@@ -1,0 +1,5 @@
+<TMP>/jarde-source-g-none-Plain/Plain.java:6: 错误: 此处需要枚举常量
+    public static final demo.Plain READY;
+    ^
+1 个错误
+exit=1

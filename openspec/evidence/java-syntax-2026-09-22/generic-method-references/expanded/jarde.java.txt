@@ -1,0 +1,169 @@
+// jarde: presentation of `GenericReferenceExpanded` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class GenericReferenceExpanded extends java.lang.Object {
+    public GenericReferenceExpanded() {
+        // @method <init>()V
+        // @declaration a constructor of `GenericReferenceExpanded`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int staticPick(java.lang.Object arg0) {
+        // @method staticPick(Ljava/lang/Object;)I
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 10;
+    }
+
+    public static int staticPick(java.lang.String arg0) {
+        // @method staticPick(Ljava/lang/String;)I
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 11;
+    }
+
+    public static int staticPick(java.lang.Object[] arg0) {
+        // @method staticPick([Ljava/lang/Object;)I
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 12;
+    }
+
+    public static int staticPick(java.lang.String[] arg0) {
+        // @method staticPick([Ljava/lang/String;)I
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 13;
+    }
+
+    public static int staticPick(int arg0) {
+        // @method staticPick(I)I
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 14;
+    }
+
+    public static int staticPick(java.lang.Integer arg0) {
+        // @method staticPick(Ljava/lang/Integer;)I
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 15;
+    }
+
+    public static java.util.function.ToIntFunction staticStrings() {
+        // @method staticStrings()Ljava/util/function/ToIntFunction;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return GenericReferenceExpanded::staticPick;
+    }
+
+    public static java.util.function.ToIntFunction staticStringArrays() {
+        // @method staticStringArrays()Ljava/util/function/ToIntFunction;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return GenericReferenceExpanded::staticPick;
+    }
+
+    public static java.util.function.ToIntFunction staticObjectArrays() {
+        // @method staticObjectArrays()Ljava/util/function/ToIntFunction;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return GenericReferenceExpanded::staticPick;
+    }
+
+    public static java.util.function.IntUnaryOperator staticInts() {
+        // @method staticInts()Ljava/util/function/IntUnaryOperator;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return GenericReferenceExpanded::staticPick;
+    }
+
+    public static java.util.function.Function staticBoxedInts() {
+        // @method staticBoxedInts()Ljava/util/function/Function;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return GenericReferenceExpanded::staticPick;
+    }
+
+    public static java.util.function.ToIntBiFunction unboundStrings() {
+        // @method unboundStrings()Ljava/util/function/ToIntBiFunction;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (ReferenceHelper p0, java.lang.String p1) -> p0.pick(p1);
+    }
+
+    public static java.util.function.ToIntBiFunction unboundArrays() {
+        // @method unboundArrays()Ljava/util/function/ToIntBiFunction;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (ReferenceHelper p0, java.lang.String[] p1) -> p0.pick(p1);
+    }
+
+    public static java.util.function.Function boundStrings() {
+        // @method boundStrings()Ljava/util/function/Function;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ReferenceHelper.make();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4 7
+        // the value at BCI 4 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        // @bytecode 13
+        // the value captured for the site's argument 0 (BCI 3) cannot be written where the shape reads it: it comes from an Duplicate at BCI 3, whose text would run again (or run later) inside the shape
+    }
+
+    public static java.util.function.Function boundArrays() {
+        // @method boundArrays()Ljava/util/function/Function;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ReferenceHelper.make();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4 7
+        // the value at BCI 4 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        // @bytecode 13
+        // the value captured for the site's argument 0 (BCI 3) cannot be written where the shape reads it: it comes from an Duplicate at BCI 3, whose text would run again (or run later) inside the shape
+    }
+
+    public static java.util.function.Function boundNull() {
+        // @method boundNull()Ljava/util/function/Function;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ReferenceHelper.nullReceiver();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4 7
+        // the value at BCI 4 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        // @bytecode 13
+        // the value captured for the site's argument 0 (BCI 3) cannot be written where the shape reads it: it comes from an Duplicate at BCI 3, whose text would run again (or run later) inside the shape
+    }
+
+    public static java.util.function.Function constructor() {
+        // @method constructor()Ljava/util/function/Function;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ReferenceBox::new;
+    }
+
+    public static java.util.function.Supplier noArgString() {
+        // @method noArgString()Ljava/util/function/Supplier;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ReferenceHelper::text;
+    }
+
+    public static java.util.function.Supplier noArgCharSequence() {
+        // @method noArgCharSequence()Ljava/util/function/Supplier;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ReferenceHelper::text;
+    }
+
+    public static java.util.function.Supplier noArgGenericString() {
+        // @method noArgGenericString()Ljava/util/function/Supplier;
+        // @declaration a static method of `GenericReferenceExpanded`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ReferenceHelper::genericText;
+    }
+}

@@ -1,0 +1,138 @@
+Classfile <WORK>/g-none/original/LambdaAlias.class
+  Last modified 2026年9月25日; size 963 bytes
+  SHA-256 checksum 542e7be31fe63f9eb9626fd34e691d2d49d72859f8c617ecfb95e83983ba4e69
+public final class LambdaAlias
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // LambdaAlias
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 5, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // LambdaAlias.factor:I
+   #8 = Class              #10            // LambdaAlias
+   #9 = NameAndType        #11:#12        // factor:I
+  #10 = Utf8               LambdaAlias
+  #11 = Utf8               factor
+  #12 = Utf8               I
+  #13 = InvokeDynamic      #0:#14         // #0:applyAsInt:(LLambdaAlias;I)Ljava/util/function/IntUnaryOperator;
+  #14 = NameAndType        #15:#16        // applyAsInt:(LLambdaAlias;I)Ljava/util/function/IntUnaryOperator;
+  #15 = Utf8               applyAsInt
+  #16 = Utf8               (LLambdaAlias;I)Ljava/util/function/IntUnaryOperator;
+  #17 = Methodref          #8.#18         // LambdaAlias.directHelper:(II)I
+  #18 = NameAndType        #19:#20        // directHelper:(II)I
+  #19 = Utf8               directHelper
+  #20 = Utf8               (II)I
+  #21 = Utf8               (I)V
+  #22 = Utf8               Code
+  #23 = Utf8               build
+  #24 = Utf8               (I)Ljava/util/function/IntUnaryOperator;
+  #25 = Utf8               direct
+  #26 = Utf8               lambda$build$0
+  #27 = Utf8               BootstrapMethods
+  #28 = MethodType         #29            //  (I)I
+  #29 = Utf8               (I)I
+  #30 = MethodHandle       7:#31          // REF_invokeSpecial LambdaAlias.lambda$build$0:(II)I
+  #31 = Methodref          #8.#32         // LambdaAlias.lambda$build$0:(II)I
+  #32 = NameAndType        #26:#20        // lambda$build$0:(II)I
+  #33 = MethodHandle       6:#34          // REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #34 = Methodref          #35.#36        // java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #35 = Class              #37            // java/lang/invoke/LambdaMetafactory
+  #36 = NameAndType        #38:#39        // metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #37 = Utf8               java/lang/invoke/LambdaMetafactory
+  #38 = Utf8               metafactory
+  #39 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #40 = Utf8               InnerClasses
+  #41 = Class              #42            // java/lang/invoke/MethodHandles$Lookup
+  #42 = Utf8               java/lang/invoke/MethodHandles$Lookup
+  #43 = Class              #44            // java/lang/invoke/MethodHandles
+  #44 = Utf8               java/lang/invoke/MethodHandles
+  #45 = Utf8               Lookup
+{
+  private final int factor;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  public LambdaAlias(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iload_1
+         6: putfield      #7                  // Field factor:I
+         9: return
+
+  public java.util.function.IntUnaryOperator build(int);
+    descriptor: (I)Ljava/util/function/IntUnaryOperator;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: invokedynamic #13,  0             // InvokeDynamic #0:applyAsInt:(LLambdaAlias;I)Ljava/util/function/IntUnaryOperator;
+         7: areturn
+
+  public int direct(int, int);
+    descriptor: (II)I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokespecial #17                 // Method directHelper:(II)I
+         6: ireturn
+
+  private int directHelper(int, int);
+    descriptor: (II)I
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=2, locals=4, args_size=3
+         0: iload_1
+         1: iload_2
+         2: iadd
+         3: istore_3
+         4: iload_3
+         5: aload_0
+         6: getfield      #7                  // Field factor:I
+         9: imul
+        10: bipush        100
+        12: iadd
+        13: ireturn
+
+  private int lambda$build$0(int, int);
+    descriptor: (II)I
+    flags: (0x1002) ACC_PRIVATE, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=5, args_size=3
+         0: iload_2
+         1: aload_0
+         2: getfield      #7                  // Field factor:I
+         5: imul
+         6: istore_3
+         7: iload_3
+         8: iload_1
+         9: iadd
+        10: istore        4
+        12: iload         4
+        14: iconst_3
+        15: isub
+        16: ireturn
+}
+BootstrapMethods:
+  0: #33 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #28 (I)I
+      #30 REF_invokeSpecial LambdaAlias.lambda$build$0:(II)I
+      #28 (I)I
+InnerClasses:
+  public static final #45= #41 of #43;    // Lookup=class java/lang/invoke/MethodHandles$Lookup of class java/lang/invoke/MethodHandles

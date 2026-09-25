@@ -1,0 +1,12 @@
+{
+  "fixture_sha256": "20a3b3cb465564ca4b6a3e4eb4af9b32cda7805c750ec503ea4e5265216a3bda",
+  "bytes": 1237,
+  "source_byte_equal": true,
+  "code_methods": 22,
+  "original_lines": 267,
+  "cli_sha256": "5fbbbe6bbee1f333b2af6d4976a919628b85c55ca1340384d507ad354e3a2dd1",
+  "jarde_quotes": 56,
+  "jarde_javac": 1,
+  "jadx_javac": 0,
+  "jadx_equal": true
+}

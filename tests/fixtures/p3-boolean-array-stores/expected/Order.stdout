@@ -1,0 +1,4 @@
+success: return=false, trace=123
+null array: throws=NullPointerException, trace=123
+out of bounds: throws=ArrayIndexOutOfBoundsException, trace=123
+value throws: throws=IllegalStateException, trace=123

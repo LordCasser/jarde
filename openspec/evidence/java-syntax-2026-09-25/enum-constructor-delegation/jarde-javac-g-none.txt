@@ -1,0 +1,4 @@
+<EVIDENCE>/decompiled/jarde-DelegatingEnum-g-none.java:4: 错误: 此处需要枚举常量
+    public static final DelegatingEnum ZERO;
+    ^
+1 个错误

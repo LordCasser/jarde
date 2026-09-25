@@ -1,0 +1,25 @@
+package defpackage;
+
+/* JADX INFO: loaded from: TypeQualifierProbe.class */
+public class TypeQualifierProbe {
+    public static int ownPick(int i) {
+        return i + 50;
+    }
+
+    public static int ownCall() {
+        return ownPick(1);
+    }
+
+    public static int invoke(ShadowOther shadowOther) {
+        return arg0.pick(1) + arg0_2.pick(1);
+    }
+
+    public static int read(ShadowOther shadowOther) {
+        return arg0.value + arg0_2.value;
+    }
+
+    public static void write(ShadowOther shadowOther, int i) {
+        arg0.value = i;
+        arg0_2.value = i + 1;
+    }
+}

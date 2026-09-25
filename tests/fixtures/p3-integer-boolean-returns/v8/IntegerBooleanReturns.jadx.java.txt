@@ -1,0 +1,48 @@
+package defpackage;
+
+/* JADX INFO: loaded from: IntegerBooleanReturns.class */
+public final class IntegerBooleanReturns {
+    public int value;
+    public int calls;
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static boolean direct(int i) {
+        return i;
+    }
+
+    public static int next(IntegerBooleanReturns integerBooleanReturns, int i) {
+        integerBooleanReturns.calls++;
+        return i;
+    }
+
+    /* JADX WARN: Type inference failed for: r0v1, types: [boolean, int] */
+    public static boolean once(IntegerBooleanReturns integerBooleanReturns, int i) {
+        return next(integerBooleanReturns, i);
+    }
+
+    /* JADX WARN: Type inference failed for: r1v1, types: [boolean, int] */
+    public boolean post() {
+        ?? r1 = this.value;
+        this.value = r1 + 1;
+        return r1;
+    }
+
+    /* JADX WARN: Type inference failed for: r1v2, types: [boolean, int] */
+    public boolean pre() {
+        ?? r1 = this.value + 1;
+        this.value = r1;
+        return r1;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static synchronized boolean sync(IntegerBooleanReturns integerBooleanReturns, int i) {
+        return i;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static boolean syncOn(Object obj, int i) {
+        synchronized (obj) {
+        }
+        return i;
+    }
+}

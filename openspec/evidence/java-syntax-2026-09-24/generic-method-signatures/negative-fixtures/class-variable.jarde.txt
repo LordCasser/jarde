@@ -1,0 +1,18 @@
+// jarde: presentation of `ClassVariableProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ClassVariableProbe extends java.lang.Object {
+    public ClassVariableProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `ClassVariableProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public java.lang.Number choose(java.lang.Number arg1, java.lang.Number arg2, boolean arg3) {
+        // @method choose(Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;
+        // @declaration an instance method of `ClassVariableProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg3 ? arg1 : arg2;
+    }
+}

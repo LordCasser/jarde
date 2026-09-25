@@ -1,0 +1,11 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ThrowClinitBranch.class */
+public class ThrowClinitBranch {
+    static {
+        if (System.nanoTime() != 0) {
+            throw new IllegalStateException("b");
+        }
+        throw new IllegalArgumentException("a");
+    }
+}

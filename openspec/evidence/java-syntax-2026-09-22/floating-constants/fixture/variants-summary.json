@@ -1,0 +1,49 @@
+[
+  {
+    "name": "canonical-nan-fneg",
+    "sha256": "226eb2c15883f4fed13d337ae183b2c9297a578b4527945d9024036cee3b989f",
+    "size": 1724,
+    "floatNan": "ffc00000",
+    "doubleNan": "fff8000000000000"
+  },
+  {
+    "name": "runtime-zero-div-zero",
+    "sha256": "136cfa080bca5a24a877824871388806dfe205f3c0bf9d64cc14b999bc74b78b",
+    "size": 1723,
+    "floatNan": "7fc00000",
+    "doubleNan": "7ff8000000000000"
+  },
+  {
+    "name": "positive-quiet",
+    "sha256": "226821fc3ca0866a4aa1277f5c9e08b40d50044bc2c55ad1bbb84414ac0a1868",
+    "size": 1722,
+    "floatNan": "7fc12345",
+    "doubleNan": "7ff8123456789abc",
+    "observed": [
+      "floatNan=7fc12345",
+      "doubleNan=7ff8123456789abc"
+    ]
+  },
+  {
+    "name": "negative-quiet",
+    "sha256": "4ef60a62ccd6eeed017bfd25f4c48d2bc4078aede3366ddfb94365947dacde0f",
+    "size": 1722,
+    "floatNan": "ffc12345",
+    "doubleNan": "fff8123456789abc",
+    "observed": [
+      "floatNan=ffc12345",
+      "doubleNan=fff8123456789abc"
+    ]
+  },
+  {
+    "name": "positive-signaling",
+    "sha256": "7e984720e44ff324e9710ab9f2e9b3ae0af53ddc67a20797d989665c17ec1525",
+    "size": 1722,
+    "floatNan": "7f812345",
+    "doubleNan": "7ff0123456789abc",
+    "observed": [
+      "floatNan=7f812345",
+      "doubleNan=7ff0123456789abc"
+    ]
+  }
+]

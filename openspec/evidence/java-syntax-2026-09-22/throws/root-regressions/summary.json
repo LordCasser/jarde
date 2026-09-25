@@ -1,0 +1,35 @@
+{
+  "census": {
+    "classes": 91,
+    "code_attributes": 509,
+    "handler_records": 75,
+    "branch_switch_targets": 231,
+    "subroutines": 8
+  },
+  "fingerprint_before": 205,
+  "fingerprint_after": 219,
+  "added": [
+    "tests/fixtures/p3-final-static/FinalStaticProbe.java",
+    "tests/fixtures/p3-final-static/FinalStaticRunner.java",
+    "tests/fixtures/p3-final-static/FinalStaticSupport.java",
+    "tests/fixtures/p3-final-static/v8/FinalStaticProbe.class",
+    "tests/fixtures/p3-instanceof/InstanceOfProbe.java",
+    "tests/fixtures/p3-instanceof/InstanceOfRunner.java",
+    "tests/fixtures/p3-instanceof/InstanceOfSupport.java",
+    "tests/fixtures/p3-instanceof/v8/InstanceOfProbe.class",
+    "tests/fixtures/p3-throw/ThrowEffects.java",
+    "tests/fixtures/p3-throw/ThrowGuardProbe.java",
+    "tests/fixtures/p3-throw/ThrowProbe.java",
+    "tests/fixtures/p3-throw/ThrowProbeRunner.java",
+    "tests/fixtures/p3-throw/ThrowStack.java",
+    "tests/fixtures/p3-throw/v8/ThrowProbe.class"
+  ],
+  "removed": [],
+  "changed": [],
+  "java_tests": 178,
+  "adjacent_tests_including_fingerprint": 61,
+  "jdk_whole_class_cases": 13,
+  "root_independent_whole_class_cases": 15,
+  "openspec_validated_items": 37,
+  "strict_clippy": "existing region.rs:1736 type_complexity"
+}

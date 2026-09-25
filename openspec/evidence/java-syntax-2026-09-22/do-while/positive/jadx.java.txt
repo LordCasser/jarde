@@ -1,0 +1,43 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DoWhilePositive.class */
+public class DoWhilePositive {
+    private static int trace;
+    private static int checks;
+
+    public static void reset() {
+        trace = 0;
+        checks = 0;
+    }
+
+    public static int trace() {
+        return trace;
+    }
+
+    public static int checks() {
+        return checks;
+    }
+
+    public static int basic(int i) {
+        int i2 = 0;
+        do {
+            i2++;
+            trace = (trace * 10) + i2;
+        } while (i2 < i);
+        return trace;
+    }
+
+    private static int touch() {
+        checks++;
+        return 0;
+    }
+
+    public static int effectfulCondition(int i) {
+        int i2 = 0;
+        do {
+            i2++;
+            trace = (trace * 10) + i2;
+        } while (touch() + i2 < i);
+        return trace;
+    }
+}

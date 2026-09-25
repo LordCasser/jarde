@@ -1,0 +1,11 @@
+typed=1,2,3,
+objectThenCast=1,2,3,
+typedRawViaElementCast=1,2,3,
+typed-reflect=java.lang.Iterable<java.lang.String>
+objectThenCast-reflect=java.lang.Iterable
+typedRawViaElementCast-reflect=java.lang.Iterable
+typed-null=NullPointerException
+objectThenCast-null=NullPointerException
+typedRawViaElementCast-null=NullPointerException
+objectThenCast-badElement=ClassCastException
+typedRawViaElementCast-badElement=ClassCastException

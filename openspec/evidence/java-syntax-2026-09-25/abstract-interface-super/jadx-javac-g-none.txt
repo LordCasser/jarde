@@ -1,0 +1,6 @@
+exit=1
+<WORK>/jadx-compile/Probe.java:6: 错误: 找不到符号
+        return super.value();
+                    ^
+  符号: 方法 value()
+1 个错误

@@ -35,6 +35,7 @@ use std::collections::BTreeMap;
 use jarde_jvm::method_ir::parameter_positions;
 use jarde_reader::classfile::{DescriptorKind, descriptor_facts};
 use jarde_reader::model::PhysicalMethodId;
+use serde::Serialize;
 
 use crate::ast::Type;
 use crate::lambda::type_of_component;
@@ -42,6 +43,9 @@ use crate::names::DebugLocal;
 
 /// The access-flag bit a class or a member sets when it is `public`.
 pub const ACC_PUBLIC: u16 = 0x0001;
+
+/// The access-flag bit a member sets when it is `private`.
+pub const ACC_PRIVATE: u16 = 0x0002;
 
 /// The access-flag bit a class sets on a member that is `static`.
 pub const ACC_STATIC: u16 = 0x0008;
@@ -133,8 +137,8 @@ impl MethodFacts {
     /// The descriptor is read once, through the reader's own facts, and the slots are the JVM
     /// layer's own derivation of them ([`parameter_positions`]): an array of a `long` or a `double`
     /// is one slot, so the parameter after it is placed where the bytes really put it. A reference —
-    /// an object type or an array of either — is stated as the conservative `Object`: which class a
-    /// reference names is not this fact's question, which is whether the value is a `boolean`.
+    /// an object type or an array of either — keeps the descriptor's exact Java type, which is also
+    /// the fact a call argument uses to preserve overload selection.
     pub fn parameter_types(&self) -> BTreeMap<u16, Type> {
         let Ok(facts) = descriptor_facts(self.descriptor.as_bytes(), DescriptorKind::Method) else {
             return BTreeMap::new();
@@ -161,15 +165,8 @@ impl MethodFacts {
         };
         let mut types = BTreeMap::new();
         for (component, slot) in facts.parameters().iter().zip(positions) {
-            let ty = match component.object_name() {
-                // A reference states `Object` whether it is an object type or an array: the boolean
-                // question is the only one this fact answers about a reference.
-                Some(_) => Type::Reference("Object".to_string()),
-                None if component.is_array() => Type::Reference("Object".to_string()),
-                None => match type_of_component(component) {
-                    Some(ty) => ty,
-                    None => return BTreeMap::new(),
-                },
+            let Some(ty) = type_of_component(component) else {
+                return BTreeMap::new();
             };
             types.insert(slot, ty);
         }
@@ -240,6 +237,10 @@ pub enum ConstantValue {
     String(String),
     /// `aconst_null`.
     Null,
+    /// A type stated by one `CONSTANT_Class` entry reached by `ldc` or `ldc_w`, in the Java
+    /// spelling this layer proved it can write, and the index of that entry in the same class's
+    /// constant pool.
+    Class { ty: String, pool_index: u16 },
 }
 
 /// The arithmetic a bytecode instruction performs.
@@ -250,6 +251,44 @@ pub enum ArithmeticOp {
     Multiply,
     Divide,
     Remainder,
+}
+
+/// The direction of an integral JVM shift; its opcode also states the left/result width.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ShiftOp {
+    Left,
+    Right,
+    UnsignedRight,
+}
+
+/// The integral or non-short-circuit boolean operation a bitwise bytecode instruction performs.
+///
+/// The `i*`/`l*` opcode pair states the computational width on the frame value; this fact keeps the
+/// shared operator without claiming whether an int-shaped value is a Java `int` or `boolean`.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum BitwiseOp {
+    And,
+    Or,
+    Xor,
+}
+
+/// The JVM numeric comparison instruction that produces a signed `-1`/`0`/`1` result.
+///
+/// The floating-point variants retain the instruction's unordered (`NaN`) bias. This is a decode
+/// fact, not a Java condition: the condition builder combines it with the one proven zero branch
+/// that consumes the result.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum NumericComparisonOp {
+    /// `lcmp`, which has no unordered value.
+    Long,
+    /// `fcmpl`, which produces `-1` for unordered operands.
+    FloatLess,
+    /// `fcmpg`, which produces `1` for unordered operands.
+    FloatGreater,
+    /// `dcmpl`, which produces `-1` for unordered operands.
+    DoubleLess,
+    /// `dcmpg`, which produces `1` for unordered operands.
+    DoubleGreater,
 }
 
 /// The sense of a conditional branch: whether it transfers when the condition holds or fails.
@@ -312,7 +351,8 @@ impl CompareOp {
 
 /// How an invocation reaches its target, which decides the shape of the call the presentation
 /// writes (`Type.name(...)` for a static, `receiver.name(...)` otherwise).
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum InvokeKind {
     Static,
     Virtual,
@@ -321,28 +361,31 @@ pub enum InvokeKind {
 }
 
 /// One symbolic reference an invocation names.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct CallTarget {
     kind: InvokeKind,
     owner: String,
     name: String,
     descriptor: String,
+    interface_reference: bool,
 }
 
 impl CallTarget {
     /// One invocation's target: how it is reached, its owner as the class file spells it (internal
-    /// form, `java/lang/Object`), its name and its descriptor.
+    /// form, `java/lang/Object`), its name and descriptor, and the pool entry's interface flag.
     pub fn new(
         kind: InvokeKind,
         owner: impl Into<String>,
         name: impl Into<String>,
         descriptor: impl Into<String>,
+        interface_reference: bool,
     ) -> Self {
         Self {
             kind,
             owner: owner.into(),
             name: name.into(),
             descriptor: descriptor.into(),
+            interface_reference,
         }
     }
 
@@ -364,6 +407,11 @@ impl CallTarget {
     /// The member descriptor.
     pub fn descriptor(&self) -> &str {
         &self.descriptor
+    }
+
+    /// Whether the pool entry was a `CONSTANT_InterfaceMethodref`.
+    pub fn is_interface_reference(&self) -> bool {
+        self.interface_reference
     }
 }
 
@@ -435,6 +483,23 @@ pub enum Operation {
     Store { slot: u16 },
     /// Combines the two values it reads (below the value it reads first).
     Arithmetic { op: ArithmeticOp },
+    /// Shifts an int-shaped or long left value by an int-shaped distance.
+    Shift { op: ShiftOp },
+    /// Combines two int-shaped or long values using the instruction's bitwise operator.
+    ///
+    /// The instruction does not distinguish Java `int` from `boolean`; that evidence belongs to
+    /// the value consumers and the declaration plan.
+    Bitwise { op: BitwiseOp },
+    /// Negates the one numeric value it reads (`ineg`, `lneg`, `fneg` or `dneg`).
+    Negate,
+    /// Converts the one numeric value it reads, retaining the JVM operand shape and Java result type.
+    ///
+    /// `source` is the primitive category named by the opcode (`int`, `long`, `float` or
+    /// `double`), not a claim that an int-shaped value is necessarily an `int`: the value reader
+    /// checks its presented type and accepts byte/short/char where the JVM uses the int category,
+    /// while refusing `boolean`. `target` is the explicit Java type the opcode produces, including
+    /// byte/char/short for `i2b`/`i2c`/`i2s` even though their frame result remains int-shaped.
+    PrimitiveConversion { source: Type, target: Type },
     /// Adds a signed amount to a local slot, in place (`iinc`): one statement's worth of effect
     /// that reads and writes the same slot, which is why it is neither a load nor a store.
     Increment { slot: u16, amount: i32 },
@@ -446,6 +511,8 @@ pub enum Operation {
     /// successor is the target" is what lets a backward branch — the condition of a loop — be
     /// presented at all.
     Comparison { op: CompareOp, target: u32 },
+    /// Produces a signed numeric comparison result, which may be composed with a zero branch.
+    NumericComparison { op: NumericComparisonOp },
     /// A multi-way transfer: the keys the decode enumerated, each with the BCI it transfers to,
     /// plus the BCI of the no-match case.
     ///
@@ -501,6 +568,8 @@ pub enum Operation {
     /// `bridge@1` rule's, and a cast no rule has claimed is [`Self::Other`]'s business — quoted,
     /// never silently dropped.
     CheckCast { ty: String },
+    /// Tests one reference against the named CP class, producing a JVM int-shaped boolean.
+    InstanceOf { ty: String },
     /// A dynamic call site: it reads the captured values the site's descriptor names and produces
     /// the instance the descriptor returns.
     ///
@@ -509,14 +578,56 @@ pub enum Operation {
     /// handle and the implementation handle ([`crate::lambda`], rule `lambda@1`), because a site
     /// with an arbitrary bootstrap must never be presented as one of them (A04).
     InvokeDynamic(DynamicSite),
-    /// Reads one element of an `int`-shaped array (`iaload`).
+    /// Reads one element of an `int`-shaped array (`iaload`): the read the `switch` a compiler
+    /// builds for an enum reads its dispatch table with.
     ///
-    /// It is modelled because the `switch` a compiler builds for an enum reads its dispatch table
-    /// with it ([`crate::enumswitch`]): the *shape* that makes one read a switch's dispatch is that
-    /// module's reading, and a read no rule claimed is quoted like every other unclaimed
-    /// instruction. The other array reads (`laload`, `aaload`, …) and the array stores stay
-    /// [`Self::Other`]: this slice models the one opcode the shape it presents reads.
+    /// The *shape* that makes one read a switch's dispatch is [`crate::enumswitch`]'s reading, and
+    /// that rule's claim is unchanged — which is why this variant is the read it names and not the
+    /// whole array-reading family: a dispatch table is an `int[]`, so the `baload`/`caload`/
+    /// `saload` that share this value shape are no candidate of that rule and are
+    /// [`Self::ArrayElementLoad`]s. A read no rule claimed is the ordinary subscript
+    /// [`crate::build`] writes.
     ArrayLoad,
+    /// Reads one element of an array whose element type the **opcode** states — or, with `None`,
+    /// whose element type only the array's own type can state.
+    ///
+    /// The variant carries the element type for the reads whose opcode names it (`laload`/`faload`/
+    /// `daload` name theirs outright), for the three that share `iaload`'s int-sized shape — an
+    /// `int`, which is the whole of what their opcode says: JVMS 2.11.1 gives a `boolean`, a `byte`,
+    /// a `char`, a `short` and an `int` one value shape and one slot, so `[Z` and `[B` are both read
+    /// with `baload` — and `None` for `aaload`, whose element is a fact of the array's own type
+    /// (`[Ljava/lang/String;` reads a `java.lang.String`, `[[I` an `int[]`) and never of the
+    /// instruction. What the **array's** own type states is [`crate::build`]'s refinement over
+    /// this; `None` is *no type claimed* and not a type to guess.
+    ArrayElementLoad { element: Option<Type> },
+    /// Writes one element of an array (`iastore`, `lastore`, …, `aastore`).
+    ///
+    /// The element type is what the written element has to meet, and it comes from the same two
+    /// places a read's does: the opcode states it for seven of the eight stores, and `None` is
+    /// `aastore`, whose element is a reference the array's own type names. `Some(Int)` for
+    /// `bastore`/`castore`/`sastore` is the same four-int rule [`Self::ArrayLoad`] states, and
+    /// [`crate::build`] refines it from the array's own type where the frames state one.
+    ArrayStore { element: Option<Type> },
+    /// Reads the length of the array it reads (`arraylength`).
+    ///
+    /// A modelled fact and not a presentation: the count a loop's test reads is what makes the test
+    /// worth writing, and whether a particular `arraylength` sits in a position this layer presents
+    /// is [`crate::build`]'s question. `.length` is the only text it has.
+    ArrayLength,
+    /// Allocates one array (`newarray`, `anewarray` and `multianewarray`).
+    ///
+    /// `element` is the **element** type the creation states — `newarray`'s `atype` code,
+    /// `anewarray`'s pool class, and the component the `multianewarray` descriptor names —
+    /// `dimensions` is how many lengths the instruction reads off the stack, and
+    /// `total_dimensions` is the complete array rank from the instruction/constant-pool facts.
+    /// JVMS 6.5 makes those facts explicit: `anewarray` allocates one dimension even when its
+    /// component is itself an array, while `multianewarray`'s operand allocates only a prefix of
+    /// the pool class's rank.
+    NewArray {
+        element: Type,
+        dimensions: u8,
+        total_dimensions: u8,
+    },
     /// Enters or leaves the monitor of the object it reads (`monitorenter`/`monitorexit`).
     ///
     /// Modelled because the `monitor@1` rule reads it (P3 2.4): a `synchronized` statement *is* one
@@ -917,7 +1028,7 @@ mod tests {
             static_facts.parameter_types(),
             BTreeMap::from([
                 (0, Type::Boolean),
-                (1, Type::Reference("Object".into())),
+                (1, Type::Reference("long[]".into())),
                 (2, Type::Int)
             ])
         );
@@ -929,7 +1040,7 @@ mod tests {
             instance_facts.parameter_types(),
             BTreeMap::from([
                 (1, Type::Boolean),
-                (2, Type::Reference("Object".into())),
+                (2, Type::Reference("long[]".into())),
                 (3, Type::Int),
             ])
         );
@@ -942,7 +1053,7 @@ mod tests {
                 .parameter_types(),
             BTreeMap::from([
                 (0, Type::Double),
-                (2, Type::Reference("Object".into())),
+                (2, Type::Reference("double[][]".into())),
                 (3, Type::Int),
             ])
         );

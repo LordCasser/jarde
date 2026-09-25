@@ -1,0 +1,2 @@
+import java.util.function.IntUnaryOperator;
+public class CaptureRunner {public static void main(String[]args){for(int fail=0;fail<4;fail++){CaptureSupport.calls=0;CaptureSupport.failAt=fail;try{IntUnaryOperator fn=LambdaCapture.create();System.out.println(fail+":created:"+CaptureSupport.calls);System.out.println(fail+":first:"+fn.applyAsInt(1)+":"+CaptureSupport.calls);System.out.println(fail+":second:"+fn.applyAsInt(2)+":"+CaptureSupport.calls);}catch(RuntimeException e){System.out.println(fail+":failure:"+(e==CaptureSupport.FAILURE)+":"+CaptureSupport.calls);}}}}

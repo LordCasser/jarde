@@ -1,0 +1,3 @@
+cli_rc=0
+javac_rc=0
+run_rc=0

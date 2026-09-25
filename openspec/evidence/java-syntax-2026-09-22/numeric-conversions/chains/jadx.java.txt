@@ -1,0 +1,36 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ConversionChain.class */
+public class ConversionChain {
+    public static int intRound(int i) {
+        return i;
+    }
+
+    public static long longFloatRound(long j) {
+        return j;
+    }
+
+    public static long longDoubleRound(long j) {
+        return j;
+    }
+
+    public static double doubleFloatRound(double d) {
+        return (float) d;
+    }
+
+    public static byte floatByte(float f) {
+        return (byte) f;
+    }
+
+    public static char doubleChar(double d) {
+        return (char) d;
+    }
+
+    public static int byteChar(int i) {
+        return (char) ((byte) i);
+    }
+
+    public static long ordered(int i, boolean z, boolean z2) {
+        return ((long) ConversionEffects.left(i, z)) + ((long) ConversionEffects.right(i, z2));
+    }
+}

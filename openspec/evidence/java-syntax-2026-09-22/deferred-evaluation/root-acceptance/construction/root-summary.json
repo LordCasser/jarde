@@ -1,0 +1,13 @@
+{
+  "class_sha256": "878f6cf5730390ede6912fb9902fc10a7657f100730f92d8c41eef08dbfb77aa",
+  "code_before": "bb000759b70009b0",
+  "code_after": "bb000759b70009b8000ab0",
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_equal": true,
+  "jadx_javac": 0,
+  "jadx_equal": true,
+  "jarde_same_complete_output": true,
+  "actual_original_lines": 3,
+  "cli_sha256": "feed5c377a439490efb12a2a46bdfa0e94c32dffd3a83bd1583b70fe89317350"
+}

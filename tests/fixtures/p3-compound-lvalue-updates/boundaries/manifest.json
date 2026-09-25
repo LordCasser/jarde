@@ -1,0 +1,96 @@
+{
+  "sources": {
+    "BoundaryBox.java": {
+      "bytes": 209,
+      "sha256": "3438080f500c0bc6763d6d180b8c9fabec3fe443d3ceb3546594f073d2c6a234"
+    },
+    "CompoundBoundaryProbe.java": {
+      "bytes": 2755,
+      "sha256": "3410f50b95426ca1ea69dd0391fec01272b1a92b6a97fb1e420f8c9f0e0867e4"
+    },
+    "CompoundBoundaryRunner.java": {
+      "bytes": 4976,
+      "sha256": "5f2347b9871ca18d1aabe60736617f95001671d15178333ea63cf9a933cf4495"
+    }
+  },
+  "base": {
+    "path": "boundaries/v8/CompoundBoundaryProbe.class",
+    "bytes": 2055,
+    "sha256": "d5acfc8babad92a18357a4fbf0e38657e374d384b15c4ffe365f8cdedc7422ed"
+  },
+  "helpers": {
+    "BoundaryBox.class": {
+      "bytes": 219,
+      "sha256": "3b7d1f963f27b4307c368ceb8b572ef805c1692b4796157993f6564581a07cd9"
+    },
+    "CompoundBoundaryRunner.class": {
+      "bytes": 3156,
+      "sha256": "71da681a56aa34bd02a9e47b93d61fa0097a108a4a7eeff0c8bb5c1b454d015e"
+    }
+  },
+  "constant_pool_indices": {
+    "other_field": 66,
+    "other_array": 27,
+    "observe_receiver": 54,
+    "observe_element": 62,
+    "rhs": 73,
+    "index": 58
+  },
+  "cases": {
+    "field-different-member": {
+      "path": "boundaries/patched/field-different-member/CompoundBoundaryProbe.class",
+      "bytes": 2055,
+      "sha256": "eba814e99be6e02bfd88adb7ae55e0557ebc0dd428c3a061e011fa15b1cadb90"
+    },
+    "array-different-index-copy": {
+      "path": "boundaries/patched/array-different-index-copy/CompoundBoundaryProbe.class",
+      "bytes": 2057,
+      "sha256": "506a236c4d0bf737de24ff5bd98a0d8d94feb0525e089d88b386c002fc14d1cf"
+    },
+    "array-different-array-copy": {
+      "path": "boundaries/patched/array-different-array-copy/CompoundBoundaryProbe.class",
+      "bytes": 2060,
+      "sha256": "7663a371df4785133cef9294e3376f8642061e4443ec4a04e9702c65f4509c8b"
+    },
+    "field-multi-consumer": {
+      "path": "boundaries/patched/field-multi-consumer/CompoundBoundaryProbe.class",
+      "bytes": 2059,
+      "sha256": "99e9456f109b8252feaef71bb36663585397dbc8f29ae8a94fa9605cc4b843f0"
+    },
+    "array-multi-consumer": {
+      "path": "boundaries/patched/array-multi-consumer/CompoundBoundaryProbe.class",
+      "bytes": 2059,
+      "sha256": "c30abf634b607f82868c9d39edab7e265810c12bbf50f5b9341813a7d6f28700"
+    },
+    "field-gap-before-dup": {
+      "path": "boundaries/patched/field-gap-before-dup/CompoundBoundaryProbe.class",
+      "bytes": 2060,
+      "sha256": "527139fbe6336607923db585df37899bfb8b2c9fd68766aa5c23638e39733553"
+    },
+    "field-gap-after-dup": {
+      "path": "boundaries/patched/field-gap-after-dup/CompoundBoundaryProbe.class",
+      "bytes": 2060,
+      "sha256": "45bf7beed7e159f19d7f75998f81148a54c2923e5abdbe3fb3e9261734afee43"
+    },
+    "field-gap-before-store": {
+      "path": "boundaries/patched/field-gap-before-store/CompoundBoundaryProbe.class",
+      "bytes": 2060,
+      "sha256": "d338967f9fdd30a14187f2d5f8329c6bdb91f92b8b88ab5f05083ec06a2f1646"
+    },
+    "array-gap-before-index": {
+      "path": "boundaries/patched/array-gap-before-index/CompoundBoundaryProbe.class",
+      "bytes": 2060,
+      "sha256": "d45af194ca820d976959d5a77121dec0174dc695cb81592d55e1ec94d651e282"
+    },
+    "array-gap-after-dup": {
+      "path": "boundaries/patched/array-gap-after-dup/CompoundBoundaryProbe.class",
+      "bytes": 2060,
+      "sha256": "60e06f1b20f10a8affcb2599120bcad74b64c4cba360c2b2a8132ea51948fc61"
+    },
+    "array-gap-before-store": {
+      "path": "boundaries/patched/array-gap-before-store/CompoundBoundaryProbe.class",
+      "bytes": 2060,
+      "sha256": "67fa3d918a2b13eeeeb7abfe45f8a5d4e8f1b1c338a8051e0e62df4840ead6d1"
+    }
+  }
+}

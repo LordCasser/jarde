@@ -1,0 +1,51 @@
+package defpackage;
+
+/* JADX INFO: loaded from: CleanupBoundaries.class */
+public class CleanupBoundaries {
+    public static int value;
+    public static int trace;
+    public static boolean failAtOne;
+    public static final RuntimeException TRY_FAILURE = new IllegalArgumentException("try");
+    public static final RuntimeException CLEANUP_FAILURE = new IllegalStateException("cleanup");
+
+    private static int mark(int i) {
+        trace = (trace * 10) + i;
+        if (i == 1 && failAtOne) {
+            throw TRY_FAILURE;
+        }
+        return i;
+    }
+
+    public static int snapshotReturn() {
+        value = 41;
+        try {
+            mark(1);
+            int i = 99;
+            return value;
+        } finally {
+            value = 99;
+            mark(2);
+        }
+    }
+
+    public static int cleanupThrowsOverReturn() {
+        try {
+            mark(3);
+            mark(4);
+            throw CLEANUP_FAILURE;
+        } catch (Throwable th) {
+            mark(4);
+            throw CLEANUP_FAILURE;
+        }
+    }
+
+    public static int cleanupThrowsOverTryThrow() {
+        try {
+            mark(5);
+            throw TRY_FAILURE;
+        } catch (Throwable th) {
+            mark(6);
+            throw CLEANUP_FAILURE;
+        }
+    }
+}

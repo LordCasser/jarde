@@ -1,0 +1,32 @@
+Base class: Java 8 major 52, 1548 bytes, 15 Code methods
+Base SHA-256: d8f4a437d0cd0f3ec12672791f27b1c11cfbcdc6885d10eddcd3114aa0838e56
+
+pop
+  method_info: called()Z -> called()V
+  before: Code max_stack=1, max_locals=0, code_length=7; 0 invokestatic, 3 instanceof, 6 ireturn
+  after:  Code max_stack=1, max_locals=0, code_length=8; 0 invokestatic, 3 instanceof, 6 pop, 7 return
+  class bytes: 1549; JVM: -Xverify:all passed; output: pop=returned:1
+
+duplicate
+  method_info: local(Ljava/lang/Object;)Z, same descriptor
+  before: Code max_stack=1, max_locals=2, code_length=7; 0 aload_0, 1 instanceof, 4 istore_1, 5 iload_1, 6 ireturn
+  after:  Code max_stack=2, max_locals=3, code_length=9; 0 aload_0, 1 instanceof, 4 dup, 5 istore_1, 6 istore_2, 7 iload_1, 8 ireturn
+  class bytes: 1550; JVM: -Xverify:all passed; output: duplicate-true=true, duplicate-false=false
+
+stale
+  method_info: local(Ljava/lang/Object;)Z, same descriptor
+  before: Code max_stack=1, max_locals=2, code_length=7; 0 aload_0, 1 instanceof, 4 istore_1, 5 iload_1, 6 ireturn
+  after:  Code max_stack=1, max_locals=2, code_length=9; 0 aload_0, 1 instanceof, 4 istore_1, 5 iconst_0, 6 istore_1, 7 iload_1, 8 ireturn
+  class bytes: 1550; JVM: -Xverify:all passed; output: stale-true=false, stale-false=false
+
+int
+  method_info: branch(Ljava/lang/Object;)I, same descriptor
+  before: Code max_stack=1, max_locals=1, code_length=11; 0 aload_0, 1 instanceof, 4 ifeq, 7 iconst_1, 8 ireturn, 9 iconst_0, 10 ireturn; StackMapTable present
+  after:  Code max_stack=2, max_locals=1, code_length=7; 0 aload_0, 1 instanceof, 4 iconst_1, 5 iand, 6 ireturn; StackMapTable removed
+  class bytes: 1535; JVM: -Xverify:all passed; output: int-string=1, int-number=0, int-null=0
+
+The pre-fix CLI reports are under `jarde/`.  They retain the producer prefix where it is already
+known and quote the unsupported instanceof/consumer boundaries.  Their complete generated class
+sources fail `javac --release 8 -g:none` because the positive fixture's other unsupported members
+remain in the same full-class request; the logs are evidence, not a claim that a partial source is
+the runtime oracle.

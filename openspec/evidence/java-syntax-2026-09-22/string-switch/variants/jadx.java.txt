@@ -1,0 +1,38 @@
+package defpackage;
+
+/* JADX INFO: loaded from: StringSwitchVariants.class */
+public class StringSwitchVariants {
+    static int calls;
+
+    static String read(String str) {
+        calls++;
+        if ("!".equals(str)) {
+            throw new IllegalStateException("selector");
+        }
+        return str;
+    }
+
+    public static int choose(String str) {
+        switch (str) {
+            case "Aa":
+            case "BB":
+                return 11;
+            case "x":
+                calls += 10;
+                break;
+            case "y":
+                break;
+            case "":
+                return 1;
+            case "雪":
+                return 9;
+            default:
+                return 44;
+        }
+        return calls + 20;
+    }
+
+    public static int once(String str) {
+        return choose(read(str));
+    }
+}

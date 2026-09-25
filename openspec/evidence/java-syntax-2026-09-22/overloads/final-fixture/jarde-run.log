@@ -1,0 +1,12 @@
+objectString=3
+objectNull=3
+objectArray=5
+objectBoxed=7
+widening=10
+narrowByte=11
+narrowShort=12
+constructorObject=1
+multiple=15
+genericObject=3
+functionalRunnable=16
+functionalObject=18

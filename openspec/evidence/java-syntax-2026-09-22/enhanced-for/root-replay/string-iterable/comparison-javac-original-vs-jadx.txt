@@ -1,0 +1,8 @@
+status: original 1 lines; jadx 1 lines; equal=true
+= 001 original="0" jadx="0"
+stdout: original 0 lines; jadx 0 lines; equal=true
+stderr: original 4 lines; jadx 4 lines; equal=true
+= 001 original="警告: [options] 源值 8 已过时，将在未来发行版中删除" jadx="警告: [options] 源值 8 已过时，将在未来发行版中删除"
+= 002 original="警告: [options] 目标值 8 已过时，将在未来发行版中删除" jadx="警告: [options] 目标值 8 已过时，将在未来发行版中删除"
+= 003 original="警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。" jadx="警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。"
+= 004 original="3 个警告" jadx="3 个警告"

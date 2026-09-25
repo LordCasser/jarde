@@ -1,0 +1,135 @@
+// jarde: presentation of `InstanceOfAudit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class InstanceOfAudit extends java.lang.Object {
+    public static int calls;
+
+    public InstanceOfAudit() {
+        // @method <init>()V
+        // @declaration a constructor of `InstanceOfAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.Object source(java.lang.Object arg0) {
+        // @method source(Ljava/lang/Object;)Ljava/lang/Object;
+        // @declaration a static method of `InstanceOfAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        InstanceOfAudit.calls = InstanceOfAudit.calls + 1;
+        return arg0;
+    }
+
+    public static boolean string(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `string(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method string(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean number(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `number(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method number(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean runnable(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `runnable(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method runnable(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean primitiveArray(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `primitiveArray(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method primitiveArray(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean referenceArray(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `referenceArray(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method referenceArray(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean multiArray(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `multiArray(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method multiArray(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean called(java.lang.Object arg0) {
+        // @method called(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        source(arg0);
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 7
+        // the value at BCI 7 comes from an Other at BCI 4, which produces no expression this subset writes
+    }
+
+    public static boolean local(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `local(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method local(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 is returned from a method whose own descriptor returns `Z`, and this layer has no evidence that the value is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the member's own signature rejects
+    }
+
+    public static int branch(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `branch(Ljava/lang/Object;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method branch(Ljava/lang/Object;)I
+        // @declaration a static method of `InstanceOfAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 0 7 15 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean negated(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `negated(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method negated(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 0 7 11 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+        // @bytecode 12
+        // the value at BCI 12 is the entry state of stack depth 0, which no instruction produced
+    }
+}

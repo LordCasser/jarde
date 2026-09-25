@@ -7,6 +7,10 @@ P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12�
 - [依赖选型](dependencies.md)：复用决策与准入要求。
 - [验收映射](acceptance.md)：A01–A18 的适用范围与证据。
 - [当前完成复核](completion-review.md)：T1–T4 按约定四项判据关闭，三项归档及 CI 已核对；新发现 P1/T5 为 `append(int)` 消费 char 时丢转换，独立登记，不宣称 concat 全面完成。
+- [2026-09-22 持续语法巡查](evidence/java-syntax-2026-09-22/README.md)：以同 class 的源码、jadx、jarde 及实际执行定位缺口；独立交付为 [一元取负](changes/recover-unary-negation/tasks.md)、[特殊调用分派](changes/preserve-special-call-dispatch/tasks.md)、[显式引用转换](changes/recover-explicit-reference-casts/tasks.md)、[数值比较条件](changes/recover-numeric-comparison-conditions/tasks.md)、[调用参数类型](changes/preserve-invocation-argument-types/tasks.md)、[静态初始化完成](changes/recover-static-initializer-completion/tasks.md)、[普通throw](changes/recover-throw-statements/tasks.md)、[final静态字段写入](changes/recover-final-static-field-writes/tasks.md)、[instanceof](changes/recover-instanceof-expressions/tasks.md)、[位运算](changes/recover-bitwise-expressions/tasks.md)、[浮点常量](changes/recover-floating-point-constants/tasks.md)。具体验收以各 change 为准，不从大 change 的历史任务数推断当前质量。
+- 本轮待实施的独立语法任务还包括 [窄整数返回](changes/recover-narrow-integer-returns/tasks.md)、[窄数组写入](changes/recover-narrow-array-stores/tasks.md)、[boolean字段整数写入](changes/recover-boolean-field-stores/tasks.md)、[数组初始化器](changes/recover-array-initializers/tasks.md)、[条件表达式值汇合](changes/recover-conditional-values/tasks.md)、[do-while体内跳转](changes/recover-do-while-body-transfers/tasks.md) 与 [Class类字面量](changes/recover-class-literals/tasks.md)；[窄字段写入B/C/S](changes/recover-narrow-field-stores/verification.md) 与 [部分维度数组创建](changes/recover-partial-array-allocations/verification.md) 已通过根验收。先按各自证据闭合，再调整主规格。
+- 数组引用的调用边界另见 [已证明的数组上溯与重载目标](changes/preserve-array-invocation-widening/tasks.md)，不并入数组创建或普通引用转换。
+- 字符串 switch 的[语法形态恢复计划](changes/recover-string-switch/tasks.md)已有同 class 三方执行对照；现有两级 Java 行为正确，局部折叠属于较低优先级的独立质量任务。
 
 | 阶段 | 记录 | 当前状态 |
 | --- | --- | --- |
@@ -24,6 +28,7 @@ P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12�
 | Benchmark 批次 4/4 | [bind-prefixed-load-roots](changes/archive/2026-09-20-bind-prefixed-load-roots/proposal.md) | 6/6，`fbcf06b` 归档；container+prefix root 与 CLI 树枚举 |
 | 性能专项 | [optimize-demand-workloads](changes/optimize-demand-workloads/proposal.md) | 0/22；O1 子交付已归档，专项测量/归因/调查处置未完成；新候选须声明本次恢复缺口与修正范围 |
 | 并行全量导出 | [add-parallel-bulk-recovery](changes/add-parallel-bulk-recovery/proposal.md) | 规划齐全，实现 0/22；类准备复用、有界多 worker、共享总预算和流式 JSONL，承接 O2/O4/O7；未声称已达到 jadx 性能 |
+| 已证明的源码结构 | [present-proved-java-structure](changes/present-proved-java-structure/proposal.md) | 39/81；单臂 `if`、命名 `catch`（含 `try` 前的普通赋值）、`int` 数组与引用数组，以及 `package`/`throws`/`...`/标量转义已落地。声明拼写和数组还在各自的 worktree，没有并入主工作区。其余：前向汇合、`dup` 的两次存储、字段的 `x = x + k`、数组元素 `++`、比较的 0/1、数组元素宽度、比较与 `super`、静态调用的类型、取负、条件里的赋值、接口 `default`、常量字段、带标记的 `break`/`continue`、accessor/lambda/匿名类。验收是自写源码与 jadx、jarde 的三方对照 |
 | 易用性 1/3 | [add-artifact-navigation](changes/archive/2026-09-20-add-artifact-navigation/proposal.md) | 8/8，`e0c83b6` 归档；候选/确认两级列举与身份交接 |
 | 易用性 2/3 | [add-task-oriented-operations](changes/archive/2026-09-20-add-task-oriented-operations/proposal.md) | 11/11，`2428752` 归档；目标选择、阶段调度、预算与环境策略 |
 | 易用性 3/3 | [add-task-oriented-cli](changes/archive/2026-09-20-add-task-oriented-cli/proposal.md) | 9/9，`85828c4` 归档；五个薄子命令、text/JSON 同源、四态退出状态 |

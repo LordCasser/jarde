@@ -1,0 +1,126 @@
+方法 Signature 负例重放
+构建命令：python3 negative-fixtures/build_evidence.py
+Java：javac --release 8 -g:none；验证/反射：java -Xverify:all
+工具版本：openjdk version "23.0.1" 2024-10-15；javac 23.0.1；Python 3.14.7；jadx 1.5.6
+每个 case 先独立编译到临时目录；负例 class 文件随后单独保存到 classes/。
+
+## object-bound
+说明：第一界从 Number 改为 Object，方法物理 descriptor 保持 Number。
+class SHA-256：7fc84e045fe2ca0bea3862d423cb1e1ac22f0cf3e23dcc60fe0a9ca5dce47cb9
+Signature attribute_info raw bytes (choose): 000f000000020010 ; referenced CONSTANT_Utf8 raw bytes: 3c543a4c6a6176612f6c616e672f4f626a6563743b3e2854543b54543b5a2954543b (<T:Ljava/lang/Object;>(TT;TT;Z)TT;)
+验证/反射退出码：0
+验证/反射 stdout：
+loaded=verified
+variable=T
+bound=java.lang.Object
+parameter=T
+parameter=T
+parameter=boolean
+return=T
+验证/反射 stderr：
+(空)
+javap 摘要：
+descriptor: ()V
+descriptor: (Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;
+Signature: #16                          // <T:Ljava/lang/Object;>(TT;TT;Z)TT;
+
+## unbound-variable
+说明：方法 Signature 引用未声明的 U；Signature grammar 合法，方法变量表中只有 T。
+class SHA-256：9d709eb9c335563687624e174a34ef51b4a407cd104e2422f13b018d773249fc
+Signature attribute_info raw bytes (choose): 000f000000020010 ; referenced CONSTANT_Utf8 raw bytes: 3c543a4c6a6176612f6c616e672f4e756d6265723b3e2854553b54543b5a2954553b (<T:Ljava/lang/Number;>(TU;TT;Z)TU;)
+验证/反射退出码：0
+验证/反射 stdout：
+loaded=verified
+variable=T
+bound=java.lang.Number
+parameter=<null Type>
+parameter=T
+parameter=boolean
+return=<null Type>
+验证/反射 stderr：
+(空)
+javap 摘要：
+descriptor: ()V
+descriptor: (Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;
+Signature: #16                          // <T:Ljava/lang/Number;>(TU;TT;Z)TU;
+
+## class-variable
+说明：T 由类级 Signature 声明；当前改动不投影类头。
+class SHA-256：1ffbff75014beaf8b26cb8e02665e2597dc3c7cdb0897ca92b4d89a841d5a547
+Signature attribute_info raw bytes (class): 000f000000020011 ; referenced CONSTANT_Utf8 raw bytes: 3c543a4c6a6176612f6c616e672f4e756d6265723b3e4c6a6176612f6c616e672f4f626a6563743b (<T:Ljava/lang/Number;>Ljava/lang/Object;)
+Signature attribute_info raw bytes (choose): 000f000000020010 ; referenced CONSTANT_Utf8 raw bytes: 2854543b54543b5a2954543b ((TT;TT;Z)TT;)
+验证/反射退出码：0
+验证/反射 stdout：
+loaded=verified
+parameter=T
+parameter=T
+parameter=boolean
+return=T
+验证/反射 stderr：
+(空)
+javap 摘要：
+descriptor: ()V
+descriptor: (Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;
+Signature: #16                          // (TT;TT;Z)TT;
+Signature: #17                          // <T:Ljava/lang/Number;>Ljava/lang/Object;
+
+## complex-method
+说明：合法方法 Signature 含数组、通配符与泛型界；Signature 无 throws 后缀，Exceptions 属性列出 IOException。
+class SHA-256：69cde64c7de62aad8bfbb406f63532bf207aef26452760eb8c262a7f848f5749
+Signature attribute_info raw bytes (choose): 0011000000020012 ; referenced CONSTANT_Utf8 raw bytes: 3c543a4c6a6176612f6c616e672f4e756d6265723b3e285b4c6a6176612f7574696c2f4c6973743c2b54543b3e3b295b4c6a6176612f7574696c2f4c6973743c2b54543b3e3b (<T:Ljava/lang/Number;>([Ljava/util/List<+TT;>;)[Ljava/util/List<+TT;>;)
+验证/反射退出码：0
+验证/反射 stdout：
+loaded=verified
+variable=T
+bound=java.lang.Number
+parameter=java.util.List<? extends T>[]
+return=java.util.List<? extends T>[]
+exception=java.io.IOException
+验证/反射 stderr：
+(空)
+javap 摘要：
+descriptor: ()V
+descriptor: ([Ljava/util/List;)[Ljava/util/List;
+Signature: #18                          // <T:Ljava/lang/Number;>([Ljava/util/List<+TT;>;)[Ljava/util/List<+TT;>;
+
+## incompatible-body
+说明：descriptor 与 Signature 擦除匹配，但正文直接返回 Integer，无法作为任意 T extends Number 返回。
+class SHA-256：af6f48c73064a9fe431da2ccff9ce2a16cbdb5e152ade4a843f6bc3a4152d03a
+Signature attribute_info raw bytes (choose): 0012000000020013 ; referenced CONSTANT_Utf8 raw bytes: 3c543a4c6a6176612f6c616e672f4e756d6265723b3e2854543b54543b5a2954543b (<T:Ljava/lang/Number;>(TT;TT;Z)TT;)
+验证/反射退出码：0
+验证/反射 stdout：
+loaded=verified
+variable=T
+bound=java.lang.Number
+parameter=T
+parameter=T
+parameter=boolean
+return=T
+验证/反射 stderr：
+(空)
+javap 摘要：
+descriptor: ()V
+descriptor: (Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;
+Signature: #19                          // <T:Ljava/lang/Number;>(TT;TT;Z)TT;
+
+
+## incompatible-body source compile check
+Projected source: java/IncompatibleBodyProjected.java
+javac --release 8 exit code: 1
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-signature-negative-xffab7ys/incompatible-projection/IncompatibleBodyProbe.java:3: 错误: 不兼容的类型: Integer无法转换为T
+        return Integer.valueOf(7);
+                              ^
+  其中, T是类型变量:
+    T扩展已在方法 <T>choose(T,T,boolean)中声明的Number
+1 个错误
+3 个警告
+
+## source provenance and positive acceptance boundary
+object-bound, unbound-variable: source-compiled baseline is ../GenericMethodProbe.java; classfile Signature is then byte-patched. JADX outputs: object-bound.jadx.java and unbound-variable.jadx.java.
+class-variable, complex-method: source-compiled in negative-fixtures/java/; JADX outputs: class-variable.jadx.java and complex-method.jadx.java.
+incompatible-body: source-compiled Number-returning body in java/IncompatibleBodyProbe.java, then Signature attribute added to the classfile; JADX output IncompatibleBodyProbe.jadx.java; candidate generic projection is java/IncompatibleBodyProjected.java and is rejected by javac above.
+Frozen Jarde CLI 0.1.0 replayed without Cargo build: class-source source and per-case SHA are in jarde-results.txt; full outputs are object-bound.jarde.txt, unbound-variable.jarde.txt, class-variable.jarde.txt, complex-method.jarde.txt and incompatible-body.jarde.txt. They remain descriptor-typed and do not claim compilable generic projection.
+Positive acceptance boundary: ../GenericThrowsProbe.class (SHA and exact javap/reflect results in ../replay-results.txt and ../generic-throws-javap.txt) has Signature <T:Ljava/lang/Number;>(TT;)TT; without ^throws while Exceptions contains java.io.IOException. Frozen CLI source is ../GenericThrowsProbe.jarde.txt; empty Signature throws must retain the Exceptions-derived declaration, not be treated as a mismatch.

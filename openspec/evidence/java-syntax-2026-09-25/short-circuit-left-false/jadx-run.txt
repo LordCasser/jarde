@@ -1,0 +1,2 @@
+false-result=false,calls=0
+true-result=true,calls=1

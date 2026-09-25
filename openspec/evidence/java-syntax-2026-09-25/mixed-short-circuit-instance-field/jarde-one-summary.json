@@ -1,0 +1,39 @@
+{
+  "outcome": "produced",
+  "quality": "fallback",
+  "representation": "mixed",
+  "content": "explanation_only",
+  "syntax_status": "not_java",
+  "semantic_validation": "unproven",
+  "verification": "not_performed",
+  "text": "// @method one(ZZ)V\n// @declaration a static method of `MixedShortCircuitField`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 1 4 5 8 11 14 17 20 21 24 25 28\n    // canonical block at BCI 20 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted\n}\n",
+  "diagnostics": [
+    {
+      "code": "jre_region_ownership_overlap",
+      "message": "canonical block at BCI 20 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_recovery_produced",
+      "message": "1 region(s), 1 statement(s), 1 segment(s), 352 byte(s) written from 6 canonical block(s)",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_field_accesses",
+      "message": "1 field instruction(s) read under field@1: 1 presented, 0 refused",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_declaration",
+      "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+      "provenance": null,
+      "severity": "info"
+    }
+  ],
+  "fallbacks": [
+    "jre_region_ownership_overlap"
+  ]
+}

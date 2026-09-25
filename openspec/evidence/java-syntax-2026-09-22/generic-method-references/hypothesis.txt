@@ -1,0 +1,6 @@
+stringText:2
+stringNull:2
+stringInteger:java.lang.ClassCastException
+objectText:1
+objectNull:1
+objectInteger:1

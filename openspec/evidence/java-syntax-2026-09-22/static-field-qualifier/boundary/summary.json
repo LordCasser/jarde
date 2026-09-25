@@ -1,0 +1,338 @@
+{
+  "cli_sha256": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "probe_source_sha256": "11c6266dfd4fc7ddf659bbd43928d21f56e20a1e40a9ec3ed803282dd1f67835",
+  "runner_source_sha256": "6188548c981e9b04077f5a2b2d7aa5d7cf3192ae014f18467bed1a31a5b4aea9",
+  "class_bytes": 1388,
+  "class_sha256": "6fb9f6a79bd78d3d1491ed7b3fea157741f8246d24667e5f81c0e4283b7c9de8",
+  "code_methods": 16,
+  "original_runtime": [
+    "read=5",
+    "read-state:select=1:rhs=0:marks=0:value=5",
+    "qualified-return=7",
+    "qualified-return-state:select=1:rhs=1:marks=0:value=5",
+    "plain-return=7",
+    "plain-return-state:select=1:rhs=1:marks=0:value=5",
+    "qualified-statement:select=1:rhs=0:marks=1:value=5",
+    "plain-statements:select=1:rhs=0:marks=1:value=5",
+    "static-write=7",
+    "static-write-state:select=1:rhs=1:marks=0:value=7",
+    "qualified-rhs-write=7",
+    "qualified-rhs-write-state:select=1:rhs=1:marks=0:value=7",
+    "plain-static-write=7",
+    "plain-static-write-state:select=1:rhs=1:marks=0:value=7",
+    "rhs-throw:select=1:rhs=1:marks=0:value=5",
+    "select-throw:select=1:rhs=0:marks=0:value=5"
+  ],
+  "jarde": {
+    "javac": 0,
+    "runtime": 0,
+    "output": [
+      "read=5",
+      "read-state:select=1:rhs=0:marks=0:value=5",
+      "qualified-return=7",
+      "qualified-return-state:select=2:rhs=1:marks=0:value=5",
+      "plain-return=7",
+      "plain-return-state:select=2:rhs=1:marks=0:value=5",
+      "qualified-statement:select=2:rhs=0:marks=1:value=5",
+      "plain-statements:select=2:rhs=0:marks=1:value=5",
+      "static-write=7",
+      "static-write-state:select=2:rhs=1:marks=0:value=7",
+      "qualified-rhs-write=7",
+      "qualified-rhs-write-state:select=2:rhs=1:marks=0:value=7",
+      "plain-static-write=7",
+      "plain-static-write-state:select=2:rhs=1:marks=0:value=7",
+      "rhs-throw:select=2:rhs=1:marks=0:value=5",
+      "select-throw:select=1:rhs=0:marks=0:value=5"
+    ]
+  },
+  "jadx": {
+    "javac": 0,
+    "runtime": 0,
+    "output": [
+      "read=5",
+      "read-state:select=1:rhs=0:marks=0:value=5",
+      "qualified-return=7",
+      "qualified-return-state:select=1:rhs=1:marks=0:value=5",
+      "plain-return=7",
+      "plain-return-state:select=1:rhs=1:marks=0:value=5",
+      "qualified-statement:select=1:rhs=0:marks=1:value=5",
+      "plain-statements:select=1:rhs=0:marks=1:value=5",
+      "static-write=7",
+      "static-write-state:select=1:rhs=1:marks=0:value=7",
+      "qualified-rhs-write=7",
+      "qualified-rhs-write-state:select=1:rhs=1:marks=0:value=7",
+      "plain-static-write=7",
+      "plain-static-write-state:select=1:rhs=1:marks=0:value=7",
+      "rhs-throw:select=1:rhs=1:marks=0:value=5",
+      "select-throw:select=1:rhs=0:marks=0:value=5"
+    ]
+  },
+  "code": {
+    "staticRead": [
+      "invokestatic  # // Method receiver:()LQualifierBoundaryProbe;",
+      "pop",
+      "getstatic     # // Field value:I",
+      "ireturn"
+    ],
+    "qualifiedCallReturn": [
+      "invokestatic  # // Method receiver:()LQualifierBoundaryProbe;",
+      "pop",
+      "invokestatic  # // Method rhs:()I",
+      "ireturn"
+    ],
+    "plainCallReturn": [
+      "invokestatic  # // Method receiver:()LQualifierBoundaryProbe;",
+      "pop",
+      "invokestatic  # // Method rhs:()I",
+      "ireturn"
+    ],
+    "qualifiedCallStatement": [
+      "invokestatic  # // Method receiver:()LQualifierBoundaryProbe;",
+      "pop",
+      "invokestatic  # // Method mark:()V",
+      "return"
+    ],
+    "plainCallStatements": [
+      "invokestatic  # // Method receiver:()LQualifierBoundaryProbe;",
+      "pop",
+      "invokestatic  # // Method mark:()V",
+      "return"
+    ],
+    "qualifiedStaticWrite": [
+      "invokestatic  # // Method receiver:()LQualifierBoundaryProbe;",
+      "pop",
+      "invokestatic  # // Method rhs:()I",
+      "putstatic     # // Field value:I",
+      "getstatic     # // Field value:I",
+      "ireturn"
+    ],
+    "fieldWriteWithQualifiedRhs": [
+      "invokestatic  # // Method receiver:()LQualifierBoundaryProbe;",
+      "pop",
+      "invokestatic  # // Method rhs:()I",
+      "putstatic     # // Field value:I",
+      "getstatic     # // Field value:I",
+      "ireturn"
+    ],
+    "plainSequenceStaticWrite": [
+      "invokestatic  # // Method receiver:()LQualifierBoundaryProbe;",
+      "pop",
+      "invokestatic  # // Method rhs:()I",
+      "putstatic     # // Field value:I",
+      "getstatic     # // Field value:I",
+      "ireturn"
+    ],
+    "qualifiedStaticWriteThrowingRhs": [
+      "invokestatic  # // Method receiver:()LQualifierBoundaryProbe;",
+      "pop",
+      "invokestatic  # // Method throwingRhs:()I",
+      "putstatic     # // Field value:I",
+      "getstatic     # // Field value:I",
+      "ireturn"
+    ],
+    "qualifiedCallThrowingReceiver": [
+      "invokestatic  # // Method receiver:()LQualifierBoundaryProbe;",
+      "pop",
+      "invokestatic  # // Method rhs:()I",
+      "ireturn"
+    ]
+  },
+  "code_pairs_identical": {
+    "qualified_call_vs_plain_return": true,
+    "qualified_call_vs_plain_statement": true,
+    "static_field_qualifier_vs_qualified_rhs": true,
+    "static_field_qualifier_vs_plain_sequence": true
+  },
+  "runtime_equal": {
+    "jarde": false,
+    "jadx": true
+  },
+  "owner_source_methodref": {
+    "index": 13,
+    "owner": "Child",
+    "name": "ping",
+    "descriptor": "()I",
+    "owner_utf_index": 16,
+    "name_utf_index": 17
+  },
+  "owner_source": {
+    "source_sha256": {
+      "Base.java": "80750e337085bf90c22058920cc775f7aa402d78c7336ebef35a5368f49780d8",
+      "Child.java": "559ddd4ea92aef398f8e949654f9c2a67d8d380d253ba9c86f4a16ebaf0928e6",
+      "Peer.java": "47f83c840b21f8b3387e3798e0b81f1262a8d69039560cf4183c87bb8abf1d23",
+      "Evil.java": "169cc42084294f766d3654b849fe31193ad19ba9edfce4b57ea99008ea0af49d",
+      "Other.java": "c8d391ad418e6e5cbbefb5fd9225424a6d6dfe66f5a6070309130028482d4307",
+      "EvilX.java": "496e6d88daf18bb75a53902c46e56fe777a8f012f8acbe47e9a191db0fb6b96b",
+      "OwnerBoundaryProbe.java": "6f524096a6af792453513bc932ac53df89d1bf1ba9778e25f16af797da2aef6a",
+      "OwnerBoundaryRunner.java": "19ce80b3fec7684b5200e79dd45b6e934a5bbc0862137b510791fa952d49717f"
+    },
+    "class_bytes": 269,
+    "class_sha256": "1ebaf124614d8ea868588a62b0ae69c4feaa6527e2541dddfb84d65a4757ac69"
+  },
+  "owner_source_code": [
+    "invokestatic  # // Method receiver:()LChild;",
+    "pop",
+    "invokestatic  # // Method Child.ping:()I",
+    "ireturn"
+  ],
+  "owner_source_runtime": {
+    "status": 0,
+    "output": [
+      "31"
+    ]
+  },
+  "owner_patches": {
+    "owner-only-peer": {
+      "class_sha256": "fe6572596ffb069ada8b50b296ce289f9c4867e36ea1fa77350feea2593484ef",
+      "changed_byte_offsets": [
+        130,
+        131,
+        132,
+        133,
+        134
+      ],
+      "methodref_after_patch": {
+        "index": 13,
+        "owner": "Other",
+        "name": "ping",
+        "descriptor": "()I",
+        "owner_utf_index": 16,
+        "name_utf_index": 17
+      },
+      "verified_runtime": {
+        "status": 0,
+        "output": [
+          "41"
+        ]
+      },
+      "code": [
+        "invokestatic  # // Method receiver:()LChild;",
+        "pop",
+        "invokestatic  # // Method Other.ping:()I",
+        "ireturn"
+      ],
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "31"
+        ]
+      },
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "41"
+        ]
+      },
+      "jarde_call_lines": [
+        "return receiver().ping();"
+      ],
+      "jadx_call_lines": [
+        "return Other.ping();"
+      ]
+    },
+    "unrelated-owner-and-name": {
+      "class_sha256": "198f81bffd50412385f65b67d79b6c316c07eed3ce04b9c92809fd8d27291b10",
+      "changed_byte_offsets": [
+        130,
+        131,
+        134,
+        139
+      ],
+      "methodref_after_patch": {
+        "index": 13,
+        "owner": "EvilX",
+        "name": "pong",
+        "descriptor": "()I",
+        "owner_utf_index": 16,
+        "name_utf_index": 17
+      },
+      "verified_runtime": {
+        "status": 0,
+        "output": [
+          "51"
+        ]
+      },
+      "code": [
+        "invokestatic  # // Method receiver:()LChild;",
+        "pop",
+        "invokestatic  # // Method EvilX.pong:()I",
+        "ireturn"
+      ],
+      "jarde": {
+        "javac": 1
+      },
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "51"
+        ]
+      },
+      "jarde_call_lines": [
+        "return receiver().pong();"
+      ],
+      "jadx_call_lines": [
+        "return EvilX.pong();"
+      ]
+    }
+  },
+  "interface_static_boundary": {
+    "source_sha256": {
+      "InterfaceStaticOwner.java": "f377cab81ff45ac0380e87e609f3a6c26f0d75e899261e322cf98a2397b81918",
+      "InterfaceBoundaryProbe.java": "8b40ff3d4cd63aaf80e357bfc53f1923faf8004f41730366bbed210c6b030eed",
+      "InterfaceBoundaryRunner.java": "2cf950d564ad620f2362a5e23b81d4c35ef9de75b7c09cf7dbbb7df27abdbbec"
+    },
+    "class_bytes": 344,
+    "class_sha256": "ec0c9caa6d67c9f367549f5a7d306c2e57cb7804cb891c1ecf298d39d5904151",
+    "code_methods": 3,
+    "code": [
+      "invokestatic  # // Method receiver:()LInterfaceStaticOwner;",
+      "pop",
+      "invokestatic  # // InterfaceMethod InterfaceStaticOwner.value:()I",
+      "ireturn"
+    ],
+    "original_runtime": {
+      "status": 0,
+      "output": [
+        "value=17:selects=1"
+      ]
+    },
+    "jarde": {
+      "javac": 1
+    },
+    "jadx": {
+      "javac": 0,
+      "runtime": 0,
+      "output": [
+        "value=17:selects=1"
+      ]
+    },
+    "illegal_expression_qualifier_javac": 1,
+    "illegal_expression_qualifier_source_sha256": "a3ddd7ccaf4a85e3e1121811a11c26ab0302461441cf77f3c247843955a68b81",
+    "illegal_expression_qualifier_stderr": [
+      "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664",
+      "\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664",
+      "\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002",
+      "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/static-field-qualifier/boundary/IllegalInterfaceQualifier.java:7: \u9519\u8bef: \u9759\u6001\u63a5\u53e3\u65b9\u6cd5\u8c03\u7528\u975e\u6cd5",
+      "        return receiver().value();",
+      "                               ^",
+      "  \u5e94\u5c06\u63a5\u6536\u65b9\u8868\u8fbe\u5f0f\u66ff\u6362\u4e3a\u7c7b\u578b\u9650\u5b9a\u7b26 'InterfaceStaticOwner'",
+      "1 \u4e2a\u9519\u8bef",
+      "3 \u4e2a\u8b66\u544a"
+    ],
+    "jarde_source_lines": [
+      "static InterfaceStaticOwner receiver() {",
+      "// @method receiver()LInterfaceStaticOwner;",
+      "receiver();",
+      "return receiver().value();"
+    ],
+    "jadx_source_lines": [
+      "static InterfaceStaticOwner receiver() {",
+      "receiver();",
+      "return InterfaceStaticOwner.value();"
+    ]
+  },
+  "cli_sha256_after": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c"
+}

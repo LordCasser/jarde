@@ -1,0 +1,36 @@
+[
+  {
+    "class": "ShiftAudit",
+    "cli_sha256": "c050b502ba3fc23f33937ac607b1da7b51447e02e1a6d41b1d060c2b93b5b8d9",
+    "source_javac": 0,
+    "class_bytes": 720,
+    "class_sha256": "f45306f5b358d02314bfd8ed42255a841f78885cf4cb261f9dfee9d86ec257c1",
+    "original_run": 0,
+    "jarde_returncode": 0,
+    "jarde_quotes": 31,
+    "jarde_javac": 1,
+    "jadx": 0,
+    "jadx_javac": 0,
+    "jadx_run": 0,
+    "jadx_equal": true,
+    "cases": 723,
+    "jadx_diff_lines": 0
+  },
+  {
+    "class": "ShiftDistanceBoundary",
+    "cli_sha256": "c050b502ba3fc23f33937ac607b1da7b51447e02e1a6d41b1d060c2b93b5b8d9",
+    "source_javac": 0,
+    "class_bytes": 364,
+    "class_sha256": "4038c308a4c9554e582089aa03ad44e361f66875e28ab7732d21dc70826148f1",
+    "original_run": 0,
+    "jarde_returncode": 0,
+    "jarde_quotes": 13,
+    "jarde_javac": 1,
+    "jadx": 0,
+    "jadx_javac": 0,
+    "jadx_run": 0,
+    "jadx_equal": true,
+    "cases": 200,
+    "jadx_diff_lines": 0
+  }
+]

@@ -1,0 +1,2 @@
+sameType:73:calls=1
+unknownRelation:java.lang.BootstrapMethodError:calls=0

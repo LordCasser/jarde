@@ -1,0 +1,26 @@
+[
+  {
+    "mode": "parameter",
+    "method_info_before": 28,
+    "method_info_after": 30,
+    "class_bytes": 948,
+    "sha256": "6e80b18e4284444a1d777227ec19afa9d6a51e7ddb66aba749cd2d023d6d777d",
+    "jvm_output": "parameter=java.lang.IllegalArgumentException:true:0"
+  },
+  {
+    "mode": "call",
+    "method_info_before": 30,
+    "method_info_after": 32,
+    "class_bytes": 948,
+    "sha256": "941d58de3b91c9685f2b4f6a30ac97e5334ff3a998b98e26683342ee39017dcc",
+    "jvm_output": "call=java.lang.IllegalArgumentException:true:1"
+  },
+  {
+    "mode": "lower",
+    "method_info_before": 28,
+    "method_info_after": 32,
+    "class_bytes": 950,
+    "sha256": "efe4fe1a36590762ad32b7c4732cbb073958e03e0e9a7b88b5d9e8097e718000",
+    "jvm_output": "lower=java.lang.IllegalArgumentException:true:producer=false:1"
+  }
+]

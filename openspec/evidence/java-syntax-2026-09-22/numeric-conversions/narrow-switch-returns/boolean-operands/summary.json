@@ -1,0 +1,107 @@
+{
+  "source_class_bytes": 171,
+  "source_class_sha256": "0857c114b45889f769deb8a9e5b2dea588437cabd6e2c24f66e20b037ae063e5",
+  "original": {
+    "class_bytes": 171,
+    "class_sha256": "0857c114b45889f769deb8a9e5b2dea588437cabd6e2c24f66e20b037ae063e5",
+    "runner_javac_exit": 0,
+    "runtime_exit": 0,
+    "jarde_cli_exit": 0,
+    "jarde_quote_count": 0,
+    "jarde_javac_exit": 0,
+    "jarde_runtime_exit": 0,
+    "jadx_exit": 0,
+    "jadx_javac_exit": 0,
+    "jadx_runtime_exit": 0
+  },
+  "variants": {
+    "B": {
+      "patch": {
+        "from": "(Z)Z",
+        "to": "(Z)B",
+        "descriptor_offset": 145,
+        "source_bytes": 171,
+        "patched_bytes": 178,
+        "source_sha256": "0857c114b45889f769deb8a9e5b2dea588437cabd6e2c24f66e20b037ae063e5",
+        "patched_sha256": "e6334168e41f8eb5faf6c7599cb6452ff17986dc744111e804459c548cede81f",
+        "code_attributes": 2,
+        "code_sha256_before": "a2ce6f368bda9cc530834807f41f29a22e6366e90ff728f4040cf72a798e5813",
+        "code_sha256_after": "a2ce6f368bda9cc530834807f41f29a22e6366e90ff728f4040cf72a798e5813"
+      },
+      "run": {
+        "class_bytes": 178,
+        "class_sha256": "e6334168e41f8eb5faf6c7599cb6452ff17986dc744111e804459c548cede81f",
+        "runner_javac_exit": 0,
+        "runtime_exit": 0,
+        "jarde_cli_exit": 0,
+        "jarde_quote_count": 1,
+        "jarde_javac_exit": 1,
+        "jarde_runtime_exit": null,
+        "jadx_exit": 0,
+        "jadx_javac_exit": 0,
+        "jadx_runtime_exit": 0
+      }
+    },
+    "C": {
+      "patch": {
+        "from": "(Z)Z",
+        "to": "(Z)C",
+        "descriptor_offset": 145,
+        "source_bytes": 171,
+        "patched_bytes": 178,
+        "source_sha256": "0857c114b45889f769deb8a9e5b2dea588437cabd6e2c24f66e20b037ae063e5",
+        "patched_sha256": "78af87dfe136343ab1cbc2ff4bfe51e02f5987b2cd8c51672799a3e265e2dfb1",
+        "code_attributes": 2,
+        "code_sha256_before": "a2ce6f368bda9cc530834807f41f29a22e6366e90ff728f4040cf72a798e5813",
+        "code_sha256_after": "a2ce6f368bda9cc530834807f41f29a22e6366e90ff728f4040cf72a798e5813"
+      },
+      "run": {
+        "class_bytes": 178,
+        "class_sha256": "78af87dfe136343ab1cbc2ff4bfe51e02f5987b2cd8c51672799a3e265e2dfb1",
+        "runner_javac_exit": 0,
+        "runtime_exit": 0,
+        "jarde_cli_exit": 0,
+        "jarde_quote_count": 1,
+        "jarde_javac_exit": 1,
+        "jarde_runtime_exit": null,
+        "jadx_exit": 0,
+        "jadx_javac_exit": 0,
+        "jadx_runtime_exit": 0
+      }
+    },
+    "S": {
+      "patch": {
+        "from": "(Z)Z",
+        "to": "(Z)S",
+        "descriptor_offset": 145,
+        "source_bytes": 171,
+        "patched_bytes": 178,
+        "source_sha256": "0857c114b45889f769deb8a9e5b2dea588437cabd6e2c24f66e20b037ae063e5",
+        "patched_sha256": "3335d78a1fe7e0f14c3c4ef14fc9172eeec8df2bc42fff610991f03dc96d2aad",
+        "code_attributes": 2,
+        "code_sha256_before": "a2ce6f368bda9cc530834807f41f29a22e6366e90ff728f4040cf72a798e5813",
+        "code_sha256_after": "a2ce6f368bda9cc530834807f41f29a22e6366e90ff728f4040cf72a798e5813"
+      },
+      "run": {
+        "class_bytes": 178,
+        "class_sha256": "3335d78a1fe7e0f14c3c4ef14fc9172eeec8df2bc42fff610991f03dc96d2aad",
+        "runner_javac_exit": 0,
+        "runtime_exit": 0,
+        "jarde_cli_exit": 0,
+        "jarde_quote_count": 1,
+        "jarde_javac_exit": 1,
+        "jarde_runtime_exit": null,
+        "jadx_exit": 0,
+        "jadx_javac_exit": 0,
+        "jadx_runtime_exit": 0
+      }
+    }
+  },
+  "variant_runtime_matches_expected": {
+    "B": true,
+    "C": true,
+    "S": true
+  },
+  "cli_sha_before": "ecab8244d1709765fa0f2b0effcebe49b9f066eea911843d11d34abec5837330",
+  "cli_sha_after": "ecab8244d1709765fa0f2b0effcebe49b9f066eea911843d11d34abec5837330"
+}

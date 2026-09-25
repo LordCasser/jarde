@@ -1,0 +1,13 @@
+// jarde: presentation of `HiddenTarget` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+// jarde: class annotation refused: annotation attribute read stopped: invalid input (classfile_invalid_attribute_content): annotation element value tag 0x51 is unknown
+
+class HiddenTarget extends java.lang.Object {
+    HiddenTarget() {
+        // @method <init>()V
+        // @declaration a constructor of `HiddenTarget`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+}

@@ -1,0 +1,6 @@
+nullObject=1
+arrayObject=3
+boxObject=5
+lambdaRunnable=7
+lambdaSupplier=8
+methodRefRunnable=7

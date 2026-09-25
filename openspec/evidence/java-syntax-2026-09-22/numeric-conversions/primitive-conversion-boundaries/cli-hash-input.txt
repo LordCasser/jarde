@@ -1,0 +1,1 @@
+d7520a08a37b54ef579d42c770f5b512af17ddb11b05050568458759c78dbf16  /Users/lordcasser/workspace/projects/jarde/target/debug/jarde-cli

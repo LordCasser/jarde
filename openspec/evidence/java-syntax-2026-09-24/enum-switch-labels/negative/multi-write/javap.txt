@@ -1,0 +1,106 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/multi-write/classes/EnumSwitchSubject$1.class
+  Last modified 2026年9月24日; size 460 bytes
+  SHA-256 checksum ef4d861e0c04d9395a706651d6f0bb18e124881e11cae8f42c47b2c1fbafea66
+final class EnumSwitchSubject$1
+  minor version: 0
+  major version: 52
+  flags: (0x0030) ACC_FINAL, ACC_SUPER
+  this_class: #14                         // EnumSwitchSubject$1
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // Hue.values:()[LHue;
+   #8 = Class              #10            // Hue
+   #9 = NameAndType        #11:#12        // values:()[LHue;
+  #10 = Utf8               Hue
+  #11 = Utf8               values
+  #12 = Utf8               ()[LHue;
+  #13 = Fieldref           #14.#15        // EnumSwitchSubject$1.$SwitchMap$Hue:[I
+  #14 = Class              #16            // EnumSwitchSubject$1
+  #15 = NameAndType        #17:#18        // $SwitchMap$Hue:[I
+  #16 = Utf8               EnumSwitchSubject$1
+  #17 = Utf8               $SwitchMap$Hue
+  #18 = Utf8               [I
+  #19 = Fieldref           #8.#20         // Hue.RED:LHue;
+  #20 = NameAndType        #21:#22        // RED:LHue;
+  #21 = Utf8               RED
+  #22 = Utf8               LHue;
+  #23 = Methodref          #8.#24         // Hue.ordinal:()I
+  #24 = NameAndType        #25:#26        // ordinal:()I
+  #25 = Utf8               ordinal
+  #26 = Utf8               ()I
+  #27 = Class              #28            // java/lang/NoSuchFieldError
+  #28 = Utf8               java/lang/NoSuchFieldError
+  #29 = Fieldref           #8.#30         // Hue.BLUE:LHue;
+  #30 = NameAndType        #31:#22        // BLUE:LHue;
+  #31 = Utf8               BLUE
+  #32 = Utf8               Code
+  #33 = Utf8               <clinit>
+  #34 = Utf8               StackMapTable
+  #35 = Class              #18            // "[I"
+{
+  static final int[] $SwitchMap$Hue;
+    descriptor: [I
+    flags: (0x0018) ACC_STATIC, ACC_FINAL
+
+  EnumSwitchSubject$1();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=0
+         0: invokestatic  #7                  // Method Hue.values:()[LHue;
+         3: arraylength
+         4: newarray       int
+         6: astore_0
+         7: aload_0
+         8: putstatic     #13                 // Field $SwitchMap$Hue:[I
+        11: aload_0
+        12: getstatic     #19                 // Field Hue.RED:LHue;
+        15: invokevirtual #23                 // Method Hue.ordinal:()I
+        18: iconst_1
+        19: iastore
+        20: aload_0
+        21: getstatic     #19                 // Field Hue.RED:LHue;
+        24: invokevirtual #23                 // Method Hue.ordinal:()I
+        27: iconst_2
+        28: iastore
+        29: goto          33
+        32: astore_1
+        33: aload_0
+        34: getstatic     #29                 // Field Hue.BLUE:LHue;
+        37: invokevirtual #23                 // Method Hue.ordinal:()I
+        40: iconst_2
+        41: iastore
+        42: goto          46
+        45: astore_1
+        46: return
+      Exception table:
+         from    to  target type
+            11    29    32   Class java/lang/NoSuchFieldError
+            33    42    45   Class java/lang/NoSuchFieldError
+      StackMapTable: number_of_entries = 4
+        frame_type = 255 /* full_frame */
+          offset_delta = 32
+          locals = [ class "[I" ]
+          stack = [ class java/lang/NoSuchFieldError ]
+        frame_type = 0 /* same */
+        frame_type = 75 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NoSuchFieldError ]
+        frame_type = 250 /* chop */
+          offset_delta = 0
+}

@@ -1,0 +1,32 @@
+// jarde: presentation of `NullObject` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NullObject extends java.lang.Object {
+    public NullObject() {
+        // @method <init>()V
+        // @declaration a constructor of `NullObject`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int choose(java.lang.Object arg0) {
+        // @method choose(Ljava/lang/Object;)I
+        // @declaration a static method of `NullObject`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 1;
+    }
+
+    public static int choose(java.lang.String arg0) {
+        // @method choose(Ljava/lang/String;)I
+        // @declaration a static method of `NullObject`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 2;
+    }
+
+    public static int run() {
+        // @method run()I
+        // @declaration a static method of `NullObject`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return choose(null);
+    }
+}

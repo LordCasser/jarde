@@ -1,0 +1,28 @@
+package defpackage;
+
+/* JADX INFO: loaded from: StringSwitchProbe.class */
+public class StringSwitchProbe {
+    static int calls;
+
+    static String read(String str) {
+        calls++;
+        return str;
+    }
+
+    public static int choose(String str) {
+        switch (str) {
+            case "Aa":
+                return 11;
+            case "BB":
+                return 22;
+            case "z":
+                return 33;
+            default:
+                return 44;
+        }
+    }
+
+    public static int once(String str) {
+        return choose(read(str));
+    }
+}

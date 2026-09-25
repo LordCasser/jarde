@@ -1,0 +1,206 @@
+{
+  "fixture_sha256": "44eaaf23c354566f25ba429e49f7d34a73a114c7de35909360b705dcc63c3d04",
+  "bytes": 1338,
+  "code_methods": 19,
+  "source_or_patched_bytes_equal": true,
+  "cases": 83,
+  "jarde_cli_sha256": "c050b502ba3fc23f33937ac607b1da7b51447e02e1a6d41b1d060c2b93b5b8d9",
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_differences": [
+    {
+      "original": "call0:5:12",
+      "jarde": "call0:9:21"
+    },
+    {
+      "original": "field0:5:2",
+      "jarde": "field0:9:2"
+    },
+    {
+      "original": "array0:7:2",
+      "jarde": "array0:8:2"
+    },
+    {
+      "original": "instance0:5:2",
+      "jarde": "instance0:9:2"
+    },
+    {
+      "original": "badCast0:java.lang.ClassCastException:false:0",
+      "jarde": "badCast0:java.lang.ClassCastException:false:2"
+    },
+    {
+      "original": "direct0:true:12",
+      "jarde": "direct0:true:21"
+    },
+    {
+      "original": "call1:java.lang.IllegalStateException:true:1",
+      "jarde": "call1:java.lang.IllegalStateException:true:21"
+    },
+    {
+      "original": "field1:5:2",
+      "jarde": "field1:9:2"
+    },
+    {
+      "original": "array1:7:2",
+      "jarde": "array1:8:2"
+    },
+    {
+      "original": "instance1:5:2",
+      "jarde": "instance1:9:2"
+    },
+    {
+      "original": "badCast1:java.lang.ClassCastException:false:0",
+      "jarde": "badCast1:java.lang.ClassCastException:false:2"
+    },
+    {
+      "original": "direct1:java.lang.IllegalStateException:true:1",
+      "jarde": "direct1:java.lang.IllegalStateException:true:21"
+    },
+    {
+      "original": "call2:java.lang.IllegalStateException:true:12",
+      "jarde": "call2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "badCast2:java.lang.ClassCastException:false:0",
+      "jarde": "badCast2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "direct2:java.lang.IllegalStateException:true:12",
+      "jarde": "direct2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "newArrayZero0:java.lang.NegativeArraySizeException:false:0",
+      "jarde": "newArrayZero0:java.lang.NegativeArraySizeException:false:2"
+    },
+    {
+      "original": "anewArrayZero0:java.lang.NegativeArraySizeException:false:0",
+      "jarde": "anewArrayZero0:java.lang.NegativeArraySizeException:false:2"
+    },
+    {
+      "original": "multiArrayZero0:java.lang.NegativeArraySizeException:false:0",
+      "jarde": "multiArrayZero0:java.lang.NegativeArraySizeException:false:2"
+    },
+    {
+      "original": "divZero0:java.lang.ArithmeticException:false:0",
+      "jarde": "divZero0:java.lang.ArithmeticException:false:2"
+    },
+    {
+      "original": "remZero0:java.lang.ArithmeticException:false:0",
+      "jarde": "remZero0:java.lang.ArithmeticException:false:2"
+    },
+    {
+      "original": "divLongZero0:java.lang.ArithmeticException:false:0",
+      "jarde": "divLongZero0:java.lang.ArithmeticException:false:2"
+    },
+    {
+      "original": "remLongZero0:java.lang.ArithmeticException:false:0",
+      "jarde": "remLongZero0:java.lang.ArithmeticException:false:2"
+    },
+    {
+      "original": "nullArrayLength0:java.lang.NullPointerException:false:0",
+      "jarde": "nullArrayLength0:java.lang.NullPointerException:false:2"
+    },
+    {
+      "original": "nullArray0:java.lang.NullPointerException:false:0",
+      "jarde": "nullArray0:java.lang.NullPointerException:false:2"
+    },
+    {
+      "original": "emptyArray0:java.lang.ArrayIndexOutOfBoundsException:false:0",
+      "jarde": "emptyArray0:java.lang.ArrayIndexOutOfBoundsException:false:2"
+    },
+    {
+      "original": "instanceNull0:java.lang.NullPointerException:false:0",
+      "jarde": "instanceNull0:java.lang.NullPointerException:false:2"
+    },
+    {
+      "original": "newArrayZero1:java.lang.NegativeArraySizeException:false:0",
+      "jarde": "newArrayZero1:java.lang.NegativeArraySizeException:false:2"
+    },
+    {
+      "original": "anewArrayZero1:java.lang.NegativeArraySizeException:false:0",
+      "jarde": "anewArrayZero1:java.lang.NegativeArraySizeException:false:2"
+    },
+    {
+      "original": "multiArrayZero1:java.lang.NegativeArraySizeException:false:0",
+      "jarde": "multiArrayZero1:java.lang.NegativeArraySizeException:false:2"
+    },
+    {
+      "original": "divZero1:java.lang.ArithmeticException:false:0",
+      "jarde": "divZero1:java.lang.ArithmeticException:false:2"
+    },
+    {
+      "original": "remZero1:java.lang.ArithmeticException:false:0",
+      "jarde": "remZero1:java.lang.ArithmeticException:false:2"
+    },
+    {
+      "original": "divLongZero1:java.lang.ArithmeticException:false:0",
+      "jarde": "divLongZero1:java.lang.ArithmeticException:false:2"
+    },
+    {
+      "original": "remLongZero1:java.lang.ArithmeticException:false:0",
+      "jarde": "remLongZero1:java.lang.ArithmeticException:false:2"
+    },
+    {
+      "original": "nullArrayLength1:java.lang.NullPointerException:false:0",
+      "jarde": "nullArrayLength1:java.lang.NullPointerException:false:2"
+    },
+    {
+      "original": "nullArray1:java.lang.NullPointerException:false:0",
+      "jarde": "nullArray1:java.lang.NullPointerException:false:2"
+    },
+    {
+      "original": "emptyArray1:java.lang.ArrayIndexOutOfBoundsException:false:0",
+      "jarde": "emptyArray1:java.lang.ArrayIndexOutOfBoundsException:false:2"
+    },
+    {
+      "original": "instanceNull1:java.lang.NullPointerException:false:0",
+      "jarde": "instanceNull1:java.lang.NullPointerException:false:2"
+    },
+    {
+      "original": "newArrayZero2:java.lang.NegativeArraySizeException:false:0",
+      "jarde": "newArrayZero2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "anewArrayZero2:java.lang.NegativeArraySizeException:false:0",
+      "jarde": "anewArrayZero2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "multiArrayZero2:java.lang.NegativeArraySizeException:false:0",
+      "jarde": "multiArrayZero2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "divZero2:java.lang.ArithmeticException:false:0",
+      "jarde": "divZero2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "remZero2:java.lang.ArithmeticException:false:0",
+      "jarde": "remZero2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "divLongZero2:java.lang.ArithmeticException:false:0",
+      "jarde": "divLongZero2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "remLongZero2:java.lang.ArithmeticException:false:0",
+      "jarde": "remLongZero2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "nullArrayLength2:java.lang.NullPointerException:false:0",
+      "jarde": "nullArrayLength2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "nullArray2:java.lang.NullPointerException:false:0",
+      "jarde": "nullArray2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "emptyArray2:java.lang.ArrayIndexOutOfBoundsException:false:0",
+      "jarde": "emptyArray2:java.lang.IllegalStateException:true:2"
+    },
+    {
+      "original": "instanceNull2:java.lang.NullPointerException:false:0",
+      "jarde": "instanceNull2:java.lang.IllegalStateException:true:2"
+    }
+  ],
+  "jadx_javac": 0,
+  "jadx_equal": true
+}

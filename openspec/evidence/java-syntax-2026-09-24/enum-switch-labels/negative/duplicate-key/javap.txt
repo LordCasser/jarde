@@ -1,0 +1,90 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/duplicate-key/classes/EnumSwitchSubject$1.class
+  Last modified 2026年9月24日; size 471 bytes
+  SHA-256 checksum da5a7ddb94ccc3b952d7661fdfbae74a12aa51b94469fd9c10a846f227067884
+class EnumSwitchSubject$1
+  minor version: 0
+  major version: 52
+  flags: (0x1020) ACC_SUPER, ACC_SYNTHETIC
+  this_class: #8                          // EnumSwitchSubject$1
+  super_class: #26                        // java/lang/Object
+  interfaces: 0, fields: 1, methods: 1, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // Hue.values:()[LHue;
+   #2 = Class              #4             // Hue
+   #3 = NameAndType        #5:#6          // values:()[LHue;
+   #4 = Utf8               Hue
+   #5 = Utf8               values
+   #6 = Utf8               ()[LHue;
+   #7 = Fieldref           #8.#9          // EnumSwitchSubject$1.$SwitchMap$Hue:[I
+   #8 = Class              #10            // EnumSwitchSubject$1
+   #9 = NameAndType        #11:#12        // $SwitchMap$Hue:[I
+  #10 = Utf8               EnumSwitchSubject$1
+  #11 = Utf8               $SwitchMap$Hue
+  #12 = Utf8               [I
+  #13 = Fieldref           #2.#14         // Hue.RED:LHue;
+  #14 = NameAndType        #15:#16        // RED:LHue;
+  #15 = Utf8               RED
+  #16 = Utf8               LHue;
+  #17 = Methodref          #2.#18         // Hue.ordinal:()I
+  #18 = NameAndType        #19:#20        // ordinal:()I
+  #19 = Utf8               ordinal
+  #20 = Utf8               ()I
+  #21 = Class              #22            // java/lang/NoSuchFieldError
+  #22 = Utf8               java/lang/NoSuchFieldError
+  #23 = Fieldref           #2.#24         // Hue.BLUE:LHue;
+  #24 = NameAndType        #25:#16        // BLUE:LHue;
+  #25 = Utf8               BLUE
+  #26 = Class              #27            // java/lang/Object
+  #27 = Utf8               java/lang/Object
+  #28 = Utf8               <clinit>
+  #29 = Utf8               ()V
+  #30 = Utf8               Code
+  #31 = Utf8               StackMapTable
+  #32 = Utf8               EnclosingMethod
+  #33 = Class              #34            // EnumSwitchSubject
+  #34 = Utf8               EnumSwitchSubject
+  #35 = Utf8               InnerClasses
+{
+  static final int[] $SwitchMap$Hue;
+    descriptor: [I
+    flags: (0x1018) ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=0
+         0: invokestatic  #1                  // Method Hue.values:()[LHue;
+         3: arraylength
+         4: newarray       int
+         6: putstatic     #7                  // Field $SwitchMap$Hue:[I
+         9: getstatic     #7                  // Field $SwitchMap$Hue:[I
+        12: getstatic     #13                 // Field Hue.RED:LHue;
+        15: invokevirtual #17                 // Method Hue.ordinal:()I
+        18: iconst_1
+        19: iastore
+        20: goto          24
+        23: astore_0
+        24: getstatic     #7                  // Field $SwitchMap$Hue:[I
+        27: getstatic     #23                 // Field Hue.BLUE:LHue;
+        30: invokevirtual #17                 // Method Hue.ordinal:()I
+        33: iconst_1
+        34: iastore
+        35: goto          39
+        38: astore_0
+        39: return
+      Exception table:
+         from    to  target type
+             9    20    23   Class java/lang/NoSuchFieldError
+            24    35    38   Class java/lang/NoSuchFieldError
+      StackMapTable: number_of_entries = 4
+        frame_type = 87 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NoSuchFieldError ]
+        frame_type = 0 /* same */
+        frame_type = 77 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NoSuchFieldError ]
+        frame_type = 0 /* same */
+}
+EnclosingMethod: #33.#0                 // EnumSwitchSubject
+InnerClasses:
+  static #8;                              // class EnumSwitchSubject$1

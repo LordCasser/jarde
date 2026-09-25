@@ -1,0 +1,1 @@
+948a6f9b7db009fbb89a792f83328c9ab63e42ac0cb62e691d97bec28c2c8ba0  target/debug/jarde-cli

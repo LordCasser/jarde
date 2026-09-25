@@ -1,0 +1,9 @@
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.99s
+     Running unittests src/lib.rs (target/debug/deps/jarde_reader-ae33cc1e4f8f0316)
+
+running 1 test
+test classfile::tests::repository_class_fixtures_validate_without_false_target_rejections ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 159 filtered out; finished in 0.04s
+

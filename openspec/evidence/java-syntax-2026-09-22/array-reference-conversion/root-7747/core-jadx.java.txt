@@ -1,0 +1,64 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ArrayReferenceCore.class */
+public class ArrayReferenceCore {
+    public static String overload(Object obj) {
+        return "Object";
+    }
+
+    public static String overload(Object[] objArr) {
+        return "Object[]";
+    }
+
+    public static String overload(Object[][] objArr) {
+        return "Object[][]";
+    }
+
+    public static String typedIntMatrix(int[][] iArr) {
+        return overload((Object[]) iArr);
+    }
+
+    public static String typedStringArray(String[] strArr) {
+        return overload((Object[]) strArr);
+    }
+
+    public static String typedStringMatrix(String[][] strArr) {
+        return overload((Object[][]) strArr);
+    }
+
+    public static String widenedObject(Object obj) {
+        return overload(obj);
+    }
+
+    public static String widenedObjectArray(Object[] objArr) {
+        return overload(objArr);
+    }
+
+    public static String exactIntMatrix(int[][] iArr) {
+        return "int[][]:" + iArr.length;
+    }
+
+    public static String exactStringArray(String[] strArr) {
+        return "String[]:" + strArr.length;
+    }
+
+    public static String exactStringMatrix(String[][] strArr) {
+        return "String[][]:" + strArr.length;
+    }
+
+    public static String exactObjectArray(Object[] objArr) {
+        return "Object[]:" + objArr.length;
+    }
+
+    public static String exactObjectMatrix(Object[][] objArr) {
+        return "Object[][]:" + objArr.length;
+    }
+
+    public static String describeObjectArray(Object[] objArr) {
+        return objArr.getClass().getName() + ":" + objArr.length;
+    }
+
+    public static String describeObjectMatrix(Object[][] objArr) {
+        return objArr.getClass().getName() + ":" + objArr.length;
+    }
+}

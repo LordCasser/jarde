@@ -1,0 +1,56 @@
+public final class CatchAfterFieldAssignment {
+  private static int field;
+
+  public CatchAfterFieldAssignment();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  private static void fail();
+    Code:
+       0: new           #7                  // class java/lang/IllegalArgumentException
+       3: dup
+       4: ldc           #9                  // String probe
+       6: invokespecial #11                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+       9: athrow
+
+  private static void maybeFail(boolean);
+    Code:
+       0: iload_0
+       1: ifeq          7
+       4: invokestatic  #14                 // Method fail:()V
+       7: return
+
+  public static int fieldAssignment(boolean);
+    Code:
+       0: bipush        7
+       2: putstatic     #19                 // Field field:I
+       5: iload_0
+       6: invokestatic  #23                 // Method maybeFail:(Z)V
+       9: goto          18
+      12: astore_1
+      13: bipush        18
+      15: putstatic     #19                 // Field field:I
+      18: getstatic     #19                 // Field field:I
+      21: ireturn
+    Exception table:
+       from    to  target type
+           5     9    12   Class java/lang/IllegalArgumentException
+
+  public static int localAssignment(boolean);
+    Code:
+       0: bipush        7
+       2: istore_1
+       3: iload_0
+       4: invokestatic  #23                 // Method maybeFail:(Z)V
+       7: goto          14
+      10: astore_2
+      11: bipush        18
+      13: istore_1
+      14: iload_1
+      15: ireturn
+    Exception table:
+       from    to  target type
+           3     7    10   Class java/lang/IllegalArgumentException
+}

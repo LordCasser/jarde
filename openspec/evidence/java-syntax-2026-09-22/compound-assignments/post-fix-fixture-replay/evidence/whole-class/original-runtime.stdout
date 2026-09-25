@@ -1,0 +1,7 @@
+local=8:rhs=1
+field=9:select=1:rhs=1
+array=14:select=1:rhs=1
+field-snapshot=9:select=1:rhs=1
+array-snapshot=14:select=1:rhs=1
+null=NPE:select=1:rhs=0
+bounds=AIOOBE:select=1:rhs=0

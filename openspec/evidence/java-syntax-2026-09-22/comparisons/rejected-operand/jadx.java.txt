@@ -1,0 +1,8 @@
+package defpackage;
+
+/* JADX INFO: loaded from: NumericRefusal.class */
+public class NumericRefusal {
+    public static int value(float f) {
+        return NumericRefusalEffects.value(f) > 0.0f ? 7 : 9;
+    }
+}

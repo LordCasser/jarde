@@ -1,0 +1,15 @@
+constructed=returned
+argumentFailure=returned
+constructorFailure=returned
+nested=returned
+problemFailure=java.lang.IllegalStateException:-:true:false:3
+wrapperFailure=java.lang.IllegalStateException:-:true:false:34
+arrayValue=returned
+arrayElementNull=returned
+arrayNull=returned
+arrayBounds=returned
+fieldValue=returned
+fieldNull=returned
+receiverNull=returned
+first=returned
+second=returned

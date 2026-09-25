@@ -1,0 +1,10 @@
+extra:Aa:10:calls=1
+wrong:Aa:40:calls=1
+extra:BB:20:calls=1
+wrong:BB:40:calls=1
+extra:abc:30:calls=1
+wrong:abc:40:calls=1
+extra:x:40:calls=1
+wrong:x:40:calls=1
+extra:null:throws=NullPointerException:calls=1
+wrong:null:throws=NullPointerException:calls=1

@@ -1,0 +1,69 @@
+{
+  "class_source_sha256": "778183c15a86ccb8deb7ed70471fc44e309074afbf9fb2d2d4ab207c50756a7d",
+  "jadx": 0,
+  "jadx_comparison": {
+    "equal": true,
+    "lines": [
+      "normal:opens=1,closes=1,initializations=0,trace=91",
+      "body-and-close-fail:opens=1,closes=1,initializations=0,trace=91",
+      "initializer-fails-before-resource:opens=0,closes=0,initializations=1,trace=0"
+    ],
+    "status": 0
+  },
+  "jadx_decompiled": {
+    "class_bytes": 1712,
+    "class_javac": 0,
+    "class_sha256": "42d7d47bdafb478580f638febb2f17e4d937946d5b824f937157b567ec118c5c",
+    "javap": 0,
+    "runner_javac": 0,
+    "runtime": 0,
+    "runtime_output_sha256": "ae1bb65b1e57cf7339fcc9c8a7ebcf386bb657545b36a7634377e5f13ada9135"
+  },
+  "jadx_package": "defpackage",
+  "jadx_source_sha256": "b5d230366535f7b9f78e37aaf5e8e6d2b13b6c855e6ecdf6a8f22cee3cc751bb",
+  "jarde": {
+    "class_bytes": 1700,
+    "class_javac": 0,
+    "class_sha256": "57051f9c0b622a46bea4f3c60b22da7ec93164bd6258eee7b9a3c60a212c8954",
+    "javap": 0,
+    "runner_javac": 0,
+    "runtime": 0,
+    "runtime_output_sha256": "ae1bb65b1e57cf7339fcc9c8a7ebcf386bb657545b36a7634377e5f13ada9135"
+  },
+  "jarde_cli": 0,
+  "jarde_comparison": {
+    "equal": true,
+    "lines": [
+      "normal:opens=1,closes=1,initializations=0,trace=91",
+      "body-and-close-fail:opens=1,closes=1,initializations=0,trace=91",
+      "initializer-fails-before-resource:opens=0,closes=0,initializations=1,trace=0"
+    ],
+    "status": 0
+  },
+  "jarde_source_sha256": "b3f7b60ec382c9a2d3943ab7ae091650ec2405723c4e98827e236a577c8241f8",
+  "original": {
+    "class_bytes": 1697,
+    "class_javac": 0,
+    "class_sha256": "954f60bb68b1bf289a7973e78740699bd1b0bb0166c6ec1c296cafb83704eb9b",
+    "javap": 0,
+    "runner_javac": 0,
+    "runtime": 0,
+    "runtime_output_sha256": "ae1bb65b1e57cf7339fcc9c8a7ebcf386bb657545b36a7634377e5f13ada9135"
+  },
+  "original_class_sha256": "954f60bb68b1bf289a7973e78740699bd1b0bb0166c6ec1c296cafb83704eb9b",
+  "original_javap": 0,
+  "original_runtime": {
+    "lines": [
+      "normal:opens=1,closes=1,initializations=0,trace=91",
+      "body-and-close-fail:opens=1,closes=1,initializations=0,trace=91",
+      "initializer-fails-before-resource:opens=0,closes=0,initializations=1,trace=0"
+    ],
+    "status": "0"
+  },
+  "runner_source_sha256": "f4af2a1f1b4b08c0ea11bd848ab993d93ca726a0231cfef769ee105eeb76b91f",
+  "source_lines": {
+    "jadx": 124,
+    "jarde": 139,
+    "original": 84
+  }
+}

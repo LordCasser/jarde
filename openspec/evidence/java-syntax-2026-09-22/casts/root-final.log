@@ -1,0 +1,30 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.39s
+     Running tests/p3_eval_context.rs (target/debug/deps/p3_eval_context-89d135dc32204181)
+
+running 10 tests
+test a_call_argument_is_checked_where_the_consuming_expression_is_evaluated ... ok
+test a_nested_arithmetic_is_checked_where_its_text_is_evaluated ... ok
+test a_nested_expression_that_crosses_no_write_is_still_written ... ok
+test a_read_behind_another_read_is_named_too ... ok
+test a_recursion_that_re_enters_its_own_loop_stops_instead_of_aborting ... ok
+test a_refused_instance_read_keeps_the_null_pointer_it_can_throw ... ok
+test a_refused_static_read_keeps_the_class_initialization_it_can_run ... ok
+test every_presented_field_read_is_accounted_for_by_its_artifact ... ok
+test the_printed_text_keeps_the_arithmetic_tree ... ok
+test the_printed_text_keeps_the_grouping_of_every_position ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_reference_cast.rs (target/debug/deps/p3_reference_cast-9643107f7de77bce)
+
+running 6 tests
+test discarded_cast_patch_retains_check_and_call_sources ... ok
+test fixture_declares_the_cast_shapes_and_real_java_source ... ok
+test nested_casts_keep_the_intermediate_runtime_check ... ok
+test ordinary_reference_casts_are_written_at_each_consumer ... ok
+test recovered_reference_casts_match_original_runtime ... ignored, requires JDK: compile Engine::class_source output and execute a temporary runner
+test unsupported_nested_consumer_retains_invocation_and_both_cast_bcis ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

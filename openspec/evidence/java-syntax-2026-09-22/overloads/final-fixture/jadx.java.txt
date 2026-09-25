@@ -1,0 +1,56 @@
+package defpackage;
+
+/* JADX INFO: loaded from: InvocationArgumentsProbe.class */
+public class InvocationArgumentsProbe {
+    public static int objectString() {
+        return ArgumentTarget.object("x");
+    }
+
+    public static int objectNull() {
+        return ArgumentTarget.object((Object) null);
+    }
+
+    public static int objectArray(String[] strArr) {
+        return ArgumentTarget.array(strArr);
+    }
+
+    public static int objectBoxed() {
+        return ArgumentTarget.boxed(3);
+    }
+
+    public static int widening(char c) {
+        return ArgumentTarget.number(c);
+    }
+
+    public static int narrowByte() {
+        return ArgumentTarget.narrow((byte) 1);
+    }
+
+    public static int narrowShort() {
+        return ArgumentTarget.narrow((short) 1);
+    }
+
+    public static int constructorObject() {
+        return new ArgumentTarget("x").value();
+    }
+
+    public static int multiple(char c) {
+        return ArgumentTarget.multi("a", "b", c);
+    }
+
+    public static int genericObject() {
+        return ArgumentTarget.object(GenericFactory.make());
+    }
+
+    public static int functionalRunnable() {
+        return ArgumentTarget.functional(InvocationArgumentsProbe::returnFive);
+    }
+
+    public static int functionalObject() {
+        return ArgumentTarget.objectFunctional(InvocationArgumentsProbe::returnFive);
+    }
+
+    private static int returnFive() {
+        return 5;
+    }
+}

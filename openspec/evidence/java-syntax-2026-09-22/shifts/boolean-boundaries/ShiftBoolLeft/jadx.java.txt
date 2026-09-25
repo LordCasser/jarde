@@ -1,0 +1,8 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ShiftBoolLeft.class */
+public class ShiftBoolLeft {
+    public static int shift(boolean z, int i) {
+        return (z ? 1 : 0) << i;
+    }
+}

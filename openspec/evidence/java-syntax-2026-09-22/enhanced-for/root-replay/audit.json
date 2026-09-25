@@ -1,0 +1,678 @@
+{
+  "after_sha256": "8cd1f767ba8cde9928bacedc29263d44be8e5e61b46d3b6f00456fac1c7c77cd",
+  "before_sha256": "8cd1f767ba8cde9928bacedc29263d44be8e5e61b46d3b6f00456fac1c7c77cd",
+  "cases": {
+    "int-array": {
+      "jadx": 0,
+      "jadx_source": {
+        "class_bytes": 539,
+        "class_sha256": "c105ba30ba03731afe8205524632f15ec29a19d9252e531cab04472ecae31463",
+        "javac": 0,
+        "runner_javac": 0,
+        "runtime": 0
+      },
+      "jarde": {
+        "class_bytes": 471,
+        "class_sha256": "9cbf47150c890e02d1fd2b047fdbe3cfd3e9f3d8e8f6fe6f28030a94101eb20c",
+        "javac": 0,
+        "runner_javac": 0,
+        "runtime": 0
+      },
+      "jarde_markers": 0,
+      "line_comparison_jadx": {
+        "available": true,
+        "equal": true,
+        "left_lines": 6,
+        "right_lines": 6
+      },
+      "line_comparison_jarde": {
+        "available": true,
+        "equal": true,
+        "left_lines": 6,
+        "right_lines": 6
+      },
+      "original": {
+        "class_bytes": 528,
+        "class_sha256": "067bf3c5b231811f97d19e9137c7d4019eb2849f8cce91706285120db7d55b58",
+        "javac": 0,
+        "runner_javac": 0,
+        "runtime": 0
+      },
+      "original_javap": 0,
+      "process_comparison_javac_jadx": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_javac_jarde": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_runner-javac_jadx": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_runner-javac_jarde": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_runtime_jadx": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_runtime_jarde": {
+        "available": true,
+        "equal": true
+      }
+    },
+    "object-array": {
+      "jadx": 0,
+      "jadx_source": {
+        "class_bytes": 634,
+        "class_sha256": "2e3034a92d748aca3693692c1923352b0e13206f7d2b5ef6236102f8e3499ece",
+        "javac": 0,
+        "runner_javac": 0,
+        "runtime": 0
+      },
+      "jarde": {
+        "class_bytes": 549,
+        "class_sha256": "b3362d30353638bd16c6b55b2dc1bbdcead37e5ff913727b85abf30b2d5af860",
+        "javac": 0,
+        "runner_javac": 0,
+        "runtime": 0
+      },
+      "jarde_markers": 0,
+      "line_comparison_jadx": {
+        "available": true,
+        "equal": true,
+        "left_lines": 7,
+        "right_lines": 7
+      },
+      "line_comparison_jarde": {
+        "available": true,
+        "equal": true,
+        "left_lines": 7,
+        "right_lines": 7
+      },
+      "original": {
+        "class_bytes": 623,
+        "class_sha256": "b4c1b0ba7b5b1857f4e5369fb57245cb835ec727f180ec9d81c1a4d6d60841b2",
+        "javac": 0,
+        "runner_javac": 0,
+        "runtime": 0
+      },
+      "original_javap": 0,
+      "process_comparison_javac_jadx": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_javac_jarde": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_runner-javac_jadx": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_runner-javac_jarde": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_runtime_jadx": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_runtime_jarde": {
+        "available": true,
+        "equal": true
+      }
+    },
+    "string-iterable": {
+      "jadx": 0,
+      "jadx_source": {
+        "class_bytes": 829,
+        "class_sha256": "e46dcfe23c8d18a23a161895bec21c0ffaa8d03280276a4f805ab9995244da4c",
+        "javac": 0,
+        "runner_javac": 0,
+        "runtime": 0
+      },
+      "jarde": {
+        "javac": 1,
+        "runner_javac": "skipped",
+        "runtime": "skipped"
+      },
+      "jarde_markers": 4,
+      "line_comparison_jadx": {
+        "available": true,
+        "equal": false,
+        "left_lines": 10,
+        "right_lines": 10
+      },
+      "line_comparison_jarde": {
+        "available": false
+      },
+      "original": {
+        "class_bytes": 826,
+        "class_sha256": "81a0dcb4a53a51eb721df72f2b30825b33e8fb4dc6f2390e93167f4012e09f36",
+        "javac": 0,
+        "runner_javac": 0,
+        "runtime": 0
+      },
+      "original_javap": 0,
+      "process_comparison_javac_jadx": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_javac_jarde": {
+        "available": true,
+        "equal": false
+      },
+      "process_comparison_runner-javac_jadx": {
+        "available": true,
+        "equal": true
+      },
+      "process_comparison_runner-javac_jarde": {
+        "available": true,
+        "equal": false
+      },
+      "process_comparison_runtime_jadx": {
+        "available": true,
+        "equal": false
+      },
+      "process_comparison_runtime_jarde": {
+        "available": true,
+        "equal": false
+      }
+    }
+  },
+  "cli_unchanged": true,
+  "commands": [
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/original",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/IntArrayForeach.java"
+      ],
+      "cwd": null,
+      "prefix": "original-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/original",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/original",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/IntArrayForeachRunner.java"
+      ],
+      "cwd": null,
+      "prefix": "original-runner-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/original",
+        "IntArrayForeachRunner"
+      ],
+      "cwd": null,
+      "prefix": "original-runtime",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javap",
+        "-v",
+        "-c",
+        "-p",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/original/IntArrayForeach.class"
+      ],
+      "cwd": null,
+      "prefix": "original-javap",
+      "status": 0
+    },
+    {
+      "argv": [
+        "/tmp/jarde-cli-boolean-root",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/original/IntArrayForeach.class",
+        "--class",
+        "IntArrayForeach",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "prefix": "jarde-cli",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/jarde",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/jarde-source.java"
+      ],
+      "cwd": null,
+      "prefix": "jarde-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/jarde",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/jarde",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/IntArrayForeachRunner.java"
+      ],
+      "cwd": null,
+      "prefix": "jarde-runner-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/jarde",
+        "IntArrayForeachRunner"
+      ],
+      "cwd": null,
+      "prefix": "jarde-runtime",
+      "status": 0
+    },
+    {
+      "argv": [
+        "jadx",
+        "--no-res",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-enhanced-int-array-cvtlu1fq/out",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/original/IntArrayForeach.class"
+      ],
+      "cwd": null,
+      "prefix": "jadx",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/jadx-source/IntArrayForeach.java"
+      ],
+      "cwd": null,
+      "prefix": "jadx-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/jadx",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/jadx/IntArrayForeachRunner.java"
+      ],
+      "cwd": null,
+      "prefix": "jadx-runner-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/int-array/compiled/jadx",
+        "defpackage.IntArrayForeachRunner"
+      ],
+      "cwd": null,
+      "prefix": "jadx-runtime",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/original",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/ObjectArrayForeach.java"
+      ],
+      "cwd": null,
+      "prefix": "original-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/original",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/original",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/ObjectArrayForeachRunner.java"
+      ],
+      "cwd": null,
+      "prefix": "original-runner-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/original",
+        "ObjectArrayForeachRunner"
+      ],
+      "cwd": null,
+      "prefix": "original-runtime",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javap",
+        "-v",
+        "-c",
+        "-p",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/original/ObjectArrayForeach.class"
+      ],
+      "cwd": null,
+      "prefix": "original-javap",
+      "status": 0
+    },
+    {
+      "argv": [
+        "/tmp/jarde-cli-boolean-root",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/original/ObjectArrayForeach.class",
+        "--class",
+        "ObjectArrayForeach",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "prefix": "jarde-cli",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/jarde",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/jarde-source.java"
+      ],
+      "cwd": null,
+      "prefix": "jarde-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/jarde",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/jarde",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/ObjectArrayForeachRunner.java"
+      ],
+      "cwd": null,
+      "prefix": "jarde-runner-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/jarde",
+        "ObjectArrayForeachRunner"
+      ],
+      "cwd": null,
+      "prefix": "jarde-runtime",
+      "status": 0
+    },
+    {
+      "argv": [
+        "jadx",
+        "--no-res",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-enhanced-object-array-79mx2g94/out",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/original/ObjectArrayForeach.class"
+      ],
+      "cwd": null,
+      "prefix": "jadx",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/jadx-source/ObjectArrayForeach.java"
+      ],
+      "cwd": null,
+      "prefix": "jadx-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/jadx",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/jadx/ObjectArrayForeachRunner.java"
+      ],
+      "cwd": null,
+      "prefix": "jadx-runner-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/object-array/compiled/jadx",
+        "defpackage.ObjectArrayForeachRunner"
+      ],
+      "cwd": null,
+      "prefix": "jadx-runtime",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/original",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/StringIterableForeach.java"
+      ],
+      "cwd": null,
+      "prefix": "original-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/original",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/original",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/StringIterableForeachRunner.java"
+      ],
+      "cwd": null,
+      "prefix": "original-runner-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/original",
+        "StringIterableForeachRunner"
+      ],
+      "cwd": null,
+      "prefix": "original-runtime",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javap",
+        "-v",
+        "-c",
+        "-p",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/original/StringIterableForeach.class"
+      ],
+      "cwd": null,
+      "prefix": "original-javap",
+      "status": 0
+    },
+    {
+      "argv": [
+        "/tmp/jarde-cli-boolean-root",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/original/StringIterableForeach.class",
+        "--class",
+        "StringIterableForeach",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "text"
+      ],
+      "prefix": "jarde-cli",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/jarde",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/jarde-source.java"
+      ],
+      "cwd": null,
+      "prefix": "jarde-javac",
+      "status": 1
+    },
+    {
+      "prefix": "jarde-runner-javac",
+      "reason": "jarde class javac failed",
+      "status": "skipped"
+    },
+    {
+      "prefix": "jarde-runtime",
+      "reason": "jarde class javac failed",
+      "status": "skipped"
+    },
+    {
+      "argv": [
+        "jadx",
+        "--no-res",
+        "-d",
+        "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-enhanced-string-iterable-4y5y7gvr/out",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/original/StringIterableForeach.class"
+      ],
+      "cwd": null,
+      "prefix": "jadx",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/jadx-source/StringIterableForeach.java"
+      ],
+      "cwd": null,
+      "prefix": "jadx-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/jadx",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/jadx/StringIterableForeachRunner.java"
+      ],
+      "cwd": null,
+      "prefix": "jadx-runner-javac",
+      "status": 0
+    },
+    {
+      "argv": [
+        "java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/root-replay/string-iterable/compiled/jadx",
+        "defpackage.StringIterableForeachRunner"
+      ],
+      "cwd": null,
+      "prefix": "jadx-runtime",
+      "status": 0
+    }
+  ],
+  "expected_cli_sha256": "8cd1f767ba8cde9928bacedc29263d44be8e5e61b46d3b6f00456fac1c7c77cd",
+  "frozen_cli": "/tmp/jarde-cli-boolean-root"
+}

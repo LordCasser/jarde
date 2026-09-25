@@ -1,0 +1,8 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/p3_throw.rs (target/debug/deps/p3_throw-2af5caca810cbbdb)
+
+running 1 test
+test recovered_throw_probe_matches_original_runtime ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.76s
+

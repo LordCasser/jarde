@@ -1,0 +1,45 @@
+cargo test --locked --test p3_bitwise
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.05s
+     Running tests/p3_bitwise.rs (target/debug/deps/p3_bitwise-ee19ba349b635d19)
+
+running 3 tests
+test bitwise_source_uses_real_bcis_and_default_text_is_stable ... FAILED
+test fixture_has_the_complete_integral_and_boolean_surface ... FAILED
+test recovered_bitwise_probe_matches_original_runtime ... ignored, requires JDK: compile Engine::class_source output and execute a temporary runner
+
+failures:
+
+---- bitwise_source_uses_real_bcis_and_default_text_is_stable stdout ----
+
+thread 'bitwise_source_uses_real_bcis_and_default_text_is_stable' (24590077) panicked at tests/p3_bitwise.rs:248:13:
+nested(ZZZ)Z has no source-map segment for BCI 3:     public static boolean nested(boolean arg0, boolean arg1, boolean arg2) {
+        // jarde: not recovered: the recovery run for `nested(ZZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nested(ZZZ)Z
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7
+        // the value at BCI 7 comes from an Other at BCI 6, which produces no expression this subset writes
+    }
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- fixture_has_the_complete_integral_and_boolean_surface stdout ----
+
+thread 'fixture_has_the_complete_integral_and_boolean_surface' (24590078) panicked at tests/p3_bitwise.rs:192:5:
+assertion failed: RUNNER_SOURCE.contains("java.lang.IllegalArgumentException")
+
+
+failures:
+    bitwise_source_uses_real_bcis_and_default_text_is_stable
+    fixture_has_the_complete_integral_and_boolean_surface
+
+test result: FAILED. 0 passed; 2 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test p3_bitwise`

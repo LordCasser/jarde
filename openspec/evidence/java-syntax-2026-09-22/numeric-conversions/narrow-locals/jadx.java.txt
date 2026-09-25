@@ -1,0 +1,20 @@
+package defpackage;
+
+/* JADX INFO: loaded from: NarrowLocals.class */
+public class NarrowLocals {
+    public static byte b(byte b) {
+        return b;
+    }
+
+    public static char c(char c) {
+        return c;
+    }
+
+    public static short s(short s) {
+        return s;
+    }
+
+    public static int integer(byte b) {
+        return b;
+    }
+}

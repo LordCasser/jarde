@@ -1,0 +1,67 @@
+// jarde: presentation of `LambdaAdaptationProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class LambdaAdaptationProbe extends java.lang.Object {
+    public LambdaAdaptationProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `LambdaAdaptationProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.util.function.ToIntFunction strings() {
+        // @method strings()Ljava/util/function/ToIntFunction;
+        // @declaration a static method of `LambdaAdaptationProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return LambdaAdaptationSupport::pick;
+    }
+
+    public static java.util.function.ToIntFunction wider() {
+        // @method wider()Ljava/util/function/ToIntFunction;
+        // @declaration a static method of `LambdaAdaptationProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return LambdaAdaptationSupport::wider;
+    }
+
+    public static java.util.function.ToIntFunction arrays() {
+        // @method arrays()Ljava/util/function/ToIntFunction;
+        // @declaration a static method of `LambdaAdaptationProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return LambdaAdaptationSupport::pickArray;
+    }
+
+    public static java.util.function.ToIntBiFunction unbound() {
+        // @method unbound()Ljava/util/function/ToIntBiFunction;
+        // @declaration a static method of `LambdaAdaptationProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (LambdaAdaptationSupport p0, java.lang.String p1) -> p0.instancePick(p1);
+    }
+
+    public static java.util.function.Function constructor() {
+        // @method constructor()Ljava/util/function/Function;
+        // @declaration a static method of `LambdaAdaptationProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return LambdaAdaptationBox::new;
+    }
+
+    public static java.util.function.IntUnaryOperator primitive() {
+        // @method primitive()Ljava/util/function/IntUnaryOperator;
+        // @declaration a static method of `LambdaAdaptationProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return LambdaAdaptationProbe::primitiveValue;
+    }
+
+    public static int primitiveValue(int arg0) {
+        // @method primitiveValue(I)I
+        // @declaration a static method of `LambdaAdaptationProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0 + 1;
+    }
+
+    public static java.util.function.Supplier genericString() {
+        // @method genericString()Ljava/util/function/Supplier;
+        // @declaration a static method of `LambdaAdaptationProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return LambdaAdaptationSupport::genericValue;
+    }
+}

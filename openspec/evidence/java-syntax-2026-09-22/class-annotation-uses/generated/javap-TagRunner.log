@@ -1,0 +1,92 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/class-annotation-uses/generated/original/TagRunner.class
+  Last modified 2026年9月23日; size 659 bytes
+  SHA-256 checksum fc9389dd804b772248a2141a7c0a65144dba741812d4afb9afbe246d063e4ec6
+public class TagRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #47                         // TagRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // java/lang/System.out:Ljava/io/PrintStream;
+   #8 = Class              #10            // java/lang/System
+   #9 = NameAndType        #11:#12        // out:Ljava/io/PrintStream;
+  #10 = Utf8               java/lang/System
+  #11 = Utf8               out
+  #12 = Utf8               Ljava/io/PrintStream;
+  #13 = Class              #14            // Tagged
+  #14 = Utf8               Tagged
+  #15 = Class              #16            // java/lang/Deprecated
+  #16 = Utf8               java/lang/Deprecated
+  #17 = Methodref          #18.#19        // java/lang/Class.isAnnotationPresent:(Ljava/lang/Class;)Z
+  #18 = Class              #20            // java/lang/Class
+  #19 = NameAndType        #21:#22        // isAnnotationPresent:(Ljava/lang/Class;)Z
+  #20 = Utf8               java/lang/Class
+  #21 = Utf8               isAnnotationPresent
+  #22 = Utf8               (Ljava/lang/Class;)Z
+  #23 = Methodref          #24.#25        // java/io/PrintStream.println:(Z)V
+  #24 = Class              #26            // java/io/PrintStream
+  #25 = NameAndType        #27:#28        // println:(Z)V
+  #26 = Utf8               java/io/PrintStream
+  #27 = Utf8               println
+  #28 = Utf8               (Z)V
+  #29 = Methodref          #13.#30        // Tagged.value:()I
+  #30 = NameAndType        #31:#32        // value:()I
+  #31 = Utf8               value
+  #32 = Utf8               ()I
+  #33 = Methodref          #24.#34        // java/io/PrintStream.println:(I)V
+  #34 = NameAndType        #27:#35        // println:(I)V
+  #35 = Utf8               (I)V
+  #36 = Class              #37            // RetentionTagged
+  #37 = Utf8               RetentionTagged
+  #38 = Class              #39            // java/lang/annotation/Retention
+  #39 = Utf8               java/lang/annotation/Retention
+  #40 = Methodref          #18.#41        // java/lang/Class.getAnnotation:(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+  #41 = NameAndType        #42:#43        // getAnnotation:(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+  #42 = Utf8               getAnnotation
+  #43 = Utf8               (Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+  #44 = Methodref          #24.#45        // java/io/PrintStream.println:(Ljava/lang/Object;)V
+  #45 = NameAndType        #27:#46        // println:(Ljava/lang/Object;)V
+  #46 = Utf8               (Ljava/lang/Object;)V
+  #47 = Class              #48            // TagRunner
+  #48 = Utf8               TagRunner
+  #49 = Utf8               Code
+  #50 = Utf8               main
+  #51 = Utf8               ([Ljava/lang/String;)V
+{
+  public TagRunner();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #13                 // class Tagged
+         5: ldc           #15                 // class java/lang/Deprecated
+         7: invokevirtual #17                 // Method java/lang/Class.isAnnotationPresent:(Ljava/lang/Class;)Z
+        10: invokevirtual #23                 // Method java/io/PrintStream.println:(Z)V
+        13: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        16: invokestatic  #29                 // Method Tagged.value:()I
+        19: invokevirtual #33                 // Method java/io/PrintStream.println:(I)V
+        22: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        25: ldc           #36                 // class RetentionTagged
+        27: ldc           #38                 // class java/lang/annotation/Retention
+        29: invokevirtual #40                 // Method java/lang/Class.getAnnotation:(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+        32: invokevirtual #44                 // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+        35: return
+}

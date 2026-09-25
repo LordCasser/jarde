@@ -1,0 +1,23 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/jarde/NarrowSwitchReturns.java:27: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/jarde/NarrowSwitchReturns.java:44: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/jarde/NarrowSwitchReturns.java:61: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/jarde/NarrowSwitchReturns.java:75: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/jarde/NarrowSwitchReturns.java:89: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/jarde/NarrowSwitchReturns.java:103: 错误: 缺少返回语句
+    }
+    ^
+6 个错误
+3 个警告

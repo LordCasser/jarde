@@ -430,7 +430,7 @@ pub const ACCESSOR: Pass = Pass::new(
 );
 
 /// Every pass this build registers, in the order the design lists them.
-pub const PASSES: [Pass; 15] = [
+pub const PASSES: [Pass; 16] = [
     STRAIGHT,
     IF,
     LOOP,
@@ -446,6 +446,7 @@ pub const PASSES: [Pass; 15] = [
     DECLARATION,
     TWR,
     MONITOR,
+    FINALLY,
 ];
 
 /// The pass that presents a verified `try`-with-resources as one guarded statement.
@@ -483,6 +484,17 @@ pub const TWR: Pass = Pass::new(
 /// balanced.
 pub const MONITOR: Pass = Pass::new(
     RuleVersion::new("monitor", "1"),
+    None,
+    &[
+        Precondition::IrTable(IrTable::Canonical),
+        Precondition::IrTable(IrTable::Ssa),
+        Precondition::IrTable(IrTable::Code),
+    ],
+);
+
+/// The narrow, straight protected body with two proved equivalent cleanup copies.
+pub const FINALLY: Pass = Pass::new(
+    RuleVersion::new("finally", "1"),
     None,
     &[
         Precondition::IrTable(IrTable::Canonical),
@@ -654,7 +666,7 @@ mod tests {
 
     #[test]
     fn the_registered_table_states_each_rule_and_its_preconditions() {
-        assert_eq!(PASSES.len(), 15);
+        assert_eq!(PASSES.len(), 16);
         assert_eq!(
             PASSES
                 .iter()
@@ -675,7 +687,8 @@ mod tests {
                 "init@1".to_string(),
                 "declaration@1".to_string(),
                 "twr@1".to_string(),
-                "monitor@1".to_string()
+                "monitor@1".to_string(),
+                "finally@1".to_string()
             ]
         );
         // Which rules are release-independent and which one is not (P3 2.1). Until then this loop
@@ -777,7 +790,7 @@ mod tests {
         }));
         for pass in [
             STRAIGHT, IF, LOOP, SWITCH, LAMBDA, CONCAT, BRIDGE, ACCESSOR, NEW, ENUMSWITCH, TWR,
-            MONITOR,
+            MONITOR, FINALLY,
         ] {
             assert!(
                 !pass.requires(Precondition::Metadata {
@@ -847,6 +860,7 @@ mod tests {
         assert!(!MONITOR.requires(Precondition::Replayable));
         assert_eq!(pass("twr"), Some(TWR));
         assert_eq!(pass("monitor"), Some(MONITOR));
+        assert_eq!(pass("finally"), Some(FINALLY));
         assert_eq!(pass("loop"), Some(LOOP));
         assert_eq!(pass("lambda"), Some(LAMBDA));
         assert_eq!(pass("concat"), Some(CONCAT));

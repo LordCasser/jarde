@@ -1,0 +1,15 @@
+{
+  "command": [
+    "javap",
+    "-classpath",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/patched",
+    "-c",
+    "-s",
+    "-v",
+    "BoolInit"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/patched/BoolInit.class\n  Last modified 2026\u5e749\u670825\u65e5; size 189 bytes\n  SHA-256 checksum e0e8cf5cf99fdb3e402db16e6d0b86db1b8b8672df2e684523c72a67df724a3f\nfinal class BoolInit\n  minor version: 0\n  major version: 52\n  flags: (0x0030) ACC_FINAL, ACC_SUPER\n  this_class: #7                          // BoolInit\n  super_class: #2                         // java/lang/Object\n  interfaces: 0, fields: 0, methods: 2, attributes: 0\nConstant pool:\n   #1 = Methodref          #2.#3          // java/lang/Object.\"<init>\":()V\n   #2 = Class              #4             // java/lang/Object\n   #3 = NameAndType        #5:#6          // \"<init>\":()V\n   #4 = Utf8               java/lang/Object\n   #5 = Utf8               <init>\n   #6 = Utf8               ()V\n   #7 = Class              #8             // BoolInit\n   #8 = Utf8               BoolInit\n   #9 = Utf8               Code\n  #10 = Utf8               values\n  #11 = Utf8               ()[Z\n{\n  BoolInit();\n    descriptor: ()V\n    flags: (0x0000)\n    Code:\n      stack=1, locals=1, args_size=1\n         0: aload_0\n         1: invokespecial #1                  // Method java/lang/Object.\"<init>\":()V\n         4: return\n\n  static boolean[] values();\n    descriptor: ()[Z\n    flags: (0x0008) ACC_STATIC\n    Code:\n      stack=4, locals=0, args_size=0\n         0: iconst_5\n         1: newarray       boolean\n         3: dup\n         4: iconst_0\n         5: iconst_0\n         6: bastore\n         7: dup\n         8: iconst_1\n         9: iconst_1\n        10: bastore\n        11: dup\n        12: iconst_2\n        13: iconst_2\n        14: bastore\n        15: dup\n        16: iconst_3\n        17: iconst_3\n        18: bastore\n        19: dup\n        20: iconst_4\n        21: iconst_m1\n        22: bastore\n        23: areturn\n}\n",
+  "stderr": ""
+}

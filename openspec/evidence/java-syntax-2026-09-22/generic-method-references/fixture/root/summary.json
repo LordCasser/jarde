@@ -1,0 +1,238 @@
+{
+  "case_count": 27,
+  "jadx_equal": true,
+  "jarde_quotes": 0,
+  "class_sha256": "1f76c28361a2c54405e82950812863da1ea2f5a1012ef3a07e1049e5e4d45c6f",
+  "class_bytes": 2205,
+  "methods": 9,
+  "code_attributes": 9,
+  "bootstrap_entries": 7,
+  "original_exit": 0,
+  "jarde_cli_exit": 0,
+  "jarde_javac_exit": 1,
+  "jarde_run_exit": null,
+  "jadx_exit": 0,
+  "jadx_javac_exit": 0,
+  "jadx_run_exit": 0,
+  "cli_hash_input": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+  "cli_hash_end": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+  "cli_hash_unchanged": true,
+  "cases": [
+    {
+      "case": "string",
+      "kind": "String/Object overload",
+      "original": "string:11",
+      "jarde": null,
+      "jadx": "string:11",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "null",
+      "kind": "String/Object null",
+      "original": "null:11",
+      "jarde": null,
+      "jadx": "null:11",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "wrong",
+      "kind": "String/Object wrong type",
+      "original": "wrong:java.lang.ClassCastException",
+      "jarde": null,
+      "jadx": "wrong:java.lang.ClassCastException",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "widerString",
+      "kind": "dynamic String to implementation Object",
+      "original": "widerString:12:calls=1",
+      "jarde": null,
+      "jadx": "widerString:12:calls=1",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "widerNull",
+      "kind": "dynamic String null to implementation Object",
+      "original": "widerNull:12:calls=1",
+      "jarde": null,
+      "jadx": "widerNull:12:calls=1",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "widerWrong",
+      "kind": "dynamic String wrong type and call count",
+      "original": "widerWrong:java.lang.ClassCastException:calls=0",
+      "jarde": null,
+      "jadx": "widerWrong:java.lang.ClassCastException:calls=0",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "array",
+      "kind": "String[] dynamic array",
+      "original": "array:14",
+      "jarde": null,
+      "jadx": "array:14",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "arrayNull",
+      "kind": "String[] null",
+      "original": "arrayNull:14",
+      "jarde": null,
+      "jadx": "arrayNull:14",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "arrayWrong",
+      "kind": "String[] wrong array type",
+      "original": "arrayWrong:java.lang.ClassCastException",
+      "jarde": null,
+      "jadx": "arrayWrong:java.lang.ClassCastException",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "unbound",
+      "kind": "unbound receiver primitive return",
+      "original": "unbound:21",
+      "jarde": null,
+      "jadx": "unbound:21",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "unboundNull",
+      "kind": "unbound receiver null parameter",
+      "original": "unboundNull:21",
+      "jarde": null,
+      "jadx": "unboundNull:21",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "unboundWrong",
+      "kind": "unbound receiver wrong parameter",
+      "original": "unboundWrong:java.lang.ClassCastException",
+      "jarde": null,
+      "jadx": "unboundWrong:java.lang.ClassCastException",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "constructor",
+      "kind": "constructor parameter",
+      "original": "constructor:text",
+      "jarde": null,
+      "jadx": "constructor:text",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "primitive",
+      "kind": "primitive same type",
+      "original": "primitive:8",
+      "jarde": null,
+      "jadx": "primitive:8",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "genericRawString",
+      "kind": "raw generic Supplier String",
+      "original": "genericRawString:java.lang.String:text",
+      "jarde": null,
+      "jadx": "genericRawString:java.lang.String:text",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "genericTypedString",
+      "kind": "typed generic Supplier String",
+      "original": "genericTypedString:text",
+      "jarde": null,
+      "jadx": "genericTypedString:text",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "genericRawInteger",
+      "kind": "raw generic Supplier Integer",
+      "original": "genericRawInteger:java.lang.Integer:7",
+      "jarde": null,
+      "jadx": "genericRawInteger:java.lang.Integer:7",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "genericTypedInteger",
+      "kind": "typed caller String cast",
+      "original": "genericTypedInteger:java.lang.ClassCastException",
+      "jarde": null,
+      "jadx": "genericTypedInteger:java.lang.ClassCastException",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "receiverNull",
+      "kind": "receiver/constructor dynamic checks and call count",
+      "original": "receiverNull:java.lang.NullPointerException:calls=0",
+      "jarde": null,
+      "jadx": "receiverNull:java.lang.NullPointerException:calls=0",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "receiverNullWrongArg",
+      "kind": "receiver/constructor dynamic checks and call count",
+      "original": "receiverNullWrongArg:java.lang.ClassCastException:calls=0",
+      "jarde": null,
+      "jadx": "receiverNullWrongArg:java.lang.ClassCastException:calls=0",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "receiverWrong",
+      "kind": "receiver/constructor dynamic checks and call count",
+      "original": "receiverWrong:java.lang.ClassCastException:calls=0",
+      "jarde": null,
+      "jadx": "receiverWrong:java.lang.ClassCastException:calls=0",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "receiverWrongNullArg",
+      "kind": "receiver/constructor dynamic checks and call count",
+      "original": "receiverWrongNullArg:java.lang.ClassCastException:calls=0",
+      "jarde": null,
+      "jadx": "receiverWrongNullArg:java.lang.ClassCastException:calls=0",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "receiverValidNullArg",
+      "kind": "receiver/constructor dynamic checks and call count",
+      "original": "receiverValidNullArg:21:calls=1",
+      "jarde": null,
+      "jadx": "receiverValidNullArg:21:calls=1",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "receiverValidWrongArg",
+      "kind": "receiver/constructor dynamic checks and call count",
+      "original": "receiverValidWrongArg:java.lang.ClassCastException:calls=0",
+      "jarde": null,
+      "jadx": "receiverValidWrongArg:java.lang.ClassCastException:calls=0",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "constructorText",
+      "kind": "receiver/constructor dynamic checks and call count",
+      "original": "constructorText:text:calls=1",
+      "jarde": null,
+      "jadx": "constructorText:text:calls=1",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "constructorNull",
+      "kind": "receiver/constructor dynamic checks and call count",
+      "original": "constructorNull:null:calls=1",
+      "jarde": null,
+      "jadx": "constructorNull:null:calls=1",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "constructorWrong",
+      "kind": "receiver/constructor dynamic checks and call count",
+      "original": "constructorWrong:java.lang.ClassCastException:calls=0",
+      "jarde": null,
+      "jadx": "constructorWrong:java.lang.ClassCastException:calls=0",
+      "failure_stage": "jarde-compile"
+    }
+  ]
+}

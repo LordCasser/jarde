@@ -1,0 +1,98 @@
+Classfile <CLASS_DIR>/Probe.class
+  Last modified 2026年9月25日; size 387 bytes
+  SHA-256 checksum ea58c463ba82a10dcd2dd4f0f78c2c1f10fa96acb3153d427cf060809402f4b2
+public final class Probe implements Child
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #19                         // Probe
+  super_class: #2                         // java/lang/Object
+  interfaces: 1, fields: 0, methods: 3, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = InterfaceMethodref #8.#9          // Child.value:()I
+   #8 = Class              #10            // Child
+   #9 = NameAndType        #11:#12        // value:()I
+  #10 = Utf8               Child
+  #11 = Utf8               value
+  #12 = Utf8               ()I
+  #13 = Fieldref           #14.#15        // java/lang/System.out:Ljava/io/PrintStream;
+  #14 = Class              #16            // java/lang/System
+  #15 = NameAndType        #17:#18        // out:Ljava/io/PrintStream;
+  #16 = Utf8               java/lang/System
+  #17 = Utf8               out
+  #18 = Utf8               Ljava/io/PrintStream;
+  #19 = Class              #20            // Probe
+  #20 = Utf8               Probe
+  #21 = Methodref          #19.#3         // Probe."<init>":()V
+  #22 = Methodref          #19.#9         // Probe.value:()I
+  #23 = Methodref          #24.#25        // java/io/PrintStream.println:(I)V
+  #24 = Class              #26            // java/io/PrintStream
+  #25 = NameAndType        #27:#28        // println:(I)V
+  #26 = Utf8               java/io/PrintStream
+  #27 = Utf8               println
+  #28 = Utf8               (I)V
+  #29 = Utf8               Code
+  #30 = Utf8               main
+  #31 = Utf8               ([Ljava/lang/String;)V
+{
+  public Probe();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public int value();
+    descriptor: ()I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #7                  // InterfaceMethod Child.value:()I
+         4: ireturn
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: new           #19                 // class Probe
+         6: dup
+         7: invokespecial #21                 // Method "<init>":()V
+        10: invokevirtual #22                 // Method value:()I
+        13: invokevirtual #23                 // Method java/io/PrintStream.println:(I)V
+        16: return
+}
+Classfile <CLASS_DIR>/Child.class
+  Last modified 2026年9月25日; size 93 bytes
+  SHA-256 checksum 0e5ca6dac27c786a2d44b5051e2b906593bf4e6ee8e02c0872728fa29486e8c0
+interface Child extends Parent
+  minor version: 0
+  major version: 52
+  flags: (0x0600) ACC_INTERFACE, ACC_ABSTRACT
+  this_class: #1                          // Child
+  super_class: #3                         // java/lang/Object
+  interfaces: 1, fields: 0, methods: 1, attributes: 0
+Constant pool:
+  #1 = Class              #2              // Child
+  #2 = Utf8               Child
+  #3 = Class              #4              // java/lang/Object
+  #4 = Utf8               java/lang/Object
+  #5 = Class              #6              // Parent
+  #6 = Utf8               Parent
+  #7 = Utf8               value
+  #8 = Utf8               ()I
+{
+  public abstract int value();
+    descriptor: ()I
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+}

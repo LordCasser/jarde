@@ -1,0 +1,7 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DiscardedConversion.class */
+public class DiscardedConversion {
+    public static void drop(int i) {
+    }
+}

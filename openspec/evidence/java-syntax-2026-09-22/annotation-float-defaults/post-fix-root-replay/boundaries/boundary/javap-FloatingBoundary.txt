@@ -1,0 +1,93 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/annotation-float-defaults/post-fix-root-replay/boundaries/boundary/original/FloatingBoundary.class
+  Last modified 2026年9月23日; size 479 bytes
+  SHA-256 checksum 361944b3d02fe66f6ad668a13de962d43b4e9f5650386fd4585cce71892f81e4
+interface FloatingBoundary extends java.lang.annotation.Annotation
+  minor version: 0
+  major version: 52
+  flags: (0x2600) ACC_INTERFACE, ACC_ABSTRACT, ACC_ANNOTATION
+  this_class: #1                          // FloatingBoundary
+  super_class: #3                         // java/lang/Object
+  interfaces: 1, fields: 0, methods: 8, attributes: 0
+Constant pool:
+   #1 = Class              #2             // FloatingBoundary
+   #2 = Utf8               FloatingBoundary
+   #3 = Class              #4             // java/lang/Object
+   #4 = Utf8               java/lang/Object
+   #5 = Class              #6             // java/lang/annotation/Annotation
+   #6 = Utf8               java/lang/annotation/Annotation
+   #7 = Utf8               negativeZero
+   #8 = Utf8               ()F
+   #9 = Utf8               AnnotationDefault
+  #10 = Float              -0.0f
+  #11 = Utf8               leastSubnormal
+  #12 = Float              1.4E-45f
+  #13 = Utf8               greatestFinite
+  #14 = Float              3.4028235E38f
+  #15 = Utf8               negativeInfinity
+  #16 = Float              -Infinityf
+  #17 = Utf8               leastSubnormalDouble
+  #18 = Utf8               ()D
+  #19 = Double             4.9E-324d
+  #21 = Utf8               greatestFiniteDouble
+  #22 = Double             1.7976931348623157E308d
+  #24 = Utf8               positiveInfinity
+  #25 = Double             Infinityd
+  #27 = Utf8               canonicalNaN
+  #28 = Double             NaNd
+{
+  public abstract float negativeZero();
+    descriptor: ()F
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: F#10
+        -0.0f
+
+  public abstract float leastSubnormal();
+    descriptor: ()F
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: F#12
+        1.4E-45f
+
+  public abstract float greatestFinite();
+    descriptor: ()F
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: F#14
+        3.4028235E38f
+
+  public abstract float negativeInfinity();
+    descriptor: ()F
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: F#16
+        -Infinityf
+
+  public abstract double leastSubnormalDouble();
+    descriptor: ()D
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: D#19
+        4.9E-324d
+
+  public abstract double greatestFiniteDouble();
+    descriptor: ()D
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: D#22
+        1.7976931348623157E308d
+
+  public abstract double positiveInfinity();
+    descriptor: ()D
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: D#25
+        Infinityd
+
+  public abstract double canonicalNaN();
+    descriptor: ()D
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: D#28
+        NaNd
+}

@@ -412,8 +412,9 @@ fn a_guarded_body_that_branches_is_refused() {
 fn a_finally_copy_is_refused_and_the_refusal_says_which_code_it_copies() {
     // `finally` is not a region with a handler: javac copies its code onto every exit path, and the
     // exceptional copy rethrows the exception it stored. Merging the copies into one `finally`
-    // restates the source only if they are provably equal — this build does not prove that, so the
-    // shape is refused, under a code of its own, and **no rule** is blamed for it.
+    // restates the source only if they are provably equal. A private bounded certificate now
+    // checks one slice, but no presentation rule consumes it yet, so the shape is still refused
+    // under a code of its own and **no rule** is blamed for it.
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);
     for name in ["fin", "catchFinally"] {
@@ -464,26 +465,34 @@ fn a_close_the_exception_path_lacks_is_refused() {
     let recovered = refused(&engine, &fixture, "one", "jre_guard_handler");
     let report = recovered.recovery();
     assert!(!report.text.contains("try ("), "{}", report.text);
-    // P3-R7, on the same body: `invokevirtual Res.close:()V` was the only instruction of the
-    // protected range `[25, 29)` that could raise, so the handler it fed — the suppression handler at
-    // BCI 32 — is a node the graph never creates, and its four instructions sit in no block and in no
-    // dead node. The rule's own refusal stays (it is the reason a rule examined the shape and found),
-    // and the instructions the graph never accounted for are quoted beside it instead of being
-    // dropped: a refused body still has to say which bytes it could not account for.
+    // P3-R7, on the same body, under 2.9: the protected range `[25, 29)` no longer holds a throwing
+    // instruction either, and the table's row for it is now an edge of the graph all the same — so
+    // the suppression handler at BCI 32 is a node the graph **creates** instead of four instructions
+    // no block and no dead-node list accounted for. The run therefore has no unaccounted
+    // instruction left to name, and what the normal-flow walk could not claim is stated as the
+    // block it is: the live node at BCI 32 is quoted under `jre_region_uncovered_blocks`.
     assert!(
-        report
-            .fallbacks
-            .contains(&"jre_region_unaccounted_instruction"),
+        report.fallbacks.contains(&"jre_guard_handler"),
+        "the rule's own refusal stays: {:?}",
+        report.fallbacks
+    );
+    assert!(
+        report.fallbacks.contains(&"jre_region_uncovered_blocks"),
         "{:?}",
         report.fallbacks
     );
-    for bci in [32, 33, 34, 35] {
-        assert!(
-            cited(&report.text).contains(&bci),
-            "the instructions no block covers are quoted (BCI {bci}): {}",
-            report.text
-        );
-    }
+    assert!(
+        !report
+            .fallbacks
+            .contains(&"jre_region_unaccounted_instruction"),
+        "every instruction of this body is inside a block the graph holds: {:?}",
+        report.fallbacks
+    );
+    assert!(
+        cited(&report.text).contains(&32),
+        "the handler block the graph now holds is named by the quote: {}",
+        report.text
+    );
 }
 
 #[test]

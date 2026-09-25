@@ -1,0 +1,8 @@
+null:own:51:3:7:null
+null:invoke:java.lang.NullPointerException:3:7:null
+null:read:java.lang.NullPointerException:3:7:null
+null:write:java.lang.NullPointerException:3:7:null
+object:own:51:3:7:70
+object:invoke:52:3:7:70
+object:read:77:3:7:70
+object:write:done:3:10:9

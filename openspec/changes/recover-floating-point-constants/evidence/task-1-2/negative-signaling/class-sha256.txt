@@ -1,0 +1,1 @@
+d6a0e87fef89854e6eec2df4578463694a6caa74d1a482f610d95b97bc969f10  FloatingConstants.class (1722 bytes)

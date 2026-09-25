@@ -1,0 +1,6 @@
+stringText:1
+stringNull:1
+stringInteger:1
+objectText:1
+objectNull:1
+objectInteger:1

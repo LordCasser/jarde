@@ -1,0 +1,23 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DeferredStructured.class */
+public class DeferredStructured {
+    public static int branch(boolean z) {
+        if (!z) {
+            return 3;
+        }
+        int iValue = StructuredSupport.value();
+        StructuredSupport.mark();
+        return iValue;
+    }
+
+    public static int prefix() {
+        boolean zFlag = StructuredSupport.flag();
+        StructuredSupport.mark();
+        return zFlag ? 7 : 9;
+    }
+
+    public static void keepPool() {
+        StructuredSupport.mark();
+    }
+}

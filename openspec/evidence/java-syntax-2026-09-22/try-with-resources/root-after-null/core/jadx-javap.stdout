@@ -1,0 +1,392 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-twr-audit-prntlh9g/core/jadx/classes/defpackage/TwrAudit.class
+  Last modified 2026年9月23日; size 1712 bytes
+  SHA-256 checksum 42d7d47bdafb478580f638febb2f17e4d937946d5b824f937157b567ec118c5c
+public final class defpackage.TwrAudit implements java.lang.AutoCloseable
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // defpackage/TwrAudit
+  super_class: #2                         // java/lang/Object
+  interfaces: 1, fields: 6, methods: 14, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // defpackage/TwrAudit.id:I
+   #8 = Class              #10            // defpackage/TwrAudit
+   #9 = NameAndType        #11:#12        // id:I
+  #10 = Utf8               defpackage/TwrAudit
+  #11 = Utf8               id
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // defpackage/TwrAudit.closeFailure:Ljava/lang/Exception;
+  #14 = NameAndType        #15:#16        // closeFailure:Ljava/lang/Exception;
+  #15 = Utf8               closeFailure
+  #16 = Utf8               Ljava/lang/Exception;
+  #17 = Fieldref           #8.#18         // defpackage/TwrAudit.opens:I
+  #18 = NameAndType        #19:#12        // opens:I
+  #19 = Utf8               opens
+  #20 = Methodref          #8.#21         // defpackage/TwrAudit."<init>":(ILjava/lang/Exception;)V
+  #21 = NameAndType        #5:#22         // "<init>":(ILjava/lang/Exception;)V
+  #22 = Utf8               (ILjava/lang/Exception;)V
+  #23 = Fieldref           #8.#24         // defpackage/TwrAudit.initializations:I
+  #24 = NameAndType        #25:#12        // initializations:I
+  #25 = Utf8               initializations
+  #26 = Fieldref           #8.#27         // defpackage/TwrAudit.trace:I
+  #27 = NameAndType        #28:#12        // trace:I
+  #28 = Utf8               trace
+  #29 = Fieldref           #8.#30         // defpackage/TwrAudit.closes:I
+  #30 = NameAndType        #31:#12        // closes:I
+  #31 = Utf8               closes
+  #32 = Methodref          #8.#33         // defpackage/TwrAudit.open:(ILjava/lang/Exception;)Ldefpackage/TwrAudit;
+  #33 = NameAndType        #34:#35        // open:(ILjava/lang/Exception;)Ldefpackage/TwrAudit;
+  #34 = Utf8               open
+  #35 = Utf8               (ILjava/lang/Exception;)Ldefpackage/TwrAudit;
+  #36 = Methodref          #8.#37         // defpackage/TwrAudit.event:(I)V
+  #37 = NameAndType        #38:#39        // event:(I)V
+  #38 = Utf8               event
+  #39 = Utf8               (I)V
+  #40 = Methodref          #8.#41         // defpackage/TwrAudit.close:()V
+  #41 = NameAndType        #42:#6         // close:()V
+  #42 = Utf8               close
+  #43 = Class              #44            // java/lang/Throwable
+  #44 = Utf8               java/lang/Throwable
+  #45 = Methodref          #43.#46        // java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+  #46 = NameAndType        #47:#48        // addSuppressed:(Ljava/lang/Throwable;)V
+  #47 = Utf8               addSuppressed
+  #48 = Utf8               (Ljava/lang/Throwable;)V
+  #49 = Methodref          #8.#50         // defpackage/TwrAudit.failBody:(Ljava/lang/Exception;)V
+  #50 = NameAndType        #51:#52        // failBody:(Ljava/lang/Exception;)V
+  #51 = Utf8               failBody
+  #52 = Utf8               (Ljava/lang/Exception;)V
+  #53 = Methodref          #8.#54         // defpackage/TwrAudit.failOpen:(Ljava/lang/Exception;)Ldefpackage/TwrAudit;
+  #54 = NameAndType        #55:#56        // failOpen:(Ljava/lang/Exception;)Ldefpackage/TwrAudit;
+  #55 = Utf8               failOpen
+  #56 = Utf8               (Ljava/lang/Exception;)Ldefpackage/TwrAudit;
+  #57 = Class              #58            // java/lang/AutoCloseable
+  #58 = Utf8               java/lang/AutoCloseable
+  #59 = Utf8               Code
+  #60 = Utf8               Exceptions
+  #61 = Class              #62            // java/lang/Exception
+  #62 = Utf8               java/lang/Exception
+  #63 = Utf8               reset
+  #64 = Utf8               ()I
+  #65 = Utf8               normalBodyAndClose
+  #66 = Utf8               StackMapTable
+  #67 = Utf8               bodyAndFailingClose
+  #68 = Utf8               (Ljava/lang/Exception;Ljava/lang/Exception;)V
+  #69 = Utf8               failingInitialization
+{
+  private static int opens;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private static int closes;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private static int initializations;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private static int trace;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private final int id;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private final java.lang.Exception closeFailure;
+    descriptor: Ljava/lang/Exception;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private defpackage.TwrAudit(int, java.lang.Exception);
+    descriptor: (ILjava/lang/Exception;)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iload_1
+         6: putfield      #7                  // Field id:I
+         9: aload_0
+        10: aload_2
+        11: putfield      #13                 // Field closeFailure:Ljava/lang/Exception;
+        14: return
+
+  private static defpackage.TwrAudit open(int, java.lang.Exception);
+    descriptor: (ILjava/lang/Exception;)Ldefpackage/TwrAudit;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=4, locals=2, args_size=2
+         0: getstatic     #17                 // Field opens:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #17                 // Field opens:I
+         8: new           #8                  // class defpackage/TwrAudit
+        11: dup
+        12: iload_0
+        13: aload_1
+        14: invokespecial #20                 // Method "<init>":(ILjava/lang/Exception;)V
+        17: areturn
+
+  private static defpackage.TwrAudit failOpen(java.lang.Exception) throws java.lang.Exception;
+    descriptor: (Ljava/lang/Exception;)Ldefpackage/TwrAudit;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #23                 // Field initializations:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #23                 // Field initializations:I
+         8: aload_0
+         9: athrow
+    Exceptions:
+      throws java.lang.Exception
+
+  private static void failBody(java.lang.Exception) throws java.lang.Exception;
+    descriptor: (Ljava/lang/Exception;)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: athrow
+    Exceptions:
+      throws java.lang.Exception
+
+  private static void event(int);
+    descriptor: (I)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #26                 // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iload_0
+         7: iadd
+         8: putstatic     #26                 // Field trace:I
+        11: return
+
+  public static void reset();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #17                 // Field opens:I
+         4: iconst_0
+         5: putstatic     #29                 // Field closes:I
+         8: iconst_0
+         9: putstatic     #23                 // Field initializations:I
+        12: iconst_0
+        13: putstatic     #26                 // Field trace:I
+        16: return
+
+  public static int opens();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #17                 // Field opens:I
+         3: ireturn
+
+  public static int closes();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #29                 // Field closes:I
+         3: ireturn
+
+  public static int initializations();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #23                 // Field initializations:I
+         3: ireturn
+
+  public static int trace();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #26                 // Field trace:I
+         3: ireturn
+
+  public static void normalBodyAndClose() throws java.lang.Exception;
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=0
+         0: iconst_1
+         1: aconst_null
+         2: invokestatic  #32                 // Method open:(ILjava/lang/Exception;)Ldefpackage/TwrAudit;
+         5: astore_0
+         6: bipush        9
+         8: invokestatic  #36                 // Method event:(I)V
+        11: aload_0
+        12: ifnull        19
+        15: aload_0
+        16: invokevirtual #40                 // Method close:()V
+        19: goto          42
+        22: astore_1
+        23: aload_0
+        24: ifnull        40
+        27: aload_0
+        28: invokevirtual #40                 // Method close:()V
+        31: goto          40
+        34: astore_2
+        35: aload_1
+        36: aload_2
+        37: invokevirtual #45                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+        40: aload_1
+        41: athrow
+        42: return
+      Exception table:
+         from    to  target type
+             6    19    22   Class java/lang/Throwable
+            27    31    34   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 5
+        frame_type = 252 /* append */
+          offset_delta = 19
+          locals = [ class defpackage/TwrAudit ]
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 11
+          locals = [ class defpackage/TwrAudit, class java/lang/Throwable ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 5 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 1
+    Exceptions:
+      throws java.lang.Exception
+
+  public static void bodyAndFailingClose(java.lang.Exception, java.lang.Exception) throws java.lang.Exception;
+    descriptor: (Ljava/lang/Exception;Ljava/lang/Exception;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=5, args_size=2
+         0: iconst_1
+         1: aload_1
+         2: invokestatic  #32                 // Method open:(ILjava/lang/Exception;)Ldefpackage/TwrAudit;
+         5: astore_2
+         6: bipush        9
+         8: invokestatic  #36                 // Method event:(I)V
+        11: aload_0
+        12: invokestatic  #49                 // Method failBody:(Ljava/lang/Exception;)V
+        15: aload_2
+        16: ifnull        23
+        19: aload_2
+        20: invokevirtual #40                 // Method close:()V
+        23: goto          48
+        26: astore_3
+        27: aload_2
+        28: ifnull        46
+        31: aload_2
+        32: invokevirtual #40                 // Method close:()V
+        35: goto          46
+        38: astore        4
+        40: aload_3
+        41: aload         4
+        43: invokevirtual #45                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+        46: aload_3
+        47: athrow
+        48: return
+      Exception table:
+         from    to  target type
+             6    23    26   Class java/lang/Throwable
+            31    35    38   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 5
+        frame_type = 252 /* append */
+          offset_delta = 23
+          locals = [ class defpackage/TwrAudit ]
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 11
+          locals = [ class java/lang/Exception, class java/lang/Exception, class defpackage/TwrAudit, class java/lang/Throwable ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 7 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 1
+    Exceptions:
+      throws java.lang.Exception
+
+  public static void failingInitialization(java.lang.Exception) throws java.lang.Exception;
+    descriptor: (Ljava/lang/Exception;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=1
+         0: aload_0
+         1: invokestatic  #53                 // Method failOpen:(Ljava/lang/Exception;)Ldefpackage/TwrAudit;
+         4: astore_1
+         5: bipush        8
+         7: invokestatic  #36                 // Method event:(I)V
+        10: aload_1
+        11: ifnull        18
+        14: aload_1
+        15: invokevirtual #40                 // Method close:()V
+        18: goto          41
+        21: astore_2
+        22: aload_1
+        23: ifnull        39
+        26: aload_1
+        27: invokevirtual #40                 // Method close:()V
+        30: goto          39
+        33: astore_3
+        34: aload_2
+        35: aload_3
+        36: invokevirtual #45                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+        39: aload_2
+        40: athrow
+        41: return
+      Exception table:
+         from    to  target type
+             5    18    21   Class java/lang/Throwable
+            26    30    33   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 5
+        frame_type = 252 /* append */
+          offset_delta = 18
+          locals = [ class defpackage/TwrAudit ]
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 11
+          locals = [ class java/lang/Exception, class defpackage/TwrAudit, class java/lang/Throwable ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 5 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 1
+    Exceptions:
+      throws java.lang.Exception
+
+  public void close() throws java.lang.Exception;
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #29                 // Field closes:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #29                 // Field closes:I
+         8: aload_0
+         9: getfield      #7                  // Field id:I
+        12: invokestatic  #36                 // Method event:(I)V
+        15: aload_0
+        16: getfield      #13                 // Field closeFailure:Ljava/lang/Exception;
+        19: ifnull        27
+        22: aload_0
+        23: getfield      #13                 // Field closeFailure:Ljava/lang/Exception;
+        26: athrow
+        27: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 27 /* same */
+    Exceptions:
+      throws java.lang.Exception
+}

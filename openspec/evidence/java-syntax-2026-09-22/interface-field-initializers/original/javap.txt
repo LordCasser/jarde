@@ -1,0 +1,132 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-interface-init-3t74slbz/original/InterfaceInitProbe.class
+  Last modified 2026年9月23日; size 771 bytes
+  SHA-256 checksum e04abe561a505d9022039776b8b29de22e35f6d4dba45a08f19a9b5c07afb527
+public interface InterfaceInitProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0601) ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT
+  this_class: #20                         // InterfaceInitProbe
+  super_class: #50                        // java/lang/Object
+  interfaces: 0, fields: 4, methods: 2, attributes: 0
+Constant pool:
+   #1 = Class              #2             // java/lang/StringBuilder
+   #2 = Utf8               java/lang/StringBuilder
+   #3 = Methodref          #1.#4          // java/lang/StringBuilder."<init>":()V
+   #4 = NameAndType        #5:#6          // "<init>":()V
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // InitEffects.trace:Ljava/lang/String;
+   #8 = Class              #10            // InitEffects
+   #9 = NameAndType        #11:#12        // trace:Ljava/lang/String;
+  #10 = Utf8               InitEffects
+  #11 = Utf8               trace
+  #12 = Utf8               Ljava/lang/String;
+  #13 = Methodref          #1.#14         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #14 = NameAndType        #15:#16        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #15 = Utf8               append
+  #16 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #17 = String             #18            // |
+  #18 = Utf8               |
+  #19 = Fieldref           #20.#21        // InterfaceInitProbe.FIRST:Ljava/lang/String;
+  #20 = Class              #22            // InterfaceInitProbe
+  #21 = NameAndType        #23:#12        // FIRST:Ljava/lang/String;
+  #22 = Utf8               InterfaceInitProbe
+  #23 = Utf8               FIRST
+  #24 = Fieldref           #20.#25        // InterfaceInitProbe.SECOND:Ljava/lang/String;
+  #25 = NameAndType        #26:#12        // SECOND:Ljava/lang/String;
+  #26 = Utf8               SECOND
+  #27 = Fieldref           #20.#28        // InterfaceInitProbe.TOTAL:I
+  #28 = NameAndType        #29:#30        // TOTAL:I
+  #29 = Utf8               TOTAL
+  #30 = Utf8               I
+  #31 = Methodref          #1.#32         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #32 = NameAndType        #15:#33        // append:(I)Ljava/lang/StringBuilder;
+  #33 = Utf8               (I)Ljava/lang/StringBuilder;
+  #34 = Methodref          #1.#35         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #35 = NameAndType        #36:#37        // toString:()Ljava/lang/String;
+  #36 = Utf8               toString
+  #37 = Utf8               ()Ljava/lang/String;
+  #38 = String             #39            // A
+  #39 = Utf8               A
+  #40 = Methodref          #8.#41         // InitEffects.next:(Ljava/lang/String;)Ljava/lang/String;
+  #41 = NameAndType        #42:#43        // next:(Ljava/lang/String;)Ljava/lang/String;
+  #42 = Utf8               next
+  #43 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #44 = String             #45            // B
+  #45 = Utf8               B
+  #46 = Methodref          #8.#47         // InitEffects.total:(Ljava/lang/String;Ljava/lang/String;)I
+  #47 = NameAndType        #48:#49        // total:(Ljava/lang/String;Ljava/lang/String;)I
+  #48 = Utf8               total
+  #49 = Utf8               (Ljava/lang/String;Ljava/lang/String;)I
+  #50 = Class              #51            // java/lang/Object
+  #51 = Utf8               java/lang/Object
+  #52 = Utf8               CONSTANT
+  #53 = Utf8               ConstantValue
+  #54 = Integer            7
+  #55 = Utf8               observe
+  #56 = Utf8               Code
+  #57 = Utf8               <clinit>
+{
+  public static final int CONSTANT;
+    descriptor: I
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+    ConstantValue: int 7
+
+  public static final java.lang.String FIRST;
+    descriptor: Ljava/lang/String;
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static final java.lang.String SECOND;
+    descriptor: Ljava/lang/String;
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static final int TOTAL;
+    descriptor: I
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static java.lang.String observe();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #1                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #7                  // Field InitEffects.trace:Ljava/lang/String;
+        10: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        13: ldc           #17                 // String |
+        15: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: getstatic     #19                 // Field FIRST:Ljava/lang/String;
+        21: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        24: ldc           #17                 // String |
+        26: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        29: getstatic     #24                 // Field SECOND:Ljava/lang/String;
+        32: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        35: ldc           #17                 // String |
+        37: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        40: getstatic     #27                 // Field TOTAL:I
+        43: invokevirtual #31                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        46: ldc           #17                 // String |
+        48: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        51: bipush        7
+        53: invokevirtual #31                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        56: invokevirtual #34                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        59: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc           #38                 // String A
+         2: invokestatic  #40                 // Method InitEffects.next:(Ljava/lang/String;)Ljava/lang/String;
+         5: putstatic     #19                 // Field FIRST:Ljava/lang/String;
+         8: ldc           #44                 // String B
+        10: invokestatic  #40                 // Method InitEffects.next:(Ljava/lang/String;)Ljava/lang/String;
+        13: putstatic     #24                 // Field SECOND:Ljava/lang/String;
+        16: getstatic     #19                 // Field FIRST:Ljava/lang/String;
+        19: getstatic     #24                 // Field SECOND:Ljava/lang/String;
+        22: invokestatic  #46                 // Method InitEffects.total:(Ljava/lang/String;Ljava/lang/String;)I
+        25: putstatic     #27                 // Field TOTAL:I
+        28: return
+}

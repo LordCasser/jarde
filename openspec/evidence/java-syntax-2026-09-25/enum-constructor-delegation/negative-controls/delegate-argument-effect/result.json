@@ -1,0 +1,51 @@
+{
+  "case": "delegate-argument-effect",
+  "class_sha256": {
+    "ConstructorEffects.class": "6218600e9d4384f695986059a7768d738f79c4c9b5bef687a97fe745641ed744",
+    "DelegatingEnum.class": "bc180bb462f392fef101733d987ae161537d77378749d28734246d303c98b30d",
+    "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+  },
+  "expected_rejection": "Argument evaluation calls a user helper before the this-delegation.",
+  "jadx_compile_exit": 0,
+  "jadx_decompile_exit": 0,
+  "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+  "jadx_output": [
+    "enum=ZERO:0:0",
+    "enum=ONE:1:1",
+    "effects=3:8,0,1",
+    "declared-constructors=2,3"
+  ],
+  "jadx_xverify_run_exit": 0,
+  "jarde_java8_compile_exit": 1,
+  "jarde_source_execution": {
+    "status": "complete",
+    "usage": {
+      "analysis_steps": 413,
+      "archive_entries": 14,
+      "attribute_bytes": 846,
+      "class_bytes": 2076,
+      "class_headers": 1,
+      "code_bytes": 102,
+      "dependency_depth": 0,
+      "elapsed_millis": 3,
+      "entry_bytes": 1038,
+      "input_bytes": 3049,
+      "ir_edges": 52,
+      "ir_items": 1231,
+      "method_bodies": 7,
+      "nested_depth": 0,
+      "normalization_clones": 0,
+      "output_bytes": 2986,
+      "read_bytes": 603,
+      "result_items": 46
+    }
+  },
+  "jarde_source_outcome": "performed",
+  "original_output": [
+    "enum=ZERO:0:0",
+    "enum=ONE:1:1",
+    "effects=3:8,0,1",
+    "declared-constructors=2,3"
+  ],
+  "original_xverify_run_exit": 0
+}

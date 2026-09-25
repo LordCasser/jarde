@@ -1,0 +1,79 @@
+Classfile <CLASS_DIR>/p/Child.class
+  SHA-256 checksum b7882adfbb358656323f413aa3dcd84bdaafa330a6b217b3b3f921bce7bd645f
+  Compiled from "Probe.java"
+class p.Child extends p.Base implements p.A,p.B
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #13                         // p/Child
+  super_class: #2                         // p/Base
+  interfaces: 2, fields: 0, methods: 3, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // p/Base."<init>":()V
+   #2 = Class              #4             // p/Base
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               p/Base
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = InterfaceMethodref #15.#9         // p/A.m:()I
+   #8 = Class              #10            // p/B
+   #9 = NameAndType        #11:#12        // m:()I
+  #10 = Utf8               p/B
+  #11 = Utf8               m
+  #12 = Utf8               ()I
+  #13 = Class              #14            // p/Child
+  #14 = Utf8               p/Child
+  #15 = Class              #16            // p/A
+  #16 = Utf8               p/A
+  #17 = Utf8               Code
+  #18 = Utf8               LineNumberTable
+  #19 = Utf8               LocalVariableTable
+  #20 = Utf8               this
+  #21 = Utf8               Lp/Child;
+  #22 = Utf8               call
+  #23 = Utf8               SourceFile
+  #24 = Utf8               Probe.java
+{
+  p.Child();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method p/Base."<init>":()V
+         4: return
+      LineNumberTable:
+        line 7: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lp/Child;
+
+  public int m();
+    descriptor: ()I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #7                  // InterfaceMethod p/A.m:()I
+         4: ireturn
+      LineNumberTable:
+        line 8: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lp/Child;
+
+  int call();
+    descriptor: ()I
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #7                  // InterfaceMethod p/A.m:()I
+         4: ireturn
+      LineNumberTable:
+        line 9: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lp/Child;
+}
+SourceFile: "Probe.java"

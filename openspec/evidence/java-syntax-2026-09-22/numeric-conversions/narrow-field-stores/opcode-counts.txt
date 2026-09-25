@@ -1,0 +1,12 @@
+original-javap
+putfield=28
+putstatic=20
+i2b=0
+i2c=0
+i2s=0
+patched-javap
+putfield=28
+putstatic=20
+i2b=0
+i2c=0
+i2s=0

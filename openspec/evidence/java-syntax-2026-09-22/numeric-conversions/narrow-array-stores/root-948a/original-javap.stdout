@@ -1,0 +1,234 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-array-stores-ft76z5g9/original/NarrowArrayStores.class
+  Last modified 2026年9月23日; size 868 bytes
+  SHA-256 checksum e7f92710bf26eb45bb3fb01dcd6e22d0d370d53cd3a9fa28468f51753a9528b5
+public class NarrowArrayStores
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #13                         // NarrowArrayStores
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 13, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // NarrowArrayStoreEffects.value:(IZ)I
+   #8 = Class              #10            // NarrowArrayStoreEffects
+   #9 = NameAndType        #11:#12        // value:(IZ)I
+  #10 = Utf8               NarrowArrayStoreEffects
+  #11 = Utf8               value
+  #12 = Utf8               (IZ)I
+  #13 = Class              #14            // NarrowArrayStores
+  #14 = Utf8               NarrowArrayStores
+  #15 = Utf8               Code
+  #16 = Utf8               storeByte
+  #17 = Utf8               ([III)V
+  #18 = Utf8               storeChar
+  #19 = Utf8               storeShort
+  #20 = Utf8               storeBoolean
+  #21 = Utf8               storeByteProduced
+  #22 = Utf8               ([IIIZ)V
+  #23 = Utf8               storeCharProduced
+  #24 = Utf8               storeShortProduced
+  #25 = Utf8               storeBooleanProduced
+  #26 = Utf8               ordinaryByte
+  #27 = Utf8               ([B)V
+  #28 = Utf8               ordinaryChar
+  #29 = Utf8               ([C)V
+  #30 = Utf8               ordinaryShort
+  #31 = Utf8               ([S)V
+  #32 = Utf8               ordinaryBoolean
+  #33 = Utf8               ([Z)V
+{
+  public NarrowArrayStores();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void storeByte(int[], int, int);
+    descriptor: ([III)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: iastore
+         4: return
+
+  public static void storeChar(int[], int, int);
+    descriptor: ([III)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: iastore
+         4: return
+
+  public static void storeShort(int[], int, int);
+    descriptor: ([III)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: iastore
+         4: return
+
+  public static void storeBoolean(int[], int, int);
+    descriptor: ([III)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: iastore
+         4: return
+
+  public static void storeByteProduced(int[], int, int, boolean);
+    descriptor: ([IIIZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=4
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: iload_3
+         4: invokestatic  #7                  // Method NarrowArrayStoreEffects.value:(IZ)I
+         7: iastore
+         8: return
+
+  public static void storeCharProduced(int[], int, int, boolean);
+    descriptor: ([IIIZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=4
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: iload_3
+         4: invokestatic  #7                  // Method NarrowArrayStoreEffects.value:(IZ)I
+         7: iastore
+         8: return
+
+  public static void storeShortProduced(int[], int, int, boolean);
+    descriptor: ([IIIZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=4
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: iload_3
+         4: invokestatic  #7                  // Method NarrowArrayStoreEffects.value:(IZ)I
+         7: iastore
+         8: return
+
+  public static void storeBooleanProduced(int[], int, int, boolean);
+    descriptor: ([IIIZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=4
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: iload_3
+         4: invokestatic  #7                  // Method NarrowArrayStoreEffects.value:(IZ)I
+         7: iastore
+         8: return
+
+  public static void ordinaryByte(byte[]);
+    descriptor: ([B)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: iconst_1
+         1: istore_1
+         2: aload_0
+         3: iconst_0
+         4: iload_1
+         5: bastore
+         6: aload_0
+         7: iconst_1
+         8: iconst_0
+         9: bastore
+        10: aload_0
+        11: iconst_2
+        12: iconst_1
+        13: bastore
+        14: return
+
+  public static void ordinaryChar(char[]);
+    descriptor: ([C)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: iconst_1
+         1: istore_1
+         2: aload_0
+         3: iconst_0
+         4: iload_1
+         5: castore
+         6: aload_0
+         7: iconst_1
+         8: iconst_0
+         9: castore
+        10: aload_0
+        11: iconst_2
+        12: iconst_1
+        13: castore
+        14: return
+
+  public static void ordinaryShort(short[]);
+    descriptor: ([S)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: iconst_1
+         1: istore_1
+         2: aload_0
+         3: iconst_0
+         4: iload_1
+         5: sastore
+         6: aload_0
+         7: iconst_1
+         8: iconst_0
+         9: sastore
+        10: aload_0
+        11: iconst_2
+        12: iconst_1
+        13: sastore
+        14: return
+
+  public static void ordinaryBoolean(boolean[]);
+    descriptor: ([Z)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: iconst_1
+         1: istore_1
+         2: aload_0
+         3: iconst_0
+         4: iload_1
+         5: bastore
+         6: aload_0
+         7: iconst_1
+         8: iconst_0
+         9: bastore
+        10: aload_0
+        11: iconst_2
+        12: iconst_1
+        13: bastore
+        14: return
+}

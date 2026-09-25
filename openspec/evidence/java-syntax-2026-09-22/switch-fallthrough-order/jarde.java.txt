@@ -1,0 +1,53 @@
+// jarde: presentation of `SwitchFallthroughOrder` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class SwitchFallthroughOrder extends java.lang.Object {
+    private static int calls;
+
+    public SwitchFallthroughOrder() {
+        // @method <init>()V
+        // @declaration a constructor of `SwitchFallthroughOrder`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    private static int selector(int arg0) {
+        // @method selector(I)I
+        // @declaration a static method of `SwitchFallthroughOrder`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        SwitchFallthroughOrder.calls = SwitchFallthroughOrder.calls + 1;
+        return arg0;
+    }
+
+    public static int choose(int arg0) {
+        // @method choose(I)I
+        // @declaration a static method of `SwitchFallthroughOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        local1 = 0;
+        switch (selector(arg0)) {
+            case 1:
+                local1 = local1 + 1;
+                break;
+            case 4:
+                local1 = local1 + 4;
+                break;
+            case 9:
+                local1 = local1 + 90;
+                break;
+            default:
+                local1 = local1 - 1;
+                break;
+        }
+        // @bytecode 43
+        // block at BCI 43 can be re-entered and belongs to no loop this subset proves
+        return local1;
+    }
+
+    public static int calls() {
+        // @method calls()I
+        // @declaration a static method of `SwitchFallthroughOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return SwitchFallthroughOrder.calls;
+    }
+}

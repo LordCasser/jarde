@@ -1,0 +1,29 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/class-annotation-uses/implementation/generated/base-original-classes/RetentionTagged.class
+  Last modified 2026年9月23日; size 247 bytes
+  SHA-256 checksum c40639586a3f68c33470b2cc873b30cf06394d76f74bad9defb9823a708ee183
+public interface RetentionTagged extends java.lang.annotation.Annotation
+  minor version: 0
+  major version: 52
+  flags: (0x2601) ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT, ACC_ANNOTATION
+  this_class: #1                          // RetentionTagged
+  super_class: #3                         // java/lang/Object
+  interfaces: 1, fields: 0, methods: 0, attributes: 1
+Constant pool:
+   #1 = Class              #2             // RetentionTagged
+   #2 = Utf8               RetentionTagged
+   #3 = Class              #4             // java/lang/Object
+   #4 = Utf8               java/lang/Object
+   #5 = Class              #6             // java/lang/annotation/Annotation
+   #6 = Utf8               java/lang/annotation/Annotation
+   #7 = Utf8               RuntimeVisibleAnnotations
+   #8 = Utf8               Ljava/lang/annotation/Retention;
+   #9 = Utf8               value
+  #10 = Utf8               Ljava/lang/annotation/RetentionPolicy;
+  #11 = Utf8               RUNTIME
+{
+}
+RuntimeVisibleAnnotations:
+  0: #8(#9=e#10.#11)
+    java.lang.annotation.Retention(
+      value=Ljava/lang/annotation/RetentionPolicy;.RUNTIME
+    )

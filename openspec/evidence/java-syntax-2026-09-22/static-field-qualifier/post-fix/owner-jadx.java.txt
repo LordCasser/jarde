@@ -1,0 +1,13 @@
+package defpackage;
+
+/* JADX INFO: loaded from: OwnerBoundaryProbe.class */
+public final class OwnerBoundaryProbe {
+    static Child receiver() {
+        return null;
+    }
+
+    public static int call() {
+        receiver();
+        return Child.ping();
+    }
+}

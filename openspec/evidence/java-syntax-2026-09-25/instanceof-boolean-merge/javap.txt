@@ -1,0 +1,88 @@
+Classfile /tmp/jarde-instanceof-merge-audit/InstanceOfMerge.class
+  Last modified 2026年9月25日; size 424 bytes
+  SHA-256 checksum cf9066c3257306c9d7e3235daa70ae2f66bed835810ada637c013bbe95642efe
+public final class InstanceOfMerge
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // InstanceOfMerge
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 4, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // InstanceOfMerge.calls:I
+   #8 = Class              #10            // InstanceOfMerge
+   #9 = NameAndType        #11:#12        // calls:I
+  #10 = Utf8               InstanceOfMerge
+  #11 = Utf8               calls
+  #12 = Utf8               I
+  #13 = Methodref          #8.#14         // InstanceOfMerge.value:(Ljava/lang/Object;)Ljava/lang/Object;
+  #14 = NameAndType        #15:#16        // value:(Ljava/lang/Object;)Ljava/lang/Object;
+  #15 = Utf8               value
+  #16 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #17 = Class              #18            // java/lang/String
+  #18 = Utf8               java/lang/String
+  #19 = Utf8               Code
+  #20 = Utf8               inverted
+  #21 = Utf8               (Ljava/lang/Object;)Z
+  #22 = Utf8               StackMapTable
+  #23 = Utf8               direct
+{
+  static int calls;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  public InstanceOfMerge();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static java.lang.Object value(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #7                  // Field calls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field calls:I
+         8: aload_0
+         9: areturn
+
+  static boolean inverted(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Z
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokestatic  #13                 // Method value:(Ljava/lang/Object;)Ljava/lang/Object;
+         4: instanceof    #17                 // class java/lang/String
+         7: ifeq          14
+        10: iconst_0
+        11: goto          15
+        14: iconst_1
+        15: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 14 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  static boolean direct(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Z
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokestatic  #13                 // Method value:(Ljava/lang/Object;)Ljava/lang/Object;
+         4: instanceof    #17                 // class java/lang/String
+         7: ireturn
+}

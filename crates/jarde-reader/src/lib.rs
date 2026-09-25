@@ -51,6 +51,9 @@ pub mod multi_release;
 pub mod prepared;
 pub mod release_registry;
 pub mod runtime_matrix;
+/// JVMS generic `Signature` grammar and its bounded structured representation. The query and
+/// source-presentation layers consume this shared reader fact; neither owns a second parser.
+pub mod signature;
 // The incremental physical traversal cursor (bulk task 3.1) is a discovery handover, not a
 // report: it walks the containers a scope holds one entry at a time and hands over one class
 // candidate per pull — together with the container it is inside, as the active handle

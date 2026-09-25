@@ -1,0 +1,51 @@
+{
+  "case": "exception-handler",
+  "class_sha256": {
+    "ConstructorEffects.class": "2ae48ef539b84189d621c789251ad6b7fca189ec3459d555c22e0a822ecac976",
+    "DelegatingEnum.class": "3cd71a5f9342521e18d0127f4936b7f898de78f87debba6c23fd585abd86b8ef",
+    "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+  },
+  "expected_rejection": "The terminal constructor has a verifier-valid exception-table edge; the helper throws for ZERO and the handler suppresses it, exercising the edge during enum initialization.",
+  "jadx_compile_exit": 0,
+  "jadx_decompile_exit": 0,
+  "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+  "jadx_output": [
+    "enum=ZERO:0:0",
+    "enum=ONE:1:1",
+    "effects=2:0,1",
+    "declared-constructors=2,3"
+  ],
+  "jadx_xverify_run_exit": 0,
+  "jarde_java8_compile_exit": 1,
+  "jarde_source_execution": {
+    "status": "complete",
+    "usage": {
+      "analysis_steps": 481,
+      "archive_entries": 14,
+      "attribute_bytes": 960,
+      "class_bytes": 2240,
+      "class_headers": 1,
+      "code_bytes": 105,
+      "dependency_depth": 0,
+      "elapsed_millis": 3,
+      "entry_bytes": 1120,
+      "input_bytes": 3133,
+      "ir_edges": 74,
+      "ir_items": 1416,
+      "method_bodies": 7,
+      "nested_depth": 0,
+      "normalization_clones": 0,
+      "output_bytes": 3557,
+      "read_bytes": 655,
+      "result_items": 46
+    }
+  },
+  "jarde_source_outcome": "performed",
+  "original_output": [
+    "enum=ZERO:0:0",
+    "enum=ONE:1:1",
+    "effects=2:0,1",
+    "declared-constructors=2,3"
+  ],
+  "original_xverify_run_exit": 0
+}

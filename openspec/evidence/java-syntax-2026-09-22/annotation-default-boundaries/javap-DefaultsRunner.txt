@@ -1,0 +1,377 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/annotation-default-boundaries/classes/DefaultsRunner.class
+  Last modified 2026年9月23日; size 1944 bytes
+  SHA-256 checksum 53d5dbe6358c61f09745f388b5d1cb67e4ff6bfadfa2229504c6f03ab7c73921
+class DefaultsRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #37                         // DefaultsRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 3, attributes: 0
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Class              #8            // java/lang/AssertionError
+    #8 = Utf8               java/lang/AssertionError
+    #9 = Methodref          #7.#10        // java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+   #10 = NameAndType        #5:#11        // "<init>":(Ljava/lang/Object;)V
+   #11 = Utf8               (Ljava/lang/Object;)V
+   #12 = Class              #13           // Defaults
+   #13 = Utf8               Defaults
+   #14 = String             #15           // nested
+   #15 = Utf8               nested
+   #16 = Class              #17           // java/lang/Class
+   #17 = Utf8               java/lang/Class
+   #18 = Methodref          #16.#19       // java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+   #19 = NameAndType        #20:#21       // getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+   #20 = Utf8               getMethod
+   #21 = Utf8               (Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+   #22 = Methodref          #23.#24       // java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+   #23 = Class              #25           // java/lang/reflect/Method
+   #24 = NameAndType        #26:#27       // getDefaultValue:()Ljava/lang/Object;
+   #25 = Utf8               java/lang/reflect/Method
+   #26 = Utf8               getDefaultValue
+   #27 = Utf8               ()Ljava/lang/Object;
+   #28 = Class              #29           // Inner
+   #29 = Utf8               Inner
+   #30 = InterfaceMethodref #28.#31       // Inner.count:()I
+   #31 = NameAndType        #32:#33       // count:()I
+   #32 = Utf8               count
+   #33 = Utf8               ()I
+   #34 = String             #35           // nested annotation
+   #35 = Utf8               nested annotation
+   #36 = Methodref          #37.#38       // DefaultsRunner.check:(ZLjava/lang/String;)V
+   #37 = Class              #39           // DefaultsRunner
+   #38 = NameAndType        #40:#41       // check:(ZLjava/lang/String;)V
+   #39 = Utf8               DefaultsRunner
+   #40 = Utf8               check
+   #41 = Utf8               (ZLjava/lang/String;)V
+   #42 = String             #43           // nestedArray
+   #43 = Utf8               nestedArray
+   #44 = Class              #45           // "[LInner;"
+   #45 = Utf8               [LInner;
+   #46 = String             #47           // nested array
+   #47 = Utf8               nested array
+   #48 = String             #49           // klass
+   #49 = Utf8               klass
+   #50 = Class              #51           // "[Ljava/lang/String;"
+   #51 = Utf8               [Ljava/lang/String;
+   #52 = Methodref          #2.#53        // java/lang/Object.equals:(Ljava/lang/Object;)Z
+   #53 = NameAndType        #54:#55       // equals:(Ljava/lang/Object;)Z
+   #54 = Utf8               equals
+   #55 = Utf8               (Ljava/lang/Object;)Z
+   #56 = String             #57           // class literal
+   #57 = Utf8               class literal
+   #58 = String             #59           // tone
+   #59 = Utf8               tone
+   #60 = Fieldref           #61.#62       // Tone.LOUD:LTone;
+   #61 = Class              #63           // Tone
+   #62 = NameAndType        #64:#65       // LOUD:LTone;
+   #63 = Utf8               Tone
+   #64 = Utf8               LOUD
+   #65 = Utf8               LTone;
+   #66 = String             #67           // enum
+   #67 = Utf8               enum
+   #68 = String             #69           // empty
+   #69 = Utf8               empty
+   #70 = Class              #71           // "[I"
+   #71 = Utf8               [I
+   #72 = String             #73           // empty array
+   #73 = Utf8               empty array
+   #74 = String             #75           // numbers
+   #75 = Utf8               numbers
+   #76 = Methodref          #77.#78       // java/util/Arrays.equals:([I[I)Z
+   #77 = Class              #79           // java/util/Arrays
+   #78 = NameAndType        #54:#80       // equals:([I[I)Z
+   #79 = Utf8               java/util/Arrays
+   #80 = Utf8               ([I[I)Z
+   #81 = String             #82           // negativeZeroFloat
+   #82 = Utf8               negativeZeroFloat
+   #83 = Class              #84           // java/lang/Float
+   #84 = Utf8               java/lang/Float
+   #85 = Methodref          #83.#86       // java/lang/Float.floatValue:()F
+   #86 = NameAndType        #87:#88       // floatValue:()F
+   #87 = Utf8               floatValue
+   #88 = Utf8               ()F
+   #89 = Methodref          #83.#90       // java/lang/Float.floatToRawIntBits:(F)I
+   #90 = NameAndType        #91:#92       // floatToRawIntBits:(F)I
+   #91 = Utf8               floatToRawIntBits
+   #92 = Utf8               (F)I
+   #93 = Integer            -2147483648
+   #94 = String             #95           // float negative zero
+   #95 = Utf8               float negative zero
+   #96 = String             #97           // negativeZeroDouble
+   #97 = Utf8               negativeZeroDouble
+   #98 = Class              #99           // java/lang/Double
+   #99 = Utf8               java/lang/Double
+  #100 = Methodref          #98.#101      // java/lang/Double.doubleValue:()D
+  #101 = NameAndType        #102:#103     // doubleValue:()D
+  #102 = Utf8               doubleValue
+  #103 = Utf8               ()D
+  #104 = Methodref          #98.#105      // java/lang/Double.doubleToRawLongBits:(D)J
+  #105 = NameAndType        #106:#107     // doubleToRawLongBits:(D)J
+  #106 = Utf8               doubleToRawLongBits
+  #107 = Utf8               (D)J
+  #108 = Long               -9223372036854775808l
+  #110 = String             #111          // double negative zero
+  #111 = Utf8               double negative zero
+  #112 = String             #113          // positiveInfinity
+  #113 = Utf8               positiveInfinity
+  #114 = Methodref          #83.#115      // java/lang/Float.isInfinite:()Z
+  #115 = NameAndType        #116:#117     // isInfinite:()Z
+  #116 = Utf8               isInfinite
+  #117 = Utf8               ()Z
+  #118 = String             #119          // float infinity
+  #119 = Utf8               float infinity
+  #120 = String             #121          // notANumber
+  #121 = Utf8               notANumber
+  #122 = Methodref          #98.#123      // java/lang/Double.isNaN:()Z
+  #123 = NameAndType        #124:#117     // isNaN:()Z
+  #124 = Utf8               isNaN
+  #125 = String             #126          // double NaN
+  #126 = Utf8               double NaN
+  #127 = Fieldref           #128.#129     // java/lang/System.out:Ljava/io/PrintStream;
+  #128 = Class              #130          // java/lang/System
+  #129 = NameAndType        #131:#132     // out:Ljava/io/PrintStream;
+  #130 = Utf8               java/lang/System
+  #131 = Utf8               out
+  #132 = Utf8               Ljava/io/PrintStream;
+  #133 = String             #134          // reflection defaults: PASS
+  #134 = Utf8               reflection defaults: PASS
+  #135 = Methodref          #136.#137     // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #136 = Class              #138          // java/io/PrintStream
+  #137 = NameAndType        #139:#140     // println:(Ljava/lang/String;)V
+  #138 = Utf8               java/io/PrintStream
+  #139 = Utf8               println
+  #140 = Utf8               (Ljava/lang/String;)V
+  #141 = Utf8               Code
+  #142 = Utf8               StackMapTable
+  #143 = Utf8               main
+  #144 = Utf8               ([Ljava/lang/String;)V
+  #145 = Utf8               Exceptions
+  #146 = Class              #147          // java/lang/Exception
+  #147 = Utf8               java/lang/Exception
+{
+  DefaultsRunner();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static void check(boolean, java.lang.String);
+    descriptor: (ZLjava/lang/String;)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: iload_0
+         1: ifne          13
+         4: new           #7                  // class java/lang/AssertionError
+         7: dup
+         8: aload_1
+         9: invokespecial #9                  // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        12: athrow
+        13: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 13 /* same */
+
+  public static void main(java.lang.String[]) throws java.lang.Exception;
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=3, args_size=1
+         0: ldc           #12                 // class Defaults
+         2: ldc           #14                 // String nested
+         4: iconst_0
+         5: anewarray     #16                 // class java/lang/Class
+         8: invokevirtual #18                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+        11: astore_1
+        12: aload_1
+        13: invokevirtual #22                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+        16: checkcast     #28                 // class Inner
+        19: invokeinterface #30,  1           // InterfaceMethod Inner.count:()I
+        24: bipush        9
+        26: if_icmpne     33
+        29: iconst_1
+        30: goto          34
+        33: iconst_0
+        34: ldc           #34                 // String nested annotation
+        36: invokestatic  #36                 // Method check:(ZLjava/lang/String;)V
+        39: ldc           #12                 // class Defaults
+        41: ldc           #42                 // String nestedArray
+        43: iconst_0
+        44: anewarray     #16                 // class java/lang/Class
+        47: invokevirtual #18                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+        50: astore_1
+        51: aload_1
+        52: invokevirtual #22                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+        55: checkcast     #44                 // class "[LInner;"
+        58: astore_2
+        59: aload_2
+        60: arraylength
+        61: iconst_2
+        62: if_icmpne     93
+        65: aload_2
+        66: iconst_0
+        67: aaload
+        68: invokeinterface #30,  1           // InterfaceMethod Inner.count:()I
+        73: iconst_2
+        74: if_icmpne     93
+        77: aload_2
+        78: iconst_1
+        79: aaload
+        80: invokeinterface #30,  1           // InterfaceMethod Inner.count:()I
+        85: iconst_4
+        86: if_icmpne     93
+        89: iconst_1
+        90: goto          94
+        93: iconst_0
+        94: ldc           #46                 // String nested array
+        96: invokestatic  #36                 // Method check:(ZLjava/lang/String;)V
+        99: ldc           #12                 // class Defaults
+       101: ldc           #48                 // String klass
+       103: iconst_0
+       104: anewarray     #16                 // class java/lang/Class
+       107: invokevirtual #18                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+       110: invokevirtual #22                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+       113: ldc           #50                 // class "[Ljava/lang/String;"
+       115: invokevirtual #52                 // Method java/lang/Object.equals:(Ljava/lang/Object;)Z
+       118: ldc           #56                 // String class literal
+       120: invokestatic  #36                 // Method check:(ZLjava/lang/String;)V
+       123: ldc           #12                 // class Defaults
+       125: ldc           #58                 // String tone
+       127: iconst_0
+       128: anewarray     #16                 // class java/lang/Class
+       131: invokevirtual #18                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+       134: invokevirtual #22                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+       137: getstatic     #60                 // Field Tone.LOUD:LTone;
+       140: if_acmpne     147
+       143: iconst_1
+       144: goto          148
+       147: iconst_0
+       148: ldc           #66                 // String enum
+       150: invokestatic  #36                 // Method check:(ZLjava/lang/String;)V
+       153: ldc           #12                 // class Defaults
+       155: ldc           #68                 // String empty
+       157: iconst_0
+       158: anewarray     #16                 // class java/lang/Class
+       161: invokevirtual #18                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+       164: invokevirtual #22                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+       167: checkcast     #70                 // class "[I"
+       170: arraylength
+       171: ifne          178
+       174: iconst_1
+       175: goto          179
+       178: iconst_0
+       179: ldc           #72                 // String empty array
+       181: invokestatic  #36                 // Method check:(ZLjava/lang/String;)V
+       184: ldc           #12                 // class Defaults
+       186: ldc           #74                 // String numbers
+       188: iconst_0
+       189: anewarray     #16                 // class java/lang/Class
+       192: invokevirtual #18                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+       195: invokevirtual #22                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+       198: checkcast     #70                 // class "[I"
+       201: iconst_2
+       202: newarray       int
+       204: dup
+       205: iconst_0
+       206: iconst_3
+       207: iastore
+       208: dup
+       209: iconst_1
+       210: iconst_5
+       211: iastore
+       212: invokestatic  #76                 // Method java/util/Arrays.equals:([I[I)Z
+       215: ldc           #74                 // String numbers
+       217: invokestatic  #36                 // Method check:(ZLjava/lang/String;)V
+       220: ldc           #12                 // class Defaults
+       222: ldc           #81                 // String negativeZeroFloat
+       224: iconst_0
+       225: anewarray     #16                 // class java/lang/Class
+       228: invokevirtual #18                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+       231: invokevirtual #22                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+       234: checkcast     #83                 // class java/lang/Float
+       237: invokevirtual #85                 // Method java/lang/Float.floatValue:()F
+       240: invokestatic  #89                 // Method java/lang/Float.floatToRawIntBits:(F)I
+       243: ldc           #93                 // int -2147483648
+       245: if_icmpne     252
+       248: iconst_1
+       249: goto          253
+       252: iconst_0
+       253: ldc           #94                 // String float negative zero
+       255: invokestatic  #36                 // Method check:(ZLjava/lang/String;)V
+       258: ldc           #12                 // class Defaults
+       260: ldc           #96                 // String negativeZeroDouble
+       262: iconst_0
+       263: anewarray     #16                 // class java/lang/Class
+       266: invokevirtual #18                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+       269: invokevirtual #22                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+       272: checkcast     #98                 // class java/lang/Double
+       275: invokevirtual #100                // Method java/lang/Double.doubleValue:()D
+       278: invokestatic  #104                // Method java/lang/Double.doubleToRawLongBits:(D)J
+       281: ldc2_w        #108                // long -9223372036854775808l
+       284: lcmp
+       285: ifne          292
+       288: iconst_1
+       289: goto          293
+       292: iconst_0
+       293: ldc           #110                // String double negative zero
+       295: invokestatic  #36                 // Method check:(ZLjava/lang/String;)V
+       298: ldc           #12                 // class Defaults
+       300: ldc           #112                // String positiveInfinity
+       302: iconst_0
+       303: anewarray     #16                 // class java/lang/Class
+       306: invokevirtual #18                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+       309: invokevirtual #22                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+       312: checkcast     #83                 // class java/lang/Float
+       315: invokevirtual #114                // Method java/lang/Float.isInfinite:()Z
+       318: ldc           #118                // String float infinity
+       320: invokestatic  #36                 // Method check:(ZLjava/lang/String;)V
+       323: ldc           #12                 // class Defaults
+       325: ldc           #120                // String notANumber
+       327: iconst_0
+       328: anewarray     #16                 // class java/lang/Class
+       331: invokevirtual #18                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+       334: invokevirtual #22                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+       337: checkcast     #98                 // class java/lang/Double
+       340: invokevirtual #122                // Method java/lang/Double.isNaN:()Z
+       343: ldc           #125                // String double NaN
+       345: invokestatic  #36                 // Method check:(ZLjava/lang/String;)V
+       348: getstatic     #127                // Field java/lang/System.out:Ljava/io/PrintStream;
+       351: ldc           #133                // String reflection defaults: PASS
+       353: invokevirtual #135                // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       356: return
+      StackMapTable: number_of_entries = 12
+        frame_type = 252 /* append */
+          offset_delta = 33
+          locals = [ class java/lang/reflect/Method ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 252 /* append */
+          offset_delta = 58
+          locals = [ class "[LInner;" ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 52 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 29 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 251 /* same_frame_extended */
+          offset_delta = 72
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 38 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+    Exceptions:
+      throws java.lang.Exception
+}

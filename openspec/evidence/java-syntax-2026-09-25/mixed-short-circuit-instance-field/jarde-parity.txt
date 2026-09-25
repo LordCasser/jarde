@@ -1,0 +1,1 @@
+Jarde stable snapshot runtime output differs from original (see jarde-vs-original.diff).

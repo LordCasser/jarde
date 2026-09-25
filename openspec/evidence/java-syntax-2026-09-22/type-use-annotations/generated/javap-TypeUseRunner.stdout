@@ -1,0 +1,194 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/type-use-annotations/generated/original/TypeUseRunner.class
+  Last modified 2026年9月23日; size 1468 bytes
+  SHA-256 checksum 24931e6cb6df55a303eaf4ae079881a4051e05fc037331300cc2c182cbd6fa4a
+final class TypeUseRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0030) ACC_FINAL, ACC_SUPER
+  this_class: #53                         // TypeUseRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 3, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // TypeMark
+   #8 = Utf8               TypeMark
+   #9 = InterfaceMethodref #10.#11        // java/lang/reflect/AnnotatedType.getAnnotation:(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+  #10 = Class              #12            // java/lang/reflect/AnnotatedType
+  #11 = NameAndType        #13:#14        // getAnnotation:(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+  #12 = Utf8               java/lang/reflect/AnnotatedType
+  #13 = Utf8               getAnnotation
+  #14 = Utf8               (Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+  #15 = String             #16            // null
+  #16 = Utf8               null
+  #17 = InterfaceMethodref #7.#18         // TypeMark.value:()Ljava/lang/String;
+  #18 = NameAndType        #19:#20        // value:()Ljava/lang/String;
+  #19 = Utf8               value
+  #20 = Utf8               ()Ljava/lang/String;
+  #21 = Class              #22            // TypeUseSubject
+  #22 = Utf8               TypeUseSubject
+  #23 = String             #24            // field
+  #24 = Utf8               field
+  #25 = Methodref          #26.#27        // java/lang/Class.getDeclaredField:(Ljava/lang/String;)Ljava/lang/reflect/Field;
+  #26 = Class              #28            // java/lang/Class
+  #27 = NameAndType        #29:#30        // getDeclaredField:(Ljava/lang/String;)Ljava/lang/reflect/Field;
+  #28 = Utf8               java/lang/Class
+  #29 = Utf8               getDeclaredField
+  #30 = Utf8               (Ljava/lang/String;)Ljava/lang/reflect/Field;
+  #31 = String             #19            // value
+  #32 = Methodref          #26.#33        // java/lang/Class.getDeclaredMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+  #33 = NameAndType        #34:#35        // getDeclaredMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+  #34 = Utf8               getDeclaredMethod
+  #35 = Utf8               (Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+  #36 = String             #37            // echo
+  #37 = Utf8               echo
+  #38 = Class              #39            // java/lang/String
+  #39 = Utf8               java/lang/String
+  #40 = Fieldref           #41.#42        // java/lang/System.out:Ljava/io/PrintStream;
+  #41 = Class              #43            // java/lang/System
+  #42 = NameAndType        #44:#45        // out:Ljava/io/PrintStream;
+  #43 = Utf8               java/lang/System
+  #44 = Utf8               out
+  #45 = Utf8               Ljava/io/PrintStream;
+  #46 = Methodref          #47.#48        // java/lang/reflect/Field.getAnnotatedType:()Ljava/lang/reflect/AnnotatedType;
+  #47 = Class              #49            // java/lang/reflect/Field
+  #48 = NameAndType        #50:#51        // getAnnotatedType:()Ljava/lang/reflect/AnnotatedType;
+  #49 = Utf8               java/lang/reflect/Field
+  #50 = Utf8               getAnnotatedType
+  #51 = Utf8               ()Ljava/lang/reflect/AnnotatedType;
+  #52 = Methodref          #53.#54        // TypeUseRunner.value:(Ljava/lang/reflect/AnnotatedType;)Ljava/lang/String;
+  #53 = Class              #55            // TypeUseRunner
+  #54 = NameAndType        #19:#56        // value:(Ljava/lang/reflect/AnnotatedType;)Ljava/lang/String;
+  #55 = Utf8               TypeUseRunner
+  #56 = Utf8               (Ljava/lang/reflect/AnnotatedType;)Ljava/lang/String;
+  #57 = Methodref          #58.#59        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #58 = Class              #60            // java/io/PrintStream
+  #59 = NameAndType        #61:#62        // println:(Ljava/lang/String;)V
+  #60 = Utf8               java/io/PrintStream
+  #61 = Utf8               println
+  #62 = Utf8               (Ljava/lang/String;)V
+  #63 = Methodref          #64.#65        // java/lang/reflect/Method.getAnnotatedReturnType:()Ljava/lang/reflect/AnnotatedType;
+  #64 = Class              #66            // java/lang/reflect/Method
+  #65 = NameAndType        #67:#51        // getAnnotatedReturnType:()Ljava/lang/reflect/AnnotatedType;
+  #66 = Utf8               java/lang/reflect/Method
+  #67 = Utf8               getAnnotatedReturnType
+  #68 = Methodref          #64.#69        // java/lang/reflect/Method.getAnnotatedParameterTypes:()[Ljava/lang/reflect/AnnotatedType;
+  #69 = NameAndType        #70:#71        // getAnnotatedParameterTypes:()[Ljava/lang/reflect/AnnotatedType;
+  #70 = Utf8               getAnnotatedParameterTypes
+  #71 = Utf8               ()[Ljava/lang/reflect/AnnotatedType;
+  #72 = Methodref          #21.#3         // TypeUseSubject."<init>":()V
+  #73 = String             #74            // ok
+  #74 = Utf8               ok
+  #75 = Methodref          #21.#76        // TypeUseSubject.echo:(Ljava/lang/String;)Ljava/lang/String;
+  #76 = NameAndType        #37:#77        // echo:(Ljava/lang/String;)Ljava/lang/String;
+  #77 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #78 = Methodref          #38.#79        // java/lang/String.toCharArray:()[C
+  #79 = NameAndType        #80:#81        // toCharArray:()[C
+  #80 = Utf8               toCharArray
+  #81 = Utf8               ()[C
+  #82 = Methodref          #83.#84        // java/util/Arrays.toString:([C)Ljava/lang/String;
+  #83 = Class              #85            // java/util/Arrays
+  #84 = NameAndType        #86:#87        // toString:([C)Ljava/lang/String;
+  #85 = Utf8               java/util/Arrays
+  #86 = Utf8               toString
+  #87 = Utf8               ([C)Ljava/lang/String;
+  #88 = Utf8               Code
+  #89 = Utf8               StackMapTable
+  #90 = Utf8               main
+  #91 = Utf8               ([Ljava/lang/String;)V
+  #92 = Utf8               Exceptions
+  #93 = Class              #94            // java/lang/Exception
+  #94 = Utf8               java/lang/Exception
+{
+  TypeUseRunner();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  private static java.lang.String value(java.lang.reflect.AnnotatedType);
+    descriptor: (Ljava/lang/reflect/AnnotatedType;)Ljava/lang/String;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: aload_0
+         1: ldc           #7                  // class TypeMark
+         3: invokeinterface #9,  2            // InterfaceMethod java/lang/reflect/AnnotatedType.getAnnotation:(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;
+         8: checkcast     #7                  // class TypeMark
+        11: astore_1
+        12: aload_1
+        13: ifnonnull     21
+        16: ldc           #15                 // String null
+        18: goto          27
+        21: aload_1
+        22: invokeinterface #17,  1           // InterfaceMethod TypeMark.value:()Ljava/lang/String;
+        27: areturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 21
+          locals = [ class TypeMark ]
+        frame_type = 69 /* same_locals_1_stack_item */
+          stack = [ class java/lang/String ]
+
+  public static void main(java.lang.String[]) throws java.lang.Exception;
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=6, locals=4, args_size=1
+         0: ldc           #21                 // class TypeUseSubject
+         2: ldc           #23                 // String field
+         4: invokevirtual #25                 // Method java/lang/Class.getDeclaredField:(Ljava/lang/String;)Ljava/lang/reflect/Field;
+         7: astore_1
+         8: ldc           #21                 // class TypeUseSubject
+        10: ldc           #31                 // String value
+        12: iconst_0
+        13: anewarray     #26                 // class java/lang/Class
+        16: invokevirtual #32                 // Method java/lang/Class.getDeclaredMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+        19: astore_2
+        20: ldc           #21                 // class TypeUseSubject
+        22: ldc           #36                 // String echo
+        24: iconst_1
+        25: anewarray     #26                 // class java/lang/Class
+        28: dup
+        29: iconst_0
+        30: ldc           #38                 // class java/lang/String
+        32: aastore
+        33: invokevirtual #32                 // Method java/lang/Class.getDeclaredMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+        36: astore_3
+        37: getstatic     #40                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        40: aload_1
+        41: invokevirtual #46                 // Method java/lang/reflect/Field.getAnnotatedType:()Ljava/lang/reflect/AnnotatedType;
+        44: invokestatic  #52                 // Method value:(Ljava/lang/reflect/AnnotatedType;)Ljava/lang/String;
+        47: invokevirtual #57                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        50: getstatic     #40                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        53: aload_2
+        54: invokevirtual #63                 // Method java/lang/reflect/Method.getAnnotatedReturnType:()Ljava/lang/reflect/AnnotatedType;
+        57: invokestatic  #52                 // Method value:(Ljava/lang/reflect/AnnotatedType;)Ljava/lang/String;
+        60: invokevirtual #57                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        63: getstatic     #40                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        66: aload_3
+        67: invokevirtual #68                 // Method java/lang/reflect/Method.getAnnotatedParameterTypes:()[Ljava/lang/reflect/AnnotatedType;
+        70: iconst_0
+        71: aaload
+        72: invokestatic  #52                 // Method value:(Ljava/lang/reflect/AnnotatedType;)Ljava/lang/String;
+        75: invokevirtual #57                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        78: getstatic     #40                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        81: new           #21                 // class TypeUseSubject
+        84: dup
+        85: invokespecial #72                 // Method TypeUseSubject."<init>":()V
+        88: ldc           #73                 // String ok
+        90: invokevirtual #75                 // Method TypeUseSubject.echo:(Ljava/lang/String;)Ljava/lang/String;
+        93: invokevirtual #78                 // Method java/lang/String.toCharArray:()[C
+        96: invokestatic  #82                 // Method java/util/Arrays.toString:([C)Ljava/lang/String;
+        99: invokevirtual #57                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       102: return
+    Exceptions:
+      throws java.lang.Exception
+}

@@ -1,0 +1,57 @@
+Frozen Jarde CLI negative class-source evidence
+CLI: jarde-cli 0.1.0; binary: /tmp/jarde-string-projection-replay/jarde-cli
+CLI SHA-256: d3bd76e99733d3d7be66559564e0f0f22452a9b156e1e1ce6744d519c98ee1eb
+Invocation: jarde-cli class-source --input <class> --class <name> --policy single-class --format text
+No Cargo build performed. Inputs are the exact frozen class files in classes/.
+
+## object-bound
+class SHA-256: 7fc84e045fe2ca0bea3862d423cb1e1ac22f0cf3e23dcc60fe0a9ca5dce47cb9
+Jarde source SHA-256: a47a202af71997e592eab0114b356a00af1e67445d084457b6e49fa2eb5e5a4c
+Jarde source file: object-bound.jarde.txt
+public static java.lang.Number choose(java.lang.Number arg0, java.lang.Number arg1, boolean arg2) {
+// @method choose(Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;
+return arg2 ? arg0 : arg1;
+
+## unbound-variable
+class SHA-256: 9d709eb9c335563687624e174a34ef51b4a407cd104e2422f13b018d773249fc
+Jarde source SHA-256: a47a202af71997e592eab0114b356a00af1e67445d084457b6e49fa2eb5e5a4c
+Jarde source file: unbound-variable.jarde.txt
+public static java.lang.Number choose(java.lang.Number arg0, java.lang.Number arg1, boolean arg2) {
+// @method choose(Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;
+return arg2 ? arg0 : arg1;
+
+## class-variable
+class SHA-256: 1ffbff75014beaf8b26cb8e02665e2597dc3c7cdb0897ca92b4d89a841d5a547
+Jarde source SHA-256: 787223f345c357596db7708a77a953c00e5c7cd5d4ae6691e19ee85e73e27e22
+Jarde source file: class-variable.jarde.txt
+public java.lang.Number choose(java.lang.Number arg1, java.lang.Number arg2, boolean arg3) {
+// @method choose(Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;
+return arg3 ? arg1 : arg2;
+
+## complex-method
+class SHA-256: 69cde64c7de62aad8bfbb406f63532bf207aef26452760eb8c262a7f848f5749
+Jarde source SHA-256: 519d6aa3feef29d10adc1cbf25c86369316ad75aa2c1a941694775fe888bcb97
+Jarde source file: complex-method.jarde.txt
+public static java.util.List[] choose(java.util.List[] arg0) throws java.io.IOException {
+// @method choose([Ljava/util/List;)[Ljava/util/List;
+return arg0;
+
+## incompatible-body
+class SHA-256: af6f48c73064a9fe431da2ccff9ce2a16cbdb5e152ade4a843f6bc3a4152d03a
+Jarde source SHA-256: 4c9b402dde20a495502597ba597d04d886d5156a5967c607a8e2ead43c86eb7a
+Jarde source file: incompatible-body.jarde.txt
+public static java.lang.Number choose(java.lang.Number arg0, java.lang.Number arg1, boolean arg2) {
+// @method choose(Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;
+return java.lang.Integer.valueOf(7);
+
+## positive GenericThrowsProbe
+class SHA-256: f1f1b4cff298113db985e13cc0fe3cc1df740ca4e388f1876712ae21dd2b2b27
+Jarde source SHA-256: fb93f605ef7e53806ac629fba495ebd18fcfbc42268ce517fcc0197af13baa9d
+Jarde output omits generic metadata and retains descriptor-oriented throws; acceptance target remains Exceptions-derived IOException.
+
+Original/JADX source provenance:
+- object-bound: original ../GenericMethodProbe.java SHA-256 305e70891759bcb8f0b303458fefd339948b14f81e666b3d54cf3eaf1692dcc9; JADX object-bound.jadx.java SHA-256 7b7140267cf6ea1e3476c8326baaf9b220bde534754f2d433b1d39e3ac3645f5
+- unbound-variable: original ../GenericMethodProbe.java SHA-256 305e70891759bcb8f0b303458fefd339948b14f81e666b3d54cf3eaf1692dcc9; JADX unbound-variable.jadx.java SHA-256 003dfa7604d73d52feb55a27111fe18c297eedf0288426a7c1cebf6ab1562c7b
+- class-variable: original java/ClassVariableProbe.java SHA-256 2799de5dacb52153be7f19b46be025d0b890695a16a6f8037b94747eae11fdd3; JADX class-variable.jadx.java SHA-256 35fa7154fc5b407c03092ecad5c23c21f16b2a68fa10728baf819cf1f6ecc73a
+- complex-method: original java/ComplexMethodProbe.java SHA-256 96843a24ba57231259c578a1e6ba22396b8ceb4b39ce341192592e7a98993eb8; JADX complex-method.jadx.java SHA-256 eab7a248a321fc54d265d3cf11dfcaa708d73219e05ec23f9d0edb6455ac55a3
+- incompatible-body: original java/IncompatibleBodyProbe.java SHA-256 883899c0cc810ac038daa678c5b84240e382f09a75b0ba099f69978b8fd301b0; JADX IncompatibleBodyProbe.jadx.java SHA-256 6a7ec01f550b3deda6fc54f1fcf3bcca84d1c468e3b885730fbf91cfda986fdd

@@ -1,0 +1,11 @@
+original: 10 lines; jadx: 10 lines; equal=false
+= 001 original="empty=0:iterator=1,hasNext=1,next=0" jadx="empty=0:iterator=1,hasNext=1,next=0"
+= 002 original="many=5:iterator=1,hasNext=4,next=3" jadx="many=5:iterator=1,hasNext=4,next=3"
+= 003 original="null=NullPointerException:Cannot invoke \"java.lang.Iterable.iterator()\" because \"<parameter1>\" is null" jadx="null=NullPointerException:Cannot invoke \"java.lang.Iterable.iterator()\" because \"<parameter1>\" is null"
+= 004 original="source-many=3:sourceCalls=1:iterator=1,hasNext=3,next=2" jadx="source-many=3:sourceCalls=1:iterator=1,hasNext=3,next=2"
+= 005 original="source-null=NullPointerException:Cannot invoke \"java.lang.Iterable.iterator()\" because the return value of \"java.util.function.Supplier.get()\" is null:calls=1" jadx="source-null=NullPointerException:Cannot invoke \"java.lang.Iterable.iterator()\" because the return value of \"java.util.function.Supplier.get()\" is null:calls=1"
+= 006 original="source-throws=IllegalStateException:source:calls=1" jadx="source-throws=IllegalStateException:source:calls=1"
+= 007 original="iterator-throws=IllegalStateException:iterator:iterator=1,hasNext=0,next=0" jadx="iterator-throws=IllegalStateException:iterator:iterator=1,hasNext=0,next=0"
+= 008 original="hasNext-throws=IllegalStateException:hasNext:iterator=1,hasNext=2,next=1" jadx="hasNext-throws=IllegalStateException:hasNext:iterator=1,hasNext=2,next=1"
+= 009 original="next-throws=IllegalStateException:next:iterator=1,hasNext=2,next=2" jadx="next-throws=IllegalStateException:next:iterator=1,hasNext=2,next=2"
+! 010 original="null-element=NullPointerException:Cannot invoke \"String.length()\" because \"<local3>\" is null:iterator=1,hasNext=2,next=2" jadx="null-element=NullPointerException:Cannot invoke \"String.length()\" because the return value of \"java.util.Iterator.next()\" is null:iterator=1,hasNext=2,next=2"

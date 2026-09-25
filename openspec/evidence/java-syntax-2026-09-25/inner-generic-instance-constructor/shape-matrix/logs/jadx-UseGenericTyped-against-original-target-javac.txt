@@ -1,0 +1,10 @@
+exit=1
+stdout:
+stderr:
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/shape-matrix/jadx-source/UseGenericTyped.java:9: 错误: 类型的格式不正确, 给出了原始类型的类型参数
+        return new Outer.A.Generic<>(Integer.valueOf(Outer.A.mark(i)));
+                                  ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/shape-matrix/jadx-source/UseGenericTyped.java:9: 错误: 需要包含A.Generic的封闭实例
+        return new Outer.A.Generic<>(Integer.valueOf(Outer.A.mark(i)));
+               ^
+2 个错误

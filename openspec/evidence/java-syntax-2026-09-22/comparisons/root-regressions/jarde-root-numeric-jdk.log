@@ -1,0 +1,8 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running tests/p3_numeric_comparison.rs (target/debug/deps/p3_numeric_comparison-4bafda7aeb43cc52)
+
+running 1 test
+test jdk_execution_matches_original_for_comparisons_and_effects ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.37s
+

@@ -1,0 +1,4 @@
+qualified:7:A
+prepared:7:A
+qualified:null:
+prepared:null:A

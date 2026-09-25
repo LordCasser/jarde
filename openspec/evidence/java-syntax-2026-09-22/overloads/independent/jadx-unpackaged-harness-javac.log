@@ -1,0 +1,74 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAudit.java:4: 错误: 找不到符号
+public class InvocationAudit extends PrologueParent {
+                                     ^
+  符号: 类 PrologueParent
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAudit.java:22: 错误: 找不到符号
+        return AuditEffects.mark(i, z);
+               ^
+  符号:   变量 AuditEffects
+  位置: 类 InvocationAudit
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:3: 错误: 找不到符号
+        System.out.println("super=" + new InvocationAudit(0).code);
+                                          ^
+  符号:   类 InvocationAudit
+  位置: 类 InvocationAuditRunner
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:4: 错误: 找不到符号
+        System.out.println("this=" + new InvocationAudit('x').code);
+                                         ^
+  符号:   类 InvocationAudit
+  位置: 类 InvocationAuditRunner
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:5: 错误: 找不到符号
+        System.out.println("objectConstructor=" + new InvocationAudit((Object) "x").code);
+                                                      ^
+  符号:   类 InvocationAudit
+  位置: 类 InvocationAuditRunner
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:6: 错误: 找不到符号
+        System.out.println("stringConstructor=" + new InvocationAudit("x").code);
+                                                      ^
+  符号:   类 InvocationAudit
+  位置: 类 InvocationAuditRunner
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:8: 错误: 找不到符号
+        System.out.println("ordered=" + InvocationAudit.ordered() + ":" + AuditEffects.count);
+                                        ^
+  符号:   变量 InvocationAudit
+  位置: 类 InvocationAuditRunner
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:10: 错误: 找不到符号
+        try { InvocationAudit.failedFirst(); } catch (IllegalArgumentException error) {
+              ^
+  符号:   变量 InvocationAudit
+  位置: 类 InvocationAuditRunner
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:14: 错误: 找不到符号
+        try { InvocationAudit.failedSecond(); } catch (IllegalArgumentException error) {
+              ^
+  符号:   变量 InvocationAudit
+  位置: 类 InvocationAuditRunner
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:17: 错误: 找不到符号
+        System.out.println("objectIdentity=" + InvocationAudit.objectIdentity("x"));
+                                               ^
+  符号:   变量 InvocationAudit
+  位置: 类 InvocationAuditRunner
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:18: 错误: 找不到符号
+        System.out.println("stringIdentity=" + InvocationAudit.stringIdentity("x"));
+                                               ^
+  符号:   变量 InvocationAudit
+  位置: 类 InvocationAuditRunner
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:19: 错误: 找不到符号
+        System.out.println("castIdentity=" + InvocationAudit.castIdentity("x"));
+                                             ^
+  符号:   变量 InvocationAudit
+  位置: 类 InvocationAuditRunner
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:20: 错误: 找不到符号
+        System.out.println("castNull=" + InvocationAudit.castIdentity(null));
+                                         ^
+  符号:   变量 InvocationAudit
+  位置: 类 InvocationAuditRunner
+/tmp/jarde-invocation-independent/jadx-compiled/InvocationAuditRunner.java:21: 错误: 找不到符号
+        try { InvocationAudit.castIdentity(new Object()); } catch (ClassCastException error) {
+              ^
+  符号:   变量 InvocationAudit
+  位置: 类 InvocationAuditRunner
+14 个错误
+3 个警告

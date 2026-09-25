@@ -1,0 +1,5 @@
+3b262291746838a670a24feefdb6396ee98fb06f938fa31a50c52c33989f0888  openspec/evidence/java-syntax-2026-09-22/generic-method-references/fixture/root/inputs/LambdaAdaptationBox.java
+add23626ffc56b633962031de8ccae2c6191611df3e1fcfc2de27fae5e9836b9  openspec/evidence/java-syntax-2026-09-22/generic-method-references/fixture/root/inputs/LambdaAdaptationProbe.java
+faf66258c9e6b265421e94d4196a55ccb9a2c9ce17b6ab4636ba10c528948405  openspec/evidence/java-syntax-2026-09-22/generic-method-references/fixture/root/inputs/LambdaAdaptationRunner.java
+7396a31aeed754783f2f4209e8b686a27dcd85d0ce00aea2c97b5bbdfd58a90e  openspec/evidence/java-syntax-2026-09-22/generic-method-references/fixture/root/inputs/LambdaAdaptationSupport.java
+1f76c28361a2c54405e82950812863da1ea2f5a1012ef3a07e1049e5e4d45c6f  tests/fixtures/p3-lambda-adaptation/v8/LambdaAdaptationProbe.class

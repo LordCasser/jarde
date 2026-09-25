@@ -1,0 +1,4 @@
+extra=true,left=false,rhs=false,result=false,calls=0
+extra=false,left=true,rhs=false,result=false,calls=0
+extra=false,left=false,rhs=true,result=false,calls=1
+extra=false,left=false,rhs=false,result=false,calls=1

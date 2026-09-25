@@ -1,0 +1,23 @@
+{
+  "class_sha256": "453c00b9ebb0974d084aca7a28e465c52c42ab8b92112ac0e913eb9c8d55a7ee",
+  "cli_sha256": "3c65e6ec6766b83163b29ea62e0b551ef902f76262f82538aa74db399b726754",
+  "jarde_cli_exit": 0,
+  "original": {
+    "javac_exit": 0,
+    "java_exit": 0,
+    "runtime": "0=101:trace=1\n1=202:trace=2\n2=303:trace=3\n-1=303:trace=3",
+    "runtime_sha256": "2c02c050e89418088bfdc6fc82ecb50aa5abdc1b2ef31711fb75a6ad05e7e962"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "java_exit": 0,
+    "runtime": "0=101:trace=1\n1=202:trace=2\n2=303:trace=3\n-1=303:trace=3",
+    "runtime_sha256": "2c02c050e89418088bfdc6fc82ecb50aa5abdc1b2ef31711fb75a6ad05e7e962"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "java_exit": 0,
+    "runtime": "0=101:trace=1\n1=202:trace=2\n2=303:trace=3\n-1=303:trace=3",
+    "runtime_sha256": "2c02c050e89418088bfdc6fc82ecb50aa5abdc1b2ef31711fb75a6ad05e7e962"
+  }
+}

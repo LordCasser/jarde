@@ -1,0 +1,8 @@
+original: 7 lines; jarde: 7 lines; equal=true
+= 001 original="empty=0" jarde="empty=0"
+= 002 original="many=7:hashCalls=1,1" jarde="many=7:hashCalls=1,1"
+= 003 original="null=NullPointerException:Cannot read the array length because \"<local2>\" is null" jarde="null=NullPointerException:Cannot read the array length because \"<local2>\" is null"
+= 004 original="source-many=11:calls=1:hashCalls=1" jarde="source-many=11:calls=1:hashCalls=1"
+= 005 original="source-null=NullPointerException:Cannot read the array length because \"<local2>\" is null:calls=1" jarde="source-null=NullPointerException:Cannot read the array length because \"<local2>\" is null:calls=1"
+= 006 original="source-throws=IllegalStateException:source:calls=1" jarde="source-throws=IllegalStateException:source:calls=1"
+= 007 original="body-throws=IllegalStateException:hash:hashCalls=1,1,0" jarde="body-throws=IllegalStateException:hash:hashCalls=1,1,0"

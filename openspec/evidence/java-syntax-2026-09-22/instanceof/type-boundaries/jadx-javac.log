@@ -1,0 +1,20 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-instanceof-types/jadx/sources/defpackage/InstanceOfTypes.java:6: 错误: 不兼容的类型: String无法转换为Integer
+        return str instanceof Integer;
+               ^
+/tmp/jarde-instanceof-types/jadx/sources/defpackage/InstanceOfTypes.java:10: 错误: 不兼容的类型: String[]无法转换为int[]
+        return strArr instanceof int[];
+               ^
+/tmp/jarde-instanceof-types/jadx/sources/defpackage/InstanceOfTypes.java:14: 错误: 不兼容的类型: String无法转换为Runnable
+        return str instanceof Runnable;
+               ^
+/tmp/jarde-instanceof-types/jadx/sources/defpackage/InstanceOfTypes.java:22: 错误: 不兼容的类型: String无法转换为Integer
+        return TypeEffects.value() instanceof Integer;
+                                ^
+/tmp/jarde-instanceof-types/jadx/sources/defpackage/InstanceOfTypes.java:29: 错误: 此处不应为方法引用
+        return InstanceOfTypes::empty instanceof Runnable;
+               ^
+5 个错误
+3 个警告

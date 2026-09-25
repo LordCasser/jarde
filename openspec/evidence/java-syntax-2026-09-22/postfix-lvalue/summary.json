@@ -1,0 +1,91 @@
+{
+  "tools": {
+    "javac": "/usr/bin/javac",
+    "java": "/usr/bin/java",
+    "javap": "/usr/bin/javap",
+    "jadx": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "jarde_cli": "/tmp/jarde-cli-bitwise-root-after"
+  },
+  "tool_sha256_before": {
+    "javac": "88a575aa4376513cc174b65ad3dfbfb4d5819b24d0ed6288c010b15286b7b639",
+    "java": "88a575aa4376513cc174b65ad3dfbfb4d5819b24d0ed6288c010b15286b7b639",
+    "javap": "88a575aa4376513cc174b65ad3dfbfb4d5819b24d0ed6288c010b15286b7b639",
+    "jadx": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "jarde_cli": "88f2e7aa9b5b8172da02f5af5d4d2c029e72a52d9b3298b46b82774e0bd5fdfd"
+  },
+  "tool_sha256_after": {
+    "javac": "88a575aa4376513cc174b65ad3dfbfb4d5819b24d0ed6288c010b15286b7b639",
+    "java": "88a575aa4376513cc174b65ad3dfbfb4d5819b24d0ed6288c010b15286b7b639",
+    "javap": "88a575aa4376513cc174b65ad3dfbfb4d5819b24d0ed6288c010b15286b7b639",
+    "jadx": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "jarde_cli": "88f2e7aa9b5b8172da02f5af5d4d2c029e72a52d9b3298b46b82774e0bd5fdfd"
+  },
+  "source_sha256": {
+    "PostfixProbe.java": "a1aa48c8df952586ff8a2bfa1c8e2d168bdd615d985c63dd4dcfee2a68257449",
+    "PostfixBox.java": "2dfdc7b4cdd86e14f5d758f33b373a886eee82e210c1983aac0ff0bb95c395e0",
+    "PostfixRunner.java": "c99b3c542a2b95d1634182c5a199ad607355350506b5d6902d21bd9a0433f39a"
+  },
+  "class": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/postfix-lvalue/original/classes/PostfixProbe.class",
+    "bytes": 1228,
+    "sha256": "7f9e8105b6ed95267ac7eb20c792eeb42303144bd2a49af3f496ce280ff26893",
+    "code_methods": 11
+  },
+  "original": {
+    "javac": 0,
+    "runtime": 0,
+    "output": [
+      "receiver.old=41",
+      "receiver.new=42",
+      "receiver.order=R",
+      "array.old=70",
+      "array.new=71",
+      "array.order=AI",
+      "receiver.null.exception=NullPointerException",
+      "receiver.null.order=R",
+      "array.null.exception=NullPointerException",
+      "array.null.order=AI",
+      "array.bounds.exception=ArrayIndexOutOfBoundsException",
+      "array.bounds.order=AI",
+      "overflow.old=2147483647",
+      "overflow.new=-2147483648",
+      "local.increment=9",
+      "simple-field.post.old=12",
+      "simple-field.post.new=13",
+      "simple-field.pre.result=14",
+      "simple-field.pre.new=14"
+    ]
+  },
+  "jadx_decompile": 0,
+  "jadx": {
+    "javac": 0,
+    "runtime": 0,
+    "output": [
+      "receiver.old=41",
+      "receiver.new=42",
+      "receiver.order=R",
+      "array.old=70",
+      "array.new=71",
+      "array.order=AI",
+      "receiver.null.exception=NullPointerException",
+      "receiver.null.order=R",
+      "array.null.exception=NullPointerException",
+      "array.null.order=AI",
+      "array.bounds.exception=ArrayIndexOutOfBoundsException",
+      "array.bounds.order=AI",
+      "overflow.old=2147483647",
+      "overflow.new=-2147483648",
+      "local.increment=9",
+      "simple-field.post.old=12",
+      "simple-field.post.new=13",
+      "simple-field.pre.result=14",
+      "simple-field.pre.new=14"
+    ]
+  },
+  "jarde_decompile": 0,
+  "jarde": {
+    "javac": 1
+  },
+  "jadx_output_matches_original": true,
+  "jarde_output_matches_original": null
+}

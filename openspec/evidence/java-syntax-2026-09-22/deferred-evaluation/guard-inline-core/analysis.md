@@ -1,0 +1,5 @@
+# 同步表达式内联正面边界
+
+GuardInlineCore是从更大的guard-inline-controls输入源码去掉独立资源拒绝后重新javac的完整类，496B，SHA `8c1764cb94e2bf60aa571fbb93990dd4cf0ea8d5b448d78faa0a5549510f6204`。两方法分别使用调用结果作锁，以及在static字段锁内调用并返回值；7种模式记录正常、调用/值/mark抛错和null锁。Thread.holdsLock同时记录正文是否仍处于原monitor内。
+
+feed5c与ecab分别独立运行14项，原class/JADX/jarde完全一致，整类零引用、javac和JVM验证执行成功。后续producer拒绝预检查不能破坏已由guard形状证明的消费。固定脚本为每个stage的run_audit.py，使用JARDE_AUDIT_CLI和JARDE_AUDIT_STAGE选择新的证据目录。

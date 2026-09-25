@@ -1,0 +1,22 @@
+package defpackage;
+
+import java.util.function.ToIntFunction;
+
+/* JADX INFO: loaded from: ArrayProbe.class */
+public class ArrayProbe {
+    public static int pick(Object[] objArr) {
+        return 30;
+    }
+
+    public static int pick(String[] strArr) {
+        return 31;
+    }
+
+    public static ToIntFunction<String[]> strings() {
+        return ArrayProbe::pick;
+    }
+
+    public static ToIntFunction<Object[]> objects() {
+        return ArrayProbe::pick;
+    }
+}

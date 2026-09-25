@@ -1,0 +1,89 @@
+// jarde: presentation of `InlineOrderControls` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class InlineOrderControls extends java.lang.Object {
+    public InlineOrderControls() {
+        // @method <init>()V
+        // @declaration a constructor of `InlineOrderControls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void voidArgument() {
+        // @method voidArgument()V
+        // @declaration a static method of `InlineOrderControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        InlineOrderEffects.accept(InlineOrderEffects.value());
+        return;
+    }
+
+    public static int callArgument() {
+        // @method callArgument()I
+        // @declaration a static method of `InlineOrderControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return InlineOrderEffects.take(InlineOrderEffects.value());
+    }
+
+    public static void discarded() {
+        // @method discarded()V
+        // @declaration a static method of `InlineOrderControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        InlineOrderEffects.value();
+        return;
+    }
+
+    public static java.lang.String concatenate() {
+        // @method concatenate()Ljava/lang/String;
+        // @declaration a static method of `InlineOrderControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return "x=" + InlineOrderEffects.value();
+    }
+
+    public static InlineHolder construct() {
+        // @method construct()LInlineHolder;
+        // @declaration a static method of `InlineOrderControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new InlineHolder(InlineOrderEffects.value());
+    }
+
+    public static int receiverAndArgument() {
+        // @method receiverAndArgument()I
+        // @declaration a static method of `InlineOrderControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return InlineOrderEffects.make().read(InlineOrderEffects.value());
+    }
+
+    public static int fieldAndCall() {
+        // @method fieldAndCall()I
+        // @declaration a static method of `InlineOrderControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return InlineOrderEffects.make().value + InlineOrderEffects.value();
+    }
+
+    public static void fieldWrite() {
+        // @method fieldWrite()V
+        // @declaration a static method of `InlineOrderControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        InlineOrderEffects.make().value = InlineOrderEffects.value();
+        return;
+    }
+
+    public static int local() {
+        // @method local()I
+        // @declaration a static method of `InlineOrderControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local0 = InlineOrderEffects.value();
+        return local0 + 1;
+    }
+
+    public static int test() {
+        // @method test()I
+        // @declaration a static method of `InlineOrderControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (InlineOrderEffects.take(InlineOrderEffects.value()) == 6) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+}

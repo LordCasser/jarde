@@ -1,0 +1,33 @@
+{
+  "cli_sha256_after": "7747b60a17dc635f0e8402d867cb9e74f9472a62057eb4865dbd8f4a207dfb34",
+  "cli_unchanged": true,
+  "code_attributes": 13,
+  "jadx": 0,
+  "jadx_runtime_equal": true,
+  "jadx_source": {
+    "class_bytes": 1292,
+    "class_javac": 0,
+    "class_sha256": "2068c424a728475bd17001f9785145dae5e9ef954ef7aa461b1c792977bec1ee",
+    "runner_javac": 0,
+    "runtime": 0
+  },
+  "jarde": {
+    "class_javac": 1
+  },
+  "jarde_cli": 0,
+  "jarde_markers": 38,
+  "jarde_runtime_equal": "skipped",
+  "original": {
+    "class_bytes": 1281,
+    "class_javac": 0,
+    "class_sha256": "998bdb54c863d92cb63cc08c654df21bc674961c652fc46a5c3eaf7de2915c86",
+    "runner_javac": 0,
+    "runtime": 0
+  },
+  "original_javap": 0,
+  "original_runtime_sha256": "f16eb426dc781c7ac365ff0f85b20c1452269145a306297802105f5eeb5a7349",
+  "source_lines": {
+    "jadx": 52,
+    "jarde": 175
+  }
+}

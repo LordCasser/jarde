@@ -1,0 +1,29 @@
+{
+  "class_sha256": "f36f1920e3043f3042bd81e3a3cf9380412f8933e61fb4acca6f1daccf6c33f7",
+  "bytes": 834,
+  "cases": 4,
+  "jarde_quotes": 1,
+  "jarde_javac": 1,
+  "original_groups": {
+    "0": [
+      "0:created:1",
+      "0:first:11:1",
+      "0:second:12:1"
+    ],
+    "1": [
+      "1:failure:true:1"
+    ],
+    "2": [
+      "2:created:1",
+      "2:first:11:1",
+      "2:second:12:1"
+    ],
+    "3": [
+      "3:created:1",
+      "3:first:11:1",
+      "3:second:12:1"
+    ]
+  },
+  "jadx_javac": 0,
+  "jadx_equal": true
+}

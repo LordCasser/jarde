@@ -1,0 +1,64 @@
+package defpackage;
+
+/* JADX INFO: loaded from: PostfixProbe.class */
+public final class PostfixProbe {
+    public static final PostfixProbe INSTANCE = new PostfixProbe();
+    public static String trace;
+    public static PostfixBox selected;
+    public static int[] values;
+    public static int selectedIndex;
+    public int simpleField;
+
+    public static void reset() {
+        trace = "";
+        selected = new PostfixBox(41);
+        values = new int[]{70};
+        selectedIndex = 0;
+    }
+
+    public static PostfixBox receiver() {
+        trace += "R";
+        return selected;
+    }
+
+    public static int[] array() {
+        trace += "A";
+        return values;
+    }
+
+    public static int index() {
+        trace += "I";
+        return selectedIndex;
+    }
+
+    public static int postReceiver() {
+        PostfixBox postfixBoxReceiver = receiver();
+        int i = postfixBoxReceiver.value;
+        postfixBoxReceiver.value = i + 1;
+        return i;
+    }
+
+    public static int postArray() {
+        int[] iArrArray = array();
+        int iIndex = index();
+        int i = iArrArray[iIndex];
+        iArrArray[iIndex] = i + 1;
+        return i;
+    }
+
+    public static int localIncrement(int i) {
+        return i + 1;
+    }
+
+    public int postSimpleField() {
+        int i = this.simpleField;
+        this.simpleField = i + 1;
+        return i;
+    }
+
+    public int preSimpleField() {
+        int i = this.simpleField + 1;
+        this.simpleField = i;
+        return i;
+    }
+}

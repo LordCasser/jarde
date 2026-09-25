@@ -1,0 +1,86 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.70s
+     Running tests/p3_patterns.rs (target/debug/deps/p3_patterns-4d7676605fcc0f84)
+
+running 44 tests
+test a_body_that_builds_a_concatenation_out_of_an_accessor_is_presented_as_both ... ok
+test a_body_without_debug_metadata_is_still_presented_with_deterministic_names ... ok
+test a_bridge_that_does_something_besides_forward_is_refused_and_its_body_kept ... ok
+test a_bridge_without_a_cast_is_presented_without_any_erasure ... ok
+test a_budget_that_refuses_the_emission_of_a_new_shape_hands_out_nothing ... ok
+test a_cast_a_bridge_applies_to_a_parameter_is_not_an_erasure ... ok
+test a_chain_a_branch_cuts_is_refused_rather_than_written_as_one_expression ... ok
+test a_chain_whose_instance_is_stored_in_a_local_is_refused ... ok
+test a_construction_only_quoted_instructions_read_is_refused_and_quoted_whole ... ok
+test a_constructors_field_initializers_are_written_after_its_constructor_call_and_in_order ... ok
+test a_debug_table_that_names_slot_zero_this_is_not_a_keyword_to_alias ... ok
+test a_declared_bridge_is_presented_as_the_forward_it_is_with_the_cast_it_erases ... ok
+test a_member_the_class_declares_without_a_body_is_refused_as_itself ... ok
+test a_member_the_class_did_not_declare_synthetic_is_not_an_accessor ... ok
+test a_member_the_class_does_not_declare_a_bridge_keeps_its_cast_quoted ... ok
+test a_run_that_states_no_access_flags_cannot_decide_a_bridge ... ok
+test a_run_that_was_not_told_the_class_refuses_the_pre_call_write_and_the_prologue ... ok
+test a_run_that_was_not_told_the_declaring_class_states_no_declaration ... ok
+test a_run_with_no_member_table_states_the_table_it_is_missing ... ok
+test a_single_append_is_not_a_concatenation ... ok
+test a_static_initializer_is_written_as_the_writes_it_performs_and_declared_as_one ... ok
+test a_static_initializer_source_map_stop_keeps_the_artifact_and_unpaid_tail_unmapped ... ok
+test a_synthetic_accessors_call_site_is_presented_as_the_field_access_it_forwards ... ok
+test a_table_read_indexed_by_a_local_is_refused_and_the_subscript_is_written ... ok
+test a_verified_chain_is_written_once_with_its_operands_in_the_order_it_read_them ... ok
+test a_write_accessor_becomes_the_assignment_it_performs ... ok
+test a_write_made_before_the_constructor_call_stays_where_the_bytecode_made_it ... ok
+test an_accessor_whose_body_does_more_than_forward_is_refused ... ok
+test an_anonymous_classs_use_is_presented_with_the_enclosing_instance_it_really_read ... FAILED
+test an_append_overload_that_plus_would_not_reproduce_is_refused ... ok
+test an_enum_switch_is_presented_as_the_table_read_the_bytecode_performs ... ok
+test an_interfaces_non_abstract_method_is_stated_as_a_default_method ... ok
+test an_invocation_argument_keeps_its_recovered_cast ... ok
+test an_invocation_is_written_once_with_its_recovered_cast ... ok
+test the_anchor_of_a_presented_field_access_states_the_member_its_bci_is_in ... ok
+test the_models_section_is_independent_of_the_presentation ... ok
+test the_oracle_agrees_with_the_run_on_a_concatenation_and_on_a_field_access ... ok
+test the_oracle_agrees_with_the_run_on_a_constructor_and_on_a_construction ... FAILED
+test the_oracle_rejects_a_concatenation_that_calls_an_operand_twice ... ok
+test the_oracle_rejects_a_concatenation_whose_calls_are_written_in_another_order ... ok
+test the_oracle_rejects_a_constructor_call_written_after_its_field_initializers ... ok
+test the_oracle_rejects_a_constructor_whose_field_writes_are_in_another_order ... ok
+test the_same_member_in_a_class_is_an_ordinary_method_and_a_static_one_is_stated_as_such ... ok
+test the_same_shape_on_a_string_buffer_is_presented_with_its_call_in_the_middle ... ok
+
+failures:
+
+---- an_anonymous_classs_use_is_presented_with_the_enclosing_instance_it_really_read stdout ----
+
+thread 'an_anonymous_classs_use_is_presented_with_the_enclosing_instance_it_really_read' (24127630) panicked at crates/jarde-java/tests/p3_patterns.rs:3286:5:
+// @method method()Lp/Outer$1;
+// @declaration an instance method of `p.Outer$1`, member flags 0x0001
+// recovered from bytecode; presentation is not claimed to compile
+{
+    // @bytecode 8
+    // the parameter 0 of the invocation at BCI 5 is declared `p.Outer` presents `p.Outer$1` but the invocation requires `p.Outer` and this layer has no safe reference conversion evidence
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- the_oracle_agrees_with_the_run_on_a_constructor_and_on_a_construction stdout ----
+
+thread 'the_oracle_agrees_with_the_run_on_a_constructor_and_on_a_construction' (24127639) panicked at crates/jarde-java/tests/p3_patterns.rs:4140:5:
+Observed { calls: [], returned: Some("instance:p.Outer$1"), accessor_calls: 0, accessor_reads: [], effects: ["new p.Outer$1(this)"] } against Observed { calls: [], returned: None, accessor_calls: 0, accessor_reads: [], effects: [] }
+// @method method()Lp/Outer$1;
+// @declaration an instance method of `p.Outer$1`, member flags 0x0001
+// recovered from bytecode; presentation is not claimed to compile
+{
+    // @bytecode 8
+    // the parameter 0 of the invocation at BCI 5 is declared `p.Outer` presents `p.Outer$1` but the invocation requires `p.Outer` and this layer has no safe reference conversion evidence
+}
+
+
+
+failures:
+    an_anonymous_classs_use_is_presented_with_the_enclosing_instance_it_really_read
+    the_oracle_agrees_with_the_run_on_a_constructor_and_on_a_construction
+
+test result: FAILED. 42 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `-p jarde-java --test p3_patterns`

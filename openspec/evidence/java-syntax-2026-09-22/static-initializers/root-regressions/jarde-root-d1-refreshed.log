@@ -1,0 +1,16 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.94s
+     Running tests/d1_evidence_selection.rs (target/debug/deps/d1_evidence_selection-0c9db97758be57b6)
+
+running 8 tests
+test a_legal_empty_range_is_a_complete_empty_selection ... ok
+test a_range_over_a_body_with_no_code_is_refused_as_a_missing_table ... ok
+test a_selected_category_that_stopped_states_its_prefix ... ok
+test a_selection_this_entry_cannot_answer_is_refused_with_its_own_code ... ok
+test closing_the_rule_records_keeps_the_refusals_and_the_explanation ... ok
+test the_driver_range_selects_the_records_it_intersects ... ok
+test the_ordinary_entry_and_the_stated_essential_selection_answer_the_same_report ... ok
+test the_same_request_under_either_selection_presents_the_same_body ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

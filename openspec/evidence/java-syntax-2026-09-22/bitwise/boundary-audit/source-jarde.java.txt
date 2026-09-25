@@ -1,0 +1,92 @@
+// jarde: presentation of `BoundaryProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class BoundaryProbe extends java.lang.Object {
+    public static int trace;
+
+    public BoundaryProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `BoundaryProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int mixedLeft(int arg0, int arg1, long arg2) {
+        // jarde: not recovered: the recovery run for `mixedLeft(IIJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method mixedLeft(IIJ)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int mixedRight(int arg0, int arg1, byte arg2) {
+        // jarde: not recovered: the recovery run for `mixedRight(IIB)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method mixedRight(IIB)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int pureIntegerLiterals(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `pureIntegerLiterals(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method pureIntegerLiterals(II)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7
+        // the value at BCI 7 comes from an Other at BCI 6, which produces no expression this subset writes
+    }
+
+    public static int overwrittenLocal(int arg0, int arg1) {
+        // @method overwrittenLocal(II)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local2 = arg0;
+        arg0 = 31;
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 8
+        // the value at BCI 8 comes from an Other at BCI 7, which produces no expression this subset writes
+    }
+
+    public static int observeOnce(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `observeOnce(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method observeOnce(II)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 4 5
+        // the statement at BCI 5 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 9 10
+        // the statement at BCI 10 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+    }
+
+    public static int observe(int arg0) {
+        // @method observe(I)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BoundaryProbe.trace = BoundaryProbe.trace * 31 + arg0;
+        return arg0;
+    }
+
+    public static int seedObserve(int arg0) {
+        // @method seedObserve(I)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return observe(arg0);
+    }
+}

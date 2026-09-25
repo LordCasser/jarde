@@ -1,0 +1,70 @@
+// jarde: presentation of `ClassLiteralProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ClassLiteralProbe extends java.lang.Object {
+    static int calls;
+
+    public ClassLiteralProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `ClassLiteralProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static java.lang.Class touch(java.lang.Class arg0) {
+        // @method touch(Ljava/lang/Class;)Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        ClassLiteralProbe.calls = ClassLiteralProbe.calls + 1;
+        return arg0;
+    }
+
+    public static java.lang.Class reference() {
+        // @method reference()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.lang.String.class;
+    }
+
+    public static java.lang.Class array() {
+        // @method array()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.lang.String[][].class;
+    }
+
+    public static java.lang.Class primitiveArray() {
+        // @method primitiveArray()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return int[][].class;
+    }
+
+    public static java.lang.Class self() {
+        // @method self()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ClassLiteralProbe.class;
+    }
+
+    public static java.lang.Class primitive() {
+        // @method primitive()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.lang.Integer.TYPE;
+    }
+
+    public static java.lang.Class voidType() {
+        // @method voidType()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.lang.Void.TYPE;
+    }
+
+    public static java.lang.Class argument() {
+        // @method argument()Ljava/lang/Class;
+        // @declaration a static method of `ClassLiteralProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return touch(java.lang.String.class);
+    }
+}

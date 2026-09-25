@@ -1,0 +1,16 @@
+0:0:OK:false:0:1:1:box
+0:1:OK:false:1:1:1:box
+0:2:OK:false:0:1:1:box
+0:3:OK:true:1:0:1:box
+0:4:OK:true:0:1:1:box
+0:5:OK:true:1:1:1:box
+0:6:OK:true:0:1:1:box
+0:7:OK:true:1:0:1:box
+1:0:NPE:false:0:1:1:box
+1:1:NPE:false:1:1:1:box
+1:2:NPE:false:0:1:1:box
+1:3:NPE:false:1:0:1:box
+1:4:NPE:false:0:1:1:box
+1:5:NPE:false:1:1:1:box
+1:6:NPE:false:0:1:1:box
+1:7:NPE:false:1:0:1:box

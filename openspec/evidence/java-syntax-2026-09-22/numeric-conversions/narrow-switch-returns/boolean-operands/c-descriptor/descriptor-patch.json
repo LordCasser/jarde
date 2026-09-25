@@ -1,0 +1,12 @@
+{
+  "from": "(Z)Z",
+  "to": "(Z)C",
+  "descriptor_offset": 145,
+  "source_bytes": 171,
+  "patched_bytes": 178,
+  "source_sha256": "0857c114b45889f769deb8a9e5b2dea588437cabd6e2c24f66e20b037ae063e5",
+  "patched_sha256": "78af87dfe136343ab1cbc2ff4bfe51e02f5987b2cd8c51672799a3e265e2dfb1",
+  "code_attributes": 2,
+  "code_sha256_before": "a2ce6f368bda9cc530834807f41f29a22e6366e90ff728f4040cf72a798e5813",
+  "code_sha256_after": "a2ce6f368bda9cc530834807f41f29a22e6366e90ff728f4040cf72a798e5813"
+}

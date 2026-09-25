@@ -1,0 +1,12 @@
+exact=[11, 22, 33]
+effects=abc
+effectful=[11, 22, 33]
+reference=[left, null, right]
+dynamic=[11, 22]
+duplicate=[22, 0]
+skipped=[0, 22, 33]
+escaped-at-publication=0
+escaped=[11, 22]
+branch-true=[11, 33]
+branch-false=[22, 33]
+covariant-store!=java.lang.ArrayStoreException

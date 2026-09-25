@@ -1,0 +1,705 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-5wrl0yyx/original/NarrowFieldStores.class
+  Last modified 2026年9月23日; size 3443 bytes
+  SHA-256 checksum ae0bfc789051a30dd6779d57cea2f484d7e5fe4822f18102eb74915075d04eda
+public class NarrowFieldStores
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // NarrowFieldStores
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 16, methods: 49, attributes: 0
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Fieldref           #8.#9         // NarrowFieldStores.byteField:I
+    #8 = Class              #10           // NarrowFieldStores
+    #9 = NameAndType        #11:#12       // byteField:I
+   #10 = Utf8               NarrowFieldStores
+   #11 = Utf8               byteField
+   #12 = Utf8               I
+   #13 = Fieldref           #8.#14        // NarrowFieldStores.charField:I
+   #14 = NameAndType        #15:#12       // charField:I
+   #15 = Utf8               charField
+   #16 = Fieldref           #8.#17        // NarrowFieldStores.shortField:I
+   #17 = NameAndType        #18:#12       // shortField:I
+   #18 = Utf8               shortField
+   #19 = Fieldref           #8.#20        // NarrowFieldStores.booleanField:I
+   #20 = NameAndType        #21:#12       // booleanField:I
+   #21 = Utf8               booleanField
+   #22 = Methodref          #23.#24       // NarrowFieldStoreEffects.value:(IZ)I
+   #23 = Class              #25           // NarrowFieldStoreEffects
+   #24 = NameAndType        #26:#27       // value:(IZ)I
+   #25 = Utf8               NarrowFieldStoreEffects
+   #26 = Utf8               value
+   #27 = Utf8               (IZ)I
+   #28 = Fieldref           #8.#29        // NarrowFieldStores.staticByteField:I
+   #29 = NameAndType        #30:#12       // staticByteField:I
+   #30 = Utf8               staticByteField
+   #31 = Fieldref           #8.#32        // NarrowFieldStores.staticCharField:I
+   #32 = NameAndType        #33:#12       // staticCharField:I
+   #33 = Utf8               staticCharField
+   #34 = Fieldref           #8.#35        // NarrowFieldStores.staticShortField:I
+   #35 = NameAndType        #36:#12       // staticShortField:I
+   #36 = Utf8               staticShortField
+   #37 = Fieldref           #8.#38        // NarrowFieldStores.staticBooleanField:I
+   #38 = NameAndType        #39:#12       // staticBooleanField:I
+   #39 = Utf8               staticBooleanField
+   #40 = Fieldref           #8.#41        // NarrowFieldStores.ordinaryByteField:B
+   #41 = NameAndType        #42:#43       // ordinaryByteField:B
+   #42 = Utf8               ordinaryByteField
+   #43 = Utf8               B
+   #44 = Fieldref           #8.#45        // NarrowFieldStores.ordinaryCharField:C
+   #45 = NameAndType        #46:#47       // ordinaryCharField:C
+   #46 = Utf8               ordinaryCharField
+   #47 = Utf8               C
+   #48 = Fieldref           #8.#49        // NarrowFieldStores.ordinaryShortField:S
+   #49 = NameAndType        #50:#51       // ordinaryShortField:S
+   #50 = Utf8               ordinaryShortField
+   #51 = Utf8               S
+   #52 = Fieldref           #8.#53        // NarrowFieldStores.ordinaryBooleanField:Z
+   #53 = NameAndType        #54:#55       // ordinaryBooleanField:Z
+   #54 = Utf8               ordinaryBooleanField
+   #55 = Utf8               Z
+   #56 = Fieldref           #8.#57        // NarrowFieldStores.ordinaryStaticByteField:B
+   #57 = NameAndType        #58:#43       // ordinaryStaticByteField:B
+   #58 = Utf8               ordinaryStaticByteField
+   #59 = Fieldref           #8.#60        // NarrowFieldStores.ordinaryStaticCharField:C
+   #60 = NameAndType        #61:#47       // ordinaryStaticCharField:C
+   #61 = Utf8               ordinaryStaticCharField
+   #62 = Fieldref           #8.#63        // NarrowFieldStores.ordinaryStaticShortField:S
+   #63 = NameAndType        #64:#51       // ordinaryStaticShortField:S
+   #64 = Utf8               ordinaryStaticShortField
+   #65 = Fieldref           #8.#66        // NarrowFieldStores.ordinaryStaticBooleanField:Z
+   #66 = NameAndType        #67:#55       // ordinaryStaticBooleanField:Z
+   #67 = Utf8               ordinaryStaticBooleanField
+   #68 = Utf8               Code
+   #69 = Utf8               setByte
+   #70 = Utf8               (I)V
+   #71 = Utf8               setChar
+   #72 = Utf8               setShort
+   #73 = Utf8               setBoolean
+   #74 = Utf8               setByteProduced
+   #75 = Utf8               (IZ)V
+   #76 = Utf8               setByteOn
+   #77 = Utf8               (LNarrowFieldStores;I)V
+   #78 = Utf8               setByteProducedOn
+   #79 = Utf8               (LNarrowFieldStores;IZ)V
+   #80 = Utf8               setCharProduced
+   #81 = Utf8               setCharOn
+   #82 = Utf8               setCharProducedOn
+   #83 = Utf8               setShortProduced
+   #84 = Utf8               setShortOn
+   #85 = Utf8               setShortProducedOn
+   #86 = Utf8               setBooleanProduced
+   #87 = Utf8               setBooleanOn
+   #88 = Utf8               setBooleanProducedOn
+   #89 = Utf8               setStaticByte
+   #90 = Utf8               setStaticChar
+   #91 = Utf8               setStaticShort
+   #92 = Utf8               setStaticBoolean
+   #93 = Utf8               setStaticByteProduced
+   #94 = Utf8               setStaticCharProduced
+   #95 = Utf8               setStaticShortProduced
+   #96 = Utf8               setStaticBooleanProduced
+   #97 = Utf8               ordinaryByteLocal
+   #98 = Utf8               ordinaryByteZero
+   #99 = Utf8               ordinaryByteOne
+  #100 = Utf8               ordinaryCharLocal
+  #101 = Utf8               ordinaryCharZero
+  #102 = Utf8               ordinaryCharOne
+  #103 = Utf8               ordinaryShortLocal
+  #104 = Utf8               ordinaryShortZero
+  #105 = Utf8               ordinaryShortOne
+  #106 = Utf8               ordinaryBooleanLocal
+  #107 = Utf8               ordinaryBooleanFalse
+  #108 = Utf8               ordinaryBooleanTrue
+  #109 = Utf8               ordinaryStaticByteLocal
+  #110 = Utf8               ordinaryStaticByteZero
+  #111 = Utf8               ordinaryStaticByteOne
+  #112 = Utf8               ordinaryStaticCharLocal
+  #113 = Utf8               ordinaryStaticCharZero
+  #114 = Utf8               ordinaryStaticCharOne
+  #115 = Utf8               ordinaryStaticShortLocal
+  #116 = Utf8               ordinaryStaticShortZero
+  #117 = Utf8               ordinaryStaticShortOne
+  #118 = Utf8               ordinaryStaticBooleanLocal
+  #119 = Utf8               ordinaryStaticBooleanFalse
+  #120 = Utf8               ordinaryStaticBooleanTrue
+{
+  public int byteField;
+    descriptor: I
+    flags: (0x0001) ACC_PUBLIC
+
+  public int charField;
+    descriptor: I
+    flags: (0x0001) ACC_PUBLIC
+
+  public int shortField;
+    descriptor: I
+    flags: (0x0001) ACC_PUBLIC
+
+  public int booleanField;
+    descriptor: I
+    flags: (0x0001) ACC_PUBLIC
+
+  public static int staticByteField;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static int staticCharField;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static int staticShortField;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static int staticBooleanField;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public byte ordinaryByteField;
+    descriptor: B
+    flags: (0x0001) ACC_PUBLIC
+
+  public char ordinaryCharField;
+    descriptor: C
+    flags: (0x0001) ACC_PUBLIC
+
+  public short ordinaryShortField;
+    descriptor: S
+    flags: (0x0001) ACC_PUBLIC
+
+  public boolean ordinaryBooleanField;
+    descriptor: Z
+    flags: (0x0001) ACC_PUBLIC
+
+  public static byte ordinaryStaticByteField;
+    descriptor: B
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static char ordinaryStaticCharField;
+    descriptor: C
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static short ordinaryStaticShortField;
+    descriptor: S
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static boolean ordinaryStaticBooleanField;
+    descriptor: Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public NarrowFieldStores();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void setByte(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #7                  // Field byteField:I
+         5: return
+
+  public void setChar(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #13                 // Field charField:I
+         5: return
+
+  public void setShort(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #16                 // Field shortField:I
+         5: return
+
+  public void setBoolean(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #19                 // Field booleanField:I
+         5: return
+
+  public void setByteProduced(int, boolean);
+    descriptor: (IZ)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         6: putfield      #7                  // Field byteField:I
+         9: return
+
+  public static void setByteOn(NarrowFieldStores, int);
+    descriptor: (LNarrowFieldStores;I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #7                  // Field byteField:I
+         5: return
+
+  public static void setByteProducedOn(NarrowFieldStores, int, boolean);
+    descriptor: (LNarrowFieldStores;IZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         6: putfield      #7                  // Field byteField:I
+         9: return
+
+  public void setCharProduced(int, boolean);
+    descriptor: (IZ)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         6: putfield      #13                 // Field charField:I
+         9: return
+
+  public static void setCharOn(NarrowFieldStores, int);
+    descriptor: (LNarrowFieldStores;I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #13                 // Field charField:I
+         5: return
+
+  public static void setCharProducedOn(NarrowFieldStores, int, boolean);
+    descriptor: (LNarrowFieldStores;IZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         6: putfield      #13                 // Field charField:I
+         9: return
+
+  public void setShortProduced(int, boolean);
+    descriptor: (IZ)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         6: putfield      #16                 // Field shortField:I
+         9: return
+
+  public static void setShortOn(NarrowFieldStores, int);
+    descriptor: (LNarrowFieldStores;I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #16                 // Field shortField:I
+         5: return
+
+  public static void setShortProducedOn(NarrowFieldStores, int, boolean);
+    descriptor: (LNarrowFieldStores;IZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         6: putfield      #16                 // Field shortField:I
+         9: return
+
+  public void setBooleanProduced(int, boolean);
+    descriptor: (IZ)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         6: putfield      #19                 // Field booleanField:I
+         9: return
+
+  public static void setBooleanOn(NarrowFieldStores, int);
+    descriptor: (LNarrowFieldStores;I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #19                 // Field booleanField:I
+         5: return
+
+  public static void setBooleanProducedOn(NarrowFieldStores, int, boolean);
+    descriptor: (LNarrowFieldStores;IZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         6: putfield      #19                 // Field booleanField:I
+         9: return
+
+  public static void setStaticByte(int);
+    descriptor: (I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: putstatic     #28                 // Field staticByteField:I
+         4: return
+
+  public static void setStaticChar(int);
+    descriptor: (I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: putstatic     #31                 // Field staticCharField:I
+         4: return
+
+  public static void setStaticShort(int);
+    descriptor: (I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: putstatic     #34                 // Field staticShortField:I
+         4: return
+
+  public static void setStaticBoolean(int);
+    descriptor: (I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: putstatic     #37                 // Field staticBooleanField:I
+         4: return
+
+  public static void setStaticByteProduced(int, boolean);
+    descriptor: (IZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         5: putstatic     #28                 // Field staticByteField:I
+         8: return
+
+  public static void setStaticCharProduced(int, boolean);
+    descriptor: (IZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         5: putstatic     #31                 // Field staticCharField:I
+         8: return
+
+  public static void setStaticShortProduced(int, boolean);
+    descriptor: (IZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         5: putstatic     #34                 // Field staticShortField:I
+         8: return
+
+  public static void setStaticBooleanProduced(int, boolean);
+    descriptor: (IZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: invokestatic  #22                 // Method NarrowFieldStoreEffects.value:(IZ)I
+         5: putstatic     #37                 // Field staticBooleanField:I
+         8: return
+
+  public void ordinaryByteLocal();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: iconst_1
+         1: istore_1
+         2: aload_0
+         3: iload_1
+         4: putfield      #40                 // Field ordinaryByteField:B
+         7: return
+
+  public void ordinaryByteZero();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: putfield      #40                 // Field ordinaryByteField:B
+         5: return
+
+  public void ordinaryByteOne();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_1
+         2: putfield      #40                 // Field ordinaryByteField:B
+         5: return
+
+  public void ordinaryCharLocal();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: iconst_1
+         1: istore_1
+         2: aload_0
+         3: iload_1
+         4: putfield      #44                 // Field ordinaryCharField:C
+         7: return
+
+  public void ordinaryCharZero();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: putfield      #44                 // Field ordinaryCharField:C
+         5: return
+
+  public void ordinaryCharOne();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_1
+         2: putfield      #44                 // Field ordinaryCharField:C
+         5: return
+
+  public void ordinaryShortLocal();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: iconst_1
+         1: istore_1
+         2: aload_0
+         3: iload_1
+         4: putfield      #48                 // Field ordinaryShortField:S
+         7: return
+
+  public void ordinaryShortZero();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: putfield      #48                 // Field ordinaryShortField:S
+         5: return
+
+  public void ordinaryShortOne();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_1
+         2: putfield      #48                 // Field ordinaryShortField:S
+         5: return
+
+  public void ordinaryBooleanLocal();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: iconst_1
+         1: istore_1
+         2: aload_0
+         3: iload_1
+         4: putfield      #52                 // Field ordinaryBooleanField:Z
+         7: return
+
+  public void ordinaryBooleanFalse();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: putfield      #52                 // Field ordinaryBooleanField:Z
+         5: return
+
+  public void ordinaryBooleanTrue();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_1
+         2: putfield      #52                 // Field ordinaryBooleanField:Z
+         5: return
+
+  public static void ordinaryStaticByteLocal();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=0
+         0: iconst_1
+         1: istore_0
+         2: iload_0
+         3: putstatic     #56                 // Field ordinaryStaticByteField:B
+         6: return
+
+  public static void ordinaryStaticByteZero();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #56                 // Field ordinaryStaticByteField:B
+         4: return
+
+  public static void ordinaryStaticByteOne();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_1
+         1: putstatic     #56                 // Field ordinaryStaticByteField:B
+         4: return
+
+  public static void ordinaryStaticCharLocal();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=0
+         0: iconst_1
+         1: istore_0
+         2: iload_0
+         3: putstatic     #59                 // Field ordinaryStaticCharField:C
+         6: return
+
+  public static void ordinaryStaticCharZero();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #59                 // Field ordinaryStaticCharField:C
+         4: return
+
+  public static void ordinaryStaticCharOne();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_1
+         1: putstatic     #59                 // Field ordinaryStaticCharField:C
+         4: return
+
+  public static void ordinaryStaticShortLocal();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=0
+         0: iconst_1
+         1: istore_0
+         2: iload_0
+         3: putstatic     #62                 // Field ordinaryStaticShortField:S
+         6: return
+
+  public static void ordinaryStaticShortZero();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #62                 // Field ordinaryStaticShortField:S
+         4: return
+
+  public static void ordinaryStaticShortOne();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_1
+         1: putstatic     #62                 // Field ordinaryStaticShortField:S
+         4: return
+
+  public static void ordinaryStaticBooleanLocal();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=0
+         0: iconst_1
+         1: istore_0
+         2: iload_0
+         3: putstatic     #65                 // Field ordinaryStaticBooleanField:Z
+         6: return
+
+  public static void ordinaryStaticBooleanFalse();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #65                 // Field ordinaryStaticBooleanField:Z
+         4: return
+
+  public static void ordinaryStaticBooleanTrue();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_1
+         1: putstatic     #65                 // Field ordinaryStaticBooleanField:Z
+         4: return
+}

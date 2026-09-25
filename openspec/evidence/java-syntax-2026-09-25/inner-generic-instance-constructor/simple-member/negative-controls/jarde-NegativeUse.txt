@@ -1,0 +1,47 @@
+// jarde: presentation of `negative/NegativeUse` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package negative;
+
+public final class NegativeUse extends java.lang.Object {
+    public NegativeUse() {
+        // @method <init>()V
+        // @declaration a constructor of `negative.NegativeUse`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.Object nestedEffects(negative.NegativeOuter arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `nestedEffects(Lnegative/NegativeOuter;I)Ljava/lang/Object;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nestedEffects(Lnegative/NegativeOuter;I)Ljava/lang/Object;
+        // @declaration a static method of `negative.NegativeUse`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 5
+        // the instruction at BCI 5 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 6 9 4
+        // the value at BCI 6 comes from an Duplicate at BCI 5, which produces no expression this subset writes
+        // @bytecode 24 21 18 15 4 14
+        // the value at BCI 24 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+    }
+
+    public static java.lang.Object preEffect(negative.NegativeOuter arg0, int arg1) {
+        // @method preEffect(Lnegative/NegativeOuter;I)Ljava/lang/Object;
+        // @declaration a static method of `negative.NegativeUse`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local2 = negative.NegativeOuter.mark("P", arg1);
+        // @bytecode 7
+        // the instruction at BCI 7 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 10
+        // the instruction at BCI 10 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 12
+        // the instruction at BCI 12 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 13 16 11
+        // the value at BCI 13 comes from an Duplicate at BCI 12, which produces no expression this subset writes
+        // @bytecode 26 23 20 11 19
+        // the value at BCI 26 comes from an Duplicate at BCI 10, which produces no expression this subset writes
+    }
+}

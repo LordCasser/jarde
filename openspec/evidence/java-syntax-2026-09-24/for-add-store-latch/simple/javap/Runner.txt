@@ -1,0 +1,119 @@
+public final class Runner {
+  private static final int[][] CASES;
+
+  public Runner();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iload_1
+       3: getstatic     #7                  // Field CASES:[[I
+       6: arraylength
+       7: if_icmpge     66
+      10: getstatic     #7                  // Field CASES:[[I
+      13: iload_1
+      14: aaload
+      15: astore_2
+      16: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      19: new           #19                 // class java/lang/StringBuilder
+      22: dup
+      23: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+      26: ldc           #22                 // String case
+      28: invokevirtual #24                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      31: iload_1
+      32: iconst_1
+      33: iadd
+      34: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      37: ldc           #31                 // String =
+      39: invokevirtual #24                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: aload_2
+      43: iconst_0
+      44: iaload
+      45: aload_2
+      46: iconst_1
+      47: iaload
+      48: invokestatic  #33                 // Method ForAddStoreSimple.run:(II)I
+      51: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      54: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      57: invokevirtual #43                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      60: iinc          1, 1
+      63: goto          2
+      66: return
+
+  static {};
+    Code:
+       0: iconst_5
+       1: anewarray     #49                 // class "[I"
+       4: dup
+       5: iconst_0
+       6: iconst_2
+       7: newarray       int
+       9: dup
+      10: iconst_0
+      11: bipush        9
+      13: iastore
+      14: dup
+      15: iconst_1
+      16: iconst_2
+      17: iastore
+      18: aastore
+      19: dup
+      20: iconst_1
+      21: iconst_2
+      22: newarray       int
+      24: dup
+      25: iconst_0
+      26: bipush        10
+      28: iastore
+      29: dup
+      30: iconst_1
+      31: iconst_3
+      32: iastore
+      33: aastore
+      34: dup
+      35: iconst_2
+      36: iconst_2
+      37: newarray       int
+      39: dup
+      40: iconst_0
+      41: bipush        11
+      43: iastore
+      44: dup
+      45: iconst_1
+      46: iconst_1
+      47: iastore
+      48: aastore
+      49: dup
+      50: iconst_3
+      51: iconst_2
+      52: newarray       int
+      54: dup
+      55: iconst_0
+      56: bipush        8
+      58: iastore
+      59: dup
+      60: iconst_1
+      61: iconst_2
+      62: iastore
+      63: aastore
+      64: dup
+      65: iconst_4
+      66: iconst_2
+      67: newarray       int
+      69: dup
+      70: iconst_0
+      71: bipush        12
+      73: iastore
+      74: dup
+      75: iconst_1
+      76: iconst_4
+      77: iastore
+      78: aastore
+      79: putstatic     #7                  // Field CASES:[[I
+      82: return
+}

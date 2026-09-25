@@ -1,0 +1,16 @@
+{
+  "candidate_only": true,
+  "original": [
+    "ffc00000",
+    "fff8000000000000"
+  ],
+  "candidate": [
+    "ffc00000",
+    "fff8000000000000"
+  ],
+  "direct_expression": [
+    "7fc00000",
+    "7ff8000000000000"
+  ],
+  "equal": true
+}

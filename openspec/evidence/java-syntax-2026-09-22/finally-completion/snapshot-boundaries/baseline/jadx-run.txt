@@ -1,0 +1,4 @@
+snapshot:return=41:field=99:trace=12
+snapshot-throw:java.lang.IllegalArgumentException:same=true:trace=12
+cleanup-return:throw=java.lang.IllegalStateException:cleanup=true:try=false:trace=344
+cleanup-try-throw:throw=java.lang.IllegalStateException:cleanup=true:try=false:trace=56

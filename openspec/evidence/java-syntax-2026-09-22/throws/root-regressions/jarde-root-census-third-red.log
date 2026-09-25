@@ -1,0 +1,17 @@
+
+running 1 test
+
+thread 'classfile::tests::repository_class_fixtures_validate_without_false_target_rejections' (24320852) panicked at crates/jarde-reader/src/classfile.rs:11297:9:
+assertion `left == right` failed: fixture population changed: re-measure these counts
+  left: (91, 509, 75, 231, 8)
+ right: (88, 480, 74, 227, 8)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test classfile::tests::repository_class_fixtures_validate_without_false_target_rejections ... FAILED
+
+failures:
+
+failures:
+    classfile::tests::repository_class_fixtures_validate_without_false_target_rejections
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 159 filtered out; finished in 0.04s
+

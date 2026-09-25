@@ -1,0 +1,6 @@
+1:0:value=101:trace=12
+1:1:error=java.lang.IllegalStateException:same=true:trace=1
+1:2:error=java.lang.IllegalStateException:same=true:trace=12
+7:0:value=303:trace=32
+7:1:error=java.lang.IllegalStateException:same=true:trace=3
+7:2:error=java.lang.IllegalStateException:same=true:trace=32

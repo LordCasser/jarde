@@ -1,0 +1,149 @@
+// jarde: presentation of `ShiftCore` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ShiftCore extends java.lang.Object {
+    public ShiftCore() {
+        // @method <init>()V
+        // @declaration a constructor of `ShiftCore`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int left(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `left(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method left(II)I
+        // @declaration a static method of `ShiftCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int right(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `right(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method right(II)I
+        // @declaration a static method of `ShiftCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int unsigned(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `unsigned(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method unsigned(II)I
+        // @declaration a static method of `ShiftCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static long leftLong(long arg0, int arg2) {
+        // jarde: not recovered: the recovery run for `leftLong(JI)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method leftLong(JI)J
+        // @declaration a static method of `ShiftCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static long rightLong(long arg0, int arg2) {
+        // jarde: not recovered: the recovery run for `rightLong(JI)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method rightLong(JI)J
+        // @declaration a static method of `ShiftCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static long unsignedLong(long arg0, int arg2) {
+        // jarde: not recovered: the recovery run for `unsignedLong(JI)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method unsignedLong(JI)J
+        // @declaration a static method of `ShiftCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int nested(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `nested(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nested(II)I
+        // @declaration a static method of `ShiftCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 11
+        // the value at BCI 11 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int local(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `local(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method local(II)I
+        // @declaration a static method of `ShiftCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 9
+        // the value at BCI 9 comes from an Other at BCI 7, which produces no expression this subset writes
+    }
+
+    public static int branch(int arg0, int arg1, boolean arg2) {
+        // @method branch(IIZ)I
+        // @declaration a static method of `ShiftCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        if (arg2) {
+            // @bytecode 8 9
+            // the statement at BCI 9 reads `local3`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        } else {
+            // @bytecode 12
+            // the instruction at BCI 12 is not part of the provable subset
+            // @bytecode 13
+            // the value at BCI 13 comes from an Other at BCI 12, which produces no expression this subset writes
+        }
+    }
+
+    public static int byteChar(byte arg0, char arg1, int arg2) {
+        // jarde: not recovered: the recovery run for `byteChar(BCI)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method byteChar(BCI)I
+        // @declaration a static method of `ShiftCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 7
+        // the value at BCI 7 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int ordered(boolean arg0, boolean arg1, int arg2, int arg3) {
+        // @method ordered(ZZII)I
+        // @declaration a static method of `ShiftCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ShiftEffects.left(arg0, arg2);
+        ShiftEffects.right(arg1, arg3);
+        // @bytecode 10
+        // the instruction at BCI 10 is not part of the provable subset
+        // @bytecode 11
+        // the value at BCI 11 comes from an Other at BCI 10, which produces no expression this subset writes
+    }
+}

@@ -1,0 +1,248 @@
+// jarde: presentation of `CompoundBoundaryProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class CompoundBoundaryProbe extends java.lang.Object {
+    public static int calls;
+
+    public static int selects;
+
+    public static int extraConsumers;
+
+    public static int[] data;
+
+    public static int[] otherData;
+
+    public static long[] longData;
+
+    public static BoundaryBox box;
+
+    public static boolean badIndex;
+
+    public CompoundBoundaryProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `CompoundBoundaryProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void reset() {
+        // @method reset()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.calls = 0;
+        CompoundBoundaryProbe.selects = 0;
+        CompoundBoundaryProbe.extraConsumers = 0;
+        CompoundBoundaryProbe.badIndex = false;
+        CompoundBoundaryProbe.data = new int[2];
+        CompoundBoundaryProbe.data[0] = 10;
+        CompoundBoundaryProbe.data[1] = 20;
+        CompoundBoundaryProbe.otherData = new int[2];
+        CompoundBoundaryProbe.otherData[0] = 30;
+        CompoundBoundaryProbe.otherData[1] = 40;
+        CompoundBoundaryProbe.longData = new long[2];
+        CompoundBoundaryProbe.longData[0] = 50L;
+        CompoundBoundaryProbe.longData[1] = 60L;
+        CompoundBoundaryProbe.box = new BoundaryBox(7, 70L);
+        return;
+    }
+
+    public static int rhs(int arg0) {
+        // @method rhs(I)I
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.calls = CompoundBoundaryProbe.calls + 1;
+        return arg0;
+    }
+
+    public static long longRhs() {
+        // @method longRhs()J
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.calls = CompoundBoundaryProbe.calls + 1;
+        return 2L;
+    }
+
+    public static BoundaryBox receiver() {
+        // @method receiver()LBoundaryBox;
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.selects = CompoundBoundaryProbe.selects + 1;
+        return CompoundBoundaryProbe.box;
+    }
+
+    public static int index() {
+        // @method index()I
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.selects = CompoundBoundaryProbe.selects + 1;
+        if (CompoundBoundaryProbe.badIndex) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    public static int rhsFieldMutation() {
+        // @method rhsFieldMutation()I
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.calls = CompoundBoundaryProbe.calls + 1;
+        CompoundBoundaryProbe.box.value = 100;
+        return 2;
+    }
+
+    public static int rhsArrayMutation() {
+        // @method rhsArrayMutation()I
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.calls = CompoundBoundaryProbe.calls + 1;
+        CompoundBoundaryProbe.data[0] = 100;
+        return 4;
+    }
+
+    public static void observeReceiver(BoundaryBox arg0) {
+        // @method observeReceiver(LBoundaryBox;)V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.extraConsumers = CompoundBoundaryProbe.extraConsumers + 1;
+        return;
+    }
+
+    public static void observeElement(int[] arg0, int arg1) {
+        // @method observeElement([II)V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.extraConsumers = CompoundBoundaryProbe.extraConsumers + 1;
+        return;
+    }
+
+    public static void forceObserverReferences() {
+        // @method forceObserverReferences()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        observeReceiver(CompoundBoundaryProbe.box);
+        observeElement(CompoundBoundaryProbe.data, index());
+        return;
+    }
+
+    public static void seedOther() {
+        // @method seedOther()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.box.other = 1;
+        return;
+    }
+
+    public static void fieldDifferentMember() {
+        // @method fieldDifferentMember()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver().value += rhs(2);
+        return;
+    }
+
+    public static void fieldMultiConsumer() {
+        // @method fieldMultiConsumer()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver().value += rhs(2);
+        return;
+    }
+
+    public static void arrayDifferentIndex() {
+        // @method arrayDifferentIndex()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.data[index()] += rhs(4);
+        return;
+    }
+
+    public static void arrayDifferentArray() {
+        // @method arrayDifferentArray()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.data[index()] += rhs(4);
+        return;
+    }
+
+    public static void arrayMultiConsumer() {
+        // @method arrayMultiConsumer()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.data[index()] += rhs(4);
+        return;
+    }
+
+    public static void fieldSnapshot() {
+        // @method fieldSnapshot()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        rhs(0);
+        // @bytecode 16 9 12
+        // the value at BCI 16 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        return;
+    }
+
+    public static void arraySnapshot() {
+        // @method arraySnapshot()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.data[index()] += rhsArrayMutation();
+        return;
+    }
+
+    public static void arrayPrecheck() {
+        // @method arrayPrecheck()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.data[index()] += rhs(4);
+        return;
+    }
+
+    public static void ordinaryField() {
+        // @method ordinaryField()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver().value = rhs(2);
+        return;
+    }
+
+    public static void ordinaryArray() {
+        // @method ordinaryArray()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        CompoundBoundaryProbe.data[index()] = rhs(4);
+        return;
+    }
+
+    public static void wideField() {
+        // @method wideField()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 11 4 7
+        // the value at BCI 11 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        return;
+    }
+
+    public static void wideArray() {
+        // @method wideArray()V
+        // @declaration a static method of `CompoundBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        index();
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 0 7
+        // the dependency chain from BCI 7 to final consumer 12 is not bounded
+        // @bytecode 8
+        // the dependency chain from BCI 8 to final consumer 12 is not bounded
+        // @bytecode 12 0 7 8
+        // the value at BCI 12 comes from an Other at BCI 6, which produces no expression this subset writes
+        return;
+    }
+}

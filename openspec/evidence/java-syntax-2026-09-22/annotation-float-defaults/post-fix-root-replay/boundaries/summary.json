@@ -1,0 +1,39 @@
+{
+  "boundary": {
+    "class_sha256": "361944b3d02fe66f6ad668a13de962d43b4e9f5650386fd4585cce71892f81e4",
+    "output": [
+      "negativeZero=80000000",
+      "leastSubnormal=00000001",
+      "greatestFinite=7f7fffff",
+      "negativeInfinity=ff800000",
+      "leastSubnormalDouble=0000000000000001",
+      "greatestFiniteDouble=7fefffffffffffff",
+      "positiveInfinity=7ff0000000000000",
+      "canonicalNaN=7ff8000000000000"
+    ],
+    "jarde_equal": true
+  },
+  "arrays": {
+    "class_sha256": "c8b3330b5423d43ca0bb02c6ee3f30a102aedd236f811c2bb74aa5d68c9683a5",
+    "output": [
+      "F=3f000000",
+      "F=80000000",
+      "D=0000000000000001",
+      "D=bff0000000000000"
+    ],
+    "jarde_equal": true
+  },
+  "arrays_payload_nan": {
+    "patched_sha256": "1f21fb069b992842eeb5bf907215831bed6097379d710e369074f1af9f66e77e",
+    "original_raw_bits": [
+      "F=7fc00001",
+      "F=80000000",
+      "D=0000000000000001",
+      "D=bff0000000000000"
+    ],
+    "jarde_doubles_kept": true,
+    "jarde_floats_refused": true,
+    "jarde_compile": 0,
+    "jarde_run": 1
+  }
+}

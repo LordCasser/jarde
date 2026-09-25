@@ -1,0 +1,4 @@
+b7882adfbb358656323f413aa3dcd84bdaafa330a6b217b3b3f921bce7bd645f  g/Child-patched.class
+4e17b5c5ee9ce5f78d7bc12a8cffc0c5a3ddf9c800ea72ad7199b759711cdd6e  g/Child-patched-transitive.class
+f792f5d9b68181f38e8d009787dcb61cf8919a27e7a7b84ddcaa11f77c13daa9  g-none/Child-patched.class
+f792f5d9b68181f38e8d009787dcb61cf8919a27e7a7b84ddcaa11f77c13daa9  g-none/Child-patched-transitive.class

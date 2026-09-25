@@ -1,0 +1,122 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-deferred-accept-uhefu1l1/checks/original/DeferredChecks.class
+  Last modified 2026年9月23日; size 514 bytes
+  SHA-256 checksum aa83f1a3db3853c1c1517a75b6949e5b5051a83a1f2f2402ef7652811506d849
+public class DeferredChecks
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #16                         // DeferredChecks
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 8, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // CheckSupport.value:I
+   #8 = Class              #10            // CheckSupport
+   #9 = NameAndType        #11:#12        // value:I
+  #10 = Utf8               CheckSupport
+  #11 = Utf8               value
+  #12 = Utf8               I
+  #13 = Methodref          #8.#14         // CheckSupport.mark:()V
+  #14 = NameAndType        #15:#6         // mark:()V
+  #15 = Utf8               mark
+  #16 = Class              #17            // DeferredChecks
+  #17 = Utf8               DeferredChecks
+  #18 = Utf8               Code
+  #19 = Utf8               divI
+  #20 = Utf8               (II)I
+  #21 = Utf8               remI
+  #22 = Utf8               divL
+  #23 = Utf8               (JJ)J
+  #24 = Utf8               remL
+  #25 = Utf8               field
+  #26 = Utf8               (LCheckSupport;)I
+  #27 = Utf8               length
+  #28 = Utf8               ([I)I
+  #29 = Utf8               keepPool
+{
+  public DeferredChecks();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int divI(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: idiv
+         3: invokestatic  #13                 // Method CheckSupport.mark:()V
+         6: ireturn
+
+  public static int remI(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: irem
+         3: invokestatic  #13                 // Method CheckSupport.mark:()V
+         6: ireturn
+
+  public static long divL(long, long);
+    descriptor: (JJ)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: ldiv
+         3: invokestatic  #13                 // Method CheckSupport.mark:()V
+         6: lreturn
+
+  public static long remL(long, long);
+    descriptor: (JJ)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: lrem
+         3: invokestatic  #13                 // Method CheckSupport.mark:()V
+         6: lreturn
+
+  public static int field(CheckSupport);
+    descriptor: (LCheckSupport;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #7                  // Field CheckSupport.value:I
+         4: invokestatic  #13                 // Method CheckSupport.mark:()V
+         7: ireturn
+
+  public static int length(int[]);
+    descriptor: ([I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: arraylength
+         2: invokestatic  #13                 // Method CheckSupport.mark:()V
+         5: ireturn
+
+  public static void keepPool();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=0, locals=0, args_size=0
+         0: invokestatic  #13                 // Method CheckSupport.mark:()V
+         3: return
+}

@@ -1,0 +1,38 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-shifts-root-core-0549/basic/jarde/ShiftCore.java:21: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-shifts-root-core-0549/basic/jarde/ShiftCore.java:32: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-shifts-root-core-0549/basic/jarde/ShiftCore.java:43: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-shifts-root-core-0549/basic/jarde/ShiftCore.java:54: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-shifts-root-core-0549/basic/jarde/ShiftCore.java:65: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-shifts-root-core-0549/basic/jarde/ShiftCore.java:76: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-shifts-root-core-0549/basic/jarde/ShiftCore.java:89: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-shifts-root-core-0549/basic/jarde/ShiftCore.java:104: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-shifts-root-core-0549/basic/jarde/ShiftCore.java:123: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-shifts-root-core-0549/basic/jarde/ShiftCore.java:136: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-shifts-root-core-0549/basic/jarde/ShiftCore.java:148: 错误: 缺少返回语句
+    }
+    ^
+11 个错误
+3 个警告

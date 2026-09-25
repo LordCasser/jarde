@@ -1,0 +1,13 @@
+package defpackage;
+
+import java.util.function.IntUnaryOperator;
+
+/* JADX INFO: loaded from: LambdaCapture.class */
+public class LambdaCapture {
+    public static IntUnaryOperator create() {
+        int next = CaptureSupport.next();
+        return i -> {
+            return next + i;
+        };
+    }
+}

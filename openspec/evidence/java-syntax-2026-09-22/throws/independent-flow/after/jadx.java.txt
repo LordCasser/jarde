@@ -1,0 +1,28 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ThrowFlow.class */
+public class ThrowFlow {
+    /* JADX INFO: Thrown type has an unknown type hierarchy: ThrowFlowException */
+    public static void constructed(String str) throws ThrowFlowException {
+        throw new ThrowFlowException(ThrowFlowEffects.argument(str));
+    }
+
+    public static void nested() {
+        throw ThrowFlowEffects.wrapper(ThrowFlowEffects.problem());
+    }
+
+    public static void array(RuntimeException[] runtimeExceptionArr, int i) {
+        throw runtimeExceptionArr[i];
+    }
+
+    public static void field(ThrowFlowHolder throwFlowHolder) {
+        throw throwFlowHolder.error;
+    }
+
+    public static void branch(boolean z, RuntimeException runtimeException, RuntimeException runtimeException2) {
+        if (!z) {
+            throw runtimeException2;
+        }
+        throw runtimeException;
+    }
+}

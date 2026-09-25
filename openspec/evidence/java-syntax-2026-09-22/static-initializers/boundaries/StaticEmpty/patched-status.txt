@@ -1,0 +1,2 @@
+runner_javac_rc=0
+run_rc=0

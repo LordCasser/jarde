@@ -1,0 +1,42 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.58s
+     Running tests/p3_final_static.rs (target/debug/deps/p3_final_static-3a9e8b0eefaf80c0)
+
+running 4 tests
+test clinit_uses_simple_blank_final_writes_and_reserves_local_names ... FAILED
+test essential_sources_match_all_sources_but_publish_no_source_map ... ok
+test fixture_keeps_the_static_final_and_instance_final_boundaries ... ok
+test recovered_complete_class_matches_original_in_both_clinit_branches ... ignored, requires JDK: compile and execute the original and recovered complete classes
+
+failures:
+
+---- clinit_uses_simple_blank_final_writes_and_reserves_local_names stdout ----
+
+thread 'clinit_uses_simple_blank_final_writes_and_reserves_local_names' (24276568) panicked at tests/p3_final_static.rs:168:9:
+the blank final `first` is written by its simple name:
+// @method <clinit>()V
+// @declaration a static initializer of `FinalStaticProbe`, member flags 0x0008
+// recovered from bytecode; presentation is not claimed to compile
+{
+    FinalStaticProbe.first = FinalStaticSupport.next("first");
+    FinalStaticProbe.second = FinalStaticSupport.next("second");
+    int local0 = FinalStaticSupport.next("local");
+    FinalStaticProbe.local0 = local0;
+    FinalStaticProbe.local0_2 = FinalStaticSupport.next("local0_2");
+    if (FinalStaticSupport.branch()) {
+        FinalStaticProbe.branchValue = FinalStaticSupport.next("branch-true");
+    } else {
+        FinalStaticProbe.branchValue = FinalStaticSupport.next("branch-false");
+    }
+    FinalStaticProbe.afterAssign = FinalStaticProbe.first + FinalStaticProbe.second + FinalStaticProbe.branchValue;
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    clinit_uses_simple_blank_final_writes_and_reserves_local_names
+
+test result: FAILED. 2 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test p3_final_static`

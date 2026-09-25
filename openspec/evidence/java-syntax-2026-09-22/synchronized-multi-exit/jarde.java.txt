@@ -1,0 +1,57 @@
+// jarde: presentation of `SynchronizedMultiExit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class SynchronizedMultiExit extends java.lang.Object {
+    public static int trace;
+
+    public static int failId;
+
+    public static final java.lang.RuntimeException FAILURE;
+
+    public SynchronizedMultiExit() {
+        // @method <init>()V
+        // @declaration a constructor of `SynchronizedMultiExit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    private static int produce(int arg0) {
+        // @method produce(I)I
+        // @declaration a static method of `SynchronizedMultiExit`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        SynchronizedMultiExit.trace = SynchronizedMultiExit.trace * 10 + arg0;
+        if (SynchronizedMultiExit.failId == arg0) {
+            throw SynchronizedMultiExit.FAILURE;
+        } else {
+            return arg0 * 10;
+        }
+    }
+
+    public static int choose(java.lang.Object arg0, boolean arg1) {
+        // @method choose(Ljava/lang/Object;Z)I
+        // @declaration a static method of `SynchronizedMultiExit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 2
+        // the value at BCI 2 comes from an Duplicate at BCI 1, which produces no expression this subset writes
+        // @bytecode 3
+        // the monitor at BCI 3 belongs to no guarded shape this run proved
+        if (arg1) {
+            // @bytecode 8
+            // block at BCI 8 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+        } else {
+            // @bytecode 15
+            // block at BCI 15 leaves through exception handler 1: a handler's shape is not part of the recoverable subset
+        }
+        // @bytecode 22
+        // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [22]
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `SynchronizedMultiExit`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        FAILURE = new java.lang.IllegalStateException("producer");
+    }
+}

@@ -1,0 +1,54 @@
+package defpackage;
+
+/* JADX INFO: loaded from: InstanceOfAudit.class */
+public class InstanceOfAudit {
+    public static int calls;
+
+    public static Object source(Object obj) {
+        calls++;
+        return obj;
+    }
+
+    public static boolean string(Object obj) {
+        return obj instanceof String;
+    }
+
+    public static boolean number(Object obj) {
+        return obj instanceof Number;
+    }
+
+    public static boolean runnable(Object obj) {
+        return obj instanceof Runnable;
+    }
+
+    public static boolean primitiveArray(Object obj) {
+        return obj instanceof int[];
+    }
+
+    public static boolean referenceArray(Object obj) {
+        return obj instanceof String[];
+    }
+
+    public static boolean multiArray(Object obj) {
+        return obj instanceof String[][];
+    }
+
+    public static boolean called(Object obj) {
+        return source(obj) instanceof String;
+    }
+
+    public static boolean local(Object obj) {
+        return obj instanceof String;
+    }
+
+    public static int branch(Object obj) {
+        if (obj instanceof String) {
+            return ((String) obj).length();
+        }
+        return -1;
+    }
+
+    public static boolean negated(Object obj) {
+        return !(obj instanceof String);
+    }
+}

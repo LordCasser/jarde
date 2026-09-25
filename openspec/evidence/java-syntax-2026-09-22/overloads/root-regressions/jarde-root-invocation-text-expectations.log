@@ -1,0 +1,28 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.23s
+     Running tests/p3_meeting.rs (target/debug/deps/p3_meeting-c336542e195ade41)
+
+running 6 tests
+test a_char_return_spells_the_code_unit_its_constant_stands_for ... ok
+test a_conversion_with_a_real_instruction_is_still_refused ... ok
+test a_discarded_call_result_is_the_calls_own_statement ... ok
+test a_popped_evaluation_is_the_static_calls_qualifier ... ok
+test a_position_performs_its_own_widening ... ok
+test no_shape_of_the_rule_claims_a_pop2 ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_required_conversions.rs (target/debug/deps/p3_required_conversions-e7130439423f86ef)
+
+running 8 tests
+test a_conversion_no_evidence_states_is_refused ... ok
+test a_converted_part_states_the_appends_own_type ... ok
+test a_part_that_already_meets_its_parameter_gains_nothing ... ok
+test a_return_states_the_members_own_type ... ok
+test a_write_states_the_written_types_own_type ... ok
+test an_argument_states_the_callees_parameter_type ... ok
+test every_declared_member_of_the_sample_is_covered ... ok
+test the_conversion_costs_no_ir_item_and_no_normalization_clone ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

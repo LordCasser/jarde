@@ -1,0 +1,40 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ConversionIntegers.class */
+public class ConversionIntegers {
+    public static long i2l(int i) {
+        return i;
+    }
+
+    public static float i2f(int i) {
+        return i;
+    }
+
+    public static double i2d(int i) {
+        return i;
+    }
+
+    public static byte i2b(int i) {
+        return (byte) i;
+    }
+
+    public static char i2c(int i) {
+        return (char) i;
+    }
+
+    public static short i2s(int i) {
+        return (short) i;
+    }
+
+    public static int byteOverload(int i) {
+        return ConversionSupport.take((byte) i);
+    }
+
+    public static int shortOverload(int i) {
+        return ConversionSupport.take((short) i);
+    }
+
+    public static int charOverload(int i) {
+        return ConversionSupport.take((char) i);
+    }
+}

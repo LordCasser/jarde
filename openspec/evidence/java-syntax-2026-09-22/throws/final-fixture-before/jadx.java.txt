@@ -1,0 +1,45 @@
+package defpackage;
+
+import java.io.IOException;
+
+/* JADX INFO: loaded from: ThrowProbe.class */
+public final class ThrowProbe {
+    public static void nullValue() {
+        throw null;
+    }
+
+    public static void parameter(RuntimeException runtimeException) {
+        throw runtimeException;
+    }
+
+    public static void allocation() {
+        throw new IllegalStateException("fresh");
+    }
+
+    public static void call() {
+        throw ThrowEffects.problem();
+    }
+
+    public static void cast(Object obj) {
+        throw ((RuntimeException) obj);
+    }
+
+    public static void conditional(boolean z, RuntimeException runtimeException, RuntimeException runtimeException2) {
+        if (!z) {
+            throw runtimeException2;
+        }
+        throw runtimeException;
+    }
+
+    public static RuntimeException namedCatch(RuntimeException runtimeException) {
+        try {
+            throw runtimeException;
+        } catch (RuntimeException e) {
+            return e;
+        }
+    }
+
+    public static void checked(IOException iOException) throws IOException {
+        throw iOException;
+    }
+}

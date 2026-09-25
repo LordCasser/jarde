@@ -1,0 +1,1 @@
+public class ShiftBoolDistanceRunner {public static void main(String[] args){for(int v:new int[]{Integer.MIN_VALUE,-1,0,1,Integer.MAX_VALUE})for(boolean d:new boolean[]{false,true})System.out.println(v+":"+d+":"+ShiftBoolDistance.shift(v,d));}}

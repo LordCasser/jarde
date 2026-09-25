@@ -1,0 +1,1 @@
+/tmp/jarde-cli-boolean-root class-source --input /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/root-after-8cd1/work/patched-classes/ZFieldStores.class --class ZFieldStores --policy single-class --release 8 --format text --evidence all

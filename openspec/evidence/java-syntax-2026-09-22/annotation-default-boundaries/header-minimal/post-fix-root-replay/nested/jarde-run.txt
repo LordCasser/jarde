@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "Inner.value()" because the return value of "java.lang.reflect.Method.getDefaultValue()" is null
+	at NestedRunner.main(Unknown Source)

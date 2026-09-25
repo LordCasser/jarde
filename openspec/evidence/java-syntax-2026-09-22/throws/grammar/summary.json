@@ -1,0 +1,24 @@
+[
+  {
+    "class": "ThrowSwitch",
+    "quotes": 0,
+    "jarde_javac": 0,
+    "jadx_javac": 0
+  },
+  {
+    "class": "ThrowClinit",
+    "quotes": 0,
+    "jarde_javac": 1,
+    "jadx_javac": 1,
+    "hypothesis_javac": 0,
+    "hypothesis_equal": true
+  },
+  {
+    "class": "ThrowClinitBranch",
+    "quotes": 0,
+    "jarde_javac": 1,
+    "jadx_javac": 1,
+    "hypothesis_javac": 0,
+    "hypothesis_equal": true
+  }
+]

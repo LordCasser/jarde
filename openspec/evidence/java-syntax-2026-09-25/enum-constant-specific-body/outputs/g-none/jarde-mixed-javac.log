@@ -1,0 +1,17 @@
+<TMP>/jarde-source-g-none-Mixed/Mixed.java:6: 错误: 此处需要枚举常量
+    public static final demo.Mixed SPECIAL;
+    ^
+<TMP>/jarde-source-g-none-Mixed/Mixed.java:49: 错误: 需要')'或','
+    Mixed(java.lang.String arg1, int arg2, demo.Mixed$1 arg3) {
+                          ^
+<TMP>/jarde-source-g-none-Mixed/Mixed.java:49: 错误: 需要';'
+    Mixed(java.lang.String arg1, int arg2, demo.Mixed$1 arg3) {
+                                               ^
+<TMP>/jarde-source-g-none-Mixed/Mixed.java:49: 错误: 需要',', '}'或';'
+    Mixed(java.lang.String arg1, int arg2, demo.Mixed$1 arg3) {
+                                                       ^
+<TMP>/jarde-source-g-none-Mixed/Mixed.java:49: 错误: 需要',', '}'或';'
+    Mixed(java.lang.String arg1, int arg2, demo.Mixed$1 arg3) {
+                                                            ^
+5 个错误
+exit=1

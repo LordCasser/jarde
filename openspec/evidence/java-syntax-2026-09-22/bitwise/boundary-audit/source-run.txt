@@ -1,0 +1,6 @@
+pure-int-01=3
+overwritten-local=2
+dup-call-pop=2
+source-int-left=2
+source-int-right=7
+trace=2

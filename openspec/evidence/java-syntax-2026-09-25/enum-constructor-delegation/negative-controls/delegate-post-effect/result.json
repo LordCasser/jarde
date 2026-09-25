@@ -1,0 +1,51 @@
+{
+  "case": "delegate-post-effect",
+  "class_sha256": {
+    "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+    "DelegatingEnum.class": "a228a841ce211007387b407ca9680700ccf8bef59694b8ed411b268a0e7fedbc",
+    "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+  },
+  "expected_rejection": "The delegating constructor performs an additional user call after this().",
+  "jadx_compile_exit": 0,
+  "jadx_decompile_exit": 0,
+  "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+  "jadx_output": [
+    "enum=ZERO:0:0",
+    "enum=ONE:1:1",
+    "effects=3:0,9,1",
+    "declared-constructors=2,3"
+  ],
+  "jadx_xverify_run_exit": 0,
+  "jarde_java8_compile_exit": 1,
+  "jarde_source_execution": {
+    "status": "complete",
+    "usage": {
+      "analysis_steps": 424,
+      "archive_entries": 14,
+      "attribute_bytes": 855,
+      "class_bytes": 2030,
+      "class_headers": 1,
+      "code_bytes": 105,
+      "dependency_depth": 0,
+      "elapsed_millis": 3,
+      "entry_bytes": 1015,
+      "input_bytes": 2995,
+      "ir_edges": 53,
+      "ir_items": 1252,
+      "method_bodies": 7,
+      "nested_depth": 0,
+      "normalization_clones": 0,
+      "output_bytes": 2992,
+      "read_bytes": 590,
+      "result_items": 46
+    }
+  },
+  "jarde_source_outcome": "performed",
+  "original_output": [
+    "enum=ZERO:0:0",
+    "enum=ONE:1:1",
+    "effects=3:0,9,1",
+    "declared-constructors=2,3"
+  ],
+  "original_xverify_run_exit": 0
+}

@@ -1,0 +1,12 @@
+super=1
+this=1
+objectConstructor=1
+stringConstructor=2
+ordered=41:12
+first=1
+second=12
+objectIdentity=41
+stringIdentity=42
+castIdentity=42
+castNull=42
+castBad=CCE

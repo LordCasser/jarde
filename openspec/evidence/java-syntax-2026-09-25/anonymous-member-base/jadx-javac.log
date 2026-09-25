@@ -1,0 +1,20 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+openspec/evidence/java-syntax-2026-09-25/anonymous-member-base/jadx-source/AnonymousMemberBase.java:73: 错误: 需要<标识符>
+        return new 2(outer, sideEffect());
+                  ^
+openspec/evidence/java-syntax-2026-09-25/anonymous-member-base/jadx-source/AnonymousMemberBase.java:73: 错误: 需要'('或'['
+        return new 2(outer, sideEffect());
+                   ^
+openspec/evidence/java-syntax-2026-09-25/anonymous-member-base/jadx-source/AnonymousMemberBase.java:73: 错误: 不是语句
+        return new 2(outer, sideEffect());
+                     ^
+openspec/evidence/java-syntax-2026-09-25/anonymous-member-base/jadx-source/AnonymousMemberBase.java:73: 错误: 需要';'
+        return new 2(outer, sideEffect());
+                          ^
+openspec/evidence/java-syntax-2026-09-25/anonymous-member-base/jadx-source/AnonymousMemberBase.java:73: 错误: 需要';'
+        return new 2(outer, sideEffect());
+                                        ^
+5 个错误
+3 个警告

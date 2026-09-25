@@ -1,0 +1,98 @@
+package defpackage;
+
+/* JADX INFO: loaded from: TwrMultiAudit.class */
+public final class TwrMultiAudit implements AutoCloseable {
+    private static int closes;
+    private static int trace;
+    private final int id;
+    private final Exception closeFailure;
+
+    private TwrMultiAudit(int i, Exception exc) {
+        this.id = i;
+        this.closeFailure = exc;
+    }
+
+    private static TwrMultiAudit open(int i, Exception exc) {
+        return new TwrMultiAudit(i, exc);
+    }
+
+    private static void failBody(Exception exc) throws Exception {
+        throw exc;
+    }
+
+    private static void event(int i) {
+        trace = (trace * 10) + i;
+    }
+
+    public static void reset() {
+        closes = 0;
+        trace = 0;
+    }
+
+    public static int closes() {
+        return closes;
+    }
+
+    public static int trace() {
+        return trace;
+    }
+
+    public static void bodyAndThreeFailingCloses(Exception exc, Exception exc2, Exception exc3, Exception exc4) throws Exception {
+        TwrMultiAudit twrMultiAuditOpen = open(1, exc2);
+        try {
+            TwrMultiAudit twrMultiAuditOpen2 = open(2, exc3);
+            try {
+                TwrMultiAudit twrMultiAuditOpen3 = open(3, exc4);
+                try {
+                    event(9);
+                    failBody(exc);
+                    if (twrMultiAuditOpen3 != null) {
+                        twrMultiAuditOpen3.close();
+                    }
+                    if (twrMultiAuditOpen2 != null) {
+                        twrMultiAuditOpen2.close();
+                    }
+                    if (twrMultiAuditOpen != null) {
+                        twrMultiAuditOpen.close();
+                    }
+                } catch (Throwable th) {
+                    if (twrMultiAuditOpen3 != null) {
+                        try {
+                            twrMultiAuditOpen3.close();
+                        } catch (Throwable th2) {
+                            th.addSuppressed(th2);
+                        }
+                    }
+                    throw th;
+                }
+            } catch (Throwable th3) {
+                if (twrMultiAuditOpen2 != null) {
+                    try {
+                        twrMultiAuditOpen2.close();
+                    } catch (Throwable th4) {
+                        th3.addSuppressed(th4);
+                    }
+                }
+                throw th3;
+            }
+        } catch (Throwable th5) {
+            if (twrMultiAuditOpen != null) {
+                try {
+                    twrMultiAuditOpen.close();
+                } catch (Throwable th6) {
+                    th5.addSuppressed(th6);
+                }
+            }
+            throw th5;
+        }
+    }
+
+    @Override // java.lang.AutoCloseable
+    public void close() throws Exception {
+        closes++;
+        event(this.id);
+        if (this.closeFailure != null) {
+            throw this.closeFailure;
+        }
+    }
+}

@@ -1,0 +1,108 @@
+Compiled from "ShiftEffectOrder.java"
+public class ShiftEffectOrder {
+  private static int events;
+
+  public ShiftEffectOrder();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  private static int step(int, int);
+    Code:
+       0: getstatic     #7                  // Field events:I
+       3: bipush        10
+       5: imul
+       6: iload_0
+       7: iadd
+       8: putstatic     #7                  // Field events:I
+      11: iload_1
+      12: ireturn
+
+  private static int fail(int);
+    Code:
+       0: getstatic     #7                  // Field events:I
+       3: bipush        10
+       5: imul
+       6: iload_0
+       7: iadd
+       8: putstatic     #7                  // Field events:I
+      11: new           #13                 // class java/lang/IllegalArgumentException
+      14: dup
+      15: ldc           #15                 // String shift operand
+      17: invokespecial #17                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      20: athrow
+
+  public static int inline(int);
+    Code:
+       0: iconst_0
+       1: putstatic     #7                  // Field events:I
+       4: iconst_1
+       5: iload_0
+       6: invokestatic  #20                 // Method step:(II)I
+       9: iconst_2
+      10: iconst_2
+      11: invokestatic  #20                 // Method step:(II)I
+      14: ishl
+      15: istore_1
+      16: getstatic     #7                  // Field events:I
+      19: sipush        1000
+      22: imul
+      23: iload_1
+      24: iadd
+      25: ireturn
+
+  public static int separated(int);
+    Code:
+       0: iconst_0
+       1: putstatic     #7                  // Field events:I
+       4: iconst_1
+       5: iload_0
+       6: invokestatic  #20                 // Method step:(II)I
+       9: istore_1
+      10: iconst_3
+      11: iconst_0
+      12: invokestatic  #20                 // Method step:(II)I
+      15: pop
+      16: iload_1
+      17: iconst_2
+      18: iconst_2
+      19: invokestatic  #20                 // Method step:(II)I
+      22: ishl
+      23: istore_2
+      24: getstatic     #7                  // Field events:I
+      27: sipush        1000
+      30: imul
+      31: iload_2
+      32: iadd
+      33: ireturn
+
+  public static int throwLeft(int);
+    Code:
+       0: iconst_0
+       1: putstatic     #7                  // Field events:I
+       4: iconst_1
+       5: invokestatic  #24                 // Method fail:(I)I
+       8: iconst_2
+       9: iload_0
+      10: invokestatic  #20                 // Method step:(II)I
+      13: ishl
+      14: ireturn
+
+  public static int throwRight(int);
+    Code:
+       0: iconst_0
+       1: putstatic     #7                  // Field events:I
+       4: iconst_1
+       5: iload_0
+       6: invokestatic  #20                 // Method step:(II)I
+       9: iconst_2
+      10: invokestatic  #24                 // Method fail:(I)I
+      13: ishl
+      14: ireturn
+
+  public static int events();
+    Code:
+       0: getstatic     #7                  // Field events:I
+       3: ireturn
+}

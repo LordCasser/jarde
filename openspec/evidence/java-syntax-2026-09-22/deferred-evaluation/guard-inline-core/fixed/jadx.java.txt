@@ -1,0 +1,18 @@
+package defpackage;
+
+/* JADX INFO: loaded from: GuardInlineCore.class */
+public class GuardInlineCore {
+    public static void locked() {
+        synchronized (GuardEffects.lock()) {
+            GuardEffects.mark();
+        }
+    }
+
+    public static int returned() {
+        int iValue;
+        synchronized (GuardEffects.shared) {
+            iValue = GuardEffects.value();
+        }
+        return iValue;
+    }
+}

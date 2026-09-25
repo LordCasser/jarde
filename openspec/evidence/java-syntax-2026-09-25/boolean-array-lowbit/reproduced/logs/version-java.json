@@ -1,0 +1,10 @@
+{
+  "command": [
+    "java",
+    "-version"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "",
+  "stderr": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)\n"
+}

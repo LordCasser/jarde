@@ -1,0 +1,20 @@
+[
+  {
+    "class": "ShiftCore",
+    "cli_sha256": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+    "source_javac": 0,
+    "class_bytes": 719,
+    "class_sha256": "db5a3053fb7b38ddf22cff1e9ec93048d41ab29e94d5809c0f1f611f8ac86bba",
+    "original_run": 0,
+    "jarde_returncode": 0,
+    "jarde_quotes": 29,
+    "jarde_javac": 1,
+    "jadx": 0,
+    "jadx_javac": 0,
+    "jadx_run": 0,
+    "jadx_equal": true,
+    "cli_sha256_after": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+    "cases": 723,
+    "jadx_diff_lines": 0
+  }
+]

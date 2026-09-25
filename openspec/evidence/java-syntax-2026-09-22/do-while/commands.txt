@@ -1,0 +1,23 @@
+Frozen CLI verification:
+shasum -a 256 /tmp/jarde-cli-deferred-budget-908c
+
+The exact replay command is:
+python3 openspec/evidence/java-syntax-2026-09-22/do-while/run_audit.py
+
+For each case the script executes these exact tool commands, with the case-specific source and
+temporary output paths substituted by the names shown in summary.json:
+
+javac --release 8 -g:none -d <work>/<case>/original <evidence>/<case-source>.java
+javac --release 8 -g:none -cp <work>/<case>/original -d <work>/<case>/original <work>/<runner>.java
+java -Xverify:all -cp <work>/<case>/original <Runner>
+javap -c -v -p <work>/<case>/original/<Class>.class
+jadx --no-res -d <work>/<case>/jadx <work>/<case>/original/<Class>.class
+javac --release 8 -g:none -d <work>/<case>/jadx-compiled <work>/<jadx-source>.java <work>/<case>/jadx-compiled/<Runner>.java
+java -Xverify:all -cp <work>/<case>/jadx-compiled <JadxPackage>.<Runner>
+/tmp/jarde-cli-deferred-budget-908c class-source --input <work>/<case>/original/<Class>.class --class <Class> --policy single-class --release 8 --format text
+javac --release 8 -g:none -d <work>/<case>/jarde-compiled <work>/<case>/jarde-source/<Class>.java <work>/<case>/jarde-compiled/<Runner>.java
+java -Xverify:all -cp <work>/<case>/jarde-compiled <Runner>
+
+The script records every exit code in summary.json and leaves candidate runtime steps unattempted
+when the preceding javac exits nonzero. The raw command stderr/stdout is in the corresponding
+*-javac.log, *-run.stderr.txt, *-run.txt, and jarde-report.txt files.

@@ -1,0 +1,26 @@
+// jarde: presentation of `LambdaCapture` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class LambdaCapture extends java.lang.Object {
+    public LambdaCapture() {
+        // @method <init>()V
+        // @declaration a constructor of `LambdaCapture`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.util.function.IntUnaryOperator create() {
+        // @method create()Ljava/util/function/IntUnaryOperator;
+        // @declaration a static method of `LambdaCapture`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int capture = CaptureSupport.next();
+        return (int p0) -> LambdaCapture.bridge$create$0(capture, p0);
+    }
+
+    private static int bridge$create$0(int arg0, int arg1) {
+        // @method bridge$create$0(II)I
+        // @declaration a static method of `LambdaCapture`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0 + arg1;
+    }
+}

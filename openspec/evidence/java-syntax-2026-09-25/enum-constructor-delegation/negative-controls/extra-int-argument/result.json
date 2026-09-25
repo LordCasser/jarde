@@ -1,0 +1,51 @@
+{
+  "case": "extra-int-argument",
+  "class_sha256": {
+    "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+    "DelegatingEnum.class": "4c3d5eed09f58ec57d89863218871dd2ab136f1a87f0817290bcb3b1cac59188",
+    "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+  },
+  "expected_rejection": "ZERO passes two source ints to a distinct `(String,int,int,int)` overload.",
+  "jadx_compile_exit": 0,
+  "jadx_decompile_exit": 0,
+  "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+  "jadx_output": [
+    "enum=ZERO:0:7",
+    "enum=ONE:1:1",
+    "effects=2:7,1",
+    "declared-constructors=2,3,4"
+  ],
+  "jadx_xverify_run_exit": 0,
+  "jarde_java8_compile_exit": 1,
+  "jarde_source_execution": {
+    "status": "complete",
+    "usage": {
+      "analysis_steps": 510,
+      "archive_entries": 14,
+      "attribute_bytes": 1036,
+      "class_bytes": 2272,
+      "class_headers": 1,
+      "code_bytes": 124,
+      "dependency_depth": 0,
+      "elapsed_millis": 3,
+      "entry_bytes": 1136,
+      "input_bytes": 3034,
+      "ir_edges": 71,
+      "ir_items": 1544,
+      "method_bodies": 8,
+      "nested_depth": 0,
+      "normalization_clones": 0,
+      "output_bytes": 3848,
+      "read_bytes": 629,
+      "result_items": 51
+    }
+  },
+  "jarde_source_outcome": "performed",
+  "original_output": [
+    "enum=ZERO:0:7",
+    "enum=ONE:1:1",
+    "effects=2:7,1",
+    "declared-constructors=2,3,4"
+  ],
+  "original_xverify_run_exit": 0
+}

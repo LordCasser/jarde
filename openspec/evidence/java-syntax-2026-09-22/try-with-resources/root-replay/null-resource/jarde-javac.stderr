@@ -1,0 +1,10 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-twr-audit-thyd3z0f/null-resource/jarde/source/NullResourceCore.java:50: 错误: 找不到符号
+                    local0.close();
+                          ^
+  符号:   方法 close()
+  位置: 类型为Object的变量 local0
+1 个错误
+3 个警告

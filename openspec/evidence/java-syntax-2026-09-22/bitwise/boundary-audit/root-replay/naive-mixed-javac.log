@@ -1,0 +1,15 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-bitwise-boundary-root/naive/NaiveMixed.java:2: 错误: 二元运算符 '&' 的操作数类型错误
+    static int left(boolean value, int other) { return value & other; }
+                                                             ^
+  第一个类型:  boolean
+  第二个类型: int
+/tmp/jarde-bitwise-boundary-root/naive/NaiveMixed.java:3: 错误: 二元运算符 '|' 的操作数类型错误
+    static int right(int value, boolean other) { return value | other; }
+                                                              ^
+  第一个类型:  int
+  第二个类型: boolean
+2 个错误
+3 个警告

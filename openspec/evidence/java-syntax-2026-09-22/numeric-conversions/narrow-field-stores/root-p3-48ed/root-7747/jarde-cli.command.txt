@@ -1,0 +1,1 @@
+/tmp/jarde-cli-deferred-accepted-7747 class-source --input /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/patched-classes/NarrowFieldStores.class --class NarrowFieldStores --policy single-class --release 8 --format text --evidence all

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/opt/homebrew/bin/jadx",
+    "-d",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/jadx",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/patched/BoolInit.class"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 1 (0%)\n                                                             \nINFO  - done\n",
+  "stderr": ""
+}

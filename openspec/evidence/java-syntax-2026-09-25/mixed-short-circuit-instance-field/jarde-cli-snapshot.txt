@@ -1,0 +1,4 @@
+build source revision is not embedded; root identified this as the gateway-complete, pre-local-values stable executable.
+path=/tmp/jarde-sept25-final-target/debug/jarde-cli
+3017e0ac79bf7bc030a1e687d31aec6c7a678453702c1cd87b5410f0c9fa9498  /tmp/jarde-sept25-final-target/debug/jarde-cli
+CLI version command: jarde-cli 0.1.0

@@ -1,0 +1,75 @@
+{
+  "input_bytes": 623,
+  "output_bytes": 665,
+  "code_attributes": 7,
+  "code_sha256_before": "ecb398c4aee2b10e38595f112cf0c1a2a9b4a5c11aeae5093bef69b93d480db5",
+  "code_sha256_after": "ecb398c4aee2b10e38595f112cf0c1a2a9b4a5c11aeae5093bef69b93d480db5",
+  "patches": [
+    {
+      "method": "runByte",
+      "from": "(I)I",
+      "to": "(I)B",
+      "method_span": [
+        242,
+        315
+      ],
+      "descriptor_offset": 246,
+      "descriptor_index": 22
+    },
+    {
+      "method": "runChar",
+      "from": "(I)I",
+      "to": "(I)C",
+      "method_span": [
+        315,
+        386
+      ],
+      "descriptor_offset": 319,
+      "descriptor_index": 23
+    },
+    {
+      "method": "runShort",
+      "from": "(I)I",
+      "to": "(I)S",
+      "method_span": [
+        386,
+        457
+      ],
+      "descriptor_offset": 390,
+      "descriptor_index": 24
+    },
+    {
+      "method": "boolByte",
+      "from": "(Z)I",
+      "to": "(Z)B",
+      "method_span": [
+        457,
+        513
+      ],
+      "descriptor_offset": 461,
+      "descriptor_index": 25
+    },
+    {
+      "method": "boolChar",
+      "from": "(Z)I",
+      "to": "(Z)C",
+      "method_span": [
+        513,
+        567
+      ],
+      "descriptor_offset": 517,
+      "descriptor_index": 26
+    },
+    {
+      "method": "boolShort",
+      "from": "(Z)I",
+      "to": "(Z)S",
+      "method_span": [
+        567,
+        621
+      ],
+      "descriptor_offset": 571,
+      "descriptor_index": 27
+    }
+  ]
+}

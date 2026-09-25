@@ -1,0 +1,24 @@
+package defpackage;
+
+/* JADX INFO: loaded from: NewConsumers.class */
+public class NewConsumers {
+    public static Runnable cast() {
+        return new ConsumerValue();
+    }
+
+    public static void array(ConsumerValue[] consumerValueArr, int i) {
+        consumerValueArr[i] = new ConsumerValue();
+    }
+
+    public static boolean type() {
+        return new ConsumerValue() instanceof Runnable;
+    }
+
+    public static int field() {
+        return new ConsumerValue().number;
+    }
+
+    public static int call() {
+        return new ConsumerValue().get();
+    }
+}

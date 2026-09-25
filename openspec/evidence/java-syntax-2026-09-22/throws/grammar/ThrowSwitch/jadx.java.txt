@@ -1,0 +1,15 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ThrowSwitch.class */
+public class ThrowSwitch {
+    public static void select(int i, RuntimeException runtimeException, RuntimeException runtimeException2) {
+        switch (i) {
+            case 0:
+                throw runtimeException;
+            case 1:
+                throw runtimeException2;
+            default:
+                throw null;
+        }
+    }
+}

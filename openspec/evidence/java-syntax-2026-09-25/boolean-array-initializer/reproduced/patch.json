@@ -1,0 +1,50 @@
+{
+  "major_version": 52,
+  "input": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/original/BoolInit.class",
+  "input_sha256": "5304fa21e9594a0ab6e04e0f79ee0da3bbcdcbc85e3019183d7cdd5e7b22da7d",
+  "output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/patched/BoolInit.class",
+  "output_sha256": "e0e8cf5cf99fdb3e402db16e6d0b86db1b8b8672df2e684523c72a67df724a3f",
+  "bytes_equal": true,
+  "descriptor_edits": [
+    {
+      "from": "()[I",
+      "to": "()[Z",
+      "entries": 1
+    }
+  ],
+  "method": "values()[Z",
+  "original_code_hex": "08bc0a5903034f5904044f5905054f5906064f5907024fb0",
+  "patched_code_hex": "08bc045903035459040454590505545906065459070254b0",
+  "newarray_atype_patch": {
+    "code_offset": 2,
+    "from": 10,
+    "to": 4
+  },
+  "store_opcode_patches": [
+    {
+      "code_offset": 6,
+      "from": "0x4f",
+      "to": "0x54"
+    },
+    {
+      "code_offset": 10,
+      "from": "0x4f",
+      "to": "0x54"
+    },
+    {
+      "code_offset": 14,
+      "from": "0x4f",
+      "to": "0x54"
+    },
+    {
+      "code_offset": 18,
+      "from": "0x4f",
+      "to": "0x54"
+    },
+    {
+      "code_offset": 22,
+      "from": "0x4f",
+      "to": "0x54"
+    }
+  ]
+}

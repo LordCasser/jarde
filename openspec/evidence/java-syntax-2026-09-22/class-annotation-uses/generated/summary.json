@@ -1,0 +1,35 @@
+{
+  "cli_sha256": "7f9dd55bb020d0308504a9484ad44b157b271f08b1b96c667e538f935c6a38d5",
+  "source_sha256": {
+    "Tagged.java": "c6bde2f7356c0a0de8de0fa8485f5d7af023b9331ea9f87e06a2854506138817",
+    "TagRunner.java": "6223e86d4bdca890b01e6171ee9a988f976a63350011821f11f11cf2addeb003",
+    "RetentionTagged.java": "9bea2bf8dcc45040d2f1d13991ccb7ce075f141691af6bd09b7cb0aabbff6b94"
+  },
+  "class_sha256": {
+    "RetentionTagged.class": "c40639586a3f68c33470b2cc873b30cf06394d76f74bad9defb9823a708ee183",
+    "TagRunner.class": "fc9389dd804b772248a2141a7c0a65144dba741812d4afb9afbe246d063e4ec6",
+    "Tagged.class": "2ba5e42e8e00e7ec9fb46a9152d3dd403f85a872ddc579d54c245f8c76be693c"
+  },
+  "class_bytes": {
+    "RetentionTagged.class": 247,
+    "TagRunner.class": 659,
+    "Tagged.class": 247
+  },
+  "output": {
+    "original": [
+      "true",
+      "3",
+      "@java.lang.annotation.Retention(RUNTIME)"
+    ],
+    "jadx": [
+      "true",
+      "3",
+      "@java.lang.annotation.Retention(RUNTIME)"
+    ],
+    "jarde": [
+      "false",
+      "3",
+      "null"
+    ]
+  }
+}

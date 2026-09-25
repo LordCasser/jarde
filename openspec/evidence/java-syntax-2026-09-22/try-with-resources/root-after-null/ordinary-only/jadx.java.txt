@@ -1,0 +1,23 @@
+package defpackage;
+
+/* JADX INFO: loaded from: NullCatchOnly.class */
+public final class NullCatchOnly implements AutoCloseable {
+    private static int catches;
+
+    public static int catches() {
+        return catches;
+    }
+
+    public static void ordinary() {
+        Object obj = null;
+        try {
+            obj.toString();
+        } catch (RuntimeException e) {
+            catches++;
+        }
+    }
+
+    @Override // java.lang.AutoCloseable
+    public void close() {
+    }
+}

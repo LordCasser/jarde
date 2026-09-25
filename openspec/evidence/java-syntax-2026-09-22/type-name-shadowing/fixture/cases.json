@@ -1,0 +1,66 @@
+[
+  {
+    "case": "null:own",
+    "kind": "same-class static call",
+    "original": "null:own:51:3:7:null",
+    "jarde": "null:own:51:3:7:null",
+    "jadx": "null:own:51:3:7:null",
+    "failure_stage": "equal"
+  },
+  {
+    "case": "null:invoke",
+    "kind": "arg0/arg0_2 external static calls",
+    "original": "null:invoke:32:3:7:null",
+    "jarde": "null:invoke:java.lang.NullPointerException:3:7:null",
+    "jadx": "null:invoke:32:3:7:null",
+    "failure_stage": "jarde-runtime-mismatch"
+  },
+  {
+    "case": "null:read",
+    "kind": "arg0/arg0_2 static field read",
+    "original": "null:read:10:3:7:null",
+    "jarde": "null:read:java.lang.NullPointerException:3:7:null",
+    "jadx": "null:read:10:3:7:null",
+    "failure_stage": "jarde-runtime-mismatch"
+  },
+  {
+    "case": "null:write",
+    "kind": "arg0/arg0_2 static field write",
+    "original": "null:write:done:9:10:null",
+    "jarde": "null:write:java.lang.NullPointerException:3:7:null",
+    "jadx": "null:write:done:9:10:null",
+    "failure_stage": "jarde-runtime-mismatch"
+  },
+  {
+    "case": "object:own",
+    "kind": "same-class static call",
+    "original": "object:own:51:3:7:70",
+    "jarde": "object:own:51:3:7:70",
+    "jadx": "object:own:51:3:7:70",
+    "failure_stage": "equal"
+  },
+  {
+    "case": "object:invoke",
+    "kind": "arg0/arg0_2 external static calls",
+    "original": "object:invoke:32:3:7:70",
+    "jarde": "object:invoke:52:3:7:70",
+    "jadx": "object:invoke:32:3:7:70",
+    "failure_stage": "jarde-runtime-mismatch"
+  },
+  {
+    "case": "object:read",
+    "kind": "arg0/arg0_2 static field read",
+    "original": "object:read:10:3:7:70",
+    "jarde": "object:read:77:3:7:70",
+    "jadx": "object:read:10:3:7:70",
+    "failure_stage": "jarde-runtime-mismatch"
+  },
+  {
+    "case": "object:write",
+    "kind": "arg0/arg0_2 static field write",
+    "original": "object:write:done:9:10:70",
+    "jarde": "object:write:done:3:10:9",
+    "jadx": "object:write:done:9:10:70",
+    "failure_stage": "jarde-runtime-mismatch"
+  }
+]

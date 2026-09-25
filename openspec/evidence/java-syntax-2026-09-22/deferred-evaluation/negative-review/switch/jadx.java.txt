@@ -1,0 +1,23 @@
+package defpackage;
+
+/* JADX INFO: loaded from: SwitchDeferred.class */
+public class SwitchDeferred {
+    public static int run(int i) {
+        switch (i) {
+            case 1:
+                int iValue = SwitchSupport.value();
+                SwitchSupport.mark();
+                return iValue;
+            default:
+                int iOther = SwitchSupport.other();
+                SwitchSupport.mark();
+                return iOther;
+        }
+    }
+
+    public static void keepPool() {
+        SwitchSupport.value();
+        SwitchSupport.mark();
+        SwitchSupport.other();
+    }
+}

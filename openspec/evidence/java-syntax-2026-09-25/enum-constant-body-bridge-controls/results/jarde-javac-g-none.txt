@@ -1,0 +1,16 @@
+<TMP>/jarde-source/demo/Op.java:6: 错误: 此处需要枚举常量
+    public static final demo.Op ADD;
+    ^
+<TMP>/jarde-source/demo/Op.java:52: 错误: 需要')'或','
+    Op(java.lang.String arg1, int arg2, demo.Op$1 arg3) {
+                       ^
+<TMP>/jarde-source/demo/Op.java:52: 错误: 需要';'
+    Op(java.lang.String arg1, int arg2, demo.Op$1 arg3) {
+                                            ^
+<TMP>/jarde-source/demo/Op.java:52: 错误: 需要',', '}'或';'
+    Op(java.lang.String arg1, int arg2, demo.Op$1 arg3) {
+                                                 ^
+<TMP>/jarde-source/demo/Op.java:52: 错误: 需要',', '}'或';'
+    Op(java.lang.String arg1, int arg2, demo.Op$1 arg3) {
+                                                      ^
+5 个错误

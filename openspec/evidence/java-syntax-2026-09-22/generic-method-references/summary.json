@@ -1,0 +1,26 @@
+{
+  "class_sha256": "206aca33d0d8bd537a40f50205107eea358addbf4198c714070338da60ff2ef6",
+  "bytes": 1014,
+  "jarde_cli_sha256": "c050b502ba3fc23f33937ac607b1da7b51447e02e1a6d41b1d060c2b93b5b8d9",
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "cases": 6,
+  "jarde_differences": [
+    {
+      "original": "stringText:2",
+      "jarde": "stringText:1"
+    },
+    {
+      "original": "stringNull:2",
+      "jarde": "stringNull:1"
+    },
+    {
+      "original": "stringInteger:java.lang.ClassCastException",
+      "jarde": "stringInteger:1"
+    }
+  ],
+  "jadx_javac": 0,
+  "jadx_equal": true,
+  "hypothesis_javac": 0,
+  "hypothesis_equal": true
+}

@@ -1,0 +1,1 @@
+not run; Java 8 recompilation failed with exit=1

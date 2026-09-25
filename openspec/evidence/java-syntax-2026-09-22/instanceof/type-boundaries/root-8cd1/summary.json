@@ -1,0 +1,9 @@
+{
+  "cli_sha256": "8cd1f767ba8cde9928bacedc29263d44be8e5e61b46d3b6f00456fac1c7c77cd",
+  "class_sha256": "8525cf1aabaef30c94e5387f4d29883bdcb7002da87fd742cdc40eaf59682f47",
+  "class_bytes": 1124,
+  "original_lines": 11,
+  "jarde_cli_exit": 0,
+  "jarde_javac_exit": 1,
+  "jadx_javac_exit": 1
+}

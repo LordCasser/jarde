@@ -1,0 +1,55 @@
+// jarde: presentation of `CatchAfterFieldAssignment` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class CatchAfterFieldAssignment extends java.lang.Object {
+    private static int field;
+
+    public CatchAfterFieldAssignment() {
+        // @method <init>()V
+        // @declaration a constructor of `CatchAfterFieldAssignment`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    private static void fail() {
+        // @method fail()V
+        // @declaration a static method of `CatchAfterFieldAssignment`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        throw new java.lang.IllegalArgumentException("probe");
+    }
+
+    private static void maybeFail(boolean arg0) {
+        // @method maybeFail(Z)V
+        // @declaration a static method of `CatchAfterFieldAssignment`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0) {
+            fail();
+        }
+        return;
+    }
+
+    public static int fieldAssignment(boolean arg0) {
+        // jarde: not recovered: the recovery run for `fieldAssignment(Z)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method fieldAssignment(Z)I
+        // @declaration a static method of `CatchAfterFieldAssignment`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // BCI 2: the resource's own initialisation is not one statement of this block whose value lands in a slot: writing it in the header would move or drop an effect
+        // @bytecode 18 12
+        // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [18, 12]
+    }
+
+    public static int localAssignment(boolean arg0) {
+        // @method localAssignment(Z)I
+        // @declaration a static method of `CatchAfterFieldAssignment`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        local1 = 7;
+        try {
+            maybeFail(arg0);
+        } catch (java.lang.IllegalArgumentException local2) {
+            local1 = 18;
+        }
+        return local1;
+    }
+}

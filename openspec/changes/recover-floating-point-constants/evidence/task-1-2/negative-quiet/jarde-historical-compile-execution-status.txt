@@ -1,0 +1,1 @@
+compile exit=1; see negative-quiet-historical-jarde-javac.log

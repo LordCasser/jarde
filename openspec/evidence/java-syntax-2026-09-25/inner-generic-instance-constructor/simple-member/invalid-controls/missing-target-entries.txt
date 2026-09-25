@@ -1,0 +1,5 @@
+META-INF/
+META-INF/MANIFEST.MF
+nested/SimpleOuter.class
+nested/UseInner.class
+nested/MissingRunner.class

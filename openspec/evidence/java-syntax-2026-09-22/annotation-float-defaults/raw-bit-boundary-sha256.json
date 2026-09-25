@@ -1,0 +1,15 @@
+{
+  "cli_sha256": "7a33dbed5b390009cb65802fd9264367e1d5854b9cc70dbced5ae1878109c822",
+  "class_files": {
+    "baseline": {
+      "FloatDefaults.class": "c257ba990cb21bd1769ad7a949e65a8338934a3b7e202e0bc9ab964ab509ecad",
+      "FloatRunner.class": "9d7e5799f5ef8a6afb5ef4e5caee30494451df986e2b88f21d3788a9a0aab401"
+    },
+    "positive-infinity-to-negative-qnan": {
+      "FloatDefaults.class": "7a8f0cc5993cc9c65b60fb77c39ce9f2c6d71dd0dc78f5ebbeb9f571dfe9f0a3"
+    },
+    "canonical-nan-to-payload-nan": {
+      "FloatDefaults.class": "760d18b05e75ca54adf144bd75df0ac77bd9643ef369d5a03a5143be6237c642"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "checkcast_constant_pool_index": 11,
+  "object_array_method_constant_pool_index": 13,
+  "method_info_code_before": "2ac0000bb8000db0",
+  "method_info_code_after": "2a000000b8000db0",
+  "patched_offset": 456,
+  "original_class_sha256": "feaf0b698d9a8ab6ee12f68c1b34ab2d044cd4c65c1c1b2bf445841e7c737772",
+  "patched_class_sha256": "1b850e7c814ce8fd3d892b0b2bbdb435a70b1ce94ca2bcbebceeec90aa873e6f"
+}

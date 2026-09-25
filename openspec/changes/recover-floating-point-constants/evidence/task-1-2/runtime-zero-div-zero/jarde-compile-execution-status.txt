@@ -1,0 +1,1 @@
+compile exit=1; see runtime-zero-div-zero-jarde-javac.log

@@ -1,0 +1,113 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/annotation-default-boundaries/header-minimal/basic/classes-original/BasicRunner.class
+  Last modified 2026年9月23日; size 775 bytes
+  SHA-256 checksum bf5fe4a905198eed3547c2c3c3f9cebe4d426b2ad50f766a8ef609f0ff91228b
+class BasicRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #50                         // BasicRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // java/lang/System.out:Ljava/io/PrintStream;
+   #8 = Class              #10            // java/lang/System
+   #9 = NameAndType        #11:#12        // out:Ljava/io/PrintStream;
+  #10 = Utf8               java/lang/System
+  #11 = Utf8               out
+  #12 = Utf8               Ljava/io/PrintStream;
+  #13 = Class              #14            // Basic
+  #14 = Utf8               Basic
+  #15 = String             #16            // count
+  #16 = Utf8               count
+  #17 = Class              #18            // java/lang/Class
+  #18 = Utf8               java/lang/Class
+  #19 = Methodref          #17.#20        // java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+  #20 = NameAndType        #21:#22        // getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+  #21 = Utf8               getMethod
+  #22 = Utf8               (Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+  #23 = Methodref          #24.#25        // java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+  #24 = Class              #26            // java/lang/reflect/Method
+  #25 = NameAndType        #27:#28        // getDefaultValue:()Ljava/lang/Object;
+  #26 = Utf8               java/lang/reflect/Method
+  #27 = Utf8               getDefaultValue
+  #28 = Utf8               ()Ljava/lang/Object;
+  #29 = Methodref          #30.#31        // java/io/PrintStream.println:(Ljava/lang/Object;)V
+  #30 = Class              #32            // java/io/PrintStream
+  #31 = NameAndType        #33:#34        // println:(Ljava/lang/Object;)V
+  #32 = Utf8               java/io/PrintStream
+  #33 = Utf8               println
+  #34 = Utf8               (Ljava/lang/Object;)V
+  #35 = String             #36            // label
+  #36 = Utf8               label
+  #37 = String             #38            // codes
+  #38 = Utf8               codes
+  #39 = Class              #40            // "[I"
+  #40 = Utf8               [I
+  #41 = Methodref          #42.#43        // java/util/Arrays.toString:([I)Ljava/lang/String;
+  #42 = Class              #44            // java/util/Arrays
+  #43 = NameAndType        #45:#46        // toString:([I)Ljava/lang/String;
+  #44 = Utf8               java/util/Arrays
+  #45 = Utf8               toString
+  #46 = Utf8               ([I)Ljava/lang/String;
+  #47 = Methodref          #30.#48        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #48 = NameAndType        #33:#49        // println:(Ljava/lang/String;)V
+  #49 = Utf8               (Ljava/lang/String;)V
+  #50 = Class              #51            // BasicRunner
+  #51 = Utf8               BasicRunner
+  #52 = Utf8               Code
+  #53 = Utf8               main
+  #54 = Utf8               ([Ljava/lang/String;)V
+  #55 = Utf8               Exceptions
+  #56 = Class              #57            // java/lang/Exception
+  #57 = Utf8               java/lang/Exception
+{
+  BasicRunner();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void main(java.lang.String[]) throws java.lang.Exception;
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=1, args_size=1
+         0: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #13                 // class Basic
+         5: ldc           #15                 // String count
+         7: iconst_0
+         8: anewarray     #17                 // class java/lang/Class
+        11: invokevirtual #19                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+        14: invokevirtual #23                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+        17: invokevirtual #29                 // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+        20: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        23: ldc           #13                 // class Basic
+        25: ldc           #35                 // String label
+        27: iconst_0
+        28: anewarray     #17                 // class java/lang/Class
+        31: invokevirtual #19                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+        34: invokevirtual #23                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+        37: invokevirtual #29                 // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+        40: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        43: ldc           #13                 // class Basic
+        45: ldc           #37                 // String codes
+        47: iconst_0
+        48: anewarray     #17                 // class java/lang/Class
+        51: invokevirtual #19                 // Method java/lang/Class.getMethod:(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+        54: invokevirtual #23                 // Method java/lang/reflect/Method.getDefaultValue:()Ljava/lang/Object;
+        57: checkcast     #39                 // class "[I"
+        60: invokestatic  #41                 // Method java/util/Arrays.toString:([I)Ljava/lang/String;
+        63: invokevirtual #47                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        66: return
+    Exceptions:
+      throws java.lang.Exception
+}

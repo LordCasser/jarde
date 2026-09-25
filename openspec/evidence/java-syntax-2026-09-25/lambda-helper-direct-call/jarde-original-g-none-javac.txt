@@ -1,0 +1,10 @@
+exit=1
+<WORK>/g-none/jarde-original-compile/LambdaAlias.java:37: 错误: 生成类 LambdaAlias 时出错
+    private int lambda$build$0(int arg1, int arg2) {
+                ^
+  (符号lambda$build$0(int,int)与LambdaAlias中的 compiler-synthesized 符号冲突)
+<WORK>/g-none/jarde-original-compile/LambdaAlias.java:1: 错误: 生成类 LambdaAlias 时出错
+// jarde: presentation of `LambdaAlias` from the class file's own declaration and one recovery run per member.
+^
+  (符号lambda$build$0(int,int)与LambdaAlias中的 compiler-synthesized 符号冲突)
+2 个错误

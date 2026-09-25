@@ -1,0 +1,300 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-twr-audit-thyd3z0f/multi-resource/original/classes/TwrMultiAudit.class
+  Last modified 2026年9月23日; size 1425 bytes
+  SHA-256 checksum db3e79f52633b0d227990e97339927074e83dbf6fc5914dab8f27d5cafb907a5
+public final class TwrMultiAudit implements java.lang.AutoCloseable
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // TwrMultiAudit
+  super_class: #2                         // java/lang/Object
+  interfaces: 1, fields: 4, methods: 9, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // TwrMultiAudit.id:I
+   #8 = Class              #10            // TwrMultiAudit
+   #9 = NameAndType        #11:#12        // id:I
+  #10 = Utf8               TwrMultiAudit
+  #11 = Utf8               id
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // TwrMultiAudit.closeFailure:Ljava/lang/Exception;
+  #14 = NameAndType        #15:#16        // closeFailure:Ljava/lang/Exception;
+  #15 = Utf8               closeFailure
+  #16 = Utf8               Ljava/lang/Exception;
+  #17 = Methodref          #8.#18         // TwrMultiAudit."<init>":(ILjava/lang/Exception;)V
+  #18 = NameAndType        #5:#19         // "<init>":(ILjava/lang/Exception;)V
+  #19 = Utf8               (ILjava/lang/Exception;)V
+  #20 = Fieldref           #8.#21         // TwrMultiAudit.trace:I
+  #21 = NameAndType        #22:#12        // trace:I
+  #22 = Utf8               trace
+  #23 = Fieldref           #8.#24         // TwrMultiAudit.closes:I
+  #24 = NameAndType        #25:#12        // closes:I
+  #25 = Utf8               closes
+  #26 = Methodref          #8.#27         // TwrMultiAudit.open:(ILjava/lang/Exception;)LTwrMultiAudit;
+  #27 = NameAndType        #28:#29        // open:(ILjava/lang/Exception;)LTwrMultiAudit;
+  #28 = Utf8               open
+  #29 = Utf8               (ILjava/lang/Exception;)LTwrMultiAudit;
+  #30 = Methodref          #8.#31         // TwrMultiAudit.event:(I)V
+  #31 = NameAndType        #32:#33        // event:(I)V
+  #32 = Utf8               event
+  #33 = Utf8               (I)V
+  #34 = Methodref          #8.#35         // TwrMultiAudit.failBody:(Ljava/lang/Exception;)V
+  #35 = NameAndType        #36:#37        // failBody:(Ljava/lang/Exception;)V
+  #36 = Utf8               failBody
+  #37 = Utf8               (Ljava/lang/Exception;)V
+  #38 = Methodref          #8.#39         // TwrMultiAudit.close:()V
+  #39 = NameAndType        #40:#6         // close:()V
+  #40 = Utf8               close
+  #41 = Class              #42            // java/lang/Throwable
+  #42 = Utf8               java/lang/Throwable
+  #43 = Methodref          #41.#44        // java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+  #44 = NameAndType        #45:#46        // addSuppressed:(Ljava/lang/Throwable;)V
+  #45 = Utf8               addSuppressed
+  #46 = Utf8               (Ljava/lang/Throwable;)V
+  #47 = Class              #48            // java/lang/AutoCloseable
+  #48 = Utf8               java/lang/AutoCloseable
+  #49 = Utf8               Code
+  #50 = Utf8               Exceptions
+  #51 = Class              #52            // java/lang/Exception
+  #52 = Utf8               java/lang/Exception
+  #53 = Utf8               reset
+  #54 = Utf8               ()I
+  #55 = Utf8               bodyAndThreeFailingCloses
+  #56 = Utf8               (Ljava/lang/Exception;Ljava/lang/Exception;Ljava/lang/Exception;Ljava/lang/Exception;)V
+  #57 = Utf8               StackMapTable
+{
+  private static int closes;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private static int trace;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private final int id;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private final java.lang.Exception closeFailure;
+    descriptor: Ljava/lang/Exception;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private TwrMultiAudit(int, java.lang.Exception);
+    descriptor: (ILjava/lang/Exception;)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iload_1
+         6: putfield      #7                  // Field id:I
+         9: aload_0
+        10: aload_2
+        11: putfield      #13                 // Field closeFailure:Ljava/lang/Exception;
+        14: return
+
+  private static TwrMultiAudit open(int, java.lang.Exception);
+    descriptor: (ILjava/lang/Exception;)LTwrMultiAudit;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=4, locals=2, args_size=2
+         0: new           #8                  // class TwrMultiAudit
+         3: dup
+         4: iload_0
+         5: aload_1
+         6: invokespecial #17                 // Method "<init>":(ILjava/lang/Exception;)V
+         9: areturn
+
+  private static void failBody(java.lang.Exception) throws java.lang.Exception;
+    descriptor: (Ljava/lang/Exception;)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: athrow
+    Exceptions:
+      throws java.lang.Exception
+
+  private static void event(int);
+    descriptor: (I)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #20                 // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iload_0
+         7: iadd
+         8: putstatic     #20                 // Field trace:I
+        11: return
+
+  public static void reset();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #23                 // Field closes:I
+         4: iconst_0
+         5: putstatic     #20                 // Field trace:I
+         8: return
+
+  public static int closes();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #23                 // Field closes:I
+         3: ireturn
+
+  public static int trace();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #20                 // Field trace:I
+         3: ireturn
+
+  public static void bodyAndThreeFailingCloses(java.lang.Exception, java.lang.Exception, java.lang.Exception, java.lang.Exception) throws java.lang.Exception;
+    descriptor: (Ljava/lang/Exception;Ljava/lang/Exception;Ljava/lang/Exception;Ljava/lang/Exception;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=9, args_size=4
+         0: iconst_1
+         1: aload_1
+         2: invokestatic  #26                 // Method open:(ILjava/lang/Exception;)LTwrMultiAudit;
+         5: astore        4
+         7: iconst_2
+         8: aload_2
+         9: invokestatic  #26                 // Method open:(ILjava/lang/Exception;)LTwrMultiAudit;
+        12: astore        5
+        14: iconst_3
+        15: aload_3
+        16: invokestatic  #26                 // Method open:(ILjava/lang/Exception;)LTwrMultiAudit;
+        19: astore        6
+        21: bipush        9
+        23: invokestatic  #30                 // Method event:(I)V
+        26: aload_0
+        27: invokestatic  #34                 // Method failBody:(Ljava/lang/Exception;)V
+        30: aload         6
+        32: ifnull        70
+        35: aload         6
+        37: invokevirtual #38                 // Method close:()V
+        40: goto          70
+        43: astore        7
+        45: aload         6
+        47: ifnull        67
+        50: aload         6
+        52: invokevirtual #38                 // Method close:()V
+        55: goto          67
+        58: astore        8
+        60: aload         7
+        62: aload         8
+        64: invokevirtual #43                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+        67: aload         7
+        69: athrow
+        70: aload         5
+        72: ifnull        110
+        75: aload         5
+        77: invokevirtual #38                 // Method close:()V
+        80: goto          110
+        83: astore        6
+        85: aload         5
+        87: ifnull        107
+        90: aload         5
+        92: invokevirtual #38                 // Method close:()V
+        95: goto          107
+        98: astore        7
+       100: aload         6
+       102: aload         7
+       104: invokevirtual #43                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+       107: aload         6
+       109: athrow
+       110: aload         4
+       112: ifnull        150
+       115: aload         4
+       117: invokevirtual #38                 // Method close:()V
+       120: goto          150
+       123: astore        5
+       125: aload         4
+       127: ifnull        147
+       130: aload         4
+       132: invokevirtual #38                 // Method close:()V
+       135: goto          147
+       138: astore        6
+       140: aload         5
+       142: aload         6
+       144: invokevirtual #43                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+       147: aload         5
+       149: athrow
+       150: return
+      Exception table:
+         from    to  target type
+            21    30    43   Class java/lang/Throwable
+            50    55    58   Class java/lang/Throwable
+            14    70    83   Class java/lang/Throwable
+            90    95    98   Class java/lang/Throwable
+             7   110   123   Class java/lang/Throwable
+           130   135   138   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 12
+        frame_type = 255 /* full_frame */
+          offset_delta = 43
+          locals = [ class java/lang/Exception, class java/lang/Exception, class java/lang/Exception, class java/lang/Exception, class TwrMultiAudit, class TwrMultiAudit, class TwrMultiAudit ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 14
+          locals = [ class java/lang/Exception, class java/lang/Exception, class java/lang/Exception, class java/lang/Exception, class TwrMultiAudit, class TwrMultiAudit, class TwrMultiAudit, class java/lang/Throwable ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 8 /* same */
+        frame_type = 249 /* chop */
+          offset_delta = 2
+        frame_type = 76 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 14
+          locals = [ class java/lang/Exception, class java/lang/Exception, class java/lang/Exception, class java/lang/Exception, class TwrMultiAudit, class TwrMultiAudit, class java/lang/Throwable ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 8 /* same */
+        frame_type = 249 /* chop */
+          offset_delta = 2
+        frame_type = 76 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 14
+          locals = [ class java/lang/Exception, class java/lang/Exception, class java/lang/Exception, class java/lang/Exception, class TwrMultiAudit, class java/lang/Throwable ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 8 /* same */
+        frame_type = 249 /* chop */
+          offset_delta = 2
+    Exceptions:
+      throws java.lang.Exception
+
+  public void close() throws java.lang.Exception;
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #23                 // Field closes:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #23                 // Field closes:I
+         8: aload_0
+         9: getfield      #7                  // Field id:I
+        12: invokestatic  #30                 // Method event:(I)V
+        15: aload_0
+        16: getfield      #13                 // Field closeFailure:Ljava/lang/Exception;
+        19: ifnull        27
+        22: aload_0
+        23: getfield      #13                 // Field closeFailure:Ljava/lang/Exception;
+        26: athrow
+        27: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 27 /* same */
+    Exceptions:
+      throws java.lang.Exception
+}

@@ -508,15 +508,11 @@ fn the_text_mode_writes_the_librarys_own_source() {
     assert!(text.contains("        return arg1 + arg2;\n"));
     assert!(braces_balance(&text) == 0, "{text}");
     assert!(indentation_is_four_spaces(&text), "{text}");
-    // This sample's third member produced an explanation-only artifact: its marker is the one place
-    // the text says so, and the artifact's own comment lines are kept under it.
-    assert_eq!(
-        markers(&text),
-        [
-            "// jarde: not recovered: the recovery run for `finallyPath(I)I` produced no statement \
-             (explanation only); the artifact's own comment lines are below"
-        ]
-    );
+    // The third member now keeps its recoverable normal-flow prefix. Its unreachable-handler
+    // refusal stays in the body, while the class layer does not mislabel it explanation-only.
+    assert!(markers(&text).is_empty(), "{text}");
+    assert!(text.contains("        return local3;\n"), "{text}");
+    assert!(text.contains("        // @bytecode 9\n"), "{text}");
 
     // Everything the document holds beside the text is on standard error, as `path = value` lines:
     // the planes as their own fields, and every other field of the report — a member's own text
@@ -676,7 +672,9 @@ fn the_json_mode_is_the_librarys_own_document() {
     );
 
     // The document really holds what the text says, member by member.
-    assert_eq!(document["declaration"]["name"], json!("p.Probe"));
+    // The declaration's name is the simple one the class file's own `p/Probe` states; the package is
+    // the text's own `package` line.
+    assert_eq!(document["declaration"]["name"], json!("Probe"));
     let names: Vec<&str> = document["methods"]
         .as_array()
         .expect("the members are an array")

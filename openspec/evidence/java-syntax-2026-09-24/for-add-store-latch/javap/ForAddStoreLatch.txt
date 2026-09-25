@@ -1,0 +1,87 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/for-add-store-latch/frozen/ForAddStoreLatch.class
+  Last modified 2026年9月24日; size 274 bytes
+  SHA-256 checksum c87ba91131c91059fea96008df93dd4f4a578178c30267fb1230fc9eef11a614
+public final class ForAddStoreLatch
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #7                          // ForAddStoreLatch
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // ForAddStoreLatch
+   #8 = Utf8               ForAddStoreLatch
+   #9 = Utf8               Code
+  #10 = Utf8               run
+  #11 = Utf8               (III)I
+  #12 = Utf8               StackMapTable
+{
+  private ForAddStoreLatch();
+    descriptor: ()V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int run(int, int, int);
+    descriptor: (III)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=7, args_size=3
+         0: iconst_0
+         1: istore        4
+         3: iconst_0
+         4: istore        5
+         6: iconst_0
+         7: istore_3
+         8: iload_3
+         9: iload_0
+        10: if_icmpge     52
+        13: iload         4
+        15: iload_3
+        16: iadd
+        17: istore        4
+        19: iconst_0
+        20: istore        6
+        22: iload         6
+        24: iconst_2
+        25: if_icmpge     42
+        28: iload_3
+        29: iload_2
+        30: if_icmpne     36
+        33: goto          45
+        36: iinc          6, 1
+        39: goto          22
+        42: iinc          5, 1
+        45: iload_3
+        46: iload_1
+        47: iadd
+        48: istore_3
+        49: goto          8
+        52: iload         4
+        54: iload         5
+        56: sipush        10000
+        59: imul
+        60: iadd
+        61: ireturn
+      StackMapTable: number_of_entries = 6
+        frame_type = 254 /* append */
+          offset_delta = 8
+          locals = [ int, int, int ]
+        frame_type = 252 /* append */
+          offset_delta = 13
+          locals = [ int ]
+        frame_type = 13 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+        frame_type = 2 /* same */
+        frame_type = 6 /* same */
+}

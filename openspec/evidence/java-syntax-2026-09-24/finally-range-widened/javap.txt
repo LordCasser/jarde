@@ -1,0 +1,79 @@
+public class ImplicitCleanup {
+  public static int trace;
+
+  public static boolean throwTry;
+
+  public static boolean throwCleanup;
+
+  public static final java.lang.RuntimeException TRY_FAILURE;
+
+  public static final java.lang.RuntimeException CLEANUP_FAILURE;
+
+  public ImplicitCleanup();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  private static int mark(int);
+    Code:
+       0: getstatic     #7                  // Field trace:I
+       3: bipush        10
+       5: imul
+       6: iload_0
+       7: iadd
+       8: putstatic     #7                  // Field trace:I
+      11: iload_0
+      12: ireturn
+
+  private static void cleanup();
+    Code:
+       0: getstatic     #7                  // Field trace:I
+       3: bipush        10
+       5: imul
+       6: bipush        9
+       8: iadd
+       9: putstatic     #7                  // Field trace:I
+      12: getstatic     #13                 // Field throwCleanup:Z
+      15: ifeq          22
+      18: getstatic     #17                 // Field CLEANUP_FAILURE:Ljava/lang/RuntimeException;
+      21: athrow
+      22: return
+
+  public static int run();
+    Code:
+       0: getstatic     #21                 // Field throwTry:Z
+       3: ifeq          15
+       6: iconst_1
+       7: invokestatic  #24                 // Method mark:(I)I
+      10: pop
+      11: getstatic     #28                 // Field TRY_FAILURE:Ljava/lang/RuntimeException;
+      14: athrow
+      15: iconst_2
+      16: invokestatic  #24                 // Method mark:(I)I
+      19: istore_0
+      20: invokestatic  #31                 // Method cleanup:()V
+      23: iload_0
+      24: ireturn
+      25: astore_1
+      26: invokestatic  #31                 // Method cleanup:()V
+      29: aload_1
+      30: athrow
+    Exception table:
+       from    to  target type
+           0    23    25   any
+
+  static {};
+    Code:
+       0: new           #34                 // class java/lang/IllegalArgumentException
+       3: dup
+       4: ldc           #36                 // String try
+       6: invokespecial #38                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+       9: putstatic     #28                 // Field TRY_FAILURE:Ljava/lang/RuntimeException;
+      12: new           #41                 // class java/lang/IllegalStateException
+      15: dup
+      16: ldc           #43                 // String cleanup
+      18: invokespecial #44                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      21: putstatic     #17                 // Field CLEANUP_FAILURE:Ljava/lang/RuntimeException;
+      24: return
+}

@@ -1,0 +1,7 @@
+local=8:rhs=1
+field=7:select=1:rhs=0
+array=10:select=1:rhs=0
+field-snapshot=7:select=1:rhs=0
+array-snapshot=10:select=1:rhs=0
+null=returned
+bounds=returned

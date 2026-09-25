@@ -1,0 +1,11 @@
+Exception in thread "main" java.lang.NoSuchMethodException: no such method: defpackage.FakeBridge.get()Object/invokeVirtual
+	at java.base/java.lang.invoke.MemberName.makeAccessException(MemberName.java:910)
+	at java.base/java.lang.invoke.MemberName$Factory.resolveOrFail(MemberName.java:989)
+	at java.base/java.lang.invoke.MethodHandles$Lookup.resolveOrFail(MethodHandles.java:3762)
+	at java.base/java.lang.invoke.MethodHandles$Lookup.findVirtual(MethodHandles.java:2752)
+	at defpackage.FakeRunner.main(FakeRunner.java:9)
+Caused by: java.lang.NoSuchMethodError: 'java.lang.Object defpackage.FakeBridge.get()'
+	at java.base/java.lang.invoke.MethodHandleNatives.resolve(Native Method)
+	at java.base/java.lang.invoke.MemberName$Factory.resolve(MemberName.java:957)
+	at java.base/java.lang.invoke.MemberName$Factory.resolveOrFail(MemberName.java:986)
+	... 3 more

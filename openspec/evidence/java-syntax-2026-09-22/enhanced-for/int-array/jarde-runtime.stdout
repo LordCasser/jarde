@@ -1,0 +1,6 @@
+empty=0
+many=6
+null=NullPointerException:Cannot read the array length because "<local2>" is null
+source-many=20:calls=1
+source-null=NullPointerException:Cannot read the array length because "<local2>" is null:calls=1
+source-throws=IllegalStateException:source:calls=1

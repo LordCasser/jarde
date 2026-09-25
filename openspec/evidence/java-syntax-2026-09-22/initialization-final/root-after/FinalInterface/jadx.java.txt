@@ -1,0 +1,10 @@
+package defpackage;
+
+/* JADX INFO: loaded from: FinalInterface.class */
+public interface FinalInterface {
+    public static final Object VALUE = FinalSupport.object();
+
+    static int result() {
+        return FinalSupport.check(VALUE);
+    }
+}

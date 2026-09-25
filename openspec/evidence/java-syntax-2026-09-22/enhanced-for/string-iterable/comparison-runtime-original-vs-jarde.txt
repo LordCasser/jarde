@@ -1,0 +1,15 @@
+status: original 1 lines; jarde 1 lines; equal=false
+! 001 original="0" jarde="skipped"
+stdout: original 10 lines; jarde 0 lines; equal=false
+! 001 original="empty=0:iterator=1,hasNext=1,next=0" jarde="<missing>"
+! 002 original="many=5:iterator=1,hasNext=4,next=3" jarde="<missing>"
+! 003 original="null=NullPointerException:Cannot invoke \"java.lang.Iterable.iterator()\" because \"<parameter1>\" is null" jarde="<missing>"
+! 004 original="source-many=3:sourceCalls=1:iterator=1,hasNext=3,next=2" jarde="<missing>"
+! 005 original="source-null=NullPointerException:Cannot invoke \"java.lang.Iterable.iterator()\" because the return value of \"java.util.function.Supplier.get()\" is null:calls=1" jarde="<missing>"
+! 006 original="source-throws=IllegalStateException:source:calls=1" jarde="<missing>"
+! 007 original="iterator-throws=IllegalStateException:iterator:iterator=1,hasNext=0,next=0" jarde="<missing>"
+! 008 original="hasNext-throws=IllegalStateException:hasNext:iterator=1,hasNext=2,next=1" jarde="<missing>"
+! 009 original="next-throws=IllegalStateException:next:iterator=1,hasNext=2,next=2" jarde="<missing>"
+! 010 original="null-element=NullPointerException:Cannot invoke \"String.length()\" because \"<local3>\" is null:iterator=1,hasNext=2,next=2" jarde="<missing>"
+stderr: original 0 lines; jarde 1 lines; equal=false
+! 001 original="<missing>" jarde="not run: jarde class javac failed"

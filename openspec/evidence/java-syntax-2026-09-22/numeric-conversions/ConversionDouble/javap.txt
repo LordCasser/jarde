@@ -1,0 +1,80 @@
+Classfile /tmp/jarde-numeric-conversions/original/ConversionDouble.class
+  Last modified 2026年9月23日; size 358 bytes
+  SHA-256 checksum b97f1fe005cbbffe961f91e43dada6080fb24f0818c76f223e4e2b55528290e6
+public class ConversionDouble
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #13                         // ConversionDouble
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 5, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // ConversionSupport.take:(I)I
+   #8 = Class              #10            // ConversionSupport
+   #9 = NameAndType        #11:#12        // take:(I)I
+  #10 = Utf8               ConversionSupport
+  #11 = Utf8               take
+  #12 = Utf8               (I)I
+  #13 = Class              #14            // ConversionDouble
+  #14 = Utf8               ConversionDouble
+  #15 = Utf8               Code
+  #16 = Utf8               d2i
+  #17 = Utf8               (D)I
+  #18 = Utf8               d2l
+  #19 = Utf8               (D)J
+  #20 = Utf8               d2f
+  #21 = Utf8               (D)F
+  #22 = Utf8               doubleToIntOverload
+{
+  public ConversionDouble();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int d2i(double);
+    descriptor: (D)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: dload_0
+         1: d2i
+         2: ireturn
+
+  public static long d2l(double);
+    descriptor: (D)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: dload_0
+         1: d2l
+         2: lreturn
+
+  public static float d2f(double);
+    descriptor: (D)F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: dload_0
+         1: d2f
+         2: freturn
+
+  public static int doubleToIntOverload(double);
+    descriptor: (D)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: dload_0
+         1: d2i
+         2: invokestatic  #7                  // Method ConversionSupport.take:(I)I
+         5: ireturn
+}

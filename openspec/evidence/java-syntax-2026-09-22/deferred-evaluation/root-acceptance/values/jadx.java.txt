@@ -1,0 +1,32 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DeferredValues.class */
+public class DeferredValues {
+    public static int call() {
+        int iValue = DeferredSupport.value();
+        DeferredSupport.mark();
+        return iValue;
+    }
+
+    public static int field() {
+        int i = DeferredSupport.field;
+        DeferredSupport.mark();
+        return i;
+    }
+
+    public static int array(int[] iArr) {
+        int i = iArr[0];
+        DeferredSupport.mark();
+        return i;
+    }
+
+    public static String cast(Object obj) {
+        String str = (String) obj;
+        DeferredSupport.mark();
+        return str;
+    }
+
+    public static void keepPool() {
+        DeferredSupport.mark();
+    }
+}

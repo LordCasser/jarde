@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/opt/homebrew/bin/jadx",
+    "--version"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "1.5.6\n",
+  "stderr": ""
+}

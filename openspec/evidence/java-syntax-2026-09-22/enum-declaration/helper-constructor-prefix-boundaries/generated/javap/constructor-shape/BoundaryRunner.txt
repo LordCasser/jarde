@@ -1,0 +1,278 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/input/constructor-shape/BoundaryRunner.class
+  Last modified 2026年9月23日; size 1576 bytes
+  SHA-256 checksum 074ecca26e70d5764bebb816afb50e5a2616a1c996dcf08818d1d8004ba46a59
+class BoundaryRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #81                         // BoundaryRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 3, attributes: 0
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Methodref          #8.#9         // Measure.valueOf:(Ljava/lang/String;)LMeasure;
+    #8 = Class              #10           // Measure
+    #9 = NameAndType        #11:#12       // valueOf:(Ljava/lang/String;)LMeasure;
+   #10 = Utf8               Measure
+   #11 = Utf8               valueOf
+   #12 = Utf8               (Ljava/lang/String;)LMeasure;
+   #13 = Methodref          #8.#14        // Measure.name:()Ljava/lang/String;
+   #14 = NameAndType        #15:#16       // name:()Ljava/lang/String;
+   #15 = Utf8               name
+   #16 = Utf8               ()Ljava/lang/String;
+   #17 = Class              #18           // java/lang/Throwable
+   #18 = Utf8               java/lang/Throwable
+   #19 = Methodref          #2.#20        // java/lang/Object.getClass:()Ljava/lang/Class;
+   #20 = NameAndType        #21:#22       // getClass:()Ljava/lang/Class;
+   #21 = Utf8               getClass
+   #22 = Utf8               ()Ljava/lang/Class;
+   #23 = Methodref          #24.#25       // java/lang/Class.getSimpleName:()Ljava/lang/String;
+   #24 = Class              #26           // java/lang/Class
+   #25 = NameAndType        #27:#16       // getSimpleName:()Ljava/lang/String;
+   #26 = Utf8               java/lang/Class
+   #27 = Utf8               getSimpleName
+   #28 = Methodref          #8.#29        // Measure.values:()[LMeasure;
+   #29 = NameAndType        #30:#31       // values:()[LMeasure;
+   #30 = Utf8               values
+   #31 = Utf8               ()[LMeasure;
+   #32 = Class              #33           // java/lang/StringBuilder
+   #33 = Utf8               java/lang/StringBuilder
+   #34 = Methodref          #32.#3        // java/lang/StringBuilder."<init>":()V
+   #35 = Methodref          #32.#36       // java/lang/StringBuilder.length:()I
+   #36 = NameAndType        #37:#38       // length:()I
+   #37 = Utf8               length
+   #38 = Utf8               ()I
+   #39 = Methodref          #32.#40       // java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+   #40 = NameAndType        #41:#42       // append:(C)Ljava/lang/StringBuilder;
+   #41 = Utf8               append
+   #42 = Utf8               (C)Ljava/lang/StringBuilder;
+   #43 = Methodref          #32.#44       // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #44 = NameAndType        #41:#45       // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #45 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #46 = Methodref          #8.#47        // Measure.ordinal:()I
+   #47 = NameAndType        #48:#38       // ordinal:()I
+   #48 = Utf8               ordinal
+   #49 = Methodref          #32.#50       // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+   #50 = NameAndType        #41:#51       // append:(I)Ljava/lang/StringBuilder;
+   #51 = Utf8               (I)Ljava/lang/StringBuilder;
+   #52 = Fieldref           #8.#53        // Measure.units:I
+   #53 = NameAndType        #54:#55       // units:I
+   #54 = Utf8               units
+   #55 = Utf8               I
+   #56 = Fieldref           #57.#58       // java/lang/System.out:Ljava/io/PrintStream;
+   #57 = Class              #59           // java/lang/System
+   #58 = NameAndType        #60:#61       // out:Ljava/io/PrintStream;
+   #59 = Utf8               java/lang/System
+   #60 = Utf8               out
+   #61 = Utf8               Ljava/io/PrintStream;
+   #62 = String             #63           // values=
+   #63 = Utf8               values=
+   #64 = Methodref          #32.#65       // java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #65 = NameAndType        #41:#66       // append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #66 = Utf8               (Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #67 = Methodref          #32.#68       // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #68 = NameAndType        #69:#16       // toString:()Ljava/lang/String;
+   #69 = Utf8               toString
+   #70 = Methodref          #71.#72       // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #71 = Class              #73           // java/io/PrintStream
+   #72 = NameAndType        #74:#75       // println:(Ljava/lang/String;)V
+   #73 = Utf8               java/io/PrintStream
+   #74 = Utf8               println
+   #75 = Utf8               (Ljava/lang/String;)V
+   #76 = String             #77           // lookup=LOW:
+   #77 = Utf8               lookup=LOW:
+   #78 = String             #79           // LOW
+   #79 = Utf8               LOW
+   #80 = Methodref          #81.#82       // BoundaryRunner.lookup:(Ljava/lang/String;)Ljava/lang/String;
+   #81 = Class              #83           // BoundaryRunner
+   #82 = NameAndType        #84:#85       // lookup:(Ljava/lang/String;)Ljava/lang/String;
+   #83 = Utf8               BoundaryRunner
+   #84 = Utf8               lookup
+   #85 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+   #86 = String             #87           // ,HIGH:
+   #87 = Utf8               ,HIGH:
+   #88 = String             #89           // HIGH
+   #89 = Utf8               HIGH
+   #90 = String             #91           // ,MISSING:
+   #91 = Utf8               ,MISSING:
+   #92 = String             #93           // MISSING
+   #93 = Utf8               MISSING
+   #94 = String             #95           // sum=
+   #95 = Utf8               sum=
+   #96 = Fieldref           #8.#97        // Measure.totalUnits:I
+   #97 = NameAndType        #98:#55       // totalUnits:I
+   #98 = Utf8               totalUnits
+   #99 = String             #100          // :
+  #100 = Utf8               :
+  #101 = Methodref          #8.#102       // Measure.sumUnits:()I
+  #102 = NameAndType        #103:#38      // sumUnits:()I
+  #103 = Utf8               sumUnits
+  #104 = String             #105          // helper-calls=
+  #105 = Utf8               helper-calls=
+  #106 = Fieldref           #107.#108     // BoundarySupport.calls:I
+  #107 = Class              #109          // BoundarySupport
+  #108 = NameAndType        #110:#55      // calls:I
+  #109 = Utf8               BoundarySupport
+  #110 = Utf8               calls
+  #111 = Utf8               Code
+  #112 = Utf8               StackMapTable
+  #113 = Utf8               main
+  #114 = Utf8               ([Ljava/lang/String;)V
+  #115 = Class              #116          // "[Ljava/lang/String;"
+  #116 = Utf8               [Ljava/lang/String;
+  #117 = Class              #118          // "[LMeasure;"
+  #118 = Utf8               [LMeasure;
+{
+  BoundaryRunner();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static java.lang.String lookup(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: aload_0
+         1: invokestatic  #7                  // Method Measure.valueOf:(Ljava/lang/String;)LMeasure;
+         4: invokevirtual #13                 // Method Measure.name:()Ljava/lang/String;
+         7: areturn
+         8: astore_1
+         9: aload_1
+        10: invokevirtual #19                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        13: invokevirtual #23                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+        16: areturn
+      Exception table:
+         from    to  target type
+             0     7     8   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 1
+        frame_type = 72 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=7, args_size=1
+         0: invokestatic  #28                 // Method Measure.values:()[LMeasure;
+         3: astore_1
+         4: new           #32                 // class java/lang/StringBuilder
+         7: dup
+         8: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+        11: astore_2
+        12: aload_1
+        13: astore_3
+        14: aload_3
+        15: arraylength
+        16: istore        4
+        18: iconst_0
+        19: istore        5
+        21: iload         5
+        23: iload         4
+        25: if_icmpge     90
+        28: aload_3
+        29: iload         5
+        31: aaload
+        32: astore        6
+        34: aload_2
+        35: invokevirtual #35                 // Method java/lang/StringBuilder.length:()I
+        38: ifeq          48
+        41: aload_2
+        42: bipush        44
+        44: invokevirtual #39                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        47: pop
+        48: aload_2
+        49: aload         6
+        51: invokevirtual #13                 // Method Measure.name:()Ljava/lang/String;
+        54: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        57: bipush        58
+        59: invokevirtual #39                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        62: aload         6
+        64: invokevirtual #46                 // Method Measure.ordinal:()I
+        67: invokevirtual #49                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        70: bipush        58
+        72: invokevirtual #39                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        75: aload         6
+        77: getfield      #52                 // Field Measure.units:I
+        80: invokevirtual #49                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        83: pop
+        84: iinc          5, 1
+        87: goto          21
+        90: getstatic     #56                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        93: new           #32                 // class java/lang/StringBuilder
+        96: dup
+        97: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+       100: ldc           #62                 // String values=
+       102: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       105: aload_2
+       106: invokevirtual #64                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+       109: invokevirtual #67                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       112: invokevirtual #70                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       115: getstatic     #56                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       118: new           #32                 // class java/lang/StringBuilder
+       121: dup
+       122: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+       125: ldc           #76                 // String lookup=LOW:
+       127: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       130: ldc           #78                 // String LOW
+       132: invokestatic  #80                 // Method lookup:(Ljava/lang/String;)Ljava/lang/String;
+       135: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       138: ldc           #86                 // String ,HIGH:
+       140: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       143: ldc           #88                 // String HIGH
+       145: invokestatic  #80                 // Method lookup:(Ljava/lang/String;)Ljava/lang/String;
+       148: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       151: ldc           #90                 // String ,MISSING:
+       153: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       156: ldc           #92                 // String MISSING
+       158: invokestatic  #80                 // Method lookup:(Ljava/lang/String;)Ljava/lang/String;
+       161: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       164: invokevirtual #67                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       167: invokevirtual #70                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       170: getstatic     #56                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       173: new           #32                 // class java/lang/StringBuilder
+       176: dup
+       177: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+       180: ldc           #94                 // String sum=
+       182: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       185: getstatic     #96                 // Field Measure.totalUnits:I
+       188: invokevirtual #49                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       191: ldc           #99                 // String :
+       193: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       196: invokestatic  #101                // Method Measure.sumUnits:()I
+       199: invokevirtual #49                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       202: invokevirtual #67                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       205: invokevirtual #70                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       208: getstatic     #56                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       211: new           #32                 // class java/lang/StringBuilder
+       214: dup
+       215: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+       218: ldc           #104                // String helper-calls=
+       220: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       223: getstatic     #106                // Field BoundarySupport.calls:I
+       226: invokevirtual #49                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       229: invokevirtual #67                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       232: invokevirtual #70                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       235: return
+      StackMapTable: number_of_entries = 3
+        frame_type = 255 /* full_frame */
+          offset_delta = 21
+          locals = [ class "[Ljava/lang/String;", class "[LMeasure;", class java/lang/StringBuilder, class "[LMeasure;", int, int ]
+          stack = []
+        frame_type = 252 /* append */
+          offset_delta = 26
+          locals = [ class Measure ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 41
+          locals = [ class "[Ljava/lang/String;", class "[LMeasure;", class java/lang/StringBuilder ]
+          stack = []
+}

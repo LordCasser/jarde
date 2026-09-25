@@ -1,0 +1,60 @@
+{
+  "class_sha256": "c6cddc1742449c069f15be2147aaffbc15b05aa3b17d7a61b8ae5efdbf25f3e1",
+  "class_bytes": 1041,
+  "methods": 5,
+  "code_attributes": 5,
+  "bootstrap_entries": 2,
+  "original_exit": 0,
+  "jarde_cli_exit": 0,
+  "jarde_javac_exit": 1,
+  "jarde_run_exit": null,
+  "jadx_exit": 0,
+  "jadx_javac_exit": 0,
+  "jadx_run_exit": 0,
+  "jarde_quotes": 0,
+  "original_output": [
+    "string:31",
+    "null:31",
+    "object:java.lang.ClassCastException",
+    "objectTarget:30"
+  ],
+  "jarde_output": [],
+  "jadx_output": [
+    "string:31",
+    "null:31",
+    "object:java.lang.ClassCastException",
+    "objectTarget:30"
+  ],
+  "cases": [
+    {
+      "case": "string",
+      "original": "string:31",
+      "jarde": null,
+      "jadx": "string:31",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "null",
+      "original": "null:31",
+      "jarde": null,
+      "jadx": "null:31",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "object",
+      "original": "object:java.lang.ClassCastException",
+      "jarde": null,
+      "jadx": "object:java.lang.ClassCastException",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "objectTarget",
+      "original": "objectTarget:30",
+      "jarde": null,
+      "jadx": "objectTarget:30",
+      "failure_stage": "jarde-compile"
+    }
+  ],
+  "jarde_equal": false,
+  "jadx_equal": true
+}

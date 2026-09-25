@@ -1,0 +1,38 @@
+public final class JadxOrderingControl {
+  static int trace;
+
+  public JadxOrderingControl();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static int mark(int);
+    Code:
+       0: getstatic     #7                  // Field trace:I
+       3: bipush        10
+       5: imul
+       6: iload_0
+       7: iadd
+       8: putstatic     #7                  // Field trace:I
+      11: iload_0
+      12: ireturn
+
+  static int[] build();
+    Code:
+       0: iconst_2
+       1: newarray       int
+       3: astore_0
+       4: aload_0
+       5: iconst_1
+       6: iconst_1
+       7: invokestatic  #13                 // Method mark:(I)I
+      10: iastore
+      11: aload_0
+      12: iconst_0
+      13: iconst_2
+      14: invokestatic  #13                 // Method mark:(I)I
+      17: iastore
+      18: aload_0
+      19: areturn
+}

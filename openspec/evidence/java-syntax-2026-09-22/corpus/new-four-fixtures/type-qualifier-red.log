@@ -1,0 +1,32 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.27s
+     Running tests/p3_type_qualifier.rs (target/debug/deps/p3_type_qualifier-dcd6bc078d61e116)
+
+running 4 tests
+test all_fixture_methods_are_structured_with_sources ... ok
+test essential_and_all_share_text_but_only_all_publishes_sources ... ok
+test recovered_complete_class_matches_frozen_original ... ignored, requires JDK: compile and execute the original and recovered complete classes
+test static_owners_survive_generated_parameter_and_suffix_names ... FAILED
+
+failures:
+
+---- static_owners_survive_generated_parameter_and_suffix_names stdout ----
+
+thread 'static_owners_survive_generated_parameter_and_suffix_names' (24811977) panicked at tests/p3_type_qualifier.rs:175:5:
+parameter captured arg0:
+// @method invoke(LShadowOther;)I
+// @declaration a static method of `TypeQualifierProbe`, member flags 0x0009
+// recovered from bytecode; presentation is not claimed to compile
+{
+    return arg0.pick(1) + arg0_2.pick(1);
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    static_owners_survive_generated_parameter_and_suffix_names
+
+test result: FAILED. 2 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p jarde --test p3_type_qualifier`

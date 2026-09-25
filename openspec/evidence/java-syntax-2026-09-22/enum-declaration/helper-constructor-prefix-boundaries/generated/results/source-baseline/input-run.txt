@@ -1,0 +1,4 @@
+values=LOW:0:2,HIGH:1:5
+lookup=LOW:LOW,HIGH:HIGH,MISSING:IllegalArgumentException
+sum=7:7
+helper-calls=0

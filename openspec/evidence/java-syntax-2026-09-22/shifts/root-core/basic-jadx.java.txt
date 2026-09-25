@@ -1,0 +1,49 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ShiftCore.class */
+public class ShiftCore {
+    public static int left(int i, int i2) {
+        return i << i2;
+    }
+
+    public static int right(int i, int i2) {
+        return i >> i2;
+    }
+
+    public static int unsigned(int i, int i2) {
+        return i >>> i2;
+    }
+
+    public static long leftLong(long j, int i) {
+        return j << i;
+    }
+
+    public static long rightLong(long j, int i) {
+        return j >> i;
+    }
+
+    public static long unsignedLong(long j, int i) {
+        return j >>> i;
+    }
+
+    public static int nested(int i, int i2) {
+        return (i << i2) + ((i >>> (i2 + 1)) * 2);
+    }
+
+    public static int local(int i, int i2) {
+        int i3 = i << i2;
+        return i3 + (i3 >>> 3);
+    }
+
+    public static int branch(int i, int i2, boolean z) {
+        return z ? i << i2 : i >> i2;
+    }
+
+    public static int byteChar(byte b, char c, int i) {
+        return (b << i) + (c >>> i);
+    }
+
+    public static int ordered(boolean z, boolean z2, int i, int i2) {
+        return ShiftEffects.left(z, i) << ShiftEffects.right(z2, i2);
+    }
+}

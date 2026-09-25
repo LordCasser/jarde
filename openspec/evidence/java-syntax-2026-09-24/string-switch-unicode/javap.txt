@@ -1,0 +1,286 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/string-switch-unicode/original-compiled/StringSwitchUnicode.class
+  Last modified 2026年9月24日; size 1471 bytes
+  SHA-256 checksum 434e6e84a045d67bc0a6337d89f5493779e12dc01133d89355220ff57cf367fa
+public final class StringSwitchUnicode
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // StringSwitchUnicode
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 5, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // StringSwitchUnicode.calls:I
+   #8 = Class              #10            // StringSwitchUnicode
+   #9 = NameAndType        #11:#12        // calls:I
+  #10 = Utf8               StringSwitchUnicode
+  #11 = Utf8               calls
+  #12 = Utf8               I
+  #13 = Methodref          #8.#14         // StringSwitchUnicode.selector:(Ljava/lang/String;)Ljava/lang/String;
+  #14 = NameAndType        #15:#16        // selector:(Ljava/lang/String;)Ljava/lang/String;
+  #15 = Utf8               selector
+  #16 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #17 = Methodref          #18.#19        // java/lang/String.hashCode:()I
+  #18 = Class              #20            // java/lang/String
+  #19 = NameAndType        #21:#22        // hashCode:()I
+  #20 = Utf8               java/lang/String
+  #21 = Utf8               hashCode
+  #22 = Utf8               ()I
+  #23 = String             #24            //
+  #24 = Utf8
+  #25 = Methodref          #18.#26        // java/lang/String.equals:(Ljava/lang/Object;)Z
+  #26 = NameAndType        #27:#28        // equals:(Ljava/lang/Object;)Z
+  #27 = Utf8               equals
+  #28 = Utf8               (Ljava/lang/Object;)Z
+  #29 = String             #30            // 雪
+  #30 = Utf8               雪
+  #31 = String             #32            // 𐐷
+  #32 = Utf8               𐐷
+  #33 = String             #34            // empty
+  #34 = Utf8               empty
+  #35 = String             #36            // bmp
+  #36 = Utf8               bmp
+  #37 = String             #38            // supplementary
+  #38 = Utf8               supplementary
+  #39 = String             #40            // default
+  #40 = Utf8               default
+  #41 = Methodref          #8.#42         // StringSwitchUnicode.run:(Ljava/lang/String;Ljava/lang/String;)V
+  #42 = NameAndType        #43:#44        // run:(Ljava/lang/String;Ljava/lang/String;)V
+  #43 = Utf8               run
+  #44 = Utf8               (Ljava/lang/String;Ljava/lang/String;)V
+  #45 = String             #46            // other
+  #46 = Utf8               other
+  #47 = Methodref          #8.#48         // StringSwitchUnicode.choose:(Ljava/lang/String;)Ljava/lang/String;
+  #48 = NameAndType        #49:#16        // choose:(Ljava/lang/String;)Ljava/lang/String;
+  #49 = Utf8               choose
+  #50 = Fieldref           #51.#52        // java/lang/System.out:Ljava/io/PrintStream;
+  #51 = Class              #53            // java/lang/System
+  #52 = NameAndType        #54:#55        // out:Ljava/io/PrintStream;
+  #53 = Utf8               java/lang/System
+  #54 = Utf8               out
+  #55 = Utf8               Ljava/io/PrintStream;
+  #56 = Class              #57            // java/lang/StringBuilder
+  #57 = Utf8               java/lang/StringBuilder
+  #58 = Methodref          #56.#3         // java/lang/StringBuilder."<init>":()V
+  #59 = String             #60            // null:returned:calls=
+  #60 = Utf8               null:returned:calls=
+  #61 = Methodref          #56.#62        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #62 = NameAndType        #63:#64        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #63 = Utf8               append
+  #64 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #65 = Methodref          #56.#66        // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #66 = NameAndType        #63:#67        // append:(I)Ljava/lang/StringBuilder;
+  #67 = Utf8               (I)Ljava/lang/StringBuilder;
+  #68 = Methodref          #56.#69        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #69 = NameAndType        #70:#71        // toString:()Ljava/lang/String;
+  #70 = Utf8               toString
+  #71 = Utf8               ()Ljava/lang/String;
+  #72 = Methodref          #73.#74        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #73 = Class              #75            // java/io/PrintStream
+  #74 = NameAndType        #76:#77        // println:(Ljava/lang/String;)V
+  #75 = Utf8               java/io/PrintStream
+  #76 = Utf8               println
+  #77 = Utf8               (Ljava/lang/String;)V
+  #78 = Class              #79            // java/lang/RuntimeException
+  #79 = Utf8               java/lang/RuntimeException
+  #80 = String             #81            // null:
+  #81 = Utf8               null:
+  #82 = Methodref          #2.#83         // java/lang/Object.getClass:()Ljava/lang/Class;
+  #83 = NameAndType        #84:#85        // getClass:()Ljava/lang/Class;
+  #84 = Utf8               getClass
+  #85 = Utf8               ()Ljava/lang/Class;
+  #86 = Methodref          #87.#88        // java/lang/Class.getSimpleName:()Ljava/lang/String;
+  #87 = Class              #89            // java/lang/Class
+  #88 = NameAndType        #90:#71        // getSimpleName:()Ljava/lang/String;
+  #89 = Utf8               java/lang/Class
+  #90 = Utf8               getSimpleName
+  #91 = String             #92            // :calls=
+  #92 = Utf8               :calls=
+  #93 = String             #94            // :
+  #94 = Utf8               :
+  #95 = Utf8               Code
+  #96 = Utf8               StackMapTable
+  #97 = Utf8               main
+  #98 = Utf8               ([Ljava/lang/String;)V
+{
+  private static int calls;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  public StringSwitchUnicode();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  private static java.lang.String selector(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #7                  // Field calls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field calls:I
+         8: aload_0
+         9: areturn
+
+  public static java.lang.String choose(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=1
+         0: aload_0
+         1: invokestatic  #13                 // Method selector:(Ljava/lang/String;)Ljava/lang/String;
+         4: astore_1
+         5: iconst_m1
+         6: istore_2
+         7: aload_1
+         8: invokevirtual #17                 // Method java/lang/String.hashCode:()I
+        11: lookupswitch  { // 3
+                       0: 44
+                   38634: 58
+                 1770582: 72
+                 default: 83
+            }
+        44: aload_1
+        45: ldc           #23                 // String
+        47: invokevirtual #25                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        50: ifeq          83
+        53: iconst_0
+        54: istore_2
+        55: goto          83
+        58: aload_1
+        59: ldc           #29                 // String 雪
+        61: invokevirtual #25                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        64: ifeq          83
+        67: iconst_1
+        68: istore_2
+        69: goto          83
+        72: aload_1
+        73: ldc           #31                 // String 𐐷
+        75: invokevirtual #25                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        78: ifeq          83
+        81: iconst_2
+        82: istore_2
+        83: iload_2
+        84: tableswitch   { // 0 to 2
+                       0: 112
+                       1: 115
+                       2: 118
+                 default: 121
+            }
+       112: ldc           #33                 // String empty
+       114: areturn
+       115: ldc           #35                 // String bmp
+       117: areturn
+       118: ldc           #37                 // String supplementary
+       120: areturn
+       121: ldc           #39                 // String default
+       123: areturn
+      StackMapTable: number_of_entries = 8
+        frame_type = 253 /* append */
+          offset_delta = 44
+          locals = [ class java/lang/String, int ]
+        frame_type = 13 /* same */
+        frame_type = 13 /* same */
+        frame_type = 10 /* same */
+        frame_type = 28 /* same */
+        frame_type = 2 /* same */
+        frame_type = 2 /* same */
+        frame_type = 2 /* same */
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: ldc           #33                 // String empty
+         2: ldc           #23                 // String
+         4: invokestatic  #41                 // Method run:(Ljava/lang/String;Ljava/lang/String;)V
+         7: ldc           #35                 // String bmp
+         9: ldc           #29                 // String 雪
+        11: invokestatic  #41                 // Method run:(Ljava/lang/String;Ljava/lang/String;)V
+        14: ldc           #37                 // String supplementary
+        16: ldc           #31                 // String 𐐷
+        18: invokestatic  #41                 // Method run:(Ljava/lang/String;Ljava/lang/String;)V
+        21: ldc           #39                 // String default
+        23: ldc           #45                 // String other
+        25: invokestatic  #41                 // Method run:(Ljava/lang/String;Ljava/lang/String;)V
+        28: iconst_0
+        29: putstatic     #7                  // Field calls:I
+        32: aconst_null
+        33: invokestatic  #47                 // Method choose:(Ljava/lang/String;)Ljava/lang/String;
+        36: pop
+        37: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        40: new           #56                 // class java/lang/StringBuilder
+        43: dup
+        44: invokespecial #58                 // Method java/lang/StringBuilder."<init>":()V
+        47: ldc           #59                 // String null:returned:calls=
+        49: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        52: getstatic     #7                  // Field calls:I
+        55: invokevirtual #65                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        58: invokevirtual #68                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        61: invokevirtual #72                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        64: goto          110
+        67: astore_1
+        68: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        71: new           #56                 // class java/lang/StringBuilder
+        74: dup
+        75: invokespecial #58                 // Method java/lang/StringBuilder."<init>":()V
+        78: ldc           #80                 // String null:
+        80: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        83: aload_1
+        84: invokevirtual #82                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        87: invokevirtual #86                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+        90: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        93: ldc           #91                 // String :calls=
+        95: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        98: getstatic     #7                  // Field calls:I
+       101: invokevirtual #65                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       104: invokevirtual #68                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       107: invokevirtual #72                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       110: return
+      Exception table:
+         from    to  target type
+            32    64    67   Class java/lang/RuntimeException
+      StackMapTable: number_of_entries = 2
+        frame_type = 247 /* same_locals_1_stack_item_frame_extended */
+          offset_delta = 67
+          stack = [ class java/lang/RuntimeException ]
+        frame_type = 42 /* same */
+
+  private static void run(java.lang.String, java.lang.String);
+    descriptor: (Ljava/lang/String;Ljava/lang/String;)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: iconst_0
+         1: putstatic     #7                  // Field calls:I
+         4: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+         7: new           #56                 // class java/lang/StringBuilder
+        10: dup
+        11: invokespecial #58                 // Method java/lang/StringBuilder."<init>":()V
+        14: aload_0
+        15: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: ldc           #93                 // String :
+        20: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        23: aload_1
+        24: invokestatic  #47                 // Method choose:(Ljava/lang/String;)Ljava/lang/String;
+        27: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        30: ldc           #91                 // String :calls=
+        32: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        35: getstatic     #7                  // Field calls:I
+        38: invokevirtual #65                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        41: invokevirtual #68                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        44: invokevirtual #72                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        47: return
+}

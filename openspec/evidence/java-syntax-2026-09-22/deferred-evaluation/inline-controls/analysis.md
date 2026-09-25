@@ -1,0 +1,7 @@
+# 原本可正确内联的回归对照
+
+root新增普通javac主类InlineOrderControls，1045 bytes，SHA-256 `349ca9c8a2d4b86e205a408540a7ea49b83a69e92de73acba93284a5858b9234`。未做任何Code修改。60项覆盖void/有返回值调用的实参、丢弃返回值、StringBuilder拼接、带实参构造、receiver与argument、字段读/写、局部声明以及if测试，并逐项观察trace、字段值、对象结果与异常身份。
+
+`before/`固定首版CLI feed5c：原class、JADX和jarde完整文本均成功编译与执行，60项逐行相同，jarde零引用。helper和runner仅源文件，不计入永久语料。`run_audit.py`允许通过JARDE_AUDIT_CLI指定构建、JARDE_AUDIT_STAGE指定不同结果目录；每次审计前后核对CLI hash，不能用后续构建改写这次正确基线。
+
+这些是修复的质量约束。尤其嵌套producer用于void调用时，该调用本身就是最终语句，不能因为没有输出SSA stack value而被当成不完整表达式链。新增有界顺序证明应保留此类已正确呈现的普通内联，不以普遍引用或拆出无必要临时变量使反例数字好看。

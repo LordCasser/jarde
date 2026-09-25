@@ -1,0 +1,5 @@
+--- original-run.txt
++++ frozen-run.txt
+@@ -1,2 +0,0 @@
+-true=7:trace=1
+-false=11:trace=2

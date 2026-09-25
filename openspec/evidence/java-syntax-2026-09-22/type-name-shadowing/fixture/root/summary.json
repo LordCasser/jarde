@@ -1,0 +1,38 @@
+{
+  "fixture_sha256": "0b8257791ce1d3544a42e5df31cfe8b9eee9ea5804b59c678caffb41f416634a",
+  "bytes": 479,
+  "code_methods": 6,
+  "source_or_patched_bytes_equal": true,
+  "cases": 8,
+  "jarde_cli_sha256": "feed5c377a439490efb12a2a46bdfa0e94c32dffd3a83bd1583b70fe89317350",
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_differences": [
+    {
+      "original": "null:invoke:32:3:7:null",
+      "jarde": "null:invoke:java.lang.NullPointerException:3:7:null"
+    },
+    {
+      "original": "null:read:10:3:7:null",
+      "jarde": "null:read:java.lang.NullPointerException:3:7:null"
+    },
+    {
+      "original": "null:write:done:9:10:null",
+      "jarde": "null:write:java.lang.NullPointerException:3:7:null"
+    },
+    {
+      "original": "object:invoke:32:3:7:70",
+      "jarde": "object:invoke:52:3:7:70"
+    },
+    {
+      "original": "object:read:10:3:7:70",
+      "jarde": "object:read:77:3:7:70"
+    },
+    {
+      "original": "object:write:done:9:10:70",
+      "jarde": "object:write:done:3:10:9"
+    }
+  ],
+  "jadx_javac": 0,
+  "jadx_equal": true
+}

@@ -1,0 +1,13 @@
+null=java.lang.NullPointerException:false:0
+parameter=java.lang.IllegalArgumentException:true:0
+parameterNull=java.lang.NullPointerException:false:0
+allocation=java.lang.IllegalStateException:false:0
+call=java.lang.IllegalArgumentException:true:1
+callFailure=java.lang.IllegalStateException:true:1
+cast=java.lang.IllegalArgumentException:true:0
+castBad=java.lang.ClassCastException:false:0
+castNull=java.lang.NullPointerException:false:0
+first=java.lang.IllegalArgumentException:true:0
+second=java.lang.IllegalStateException:true:0
+checked=java.io.IOException:true:0
+caught=true

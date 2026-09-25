@@ -1,0 +1,266 @@
+// jarde: presentation of `CompareProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class CompareProbe extends java.lang.Object {
+    public CompareProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `CompareProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int long_eq(long arg0, long arg2) {
+        // jarde: not recovered: the recovery run for `long_eq(JJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method long_eq(JJ)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int long_ne(long arg0, long arg2) {
+        // jarde: not recovered: the recovery run for `long_ne(JJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method long_ne(JJ)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int long_lt(long arg0, long arg2) {
+        // jarde: not recovered: the recovery run for `long_lt(JJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method long_lt(JJ)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int long_le(long arg0, long arg2) {
+        // jarde: not recovered: the recovery run for `long_le(JJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method long_le(JJ)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int long_gt(long arg0, long arg2) {
+        // jarde: not recovered: the recovery run for `long_gt(JJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method long_gt(JJ)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int long_ge(long arg0, long arg2) {
+        // jarde: not recovered: the recovery run for `long_ge(JJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method long_ge(JJ)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int long_not_lt(long arg0, long arg2) {
+        // jarde: not recovered: the recovery run for `long_not_lt(JJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method long_not_lt(JJ)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int float_eq(float arg0, float arg1) {
+        // jarde: not recovered: the recovery run for `float_eq(FF)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method float_eq(FF)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int float_ne(float arg0, float arg1) {
+        // jarde: not recovered: the recovery run for `float_ne(FF)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method float_ne(FF)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int float_lt(float arg0, float arg1) {
+        // jarde: not recovered: the recovery run for `float_lt(FF)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method float_lt(FF)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int float_le(float arg0, float arg1) {
+        // jarde: not recovered: the recovery run for `float_le(FF)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method float_le(FF)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int float_gt(float arg0, float arg1) {
+        // jarde: not recovered: the recovery run for `float_gt(FF)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method float_gt(FF)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int float_ge(float arg0, float arg1) {
+        // jarde: not recovered: the recovery run for `float_ge(FF)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method float_ge(FF)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int float_not_lt(float arg0, float arg1) {
+        // jarde: not recovered: the recovery run for `float_not_lt(FF)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method float_not_lt(FF)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int double_eq(double arg0, double arg2) {
+        // jarde: not recovered: the recovery run for `double_eq(DD)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method double_eq(DD)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int double_ne(double arg0, double arg2) {
+        // jarde: not recovered: the recovery run for `double_ne(DD)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method double_ne(DD)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int double_lt(double arg0, double arg2) {
+        // jarde: not recovered: the recovery run for `double_lt(DD)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method double_lt(DD)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int double_le(double arg0, double arg2) {
+        // jarde: not recovered: the recovery run for `double_le(DD)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method double_le(DD)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int double_gt(double arg0, double arg2) {
+        // jarde: not recovered: the recovery run for `double_gt(DD)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method double_gt(DD)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int double_ge(double arg0, double arg2) {
+        // jarde: not recovered: the recovery run for `double_ge(DD)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method double_ge(DD)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int double_not_lt(double arg0, double arg2) {
+        // jarde: not recovered: the recovery run for `double_not_lt(DD)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method double_not_lt(DD)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int int_lt(int arg0, int arg1) {
+        // @method int_lt(II)I
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 < arg1) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static boolean double_boolean(double arg0, double arg2) {
+        // jarde: not recovered: the recovery run for `double_boolean(DD)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method double_boolean(DD)Z
+        // @declaration a static method of `CompareProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 10 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 11
+        // the value at BCI 11 is the entry state of stack depth 0, which no instruction produced
+    }
+}

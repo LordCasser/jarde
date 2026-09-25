@@ -35,7 +35,8 @@
 
 use std::collections::BTreeSet;
 
-use jarde_jvm::method_ir::{Definition, Slot, SsaInstruction, SsaTable, Value, ValueId};
+use jarde_jvm::method_ir::{Definition, RefType, SsaInstruction, SsaTable, Value, ValueId};
+use jarde_reader::classfile::MethodCodeFacts;
 use serde::Serialize;
 
 use crate::ast::ConstructorTarget;
@@ -43,8 +44,10 @@ use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::evidence::Publication;
 use crate::facts::{MethodFacts, Operation};
+use crate::field;
 use crate::pass::{INIT, NEW, Precondition, RuleVersion};
 use crate::refusal::{Gap, Refusal};
+use crate::report::ProvedMemberInnerTarget;
 
 /// The pass answerable for a construction site.
 pub(crate) const NEW_RULE: RuleVersion = NEW.rule();
@@ -74,10 +77,37 @@ pub(crate) struct Site {
     /// The BCIs of the values the constructor call takes, in the order it reads them: the evidence
     /// of the argument order, and the anchors the written expression keeps.
     pub(crate) arguments: Vec<u32>,
+    /// Call-site proof for a selected member target. Projection is enabled by the AST slice.
+    pub(crate) member_inner: Option<MemberInnerSite>,
     /// Every BCI the site owns: the allocation, the copy and the constructor call. An owned
     /// instruction produces no statement of its own — its text is the `new` expression, written
     /// where the instance is consumed and nowhere else.
     pub(crate) owned: BTreeSet<u32>,
+}
+
+/// The local qualifier and exact check already proved for one physical member constructor.
+pub(crate) struct MemberInnerSite {
+    pub(crate) qualifier: u32,
+    pub(crate) check: u32,
+    pub(crate) pop: u32,
+    pub(crate) outer: String,
+    pub(crate) simple_name: String,
+    pub(crate) generic_diamond: bool,
+}
+
+struct MemberProof {
+    site: MemberInnerSite,
+    arguments: Vec<u32>,
+    owned: BTreeSet<u32>,
+}
+
+/// The already-read facts shared by ordinary and member construction verification.
+struct ConstructionFacts<'a> {
+    ssa: &'a SsaTable,
+    operations: &'a Operations,
+    fields: &'a field::Plan,
+    member_targets: &'a [ProvedMemberInnerTarget],
+    code: &'a MethodCodeFacts,
 }
 
 /// Every construction site of one body, the candidates that were not sites, and the gaps stated in
@@ -90,9 +120,19 @@ pub(crate) struct Site {
 pub(crate) struct Sites {
     sites: Vec<Site>,
     owned: BTreeSet<u32>,
+    /// Every decoded `new` allocation in the body, including candidates reserved by another rule.
+    /// A false `verified` value is evidence against a class-level unique allocation claim.
+    allocation_candidates: Vec<AllocationCandidate>,
     /// Why a candidate was not a construction site, in BCI order: the internal decision every
     /// selection reports as a gap beside the records only a selected run materializes.
     refusals: Vec<Refused>,
+}
+
+/// The bounded census of allocation instructions that `new@1` considered or another rule owned.
+pub(crate) struct AllocationCandidate {
+    pub(crate) head: u32,
+    pub(crate) class: String,
+    pub(crate) verified: bool,
 }
 
 /// One candidate construction this rule read and did not present.
@@ -148,6 +188,7 @@ impl Sites {
         Self {
             sites: Vec::new(),
             owned: BTreeSet::new(),
+            allocation_candidates: Vec::new(),
             refusals: Vec::new(),
         }
     }
@@ -160,6 +201,17 @@ impl Sites {
     /// The site one instruction belongs to, when one of them produces the value it wrote.
     pub(crate) fn site_of(&self, bci: u32) -> Option<&Site> {
         self.sites.iter().find(|site| site.owned.contains(&bci))
+    }
+
+    /// Every allocation opcode in this body, in BCI order, whether `new@1` accepted it or another
+    /// rule reserved it. Class-level uniqueness proofs must count all of them.
+    pub(crate) fn allocation_candidates(&self) -> &[AllocationCandidate] {
+        &self.allocation_candidates
+    }
+
+    /// The accepted site whose allocation begins at `head`, if `new@1` verified it.
+    pub(crate) fn site_at_head(&self, head: u32) -> Option<&Site> {
+        self.sites.iter().find(|site| site.head == head)
     }
 
     /// Every candidate the rule refused, in BCI order.
@@ -212,13 +264,32 @@ impl Sites {
 /// `reserved` is every BCI another rule of this run already owns — in practice the concatenation
 /// chains, whose own allocation and constructor call are written inside a `+` expression and must not
 /// be written a second time as a `new`. One instruction is never two shapes.
-pub(crate) fn sites(ssa: &SsaTable, operations: &Operations, reserved: &BTreeSet<u32>) -> Sites {
+///
+/// `fields` is the `field@1` plan of the same body, which this rule **reads** and never re-derives: a
+/// claimed field access is one of the places a construction's instance is written into (P3 2c.26), and
+/// whether an instruction really is an access to the member its own receiver's type declares is that
+/// rule's verdict. `@field` is therefore decided before `@new` — [`crate::report`] runs the two in
+/// that order — and the judgement is handed in rather than taken a second time here.
+pub(crate) fn sites(
+    ssa: &SsaTable,
+    operations: &Operations,
+    reserved: &BTreeSet<u32>,
+    fields: &field::Plan,
+    member_targets: &[ProvedMemberInnerTarget],
+    code: &MethodCodeFacts,
+) -> Sites {
+    let facts = ConstructionFacts {
+        ssa,
+        operations,
+        fields,
+        member_targets,
+        code,
+    };
     let blocks: Vec<&[SsaInstruction]> = ssa
         .blocks()
         .iter()
         .map(|block| block.instructions())
         .collect();
-    let all: Vec<&SsaInstruction> = blocks.iter().flat_map(|block| block.iter()).collect();
     let mut plan = Sites::empty();
     for block in &blocks {
         for (index, instruction) in block.iter().enumerate() {
@@ -226,13 +297,20 @@ pub(crate) fn sites(ssa: &SsaTable, operations: &Operations, reserved: &BTreeSet
             let Some(Operation::Allocate { ty }) = operations.get(head) else {
                 continue;
             };
+            let candidate_index = plan.allocation_candidates.len();
+            plan.allocation_candidates.push(AllocationCandidate {
+                head,
+                class: ty.clone(),
+                verified: false,
+            });
             if reserved.contains(&head) {
                 // Another rule of this run writes this allocation's text: it is not a second shape.
                 continue;
             }
             let ty = ty.clone();
-            match verify(head, index, block, ty.clone(), ssa, operations, &all) {
+            match verify(head, index, block, ty.clone(), &facts) {
                 Ok(site) => {
+                    plan.allocation_candidates[candidate_index].verified = true;
                     for bci in &site.owned {
                         plan.owned.insert(*bci);
                     }
@@ -246,6 +324,8 @@ pub(crate) fn sites(ssa: &SsaTable, operations: &Operations, reserved: &BTreeSet
             }
         }
     }
+    plan.allocation_candidates
+        .sort_by_key(|candidate| candidate.head);
     plan.refusals.sort_by_key(|refused| refused.head);
     plan
 }
@@ -255,19 +335,31 @@ pub(crate) fn sites(ssa: &SsaTable, operations: &Operations, reserved: &BTreeSet
 fn site_positions(site: &Site) -> Vec<u32> {
     let mut positions = vec![site.head, site.dup, site.constructor];
     positions.extend(site.arguments.iter().copied());
+    if let Some(member) = &site.member_inner {
+        positions.extend([member.qualifier, member.check, member.pop]);
+    }
     positions
 }
 
 /// Verifies one candidate construction site, or states the link that failed.
+///
+/// `fields` is the `field@1` plan of this body: the one fact consulted here that this rule does not
+/// decide for itself, and only for the question of whether an instruction is a place the instance is
+/// written (P3 2c.26).
 fn verify(
     head: u32,
     index: usize,
     block: &[SsaInstruction],
     ty: String,
-    ssa: &SsaTable,
-    operations: &Operations,
-    all: &[&SsaInstruction],
+    facts: &ConstructionFacts<'_>,
 ) -> Result<Site, Refusal> {
+    let ConstructionFacts {
+        ssa,
+        operations,
+        fields,
+        member_targets,
+        ..
+    } = *facts;
     let shape = |detail: String| Refusal::shape("jre_new_shape", detail);
     let Some(dup) = block.get(index + 1) else {
         return Err(shape(format!(
@@ -306,62 +398,108 @@ fn verify(
             "the constructor at BCI {at} is called on a value this allocation did not produce"
         )));
     }
-    // Every argument has to be produced **between the copy and the call**, so that writing it as an
-    // argument of the `new` expression evaluates it exactly where the bytecode evaluated it. A value
-    // produced elsewhere would move, and this rule never moves a value.
-    let mut arguments: Vec<u32> = Vec::new();
-    for (_, value) in operands.iter().skip(1) {
-        let Some(produced) = produced_at(ssa, *value) else {
-            return Err(shape(format!(
-                "an argument of the constructor call at BCI {at} was not produced by an instruction of this body, so where it is evaluated is not stated"
-            )));
-        };
-        if produced <= dup.bci() || produced >= at {
-            return Err(shape(format!(
-                "the argument produced at BCI {produced} is not produced between the `dup` at BCI {} and the constructor call at BCI {at}: writing it as an argument of the `new` expression would evaluate it in a different order",
-                dup.bci()
-            )));
-        }
-        arguments.push(produced);
-    }
-    // Nothing inside the span may be an effect this rule would have to move: every instruction
-    // between the copy and the call is an argument's own instruction (a value expression, or a call
-    // whose value the constructor reads), and anything else ends the walk with the requirement
-    // stated.
-    for instruction in block.iter().skip(index + 2) {
-        if instruction.bci() >= at {
-            break;
-        }
-        match operations.get(instruction.bci()) {
-            Some(Operation::Push(_) | Operation::Load { .. } | Operation::Arithmetic { .. }) => {}
-            Some(Operation::Invoke(_)) if produces_a_read_value(instruction, block) => {}
-            Some(operation) => {
-                return Err(Refusal::unmet(
-                    &NEW,
-                    Precondition::StatementFree,
-                    format!(
-                        "the instruction at BCI {} is an {operation:?} between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
-                        instruction.bci()
-                    ),
-                ));
-            }
-            None => {
+    let member = member_targets
+        .iter()
+        .find(|target| {
+            target.owner == ty
+                && matches!(
+                    operations.get(at),
+                    Some(Operation::Invoke(call)) if call.descriptor() == target.constructor_descriptor
+                )
+        })
+        .map(|target| verify_member(index, block, constructor, &operands, facts, target))
+        .transpose()?;
+    let arguments = if let Some(member) = &member {
+        member.arguments.clone()
+    } else {
+        // Every argument has to be produced **between the copy and the call**, so that writing it as an
+        // argument of the `new` expression evaluates it exactly where the bytecode evaluated it. A value
+        // produced elsewhere would move, and this rule never moves a value.
+        let mut arguments: Vec<u32> = Vec::new();
+        for (_, value) in operands.iter().skip(1) {
+            let Some(produced) = produced_at(ssa, *value) else {
                 return Err(shape(format!(
-                    "the instruction at BCI {} was not decoded by this run, so what it does inside the construction is not stated",
-                    instruction.bci()
+                    "an argument of the constructor call at BCI {at} was not produced by an instruction of this body, so where it is evaluated is not stated"
+                )));
+            };
+            if produced <= dup.bci() || produced >= at {
+                return Err(shape(format!(
+                    "the argument produced at BCI {produced} is not produced between the `dup` at BCI {} and the constructor call at BCI {at}: writing it as an argument of the `new` expression would evaluate it in a different order",
+                    dup.bci()
                 )));
             }
+            arguments.push(produced);
         }
-    }
-    // The instance has to be read by an instruction this build **writes it into**. A construction
-    // reads no value of its own, so a value nothing writes has no place in the body: the instructions
-    // that do read it are quoted instead, and the allocation, its copy and its constructor call are
-    // quoted with them — never written as a `new` expression that no statement holds.
-    let readers = outside_readers(ssa, all, &produced_by);
+        // Trace the constructor's physical arguments back through this block's SSA definitions and
+        // reads. An invocation is part of the expression only when that actual dependency walk reaches
+        // it; a result consumed by unrelated bytecode is not enough, and a void invocation cannot be
+        // reached at all.
+        let argument_dependencies =
+            value_dependency_bcis(ssa, block, operands.iter().skip(1).map(|(_, value)| *value));
+        // Nothing inside the span may be an effect this rule would have to move: every invocation
+        // between the copy and the call must be in an argument's own value dependency chain.
+        for instruction in block.iter().skip(index + 2) {
+            if instruction.bci() >= at {
+                break;
+            }
+            match operations.get(instruction.bci()) {
+                Some(
+                    Operation::Push(_)
+                    | Operation::Load { .. }
+                    | Operation::Arithmetic { .. }
+                    | Operation::Negate,
+                ) => {}
+                Some(Operation::Invoke(_))
+                    if argument_dependencies.contains(&instruction.bci()) => {}
+                Some(Operation::Invoke(_)) => {
+                    return Err(Refusal::unmet(
+                        &NEW,
+                        Precondition::StatementFree,
+                        format!(
+                            "the invocation at BCI {} is not a value dependency of the constructor's physical arguments at BCI {at}, so presenting the construction would move that call effect",
+                            instruction.bci()
+                        ),
+                    ));
+                }
+                Some(operation) => {
+                    return Err(Refusal::unmet(
+                        &NEW,
+                        Precondition::StatementFree,
+                        format!(
+                            "the instruction at BCI {} is an {operation:?} between the allocation's copy and its constructor call, and presenting the construction would write that effect somewhere else",
+                            instruction.bci()
+                        ),
+                    ));
+                }
+                None => {
+                    return Err(shape(format!(
+                        "the instruction at BCI {} was not decoded by this run, so what it does inside the construction is not stated",
+                        instruction.bci()
+                    )));
+                }
+            }
+        }
+        arguments
+    };
+    // The instance has to be read by **exactly one** instruction this build **writes it into**. A
+    // construction reads no value of its own, so a value nothing writes has no place in the body: the
+    // instructions that do read it are quoted instead, and the allocation, its copy and its
+    // constructor call are quoted with them — never written as a `new` expression that no statement
+    // holds.
+    //
+    // The instance is written **once**, too, and that is what the count below states (P3 2c.26/2c.27):
+    // a site is one `new` expression in one place, so a leftover that more than one instruction reads
+    // would have to be spelled twice — two instances where the bytecode allocated one — and such a
+    // candidate keeps its refusal. The constructor's own copy is not a reader here: it is one of the
+    // three instructions this site owns, and [`outside_readers`] leaves the site's own instructions
+    // out. The place the value is written is the reader's own text: a store, a call, a `return`, a
+    // test and a *claimed* field access ([`renders_its_reads`]) all write the value they read, and
+    // every other instruction is quoted as bytecode and writes nothing.
+    let readers = outside_readers(ssa, &produced_by);
     let written: Vec<u32> = readers
         .iter()
         .copied()
-        .filter(|bci| renders_its_reads(operations, *bci))
+        .filter(|bci| renders_its_reads(operations, fields, *bci))
         .collect();
     if written.is_empty() {
         return Err(shape(if readers.is_empty() {
@@ -379,21 +517,214 @@ fn verify(
             )
         }));
     }
-    let owned: BTreeSet<u32> = produced_by.iter().copied().collect();
+    if readers.len() != 1 {
+        return Err(shape(format!(
+            "the instance the allocation at BCI {head} builds is read by the instructions at BCIs {}, and a construction is written as one `new` expression in one place: a leftover that more than one instruction reads has no single Java spelling",
+            readers
+                .iter()
+                .map(u32::to_string)
+                .collect::<Vec<_>>()
+                .join(", ")
+        )));
+    }
+    let mut owned: BTreeSet<u32> = produced_by.iter().copied().collect();
+    if let Some(member) = &member {
+        owned.extend(member.owned.iter().copied());
+    }
     Ok(Site {
         head,
         dup: dup.bci(),
         constructor: at,
         class: ty,
         arguments,
+        member_inner: member.map(|proof| proof.site),
         owned,
     })
 }
 
+/// The restricted javac member shape. The target's declaration is already proved by class-source;
+/// this checks only this call's values and effects. In particular, the descriptor's first type is
+/// not evidence for the qualifier's static type or identity.
+fn verify_member(
+    index: usize,
+    block: &[SsaInstruction],
+    constructor: &SsaInstruction,
+    operands: &[(jarde_jvm::method_ir::Slot, ValueId)],
+    facts: &ConstructionFacts<'_>,
+    target: &ProvedMemberInnerTarget,
+) -> Result<MemberProof, Refusal> {
+    let ConstructionFacts {
+        ssa,
+        operations,
+        code,
+        ..
+    } = *facts;
+    let at = constructor.bci();
+    let shape = |detail: String| Refusal::shape("jre_new_member_shape", detail);
+    let order = |detail: String| Refusal::shape("jre_new_member_order", detail);
+    let Some((_, physical_outer)) = operands.get(1).copied() else {
+        return Err(shape(format!(
+            "the member constructor at BCI {at} has no physical outer argument"
+        )));
+    };
+    let Some([qualifier, copy, check, pop]) = block.get(index + 2..index + 6) else {
+        return Err(shape(format!(
+            "the member constructor at BCI {at} has no complete qualifier check"
+        )));
+    };
+    if pop.bci() >= at
+        || !matches!(
+            operations.get(qualifier.bci()),
+            Some(Operation::Load { .. })
+        )
+        || operations.get(copy.bci()) != Some(&Operation::Duplicate)
+        || !matches!(operations.get(check.bci()), Some(Operation::Invoke(call))
+            if call.kind() == crate::facts::InvokeKind::Static
+                && !call.is_interface_reference()
+                && call.owner() == "java/util/Objects"
+                && call.name() == "requireNonNull"
+                && call.descriptor() == "(Ljava/lang/Object;)Ljava/lang/Object;")
+        || pop.opcode() != 0x57
+    {
+        return Err(shape(format!(
+            "the member constructor at BCI {at} lacks the contiguous local load, dup, exact requireNonNull(Object), pop check"
+        )));
+    }
+    let qualifier_writes = qualifier.writes();
+    let copy_reads = stack_operands(copy);
+    let copy_writes = copy.writes();
+    let check_reads = stack_operands(check);
+    let check_writes = check.writes();
+    let pop_reads = stack_operands(pop);
+    if qualifier_writes.len() != 1
+        || copy_reads.len() != 1
+        || copy_writes.len() != 2
+        || check_reads.len() != 1
+        || check_writes.len() != 1
+        || pop_reads.len() != 1
+        || copy_reads[0].1 != qualifier_writes[0].1
+        || !copy_writes
+            .iter()
+            .any(|(_, value)| *value == physical_outer)
+        || !copy_writes
+            .iter()
+            .any(|(_, value)| *value == check_reads[0].1)
+        || physical_outer == check_reads[0].1
+        || pop_reads[0].1 != check_writes[0].1
+        || !single_use_at(ssa, qualifier_writes[0].1, copy.bci())
+        || !single_use_at(ssa, physical_outer, at)
+        || !single_use_at(ssa, check_reads[0].1, check.bci())
+        || !single_use_at(ssa, check_writes[0].1, pop.bci())
+    {
+        return Err(shape(format!(
+            "the member constructor at BCI {at} does not pass the checked qualifier's two SSA copies as its physical outer and null-check operand exactly once"
+        )));
+    }
+    let outer_descriptor = format!("L{};", target.outer);
+    if !matches!(ssa.value(qualifier_writes[0].1).ty(),
+        Value::Ref(RefType::Named { name, .. }) if name == outer_descriptor.as_bytes())
+    {
+        return Err(shape(format!(
+            "the qualifier at BCI {} has no exact static type `{}` for member binding (SSA type {:?})",
+            qualifier.bci(),
+            target.outer,
+            ssa.value(qualifier_writes[0].1).ty()
+        )));
+    }
+
+    // The Java qualified expression puts its check at this position. Every instruction it owns
+    // must have the same handler coverage as the original check; a boundary cannot be crossed.
+    let coverage = |bci: u32| -> Vec<u32> {
+        code.exception_handlers
+            .iter()
+            .filter(|handler| handler.start_bci <= bci && bci < handler.end_bci)
+            .map(|handler| handler.ordinal)
+            .collect()
+    };
+    let expected_handlers = coverage(check.bci());
+    if block[index..]
+        .iter()
+        .take_while(|instruction| instruction.bci() <= at)
+        .any(|instruction| coverage(instruction.bci()) != expected_handlers)
+    {
+        return Err(order(format!(
+            "the member constructor at BCI {at} crosses an exception-handler boundary around its qualifier check"
+        )));
+    }
+
+    let mut arguments = vec![copy.bci()]; // physical first argument, not a source argument
+    let mut last = pop.bci();
+    for (_, value) in operands.iter().skip(2) {
+        let Some(produced) = produced_at(ssa, *value) else {
+            return Err(order(format!(
+                "an ordinary argument of the member constructor at BCI {at} has no local producer"
+            )));
+        };
+        if produced <= last || produced >= at {
+            return Err(order(format!(
+                "the ordinary argument at BCI {produced} is not produced in order after the null-check at BCI {} and before the constructor at BCI {at}",
+                pop.bci()
+            )));
+        }
+        arguments.push(produced);
+        last = produced;
+    }
+    let dependencies =
+        value_dependency_bcis(ssa, block, operands.iter().skip(2).map(|(_, value)| *value));
+    let after_check = index + 6;
+    for instruction in block
+        .iter()
+        .skip(after_check)
+        .take_while(|instruction| instruction.bci() < at)
+    {
+        let bci = instruction.bci();
+        if !dependencies.contains(&bci) {
+            return Err(order(format!(
+                "the instruction at BCI {bci} is not an ordinary argument dependency of the member constructor at BCI {at}"
+            )));
+        }
+        if !matches!(
+            operations.get(bci),
+            Some(
+                Operation::Push(_)
+                    | Operation::Load { .. }
+                    | Operation::Arithmetic { .. }
+                    | Operation::Negate
+                    | Operation::Invoke(_)
+            )
+        ) {
+            return Err(order(format!(
+                "the instruction at BCI {bci} cannot be kept in member argument order"
+            )));
+        }
+    }
+    let owned = [copy.bci(), check.bci(), pop.bci()].into_iter().collect();
+    Ok(MemberProof {
+        site: MemberInnerSite {
+            qualifier: qualifier.bci(),
+            check: check.bci(),
+            pop: pop.bci(),
+            outer: target.outer.clone(),
+            simple_name: target.simple_name.clone(),
+            generic_diamond: target.generic_diamond,
+        },
+        arguments,
+        owned,
+    })
+}
+
+fn single_use_at(ssa: &SsaTable, value: ValueId, at: u32) -> bool {
+    let uses = ssa.value(value).uses();
+    uses.len() == 1 && uses[0].bci() == Some(at)
+}
+
 /// Every instruction outside a site that reads one of the values the site produced.
-fn outside_readers(ssa: &SsaTable, all: &[&SsaInstruction], produced_by: &[u32]) -> Vec<u32> {
+///
+/// The walk is the body's own instructions, in block order: the site's own three instructions are
+/// left out by BCI, and everything else is read from the table the caller already holds.
+fn outside_readers(ssa: &SsaTable, produced_by: &[u32]) -> Vec<u32> {
     let mut readers: Vec<u32> = Vec::new();
-    for instruction in all {
+    for instruction in ssa.blocks().iter().flat_map(|block| block.instructions()) {
         if produced_by.contains(&instruction.bci()) {
             continue;
         }
@@ -413,22 +744,33 @@ fn outside_readers(ssa: &SsaTable, all: &[&SsaInstruction], produced_by: &[u32])
 /// The predicate is the one [`crate::build`] applies to a call's reader (P3 2.3 §0), stated here
 /// because this rule decides before the builder does: a store, a call, a `return`, a condition, a
 /// switch, an arithmetic and a dynamic site write the values they read; a `dup` copies a value and
-/// writes nothing, and an instruction a rule of this build does not claim is quoted. Field accesses,
-/// array reads and casts are deliberately not here: whether *their* rules claim them is decided after
+/// writes nothing, and an instruction a rule of this build does not claim is quoted.
+///
+/// A **field access** is exactly [`crate::field::Plan::owns`]: a claimed write is the assignment
+/// `field@1` writes, and a claimed read is the expression whose receiver or whose value the access
+/// is — either way the instance is written into the access's own text (P3 2c.26). An access `@field`
+/// refused is quoted as bytecode and writes nothing, so the site must not lean on it: that is why the
+/// plan is an input of this rule and the verdict is read rather than guessed from the opcode, and why
+/// `@field` is decided before `@new` ([`crate::report`] orders the two plans that way).
+///
+/// Array reads and casts are deliberately not here: whether *their* rules claim them is decided after
 /// this plan, and a site that leaned on one would be leaning on a verdict not yet taken.
-fn renders_its_reads(operations: &Operations, bci: u32) -> bool {
-    matches!(
-        operations.get(bci),
+fn renders_its_reads(operations: &Operations, fields: &field::Plan, bci: u32) -> bool {
+    match operations.get(bci) {
         Some(
             Operation::Store { .. }
-                | Operation::Invoke(_)
-                | Operation::InvokeDynamic(_)
-                | Operation::Return
-                | Operation::Comparison { .. }
-                | Operation::Switch { .. }
-                | Operation::Arithmetic { .. }
-        )
-    )
+            | Operation::Invoke(_)
+            | Operation::InvokeDynamic(_)
+            | Operation::Return
+            | Operation::Throw
+            | Operation::Comparison { .. }
+            | Operation::Switch { .. }
+            | Operation::Arithmetic { .. }
+            | Operation::Negate,
+        ) => true,
+        Some(Operation::Field { .. }) => fields.owns(bci),
+        _ => false,
+    }
 }
 
 /// Whether one value is the instance a candidate site builds: it was produced by the allocation, by
@@ -448,19 +790,49 @@ fn produced_at(ssa: &SsaTable, value: ValueId) -> Option<u32> {
     }
 }
 
-/// Whether an invocation inside the span is a value the constructor call really reads.
-fn produces_a_read_value(instruction: &SsaInstruction, block: &[SsaInstruction]) -> bool {
-    let values: Vec<ValueId> = instruction
-        .writes()
+/// The current block's instruction definitions reachable from physical argument values.
+///
+/// A value dependency follows both edges the SSA table states: an instruction definition leads to
+/// that instruction's reads, and a phi definition leads to its incoming values. Entry definitions
+/// have no instruction in this block to follow. The visited set makes loop-carried phi inputs and
+/// repeated reads finite without relying on instruction order.
+fn value_dependency_bcis(
+    ssa: &SsaTable,
+    block: &[SsaInstruction],
+    roots: impl IntoIterator<Item = ValueId>,
+) -> BTreeSet<u32> {
+    let instructions: std::collections::BTreeMap<u32, &SsaInstruction> = block
         .iter()
-        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
-        .map(|(_, value)| *value)
+        .map(|instruction| (instruction.bci(), instruction))
         .collect();
-    values.is_empty()
-        || block.iter().any(|other| {
-            other.bci() > instruction.bci()
-                && other.reads().iter().any(|(_, read)| values.contains(read))
-        })
+    let mut pending: Vec<ValueId> = roots.into_iter().collect();
+    let mut visited = BTreeSet::new();
+    let mut dependencies = BTreeSet::new();
+
+    while let Some(value) = pending.pop() {
+        if !visited.insert(value) {
+            continue;
+        }
+        match ssa.value(value).def() {
+            Definition::Instruction { bci, .. } => {
+                if let Some(instruction) = instructions.get(bci) {
+                    dependencies.insert(*bci);
+                    pending.extend(instruction.reads().iter().map(|(_, read)| *read));
+                }
+            }
+            Definition::Phi { .. } => {
+                if let Some(phi) = ssa.phis().iter().find(|phi| phi.value() == value) {
+                    for input in phi.inputs() {
+                        if let jarde_jvm::method_ir::PhiInput::Value(input) = input {
+                            pending.push(*input);
+                        }
+                    }
+                }
+            }
+            Definition::Entry { .. } | Definition::Caught { .. } => {}
+        }
+    }
+    dependencies
 }
 
 /// What one candidate construction site was presented as, or why it was not (P3 2.3, `new@1`).
@@ -682,7 +1054,7 @@ impl Prologues {
     }
 
     /// The record one verdict publishes, built from the decision this plan holds.
-    fn record(&self) -> InitRecord {
+    pub(crate) fn record(&self) -> InitRecord {
         match &self.verdict {
             Verdict::NotThisRule => InitRecord {
                 bci: None,
@@ -888,6 +1260,292 @@ impl InitRefusal {
 mod tests {
     use super::*;
     use crate::pass::IrTable;
+    use jarde_jvm::engine::analyze_method_ir;
+    use jarde_jvm::environment::ResolutionEnvironment;
+    use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+    use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+    use jarde_reader::budget::{Budget, Limits};
+    use jarde_reader::model::{
+        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+        PhysicalMethodId, PhysicalVariant,
+    };
+    use jarde_reader::view::LoaderId;
+    use jarde_reader::view::{
+        DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, ModuleMode, MultiReleasePolicy,
+        PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty, RuntimeView,
+    };
+
+    const POSITIVE: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/UseInner.class"
+    );
+    const WRONG_IDENTITY: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-identity.class"
+    );
+    const WRONG_IDENTITY_CHECKED: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-identity-checked.class"
+    );
+    const LATE_CHECK: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/late-check.class"
+    );
+    const NESTED_EFFECTS: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/negative-controls/NegativeUse.class"
+    );
+
+    fn proof_budget() -> Budget {
+        Budget::new(Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 100,
+            method_bodies: 100,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 8,
+            dependency_depth: 8,
+            elapsed_millis: u64::MAX,
+        })
+    }
+
+    fn analyzed_caller(
+        class: &[u8],
+        name: &str,
+        descriptor: &str,
+    ) -> (jarde_jvm::method_ir::MethodIrAnalysis, PhysicalDefinitionId) {
+        let mut budget = proof_budget();
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
+            .expect("caller class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(class).to_hex().to_string()),
+                length: class.len() as u64,
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let request = MethodAnalysisRequest {
+            environment: ResolutionEnvironment {
+                runtime: RuntimeView {
+                    physical: PhysicalView {
+                        snapshot: snapshot.id().clone(),
+                        scope: PhysicalScope::SnapshotAll,
+                    },
+                    profile: RuntimeProfile {
+                        java_release: 8,
+                        multi_release: MultiReleasePolicy::Disabled,
+                        layout: LayoutMode::Generic,
+                    },
+                    load_domain: domain.clone(),
+                },
+                domains: vec![domain],
+                providers: Vec::new(),
+            },
+            method: PhysicalMethodId {
+                owner: definition.clone(),
+                name: JvmBytes(name.as_bytes().to_vec()),
+                descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+            },
+            stages: AnalysisStage::ALL.to_vec(),
+        };
+        (
+            analyze_method_ir(&[snapshot], &request, &mut budget).expect("caller IR analyzes"),
+            definition,
+        )
+    }
+
+    fn target(definition: PhysicalDefinitionId, outer: &str) -> ProvedMemberInnerTarget {
+        ProvedMemberInnerTarget {
+            definition,
+            owner: format!("{outer}$Inner"),
+            outer: outer.to_owned(),
+            simple_name: "Inner".to_owned(),
+            constructor_descriptor: format!("(L{outer};I)V"),
+            capture_field: "this$0".to_owned(),
+            generic_diamond: false,
+            source_type_path: Vec::new(),
+        }
+    }
+
+    fn verdict_with(
+        class: &[u8],
+        name: &str,
+        descriptor: &str,
+        has_target: bool,
+        handler_range: Option<(u32, u32)>,
+        target_outer: Option<&str>,
+    ) -> Result<Site, Refusal> {
+        let (analysis, definition) = analyzed_caller(class, name, descriptor);
+        let ir = analysis.ir();
+        let mut code = ir.code().expect("code").clone();
+        if let Some((start_bci, end_bci)) = handler_range {
+            code.exception_handlers
+                .push(jarde_reader::classfile::ExceptionHandlerFact {
+                    ordinal: 0,
+                    start_bci,
+                    end_bci,
+                    handler_bci: 0,
+                    catch_type_index: None,
+                });
+        }
+        let ssa = ir.ssa().expect("ssa");
+        let operations = Operations::of(&code, ir.constant_pool());
+        let (block, index) = ssa
+            .blocks()
+            .iter()
+            .find_map(|block| {
+                block
+                    .instructions()
+                    .iter()
+                    .position(|instruction| {
+                        matches!(
+                            operations.get(instruction.bci()),
+                            Some(Operation::Allocate { .. })
+                        )
+                    })
+                    .map(|index| (block, index))
+            })
+            .expect("allocation block");
+        let head = block.instructions()[index].bci();
+        let Some(Operation::Allocate { ty }) = operations.get(head) else {
+            unreachable!()
+        };
+        let outer = ty.strip_suffix("$Inner").expect("fixture member name");
+        let mut targets = Vec::new();
+        if has_target {
+            let mut fact = target(definition, outer);
+            if let Some(outer) = target_outer {
+                fact.outer = outer.to_owned();
+            }
+            targets.push(fact);
+        }
+        let fields = field::Plan::empty();
+        let facts = ConstructionFacts {
+            ssa,
+            operations: &operations,
+            fields: &fields,
+            member_targets: &targets,
+            code: &code,
+        };
+        verify(head, index, block.instructions(), ty.clone(), &facts)
+    }
+
+    fn verdict(class: &[u8], name: &str, descriptor: &str) -> Result<Site, Refusal> {
+        verdict_with(class, name, descriptor, true, None, None)
+    }
+
+    #[test]
+    fn member_call_proof_requires_same_qualifier_and_early_check() {
+        let positive = verdict(
+            POSITIVE,
+            "make",
+            "(Lnested/SimpleOuter;I)Ljava/lang/Object;",
+        )
+        .expect("javac member call proves");
+        let member = positive.member_inner.expect("member proof");
+        assert_eq!((member.qualifier, member.check, member.pop), (4, 6, 9));
+        assert_eq!(positive.arguments, [5, 13]);
+        assert!(positive.owned.contains(&6) && positive.owned.contains(&9));
+
+        let nested = verdict(
+            NESTED_EFFECTS,
+            "nestedEffects",
+            "(Lnegative/NegativeOuter;I)Ljava/lang/Object;",
+        )
+        .expect("both nested argument effects remain in order");
+        assert_eq!(nested.arguments, [5, 18]);
+        let pre = verdict(
+            NESTED_EFFECTS,
+            "preEffect",
+            "(Lnegative/NegativeOuter;I)Ljava/lang/Object;",
+        )
+        .expect("an effect completed before allocation remains outside the site");
+        assert_eq!(pre.head, 7);
+        assert_eq!(pre.arguments, [12, 20]);
+
+        let wrong = verdict(
+            WRONG_IDENTITY,
+            "make",
+            "(Lnested/SimpleOuter;Lnested/SimpleOuter;I)Ljava/lang/Object;",
+        )
+        .err()
+        .expect("checked and physical outers differ");
+        assert_eq!(wrong.code(), "jre_new_member_shape");
+        let checked_shape = verdict(
+            WRONG_IDENTITY_CHECKED,
+            "make",
+            "(Lnested/SimpleOuter;Lnested/SimpleOuter;I)Ljava/lang/Object;",
+        )
+        .err()
+        .expect("a syntactically exact check cannot prove a different physical outer");
+        assert_eq!(checked_shape.code(), "jre_new_member_shape");
+        assert!(checked_shape.message().contains("two SSA copies"));
+        let late = verdict(
+            LATE_CHECK,
+            "make",
+            "(Lnested/SimpleOuter;I)Ljava/lang/Object;",
+        )
+        .err()
+        .expect("argument effect precedes check");
+        assert_eq!(late.code(), "jre_new_member_shape");
+
+        let no_target = verdict_with(
+            POSITIVE,
+            "make",
+            "(Lnested/SimpleOuter;I)Ljava/lang/Object;",
+            false,
+            None,
+            None,
+        )
+        .err()
+        .expect("without selected target the ordinary rule still refuses the member shape");
+        assert_eq!(no_target.code(), "jre_new_interleaved_effect");
+
+        let wrong_static_type = verdict_with(
+            POSITIVE,
+            "make",
+            "(Lnested/SimpleOuter;I)Ljava/lang/Object;",
+            true,
+            None,
+            Some("nested/OtherOuter"),
+        )
+        .err()
+        .expect("qualifier static type must prove exact member binding");
+        assert_eq!(wrong_static_type.code(), "jre_new_member_shape");
+
+        for boundary in [(0, 6), (6, 16)] {
+            let crossing = verdict_with(
+                POSITIVE,
+                "make",
+                "(Lnested/SimpleOuter;I)Ljava/lang/Object;",
+                true,
+                Some(boundary),
+                None,
+            )
+            .err()
+            .expect("a changed handler region is not folded");
+            assert_eq!(crossing.code(), "jre_new_member_order");
+        }
+    }
 
     #[test]
     fn the_two_construction_rules_state_what_they_read() {

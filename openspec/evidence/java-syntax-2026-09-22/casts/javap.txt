@@ -1,0 +1,69 @@
+public class CastProbe {
+  public CastProbe();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static java.lang.String direct(java.lang.Object);
+    Code:
+       0: aload_0
+       1: checkcast     #7                  // class java/lang/String
+       4: areturn
+
+  public static int receiver(java.lang.Object);
+    Code:
+       0: aload_0
+       1: checkcast     #7                  // class java/lang/String
+       4: invokevirtual #9                  // Method java/lang/String.length:()I
+       7: ireturn
+
+  public static int array(java.lang.Object, int);
+    Code:
+       0: aload_0
+       1: checkcast     #13                 // class "[I"
+       4: iload_1
+       5: iaload
+       6: ireturn
+
+  public static java.lang.String[] referenceArray(java.lang.Object);
+    Code:
+       0: aload_0
+       1: checkcast     #15                 // class "[Ljava/lang/String;"
+       4: areturn
+
+  public static java.lang.Object widen(java.lang.Object);
+    Code:
+       0: aload_0
+       1: checkcast     #7                  // class java/lang/String
+       4: astore_1
+       5: aload_1
+       6: areturn
+
+  public static java.lang.String twice(java.lang.Object);
+    Code:
+       0: aload_0
+       1: checkcast     #17                 // class java/lang/CharSequence
+       4: checkcast     #7                  // class java/lang/String
+       7: areturn
+
+  public static java.lang.String invocation(java.util.function.Supplier<java.lang.Object>);
+    Code:
+       0: aload_0
+       1: invokeinterface #19,  1           // InterfaceMethod java/util/function/Supplier.get:()Ljava/lang/Object;
+       6: checkcast     #7                  // class java/lang/String
+       9: areturn
+
+  public static int catches(java.lang.Object);
+    Code:
+       0: aload_0
+       1: checkcast     #7                  // class java/lang/String
+       4: invokevirtual #9                  // Method java/lang/String.length:()I
+       7: ireturn
+       8: astore_1
+       9: bipush        7
+      11: ireturn
+    Exception table:
+       from    to  target type
+           0     7     8   Class java/lang/ClassCastException
+}

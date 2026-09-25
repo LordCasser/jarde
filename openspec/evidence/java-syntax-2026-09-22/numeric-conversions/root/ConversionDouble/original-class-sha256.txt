@@ -1,0 +1,1 @@
+b97f1fe005cbbffe961f91e43dada6080fb24f0818c76f223e4e2b55528290e6  ConversionDouble.class

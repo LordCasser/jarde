@@ -1,0 +1,231 @@
+package defpackage;
+
+/* JADX INFO: loaded from: NarrowFieldStores.class */
+public class NarrowFieldStores {
+    public byte byteField;
+    public char charField;
+    public short shortField;
+    public int booleanField;
+    public static byte staticByteField;
+    public static char staticCharField;
+    public static short staticShortField;
+    public static int staticBooleanField;
+    public byte ordinaryByteField;
+    public char ordinaryCharField;
+    public short ordinaryShortField;
+    public boolean ordinaryBooleanField;
+    public static byte ordinaryStaticByteField;
+    public static char ordinaryStaticCharField;
+    public static short ordinaryStaticShortField;
+    public static boolean ordinaryStaticBooleanField;
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public void setByte(int i) {
+        this.byteField = i;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public void setChar(int i) {
+        this.charField = i;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public void setShort(int i) {
+        this.shortField = i;
+    }
+
+    public void setBoolean(int i) {
+        this.booleanField = i;
+    }
+
+    /* JADX WARN: Type inference failed for: r1v1, types: [byte, int] */
+    public void setByteProduced(int i, boolean z) {
+        this.byteField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static void setByteOn(NarrowFieldStores narrowFieldStores, int i) {
+        narrowFieldStores.byteField = i;
+    }
+
+    /* JADX WARN: Type inference failed for: r1v1, types: [byte, int] */
+    public static void setByteProducedOn(NarrowFieldStores narrowFieldStores, int i, boolean z) {
+        narrowFieldStores.byteField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    /* JADX WARN: Type inference failed for: r1v1, types: [char, int] */
+    public void setCharProduced(int i, boolean z) {
+        this.charField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static void setCharOn(NarrowFieldStores narrowFieldStores, int i) {
+        narrowFieldStores.charField = i;
+    }
+
+    /* JADX WARN: Type inference failed for: r1v1, types: [char, int] */
+    public static void setCharProducedOn(NarrowFieldStores narrowFieldStores, int i, boolean z) {
+        narrowFieldStores.charField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    /* JADX WARN: Type inference failed for: r1v1, types: [int, short] */
+    public void setShortProduced(int i, boolean z) {
+        this.shortField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static void setShortOn(NarrowFieldStores narrowFieldStores, int i) {
+        narrowFieldStores.shortField = i;
+    }
+
+    /* JADX WARN: Type inference failed for: r1v1, types: [int, short] */
+    public static void setShortProducedOn(NarrowFieldStores narrowFieldStores, int i, boolean z) {
+        narrowFieldStores.shortField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    public void setBooleanProduced(int i, boolean z) {
+        this.booleanField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    public static void setBooleanOn(NarrowFieldStores narrowFieldStores, int i) {
+        narrowFieldStores.booleanField = i;
+    }
+
+    public static void setBooleanProducedOn(NarrowFieldStores narrowFieldStores, int i, boolean z) {
+        narrowFieldStores.booleanField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static void setStaticByte(int i) {
+        staticByteField = i;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static void setStaticChar(int i) {
+        staticCharField = i;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static void setStaticShort(int i) {
+        staticShortField = i;
+    }
+
+    public static void setStaticBoolean(int i) {
+        staticBooleanField = i;
+    }
+
+    /* JADX WARN: Type inference failed for: r0v1, types: [byte, int] */
+    public static void setStaticByteProduced(int i, boolean z) {
+        staticByteField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    /* JADX WARN: Type inference failed for: r0v1, types: [char, int] */
+    public static void setStaticCharProduced(int i, boolean z) {
+        staticCharField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    /* JADX WARN: Type inference failed for: r0v1, types: [int, short] */
+    public static void setStaticShortProduced(int i, boolean z) {
+        staticShortField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    public static void setStaticBooleanProduced(int i, boolean z) {
+        staticBooleanField = NarrowFieldStoreEffects.value(i, z);
+    }
+
+    public void ordinaryByteLocal() {
+        this.ordinaryByteField = (byte) 1;
+    }
+
+    public void ordinaryByteZero() {
+        this.ordinaryByteField = (byte) 0;
+    }
+
+    public void ordinaryByteOne() {
+        this.ordinaryByteField = (byte) 1;
+    }
+
+    public void ordinaryCharLocal() {
+        this.ordinaryCharField = (char) 1;
+    }
+
+    public void ordinaryCharZero() {
+        this.ordinaryCharField = (char) 0;
+    }
+
+    public void ordinaryCharOne() {
+        this.ordinaryCharField = (char) 1;
+    }
+
+    public void ordinaryShortLocal() {
+        this.ordinaryShortField = (short) 1;
+    }
+
+    public void ordinaryShortZero() {
+        this.ordinaryShortField = (short) 0;
+    }
+
+    public void ordinaryShortOne() {
+        this.ordinaryShortField = (short) 1;
+    }
+
+    public void ordinaryBooleanLocal() {
+        this.ordinaryBooleanField = true;
+    }
+
+    public void ordinaryBooleanFalse() {
+        this.ordinaryBooleanField = false;
+    }
+
+    public void ordinaryBooleanTrue() {
+        this.ordinaryBooleanField = true;
+    }
+
+    public static void ordinaryStaticByteLocal() {
+        ordinaryStaticByteField = (byte) 1;
+    }
+
+    public static void ordinaryStaticByteZero() {
+        ordinaryStaticByteField = (byte) 0;
+    }
+
+    public static void ordinaryStaticByteOne() {
+        ordinaryStaticByteField = (byte) 1;
+    }
+
+    public static void ordinaryStaticCharLocal() {
+        ordinaryStaticCharField = (char) 1;
+    }
+
+    public static void ordinaryStaticCharZero() {
+        ordinaryStaticCharField = (char) 0;
+    }
+
+    public static void ordinaryStaticCharOne() {
+        ordinaryStaticCharField = (char) 1;
+    }
+
+    public static void ordinaryStaticShortLocal() {
+        ordinaryStaticShortField = (short) 1;
+    }
+
+    public static void ordinaryStaticShortZero() {
+        ordinaryStaticShortField = (short) 0;
+    }
+
+    public static void ordinaryStaticShortOne() {
+        ordinaryStaticShortField = (short) 1;
+    }
+
+    public static void ordinaryStaticBooleanLocal() {
+        ordinaryStaticBooleanField = true;
+    }
+
+    public static void ordinaryStaticBooleanFalse() {
+        ordinaryStaticBooleanField = false;
+    }
+
+    public static void ordinaryStaticBooleanTrue() {
+        ordinaryStaticBooleanField = true;
+    }
+}

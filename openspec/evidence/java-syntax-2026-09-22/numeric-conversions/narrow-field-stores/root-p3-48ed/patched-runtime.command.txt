@@ -1,0 +1,1 @@
+java -Xverify:all -cp /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-tjw57c5d/patched-runner:/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-tjw57c5d/patched-classes:/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-tjw57c5d/source-classes NarrowFieldStoresRunner

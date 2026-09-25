@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.NullPointerException: Cannot read the array length because "<local1>" is null
+	at FloatingArraysRunner.main(Unknown Source)

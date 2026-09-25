@@ -1,0 +1,284 @@
+Classfile /tmp/jarde-assert-syntax-audit-908c/original-input/AssertProbe.class
+  Last modified 2026年9月23日; size 1346 bytes
+  SHA-256 checksum 163282a201ca5c2cf7ae0485f92f472802c34d8bd2fe8367fff0ed1400f0f46d
+public final class AssertProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // AssertProbe
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 4, methods: 11, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // AssertProbe.conditionCalls:I
+   #8 = Class              #10            // AssertProbe
+   #9 = NameAndType        #11:#12        // conditionCalls:I
+  #10 = Utf8               AssertProbe
+  #11 = Utf8               conditionCalls
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // AssertProbe.messageCalls:I
+  #14 = NameAndType        #15:#12        // messageCalls:I
+  #15 = Utf8               messageCalls
+  #16 = Fieldref           #8.#17         // AssertProbe.trace:I
+  #17 = NameAndType        #18:#12        // trace:I
+  #18 = Utf8               trace
+  #19 = Fieldref           #8.#20         // AssertProbe.$assertionsDisabled:Z
+  #20 = NameAndType        #21:#22        // $assertionsDisabled:Z
+  #21 = Utf8               $assertionsDisabled
+  #22 = Utf8               Z
+  #23 = Methodref          #8.#24         // AssertProbe.condition:(Z)Z
+  #24 = NameAndType        #25:#26        // condition:(Z)Z
+  #25 = Utf8               condition
+  #26 = Utf8               (Z)Z
+  #27 = Class              #28            // java/lang/AssertionError
+  #28 = Utf8               java/lang/AssertionError
+  #29 = String             #30            // success-message
+  #30 = Utf8               success-message
+  #31 = Methodref          #8.#32         // AssertProbe.message:(Ljava/lang/String;)Ljava/lang/Object;
+  #32 = NameAndType        #33:#34        // message:(Ljava/lang/String;)Ljava/lang/Object;
+  #33 = Utf8               message
+  #34 = Utf8               (Ljava/lang/String;)Ljava/lang/Object;
+  #35 = Methodref          #27.#36        // java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+  #36 = NameAndType        #5:#37         // "<init>":(Ljava/lang/Object;)V
+  #37 = Utf8               (Ljava/lang/Object;)V
+  #38 = String             #39            // failure-message
+  #39 = Utf8               failure-message
+  #40 = Methodref          #8.#41         // AssertProbe.conditionThrows:(Ljava/lang/RuntimeException;)Z
+  #41 = NameAndType        #42:#43        // conditionThrows:(Ljava/lang/RuntimeException;)Z
+  #42 = Utf8               conditionThrows
+  #43 = Utf8               (Ljava/lang/RuntimeException;)Z
+  #44 = String             #45            // unreachable-message
+  #45 = Utf8               unreachable-message
+  #46 = Methodref          #8.#47         // AssertProbe.messageThrows:(Ljava/lang/RuntimeException;)Ljava/lang/Object;
+  #47 = NameAndType        #48:#49        // messageThrows:(Ljava/lang/RuntimeException;)Ljava/lang/Object;
+  #48 = Utf8               messageThrows
+  #49 = Utf8               (Ljava/lang/RuntimeException;)Ljava/lang/Object;
+  #50 = Methodref          #51.#52        // java/lang/Class.desiredAssertionStatus:()Z
+  #51 = Class              #53            // java/lang/Class
+  #52 = NameAndType        #54:#55        // desiredAssertionStatus:()Z
+  #53 = Utf8               java/lang/Class
+  #54 = Utf8               desiredAssertionStatus
+  #55 = Utf8               ()Z
+  #56 = Utf8               Code
+  #57 = Utf8               reset
+  #58 = Utf8               succeeds
+  #59 = Utf8               StackMapTable
+  #60 = Utf8               fails
+  #61 = Utf8               conditionException
+  #62 = Utf8               (Ljava/lang/RuntimeException;)V
+  #63 = Utf8               messageException
+  #64 = Utf8               <clinit>
+{
+  public static int conditionCalls;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static int messageCalls;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static int trace;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  static final boolean $assertionsDisabled;
+    descriptor: Z
+    flags: (0x1018) ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  private AssertProbe();
+    descriptor: ()V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void reset();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #7                  // Field conditionCalls:I
+         4: iconst_0
+         5: putstatic     #13                 // Field messageCalls:I
+         8: iconst_0
+         9: putstatic     #16                 // Field trace:I
+        12: return
+
+  public static boolean condition(boolean);
+    descriptor: (Z)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #7                  // Field conditionCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field conditionCalls:I
+         8: getstatic     #16                 // Field trace:I
+        11: bipush        10
+        13: imul
+        14: iconst_1
+        15: iadd
+        16: putstatic     #16                 // Field trace:I
+        19: iload_0
+        20: ireturn
+
+  public static boolean conditionThrows(java.lang.RuntimeException);
+    descriptor: (Ljava/lang/RuntimeException;)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #7                  // Field conditionCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field conditionCalls:I
+         8: getstatic     #16                 // Field trace:I
+        11: bipush        10
+        13: imul
+        14: iconst_1
+        15: iadd
+        16: putstatic     #16                 // Field trace:I
+        19: aload_0
+        20: athrow
+
+  public static java.lang.Object message(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #13                 // Field messageCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #13                 // Field messageCalls:I
+         8: getstatic     #16                 // Field trace:I
+        11: bipush        10
+        13: imul
+        14: iconst_2
+        15: iadd
+        16: putstatic     #16                 // Field trace:I
+        19: aload_0
+        20: areturn
+
+  public static java.lang.Object messageThrows(java.lang.RuntimeException);
+    descriptor: (Ljava/lang/RuntimeException;)Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #13                 // Field messageCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #13                 // Field messageCalls:I
+         8: getstatic     #16                 // Field trace:I
+        11: bipush        10
+        13: imul
+        14: iconst_2
+        15: iadd
+        16: putstatic     #16                 // Field trace:I
+        19: aload_0
+        20: athrow
+
+  public static void succeeds();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=0, args_size=0
+         0: getstatic     #19                 // Field $assertionsDisabled:Z
+         3: ifne          26
+         6: iconst_1
+         7: invokestatic  #23                 // Method condition:(Z)Z
+        10: ifne          26
+        13: new           #27                 // class java/lang/AssertionError
+        16: dup
+        17: ldc           #29                 // String success-message
+        19: invokestatic  #31                 // Method message:(Ljava/lang/String;)Ljava/lang/Object;
+        22: invokespecial #35                 // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        25: athrow
+        26: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 26 /* same */
+
+  public static void fails();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=0, args_size=0
+         0: getstatic     #19                 // Field $assertionsDisabled:Z
+         3: ifne          26
+         6: iconst_0
+         7: invokestatic  #23                 // Method condition:(Z)Z
+        10: ifne          26
+        13: new           #27                 // class java/lang/AssertionError
+        16: dup
+        17: ldc           #38                 // String failure-message
+        19: invokestatic  #31                 // Method message:(Ljava/lang/String;)Ljava/lang/Object;
+        22: invokespecial #35                 // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        25: athrow
+        26: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 26 /* same */
+
+  public static void conditionException(java.lang.RuntimeException);
+    descriptor: (Ljava/lang/RuntimeException;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: getstatic     #19                 // Field $assertionsDisabled:Z
+         3: ifne          26
+         6: aload_0
+         7: invokestatic  #40                 // Method conditionThrows:(Ljava/lang/RuntimeException;)Z
+        10: ifne          26
+        13: new           #27                 // class java/lang/AssertionError
+        16: dup
+        17: ldc           #44                 // String unreachable-message
+        19: invokestatic  #31                 // Method message:(Ljava/lang/String;)Ljava/lang/Object;
+        22: invokespecial #35                 // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        25: athrow
+        26: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 26 /* same */
+
+  public static void messageException(java.lang.RuntimeException);
+    descriptor: (Ljava/lang/RuntimeException;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: getstatic     #19                 // Field $assertionsDisabled:Z
+         3: ifne          25
+         6: iconst_0
+         7: invokestatic  #23                 // Method condition:(Z)Z
+        10: ifne          25
+        13: new           #27                 // class java/lang/AssertionError
+        16: dup
+        17: aload_0
+        18: invokestatic  #46                 // Method messageThrows:(Ljava/lang/RuntimeException;)Ljava/lang/Object;
+        21: invokespecial #35                 // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        24: athrow
+        25: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 25 /* same */
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #8                  // class AssertProbe
+         2: invokevirtual #50                 // Method java/lang/Class.desiredAssertionStatus:()Z
+         5: ifne          12
+         8: iconst_1
+         9: goto          13
+        12: iconst_0
+        13: putstatic     #19                 // Field $assertionsDisabled:Z
+        16: return
+      StackMapTable: number_of_entries = 2
+        frame_type = 12 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+}

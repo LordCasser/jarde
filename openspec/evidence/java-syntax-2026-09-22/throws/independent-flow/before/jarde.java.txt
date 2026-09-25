@@ -1,0 +1,68 @@
+// jarde: presentation of `ThrowFlow` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ThrowFlow extends java.lang.Object {
+    public ThrowFlow() {
+        // @method <init>()V
+        // @declaration a constructor of `ThrowFlow`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void constructed(java.lang.String arg0) {
+        // jarde: not recovered: the recovery run for `constructed(Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method constructed(Ljava/lang/String;)V
+        // @declaration a static method of `ThrowFlow`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 8 5
+        // the value at BCI 8 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        // @bytecode 11
+        // the instruction at BCI 11 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+    }
+
+    public static void nested() {
+        // @method nested()V
+        // @declaration a static method of `ThrowFlow`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ThrowFlowEffects.wrapper((java.lang.RuntimeException) ThrowFlowEffects.problem());
+        // @bytecode 6
+        // the instruction at BCI 6 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+    }
+
+    public static void array(java.lang.RuntimeException[] arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `array([Ljava/lang/RuntimeException;I)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method array([Ljava/lang/RuntimeException;I)V
+        // @declaration a static method of `ThrowFlow`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the array instruction at BCI 2 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+    }
+
+    public static void field(ThrowFlowHolder arg0) {
+        // jarde: not recovered: the recovery run for `field(LThrowFlowHolder;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method field(LThrowFlowHolder;)V
+        // @declaration a static method of `ThrowFlow`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4
+        // the instruction at BCI 4 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+    }
+
+    public static void branch(boolean arg0, java.lang.RuntimeException arg1, java.lang.RuntimeException arg2) {
+        // @method branch(ZLjava/lang/RuntimeException;Ljava/lang/RuntimeException;)V
+        // @declaration a static method of `ThrowFlow`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0) {
+            // @bytecode 5
+            // the instruction at BCI 5 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+        } else {
+            // @bytecode 7
+            // the instruction at BCI 7 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+        }
+    }
+}

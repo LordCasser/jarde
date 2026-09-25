@@ -1,0 +1,29 @@
+// jarde: presentation of `SwitchDeferredCore` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class SwitchDeferredCore extends java.lang.Object {
+    public SwitchDeferredCore() {
+        // @method <init>()V
+        // @declaration a constructor of `SwitchDeferredCore`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int run(int arg0) {
+        // @method run(I)I
+        // @declaration a static method of `SwitchDeferredCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        switch (arg0) {
+            case 1:
+                // @bytecode 20
+                // the saved producer at BCI 20 has no bounded final expression consumer
+                SwitchSupport.mark();
+                return SwitchSupport.value();
+            default:
+                // @bytecode 29
+                // the saved producer at BCI 29 has no bounded final expression consumer
+                SwitchSupport.mark();
+                return SwitchSupport.other();
+        }
+    }
+}

@@ -1,0 +1,18 @@
+package defpackage;
+
+import java.util.function.ToIntBiFunction;
+
+/* JADX INFO: loaded from: UnboundProbe.class */
+public class UnboundProbe {
+    public static ToIntBiFunction<UnboundHelper, String> strings() {
+        return (v0, v1) -> {
+            return v0.pick(v1);
+        };
+    }
+
+    public static ToIntBiFunction<UnboundHelper, String[]> arrays() {
+        return (v0, v1) -> {
+            return v0.pick(v1);
+        };
+    }
+}

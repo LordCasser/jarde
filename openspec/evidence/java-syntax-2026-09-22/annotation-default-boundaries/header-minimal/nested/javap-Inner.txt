@@ -1,0 +1,29 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/annotation-default-boundaries/header-minimal/nested/classes-original/Inner.class
+  Last modified 2026年9月23日; size 152 bytes
+  SHA-256 checksum 06612cd90415d077d494394e703e2fca618365d5cc00889be0aa021a7969fbef
+interface Inner extends java.lang.annotation.Annotation
+  minor version: 0
+  major version: 52
+  flags: (0x2600) ACC_INTERFACE, ACC_ABSTRACT, ACC_ANNOTATION
+  this_class: #1                          // Inner
+  super_class: #3                         // java/lang/Object
+  interfaces: 1, fields: 0, methods: 1, attributes: 0
+Constant pool:
+   #1 = Class              #2             // Inner
+   #2 = Utf8               Inner
+   #3 = Class              #4             // java/lang/Object
+   #4 = Utf8               java/lang/Object
+   #5 = Class              #6             // java/lang/annotation/Annotation
+   #6 = Utf8               java/lang/annotation/Annotation
+   #7 = Utf8               value
+   #8 = Utf8               ()I
+   #9 = Utf8               AnnotationDefault
+  #10 = Integer            1
+{
+  public abstract int value();
+    descriptor: ()I
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: I#10
+        1
+}

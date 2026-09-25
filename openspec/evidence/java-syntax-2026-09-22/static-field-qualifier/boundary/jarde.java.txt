@@ -1,0 +1,155 @@
+// jarde: presentation of `QualifierBoundaryProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class QualifierBoundaryProbe extends java.lang.Object {
+    public static int selects;
+
+    public static int rightCalls;
+
+    public static int marks;
+
+    public static int value;
+
+    public static boolean failSelect;
+
+    public QualifierBoundaryProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `QualifierBoundaryProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void reset() {
+        // @method reset()V
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        QualifierBoundaryProbe.selects = 0;
+        QualifierBoundaryProbe.rightCalls = 0;
+        QualifierBoundaryProbe.marks = 0;
+        QualifierBoundaryProbe.value = 5;
+        QualifierBoundaryProbe.failSelect = false;
+        return;
+    }
+
+    public static QualifierBoundaryProbe receiver() {
+        // @method receiver()LQualifierBoundaryProbe;
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        QualifierBoundaryProbe.selects = QualifierBoundaryProbe.selects + 1;
+        if (QualifierBoundaryProbe.failSelect) {
+            throw new java.lang.IllegalStateException("select");
+        } else {
+            return null;
+        }
+    }
+
+    public static int rhs() {
+        // @method rhs()I
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        QualifierBoundaryProbe.rightCalls = QualifierBoundaryProbe.rightCalls + 1;
+        return 7;
+    }
+
+    public static int throwingRhs() {
+        // @method throwingRhs()I
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        QualifierBoundaryProbe.rightCalls = QualifierBoundaryProbe.rightCalls + 1;
+        throw new java.lang.IllegalArgumentException("rhs");
+    }
+
+    public static void mark() {
+        // @method mark()V
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        QualifierBoundaryProbe.marks = QualifierBoundaryProbe.marks + 1;
+        return;
+    }
+
+    public static int staticRead() {
+        // @method staticRead()I
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        return QualifierBoundaryProbe.value;
+    }
+
+    public static int qualifiedCallReturn() {
+        // @method qualifiedCallReturn()I
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        return receiver().rhs();
+    }
+
+    public static int plainCallReturn() {
+        // @method plainCallReturn()I
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        return receiver().rhs();
+    }
+
+    public static void qualifiedCallStatement() {
+        // @method qualifiedCallStatement()V
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        receiver().mark();
+        return;
+    }
+
+    public static void plainCallStatements() {
+        // @method plainCallStatements()V
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        receiver().mark();
+        return;
+    }
+
+    public static int qualifiedStaticWrite() {
+        // @method qualifiedStaticWrite()I
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        QualifierBoundaryProbe.value = receiver().rhs();
+        return QualifierBoundaryProbe.value;
+    }
+
+    public static int fieldWriteWithQualifiedRhs() {
+        // @method fieldWriteWithQualifiedRhs()I
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        QualifierBoundaryProbe.value = receiver().rhs();
+        return QualifierBoundaryProbe.value;
+    }
+
+    public static int plainSequenceStaticWrite() {
+        // @method plainSequenceStaticWrite()I
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        QualifierBoundaryProbe.value = receiver().rhs();
+        return QualifierBoundaryProbe.value;
+    }
+
+    public static int qualifiedStaticWriteThrowingRhs() {
+        // @method qualifiedStaticWriteThrowingRhs()I
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        QualifierBoundaryProbe.value = receiver().throwingRhs();
+        return QualifierBoundaryProbe.value;
+    }
+
+    public static int qualifiedCallThrowingReceiver() {
+        // @method qualifiedCallThrowingReceiver()I
+        // @declaration a static method of `QualifierBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        return receiver().rhs();
+    }
+}

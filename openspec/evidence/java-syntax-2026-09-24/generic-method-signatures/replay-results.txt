@@ -1,0 +1,31 @@
+重放日期：2026-09-24 Asia/Shanghai
+
+工具：
+- javac: 23.0.1（`javac --release 8 -g:none`）
+- JVM: OpenJDK 23.0.1+9（原/JADX/Jarde runner 均使用 `java -Xverify:all`）
+- JADX: 1.5.6
+- Jarde CLI: jarde-cli 0.1.0；`target/debug/jarde-cli` SHA-256 `a3a29b59aa85c2d174b06033f874eb7d60a104dbccf1d20f5d88908273e92dd5`
+
+输入与源哈希：
+- `GenericMethodProbe.java`: `305e70891759bcb8f0b303458fefd339948b14f81e666b3d54cf3eaf1692dcc9`
+- source-only `GenericMethodRunner.java`: `62a10ac54b9b48ff4f9011dd4a7d3227e12f69abe1ce1bc9d2cc39121095d9f8`
+- 冻结 `GenericMethodProbe.class`: 346 B，SHA-256 `928311a035b4716e846804dfcf78165a7958a7531da1f635ea28f040d54af2e3`
+- 冻结 JADX 源 `jadx.java`: `555825556ee3dc9e1dad5dad821eb812749c5ac966b8ae1209ef8c65824d901c`
+- 冻结 Jarde 源 `jarde.java`: `a47a202af71997e592eab0114b356a00af1e67445d084457b6e49fa2eb5e5a4c`
+
+执行：运行同目录 `./replay.sh`。脚本在临时目录中独立编译 subject；由该 class 重新运行 JADX 与已冻结 Jarde CLI，再分别对原/JADX/Jarde 完整类和 source-only runner 执行 `javac --release 8 -g:none`，最后使用 `java -Xverify:all` 运行。JADX/Jarde 分别使用与声明 package 相符的同一 source-only runner。临时目录在退出时清理。
+
+结果（普通调用结果 | `getDeclaredMethod(...).getTypeParameters().length`）：
+- 独立 subject：`3|1`
+- 原源码重编：`3|1`
+- JADX 1.5.6 重新反编译、重编：`3|1`
+- Jarde 0.1.0 冻结 CLI 重新生成、重编：`3|0`
+
+subject 与原/JADX 输出的 `choose` javap facts 相同：descriptor `(Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;`，Signature `<T:Ljava/lang/Number;>(TT;TT;Z)TT;`。Jarde 重编只有该 descriptor，没有方法 Signature。完整 `javap -v -p` 的冻结 subject 输出在 `original-javap.txt`。
+
+独立 task 1.1 重放（2026-09-24；isolated CLI）：
+- 使用全新目录 `/private/tmp/jarde-generic-1.1.MmACNe`，未构建 Rust/Cargo。Subject 命令：`javac --release 8 -g:none -d "$TMP/subject" "$E/GenericMethodProbe.java"`，runner 命令：`javac --release 8 -g:none -cp "$TMP/subject" -d "$TMP/subject" "$TMP/subject/GenericMethodRunner.java"`。重编 subject SHA-256 仍为 `928311a035b4716e846804dfcf78165a7958a7531da1f635ea28f040d54af2e3`；独立 runner 使用 `java -Xverify:all -cp "$TMP/subject" GenericMethodRunner` 输出两行 `3`、`1`（合并为 `3|1`）。
+- 工具版本：JADX `1.5.6`；Jarde `jarde-cli 0.1.0`，明确使用 `/tmp/jarde-string-projection-replay/jarde-cli`，SHA-256 `d3bd76e99733d3d7be66559564e0f0f22452a9b156e1e1ce6744d519c98ee1eb`；`javac 23.0.1`；OpenJDK `23.0.1+11-39`。
+- JADX 从独立编译 subject 运行：`jadx -d "$TMP/jadx" "$TMP/subject/GenericMethodProbe.class"`。Jarde 从同一 subject 运行：`/tmp/jarde-string-projection-replay/jarde-cli class-source --input "$TMP/subject/GenericMethodProbe.class" --class GenericMethodProbe --policy single-class --format text`。逐一把原/JADX/Jarde 完整类源与 source-only runner 一起用 `javac --release 8 -g:none` 编译，随后以 `java -Xverify:all` 执行；原 `3|1`、JADX `3|1`、Jarde `3|0`。
+- 输入与三方源 SHA-256：原 `GenericMethodProbe.java` `305e70891759bcb8f0b303458fefd339948b14f81e666b3d54cf3eaf1692dcc9`；source-only `GenericMethodRunner.java` `62a10ac54b9b48ff4f9011dd4a7d3227e12f69abe1ce1bc9d2cc39121095d9f8`；JADX 生成 `GenericMethodProbe.java` `555825556ee3dc9e1dad5dad821eb812749c5ac966b8ae1209ef8c65824d901c`；Jarde 生成 `GenericMethodProbe.java` `a47a202af71997e592eab0114b356a00af1e67445d084457b6e49fa2eb5e5a4c`。
+- `javap -v -p` 对独立输入、原重编及 JADX 重编均显示 `choose` descriptor `(Ljava/lang/Number;Ljava/lang/Number;Z)Ljava/lang/Number;` 与 Signature `<T:Ljava/lang/Number;>(TT;TT;Z)TT;`。Jarde 重编仍有相同 descriptor，但无 `choose` Signature。输入完整 javap 事实仍见 `original-javap.txt`；本次独立重放产物在上述临时目录，现已清理。

@@ -1,0 +1,47 @@
+[
+  {
+    "jarde_equal": true,
+    "cli_sha256": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+    "class": "FinalOrder",
+    "original_javac": 0,
+    "jarde_javac": 0,
+    "jadx_javac": 0,
+    "runs": 1
+  },
+  {
+    "jarde_equal": true,
+    "cli_sha256": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+    "class": "FinalBranch",
+    "original_javac": 0,
+    "jarde_javac": 0,
+    "jadx_javac": 0,
+    "runs": 2
+  },
+  {
+    "jarde_equal": true,
+    "cli_sha256": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+    "class": "FinalLocalCollision",
+    "original_javac": 0,
+    "jarde_javac": 0,
+    "jadx_javac": 0,
+    "runs": 1
+  },
+  {
+    "jarde_equal": true,
+    "cli_sha256": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+    "class": "FinalSelfRead",
+    "original_javac": 0,
+    "jarde_javac": 0,
+    "jadx_javac": 0,
+    "runs": 1
+  },
+  {
+    "jarde_equal": null,
+    "cli_sha256": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+    "class": "FinalInterface",
+    "original_javac": 0,
+    "jarde_javac": 1,
+    "jadx_javac": 0,
+    "runs": 1
+  }
+]

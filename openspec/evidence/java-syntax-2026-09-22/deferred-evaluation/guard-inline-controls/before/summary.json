@@ -1,0 +1,42 @@
+{
+  "class_sha256": "d98d79395bbd2348ec4c51ceb8af14813a35ccf6edfb912425c1f17c72d06636",
+  "bytes": 724,
+  "cases": 21,
+  "cli_sha256": "feed5c377a439490efb12a2a46bdfa0e94c32dffd3a83bd1583b70fe89317350",
+  "jarde_quotes": 2,
+  "jarde_javac": 0,
+  "jarde_java": 0,
+  "jarde_differences": [
+    {
+      "original": "resource:0:done:534:0",
+      "jarde": "resource:0:done:0:0"
+    },
+    {
+      "original": "resource:1:done:534:0",
+      "jarde": "resource:1:done:0:0"
+    },
+    {
+      "original": "resource:2:done:534:0",
+      "jarde": "resource:2:done:0:0"
+    },
+    {
+      "original": "resource:3:java.lang.IllegalStateException:true:0:534:0",
+      "jarde": "resource:3:done:0:0"
+    },
+    {
+      "original": "resource:4:java.lang.IllegalStateException:true:0:534:0",
+      "jarde": "resource:4:done:0:0"
+    },
+    {
+      "original": "resource:5:java.lang.IllegalStateException:true:0:5:0",
+      "jarde": "resource:5:done:0:0"
+    },
+    {
+      "original": "resource:6:done:534:0",
+      "jarde": "resource:6:done:0:0"
+    }
+  ],
+  "jadx_javac": 0,
+  "jadx_java": 0,
+  "jadx_equal": false
+}

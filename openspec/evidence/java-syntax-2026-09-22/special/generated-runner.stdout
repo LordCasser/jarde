@@ -1,0 +1,4 @@
+value=java.lang.StackOverflowError
+defaultCall=java.lang.StackOverflowError
+own=7
+other=7

@@ -1,0 +1,36 @@
+// jarde: presentation of `FinalInit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class FinalInit extends java.lang.Object {
+    public static final int CONSTANT = 5;
+
+    public static final int COMPUTED;
+
+    public static final java.lang.Object OBJECT;
+
+    public final int instance;
+
+    public FinalInit(int arg1) {
+        // @method <init>(I)V
+        // @declaration a constructor of `FinalInit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.instance = arg1;
+        return;
+    }
+
+    public static int compute() {
+        // @method compute()I
+        // @declaration a static method of `FinalInit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 7;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `FinalInit`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        FinalInit.COMPUTED = compute();
+        FinalInit.OBJECT = new java.lang.Object();
+        return;
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/opt/homebrew/bin/jadx",
+    "-d",
+    "/private/tmp/jarde-bastore-evidence.aBYQFV/out/jadx/Order",
+    "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/patched/Order.class"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 1 (0%)\n                                                             \nINFO  - done\n",
+  "stderr": ""
+}

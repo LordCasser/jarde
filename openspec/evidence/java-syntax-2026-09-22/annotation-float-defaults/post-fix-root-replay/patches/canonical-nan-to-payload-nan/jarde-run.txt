@@ -1,0 +1,5 @@
+80000000
+1
+7f800000
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.lang.Double.doubleValue()" because the return value of "java.lang.reflect.Method.getDefaultValue()" is null
+	at FloatRunner.main(Unknown Source)

@@ -1,0 +1,4 @@
+openspec/evidence/java-syntax-2026-09-24/typed-iterable-foreach/RawTypedForeachFails.java:3: 错误: 不兼容的类型: Object无法转换为String
+        for (String value : values) {
+                            ^
+1 个错误

@@ -1,0 +1,22 @@
+package defpackage;
+
+/* JADX INFO: loaded from: arg0.class */
+public class arg0 {
+    public static int value;
+
+    public static int pick(int i) {
+        return i + 10;
+    }
+
+    public static int invoke(ShadowOther shadowOther) {
+        return pick(1);
+    }
+
+    public static int read(ShadowOther shadowOther) {
+        return value;
+    }
+
+    public static void write(ShadowOther shadowOther, int i) {
+        value = i;
+    }
+}

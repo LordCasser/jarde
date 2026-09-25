@@ -1,0 +1,146 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-twr-audit-prntlh9g/exceptional/original/classes/NullResourceExceptionalCore.class
+  Last modified 2026年9月23日; size 680 bytes
+  SHA-256 checksum ae9d8ea51f6f6e6f715c13ba69d27a60614c44b5c906655bfe781d279ff4f61a
+public final class NullResourceExceptionalCore implements java.lang.AutoCloseable
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // NullResourceExceptionalCore
+  super_class: #2                         // java/lang/Object
+  interfaces: 1, fields: 2, methods: 6, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // NullResourceExceptionalCore.bodyCalls:I
+   #8 = Class              #10            // NullResourceExceptionalCore
+   #9 = NameAndType        #11:#12        // bodyCalls:I
+  #10 = Utf8               NullResourceExceptionalCore
+  #11 = Utf8               bodyCalls
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // NullResourceExceptionalCore.closes:I
+  #14 = NameAndType        #15:#12        // closes:I
+  #15 = Utf8               closes
+  #16 = Methodref          #17.#18        // NullResourceThrower.raise:()V
+  #17 = Class              #19            // NullResourceThrower
+  #18 = NameAndType        #20:#6         // raise:()V
+  #19 = Utf8               NullResourceThrower
+  #20 = Utf8               raise
+  #21 = Methodref          #8.#22         // NullResourceExceptionalCore.close:()V
+  #22 = NameAndType        #23:#6         // close:()V
+  #23 = Utf8               close
+  #24 = Class              #25            // java/lang/Throwable
+  #25 = Utf8               java/lang/Throwable
+  #26 = Methodref          #24.#27        // java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+  #27 = NameAndType        #28:#29        // addSuppressed:(Ljava/lang/Throwable;)V
+  #28 = Utf8               addSuppressed
+  #29 = Utf8               (Ljava/lang/Throwable;)V
+  #30 = Class              #31            // java/lang/AutoCloseable
+  #31 = Utf8               java/lang/AutoCloseable
+  #32 = Utf8               Code
+  #33 = Utf8               reset
+  #34 = Utf8               ()I
+  #35 = Utf8               useNullResourceException
+  #36 = Utf8               StackMapTable
+{
+  private static int bodyCalls;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private static int closes;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  public NullResourceExceptionalCore();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void reset();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #7                  // Field bodyCalls:I
+         4: iconst_0
+         5: putstatic     #13                 // Field closes:I
+         8: return
+
+  public static int bodyCalls();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #7                  // Field bodyCalls:I
+         3: ireturn
+
+  public static int closes();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #13                 // Field closes:I
+         3: ireturn
+
+  public static void useNullResourceException();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=0
+         0: aconst_null
+         1: astore_0
+         2: invokestatic  #16                 // Method NullResourceThrower.raise:()V
+         5: aload_0
+         6: ifnull        36
+         9: aload_0
+        10: invokevirtual #21                 // Method close:()V
+        13: goto          36
+        16: astore_1
+        17: aload_0
+        18: ifnull        34
+        21: aload_0
+        22: invokevirtual #21                 // Method close:()V
+        25: goto          34
+        28: astore_2
+        29: aload_1
+        30: aload_2
+        31: invokevirtual #26                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+        34: aload_1
+        35: athrow
+        36: return
+      Exception table:
+         from    to  target type
+             2     5    16   Class java/lang/Throwable
+            21    25    28   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 4
+        frame_type = 255 /* full_frame */
+          offset_delta = 16
+          locals = [ class NullResourceExceptionalCore ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 11
+          locals = [ class NullResourceExceptionalCore, class java/lang/Throwable ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 5 /* same */
+        frame_type = 249 /* chop */
+          offset_delta = 1
+
+  public void close();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #13                 // Field closes:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #13                 // Field closes:I
+         8: return
+}

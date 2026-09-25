@@ -1,0 +1,4 @@
+<OUT>/positive/jarde/BridgeProbe.java:27: 错误: 已在类 BridgeProbe中定义了方法 get()
+    public java.lang.Object get() {
+                            ^
+1 个错误

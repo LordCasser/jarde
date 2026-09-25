@@ -1,0 +1,12 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-overload-boundaries/cases-v1/OnlyNarrow/jarde-src/OnlyNarrow.java:30: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        return onlyByte(3);
+                        ^
+/tmp/jarde-overload-boundaries/cases-v1/OnlyNarrow/jarde-src/OnlyNarrow.java:37: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        return onlyShort(3);
+                         ^
+注: 某些消息已经过简化; 请使用 -Xdiags:verbose 重新编译以获得完整输出
+2 个错误
+3 个警告

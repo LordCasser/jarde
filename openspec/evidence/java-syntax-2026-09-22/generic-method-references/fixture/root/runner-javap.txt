@@ -1,0 +1,953 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-lambda-adaptation-fixture-hz5t5jc7/original/LambdaAdaptationRunner.class
+  Last modified 2026年9月23日; size 5748 bytes
+  SHA-256 checksum 13cf7d9af32b9f746781abe3a6811f7f26e45b3f2ad0c250806c0beea17c0376
+public class LambdaAdaptationRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #123                        // LambdaAdaptationRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 17, attributes: 2
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Fieldref           #8.#9         // LambdaAdaptationSupport.calls:I
+    #8 = Class              #10           // LambdaAdaptationSupport
+    #9 = NameAndType        #11:#12       // calls:I
+   #10 = Utf8               LambdaAdaptationSupport
+   #11 = Utf8               calls
+   #12 = Utf8               I
+   #13 = Fieldref           #14.#15       // java/lang/System.out:Ljava/io/PrintStream;
+   #14 = Class              #16           // java/lang/System
+   #15 = NameAndType        #17:#18       // out:Ljava/io/PrintStream;
+   #16 = Utf8               java/lang/System
+   #17 = Utf8               out
+   #18 = Utf8               Ljava/io/PrintStream;
+   #19 = Class              #20           // java/lang/StringBuilder
+   #20 = Utf8               java/lang/StringBuilder
+   #21 = Methodref          #19.#3        // java/lang/StringBuilder."<init>":()V
+   #22 = Methodref          #19.#23       // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #23 = NameAndType        #24:#25       // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #24 = Utf8               append
+   #25 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #26 = String             #27           // :
+   #27 = Utf8               :
+   #28 = InterfaceMethodref #29.#30       // java/util/concurrent/Callable.call:()Ljava/lang/Object;
+   #29 = Class              #31           // java/util/concurrent/Callable
+   #30 = NameAndType        #32:#33       // call:()Ljava/lang/Object;
+   #31 = Utf8               java/util/concurrent/Callable
+   #32 = Utf8               call
+   #33 = Utf8               ()Ljava/lang/Object;
+   #34 = Methodref          #19.#35       // java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #35 = NameAndType        #24:#36       // append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #36 = Utf8               (Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #37 = Methodref          #19.#38       // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #38 = NameAndType        #39:#40       // toString:()Ljava/lang/String;
+   #39 = Utf8               toString
+   #40 = Utf8               ()Ljava/lang/String;
+   #41 = Methodref          #42.#43       // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #42 = Class              #44           // java/io/PrintStream
+   #43 = NameAndType        #45:#46       // println:(Ljava/lang/String;)V
+   #44 = Utf8               java/io/PrintStream
+   #45 = Utf8               println
+   #46 = Utf8               (Ljava/lang/String;)V
+   #47 = Class              #48           // java/lang/Throwable
+   #48 = Utf8               java/lang/Throwable
+   #49 = Methodref          #2.#50        // java/lang/Object.getClass:()Ljava/lang/Class;
+   #50 = NameAndType        #51:#52       // getClass:()Ljava/lang/Class;
+   #51 = Utf8               getClass
+   #52 = Utf8               ()Ljava/lang/Class;
+   #53 = Methodref          #54.#55       // java/lang/Class.getName:()Ljava/lang/String;
+   #54 = Class              #56           // java/lang/Class
+   #55 = NameAndType        #57:#40       // getName:()Ljava/lang/String;
+   #56 = Utf8               java/lang/Class
+   #57 = Utf8               getName
+   #58 = Methodref          #59.#60       // LambdaAdaptationProbe.wider:()Ljava/util/function/ToIntFunction;
+   #59 = Class              #61           // LambdaAdaptationProbe
+   #60 = NameAndType        #62:#63       // wider:()Ljava/util/function/ToIntFunction;
+   #61 = Utf8               LambdaAdaptationProbe
+   #62 = Utf8               wider
+   #63 = Utf8               ()Ljava/util/function/ToIntFunction;
+   #64 = InterfaceMethodref #65.#66       // java/util/function/ToIntFunction.applyAsInt:(Ljava/lang/Object;)I
+   #65 = Class              #67           // java/util/function/ToIntFunction
+   #66 = NameAndType        #68:#69       // applyAsInt:(Ljava/lang/Object;)I
+   #67 = Utf8               java/util/function/ToIntFunction
+   #68 = Utf8               applyAsInt
+   #69 = Utf8               (Ljava/lang/Object;)I
+   #70 = Methodref          #19.#71       // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+   #71 = NameAndType        #24:#72       // append:(I)Ljava/lang/StringBuilder;
+   #72 = Utf8               (I)Ljava/lang/StringBuilder;
+   #73 = String             #74           // :calls=
+   #74 = Utf8               :calls=
+   #75 = Fieldref           #8.#76        // LambdaAdaptationSupport.current:Ljava/lang/Object;
+   #76 = NameAndType        #77:#78       // current:Ljava/lang/Object;
+   #77 = Utf8               current
+   #78 = Utf8               Ljava/lang/Object;
+   #79 = Methodref          #59.#80       // LambdaAdaptationProbe.genericString:()Ljava/util/function/Supplier;
+   #80 = NameAndType        #81:#82       // genericString:()Ljava/util/function/Supplier;
+   #81 = Utf8               genericString
+   #82 = Utf8               ()Ljava/util/function/Supplier;
+   #83 = InterfaceMethodref #84.#85       // java/util/function/Supplier.get:()Ljava/lang/Object;
+   #84 = Class              #86           // java/util/function/Supplier
+   #85 = NameAndType        #87:#33       // get:()Ljava/lang/Object;
+   #86 = Utf8               java/util/function/Supplier
+   #87 = Utf8               get
+   #88 = Class              #89           // java/lang/String
+   #89 = Utf8               java/lang/String
+   #90 = Methodref          #59.#91       // LambdaAdaptationProbe.unbound:()Ljava/util/function/ToIntBiFunction;
+   #91 = NameAndType        #92:#93       // unbound:()Ljava/util/function/ToIntBiFunction;
+   #92 = Utf8               unbound
+   #93 = Utf8               ()Ljava/util/function/ToIntBiFunction;
+   #94 = InterfaceMethodref #95.#96       // java/util/function/ToIntBiFunction.applyAsInt:(Ljava/lang/Object;Ljava/lang/Object;)I
+   #95 = Class              #97           // java/util/function/ToIntBiFunction
+   #96 = NameAndType        #68:#98       // applyAsInt:(Ljava/lang/Object;Ljava/lang/Object;)I
+   #97 = Utf8               java/util/function/ToIntBiFunction
+   #98 = Utf8               (Ljava/lang/Object;Ljava/lang/Object;)I
+   #99 = Methodref          #59.#100      // LambdaAdaptationProbe.constructor:()Ljava/util/function/Function;
+  #100 = NameAndType        #101:#102     // constructor:()Ljava/util/function/Function;
+  #101 = Utf8               constructor
+  #102 = Utf8               ()Ljava/util/function/Function;
+  #103 = InterfaceMethodref #104.#105     // java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+  #104 = Class              #106          // java/util/function/Function
+  #105 = NameAndType        #107:#108     // apply:(Ljava/lang/Object;)Ljava/lang/Object;
+  #106 = Utf8               java/util/function/Function
+  #107 = Utf8               apply
+  #108 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #109 = Class              #110          // LambdaAdaptationBox
+  #110 = Utf8               LambdaAdaptationBox
+  #111 = Methodref          #109.#112     // LambdaAdaptationBox.value:()Ljava/lang/String;
+  #112 = NameAndType        #113:#40      // value:()Ljava/lang/String;
+  #113 = Utf8               value
+  #114 = Methodref          #59.#115      // LambdaAdaptationProbe.strings:()Ljava/util/function/ToIntFunction;
+  #115 = NameAndType        #116:#63      // strings:()Ljava/util/function/ToIntFunction;
+  #116 = Utf8               strings
+  #117 = String             #118          // string
+  #118 = Utf8               string
+  #119 = InvokeDynamic      #0:#120       // #0:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+  #120 = NameAndType        #32:#121      // call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+  #121 = Utf8               (Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+  #122 = Methodref          #123.#124     // LambdaAdaptationRunner.run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+  #123 = Class              #125          // LambdaAdaptationRunner
+  #124 = NameAndType        #126:#127     // run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+  #125 = Utf8               LambdaAdaptationRunner
+  #126 = Utf8               run
+  #127 = Utf8               (Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+  #128 = String             #129          // null
+  #129 = Utf8               null
+  #130 = InvokeDynamic      #1:#120       // #1:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+  #131 = String             #132          // wrong
+  #132 = Utf8               wrong
+  #133 = InvokeDynamic      #2:#120       // #2:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+  #134 = String             #135          // widerString
+  #135 = Utf8               widerString
+  #136 = String             #137          // text
+  #137 = Utf8               text
+  #138 = Methodref          #123.#139     // LambdaAdaptationRunner.wider:(Ljava/lang/String;Ljava/lang/Object;)V
+  #139 = NameAndType        #62:#140      // wider:(Ljava/lang/String;Ljava/lang/Object;)V
+  #140 = Utf8               (Ljava/lang/String;Ljava/lang/Object;)V
+  #141 = String             #142          // widerNull
+  #142 = Utf8               widerNull
+  #143 = String             #144          // widerWrong
+  #144 = Utf8               widerWrong
+  #145 = Methodref          #146.#147     // java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+  #146 = Class              #148          // java/lang/Integer
+  #147 = NameAndType        #149:#150     // valueOf:(I)Ljava/lang/Integer;
+  #148 = Utf8               java/lang/Integer
+  #149 = Utf8               valueOf
+  #150 = Utf8               (I)Ljava/lang/Integer;
+  #151 = Methodref          #59.#152      // LambdaAdaptationProbe.arrays:()Ljava/util/function/ToIntFunction;
+  #152 = NameAndType        #153:#63      // arrays:()Ljava/util/function/ToIntFunction;
+  #153 = Utf8               arrays
+  #154 = String             #155          // array
+  #155 = Utf8               array
+  #156 = InvokeDynamic      #3:#120       // #3:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+  #157 = String             #158          // arrayNull
+  #158 = Utf8               arrayNull
+  #159 = InvokeDynamic      #1:#120       // #1:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+  #160 = String             #161          // arrayWrong
+  #161 = Utf8               arrayWrong
+  #162 = InvokeDynamic      #4:#120       // #4:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+  #163 = String             #92           // unbound
+  #164 = InvokeDynamic      #5:#165       // #5:call:(Ljava/util/function/ToIntBiFunction;)Ljava/util/concurrent/Callable;
+  #165 = NameAndType        #32:#166      // call:(Ljava/util/function/ToIntBiFunction;)Ljava/util/concurrent/Callable;
+  #166 = Utf8               (Ljava/util/function/ToIntBiFunction;)Ljava/util/concurrent/Callable;
+  #167 = String             #168          // unboundNull
+  #168 = Utf8               unboundNull
+  #169 = InvokeDynamic      #6:#165       // #6:call:(Ljava/util/function/ToIntBiFunction;)Ljava/util/concurrent/Callable;
+  #170 = String             #171          // unboundWrong
+  #171 = Utf8               unboundWrong
+  #172 = InvokeDynamic      #7:#165       // #7:call:(Ljava/util/function/ToIntBiFunction;)Ljava/util/concurrent/Callable;
+  #173 = String             #101          // constructor
+  #174 = InvokeDynamic      #8:#175       // #8:call:(Ljava/util/function/Function;)Ljava/util/concurrent/Callable;
+  #175 = NameAndType        #32:#176      // call:(Ljava/util/function/Function;)Ljava/util/concurrent/Callable;
+  #176 = Utf8               (Ljava/util/function/Function;)Ljava/util/concurrent/Callable;
+  #177 = Methodref          #59.#178      // LambdaAdaptationProbe.primitive:()Ljava/util/function/IntUnaryOperator;
+  #178 = NameAndType        #179:#180     // primitive:()Ljava/util/function/IntUnaryOperator;
+  #179 = Utf8               primitive
+  #180 = Utf8               ()Ljava/util/function/IntUnaryOperator;
+  #181 = String             #179          // primitive
+  #182 = InvokeDynamic      #9:#183       // #9:call:(Ljava/util/function/IntUnaryOperator;)Ljava/util/concurrent/Callable;
+  #183 = NameAndType        #32:#184      // call:(Ljava/util/function/IntUnaryOperator;)Ljava/util/concurrent/Callable;
+  #184 = Utf8               (Ljava/util/function/IntUnaryOperator;)Ljava/util/concurrent/Callable;
+  #185 = String             #186          // genericRawString
+  #186 = Utf8               genericRawString
+  #187 = Methodref          #123.#188     // LambdaAdaptationRunner.generic:(Ljava/lang/String;Ljava/lang/Object;Z)V
+  #188 = NameAndType        #189:#190     // generic:(Ljava/lang/String;Ljava/lang/Object;Z)V
+  #189 = Utf8               generic
+  #190 = Utf8               (Ljava/lang/String;Ljava/lang/Object;Z)V
+  #191 = String             #192          // genericTypedString
+  #192 = Utf8               genericTypedString
+  #193 = String             #194          // genericRawInteger
+  #194 = Utf8               genericRawInteger
+  #195 = String             #196          // genericTypedInteger
+  #196 = Utf8               genericTypedInteger
+  #197 = String             #198          // receiverNull
+  #198 = Utf8               receiverNull
+  #199 = Methodref          #123.#200     // LambdaAdaptationRunner.unboundCheck:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+  #200 = NameAndType        #201:#202     // unboundCheck:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+  #201 = Utf8               unboundCheck
+  #202 = Utf8               (Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+  #203 = String             #204          // receiverNullWrongArg
+  #204 = Utf8               receiverNullWrongArg
+  #205 = String             #206          // receiverWrong
+  #206 = Utf8               receiverWrong
+  #207 = String             #208          // receiverWrongNullArg
+  #208 = Utf8               receiverWrongNullArg
+  #209 = String             #210          // receiverValidNullArg
+  #210 = Utf8               receiverValidNullArg
+  #211 = Methodref          #8.#3         // LambdaAdaptationSupport."<init>":()V
+  #212 = String             #213          // receiverValidWrongArg
+  #213 = Utf8               receiverValidWrongArg
+  #214 = String             #215          // constructorText
+  #215 = Utf8               constructorText
+  #216 = Methodref          #123.#217     // LambdaAdaptationRunner.constructorCheck:(Ljava/lang/String;Ljava/lang/Object;)V
+  #217 = NameAndType        #218:#140     // constructorCheck:(Ljava/lang/String;Ljava/lang/Object;)V
+  #218 = Utf8               constructorCheck
+  #219 = String             #220          // constructorNull
+  #220 = Utf8               constructorNull
+  #221 = String             #222          // constructorWrong
+  #222 = Utf8               constructorWrong
+  #223 = InterfaceMethodref #224.#225     // java/util/function/IntUnaryOperator.applyAsInt:(I)I
+  #224 = Class              #226          // java/util/function/IntUnaryOperator
+  #225 = NameAndType        #68:#227      // applyAsInt:(I)I
+  #226 = Utf8               java/util/function/IntUnaryOperator
+  #227 = Utf8               (I)I
+  #228 = Utf8               Code
+  #229 = Utf8               StackMapTable
+  #230 = Utf8               Signature
+  #231 = Utf8               (Ljava/lang/String;Ljava/util/concurrent/Callable<Ljava/lang/Object;>;)V
+  #232 = Utf8               main
+  #233 = Utf8               ([Ljava/lang/String;)V
+  #234 = Utf8               lambda$main$10
+  #235 = Utf8               (Ljava/util/function/IntUnaryOperator;)Ljava/lang/Object;
+  #236 = Utf8               Exceptions
+  #237 = Class              #238          // java/lang/Exception
+  #238 = Utf8               java/lang/Exception
+  #239 = Utf8               lambda$main$9
+  #240 = Utf8               (Ljava/util/function/Function;)Ljava/lang/Object;
+  #241 = Utf8               lambda$main$8
+  #242 = Utf8               (Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+  #243 = Utf8               lambda$main$7
+  #244 = Utf8               lambda$main$6
+  #245 = Utf8               lambda$main$5
+  #246 = Utf8               (Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #247 = Utf8               lambda$main$3
+  #248 = Utf8               lambda$main$2
+  #249 = Utf8               lambda$main$1
+  #250 = Utf8               lambda$main$0
+  #251 = Utf8               BootstrapMethods
+  #252 = MethodType         #33           //  ()Ljava/lang/Object;
+  #253 = MethodHandle       6:#254        // REF_invokeStatic LambdaAdaptationRunner.lambda$main$0:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #254 = Methodref          #123.#255     // LambdaAdaptationRunner.lambda$main$0:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #255 = NameAndType        #250:#246     // lambda$main$0:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #256 = MethodHandle       6:#257        // REF_invokeStatic LambdaAdaptationRunner.lambda$main$1:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #257 = Methodref          #123.#258     // LambdaAdaptationRunner.lambda$main$1:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #258 = NameAndType        #249:#246     // lambda$main$1:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #259 = MethodHandle       6:#260        // REF_invokeStatic LambdaAdaptationRunner.lambda$main$2:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #260 = Methodref          #123.#261     // LambdaAdaptationRunner.lambda$main$2:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #261 = NameAndType        #248:#246     // lambda$main$2:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #262 = MethodHandle       6:#263        // REF_invokeStatic LambdaAdaptationRunner.lambda$main$3:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #263 = Methodref          #123.#264     // LambdaAdaptationRunner.lambda$main$3:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #264 = NameAndType        #247:#246     // lambda$main$3:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #265 = MethodHandle       6:#266        // REF_invokeStatic LambdaAdaptationRunner.lambda$main$5:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #266 = Methodref          #123.#267     // LambdaAdaptationRunner.lambda$main$5:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #267 = NameAndType        #245:#246     // lambda$main$5:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+  #268 = MethodHandle       6:#269        // REF_invokeStatic LambdaAdaptationRunner.lambda$main$6:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+  #269 = Methodref          #123.#270     // LambdaAdaptationRunner.lambda$main$6:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+  #270 = NameAndType        #244:#242     // lambda$main$6:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+  #271 = MethodHandle       6:#272        // REF_invokeStatic LambdaAdaptationRunner.lambda$main$7:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+  #272 = Methodref          #123.#273     // LambdaAdaptationRunner.lambda$main$7:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+  #273 = NameAndType        #243:#242     // lambda$main$7:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+  #274 = MethodHandle       6:#275        // REF_invokeStatic LambdaAdaptationRunner.lambda$main$8:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+  #275 = Methodref          #123.#276     // LambdaAdaptationRunner.lambda$main$8:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+  #276 = NameAndType        #241:#242     // lambda$main$8:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+  #277 = MethodHandle       6:#278        // REF_invokeStatic LambdaAdaptationRunner.lambda$main$9:(Ljava/util/function/Function;)Ljava/lang/Object;
+  #278 = Methodref          #123.#279     // LambdaAdaptationRunner.lambda$main$9:(Ljava/util/function/Function;)Ljava/lang/Object;
+  #279 = NameAndType        #239:#240     // lambda$main$9:(Ljava/util/function/Function;)Ljava/lang/Object;
+  #280 = MethodHandle       6:#281        // REF_invokeStatic LambdaAdaptationRunner.lambda$main$10:(Ljava/util/function/IntUnaryOperator;)Ljava/lang/Object;
+  #281 = Methodref          #123.#282     // LambdaAdaptationRunner.lambda$main$10:(Ljava/util/function/IntUnaryOperator;)Ljava/lang/Object;
+  #282 = NameAndType        #234:#235     // lambda$main$10:(Ljava/util/function/IntUnaryOperator;)Ljava/lang/Object;
+  #283 = MethodHandle       6:#284        // REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #284 = Methodref          #285.#286     // java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #285 = Class              #287          // java/lang/invoke/LambdaMetafactory
+  #286 = NameAndType        #288:#289     // metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #287 = Utf8               java/lang/invoke/LambdaMetafactory
+  #288 = Utf8               metafactory
+  #289 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #290 = Utf8               InnerClasses
+  #291 = Class              #292          // java/lang/invoke/MethodHandles$Lookup
+  #292 = Utf8               java/lang/invoke/MethodHandles$Lookup
+  #293 = Class              #294          // java/lang/invoke/MethodHandles
+  #294 = Utf8               java/lang/invoke/MethodHandles
+  #295 = Utf8               Lookup
+{
+  public LambdaAdaptationRunner();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static void run(java.lang.String, java.util.concurrent.Callable<java.lang.Object>);
+    descriptor: (Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=2
+         0: iconst_0
+         1: putstatic     #7                  // Field LambdaAdaptationSupport.calls:I
+         4: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+         7: new           #19                 // class java/lang/StringBuilder
+        10: dup
+        11: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+        14: aload_0
+        15: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: ldc           #26                 // String :
+        20: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        23: aload_1
+        24: invokeinterface #28,  1           // InterfaceMethod java/util/concurrent/Callable.call:()Ljava/lang/Object;
+        29: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        32: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        35: invokevirtual #41                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        38: goto          77
+        41: astore_2
+        42: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        45: new           #19                 // class java/lang/StringBuilder
+        48: dup
+        49: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+        52: aload_0
+        53: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        56: ldc           #26                 // String :
+        58: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        61: aload_2
+        62: invokevirtual #49                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        65: invokevirtual #53                 // Method java/lang/Class.getName:()Ljava/lang/String;
+        68: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        71: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        74: invokevirtual #41                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        77: return
+      Exception table:
+         from    to  target type
+             4    38    41   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 2
+        frame_type = 105 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 35 /* same */
+    Signature: #231                         // (Ljava/lang/String;Ljava/util/concurrent/Callable<Ljava/lang/Object;>;)V
+
+  static void wider(java.lang.String, java.lang.Object);
+    descriptor: (Ljava/lang/String;Ljava/lang/Object;)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: iconst_0
+         1: putstatic     #7                  // Field LambdaAdaptationSupport.calls:I
+         4: invokestatic  #58                 // Method LambdaAdaptationProbe.wider:()Ljava/util/function/ToIntFunction;
+         7: astore_2
+         8: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: new           #19                 // class java/lang/StringBuilder
+        14: dup
+        15: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+        18: aload_0
+        19: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        22: ldc           #26                 // String :
+        24: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        27: aload_2
+        28: aload_1
+        29: invokeinterface #64,  2           // InterfaceMethod java/util/function/ToIntFunction.applyAsInt:(Ljava/lang/Object;)I
+        34: invokevirtual #70                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        37: ldc           #73                 // String :calls=
+        39: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        42: getstatic     #7                  // Field LambdaAdaptationSupport.calls:I
+        45: invokevirtual #70                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        48: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        51: invokevirtual #41                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        54: goto          104
+        57: astore_3
+        58: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        61: new           #19                 // class java/lang/StringBuilder
+        64: dup
+        65: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+        68: aload_0
+        69: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        72: ldc           #26                 // String :
+        74: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        77: aload_3
+        78: invokevirtual #49                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        81: invokevirtual #53                 // Method java/lang/Class.getName:()Ljava/lang/String;
+        84: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        87: ldc           #73                 // String :calls=
+        89: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        92: getstatic     #7                  // Field LambdaAdaptationSupport.calls:I
+        95: invokevirtual #70                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        98: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       101: invokevirtual #41                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       104: return
+      Exception table:
+         from    to  target type
+             8    54    57   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 2
+        frame_type = 255 /* full_frame */
+          offset_delta = 57
+          locals = [ class java/lang/String, class java/lang/Object, class java/util/function/ToIntFunction ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 46 /* same */
+
+  static void generic(java.lang.String, java.lang.Object, boolean);
+    descriptor: (Ljava/lang/String;Ljava/lang/Object;Z)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=5, args_size=3
+         0: aload_1
+         1: putstatic     #75                 // Field LambdaAdaptationSupport.current:Ljava/lang/Object;
+         4: invokestatic  #79                 // Method LambdaAdaptationProbe.genericString:()Ljava/util/function/Supplier;
+         7: astore_3
+         8: iload_2
+         9: ifeq          56
+        12: aload_3
+        13: invokeinterface #83,  1           // InterfaceMethod java/util/function/Supplier.get:()Ljava/lang/Object;
+        18: checkcast     #88                 // class java/lang/String
+        21: astore        4
+        23: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        26: new           #19                 // class java/lang/StringBuilder
+        29: dup
+        30: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+        33: aload_0
+        34: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        37: ldc           #26                 // String :
+        39: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        42: aload         4
+        44: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        47: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        50: invokevirtual #41                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        53: goto          110
+        56: aload_3
+        57: invokeinterface #83,  1           // InterfaceMethod java/util/function/Supplier.get:()Ljava/lang/Object;
+        62: astore        4
+        64: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        67: new           #19                 // class java/lang/StringBuilder
+        70: dup
+        71: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+        74: aload_0
+        75: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        78: ldc           #26                 // String :
+        80: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        83: aload         4
+        85: invokevirtual #49                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        88: invokevirtual #53                 // Method java/lang/Class.getName:()Ljava/lang/String;
+        91: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        94: ldc           #26                 // String :
+        96: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        99: aload         4
+       101: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+       104: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       107: invokevirtual #41                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       110: goto          151
+       113: astore        4
+       115: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       118: new           #19                 // class java/lang/StringBuilder
+       121: dup
+       122: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+       125: aload_0
+       126: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       129: ldc           #26                 // String :
+       131: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       134: aload         4
+       136: invokevirtual #49                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       139: invokevirtual #53                 // Method java/lang/Class.getName:()Ljava/lang/String;
+       142: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       145: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       148: invokevirtual #41                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       151: return
+      Exception table:
+         from    to  target type
+             8   110   113   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 4
+        frame_type = 252 /* append */
+          offset_delta = 56
+          locals = [ class java/util/function/Supplier ]
+        frame_type = 53 /* same */
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 37 /* same */
+
+  static void unboundCheck(java.lang.String, java.lang.Object, java.lang.Object);
+    descriptor: (Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=5, locals=5, args_size=3
+         0: iconst_0
+         1: putstatic     #7                  // Field LambdaAdaptationSupport.calls:I
+         4: invokestatic  #90                 // Method LambdaAdaptationProbe.unbound:()Ljava/util/function/ToIntBiFunction;
+         7: astore_3
+         8: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: new           #19                 // class java/lang/StringBuilder
+        14: dup
+        15: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+        18: aload_0
+        19: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        22: ldc           #26                 // String :
+        24: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        27: aload_3
+        28: aload_1
+        29: aload_2
+        30: invokeinterface #94,  3           // InterfaceMethod java/util/function/ToIntBiFunction.applyAsInt:(Ljava/lang/Object;Ljava/lang/Object;)I
+        35: invokevirtual #70                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        38: ldc           #73                 // String :calls=
+        40: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        43: getstatic     #7                  // Field LambdaAdaptationSupport.calls:I
+        46: invokevirtual #70                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        49: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        52: invokevirtual #41                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        55: goto          107
+        58: astore        4
+        60: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        63: new           #19                 // class java/lang/StringBuilder
+        66: dup
+        67: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+        70: aload_0
+        71: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        74: ldc           #26                 // String :
+        76: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        79: aload         4
+        81: invokevirtual #49                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        84: invokevirtual #53                 // Method java/lang/Class.getName:()Ljava/lang/String;
+        87: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        90: ldc           #73                 // String :calls=
+        92: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        95: getstatic     #7                  // Field LambdaAdaptationSupport.calls:I
+        98: invokevirtual #70                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       101: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       104: invokevirtual #41                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       107: return
+      Exception table:
+         from    to  target type
+             8    55    58   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 2
+        frame_type = 255 /* full_frame */
+          offset_delta = 58
+          locals = [ class java/lang/String, class java/lang/Object, class java/lang/Object, class java/util/function/ToIntBiFunction ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 48 /* same */
+
+  static void constructorCheck(java.lang.String, java.lang.Object);
+    descriptor: (Ljava/lang/String;Ljava/lang/Object;)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: iconst_0
+         1: putstatic     #7                  // Field LambdaAdaptationSupport.calls:I
+         4: invokestatic  #99                 // Method LambdaAdaptationProbe.constructor:()Ljava/util/function/Function;
+         7: astore_2
+         8: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: new           #19                 // class java/lang/StringBuilder
+        14: dup
+        15: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+        18: aload_0
+        19: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        22: ldc           #26                 // String :
+        24: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        27: aload_2
+        28: aload_1
+        29: invokeinterface #103,  2          // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+        34: checkcast     #109                // class LambdaAdaptationBox
+        37: invokevirtual #111                // Method LambdaAdaptationBox.value:()Ljava/lang/String;
+        40: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        43: ldc           #73                 // String :calls=
+        45: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        48: getstatic     #7                  // Field LambdaAdaptationSupport.calls:I
+        51: invokevirtual #70                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        54: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        57: invokevirtual #41                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        60: goto          110
+        63: astore_3
+        64: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        67: new           #19                 // class java/lang/StringBuilder
+        70: dup
+        71: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+        74: aload_0
+        75: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        78: ldc           #26                 // String :
+        80: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        83: aload_3
+        84: invokevirtual #49                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        87: invokevirtual #53                 // Method java/lang/Class.getName:()Ljava/lang/String;
+        90: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        93: ldc           #73                 // String :calls=
+        95: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        98: getstatic     #7                  // Field LambdaAdaptationSupport.calls:I
+       101: invokevirtual #70                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       104: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       107: invokevirtual #41                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       110: return
+      Exception table:
+         from    to  target type
+             8    60    63   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 2
+        frame_type = 255 /* full_frame */
+          offset_delta = 63
+          locals = [ class java/lang/String, class java/lang/Object, class java/util/function/Function ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 46 /* same */
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=6, args_size=1
+         0: invokestatic  #114                // Method LambdaAdaptationProbe.strings:()Ljava/util/function/ToIntFunction;
+         3: astore_1
+         4: ldc           #117                // String string
+         6: aload_1
+         7: invokedynamic #119,  0            // InvokeDynamic #0:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+        12: invokestatic  #122                // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+        15: ldc           #128                // String null
+        17: aload_1
+        18: invokedynamic #130,  0            // InvokeDynamic #1:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+        23: invokestatic  #122                // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+        26: ldc           #131                // String wrong
+        28: aload_1
+        29: invokedynamic #133,  0            // InvokeDynamic #2:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+        34: invokestatic  #122                // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+        37: ldc           #134                // String widerString
+        39: ldc           #136                // String text
+        41: invokestatic  #138                // Method wider:(Ljava/lang/String;Ljava/lang/Object;)V
+        44: ldc           #141                // String widerNull
+        46: aconst_null
+        47: invokestatic  #138                // Method wider:(Ljava/lang/String;Ljava/lang/Object;)V
+        50: ldc           #143                // String widerWrong
+        52: bipush        7
+        54: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        57: invokestatic  #138                // Method wider:(Ljava/lang/String;Ljava/lang/Object;)V
+        60: invokestatic  #151                // Method LambdaAdaptationProbe.arrays:()Ljava/util/function/ToIntFunction;
+        63: astore_2
+        64: ldc           #154                // String array
+        66: aload_2
+        67: invokedynamic #156,  0            // InvokeDynamic #3:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+        72: invokestatic  #122                // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+        75: ldc           #157                // String arrayNull
+        77: aload_2
+        78: invokedynamic #159,  0            // InvokeDynamic #1:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+        83: invokestatic  #122                // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+        86: ldc           #160                // String arrayWrong
+        88: aload_2
+        89: invokedynamic #162,  0            // InvokeDynamic #4:call:(Ljava/util/function/ToIntFunction;)Ljava/util/concurrent/Callable;
+        94: invokestatic  #122                // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+        97: invokestatic  #90                 // Method LambdaAdaptationProbe.unbound:()Ljava/util/function/ToIntBiFunction;
+       100: astore_3
+       101: ldc           #163                // String unbound
+       103: aload_3
+       104: invokedynamic #164,  0            // InvokeDynamic #5:call:(Ljava/util/function/ToIntBiFunction;)Ljava/util/concurrent/Callable;
+       109: invokestatic  #122                // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+       112: ldc           #167                // String unboundNull
+       114: aload_3
+       115: invokedynamic #169,  0            // InvokeDynamic #6:call:(Ljava/util/function/ToIntBiFunction;)Ljava/util/concurrent/Callable;
+       120: invokestatic  #122                // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+       123: ldc           #170                // String unboundWrong
+       125: aload_3
+       126: invokedynamic #172,  0            // InvokeDynamic #7:call:(Ljava/util/function/ToIntBiFunction;)Ljava/util/concurrent/Callable;
+       131: invokestatic  #122                // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+       134: invokestatic  #99                 // Method LambdaAdaptationProbe.constructor:()Ljava/util/function/Function;
+       137: astore        4
+       139: ldc           #173                // String constructor
+       141: aload         4
+       143: invokedynamic #174,  0            // InvokeDynamic #8:call:(Ljava/util/function/Function;)Ljava/util/concurrent/Callable;
+       148: invokestatic  #122                // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+       151: invokestatic  #177                // Method LambdaAdaptationProbe.primitive:()Ljava/util/function/IntUnaryOperator;
+       154: astore        5
+       156: ldc           #181                // String primitive
+       158: aload         5
+       160: invokedynamic #182,  0            // InvokeDynamic #9:call:(Ljava/util/function/IntUnaryOperator;)Ljava/util/concurrent/Callable;
+       165: invokestatic  #122                // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+       168: ldc           #185                // String genericRawString
+       170: ldc           #136                // String text
+       172: iconst_0
+       173: invokestatic  #187                // Method generic:(Ljava/lang/String;Ljava/lang/Object;Z)V
+       176: ldc           #191                // String genericTypedString
+       178: ldc           #136                // String text
+       180: iconst_1
+       181: invokestatic  #187                // Method generic:(Ljava/lang/String;Ljava/lang/Object;Z)V
+       184: ldc           #193                // String genericRawInteger
+       186: bipush        7
+       188: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       191: iconst_0
+       192: invokestatic  #187                // Method generic:(Ljava/lang/String;Ljava/lang/Object;Z)V
+       195: ldc           #195                // String genericTypedInteger
+       197: bipush        7
+       199: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       202: iconst_1
+       203: invokestatic  #187                // Method generic:(Ljava/lang/String;Ljava/lang/Object;Z)V
+       206: ldc           #197                // String receiverNull
+       208: aconst_null
+       209: ldc           #136                // String text
+       211: invokestatic  #199                // Method unboundCheck:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+       214: ldc           #203                // String receiverNullWrongArg
+       216: aconst_null
+       217: bipush        7
+       219: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       222: invokestatic  #199                // Method unboundCheck:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+       225: ldc           #205                // String receiverWrong
+       227: bipush        7
+       229: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       232: ldc           #136                // String text
+       234: invokestatic  #199                // Method unboundCheck:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+       237: ldc           #207                // String receiverWrongNullArg
+       239: bipush        7
+       241: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       244: aconst_null
+       245: invokestatic  #199                // Method unboundCheck:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+       248: ldc           #209                // String receiverValidNullArg
+       250: new           #8                  // class LambdaAdaptationSupport
+       253: dup
+       254: invokespecial #211                // Method LambdaAdaptationSupport."<init>":()V
+       257: aconst_null
+       258: invokestatic  #199                // Method unboundCheck:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+       261: ldc           #212                // String receiverValidWrongArg
+       263: new           #8                  // class LambdaAdaptationSupport
+       266: dup
+       267: invokespecial #211                // Method LambdaAdaptationSupport."<init>":()V
+       270: bipush        7
+       272: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       275: invokestatic  #199                // Method unboundCheck:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+       278: ldc           #214                // String constructorText
+       280: ldc           #136                // String text
+       282: invokestatic  #216                // Method constructorCheck:(Ljava/lang/String;Ljava/lang/Object;)V
+       285: ldc           #219                // String constructorNull
+       287: aconst_null
+       288: invokestatic  #216                // Method constructorCheck:(Ljava/lang/String;Ljava/lang/Object;)V
+       291: ldc           #221                // String constructorWrong
+       293: bipush        7
+       295: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       298: invokestatic  #216                // Method constructorCheck:(Ljava/lang/String;Ljava/lang/Object;)V
+       301: return
+
+  private static java.lang.Object lambda$main$10(java.util.function.IntUnaryOperator) throws java.lang.Exception;
+    descriptor: (Ljava/util/function/IntUnaryOperator;)Ljava/lang/Object;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: bipush        7
+         3: invokeinterface #223,  2          // InterfaceMethod java/util/function/IntUnaryOperator.applyAsInt:(I)I
+         8: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        11: areturn
+    Exceptions:
+      throws java.lang.Exception
+
+  private static java.lang.Object lambda$main$9(java.util.function.Function) throws java.lang.Exception;
+    descriptor: (Ljava/util/function/Function;)Ljava/lang/Object;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: ldc           #136                // String text
+         3: invokeinterface #103,  2          // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+         8: checkcast     #109                // class LambdaAdaptationBox
+        11: invokevirtual #111                // Method LambdaAdaptationBox.value:()Ljava/lang/String;
+        14: areturn
+    Exceptions:
+      throws java.lang.Exception
+
+  private static java.lang.Object lambda$main$8(java.util.function.ToIntBiFunction) throws java.lang.Exception;
+    descriptor: (Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: aload_0
+         1: new           #8                  // class LambdaAdaptationSupport
+         4: dup
+         5: invokespecial #211                // Method LambdaAdaptationSupport."<init>":()V
+         8: bipush        7
+        10: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        13: invokeinterface #94,  3           // InterfaceMethod java/util/function/ToIntBiFunction.applyAsInt:(Ljava/lang/Object;Ljava/lang/Object;)I
+        18: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        21: areturn
+    Exceptions:
+      throws java.lang.Exception
+
+  private static java.lang.Object lambda$main$7(java.util.function.ToIntBiFunction) throws java.lang.Exception;
+    descriptor: (Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: aload_0
+         1: new           #8                  // class LambdaAdaptationSupport
+         4: dup
+         5: invokespecial #211                // Method LambdaAdaptationSupport."<init>":()V
+         8: aconst_null
+         9: invokeinterface #94,  3           // InterfaceMethod java/util/function/ToIntBiFunction.applyAsInt:(Ljava/lang/Object;Ljava/lang/Object;)I
+        14: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        17: areturn
+    Exceptions:
+      throws java.lang.Exception
+
+  private static java.lang.Object lambda$main$6(java.util.function.ToIntBiFunction) throws java.lang.Exception;
+    descriptor: (Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: aload_0
+         1: new           #8                  // class LambdaAdaptationSupport
+         4: dup
+         5: invokespecial #211                // Method LambdaAdaptationSupport."<init>":()V
+         8: ldc           #136                // String text
+        10: invokeinterface #94,  3           // InterfaceMethod java/util/function/ToIntBiFunction.applyAsInt:(Ljava/lang/Object;Ljava/lang/Object;)I
+        15: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        18: areturn
+    Exceptions:
+      throws java.lang.Exception
+
+  private static java.lang.Object lambda$main$5(java.util.function.ToIntFunction) throws java.lang.Exception;
+    descriptor: (Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: aload_0
+         1: iconst_1
+         2: anewarray     #2                  // class java/lang/Object
+         5: dup
+         6: iconst_0
+         7: ldc           #136                // String text
+         9: aastore
+        10: invokeinterface #64,  2           // InterfaceMethod java/util/function/ToIntFunction.applyAsInt:(Ljava/lang/Object;)I
+        15: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        18: areturn
+    Exceptions:
+      throws java.lang.Exception
+
+  private static java.lang.Object lambda$main$3(java.util.function.ToIntFunction) throws java.lang.Exception;
+    descriptor: (Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: aload_0
+         1: iconst_1
+         2: anewarray     #88                 // class java/lang/String
+         5: dup
+         6: iconst_0
+         7: ldc           #136                // String text
+         9: aastore
+        10: invokeinterface #64,  2           // InterfaceMethod java/util/function/ToIntFunction.applyAsInt:(Ljava/lang/Object;)I
+        15: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        18: areturn
+    Exceptions:
+      throws java.lang.Exception
+
+  private static java.lang.Object lambda$main$2(java.util.function.ToIntFunction) throws java.lang.Exception;
+    descriptor: (Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: bipush        7
+         3: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+         6: invokeinterface #64,  2           // InterfaceMethod java/util/function/ToIntFunction.applyAsInt:(Ljava/lang/Object;)I
+        11: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        14: areturn
+    Exceptions:
+      throws java.lang.Exception
+
+  private static java.lang.Object lambda$main$1(java.util.function.ToIntFunction) throws java.lang.Exception;
+    descriptor: (Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: aconst_null
+         2: invokeinterface #64,  2           // InterfaceMethod java/util/function/ToIntFunction.applyAsInt:(Ljava/lang/Object;)I
+         7: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        10: areturn
+    Exceptions:
+      throws java.lang.Exception
+
+  private static java.lang.Object lambda$main$0(java.util.function.ToIntFunction) throws java.lang.Exception;
+    descriptor: (Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: ldc           #136                // String text
+         3: invokeinterface #64,  2           // InterfaceMethod java/util/function/ToIntFunction.applyAsInt:(Ljava/lang/Object;)I
+         8: invokestatic  #145                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        11: areturn
+    Exceptions:
+      throws java.lang.Exception
+}
+BootstrapMethods:
+  0: #283 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #252 ()Ljava/lang/Object;
+      #253 REF_invokeStatic LambdaAdaptationRunner.lambda$main$0:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+      #252 ()Ljava/lang/Object;
+  1: #283 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #252 ()Ljava/lang/Object;
+      #256 REF_invokeStatic LambdaAdaptationRunner.lambda$main$1:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+      #252 ()Ljava/lang/Object;
+  2: #283 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #252 ()Ljava/lang/Object;
+      #259 REF_invokeStatic LambdaAdaptationRunner.lambda$main$2:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+      #252 ()Ljava/lang/Object;
+  3: #283 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #252 ()Ljava/lang/Object;
+      #262 REF_invokeStatic LambdaAdaptationRunner.lambda$main$3:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+      #252 ()Ljava/lang/Object;
+  4: #283 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #252 ()Ljava/lang/Object;
+      #265 REF_invokeStatic LambdaAdaptationRunner.lambda$main$5:(Ljava/util/function/ToIntFunction;)Ljava/lang/Object;
+      #252 ()Ljava/lang/Object;
+  5: #283 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #252 ()Ljava/lang/Object;
+      #268 REF_invokeStatic LambdaAdaptationRunner.lambda$main$6:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+      #252 ()Ljava/lang/Object;
+  6: #283 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #252 ()Ljava/lang/Object;
+      #271 REF_invokeStatic LambdaAdaptationRunner.lambda$main$7:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+      #252 ()Ljava/lang/Object;
+  7: #283 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #252 ()Ljava/lang/Object;
+      #274 REF_invokeStatic LambdaAdaptationRunner.lambda$main$8:(Ljava/util/function/ToIntBiFunction;)Ljava/lang/Object;
+      #252 ()Ljava/lang/Object;
+  8: #283 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #252 ()Ljava/lang/Object;
+      #277 REF_invokeStatic LambdaAdaptationRunner.lambda$main$9:(Ljava/util/function/Function;)Ljava/lang/Object;
+      #252 ()Ljava/lang/Object;
+  9: #283 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #252 ()Ljava/lang/Object;
+      #280 REF_invokeStatic LambdaAdaptationRunner.lambda$main$10:(Ljava/util/function/IntUnaryOperator;)Ljava/lang/Object;
+      #252 ()Ljava/lang/Object;
+InnerClasses:
+  public static final #295= #291 of #293; // Lookup=class java/lang/invoke/MethodHandles$Lookup of class java/lang/invoke/MethodHandles

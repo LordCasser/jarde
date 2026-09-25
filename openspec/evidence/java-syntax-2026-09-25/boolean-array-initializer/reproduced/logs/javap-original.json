@@ -1,0 +1,15 @@
+{
+  "command": [
+    "javap",
+    "-classpath",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/original",
+    "-c",
+    "-s",
+    "-v",
+    "BoolInit"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/original/BoolInit.class\n  Last modified 2026\u5e749\u670825\u65e5; size 189 bytes\n  SHA-256 checksum 5304fa21e9594a0ab6e04e0f79ee0da3bbcdcbc85e3019183d7cdd5e7b22da7d\nfinal class BoolInit\n  minor version: 0\n  major version: 52\n  flags: (0x0030) ACC_FINAL, ACC_SUPER\n  this_class: #7                          // BoolInit\n  super_class: #2                         // java/lang/Object\n  interfaces: 0, fields: 0, methods: 2, attributes: 0\nConstant pool:\n   #1 = Methodref          #2.#3          // java/lang/Object.\"<init>\":()V\n   #2 = Class              #4             // java/lang/Object\n   #3 = NameAndType        #5:#6          // \"<init>\":()V\n   #4 = Utf8               java/lang/Object\n   #5 = Utf8               <init>\n   #6 = Utf8               ()V\n   #7 = Class              #8             // BoolInit\n   #8 = Utf8               BoolInit\n   #9 = Utf8               Code\n  #10 = Utf8               values\n  #11 = Utf8               ()[I\n{\n  BoolInit();\n    descriptor: ()V\n    flags: (0x0000)\n    Code:\n      stack=1, locals=1, args_size=1\n         0: aload_0\n         1: invokespecial #1                  // Method java/lang/Object.\"<init>\":()V\n         4: return\n\n  static int[] values();\n    descriptor: ()[I\n    flags: (0x0008) ACC_STATIC\n    Code:\n      stack=4, locals=0, args_size=0\n         0: iconst_5\n         1: newarray       int\n         3: dup\n         4: iconst_0\n         5: iconst_0\n         6: iastore\n         7: dup\n         8: iconst_1\n         9: iconst_1\n        10: iastore\n        11: dup\n        12: iconst_2\n        13: iconst_2\n        14: iastore\n        15: dup\n        16: iconst_3\n        17: iconst_3\n        18: iastore\n        19: dup\n        20: iconst_4\n        21: iconst_m1\n        22: iastore\n        23: areturn\n}\n",
+  "stderr": ""
+}

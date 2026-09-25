@@ -1,0 +1,1 @@
+a766f7a14a7ef71e255555314b88386c11be924ff27bdb3ec880cf09a607cb9d  tests/fixtures/proved-java-structure/short-circuit-left-false/ShortCircuitFalse.class

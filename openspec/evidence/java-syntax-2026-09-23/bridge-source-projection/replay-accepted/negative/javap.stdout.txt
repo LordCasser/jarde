@@ -1,0 +1,30 @@
+Compiled from "FakeBridge.java"
+public final class FakeBridge {
+  private static int calls;
+
+  public FakeBridge();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public java.lang.String get();
+    Code:
+       0: ldc           #7                  // String value
+       2: areturn
+
+  public java.lang.Object get();
+    Code:
+       0: getstatic     #9                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #9                  // Field calls:I
+       8: aload_0
+       9: invokevirtual #15                 // Method get:()Ljava/lang/String;
+      12: areturn
+
+  public static int count();
+    Code:
+       0: getstatic     #9                  // Field calls:I
+       3: ireturn
+}

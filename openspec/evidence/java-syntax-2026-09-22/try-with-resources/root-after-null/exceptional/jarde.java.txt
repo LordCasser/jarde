@@ -1,0 +1,56 @@
+// jarde: presentation of `NullResourceExceptionalCore` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class NullResourceExceptionalCore extends java.lang.Object implements java.lang.AutoCloseable {
+    private static int bodyCalls;
+
+    private static int closes;
+
+    public NullResourceExceptionalCore() {
+        // @method <init>()V
+        // @declaration a constructor of `NullResourceExceptionalCore`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void reset() {
+        // @method reset()V
+        // @declaration a static method of `NullResourceExceptionalCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NullResourceExceptionalCore.bodyCalls = 0;
+        NullResourceExceptionalCore.closes = 0;
+        return;
+    }
+
+    public static int bodyCalls() {
+        // @method bodyCalls()I
+        // @declaration a static method of `NullResourceExceptionalCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return NullResourceExceptionalCore.bodyCalls;
+    }
+
+    public static int closes() {
+        // @method closes()I
+        // @declaration a static method of `NullResourceExceptionalCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return NullResourceExceptionalCore.closes;
+    }
+
+    public static void useNullResourceException() {
+        // @method useNullResourceException()V
+        // @declaration a static method of `NullResourceExceptionalCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (NullResourceExceptionalCore local0 = null) {
+            NullResourceThrower.raise();
+        }
+        return;
+    }
+
+    public void close() {
+        // @method close()V
+        // @declaration an instance method of `NullResourceExceptionalCore`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        NullResourceExceptionalCore.closes = NullResourceExceptionalCore.closes + 1;
+        return;
+    }
+}

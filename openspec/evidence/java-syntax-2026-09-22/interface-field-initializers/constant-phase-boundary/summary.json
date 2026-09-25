@@ -1,0 +1,55 @@
+{
+  "purpose": "controlled JVM evidence for interface <clinit> default-value read before later field write",
+  "source_shape": "legal Java 8 interface source compiled with javac, followed by a same-length three-byte patch confined to <clinit> Code",
+  "cli_path": "/private/tmp/jarde-cli-root-final-accepted",
+  "cli_sha256": "d7520a08a37b54ef579d42c770f5b512af17ddb11b05050568458759c78dbf16",
+  "cli_matches_expected_frozen_sha256": true,
+  "javac_version": "javac 23.0.1",
+  "jadx_version": "1.5.6",
+  "prepatch_class_sha256": "bd53e1013f733fa97cf610550f6aadda9b14c7d45734d0d4d9faf7cdb2fbc052",
+  "prepatch_class_bytes": 496,
+  "frozen_class_sha256": "e9e686a011b047f24d352396ec5a3ccc20d8a502c6515ae063b6f0a76b569f5b",
+  "frozen_class_bytes": 496,
+  "patch": {
+    "offset": 483,
+    "length": 3,
+    "changed_byte_offsets": [
+      483,
+      485
+    ],
+    "original_instruction": "invokestatic BoundaryEffects.value()I",
+    "patched_instruction": "sipush 9"
+  },
+  "frozen_fields": [
+    {
+      "name": "EARLY",
+      "attributes": []
+    },
+    {
+      "name": "LATE",
+      "attributes": []
+    }
+  ],
+  "frozen_original_runtime_exit": 0,
+  "frozen_original_runtime": "0|9",
+  "jarde": {
+    "decompile_exit": 0,
+    "javac_exit": 1,
+    "runtime_exit": null,
+    "runtime": null
+  },
+  "jadx": {
+    "decompile_exit": 0,
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "runtime": "9|9"
+  },
+  "manual_javac_constant_control": {
+    "explicitly_not_jarde_output": true,
+    "class_sha256": "6161696ccd62af30f9c8e4ef2eee6f3ecb8240de3531e9809733f59e7e4d83f1",
+    "runtime_exit": 0,
+    "runtime": "9|9",
+    "shows_ConstantValue": true,
+    "reader_inlines_to_9": true
+  }
+}

@@ -1,0 +1,13 @@
+array-first=4,calls=1,array=[3]
+tick-first=92,calls=1,array=[91]
+call-tick-array=1003,calls=1,array=[3]
+call-mutate-array=1091,calls=1,array=[91]
+read-after-effect=91,calls=1,array=[91]
+two-reads=94,calls=1,array=[91]
+wrapped-only=4,calls=1,array=[3]
+throw-array-first=IllegalStateException:boom,calls=1,array=[3]
+throw-tick-first=IllegalStateException:boom,calls=1,array=[91]
+throw-call=IllegalStateException:boom,calls=1,array=[3]
+null-plus-array=NullPointerException:Cannot read the array length because "<local2>" is null,calls=0,array=null
+null-tick-first=NullPointerException:Cannot read the array length because "<local2>" is null,calls=0,array=null
+null-call=NullPointerException:Cannot read the array length because "<local2>" is null,calls=0,array=null

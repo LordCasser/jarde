@@ -1,0 +1,46 @@
+// jarde: presentation of `ReturnSinks` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ReturnSinks extends java.lang.Object {
+    public int value;
+
+    public ReturnSinks() {
+        // @method <init>()V
+        // @declaration a constructor of `ReturnSinks`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public byte post() {
+        // @method post()B
+        // @declaration an instance method of `ReturnSinks`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.value++;
+    }
+
+    public byte pre() {
+        // @method pre()B
+        // @declaration an instance method of `ReturnSinks`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return ++this.value;
+    }
+
+    public static byte guarded(java.lang.Object arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `guarded(Ljava/lang/Object;I)B` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method guarded(Ljava/lang/Object;I)B
+        // @declaration a static method of `ReturnSinks`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 8 7
+        // the value at BCI 4 is presented as `int` and the member's own descriptor returns `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static byte choice(boolean arg0, int arg1, int arg2) {
+        // @method choice(ZII)B
+        // @declaration a static method of `ReturnSinks`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0) {
+        }
+        // @bytecode 9
+        // the value at BCI 9 is the entry state of stack depth 0, which no instruction produced
+    }
+}

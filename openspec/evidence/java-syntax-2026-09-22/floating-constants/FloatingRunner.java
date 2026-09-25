@@ -1,0 +1,29 @@
+public class FloatingRunner {public static void main(String[] args){
+  System.out.println("floatZero="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatZero())));
+  System.out.println("floatNegativeZero="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatNegativeZero())));
+  System.out.println("floatOne="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatOne())));
+  System.out.println("floatTwo="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatTwo())));
+  System.out.println("floatNegativeOne="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatNegativeOne())));
+  System.out.println("floatFraction="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatFraction())));
+  System.out.println("floatMinimum="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatMinimum())));
+  System.out.println("floatNormal="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatNormal())));
+  System.out.println("floatMaximum="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatMaximum())));
+  System.out.println("floatNan="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatNan())));
+  System.out.println("floatPositiveInfinity="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatPositiveInfinity())));
+  System.out.println("floatNegativeInfinity="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatNegativeInfinity())));
+  System.out.println("doubleZero="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleZero())));
+  System.out.println("doubleNegativeZero="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleNegativeZero())));
+  System.out.println("doubleOne="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleOne())));
+  System.out.println("doubleTwo="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleTwo())));
+  System.out.println("doubleNegativeOne="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleNegativeOne())));
+  System.out.println("doubleFraction="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleFraction())));
+  System.out.println("doubleMinimum="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleMinimum())));
+  System.out.println("doubleNormal="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleNormal())));
+  System.out.println("doubleMaximum="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleMaximum())));
+  System.out.println("doubleNan="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleNan())));
+  System.out.println("doublePositiveInfinity="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doublePositiveInfinity())));
+  System.out.println("doubleNegativeInfinity="+Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleNegativeInfinity())));
+  System.out.println("floatArgument="+FloatingConstants.floatArgument());
+  System.out.println("doubleArgument="+FloatingConstants.doubleArgument());
+  for(float x:new float[]{Float.NaN,-1.0f,-0.0f,0.0f,1.0f}) {System.out.println("nested="+Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.nested(x))));System.out.println("threshold="+FloatingConstants.threshold(x));}
+}}

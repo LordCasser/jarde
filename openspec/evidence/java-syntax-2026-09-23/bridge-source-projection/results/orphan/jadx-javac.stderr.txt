@@ -1,0 +1,6 @@
+<OUT>/orphan/jadx/OrphanRunner.java:11: 错误: 找不到符号
+        System.out.println(subject.get() + "|" + forwarded);
+                                  ^
+  符号:   方法 get()
+  位置: 类型为OrphanBridge的变量 subject
+1 个错误

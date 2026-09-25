@@ -1,0 +1,188 @@
+{
+  "java_classfile_target": 52,
+  "versions": {
+    "java": {
+      "command": [
+        "java",
+        "-version"
+      ],
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)",
+      "executable": "/usr/bin/java"
+    },
+    "javac": {
+      "command": [
+        "javac",
+        "-version"
+      ],
+      "exit_status": 0,
+      "stdout": "javac 23.0.1",
+      "stderr": "",
+      "executable": "/usr/bin/javac"
+    },
+    "jadx": {
+      "command": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "exit_status": 0,
+      "stdout": "1.5.6",
+      "stderr": "",
+      "executable": "/opt/homebrew/bin/jadx"
+    },
+    "jarde_cli": {
+      "command": [
+        "/tmp/jarde-intbool-root-target/debug/jarde-cli",
+        "--version"
+      ],
+      "exit_status": 0,
+      "stdout": "jarde-cli 0.1.0",
+      "stderr": "",
+      "executable": "/tmp/jarde-intbool-root-target/debug/jarde-cli"
+    }
+  },
+  "cli_sha256": "f99024d22e000d2e28cb1f8d95acc0880bdfea2445343f38b476d04b7d115273",
+  "fixtures": {
+    "RawBool": {
+      "class": "RawBool",
+      "classfile_major_version": 52,
+      "original": {
+        "path": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/original/RawBool.class",
+        "sha256": "e38d0e46a055d5183001d2e51ed329c2a0f121409f27ead257d34f6ab76317e3",
+        "bytes": 172
+      },
+      "patched": {
+        "path": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/patched/RawBool.class",
+        "sha256": "32286d138ace6a328a8c5ba7d0a0d66fadb4bf9dbbab79385e6dc3a01dcd6c2b",
+        "bytes": 172
+      },
+      "descriptor_edits": [
+        {
+          "from": "([III)I",
+          "to": "([ZII)Z",
+          "constant_pool_entries": 1
+        }
+      ],
+      "method": {
+        "name": "put",
+        "patched_descriptor": "([ZII)Z",
+        "access_flags": "0x0009",
+        "code_length": 8,
+        "original_code_hex": "2a1b1c4f2a1b2eac",
+        "array_opcode_edits": [
+          {
+            "offset_in_code": [
+              3
+            ],
+            "from": "0x4f",
+            "to": "0x54"
+          },
+          {
+            "offset_in_code": [
+              6
+            ],
+            "from": "0x2e",
+            "to": "0x33"
+          }
+        ]
+      },
+      "scope": "Only the stated method descriptor(s) and the sole iastore/iaload pair in put are changed."
+    },
+    "Order": {
+      "class": "Order",
+      "classfile_major_version": 52,
+      "original": {
+        "path": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/original/Order.class",
+        "sha256": "63dc18e93763ffbf9d6ce73a299a7d140023eb278dd2d430f6e47d208bb55ef0",
+        "bytes": 532
+      },
+      "patched": {
+        "path": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/patched/Order.class",
+        "sha256": "31d8fc3394c39cfe9a9e62da435af9245d2f26cd24e62e077e7310e1bf97d414",
+        "bytes": 532
+      },
+      "descriptor_edits": [
+        {
+          "from": "([I)[I",
+          "to": "([Z)[Z",
+          "constant_pool_entries": 1
+        },
+        {
+          "from": "([II)I",
+          "to": "([ZI)Z",
+          "constant_pool_entries": 1
+        }
+      ],
+      "method": {
+        "name": "put",
+        "patched_descriptor": "([ZI)Z",
+        "access_flags": "0x0009",
+        "code_length": 16,
+        "original_code_hex": "2ab80014b800181bb8001c4f2a032eac",
+        "array_opcode_edits": [
+          {
+            "offset_in_code": [
+              11
+            ],
+            "from": "0x4f",
+            "to": "0x54"
+          },
+          {
+            "offset_in_code": [
+              14
+            ],
+            "from": "0x2e",
+            "to": "0x33"
+          }
+        ]
+      },
+      "scope": "Only the stated method descriptor(s) and the sole iastore/iaload pair in put are changed."
+    }
+  },
+  "javap_logs": {
+    "original-RawBool": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/logs/javap-original-RawBool.json",
+    "patched-RawBool": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/logs/javap-patched-RawBool.json",
+    "original-Order": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/logs/javap-original-Order.json",
+    "patched-Order": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/logs/javap-patched-Order.json"
+  },
+  "stages": {
+    "RawBool": {
+      "jadx": {
+        "exit_status": 0,
+        "source": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/jadx/RawBool/sources/defpackage/RawBool.java",
+        "source_sha256": "a2c78853f4f9e485f76ebce01559ad428848ad958e3136bd9791edcb598e7790",
+        "javac_exit_status": 1,
+        "javac_log": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/logs/javac-jadx-RawBool.json"
+      },
+      "jarde": {
+        "exit_status": 0,
+        "log": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/logs/jarde-RawBool.json",
+        "stdout_sha256": "d5911427ac97c4b2aadfcbf2ca70d0a88fcacc1a17bf775a07c5dd319ec70652",
+        "stderr_sha256": "77044ba0c955da5d4c47aa04c3a95f39256349727de0192c5d2b58dc86fae2ba",
+        "bytecode_markers": 1
+      }
+    },
+    "Order": {
+      "jadx": {
+        "exit_status": 0,
+        "source": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/jadx/Order/sources/defpackage/Order.java",
+        "source_sha256": "ba64d98c8d2a93d22576b6d5b05e7c4f600fff4a447ceb359f9ab9b94edfc091",
+        "javac_exit_status": 1,
+        "javac_log": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/logs/javac-jadx-Order.json"
+      },
+      "jarde": {
+        "exit_status": 0,
+        "log": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/logs/jarde-Order.json",
+        "stdout_sha256": "940594c3feff44a15b19e3637cde8afbffbe4efb60e4284b9b56547888c45f6e",
+        "stderr_sha256": "a3ff3a0f1895340cd62b3b018e2c894f74635a477a8acf26acc5c123bfef1edb",
+        "bytecode_markers": 1
+      }
+    }
+  },
+  "jvm_logs": {
+    "RawBool": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/logs/jvm-RawBool.json",
+    "Order": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/logs/jvm-Order.json"
+  },
+  "all_outputs_are_under_caller_supplied_out": true
+}

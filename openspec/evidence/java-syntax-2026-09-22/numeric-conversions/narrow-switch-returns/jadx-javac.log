@@ -1,0 +1,20 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/jadx-input/NarrowSwitchReturns.java:12: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+                b = 130;
+                    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/jadx-input/NarrowSwitchReturns.java:15: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+                b = -129;
+                    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/jadx-input/NarrowSwitchReturns.java:25: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+                b = 65535;
+                    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/jadx-input/NarrowSwitchReturns.java:31: 错误: 不兼容的类型: 从byte转换到char可能会有损失
+        return b;
+               ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/jadx-input/NarrowSwitchReturns.java:52: 错误: 不兼容的类型: 从byte转换到char可能会有损失
+        return z ? (byte) 65535 : (byte) -2;
+                 ^
+5 个错误
+3 个警告

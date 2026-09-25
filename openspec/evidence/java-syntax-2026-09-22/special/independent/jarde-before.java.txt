@@ -1,0 +1,66 @@
+// jarde: presentation of `probe/DispatchAudit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package probe;
+
+public class DispatchAudit extends probe.ParentAudit implements probe.FaceAudit {
+    public DispatchAudit() {
+        // @method <init>()V
+        // @declaration a constructor of `probe.DispatchAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public int read() {
+        // @method read()I
+        // @declaration an instance method of `probe.DispatchAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.read() + 1;
+    }
+
+    public int faceRead() {
+        // @method faceRead()I
+        // @declaration an instance method of `probe.DispatchAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.read();
+    }
+
+    public void add(int arg1) {
+        // @method add(I)V
+        // @declaration an instance method of `probe.DispatchAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.add(arg1);
+        probe.ParentAudit.bump(100);
+        return;
+    }
+
+    public void faceTouch(int arg1) {
+        // @method faceTouch(I)V
+        // @declaration an instance method of `probe.DispatchAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.touch(arg1);
+        return;
+    }
+
+    public void evaluate() {
+        // @method evaluate()V
+        // @declaration an instance method of `probe.DispatchAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.add(probe.ParentAudit.argument());
+        return;
+    }
+
+    private int secret(int arg1) {
+        // @method secret(I)I
+        // @declaration an instance method of `probe.DispatchAudit`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1 + 10;
+    }
+
+    public int other(probe.DispatchAudit arg1, int arg2) {
+        // @method other(Lprobe/DispatchAudit;I)I
+        // @declaration an instance method of `probe.DispatchAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1.secret(arg2);
+    }
+}

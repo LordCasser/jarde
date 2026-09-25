@@ -44,26 +44,36 @@
 //! out, and the one a caller has to be able to rely on without reading diagnostics.
 
 use jarde_jvm::ir::{CompileStatus, Quality, Representation, SemanticValidation, SyntaxStatus};
-use jarde_jvm::method_ir::MethodIr;
+use jarde_jvm::method_ir::{MethodIr, Slot, SsaTable};
 use jarde_reader::budget::{Budget, BudgetDimension, UsageSnapshot};
 use jarde_reader::classfile::VerificationStatus;
-use jarde_reader::model::{Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason};
+use jarde_reader::model::{
+    Diagnostic, DiagnosticSeverity, ExecutionReport, PhysicalDefinitionId, PhysicalMethodId,
+    TerminationReason,
+};
 use serde::Serialize;
 
 use crate::accessor::AccessorRecord;
 use crate::artifact::{ArtifactBinding, ArtifactSubject, RecoveryArtifact};
-use crate::bridge::{self, BridgeRecord};
+use crate::ast::{AssignOp, ConstructorTarget, Expr, ExprKind, StmtKind, Type};
+use crate::bridge::{self, BridgeRecord, ClassSourceBridgeCandidate};
 use crate::build;
 use crate::concat::{self, ConcatRecord};
 use crate::declaration::{self, DeclarationRecord};
 use crate::decode::Operations;
-use crate::emit::{Emitted, emit, emit_source_map};
-use crate::enumswitch::{self, EnumSwitchRecord};
+use crate::emit::{
+    Emitted, emit, emit_class_initializer_value as emit_initializer_value, emit_source_map,
+};
+use crate::enumswitch::{self, ClassSourceEnumSwitchCandidate, EnumSwitchRecord};
 use crate::evidence::{
     EvidencePayload, EvidencePhase, EvidenceRefusal, Materialized, Publication, RecoveryEvidence,
     RecoveryEvidenceKind, RecoveryEvidenceRequest, SegmentPublication,
 };
-use crate::facts::{ClassMembers, RecoveryFacts};
+use crate::facts::{
+    ACC_ANNOTATION, ACC_INTERFACE, ClassMembers, FieldAccess, Operation, RecoveryFacts,
+};
+
+const ACC_ENUM: u16 = 0x4000;
 use crate::field::{self, FieldRecord};
 use crate::init::{self, InitRecord, NewRecord};
 use crate::lambda::LambdaRecord;
@@ -75,7 +85,7 @@ use crate::pass::{
 };
 use crate::region::{FallbackReason, Recovered, Region};
 use crate::reuse;
-use crate::source_map::SourceMap;
+use crate::source_map::{OriginSet, SourceMap};
 use crate::stop::StopReason;
 
 /// One recovery request: the payload of a P2 run, the facts that run did not publish, and the
@@ -99,6 +109,14 @@ pub struct RecoveryRequest<'a> {
     /// (P3 2.2). A caller that did not read the class's members states `None`, and the accessor rule
     /// then records the table it is missing rather than guessing from a call's name.
     pub members: Option<&'a ClassMembers>,
+    /// Target definitions proved from the class-source request's selected physical environment.
+    /// Method-only recovery has none. `new@1` verifies each call site separately; this fact alone
+    /// carries no conclusion about any particular allocation.
+    pub member_inner_targets: &'a [ProvedMemberInnerTarget],
+    /// Exact interface-special targets whose Java source qualifier and default binding were proved
+    /// by the facade's selected-definition reads. Direct recovery has no such environment and
+    /// therefore leaves interface-qualified `super` calls refused.
+    pub interface_super_calls: &'a [ProvedInterfaceSuperCall],
     /// Which **optional evidence** this request wants delivered (change
     /// `add-demand-driven-core-results`, D1): the categories of detail records, and the driver BCI
     /// range they are restricted to. [`RecoveryEvidenceRequest::essential`] — the default
@@ -117,6 +135,559 @@ pub struct RecoveryRequest<'a> {
     pub subject: Option<ArtifactSubject>,
 }
 
+/// Narrow, non-serialized physical target fact supplied by class-source assembly. It is a target
+/// declaration proof only; the allocation, outer value and effect order remain method-site work.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProvedMemberInnerTarget {
+    pub definition: PhysicalDefinitionId,
+    pub owner: String,
+    pub outer: String,
+    pub simple_name: String,
+    pub constructor_descriptor: String,
+    pub capture_field: String,
+    /// Class and constructor signatures proved the source-level generic member tail.
+    pub generic_diamond: bool,
+    /// The selected, bidirectionally proved source type path from its top-level enclosing class to
+    /// this member. The binary names stay attached so a consumer never splits `$` on its own.
+    pub source_type_path: Vec<ProvedMemberInnerSourceSegment>,
+}
+
+/// One exact `invokespecial InterfaceMethodref` target proved writable as `I.super.m(...)`.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProvedInterfaceSuperCall {
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
+}
+
+/// One selected definition in a source type path proved by the class-source adapter.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProvedMemberInnerSourceSegment {
+    pub definition: PhysicalDefinitionId,
+    pub binary_name: String,
+    /// Fully-qualified Java source name through this segment, for example `matrix.Outer.A`.
+    pub source_name: String,
+    /// The class Signature's proven type parameter count; a raw use has no arguments, while a
+    /// parameterized use must provide exactly this many.
+    pub type_parameter_count: usize,
+    /// The selected enclosing binary name, when this is a member type.
+    pub enclosing_binary_name: Option<String>,
+    /// Whether the member relation is static. A non-static generic member requires its enclosing
+    /// type segment to remain explicit in a Signature path.
+    pub is_static: bool,
+}
+
+/// One field write retained beside a `<clinit>` recovery for the class-source assembler.
+///
+/// This is a private-in-practice handoff: it is returned only by
+/// [`recover_for_class_source`], is not part of [`RecoveryReport`] or its serialized schema, and is
+/// derived from the same AST and field plan that produce that report. The public visibility is
+/// required because `jarde` is a separate adapter crate.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassInitializerFieldWrite {
+    /// Position among the recovered top-level `<clinit>` statements.
+    pub order: usize,
+    /// The exact field instruction this statement was built from.
+    pub bci: u32,
+    /// The constant-pool owner, in internal form.
+    pub owner: String,
+    /// The constant-pool field name.
+    pub name: String,
+    /// The member name the recovery AST wrote for the assignment.
+    pub spelled_name: String,
+    /// The constant-pool field descriptor.
+    pub descriptor: String,
+    /// Whether this write names a static field.
+    pub is_static: bool,
+    /// Whether the emitted assignment carries a receiver expression.
+    pub has_receiver: bool,
+    /// The assignment operator the AST states.
+    pub op: crate::ast::AssignOp,
+    /// The statement's original source anchors.
+    pub source: OriginSet,
+    /// The right-hand side as the recovery AST built it, with its own source anchors.
+    pub value: crate::ast::Expr,
+    /// Every static field read nested in the RHS, each joined to this run's `field@1` claim.
+    /// `None` means a field-shaped AST node had no exact read claim in this method's field plan.
+    pub field_reads: Option<Vec<ClassInitializerFieldRead>>,
+}
+
+/// One static field read inside a class-initializer write's RHS, retained from `field@1`.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassInitializerFieldRead {
+    /// The field instruction's BCI in this `<clinit>` body.
+    pub bci: u32,
+    /// The constant-pool owner, in internal form.
+    pub owner: String,
+    /// The constant-pool field name.
+    pub name: String,
+    /// The constant-pool field descriptor.
+    pub descriptor: String,
+    /// Whether this read names a static field.
+    pub is_static: bool,
+}
+
+/// What occupies one top-level position in a `<clinit>` candidate sequence.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ClassInitializerStep {
+    /// A statement whose source is a field write proven by `field@1`.
+    FieldWrite(Box<ClassInitializerFieldWrite>),
+    /// A statement the later all-or-nothing projection must account for separately.
+    Other {
+        /// Position among the recovered top-level statements.
+        order: usize,
+        /// The statement's primary bytecode index.
+        bci: u32,
+        /// Its AST-level class; fallback text itself is never consulted.
+        kind: ClassInitializerStatementKind,
+    },
+}
+
+/// The AST statement classes relevant to an all-or-nothing class initializer projection.
+#[doc(hidden)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ClassInitializerStatementKind {
+    /// A local declaration.
+    Declaration,
+    /// An assignment to a local.
+    LocalAssignment,
+    /// An expression statement, commonly a call.
+    Expression,
+    /// A field-shaped AST statement without a matching claimed write at this BCI.
+    UnattributedFieldWrite,
+    /// An array element write.
+    ArrayWrite,
+    /// A constructor invocation.
+    ConstructorCall,
+    /// A return statement.
+    Return,
+    /// A throw statement.
+    Throw,
+    /// A conditional statement.
+    Conditional,
+    /// A loop statement.
+    Loop,
+    /// A switch statement.
+    Switch,
+    /// A try statement.
+    Try,
+    /// A synchronized statement.
+    Synchronized,
+    /// A quoted bytecode fallback.
+    Fallback,
+}
+
+/// The ordered, bounded AST candidates from one `<clinit>()V` recovery.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassInitializerCandidates {
+    /// The physical identity of the member this sequence belongs to, when its read stated it.
+    pub member: Option<jarde_reader::model::PhysicalMethodId>,
+    /// Whether the same Code facts declare at least one exception-table row. Missing Code facts
+    /// conservatively make this true so the class-level proof cannot mistake unknown for none.
+    pub has_exception_handlers: bool,
+    /// Every top-level statement in original recovery order.
+    pub steps: Vec<ClassInitializerStep>,
+}
+
+/// The minimal ordered AST handoff for one enum constructor recovered in this class-source run.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassEnumConstructorCandidates {
+    pub member: Option<jarde_reader::model::PhysicalMethodId>,
+    pub complete: bool,
+    pub has_exception_handlers: bool,
+    pub steps: Vec<ClassEnumConstructorStep>,
+}
+
+/// One top-level constructor statement and the same-run AST shape the bytecode built.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassEnumConstructorStep {
+    pub order: usize,
+    pub bci: u32,
+    pub source: OriginSet,
+    pub kind: ClassEnumConstructorStepKind,
+}
+
+/// Only the constructor statement shapes a later bounded proof can consume are retained as AST.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ClassEnumConstructorStepKind {
+    ConstructorCall {
+        target: ConstructorTarget,
+        args: Vec<Expr>,
+    },
+    Expression(Expr),
+    FieldWrite {
+        field: Option<ClassEnumConstructorField>,
+        spelled_name: String,
+        receiver: Option<Expr>,
+        op: AssignOp,
+        value: Expr,
+    },
+    Return {
+        value: Option<Expr>,
+    },
+    Other(ClassInitializerStatementKind),
+}
+
+/// The physical member identity claimed by `field@1` for one constructor store.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassEnumConstructorField {
+    pub bci: u32,
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
+    pub is_static: bool,
+}
+
+/// A class-source recovery result with its non-serialized same-run sidecars.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceRecovery {
+    /// The ordinary recovery report, unchanged from [`recover`].
+    pub report: RecoveryReport,
+    /// The same-run `<clinit>` AST candidates, when the body was produced.
+    pub initializer: Option<ClassInitializerCandidates>,
+    /// The same-run AST candidates for an enum constructor, when this is a produced body.
+    pub enum_constructor: Option<ClassEnumConstructorCandidates>,
+    /// The same-run `bridge@1` verdict, independent of the optional `RuleDetails` record.
+    pub bridge: Option<ClassSourceBridgeCandidate>,
+    /// Same-run enum-table reads consumed by integer switches, for bounded class-level proof.
+    pub enum_switches: Vec<ClassSourceEnumSwitchCandidate>,
+    /// Same-run Fieldref operations of this physical method, used to reject mutable aliases of a
+    /// selected synthetic table in visible class-source members.
+    pub enum_switch_field_uses: Vec<ClassSourceEnumSwitchFieldUse>,
+    /// A bounded same-run AST/SSA proof for a direct parameter return.
+    pub generic_return: Option<GenericReturnCandidate>,
+    /// A bounded same-run AST/SSA proof for an empty constructor that calls Object().
+    pub generic_constructor: Option<GenericConstructorCandidate>,
+    /// Every visible allocation instruction in the recovered physical method. `None` means this
+    /// run stopped before retaining the scan or had no physical method identity; `complete=false`
+    /// means raw `new` opcode facts did not all resolve through the existing decoder.
+    pub anonymous_allocations: Option<AnonymousAllocationScan>,
+}
+
+/// The complete same-run census, with an explicit marker for allocation opcodes not decoded as
+/// `Operation::Allocate` by the existing decoder.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AnonymousAllocationScan {
+    pub complete: bool,
+    pub allocations: Vec<AnonymousAllocationCandidate>,
+}
+
+/// One allocation candidate carried to bounded class-source proofs.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AnonymousAllocationCandidate {
+    /// The physical method whose bytecode contains this allocation.
+    pub member: PhysicalMethodId,
+    /// The allocation instruction's BCI.
+    pub head_bci: u32,
+    /// The target class in internal form, from the `new` instruction's pool entry.
+    pub class: String,
+    /// Whether the same-run `new@1` plan verified the allocation as a complete construction site.
+    /// False includes rejected shapes and allocations owned by another rule.
+    pub verified: bool,
+    /// Constructor invocation BCI for verified sites.
+    pub constructor_bci: Option<u32>,
+    /// Ordered producer BCIs of the constructor's arguments for verified sites.
+    pub argument_bcis: Vec<u32>,
+}
+
+/// Parameter slots, rather than rendered text, identify the values in this proof.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct GenericReturnCandidate {
+    pub parameters: Vec<(u16, String)>,
+    pub value: GenericReturnValue,
+}
+
+/// Parameter slots, rather than rendered text, identify the values this constructor leaves unused.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct GenericConstructorCandidate {
+    pub parameters: Vec<(u16, String)>,
+    /// The `init@1` record derived from the same run's prologue decision.
+    pub init: InitRecord,
+}
+
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum GenericReturnValue {
+    /// The body is exactly one effect-free `return;` instruction.
+    EmptyVoid,
+    Parameter(u16),
+    Conditional {
+        test: u16,
+        when_true: u16,
+        when_false: u16,
+    },
+    /// The method returns the same-run verified member creation, whose enclosing value is a
+    /// parameter slot. The complete selected target is carried to class-source projection.
+    MemberCreation {
+        target: Box<ProvedMemberInnerTarget>,
+        qualifier_slot: u16,
+    },
+}
+
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceEnumSwitchFieldUse {
+    pub member: Option<PhysicalMethodId>,
+    pub bci: u32,
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
+    pub is_static: bool,
+    pub write: bool,
+}
+
+/// Emits one proven class-initializer RHS as a field initializer fragment for the class-source
+/// adapter. This is a narrow handoff to the existing expression formatter, not a second printer.
+#[doc(hidden)]
+pub fn emit_class_initializer_value(
+    value: &crate::ast::Expr,
+    member: &PhysicalMethodId,
+    budget: &mut Budget,
+) -> Result<String, StopReason> {
+    emit_initializer_value(value, member, budget)
+}
+
+/// Re-emits the two user statements of a proved enum terminal constructor after mapping the
+/// physical enum parameter slot back to the sole source parameter `arg0`.
+///
+/// The caller has already proved the corresponding Code locals and Fieldref/Methodref identities;
+/// this handoff only binds the captured AST origins to the fixed statement sequence and delegates
+/// spelling to the existing statement emitter.
+#[doc(hidden)]
+pub fn emit_class_enum_constructor_body(
+    candidate: &ClassEnumConstructorCandidates,
+    member: &PhysicalMethodId,
+    budget: &mut Budget,
+) -> Result<Option<String>, StopReason> {
+    use crate::ast::{AssignOp, ConstructorTarget, ExprKind, Stmt, StmtKind};
+    use crate::report::ClassEnumConstructorStepKind as StepKind;
+
+    if candidate.member.as_ref() != Some(member)
+        || !candidate.complete
+        || candidate.has_exception_handlers
+        || candidate.steps.len() != 4
+    {
+        return Ok(None);
+    }
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        4,
+        Some(3),
+    )?;
+    let [super_step, helper_step, field_step, return_step] = candidate.steps.as_slice() else {
+        return Ok(None);
+    };
+    if [super_step, helper_step, field_step, return_step]
+        .iter()
+        .zip([3, 7, 12, 15])
+        .enumerate()
+        .any(|(order, (step, bci))| {
+            step.order != order || step.bci != bci || step.source.primary().bci() != bci
+        })
+    {
+        return Ok(None);
+    }
+    if !matches!(
+        &super_step.kind,
+        StepKind::ConstructorCall {
+            target: ConstructorTarget::Super,
+            args
+        } if args.len() == 2
+    ) || !matches!(&return_step.kind, StepKind::Return { value: None })
+    {
+        return Ok(None);
+    }
+    let StepKind::Expression(helper_expression) = &helper_step.kind else {
+        return Ok(None);
+    };
+    let mut helper_expression = helper_expression.clone();
+    let ExprKind::Call { args, .. } = &mut helper_expression.kind else {
+        return Ok(None);
+    };
+    let [helper_argument] = args.as_mut_slice() else {
+        return Ok(None);
+    };
+    if helper_expression.origin.primary().bci() != 7 || helper_argument.origin.primary().bci() != 6
+    {
+        return Ok(None);
+    }
+    let ExprKind::Local(local) = &mut helper_argument.kind else {
+        return Ok(None);
+    };
+    *local = "arg0".to_owned();
+
+    let StepKind::FieldWrite {
+        field: Some(field),
+        spelled_name,
+        receiver: Some(receiver),
+        op: AssignOp::Assign,
+        value,
+    } = &field_step.kind
+    else {
+        return Ok(None);
+    };
+    if field.bci != 12
+        || field.is_static
+        || receiver.origin.primary().bci() != 10
+        || value.origin.primary().bci() != 11
+    {
+        return Ok(None);
+    }
+    let mut receiver = receiver.clone();
+    let ExprKind::Local(local) = &mut receiver.kind else {
+        return Ok(None);
+    };
+    *local = "this".to_owned();
+
+    let mut value = value.clone();
+    let ExprKind::Local(local) = &mut value.kind else {
+        return Ok(None);
+    };
+    *local = "arg0".to_owned();
+
+    let statements = [
+        Stmt::new(
+            StmtKind::Expr(helper_expression),
+            helper_step.source.clone(),
+        ),
+        Stmt::new(
+            StmtKind::FieldAssign {
+                receiver: Some(receiver),
+                name: spelled_name.clone(),
+                op: AssignOp::Assign,
+                value,
+            },
+            field_step.source.clone(),
+        ),
+    ];
+    crate::emit::emit_class_enum_constructor_statements(&statements, member, budget).map(Some)
+}
+
+/// Re-emits one same-run method AST with a proved enum selector and constant labels.
+#[doc(hidden)]
+pub fn emit_class_source_enum_switch(
+    candidate: &ClassSourceEnumSwitchCandidate,
+    labels: &std::collections::BTreeMap<i64, String>,
+    budget: &mut Budget,
+) -> Result<Option<String>, crate::stop::StopReason> {
+    let Some(source) = &candidate.projection else {
+        return Ok(None);
+    };
+    let mut program = source.program.clone();
+    let mut changed = false;
+    fn visit(
+        statements: &mut [crate::ast::Stmt],
+        candidate: &ClassSourceEnumSwitchCandidate,
+        labels: &std::collections::BTreeMap<i64, String>,
+        changed: &mut bool,
+    ) -> bool {
+        use crate::ast::{ExprKind, StmtKind};
+        for statement in statements {
+            match &mut statement.kind {
+                StmtKind::If {
+                    then_body,
+                    else_body,
+                    ..
+                } => {
+                    if visit(then_body, candidate, labels, changed)
+                        || visit(else_body, candidate, labels, changed)
+                    {
+                        return true;
+                    }
+                }
+                StmtKind::While { body, .. }
+                | StmtKind::For { body, .. }
+                | StmtKind::DoWhile { body, .. }
+                | StmtKind::Synchronized { body, .. } => {
+                    if visit(body, candidate, labels, changed) {
+                        return true;
+                    }
+                }
+                StmtKind::Try {
+                    body, finally_body, ..
+                } => {
+                    if visit(body, candidate, labels, changed)
+                        || finally_body
+                            .as_mut()
+                            .is_some_and(|body| visit(body, candidate, labels, changed))
+                    {
+                        return true;
+                    }
+                }
+                StmtKind::Switch { value, arms } => {
+                    if statement.origin.primary().bci() == candidate.switch_bci {
+                        let receiver = match &value.kind {
+                            ExprKind::Index { index, .. } => match &index.kind {
+                                ExprKind::Call {
+                                    receiver: Some(receiver),
+                                    name,
+                                    args,
+                                } if name == "ordinal" && args.is_empty() => {
+                                    Some((**receiver).clone())
+                                }
+                                _ => None,
+                            },
+                            _ => None,
+                        };
+                        let Some(receiver) = receiver else {
+                            return true;
+                        };
+                        for arm in arms {
+                            let mut projected = Vec::with_capacity(arm.keys.len());
+                            for key in &arm.keys {
+                                let Some(label) = labels.get(key) else {
+                                    return true;
+                                };
+                                projected.push(label.clone());
+                            }
+                            arm.labels = Some(crate::ast::SwitchLabels::Enum(projected));
+                        }
+                        *value = receiver;
+                        *changed = true;
+                        return true;
+                    }
+                    for arm in arms {
+                        if visit(&mut arm.body, candidate, labels, changed) {
+                            return true;
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+        false
+    }
+    visit(&mut program.stmts, candidate, labels, &mut changed);
+    if !changed {
+        return Ok(None);
+    }
+    let emitted = emit(
+        &program.stmts,
+        &source.facts,
+        source.declaration.as_ref(),
+        source.member.as_ref(),
+        budget,
+    )?;
+    Ok(Some(emitted.text))
+}
+
 impl<'a> RecoveryRequest<'a> {
     /// One request over one payload, one fact set and one profile, with no member table.
     ///
@@ -129,6 +700,8 @@ impl<'a> RecoveryRequest<'a> {
             facts,
             profile,
             members: None,
+            member_inner_targets: &[],
+            interface_super_calls: &[],
             evidence: RecoveryEvidenceRequest::essential(),
             subject: None,
         }
@@ -138,6 +711,18 @@ impl<'a> RecoveryRequest<'a> {
     /// is decided from (P3 2.2, A12).
     pub fn with_members(mut self, members: &'a ClassMembers) -> Self {
         self.members = Some(members);
+        self
+    }
+
+    /// Supply only definitions whose target-side relation and constructor prologue were proved.
+    pub fn with_member_inner_targets(mut self, targets: &'a [ProvedMemberInnerTarget]) -> Self {
+        self.member_inner_targets = targets;
+        self
+    }
+
+    /// Supply only interface-special targets proved against this request's selected environment.
+    pub fn with_interface_super_calls(mut self, calls: &'a [ProvedInterfaceSuperCall]) -> Self {
+        self.interface_super_calls = calls;
         self
     }
 
@@ -379,6 +964,579 @@ impl RecoveryReport {
 /// `AnalysisSteps`, the text to `OutputBytes`. Every charge happens before the work it pays for, so a
 /// refusal leaves no work half done — see [`crate::stop`].
 pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryReport {
+    recover_inner(
+        request, budget, None, None, None, None, None, None, None, None,
+    )
+}
+
+/// Capture only the body shape whose generic return type follows directly from unchanged
+/// parameter slots. Every local read is checked against its own SSA load; a write to any
+/// parameter slot makes the whole candidate unavailable.
+fn generic_return_candidate(
+    program: &build::Program,
+    names: &NameTable,
+    ssa: &SsaTable,
+    operations: &Operations,
+    sites: &init::Sites,
+    request: &RecoveryRequest<'_>,
+    budget: &mut Budget,
+) -> Result<Option<GenericReturnCandidate>, StopReason> {
+    let Some(code) = request.ir.code() else {
+        return Ok(None);
+    };
+    let parameter_types = request.facts.method().parameter_types();
+    crate::stop::poll(budget, None)?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(program.stmts.len())
+            .unwrap_or(u64::MAX)
+            .saturating_add(1),
+        None,
+    )?;
+    if program.ragged || program.stmts.len() != 1 {
+        return Ok(None);
+    }
+    if matches!(program.stmts[0].kind, StmtKind::Return { value: None }) {
+        if program.statements != 1
+            || code.stopped_at.is_some()
+            || code.exception_handler_count != 0
+            || !code.exception_handlers.is_empty()
+            || code.instructions.len() != 1
+            || code.instructions[0].opcode != 0xb1
+            || ssa.blocks().len() != 1
+            || !ssa.phis().is_empty()
+            || ssa.blocks()[0].instructions().len() != 1
+        {
+            return Ok(None);
+        }
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            2,
+            Some(code.instructions[0].bci),
+        )?;
+        crate::stop::poll(budget, Some(code.instructions[0].bci))?;
+        let instruction = &ssa.blocks()[0].instructions()[0];
+        let mut body_operations = operations.iter();
+        let Some((operation_bci, Operation::Return)) = body_operations.next() else {
+            return Ok(None);
+        };
+        let effects = ssa.effects().instructions();
+        if body_operations.next().is_some()
+            || !parameter_types.is_empty()
+            || *operation_bci != instruction.bci()
+            || instruction.bci() != code.instructions[0].bci
+            || instruction.opcode() != 0xb1
+            || !instruction.reads().is_empty()
+            || !instruction.writes().is_empty()
+            || program.stmts[0].origin.primary().bci() != instruction.bci()
+            || !matches!(effects, [effect]
+                if effect.bci() == instruction.bci()
+                    && effect.opcode() == 0xb1
+                    && effect.locals_read().is_empty()
+                    && effect.locals_written().is_empty()
+                    && !effect.may_throw()
+                    && effect.handlers().is_empty())
+        {
+            return Ok(None);
+        }
+        return Ok(Some(GenericReturnCandidate {
+            parameters: Vec::new(),
+            value: GenericReturnValue::EmptyVoid,
+        }));
+    }
+    let StmtKind::Return { value: Some(value) } = &program.stmts[0].kind else {
+        return Ok(None);
+    };
+    let mut parameters = Vec::new();
+    for slot in parameter_types.keys() {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            None,
+        )?;
+        let Some(name) = names.whole(*slot) else {
+            return Ok(None);
+        };
+        parameters.push((*slot, name.text().to_owned()));
+    }
+    let mut local_reads = std::collections::BTreeMap::new();
+    let mut branch_bcis = std::collections::BTreeSet::new();
+    for block in ssa.blocks() {
+        for instruction in block.instructions() {
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(instruction.bci()),
+            )?;
+            crate::stop::poll(budget, Some(instruction.bci()))?;
+            if instruction.writes().iter().any(|(slot, _)| matches!(slot, Slot::Local(index) if parameter_types.contains_key(index))) {
+                return Ok(None);
+            }
+            if matches!(instruction.opcode(), 0x99..=0xa6 | 0xc6..=0xc7) {
+                branch_bcis.insert(instruction.bci());
+            }
+            if matches!(instruction.opcode(), 0x15..=0x2d) {
+                let mut reads = instruction
+                    .reads()
+                    .iter()
+                    .filter_map(|(slot, _)| match slot {
+                        Slot::Local(index) => Some(*index),
+                        Slot::Stack(_) => None,
+                    });
+                if let Some(slot) = reads.next()
+                    && reads.next().is_none()
+                    && local_reads
+                        .insert(instruction.bci(), slot)
+                        .is_some_and(|old| old != slot)
+                {
+                    return Ok(None);
+                }
+            }
+        }
+    }
+    let local = |expr: &Expr, allow_branch_anchor: bool| -> Option<u16> {
+        let ExprKind::Local(name) = &expr.kind else {
+            return None;
+        };
+        if (!allow_branch_anchor && !expr.origin.derived().is_empty())
+            || expr.origin.primary().provenance() != crate::source_map::Provenance::Direct
+            || (allow_branch_anchor
+                && expr
+                    .origin
+                    .derived()
+                    .iter()
+                    .any(|anchor| !branch_bcis.contains(&anchor.bci())))
+        {
+            return None;
+        }
+        let (slot, _) = parameters
+            .iter()
+            .find(|(_, parameter_name)| parameter_name == name)?;
+        let bci = expr.origin.primary().bci();
+        if local_reads.get(&bci) != Some(slot) {
+            return None;
+        }
+        Some(*slot)
+    };
+    let member_creation = || -> Option<(ProvedMemberInnerTarget, u16)> {
+        if !branch_bcis.is_empty()
+            || !code.exception_handlers.is_empty()
+            || code.exception_handler_count != 0
+            || ssa.blocks().len() != 1
+            || !ssa.phis().is_empty()
+            || code.stopped_at.is_some()
+            || program.statements != 1
+            || code.instructions.last().is_none_or(|instruction| {
+                instruction.opcode != 0xb0
+                    || instruction.bci != program.stmts[0].origin.primary().bci()
+            })
+        {
+            return None;
+        }
+        let ExprKind::New {
+            qualifier: Some(qualifier),
+            member_name: Some(member_name),
+            diamond,
+            ..
+        } = &value.kind
+        else {
+            return None;
+        };
+        let qualifier_slot = local(qualifier, false)?;
+        let qualifier_type = parameter_types.get(&qualifier_slot)?;
+        let mut anchors = std::collections::BTreeSet::new();
+        anchors.extend(program.stmts[0].origin.bcis());
+        collect_expression_anchors(value, &mut anchors);
+        // A source-level return candidate may only replace a complete same-run body. Every
+        // physical instruction must have an AST anchor; a NOP is the only instruction whose
+        // absence from Java text has no effect.
+        if code
+            .instructions
+            .iter()
+            .any(|instruction| instruction.opcode != 0x00 && !anchors.contains(&instruction.bci))
+        {
+            return None;
+        }
+        let site = value
+            .origin
+            .derived()
+            .iter()
+            .filter_map(|origin| sites.site_at_head(origin.bci()))
+            .find(|site| {
+                site.constructor == value.origin.primary().bci()
+                    && site.member_inner.as_ref().is_some_and(|member| {
+                        member.qualifier == qualifier.origin.primary().bci()
+                            && member.simple_name == *member_name
+                            && member.generic_diamond == *diamond
+                    })
+            })?;
+        let selected = request.member_inner_targets.iter().find(|target| {
+            target.owner == site.class
+                && target.simple_name == *member_name
+                && target.outer
+                    == site
+                        .member_inner
+                        .as_ref()
+                        .map_or("", |member| member.outer.as_str())
+                && target.source_type_path.iter().any(|segment| {
+                    segment.binary_name == target.outer
+                        && qualifier_type == &Type::Reference(segment.binary_name.replace('/', "."))
+                })
+        })?;
+        Some((selected.clone(), qualifier_slot))
+    };
+    let value = match &value.kind {
+        ExprKind::Local(_) => GenericReturnValue::Parameter(match local(value, false) {
+            Some(slot) => slot,
+            None => return Ok(None),
+        }),
+        ExprKind::Conditional {
+            test,
+            when_true,
+            when_false,
+        } => {
+            let (Some(test), Some(when_true), Some(when_false)) = (
+                local(test, true),
+                local(when_true, false),
+                local(when_false, false),
+            ) else {
+                return Ok(None);
+            };
+            if parameter_types.get(&test) != Some(&Type::Boolean) {
+                return Ok(None);
+            }
+            GenericReturnValue::Conditional {
+                test,
+                when_true,
+                when_false,
+            }
+        }
+        ExprKind::New { .. } => match member_creation() {
+            Some((target, qualifier_slot)) => GenericReturnValue::MemberCreation {
+                target: Box::new(target),
+                qualifier_slot,
+            },
+            None => return Ok(None),
+        },
+        _ => return Ok(None),
+    };
+    Ok(Some(GenericReturnCandidate { parameters, value }))
+}
+
+/// Retain every bytecode origin represented by one complete return expression. The member-return
+/// candidate compares this set with the method's instruction table before it can affect a header.
+fn collect_expression_anchors(expr: &Expr, anchors: &mut std::collections::BTreeSet<u32>) {
+    anchors.extend(expr.origin.bcis());
+    match &expr.kind {
+        ExprKind::InstanceOf { value, .. }
+        | ExprKind::Field {
+            receiver: value, ..
+        }
+        | ExprKind::PostIncrement { target: value }
+        | ExprKind::ArrayLength { array: value }
+        | ExprKind::Cast { value, .. }
+        | ExprKind::Not { value }
+        | ExprKind::Neg { value } => collect_expression_anchors(value, anchors),
+        ExprKind::Call { receiver, args, .. } => {
+            if let Some(receiver) = receiver {
+                collect_expression_anchors(receiver, anchors);
+            }
+            for arg in args {
+                collect_expression_anchors(arg, anchors);
+            }
+        }
+        ExprKind::New {
+            qualifier, args, ..
+        } => {
+            if let Some(qualifier) = qualifier {
+                collect_expression_anchors(qualifier, anchors);
+            }
+            for arg in args {
+                collect_expression_anchors(arg, anchors);
+            }
+        }
+        ExprKind::Lambda { body, .. } => collect_expression_anchors(body, anchors),
+        ExprKind::MethodReference { qualifier, .. } => {
+            collect_expression_anchors(qualifier, anchors)
+        }
+        ExprKind::Index { array, index }
+        | ExprKind::Binary {
+            left: array,
+            right: index,
+            ..
+        } => {
+            collect_expression_anchors(array, anchors);
+            collect_expression_anchors(index, anchors);
+        }
+        ExprKind::NewArray {
+            lengths,
+            initializers,
+            ..
+        } => {
+            for value in lengths {
+                collect_expression_anchors(value, anchors);
+            }
+            if let Some(values) = initializers {
+                for value in values {
+                    collect_expression_anchors(value, anchors);
+                }
+            }
+        }
+        ExprKind::Conditional {
+            test,
+            when_true,
+            when_false,
+        } => {
+            collect_expression_anchors(test, anchors);
+            collect_expression_anchors(when_true, anchors);
+            collect_expression_anchors(when_false, anchors);
+        }
+        ExprKind::Concat { parts } => {
+            for part in parts {
+                collect_expression_anchors(&part.value, anchors);
+            }
+        }
+        ExprKind::Local(_)
+        | ExprKind::Integer(_)
+        | ExprKind::Boolean(_)
+        | ExprKind::Long(_)
+        | ExprKind::Str(_)
+        | ExprKind::Null
+        | ExprKind::ClassLiteral { .. }
+        | ExprKind::Path(_)
+        | ExprKind::Super { .. } => {}
+    }
+}
+
+/// Capture only the constructor body whose complete AST and SSA state no work beyond `Object()`.
+/// The prologue is the decision from which the selected `InitRecord` is materialized; carrying its
+/// BCI here makes this sidecar independent of the caller's evidence selection.
+fn generic_constructor_candidate(
+    program: &build::Program,
+    names: &NameTable,
+    ssa: &SsaTable,
+    operations: &Operations,
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    prologues: &init::Prologues,
+    parameter_types: &std::collections::BTreeMap<u16, Type>,
+    budget: &mut Budget,
+) -> Result<Option<GenericConstructorCandidate>, StopReason> {
+    crate::stop::poll(budget, None)?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(program.stmts.len())
+            .unwrap_or(u64::MAX)
+            .saturating_add(1),
+        None,
+    )?;
+    if program.ragged
+        || program.stmts.len() != 2
+        || program.statements != 2
+        || code.stopped_at.is_some()
+        || code.exception_handler_count != 0
+        || !code.exception_handlers.is_empty()
+        || code.instructions.len() != 3
+        || ssa.blocks().len() != 1
+        || !ssa.phis().is_empty()
+    {
+        return Ok(None);
+    }
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        9,
+        None,
+    )?;
+    if !matches!(
+        program.stmts[0].kind,
+        StmtKind::ConstructorCall {
+            target: ConstructorTarget::Super,
+            ref args,
+        } if args.is_empty()
+    ) || !matches!(program.stmts[1].kind, StmtKind::Return { value: None })
+    {
+        return Ok(None);
+    }
+
+    let init = prologues.record();
+    let Some(init_bci) = init.bci else {
+        return Ok(None);
+    };
+    if !init.presented
+        || init.target != Some(ConstructorTarget::Super)
+        || init.class.as_deref() != Some("java/lang/Object")
+        || init.declared.is_none()
+        || init_bci != program.stmts[0].origin.primary().bci()
+    {
+        return Ok(None);
+    }
+    let Some(Operation::Invoke(target)) = operations.get(init_bci) else {
+        return Ok(None);
+    };
+    if target.kind() != crate::facts::InvokeKind::Special
+        || target.owner() != "java/lang/Object"
+        || target.name() != "<init>"
+        || target.descriptor() != "()V"
+        || target.is_interface_reference()
+    {
+        return Ok(None);
+    }
+
+    let expected_opcodes = [0x2a, 0xb7, 0xb1];
+    let block = &ssa.blocks()[0];
+    if block.instructions().len() != expected_opcodes.len()
+        || block
+            .instructions()
+            .iter()
+            .zip(expected_opcodes)
+            .any(|(instruction, expected)| instruction.opcode() != expected)
+        || code
+            .instructions
+            .iter()
+            .zip(expected_opcodes)
+            .any(|(instruction, expected)| instruction.opcode != expected)
+        || operations.iter().count() != expected_opcodes.len()
+    {
+        return Ok(None);
+    }
+    let effects = ssa.effects().instructions();
+    if effects.len() != expected_opcodes.len()
+        || effects
+            .iter()
+            .zip(expected_opcodes.into_iter().zip([false, true, false]))
+            .any(|(effect, (expected, may_throw))| {
+                effect.opcode() != expected
+                    || !effect.handlers().is_empty()
+                    || effect.may_throw() != may_throw
+            })
+    {
+        return Ok(None);
+    }
+    let instructions = block.instructions();
+    let [(Slot::Stack(0), receiver)] = instructions[0].writes() else {
+        return Ok(None);
+    };
+    if !matches!(instructions[0].reads(), [(Slot::Local(0), _)])
+        || !matches!(instructions[1].reads(), [(Slot::Stack(0), value)] if value == receiver)
+        || !matches!(instructions[1].writes(), [(Slot::Local(0), _)])
+        || !instructions[2].reads().is_empty()
+        || !instructions[2].writes().is_empty()
+    {
+        return Ok(None);
+    }
+
+    let mut parameters = Vec::with_capacity(parameter_types.len());
+    for slot in parameter_types.keys() {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            None,
+        )?;
+        let Some(name) = names.whole(*slot) else {
+            return Ok(None);
+        };
+        parameters.push((*slot, name.text().to_owned()));
+    }
+    Ok(Some(GenericConstructorCandidate { parameters, init }))
+}
+
+/// The same recovery for the class-source assembler, with same-run class-source sidecars.
+///
+/// The ordinary report follows exactly the same path as [`recover`]. Sidecars are available only
+/// to the adapter that assembles one class and are never serialized as report evidence.
+#[doc(hidden)]
+pub fn recover_for_class_source(
+    request: &RecoveryRequest<'_>,
+    budget: &mut Budget,
+    prove_generic_return: bool,
+    collect_enum_constructor_candidates: bool,
+) -> ClassSourceRecovery {
+    let is_clinit =
+        request.facts.method().name() == "<clinit>" && request.facts.method().descriptor() == "()V";
+    let is_ordinary_interface = request
+        .facts
+        .method()
+        .declaring_class()
+        .is_some_and(|class| {
+            let flags = class.access_flags();
+            flags & ACC_INTERFACE != 0 && flags & ACC_ANNOTATION == 0
+        });
+    let is_enum = request
+        .facts
+        .method()
+        .declaring_class()
+        .is_some_and(|class| class.access_flags() & ACC_ENUM != 0);
+    let collect_initializer = is_clinit && (is_ordinary_interface || is_enum);
+    let collect_enum_constructor = collect_enum_constructor_candidates
+        && is_enum
+        && request.facts.method().name() == "<init>"
+        && matches!(
+            request.facts.method().descriptor(),
+            "(Ljava/lang/String;I)V" | "(Ljava/lang/String;II)V"
+        );
+    let mut initializer = None;
+    let mut enum_constructor = None;
+    let mut bridge = None;
+    let mut enum_switches = None;
+    let mut enum_switch_field_uses = None;
+    let mut generic_return = None;
+    let mut generic_constructor = None;
+    let mut anonymous_allocations = None;
+    let report = recover_inner(
+        request,
+        budget,
+        collect_initializer.then_some(&mut initializer),
+        collect_enum_constructor.then_some(&mut enum_constructor),
+        Some(&mut bridge),
+        Some(&mut enum_switches),
+        Some(&mut enum_switch_field_uses),
+        prove_generic_return.then_some(&mut generic_return),
+        prove_generic_return.then_some(&mut generic_constructor),
+        Some(&mut anonymous_allocations),
+    );
+    if !report.produced() || !matches!(&report.execution, ExecutionReport::Complete { .. }) {
+        if !is_enum {
+            initializer = None;
+        }
+        enum_constructor = None;
+        bridge = None;
+        enum_switches = None;
+        enum_switch_field_uses = None;
+        generic_return = None;
+        generic_constructor = None;
+        anonymous_allocations = None;
+    }
+    ClassSourceRecovery {
+        report,
+        initializer,
+        enum_constructor,
+        bridge,
+        enum_switches: enum_switches.unwrap_or_default(),
+        enum_switch_field_uses: enum_switch_field_uses.unwrap_or_default(),
+        generic_return,
+        generic_constructor,
+        anonymous_allocations,
+    }
+}
+
+fn recover_inner(
+    request: &RecoveryRequest<'_>,
+    budget: &mut Budget,
+    initializer: Option<&mut Option<ClassInitializerCandidates>>,
+    mut enum_constructor: Option<&mut Option<ClassEnumConstructorCandidates>>,
+    mut bridge_candidate: Option<&mut Option<ClassSourceBridgeCandidate>>,
+    mut enum_switch_candidate: Option<&mut Option<Vec<ClassSourceEnumSwitchCandidate>>>,
+    mut enum_switch_field_use: Option<&mut Option<Vec<ClassSourceEnumSwitchFieldUse>>>,
+    generic_return: Option<&mut Option<GenericReturnCandidate>>,
+    generic_constructor: Option<&mut Option<GenericConstructorCandidate>>,
+    mut anonymous_allocations: Option<&mut Option<AnonymousAllocationScan>>,
+) -> RecoveryReport {
     let method = format!(
         "{}{}",
         request.facts.method().name(),
@@ -440,6 +1598,45 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         return refused(method, profile.clone(), &selection, refusal, budget);
     }
     let operations = Operations::of(code, request.ir.constant_pool());
+    if let Some(field_uses_slot) = enum_switch_field_use.as_deref_mut() {
+        let member = request
+            .ir
+            .declaration()
+            .map(|declaration| declaration.identity().clone());
+        let mut field_uses = Vec::new();
+        for (bci, operation) in operations.iter() {
+            if let Operation::Field {
+                access,
+                is_static,
+                owner,
+                name,
+                descriptor,
+            } = operation
+            {
+                if let Err(stop) = crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    1,
+                    Some(*bci),
+                ) {
+                    return stopped(method, profile.clone(), &selection, stop, budget);
+                }
+                if let Err(stop) = crate::stop::poll(budget, Some(*bci)) {
+                    return stopped(method, profile.clone(), &selection, stop, budget);
+                }
+                field_uses.push(ClassSourceEnumSwitchFieldUse {
+                    member: member.clone(),
+                    bci: *bci,
+                    owner: owner.clone(),
+                    name: name.clone(),
+                    descriptor: descriptor.clone(),
+                    is_static: *is_static,
+                    write: *access == FieldAccess::Write,
+                });
+            }
+        }
+        *field_uses_slot = Some(field_uses);
+    }
     if canonical.blocks().is_empty() {
         return stopped(
             method,
@@ -455,38 +1652,83 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         Ok(view) => view,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
-    let recovered: Recovered = match crate::region::recover(
+    // `MethodCodeFacts` describes only the Code attribute; a missing method flag must not be read
+    // as proof that the JVM's implicit synchronized-method monitor is absent.
+    let method_synchronized = request
+        .facts
+        .method()
+        .access_flags()
+        .map(|flags| flags & 0x0020 != 0);
+    let mut recovered: Recovered = match crate::region::recover(
         canonical,
         &view,
         ssa,
         &operations,
         code,
+        method_synchronized,
         &request.profile,
         budget,
     ) {
         Ok(recovered) => recovered,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
+    if let Err(stop) = crate::region::project_string_switches(&mut recovered, request.ir, budget) {
+        return stopped(method, profile.clone(), &selection, stop, budget);
+    }
     // The slots the names are decided for are the body's own local slots: the frames table states
     // how many there are, and a local the debug metadata never named still needs a name.
     let slots = u16::try_from(frames.locals_slots()).unwrap_or(u16::MAX);
-    // Which *variable* each slot holds, before any name is decided (P3 3.4): a slot the debug table
-    // names over two disjoint ranges is two variables, and the naming below states a name for each.
-    // The slot a guarded statement declares in its own header is never split, so the guard's own
-    // naming rule is untouched.
-    let reuse = reuse::plan(
+    // Which *variable* each slot holds, before any name is decided (P3 3.4): either disjoint LVT
+    // records or a narrow SSA/CFG lifetime proof may split one physical slot. An unnamed segment
+    // receives an ordinal name below. Guard-header slots keep their own declaration rule.
+    let reuse = match reuse::plan(
         ssa,
+        canonical,
         slots,
+        request.facts.method().parameters(),
         request.facts.debug_locals(),
         &build::resource_slots(&recovered.regions),
-    );
+        budget,
+    ) {
+        Ok(reuse) => reuse,
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+    };
+    // Field declarations are borrowed from the same class facts as the body. The field plan keeps
+    // the proof that lets a blank same-class static final write lose its qualifier, and the same
+    // proof supplies the names the local naming walk must reserve.
+    let fields = match field::plan(
+        ssa,
+        &operations,
+        request.facts.method().declaring_class(),
+        request.facts.method().name(),
+        request.facts.method().descriptor(),
+        request.ir.class_fields(),
+        budget,
+    ) {
+        Ok(fields) => fields,
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+    };
+    let reserved_field_names = match fields.simple_static_final_names(budget) {
+        Ok(names) => names,
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+    };
     let names = if request.facts.method().has_receiver() {
         // Slot 0 holds the receiver (JVMS 4.10.1.9), so it is spelled as one: the answer comes from
         // the member's own flags and from nothing else, which is why the naming is told it instead of
         // finding it out from a debug name or a slot ordinal.
-        NameTable::build_with_receiver(request.facts.method().parameters(), slots, reuse.evidence())
+        NameTable::build_with_receiver_and_reserved(
+            request.facts.method().parameters(),
+            slots,
+            reuse.evidence(),
+            &reserved_field_names,
+        )
     } else {
-        NameTable::build(request.facts.method().parameters(), slots, reuse.evidence())
+        NameTable::build_with_reserved(
+            request.facts.method().parameters(),
+            slots,
+            reuse.evidence(),
+            &reserved_field_names,
+        )
     };
     // The two shapes this run decides *before* a single statement is written, each from this run's
     // own tables: the concatenation chains the body builds (P3 2.2) and the bridge verdict for the
@@ -498,13 +1740,106 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // is committed (the evidence phase below), so a run that stops inside the evidence keeps its text.
     let chains = concat::plan(ssa, &operations);
     let bridge = bridge::plan(request.facts.method(), ssa, &operations);
+    if let (Some(plan), Some(candidate_slot)) = (bridge.as_ref(), bridge_candidate.as_deref_mut()) {
+        let member = request
+            .subject
+            .as_ref()
+            .map(|subject| subject.method().clone())
+            .or_else(|| {
+                request
+                    .ir
+                    .declaration()
+                    .map(|declaration| declaration.identity().clone())
+            });
+        let has_exception_handlers = request
+            .ir
+            .code()
+            .is_none_or(|code| code.exception_handler_count != 0);
+        *candidate_slot = Some(
+            match plan.class_source_candidate(
+                member,
+                request.facts.method().access_flags(),
+                has_exception_handlers,
+                budget,
+            ) {
+                Ok(candidate) => candidate,
+                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+            },
+        );
+    }
     // The four shapes P3 2.3 reads — each decided before a statement is written, each from this run's
-    // own tables. The construction sites reserve the concatenation chains' instructions, because one
-    // instruction is never two shapes: the allocation a verified chain builds is written inside the
-    // `+` expression and not a second time as a `new`.
-    let sites = init::sites(ssa, &operations, chains.owned());
+    // own tables. `field@1` is decided **before** `new@1`, because a construction site's only question
+    // about a field access is whether that access is a place the instance is written into, and the
+    // answer is that rule's own claim: the site plan reads the verdict instead of guessing it from the
+    // opcode (P3 2c.26). The order is a dependency, not a preference — nothing either plan decides is
+    // read by the other in the other direction.
+    //
+    // The construction sites reserve the concatenation chains' instructions, because one instruction
+    // is never two shapes: the allocation a verified chain builds is written inside the `+` expression
+    // and not a second time as a `new`.
+    let sites = init::sites(
+        ssa,
+        &operations,
+        chains.owned(),
+        &fields,
+        request.member_inner_targets,
+        code,
+    );
+    if let Some(output) = anonymous_allocations.as_deref_mut() {
+        let member = request
+            .subject
+            .as_ref()
+            .map(|subject| subject.method().clone())
+            .or_else(|| {
+                request
+                    .ir
+                    .declaration()
+                    .map(|declaration| declaration.identity().clone())
+            });
+        if let Some(member) = member {
+            if let Err(stop) = crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                u64::try_from(code.instructions.len()).unwrap_or(u64::MAX),
+                None,
+            ) {
+                return stopped(method, profile.clone(), &selection, stop, budget);
+            }
+            let raw_new_count = code
+                .instructions
+                .iter()
+                .filter(|item| item.opcode == 0xbb)
+                .count();
+            let mut allocations = Vec::with_capacity(sites.allocation_candidates().len());
+            for candidate in sites.allocation_candidates() {
+                if let Err(stop) = crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    1,
+                    Some(candidate.head),
+                ) {
+                    return stopped(method, profile.clone(), &selection, stop, budget);
+                }
+                if let Err(stop) = crate::stop::poll(budget, Some(candidate.head)) {
+                    return stopped(method, profile.clone(), &selection, stop, budget);
+                }
+                let site = sites.site_at_head(candidate.head);
+                allocations.push(AnonymousAllocationCandidate {
+                    member: member.clone(),
+                    head_bci: candidate.head,
+                    class: candidate.class.clone(),
+                    verified: candidate.verified && site.is_some(),
+                    constructor_bci: site.map(|site| site.constructor),
+                    argument_bcis: site.map_or_else(Vec::new, |site| site.arguments.clone()),
+                });
+            }
+            *output = Some(AnonymousAllocationScan {
+                complete: code.stopped_at.is_none() && raw_new_count == allocations.len(),
+                allocations,
+            });
+        }
+    }
     let prologues = init::prologue(ssa, &operations, request.facts.method());
-    let fields = field::plan(ssa, &operations, request.facts.method().declaring_class());
     let enums = enumswitch::plan(ssa, &operations);
     // The declaration is read from the two facts the caller stated and decides the artifact's
     // envelope; it never decides a statement, and it is the only shape of this slice that is read
@@ -524,16 +1859,32 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         ssa,
         &operations,
         build::Inputs {
+            code,
             pool: request.ir.constant_pool(),
             bootstrap: request.ir.bootstrap_methods(),
             profile: request.profile.clone(),
             parameters: request.facts.method().parameters(),
+            has_receiver: request.facts.method().has_receiver(),
             parameter_types: &parameter_types,
             return_type,
             names: &names,
             reuse: &reuse,
             chains: &chains,
             members: request.members,
+            member_inner_targets: request.member_inner_targets,
+            interface_super_calls: request.interface_super_calls,
+            // The class this body belongs to, as the run's own member declaration states it: the
+            // fact a static call's pool owner is compared against, so that a call to this class is
+            // written unqualified and a call to another class names it (P3 4.4). A run that read no
+            // member declaration states none, and then no static call gains a qualifier.
+            declaring_class: request
+                .facts
+                .method()
+                .declaring_class()
+                .map(|declaring| declaring.name()),
+            direct_super_class: request.ir.direct_super_class(),
+            direct_interfaces: request.ir.direct_interfaces(),
+            class_methods: request.ir.class_methods(),
             bridge: bridge.as_ref(),
             sites: &sites,
             prologues: &prologues,
@@ -546,6 +1897,81 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         Ok(program) => program,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
+    if let Some(slot) = generic_return {
+        match generic_return_candidate(&program, &names, ssa, &operations, &sites, request, budget)
+        {
+            Ok(candidate) => *slot = candidate,
+            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        }
+    }
+    if let Some(slot) = generic_constructor {
+        if request.facts.method().name() == "<init>" {
+            match generic_constructor_candidate(
+                &program,
+                &names,
+                ssa,
+                &operations,
+                code,
+                &prologues,
+                &parameter_types,
+                budget,
+            ) {
+                Ok(candidate) => *slot = candidate,
+                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+            }
+        }
+    }
+    if let Some(slot) = enum_constructor.as_deref_mut() {
+        if request.facts.method().name() == "<init>" {
+            match class_enum_constructor_candidates(request, &program, &fields, code, budget) {
+                Ok(candidates) => *slot = Some(candidates),
+                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+            }
+        }
+    }
+    if let Some(initializer) = initializer {
+        match class_initializer_candidates(request, &program, &fields, budget) {
+            Ok(candidates) => *initializer = Some(candidates),
+            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        }
+    }
+    if let Some(enum_switches) = enum_switch_candidate.as_deref_mut() {
+        let member = request
+            .ir
+            .declaration()
+            .map(|declaration| declaration.identity().clone());
+        match enums.class_source_candidates(ssa, &operations, member.clone(), budget) {
+            Ok(mut candidates) => {
+                if !candidates.is_empty() {
+                    if let Err(stop) = crate::stop::charge(
+                        budget,
+                        jarde_reader::budget::CountedBudgetDimension::IrItems,
+                        u64::try_from(program.statements.max(1)).unwrap_or(u64::MAX),
+                        candidates.first().map(|candidate| candidate.switch_bci),
+                    ) {
+                        return stopped(method, profile.clone(), &selection, stop, budget);
+                    }
+                    if let Err(stop) = crate::stop::poll(
+                        budget,
+                        candidates.first().map(|candidate| candidate.switch_bci),
+                    ) {
+                        return stopped(method, profile.clone(), &selection, stop, budget);
+                    }
+                    let projection = std::sync::Arc::new(enumswitch::EnumSwitchProjectionSource {
+                        program: program.clone(),
+                        facts: request.facts.clone(),
+                        declaration: declaration.declaration().cloned(),
+                        member,
+                    });
+                    for candidate in &mut candidates {
+                        candidate.projection = Some(projection.clone());
+                    }
+                }
+                *enum_switches = Some(candidates);
+            }
+            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        }
+    }
     // The identity of the body being presented, as the payload's own declaration states it: the
     // member every anchor of this artifact belongs to (P3 3.2). A run that read no member header
     // states none. Both emitter passes state it for the anchors that name no member of their own.
@@ -561,6 +1987,10 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         budget,
     ) {
         Ok(emitted) => emitted,
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+    };
+    let field_presentations = match field::committed_presentations(&program, &fields, budget) {
+        Ok(presentations) => presentations,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
     // What the artifact that was just committed holds. The classification is taken here, from the
@@ -780,14 +2210,14 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             ),
         ));
     }
-    for gap in fields.refusals() {
+    for gap in fields.refusals(&field_presentations) {
         diagnostics.push(diagnostic(
             gap.code(),
             DiagnosticSeverity::Warning,
             gap.message(),
         ));
     }
-    let (field_read, field_presented) = fields.counts();
+    let (field_read, field_presented) = fields.counts(&field_presentations);
     if field_read > 0 {
         diagnostics.push(diagnostic(
             "jre_field_accesses",
@@ -949,7 +2379,12 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             None => Vec::new(),
         };
         news = delivery.take(sites.materialize(publication, &mut phase, budget));
-        field_records = delivery.take(fields.materialize(publication, &mut phase, budget));
+        field_records = delivery.take(fields.materialize(
+            &field_presentations,
+            publication,
+            &mut phase,
+            budget,
+        ));
         enum_switches = delivery.take(enums.materialize(publication, &mut phase, budget));
         init = prologues
             .answered()
@@ -1064,6 +2499,490 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         "the evidence status list disagrees with the payload it describes"
     );
     report
+}
+
+/// Captures the class initializer's already-built top-level statements and the field identities
+/// proved by this same recovery's `field@1` plan. The returned candidates are an adapter handoff,
+/// never a second artifact or a projection decision.
+fn class_initializer_candidates(
+    request: &RecoveryRequest<'_>,
+    program: &build::Program,
+    fields: &field::Plan,
+    budget: &mut Budget,
+) -> Result<ClassInitializerCandidates, StopReason> {
+    crate::stop::poll(budget, None)?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        1,
+        None,
+    )?;
+    let member = request
+        .ir
+        .declaration()
+        .map(|declaration| declaration.identity().clone());
+    let has_exception_handlers = request
+        .ir
+        .code()
+        .is_none_or(|code| code.exception_handler_count != 0 || code.stopped_at.is_some());
+    let mut steps = Vec::new();
+    for (order, statement) in program.stmts.iter().enumerate() {
+        let bci = statement.origin.primary().bci();
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(bci),
+        )?;
+        crate::stop::poll(budget, Some(bci))?;
+        let step = match &statement.kind {
+            crate::ast::StmtKind::FieldAssign {
+                receiver,
+                name: spelled_name,
+                op,
+                value,
+            } => match fields.claim(bci) {
+                Some((evidence, shape))
+                    if evidence.access == FieldAccess::Write && shape.writes() =>
+                {
+                    charge_expression_tree(value, budget)?;
+                    let field_reads = class_initializer_field_reads(value, fields, budget)?;
+                    let source_items = u64::try_from(statement.origin.derived().len())
+                        .unwrap_or(u64::MAX)
+                        .saturating_add(1);
+                    crate::stop::charge(
+                        budget,
+                        jarde_reader::budget::CountedBudgetDimension::IrItems,
+                        source_items.saturating_add(4),
+                        Some(bci),
+                    )?;
+                    crate::stop::poll(budget, Some(bci))?;
+                    ClassInitializerStep::FieldWrite(Box::new(ClassInitializerFieldWrite {
+                        order,
+                        bci: evidence.bci,
+                        owner: evidence.owner.clone(),
+                        name: evidence.name.clone(),
+                        spelled_name: spelled_name.clone(),
+                        descriptor: evidence.descriptor.clone(),
+                        is_static: evidence.is_static,
+                        has_receiver: receiver.is_some(),
+                        op: *op,
+                        source: statement.origin.clone(),
+                        value: value.clone(),
+                        field_reads,
+                    }))
+                }
+                _ => ClassInitializerStep::Other {
+                    order,
+                    bci,
+                    kind: ClassInitializerStatementKind::UnattributedFieldWrite,
+                },
+            },
+            kind => ClassInitializerStep::Other {
+                order,
+                bci,
+                kind: class_initializer_statement_kind(kind),
+            },
+        };
+        steps.push(step);
+    }
+    Ok(ClassInitializerCandidates {
+        member,
+        has_exception_handlers,
+        steps,
+    })
+}
+
+/// Retains the small top-level AST shapes needed by the bounded enum constructor proof.
+fn class_enum_constructor_candidates(
+    request: &RecoveryRequest<'_>,
+    program: &build::Program,
+    fields: &field::Plan,
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    budget: &mut Budget,
+) -> Result<ClassEnumConstructorCandidates, StopReason> {
+    crate::stop::poll(budget, None)?;
+    let member = request
+        .ir
+        .declaration()
+        .map(|declaration| declaration.identity().clone());
+    let has_exception_handlers = code.exception_handler_count != 0
+        || code.exception_handler_count as usize != code.exception_handlers.len()
+        || code.stopped_at.is_some();
+    let mut steps = Vec::with_capacity(program.stmts.len());
+    for (order, statement) in program.stmts.iter().enumerate() {
+        let bci = statement.origin.primary().bci();
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(statement.origin.derived().len())
+                .unwrap_or(u64::MAX)
+                .saturating_add(1),
+            Some(bci),
+        )?;
+        crate::stop::poll(budget, Some(bci))?;
+        let kind = match &statement.kind {
+            StmtKind::ConstructorCall { target, args } => {
+                for argument in args {
+                    charge_expression_tree(argument, budget)?;
+                }
+                ClassEnumConstructorStepKind::ConstructorCall {
+                    target: *target,
+                    args: args.clone(),
+                }
+            }
+            StmtKind::Expr(expression) => {
+                charge_expression_tree(expression, budget)?;
+                ClassEnumConstructorStepKind::Expression(expression.clone())
+            }
+            StmtKind::FieldAssign {
+                receiver,
+                name,
+                op,
+                value,
+            } => {
+                if let Some(receiver) = receiver {
+                    charge_expression_tree(receiver, budget)?;
+                }
+                charge_expression_tree(value, budget)?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    1,
+                    Some(bci),
+                )?;
+                let field = fields.claim(bci).and_then(|(evidence, shape)| {
+                    (evidence.access == FieldAccess::Write && shape.writes()).then(|| {
+                        ClassEnumConstructorField {
+                            bci: evidence.bci,
+                            owner: evidence.owner.clone(),
+                            name: evidence.name.clone(),
+                            descriptor: evidence.descriptor.clone(),
+                            is_static: evidence.is_static,
+                        }
+                    })
+                });
+                ClassEnumConstructorStepKind::FieldWrite {
+                    field,
+                    spelled_name: name.clone(),
+                    receiver: receiver.clone(),
+                    op: *op,
+                    value: value.clone(),
+                }
+            }
+            StmtKind::Return { value } => {
+                if let Some(value) = value {
+                    charge_expression_tree(value, budget)?;
+                }
+                ClassEnumConstructorStepKind::Return {
+                    value: value.clone(),
+                }
+            }
+            other => ClassEnumConstructorStepKind::Other(class_initializer_statement_kind(other)),
+        };
+        steps.push(ClassEnumConstructorStep {
+            order,
+            bci,
+            source: statement.origin.clone(),
+            kind,
+        });
+    }
+    let complete = !program.ragged
+        && program.statements == program.stmts.len()
+        && code.stopped_at.is_none()
+        && matches!(code.execution, ExecutionReport::Complete { .. })
+        && code.exception_handler_count as usize == code.exception_handlers.len()
+        && code.instructions.len() == code.operands().len();
+    Ok(ClassEnumConstructorCandidates {
+        member,
+        complete,
+        has_exception_handlers,
+        steps,
+    })
+}
+
+/// Retains every field-shaped RHS node only when the same method's field plan proves its identity.
+fn class_initializer_field_reads(
+    expression: &crate::ast::Expr,
+    fields: &field::Plan,
+    budget: &mut Budget,
+) -> Result<Option<Vec<ClassInitializerFieldRead>>, StopReason> {
+    let mut reads = Vec::new();
+    let mut complete = true;
+    visit_class_initializer_field_reads(expression, fields, budget, &mut reads, &mut complete)?;
+    Ok(complete.then_some(reads))
+}
+
+fn visit_class_initializer_field_reads(
+    expression: &crate::ast::Expr,
+    fields: &field::Plan,
+    budget: &mut Budget,
+    reads: &mut Vec<ClassInitializerFieldRead>,
+    complete: &mut bool,
+) -> Result<(), StopReason> {
+    use crate::ast::ExprKind;
+
+    match &expression.kind {
+        ExprKind::Field { receiver, .. } => {
+            let bci = expression.origin.primary().bci();
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                1,
+                Some(bci),
+            )?;
+            crate::stop::poll(budget, Some(bci))?;
+            match fields.claim(bci) {
+                Some((evidence, shape))
+                    if evidence.access == FieldAccess::Read && !shape.writes() =>
+                {
+                    reads.push(ClassInitializerFieldRead {
+                        bci: evidence.bci,
+                        owner: evidence.owner.clone(),
+                        name: evidence.name.clone(),
+                        descriptor: evidence.descriptor.clone(),
+                        is_static: evidence.is_static,
+                    });
+                }
+                _ => *complete = false,
+            }
+            visit_class_initializer_field_reads(receiver, fields, budget, reads, complete)?;
+        }
+        ExprKind::Call { receiver, args, .. } => {
+            if let Some(receiver) = receiver {
+                visit_class_initializer_field_reads(receiver, fields, budget, reads, complete)?;
+            }
+            for arg in args {
+                visit_class_initializer_field_reads(arg, fields, budget, reads, complete)?;
+            }
+        }
+        ExprKind::New {
+            qualifier, args, ..
+        } => {
+            if let Some(qualifier) = qualifier {
+                visit_class_initializer_field_reads(qualifier, fields, budget, reads, complete)?;
+            }
+            for arg in args {
+                visit_class_initializer_field_reads(arg, fields, budget, reads, complete)?;
+            }
+        }
+        ExprKind::Lambda { body, .. } => {
+            visit_class_initializer_field_reads(body, fields, budget, reads, complete)?;
+        }
+        ExprKind::MethodReference { qualifier, .. }
+        | ExprKind::ArrayLength { array: qualifier }
+        | ExprKind::Cast {
+            value: qualifier, ..
+        }
+        | ExprKind::InstanceOf {
+            value: qualifier, ..
+        }
+        | ExprKind::Not { value: qualifier }
+        | ExprKind::Neg { value: qualifier }
+        | ExprKind::PostIncrement { target: qualifier } => {
+            visit_class_initializer_field_reads(qualifier, fields, budget, reads, complete)?;
+        }
+        ExprKind::Index { array, index } => {
+            visit_class_initializer_field_reads(array, fields, budget, reads, complete)?;
+            visit_class_initializer_field_reads(index, fields, budget, reads, complete)?;
+        }
+        ExprKind::NewArray {
+            lengths,
+            initializers,
+            ..
+        } => {
+            for length in lengths {
+                visit_class_initializer_field_reads(length, fields, budget, reads, complete)?;
+            }
+            if let Some(initializers) = initializers {
+                for value in initializers {
+                    visit_class_initializer_field_reads(value, fields, budget, reads, complete)?;
+                }
+            }
+        }
+        ExprKind::Binary { left, right, .. } => {
+            visit_class_initializer_field_reads(left, fields, budget, reads, complete)?;
+            visit_class_initializer_field_reads(right, fields, budget, reads, complete)?;
+        }
+        ExprKind::Conditional {
+            test,
+            when_true,
+            when_false,
+        } => {
+            visit_class_initializer_field_reads(test, fields, budget, reads, complete)?;
+            visit_class_initializer_field_reads(when_true, fields, budget, reads, complete)?;
+            visit_class_initializer_field_reads(when_false, fields, budget, reads, complete)?;
+        }
+        ExprKind::Concat { parts } => {
+            for part in parts {
+                visit_class_initializer_field_reads(&part.value, fields, budget, reads, complete)?;
+            }
+        }
+        ExprKind::Local(_)
+        | ExprKind::Integer(_)
+        | ExprKind::Boolean(_)
+        | ExprKind::Long(_)
+        | ExprKind::Str(_)
+        | ExprKind::Null
+        | ExprKind::ClassLiteral { .. }
+        | ExprKind::Path(_)
+        | ExprKind::Super { .. } => {}
+    }
+    Ok(())
+}
+
+/// Counts every AST node and auxiliary list item the candidate clones, before cloning it.
+fn charge_expression_tree(
+    expression: &crate::ast::Expr,
+    budget: &mut Budget,
+) -> Result<(), StopReason> {
+    charge_expression_tree_at_depth(expression, budget, 0)
+}
+
+fn charge_expression_tree_at_depth(
+    expression: &crate::ast::Expr,
+    budget: &mut Budget,
+    depth: usize,
+) -> Result<(), StopReason> {
+    use crate::ast::ExprKind;
+
+    let at = expression.origin.primary().bci();
+    if depth > build::MAX_VALUE_DEPTH {
+        return Err(StopReason::Interrupted {
+            code: crate::stop::RECURSION_BOUND_CODE,
+            at: Some(at),
+        });
+    }
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        1,
+        Some(at),
+    )?;
+    crate::stop::poll(budget, Some(at))?;
+    match &expression.kind {
+        ExprKind::Call { receiver, args, .. } => {
+            if let Some(receiver) = receiver {
+                charge_expression_tree_at_depth(receiver, budget, depth + 1)?;
+            }
+            for arg in args {
+                charge_expression_tree_at_depth(arg, budget, depth + 1)?;
+            }
+        }
+        ExprKind::New {
+            qualifier, args, ..
+        } => {
+            if let Some(qualifier) = qualifier {
+                charge_expression_tree_at_depth(qualifier, budget, depth + 1)?;
+            }
+            for arg in args {
+                charge_expression_tree_at_depth(arg, budget, depth + 1)?;
+            }
+        }
+        ExprKind::Lambda { params, body } => {
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                u64::try_from(params.len()).unwrap_or(u64::MAX),
+                Some(at),
+            )?;
+            charge_expression_tree_at_depth(body, budget, depth + 1)?;
+        }
+        ExprKind::MethodReference { qualifier, .. }
+        | ExprKind::ArrayLength { array: qualifier }
+        | ExprKind::Cast {
+            value: qualifier, ..
+        }
+        | ExprKind::InstanceOf {
+            value: qualifier, ..
+        }
+        | ExprKind::Not { value: qualifier }
+        | ExprKind::Neg { value: qualifier }
+        | ExprKind::PostIncrement { target: qualifier } => {
+            charge_expression_tree_at_depth(qualifier, budget, depth + 1)?;
+        }
+        ExprKind::Field { receiver, .. } => {
+            charge_expression_tree_at_depth(receiver, budget, depth + 1)?;
+        }
+        ExprKind::Index { array, index } => {
+            charge_expression_tree_at_depth(array, budget, depth + 1)?;
+            charge_expression_tree_at_depth(index, budget, depth + 1)?;
+        }
+        ExprKind::NewArray {
+            lengths,
+            initializers,
+            ..
+        } => {
+            for length in lengths {
+                charge_expression_tree_at_depth(length, budget, depth + 1)?;
+            }
+            if let Some(initializers) = initializers {
+                for value in initializers {
+                    charge_expression_tree_at_depth(value, budget, depth + 1)?;
+                }
+            }
+        }
+        ExprKind::Binary { left, right, .. } => {
+            charge_expression_tree_at_depth(left, budget, depth + 1)?;
+            charge_expression_tree_at_depth(right, budget, depth + 1)?;
+        }
+        ExprKind::Conditional {
+            test,
+            when_true,
+            when_false,
+        } => {
+            charge_expression_tree_at_depth(test, budget, depth + 1)?;
+            charge_expression_tree_at_depth(when_true, budget, depth + 1)?;
+            charge_expression_tree_at_depth(when_false, budget, depth + 1)?;
+        }
+        ExprKind::Concat { parts } => {
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                u64::try_from(parts.len()).unwrap_or(u64::MAX),
+                Some(at),
+            )?;
+            for part in parts {
+                charge_expression_tree_at_depth(&part.value, budget, depth + 1)?;
+            }
+        }
+        ExprKind::Integer(_)
+        | ExprKind::Local(_)
+        | ExprKind::Boolean(_)
+        | ExprKind::Long(_)
+        | ExprKind::Str(_)
+        | ExprKind::Null
+        | ExprKind::ClassLiteral { .. }
+        | ExprKind::Path(_)
+        | ExprKind::Super { .. } => {}
+    }
+    Ok(())
+}
+
+fn class_initializer_statement_kind(kind: &crate::ast::StmtKind) -> ClassInitializerStatementKind {
+    use crate::ast::StmtKind;
+
+    match kind {
+        StmtKind::Declare { .. } => ClassInitializerStatementKind::Declaration,
+        StmtKind::Assign { .. } => ClassInitializerStatementKind::LocalAssignment,
+        StmtKind::Expr(_) => ClassInitializerStatementKind::Expression,
+        StmtKind::FieldAssign { .. } => ClassInitializerStatementKind::UnattributedFieldWrite,
+        StmtKind::IndexAssign { .. } => ClassInitializerStatementKind::ArrayWrite,
+        StmtKind::ConstructorCall { .. } => ClassInitializerStatementKind::ConstructorCall,
+        StmtKind::Return { .. } => ClassInitializerStatementKind::Return,
+        StmtKind::Throw { .. } => ClassInitializerStatementKind::Throw,
+        StmtKind::If { .. } => ClassInitializerStatementKind::Conditional,
+        StmtKind::While { .. }
+        | StmtKind::For { .. }
+        | StmtKind::ForEach { .. }
+        | StmtKind::DoWhile { .. }
+        | StmtKind::Break { .. }
+        | StmtKind::Continue { .. } => ClassInitializerStatementKind::Loop,
+        StmtKind::Switch { .. } => ClassInitializerStatementKind::Switch,
+        StmtKind::Try { .. } => ClassInitializerStatementKind::Try,
+        StmtKind::Synchronized { .. } => ClassInitializerStatementKind::Synchronized,
+        StmtKind::Fallback { .. } => ClassInitializerStatementKind::Fallback,
+    }
 }
 
 /// One category's materialization across the several plans that publish into it.
@@ -1401,5 +3320,77 @@ fn diagnostic(code: &str, severity: DiagnosticSeverity, message: &str) -> Diagno
         severity,
         message: message.to_string(),
         provenance: None,
+    }
+}
+
+#[cfg(test)]
+mod class_initializer_candidate_tests {
+    use super::*;
+    use jarde_reader::budget::{Budget, Limits};
+
+    #[test]
+    fn candidate_expression_charging_stops_at_the_shared_value_depth_bound() {
+        let mut expression = crate::ast::Expr::direct(crate::ast::ExprKind::Integer(1), 7);
+        for _ in 0..=build::MAX_VALUE_DEPTH {
+            expression = crate::ast::Expr::direct(
+                crate::ast::ExprKind::Not {
+                    value: Box::new(expression),
+                },
+                7,
+            );
+        }
+        let mut budget = Budget::new(Limits {
+            ir_items: 1_000,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+
+        let stopped = charge_expression_tree(&expression, &mut budget)
+            .expect_err("future AST shapes must not make this traversal unbounded");
+        assert_eq!(
+            stopped,
+            StopReason::Interrupted {
+                code: crate::stop::RECURSION_BOUND_CODE,
+                at: Some(7),
+            }
+        );
+    }
+
+    #[test]
+    fn candidate_expression_charging_includes_a_member_creation_qualifier() {
+        let mut qualifier = crate::ast::Expr::direct(crate::ast::ExprKind::Integer(1), 7);
+        for _ in 0..=build::MAX_VALUE_DEPTH {
+            qualifier = crate::ast::Expr::direct(
+                crate::ast::ExprKind::Not {
+                    value: Box::new(qualifier),
+                },
+                7,
+            );
+        }
+        let expression = crate::ast::Expr::direct(
+            crate::ast::ExprKind::New {
+                ty: "sample.SimpleOuter$Inner".to_string(),
+                qualifier: Some(Box::new(qualifier)),
+                member_name: Some("Inner".to_string()),
+                diamond: false,
+                args: Vec::new(),
+            },
+            8,
+        );
+        let mut budget = Budget::new(Limits {
+            ir_items: 1_000,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+
+        let stopped = charge_expression_tree(&expression, &mut budget)
+            .expect_err("a qualified receiver is part of the candidate's bounded AST");
+        assert_eq!(
+            stopped,
+            StopReason::Interrupted {
+                code: crate::stop::RECURSION_BOUND_CODE,
+                at: Some(7),
+            }
+        );
     }
 }

@@ -1,0 +1,1 @@
+public class BoundFunctionalRunner { public static void main(String[] args) { for (int n : new int[]{0,3,-1}) { try { System.out.println(BoundFunctionalReceiver.array(n)+"|"+BoundFunctionalReceiver.method(n)); } catch (Throwable t) { System.out.println(t.getClass().getName()+"|"+BoundFunctionalReceiver.method(n)); } } } }

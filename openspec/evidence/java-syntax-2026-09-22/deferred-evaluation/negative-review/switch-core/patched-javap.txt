@@ -1,0 +1,62 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-final-ecab-cfmq33vh/switch/original/SwitchDeferredCore.class
+  Last modified 2026年9月23日; size 302 bytes
+  SHA-256 checksum e2373834340108fdb7caecdfcb06cecdc9e1f8fdb43e8ab14028401a6faf6b9f
+public class SwitchDeferredCore
+  minor version: 0
+  major version: 49
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #19                         // SwitchDeferredCore
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // SwitchSupport.value:()I
+   #8 = Class              #10            // SwitchSupport
+   #9 = NameAndType        #11:#12        // value:()I
+  #10 = Utf8               SwitchSupport
+  #11 = Utf8               value
+  #12 = Utf8               ()I
+  #13 = Methodref          #8.#14         // SwitchSupport.other:()I
+  #14 = NameAndType        #15:#12        // other:()I
+  #15 = Utf8               other
+  #16 = Methodref          #8.#17         // SwitchSupport.mark:()V
+  #17 = NameAndType        #18:#6         // mark:()V
+  #18 = Utf8               mark
+  #19 = Class              #20            // SwitchDeferredCore
+  #20 = Utf8               SwitchDeferredCore
+  #21 = Utf8               Code
+  #22 = Utf8               run
+  #23 = Utf8               (I)I
+  #24 = Utf8               StackMapTable
+{
+  public SwitchDeferredCore();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int run(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: lookupswitch  { // 1
+                       1: 20
+                 default: 29
+            }
+        20: invokestatic  #7                  // Method SwitchSupport.value:()I
+        23: invokestatic  #16                 // Method SwitchSupport.mark:()V
+        26: goto          35
+        29: invokestatic  #13                 // Method SwitchSupport.other:()I
+        32: invokestatic  #16                 // Method SwitchSupport.mark:()V
+        35: ireturn
+}

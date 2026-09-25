@@ -1,0 +1,4 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/redundant-interface-super/RedundantIndirectNegative.java:8: 错误: 不是封闭类: IndirectParent
+    int valueFromAncestor() { return IndirectParent.super.value(); }
+                                                   ^
+1 个错误

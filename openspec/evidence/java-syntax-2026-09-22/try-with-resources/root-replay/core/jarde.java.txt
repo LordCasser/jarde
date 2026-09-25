@@ -1,0 +1,139 @@
+// jarde: presentation of `TwrAudit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class TwrAudit extends java.lang.Object implements java.lang.AutoCloseable {
+    private static int opens;
+
+    private static int closes;
+
+    private static int initializations;
+
+    private static int trace;
+
+    private final int id;
+
+    private final java.lang.Exception closeFailure;
+
+    private TwrAudit(int arg1, java.lang.Exception arg2) {
+        // @method <init>(ILjava/lang/Exception;)V
+        // @declaration a constructor of `TwrAudit`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.id = arg1;
+        this.closeFailure = arg2;
+        return;
+    }
+
+    private static TwrAudit open(int arg0, java.lang.Exception arg1) {
+        // @method open(ILjava/lang/Exception;)LTwrAudit;
+        // @declaration a static method of `TwrAudit`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        TwrAudit.opens = TwrAudit.opens + 1;
+        return new TwrAudit(arg0, arg1);
+    }
+
+    private static TwrAudit failOpen(java.lang.Exception arg0) throws java.lang.Exception {
+        // @method failOpen(Ljava/lang/Exception;)LTwrAudit;
+        // @declaration a static method of `TwrAudit`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        TwrAudit.initializations = TwrAudit.initializations + 1;
+        throw arg0;
+    }
+
+    private static void failBody(java.lang.Exception arg0) throws java.lang.Exception {
+        // @method failBody(Ljava/lang/Exception;)V
+        // @declaration a static method of `TwrAudit`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        throw arg0;
+    }
+
+    private static void event(int arg0) {
+        // @method event(I)V
+        // @declaration a static method of `TwrAudit`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        TwrAudit.trace = TwrAudit.trace * 10 + arg0;
+        return;
+    }
+
+    public static void reset() {
+        // @method reset()V
+        // @declaration a static method of `TwrAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        TwrAudit.opens = 0;
+        TwrAudit.closes = 0;
+        TwrAudit.initializations = 0;
+        TwrAudit.trace = 0;
+        return;
+    }
+
+    public static int opens() {
+        // @method opens()I
+        // @declaration a static method of `TwrAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return TwrAudit.opens;
+    }
+
+    public static int closes() {
+        // @method closes()I
+        // @declaration a static method of `TwrAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return TwrAudit.closes;
+    }
+
+    public static int initializations() {
+        // @method initializations()I
+        // @declaration a static method of `TwrAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return TwrAudit.initializations;
+    }
+
+    public static int trace() {
+        // @method trace()I
+        // @declaration a static method of `TwrAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return TwrAudit.trace;
+    }
+
+    public static void normalBodyAndClose() throws java.lang.Exception {
+        // @method normalBodyAndClose()V
+        // @declaration a static method of `TwrAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (TwrAudit local0 = open(1, (java.lang.Exception) null)) {
+            event(9);
+        }
+        return;
+    }
+
+    public static void bodyAndFailingClose(java.lang.Exception arg0, java.lang.Exception arg1) throws java.lang.Exception {
+        // @method bodyAndFailingClose(Ljava/lang/Exception;Ljava/lang/Exception;)V
+        // @declaration a static method of `TwrAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (TwrAudit local2 = open(1, arg1)) {
+            event(9);
+            failBody(arg0);
+        }
+        return;
+    }
+
+    public static void failingInitialization(java.lang.Exception arg0) throws java.lang.Exception {
+        // @method failingInitialization(Ljava/lang/Exception;)V
+        // @declaration a static method of `TwrAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (TwrAudit local1 = failOpen(arg0)) {
+            event(8);
+        }
+        return;
+    }
+
+    public void close() throws java.lang.Exception {
+        // @method close()V
+        // @declaration an instance method of `TwrAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        TwrAudit.closes = TwrAudit.closes + 1;
+        event(this.id);
+        if (this.closeFailure != null) {
+            throw this.closeFailure;
+        } else {
+            return;
+        }
+    }
+}

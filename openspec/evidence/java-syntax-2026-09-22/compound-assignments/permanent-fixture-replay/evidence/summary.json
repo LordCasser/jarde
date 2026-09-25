@@ -1,0 +1,450 @@
+{
+  "cli_sha256_before": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "whole_class": {
+    "source_hashes": {
+      "CompoundProbe.java": "18d257a39d8c749183cdcc8916ff7049569b00a17a41e5f3eefa4f3f4dd660f1",
+      "CompoundBox.java": "053b77534a272c75c8db2f28c7ac9f4c85a76772bb4bce778022c4d56310d1f4",
+      "CompoundRunner.java": "da91ad8f75e97729a0280aae0d3eb1543e5feb46ec56e6d1a6003537fd139cdb"
+    },
+    "class_bytes": 1113,
+    "class_sha256": "889f36d3a5c06951d32762c8914829c059d8b1d6692001c08df73404c92f673f",
+    "code_methods": 12,
+    "original_javac": 0,
+    "original_runtime": 0,
+    "original_output": [
+      "local=8:rhs=1",
+      "field=9:select=1:rhs=1",
+      "array=14:select=1:rhs=1",
+      "field-snapshot=9:select=1:rhs=1",
+      "array-snapshot=14:select=1:rhs=1",
+      "null=NPE:select=1:rhs=0",
+      "bounds=AIOOBE:select=1:rhs=0"
+    ],
+    "jadx": {
+      "javac": 0,
+      "runtime": 0,
+      "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+      "main_class": "defpackage.CompoundRunner",
+      "decompile": 0,
+      "output": [
+        "local=8:rhs=1",
+        "field=9:select=1:rhs=1",
+        "array=14:select=1:rhs=1",
+        "field-snapshot=9:select=1:rhs=1",
+        "array-snapshot=14:select=1:rhs=1",
+        "null=NPE:select=1:rhs=0",
+        "bounds=AIOOBE:select=1:rhs=0"
+      ]
+    },
+    "jarde": {
+      "javac": 0,
+      "runtime": 0,
+      "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+      "main_class": "CompoundRunner",
+      "decompile": null,
+      "output": [
+        "local=8:rhs=1",
+        "field=7:select=1:rhs=0",
+        "array=10:select=1:rhs=0",
+        "field-snapshot=7:select=1:rhs=0",
+        "array-snapshot=10:select=1:rhs=0",
+        "null=returned",
+        "bounds=returned"
+      ]
+    },
+    "jadx_equal": true,
+    "jarde_equal": false
+  },
+  "boundaries": {
+    "field-different-member": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "field=7:other=9:select=1:rhs=1"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "field=7:other=9:select=1:rhs=1"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "field=7:other=0:select=1:rhs=0"
+        ],
+        "equal_to_original": false
+      }
+    },
+    "array-different-index-copy": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "data0=24:data1=20:select=1:rhs=1"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "data0=24:data1=20:select=1:rhs=1"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "data0=10:data1=20:select=1:rhs=0"
+        ],
+        "equal_to_original": false
+      }
+    },
+    "array-different-array-copy": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "data0=44:other0=30:select=1:rhs=1"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "data0=44:other0=30:select=1:rhs=1"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "data0=10:other0=30:select=1:rhs=0"
+        ],
+        "equal_to_original": false
+      }
+    },
+    "field-multi-consumer": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "value=9:extra=1"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "value=9:extra=1"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "value=7:extra=0"
+        ],
+        "equal_to_original": false
+      }
+    },
+    "array-multi-consumer": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "data0=14:extra=1"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "data0=14:extra=1"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "data0=10:extra=0"
+        ],
+        "equal_to_original": false
+      }
+    },
+    "ordinary-field": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "value=2:select=1:rhs=1"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "value=2:select=1:rhs=1"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "value=2:select=1:rhs=1"
+        ],
+        "equal_to_original": true
+      }
+    },
+    "ordinary-array": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "data0=4:select=1:rhs=1"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "data0=4:select=1:rhs=1"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "data0=4:select=1:rhs=1"
+        ],
+        "equal_to_original": true
+      }
+    },
+    "wide-field": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "wide=72:select=1:rhs=1"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "wide=72:select=1:rhs=1"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "wide=70:select=1:rhs=0"
+        ],
+        "equal_to_original": false
+      }
+    },
+    "wide-array": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "long0=52:select=1:rhs=1"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "long0=52:select=1:rhs=1"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "long0=50:select=1:rhs=0"
+        ],
+        "equal_to_original": false
+      }
+    },
+    "field-snapshot": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "value=9:select=1:rhs=1"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "value=9:select=1:rhs=1"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "value=7:select=1:rhs=0"
+        ],
+        "equal_to_original": false
+      }
+    },
+    "array-snapshot": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "data0=14:select=1:rhs=1"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "data0=14:select=1:rhs=1"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "data0=10:select=1:rhs=0"
+        ],
+        "equal_to_original": false
+      }
+    },
+    "array-null": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "null-array=NPE:select=1:rhs=0"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "null-array=NPE:select=1:rhs=0"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "null-array=returned"
+        ],
+        "equal_to_original": false
+      }
+    },
+    "array-bounds": {
+      "original_javap": 0,
+      "original_runtime": 0,
+      "original_output": [
+        "bounds=AIOOBE:select=1:rhs=0"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jadx-classes",
+        "main_class": "defpackage.CompoundBoundaryRunner",
+        "decompile": 0,
+        "output": [
+          "bounds=AIOOBE:select=1:rhs=0"
+        ],
+        "equal_to_original": true
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "class_dir": "/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-compound-fixture-srcvzkeg/jarde-classes",
+        "main_class": "CompoundBoundaryRunner",
+        "decompile": null,
+        "output": [
+          "bounds=returned"
+        ],
+        "equal_to_original": false
+      }
+    }
+  },
+  "boundary_fixture": {
+    "source_hashes": {
+      "BoundaryBox.java": "3438080f500c0bc6763d6d180b8c9fabec3fe443d3ceb3546594f073d2c6a234",
+      "CompoundBoundaryProbe.java": "3410f50b95426ca1ea69dd0391fec01272b1a92b6a97fb1e420f8c9f0e0867e4",
+      "CompoundBoundaryRunner.java": "5f2347b9871ca18d1aabe60736617f95001671d15178333ea63cf9a933cf4495"
+    },
+    "class_bytes": 2055,
+    "class_sha256": "d5acfc8babad92a18357a4fbf0e38657e374d384b15c4ffe365f8cdedc7422ed",
+    "code_methods": 24,
+    "javac": 0,
+    "javap": 0
+  },
+  "cli_sha256_after": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c"
+}

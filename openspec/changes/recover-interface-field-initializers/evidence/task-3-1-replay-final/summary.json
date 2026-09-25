@@ -1,0 +1,273 @@
+{
+  "normal": {
+    "class_sha256": "e04abe561a505d9022039776b8b29de22e35f6d4dba45a08f19a9b5c07afb527",
+    "source_sha256": {
+      "InterfaceInitProbe.java": "e1e5dfc3de78bef01d3ba1840df8d5a030ed3fc491d89e3dc4c6b89765c667ff",
+      "InitEffects.java": "2d2d37cab7223d5d6c16aa886bb38d5330e1fc5ab2c9c3103b07189227704d41",
+      "InitRunner.java": "bbe14c90ddca778c0f26b447496988a64ca61954bca4faa9ff1675631c5329ea",
+      "original/jadx.java.txt": "c8115a187dd0d59305ae767b311ce10874251c0217a197fccc598895e5075aac",
+      "original/InterfaceInitProbe.class": "e04abe561a505d9022039776b8b29de22e35f6d4dba45a08f19a9b5c07afb527"
+    },
+    "expected_original_runtime": "ABT|A1|B2|4|7",
+    "original": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "ABT|A1|B2|4|7"
+    },
+    "jadx": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "ABT|A1|B2|4|7"
+    },
+    "jarde": {
+      "cli_exit": 0,
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "ABT|A1|B2|4|7",
+      "source_bytes": 1207
+    },
+    "jarde_has_interface_static_block": false,
+    "original_matches_expected": true,
+    "jarde_matches_expected": true
+  },
+  "field-table-reordered": {
+    "class_sha256": "01f953662dc388e8682740967e007bfeaa5671576329f87a75b0989254470fb6",
+    "source_sha256": {
+      "InterfaceInitProbe.java": "e1e5dfc3de78bef01d3ba1840df8d5a030ed3fc491d89e3dc4c6b89765c667ff",
+      "InitEffects.java": "2d2d37cab7223d5d6c16aa886bb38d5330e1fc5ab2c9c3103b07189227704d41",
+      "InitRunner.java": "bbe14c90ddca778c0f26b447496988a64ca61954bca4faa9ff1675631c5329ea",
+      "field-table-reordered/jadx.java.txt": "c8115a187dd0d59305ae767b311ce10874251c0217a197fccc598895e5075aac",
+      "field-table-reordered/InterfaceInitProbe.class": "01f953662dc388e8682740967e007bfeaa5671576329f87a75b0989254470fb6"
+    },
+    "expected_original_runtime": "ABT|A1|B2|4|7",
+    "original": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "ABT|A1|B2|4|7"
+    },
+    "jadx": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "ABT|A1|B2|4|7"
+    },
+    "jarde": {
+      "cli_exit": 0,
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "ABT|A1|B2|4|7",
+      "source_bytes": 1207
+    },
+    "jarde_has_interface_static_block": false,
+    "original_matches_expected": true,
+    "jarde_matches_expected": true
+  },
+  "refusal-extra-effect": {
+    "class_sha256": "ddbeb07c02d68beddc307e70684cb9c672cf7ffa47ff4ec86719bef6467ebeac",
+    "source_sha256": {
+      "boundaries/extra-effect/original-source/BoundaryProbe.java": "7653b7f13c807a31e39eb8dd105668340c938be062ff7a0754f19196e311637a",
+      "boundaries/extra-effect/original-source/BoundaryEffects.java": "56dc83794a7f3bf075247ee3897357646dc3027c077b76485a61429260c25bdb",
+      "boundaries/extra-effect/original-source/BoundaryRunner.java": "d611ee6cb578441ee36042cdc29493a2621c42191613751ee4d7e48f6b4f05e0",
+      "boundaries/extra-effect/jadx.java.txt": "573b2b0627d38ec71b506b7aa6c44a0c4bcac812f8531af75e64496520457c13",
+      "boundaries/extra-effect/BoundaryProbe.class": "ddbeb07c02d68beddc307e70684cb9c672cf7ffa47ff4ec86719bef6467ebeac"
+    },
+    "expected_original_runtime": "ABXB|A|B",
+    "original": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "ABXB|A|B"
+    },
+    "jadx": {
+      "javac_exit": 1,
+      "java_exit": null,
+      "runtime": null
+    },
+    "jarde": {
+      "cli_exit": 0,
+      "javac_exit": 1,
+      "java_exit": null,
+      "runtime": null,
+      "source_bytes": 1587
+    },
+    "jarde_has_interface_static_block": true,
+    "original_matches_expected": true,
+    "jarde_matches_expected": false
+  },
+  "refusal-duplicate-write": {
+    "class_sha256": "2c8ce2e3a9fc416b80ef5151ef185b4b55053163c860ca4bba75addcc84e1cd8",
+    "source_sha256": {
+      "boundaries/duplicate-write/original-source/BoundaryProbe.java": "7653b7f13c807a31e39eb8dd105668340c938be062ff7a0754f19196e311637a",
+      "boundaries/duplicate-write/original-source/BoundaryEffects.java": "56dc83794a7f3bf075247ee3897357646dc3027c077b76485a61429260c25bdb",
+      "boundaries/duplicate-write/original-source/BoundaryRunner.java": "d611ee6cb578441ee36042cdc29493a2621c42191613751ee4d7e48f6b4f05e0",
+      "boundaries/duplicate-write/jadx.java.txt": "017c211769f8a0caa0e4f9e21b8eccdbea21e2469f866254fa8ecea7cdd31c0b",
+      "boundaries/duplicate-write/BoundaryProbe.class": "2c8ce2e3a9fc416b80ef5151ef185b4b55053163c860ca4bba75addcc84e1cd8"
+    },
+    "expected_original_runtime": "AB|null|B",
+    "original": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "AB|null|B"
+    },
+    "jadx": {
+      "javac_exit": 1,
+      "java_exit": null,
+      "runtime": null
+    },
+    "jarde": {
+      "cli_exit": 0,
+      "javac_exit": 1,
+      "java_exit": null,
+      "runtime": null,
+      "source_bytes": 1549
+    },
+    "jarde_has_interface_static_block": true,
+    "original_matches_expected": true,
+    "jarde_matches_expected": false
+  },
+  "refusal-branch": {
+    "class_sha256": "c61471f60100781f462145d958428840c730e7c98cb7a23e2c77c45b554cd254",
+    "source_sha256": {
+      "boundaries/branch/original-source/BoundaryProbe.java": "2f1b2ccc7d5c4f9adf31c9ef45234cd4aaf17c3380bcd0f9203644bea3b2bc47",
+      "boundaries/branch/original-source/BoundaryEffects.java": "56dc83794a7f3bf075247ee3897357646dc3027c077b76485a61429260c25bdb",
+      "boundaries/branch/original-source/BoundaryRunner.java": "d611ee6cb578441ee36042cdc29493a2621c42191613751ee4d7e48f6b4f05e0",
+      "boundaries/branch/jadx.java.txt": "54a1f9b8c1f69f53c0be9167f6cab06b132d7aca516030a2378c1a91b86f9bf1",
+      "boundaries/branch/BoundaryProbe.class": "c61471f60100781f462145d958428840c730e7c98cb7a23e2c77c45b554cd254"
+    },
+    "expected_original_runtime": "CAB|A|B",
+    "original": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "CAB|A|B"
+    },
+    "jadx": {
+      "javac_exit": 1,
+      "java_exit": null,
+      "runtime": null
+    },
+    "jarde": {
+      "cli_exit": 0,
+      "javac_exit": 1,
+      "java_exit": null,
+      "runtime": null,
+      "source_bytes": 1904
+    },
+    "jarde_has_interface_static_block": true,
+    "original_matches_expected": true,
+    "jarde_matches_expected": false
+  },
+  "forward-binding": {
+    "class_sha256": "916d57e880cd8bd99c5c705fab87dea60d41365afa3fee3604e5d2dd3a8f7b29",
+    "source_sha256": {
+      "forward-binding-exception-edge/forward-binding/original-source/ForwardProbe.java": "2319523013efaf3ed6414940c00c9efb52afd432db027fdc1c6ac587212e33dd",
+      "forward-binding-exception-edge/forward-binding/original-source/BoundaryEffects.java": "91dd2879db6ad9832942111566523f7b145a124341234dfa4c1f441203f2ffc0",
+      "forward-binding-exception-edge/forward-binding/original-source/BoundaryRunner.java": "991465790de1fd1eedf036101ce0ae94454ee9ae2477a0c390bd345daff955aa",
+      "forward-binding-exception-edge/forward-binding/jadx.java.txt": "ff619836bb8c62a01e00b63216607c747687189b570ec2b12c138e35d968d62c",
+      "forward-binding-exception-edge/forward-binding/ForwardProbe.class": "916d57e880cd8bd99c5c705fab87dea60d41365afa3fee3604e5d2dd3a8f7b29"
+    },
+    "expected_original_runtime": "L|0|9",
+    "original": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "L|0|9"
+    },
+    "jadx": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "L|9|9"
+    },
+    "jarde": {
+      "cli_exit": 0,
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "L|0|9",
+      "source_bytes": 930
+    },
+    "jarde_has_interface_static_block": false,
+    "original_matches_expected": true,
+    "jarde_matches_expected": true
+  },
+  "exception-handler": {
+    "class_sha256": "6a7ee16469492c295c64fcbaaedd506c6ab322865b4f03dd62561b0d7619872a",
+    "source_sha256": {
+      "forward-binding-exception-edge/exception-handler/original-source/ExceptionProbe.java": "4f43749c907cf164857d06f475bdcf845fecfb2503c8ac546b80bc8758a0eab9",
+      "forward-binding-exception-edge/exception-handler/original-source/BoundaryEffects.java": "91dd2879db6ad9832942111566523f7b145a124341234dfa4c1f441203f2ffc0",
+      "forward-binding-exception-edge/exception-handler/original-source/BoundaryRunner.java": "991465790de1fd1eedf036101ce0ae94454ee9ae2477a0c390bd345daff955aa",
+      "forward-binding-exception-edge/exception-handler/jadx.java.txt": "5df014a91d7683ac477faba5355acfe39acca68ee2e63bf210eeb4191e735cb5",
+      "forward-binding-exception-edge/exception-handler/ExceptionProbe.class": "6a7ee16469492c295c64fcbaaedd506c6ab322865b4f03dd62561b0d7619872a"
+    },
+    "expected_original_runtime": "ABEC|A|B",
+    "original": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "ABEC|A|B"
+    },
+    "jadx": {
+      "javac_exit": 1,
+      "java_exit": null,
+      "runtime": null
+    },
+    "jarde": {
+      "cli_exit": 0,
+      "javac_exit": 1,
+      "java_exit": null,
+      "runtime": null,
+      "source_bytes": 1611
+    },
+    "jarde_has_interface_static_block": true,
+    "original_matches_expected": true,
+    "jarde_matches_expected": false
+  },
+  "constant-phase-boundary": {
+    "class_sha256": "e9e686a011b047f24d352396ec5a3ccc20d8a502c6515ae063b6f0a76b569f5b",
+    "source_sha256": {
+      "constant-phase-boundary/original-source/PhaseProbe.java": "1b21f9c232a8b6999fb8661371ce473f2aecf907c20890c75aaf57673dc8e94b",
+      "constant-phase-boundary/original-source/BoundaryEffects.java": "47b71ea0e7a4ef7ec3d8d2d774a0754ee548cbf605547ae1ca76feb4f9824b05",
+      "constant-phase-boundary/original-source/BoundaryRunner.java": "ef3e09d0673689cf292d2f2dd4940c4764aa7297de866728f61ad61d900daa59",
+      "constant-phase-boundary/jadx.java.txt": "e4c4de2fdf55c6caa358ad309cbe07a3c2eda9221f33a5bbcc7c1012f0d58399",
+      "constant-phase-boundary/PhaseProbe.class": "e9e686a011b047f24d352396ec5a3ccc20d8a502c6515ae063b6f0a76b569f5b"
+    },
+    "expected_original_runtime": "0|9",
+    "original": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "0|9"
+    },
+    "jadx": {
+      "javac_exit": 0,
+      "java_exit": 0,
+      "runtime": "9|9"
+    },
+    "jarde": {
+      "cli_exit": 0,
+      "javac_exit": 1,
+      "java_exit": null,
+      "runtime": null,
+      "source_bytes": 1113
+    },
+    "jarde_has_interface_static_block": true,
+    "original_matches_expected": true,
+    "jarde_matches_expected": false
+  },
+  "budget-method-bodies-1": {
+    "cli_exit": 4,
+    "budget": "method_bodies=1",
+    "source_bytes": 1283,
+    "class_sha256": "e04abe561a505d9022039776b8b29de22e35f6d4dba45a08f19a9b5c07afb527",
+    "javac_exit": 1,
+    "java_exit": null,
+    "runtime": null
+  },
+  "budget-output-bytes-1024": {
+    "cli_exit": 2,
+    "budget": "output_bytes=1024",
+    "source_bytes": 0,
+    "class_sha256": "e04abe561a505d9022039776b8b29de22e35f6d4dba45a08f19a9b5c07afb527",
+    "javac_exit": null,
+    "java_exit": null,
+    "runtime": null
+  },
+  "cancellation": {
+    "status": "library_only",
+    "reason": "the one-shot CLI has no cancellation-token parameter",
+    "coverage": "tests/interface_initializer_projection.rs::cancellation_before_projection_publishes_no_class_source_report"
+  }
+}

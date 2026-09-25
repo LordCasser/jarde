@@ -1,0 +1,7 @@
+empty=0
+many=7:hashCalls=1,1
+null=NullPointerException:Cannot read the array length because "<local2>" is null
+source-many=11:calls=1:hashCalls=1
+source-null=NullPointerException:Cannot read the array length because "<local2>" is null:calls=1
+source-throws=IllegalStateException:source:calls=1
+body-throws=IllegalStateException:hash:hashCalls=1,1,0

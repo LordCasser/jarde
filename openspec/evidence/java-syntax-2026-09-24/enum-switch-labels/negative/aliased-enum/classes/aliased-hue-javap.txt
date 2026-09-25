@@ -1,0 +1,77 @@
+public final class Hue extends java.lang.Enum<Hue> {
+  public static final Hue RED;
+
+  public static final Hue BLUE;
+
+  public static final Hue GREEN;
+
+  private static final Hue[] $VALUES;
+
+  public static Hue[] values();
+    Code:
+       0: getstatic     #13                 // Field $VALUES:[LHue;
+       3: invokevirtual #17                 // Method "[LHue;".clone:()Ljava/lang/Object;
+       6: checkcast     #18                 // class "[LHue;"
+       9: areturn
+
+  public static Hue valueOf(java.lang.String);
+    Code:
+       0: ldc           #1                  // class Hue
+       2: aload_0
+       3: invokestatic  #22                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+       6: checkcast     #1                  // class Hue
+       9: areturn
+
+  private Hue();
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: invokespecial #28                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+       6: return
+
+  private static Hue[] $values();
+    Code:
+       0: iconst_3
+       1: anewarray     #1                  // class Hue
+       4: dup
+       5: iconst_0
+       6: getstatic     #3                  // Field RED:LHue;
+       9: aastore
+      10: dup
+      11: iconst_1
+      12: getstatic     #7                  // Field BLUE:LHue;
+      15: aastore
+      16: dup
+      17: iconst_2
+      18: getstatic     #10                 // Field GREEN:LHue;
+      21: aastore
+      22: areturn
+
+  static {};
+    Code:
+       0: new           #1                  // class Hue
+       3: dup
+       4: ldc           #32                 // String RED
+       6: iconst_0
+       7: invokespecial #33                 // Method "<init>":(Ljava/lang/String;I)V
+      10: putstatic     #3                  // Field RED:LHue;
+      13: getstatic     #3                  // Field RED:LHue;
+      16: nop
+      17: nop
+      18: nop
+      19: nop
+      20: nop
+      21: nop
+      22: nop
+      23: putstatic     #7                  // Field BLUE:LHue;
+      26: new           #1                  // class Hue
+      29: dup
+      30: ldc           #35                 // String GREEN
+      32: iconst_2
+      33: invokespecial #33                 // Method "<init>":(Ljava/lang/String;I)V
+      36: putstatic     #10                 // Field GREEN:LHue;
+      39: invokestatic  #36                 // Method $values:()[LHue;
+      42: putstatic     #13                 // Field $VALUES:[LHue;
+      45: return
+}

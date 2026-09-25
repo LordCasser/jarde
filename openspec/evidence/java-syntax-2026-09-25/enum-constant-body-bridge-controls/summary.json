@@ -1,0 +1,29 @@
+{
+  "tools": {
+    "jadx": "1.5.6",
+    "jarde_cli_sha256": "ca04265a4f412d59c29d6bd4a26b7d9cb961f72ae13e77684831c0b9e57b5145",
+    "javac": "javac 23.0.1"
+  },
+  "variants": {
+    "g": {
+      "jadx_recompiled_run": "ADD:0=10\nMULTIPLY:1=21\n",
+      "jadx_source_sha256": "e0d9c5f3cca40cf7e3e82a269e1f9d95f9d3b9d3f232d1858654e888d4f9ad9a",
+      "jarde_javac_exit": 1,
+      "jarde_source_sha256": "0f6ba5f5faba9e5a9e45a548b347cbd3a9d75fdbdd11184be270630e04f4207e",
+      "original_class_before_sha256": "29bfd70fc4bd4cbe6bdec0ea433fe4c750bd42013bf2e4b65666a339edce10b4",
+      "original_run": "ADD:1=10\nMULTIPLY:1=21\n",
+      "patch": "synthetic Op.<init>(String,int,Op$1) BCI 2 iload_2 -> iconst_1",
+      "patched_class_sha256": "54b8edadf04ea6fd4057b691aa527cf6dda388eb459930e2259ded218a6cae11"
+    },
+    "g-none": {
+      "jadx_recompiled_run": "ADD:0=10\nMULTIPLY:1=21\n",
+      "jadx_source_sha256": "b85dbb1fd45e54dd7ca8b3d5bf0774ed81288e4f6ca64881789ff7da2638297b",
+      "jarde_javac_exit": 1,
+      "jarde_source_sha256": "0a778d00192ef87a8bc164647a23d123319d8fb01c8fd4314b3ff1bae36c565f",
+      "original_class_before_sha256": "90c3108884757ae72b875243a0c0b5ab4e6e8946e7cdc25efc484a0abbd2bebc",
+      "original_run": "ADD:1=10\nMULTIPLY:1=21\n",
+      "patch": "synthetic Op.<init>(String,int,Op$1) BCI 2 iload_2 -> iconst_1",
+      "patched_class_sha256": "919185c829beb826fff94ba52be8604fb21fb116ae3234ed1163a39f6c3b38e7"
+    }
+  }
+}

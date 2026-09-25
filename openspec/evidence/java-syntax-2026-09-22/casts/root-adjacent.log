@@ -1,0 +1,85 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.48s
+     Running tests/p3_array_access.rs (target/debug/deps/p3_array_access-9200cfd6a9ddc7d5)
+
+running 11 tests
+test a_boolean_element_read_is_evidence_only_where_the_array_is_proven_boolean ... ok
+test a_local_whose_declaring_write_was_refused_is_not_read_by_name ... ok
+test a_multi_dimensional_creation_is_one_creation_with_the_lengths_its_operand_states ... ok
+test a_narrow_element_read_adds_no_conversion_the_bytecode_did_not_perform ... ok
+test a_nested_read_reindexes_the_subscript_it_read ... ok
+test a_reference_creation_takes_its_element_from_the_pool_class ... ok
+test an_array_creation_its_subscripts_and_its_local_are_written ... ok
+test an_element_read_of_a_parameter_array_is_the_subscript ... ok
+test an_element_write_is_the_subscript_assignment ... ok
+test the_initializer_chain_of_a_later_batch_is_still_quoted ... ok
+test the_length_of_an_array_is_a_suffix_over_it ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/p3_instance_receiver.rs (target/debug/deps/p3_instance_receiver-0a579578e91afb6b)
+
+running 4 tests
+test a_constructors_own_receiver_is_this_and_its_writes_keep_their_place ... ok
+test a_receiver_the_body_never_reads_is_not_written_and_is_no_longer_an_alias ... ok
+test a_static_members_slot_zero_is_still_its_ordinal_parameter ... ok
+test an_instance_members_receiver_is_written_as_this_where_the_body_reads_it ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_local_rewrite.rs (target/debug/deps/p3_local_rewrite-43af107544d84693)
+
+running 7 tests
+test a_branch_on_a_superseded_load_is_refused_with_the_read_named ... ok
+test a_mixed_artifacts_quotes_are_mapped_whole_and_its_scan_stays_complete ... ok
+test a_slot_written_and_read_again_is_still_written_with_the_slot_name ... ok
+test a_store_of_a_superseded_load_is_refused_with_the_read_named ... ok
+test a_value_loaded_before_a_loop_is_still_named_after_the_body_rewrote_the_slot ... ok
+test a_value_the_slot_no_longer_holds_is_not_returned_through_the_slot_name ... ok
+test the_producer_behind_a_cast_that_this_slice_cannot_present_stays_in_the_answer ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_prefix_survival.rs (target/debug/deps/p3_prefix_survival-56eb471185288fdf)
+
+running 3 tests
+test a_body_the_walk_claimed_is_named_even_when_its_loop_is_refused ... ok
+test a_dead_exception_edge_does_not_quote_the_block_the_bytes_state ... ok
+test a_store_inside_the_failing_block_is_still_a_statement ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_required_conversions.rs (target/debug/deps/p3_required_conversions-e7130439423f86ef)
+
+running 8 tests
+test a_conversion_no_evidence_states_is_refused ... ok
+test a_converted_part_states_the_appends_own_type ... ok
+test a_part_that_already_meets_its_parameter_gains_nothing ... ok
+test a_return_states_the_members_own_type ... ok
+test a_write_states_the_written_types_own_type ... ok
+test an_argument_states_the_callees_parameter_type ... ok
+test every_declared_member_of_the_sample_is_covered ... ok
+test the_conversion_costs_no_ir_item_and_no_normalization_clone ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_special_dispatch.rs (target/debug/deps/p3_special_dispatch-14126f0f530aa881)
+
+running 4 tests
+test generated_special_dispatch_matches_original_runtime ... ignored, 需要 JDK：从 Engine::class_source 生成真实文本后用 javac/java 编译执行；cargo test 默认跳过
+test special_dispatch_arguments_keep_super_shape_and_producers ... ok
+test special_dispatch_keeps_receiver_and_call_origins ... ok
+test special_dispatch_text_keeps_each_declared_receiver ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_special_refusal.rs (target/debug/deps/p3_special_refusal-a0f8602fae65b30b)
+
+running 4 tests
+test discarded_result_special_keeps_argument_and_call_sources ... ok
+test nonprivate_current_special_is_refused_instead_of_becoming_this_virtual ... ok
+test nonthis_direct_super_special_is_refused_instead_of_becoming_super ... ok
+test refused_nested_special_keeps_argument_outer_call_and_return_sources ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

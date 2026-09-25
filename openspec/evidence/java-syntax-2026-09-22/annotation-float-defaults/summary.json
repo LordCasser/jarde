@@ -1,0 +1,26 @@
+{
+  "cli_sha256": "7a33dbed5b390009cb65802fd9264367e1d5854b9cc70dbced5ae1878109c822",
+  "class_sha256": {
+    "FloatDefaults.class": "c257ba990cb21bd1769ad7a949e65a8338934a3b7e202e0bc9ab964ab509ecad",
+    "FloatRunner.class": "9d7e5799f5ef8a6afb5ef4e5caee30494451df986e2b88f21d3788a9a0aab401"
+  },
+  "annotation_class_bytes": 293,
+  "original_output": [
+    "80000000",
+    "1",
+    "7f800000",
+    "7ff8000000000000"
+  ],
+  "jadx_output": [
+    "80000000",
+    "1",
+    "7f800000",
+    "7ff8000000000000"
+  ],
+  "jarde_javac": 0,
+  "jarde_runtime": 1,
+  "jarde_output": [
+    "Exception in thread \"main\" java.lang.NullPointerException: Cannot invoke \"java.lang.Float.floatValue()\" because the return value of \"java.lang.reflect.Method.getDefaultValue()\" is null",
+    "\tat FloatRunner.main(Unknown Source)"
+  ]
+}

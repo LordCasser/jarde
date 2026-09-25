@@ -1,0 +1,1 @@
+public class ArraySupport {public static int mode;public static int trace;public static final RuntimeException FAILURE=new IllegalStateException("marker");public static void mark(){trace=trace*10+2;if(mode==1)throw FAILURE;}}

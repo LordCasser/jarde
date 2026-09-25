@@ -1,0 +1,26 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-ternary-values-root-7747/frozen-source/TernaryValues.java:72: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-ternary-values-root-7747/frozen-source/TernaryValues.java:89: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-ternary-values-root-7747/frozen-source/TernaryValues.java:104: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-ternary-values-root-7747/frozen-source/TernaryValues.java:129: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-ternary-values-root-7747/frozen-source/TernaryValues.java:139: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-ternary-values-root-7747/frozen-source/TernaryValues.java:151: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-ternary-values-root-7747/frozen-source/TernaryValues.java:182: 错误: 缺少返回语句
+    }
+    ^
+7 个错误
+3 个警告

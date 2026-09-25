@@ -1,0 +1,302 @@
+public final class CompoundBoundaryProbe {
+  public static int calls;
+
+  public static int selects;
+
+  public static int extraConsumers;
+
+  public static int[] data;
+
+  public static int[] otherData;
+
+  public static long[] longData;
+
+  public static BoundaryBox box;
+
+  public static boolean badIndex;
+
+  public CompoundBoundaryProbe();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void reset();
+    Code:
+       0: iconst_0
+       1: putstatic     #7                  // Field calls:I
+       4: iconst_0
+       5: putstatic     #13                 // Field selects:I
+       8: iconst_0
+       9: putstatic     #16                 // Field extraConsumers:I
+      12: iconst_0
+      13: putstatic     #19                 // Field badIndex:Z
+      16: iconst_2
+      17: newarray       int
+      19: putstatic     #23                 // Field data:[I
+      22: getstatic     #23                 // Field data:[I
+      25: iconst_0
+      26: bipush        10
+      28: iastore
+      29: getstatic     #23                 // Field data:[I
+      32: iconst_1
+      33: bipush        20
+      35: iastore
+      36: iconst_2
+      37: newarray       int
+      39: putstatic     #27                 // Field otherData:[I
+      42: getstatic     #27                 // Field otherData:[I
+      45: iconst_0
+      46: bipush        30
+      48: iastore
+      49: getstatic     #27                 // Field otherData:[I
+      52: iconst_1
+      53: bipush        40
+      55: iastore
+      56: iconst_2
+      57: newarray       long
+      59: putstatic     #30                 // Field longData:[J
+      62: getstatic     #30                 // Field longData:[J
+      65: iconst_0
+      66: ldc2_w        #34                 // long 50l
+      69: lastore
+      70: getstatic     #30                 // Field longData:[J
+      73: iconst_1
+      74: ldc2_w        #36                 // long 60l
+      77: lastore
+      78: new           #38                 // class BoundaryBox
+      81: dup
+      82: bipush        7
+      84: ldc2_w        #40                 // long 70l
+      87: invokespecial #42                 // Method BoundaryBox."<init>":(IJ)V
+      90: putstatic     #45                 // Field box:LBoundaryBox;
+      93: return
+
+  public static int rhs(int);
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: iload_0
+       9: ireturn
+
+  public static long longRhs();
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: ldc2_w        #49                 // long 2l
+      11: lreturn
+
+  public static BoundaryBox receiver();
+    Code:
+       0: getstatic     #13                 // Field selects:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #13                 // Field selects:I
+       8: getstatic     #45                 // Field box:LBoundaryBox;
+      11: areturn
+
+  public static int index();
+    Code:
+       0: getstatic     #13                 // Field selects:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #13                 // Field selects:I
+       8: getstatic     #19                 // Field badIndex:Z
+      11: ifeq          16
+      14: iconst_1
+      15: ireturn
+      16: iconst_0
+      17: ireturn
+
+  public static int rhsFieldMutation();
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: getstatic     #45                 // Field box:LBoundaryBox;
+      11: bipush        100
+      13: putfield      #51                 // Field BoundaryBox.value:I
+      16: iconst_2
+      17: ireturn
+
+  public static int rhsArrayMutation();
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: getstatic     #23                 // Field data:[I
+      11: iconst_0
+      12: bipush        100
+      14: iastore
+      15: iconst_4
+      16: ireturn
+
+  public static void observeReceiver(BoundaryBox);
+    Code:
+       0: getstatic     #16                 // Field extraConsumers:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #16                 // Field extraConsumers:I
+       8: return
+
+  public static void observeElement(int[], int);
+    Code:
+       0: getstatic     #16                 // Field extraConsumers:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #16                 // Field extraConsumers:I
+       8: return
+
+  public static void forceObserverReferences();
+    Code:
+       0: getstatic     #45                 // Field box:LBoundaryBox;
+       3: invokestatic  #54                 // Method observeReceiver:(LBoundaryBox;)V
+       6: getstatic     #23                 // Field data:[I
+       9: invokestatic  #58                 // Method index:()I
+      12: invokestatic  #62                 // Method observeElement:([II)V
+      15: return
+
+  public static void seedOther();
+    Code:
+       0: getstatic     #45                 // Field box:LBoundaryBox;
+       3: iconst_1
+       4: putfield      #66                 // Field BoundaryBox.other:I
+       7: return
+
+  public static void fieldDifferentMember();
+    Code:
+       0: invokestatic  #69                 // Method receiver:()LBoundaryBox;
+       3: dup
+       4: getfield      #51                 // Field BoundaryBox.value:I
+       7: iconst_2
+       8: invokestatic  #73                 // Method rhs:(I)I
+      11: iadd
+      12: putfield      #51                 // Field BoundaryBox.value:I
+      15: return
+
+  public static void fieldMultiConsumer();
+    Code:
+       0: invokestatic  #69                 // Method receiver:()LBoundaryBox;
+       3: dup
+       4: getfield      #51                 // Field BoundaryBox.value:I
+       7: iconst_2
+       8: invokestatic  #73                 // Method rhs:(I)I
+      11: iadd
+      12: putfield      #51                 // Field BoundaryBox.value:I
+      15: return
+
+  public static void arrayDifferentIndex();
+    Code:
+       0: getstatic     #23                 // Field data:[I
+       3: invokestatic  #58                 // Method index:()I
+       6: dup2
+       7: iaload
+       8: iconst_4
+       9: invokestatic  #73                 // Method rhs:(I)I
+      12: iadd
+      13: iastore
+      14: return
+
+  public static void arrayDifferentArray();
+    Code:
+       0: getstatic     #23                 // Field data:[I
+       3: invokestatic  #58                 // Method index:()I
+       6: dup2
+       7: iaload
+       8: iconst_4
+       9: invokestatic  #73                 // Method rhs:(I)I
+      12: iadd
+      13: iastore
+      14: return
+
+  public static void arrayMultiConsumer();
+    Code:
+       0: getstatic     #23                 // Field data:[I
+       3: invokestatic  #58                 // Method index:()I
+       6: dup2
+       7: dup2
+       8: invokestatic  #62                 // Method observeElement:([II)V
+      11: iaload
+      12: iconst_4
+      13: invokestatic  #73                 // Method rhs:(I)I
+      16: iadd
+      17: iastore
+      18: return
+
+  public static void fieldSnapshot();
+    Code:
+       0: invokestatic  #69                 // Method receiver:()LBoundaryBox;
+       3: dup
+       4: getfield      #51                 // Field BoundaryBox.value:I
+       7: invokestatic  #77                 // Method rhsFieldMutation:()I
+      10: iadd
+      11: putfield      #51                 // Field BoundaryBox.value:I
+      14: return
+
+  public static void arraySnapshot();
+    Code:
+       0: getstatic     #23                 // Field data:[I
+       3: invokestatic  #58                 // Method index:()I
+       6: dup2
+       7: iaload
+       8: invokestatic  #80                 // Method rhsArrayMutation:()I
+      11: iadd
+      12: iastore
+      13: return
+
+  public static void arrayPrecheck();
+    Code:
+       0: getstatic     #23                 // Field data:[I
+       3: invokestatic  #58                 // Method index:()I
+       6: dup2
+       7: iaload
+       8: iconst_4
+       9: invokestatic  #73                 // Method rhs:(I)I
+      12: iadd
+      13: iastore
+      14: return
+
+  public static void ordinaryField();
+    Code:
+       0: invokestatic  #69                 // Method receiver:()LBoundaryBox;
+       3: iconst_2
+       4: invokestatic  #73                 // Method rhs:(I)I
+       7: putfield      #51                 // Field BoundaryBox.value:I
+      10: return
+
+  public static void ordinaryArray();
+    Code:
+       0: getstatic     #23                 // Field data:[I
+       3: invokestatic  #58                 // Method index:()I
+       6: iconst_4
+       7: invokestatic  #73                 // Method rhs:(I)I
+      10: iastore
+      11: return
+
+  public static void wideField();
+    Code:
+       0: invokestatic  #69                 // Method receiver:()LBoundaryBox;
+       3: dup
+       4: getfield      #83                 // Field BoundaryBox.wide:J
+       7: invokestatic  #87                 // Method longRhs:()J
+      10: ladd
+      11: putfield      #83                 // Field BoundaryBox.wide:J
+      14: return
+
+  public static void wideArray();
+    Code:
+       0: getstatic     #30                 // Field longData:[J
+       3: invokestatic  #58                 // Method index:()I
+       6: dup2
+       7: laload
+       8: invokestatic  #87                 // Method longRhs:()J
+      11: ladd
+      12: lastore
+      13: return
+}

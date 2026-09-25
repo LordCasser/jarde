@@ -1,0 +1,1 @@
+java -Xverify:all -cp /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-array-stores-jkrh5bkd/patched-run:/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-array-stores-jkrh5bkd/patched:/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-array-stores-jkrh5bkd/original NarrowArrayStoresRunner

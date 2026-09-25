@@ -1,0 +1,57 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/annotation-float-defaults/canonical-nan-to-payload-nan/FloatDefaults.class
+  Last modified 2026年9月23日; size 293 bytes
+  SHA-256 checksum 760d18b05e75ca54adf144bd75df0ac77bd9643ef369d5a03a5143be6237c642
+interface FloatDefaults extends java.lang.annotation.Annotation
+  minor version: 0
+  major version: 52
+  flags: (0x2600) ACC_INTERFACE, ACC_ABSTRACT, ACC_ANNOTATION
+  this_class: #1                          // FloatDefaults
+  super_class: #3                         // java/lang/Object
+  interfaces: 1, fields: 0, methods: 4, attributes: 0
+Constant pool:
+   #1 = Class              #2             // FloatDefaults
+   #2 = Utf8               FloatDefaults
+   #3 = Class              #4             // java/lang/Object
+   #4 = Utf8               java/lang/Object
+   #5 = Class              #6             // java/lang/annotation/Annotation
+   #6 = Utf8               java/lang/annotation/Annotation
+   #7 = Utf8               negativeZero
+   #8 = Utf8               ()F
+   #9 = Utf8               AnnotationDefault
+  #10 = Float              -0.0f
+  #11 = Utf8               subnormal
+  #12 = Utf8               ()D
+  #13 = Double             4.9E-324d
+  #15 = Utf8               positiveInfinity
+  #16 = Float              Infinityf
+  #17 = Utf8               canonicalNaN
+  #18 = Double             NaNd
+{
+  public abstract float negativeZero();
+    descriptor: ()F
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: F#10
+        -0.0f
+
+  public abstract double subnormal();
+    descriptor: ()D
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: D#13
+        4.9E-324d
+
+  public abstract float positiveInfinity();
+    descriptor: ()F
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: F#16
+        Infinityf
+
+  public abstract double canonicalNaN();
+    descriptor: ()D
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: D#18
+        NaNd
+}

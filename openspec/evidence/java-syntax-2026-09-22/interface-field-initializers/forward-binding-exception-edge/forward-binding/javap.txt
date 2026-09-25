@@ -1,0 +1,95 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/forward-binding/ForwardProbe.class
+  Last modified 2026年9月23日; size 548 bytes
+  SHA-256 checksum 916d57e880cd8bd99c5c705fab87dea60d41365afa3fee3604e5d2dd3a8f7b29
+public interface ForwardProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0601) ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT
+  this_class: #20                         // ForwardProbe
+  super_class: #39                        // java/lang/Object
+  interfaces: 0, fields: 2, methods: 2, attributes: 0
+Constant pool:
+   #1 = Class              #2             // java/lang/StringBuilder
+   #2 = Utf8               java/lang/StringBuilder
+   #3 = Methodref          #1.#4          // java/lang/StringBuilder."<init>":()V
+   #4 = NameAndType        #5:#6          // "<init>":()V
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // BoundaryEffects.trace:Ljava/lang/String;
+   #8 = Class              #10            // BoundaryEffects
+   #9 = NameAndType        #11:#12        // trace:Ljava/lang/String;
+  #10 = Utf8               BoundaryEffects
+  #11 = Utf8               trace
+  #12 = Utf8               Ljava/lang/String;
+  #13 = Methodref          #1.#14         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #14 = NameAndType        #15:#16        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #15 = Utf8               append
+  #16 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #17 = String             #18            // |
+  #18 = Utf8               |
+  #19 = Fieldref           #20.#21        // ForwardProbe.EARLY:I
+  #20 = Class              #22            // ForwardProbe
+  #21 = NameAndType        #23:#24        // EARLY:I
+  #22 = Utf8               ForwardProbe
+  #23 = Utf8               EARLY
+  #24 = Utf8               I
+  #25 = Methodref          #1.#26         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #26 = NameAndType        #15:#27        // append:(I)Ljava/lang/StringBuilder;
+  #27 = Utf8               (I)Ljava/lang/StringBuilder;
+  #28 = Fieldref           #20.#29        // ForwardProbe.LATE:I
+  #29 = NameAndType        #30:#24        // LATE:I
+  #30 = Utf8               LATE
+  #31 = Methodref          #1.#32         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #32 = NameAndType        #33:#34        // toString:()Ljava/lang/String;
+  #33 = Utf8               toString
+  #34 = Utf8               ()Ljava/lang/String;
+  #35 = Methodref          #8.#36         // BoundaryEffects.value:()I
+  #36 = NameAndType        #37:#38        // value:()I
+  #37 = Utf8               value
+  #38 = Utf8               ()I
+  #39 = Class              #40            // java/lang/Object
+  #40 = Utf8               java/lang/Object
+  #41 = Utf8               observe
+  #42 = Utf8               Code
+  #43 = Utf8               <clinit>
+{
+  public static final int LATE;
+    descriptor: I
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static final int EARLY;
+    descriptor: I
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static java.lang.String observe();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #1                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #7                  // Field BoundaryEffects.trace:Ljava/lang/String;
+        10: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        13: ldc           #17                 // String |
+        15: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: getstatic     #19                 // Field EARLY:I
+        21: invokevirtual #25                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        24: ldc           #17                 // String |
+        26: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        29: getstatic     #28                 // Field LATE:I
+        32: invokevirtual #25                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        35: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        38: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #28                 // Field LATE:I
+         3: putstatic     #19                 // Field EARLY:I
+         6: invokestatic  #35                 // Method BoundaryEffects.value:()I
+         9: putstatic     #28                 // Field LATE:I
+        12: return
+}

@@ -1,0 +1,1 @@
+public class ScopeRunner {public static void main(String[]args){for(int m=0;m<3;m++){ScopeSupport.trace=0;ScopeSupport.mode=m;try{System.out.println(m+":"+DeferredScope.direct()+":"+ScopeSupport.trace);}catch(RuntimeException e){System.out.println(m+":"+e.getClass().getName()+":"+(e==ScopeSupport.FAILURE)+":"+ScopeSupport.trace);}}}}

@@ -1,0 +1,9 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/generic-method-references/expanded/unknown-reference-probe/UnknownReferenceJavacControl.java:13: 错误: 不兼容的类型: 方法引用无效
+        return UnknownReferenceJavacControl::consume;
+               ^
+    不兼容的类型: UnknownRight无法转换为UnknownLeft
+1 个错误
+3 个警告

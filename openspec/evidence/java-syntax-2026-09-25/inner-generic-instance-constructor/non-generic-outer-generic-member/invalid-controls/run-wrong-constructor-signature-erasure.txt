@@ -1,0 +1,5 @@
+exit=0
+stdout:
+minimal.Outer$Inner:1
+null:1
+stderr:

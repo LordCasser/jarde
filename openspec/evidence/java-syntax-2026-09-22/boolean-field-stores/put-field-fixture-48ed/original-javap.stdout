@@ -1,0 +1,183 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/put-field-fixture-48ed/work/source-classes/ZFieldStores.class
+  Last modified 2026年9月23日; size 906 bytes
+  SHA-256 checksum f1089b9ed4bf8802697c7c88c7bdd79f79af93ec4d6f04135fefb764e020c4fd
+public class ZFieldStores
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // ZFieldStores
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 4, methods: 11, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // ZFieldStores.instanceFlag:I
+   #8 = Class              #10            // ZFieldStores
+   #9 = NameAndType        #11:#12        // instanceFlag:I
+  #10 = Utf8               ZFieldStores
+  #11 = Utf8               instanceFlag
+  #12 = Utf8               I
+  #13 = Methodref          #14.#15        // ZFieldStoreEffects.value:(IZ)I
+  #14 = Class              #16            // ZFieldStoreEffects
+  #15 = NameAndType        #17:#18        // value:(IZ)I
+  #16 = Utf8               ZFieldStoreEffects
+  #17 = Utf8               value
+  #18 = Utf8               (IZ)I
+  #19 = Fieldref           #8.#20         // ZFieldStores.staticFlag:I
+  #20 = NameAndType        #21:#12        // staticFlag:I
+  #21 = Utf8               staticFlag
+  #22 = Fieldref           #8.#23         // ZFieldStores.ordinaryInstanceFlag:Z
+  #23 = NameAndType        #24:#25        // ordinaryInstanceFlag:Z
+  #24 = Utf8               ordinaryInstanceFlag
+  #25 = Utf8               Z
+  #26 = Fieldref           #8.#27         // ZFieldStores.ordinaryStaticFlag:Z
+  #27 = NameAndType        #28:#25        // ordinaryStaticFlag:Z
+  #28 = Utf8               ordinaryStaticFlag
+  #29 = Utf8               Code
+  #30 = Utf8               putInstance
+  #31 = Utf8               (I)V
+  #32 = Utf8               putInstanceProduced
+  #33 = Utf8               (IZ)V
+  #34 = Utf8               putStatic
+  #35 = Utf8               putStaticProduced
+  #36 = Utf8               putOn
+  #37 = Utf8               (LZFieldStores;I)V
+  #38 = Utf8               putProducedOn
+  #39 = Utf8               (LZFieldStores;IZ)V
+  #40 = Utf8               putOrdinaryInstance
+  #41 = Utf8               (Z)V
+  #42 = Utf8               putOrdinaryInstanceTrue
+  #43 = Utf8               putOrdinaryStatic
+  #44 = Utf8               putOrdinaryStaticTrue
+{
+  public int instanceFlag;
+    descriptor: I
+    flags: (0x0001) ACC_PUBLIC
+
+  public static int staticFlag;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public boolean ordinaryInstanceFlag;
+    descriptor: Z
+    flags: (0x0001) ACC_PUBLIC
+
+  public static boolean ordinaryStaticFlag;
+    descriptor: Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public ZFieldStores();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void putInstance(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #7                  // Field instanceFlag:I
+         5: return
+
+  public void putInstanceProduced(int, boolean);
+    descriptor: (IZ)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokestatic  #13                 // Method ZFieldStoreEffects.value:(IZ)I
+         6: putfield      #7                  // Field instanceFlag:I
+         9: return
+
+  public static void putStatic(int);
+    descriptor: (I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: putstatic     #19                 // Field staticFlag:I
+         4: return
+
+  public static void putStaticProduced(int, boolean);
+    descriptor: (IZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: invokestatic  #13                 // Method ZFieldStoreEffects.value:(IZ)I
+         5: putstatic     #19                 // Field staticFlag:I
+         8: return
+
+  public static void putOn(ZFieldStores, int);
+    descriptor: (LZFieldStores;I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #7                  // Field instanceFlag:I
+         5: return
+
+  public static void putProducedOn(ZFieldStores, int, boolean);
+    descriptor: (LZFieldStores;IZ)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokestatic  #13                 // Method ZFieldStoreEffects.value:(IZ)I
+         6: putfield      #7                  // Field instanceFlag:I
+         9: return
+
+  public void putOrdinaryInstance(boolean);
+    descriptor: (Z)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #22                 // Field ordinaryInstanceFlag:Z
+         5: return
+
+  public void putOrdinaryInstanceTrue();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_1
+         2: putfield      #22                 // Field ordinaryInstanceFlag:Z
+         5: return
+
+  public static void putOrdinaryStatic(boolean);
+    descriptor: (Z)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: putstatic     #26                 // Field ordinaryStaticFlag:Z
+         4: return
+
+  public static void putOrdinaryStaticTrue();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_1
+         1: putstatic     #26                 // Field ordinaryStaticFlag:Z
+         4: return
+}

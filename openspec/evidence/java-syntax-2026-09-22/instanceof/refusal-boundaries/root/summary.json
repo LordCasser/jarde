@@ -1,0 +1,42 @@
+[
+  {
+    "mode": "pop",
+    "method_info_before": 33,
+    "method_info_after": 34,
+    "class_bytes": 1549,
+    "sha256": "1fc6aa18b969dcacea3416fea2909f3a11a37f43b83f220f30a8346daff37d41",
+    "jvm_output": "pop=returned:1"
+  },
+  {
+    "mode": "duplicate",
+    "method_info_before": 33,
+    "method_info_after": 35,
+    "class_bytes": 1550,
+    "sha256": "4cafa37ea546a00d782e844e5a45fb05f6e050d7a6f7d0a3d8ae39d5eafe45cb",
+    "jvm_output": "duplicate-true=true\nduplicate-false=false"
+  },
+  {
+    "mode": "stale",
+    "method_info_before": 33,
+    "method_info_after": 35,
+    "class_bytes": 1550,
+    "sha256": "f9140750647f9c1fafa80bacf38a6c284d52c92e190235dc8b1d8d4f72196364",
+    "jvm_output": "stale-true=false\nstale-false=false"
+  },
+  {
+    "mode": "retained",
+    "method_info_before": 33,
+    "method_info_after": 35,
+    "class_bytes": 1550,
+    "sha256": "231d22ac22157f83160ff2d7b88d4596238930f288620217400b22645d753f28",
+    "jvm_output": "retained-true=true\nretained-false=false"
+  },
+  {
+    "mode": "int",
+    "method_info_before": 46,
+    "method_info_after": 33,
+    "class_bytes": 1535,
+    "sha256": "b32bc59222d83c708d9bd23e9877554e6c8658abbf2305b0082128a3a9395c4e",
+    "jvm_output": "int-string=1\nint-number=0\nint-null=0"
+  }
+]

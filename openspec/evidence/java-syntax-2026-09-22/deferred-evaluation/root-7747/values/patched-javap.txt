@@ -1,0 +1,98 @@
+Classfile /tmp/jarde-deferred-root-7747/values/original/DeferredValues.class
+  Last modified 2026年9月23日; size 480 bytes
+  SHA-256 checksum 528cc1ded96882f78493144dc5c70c99788598ac1542c088422c77f3e1fe77ee
+public class DeferredValues
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #22                         // DeferredValues
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 6, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // DeferredSupport.value:()I
+   #8 = Class              #10            // DeferredSupport
+   #9 = NameAndType        #11:#12        // value:()I
+  #10 = Utf8               DeferredSupport
+  #11 = Utf8               value
+  #12 = Utf8               ()I
+  #13 = Fieldref           #8.#14         // DeferredSupport.field:I
+  #14 = NameAndType        #15:#16        // field:I
+  #15 = Utf8               field
+  #16 = Utf8               I
+  #17 = Class              #18            // java/lang/String
+  #18 = Utf8               java/lang/String
+  #19 = Methodref          #8.#20         // DeferredSupport.mark:()V
+  #20 = NameAndType        #21:#6         // mark:()V
+  #21 = Utf8               mark
+  #22 = Class              #23            // DeferredValues
+  #23 = Utf8               DeferredValues
+  #24 = Utf8               Code
+  #25 = Utf8               call
+  #26 = Utf8               array
+  #27 = Utf8               ([I)I
+  #28 = Utf8               cast
+  #29 = Utf8               (Ljava/lang/Object;)Ljava/lang/String;
+  #30 = Utf8               keepPool
+{
+  public DeferredValues();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int call();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokestatic  #7                  // Method DeferredSupport.value:()I
+         3: invokestatic  #19                 // Method DeferredSupport.mark:()V
+         6: ireturn
+
+  public static int field();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #13                 // Field DeferredSupport.field:I
+         3: invokestatic  #19                 // Method DeferredSupport.mark:()V
+         6: ireturn
+
+  public static int array(int[]);
+    descriptor: ([I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: iaload
+         3: invokestatic  #19                 // Method DeferredSupport.mark:()V
+         6: ireturn
+
+  public static java.lang.String cast(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: checkcast     #17                 // class java/lang/String
+         4: invokestatic  #19                 // Method DeferredSupport.mark:()V
+         7: areturn
+
+  public static void keepPool();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=0, locals=0, args_size=0
+         0: invokestatic  #19                 // Method DeferredSupport.mark:()V
+         3: return
+}

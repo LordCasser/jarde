@@ -1,0 +1,11 @@
+{
+  "class_sha256": "7f756182d4fe018cd695676870d477bf458949e8fa3bb3a1adf62b312840ce6b",
+  "original": [
+    "22"
+  ],
+  "jarde_quotes": 0,
+  "jarde_javac": 1,
+  "hypothesis_javac": 1,
+  "jadx_javac": 0,
+  "jadx_equal": true
+}

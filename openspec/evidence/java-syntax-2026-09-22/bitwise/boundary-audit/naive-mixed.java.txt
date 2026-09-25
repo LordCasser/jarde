@@ -1,0 +1,4 @@
+public final class NaiveMixed {
+    static int left(boolean value, int other) { return value & other; }
+    static int right(int value, boolean other) { return value | other; }
+}

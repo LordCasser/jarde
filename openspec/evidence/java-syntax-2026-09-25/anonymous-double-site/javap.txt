@@ -1,0 +1,73 @@
+Compiled from "AnonymousDoubleSite.java"
+public final class AnonymousDoubleSite {
+  public AnonymousDoubleSite();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static DoubleBase create(boolean);
+    descriptor: (Z)LDoubleBase;
+    Code:
+       0: iload_0
+       1: ifeq          12
+       4: new           #7                  // class AnonymousDoubleSite$1
+       7: dup
+       8: invokespecial #9                  // Method AnonymousDoubleSite$1."<init>":()V
+      11: areturn
+      12: new           #7                  // class AnonymousDoubleSite$1
+      15: dup
+      16: invokespecial #9                  // Method AnonymousDoubleSite$1."<init>":()V
+      19: areturn
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    Code:
+       0: iconst_1
+       1: invokestatic  #13                 // Method create:(Z)LDoubleBase;
+       4: astore_1
+       5: iconst_0
+       6: invokestatic  #13                 // Method create:(Z)LDoubleBase;
+       9: astore_2
+      10: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      13: new           #25                 // class java/lang/StringBuilder
+      16: dup
+      17: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+      20: ldc           #28                 // String first=
+      22: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      25: aload_1
+      26: invokevirtual #34                 // Method DoubleBase.value:()I
+      29: invokevirtual #40                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      32: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      35: invokevirtual #47                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      38: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      41: new           #25                 // class java/lang/StringBuilder
+      44: dup
+      45: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+      48: ldc           #53                 // String second=
+      50: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      53: aload_2
+      54: invokevirtual #34                 // Method DoubleBase.value:()I
+      57: invokevirtual #40                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      60: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      63: invokevirtual #47                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      66: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      69: new           #25                 // class java/lang/StringBuilder
+      72: dup
+      73: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+      76: ldc           #55                 // String sameClass=
+      78: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      81: aload_1
+      82: invokevirtual #57                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      85: aload_2
+      86: invokevirtual #57                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      89: if_acmpne     96
+      92: iconst_1
+      93: goto          97
+      96: iconst_0
+      97: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+     100: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     103: invokevirtual #47                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     106: return
+}

@@ -1,0 +1,124 @@
+package defpackage;
+
+/* JADX INFO: loaded from: TwrAudit.class */
+public final class TwrAudit implements AutoCloseable {
+    private static int opens;
+    private static int closes;
+    private static int initializations;
+    private static int trace;
+    private final int id;
+    private final Exception closeFailure;
+
+    private TwrAudit(int i, Exception exc) {
+        this.id = i;
+        this.closeFailure = exc;
+    }
+
+    private static TwrAudit open(int i, Exception exc) {
+        opens++;
+        return new TwrAudit(i, exc);
+    }
+
+    private static TwrAudit failOpen(Exception exc) throws Exception {
+        initializations++;
+        throw exc;
+    }
+
+    private static void failBody(Exception exc) throws Exception {
+        throw exc;
+    }
+
+    private static void event(int i) {
+        trace = (trace * 10) + i;
+    }
+
+    public static void reset() {
+        opens = 0;
+        closes = 0;
+        initializations = 0;
+        trace = 0;
+    }
+
+    public static int opens() {
+        return opens;
+    }
+
+    public static int closes() {
+        return closes;
+    }
+
+    public static int initializations() {
+        return initializations;
+    }
+
+    public static int trace() {
+        return trace;
+    }
+
+    public static void normalBodyAndClose() throws Exception {
+        TwrAudit twrAuditOpen = open(1, null);
+        try {
+            event(9);
+            if (twrAuditOpen != null) {
+                twrAuditOpen.close();
+            }
+        } catch (Throwable th) {
+            if (twrAuditOpen != null) {
+                try {
+                    twrAuditOpen.close();
+                } catch (Throwable th2) {
+                    th.addSuppressed(th2);
+                }
+            }
+            throw th;
+        }
+    }
+
+    public static void bodyAndFailingClose(Exception exc, Exception exc2) throws Exception {
+        TwrAudit twrAuditOpen = open(1, exc2);
+        try {
+            event(9);
+            failBody(exc);
+            if (twrAuditOpen != null) {
+                twrAuditOpen.close();
+            }
+        } catch (Throwable th) {
+            if (twrAuditOpen != null) {
+                try {
+                    twrAuditOpen.close();
+                } catch (Throwable th2) {
+                    th.addSuppressed(th2);
+                }
+            }
+            throw th;
+        }
+    }
+
+    public static void failingInitialization(Exception exc) throws Exception {
+        TwrAudit twrAuditFailOpen = failOpen(exc);
+        try {
+            event(8);
+            if (twrAuditFailOpen != null) {
+                twrAuditFailOpen.close();
+            }
+        } catch (Throwable th) {
+            if (twrAuditFailOpen != null) {
+                try {
+                    twrAuditFailOpen.close();
+                } catch (Throwable th2) {
+                    th.addSuppressed(th2);
+                }
+            }
+            throw th;
+        }
+    }
+
+    @Override // java.lang.AutoCloseable
+    public void close() throws Exception {
+        closes++;
+        event(this.id);
+        if (this.closeFailure != null) {
+            throw this.closeFailure;
+        }
+    }
+}

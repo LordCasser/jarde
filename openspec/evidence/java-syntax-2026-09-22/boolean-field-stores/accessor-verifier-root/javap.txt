@@ -1,0 +1,34 @@
+public final class AccessorVerify {
+  private boolean f;
+    descriptor: Z
+
+  public AccessorVerify();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  private static void access$102(AccessorVerify, boolean);
+    descriptor: (LAccessorVerify;Z)V
+    Code:
+       0: aload_0
+       1: iload_1
+       2: putfield      #7                  // Field f:Z
+       5: return
+
+  public void write(int);
+    descriptor: (I)V
+    Code:
+       0: aload_0
+       1: iload_1
+       2: invokestatic  #13                 // Method access$102:(LAccessorVerify;Z)V
+       5: return
+
+  public boolean value();
+    descriptor: ()Z
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field f:Z
+       4: ireturn
+}

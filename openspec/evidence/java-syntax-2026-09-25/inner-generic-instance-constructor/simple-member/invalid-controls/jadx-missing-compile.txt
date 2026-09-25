@@ -1,0 +1,7 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/jadx-missing/sources/nested/UseInner.java:9: 错误: 找不到符号
+        return new SimpleOuter.Inner(simpleOuter, SimpleOuter.mark("A", i));
+                              ^
+  符号:   类 Inner
+  位置: 类 SimpleOuter
+1 个错误
+exit=nonzero

@@ -1,0 +1,9 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ReturnShort.class */
+public class ReturnShort {
+    /* JADX WARN: Multi-variable type inference failed */
+    public static short run(int i) {
+        return i;
+    }
+}

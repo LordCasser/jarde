@@ -1,0 +1,1 @@
+Not run: generated complete class did not compile.

@@ -1,0 +1,8 @@
+--- openspec/evidence/java-syntax-2026-09-24/string-switch-unicode/original-runtime.txt	2026-09-24 13:41:46
++++ openspec/evidence/java-syntax-2026-09-24/string-switch-unicode/jarde-run.txt	2026-09-24 13:41:53
+@@ -1,5 +0,0 @@
+-empty:empty:calls=1
+-bmp:bmp:calls=1
+-supplementary:supplementary:calls=1
+-default:default:calls=1
+-null:NullPointerException:calls=1

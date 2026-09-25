@@ -1,0 +1,13 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-overload-boundaries/whole-class-v3/jarde-source/OverloadEdges.java:117: 错误: 生成类 OverloadEdges 时出错
+    private static void lambda$lambdaRunnable$0() {
+                        ^
+  (符号lambda$lambdaRunnable$0()与OverloadEdges中的 compiler-synthesized 符号冲突)
+/tmp/jarde-overload-boundaries/whole-class-v3/jarde-source/OverloadEdges.java:1: 错误: 生成类 OverloadEdges 时出错
+// jarde: presentation of `OverloadEdges` from the class file's own declaration and one recovery run per member.
+^
+  (符号lambda$lambdaRunnable$0()与OverloadEdges中的 compiler-synthesized 符号冲突)
+2 个错误
+3 个警告

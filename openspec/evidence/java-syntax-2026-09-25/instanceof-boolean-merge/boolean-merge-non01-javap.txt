@@ -1,0 +1,40 @@
+public final class BooleanMergeControls {
+  static int calls;
+
+  public BooleanMergeControls();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static java.lang.Object value(java.lang.Object);
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: aload_0
+       9: areturn
+
+  static boolean positive(java.lang.Object);
+    Code:
+       0: aload_0
+       1: invokestatic  #13                 // Method value:(Ljava/lang/Object;)Ljava/lang/Object;
+       4: instanceof    #17                 // class java/lang/String
+       7: ifeq          14
+      10: iconst_2
+      11: goto          15
+      14: iconst_3
+      15: ireturn
+
+  static boolean negative(java.lang.Object);
+    Code:
+       0: aload_0
+       1: invokestatic  #13                 // Method value:(Ljava/lang/Object;)Ljava/lang/Object;
+       4: instanceof    #17                 // class java/lang/String
+       7: ifeq          14
+      10: iconst_0
+      11: goto          15
+      14: iconst_1
+      15: ireturn
+}

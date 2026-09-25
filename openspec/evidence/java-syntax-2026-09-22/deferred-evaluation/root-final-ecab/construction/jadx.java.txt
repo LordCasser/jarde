@@ -1,0 +1,14 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ConstructionOrder.class */
+public class ConstructionOrder {
+    public static OrderValue direct() {
+        OrderValue orderValue = new OrderValue();
+        OrderEffects.mark();
+        return orderValue;
+    }
+
+    public static void keepPool() {
+        OrderEffects.mark();
+    }
+}

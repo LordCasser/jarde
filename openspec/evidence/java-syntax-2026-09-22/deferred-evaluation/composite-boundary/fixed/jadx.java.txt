@@ -1,0 +1,32 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DeferredComposite.class */
+public class DeferredComposite {
+    public static int callAdd() {
+        int iValue = DeferredSupport.value() + 1;
+        DeferredSupport.mark();
+        return iValue;
+    }
+
+    public static int callNeg() {
+        int i = -DeferredSupport.value();
+        DeferredSupport.mark();
+        return i;
+    }
+
+    public static int fieldAdd() {
+        int i = DeferredSupport.field + 1;
+        DeferredSupport.mark();
+        return i;
+    }
+
+    public static int divAdd(int i, int i2) {
+        int i3 = (i / i2) + 1;
+        DeferredSupport.mark();
+        return i3;
+    }
+
+    public static void keepPool() {
+        DeferredSupport.mark();
+    }
+}

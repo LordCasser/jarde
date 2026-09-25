@@ -1,0 +1,48 @@
+public class SpecialProbe extends BaseProbe implements DefaultProbe {
+  public SpecialProbe();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method BaseProbe."<init>":()V
+       4: return
+
+  public int value();
+    descriptor: ()I
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method BaseProbe.value:()I
+       4: iconst_1
+       5: iadd
+       6: ireturn
+
+  public int defaultCall();
+    descriptor: ()I
+    Code:
+       0: aload_0
+       1: invokespecial #11                 // InterfaceMethod DefaultProbe.value:()I
+       4: ireturn
+
+  private int privateHelper(int);
+    descriptor: (I)I
+    Code:
+       0: iload_1
+       1: iconst_2
+       2: iadd
+       3: ireturn
+
+  public int callOwnPrivate(int);
+    descriptor: (I)I
+    Code:
+       0: aload_0
+       1: iload_1
+       2: invokespecial #14                 // Method privateHelper:(I)I
+       5: ireturn
+
+  public int callOtherPrivate(SpecialProbe, int);
+    descriptor: (LSpecialProbe;I)I
+    Code:
+       0: aload_1
+       1: iload_2
+       2: invokespecial #14                 // Method privateHelper:(I)I
+       5: ireturn
+}

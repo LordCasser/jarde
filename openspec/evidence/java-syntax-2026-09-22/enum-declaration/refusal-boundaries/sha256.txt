@@ -1,0 +1,3 @@
+286005bc6edb857700851506740ba1e30139f1ae4348afc1bb219917a04cc7fd  classes-original/Measure.class
+17512d21cc493ff73ca1bc33fe02d33594232c1140f4cd6b4d780800a519c944  patched-name-alias/Measure.class
+5b206ba13360fe3a5fb4d595ad4f0124ffb3470b19dc362d4ec85de1e79ddb38  patched-ordinal-two/Measure.class

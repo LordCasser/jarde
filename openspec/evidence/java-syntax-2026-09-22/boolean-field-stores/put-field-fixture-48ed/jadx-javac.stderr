@@ -1,0 +1,23 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/put-field-fixture-48ed/work/jadx-output/sources/defpackage/ZFieldStores.java:12: 错误: 不兼容的类型: int无法转换为boolean
+        this.instanceFlag = i;
+                            ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/put-field-fixture-48ed/work/jadx-output/sources/defpackage/ZFieldStores.java:17: 错误: 不兼容的类型: int无法转换为boolean
+        this.instanceFlag = ZFieldStoreEffects.value(i, z);
+                                                    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/put-field-fixture-48ed/work/jadx-output/sources/defpackage/ZFieldStores.java:22: 错误: 不兼容的类型: int无法转换为boolean
+        staticFlag = i;
+                     ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/put-field-fixture-48ed/work/jadx-output/sources/defpackage/ZFieldStores.java:27: 错误: 不兼容的类型: int无法转换为boolean
+        staticFlag = ZFieldStoreEffects.value(i, z);
+                                             ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/put-field-fixture-48ed/work/jadx-output/sources/defpackage/ZFieldStores.java:32: 错误: 不兼容的类型: int无法转换为boolean
+        zFieldStores.instanceFlag = i;
+                                    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/put-field-fixture-48ed/work/jadx-output/sources/defpackage/ZFieldStores.java:37: 错误: 不兼容的类型: int无法转换为boolean
+        zFieldStores.instanceFlag = ZFieldStoreEffects.value(i, z);
+                                                            ^
+6 个错误
+3 个警告

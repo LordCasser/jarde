@@ -1,0 +1,24 @@
+public class InterfaceBoundaryProbe {
+  public InterfaceBoundaryProbe();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int take(java.lang.Runnable);
+    descriptor: (Ljava/lang/Runnable;)I
+    Code:
+       0: bipush        7
+       2: ireturn
+
+  public static int caller(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)I
+    Code:
+       0: aload_0
+       1: nop
+       2: nop
+       3: nop
+       4: invokestatic  #9                  // Method take:(Ljava/lang/Runnable;)I
+       7: ireturn
+}

@@ -1,0 +1,21 @@
+stage statuses:
+  source_javac: 0
+  source_runtime: 0
+  patch: 0
+  patched_runner_javac: 0
+  patched_runtime: 0
+  jadx: 0
+  jadx_javac: 1
+  jadx_runtime: None
+  jarde_cli: 0
+  jarde_javac: 0
+  jarde_runtime: 0
+Code attributes hashed: 11; unchanged: True
+patched JVM output lines: 40
+jarde pre-implementation RED: True; differing lines: 26
+required semantic checks:
+  direct_null_is_npe: True
+  producer_failure_precedes_null_check: True
+  normal_producer_runs_before_null_check: True
+  ordinary_instance_parameter: True
+  ordinary_static_parameter: True

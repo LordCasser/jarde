@@ -1,0 +1,20 @@
+// jarde: presentation of `ReturnShort` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ReturnShort extends java.lang.Object {
+    public ReturnShort() {
+        // @method <init>()V
+        // @declaration a constructor of `ReturnShort`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static short run(int arg0) {
+        // jarde: not recovered: the recovery run for `run(I)S` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method run(I)S
+        // @declaration a static method of `ReturnShort`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the value at BCI 0 is presented as `int` and the member's own descriptor returns `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+}

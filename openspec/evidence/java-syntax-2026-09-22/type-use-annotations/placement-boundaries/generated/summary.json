@@ -1,0 +1,20 @@
+{
+  "sources": {
+    "PlaceMark.java": "5bb718e989cfcacb0d9310b8727e4571b11ea5c39bf2a42b73beb4dcbc3a2236",
+    "PlacementSubject.java": "2af8f953997c67c49bab5d7b2abe5f72684164006c095f9b7b6a3b8f00cf99b9",
+    "PlacementRunner.java": "35a7aeecf705f77ed9e4937819afcb2949f8245a827f34785aed618d85159f0c"
+  },
+  "commands": {
+    "javac-version": 0,
+    "java-version": 0,
+    "javac": 0,
+    "java-verify-run": 0,
+    "javap-subject": 0,
+    "javap-annotation": 0
+  },
+  "class_sha256": {
+    "PlaceMark.class": "d3727692c895a9953a6f9fbfad2798efc2ed1fb0db03852b52e2aa866b52b09f",
+    "PlacementRunner.class": "c2f55cff713df337783313a102595d4332d00ed9382807724fdd68b7fb53cd28",
+    "PlacementSubject.class": "32d046c8674d258c89c64f6934eed9562a9f1b67b0fd89e9b80718433c9cfeb3"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "class_sha256": "f77378eebaa6230967194214ca0ef2ffd3e1a3f9235e3ff92e567b9c98f8677f",
+  "patches": [
+    {
+      "method": "nested",
+      "before": "b80007b8000dac",
+      "after": "b80007b80011b8000db80011ac"
+    }
+  ],
+  "cases": 5,
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_differences": 0,
+  "jadx_javac": 0,
+  "jadx_equal": true,
+  "cli_sha256": "7747b60a17dc635f0e8402d867cb9e74f9472a62057eb4865dbd8f4a207dfb34"
+}

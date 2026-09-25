@@ -1,0 +1,134 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/object-array-body-if-red/compiled/original/ObjectArrayForeach.class
+  Last modified 2026年9月23日; size 635 bytes
+  SHA-256 checksum e0b6e524da02db14fae69bb6924c7dd30c23d8b42c81b2e68c996eeee444c4db
+final class ObjectArrayForeach
+  minor version: 0
+  major version: 52
+  flags: (0x0030) ACC_FINAL, ACC_SUPER
+  this_class: #19                         // ObjectArrayForeach
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 3, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #2.#8          // java/lang/Object.hashCode:()I
+   #8 = NameAndType        #9:#10         // hashCode:()I
+   #9 = Utf8               hashCode
+  #10 = Utf8               ()I
+  #11 = InterfaceMethodref #12.#13        // java/util/function/Supplier.get:()Ljava/lang/Object;
+  #12 = Class              #14            // java/util/function/Supplier
+  #13 = NameAndType        #15:#16        // get:()Ljava/lang/Object;
+  #14 = Utf8               java/util/function/Supplier
+  #15 = Utf8               get
+  #16 = Utf8               ()Ljava/lang/Object;
+  #17 = Class              #18            // "[Ljava/lang/Object;"
+  #18 = Utf8               [Ljava/lang/Object;
+  #19 = Class              #20            // ObjectArrayForeach
+  #20 = Utf8               ObjectArrayForeach
+  #21 = Utf8               Code
+  #22 = Utf8               sumHash
+  #23 = Utf8               ([Ljava/lang/Object;)I
+  #24 = Utf8               StackMapTable
+  #25 = Utf8               sumHashFrom
+  #26 = Utf8               (Ljava/util/function/Supplier;)I
+  #27 = Utf8               Signature
+  #28 = Utf8               (Ljava/util/function/Supplier<[Ljava/lang/Object;>;)I
+{
+  ObjectArrayForeach();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static int sumHash(java.lang.Object[]);
+    descriptor: ([Ljava/lang/Object;)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=6, args_size=1
+         0: iconst_0
+         1: istore_1
+         2: aload_0
+         3: astore_2
+         4: aload_2
+         5: arraylength
+         6: istore_3
+         7: iconst_0
+         8: istore        4
+        10: iload         4
+        12: iload_3
+        13: if_icmpge     41
+        16: aload_2
+        17: iload         4
+        19: aaload
+        20: astore        5
+        22: aload         5
+        24: ifnull        35
+        27: iload_1
+        28: aload         5
+        30: invokevirtual #7                  // Method java/lang/Object.hashCode:()I
+        33: iadd
+        34: istore_1
+        35: iinc          4, 1
+        38: goto          10
+        41: iload_1
+        42: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 255 /* full_frame */
+          offset_delta = 10
+          locals = [ class "[Ljava/lang/Object;", int, class "[Ljava/lang/Object;", int, int ]
+          stack = []
+        frame_type = 24 /* same */
+        frame_type = 248 /* chop */
+          offset_delta = 5
+
+  static int sumHashFrom(java.util.function.Supplier<java.lang.Object[]>);
+    descriptor: (Ljava/util/function/Supplier;)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=6, args_size=1
+         0: iconst_0
+         1: istore_1
+         2: aload_0
+         3: invokeinterface #11,  1           // InterfaceMethod java/util/function/Supplier.get:()Ljava/lang/Object;
+         8: checkcast     #17                 // class "[Ljava/lang/Object;"
+        11: astore_2
+        12: aload_2
+        13: arraylength
+        14: istore_3
+        15: iconst_0
+        16: istore        4
+        18: iload         4
+        20: iload_3
+        21: if_icmpge     49
+        24: aload_2
+        25: iload         4
+        27: aaload
+        28: astore        5
+        30: aload         5
+        32: ifnull        43
+        35: iload_1
+        36: aload         5
+        38: invokevirtual #7                  // Method java/lang/Object.hashCode:()I
+        41: iadd
+        42: istore_1
+        43: iinc          4, 1
+        46: goto          18
+        49: iload_1
+        50: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 255 /* full_frame */
+          offset_delta = 18
+          locals = [ class java/util/function/Supplier, int, class "[Ljava/lang/Object;", int, int ]
+          stack = []
+        frame_type = 24 /* same */
+        frame_type = 248 /* chop */
+          offset_delta = 5
+    Signature: #28                          // (Ljava/util/function/Supplier<[Ljava/lang/Object;>;)I
+}

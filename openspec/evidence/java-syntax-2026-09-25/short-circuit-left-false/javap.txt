@@ -1,0 +1,75 @@
+Compiled from "ShortCircuitFalse.java"
+final class ShortCircuitFalse {
+  static boolean result;
+    descriptor: Z
+
+  static int calls;
+    descriptor: I
+
+  ShortCircuitFalse();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static boolean rhs();
+    descriptor: ()Z
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: iconst_1
+       9: ireturn
+
+  static void assign(boolean);
+    descriptor: (Z)V
+    Code:
+       0: iload_0
+       1: ifeq          14
+       4: invokestatic  #13                 // Method rhs:()Z
+       7: ifeq          14
+      10: iconst_1
+      11: goto          15
+      14: iconst_0
+      15: putstatic     #17                 // Field result:Z
+      18: return
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    Code:
+       0: iconst_0
+       1: invokestatic  #21                 // Method assign:(Z)V
+       4: getstatic     #25                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       7: new           #31                 // class java/lang/StringBuilder
+      10: dup
+      11: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+      14: ldc           #34                 // String false-result=
+      16: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: getstatic     #17                 // Field result:Z
+      22: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+      25: ldc           #43                 // String ,calls=
+      27: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      30: getstatic     #7                  // Field calls:I
+      33: invokevirtual #45                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      36: invokevirtual #48                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      39: invokevirtual #52                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      42: iconst_1
+      43: invokestatic  #21                 // Method assign:(Z)V
+      46: getstatic     #25                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      49: new           #31                 // class java/lang/StringBuilder
+      52: dup
+      53: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+      56: ldc           #58                 // String true-result=
+      58: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: getstatic     #17                 // Field result:Z
+      64: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+      67: ldc           #43                 // String ,calls=
+      69: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      72: getstatic     #7                  // Field calls:I
+      75: invokevirtual #45                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      78: invokevirtual #48                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      81: invokevirtual #52                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      84: return
+}

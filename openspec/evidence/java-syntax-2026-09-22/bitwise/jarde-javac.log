@@ -1,0 +1,50 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:21: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:32: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:43: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:54: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:65: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:76: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:91: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:102: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:113: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:124: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:135: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:146: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:157: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:169: 错误: 缺少返回语句
+    }
+    ^
+/tmp/jarde-bitwise-audit/recovered/BitwiseAudit.java:180: 错误: 缺少返回语句
+    }
+    ^
+15 个错误
+3 个警告

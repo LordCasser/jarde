@@ -1,0 +1,60 @@
+// jarde: presentation of `CloneProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class CloneProbe extends java.lang.Object {
+    public CloneProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `CloneProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int[] ints(int[] arg0) {
+        // @method ints([I)[I
+        // @declaration a static method of `CloneProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (int[]) arg0.clone();
+    }
+
+    public static java.lang.String[] refs(java.lang.String[] arg0) {
+        // @method refs([Ljava/lang/String;)[Ljava/lang/String;
+        // @declaration a static method of `CloneProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String[]) arg0.clone();
+    }
+
+    public static int[][] outer(int[][] arg0) {
+        // @method outer([[I)[[I
+        // @declaration a static method of `CloneProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (int[][]) arg0.clone();
+    }
+
+    public static java.lang.Object[] widen(java.lang.String[] arg0) {
+        // @method widen([Ljava/lang/String;)[Ljava/lang/Object;
+        // @declaration a static method of `CloneProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.Object[]) arg0.clone();
+    }
+
+    public static int accept(java.lang.Object arg0) {
+        // @method accept(Ljava/lang/Object;)I
+        // @declaration a static method of `CloneProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 1;
+    }
+
+    public static int accept(int[] arg0) {
+        // @method accept([I)I
+        // @declaration a static method of `CloneProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 2;
+    }
+
+    public static int overload(int[] arg0) {
+        // @method overload([I)I
+        // @declaration a static method of `CloneProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return accept((int[]) arg0.clone());
+    }
+}

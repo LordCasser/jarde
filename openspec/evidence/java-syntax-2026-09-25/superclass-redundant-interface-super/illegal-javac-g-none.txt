@@ -1,0 +1,10 @@
+exit=1
+<WORK>/Probe.java:8: 错误: 默认超级调用中的类型限定符A错误
+    public int m() { return A.super.m(); }
+                             ^
+  冗余接口 A 已由 Base 扩展
+<WORK>/Probe.java:9: 错误: 默认超级调用中的类型限定符A错误
+    int call() { return A.super.m(); }
+                         ^
+  冗余接口 A 已由 Base 扩展
+2 个错误

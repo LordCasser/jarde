@@ -1,0 +1,13 @@
+public final class InterfaceBoundaryProbe {
+    public static int selects;
+
+    static InterfaceStaticOwner receiver() {
+        selects++;
+        return null;
+    }
+
+    public static int call() {
+        receiver();
+        return InterfaceStaticOwner.value();
+    }
+}

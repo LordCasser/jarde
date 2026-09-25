@@ -1,0 +1,336 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/canonical-nan-fneg-dneg/FloatingConstants.class
+  Last modified 2026年9月23日; size 1724 bytes
+  SHA-256 checksum 226eb2c15883f4fed13d337ae183b2c9297a578b4527945d9024036cee3b989f
+public class FloatingConstants
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #52                         // FloatingConstants
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 29, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Float              -0.0f
+   #8 = Float              -1.0f
+   #9 = Float              0.1f
+  #10 = Class              #11            // java/lang/Float
+  #11 = Utf8               java/lang/Float
+  #12 = Float              1.4E-45f
+  #13 = Float              1.1754944E-38f
+  #14 = Float              3.4028235E38f
+  #15 = Float              NaNf
+  #16 = Float              Infinityf
+  #17 = Float              -Infinityf
+  #18 = Double             -0.0d
+  #20 = Double             2.0d
+  #22 = Double             -1.0d
+  #24 = Double             0.1d
+  #26 = Class              #27            // java/lang/Double
+  #27 = Utf8               java/lang/Double
+  #28 = Double             4.9E-324d
+  #30 = Double             2.2250738585072014E-308d
+  #32 = Double             1.7976931348623157E308d
+  #34 = Double             NaNd
+  #36 = Double             Infinityd
+  #38 = Double             -Infinityd
+  #40 = Float              0.25f
+  #41 = Methodref          #42.#43        // FloatingSupport.pick:(F)I
+  #42 = Class              #44            // FloatingSupport
+  #43 = NameAndType        #45:#46        // pick:(F)I
+  #44 = Utf8               FloatingSupport
+  #45 = Utf8               pick
+  #46 = Utf8               (F)I
+  #47 = Double             0.25d
+  #49 = Methodref          #42.#50        // FloatingSupport.pick:(D)I
+  #50 = NameAndType        #45:#51        // pick:(D)I
+  #51 = Utf8               (D)I
+  #52 = Class              #53            // FloatingConstants
+  #53 = Utf8               FloatingConstants
+  #54 = Utf8               Code
+  #55 = Utf8               floatZero
+  #56 = Utf8               ()F
+  #57 = Utf8               floatNegativeZero
+  #58 = Utf8               floatOne
+  #59 = Utf8               floatTwo
+  #60 = Utf8               floatNegativeOne
+  #61 = Utf8               floatFraction
+  #62 = Utf8               floatMinimum
+  #63 = Utf8               floatNormal
+  #64 = Utf8               floatMaximum
+  #65 = Utf8               floatNan
+  #66 = Utf8               floatPositiveInfinity
+  #67 = Utf8               floatNegativeInfinity
+  #68 = Utf8               doubleZero
+  #69 = Utf8               ()D
+  #70 = Utf8               doubleNegativeZero
+  #71 = Utf8               doubleOne
+  #72 = Utf8               doubleTwo
+  #73 = Utf8               doubleNegativeOne
+  #74 = Utf8               doubleFraction
+  #75 = Utf8               doubleMinimum
+  #76 = Utf8               doubleNormal
+  #77 = Utf8               doubleMaximum
+  #78 = Utf8               doubleNan
+  #79 = Utf8               doublePositiveInfinity
+  #80 = Utf8               doubleNegativeInfinity
+  #81 = Utf8               floatArgument
+  #82 = Utf8               ()I
+  #83 = Utf8               doubleArgument
+  #84 = Utf8               nested
+  #85 = Utf8               (F)F
+  #86 = Utf8               threshold
+  #87 = Utf8               StackMapTable
+{
+  public FloatingConstants();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static float floatZero();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: fconst_0
+         1: freturn
+
+  public static float floatNegativeZero();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #7                  // float -0.0f
+         2: freturn
+
+  public static float floatOne();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: fconst_1
+         1: freturn
+
+  public static float floatTwo();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: fconst_2
+         1: freturn
+
+  public static float floatNegativeOne();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #8                  // float -1.0f
+         2: freturn
+
+  public static float floatFraction();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #9                  // float 0.1f
+         2: freturn
+
+  public static float floatMinimum();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #12                 // float 1.4E-45f
+         2: freturn
+
+  public static float floatNormal();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #13                 // float 1.1754944E-38f
+         2: freturn
+
+  public static float floatMaximum();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #14                 // float 3.4028235E38f
+         2: freturn
+
+  public static float floatNan();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #15                 // float NaNf
+         2: fneg
+         3: freturn
+
+  public static float floatPositiveInfinity();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #16                 // float Infinityf
+         2: freturn
+
+  public static float floatNegativeInfinity();
+    descriptor: ()F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #17                 // float -Infinityf
+         2: freturn
+
+  public static double doubleZero();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: dconst_0
+         1: dreturn
+
+  public static double doubleNegativeZero();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #18                 // double -0.0d
+         3: dreturn
+
+  public static double doubleOne();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: dconst_1
+         1: dreturn
+
+  public static double doubleTwo();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #20                 // double 2.0d
+         3: dreturn
+
+  public static double doubleNegativeOne();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #22                 // double -1.0d
+         3: dreturn
+
+  public static double doubleFraction();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #24                 // double 0.1d
+         3: dreturn
+
+  public static double doubleMinimum();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #28                 // double 4.9E-324d
+         3: dreturn
+
+  public static double doubleNormal();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #30                 // double 2.2250738585072014E-308d
+         3: dreturn
+
+  public static double doubleMaximum();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #32                 // double 1.7976931348623157E308d
+         3: dreturn
+
+  public static double doubleNan();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #34                 // double NaNd
+         3: dneg
+         4: dreturn
+
+  public static double doublePositiveInfinity();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #36                 // double Infinityd
+         3: dreturn
+
+  public static double doubleNegativeInfinity();
+    descriptor: ()D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #38                 // double -Infinityd
+         3: dreturn
+
+  public static int floatArgument();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #40                 // float 0.25f
+         2: invokestatic  #41                 // Method FloatingSupport.pick:(F)I
+         5: ireturn
+
+  public static int doubleArgument();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #47                 // double 0.25d
+         3: invokestatic  #49                 // Method FloatingSupport.pick:(D)I
+         6: ireturn
+
+  public static float nested(float);
+    descriptor: (F)F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: fload_0
+         1: ldc           #7                  // float -0.0f
+         3: fadd
+         4: fneg
+         5: freturn
+
+  public static int threshold(float);
+    descriptor: (F)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: fload_0
+         1: fconst_0
+         2: fcmpl
+         3: ifle          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+}

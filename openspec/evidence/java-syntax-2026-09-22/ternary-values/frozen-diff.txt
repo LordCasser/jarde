@@ -1,0 +1,19 @@
+--- original-run.txt
++++ frozen-run.txt
+@@ -1,16 +0,0 @@
+-returned:true=7:trace=1
+-returned:false=11:trace=2
+-assigned:true=7:trace=1
+-assigned:false=11:trace=2
+-arithmetic:true=15:trace=1
+-arithmetic:false=23:trace=2
+-call:true=107:trace=13
+-call:false=111:trace=23
+-reference:true=null:trace=0
+-reference:false=value:trace=0
+-overload:true=string:trace=4
+-overload:false=string:trace=4
+-throwing:true:failA=throws:java.lang.IllegalStateException:a:trace=1
+-throwing:false:failB=throws:java.lang.IllegalArgumentException:b:trace=2
+-throwing:true:onlyA=throws:java.lang.IllegalStateException:a:trace=1
+-throwing:false:onlyB=throws:java.lang.IllegalArgumentException:b:trace=12

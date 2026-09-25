@@ -1,0 +1,19 @@
+BLOCKS
+block=0 entry=[(Local(0), ValueId(0))] exit=[(Local(0), ValueId(0))]
+block=4 entry=[(Local(0), ValueId(0))] exit=[(Local(0), ValueId(0)), (Local(1), ValueId(15)), (Local(2), ValueId(11))]
+block=20 entry=[(Local(0), ValueId(0))] exit=[(Local(0), ValueId(0)), (Local(1), ValueId(19)), (Local(2), ValueId(17))]
+block=25 entry=[(Local(0), ValueId(0)), (Local(1), ValueId(2))] exit=[(Local(0), ValueId(0)), (Local(1), ValueId(2))]
+SLOT 2/3 INSTRUCTIONS
+block=4 bci=12 reads=[] writes=[(Local(2), ValueId(11))]
+block=4 bci=13 reads=[(Local(2), ValueId(11))] writes=[]
+block=20 bci=22 reads=[] writes=[(Local(2), ValueId(17))]
+block=20 bci=23 reads=[(Local(2), ValueId(17))] writes=[]
+VALUES FOR SLOT 2/3 DEFINITIONS AND USES
+vValueId(11) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 4, path: [] }, bci: 12 } replaced=None uses=[SsaUse { block: CanonicalBlockId { bci: 4, path: [] }, bci: Some(13) }]
+vValueId(17) ty=Int def=Instruction { block: CanonicalBlockId { bci: 20, path: [] }, bci: 22 } replaced=None uses=[SsaUse { block: CanonicalBlockId { bci: 20, path: [] }, bci: Some(23) }]
+PHIS FOR SLOT 2/3
+EDGES
+0 -> 4 Normal
+0 -> 20 Normal
+4 -> 25 Normal
+20 -> 25 Normal

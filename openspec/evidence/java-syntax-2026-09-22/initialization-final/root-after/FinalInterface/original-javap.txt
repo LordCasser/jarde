@@ -1,0 +1,57 @@
+Classfile /tmp/jarde-final-initialization-root-after/FinalInterface/original/FinalInterface.class
+  Last modified 2026年9月23日; size 320 bytes
+  SHA-256 checksum 9f073a1901c0a49a5230d03053ab797010e8eaf991e81ada81c15c029e37947f
+public interface FinalInterface
+  minor version: 0
+  major version: 52
+  flags: (0x0601) ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT
+  this_class: #2                          // FinalInterface
+  super_class: #17                        // java/lang/Object
+  interfaces: 0, fields: 1, methods: 2, attributes: 0
+Constant pool:
+   #1 = Fieldref           #2.#3          // FinalInterface.VALUE:Ljava/lang/Object;
+   #2 = Class              #4             // FinalInterface
+   #3 = NameAndType        #5:#6          // VALUE:Ljava/lang/Object;
+   #4 = Utf8               FinalInterface
+   #5 = Utf8               VALUE
+   #6 = Utf8               Ljava/lang/Object;
+   #7 = Methodref          #8.#9          // FinalSupport.check:(Ljava/lang/Object;)I
+   #8 = Class              #10            // FinalSupport
+   #9 = NameAndType        #11:#12        // check:(Ljava/lang/Object;)I
+  #10 = Utf8               FinalSupport
+  #11 = Utf8               check
+  #12 = Utf8               (Ljava/lang/Object;)I
+  #13 = Methodref          #8.#14         // FinalSupport.object:()Ljava/lang/Object;
+  #14 = NameAndType        #15:#16        // object:()Ljava/lang/Object;
+  #15 = Utf8               object
+  #16 = Utf8               ()Ljava/lang/Object;
+  #17 = Class              #18            // java/lang/Object
+  #18 = Utf8               java/lang/Object
+  #19 = Utf8               result
+  #20 = Utf8               ()I
+  #21 = Utf8               Code
+  #22 = Utf8               <clinit>
+  #23 = Utf8               ()V
+{
+  public static final java.lang.Object VALUE;
+    descriptor: Ljava/lang/Object;
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static int result();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #1                  // Field VALUE:Ljava/lang/Object;
+         3: invokestatic  #7                  // Method FinalSupport.check:(Ljava/lang/Object;)I
+         6: ireturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokestatic  #13                 // Method FinalSupport.object:()Ljava/lang/Object;
+         3: putstatic     #1                  // Field VALUE:Ljava/lang/Object;
+         6: return
+}

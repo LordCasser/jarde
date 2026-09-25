@@ -1,0 +1,163 @@
+// jarde: presentation of `InstanceOfProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class InstanceOfProbe extends java.lang.Object {
+    public InstanceOfProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `InstanceOfProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static boolean objectString(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `objectString(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method objectString(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean nullValue() {
+        // jarde: not recovered: the recovery run for `nullValue()Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nullValue()Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean objectRunnable(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `objectRunnable(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method objectRunnable(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean primitiveArray(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `primitiveArray(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method primitiveArray(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean referenceArray(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `referenceArray(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method referenceArray(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean multiArray(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `multiArray(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method multiArray(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean widenedString(java.lang.String arg0) {
+        // jarde: not recovered: the recovery run for `widenedString(Ljava/lang/String;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method widenedString(Ljava/lang/String;)Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean called() {
+        // @method called()Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        InstanceOfSupport.value();
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 3, which produces no expression this subset writes
+    }
+
+    public static boolean local(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `local(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method local(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+        // @bytecode 6
+        // the value at BCI 6 is returned from a method whose own descriptor returns `Z`, and this layer has no evidence that the value is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the member's own signature rejects
+    }
+
+    public static boolean parameter(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `parameter(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method parameter(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 7 4
+        // the value at BCI 7 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static int branch(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `branch(Ljava/lang/Object;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method branch(Ljava/lang/Object;)I
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 5, which produces no expression this subset writes
+    }
+
+    public static boolean functional() {
+        // jarde: not recovered: the recovery run for `functional()Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method functional()Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // nothing in this method reads the instance the site creates, so the invocation the site makes has no place in the body
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 8
+        // the value at BCI 8 comes from an Other at BCI 5, which produces no expression this subset writes
+    }
+
+    private static boolean keep(boolean arg0) {
+        // @method keep(Z)Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0;
+    }
+
+    private static void empty() {
+        // @method empty()V
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+}

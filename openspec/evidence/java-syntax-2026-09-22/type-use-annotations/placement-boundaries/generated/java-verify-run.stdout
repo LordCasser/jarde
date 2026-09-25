@@ -1,0 +1,6 @@
+field scalarField declaration=[@PlaceMark("field-scalar")] type=[@PlaceMark("field-scalar")]
+field qualifiedField declaration=[] type=[@PlaceMark("field-qualified")]
+method scalarMethod declaration=[@PlaceMark("method-scalar")] returnType=[@PlaceMark("method-scalar")]
+parameter 0 declaration=[@PlaceMark("parameter-scalar")] type=[@PlaceMark("parameter-scalar")]
+parameter 1 declaration=[] type=[@PlaceMark("parameter-qualified")]
+method qualifiedMethod declaration=[] returnType=[@PlaceMark("method-qualified")]

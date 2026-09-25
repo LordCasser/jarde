@@ -1,0 +1,2 @@
+raw:java.lang.Integer:7
+typed:java.lang.ClassCastException

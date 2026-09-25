@@ -1,0 +1,4 @@
+constant=5
+computed=7
+object=java.lang.Object
+instance=9

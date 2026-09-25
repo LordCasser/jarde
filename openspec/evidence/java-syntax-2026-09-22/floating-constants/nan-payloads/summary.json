@@ -1,0 +1,32 @@
+[
+  {
+    "variant": "positive-quiet",
+    "float_bits": "7fc12345",
+    "double_bits": "7ff8123456789abc",
+    "original_nan_lines": [
+      "floatNan=7fc12345",
+      "doubleNan=7ff8123456789abc"
+    ],
+    "jadx_mismatches": 2
+  },
+  {
+    "variant": "negative-quiet",
+    "float_bits": "ffc12345",
+    "double_bits": "fff8123456789abc",
+    "original_nan_lines": [
+      "floatNan=ffc12345",
+      "doubleNan=fff8123456789abc"
+    ],
+    "jadx_mismatches": 2
+  },
+  {
+    "variant": "positive-signaling",
+    "float_bits": "7f812345",
+    "double_bits": "7ff0123456789abc",
+    "original_nan_lines": [
+      "floatNan=7f812345",
+      "doubleNan=7ff0123456789abc"
+    ],
+    "jadx_mismatches": 2
+  }
+]

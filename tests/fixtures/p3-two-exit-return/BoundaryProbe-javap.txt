@@ -1,0 +1,113 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-two-exit-return/BoundaryProbe.class
+  Last modified 2026年9月25日; size 491 bytes
+  SHA-256 checksum 35a1e4716c8898cba3b9fff3430e279a6768f1386497541e74fdc13daf4ec040
+public final class BoundaryProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #17                         // BoundaryProbe
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 4, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = String             #8             // x
+   #8 = Utf8               x
+   #9 = Methodref          #10.#11        // java/lang/String.equals:(Ljava/lang/Object;)Z
+  #10 = Class              #12            // java/lang/String
+  #11 = NameAndType        #13:#14        // equals:(Ljava/lang/Object;)Z
+  #12 = Utf8               java/lang/String
+  #13 = Utf8               equals
+  #14 = Utf8               (Ljava/lang/Object;)Z
+  #15 = Class              #16            // java/lang/RuntimeException
+  #16 = Utf8               java/lang/RuntimeException
+  #17 = Class              #18            // BoundaryProbe
+  #18 = Utf8               BoundaryProbe
+  #19 = Utf8               Code
+  #20 = Utf8               third
+  #21 = Utf8               (ZZ)Z
+  #22 = Utf8               StackMapTable
+  #23 = Utf8               backedge
+  #24 = Utf8               (I)Z
+  #25 = Utf8               exception
+  #26 = Utf8               (Ljava/lang/String;)Z
+{
+  public BoundaryProbe();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static boolean third(boolean, boolean);
+    descriptor: (ZZ)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: iload_0
+         1: ifeq          6
+         4: iconst_1
+         5: ireturn
+         6: iload_1
+         7: ifeq          12
+        10: iconst_0
+        11: ireturn
+        12: iconst_1
+        13: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 6 /* same */
+        frame_type = 5 /* same */
+
+  public static boolean backedge(int);
+    descriptor: (I)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iload_0
+         1: ifle          17
+         4: iload_0
+         5: iconst_1
+         6: if_icmpne     11
+         9: iconst_1
+        10: ireturn
+        11: iinc          0, -1
+        14: goto          0
+        17: iconst_0
+        18: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 0 /* same */
+        frame_type = 10 /* same */
+        frame_type = 5 /* same */
+
+  public static boolean exception(java.lang.String);
+    descriptor: (Ljava/lang/String;)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: aload_0
+         1: ldc           #7                  // String x
+         3: invokevirtual #9                  // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+         6: ifeq          11
+         9: iconst_1
+        10: ireturn
+        11: goto          17
+        14: astore_1
+        15: iconst_0
+        16: ireturn
+        17: iconst_0
+        18: ireturn
+      Exception table:
+         from    to  target type
+             0    10    14   Class java/lang/RuntimeException
+      StackMapTable: number_of_entries = 3
+        frame_type = 11 /* same */
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class java/lang/RuntimeException ]
+        frame_type = 2 /* same */
+}

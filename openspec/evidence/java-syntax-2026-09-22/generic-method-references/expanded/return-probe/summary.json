@@ -1,0 +1,96 @@
+{
+  "class_sha256": "adfbe98a1409fd4b7cde9020ad66633f3f4bd2d3227e634d495721b81d1c1f3c",
+  "class_bytes": 821,
+  "methods": 2,
+  "code_attributes": 2,
+  "bootstrap_entries": 1,
+  "outputs": {
+    "original": {
+      "string": [
+        "raw:java.lang.String:text",
+        "typed:java.lang.String:text"
+      ],
+      "integer": [
+        "raw:java.lang.Integer:7",
+        "typed:java.lang.ClassCastException"
+      ]
+    },
+    "jarde": {
+      "string": [
+        "raw:java.lang.String:text",
+        "typed:java.lang.String:text"
+      ],
+      "integer": [
+        "raw:java.lang.Integer:7",
+        "typed:java.lang.ClassCastException"
+      ]
+    },
+    "jadx": {
+      "string": [
+        "raw:java.lang.String:text",
+        "typed:java.lang.String:text"
+      ],
+      "integer": [
+        "raw:java.lang.Integer:7",
+        "typed:java.lang.ClassCastException"
+      ]
+    }
+  },
+  "jarde_cli_exit": 0,
+  "cli_hash_input": "6e2fce612d014ed327c9891981805720a1d5d276e68daeb3be43f8f33ff2dd9a",
+  "cli_hash_end": "6e2fce612d014ed327c9891981805720a1d5d276e68daeb3be43f8f33ff2dd9a",
+  "cli_hash_unchanged": true,
+  "jarde_javac_exit": 0,
+  "jadx_exit": 0,
+  "jadx_javac_exit": 0,
+  "differences": {
+    "jarde": {
+      "string": {
+        "original": [
+          "raw:java.lang.String:text",
+          "typed:java.lang.String:text"
+        ],
+        "observed": [
+          "raw:java.lang.String:text",
+          "typed:java.lang.String:text"
+        ],
+        "equal": true
+      },
+      "integer": {
+        "original": [
+          "raw:java.lang.Integer:7",
+          "typed:java.lang.ClassCastException"
+        ],
+        "observed": [
+          "raw:java.lang.Integer:7",
+          "typed:java.lang.ClassCastException"
+        ],
+        "equal": true
+      }
+    },
+    "jadx": {
+      "string": {
+        "original": [
+          "raw:java.lang.String:text",
+          "typed:java.lang.String:text"
+        ],
+        "observed": [
+          "raw:java.lang.String:text",
+          "typed:java.lang.String:text"
+        ],
+        "equal": true
+      },
+      "integer": {
+        "original": [
+          "raw:java.lang.Integer:7",
+          "typed:java.lang.ClassCastException"
+        ],
+        "observed": [
+          "raw:java.lang.Integer:7",
+          "typed:java.lang.ClassCastException"
+        ],
+        "equal": true
+      }
+    }
+  }
+}

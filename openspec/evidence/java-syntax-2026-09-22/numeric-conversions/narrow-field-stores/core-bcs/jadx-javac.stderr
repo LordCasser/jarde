@@ -1,0 +1,59 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:24: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        this.byteField = i;
+                         ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:29: 错误: 不兼容的类型: 从int转换到char可能会有损失
+        this.charField = i;
+                         ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:34: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        this.shortField = i;
+                          ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:43: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        this.byteField = NarrowFieldStoreEffects.value(i, z);
+                                                      ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:48: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        narrowFieldStores.byteField = i;
+                                      ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:53: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        narrowFieldStores.byteField = NarrowFieldStoreEffects.value(i, z);
+                                                                   ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:58: 错误: 不兼容的类型: 从int转换到char可能会有损失
+        this.charField = NarrowFieldStoreEffects.value(i, z);
+                                                      ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:63: 错误: 不兼容的类型: 从int转换到char可能会有损失
+        narrowFieldStores.charField = i;
+                                      ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:68: 错误: 不兼容的类型: 从int转换到char可能会有损失
+        narrowFieldStores.charField = NarrowFieldStoreEffects.value(i, z);
+                                                                   ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:73: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        this.shortField = NarrowFieldStoreEffects.value(i, z);
+                                                       ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:78: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        narrowFieldStores.shortField = i;
+                                       ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:83: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        narrowFieldStores.shortField = NarrowFieldStoreEffects.value(i, z);
+                                                                    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:100: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        staticByteField = i;
+                          ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:105: 错误: 不兼容的类型: 从int转换到char可能会有损失
+        staticCharField = i;
+                          ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:110: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        staticShortField = i;
+                           ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:119: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        staticByteField = NarrowFieldStoreEffects.value(i, z);
+                                                       ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:124: 错误: 不兼容的类型: 从int转换到char可能会有损失
+        staticCharField = NarrowFieldStoreEffects.value(i, z);
+                                                       ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-4zpd9eey/jadx/sources/defpackage/NarrowFieldStores.java:129: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        staticShortField = NarrowFieldStoreEffects.value(i, z);
+                                                        ^
+18 个错误
+3 个警告

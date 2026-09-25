@@ -1,0 +1,81 @@
+public class ShiftSlice {
+  public ShiftSlice();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int intLeft(int, int);
+    Code:
+       0: iload_0
+       1: iload_1
+       2: ishl
+       3: ireturn
+
+  public static int intRight(int, int);
+    Code:
+       0: iload_0
+       1: iload_1
+       2: ishr
+       3: ireturn
+
+  public static int intUnsigned(int, int);
+    Code:
+       0: iload_0
+       1: iload_1
+       2: iushr
+       3: ireturn
+
+  public static long longLeft(long, int);
+    Code:
+       0: lload_0
+       1: iload_2
+       2: lshl
+       3: lreturn
+
+  public static long longRight(long, int);
+    Code:
+       0: lload_0
+       1: iload_2
+       2: lshr
+       3: lreturn
+
+  public static long longUnsigned(long, int);
+    Code:
+       0: lload_0
+       1: iload_2
+       2: lushr
+       3: lreturn
+
+  public static int shortLeft(short, int);
+    Code:
+       0: iload_0
+       1: iload_1
+       2: ishl
+       3: ireturn
+
+  public static int charUnsigned(char, int);
+    Code:
+       0: iload_0
+       1: iload_1
+       2: iushr
+       3: ireturn
+
+  public static int nested(int, int, int);
+    Code:
+       0: iload_0
+       1: iload_1
+       2: ishl
+       3: iload_2
+       4: iushr
+       5: ireturn
+
+  public static int callTarget(int, int);
+    Code:
+       0: iload_0
+       1: invokestatic  #7                  // Method ShiftSliceHelper.value:(I)I
+       4: iload_1
+       5: invokestatic  #13                 // Method ShiftSliceHelper.distance:(I)I
+       8: ishl
+       9: ireturn
+}

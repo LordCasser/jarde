@@ -1,0 +1,10 @@
+{
+  "command": [
+    "javac",
+    "-version"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "javac 23.0.1\n",
+  "stderr": ""
+}

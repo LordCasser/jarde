@@ -1,0 +1,12 @@
+ints20:2:2
+intsNegative0:java.lang.NegativeArraySizeException:false:0
+refs20:2:2
+refsNegative0:java.lang.NegativeArraySizeException:false:0
+multi20:3:2
+multiNegative0:java.lang.NegativeArraySizeException:false:0
+ints21:java.lang.IllegalStateException:true:2
+intsNegative1:java.lang.NegativeArraySizeException:false:0
+refs21:java.lang.IllegalStateException:true:2
+refsNegative1:java.lang.NegativeArraySizeException:false:0
+multi21:java.lang.IllegalStateException:true:2
+multiNegative1:java.lang.NegativeArraySizeException:false:0

@@ -1,0 +1,123 @@
+// jarde: presentation of `BoundaryProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class BoundaryProbe extends java.lang.Object {
+    public static long longField;
+
+    public static double[] doubles;
+
+    public static byte[] bytes;
+
+    public BoundaryProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `BoundaryProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int savedOldValue(int arg0) {
+        // @method savedOldValue(I)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = arg0;
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7
+        // the value at BCI 7 comes from an Other at BCI 6, which produces no expression this subset writes
+        // @bytecode 8 9 11 12 13 14
+        // the statement at BCI 14 reads `arg0`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+    }
+
+    public static int grouped(int arg0) {
+        // jarde: not recovered: the recovery run for `grouped(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method grouped(I)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7
+        // the value at BCI 7 comes from an Other at BCI 6, which produces no expression this subset writes
+    }
+
+    public static long fieldConsumer(int arg0) {
+        // @method fieldConsumer(I)J
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        return BoundaryProbe.longField;
+    }
+
+    public static double arrayConsumer(int arg0, long arg1) {
+        // @method arrayConsumer(IJ)D
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the dependency chain from BCI 0 to final consumer 7 is not bounded
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7 0
+        // the value at BCI 7 was produced by a saved declaration this run could not commit
+        return BoundaryProbe.doubles[arg0];
+    }
+
+    public static int arrayNarrowConsumer(int arg0, int arg1) {
+        // @method arrayNarrowConsumer(II)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the dependency chain from BCI 0 to final consumer 6 is not bounded
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 6 0
+        // the value at BCI 6 was produced by a saved declaration this run could not commit
+        return BoundaryProbe.bytes[arg0];
+    }
+
+    public static int discardConvertedProducer() {
+        // @method discardConvertedProducer()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BoundaryEffects.next();
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 3, which produces no expression this subset writes
+        return BoundaryEffects.trace;
+    }
+
+    public static int repeatConvertedValue() {
+        // @method repeatConvertedValue()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BoundaryEffects.next();
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 5
+        // the value at BCI 5 comes from an Other at BCI 4, which produces no expression this subset writes
+        // @bytecode 6 7 8 9
+        // the statement at BCI 9 reads `local0`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `BoundaryProbe`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        BoundaryProbe.doubles = new double[4];
+        BoundaryProbe.bytes = new byte[4];
+    }
+}

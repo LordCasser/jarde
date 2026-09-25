@@ -1,0 +1,32 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ReturnSinks.class */
+public class ReturnSinks {
+    public int value;
+
+    /* JADX WARN: Type inference failed for: r1v1, types: [byte, int] */
+    public byte post() {
+        ?? r1 = this.value;
+        this.value = r1 + 1;
+        return r1;
+    }
+
+    /* JADX WARN: Type inference failed for: r1v2, types: [byte, int] */
+    public byte pre() {
+        ?? r1 = this.value + 1;
+        this.value = r1;
+        return r1;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static byte guarded(Object obj, int i) {
+        synchronized (obj) {
+        }
+        return i;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static byte choice(boolean z, int i, int i2) {
+        return z ? i : i2;
+    }
+}

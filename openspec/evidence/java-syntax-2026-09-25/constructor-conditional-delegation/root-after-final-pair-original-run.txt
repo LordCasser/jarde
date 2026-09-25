@@ -1,0 +1,7 @@
+exit=0
+null:0::
+null:1:null:null
+null:2::null
+x:0::
+x:1:x:x
+x:2::x

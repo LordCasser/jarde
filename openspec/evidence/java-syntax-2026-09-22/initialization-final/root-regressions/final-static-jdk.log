@@ -1,0 +1,9 @@
+cargo test --locked --test p3_final_static -- --ignored
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/p3_final_static.rs (target/debug/deps/p3_final_static-3a9e8b0eefaf80c0)
+
+running 1 test
+test recovered_complete_class_matches_original_in_both_clinit_branches ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.67s
+

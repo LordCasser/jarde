@@ -1,0 +1,2 @@
+run(false)=0
+run(true)=1

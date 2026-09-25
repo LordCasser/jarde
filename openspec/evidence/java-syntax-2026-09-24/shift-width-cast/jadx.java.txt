@@ -1,0 +1,22 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ShiftWidth.class */
+public class ShiftWidth {
+    public static long wide(int i) {
+        return ((long) i) << 32;
+    }
+
+    public static long narrow(int i) {
+        return i << 32;
+    }
+
+    public static long mixed(int i, int i2) {
+        return ((long) i) >>> i2;
+    }
+
+    public static void main(java.lang.String[] strArr) {
+        for (int i : new int[]{1, -1, 7}) {
+            java.lang.System.out.println(wide(i) + "," + narrow(i) + "," + mixed(i, 33));
+        }
+    }
+}

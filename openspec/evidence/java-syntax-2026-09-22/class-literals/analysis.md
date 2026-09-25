@@ -1,0 +1,9 @@
+# `ldc Class` 类字面量审计
+
+`run_audit.py` 使用 SHA-256 为 `908c472560d6146354e1fd679c595e884afadf5ec7051727b51e79a1f95c6570` 的冻结 CLI，并将源/JADX/jarde **未编辑的整类输出**经 `javac --release 8` 编译、`java -Xverify:all` 执行。主 class 851 B，SHA-256 `11b1724cd33490629a115dfdd8104fed394f3569b03aa6ecfe9007ca1bedfc4b`；runner 七项覆盖 `String.class`、`String[][].class`、`int[][].class`、本类 `.class`、`int.class`、`void.class`、字面量作为调用参数且调用恰一次。原 class/JADX 均编译执行成功，输出逐项相同；本类名字以 `ClassLiteralProbe.self() == ClassLiteralProbe.class` 对照，避免 JADX 为源码加 `defpackage` 后的无关名字差异。
+
+冻结 jarde `class-source` 返回0，整类有11处 `@bytecode`，`javac` 报五个方法缺少返回语句，未执行恢复类。前四个引用类/数组/本类字面量及调用参数的 `ldc Class` 都在 BCI 0 被解码成 `Other`；返回或后续调用的来源随之引用。两个基本类型/void正面方法已呈现 `java.lang.Integer.TYPE` 与 `java.lang.Void.TYPE`，运行上等价，但不是源码的 `.class` 写法，属于独立形态忠实度，不强行并入 `ldc Class`。
+
+缺口位于 `decode::constant` 的 `CpEntryKind::Class` 分支：现有常量事实只有整数、长整数、字符串、null。可在同一常量表达式链加入类字面量形状，复用已有 `spell_reference` 的内部名/数组 descriptor 解析及 `java.lang.Class` 返回/参数类型；不能把 `MethodType` 或未知池项一并放行。类名以 Modified UTF-8 解码；Malformed MUTF-8 会产生替换字符并拒绝，名称还须符合本层现有 ASCII Java 类型名子集。root 用 Corretto 8 验证 U+10400 补充平面字母类名确实可编译，来源池中以代理对编码；本项把它作为明确的 Unicode 未覆盖边界保守拒绝。完整支持须使用 Java 8 Unicode 6.2 的 `Character.isJavaIdentifierStart/Part` 规则，单独评估紧凑表，不用较新的 XID 近似规则替代。含 `$` 的 Class 内部名也保守拒绝：该形状可能是需要 `Outer.Inner` 源拼写的嵌套二进制名，也可能是受编译/类路径可见性影响的顶层 `$` 名，单个池项无法证明其源名绑定。类名若不能写成已验证 Java 类型、或当前 class 已读声明证明其源码限定路径会被同名**类型**改绑，须保留来源完整的拒绝，不能打印已知有歧义的 `X.class`。root 用 Corretto 8 另证：局部 `int ClassLiteralProbe` 不遮蔽 `ClassLiteralProbe.class`，局部 `int java` 不遮蔽 `java.lang.String.class`；但同包 `class java` 含嵌套 `lang.String` 时，该路径取得 `java$lang$String`，与 JDK `java.lang.String` 不同。单类输入无法证明任意同包旁类不存在，此问题沿用系统既有类型路径边界，不为本项新增跨类查询。来源为真实 `ldc` BCI 与池项，预算/取消沿已有表达式合同。
+
+父变更 `present-proved-java-structure` 的2c.5把浮点常量和 `Class` 池项放在同一任务。本证据将 `Class` 拆成独立最小闭环，浮点值按 `recover-floating-point-constants` 的既有规划推进。

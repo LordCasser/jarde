@@ -1,0 +1,20 @@
+// jarde: presentation of `ReturnBoolean` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ReturnBoolean extends java.lang.Object {
+    public ReturnBoolean() {
+        // @method <init>()V
+        // @declaration a constructor of `ReturnBoolean`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static boolean run(int arg0) {
+        // jarde: not recovered: the recovery run for `run(I)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method run(I)Z
+        // @declaration a static method of `ReturnBoolean`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the value at BCI 1 is returned from a method whose own descriptor returns `Z`, and this layer has no evidence that the value is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the member's own signature rejects
+    }
+}

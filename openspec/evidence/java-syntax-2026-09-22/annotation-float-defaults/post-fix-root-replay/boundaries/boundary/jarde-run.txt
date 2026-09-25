@@ -1,0 +1,8 @@
+negativeZero=80000000
+leastSubnormal=00000001
+greatestFinite=7f7fffff
+negativeInfinity=ff800000
+leastSubnormalDouble=0000000000000001
+greatestFiniteDouble=7fefffffffffffff
+positiveInfinity=7ff0000000000000
+canonicalNaN=7ff8000000000000

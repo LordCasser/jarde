@@ -1,0 +1,215 @@
+Classfile /tmp/jarde-assert-core-audit-20260924/AssertCore-wrong-owner.class
+  Last modified 2026年9月24日; size 1187 bytes
+  SHA-256 checksum af3c1190da44c938138da327a6232220acd3b8e8161808e2d9d517f11a4e71dc
+  Compiled from "AssertCore.java"
+public class AssertCore
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // AssertCore
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 3, methods: 6, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // AssertCore.guardCalls:I
+   #8 = Class              #10            // AssertCore
+   #9 = NameAndType        #11:#12        // guardCalls:I
+  #10 = Utf8               AssertCore
+  #11 = Utf8               guardCalls
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // AssertCore.detailCalls:I
+  #14 = NameAndType        #15:#12        // detailCalls:I
+  #15 = Utf8               detailCalls
+  #16 = String             #17            // bad
+  #17 = Utf8               bad
+  #18 = Fieldref           #8.#19         // AssertCore.$assertionsDisabled:Z
+  #19 = NameAndType        #20:#21        // $assertionsDisabled:Z
+  #20 = Utf8               $assertionsDisabled
+  #21 = Utf8               Z
+  #22 = Methodref          #8.#23         // AssertCore.guard:(Z)Z
+  #23 = NameAndType        #24:#25        // guard:(Z)Z
+  #24 = Utf8               guard
+  #25 = Utf8               (Z)Z
+  #26 = Class              #27            // java/lang/AssertionError
+  #27 = Utf8               java/lang/AssertionError
+  #28 = Methodref          #8.#29         // AssertCore.detail:()Ljava/lang/String;
+  #29 = NameAndType        #30:#31        // detail:()Ljava/lang/String;
+  #30 = Utf8               detail
+  #31 = Utf8               ()Ljava/lang/String;
+  #32 = Methodref          #26.#33        // java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+  #33 = NameAndType        #5:#34         // "<init>":(Ljava/lang/Object;)V
+  #34 = Utf8               (Ljava/lang/Object;)V
+  #35 = Class              #36            // java/lang/StringBuilder
+  #36 = Utf8               java/lang/StringBuilder
+  #37 = Methodref          #35.#3         // java/lang/StringBuilder."<init>":()V
+  #38 = Methodref          #35.#39        // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #39 = NameAndType        #40:#41        // append:(I)Ljava/lang/StringBuilder;
+  #40 = Utf8               append
+  #41 = Utf8               (I)Ljava/lang/StringBuilder;
+  #42 = String             #43            // |
+  #43 = Utf8               |
+  #44 = Methodref          #35.#45        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #45 = NameAndType        #40:#46        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #46 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #47 = Methodref          #35.#48        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #48 = NameAndType        #49:#31        // toString:()Ljava/lang/String;
+  #49 = Utf8               toString
+  #50 = Methodref          #51.#52        // java/lang/Class.desiredAssertionStatus:()Z
+  #51 = Class              #53            // java/lang/Class
+  #52 = NameAndType        #54:#55        // desiredAssertionStatus:()Z
+  #53 = Utf8               java/lang/Class
+  #54 = Utf8               desiredAssertionStatus
+  #55 = Utf8               ()Z
+  #56 = Utf8               Code
+  #57 = Utf8               LineNumberTable
+  #58 = Utf8               LocalVariableTable
+  #59 = Utf8               this
+  #60 = Utf8               LAssertCore;
+  #61 = Utf8               ok
+  #62 = Utf8               check
+  #63 = Utf8               (Z)Ljava/lang/String;
+  #64 = Utf8               StackMapTable
+  #65 = Utf8               counts
+  #66 = Utf8               <clinit>
+  #67 = Utf8               SourceFile
+  #68 = Utf8               AssertCore.java
+{
+  private static int guardCalls;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private static int detailCalls;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  static final boolean $assertionsDisabled;
+    descriptor: Z
+    flags: (0x1018) ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public AssertCore();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LAssertCore;
+
+  private static boolean guard(boolean);
+    descriptor: (Z)Z
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #7                  // Field guardCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field guardCalls:I
+         8: iload_0
+         9: ireturn
+      LineNumberTable:
+        line 6: 0
+        line 7: 8
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      10     0    ok   Z
+
+  private static java.lang.String detail();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #13                 // Field detailCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #13                 // Field detailCalls:I
+         8: ldc           #16                 // String bad
+        10: areturn
+      LineNumberTable:
+        line 11: 0
+        line 12: 8
+
+  public static java.lang.String check(boolean);
+    descriptor: (Z)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: getstatic     #18                 // Field $assertionsDisabled:Z
+         3: ifne          24
+         6: iload_0
+         7: invokestatic  #22                 // Method guard:(Z)Z
+        10: ifne          24
+        13: new           #26                 // class java/lang/AssertionError
+        16: dup
+        17: invokestatic  #28                 // Method detail:()Ljava/lang/String;
+        20: invokespecial #32                 // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        23: athrow
+        24: new           #35                 // class java/lang/StringBuilder
+        27: dup
+        28: invokespecial #37                 // Method java/lang/StringBuilder."<init>":()V
+        31: getstatic     #7                  // Field guardCalls:I
+        34: invokevirtual #38                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        37: ldc           #42                 // String |
+        39: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        42: getstatic     #13                 // Field detailCalls:I
+        45: invokevirtual #38                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        48: invokevirtual #47                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        51: areturn
+      LineNumberTable:
+        line 16: 0
+        line 17: 24
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      52     0    ok   Z
+      StackMapTable: number_of_entries = 1
+        frame_type = 24 /* same */
+
+  public static java.lang.String counts();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #35                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #37                 // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #7                  // Field guardCalls:I
+        10: invokevirtual #38                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        13: ldc           #42                 // String |
+        15: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: getstatic     #13                 // Field detailCalls:I
+        21: invokevirtual #38                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        24: invokevirtual #47                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        27: areturn
+      LineNumberTable:
+        line 21: 0
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #35                 // class java/lang/StringBuilder
+         2: invokevirtual #50                 // Method java/lang/Class.desiredAssertionStatus:()Z
+         5: ifne          12
+         8: iconst_1
+         9: goto          13
+        12: iconst_0
+        13: putstatic     #18                 // Field $assertionsDisabled:Z
+        16: return
+      LineNumberTable:
+        line 1: 0
+      StackMapTable: number_of_entries = 2
+        frame_type = 12 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+}
+SourceFile: "AssertCore.java"

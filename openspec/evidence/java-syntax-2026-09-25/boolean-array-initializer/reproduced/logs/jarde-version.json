@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/tmp/jarde-bool-array-init-audit-target/debug/jarde-cli",
+    "--version"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "jarde-cli 0.1.0\n",
+  "stderr": ""
+}

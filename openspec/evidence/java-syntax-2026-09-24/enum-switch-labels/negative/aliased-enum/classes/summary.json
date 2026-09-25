@@ -1,0 +1,16 @@
+{
+  "input_hue_sha256": "3a5d7db6f4420d09cbdd0f128dcaaa4759fd33de11196c6bebdb10917db67ab2",
+  "aliased_hue_sha256": "c170d13e3e0bacaed624b7f5c4d4f845135a4b7633ee563040414329a7811d9b",
+  "original": [
+    "1|1",
+    "1|1",
+    "3|3",
+    "null|0"
+  ],
+  "direct_switch": [
+    "2|2",
+    "2|2",
+    "3|3",
+    "null|0"
+  ]
+}

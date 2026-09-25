@@ -1,0 +1,8 @@
+removed attributes:
+  field fieldI: RuntimeVisibleAnnotations
+  method answer()I: RuntimeVisibleAnnotations
+  method echo(I)I: RuntimeVisibleParameterAnnotations
+Code attribute-info SHA-256 (baseline / patched):
+  method <init>()V	d07220fc300f36172373b6d8f5ec217cef08ff60c3d61b88e5d98c33e79b55ef	d07220fc300f36172373b6d8f5ec217cef08ff60c3d61b88e5d98c33e79b55ef	IDENTICAL
+  method answer()I	eacb356175aebd10d5224dcd1f05f73687a8a944bf063187b83ae73be66a5145	eacb356175aebd10d5224dcd1f05f73687a8a944bf063187b83ae73be66a5145	IDENTICAL
+  method echo(I)I	21d94515a36a46123f42cd232cf74af78bd4760496af731cffd2fbe82c5bedb2	21d94515a36a46123f42cd232cf74af78bd4760496af731cffd2fbe82c5bedb2	IDENTICAL

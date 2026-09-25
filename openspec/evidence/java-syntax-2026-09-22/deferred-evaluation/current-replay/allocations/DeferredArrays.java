@@ -1,0 +1,1 @@
+public class DeferredArrays { public static int[] ints(int n){return new int[n];} public static String[] refs(int n){return new String[n];} public static int[][] multi(int a,int b){return new int[a][b];} public static void keepPool(){ArraySupport.mark();}}

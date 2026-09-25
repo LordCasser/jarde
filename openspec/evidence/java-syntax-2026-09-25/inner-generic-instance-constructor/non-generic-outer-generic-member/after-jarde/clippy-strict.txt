@@ -1,0 +1,282 @@
+    Checking cfg-if v1.0.4
+    Checking bitflags v2.13.2
+    Checking equivalent v1.0.2
+    Checking hashbrown v0.17.1
+    Checking simd-adler32 v0.3.10
+    Checking adler2 v2.0.1
+    Checking serde_core v1.0.229
+    Checking arrayvec v0.7.8
+    Checking constant_time_eq v0.4.2
+    Checking foldhash v0.1.5
+    Checking rawzip v0.5.1
+    Checking thiserror v2.0.20
+    Checking crc32fast v1.5.2
+    Checking fixedbitset v0.5.7
+    Checking libc v0.2.189
+    Checking zerocopy v0.8.57
+    Checking once_cell v1.21.4
+    Checking miniz_oxide v0.9.1
+    Checking hashbrown v0.15.5
+    Checking fastrand v2.5.0
+    Checking bit-vec v0.8.0
+    Checking blake3 v1.8.7
+    Checking fnv v1.0.7
+    Checking quick-error v1.2.3
+    Checking num-traits v0.2.19
+    Checking zmij v1.0.23
+    Checking itoa v1.0.18
+    Checking bit-set v0.8.0
+    Checking unarray v0.1.4
+    Checking indexmap v2.14.2
+    Checking memchr v2.8.3
+    Checking regex-syntax v0.8.11
+    Checking flate2 v1.1.10
+    Checking getrandom v0.3.4
+    Checking errno v0.3.14
+    Checking getrandom v0.4.3
+    Checking wait-timeout v0.2.1
+    Checking rustix v1.1.4
+    Checking rand_core v0.9.5
+    Checking rand v0.9.5
+    Checking rand_xorshift v0.4.0
+    Checking noak v0.7.0
+    Checking petgraph v0.8.3
+    Checking tempfile v3.27.0
+    Checking serde v1.0.229
+    Checking serde_json v1.0.151
+    Checking rusty-fork v0.3.1
+    Checking jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+    Checking ppv-lite86 v0.2.21
+    Checking rand_chacha v0.9.0
+    Checking proptest v1.11.0
+    Checking jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+    Checking jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+    Checking jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error: useless conversion to the same type: `i64`
+   --> crates/jarde-java/src/enumswitch.rs:880:34
+    |
+880 |             || !seen_keys.insert(i64::from(*key))
+    |                                  ^^^^^^^^^^^^^^^ help: consider removing `i64::from()`: `(*key)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#useless_conversion
+    = note: `-D clippy::useless-conversion` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::useless_conversion)]`
+
+error: useless conversion to the same type: `i64`
+    --> crates/jarde-java/src/enumswitch.rs:1000:18
+     |
+1000 |             key: i64::from(*key),
+     |                  ^^^^^^^^^^^^^^^ help: consider removing `i64::from()`: `(*key)`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#useless_conversion
+
+error: this function has too many arguments (8/7)
+    --> crates/jarde-java/src/region.rs:1036:1
+     |
+1036 | / pub(crate) fn recover(
+1037 | |     canonical: &CanonicalCfg,
+1038 | |     view: &NormalFlowView,
+1039 | |     ssa: &SsaTable,
+...    |
+1044 | |     budget: &mut Budget,
+1045 | | ) -> Result<Recovered, StopReason> {
+     | |__________________________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#too_many_arguments
+     = note: `-D clippy::too-many-arguments` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::too_many_arguments)]`
+
+error: this function has too many arguments (8/7)
+    --> crates/jarde-java/src/region.rs:1645:5
+     |
+1645 | /     fn loop_body(
+1646 | |         &self,
+1647 | |         blocks: &BTreeSet<usize>,
+1648 | |         boundary: usize,
+...    |
+1653 | |         transfer_sources: &BTreeSet<usize>,
+1654 | |     ) -> Self {
+     | |_____________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#too_many_arguments
+
+error: very complex type used. Consider factoring parts into `type` definitions
+    --> crates/jarde-java/src/region.rs:2566:10
+     |
+2566 |       ) -> Result<
+     |  __________^
+2567 | |         (
+2568 | |             Region,
+2569 | |             Vec<CatchClause>,
+...    |
+2573 | |         StopReason,
+2574 | |     > {
+     | |_____^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#type_complexity
+     = note: `-D clippy::type-complexity` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::type_complexity)]`
+
+error: this function has too many arguments (8/7)
+   --> crates/jarde-java/src/report.rs:932:1
+    |
+932 | / fn generic_constructor_candidate(
+933 | |     program: &build::Program,
+934 | |     names: &NameTable,
+935 | |     ssa: &SsaTable,
+...   |
+940 | |     budget: &mut Budget,
+941 | | ) -> Result<Option<GenericConstructorCandidate>, StopReason> {
+    | |____________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#too_many_arguments
+
+error: this function has too many arguments (9/7)
+    --> crates/jarde-java/src/report.rs:1123:1
+     |
+1123 | / fn recover_inner(
+1124 | |     request: &RecoveryRequest<'_>,
+1125 | |     budget: &mut Budget,
+1126 | |     initializer: Option<&mut Option<ClassInitializerCandidates>>,
+...    |
+1132 | |     mut anonymous_allocations: Option<&mut Option<AnonymousAllocationScan>>,
+1133 | | ) -> RecoveryReport {
+     | |___________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#too_many_arguments
+
+error: derefed type is same as origin
+    --> crates/jarde-java/src/report.rs:1195:36
+     |
+1195 |     if let Some(field_uses_slot) = enum_switch_field_use.as_deref_mut() {
+     |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `enum_switch_field_use`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_option_as_deref
+     = note: `-D clippy::needless-option-as-deref` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::needless_option_as_deref)]`
+
+error: derefed type is same as origin
+    --> crates/jarde-java/src/report.rs:1337:67
+     |
+1337 |     if let (Some(plan), Some(candidate_slot)) = (bridge.as_ref(), bridge_candidate.as_deref_mut()) {
+     |                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `bridge_candidate`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_option_as_deref
+
+error: derefed type is same as origin
+    --> crates/jarde-java/src/report.rs:1382:27
+     |
+1382 |     if let Some(output) = anonymous_allocations.as_deref_mut() {
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `anonymous_allocations`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_option_as_deref
+
+error: this `if` statement can be collapsed
+    --> crates/jarde-java/src/report.rs:1506:5
+     |
+1506 | /     if let Some(slot) = generic_constructor {
+1507 | |         if request.facts.method().name() == "<init>" {
+1508 | |             match generic_constructor_candidate(
+1509 | |                 &program,
+...    |
+1522 | |     }
+     | |_____^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+     = note: `-D clippy::collapsible-if` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::collapsible_if)]`
+help: collapse nested if block
+     |
+1506 ~     if let Some(slot) = generic_constructor
+1507 ~         && request.facts.method().name() == "<init>" {
+1508 |             match generic_constructor_candidate(
+ ...
+1520 |             }
+1521 ~         }
+     |
+
+error: derefed type is same as origin
+    --> crates/jarde-java/src/report.rs:1529:34
+     |
+1529 |     if let Some(enum_switches) = enum_switch_candidate.as_deref_mut() {
+     |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `enum_switch_candidate`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_option_as_deref
+
+error: very complex type used. Consider factoring parts into `type` definitions
+    --> crates/jarde-java/src/build.rs:8588:10
+     |
+8588 |     ) -> Result<Option<(StmtKind, OriginSet, Vec<usize>, String)>, StopReason> {
+     |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#type_complexity
+
+error: very complex type used. Consider factoring parts into `type` definitions
+    --> crates/jarde-java/src/build.rs:9086:10
+     |
+9086 |     ) -> Result<Option<(StmtKind, OriginSet, bool, Vec<usize>)>, StopReason> {
+     |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#type_complexity
+
+error: this function has too many arguments (8/7)
+     --> crates/jarde-java/src/build.rs:14234:5
+      |
+14234 | /     fn quoted_qualifier_producer(
+14235 | |         &self,
+14236 | |         call: u32,
+14237 | |         reader: u32,
+...     |
+14242 | |         budget: Option<&Budget>,
+14243 | |     ) -> Result<(), StopReason> {
+      | |_______________________________^
+      |
+      = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#too_many_arguments
+
+error: this function has too many arguments (8/7)
+     --> crates/jarde-java/src/build.rs:14308:5
+      |
+14308 | /     fn deferred_producers(
+14309 | |         &self,
+14310 | |         value: ValueId,
+14311 | |         reader: u32,
+...     |
+14316 | |         budget: Option<&Budget>,
+14317 | |     ) -> Result<(), StopReason> {
+      | |_______________________________^
+      |
+      = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#too_many_arguments
+
+error: very complex type used. Consider factoring parts into `type` definitions
+   --> crates/jarde-java/src/reuse.rs:241:6
+    |
+241 | ) -> Result<Option<(Vec<Option<String>>, Split)>, StopReason> {
+    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#type_complexity
+
+error: could not compile `jarde-java` (lib) due to 17 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: you are using an explicit closure for cloning elements
+     --> crates/jarde-java/src/build.rs:18213:29
+      |
+18213 |           let owned: Vec<_> = recovered
+      |  _____________________________^
+18214 | |             .regions
+18215 | |             .iter()
+18216 | |             .flat_map(Region::blocks)
+18217 | |             .map(|block| block.clone())
+      | |_______________________________________^
+      |
+      = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#map_clone
+      = note: `-D clippy::map-clone` implied by `-D warnings`
+      = help: to override `-D warnings` add `#[allow(clippy::map_clone)]`
+help: consider calling the dedicated `cloned` method
+      |
+18213 ~         let owned: Vec<_> = recovered
+18214 +             .regions
+18215 +             .iter()
+18216 +             .flat_map(Region::blocks).cloned()
+      |
+
+error: could not compile `jarde-java` (lib test) due to 18 previous errors

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "java",
+    "-Xverify:all",
+    "-cp",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/patched:/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/runner",
+    "BoolInitRunner"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "[false, true, false, true, true]\n",
+  "stderr": ""
+}

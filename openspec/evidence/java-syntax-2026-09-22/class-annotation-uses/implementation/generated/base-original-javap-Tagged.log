@@ -1,0 +1,47 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/class-annotation-uses/implementation/generated/base-original-classes/Tagged.class
+  Last modified 2026年9月23日; size 247 bytes
+  SHA-256 checksum 2ba5e42e8e00e7ec9fb46a9152d3dd403f85a872ddc579d54c245f8c76be693c
+public class Tagged
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #7                          // Tagged
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // Tagged
+   #8 = Utf8               Tagged
+   #9 = Utf8               Code
+  #10 = Utf8               value
+  #11 = Utf8               ()I
+  #12 = Utf8               Deprecated
+  #13 = Utf8               RuntimeVisibleAnnotations
+  #14 = Utf8               Ljava/lang/Deprecated;
+{
+  public Tagged();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int value();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_3
+         1: ireturn
+}
+Deprecated: true
+RuntimeVisibleAnnotations:
+  0: #14()
+    java.lang.Deprecated

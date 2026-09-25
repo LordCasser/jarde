@@ -1,0 +1,47 @@
+package defpackage;
+
+/* JADX INFO: loaded from: NarrowArrayStores.class */
+public class NarrowArrayStores {
+    public static void storeByte(byte[] bArr, int i, int i2) {
+        bArr[i] = i2;
+    }
+
+    public static void storeChar(char[] cArr, int i, int i2) {
+        cArr[i] = i2;
+    }
+
+    public static void storeShort(short[] sArr, int i, int i2) {
+        sArr[i] = i2;
+    }
+
+    /* JADX WARN: Type inference failed for: r2v1, types: [int] */
+    public static void storeByteProduced(byte[] bArr, int i, int i2, boolean z) {
+        bArr[i] = NarrowArrayStoreEffects.value(i2, z);
+    }
+
+    public static void storeCharProduced(char[] cArr, int i, int i2, boolean z) {
+        cArr[i] = NarrowArrayStoreEffects.value(i2, z);
+    }
+
+    public static void storeShortProduced(short[] sArr, int i, int i2, boolean z) {
+        sArr[i] = NarrowArrayStoreEffects.value(i2, z);
+    }
+
+    public static void ordinaryByte(byte[] bArr) {
+        bArr[0] = 1;
+        bArr[1] = 0;
+        bArr[2] = 1;
+    }
+
+    public static void ordinaryChar(char[] cArr) {
+        cArr[0] = 1;
+        cArr[1] = 0;
+        cArr[2] = 1;
+    }
+
+    public static void ordinaryShort(short[] sArr) {
+        sArr[0] = 1;
+        sArr[1] = 0;
+        sArr[2] = 1;
+    }
+}

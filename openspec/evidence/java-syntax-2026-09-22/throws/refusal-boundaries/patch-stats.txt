@@ -1,0 +1,6 @@
+major version: 52
+Code methods: 9 in every variant
+original ThrowProbe.class: 946 bytes
+stale parameter patch: 948 bytes; parameter Code max_stack=2, code_length=4
+duplicate call patch: 948 bytes; call Code max_stack=2, code_length=6
+lower parameter patch: 950 bytes; parameter Code max_stack=2, code_length=6

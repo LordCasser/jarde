@@ -1,0 +1,66 @@
+// jarde: presentation of `ShiftWidth` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ShiftWidth extends java.lang.Object {
+    public ShiftWidth() {
+        // @method <init>()V
+        // @declaration a constructor of `ShiftWidth`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static long wide(int arg0) {
+        // jarde: not recovered: the recovery run for `wide(I)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method wide(I)J
+        // @declaration a static method of `ShiftWidth`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the primitive conversion at BCI 1 produces a value nothing in this body reads, so its instruction and operand effects remain quoted
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 5 1
+        // the value at BCI 5 comes from an Other at BCI 4, which produces no expression this subset writes
+    }
+
+    public static long narrow(int arg0) {
+        // jarde: not recovered: the recovery run for `narrow(I)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method narrow(I)J
+        // @declaration a static method of `ShiftWidth`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 4
+        // the dependency chain from BCI 4 to final consumer 5 is not bounded
+        // @bytecode 5 4
+        // the value at BCI 5 was produced by a saved declaration this run could not commit
+    }
+
+    public static long mixed(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `mixed(II)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method mixed(II)J
+        // @declaration a static method of `ShiftWidth`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the primitive conversion at BCI 1 produces a value nothing in this body reads, so its instruction and operand effects remain quoted
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 4 1
+        // the value at BCI 4 comes from an Other at BCI 3, which produces no expression this subset writes
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `ShiftWidth`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int[] local1;
+        int local2;
+        int local3;
+        local1 = new int[]{1, -1, 7};
+        local2 = local1.length;
+        for (local3 = 0; local3 < local2; local3 = local3 + 1) {
+            int local4 = local1[local3];
+            java.lang.System.out.println("" + wide(local4) + "," + narrow(local4) + "," + mixed(local4, 33));
+        }
+        return;
+    }
+}

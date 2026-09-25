@@ -1,0 +1,1 @@
+java -Xverify:all -cp /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-array-stores-ft76z5g9/jarde/classes NarrowArrayStoresRunner

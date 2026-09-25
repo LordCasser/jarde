@@ -1,0 +1,23 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-return-sinks-core-dsbady0y/jadx/sources/defpackage/ReturnSinksCore.java:9: 错误: 非法的表达式开始
+        ?? r1 = this.value;
+        ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-return-sinks-core-dsbady0y/jadx/sources/defpackage/ReturnSinksCore.java:9: 错误: 非法的表达式开始
+        ?? r1 = this.value;
+         ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-return-sinks-core-dsbady0y/jadx/sources/defpackage/ReturnSinksCore.java:9: 错误: 需要:
+        ?? r1 = this.value;
+                          ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-return-sinks-core-dsbady0y/jadx/sources/defpackage/ReturnSinksCore.java:16: 错误: 非法的表达式开始
+        ?? r1 = this.value + 1;
+        ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-return-sinks-core-dsbady0y/jadx/sources/defpackage/ReturnSinksCore.java:16: 错误: 非法的表达式开始
+        ?? r1 = this.value + 1;
+         ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-return-sinks-core-dsbady0y/jadx/sources/defpackage/ReturnSinksCore.java:16: 错误: 需要:
+        ?? r1 = this.value + 1;
+                              ^
+6 个错误
+3 个警告

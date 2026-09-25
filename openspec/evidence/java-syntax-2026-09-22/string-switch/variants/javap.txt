@@ -1,0 +1,215 @@
+Classfile /tmp/jarde-string-switch-variants-audit/original/StringSwitchVariants.class
+  Last modified 2026年9月23日; size 876 bytes
+  SHA-256 checksum 234d6676b62896bb4a8865eb1bf21bed75bc9560132a2853e60ccc886c45f83d
+public class StringSwitchVariants
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // StringSwitchVariants
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 4, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // StringSwitchVariants.calls:I
+   #8 = Class              #10            // StringSwitchVariants
+   #9 = NameAndType        #11:#12        // calls:I
+  #10 = Utf8               StringSwitchVariants
+  #11 = Utf8               calls
+  #12 = Utf8               I
+  #13 = String             #14            // !
+  #14 = Utf8               !
+  #15 = Methodref          #16.#17        // java/lang/String.equals:(Ljava/lang/Object;)Z
+  #16 = Class              #18            // java/lang/String
+  #17 = NameAndType        #19:#20        // equals:(Ljava/lang/Object;)Z
+  #18 = Utf8               java/lang/String
+  #19 = Utf8               equals
+  #20 = Utf8               (Ljava/lang/Object;)Z
+  #21 = Class              #22            // java/lang/IllegalStateException
+  #22 = Utf8               java/lang/IllegalStateException
+  #23 = String             #24            // selector
+  #24 = Utf8               selector
+  #25 = Methodref          #21.#26        // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #26 = NameAndType        #5:#27         // "<init>":(Ljava/lang/String;)V
+  #27 = Utf8               (Ljava/lang/String;)V
+  #28 = Methodref          #16.#29        // java/lang/String.hashCode:()I
+  #29 = NameAndType        #30:#31        // hashCode:()I
+  #30 = Utf8               hashCode
+  #31 = Utf8               ()I
+  #32 = String             #33            // BB
+  #33 = Utf8               BB
+  #34 = String             #35            // Aa
+  #35 = Utf8               Aa
+  #36 = String             #37            // x
+  #37 = Utf8               x
+  #38 = String             #39            // y
+  #39 = Utf8               y
+  #40 = String             #41            //
+  #41 = Utf8
+  #42 = String             #43            // 雪
+  #43 = Utf8               雪
+  #44 = Methodref          #8.#45         // StringSwitchVariants.read:(Ljava/lang/String;)Ljava/lang/String;
+  #45 = NameAndType        #46:#47        // read:(Ljava/lang/String;)Ljava/lang/String;
+  #46 = Utf8               read
+  #47 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #48 = Methodref          #8.#49         // StringSwitchVariants.choose:(Ljava/lang/String;)I
+  #49 = NameAndType        #50:#51        // choose:(Ljava/lang/String;)I
+  #50 = Utf8               choose
+  #51 = Utf8               (Ljava/lang/String;)I
+  #52 = Utf8               Code
+  #53 = Utf8               StackMapTable
+  #54 = Utf8               once
+{
+  static int calls;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  public StringSwitchVariants();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static java.lang.String read(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: getstatic     #7                  // Field calls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field calls:I
+         8: ldc           #13                 // String !
+        10: aload_0
+        11: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        14: ifeq          27
+        17: new           #21                 // class java/lang/IllegalStateException
+        20: dup
+        21: ldc           #23                 // String selector
+        23: invokespecial #25                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        26: athrow
+        27: aload_0
+        28: areturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 27 /* same */
+
+  public static int choose(java.lang.String);
+    descriptor: (Ljava/lang/String;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=1
+         0: aload_0
+         1: astore_1
+         2: iconst_m1
+         3: istore_2
+         4: aload_1
+         5: invokevirtual #28                 // Method java/lang/String.hashCode:()I
+         8: lookupswitch  { // 5
+                       0: 116
+                     120: 88
+                     121: 102
+                    2112: 60
+                   38634: 130
+                 default: 141
+            }
+        60: aload_1
+        61: ldc           #32                 // String BB
+        63: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        66: ifeq          74
+        69: iconst_1
+        70: istore_2
+        71: goto          141
+        74: aload_1
+        75: ldc           #34                 // String Aa
+        77: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        80: ifeq          141
+        83: iconst_0
+        84: istore_2
+        85: goto          141
+        88: aload_1
+        89: ldc           #36                 // String x
+        91: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        94: ifeq          141
+        97: iconst_2
+        98: istore_2
+        99: goto          141
+       102: aload_1
+       103: ldc           #38                 // String y
+       105: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       108: ifeq          141
+       111: iconst_3
+       112: istore_2
+       113: goto          141
+       116: aload_1
+       117: ldc           #40                 // String
+       119: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       122: ifeq          141
+       125: iconst_4
+       126: istore_2
+       127: goto          141
+       130: aload_1
+       131: ldc           #42                 // String 雪
+       133: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       136: ifeq          141
+       139: iconst_5
+       140: istore_2
+       141: iload_2
+       142: tableswitch   { // 0 to 5
+                       0: 180
+                       1: 180
+                       2: 183
+                       3: 192
+                       4: 199
+                       5: 201
+                 default: 204
+            }
+       180: bipush        11
+       182: ireturn
+       183: getstatic     #7                  // Field calls:I
+       186: bipush        10
+       188: iadd
+       189: putstatic     #7                  // Field calls:I
+       192: getstatic     #7                  // Field calls:I
+       195: bipush        20
+       197: iadd
+       198: ireturn
+       199: iconst_1
+       200: ireturn
+       201: bipush        9
+       203: ireturn
+       204: bipush        44
+       206: ireturn
+      StackMapTable: number_of_entries = 13
+        frame_type = 253 /* append */
+          offset_delta = 60
+          locals = [ class java/lang/String, int ]
+        frame_type = 13 /* same */
+        frame_type = 13 /* same */
+        frame_type = 13 /* same */
+        frame_type = 13 /* same */
+        frame_type = 13 /* same */
+        frame_type = 10 /* same */
+        frame_type = 38 /* same */
+        frame_type = 2 /* same */
+        frame_type = 8 /* same */
+        frame_type = 6 /* same */
+        frame_type = 1 /* same */
+        frame_type = 2 /* same */
+
+  public static int once(java.lang.String);
+    descriptor: (Ljava/lang/String;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokestatic  #44                 // Method read:(Ljava/lang/String;)Ljava/lang/String;
+         4: invokestatic  #48                 // Method choose:(Ljava/lang/String;)I
+         7: ireturn
+}

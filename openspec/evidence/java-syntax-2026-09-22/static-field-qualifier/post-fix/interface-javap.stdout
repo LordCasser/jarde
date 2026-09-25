@@ -1,0 +1,25 @@
+public final class InterfaceBoundaryProbe {
+  public static int selects;
+
+  public InterfaceBoundaryProbe();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static InterfaceStaticOwner receiver();
+    Code:
+       0: getstatic     #7                  // Field selects:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field selects:I
+       8: aconst_null
+       9: areturn
+
+  public static int call();
+    Code:
+       0: invokestatic  #13                 // Method receiver:()LInterfaceStaticOwner;
+       3: pop
+       4: invokestatic  #17                 // InterfaceMethod InterfaceStaticOwner.value:()I
+       7: ireturn
+}

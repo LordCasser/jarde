@@ -1,0 +1,192 @@
+{
+  "source_class_sha256": "3e2e2970faa2a1432867c403cdd34387cd7f1beac9b9d7d0fa04a03cc9ca5b4b",
+  "source_class_bytes": 414,
+  "source_runtime_matches_expected": true,
+  "stack_patch": {
+    "source_bytes": 414,
+    "patched_bytes": 372,
+    "source_sha256": "3e2e2970faa2a1432867c403cdd34387cd7f1beac9b9d7d0fa04a03cc9ca5b4b",
+    "patched_sha256": "adaf8142090cc1c25f41e597350ca6ff31baf17081aeb8f0f89accc512f51e98",
+    "source_major": 52,
+    "patched_major": 49,
+    "methods": [
+      {
+        "source_case_value_bci": 20,
+        "source_default_value_bci": 27,
+        "patched_case_value_bci": 20,
+        "patched_default_value_bci": 26,
+        "patched_join_ireturn_bci": 32,
+        "switch_bci": 1,
+        "method": "runByte",
+        "source_code_length": 33,
+        "patched_code_length": 33,
+        "nested_attributes_removed": 1
+      },
+      {
+        "source_case_value_bci": 20,
+        "source_default_value_bci": 26,
+        "patched_case_value_bci": 20,
+        "patched_default_value_bci": 25,
+        "patched_join_ireturn_bci": 30,
+        "switch_bci": 1,
+        "method": "runChar",
+        "source_code_length": 31,
+        "patched_code_length": 31,
+        "nested_attributes_removed": 1
+      },
+      {
+        "source_case_value_bci": 20,
+        "source_default_value_bci": 26,
+        "patched_case_value_bci": 20,
+        "patched_default_value_bci": 25,
+        "patched_join_ireturn_bci": 30,
+        "switch_bci": 1,
+        "method": "runShort",
+        "source_code_length": 31,
+        "patched_code_length": 31,
+        "nested_attributes_removed": 1
+      }
+    ]
+  },
+  "stack_i_version": {
+    "class_sha256": "adaf8142090cc1c25f41e597350ca6ff31baf17081aeb8f0f89accc512f51e98",
+    "class_bytes": 372,
+    "runner_javac_exit": 0,
+    "runtime_exit": 0,
+    "runtime_lines": 12,
+    "jarde_cli_exit": 0,
+    "jarde_quote_count": 0,
+    "jarde_javac_exit": 0,
+    "jarde_runtime_exit": 0,
+    "jadx_exit": 0,
+    "jadx_javac_exit": 0,
+    "jadx_runtime_exit": 0
+  },
+  "stack_runtime_matches_expected": true,
+  "descriptor_variants": {
+    "byte": {
+      "kind": "B",
+      "patch": {
+        "source_bytes": 372,
+        "patched_bytes": 379,
+        "source_sha256": "adaf8142090cc1c25f41e597350ca6ff31baf17081aeb8f0f89accc512f51e98",
+        "patched_sha256": "ad9b88a41ec56ed7a5ff553388dcf3867f8d00bc5a6a27404da4976b7b684149",
+        "code_attributes": 4,
+        "code_sha256_before": "992afa432deb03303c46dd1ddd3d62ea64f02dbacee82462c65c0d5ec658153b",
+        "code_sha256_after": "992afa432deb03303c46dd1ddd3d62ea64f02dbacee82462c65c0d5ec658153b",
+        "patches": [
+          {
+            "method": "runByte",
+            "from": "(I)I",
+            "to": "(I)B",
+            "descriptor_offset": 201,
+            "method_span": [
+              197,
+              256
+            ],
+            "descriptor_index": 18
+          }
+        ]
+      },
+      "run": {
+        "class_sha256": "ad9b88a41ec56ed7a5ff553388dcf3867f8d00bc5a6a27404da4976b7b684149",
+        "class_bytes": 379,
+        "runner_javac_exit": 0,
+        "runtime_exit": 0,
+        "runtime_lines": 12,
+        "jarde_cli_exit": 0,
+        "jarde_quote_count": 1,
+        "jarde_javac_exit": 1,
+        "jarde_runtime_exit": null,
+        "jadx_exit": 0,
+        "jadx_javac_exit": 0,
+        "jadx_runtime_exit": 0
+      }
+    },
+    "char": {
+      "kind": "C",
+      "patch": {
+        "source_bytes": 372,
+        "patched_bytes": 379,
+        "source_sha256": "adaf8142090cc1c25f41e597350ca6ff31baf17081aeb8f0f89accc512f51e98",
+        "patched_sha256": "c5c2ab16469319970488a56cb881cb14873a23c55e59e77b4dd582f1dd3b7abe",
+        "code_attributes": 4,
+        "code_sha256_before": "992afa432deb03303c46dd1ddd3d62ea64f02dbacee82462c65c0d5ec658153b",
+        "code_sha256_after": "992afa432deb03303c46dd1ddd3d62ea64f02dbacee82462c65c0d5ec658153b",
+        "patches": [
+          {
+            "method": "runChar",
+            "from": "(I)I",
+            "to": "(I)C",
+            "descriptor_offset": 260,
+            "method_span": [
+              256,
+              313
+            ],
+            "descriptor_index": 18
+          }
+        ]
+      },
+      "run": {
+        "class_sha256": "c5c2ab16469319970488a56cb881cb14873a23c55e59e77b4dd582f1dd3b7abe",
+        "class_bytes": 379,
+        "runner_javac_exit": 0,
+        "runtime_exit": 0,
+        "runtime_lines": 12,
+        "jarde_cli_exit": 0,
+        "jarde_quote_count": 1,
+        "jarde_javac_exit": 1,
+        "jarde_runtime_exit": null,
+        "jadx_exit": 0,
+        "jadx_javac_exit": 0,
+        "jadx_runtime_exit": 0
+      }
+    },
+    "short": {
+      "kind": "S",
+      "patch": {
+        "source_bytes": 372,
+        "patched_bytes": 379,
+        "source_sha256": "adaf8142090cc1c25f41e597350ca6ff31baf17081aeb8f0f89accc512f51e98",
+        "patched_sha256": "a5f141e48dc0ee777e02d9cd4c87c25a27ca3b9b40f86909f8f05e2153196dd3",
+        "code_attributes": 4,
+        "code_sha256_before": "992afa432deb03303c46dd1ddd3d62ea64f02dbacee82462c65c0d5ec658153b",
+        "code_sha256_after": "992afa432deb03303c46dd1ddd3d62ea64f02dbacee82462c65c0d5ec658153b",
+        "patches": [
+          {
+            "method": "runShort",
+            "from": "(I)I",
+            "to": "(I)S",
+            "descriptor_offset": 317,
+            "method_span": [
+              313,
+              370
+            ],
+            "descriptor_index": 18
+          }
+        ]
+      },
+      "run": {
+        "class_sha256": "a5f141e48dc0ee777e02d9cd4c87c25a27ca3b9b40f86909f8f05e2153196dd3",
+        "class_bytes": 379,
+        "runner_javac_exit": 0,
+        "runtime_exit": 0,
+        "runtime_lines": 12,
+        "jarde_cli_exit": 0,
+        "jarde_quote_count": 1,
+        "jarde_javac_exit": 1,
+        "jarde_runtime_exit": null,
+        "jadx_exit": 0,
+        "jadx_javac_exit": 0,
+        "jadx_runtime_exit": 0
+      }
+    }
+  },
+  "descriptor_runtime_matches_expected": {
+    "byte": true,
+    "char": true,
+    "short": true
+  },
+  "cli_sha_before": "ecab8244d1709765fa0f2b0effcebe49b9f066eea911843d11d34abec5837330",
+  "cli_sha_after": "ecab8244d1709765fa0f2b0effcebe49b9f066eea911843d11d34abec5837330"
+}

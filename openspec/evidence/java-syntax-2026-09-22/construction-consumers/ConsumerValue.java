@@ -1,0 +1,1 @@
+public class ConsumerValue implements Runnable {public int number=7;public ConsumerValue(){ConsumerEffects.calls++;if(ConsumerEffects.fail)throw ConsumerEffects.FAILURE;} public void run(){}public int get(){return number;}}

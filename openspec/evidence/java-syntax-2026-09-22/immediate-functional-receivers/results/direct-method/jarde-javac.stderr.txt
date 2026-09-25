@@ -1,0 +1,4 @@
+<OUT>/direct-method/jarde/DirectMethodRef.java:16: 错误: 此处不应为方法引用
+        return java.lang.Math::abs.applyAsInt(n);
+               ^
+1 个错误

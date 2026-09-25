@@ -1,0 +1,59 @@
+{
+  "fixture": "Java 8 int-shaped writers patched to verifier-valid Z field descriptors",
+  "frozen_cli": {
+    "path": "/tmp/jarde-cli-narrow-field-stores-48ed",
+    "expected_sha256": "48edb9d2e3eec451983aabb4affcbcaf6d723c8a75b0284605f729743088cc76",
+    "start_sha256": "48edb9d2e3eec451983aabb4affcbcaf6d723c8a75b0284605f729743088cc76",
+    "end_sha256": "48edb9d2e3eec451983aabb4affcbcaf6d723c8a75b0284605f729743088cc76"
+  },
+  "source_class_sha256": "f1089b9ed4bf8802697c7c88c7bdd79f79af93ec4d6f04135fefb764e020c4fd",
+  "patched_class_sha256": "671ee4999373f8d95e989a480ded9a648b9733c44ddb5c12f408b24e3b4b1e96",
+  "method_count_with_code": 11,
+  "code_hashes_unchanged": true,
+  "stage_statuses": {
+    "source_javac": 0,
+    "source_runtime": 0,
+    "patch": 0,
+    "patched_runner_javac": 0,
+    "patched_runtime": 0,
+    "jadx": 0,
+    "jadx_javac": 1,
+    "jadx_runtime": null,
+    "jarde_cli": 0,
+    "jarde_javac": 0,
+    "jarde_runtime": 0
+  },
+  "runtime_line_count": {
+    "source": 40,
+    "patched": 40,
+    "jarde": 40,
+    "jadx": null
+  },
+  "runtime_parity_against_patched": {
+    "source": {
+      "available": true,
+      "same_stdout": false,
+      "expected_line_count": 40,
+      "actual_line_count": 40,
+      "different_line_count": 31
+    },
+    "jarde": {
+      "available": true,
+      "same_stdout": false,
+      "expected_line_count": 40,
+      "actual_line_count": 40,
+      "different_line_count": 26
+    },
+    "jadx": {
+      "available": false
+    }
+  },
+  "pre_implementation_red": true,
+  "required_semantics": {
+    "direct_null_is_npe": true,
+    "producer_failure_precedes_null_check": true,
+    "normal_producer_runs_before_null_check": true,
+    "ordinary_instance_parameter": true,
+    "ordinary_static_parameter": true
+  }
+}

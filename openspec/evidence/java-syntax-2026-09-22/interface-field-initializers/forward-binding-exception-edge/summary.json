@@ -1,0 +1,38 @@
+{
+  "forward-binding": {
+    "class_sha256": "916d57e880cd8bd99c5c705fab87dea60d41365afa3fee3604e5d2dd3a8f7b29",
+    "classfile_patch": "swapped complete EARLY/LATE field_info records; Code unchanged",
+    "source_java_8_compile_before_patch": "PASS",
+    "original_xverify_all": "PASS",
+    "original_runtime": "L|0|9",
+    "patch_details": [],
+    "jadx_generation_exit": 0,
+    "jadx_java_8_compile_exit": 0,
+    "jadx_xverify_all_exit": 0,
+    "jadx_runtime": "L|9|9",
+    "jarde_generation_exit": 0,
+    "jarde_java_8_compile_exit": 1,
+    "jarde_xverify_all_exit": null,
+    "jarde_runtime": null,
+    "jarde_cli_sha256": "19ede7a6fe88b95530637e9765c7ae02b9f233520dc6a2e2e815f0dca58d0552"
+  },
+  "exception-handler": {
+    "class_sha256": "6a7ee16469492c295c64fcbaaedd506c6ab322865b4f03dd62561b0d7619872a",
+    "classfile_patch": "converted javac class access/field/method flags to Java 8 interface; removed only constructor",
+    "source_java_8_compile_before_patch": "PASS",
+    "original_xverify_all": "PASS",
+    "original_runtime": "ABEC|A|B",
+    "patch_details": {
+      "exception_table_entries": 1
+    },
+    "jadx_generation_exit": 0,
+    "jadx_java_8_compile_exit": 1,
+    "jadx_xverify_all_exit": null,
+    "jadx_runtime": null,
+    "jarde_generation_exit": 0,
+    "jarde_java_8_compile_exit": 1,
+    "jarde_xverify_all_exit": null,
+    "jarde_runtime": null,
+    "jarde_cli_sha256": "19ede7a6fe88b95530637e9765c7ae02b9f233520dc6a2e2e815f0dca58d0552"
+  }
+}

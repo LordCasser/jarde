@@ -1,0 +1,35 @@
+BLOCKS
+block=0 entry=[(Local(0), ValueId(0))] exit=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(13))]
+block=11 entry=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(13))] exit=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(13))]
+block=15 entry=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(13))] exit=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(13))]
+block=17 entry=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Stack(0), ValueId(4))] exit=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(18))]
+block=22 entry=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(18))] exit=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(18))]
+block=35 entry=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(18))] exit=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(18))]
+block=29 entry=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(18)), (Stack(0), ValueId(8))] exit=[(Local(0), ValueId(0)), (Local(1), ValueId(10)), (Local(2), ValueId(18)), (Local(3), ValueId(21))]
+SLOT 2/3 INSTRUCTIONS
+block=0 bci=6 reads=[] writes=[(Local(2), ValueId(13))]
+block=15 bci=15 reads=[(Local(2), ValueId(13))] writes=[]
+block=17 bci=17 reads=[] writes=[(Local(2), ValueId(18))]
+block=35 bci=35 reads=[(Local(2), ValueId(18))] writes=[]
+block=29 bci=29 reads=[] writes=[(Local(3), ValueId(21))]
+block=29 bci=30 reads=[(Local(2), ValueId(18))] writes=[]
+block=29 bci=31 reads=[(Local(3), ValueId(21))] writes=[]
+VALUES FOR SLOT 2/3 DEFINITIONS AND USES
+vValueId(3) ty=Int def=Phi { block: CanonicalBlockId { bci: 15, path: [] }, slot: Local(2) } replaced=Some(ValueId(13)) uses=[]
+vValueId(7) ty=Ref(Named { name: [106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 84, 104, 114, 111, 119, 97, 98, 108, 101], loader: LoaderId("app") }) def=Phi { block: CanonicalBlockId { bci: 35, path: [] }, slot: Local(2) } replaced=Some(ValueId(18)) uses=[]
+vValueId(13) ty=Int def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 6 } replaced=None uses=[SsaUse { block: CanonicalBlockId { bci: 15, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 15, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 15, path: [] }, bci: Some(15) }]
+vValueId(18) ty=Ref(Named { name: [106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 84, 104, 114, 111, 119, 97, 98, 108, 101], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 17, path: [] }, bci: 17 } replaced=None uses=[SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(30) }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: None }, SsaUse { block: CanonicalBlockId { bci: 35, path: [] }, bci: Some(35) }]
+vValueId(21) ty=Ref(Named { name: [106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 84, 104, 114, 111, 119, 97, 98, 108, 101], loader: LoaderId("app") }) def=Instruction { block: CanonicalBlockId { bci: 29, path: [] }, bci: 29 } replaced=None uses=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(31) }]
+PHIS FOR SLOT 2/3
+block=15 slot=Local(2) value=ValueId(3) inputs=[Value(ValueId(13)), Value(ValueId(13))]
+block=35 slot=Local(2) value=ValueId(7) inputs=[Value(ValueId(18)), Value(ValueId(18)), Value(ValueId(18))]
+EDGES
+0 -> 11 Normal
+0 -> 15 Normal
+0 -> 17 Exception { handler_ordinal: 0 }
+11 -> 15 Normal
+17 -> 22 Normal
+17 -> 35 Normal
+22 -> 35 Normal
+22 -> 29 Exception { handler_ordinal: 1 }
+29 -> 35 Normal

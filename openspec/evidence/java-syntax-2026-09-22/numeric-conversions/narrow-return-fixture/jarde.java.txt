@@ -1,0 +1,123 @@
+// jarde: presentation of `NarrowIntegerReturns` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NarrowIntegerReturns extends java.lang.Object {
+    public int value;
+
+    public NarrowIntegerReturns() {
+        // @method <init>()V
+        // @declaration a constructor of `NarrowIntegerReturns`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static byte directByte(java.lang.String arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `directByte(Ljava/lang/String;I)B` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method directByte(Ljava/lang/String;I)B
+        // @declaration a static method of `NarrowIntegerReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the value at BCI 0 is presented as `int` and the member's own descriptor returns `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static char directChar(java.lang.Number arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `directChar(Ljava/lang/Number;I)C` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method directChar(Ljava/lang/Number;I)C
+        // @declaration a static method of `NarrowIntegerReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the value at BCI 0 is presented as `int` and the member's own descriptor returns `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static short directShort(boolean arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `directShort(ZI)S` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method directShort(ZI)S
+        // @declaration a static method of `NarrowIntegerReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the value at BCI 0 is presented as `int` and the member's own descriptor returns `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static byte byteLocal(byte arg0) {
+        // @method byteLocal(B)B
+        // @declaration a static method of `NarrowIntegerReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = arg0;
+        // @bytecode 3
+        // the value at BCI 2 is presented as `int` and the member's own descriptor returns `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static char charLocal(char arg0) {
+        // @method charLocal(C)C
+        // @declaration a static method of `NarrowIntegerReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = arg0;
+        // @bytecode 3
+        // the value at BCI 2 is presented as `int` and the member's own descriptor returns `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static short shortLocal(short arg0) {
+        // @method shortLocal(S)S
+        // @declaration a static method of `NarrowIntegerReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = arg0;
+        // @bytecode 3
+        // the value at BCI 2 is presented as `int` and the member's own descriptor returns `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static int integerControl(byte arg0, boolean arg1) {
+        // @method integerControl(BZ)I
+        // @declaration a static method of `NarrowIntegerReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local2 = arg0;
+        return local2;
+    }
+
+    public byte postByte(int arg1) {
+        // @method postByte(I)B
+        // @declaration an instance method of `NarrowIntegerReturns`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.value++;
+    }
+
+    public char preChar(long arg1) {
+        // @method preChar(J)C
+        // @declaration an instance method of `NarrowIntegerReturns`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return ++this.value;
+    }
+
+    public short postShort(float arg1) {
+        // @method postShort(F)S
+        // @declaration an instance method of `NarrowIntegerReturns`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.value++;
+    }
+
+    public static byte syncByte(java.lang.Object arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `syncByte(Ljava/lang/Object;I)B` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method syncByte(Ljava/lang/Object;I)B
+        // @declaration a static method of `NarrowIntegerReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 8 7
+        // the value at BCI 4 is presented as `int` and the member's own descriptor returns `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static char syncChar(java.lang.String arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `syncChar(Ljava/lang/String;I)C` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method syncChar(Ljava/lang/String;I)C
+        // @declaration a static method of `NarrowIntegerReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 8 7
+        // the value at BCI 4 is presented as `int` and the member's own descriptor returns `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static short syncShort(java.lang.Object arg0, long arg1, int arg3) {
+        // jarde: not recovered: the recovery run for `syncShort(Ljava/lang/Object;JI)S` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method syncShort(Ljava/lang/Object;JI)S
+        // @declaration a static method of `NarrowIntegerReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 10 9
+        // the value at BCI 5 is presented as `int` and the member's own descriptor returns `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+}

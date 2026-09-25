@@ -1,0 +1,13 @@
+{
+  "cli_sha256": "88f2e7aa9b5b8172da02f5af5d4d2c029e72a52d9b3298b46b82774e0bd5fdfd",
+  "class_sha256": "6c1e6ee18ca8370ffc5ad44f8ad911a000ed34f6c258d95d603004d4aeab701a",
+  "class_bytes": 593,
+  "code_attribute_count": 3,
+  "original_compile_status": 0,
+  "original_run_status": 0,
+  "jadx_compile_or_run_status": 0,
+  "jarde_compile_or_run_status": 1,
+  "jadx_matches_original": true,
+  "jarde_matches_original": null,
+  "jarde_references": 2
+}

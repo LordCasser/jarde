@@ -1,0 +1,6 @@
+raw=3
+castBeforeTouch=6,touches=2
+touchBeforeCast=6,touches=2
+wrongCastBeforeTouch=ClassCastException,touches=1
+wrongTouchBeforeCast=ClassCastException,touches=1
+nextFailure=IllegalStateException,touches=1

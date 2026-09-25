@@ -1,0 +1,5 @@
+public class FinalFailure {
+ public static final int first=FinalFailureSupport.next("A");
+ public static final int second=FinalFailureSupport.next("B");
+ public static int value(){return first*10+second;}
+}

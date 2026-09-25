@@ -1,0 +1,7 @@
+original: 6 lines; jadx: 6 lines; equal=true
+= 001 original="empty=0" jadx="empty=0"
+= 002 original="many=6" jadx="many=6"
+= 003 original="null=NullPointerException:Cannot read the array length because \"<local2>\" is null" jadx="null=NullPointerException:Cannot read the array length because \"<local2>\" is null"
+= 004 original="source-many=20:calls=1" jadx="source-many=20:calls=1"
+= 005 original="source-null=NullPointerException:Cannot read the array length because \"<local2>\" is null:calls=1" jadx="source-null=NullPointerException:Cannot read the array length because \"<local2>\" is null:calls=1"
+= 006 original="source-throws=IllegalStateException:source:calls=1" jadx="source-throws=IllegalStateException:source:calls=1"

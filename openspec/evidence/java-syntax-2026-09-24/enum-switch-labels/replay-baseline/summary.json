@@ -1,0 +1,35 @@
+{
+  "cli_sha256": "6e2d1a3ee7c18622d98c0695ecc87bbaaad03acecc8795c1d17567aa6330859f",
+  "cases": {
+    "normal": {
+      "input_sha256": {
+        "EnumSwitchSubject.class": "05efc57231504c39db97ee3629d2f83b22add32cb4a0bc0eff1faf54fb2bf295",
+        "EnumSwitchSubject$1.class": "5cbf19d12db909aa88ad1a504f6d8f8a096f6d9622cae972f0569b0b591aabd6",
+        "Hue.class": "3a5d7db6f4420d09cbdd0f128dcaaa4759fd33de11196c6bebdb10917db67ab2",
+        "EnumSwitchRunner.class": "6d7ed4dd46e787a3119703bd8d0d0ae9ba24cd341ea253c5bf4b58f17aa1baea"
+      },
+      "original_runtime": "1|1\n2|2\n3|3\nnull|0",
+      "jadx_javac_exit": 0,
+      "jadx_runtime": "1|1\n2|2\n3|3\nnull|0",
+      "jarde_cli_exit": 0,
+      "jarde_source_sha256": "3a47145066921960fed93c18b1353bb9072b4ecf930c988bb73370494fbf6c39",
+      "jarde_javac_exit": 1,
+      "jarde_runtime": null
+    },
+    "swapped": {
+      "input_sha256": {
+        "EnumSwitchSubject.class": "05efc57231504c39db97ee3629d2f83b22add32cb4a0bc0eff1faf54fb2bf295",
+        "EnumSwitchSubject$1.class": "65e6ad3fcfc997a554dac632132f866ac1d09a6ea2821c2bf464180b912852fd",
+        "Hue.class": "3a5d7db6f4420d09cbdd0f128dcaaa4759fd33de11196c6bebdb10917db67ab2",
+        "EnumSwitchRunner.class": "6d7ed4dd46e787a3119703bd8d0d0ae9ba24cd341ea253c5bf4b58f17aa1baea"
+      },
+      "original_runtime": "2|2\n1|1\n3|3\nnull|0",
+      "jadx_javac_exit": 0,
+      "jadx_runtime": "2|2\n1|1\n3|3\nnull|0",
+      "jarde_cli_exit": 0,
+      "jarde_source_sha256": "3a47145066921960fed93c18b1353bb9072b4ecf930c988bb73370494fbf6c39",
+      "jarde_javac_exit": 1,
+      "jarde_runtime": null
+    }
+  }
+}

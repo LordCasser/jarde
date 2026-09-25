@@ -1,0 +1,4 @@
+<OUT>/direct-array/jarde/DirectArrayCtorRef.java:16: 错误: 此处不应为 lambda 表达式
+        return (int[]) ((int p0) -> DirectArrayCtorRef.lambda$make$0(p0)).apply(n);
+                        ^
+1 个错误

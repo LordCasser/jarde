@@ -1,0 +1,5 @@
+/tmp/jarde-mixed-short-local.djEtvp/jarde-src/MixedBooleanLocal.java:45: 错误: 缺少返回语句
+    }
+    ^
+1 个错误
+javac_exit=1

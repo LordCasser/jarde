@@ -1,0 +1,1 @@
+public class DeferredValues {public static int call(){return DeferredSupport.value();}public static int field(){return DeferredSupport.field;}public static int array(int[]a){return a[0];}public static String cast(Object a){return (String)a;}public static void keepPool(){DeferredSupport.mark();}}

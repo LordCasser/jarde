@@ -1,0 +1,8 @@
+package defpackage;
+
+/* JADX INFO: loaded from: NonInvokeQualifierProbe.owner-other.class */
+public final class NonInvokeQualifierProbe {
+    public static int call(Child child) {
+        return Other.ping();
+    }
+}

@@ -1,0 +1,3 @@
+2bdac1c17fb71fd643534b5bee32f3b075d0da438d717d771f975097bcaeee83  openspec/evidence/java-syntax-2026-09-22/numeric-conversions/narrow-field-stores/original-runtime.txt
+f8bb1c851affca6e5e54b8152e84ceefe56f15f5d7a950417fff2cad8fe60596  openspec/evidence/java-syntax-2026-09-22/numeric-conversions/narrow-field-stores/patched-runtime.txt
+b1f6604d77caa989c27eddede19a9f9eb412ef75819ef103f5a6eae994ce038e  openspec/evidence/java-syntax-2026-09-22/numeric-conversions/narrow-field-stores/jarde-runtime.txt

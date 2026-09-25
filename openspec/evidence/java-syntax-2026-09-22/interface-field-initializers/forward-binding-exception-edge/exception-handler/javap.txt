@@ -1,0 +1,114 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/interface-field-initializers/forward-binding-exception-edge/exception-handler/ExceptionProbe.class
+  Last modified 2026年9月23日; size 645 bytes
+  SHA-256 checksum 6a7ee16469492c295c64fcbaaedd506c6ab322865b4f03dd62561b0d7619872a
+public interface ExceptionProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0601) ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT
+  this_class: #23                         // ExceptionProbe
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // java/lang/StringBuilder
+   #8 = Utf8               java/lang/StringBuilder
+   #9 = Methodref          #7.#3          // java/lang/StringBuilder."<init>":()V
+  #10 = Fieldref           #11.#12        // BoundaryEffects.trace:Ljava/lang/String;
+  #11 = Class              #13            // BoundaryEffects
+  #12 = NameAndType        #14:#15        // trace:Ljava/lang/String;
+  #13 = Utf8               BoundaryEffects
+  #14 = Utf8               trace
+  #15 = Utf8               Ljava/lang/String;
+  #16 = Methodref          #7.#17         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #17 = NameAndType        #18:#19        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #18 = Utf8               append
+  #19 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #20 = String             #21            // |
+  #21 = Utf8               |
+  #22 = Fieldref           #23.#24        // ExceptionProbe.FIRST:Ljava/lang/String;
+  #23 = Class              #25            // ExceptionProbe
+  #24 = NameAndType        #26:#15        // FIRST:Ljava/lang/String;
+  #25 = Utf8               ExceptionProbe
+  #26 = Utf8               FIRST
+  #27 = Fieldref           #23.#28        // ExceptionProbe.SECOND:Ljava/lang/String;
+  #28 = NameAndType        #29:#15        // SECOND:Ljava/lang/String;
+  #29 = Utf8               SECOND
+  #30 = Methodref          #7.#31         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #31 = NameAndType        #32:#33        // toString:()Ljava/lang/String;
+  #32 = Utf8               toString
+  #33 = Utf8               ()Ljava/lang/String;
+  #34 = Methodref          #11.#35        // BoundaryEffects.first:()Ljava/lang/String;
+  #35 = NameAndType        #36:#33        // first:()Ljava/lang/String;
+  #36 = Utf8               first
+  #37 = Methodref          #11.#38        // BoundaryEffects.second:()Ljava/lang/String;
+  #38 = NameAndType        #39:#33        // second:()Ljava/lang/String;
+  #39 = Utf8               second
+  #40 = Methodref          #11.#41        // BoundaryEffects.fail:()V
+  #41 = NameAndType        #42:#6         // fail:()V
+  #42 = Utf8               fail
+  #43 = Class              #44            // java/lang/IllegalStateException
+  #44 = Utf8               java/lang/IllegalStateException
+  #45 = Methodref          #11.#46        // BoundaryEffects.caught:()V
+  #46 = NameAndType        #47:#6         // caught:()V
+  #47 = Utf8               caught
+  #48 = Utf8               Code
+  #49 = Utf8               observe
+  #50 = Utf8               <clinit>
+  #51 = Utf8               StackMapTable
+{
+  public static final java.lang.String FIRST;
+    descriptor: Ljava/lang/String;
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static final java.lang.String SECOND;
+    descriptor: Ljava/lang/String;
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static java.lang.String observe();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #7                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #10                 // Field BoundaryEffects.trace:Ljava/lang/String;
+        10: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        13: ldc           #20                 // String |
+        15: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: getstatic     #22                 // Field FIRST:Ljava/lang/String;
+        21: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        24: ldc           #20                 // String |
+        26: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        29: getstatic     #27                 // Field SECOND:Ljava/lang/String;
+        32: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        35: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        38: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=0
+         0: invokestatic  #34                 // Method BoundaryEffects.first:()Ljava/lang/String;
+         3: putstatic     #22                 // Field FIRST:Ljava/lang/String;
+         6: invokestatic  #37                 // Method BoundaryEffects.second:()Ljava/lang/String;
+         9: putstatic     #27                 // Field SECOND:Ljava/lang/String;
+        12: invokestatic  #40                 // Method BoundaryEffects.fail:()V
+        15: goto          22
+        18: astore_0
+        19: invokestatic  #45                 // Method BoundaryEffects.caught:()V
+        22: return
+      Exception table:
+         from    to  target type
+            12    15    18   Class java/lang/IllegalStateException
+      StackMapTable: number_of_entries = 2
+        frame_type = 82 /* same_locals_1_stack_item */
+          stack = [ class java/lang/IllegalStateException ]
+        frame_type = 3 /* same */
+}

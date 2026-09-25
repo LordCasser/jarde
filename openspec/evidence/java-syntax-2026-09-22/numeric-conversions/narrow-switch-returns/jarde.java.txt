@@ -1,0 +1,104 @@
+// jarde: presentation of `NarrowSwitchReturns` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class NarrowSwitchReturns extends java.lang.Object {
+    private NarrowSwitchReturns() {
+        // @method <init>()V
+        // @declaration a constructor of `NarrowSwitchReturns`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static byte runByte(int arg0) {
+        // @method runByte(I)B
+        // @declaration a static method of `NarrowSwitchReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        switch (arg0) {
+            case 1:
+                local1 = 130;
+                break;
+            default:
+                local1 = -129;
+                break;
+        }
+        // @bytecode 32
+        // the value at BCI 31 is presented as `int` and the member's own descriptor returns `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static char runChar(int arg0) {
+        // @method runChar(I)C
+        // @declaration a static method of `NarrowSwitchReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        switch (arg0) {
+            case 1:
+                local1 = 65535;
+                break;
+            default:
+                local1 = -2;
+                break;
+        }
+        // @bytecode 30
+        // the value at BCI 29 is presented as `int` and the member's own descriptor returns `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static short runShort(int arg0) {
+        // @method runShort(I)S
+        // @declaration a static method of `NarrowSwitchReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        switch (arg0) {
+            case 1:
+                local1 = 32768;
+                break;
+            default:
+                local1 = -32769;
+                break;
+        }
+        // @bytecode 30
+        // the value at BCI 29 is presented as `int` and the member's own descriptor returns `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static byte boolByte(boolean arg0) {
+        // @method boolByte(Z)B
+        // @declaration a static method of `NarrowSwitchReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        if (arg0) {
+            local1 = 255;
+        } else {
+            local1 = -256;
+        }
+        // @bytecode 16
+        // the value at BCI 15 is presented as `int` and the member's own descriptor returns `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static char boolChar(boolean arg0) {
+        // @method boolChar(Z)C
+        // @declaration a static method of `NarrowSwitchReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        if (arg0) {
+            local1 = 65535;
+        } else {
+            local1 = -2;
+        }
+        // @bytecode 14
+        // the value at BCI 13 is presented as `int` and the member's own descriptor returns `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+
+    public static short boolShort(boolean arg0) {
+        // @method boolShort(Z)S
+        // @declaration a static method of `NarrowSwitchReturns`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        if (arg0) {
+            local1 = 32768;
+        } else {
+            local1 = -32769;
+        }
+        // @bytecode 14
+        // the value at BCI 13 is presented as `int` and the member's own descriptor returns `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+    }
+}

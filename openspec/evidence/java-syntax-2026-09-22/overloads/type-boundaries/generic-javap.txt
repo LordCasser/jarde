@@ -1,0 +1,27 @@
+public class GenericOverloadProbe {
+  public GenericOverloadProbe();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int choose(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)I
+    Code:
+       0: iconst_1
+       1: ireturn
+
+  public static int choose(java.lang.String);
+    descriptor: (Ljava/lang/String;)I
+    Code:
+       0: iconst_2
+       1: ireturn
+
+  public static int genericObjectCast();
+    descriptor: ()I
+    Code:
+       0: invokestatic  #7                  // Method GenericFactory.make:()Ljava/lang/Object;
+       3: invokestatic  #13                 // Method choose:(Ljava/lang/Object;)I
+       6: ireturn
+}

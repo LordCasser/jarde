@@ -1,0 +1,3 @@
+values=ZERO:0,ONE:1
+effects=2:0,1
+declared-constructors=2,3

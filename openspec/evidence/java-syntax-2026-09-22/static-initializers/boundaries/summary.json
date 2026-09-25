@@ -1,0 +1,87 @@
+{
+  "StaticEmpty": {
+    "cli_rc": 0,
+    "original": "value=7",
+    "original_status": [
+      "javac_rc=0",
+      "run_rc=0"
+    ],
+    "patched": {
+      "": "value=0"
+    },
+    "patched_status": [
+      "runner_javac_rc=0",
+      "run_rc=0"
+    ],
+    "jarde": {
+      "status": [
+        "cli_rc=0",
+        "javac_rc=0",
+        "run_rc=0"
+      ],
+      "runs": {
+        "": "value=0"
+      }
+    },
+    "jadx": [
+      "jadx_rc=0",
+      "javac_rc=0",
+      "run_rc=0"
+    ]
+  },
+  "StaticEarlyReturn": {
+    "cli_rc": 0,
+    "original": "value=7",
+    "original_status": [
+      "javac_rc=0",
+      "run_rc=0"
+    ],
+    "patched": {
+      "true": "value=1",
+      "false": "value=7"
+    },
+    "patched_status": [
+      "runner_javac_rc=0",
+      "runtrue_rc=0",
+      "runfalse_rc=0"
+    ],
+    "jarde": {
+      "status": [
+        "cli_rc=0",
+        "javac_rc=1"
+      ],
+      "runs": {}
+    },
+    "jadx": [
+      "jadx_rc=0",
+      "javac_rc=0",
+      "runtrue_rc=0",
+      "runfalse_rc=0"
+    ]
+  },
+  "StaticExternalException": {
+    "cli_rc": 0,
+    "original": "first=java.lang.ExceptionInInitializerError:java.lang.IllegalStateException\nsecond=java.lang.NoClassDefFoundError:java.lang.ExceptionInInitializerError",
+    "original_status": [
+      "javac_rc=0",
+      "run_rc=0"
+    ],
+    "patched": null,
+    "patched_status": null,
+    "jarde": {
+      "status": [
+        "cli_rc=0",
+        "javac_rc=0",
+        "run_rc=0"
+      ],
+      "runs": {
+        "": "first=java.lang.ExceptionInInitializerError:java.lang.IllegalStateException\nsecond=java.lang.NoClassDefFoundError:java.lang.ExceptionInInitializerError"
+      }
+    },
+    "jadx": [
+      "jadx_rc=0",
+      "javac_rc=0",
+      "run_rc=0"
+    ]
+  }
+}

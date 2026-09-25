@@ -1,0 +1,14 @@
+{
+  "command": [
+    "javap",
+    "-classpath",
+    "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/original",
+    "-c",
+    "-s",
+    "Order"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "public class Order {\n  static int trace;\n    descriptor: I\n\n  public Order();\n    descriptor: ()V\n    Code:\n       0: aload_0\n       1: invokespecial #1                  // Method java/lang/Object.\"<init>\":()V\n       4: return\n\n  static int[] array(int[]);\n    descriptor: ([I)[I\n    Code:\n       0: getstatic     #7                  // Field trace:I\n       3: bipush        10\n       5: imul\n       6: iconst_1\n       7: iadd\n       8: putstatic     #7                  // Field trace:I\n      11: aload_0\n      12: areturn\n\n  static int index();\n    descriptor: ()I\n    Code:\n       0: getstatic     #7                  // Field trace:I\n       3: bipush        10\n       5: imul\n       6: iconst_2\n       7: iadd\n       8: putstatic     #7                  // Field trace:I\n      11: iconst_0\n      12: ireturn\n\n  static int value(int);\n    descriptor: (I)I\n    Code:\n       0: getstatic     #7                  // Field trace:I\n       3: bipush        10\n       5: imul\n       6: iconst_3\n       7: iadd\n       8: putstatic     #7                  // Field trace:I\n      11: iload_0\n      12: bipush        99\n      14: if_icmpne     27\n      17: new           #13                 // class java/lang/IllegalStateException\n      20: dup\n      21: ldc           #15                 // String value producer\n      23: invokespecial #17                 // Method java/lang/IllegalStateException.\"<init>\":(Ljava/lang/String;)V\n      26: athrow\n      27: iload_0\n      28: ireturn\n\n  public static int put(int[], int);\n    descriptor: ([II)I\n    Code:\n       0: aload_0\n       1: invokestatic  #20                 // Method array:([I)[I\n       4: invokestatic  #24                 // Method index:()I\n       7: iload_1\n       8: invokestatic  #28                 // Method value:(I)I\n      11: iastore\n      12: aload_0\n      13: iconst_0\n      14: iaload\n      15: ireturn\n}\n",
+  "stderr": ""
+}

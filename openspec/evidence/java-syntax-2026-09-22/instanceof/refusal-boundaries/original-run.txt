@@ -1,0 +1,12 @@
+[pop]
+pop=returned:1
+[duplicate]
+duplicate-true=true
+duplicate-false=false
+[stale]
+stale-true=true
+stale-false=false
+[int]
+int-string=1
+int-number=0
+int-null=0

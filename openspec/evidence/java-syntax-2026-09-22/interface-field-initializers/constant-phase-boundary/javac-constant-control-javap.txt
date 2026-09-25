@@ -1,0 +1,32 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-constant-phase-ek51ew0j/constant-control-classes/JavacConstantControl.class
+  Last modified 2026年9月23日; size 144 bytes
+  SHA-256 checksum 6161696ccd62af30f9c8e4ef2eee6f3ecb8240de3531e9809733f59e7e4d83f1
+public interface JavacConstantControl
+  minor version: 0
+  major version: 52
+  flags: (0x0601) ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT
+  this_class: #1                          // JavacConstantControl
+  super_class: #3                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 0, attributes: 0
+Constant pool:
+   #1 = Class              #2             // JavacConstantControl
+   #2 = Utf8               JavacConstantControl
+   #3 = Class              #4             // java/lang/Object
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               EARLY
+   #6 = Utf8               I
+   #7 = Utf8               ConstantValue
+   #8 = Integer            9
+   #9 = Utf8               LATE
+{
+  public static final int EARLY;
+    descriptor: I
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+    ConstantValue: int 9
+
+  public static final int LATE;
+    descriptor: I
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+    ConstantValue: int 9
+
+}

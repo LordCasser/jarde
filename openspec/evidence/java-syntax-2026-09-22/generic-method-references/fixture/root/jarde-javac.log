@@ -1,0 +1,22 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-lambda-adaptation-fixture-hz5t5jc7/jarde/LambdaAdaptationProbe.java:30: 错误: 不兼容的类型: 方法引用无效
+        return LambdaAdaptationSupport::pickArray;
+               ^
+    对于pickArray(Object), 找不到合适的方法
+        方法 LambdaAdaptationSupport.pickArray(Object[])不适用
+          (参数不匹配; Object无法转换为Object[])
+        方法 LambdaAdaptationSupport.pickArray(String[])不适用
+          (参数不匹配; Object无法转换为String[])
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-lambda-adaptation-fixture-hz5t5jc7/jarde/LambdaAdaptationProbe.java:37: 错误: 不兼容的类型: lambda 表达式中的参数类型不兼容
+        return (LambdaAdaptationSupport p0, java.lang.String p1) -> p0.instancePick(p1);
+               ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-lambda-adaptation-fixture-hz5t5jc7/jarde/LambdaAdaptationProbe.java:44: 错误: 不兼容的类型: 构造器引用无效
+        return LambdaAdaptationBox::new;
+               ^
+    不兼容的类型: Object无法转换为String
+注: /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-lambda-adaptation-fixture-hz5t5jc7/jarde/LambdaAdaptationRunner.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+3 个错误
+3 个警告

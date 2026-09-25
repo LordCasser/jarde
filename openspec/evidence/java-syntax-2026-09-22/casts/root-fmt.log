@@ -1,0 +1,59 @@
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_invocation_arguments.rs:16:
+ 
+ const FIXTURE: &[u8] =
+     include_bytes!("fixtures/p3-invocation-arguments/v8/InvocationArgumentsProbe.class");
+-const PROBE_SOURCE: &str = include_str!("fixtures/p3-invocation-arguments/InvocationArgumentsProbe.java");
++const PROBE_SOURCE: &str =
++    include_str!("fixtures/p3-invocation-arguments/InvocationArgumentsProbe.java");
+ const TARGET_SOURCE: &str = include_str!("fixtures/p3-invocation-arguments/ArgumentTarget.java");
+ const GENERIC_SOURCE: &str = include_str!("fixtures/p3-invocation-arguments/GenericFactory.java");
+-const RUNNER_SOURCE: &str = include_str!("fixtures/p3-invocation-arguments/InvocationArgumentsRunner.java");
++const RUNNER_SOURCE: &str =
++    include_str!("fixtures/p3-invocation-arguments/InvocationArgumentsRunner.java");
+ 
+ fn budget() -> Budget {
+     task_budget(&[]).expect("the task defaults are a bounded budget")
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_invocation_arguments.rs:91:
+     assert!(PROBE_SOURCE.contains("(Runnable) InvocationArgumentsProbe::returnFive"));
+ 
+     let report = class_source_of(&open(FIXTURE));
+-    assert_eq!(report.methods.len(), 14, "constructor plus thirteen code methods");
++    assert_eq!(
++        report.methods.len(),
++        14,
++        "constructor plus thirteen code methods"
++    );
+     for name in [
+         "<init>",
+         "objectString",
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_invocation_arguments.rs:146:
+ 
+     let object_boxed = assert_presented(&report, "objectBoxed");
+     assert!(
+-        object_boxed.contains("ArgumentTarget.boxed((java.lang.Object) java.lang.Integer.valueOf(3))"),
++        object_boxed
++            .contains("ArgumentTarget.boxed((java.lang.Object) java.lang.Integer.valueOf(3))"),
+         "boxing does not change the Object argument fact:\n{object_boxed}"
+     );
+ 
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_invocation_arguments.rs:195:
+ 
+     let functional = assert_presented(&report, "functionalRunnable");
+     assert!(
+-        functional.contains("ArgumentTarget.functional((java.lang.Runnable) InvocationArgumentsProbe::returnFive)"),
++        functional.contains(
++            "ArgumentTarget.functional((java.lang.Runnable) InvocationArgumentsProbe::returnFive)"
++        ),
+         "the Runnable factory target is preserved at the overloaded call:\n{functional}"
+     );
+     let functional_object = assert_presented(&report, "functionalObject");
+Diff in /Users/lordcasser/workspace/projects/jarde/tests/p3_numeric_comparison.rs:370:
+ 
+ fn recovered_class(engine: &Engine, fixture: &Fixture) -> String {
+     let mut source = String::from(
+-        "public final class RecoveredNumericComparisons {\n"
+-            .to_owned()
++        "public final class RecoveredNumericComparisons {\n".to_owned()
+             + "    static int calls;\n"
+             + "    static void resetCalls() { calls = 0; }\n"
+             + "    static int calls() { return calls; }\n"

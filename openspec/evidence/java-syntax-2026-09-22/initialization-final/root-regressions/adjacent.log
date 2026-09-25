@@ -1,0 +1,91 @@
+cargo test --locked --test p3_final_static --test p3_declaration_handoff --test p3_alias_field --test p3_field_increment --test p3_new_value --test p3_invocation_arguments --test p3_eval_context --test p3_recovery_entry
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.25s
+     Running tests/p3_alias_field.rs (target/debug/deps/p3_alias_field-945f8a75f4ea4f88)
+
+running 3 tests
+test a_local_alias_receiver_is_presented_from_the_frames_slot_type ... ok
+test a_parameter_receiver_is_unchanged ... ok
+test a_this_receiver_is_unchanged ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_declaration_handoff.rs (target/debug/deps/p3_declaration_handoff-50644a2b7929830c)
+
+running 10 tests
+test a_body_that_still_has_fallbacks_keeps_its_quality ... ok
+test a_mangled_class_name_is_displayed_and_moves_nothing_but_the_display ... ok
+test a_stopped_run_publishes_no_declaration_and_no_class_facts ... ok
+test an_ordinary_member_charges_the_same_reads_and_bytes_as_before_the_handoff ... ok
+test the_class_facts_are_taken_from_the_read_that_was_already_there ... ok
+test the_payload_states_the_declaring_class_facts_the_same_header_read_holds ... ok
+test the_prepared_callee_read_needs_no_second_class_read ... ok
+test the_prepared_driver_read_consumes_the_class_the_caller_already_read ... ok
+test the_public_entry_decides_every_member_form_from_the_runs_own_class_facts ... ok
+test two_definitions_of_the_same_internal_name_keep_their_own_class_facts ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_eval_context.rs (target/debug/deps/p3_eval_context-89d135dc32204181)
+
+running 10 tests
+test a_call_argument_is_checked_where_the_consuming_expression_is_evaluated ... ok
+test a_nested_arithmetic_is_checked_where_its_text_is_evaluated ... ok
+test a_nested_expression_that_crosses_no_write_is_still_written ... ok
+test a_read_behind_another_read_is_named_too ... ok
+test a_recursion_that_re_enters_its_own_loop_stops_instead_of_aborting ... ok
+test a_refused_instance_read_keeps_the_null_pointer_it_can_throw ... ok
+test a_refused_static_read_keeps_the_class_initialization_it_can_run ... ok
+test every_presented_field_read_is_accounted_for_by_its_artifact ... ok
+test the_printed_text_keeps_the_arithmetic_tree ... ok
+test the_printed_text_keeps_the_grouping_of_every_position ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_field_increment.rs (target/debug/deps/p3_field_increment-542dab69661d38ba)
+
+running 2 tests
+test a_post_increment_returns_the_old_value_and_a_pre_increment_the_sum ... ok
+test the_update_is_the_text_the_instructions_that_perform_it_are_anchored_at ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p3_final_static.rs (target/debug/deps/p3_final_static-3a9e8b0eefaf80c0)
+
+running 5 tests
+test clinit_uses_simple_blank_final_writes_and_reserves_local_names ... ok
+test essential_sources_match_all_sources_but_publish_no_source_map ... ok
+test final_static_proof_rejects_missing_mismatch_owner_ambiguity_nonfinal_and_constant ... ok
+test fixture_keeps_the_static_final_and_instance_final_boundaries ... ok
+test recovered_complete_class_matches_original_in_both_clinit_branches ... ignored, requires JDK: compile and execute the original and recovered complete classes
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_invocation_arguments.rs (target/debug/deps/p3_invocation_arguments-795dea53a8392d17)
+
+running 4 tests
+test call_casts_keep_their_call_site_as_derived_provenance ... ok
+test fixture_has_one_real_class_and_all_argument_shapes ... ok
+test recovered_calls_keep_their_invocation_argument_types ... ok
+test recovered_invocation_arguments_match_original_runtime ... ignored, requires JDK: compile Engine::class_source output and execute a temporary runner
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_new_value.rs (target/debug/deps/p3_new_value-e8c5600069976e83)
+
+running 4 tests
+test a_field_write_takes_the_construction_as_its_value ... ok
+test a_leftover_two_instructions_read_keeps_its_refusal ... ok
+test a_return_and_an_argument_write_the_construction_in_place ... ok
+test the_store_consumer_keeps_the_spelling_it_had ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_recovery_entry.rs (target/debug/deps/p3_recovery_entry-b5cbce30acfd159a)
+
+running 2 tests
+test a_recovery_request_that_asks_for_no_ssa_stops_inside_a_successful_answer ... ok
+test one_recovery_request_reads_one_body_and_presents_that_member ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

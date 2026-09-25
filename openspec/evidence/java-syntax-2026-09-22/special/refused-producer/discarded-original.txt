@@ -1,0 +1,9 @@
+value=8
+defaultCall=11
+own=7
+other=8
+otherNull=java.lang.NullPointerException
+superSideEffect=0
+sideEffectCount=1
+superThrowingArgument=java.lang.IllegalArgumentException
+superThrowingParent=java.lang.IllegalStateException

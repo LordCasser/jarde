@@ -1,0 +1,71 @@
+package defpackage;
+
+/* JADX INFO: loaded from: NullResourceCore.class */
+public final class NullResourceCore implements AutoCloseable {
+    private static int bodyCalls;
+    private static int closes;
+
+    public static void reset() {
+        bodyCalls = 0;
+        closes = 0;
+    }
+
+    public static int bodyCalls() {
+        return bodyCalls;
+    }
+
+    public static int closes() {
+        return closes;
+    }
+
+    public static void useNullResource() throws Exception {
+        AutoCloseable autoCloseable = null;
+        try {
+            bodyCalls++;
+            if (0 != 0) {
+                autoCloseable.close();
+            }
+        } catch (Throwable th) {
+            if (0 != 0) {
+                try {
+                    autoCloseable.close();
+                } catch (Throwable th2) {
+                    th.addSuppressed(th2);
+                }
+            }
+            throw th;
+        }
+    }
+
+    @Override // java.lang.AutoCloseable
+    public void close() {
+        closes++;
+    }
+
+    public static void ordinaryNullThenCatch() {
+        Object obj = null;
+        try {
+            obj.toString();
+        } catch (RuntimeException e) {
+            bodyCalls++;
+        }
+    }
+
+    public static void closeWithoutSuppression() throws Throwable {
+        AutoCloseable autoCloseable = null;
+        try {
+            bodyCalls++;
+            if (0 != 0) {
+                autoCloseable.close();
+            }
+        } catch (Throwable th) {
+            if (0 != 0) {
+                try {
+                    autoCloseable.close();
+                } catch (Throwable th2) {
+                }
+            }
+            throw th;
+        }
+    }
+}

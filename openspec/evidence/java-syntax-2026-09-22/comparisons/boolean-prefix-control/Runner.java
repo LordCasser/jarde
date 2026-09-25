@@ -1,0 +1,1 @@
+public class Runner { public static void main(String[] a) { System.out.println(BooleanPrefixControl.less(1, 2)); System.out.println(BooleanPrefixControl.less(2, 1)); System.out.println(BooleanPrefixControl.less(Integer.MIN_VALUE, Integer.MAX_VALUE)); } }

@@ -1,0 +1,31 @@
+--- evidence/run_audit.py
++++ temp-copy/run_audit.py
+@@ -14,7 +14,7 @@
+ HERE = Path(__file__).resolve().parent
+ OUT = HERE / "generated"
+ CLI = Path(os.environ.get("JARDE_CLI", "/tmp/jarde-cli-ann-fd-root-final"))
+-CLI_SHA256 = "f2fb24241c2692dff53060576e185eb282617a6881e81900140bb2eb62006544"
++CLI_SHA256 = "8f48a9b418385b20d63257d707e0a54ef833c21b9b66901108fdcce865ea9169"
+ 
+ 
+ def sha(path: Path) -> str:
+@@ -81,7 +81,7 @@
+               for name in ("original", "jadx", "jarde")}
+     assert output == {"original": "true\ntrue\n1\n5\n",
+                       "jadx": "true\ntrue\n1\n5\n",
+-                      "jarde": "false\nfalse\n0\n5\n"}
++                      "jarde": "true\ntrue\n1\n5\n"}
+     assert sha(CLI) == CLI_SHA256
+     (OUT / "summary.json").write_text(json.dumps({
+         "cli_sha256": CLI_SHA256,
+--- evidence/boundaries/run_boundaries.py
++++ temp-copy/boundaries/run_boundaries.py
+@@ -15,7 +15,7 @@
+ HERE = Path(__file__).resolve().parent
+ OUT = HERE / "generated"
+ CLI = Path(os.environ.get("JARDE_CLI", "/tmp/jarde-cli-ann-fd-root-final"))
+-CLI_SHA256 = "f2fb24241c2692dff53060576e185eb282617a6881e81900140bb2eb62006544"
++CLI_SHA256 = "8f48a9b418385b20d63257d707e0a54ef833c21b9b66901108fdcce865ea9169"
+ 
+ 
+ def sha(path: Path) -> str:

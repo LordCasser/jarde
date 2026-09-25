@@ -1,0 +1,40 @@
+Classfile /tmp/jarde-return-narrowing-0923/ReturnBoolean/patched/ReturnBoolean.class
+  Last modified 2026年9月23日; size 169 bytes
+  SHA-256 checksum 95b351c13d04522dca82259b1b20bc5c48223ac0084a6fad4e61044a849e2b9d
+public class ReturnBoolean
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #7                          // ReturnBoolean
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // ReturnBoolean
+   #8 = Utf8               ReturnBoolean
+   #9 = Utf8               Code
+  #10 = Utf8               run
+  #11 = Utf8               (I)Z
+{
+  public ReturnBoolean();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static boolean run(int);
+    descriptor: (I)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: ireturn
+}

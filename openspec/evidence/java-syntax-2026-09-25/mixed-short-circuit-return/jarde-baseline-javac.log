@@ -1,0 +1,6 @@
+exit=1
+stdout=
+stderr=MixedLocalReturn.java:43: 错误: 缺少返回语句
+    }
+    ^
+1 个错误

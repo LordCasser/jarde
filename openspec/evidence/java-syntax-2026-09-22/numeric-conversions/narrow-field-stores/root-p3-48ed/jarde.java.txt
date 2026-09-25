@@ -1,0 +1,176 @@
+// jarde: presentation of `NarrowFieldStores` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NarrowFieldStores extends java.lang.Object {
+    public byte byteField;
+
+    public char charField;
+
+    public short shortField;
+
+    public static byte staticByteField;
+
+    public static char staticCharField;
+
+    public static short staticShortField;
+
+    public byte ordinaryByteField;
+
+    public char ordinaryCharField;
+
+    public short ordinaryShortField;
+
+    public NarrowFieldStores() {
+        // @method <init>()V
+        // @declaration a constructor of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void setByte(int arg1) {
+        // @method setByte(I)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.byteField = (byte) arg1;
+        return;
+    }
+
+    public void setChar(int arg1) {
+        // @method setChar(I)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.charField = (char) arg1;
+        return;
+    }
+
+    public void setShort(int arg1) {
+        // @method setShort(I)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.shortField = (short) arg1;
+        return;
+    }
+
+    public void setByteProduced(int arg1, boolean arg2) {
+        // @method setByteProduced(IZ)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.byteField = (byte) NarrowFieldStoreEffects.value(arg1, arg2);
+        return;
+    }
+
+    public void setCharProduced(int arg1, boolean arg2) {
+        // @method setCharProduced(IZ)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.charField = (char) NarrowFieldStoreEffects.value(arg1, arg2);
+        return;
+    }
+
+    public void setShortProduced(int arg1, boolean arg2) {
+        // @method setShortProduced(IZ)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.shortField = (short) NarrowFieldStoreEffects.value(arg1, arg2);
+        return;
+    }
+
+    public static void setByteProducedOn(NarrowFieldStores arg0, int arg1, boolean arg2) {
+        // @method setByteProducedOn(LNarrowFieldStores;IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.byteField = (byte) NarrowFieldStoreEffects.value(arg1, arg2);
+        return;
+    }
+
+    public static void setCharProducedOn(NarrowFieldStores arg0, int arg1, boolean arg2) {
+        // @method setCharProducedOn(LNarrowFieldStores;IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.charField = (char) NarrowFieldStoreEffects.value(arg1, arg2);
+        return;
+    }
+
+    public static void setShortProducedOn(NarrowFieldStores arg0, int arg1, boolean arg2) {
+        // @method setShortProducedOn(LNarrowFieldStores;IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.shortField = (short) NarrowFieldStoreEffects.value(arg1, arg2);
+        return;
+    }
+
+    public static void setStaticByte(int arg0) {
+        // @method setStaticByte(I)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.staticByteField = (byte) arg0;
+        return;
+    }
+
+    public static void setStaticChar(int arg0) {
+        // @method setStaticChar(I)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.staticCharField = (char) arg0;
+        return;
+    }
+
+    public static void setStaticShort(int arg0) {
+        // @method setStaticShort(I)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.staticShortField = (short) arg0;
+        return;
+    }
+
+    public static void setStaticByteProduced(int arg0, boolean arg1) {
+        // @method setStaticByteProduced(IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.staticByteField = (byte) NarrowFieldStoreEffects.value(arg0, arg1);
+        return;
+    }
+
+    public static void setStaticCharProduced(int arg0, boolean arg1) {
+        // @method setStaticCharProduced(IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.staticCharField = (char) NarrowFieldStoreEffects.value(arg0, arg1);
+        return;
+    }
+
+    public static void setStaticShortProduced(int arg0, boolean arg1) {
+        // @method setStaticShortProduced(IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.staticShortField = (short) NarrowFieldStoreEffects.value(arg0, arg1);
+        return;
+    }
+
+    public void ordinaryByteLocal() {
+        // @method ordinaryByteLocal()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 1;
+        this.ordinaryByteField = (byte) local1;
+        return;
+    }
+
+    public void ordinaryCharLocal() {
+        // @method ordinaryCharLocal()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 1;
+        this.ordinaryCharField = (char) local1;
+        return;
+    }
+
+    public void ordinaryShortLocal() {
+        // @method ordinaryShortLocal()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 1;
+        this.ordinaryShortField = (short) local1;
+        return;
+    }
+}

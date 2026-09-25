@@ -1,0 +1,158 @@
+{
+  "source": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/root-after-8cd1/work/source-classes/ZFieldStores.class",
+  "output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/root-after-8cd1/work/patched-classes/ZFieldStores.class",
+  "owner": "ZFieldStores",
+  "source_sha256": "f1089b9ed4bf8802697c7c88c7bdd79f79af93ec4d6f04135fefb764e020c4fd",
+  "fields": [
+    {
+      "name": "instanceFlag",
+      "source_descriptor": "I",
+      "patched_descriptor": "Z",
+      "field_info_offset": 519,
+      "field_info_descriptor_index_before": 12,
+      "field_info_descriptor_index_after": 45,
+      "fieldref_cp_index": 7,
+      "name_and_type_cp_index": 9,
+      "name_and_type_descriptor_index_before": 12,
+      "name_and_type_descriptor_index_after": 45,
+      "writer_methods": [
+        "putInstance",
+        "putInstanceProduced",
+        "putOn",
+        "putProducedOn"
+      ]
+    },
+    {
+      "name": "staticFlag",
+      "source_descriptor": "I",
+      "patched_descriptor": "Z",
+      "field_info_offset": 527,
+      "field_info_descriptor_index_before": 12,
+      "field_info_descriptor_index_after": 46,
+      "fieldref_cp_index": 19,
+      "name_and_type_cp_index": 20,
+      "name_and_type_descriptor_index_before": 12,
+      "name_and_type_descriptor_index_after": 46,
+      "writer_methods": [
+        "putStatic",
+        "putStaticProduced"
+      ]
+    }
+  ],
+  "methods": [
+    {
+      "method": "<init>",
+      "descriptor": "()V",
+      "code_attribute_offset": 567,
+      "code_length": 5,
+      "code_sha256": "d6f7264189858f154b120ac2e9b76f4b4dae9ddb629e4ec627af7810207e1a24",
+      "max_stack": 1,
+      "max_locals": 1,
+      "code_sha256_after": "d6f7264189858f154b120ac2e9b76f4b4dae9ddb629e4ec627af7810207e1a24"
+    },
+    {
+      "method": "putInstance",
+      "descriptor": "(I)V",
+      "code_attribute_offset": 598,
+      "code_length": 6,
+      "code_sha256": "dbf6b3f1c183e9edd237770d4eb6df9ed7c18a85984a7c8323f77292ccfa9f6f",
+      "max_stack": 2,
+      "max_locals": 2,
+      "code_sha256_after": "dbf6b3f1c183e9edd237770d4eb6df9ed7c18a85984a7c8323f77292ccfa9f6f"
+    },
+    {
+      "method": "putInstanceProduced",
+      "descriptor": "(IZ)V",
+      "code_attribute_offset": 630,
+      "code_length": 10,
+      "code_sha256": "c1bcc19a204574cdfafa60f81741c6373916db41a54d203f68019a94ab967c21",
+      "max_stack": 3,
+      "max_locals": 3,
+      "code_sha256_after": "c1bcc19a204574cdfafa60f81741c6373916db41a54d203f68019a94ab967c21"
+    },
+    {
+      "method": "putStatic",
+      "descriptor": "(I)V",
+      "code_attribute_offset": 666,
+      "code_length": 5,
+      "code_sha256": "1ecd515a652c5f6059f90461d6da6224883ff267d37aced50993087f12aa668e",
+      "max_stack": 1,
+      "max_locals": 1,
+      "code_sha256_after": "1ecd515a652c5f6059f90461d6da6224883ff267d37aced50993087f12aa668e"
+    },
+    {
+      "method": "putStaticProduced",
+      "descriptor": "(IZ)V",
+      "code_attribute_offset": 697,
+      "code_length": 9,
+      "code_sha256": "dfd905c9c78bf2c4c666715cf56b4b2dd95d00bc8012cc328a57e12268d4087a",
+      "max_stack": 2,
+      "max_locals": 2,
+      "code_sha256_after": "dfd905c9c78bf2c4c666715cf56b4b2dd95d00bc8012cc328a57e12268d4087a"
+    },
+    {
+      "method": "putOn",
+      "descriptor": "(LZFieldStores;I)V",
+      "code_attribute_offset": 732,
+      "code_length": 6,
+      "code_sha256": "dbf6b3f1c183e9edd237770d4eb6df9ed7c18a85984a7c8323f77292ccfa9f6f",
+      "max_stack": 2,
+      "max_locals": 2,
+      "code_sha256_after": "dbf6b3f1c183e9edd237770d4eb6df9ed7c18a85984a7c8323f77292ccfa9f6f"
+    },
+    {
+      "method": "putProducedOn",
+      "descriptor": "(LZFieldStores;IZ)V",
+      "code_attribute_offset": 764,
+      "code_length": 10,
+      "code_sha256": "c1bcc19a204574cdfafa60f81741c6373916db41a54d203f68019a94ab967c21",
+      "max_stack": 3,
+      "max_locals": 3,
+      "code_sha256_after": "c1bcc19a204574cdfafa60f81741c6373916db41a54d203f68019a94ab967c21"
+    },
+    {
+      "method": "putOrdinaryInstance",
+      "descriptor": "(Z)V",
+      "code_attribute_offset": 800,
+      "code_length": 6,
+      "code_sha256": "7219da784c3356986243ab7c21ee693a4c1ee8340bc544be9069ecdac498c260",
+      "max_stack": 2,
+      "max_locals": 2,
+      "code_sha256_after": "7219da784c3356986243ab7c21ee693a4c1ee8340bc544be9069ecdac498c260"
+    },
+    {
+      "method": "putOrdinaryInstanceTrue",
+      "descriptor": "()V",
+      "code_attribute_offset": 832,
+      "code_length": 6,
+      "code_sha256": "3cebcd8b56c9cc33230b7cc9c397108cc042d6dc6f4fa470dee8e6ddc3ff24b1",
+      "max_stack": 2,
+      "max_locals": 1,
+      "code_sha256_after": "3cebcd8b56c9cc33230b7cc9c397108cc042d6dc6f4fa470dee8e6ddc3ff24b1"
+    },
+    {
+      "method": "putOrdinaryStatic",
+      "descriptor": "(Z)V",
+      "code_attribute_offset": 864,
+      "code_length": 5,
+      "code_sha256": "e85f027235e2ee04561020707e6f983c6358d1b7d590965b2fe75bdadc5a1285",
+      "max_stack": 1,
+      "max_locals": 1,
+      "code_sha256_after": "e85f027235e2ee04561020707e6f983c6358d1b7d590965b2fe75bdadc5a1285"
+    },
+    {
+      "method": "putOrdinaryStaticTrue",
+      "descriptor": "()V",
+      "code_attribute_offset": 895,
+      "code_length": 5,
+      "code_sha256": "ff6ea4c2f54cbd5907ae437904ca56c1d81697072ce5de5dc47fec3fb8093b1a",
+      "max_stack": 1,
+      "max_locals": 0,
+      "code_sha256_after": "ff6ea4c2f54cbd5907ae437904ca56c1d81697072ce5de5dc47fec3fb8093b1a"
+    }
+  ],
+  "patched_sha256": "671ee4999373f8d95e989a480ded9a648b9733c44ddb5c12f408b24e3b4b1e96",
+  "constant_pool_count": 47,
+  "field_count": 4,
+  "method_count": 11
+}

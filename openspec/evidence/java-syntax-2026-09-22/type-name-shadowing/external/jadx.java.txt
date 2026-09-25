@@ -1,0 +1,16 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ShadowExternal.class */
+public class ShadowExternal {
+    public static int invoke(ShadowOther shadowOther) {
+        return arg0.pick(1);
+    }
+
+    public static int read(ShadowOther shadowOther) {
+        return arg0.value;
+    }
+
+    public static void write(ShadowOther shadowOther, int i) {
+        arg0.value = i;
+    }
+}

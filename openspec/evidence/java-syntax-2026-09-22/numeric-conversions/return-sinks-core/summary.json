@@ -1,0 +1,9 @@
+{
+  "bytes": 411,
+  "class_sha256": "dbb7b8cecab3df4d6fcb207cf4db7bbe9337af73d8ceeba8df9f9926087002d5",
+  "cli_sha256": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+  "jarde_quotes": 1,
+  "cases": 19,
+  "jarde_javac": 1,
+  "jadx_javac": 1
+}

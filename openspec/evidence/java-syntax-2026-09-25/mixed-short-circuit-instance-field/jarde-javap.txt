@@ -1,0 +1,65 @@
+public final class MixedShortCircuitField {
+  static boolean bValue;
+    descriptor: Z
+
+  static boolean cValue;
+    descriptor: Z
+
+  static int bCalls;
+    descriptor: I
+
+  static int cCalls;
+    descriptor: I
+
+  static int receiverCalls;
+    descriptor: I
+
+  static MixedShortCircuitField$Box receiver;
+    descriptor: LMixedShortCircuitField$Box;
+
+  public MixedShortCircuitField();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static MixedShortCircuitField$Box target(boolean);
+    descriptor: (Z)LMixedShortCircuitField$Box;
+    Code:
+       0: getstatic     #7                  // Field receiverCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field receiverCalls:I
+       8: iload_0
+       9: ifeq          16
+      12: aconst_null
+      13: goto          19
+      16: getstatic     #13                 // Field receiver:LMixedShortCircuitField$Box;
+      19: areturn
+
+  static void one(boolean, boolean);
+    descriptor: (ZZ)V
+    Code:
+       0: return
+
+  static boolean b();
+    descriptor: ()Z
+    Code:
+       0: getstatic     #17                 // Field bCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #17                 // Field bCalls:I
+       8: getstatic     #20                 // Field bValue:Z
+      11: ireturn
+
+  static boolean c();
+    descriptor: ()Z
+    Code:
+       0: getstatic     #24                 // Field cCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #24                 // Field cCalls:I
+       8: getstatic     #27                 // Field cValue:Z
+      11: ireturn
+}

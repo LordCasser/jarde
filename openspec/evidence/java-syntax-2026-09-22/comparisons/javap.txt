@@ -1,0 +1,259 @@
+public class CompareProbe {
+  public CompareProbe();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int long_eq(long, long);
+    Code:
+       0: lload_0
+       1: lload_2
+       2: lcmp
+       3: ifne          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int long_ne(long, long);
+    Code:
+       0: lload_0
+       1: lload_2
+       2: lcmp
+       3: ifeq          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int long_lt(long, long);
+    Code:
+       0: lload_0
+       1: lload_2
+       2: lcmp
+       3: ifge          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int long_le(long, long);
+    Code:
+       0: lload_0
+       1: lload_2
+       2: lcmp
+       3: ifgt          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int long_gt(long, long);
+    Code:
+       0: lload_0
+       1: lload_2
+       2: lcmp
+       3: ifle          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int long_ge(long, long);
+    Code:
+       0: lload_0
+       1: lload_2
+       2: lcmp
+       3: iflt          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int long_not_lt(long, long);
+    Code:
+       0: lload_0
+       1: lload_2
+       2: lcmp
+       3: iflt          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int float_eq(float, float);
+    Code:
+       0: fload_0
+       1: fload_1
+       2: fcmpl
+       3: ifne          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int float_ne(float, float);
+    Code:
+       0: fload_0
+       1: fload_1
+       2: fcmpl
+       3: ifeq          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int float_lt(float, float);
+    Code:
+       0: fload_0
+       1: fload_1
+       2: fcmpg
+       3: ifge          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int float_le(float, float);
+    Code:
+       0: fload_0
+       1: fload_1
+       2: fcmpg
+       3: ifgt          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int float_gt(float, float);
+    Code:
+       0: fload_0
+       1: fload_1
+       2: fcmpl
+       3: ifle          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int float_ge(float, float);
+    Code:
+       0: fload_0
+       1: fload_1
+       2: fcmpl
+       3: iflt          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int float_not_lt(float, float);
+    Code:
+       0: fload_0
+       1: fload_1
+       2: fcmpg
+       3: iflt          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int double_eq(double, double);
+    Code:
+       0: dload_0
+       1: dload_2
+       2: dcmpl
+       3: ifne          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int double_ne(double, double);
+    Code:
+       0: dload_0
+       1: dload_2
+       2: dcmpl
+       3: ifeq          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int double_lt(double, double);
+    Code:
+       0: dload_0
+       1: dload_2
+       2: dcmpg
+       3: ifge          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int double_le(double, double);
+    Code:
+       0: dload_0
+       1: dload_2
+       2: dcmpg
+       3: ifgt          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int double_gt(double, double);
+    Code:
+       0: dload_0
+       1: dload_2
+       2: dcmpl
+       3: ifle          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int double_ge(double, double);
+    Code:
+       0: dload_0
+       1: dload_2
+       2: dcmpl
+       3: iflt          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int double_not_lt(double, double);
+    Code:
+       0: dload_0
+       1: dload_2
+       2: dcmpg
+       3: iflt          9
+       6: bipush        7
+       8: ireturn
+       9: bipush        9
+      11: ireturn
+
+  public static int int_lt(int, int);
+    Code:
+       0: iload_0
+       1: iload_1
+       2: if_icmpge     8
+       5: bipush        7
+       7: ireturn
+       8: bipush        9
+      10: ireturn
+
+  public static boolean double_boolean(double, double);
+    Code:
+       0: dload_0
+       1: dload_2
+       2: dcmpg
+       3: ifge          10
+       6: iconst_1
+       7: goto          11
+      10: iconst_0
+      11: ireturn
+}

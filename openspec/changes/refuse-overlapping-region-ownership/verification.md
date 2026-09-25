@@ -1,0 +1,7 @@
+# 独立验收（2026-09-25）
+
+冻结的 [ChainExtraBoundary](../../evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/analysis.md) 是普通 Java 8 源编译结果，重建的 class 与冻结字节相同。原 Region 树重复拥有 BCI 25 四次、BCI 15 两次，首次重复是第七个块引用。现在方法级校验按包含 `jsr` 路径的 canonical 身份拒绝该树，仅生成一个 `jre_region_ownership_overlap` whole-body fallback，不再报告四个虚假循环或发射结构化字段写入。[新完整类](../../evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/jarde-after-owner-ChainExtraBoundary.java)仍可 Java 8 重编；其 `assign` 引用逐条标出 16 个已解码 BCI，包括此前遗漏的 8、26、29。[完整报告](../../evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/jarde-after-owner-report.json)记录 `quality=fallback`、`representation=mixed`。
+
+原 class、JADX 1.5.6 和旧 Jarde 完整类的 32 路径对照已冻结在同一目录。新 Jarde 完整类用同一 Runner 在 `java -Xverify:all` 下又执行 32 路径，[输出](../../evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/jarde-after-owner-run.txt)与原 class 32/32 不同；它是诚实的引用，不是语义恢复。JADX 与原件有 16/32 条差异，也不能当作正确性目标。字段 rule-detail 中未发射的 `putstatic` 仍可能标 `presented=true`，留给独立报告层改动。
+
+主代理独立运行：`jarde-java --lib` 163/163；root `p3_region_owner_overlap`、`p3_region_fallback_origins`、`p3_postfix_handler_boundary`、纯短路链与异常边、loop/switch/try/jsr 相邻组均通过。首次全库测试抓到单块 `do-while` 的合法 loop header/body 别名误判；收紧后再次 163/163 通过，该 oracle 的调用行为保持原样。`openspec validate refuse-overlapping-region-ownership --strict` 通过。`p3_try_local` 两项及 `p3_typed_catch` 一项仍因局部变量跨引用区而失败，代理探针确认没有触发本所有权校验，继续归作用域 change。严格 Clippy 在工作树其它既有 16 项告警处停止；本 change 不扩范围修这些告警。Cargo target 的最终清理和全局格式检查另见任务 3.2。

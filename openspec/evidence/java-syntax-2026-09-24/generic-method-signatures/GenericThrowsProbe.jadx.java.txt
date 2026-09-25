@@ -1,0 +1,10 @@
+package defpackage;
+
+import java.io.IOException;
+
+/* JADX INFO: loaded from: GenericThrowsProbe.class */
+public class GenericThrowsProbe {
+    public static <T extends Number> T choose(T t) throws IOException {
+        return t;
+    }
+}

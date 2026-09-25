@@ -1,0 +1,81 @@
+{
+  "java_version": "openjdk version \"23.0.1\" 2024-10-15",
+  "release": 8,
+  "source_sha256": {
+    "BoundaryProbe.java": "db0d444a95129dc4e0797540a6295b94e7ef78201cb578125ae0703cf007c859",
+    "BoundaryEffects.java": "b096c907ab9105ecbfe0ad9c7f053fdf41ecd35315ebbb1a3a3d8377a750779a",
+    "BooleanDescriptor.java": "ddaec1339b3d75f8a750fe177f6238753b7b5c68be7bab404240d102a169b44d",
+    "BoundaryRunner.java": "cfa9bf1c929bd952449cb4834c6a9b5bd13a957eea2ae3d2833c2b7e83db214b",
+    "BooleanRunner.java": "5290e2ac246c0678198cbe096c2b8f3b98d304aa6d6536283b40168df90fae9a",
+    "DiscardedConversion.java": "07cb381a1ded49a1017c1e95008791ed719520dfcbfeb0bb25d9b5a0791bef07",
+    "DiscardRunner.java": "94a29a6fcb8a5990917a2fcb5b9f8e8c266db81b2db5fd53dbd879de83c26697"
+  },
+  "patched_boolean_descriptor": {
+    "descriptor": "(Z)Z",
+    "method_code": "iload_0; i2b; ireturn",
+    "verification": "java -Xverify:all exited 0",
+    "class_sha256": "ecd0e070ad1c87bbab1548514980f60b1cce4fc05caabf1df33a79fbb419e93d"
+  },
+  "discarded_conversion": {
+    "method_descriptor": "(I)V",
+    "method_code": "iload_0; i2b; pop; return",
+    "verification": "java -Xverify:all exited 0",
+    "class_sha256": "b82b632fca485220f4d6482bab742fc973681d0cdca62e978dce6b193ba7698c"
+  },
+  "original_class_sha256": {
+    "BoundaryProbe": "2cc0e12513688eacec158bc370e010b641faa29621dd02b2eade07f8ad2bcce0",
+    "BooleanDescriptor": "ecd0e070ad1c87bbab1548514980f60b1cce4fc05caabf1df33a79fbb419e93d",
+    "DiscardedConversion": "b82b632fca485220f4d6482bab742fc973681d0cdca62e978dce6b193ba7698c"
+  },
+  "original_exit": 0,
+  "original_cases": 7,
+  "original_boolean_output": "boolean:true:false",
+  "original_discarded_output": "discarded:ok",
+  "jarde_classes": {
+    "BoundaryProbe": {
+      "cli_exit": 0,
+      "quote_count": 24
+    },
+    "BooleanDescriptor": {
+      "cli_exit": 0,
+      "quote_count": 2
+    },
+    "DiscardedConversion": {
+      "cli_exit": 0,
+      "quote_count": 2
+    }
+  },
+  "jarde_javac_exit": 1,
+  "jarde_run_exit": null,
+  "jarde_boolean_javac_exit": 1,
+  "jarde_boolean_run_exit": null,
+  "jarde_discard_javac_exit": 0,
+  "jarde_discard_run_exit": 0,
+  "original_jarde_discard_equal": true,
+  "jadx": {
+    "BoundaryProbe": {
+      "jadx_exit": 0,
+      "source_found": true,
+      "javac_exit": 0
+    },
+    "BooleanDescriptor": {
+      "jadx_exit": 0,
+      "source_found": true,
+      "javac_exit": 1
+    },
+    "DiscardedConversion": {
+      "jadx_exit": 0,
+      "source_found": true,
+      "javac_exit": 0
+    }
+  },
+  "jadx_run_exit": 0,
+  "jadx_boolean_run_exit": null,
+  "jadx_discard_run_exit": 0,
+  "original_jarde_equal": null,
+  "original_jadx_discard_equal": true,
+  "original_jadx_equal": false,
+  "cli_sha256_before": "d7520a08a37b54ef579d42c770f5b512af17ddb11b05050568458759c78dbf16",
+  "cli_sha256_after": "d7520a08a37b54ef579d42c770f5b512af17ddb11b05050568458759c78dbf16",
+  "cli_unchanged": true
+}

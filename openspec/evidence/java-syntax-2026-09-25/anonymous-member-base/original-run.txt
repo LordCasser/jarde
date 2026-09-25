@@ -1,0 +1,2 @@
+normal=8;events=outer,argument,base(7),anonymous
+null=nullOuter

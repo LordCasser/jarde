@@ -1,0 +1,2 @@
+6135e546c50f7f319b8bdbe17f44551c06abd5a77b3b329cf467ff7834b8690d  original/LambdaAlias.class
+b59dcf2370812f65f3dd49ff4ae7c11c6f6080e01fe4d9b544f772191c89eb22  patched/LambdaAlias.class

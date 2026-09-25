@@ -1,0 +1,5 @@
+--- ordering-original-run.txt	2026-09-25 12:32:24
++++ ordering-jadx-run.txt	2026-09-25 12:32:43
+@@ -1 +1 @@
+-[2, 1]:12
++[2, 1]:21

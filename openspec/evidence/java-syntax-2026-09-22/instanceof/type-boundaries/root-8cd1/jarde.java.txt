@@ -1,0 +1,86 @@
+// jarde: presentation of `InstanceOfTypes` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class InstanceOfTypes extends java.lang.Object {
+    public InstanceOfTypes() {
+        // @method <init>()V
+        // @declaration a constructor of `InstanceOfTypes`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static boolean unrelated(java.lang.String arg0) {
+        // jarde: not recovered: the recovery run for `unrelated(Ljava/lang/String;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method unrelated(Ljava/lang/String;)Z
+        // @declaration a static method of `InstanceOfTypes`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean unrelatedArray(java.lang.String[] arg0) {
+        // jarde: not recovered: the recovery run for `unrelatedArray([Ljava/lang/String;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method unrelatedArray([Ljava/lang/String;)Z
+        // @declaration a static method of `InstanceOfTypes`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean unrelatedInterface(java.lang.String arg0) {
+        // jarde: not recovered: the recovery run for `unrelatedInterface(Ljava/lang/String;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method unrelatedInterface(Ljava/lang/String;)Z
+        // @declaration a static method of `InstanceOfTypes`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean related(java.lang.String arg0) {
+        // jarde: not recovered: the recovery run for `related(Ljava/lang/String;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method related(Ljava/lang/String;)Z
+        // @declaration a static method of `InstanceOfTypes`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean called() {
+        // @method called()Z
+        // @declaration a static method of `InstanceOfTypes`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        TypeEffects.value();
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 3, which produces no expression this subset writes
+    }
+
+    public static void empty() {
+        // @method empty()V
+        // @declaration a static method of `InstanceOfTypes`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    public static boolean functional() {
+        // jarde: not recovered: the recovery run for `functional()Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method functional()Z
+        // @declaration a static method of `InstanceOfTypes`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // nothing in this method reads the instance the site creates, so the invocation the site makes has no place in the body
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 8
+        // the value at BCI 8 comes from an Other at BCI 5, which produces no expression this subset writes
+    }
+}

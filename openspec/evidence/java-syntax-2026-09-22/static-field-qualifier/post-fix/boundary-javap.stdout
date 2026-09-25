@@ -1,0 +1,154 @@
+public final class QualifierBoundaryProbe {
+  public static int selects;
+
+  public static int rightCalls;
+
+  public static int marks;
+
+  public static int value;
+
+  public static boolean failSelect;
+
+  public QualifierBoundaryProbe();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void reset();
+    Code:
+       0: iconst_0
+       1: putstatic     #7                  // Field selects:I
+       4: iconst_0
+       5: putstatic     #13                 // Field rightCalls:I
+       8: iconst_0
+       9: putstatic     #16                 // Field marks:I
+      12: iconst_5
+      13: putstatic     #19                 // Field value:I
+      16: iconst_0
+      17: putstatic     #22                 // Field failSelect:Z
+      20: return
+
+  public static QualifierBoundaryProbe receiver();
+    Code:
+       0: getstatic     #7                  // Field selects:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field selects:I
+       8: getstatic     #22                 // Field failSelect:Z
+      11: ifeq          24
+      14: new           #26                 // class java/lang/IllegalStateException
+      17: dup
+      18: ldc           #28                 // String select
+      20: invokespecial #30                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      23: athrow
+      24: aconst_null
+      25: areturn
+
+  public static int rhs();
+    Code:
+       0: getstatic     #13                 // Field rightCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #13                 // Field rightCalls:I
+       8: bipush        7
+      10: ireturn
+
+  public static int throwingRhs();
+    Code:
+       0: getstatic     #13                 // Field rightCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #13                 // Field rightCalls:I
+       8: new           #33                 // class java/lang/IllegalArgumentException
+      11: dup
+      12: ldc           #35                 // String rhs
+      14: invokespecial #37                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      17: athrow
+
+  public static void mark();
+    Code:
+       0: getstatic     #16                 // Field marks:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #16                 // Field marks:I
+       8: return
+
+  public static int staticRead();
+    Code:
+       0: invokestatic  #38                 // Method receiver:()LQualifierBoundaryProbe;
+       3: pop
+       4: getstatic     #19                 // Field value:I
+       7: ireturn
+
+  public static int qualifiedCallReturn();
+    Code:
+       0: invokestatic  #38                 // Method receiver:()LQualifierBoundaryProbe;
+       3: pop
+       4: invokestatic  #42                 // Method rhs:()I
+       7: ireturn
+
+  public static int plainCallReturn();
+    Code:
+       0: invokestatic  #38                 // Method receiver:()LQualifierBoundaryProbe;
+       3: pop
+       4: invokestatic  #42                 // Method rhs:()I
+       7: ireturn
+
+  public static void qualifiedCallStatement();
+    Code:
+       0: invokestatic  #38                 // Method receiver:()LQualifierBoundaryProbe;
+       3: pop
+       4: invokestatic  #45                 // Method mark:()V
+       7: return
+
+  public static void plainCallStatements();
+    Code:
+       0: invokestatic  #38                 // Method receiver:()LQualifierBoundaryProbe;
+       3: pop
+       4: invokestatic  #45                 // Method mark:()V
+       7: return
+
+  public static int qualifiedStaticWrite();
+    Code:
+       0: invokestatic  #38                 // Method receiver:()LQualifierBoundaryProbe;
+       3: pop
+       4: invokestatic  #42                 // Method rhs:()I
+       7: putstatic     #19                 // Field value:I
+      10: getstatic     #19                 // Field value:I
+      13: ireturn
+
+  public static int fieldWriteWithQualifiedRhs();
+    Code:
+       0: invokestatic  #38                 // Method receiver:()LQualifierBoundaryProbe;
+       3: pop
+       4: invokestatic  #42                 // Method rhs:()I
+       7: putstatic     #19                 // Field value:I
+      10: getstatic     #19                 // Field value:I
+      13: ireturn
+
+  public static int plainSequenceStaticWrite();
+    Code:
+       0: invokestatic  #38                 // Method receiver:()LQualifierBoundaryProbe;
+       3: pop
+       4: invokestatic  #42                 // Method rhs:()I
+       7: putstatic     #19                 // Field value:I
+      10: getstatic     #19                 // Field value:I
+      13: ireturn
+
+  public static int qualifiedStaticWriteThrowingRhs();
+    Code:
+       0: invokestatic  #38                 // Method receiver:()LQualifierBoundaryProbe;
+       3: pop
+       4: invokestatic  #48                 // Method throwingRhs:()I
+       7: putstatic     #19                 // Field value:I
+      10: getstatic     #19                 // Field value:I
+      13: ireturn
+
+  public static int qualifiedCallThrowingReceiver();
+    Code:
+       0: invokestatic  #38                 // Method receiver:()LQualifierBoundaryProbe;
+       3: pop
+       4: invokestatic  #42                 // Method rhs:()I
+       7: ireturn
+}

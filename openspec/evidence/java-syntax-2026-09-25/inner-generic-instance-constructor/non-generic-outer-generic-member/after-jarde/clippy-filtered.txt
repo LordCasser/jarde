@@ -1,0 +1,2 @@
+    Checking jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.22s

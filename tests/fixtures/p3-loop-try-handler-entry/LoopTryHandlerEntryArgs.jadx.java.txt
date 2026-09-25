@@ -1,0 +1,21 @@
+/* JADX INFO: loaded from: LoopTryHandlerEntryArgs.class */
+public class LoopTryHandlerEntryArgs {
+    static int maybeFail(int i, int i2) {
+        if (i == i2) {
+            throw new IllegalStateException();
+        }
+        return i;
+    }
+
+    static int loopTry(int i, int i2, int i3) {
+        while (i > 0) {
+            try {
+                i3 += maybeFail(i, i2);
+            } catch (RuntimeException e) {
+                i3 = -1;
+            }
+            i--;
+        }
+        return i3;
+    }
+}

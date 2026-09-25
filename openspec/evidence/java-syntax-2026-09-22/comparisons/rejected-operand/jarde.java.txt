@@ -1,0 +1,22 @@
+// jarde: presentation of `NumericRefusal` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NumericRefusal extends java.lang.Object {
+    public NumericRefusal() {
+        // @method <init>()V
+        // @declaration a constructor of `NumericRefusal`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int value(float arg0) {
+        // jarde: not recovered: the recovery run for `value(F)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method value(F)I
+        // @declaration a static method of `NumericRefusal`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 0 9 12 6 5 1
+        // the value at BCI 6 comes from an Other at BCI 4, which produces no expression this subset writes
+    }
+}

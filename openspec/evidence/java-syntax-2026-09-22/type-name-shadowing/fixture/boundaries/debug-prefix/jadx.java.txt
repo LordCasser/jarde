@@ -1,0 +1,8 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DebugPrefixProbe.class */
+public class DebugPrefixProbe {
+    public static int abs(Object java, int value) {
+        return Math.abs(value);
+    }
+}

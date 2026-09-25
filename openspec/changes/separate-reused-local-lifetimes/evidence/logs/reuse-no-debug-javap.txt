@@ -1,0 +1,84 @@
+Classfile /tmp/jarde-slot-reuse-investigation/original/no-debug/ReuseAfterForEach.class
+  Last modified 2026年9月24日; size 279 bytes
+  SHA-256 checksum 3fdc5853f0bb1e64071c1bf0b809d851e74fb41a576b0d273fe5085cd1fd548b
+public class ReuseAfterForEach
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #7                          // ReuseAfterForEach
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // ReuseAfterForEach
+   #8 = Utf8               ReuseAfterForEach
+   #9 = Utf8               Code
+  #10 = Utf8               sumThenReuse
+  #11 = Utf8               ([I)I
+  #12 = Utf8               StackMapTable
+  #13 = Class              #14            // "[I"
+  #14 = Utf8               [I
+{
+  public ReuseAfterForEach();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int sumThenReuse(int[]);
+    descriptor: ([I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=6, args_size=1
+         0: iconst_0
+         1: istore_1
+         2: aload_0
+         3: astore_2
+         4: aload_2
+         5: arraylength
+         6: istore_3
+         7: iconst_0
+         8: istore        4
+        10: iload         4
+        12: iload_3
+        13: if_icmpge     33
+        16: aload_2
+        17: iload         4
+        19: iaload
+        20: istore        5
+        22: iload_1
+        23: iload         5
+        25: iadd
+        26: istore_1
+        27: iinc          4, 1
+        30: goto          10
+        33: iload_1
+        34: iconst_1
+        35: iadd
+        36: istore_2
+        37: iload_2
+        38: iconst_2
+        39: iadd
+        40: istore_3
+        41: iload_1
+        42: iload_2
+        43: iadd
+        44: iload_3
+        45: iadd
+        46: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 255 /* full_frame */
+          offset_delta = 10
+          locals = [ class "[I", int, class "[I", int, int ]
+          stack = []
+        frame_type = 248 /* chop */
+          offset_delta = 22
+}

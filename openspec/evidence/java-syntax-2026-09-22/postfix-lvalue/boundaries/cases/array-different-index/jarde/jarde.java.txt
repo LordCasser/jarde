@@ -1,0 +1,317 @@
+// jarde: presentation of `BoundaryProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class BoundaryProbe extends java.lang.Object {
+    public static BoundarySubBox selected;
+
+    public static int[] values;
+
+    public static int[] otherValues;
+
+    public static int selectedIndex;
+
+    public static int observed;
+
+    public static java.lang.String trace;
+
+    public BoundaryProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `BoundaryProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void reset() {
+        // @method reset()V
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BoundaryProbe.selected = new BoundarySubBox(5, 10, 20);
+        // @bytecode 16
+        // the array instruction at BCI 16 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 18 16
+        // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 22 16
+        // the value at BCI 22 comes from an Duplicate at BCI 18, which produces no expression this subset writes
+        // @bytecode 23 16
+        // the instruction at BCI 23 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 27 16
+        // the value at BCI 27 comes from an Duplicate at BCI 23, which produces no expression this subset writes
+        // @bytecode 28 16
+        // the value at BCI 28 comes from an Duplicate at BCI 23, which produces no expression this subset writes
+        // @bytecode 32
+        // the array instruction at BCI 32 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 34 32
+        // the instruction at BCI 34 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 38 32
+        // the value at BCI 38 comes from an Duplicate at BCI 34, which produces no expression this subset writes
+        // @bytecode 39 32
+        // the instruction at BCI 39 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 43 32
+        // the value at BCI 43 comes from an Duplicate at BCI 39, which produces no expression this subset writes
+        // @bytecode 44 32
+        // the value at BCI 44 comes from an Duplicate at BCI 39, which produces no expression this subset writes
+        BoundaryProbe.selectedIndex = 0;
+        BoundaryProbe.observed = 0;
+        BoundaryProbe.trace = "";
+        return;
+    }
+
+    public static BoundarySubBox receiver() {
+        // @method receiver()LBoundarySubBox;
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BoundaryProbe.trace = new java.lang.StringBuilder().append(BoundaryProbe.trace).append("R").toString();
+        return BoundaryProbe.selected;
+    }
+
+    public static BoundaryBaseBox baseReceiver() {
+        // @method baseReceiver()LBoundaryBaseBox;
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return BoundaryProbe.selected;
+    }
+
+    public static int[] array() {
+        // @method array()[I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BoundaryProbe.trace = new java.lang.StringBuilder().append(BoundaryProbe.trace).append("A").toString();
+        return BoundaryProbe.values;
+    }
+
+    public static int index() {
+        // @method index()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BoundaryProbe.trace = new java.lang.StringBuilder().append(BoundaryProbe.trace).append("I").toString();
+        return BoundaryProbe.selectedIndex;
+    }
+
+    public static void tick() {
+        // @method tick()V
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BoundaryProbe.trace = new java.lang.StringBuilder().append(BoundaryProbe.trace).append("T").toString();
+        return;
+    }
+
+    public static void observe(int arg0) {
+        // @method observe(I)V
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BoundaryProbe.observed = BoundaryProbe.observed + arg0;
+        return;
+    }
+
+    public static void exposeObserverReference() {
+        // @method exposeObserverReference()V
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        observe(1);
+        return;
+    }
+
+    public static void exposeTickReference() {
+        // @method exposeTickReference()V
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        tick();
+        return;
+    }
+
+    public static int fieldDifferentMember() {
+        // @method fieldDifferentMember()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 10 4
+        // the value at BCI 10 comes from an Other at BCI 7, which produces no expression this subset writes
+        // @bytecode 13 4
+        // the value at BCI 13 comes from an Other at BCI 7, which produces no expression this subset writes
+    }
+
+    public static int fieldOtherMember() {
+        // @method fieldOtherMember()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 10 4
+        // the value at BCI 10 comes from an Other at BCI 7, which produces no expression this subset writes
+        // @bytecode 13 4
+        // the value at BCI 13 comes from an Other at BCI 7, which produces no expression this subset writes
+    }
+
+    public static int fieldDifferentOwner() {
+        // @method fieldDifferentOwner()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 10 4
+        // the value at BCI 10 comes from an Other at BCI 7, which produces no expression this subset writes
+        // @bytecode 13 4
+        // the value at BCI 13 comes from an Other at BCI 7, which produces no expression this subset writes
+    }
+
+    public static int fieldBaseOwner() {
+        // @method fieldBaseOwner()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        baseReceiver();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 10 4
+        // the value at BCI 10 comes from an Other at BCI 7, which produces no expression this subset writes
+        // @bytecode 13 4
+        // the value at BCI 13 comes from an Other at BCI 7, which produces no expression this subset writes
+    }
+
+    public static int fieldGap() {
+        // @method fieldGap()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 10 4
+        // the value at BCI 10 comes from an Other at BCI 7, which produces no expression this subset writes
+        // @bytecode 13 4
+        // the value at BCI 13 comes from an Other at BCI 7, which produces no expression this subset writes
+    }
+
+    public static int fieldExtraConsumer() {
+        // @method fieldExtraConsumer()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 10 4
+        // the value at BCI 10 comes from an Other at BCI 7, which produces no expression this subset writes
+        // @bytecode 13 4
+        // the value at BCI 13 comes from an Other at BCI 7, which produces no expression this subset writes
+    }
+
+    public static int arrayDifferentIndex() {
+        // @method arrayDifferentIndex()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        array();
+        index();
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7
+        // the dependency chain from BCI 7 to final consumer 8 is not bounded
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 11 7
+        // the value at BCI 11 comes from an Other at BCI 8, which produces no expression this subset writes
+        // @bytecode 12 7
+        // the value at BCI 12 comes from an Other at BCI 8, which produces no expression this subset writes
+        // @bytecode 13 7
+        // the value at BCI 13 comes from an Other at BCI 8, which produces no expression this subset writes
+        // @bytecode 14 15 16 17 18 19
+        // the statement at BCI 19 reads `local0`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 20 7
+        // the value at BCI 20 comes from an Other at BCI 8, which produces no expression this subset writes
+    }
+
+    public static int arrayDifferentArray() {
+        // @method arrayDifferentArray()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        array();
+        index();
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7
+        // the dependency chain from BCI 7 to final consumer 8 is not bounded
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 11 7
+        // the value at BCI 11 comes from an Other at BCI 8, which produces no expression this subset writes
+        // @bytecode 12 7
+        // the value at BCI 12 comes from an Other at BCI 8, which produces no expression this subset writes
+    }
+
+    public static int arrayGap() {
+        // @method arrayGap()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        array();
+        index();
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7
+        // the dependency chain from BCI 7 to final consumer 8 is not bounded
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 11 7
+        // the value at BCI 11 comes from an Other at BCI 8, which produces no expression this subset writes
+        // @bytecode 12 7
+        // the value at BCI 12 comes from an Other at BCI 8, which produces no expression this subset writes
+    }
+
+    public static int arrayExtraConsumer() {
+        // @method arrayExtraConsumer()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        array();
+        index();
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7
+        // the dependency chain from BCI 7 to final consumer 8 is not bounded
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 11 7
+        // the value at BCI 11 comes from an Other at BCI 8, which produces no expression this subset writes
+        // @bytecode 12 7
+        // the value at BCI 12 comes from an Other at BCI 8, which produces no expression this subset writes
+    }
+
+    public static int prefixReceiver() {
+        // @method prefixReceiver()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 9
+        // the instruction at BCI 9 is not part of the provable subset
+        // @bytecode 10 4
+        // the value at BCI 10 comes from an Other at BCI 9, which produces no expression this subset writes
+        // @bytecode 13 4
+        // the value at BCI 13 comes from an Other at BCI 9, which produces no expression this subset writes
+    }
+
+    public static int ordinaryAssignment() {
+        // @method ordinaryAssignment()I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 6
+        // the value at BCI 6 comes from an Other at BCI 5, which produces no expression this subset writes
+        // @bytecode 9
+        // the value at BCI 9 comes from an Other at BCI 5, which produces no expression this subset writes
+    }
+}

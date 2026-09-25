@@ -1,0 +1,4 @@
+read=5:select=1:rhs=0
+write=7:select=2:rhs=1
+sum=12:select=1:rhs=1
+fail=ISE:select=1:rhs=0:value=5

@@ -1,0 +1,217 @@
+{
+  "class_sha256": "592347dcc9201756c6bda19edf0517052bff41ff7640fceff79ebf892ac4e49a",
+  "class_bytes": 3728,
+  "methods": 21,
+  "code_attributes": 21,
+  "bootstrap_entries": 13,
+  "original_exit": 0,
+  "jarde_cli_exit": 0,
+  "cli_hash_input": "6e2fce612d014ed327c9891981805720a1d5d276e68daeb3be43f8f33ff2dd9a",
+  "cli_hash_end": "6e2fce612d014ed327c9891981805720a1d5d276e68daeb3be43f8f33ff2dd9a",
+  "cli_hash_unchanged": true,
+  "jarde_compile_exit": 1,
+  "jarde_run_exit": null,
+  "jadx_exit": 0,
+  "jadx_run_exit": 0,
+  "jarde_quotes": 9,
+  "cases": [
+    {
+      "case": "staticString",
+      "kind": "static overload: String",
+      "method": "staticStrings",
+      "original": "staticString:11",
+      "jarde": null,
+      "jadx": "staticString:11",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "staticNull",
+      "kind": "static overload: null",
+      "method": "staticStrings",
+      "original": "staticNull:11",
+      "jarde": null,
+      "jadx": "staticNull:11",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "staticInteger",
+      "kind": "static overload: erased wrong argument",
+      "method": "staticStrings",
+      "original": "staticInteger:java.lang.ClassCastException",
+      "jarde": null,
+      "jadx": "staticInteger:java.lang.ClassCastException",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "staticStringArray",
+      "kind": "static overload: String[]",
+      "method": "staticStringArrays",
+      "original": "staticStringArray:13",
+      "jarde": null,
+      "jadx": "staticStringArray:13",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "staticNullArray",
+      "kind": "static overload: null array",
+      "method": "staticStringArrays",
+      "original": "staticNullArray:13",
+      "jarde": null,
+      "jadx": "staticNullArray:13",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "staticObjectArray",
+      "kind": "static overload: erased wrong array",
+      "method": "staticStringArrays",
+      "original": "staticObjectArray:java.lang.ClassCastException",
+      "jarde": null,
+      "jadx": "staticObjectArray:java.lang.ClassCastException",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "staticObjectArrayTarget",
+      "kind": "static overload: Object[]",
+      "method": "staticObjectArrays",
+      "original": "staticObjectArrayTarget:12",
+      "jarde": null,
+      "jadx": "staticObjectArrayTarget:12",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "staticInt",
+      "kind": "static overload: primitive int",
+      "method": "staticInts",
+      "original": "staticInt:14",
+      "jarde": null,
+      "jadx": "staticInt:14",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "staticBoxedInt",
+      "kind": "static overload: boxed Integer",
+      "method": "staticBoxedInts",
+      "original": "staticBoxedInt:15",
+      "jarde": null,
+      "jadx": "staticBoxedInt:15",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "unboundString",
+      "kind": "unbound receiver: String",
+      "method": "unboundStrings",
+      "original": "unboundString:21",
+      "jarde": null,
+      "jadx": "unboundString:21",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "unboundNull",
+      "kind": "unbound receiver: null",
+      "method": "unboundStrings",
+      "original": "unboundNull:21",
+      "jarde": null,
+      "jadx": "unboundNull:21",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "unboundInteger",
+      "kind": "unbound receiver: erased wrong argument",
+      "method": "unboundStrings",
+      "original": "unboundInteger:java.lang.ClassCastException",
+      "jarde": null,
+      "jadx": "unboundInteger:java.lang.ClassCastException",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "unboundArray",
+      "kind": "unbound receiver: String[]",
+      "method": "unboundArrays",
+      "original": "unboundArray:23",
+      "jarde": null,
+      "jadx": "unboundArray:23",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "unboundObjectArray",
+      "kind": "unbound receiver: erased wrong array",
+      "method": "unboundArrays",
+      "original": "unboundObjectArray:java.lang.ClassCastException",
+      "jarde": null,
+      "jadx": "unboundObjectArray:java.lang.ClassCastException",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "boundString",
+      "kind": "bound receiver: String",
+      "method": "boundStrings",
+      "original": "boundString:21",
+      "jarde": null,
+      "jadx": "boundString:21",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "boundArray",
+      "kind": "bound receiver: String[]",
+      "method": "boundArrays",
+      "original": "boundArray:23",
+      "jarde": null,
+      "jadx": "boundArray:23",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "boundNullReceiver",
+      "kind": "bound receiver: null check",
+      "method": "boundNull",
+      "original": "boundNullReceiver:java.lang.NullPointerException",
+      "jarde": null,
+      "jadx": "boundNullReceiver:java.lang.NullPointerException",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "constructor",
+      "kind": "constructor reference",
+      "method": "constructor",
+      "original": "constructor:text",
+      "jarde": null,
+      "jadx": "constructor:text",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "noArgString",
+      "kind": "no-arg return String",
+      "method": "noArgString",
+      "original": "noArgString:text",
+      "jarde": null,
+      "jadx": "noArgString:text",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "noArgCharSequence",
+      "kind": "no-arg return widening",
+      "method": "noArgCharSequence",
+      "original": "noArgCharSequence:text",
+      "jarde": null,
+      "jadx": "noArgCharSequence:text",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "noArgGenericString",
+      "kind": "no-arg generic return adaptation",
+      "method": "noArgGenericString",
+      "original": "noArgGenericString:generic",
+      "jarde": null,
+      "jadx": "noArgGenericString:generic",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "noArgGenericRaw",
+      "kind": "raw Supplier return without caller cast",
+      "method": "noArgGenericString",
+      "original": "noArgGenericRaw:generic",
+      "jarde": null,
+      "jadx": "noArgGenericRaw:generic",
+      "failure_stage": "jarde-compile"
+    }
+  ]
+}

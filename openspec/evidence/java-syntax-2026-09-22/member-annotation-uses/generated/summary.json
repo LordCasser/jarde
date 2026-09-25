@@ -1,0 +1,35 @@
+{
+  "cli_sha256": "f2fb24241c2692dff53060576e185eb282617a6881e81900140bb2eb62006544",
+  "source_sha256": {
+    "MemberTagged.java": "bbe4439e03703ad3d785211d8501341dfef68c7b876eceea0a081e8e5c8ea053",
+    "MemberRunner.java": "55ee80a85f474433de7cc50ff13a3ef8971e6b2e541ff44356df82c745fa4bba"
+  },
+  "class_sha256": {
+    "MemberRunner.class": "dc14d1bca61343c000119bd1ff45c231b51948199986a722f8ebdb0aadff6d2b",
+    "MemberTagged.class": "63fbb2c76199125f23540adc0611e65232be055e6817899291722c90d301c996"
+  },
+  "class_bytes": {
+    "MemberRunner.class": 858,
+    "MemberTagged.class": 362
+  },
+  "output": {
+    "original": [
+      "true",
+      "true",
+      "1",
+      "5"
+    ],
+    "jadx": [
+      "true",
+      "true",
+      "1",
+      "5"
+    ],
+    "jarde": [
+      "false",
+      "false",
+      "0",
+      "5"
+    ]
+  }
+}

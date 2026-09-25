@@ -1,0 +1,5 @@
+# Root acceptance replay: bitwise expressions
+
+Run `python3 openspec/evidence/java-syntax-2026-09-22/bitwise/root-after/run_replay.py` from the repository root after placing the rebuilt CLI at `/tmp/jarde-cli-bitwise-root-after`. The script checks CLI SHA-256 `88f2e7aa9b5b8172da02f5af5d4d2c029e72a52d9b3298b46b82774e0bd5fdfd`, recompiles the checked Java 8 class byte-for-byte, and compiles and executes the complete original, JADX and Jarde sources. `summary.json` records 268 equal output lines and zero Jarde bytecode quotes; adjacent files preserve command status and output.
+
+Run `python3 openspec/evidence/java-syntax-2026-09-22/bitwise/root-after/boundary/run_audit.py` for the independent source/descriptor/dup-pop boundary replay. Both input classes pass JVM verification. The mixed boolean/integer descriptor class is retained as a quoted refusal in Jarde, while the unpatched integer controls compile and execute. `boundary/summary.json` and adjacent logs contain bytecode patches, hashes, generated sources and execution results. Both scripts verify the frozen CLI hash before and after their runs.

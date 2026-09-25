@@ -1,0 +1,12 @@
+uniform/none=1;IHNHF;caught=0;finally=1
+uniform/iterator=0;ICF;caught=1;finally=1
+uniform/hasNext=0;IHCF;caught=1;finally=1
+uniform/next=0;IHNCF;caught=1;finally=1
+iteratorBoundary/none=1;PIHNHF;caught=0;finally=1
+iteratorBoundary/iterator=-1;PIIcatch;caught=1;finally=0
+iteratorBoundary/hasNext=-1;PIHIcatch;caught=1;finally=0
+iteratorBoundary/next=-1;PIHNIcatch;caught=1;finally=0
+nextBoundary/none=1;PIHNHF;caught=0;finally=1
+nextBoundary/iterator=-99;PIX;caught=0;finally=0
+nextBoundary/hasNext=-99;PIHX;caught=0;finally=0
+nextBoundary/next=-99;PIHNX;caught=0;finally=0

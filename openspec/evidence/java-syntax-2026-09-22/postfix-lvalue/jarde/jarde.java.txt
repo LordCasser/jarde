@@ -1,0 +1,128 @@
+// jarde: presentation of `PostfixProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class PostfixProbe extends java.lang.Object {
+    public static final PostfixProbe INSTANCE;
+
+    public static java.lang.String trace;
+
+    public static PostfixBox selected;
+
+    public static int[] values;
+
+    public static int selectedIndex;
+
+    public int simpleField;
+
+    public PostfixProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `PostfixProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void reset() {
+        // @method reset()V
+        // @declaration a static method of `PostfixProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        PostfixProbe.trace = "";
+        PostfixProbe.selected = new PostfixBox(41);
+        // @bytecode 18
+        // the array instruction at BCI 18 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 20 18
+        // the instruction at BCI 20 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 24 18
+        // the value at BCI 24 comes from an Duplicate at BCI 20, which produces no expression this subset writes
+        // @bytecode 25 18
+        // the value at BCI 25 comes from an Duplicate at BCI 20, which produces no expression this subset writes
+        PostfixProbe.selectedIndex = 0;
+        return;
+    }
+
+    public static PostfixBox receiver() {
+        // @method receiver()LPostfixBox;
+        // @declaration a static method of `PostfixProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        PostfixProbe.trace = new java.lang.StringBuilder().append(PostfixProbe.trace).append("R").toString();
+        return PostfixProbe.selected;
+    }
+
+    public static int[] array() {
+        // @method array()[I
+        // @declaration a static method of `PostfixProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        PostfixProbe.trace = new java.lang.StringBuilder().append(PostfixProbe.trace).append("A").toString();
+        return PostfixProbe.values;
+    }
+
+    public static int index() {
+        // @method index()I
+        // @declaration a static method of `PostfixProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        PostfixProbe.trace = new java.lang.StringBuilder().append(PostfixProbe.trace).append("I").toString();
+        return PostfixProbe.selectedIndex;
+    }
+
+    public static int postReceiver() {
+        // @method postReceiver()I
+        // @declaration a static method of `PostfixProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 10 4
+        // the value at BCI 10 comes from an Other at BCI 7, which produces no expression this subset writes
+        // @bytecode 13 4
+        // the value at BCI 13 comes from an Other at BCI 7, which produces no expression this subset writes
+    }
+
+    public static int postArray() {
+        // @method postArray()I
+        // @declaration a static method of `PostfixProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        array();
+        index();
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7
+        // the dependency chain from BCI 7 to final consumer 8 is not bounded
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 11 7
+        // the value at BCI 11 comes from an Other at BCI 8, which produces no expression this subset writes
+        // @bytecode 12 7
+        // the value at BCI 12 comes from an Other at BCI 8, which produces no expression this subset writes
+    }
+
+    public static int localIncrement(int arg0) {
+        // @method localIncrement(I)I
+        // @declaration a static method of `PostfixProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = arg0;
+        local1 = local1 + 1;
+        return local1;
+    }
+
+    public int postSimpleField() {
+        // @method postSimpleField()I
+        // @declaration an instance method of `PostfixProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.simpleField++;
+    }
+
+    public int preSimpleField() {
+        // @method preSimpleField()I
+        // @declaration an instance method of `PostfixProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return ++this.simpleField;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `PostfixProbe`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        INSTANCE = new PostfixProbe();
+    }
+}

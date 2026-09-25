@@ -1,0 +1,34 @@
+// jarde: presentation of `StaticHelper` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class StaticHelper extends java.lang.Object {
+    static int value;
+
+    public StaticHelper() {
+        // @method <init>()V
+        // @declaration a constructor of `StaticHelper`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static int helper() {
+        // @method helper()I
+        // @declaration a static method of `StaticHelper`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return 11;
+    }
+
+    public static int get() {
+        // @method get()I
+        // @declaration a static method of `StaticHelper`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return StaticHelper.value;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `StaticHelper`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        StaticHelper.value = helper();
+    }
+}

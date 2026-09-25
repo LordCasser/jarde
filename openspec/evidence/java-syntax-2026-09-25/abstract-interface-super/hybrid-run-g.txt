@@ -1,0 +1,4 @@
+exit=1
+Exception in thread "main" java.lang.AbstractMethodError: 'int Child.value()'
+	at Probe.value(Probe.java:2)
+	at Probe.main(Probe.java:4)

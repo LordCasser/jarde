@@ -1,0 +1,141 @@
+package defpackage;
+
+/* JADX INFO: loaded from: BoundaryProbe.class */
+public final class BoundaryProbe {
+    public static BoundarySubBox selected;
+    public static int[] values;
+    public static int[] otherValues;
+    public static int selectedIndex;
+    public static int observed;
+    public static String trace;
+
+    public static void reset() {
+        selected = new BoundarySubBox(5, 10, 20);
+        values = new int[]{30, 40};
+        otherValues = new int[]{50, 60};
+        selectedIndex = 0;
+        observed = 0;
+        trace = "";
+    }
+
+    public static BoundarySubBox receiver() {
+        trace += "R";
+        return selected;
+    }
+
+    public static BoundaryBaseBox baseReceiver() {
+        return selected;
+    }
+
+    public static int[] array() {
+        trace += "A";
+        return values;
+    }
+
+    public static int index() {
+        trace += "I";
+        return selectedIndex;
+    }
+
+    public static void tick() {
+        trace += "T";
+    }
+
+    public static void observe(int i) {
+        observed += i;
+    }
+
+    public static void exposeObserverReference() {
+        observe(1);
+    }
+
+    public static void exposeTickReference() {
+        tick();
+    }
+
+    public static int fieldDifferentMember() {
+        BoundarySubBox boundarySubBoxReceiver = receiver();
+        int i = boundarySubBoxReceiver.value;
+        boundarySubBoxReceiver.value = i + 1;
+        return i;
+    }
+
+    public static int fieldOtherMember() {
+        BoundarySubBox boundarySubBoxReceiver = receiver();
+        int i = boundarySubBoxReceiver.other;
+        boundarySubBoxReceiver.other = i + 1;
+        return i;
+    }
+
+    public static int fieldDifferentOwner() {
+        BoundarySubBox boundarySubBoxReceiver = receiver();
+        int i = boundarySubBoxReceiver.value;
+        boundarySubBoxReceiver.value = i + 1;
+        return i;
+    }
+
+    public static int fieldBaseOwner() {
+        BoundaryBaseBox boundaryBaseBoxBaseReceiver = baseReceiver();
+        int i = boundaryBaseBoxBaseReceiver.value;
+        boundaryBaseBoxBaseReceiver.value = i + 1;
+        return i;
+    }
+
+    public static int fieldGap() {
+        BoundarySubBox boundarySubBoxReceiver = receiver();
+        int i = boundarySubBoxReceiver.value;
+        boundarySubBoxReceiver.value = i + 1;
+        return i;
+    }
+
+    public static int fieldExtraConsumer() {
+        BoundarySubBox boundarySubBoxReceiver = receiver();
+        int i = boundarySubBoxReceiver.value;
+        boundarySubBoxReceiver.value = i + 1;
+        return i;
+    }
+
+    public static int arrayDifferentIndex() {
+        int[] iArrArray = array();
+        int iIndex = index();
+        int i = iArrArray[iIndex];
+        iArrArray[iIndex + 1] = i + 1;
+        return i;
+    }
+
+    public static int arrayDifferentArray() {
+        int[] iArrArray = array();
+        int iIndex = index();
+        int i = iArrArray[iIndex];
+        iArrArray[iIndex] = i + 1;
+        return i;
+    }
+
+    public static int arrayGap() {
+        int[] iArrArray = array();
+        int iIndex = index();
+        int i = iArrArray[iIndex];
+        iArrArray[iIndex] = i + 1;
+        return i;
+    }
+
+    public static int arrayExtraConsumer() {
+        int[] iArrArray = array();
+        int iIndex = index();
+        int i = iArrArray[iIndex];
+        iArrArray[iIndex] = i + 1;
+        return i;
+    }
+
+    public static int prefixReceiver() {
+        BoundarySubBox boundarySubBoxReceiver = receiver();
+        int i = boundarySubBoxReceiver.value + 1;
+        boundarySubBoxReceiver.value = i;
+        return i;
+    }
+
+    public static int ordinaryAssignment() {
+        receiver().value = 99;
+        return 99;
+    }
+}

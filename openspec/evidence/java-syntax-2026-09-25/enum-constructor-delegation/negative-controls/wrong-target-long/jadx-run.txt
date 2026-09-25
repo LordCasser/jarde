@@ -1,0 +1,5 @@
+exit=0
+enum=ZERO:0:0
+enum=ONE:1:1
+effects=2:0,1
+declared-constructors=2,3,3

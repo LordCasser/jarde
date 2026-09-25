@@ -1,0 +1,25 @@
+{
+  "original_sha256": "25f1a74ac01c1bea3563e679958e0ed6395219ade042cd87a59eb496597457ef",
+  "patched_sha256": "e2373834340108fdb7caecdfcb06cecdc9e1f8fdb43e8ab14028401a6faf6b9f",
+  "original_code_hex": "1aab00000000001a000000010000000100000013b800073ca70007b8000d3cb800101bac",
+  "patched_code_hex": "1aab00000000001c000000010000000100000013b80007b80010a70009b8000db80010ac",
+  "patched_code_length": 36,
+  "max_stack": 1,
+  "max_locals": 1,
+  "class_major_before": 52,
+  "class_major_after": 49,
+  "removed_code_attributes": [
+    "StackMapTable"
+  ],
+  "switch_default_offset": 28,
+  "switch_case_1_offset": 19,
+  "cli_sha256_before": "908c472560d6146354e1fd679c595e884afadf5ec7051727b51e79a1f95c6570",
+  "cli_sha256_after": "908c472560d6146354e1fd679c595e884afadf5ec7051727b51e79a1f95c6570",
+  "jarde_cli_returncode": 0,
+  "jarde_quotes": 2,
+  "jarde_javac_returncode": 1,
+  "jadx_returncode": 0,
+  "jadx_javac_returncode": 0,
+  "original_lines": 6,
+  "jadx_equal": true
+}

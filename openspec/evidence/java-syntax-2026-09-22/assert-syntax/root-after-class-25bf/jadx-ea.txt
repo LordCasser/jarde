@@ -1,0 +1,5 @@
+assertions=true
+success: outcome=returned, detail=-, same=-, conditionCalls=1, messageCalls=0, trace=1
+failure: outcome=java.lang.AssertionError, detail=failure-message, same=-, conditionCalls=1, messageCalls=1, trace=12
+condition-exception: outcome=java.lang.IllegalStateException, detail=-, same=true, conditionCalls=1, messageCalls=0, trace=1
+message-exception: outcome=java.lang.IllegalArgumentException, detail=-, same=true, conditionCalls=1, messageCalls=1, trace=12

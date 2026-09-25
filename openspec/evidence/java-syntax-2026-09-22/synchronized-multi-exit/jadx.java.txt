@@ -1,0 +1,29 @@
+package defpackage;
+
+/* JADX INFO: loaded from: SynchronizedMultiExit.class */
+public class SynchronizedMultiExit {
+    public static int trace;
+    public static int failId;
+    public static final RuntimeException FAILURE = new IllegalStateException("producer");
+
+    private static int produce(int i) {
+        trace = (trace * 10) + i;
+        if (failId == i) {
+            throw FAILURE;
+        }
+        return i * 10;
+    }
+
+    public static int choose(Object obj, boolean z) {
+        synchronized (obj) {
+            try {
+                if (z) {
+                    return produce(1);
+                }
+                return produce(2);
+            } catch (Throwable th) {
+                throw th;
+            }
+        }
+    }
+}

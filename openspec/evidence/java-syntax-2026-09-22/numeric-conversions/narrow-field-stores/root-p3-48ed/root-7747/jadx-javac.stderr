@@ -1,0 +1,50 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:17: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        this.byteField = i;
+                         ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:22: 错误: 不兼容的类型: 从int转换到char可能会有损失
+        this.charField = i;
+                         ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:27: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        this.shortField = i;
+                          ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:32: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        this.byteField = NarrowFieldStoreEffects.value(i, z);
+                                                      ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:37: 错误: 不兼容的类型: 从int转换到char可能会有损失
+        this.charField = NarrowFieldStoreEffects.value(i, z);
+                                                      ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:42: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        this.shortField = NarrowFieldStoreEffects.value(i, z);
+                                                       ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:47: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        narrowFieldStores.byteField = NarrowFieldStoreEffects.value(i, z);
+                                                                   ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:52: 错误: 不兼容的类型: 从int转换到char可能会有损失
+        narrowFieldStores.charField = NarrowFieldStoreEffects.value(i, z);
+                                                                   ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:57: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        narrowFieldStores.shortField = NarrowFieldStoreEffects.value(i, z);
+                                                                    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:62: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        staticByteField = i;
+                          ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:67: 错误: 不兼容的类型: 从int转换到char可能会有损失
+        staticCharField = i;
+                          ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:72: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        staticShortField = i;
+                           ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:77: 错误: 不兼容的类型: 从int转换到byte可能会有损失
+        staticByteField = NarrowFieldStoreEffects.value(i, z);
+                                                       ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:82: 错误: 不兼容的类型: 从int转换到char可能会有损失
+        staticCharField = NarrowFieldStoreEffects.value(i, z);
+                                                       ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-p3-0zekjen9/jadx/sources/defpackage/NarrowFieldStores.java:87: 错误: 不兼容的类型: 从int转换到short可能会有损失
+        staticShortField = NarrowFieldStoreEffects.value(i, z);
+                                                        ^
+15 个错误
+3 个警告

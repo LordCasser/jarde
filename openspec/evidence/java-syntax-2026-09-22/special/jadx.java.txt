@@ -1,0 +1,25 @@
+package defpackage;
+
+/* JADX INFO: loaded from: special-probe.jar:SpecialProbe.class */
+public class SpecialProbe extends BaseProbe implements DefaultProbe {
+    @Override // defpackage.BaseProbe, defpackage.DefaultProbe
+    public int value() {
+        return super.value() + 1;
+    }
+
+    public int defaultCall() {
+        return super.value();
+    }
+
+    private int privateHelper(int i) {
+        return i + 2;
+    }
+
+    public int callOwnPrivate(int i) {
+        return privateHelper(i);
+    }
+
+    public int callOtherPrivate(SpecialProbe specialProbe, int i) {
+        return specialProbe.privateHelper(i);
+    }
+}

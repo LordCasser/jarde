@@ -1,0 +1,3 @@
+READY=ready:runtimeIsEnum=true
+WAITING=waiting:runtimeIsEnum=true
+exit=0

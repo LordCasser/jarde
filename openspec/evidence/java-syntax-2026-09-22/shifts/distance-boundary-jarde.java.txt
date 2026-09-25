@@ -1,0 +1,65 @@
+// jarde: presentation of `ShiftDistanceBoundary` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ShiftDistanceBoundary extends java.lang.Object {
+    public ShiftDistanceBoundary() {
+        // @method <init>()V
+        // @declaration a constructor of `ShiftDistanceBoundary`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int intLeftLongDistance(int arg0, long arg1) {
+        // jarde: not recovered: the recovery run for `intLeftLongDistance(IJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method intLeftLongDistance(IJ)I
+        // @declaration a static method of `ShiftDistanceBoundary`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 3, which produces no expression this subset writes
+    }
+
+    public static int intRightLongDistance(int arg0, long arg1) {
+        // jarde: not recovered: the recovery run for `intRightLongDistance(IJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method intRightLongDistance(IJ)I
+        // @declaration a static method of `ShiftDistanceBoundary`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 3, which produces no expression this subset writes
+    }
+
+    public static int intUnsignedLongDistance(int arg0, long arg1) {
+        // jarde: not recovered: the recovery run for `intUnsignedLongDistance(IJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method intUnsignedLongDistance(IJ)I
+        // @declaration a static method of `ShiftDistanceBoundary`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 3, which produces no expression this subset writes
+    }
+
+    public static int intLongDistanceLocal(int arg0, long arg1) {
+        // jarde: not recovered: the recovery run for `intLongDistanceLocal(IJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method intLongDistanceLocal(IJ)I
+        // @declaration a static method of `ShiftDistanceBoundary`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 3, which produces no expression this subset writes
+        // @bytecode 5 6
+        // the statement at BCI 6 reads `local3`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+    }
+}

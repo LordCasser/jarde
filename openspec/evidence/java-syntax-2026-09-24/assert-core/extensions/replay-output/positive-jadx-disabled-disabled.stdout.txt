@@ -1,0 +1,1 @@
+init=1;plain-true=1;plain-false=none;multiple-true=1;multiple-second-false=none;effects=1

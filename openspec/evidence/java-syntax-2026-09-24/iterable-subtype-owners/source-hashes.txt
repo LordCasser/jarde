@@ -1,0 +1,3 @@
+9be0a3e77d749244b9ea5ea59636f2c09f5441a8e10595af37f53dc57c4843b6  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/original/SubtypeOwners.java
+b967740919319d0b8dc3d29bb46c99dcf44b01c086e520abe5aeee2ecf3393b0  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/original/SubtypeOwnersRunner.java
+8fda11846e8d22b03d59673630dfaf15eb2575a12b6333120130e38b21e784a1  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/original/TextIterable.java

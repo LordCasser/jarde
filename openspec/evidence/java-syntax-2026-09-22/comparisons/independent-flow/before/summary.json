@@ -1,0 +1,8 @@
+{
+  "stage": "before",
+  "cases": 242,
+  "jarde_javac": 1,
+  "jarde_quotes": 10,
+  "jadx_javac": 0,
+  "jadx_mismatches": 11
+}

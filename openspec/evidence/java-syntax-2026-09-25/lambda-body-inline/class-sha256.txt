@@ -1,0 +1,2 @@
+4293d266fa4b00a7f77fa2eeb64cb9cecaaafbd982bd351259ba584cad1eacce  tests/fixtures/proved-java-structure/lambda-body-inline/IntAction.class
+e429024c15ac2a7f81523c1550a6c8687a37a0ea76dbbe32b935038136ef0c66  tests/fixtures/proved-java-structure/lambda-body-inline/LambdaBodyInline.class

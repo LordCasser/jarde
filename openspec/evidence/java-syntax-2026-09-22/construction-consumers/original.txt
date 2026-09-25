@@ -1,0 +1,14 @@
+castfalse=true:1
+arrayfalse=7:1
+nullfalse=java.lang.NullPointerException:false:1
+boundsfalse=java.lang.ArrayIndexOutOfBoundsException:false:1
+typefalse=true:1
+fieldfalse=7:1
+callfalse=7:1
+casttrue=java.lang.IllegalStateException:true:1
+arraytrue=java.lang.IllegalStateException:true:1
+nulltrue=java.lang.IllegalStateException:true:1
+boundstrue=java.lang.IllegalStateException:true:1
+typetrue=java.lang.IllegalStateException:true:1
+fieldtrue=java.lang.IllegalStateException:true:1
+calltrue=java.lang.IllegalStateException:true:1

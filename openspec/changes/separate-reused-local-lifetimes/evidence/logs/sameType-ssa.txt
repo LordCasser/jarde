@@ -1,0 +1,12 @@
+BLOCKS
+block=0 entry=[(Local(0), ValueId(0))] exit=[(Local(0), ValueId(0)), (Local(1), ValueId(18)), (Local(2), ValueId(14))]
+SLOT 2/3 INSTRUCTIONS
+block=0 bci=5 reads=[] writes=[(Local(2), ValueId(6))]
+block=0 bci=7 reads=[(Local(2), ValueId(6))] writes=[]
+block=0 bci=13 reads=[] writes=[(Local(2), ValueId(14))]
+block=0 bci=15 reads=[(Local(2), ValueId(14))] writes=[]
+VALUES FOR SLOT 2/3 DEFINITIONS AND USES
+vValueId(6) ty=Int def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 5 } replaced=None uses=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(7) }]
+vValueId(14) ty=Int def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 13 } replaced=None uses=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(15) }]
+PHIS FOR SLOT 2/3
+EDGES

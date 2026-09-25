@@ -1,0 +1,14 @@
+public final class NonInvokeQualifierProbe {
+  public NonInvokeQualifierProbe();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int call(Child);
+    Code:
+       0: aload_0
+       1: pop
+       2: invokestatic  #7                  // Method Child.ping:()I
+       5: ireturn
+}

@@ -1,0 +1,19 @@
+public class NumericRefusal {
+  public NumericRefusal();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int value(float);
+    Code:
+       0: fload_0
+       1: invokestatic  #7                  // Method NumericRefusalEffects.value:(F)F
+       4: fconst_0
+       5: fcmpl
+       6: ifle          12
+       9: bipush        7
+      11: ireturn
+      12: bipush        9
+      14: ireturn
+}

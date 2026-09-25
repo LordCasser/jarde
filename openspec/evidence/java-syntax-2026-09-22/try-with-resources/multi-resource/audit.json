@@ -1,0 +1,63 @@
+{
+  "class_source_sha256": "069c3daf3855fb58c821740f1d1a534b26ac4b94fd6cff5145a16985fa68fd29",
+  "jadx": 0,
+  "jadx_comparison": {
+    "equal": true,
+    "lines": [
+      "suppressed-order-3-2-1:closes=3,trace=9321"
+    ],
+    "status": 0
+  },
+  "jadx_decompiled": {
+    "class_bytes": 1434,
+    "class_javac": 0,
+    "class_sha256": "01d670d3adb40cd964a9891a2d3ded745d413fee0b041fbff0ade817b35d33ef",
+    "javap": 0,
+    "runner_javac": 0,
+    "runtime": 0,
+    "runtime_output_sha256": "cf69190842f8df30ecfeb653ce3e3f6a9888558f547707c3a5d746c7c5baea2f"
+  },
+  "jadx_package": "defpackage",
+  "jadx_source_sha256": "9b77cfdee9ad6b5455e8e3466f5dee0b595c468d2cde2a04e76604a1f555779a",
+  "jarde": {
+    "class_bytes": 1425,
+    "class_javac": 0,
+    "class_sha256": "db3e79f52633b0d227990e97339927074e83dbf6fc5914dab8f27d5cafb907a5",
+    "javap": 0,
+    "runner_javac": 0,
+    "runtime": 0,
+    "runtime_output_sha256": "cf69190842f8df30ecfeb653ce3e3f6a9888558f547707c3a5d746c7c5baea2f"
+  },
+  "jarde_cli": 0,
+  "jarde_comparison": {
+    "equal": true,
+    "lines": [
+      "suppressed-order-3-2-1:closes=3,trace=9321"
+    ],
+    "status": 0
+  },
+  "jarde_source_sha256": "2376dc36d5800c4d224b26a752077df1c650132742f91ea0a0f7c006d055173a",
+  "original": {
+    "class_bytes": 1425,
+    "class_javac": 0,
+    "class_sha256": "db3e79f52633b0d227990e97339927074e83dbf6fc5914dab8f27d5cafb907a5",
+    "javap": 0,
+    "runner_javac": 0,
+    "runtime": 0,
+    "runtime_output_sha256": "cf69190842f8df30ecfeb653ce3e3f6a9888558f547707c3a5d746c7c5baea2f"
+  },
+  "original_class_sha256": "db3e79f52633b0d227990e97339927074e83dbf6fc5914dab8f27d5cafb907a5",
+  "original_javap": 0,
+  "original_runtime": {
+    "lines": [
+      "suppressed-order-3-2-1:closes=3,trace=9321"
+    ],
+    "status": "0"
+  },
+  "runner_source_sha256": "93bcf563f3e9e23b49ae01b3e87ec9f979e3ca02951c38da734f3cd07ced868c",
+  "source_lines": {
+    "jadx": 98,
+    "jarde": 90,
+    "original": 58
+  }
+}

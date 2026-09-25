@@ -1601,6 +1601,7 @@ fn limits() -> Limits {
         code_bytes: 1 << 20,
         result_items: 10_000,
         output_bytes: 1 << 20,
+        analysis_steps: 1 << 20,
         nested_depth: 4,
         elapsed_millis: u64::MAX,
         ..Limits::default()
@@ -2478,6 +2479,61 @@ fn generic_signatures_follow_their_own_grammar() {
         ),
     );
     assert!(report.items.is_empty());
+}
+
+#[test]
+fn frozen_method_signature_boundaries_remain_queryable() {
+    const BASE: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericMethodProbe.class"
+    );
+    const THROWS: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/GenericThrowsProbe.class"
+    );
+    const OBJECT: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/object-bound.class"
+    );
+    const UNBOUND: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/unbound-variable.class"
+    );
+    const CLASS_VARIABLE: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/class-variable.class"
+    );
+    const COMPLEX: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/complex-method.class"
+    );
+    const INCOMPATIBLE_BODY: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-24/generic-method-signatures/negative-fixtures/classes/incompatible-body.class"
+    );
+
+    for (label, bytes, number_references) in [
+        ("base", BASE, 1),
+        ("throws without suffix", THROWS, 1),
+        ("object bound", OBJECT, 0),
+        ("unbound variable", UNBOUND, 1),
+        ("class variable", CLASS_VARIABLE, 1),
+        ("complex method", COMPLEX, 1),
+        ("incompatible body", INCOMPATIBLE_BODY, 1),
+    ] {
+        let snapshot = open(zip(&[(b"probe.class", bytes)]));
+        let report = run_complete(
+            &snapshot,
+            &query_request(
+                &snapshot,
+                QueryRelation::MentionsSymbol,
+                target_symbol("java/lang/Number"),
+                &[ConsumerKind::Signature],
+            ),
+        );
+        assert_complete(&report);
+        assert_eq!(report.items.len(), number_references, "{label}");
+        assert!(
+            report
+                .items
+                .iter()
+                .all(|item| item.operation == XrefOperation::GenericSignature),
+            "{label}"
+        );
+    }
 }
 
 /// One expected record component fact: target type, raw owner bytes, the attribute
@@ -4190,6 +4246,68 @@ fn a_method_signature_grammar_still_rejects_malformed_content() {
                 .any(|diagnostic| diagnostic.code == "query_signature_malformed"),
             "{what} is explained by a diagnostic"
         );
+    }
+}
+
+#[test]
+fn shared_method_signature_grammar_keeps_valid_negative_shape_xrefs() {
+    let cases: [(&str, &[u8], &[&str]); 4] = [
+        (
+            "bounded method-local variable",
+            b"<T:Ljava/lang/Number;>(TT;TT;Z)TT;",
+            &["java/lang/Number"],
+        ),
+        (
+            "Object first bound with physical Number descriptor",
+            b"<T:Ljava/lang/Object;>(TT;TT;Z)TT;",
+            &["java/lang/Object"],
+        ),
+        (
+            "unbound variable syntax",
+            b"<T:Ljava/lang/Number;>(TU;TT;Z)TU;",
+            &["java/lang/Number"],
+        ),
+        (
+            "legal complex array wildcard and throws shape",
+            b"<T:Ljava/lang/Number;>([Ljava/util/List<+TT;>;)[Ljava/util/List<+TT;>;^Ljava/io/IOException;",
+            &["java/lang/Number", "java/util/List", "java/io/IOException"],
+        ),
+    ];
+    for (label, signature, expected) in cases {
+        let built = method_signature_fixture(signature);
+        let snapshot = open(built.bytes);
+        for name in expected {
+            let report = run_complete(
+                &snapshot,
+                &query_request(
+                    &snapshot,
+                    QueryRelation::MentionsSymbol,
+                    target_symbol(name),
+                    &[ConsumerKind::Signature],
+                ),
+            );
+            assert_eq!(
+                report.items.len(),
+                1,
+                "{label}: {name}: {:?}",
+                report.diagnostics
+            );
+            assert_eq!(
+                report.items[0].operation,
+                XrefOperation::GenericSignature,
+                "{label}: {name}"
+            );
+        }
+        let report = run_complete(
+            &snapshot,
+            &query_request(
+                &snapshot,
+                QueryRelation::MentionsSymbol,
+                target_symbol("U"),
+                &[ConsumerKind::Signature, ConsumerKind::Type],
+            ),
+        );
+        assert!(report.items.is_empty(), "{label}: {:?}", report.items);
     }
 }
 

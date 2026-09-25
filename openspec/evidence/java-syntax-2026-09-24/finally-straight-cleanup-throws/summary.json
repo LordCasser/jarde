@@ -1,0 +1,27 @@
+{
+  "work": "/private/tmp/jarde-finally-cleanup-throws-_x5il6fb",
+  "class_sha256": "ce79125f7752333349583e6b1ca4a0297143b6b62bb002467db8934da314bdf9",
+  "class_bytes": 786,
+  "cli_sha256": "8d93cf642dbca5de2a625677c3e13a44a989b2d5824ed43058d5724927744faf",
+  "original": [
+    "false:false:return=41:trace=12",
+    "true:false:try=true:cleanup=false:trace=12",
+    "false:true:try=false:cleanup=true:trace=12",
+    "true:true:try=false:cleanup=true:trace=12"
+  ],
+  "jarde_cli_status": 0,
+  "jarde_compile_status": 0,
+  "jarde_run_status": 0,
+  "jarde_matches": true,
+  "jarde_quotes": 0,
+  "jadx_status": 0,
+  "jadx_compile_status": 0,
+  "jadx_run_status": 0,
+  "jadx_matches": true,
+  "jadx_rows": [
+    "false:false:return=41:trace=12",
+    "true:false:try=true:cleanup=false:trace=12",
+    "false:true:try=false:cleanup=true:trace=12",
+    "true:true:try=false:cleanup=true:trace=12"
+  ]
+}

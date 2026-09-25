@@ -1,0 +1,19 @@
+Compiled from "OrphanBridge.java"
+public final class OrphanBridge {
+  public OrphanBridge();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public java.lang.String get();
+    Code:
+       0: ldc           #7                  // String value
+       2: areturn
+
+  public java.lang.Object geh();
+    Code:
+       0: aload_0
+       1: invokevirtual #9                  // Method get:()Ljava/lang/String;
+       4: areturn
+}

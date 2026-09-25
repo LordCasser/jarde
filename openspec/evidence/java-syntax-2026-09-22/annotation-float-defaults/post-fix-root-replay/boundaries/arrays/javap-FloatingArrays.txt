@@ -1,0 +1,41 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/annotation-float-defaults/post-fix-root-replay/boundaries/arrays/original/FloatingArrays.class
+  Last modified 2026年9月23日; size 232 bytes
+  SHA-256 checksum c8b3330b5423d43ca0bb02c6ee3f30a102aedd236f811c2bb74aa5d68c9683a5
+interface FloatingArrays extends java.lang.annotation.Annotation
+  minor version: 0
+  major version: 52
+  flags: (0x2600) ACC_INTERFACE, ACC_ABSTRACT, ACC_ANNOTATION
+  this_class: #1                          // FloatingArrays
+  super_class: #3                         // java/lang/Object
+  interfaces: 1, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Class              #2             // FloatingArrays
+   #2 = Utf8               FloatingArrays
+   #3 = Class              #4             // java/lang/Object
+   #4 = Utf8               java/lang/Object
+   #5 = Class              #6             // java/lang/annotation/Annotation
+   #6 = Utf8               java/lang/annotation/Annotation
+   #7 = Utf8               floats
+   #8 = Utf8               ()[F
+   #9 = Utf8               AnnotationDefault
+  #10 = Float              0.5f
+  #11 = Float              -0.0f
+  #12 = Utf8               doubles
+  #13 = Utf8               ()[D
+  #14 = Double             4.9E-324d
+  #16 = Double             -1.0d
+{
+  public abstract float[] floats();
+    descriptor: ()[F
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: [F#10,F#11]
+        [0.5f,-0.0f]
+
+  public abstract double[] doubles();
+    descriptor: ()[D
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: [D#14,D#16]
+        [4.9E-324d,-1.0d]
+}

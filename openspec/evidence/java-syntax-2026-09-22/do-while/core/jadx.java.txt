@@ -1,0 +1,46 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DoWhileCore.class */
+public class DoWhileCore {
+    private static int trace;
+
+    public static void reset() {
+        trace = 0;
+    }
+
+    public static int trace() {
+        return trace;
+    }
+
+    public static int basic(int i) {
+        int i2 = 0;
+        do {
+            i2++;
+            trace = (trace * 10) + i2;
+        } while (i2 < i);
+        return trace;
+    }
+
+    public static int withContinue(int i) {
+        int i2 = 0;
+        do {
+            i2++;
+            if (i2 != 2) {
+                trace = (trace * 10) + i2;
+            }
+        } while (i2 < i);
+        return trace;
+    }
+
+    public static int withBreak(int i) {
+        int i2 = 0;
+        do {
+            i2++;
+            if (i2 == 3) {
+                break;
+            }
+            trace = (trace * 10) + i2;
+        } while (i2 < i);
+        return trace;
+    }
+}

@@ -1,0 +1,20 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ShiftDistanceBoundary.class */
+public class ShiftDistanceBoundary {
+    public static int intLeftLongDistance(int i, long j) {
+        return i << ((int) j);
+    }
+
+    public static int intRightLongDistance(int i, long j) {
+        return i >> ((int) j);
+    }
+
+    public static int intUnsignedLongDistance(int i, long j) {
+        return i >>> ((int) j);
+    }
+
+    public static int intLongDistanceLocal(int i, long j) {
+        return i << ((int) j);
+    }
+}

@@ -1,0 +1,891 @@
+{
+  "source_class_bytes": 623,
+  "source_class_sha256": "8bbd3ca48fce4f11c8e4cc9ece31e09e7e0bb55b4cca293c905b0ea4d5c5ac17",
+  "patched_class_bytes": 665,
+  "patched_class_sha256": "3ea6861fdfc8ff741c55a1ee3ac61cb235b21281239e3e048d9be7d8deeab1de",
+  "code_attributes": 7,
+  "code_sha256_before": "ecb398c4aee2b10e38595f112cf0c1a2a9b4a5c11aeae5093bef69b93d480db5",
+  "code_sha256_after": "ecb398c4aee2b10e38595f112cf0c1a2a9b4a5c11aeae5093bef69b93d480db5",
+  "descriptor_patch_count": 6,
+  "method_bcis": {
+    "runByte": {
+      "source": {
+        "value_instruction_bcis": [
+          [
+            20,
+            "sipush        130"
+          ],
+          [
+            27,
+            "sipush        -129"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            23,
+            "istore_1"
+          ],
+          [
+            30,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            31,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 32,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "lookupswitch  { // 1"
+          ],
+          [
+            20,
+            "sipush        130"
+          ],
+          [
+            23,
+            "istore_1"
+          ],
+          [
+            24,
+            "goto          31"
+          ],
+          [
+            27,
+            "sipush        -129"
+          ],
+          [
+            30,
+            "istore_1"
+          ],
+          [
+            31,
+            "iload_1"
+          ],
+          [
+            32,
+            "ireturn"
+          ]
+        ]
+      },
+      "patched": {
+        "value_instruction_bcis": [
+          [
+            20,
+            "sipush        130"
+          ],
+          [
+            27,
+            "sipush        -129"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            23,
+            "istore_1"
+          ],
+          [
+            30,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            31,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 32,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "lookupswitch  { // 1"
+          ],
+          [
+            20,
+            "sipush        130"
+          ],
+          [
+            23,
+            "istore_1"
+          ],
+          [
+            24,
+            "goto          31"
+          ],
+          [
+            27,
+            "sipush        -129"
+          ],
+          [
+            30,
+            "istore_1"
+          ],
+          [
+            31,
+            "iload_1"
+          ],
+          [
+            32,
+            "ireturn"
+          ]
+        ]
+      }
+    },
+    "runChar": {
+      "source": {
+        "value_instruction_bcis": [
+          [
+            20,
+            "ldc           #7                  // int 65535"
+          ],
+          [
+            26,
+            "bipush        -2"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            22,
+            "istore_1"
+          ],
+          [
+            28,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            29,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 30,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "lookupswitch  { // 1"
+          ],
+          [
+            20,
+            "ldc           #7                  // int 65535"
+          ],
+          [
+            22,
+            "istore_1"
+          ],
+          [
+            23,
+            "goto          29"
+          ],
+          [
+            26,
+            "bipush        -2"
+          ],
+          [
+            28,
+            "istore_1"
+          ],
+          [
+            29,
+            "iload_1"
+          ],
+          [
+            30,
+            "ireturn"
+          ]
+        ]
+      },
+      "patched": {
+        "value_instruction_bcis": [
+          [
+            20,
+            "ldc           #7                  // int 65535"
+          ],
+          [
+            26,
+            "bipush        -2"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            22,
+            "istore_1"
+          ],
+          [
+            28,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            29,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 30,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "lookupswitch  { // 1"
+          ],
+          [
+            20,
+            "ldc           #7                  // int 65535"
+          ],
+          [
+            22,
+            "istore_1"
+          ],
+          [
+            23,
+            "goto          29"
+          ],
+          [
+            26,
+            "bipush        -2"
+          ],
+          [
+            28,
+            "istore_1"
+          ],
+          [
+            29,
+            "iload_1"
+          ],
+          [
+            30,
+            "ireturn"
+          ]
+        ]
+      }
+    },
+    "runShort": {
+      "source": {
+        "value_instruction_bcis": [
+          [
+            20,
+            "ldc           #8                  // int 32768"
+          ],
+          [
+            26,
+            "ldc           #9                  // int -32769"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            22,
+            "istore_1"
+          ],
+          [
+            28,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            29,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 30,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "lookupswitch  { // 1"
+          ],
+          [
+            20,
+            "ldc           #8                  // int 32768"
+          ],
+          [
+            22,
+            "istore_1"
+          ],
+          [
+            23,
+            "goto          29"
+          ],
+          [
+            26,
+            "ldc           #9                  // int -32769"
+          ],
+          [
+            28,
+            "istore_1"
+          ],
+          [
+            29,
+            "iload_1"
+          ],
+          [
+            30,
+            "ireturn"
+          ]
+        ]
+      },
+      "patched": {
+        "value_instruction_bcis": [
+          [
+            20,
+            "ldc           #8                  // int 32768"
+          ],
+          [
+            26,
+            "ldc           #9                  // int -32769"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            22,
+            "istore_1"
+          ],
+          [
+            28,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            29,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 30,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "lookupswitch  { // 1"
+          ],
+          [
+            20,
+            "ldc           #8                  // int 32768"
+          ],
+          [
+            22,
+            "istore_1"
+          ],
+          [
+            23,
+            "goto          29"
+          ],
+          [
+            26,
+            "ldc           #9                  // int -32769"
+          ],
+          [
+            28,
+            "istore_1"
+          ],
+          [
+            29,
+            "iload_1"
+          ],
+          [
+            30,
+            "ireturn"
+          ]
+        ]
+      }
+    },
+    "boolByte": {
+      "source": {
+        "value_instruction_bcis": [
+          [
+            4,
+            "sipush        255"
+          ],
+          [
+            11,
+            "sipush        -256"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            7,
+            "istore_1"
+          ],
+          [
+            14,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            15,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 16,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "ifeq          11"
+          ],
+          [
+            4,
+            "sipush        255"
+          ],
+          [
+            7,
+            "istore_1"
+          ],
+          [
+            8,
+            "goto          15"
+          ],
+          [
+            11,
+            "sipush        -256"
+          ],
+          [
+            14,
+            "istore_1"
+          ],
+          [
+            15,
+            "iload_1"
+          ],
+          [
+            16,
+            "ireturn"
+          ]
+        ]
+      },
+      "patched": {
+        "value_instruction_bcis": [
+          [
+            4,
+            "sipush        255"
+          ],
+          [
+            11,
+            "sipush        -256"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            7,
+            "istore_1"
+          ],
+          [
+            14,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            15,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 16,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "ifeq          11"
+          ],
+          [
+            4,
+            "sipush        255"
+          ],
+          [
+            7,
+            "istore_1"
+          ],
+          [
+            8,
+            "goto          15"
+          ],
+          [
+            11,
+            "sipush        -256"
+          ],
+          [
+            14,
+            "istore_1"
+          ],
+          [
+            15,
+            "iload_1"
+          ],
+          [
+            16,
+            "ireturn"
+          ]
+        ]
+      }
+    },
+    "boolChar": {
+      "source": {
+        "value_instruction_bcis": [
+          [
+            4,
+            "ldc           #7                  // int 65535"
+          ],
+          [
+            10,
+            "bipush        -2"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            6,
+            "istore_1"
+          ],
+          [
+            12,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            13,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 14,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "ifeq          10"
+          ],
+          [
+            4,
+            "ldc           #7                  // int 65535"
+          ],
+          [
+            6,
+            "istore_1"
+          ],
+          [
+            7,
+            "goto          13"
+          ],
+          [
+            10,
+            "bipush        -2"
+          ],
+          [
+            12,
+            "istore_1"
+          ],
+          [
+            13,
+            "iload_1"
+          ],
+          [
+            14,
+            "ireturn"
+          ]
+        ]
+      },
+      "patched": {
+        "value_instruction_bcis": [
+          [
+            4,
+            "ldc           #7                  // int 65535"
+          ],
+          [
+            10,
+            "bipush        -2"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            6,
+            "istore_1"
+          ],
+          [
+            12,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            13,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 14,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "ifeq          10"
+          ],
+          [
+            4,
+            "ldc           #7                  // int 65535"
+          ],
+          [
+            6,
+            "istore_1"
+          ],
+          [
+            7,
+            "goto          13"
+          ],
+          [
+            10,
+            "bipush        -2"
+          ],
+          [
+            12,
+            "istore_1"
+          ],
+          [
+            13,
+            "iload_1"
+          ],
+          [
+            14,
+            "ireturn"
+          ]
+        ]
+      }
+    },
+    "boolShort": {
+      "source": {
+        "value_instruction_bcis": [
+          [
+            4,
+            "ldc           #8                  // int 32768"
+          ],
+          [
+            10,
+            "ldc           #9                  // int -32769"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            6,
+            "istore_1"
+          ],
+          [
+            12,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            13,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 14,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "ifeq          10"
+          ],
+          [
+            4,
+            "ldc           #8                  // int 32768"
+          ],
+          [
+            6,
+            "istore_1"
+          ],
+          [
+            7,
+            "goto          13"
+          ],
+          [
+            10,
+            "ldc           #9                  // int -32769"
+          ],
+          [
+            12,
+            "istore_1"
+          ],
+          [
+            13,
+            "iload_1"
+          ],
+          [
+            14,
+            "ireturn"
+          ]
+        ]
+      },
+      "patched": {
+        "value_instruction_bcis": [
+          [
+            4,
+            "ldc           #8                  // int 32768"
+          ],
+          [
+            10,
+            "ldc           #9                  // int -32769"
+          ]
+        ],
+        "arm_store_bcis": [
+          [
+            6,
+            "istore_1"
+          ],
+          [
+            12,
+            "istore_1"
+          ]
+        ],
+        "join_load_bcis": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            13,
+            "iload_1"
+          ]
+        ],
+        "join_ireturn_bci": 14,
+        "instructions": [
+          [
+            0,
+            "iload_0"
+          ],
+          [
+            1,
+            "ifeq          10"
+          ],
+          [
+            4,
+            "ldc           #8                  // int 32768"
+          ],
+          [
+            6,
+            "istore_1"
+          ],
+          [
+            7,
+            "goto          13"
+          ],
+          [
+            10,
+            "ldc           #9                  // int -32769"
+          ],
+          [
+            12,
+            "istore_1"
+          ],
+          [
+            13,
+            "iload_1"
+          ],
+          [
+            14,
+            "ireturn"
+          ]
+        ]
+      }
+    }
+  },
+  "source_runtime_lines": 18,
+  "patched_runtime_lines": 18,
+  "source_exit": 0,
+  "patched_exit": 0,
+  "patched_runtime_matches_expected": true,
+  "jarde_cli_exit": 0,
+  "jarde_quote_count": 6,
+  "jarde_javac_exit": 1,
+  "jarde_run_exit": null,
+  "jadx_exit": 0,
+  "jadx_javac_exit": 1,
+  "jadx_run_exit": null,
+  "runtime_equal_source_patched": false,
+  "cli_sha_before": "ecab8244d1709765fa0f2b0effcebe49b9f066eea911843d11d34abec5837330",
+  "cli_sha_after": "ecab8244d1709765fa0f2b0effcebe49b9f066eea911843d11d34abec5837330"
+}

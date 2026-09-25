@@ -1,0 +1,42 @@
+// jarde: presentation of `GuardInlineControls` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class GuardInlineControls extends java.lang.Object {
+    public GuardInlineControls() {
+        // @method <init>()V
+        // @declaration a constructor of `GuardInlineControls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void locked() {
+        // @method locked()V
+        // @declaration a static method of `GuardInlineControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        synchronized (GuardEffects.lock()) {
+            GuardEffects.mark();
+        }
+        return;
+    }
+
+    public static int returned() {
+        // @method returned()I
+        // @declaration a static method of `GuardInlineControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        synchronized (GuardEffects.shared) {
+            int saved0 = GuardEffects.value();
+            return saved0;
+        }
+    }
+
+    public static void resource() {
+        // jarde: not recovered: the recovery run for `resource()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method resource()V
+        // @declaration a static method of `GuardInlineControls`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // BCI 0: an instruction between the statement's own start and its join is not part of the shape: presenting the statement would drop the statement its block holds
+        // @bytecode 34 18 32 26
+        // 4 live block(s) are reachable only through edges the normal-flow view leaves out: [34, 18, 32, 26]
+    }
+}

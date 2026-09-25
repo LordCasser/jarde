@@ -1,0 +1,38 @@
+{
+  "cli_sha256_before": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "cli_sha256_after": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "class_bytes": 947,
+  "class_sha256": "f38c8ec956ecce1ea0d63556f777e98717fe1bb67d10fc1e123df73e2d6a830d",
+  "code_methods": 10,
+  "original_javac": 0,
+  "original_runtime": 0,
+  "original_output": [
+    "local=8:rhs=1",
+    "field=9:select=1:rhs=1",
+    "array=14:select=1:rhs=1",
+    "post-field=7:new=8:select=1",
+    "post-array=10:new=11:select=1",
+    "null=NPE:select=1:rhs=0",
+    "bounds=AIOOBE:select=1:rhs=0"
+  ],
+  "jarde_cli": 0,
+  "jarde": {
+    "javac": 1
+  },
+  "jadx_decompile": 0,
+  "jadx": {
+    "javac": 0,
+    "runtime": 0,
+    "output": [
+      "local=8:rhs=1",
+      "field=9:select=1:rhs=1",
+      "array=14:select=1:rhs=1",
+      "post-field=7:new=8:select=1",
+      "post-array=10:new=11:select=1",
+      "null=NPE:select=1:rhs=0",
+      "bounds=AIOOBE:select=1:rhs=0"
+    ]
+  },
+  "jarde_equal": null,
+  "jadx_equal": true
+}

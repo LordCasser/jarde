@@ -1,0 +1,8 @@
+exit=1
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/method-type-variable-shadowing/fixture/StrongCaller.java:5: 错误: 不兼容的类型: Object无法转换为String
+        return ShadowPlain.<String>echo("plain");
+                                       ^
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/method-type-variable-shadowing/fixture/StrongCaller.java:9: 错误: 不兼容的类型: CharSequence无法转换为String
+        return ShadowBounded.<String>echo("bounded");
+                                         ^
+2 个错误

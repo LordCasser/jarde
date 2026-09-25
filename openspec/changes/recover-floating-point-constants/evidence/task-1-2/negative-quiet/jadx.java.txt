@@ -1,0 +1,116 @@
+package defpackage;
+
+/* JADX INFO: loaded from: FloatingConstants.class */
+public class FloatingConstants {
+    public static float floatZero() {
+        return 0.0f;
+    }
+
+    public static float floatNegativeZero() {
+        return -0.0f;
+    }
+
+    public static float floatOne() {
+        return 1.0f;
+    }
+
+    public static float floatTwo() {
+        return 2.0f;
+    }
+
+    public static float floatNegativeOne() {
+        return -1.0f;
+    }
+
+    public static float floatFraction() {
+        return 0.1f;
+    }
+
+    public static float floatMinimum() {
+        return Float.MIN_VALUE;
+    }
+
+    public static float floatNormal() {
+        return Float.MIN_NORMAL;
+    }
+
+    public static float floatMaximum() {
+        return Float.MAX_VALUE;
+    }
+
+    public static float floatNan() {
+        return Float.NaN;
+    }
+
+    public static float floatPositiveInfinity() {
+        return Float.POSITIVE_INFINITY;
+    }
+
+    public static float floatNegativeInfinity() {
+        return Float.NEGATIVE_INFINITY;
+    }
+
+    public static double doubleZero() {
+        return 0.0d;
+    }
+
+    public static double doubleNegativeZero() {
+        return -0.0d;
+    }
+
+    public static double doubleOne() {
+        return 1.0d;
+    }
+
+    public static double doubleTwo() {
+        return 2.0d;
+    }
+
+    public static double doubleNegativeOne() {
+        return -1.0d;
+    }
+
+    public static double doubleFraction() {
+        return 0.1d;
+    }
+
+    public static double doubleMinimum() {
+        return Double.MIN_VALUE;
+    }
+
+    public static double doubleNormal() {
+        return Double.MIN_NORMAL;
+    }
+
+    public static double doubleMaximum() {
+        return Double.MAX_VALUE;
+    }
+
+    public static double doubleNan() {
+        return Double.NaN;
+    }
+
+    public static double doublePositiveInfinity() {
+        return Double.POSITIVE_INFINITY;
+    }
+
+    public static double doubleNegativeInfinity() {
+        return Double.NEGATIVE_INFINITY;
+    }
+
+    public static int floatArgument() {
+        return FloatingSupport.pick(0.25f);
+    }
+
+    public static int doubleArgument() {
+        return FloatingSupport.pick(0.25d);
+    }
+
+    public static float nested(float f) {
+        return -(f + (-0.0f));
+    }
+
+    public static int threshold(float f) {
+        return f > 0.0f ? 7 : 9;
+    }
+}

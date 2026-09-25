@@ -1,0 +1,58 @@
+package defpackage;
+
+/* JADX INFO: loaded from: NarrowSwitchReturns.class */
+public final class NarrowSwitchReturns {
+    private NarrowSwitchReturns() {
+    }
+
+    public static byte runByte(int i) {
+        byte b;
+        switch (i) {
+            case 1:
+                b = 130;
+                break;
+            default:
+                b = -129;
+                break;
+        }
+        return b;
+    }
+
+    public static char runChar(int i) {
+        byte b;
+        switch (i) {
+            case 1:
+                b = 65535;
+                break;
+            default:
+                b = -2;
+                break;
+        }
+        return b;
+    }
+
+    public static short runShort(int i) {
+        short s;
+        switch (i) {
+            case 1:
+                s = Short.MIN_VALUE;
+                break;
+            default:
+                s = Short.MAX_VALUE;
+                break;
+        }
+        return s;
+    }
+
+    public static byte boolByte(boolean z) {
+        return z ? (byte) 255 : (byte) -256;
+    }
+
+    public static char boolChar(boolean z) {
+        return z ? (byte) 65535 : (byte) -2;
+    }
+
+    public static short boolShort(boolean z) {
+        return z ? Short.MIN_VALUE : Short.MAX_VALUE;
+    }
+}

@@ -1,0 +1,23 @@
+{
+  "cli_unchanged": true,
+  "jadx": 0,
+  "jadx_runtime_equal": "skipped",
+  "jadx_source": {
+    "javac": 1
+  },
+  "jarde": {
+    "javac": 1
+  },
+  "jarde_cli": 0,
+  "jarde_markers": 28,
+  "jarde_runtime_equal": "skipped",
+  "original": {
+    "class_bytes": 1741,
+    "class_sha256": "eda910510d9632dc52c1fe8555828ec9e215a05531ed371bbb1ee0ee67427d3b",
+    "javac": 0,
+    "runner_javac": 0,
+    "runtime": 0
+  },
+  "original_class_sha256": "eda910510d9632dc52c1fe8555828ec9e215a05531ed371bbb1ee0ee67427d3b",
+  "original_code_attributes": 15
+}

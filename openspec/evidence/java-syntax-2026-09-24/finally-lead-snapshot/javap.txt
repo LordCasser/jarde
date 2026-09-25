@@ -1,0 +1,28 @@
+public class FinallyLeadSnapshot {
+  public static int value;
+
+  public FinallyLeadSnapshot();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int run();
+    Code:
+       0: bipush        41
+       2: putstatic     #7                  // Field value:I
+       5: getstatic     #7                  // Field value:I
+       8: istore_0
+       9: bipush        99
+      11: putstatic     #7                  // Field value:I
+      14: iload_0
+      15: ireturn
+      16: astore_1
+      17: bipush        99
+      19: putstatic     #7                  // Field value:I
+      22: aload_1
+      23: athrow
+    Exception table:
+       from    to  target type
+           5     9    16   any
+}

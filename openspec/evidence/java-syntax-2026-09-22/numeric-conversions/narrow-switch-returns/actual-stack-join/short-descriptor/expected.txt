@@ -1,0 +1,12 @@
+runByte(-1)=-129
+runChar(-1)=-2
+runShort(-1)=32767
+runByte(0)=-129
+runChar(0)=-2
+runShort(0)=32767
+runByte(1)=130
+runChar(1)=65535
+runShort(1)=-32768
+runByte(2)=-129
+runChar(2)=-2
+runShort(2)=32767

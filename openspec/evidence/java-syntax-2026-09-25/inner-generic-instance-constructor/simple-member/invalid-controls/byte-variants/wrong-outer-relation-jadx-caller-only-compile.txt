@@ -1,0 +1,12 @@
+exit=1
+jadx-wrong-outer-relation/sources/nested/UseInner.java:4: 错误: 找不到符号
+import nested.SimpleOuter.Inner;
+                         ^
+  符号:   类 Inner
+  位置: 类 SimpleOuter
+jadx-wrong-outer-relation/sources/nested/UseInner.java:10: 错误: 找不到符号
+        return simpleOuter.new Inner(SimpleOuter.mark("A", i));
+                               ^
+  符号:   类 Inner
+  位置: 类 SimpleOuter
+2 个错误

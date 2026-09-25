@@ -1,0 +1,70 @@
+Classfile <TMP>/positive-none/InterfaceSuperProbe.class
+  SHA-256 checksum 8acaf9513179c8c52c25d031cc6813d6e0dd9d8c8504751f32a5804c25fbebd7
+public final class InterfaceSuperProbe extends DefaultBase implements DefaultLeft,DefaultRight
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #16                         // InterfaceSuperProbe
+  super_class: #2                         // DefaultBase
+  interfaces: 2, fields: 0, methods: 4, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // DefaultBase."<init>":()V
+   #2 = Class              #4             // DefaultBase
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               DefaultBase
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = InterfaceMethodref #8.#9          // DefaultLeft.value:()I
+   #8 = Class              #10            // DefaultLeft
+   #9 = NameAndType        #11:#12        // value:()I
+  #10 = Utf8               DefaultLeft
+  #11 = Utf8               value
+  #12 = Utf8               ()I
+  #13 = InterfaceMethodref #14.#9         // DefaultRight.value:()I
+  #14 = Class              #15            // DefaultRight
+  #15 = Utf8               DefaultRight
+  #16 = Class              #17            // InterfaceSuperProbe
+  #17 = Utf8               InterfaceSuperProbe
+  #18 = Utf8               Code
+  #19 = Utf8               chooseRight
+  #20 = Utf8               both
+{
+  public InterfaceSuperProbe();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method DefaultBase."<init>":()V
+         4: return
+
+  public int value();
+    descriptor: ()I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #7                  // InterfaceMethod DefaultLeft.value:()I
+         4: ireturn
+
+  public int chooseRight();
+    descriptor: ()I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #13                 // InterfaceMethod DefaultRight.value:()I
+         4: ireturn
+
+  public int both();
+    descriptor: ()I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #7                  // InterfaceMethod DefaultLeft.value:()I
+         4: aload_0
+         5: invokespecial #13                 // InterfaceMethod DefaultRight.value:()I
+         8: iadd
+         9: ireturn
+}

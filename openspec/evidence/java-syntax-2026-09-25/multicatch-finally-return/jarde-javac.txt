@@ -1,0 +1,7 @@
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-multicatch-jarde-9e2sl90l/MultiCatchProbe.java:32: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-multicatch-jarde-9e2sl90l/MultiCatchProbe.java:41: 错误: 缺少返回语句
+    }
+    ^
+2 个错误

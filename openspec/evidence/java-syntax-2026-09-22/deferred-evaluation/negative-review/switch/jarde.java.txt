@@ -1,0 +1,38 @@
+// jarde: presentation of `SwitchDeferred` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class SwitchDeferred extends java.lang.Object {
+    public SwitchDeferred() {
+        // @method <init>()V
+        // @declaration a constructor of `SwitchDeferred`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int run(int arg0) {
+        // @method run(I)I
+        // @declaration a static method of `SwitchDeferred`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        switch (arg0) {
+            case 1:
+                SwitchSupport.value();
+                SwitchSupport.mark();
+                return SwitchSupport.value();
+            default:
+                SwitchSupport.other();
+                SwitchSupport.mark();
+                return SwitchSupport.other();
+        }
+    }
+
+    public static void keepPool() {
+        // @method keepPool()V
+        // @declaration a static method of `SwitchDeferred`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        SwitchSupport.value();
+        // @bytecode 4 3
+        // the call at BCI 4 is the static call whose qualifier the bytecode evaluated and the `pop` at BCI 3 discarded, and that evaluation presents `int`: only an expression of a reference type can be a call's qualifier
+        SwitchSupport.other();
+        return;
+    }
+}

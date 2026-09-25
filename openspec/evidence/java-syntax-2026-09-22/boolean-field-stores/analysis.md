@@ -1,0 +1,11 @@
+# `Z` 字段写入的整数低位恢复
+
+本审计复用 `../numeric-conversions/narrow-field-stores/root-z-48ed/` 的未编辑整类证据。`run_audit.py` 从 `NarrowFieldStores.java` 以 `javac --release 8 -g:none` 编译，再精确把两个 `I` 字段及其 Fieldref 改为 `Z`（其余六个目标为 B/C/S）；49 个 Code 属性逐字节不变。原 class SHA-256 为 `ae0bfc789051a30dd6779d57cea2f484d7e5fe4822f18102eb74915075d04eda`，补丁后为 `713e821a6e182505d412ae2b8b01823e426cd436ac154073044fc19f1c6d2f10`，原/补丁 class 均通过 `java -Xverify:all`。冻结 jarde CLI SHA-256 为 `48edb9d2e3eec451983aabb4affcbcaf6d723c8a75b0284605f729743088cc76`；JADX 原样整类 `javac` 失败，不报告其运行对照。
+
+root 重放的 380 行中，B/C/S 的 285 行现已全部与补丁 JVM 相同；`Z` 的 95 行有 70 行不同。jarde 整类反而能 `javac` 和执行，因为 `setBoolean` 等拒绝方法仅留下 `return;`：`setBoolean(1)` 后仍为 `false`，对 null 的写入不抛 NPE，producer 调用消失。边界输入包含负数、2、128、最大/最小 int、静态/实例、producer 正常/抛错及 null receiver。JVM 的 `Z` 写入在本批样本表现为最低位：奇数 `true`、偶数 `false`，而 `value != 0` 对 2 等偶数错误。普通 boolean 参数/字段/0、1 常量的既有证明路径保持健康。
+
+更小的独立样本位于 [`put-field-fixture-48ed/`](put-field-fixture-48ed/README.md)：源 class `f1089b9ed4bf8802697c7c88c7bdd79f79af93ec4d6f04135fefb764e020c4fd`，只把两个字段与匹配 Fieldref 的 `I` 改 `Z` 后为 `671ee4999373f8d95e989a480ded9a648b9733c44ddb5c12f408b24e3b4b1e96`；11 个 Code 哈希完全不变。root 独立运行该目录 `run_audit.py`，源/补丁 class 均编译执行成功，jarde 整类也编译运行但 40 行中 26 行不同，六个 int→Z 写入均引用；JADX 完整类编译失败，运行未比较。它把原大样本的 Z 缺口隔离到可做永久 fixture 的体量，没有编辑任何恢复输出。
+
+源码中的 `field_write` 在真实 put BCI 按 receiver、value 顺序渲染，调用共享 `field_value`；后者对 `Type::Boolean` 只接受已有 boolean 证明，否则拒绝。失败来源现由 `quoted_bcis(at)` 保住 producer 与 put；当前缺的是字段写入消费位置对已呈现整数的表达，不是另一套 SSA/类型机制。现有 `BinaryOp::Remainder`、`BinaryOp::NotEqual` 与整数/布尔表达式类型足以写成 `value % 2 != 0`，Java 对任意有符号 int 的余数为 -1、0、1，故此式恰与最低位是否为 1 等价；它不会对除数 2 抛错，只求值一次。具体写法须在 put BCI 派生来源，并保持接收者先求值、producer 异常优先于 null 检查。`& 1` 目前仍属于独立 `recover-bitwise-expressions`，不必把该模块的六个 opcode、boolean 类型传播和局部队列引入这个字段闭环。
+
+规范边界：Java SE 8 的 [`putfield`/`putstatic`](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.putfield) 规定 Z 字段消费 int 形状并执行字段存储；[更新版 JVMS 对 Z 的最低位转换写得明确](https://docs.oracle.com/javase/specs/jvms/se23/html/jvms-6.html#jvms-6.5.putfield)，本批真实 JVM 输出也实测符合。 [JLS §15.17.3](https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.17.3) 给出整数余数语义。此处不会把 `value % 2 != 0` 扩大为通用 int→boolean、`bastore` 或 `ireturn` 的自动转换；那些位置各自有自己的字节码事实和独立任务。

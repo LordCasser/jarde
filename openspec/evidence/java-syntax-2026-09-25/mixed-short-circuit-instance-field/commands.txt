@@ -1,0 +1,18 @@
+# Original frozen fixture
+javac --release 8 -g:none -Xlint:-options -d <original-classes> tests/fixtures/p3-conditional-values/mixed-short-circuit-instance-field/MixedShortCircuitField.java tests/fixtures/p3-conditional-values/mixed-short-circuit-instance-field/Runner.java
+java -Xverify:all -cp <original-classes> Runner
+javap -classpath <original-classes> -c -p -s MixedShortCircuitField
+
+# JADX 1.5.6 (whole jar including Runner and nested Box)
+jadx -d <jadx-output> <sample.jar>
+# Remove only JADX's package defpackage line in isolated compile copies, preserving originals under jadx-output.
+javac --release 8 -g:none -Xlint:-options -d <jadx-classes> <JADX MixedShortCircuitField.java> <JADX Runner.java>
+java -Xverify:all -cp <jadx-classes> Runner
+
+# Root-provided stable CLI snapshot (not latest-source)
+/tmp/jarde-sept25-final-target/debug/jarde-cli class-source --input <sample.jar> --class MixedShortCircuitField --release 8 --format text --output <jarde-MixedShortCircuitField.java>
+/tmp/jarde-sept25-final-target/debug/jarde-cli class-source --input <sample.jar> --class 'MixedShortCircuitField$Box' --release 8 --format text --output <jarde-MixedShortCircuitField-Box.java>
+/tmp/jarde-sept25-final-target/debug/jarde-cli class-source --input <sample.jar> --class MixedShortCircuitField --release 8 --format json --output <jarde-report.json>
+# Compile the two returned class presentations with jarde-src/Runner.java (which names the emitted Box binary type).
+javac --release 8 -g:none -Xlint:-options -d <jarde-classes> <jarde-MixedShortCircuitField.java> <jarde-MixedShortCircuitField-Box.java> <jarde-src/Runner.java>
+java -Xverify:all -cp <jarde-classes> Runner

@@ -1,0 +1,45 @@
+{
+  "cli_sha256_before": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "cli_sha256_after": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "class_bytes": 670,
+  "class_sha256": "4a52f56e56bb9858bb016f9675a6f35503b905d6e3f28b556d70c50ef478dc80",
+  "code_methods": 8,
+  "original_javac": 0,
+  "original_runtime": 0,
+  "original_output": [
+    "ints=2:3:distinct=true",
+    "refs=a:b:distinct=true",
+    "outer=distinct:true:innerSame:true",
+    "widen=a:type=[Ljava.lang.String;",
+    "overload=2",
+    "null=NPE"
+  ],
+  "jarde_cli": 0,
+  "jarde": {
+    "javac": 0,
+    "runtime": 0,
+    "output": [
+      "ints=2:3:distinct=true",
+      "refs=a:b:distinct=true",
+      "outer=distinct:true:innerSame:true",
+      "widen=a:type=[Ljava.lang.String;",
+      "overload=2",
+      "null=NPE"
+    ]
+  },
+  "jadx_decompile": 0,
+  "jadx": {
+    "javac": 0,
+    "runtime": 0,
+    "output": [
+      "ints=2:3:distinct=true",
+      "refs=a:b:distinct=true",
+      "outer=distinct:true:innerSame:true",
+      "widen=a:type=[Ljava.lang.String;",
+      "overload=2",
+      "null=NPE"
+    ]
+  },
+  "jarde_equal": true,
+  "jadx_equal": true
+}

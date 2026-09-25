@@ -1,0 +1,72 @@
+Classfile jar:file:///Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-identity.jar!/nested/IdentityUse.class
+  Last modified 2026年9月25日; size 520 bytes
+  SHA-256 checksum 0235c2bcfa0d5c5d18c178eaf928562bca3a89b8535a2b943c69690ae3ce4856
+public final class nested.IdentityUse
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #26                         // nested/IdentityUse
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // nested/SimpleOuter$Inner
+   #8 = Utf8               nested/SimpleOuter$Inner
+   #9 = Methodref          #10.#11        // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #10 = Class              #12            // java/util/Objects
+  #11 = NameAndType        #13:#14        // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #12 = Utf8               java/util/Objects
+  #13 = Utf8               requireNonNull
+  #14 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #15 = String             #16            // A
+  #16 = Utf8               A
+  #17 = Methodref          #18.#19        // nested/SimpleOuter.mark:(Ljava/lang/String;I)I
+  #18 = Class              #20            // nested/SimpleOuter
+  #19 = NameAndType        #21:#22        // mark:(Ljava/lang/String;I)I
+  #20 = Utf8               nested/SimpleOuter
+  #21 = Utf8               mark
+  #22 = Utf8               (Ljava/lang/String;I)I
+  #23 = Methodref          #7.#24         // nested/SimpleOuter$Inner."<init>":(Lnested/SimpleOuter;I)V
+  #24 = NameAndType        #5:#25         // "<init>":(Lnested/SimpleOuter;I)V
+  #25 = Utf8               (Lnested/SimpleOuter;I)V
+  #26 = Class              #27            // nested/IdentityUse
+  #27 = Utf8               nested/IdentityUse
+  #28 = Utf8               Code
+  #29 = Utf8               make
+  #30 = Utf8               (Lnested/SimpleOuter;Lnested/SimpleOuter;I)Ljava/lang/Object;
+  #31 = Utf8               InnerClasses
+  #32 = Utf8               Inner
+{
+  public nested.IdentityUse();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static java.lang.Object make(nested.SimpleOuter, nested.SimpleOuter, int);
+    descriptor: (Lnested/SimpleOuter;Lnested/SimpleOuter;I)Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=3, args_size=3
+         0: new           #7                  // class nested/SimpleOuter$Inner
+         3: dup
+         4: aload_1
+         5: aload_0
+         6: invokestatic  #9                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+         9: pop
+        10: ldc           #15                 // String A
+        12: iload_2
+        13: invokestatic  #17                 // Method nested/SimpleOuter.mark:(Ljava/lang/String;I)I
+        16: invokespecial #23                 // Method nested/SimpleOuter$Inner."<init>":(Lnested/SimpleOuter;I)V
+        19: areturn
+}
+InnerClasses:
+  public final #32= #7 of #18;            // Inner=class nested/SimpleOuter$Inner of class nested/SimpleOuter

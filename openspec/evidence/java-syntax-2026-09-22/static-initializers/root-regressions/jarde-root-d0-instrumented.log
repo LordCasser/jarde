@@ -1,0 +1,13 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.71s
+     Running tests/d0_demand_counts.rs (target/debug/deps/d0_demand_counts-eb7f8378d11634d9)
+
+running 5 tests
+test a_class_source_request_materializes_its_class_once_and_prepares_it_once ... ok
+test a_consumer_release_drops_the_prepared_facts_handle_back_to_its_baseline ... ok
+test a_member_only_read_decodes_no_body_and_builds_no_record ... ok
+test a_page_limited_query_publishes_one_item_and_decodes_the_whole_first_unit ... ok
+test one_requested_body_decodes_one_body_and_runs_no_recovery ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

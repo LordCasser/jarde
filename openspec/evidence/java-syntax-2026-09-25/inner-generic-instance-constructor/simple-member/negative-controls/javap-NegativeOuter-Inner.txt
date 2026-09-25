@@ -1,0 +1,17 @@
+public final class negative.NegativeOuter$Inner {
+  public final int value;
+
+  final negative.NegativeOuter this$0;
+
+  public negative.NegativeOuter$Inner(negative.NegativeOuter, int);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #1                  // Field this$0:Lnegative/NegativeOuter;
+       5: aload_0
+       6: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       9: aload_0
+      10: iload_2
+      11: putfield      #13                 // Field value:I
+      14: return
+}

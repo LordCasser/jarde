@@ -1,0 +1,52 @@
+{
+  "java_version": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)",
+  "javac_version": "javac 23.0.1",
+  "jadx_version_rc": 0,
+  "frozen_cli_sha256": "8cd1f767ba8cde9928bacedc29263d44be8e5e61b46d3b6f00456fac1c7c77cd",
+  "scope": "Two Z/I descriptor orderings, an integer 0/1 control, overwritten local, and one dup/call/pop delayed-consumer Code variant.",
+  "source_javac_rc": 0,
+  "source_class_sha256": "8ef5bf00b1aa19456d5fb405bd64cf64b7734583ab2c8cd7f428534f0d5c581d",
+  "source_class_length": 541,
+  "source_java_verify_rc": 0,
+  "source_javap_rc": 0,
+  "descriptor_patches": [
+    {
+      "old": "(IIJ)I",
+      "new": "(ZIJ)I",
+      "offset": 147
+    },
+    {
+      "old": "(IIB)I",
+      "new": "(IZB)I",
+      "offset": 169
+    }
+  ],
+  "observe_methodref_cp_index": 7,
+  "dup_pop_code_patch": {
+    "method": "observeOnce",
+    "old_code_hex": "1a1b7e3d1cb80007571cac",
+    "new_code_hex": "1a1b7e59b8000757ac",
+    "old_code_length": 11,
+    "new_code_length": 9,
+    "replacement_old_hex": "7e3d1cb80007571cac",
+    "replacement_new_hex": "7e59b8000757ac"
+  },
+  "patched_class_sha256": "6c55df799d7a643beec915b968596ab3a1edd4243a1b06d1dfe3d3142cf1accc",
+  "patched_class_length": 539,
+  "patched_runner_javac_rc": 0,
+  "patched_java_verify_rc": 0,
+  "patched_javap_rc": 0,
+  "source_jadx_decompile_rc": 0,
+  "source-jadx_javac_rc": 0,
+  "source-jadx_run_rc": 0,
+  "source_jarde_decompile_rc": 0,
+  "source-jarde_javac_rc": 1,
+  "patched_jadx_decompile_rc": 0,
+  "patched-jadx_javac_rc": 1,
+  "patched_jarde_decompile_rc": 0,
+  "patched-jarde_javac_rc": 1,
+  "naive_mixed_javac_rc": 1,
+  "source_vs_jadx_runtime_equal": true,
+  "source_vs_patched_shared_semantics_equal": true,
+  "frozen_cli_sha256_after": "8cd1f767ba8cde9928bacedc29263d44be8e5e61b46d3b6f00456fac1c7c77cd"
+}

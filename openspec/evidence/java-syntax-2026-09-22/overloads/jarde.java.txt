@@ -1,0 +1,60 @@
+// jarde: presentation of `OverloadProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class OverloadProbe extends OverloadParent {
+    public OverloadProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `OverloadProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public int own(java.lang.Object arg1) {
+        // @method own(Ljava/lang/Object;)I
+        // @declaration an instance method of `OverloadProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return 3;
+    }
+
+    public int own(java.lang.String arg1) {
+        // @method own(Ljava/lang/String;)I
+        // @declaration an instance method of `OverloadProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return 4;
+    }
+
+    public int number(int arg1) {
+        // @method number(I)I
+        // @declaration an instance method of `OverloadProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return 7;
+    }
+
+    public int number(char arg1) {
+        // @method number(C)I
+        // @declaration an instance method of `OverloadProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return 8;
+    }
+
+    public int superObject() {
+        // @method superObject()I
+        // @declaration an instance method of `OverloadProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return super.pick("x");
+    }
+
+    public int ownObject() {
+        // @method ownObject()I
+        // @declaration an instance method of `OverloadProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.own("x");
+    }
+
+    public int primitive(char arg1) {
+        // @method primitive(C)I
+        // @declaration an instance method of `OverloadProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.number(arg1);
+    }
+}

@@ -1,0 +1,33 @@
+cargo test --locked --test p3_deferred_value_order
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.06s
+     Running tests/p3_deferred_value_order.rs (target/debug/deps/p3_deferred_value_order-3e21288c92738d48)
+
+running 3 tests
+test deferred_value_sources_keep_producer_mark_consumer_bcis_and_default_text ... ok
+test deferred_values_keep_real_producer_order_and_structural_controls ... FAILED
+test recovered_deferred_value_order_matches_patched_class_runtime ... ignored, requires JDK: compile Engine::class_source output and execute the patched class oracle
+
+failures:
+
+---- deferred_values_keep_real_producer_order_and_structural_controls stdout ----
+
+thread 'deferred_values_keep_real_producer_order_and_structural_controls' (24589945) panicked at tests/p3_deferred_value_order.rs:189:5:
+the saved value, independent call and return are out of order:
+    public static int call() {
+        // @method call()I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return DeferredEffects.value();
+    }
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    deferred_values_keep_real_producer_order_and_structural_controls
+
+test result: FAILED. 1 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test p3_deferred_value_order`

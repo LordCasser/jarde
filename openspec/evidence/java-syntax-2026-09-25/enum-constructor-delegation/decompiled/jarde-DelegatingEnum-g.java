@@ -1,0 +1,68 @@
+// jarde: presentation of `DelegatingEnum` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public enum DelegatingEnum {
+    public static final DelegatingEnum ZERO;
+
+    public static final DelegatingEnum ONE;
+
+    private final int value;
+
+    private static final DelegatingEnum[] $VALUES;
+
+    public static DelegatingEnum[] values() {
+        // @method values()[LDelegatingEnum;
+        // @declaration a static method of `DelegatingEnum`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (DelegatingEnum[]) DelegatingEnum.$VALUES.clone();
+    }
+
+    public static DelegatingEnum valueOf(java.lang.String name) {
+        // @method valueOf(Ljava/lang/String;)LDelegatingEnum;
+        // @declaration a static method of `DelegatingEnum`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (DelegatingEnum) java.lang.Enum.valueOf(DelegatingEnum.class, name);
+    }
+
+    // jarde: generic Signature projection refused for `<init>(Ljava/lang/String;I)V`: invalid input (jvm_signature_erasure_mismatch): erased Signature disagrees with the physical descriptor at parameter count
+    private DelegatingEnum(java.lang.String arg1, int arg2) {
+        // @method <init>(Ljava/lang/String;I)V
+        // @declaration a constructor of `DelegatingEnum`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        this(arg1, arg2, 0);
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `<init>(Ljava/lang/String;II)V`: invalid input (jvm_signature_erasure_mismatch): erased Signature disagrees with the physical descriptor at parameter count
+    private DelegatingEnum(java.lang.String arg1, int arg2, int value) {
+        // @method <init>(Ljava/lang/String;II)V
+        // @declaration a constructor of `DelegatingEnum`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super(arg1, arg2);
+        ConstructorEffects.record(value);
+        this.value = value;
+        return;
+    }
+
+    public int value() {
+        // @method value()I
+        // @declaration an instance method of `DelegatingEnum`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.value;
+    }
+
+    private static DelegatingEnum[] $values() {
+        // @method $values()[LDelegatingEnum;
+        // @declaration a static method of `DelegatingEnum`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return new DelegatingEnum[]{DelegatingEnum.ZERO, DelegatingEnum.ONE};
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `DelegatingEnum`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        DelegatingEnum.ZERO = new DelegatingEnum("ZERO", 0);
+        DelegatingEnum.ONE = new DelegatingEnum("ONE", 1, 1);
+        DelegatingEnum.$VALUES = $values();
+    }
+}

@@ -1,0 +1,67 @@
+// jarde: presentation of `NumericFlowAudit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NumericFlowAudit extends java.lang.Object {
+    public NumericFlowAudit() {
+        // @method <init>()V
+        // @declaration a constructor of `NumericFlowAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int floatNegated(float arg0, float arg1) {
+        // jarde: not recovered: the recovery run for `floatNegated(FF)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatNegated(FF)I
+        // @declaration a static method of `NumericFlowAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int doubleChoice(double arg0, double arg2) {
+        // jarde: not recovered: the recovery run for `doubleChoice(DD)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleChoice(DD)I
+        // @declaration a static method of `NumericFlowAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 15 18 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int longChain(long arg0, long arg2, long arg4) {
+        // jarde: not recovered: the recovery run for `longChain(JJJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method longChain(JJJ)I
+        // @declaration a static method of `NumericFlowAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 13 16 19 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int ordered(float arg0, float arg1) {
+        // @method ordered(FF)I
+        // @declaration a static method of `NumericFlowAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NumericEffects.left(arg0);
+        NumericEffects.right(arg1);
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 0 12 15 9
+        // the value at BCI 9 comes from an Other at BCI 8, which produces no expression this subset writes
+    }
+
+    public static int doubleLoop(double arg0, double arg2, double arg4) {
+        // @method doubleLoop(DDD)I
+        // @declaration a static method of `NumericFlowAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local6 = 0;
+        // @bytecode 3
+        // the loop@1 rule did not claim the block at BCI 3: it requires a test block whose every instruction is part of a value expression, and the instruction at BCI 5 is not part of one, so presenting the structure would have moved that effect out of the shape it decides
+        // @bytecode 3 9 20
+        // 3 live block(s) are reachable only through edges the normal-flow view leaves out: [3, 9, 20]
+    }
+}

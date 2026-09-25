@@ -1,0 +1,12 @@
+
+/* JADX INFO: loaded from: InterfaceBoundaryProbe.nocheckcast.class */
+public class InterfaceBoundaryProbe {
+    public static int take(Runnable runnable) {
+        return 7;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static int caller(Object obj) {
+        return take(obj);
+    }
+}

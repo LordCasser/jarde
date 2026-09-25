@@ -1,0 +1,2 @@
+first=java.lang.ExceptionInInitializerError:java.lang.IllegalStateException
+second=java.lang.NoClassDefFoundError:java.lang.ExceptionInInitializerError

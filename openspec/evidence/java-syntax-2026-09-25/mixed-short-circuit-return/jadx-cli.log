@@ -1,0 +1,8 @@
+exit=0
+stdout=INFO  - loading ...
+INFO  - processing ...
+INFO  - progress: 0 of 1 (0%)
+                                                             
+INFO  - done
+
+stderr=

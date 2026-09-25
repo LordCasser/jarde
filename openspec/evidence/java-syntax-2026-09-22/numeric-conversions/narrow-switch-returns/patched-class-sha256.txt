@@ -1,0 +1,1 @@
+3ea6861fdfc8ff741c55a1ee3ac61cb235b21281239e3e048d9be7d8deeab1de  NarrowSwitchReturns.patched.class

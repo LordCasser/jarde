@@ -1,0 +1,41 @@
+{
+  "extra-effect": {
+    "class_sha256": "ddbeb07c02d68beddc307e70684cb9c672cf7ffa47ff4ec86719bef6467ebeac",
+    "classfile_patch": "injected invokestatic BoundaryEffects.independent()V before RETURN",
+    "patched_bci": 16,
+    "source_java_8_compile_before_optional_patch": "PASS",
+    "original_xverify_all": "PASS",
+    "original_runtime": "ABXB|A|B",
+    "jadx_java_8_compile_exit": 1,
+    "jadx_runtime": null,
+    "jarde_java_8_compile_exit": 1,
+    "jarde_runtime": null,
+    "jarde_cli_sha256": "19ede7a6fe88b95530637e9765c7ae02b9f233520dc6a2e2e815f0dca58d0552"
+  },
+  "duplicate-write": {
+    "class_sha256": "2c8ce2e3a9fc416b80ef5151ef185b4b55053163c860ca4bba75addcc84e1cd8",
+    "classfile_patch": "FIRST putstatic retargeted to SECOND",
+    "patched_bci": 5,
+    "source_java_8_compile_before_optional_patch": "PASS",
+    "original_xverify_all": "PASS",
+    "original_runtime": "AB|null|B",
+    "jadx_java_8_compile_exit": 1,
+    "jadx_runtime": null,
+    "jarde_java_8_compile_exit": 1,
+    "jarde_runtime": null,
+    "jarde_cli_sha256": "19ede7a6fe88b95530637e9765c7ae02b9f233520dc6a2e2e815f0dca58d0552"
+  },
+  "branch": {
+    "class_sha256": "c61471f60100781f462145d958428840c730e7c98cb7a23e2c77c45b554cd254",
+    "classfile_patch": null,
+    "patched_bci": null,
+    "source_java_8_compile_before_optional_patch": "PASS",
+    "original_xverify_all": "PASS",
+    "original_runtime": "CAB|A|B",
+    "jadx_java_8_compile_exit": 1,
+    "jadx_runtime": null,
+    "jarde_java_8_compile_exit": 1,
+    "jarde_runtime": null,
+    "jarde_cli_sha256": "19ede7a6fe88b95530637e9765c7ae02b9f233520dc6a2e2e815f0dca58d0552"
+  }
+}

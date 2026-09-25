@@ -1,0 +1,1 @@
+25bf181ccf0d879351a16710818e27efba0df6b3851931a29eb98d9f41adb1e0  /tmp/jarde-cli-class-literals-root

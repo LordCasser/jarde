@@ -1,0 +1,196 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-java-structure/anonymous-cross-class-use/Owner.class
+  Last modified 2026年9月25日; size 220 bytes
+  SHA-256 checksum 1b0093b9055a049cf5247e17f616f19c442167547addd09125e5a1aa77f87136
+final class Owner
+  minor version: 0
+  major version: 52
+  flags: (0x0030) ACC_FINAL, ACC_SUPER
+  this_class: #10                         // Owner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // Owner$1
+   #8 = Utf8               Owner$1
+   #9 = Methodref          #7.#3          // Owner$1."<init>":()V
+  #10 = Class              #11            // Owner
+  #11 = Utf8               Owner
+  #12 = Utf8               Code
+  #13 = Utf8               one
+  #14 = Utf8               ()LBase;
+  #15 = Utf8               InnerClasses
+{
+  Owner();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static Base one();
+    descriptor: ()LBase;
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #7                  // class Owner$1
+         3: dup
+         4: invokespecial #9                  // Method Owner$1."<init>":()V
+         7: areturn
+}
+InnerClasses:
+  #7;                                     // class Owner$1
+Classfile /Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-java-structure/anonymous-cross-class-use/Other.class
+  Last modified 2026年9月25日; size 220 bytes
+  SHA-256 checksum 258f29995f016d966cfaa3fa5e225a57e096d84b80420a2a2e94105a4f8d7210
+final class Other
+  minor version: 0
+  major version: 52
+  flags: (0x0030) ACC_FINAL, ACC_SUPER
+  this_class: #10                         // Other
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // Owner$1
+   #8 = Utf8               Owner$1
+   #9 = Methodref          #7.#3          // Owner$1."<init>":()V
+  #10 = Class              #11            // Other
+  #11 = Utf8               Other
+  #12 = Utf8               Code
+  #13 = Utf8               two
+  #14 = Utf8               ()LBase;
+  #15 = Utf8               InnerClasses
+{
+  Other();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static Base two();
+    descriptor: ()LBase;
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #7                  // class Owner$1
+         3: dup
+         4: invokespecial #9                  // Method Owner$1."<init>":()V
+         7: areturn
+}
+InnerClasses:
+  #7;                                     // class Owner$1
+Classfile /Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-java-structure/anonymous-cross-class-use/Owner$1.class
+  Last modified 2026年9月25日; size 244 bytes
+  SHA-256 checksum 377750e724cbe67b3c7b9a8518a0d7aa92448ba9fcd7e6625aa333d9dde797b8
+class Owner$1 extends Base
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #7                          // Owner$1
+  super_class: #2                         // Base
+  interfaces: 0, fields: 0, methods: 2, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // Base."<init>":()V
+   #2 = Class              #4             // Base
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               Base
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // Owner$1
+   #8 = Utf8               Owner$1
+   #9 = Utf8               Code
+  #10 = Utf8               value
+  #11 = Utf8               ()I
+  #12 = Utf8               EnclosingMethod
+  #13 = Class              #14            // Owner
+  #14 = Utf8               Owner
+  #15 = NameAndType        #16:#17        // one:()LBase;
+  #16 = Utf8               one
+  #17 = Utf8               ()LBase;
+  #18 = Utf8               InnerClasses
+{
+  Owner$1();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method Base."<init>":()V
+         4: return
+
+  int value();
+    descriptor: ()I
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iconst_1
+         1: ireturn
+}
+EnclosingMethod: #13.#15                // Owner.one
+InnerClasses:
+  #7;                                     // class Owner$1
+Classfile /Users/lordcasser/workspace/projects/jarde/tests/fixtures/proved-java-structure/anonymous-cross-class-use/Other$1.class
+  Last modified 2026年9月25日; size 244 bytes
+  SHA-256 checksum 0d5cef597b73f5ba3581a425511c4f9dc818d004e3ba658cbc7aad575bc46e45
+class Other$1 extends Base
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #7                          // Other$1
+  super_class: #2                         // Base
+  interfaces: 0, fields: 0, methods: 2, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // Base."<init>":()V
+   #2 = Class              #4             // Base
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               Base
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // Other$1
+   #8 = Utf8               Other$1
+   #9 = Utf8               Code
+  #10 = Utf8               value
+  #11 = Utf8               ()I
+  #12 = Utf8               EnclosingMethod
+  #13 = Class              #14            // Other
+  #14 = Utf8               Other
+  #15 = NameAndType        #16:#17        // two:()LBase;
+  #16 = Utf8               two
+  #17 = Utf8               ()LBase;
+  #18 = Utf8               InnerClasses
+{
+  Other$1();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method Base."<init>":()V
+         4: return
+
+  int value();
+    descriptor: ()I
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iconst_2
+         1: ireturn
+}
+EnclosingMethod: #13.#15                // Other.two
+InnerClasses:
+  #7;                                     // class Other$1

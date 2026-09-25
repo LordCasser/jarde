@@ -1,0 +1,15 @@
+status: original 1 lines; jarde 1 lines; equal=false
+! 001 original="0" jarde="1"
+stdout: original 0 lines; jarde 0 lines; equal=true
+stderr: original 4 lines; jarde 11 lines; equal=false
+= 001 original="警告: [options] 源值 8 已过时，将在未来发行版中删除" jarde="警告: [options] 源值 8 已过时，将在未来发行版中删除"
+= 002 original="警告: [options] 目标值 8 已过时，将在未来发行版中删除" jarde="警告: [options] 目标值 8 已过时，将在未来发行版中删除"
+= 003 original="警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。" jarde="警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。"
+! 004 original="3 个警告" jarde="/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/string-iterable/jarde-source.java:22: 错误: 缺少返回语句"
+! 005 original="<missing>" jarde="    }"
+! 006 original="<missing>" jarde="    ^"
+! 007 original="<missing>" jarde="/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enhanced-for/string-iterable/jarde-source.java:34: 错误: 缺少返回语句"
+! 008 original="<missing>" jarde="    }"
+! 009 original="<missing>" jarde="    ^"
+! 010 original="<missing>" jarde="2 个错误"
+! 011 original="<missing>" jarde="3 个警告"

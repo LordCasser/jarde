@@ -1,0 +1,170 @@
+{
+  "javac": [
+    "javac",
+    "--release",
+    "8",
+    "-g:none",
+    "-Xlint:-options",
+    "-d",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/legal",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/BoundaryTagged.java",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/BoundaryRunner.java"
+  ],
+  "cli_sha256": "f2fb24241c2692dff53060576e185eb282617a6881e81900140bb2eb62006544",
+  "source_sha256": {
+    "BoundaryTagged.java": "d964c13f1c91d8044391cec8232bf6dc3ff68bb686abf99caa613617d7dd3be4",
+    "BoundaryRunner.java": "f3f492f47d44540df72d8b30672ca216de2f09da710e502c1d5c2e2e1fdcaded"
+  },
+  "class_sha256": {
+    "BoundaryTagged.class": "d3944046269d6cbb7dc2848cdfd69329c0cd875a9b361ab420911672165bc6f0",
+    "BoundaryMark.class": "d6263607a401e00a7fb1cabaa3243a8e021a869cbbd08986ecd5324d59fe9457",
+    "BoundaryRunner.class": "bf62374565679ca506985e49480e3d90571a3888afbdc314771b2572e9262cd8"
+  },
+  "classfile_size": {
+    "BoundaryTagged.class": 618,
+    "BoundaryMark.class": 378,
+    "BoundaryRunner.class": 1191
+  },
+  "legal_runtime_stdout": [
+    "7",
+    "7",
+    "0",
+    "3"
+  ],
+  "legal_attribute_spans": [
+    {
+      "member": "field fieldI",
+      "attribute": "RuntimeInvisibleAnnotations",
+      "classfile_offset": 400,
+      "content_length": 11,
+      "content_end_exclusive": 411
+    },
+    {
+      "member": "method wideAndVarargs(JD[Ljava/lang/String;)I",
+      "attribute": "RuntimeInvisibleAnnotations",
+      "classfile_offset": 486,
+      "content_length": 11,
+      "content_end_exclusive": 497
+    },
+    {
+      "member": "method wideAndVarargs(JD[Ljava/lang/String;)I",
+      "attribute": "RuntimeInvisibleParameterAnnotations",
+      "classfile_offset": 503,
+      "content_length": 34,
+      "content_end_exclusive": 537
+    },
+    {
+      "member": "method sameTypeAtDistinctPositions(ILjava/lang/String;)I",
+      "attribute": "RuntimeInvisibleAnnotations",
+      "classfile_offset": 576,
+      "content_length": 11,
+      "content_end_exclusive": 587
+    },
+    {
+      "member": "method sameTypeAtDistinctPositions(ILjava/lang/String;)I",
+      "attribute": "RuntimeInvisibleParameterAnnotations",
+      "classfile_offset": 593,
+      "content_length": 23,
+      "content_end_exclusive": 616
+    }
+  ],
+  "controlled_patches": {
+    "duplicate-same-position": {
+      "attribute": "RuntimeInvisibleAnnotations",
+      "old_annotation_count": 1,
+      "new_annotation_count": 2,
+      "old_content_length": 11,
+      "new_content_length": 20,
+      "patch": "duplicated one encoded annotation at same field position",
+      "patched_sha256": "4c312f4700dd19f58810c7fe154f5cf7a3569782037b24fc6bb21964f02251ee",
+      "attribute_spans": [
+        {
+          "member": "field fieldI",
+          "attribute": "RuntimeInvisibleAnnotations",
+          "classfile_offset": 400,
+          "content_length": 20,
+          "content_end_exclusive": 420
+        },
+        {
+          "member": "method wideAndVarargs(JD[Ljava/lang/String;)I",
+          "attribute": "RuntimeInvisibleAnnotations",
+          "classfile_offset": 495,
+          "content_length": 11,
+          "content_end_exclusive": 506
+        },
+        {
+          "member": "method wideAndVarargs(JD[Ljava/lang/String;)I",
+          "attribute": "RuntimeInvisibleParameterAnnotations",
+          "classfile_offset": 512,
+          "content_length": 34,
+          "content_end_exclusive": 546
+        },
+        {
+          "member": "method sameTypeAtDistinctPositions(ILjava/lang/String;)I",
+          "attribute": "RuntimeInvisibleAnnotations",
+          "classfile_offset": 585,
+          "content_length": 11,
+          "content_end_exclusive": 596
+        },
+        {
+          "member": "method sameTypeAtDistinctPositions(ILjava/lang/String;)I",
+          "attribute": "RuntimeInvisibleParameterAnnotations",
+          "classfile_offset": 602,
+          "content_length": 23,
+          "content_end_exclusive": 625
+        }
+      ],
+      "java_verify_exit": "0",
+      "javap_exit": "0"
+    },
+    "parameter-count-mismatch": {
+      "attribute": "RuntimeInvisibleParameterAnnotations",
+      "descriptor_parameter_count": 3,
+      "old_attribute_parameter_count": 3,
+      "new_attribute_parameter_count": 2,
+      "old_content_length": 34,
+      "new_content_length": 23,
+      "patch": "removed final parameter group and updated u1 count and attribute_length",
+      "patched_sha256": "73a119aaf766b2970098b1f9f03cb53e1eb66db16626932f5d9869d6d9c74485",
+      "attribute_spans": [
+        {
+          "member": "field fieldI",
+          "attribute": "RuntimeInvisibleAnnotations",
+          "classfile_offset": 400,
+          "content_length": 11,
+          "content_end_exclusive": 411
+        },
+        {
+          "member": "method wideAndVarargs(JD[Ljava/lang/String;)I",
+          "attribute": "RuntimeInvisibleAnnotations",
+          "classfile_offset": 486,
+          "content_length": 11,
+          "content_end_exclusive": 497
+        },
+        {
+          "member": "method wideAndVarargs(JD[Ljava/lang/String;)I",
+          "attribute": "RuntimeInvisibleParameterAnnotations",
+          "classfile_offset": 503,
+          "content_length": 23,
+          "content_end_exclusive": 526
+        },
+        {
+          "member": "method sameTypeAtDistinctPositions(ILjava/lang/String;)I",
+          "attribute": "RuntimeInvisibleAnnotations",
+          "classfile_offset": 565,
+          "content_length": 11,
+          "content_end_exclusive": 576
+        },
+        {
+          "member": "method sameTypeAtDistinctPositions(ILjava/lang/String;)I",
+          "attribute": "RuntimeInvisibleParameterAnnotations",
+          "classfile_offset": 582,
+          "content_length": 23,
+          "content_end_exclusive": 605
+        }
+      ],
+      "java_verify_exit": "0",
+      "javap_exit": "0"
+    }
+  }
+}

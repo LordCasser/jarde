@@ -1,0 +1,7 @@
+exit=1
+<WORK>/g/jadx-patched-compile/LambdaAlias.java:21: 错误: 找不到符号
+        return lambda$build$0(left, right);
+               ^
+  符号:   方法 lambda$build$0(int,int)
+  位置: 类 LambdaAlias
+1 个错误

@@ -1,0 +1,16 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DeferredComposite.class */
+public class DeferredComposite {
+    public static int nested() {
+        int iValue = DeferredSupport.value();
+        DeferredSupport.mark();
+        int iTake = DeferredSupport.take(iValue);
+        DeferredSupport.mark();
+        return iTake;
+    }
+
+    public static void keepPool() {
+        DeferredSupport.mark();
+    }
+}

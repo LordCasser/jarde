@@ -1,0 +1,6 @@
+ALIAS|0|2
+HIGH|1|5
+valueOf(LOW)=IllegalArgumentException
+valueOf(HIGH)=HIGH|1
+valueOf(ALIAS)=ALIAS|0
+sum=7, total=7

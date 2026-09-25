@@ -1,0 +1,51 @@
+{
+  "case": "ordinal-not-forwarded",
+  "class_sha256": {
+    "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+    "DelegatingEnum.class": "90a3c346977f327890bf2be4e8cec0cc7c1c528d6ded4edb2a27e4753902d06a",
+    "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+  },
+  "expected_rejection": "At BCI 2, iconst_1 replaces forwarding the incoming ordinal; verifier-valid, but ZERO receives ordinal 1.",
+  "jadx_compile_exit": 0,
+  "jadx_decompile_exit": 0,
+  "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+  "jadx_output": [
+    "enum=ZERO:0:0",
+    "enum=ONE:1:1",
+    "effects=2:0,1",
+    "declared-constructors=2,3"
+  ],
+  "jadx_xverify_run_exit": 0,
+  "jarde_java8_compile_exit": 1,
+  "jarde_source_execution": {
+    "status": "complete",
+    "usage": {
+      "analysis_steps": 411,
+      "archive_entries": 14,
+      "attribute_bytes": 840,
+      "class_bytes": 2020,
+      "class_headers": 1,
+      "code_bytes": 100,
+      "dependency_depth": 0,
+      "elapsed_millis": 3,
+      "entry_bytes": 1010,
+      "input_bytes": 2993,
+      "ir_edges": 51,
+      "ir_items": 1219,
+      "method_bodies": 7,
+      "nested_depth": 0,
+      "normalization_clones": 0,
+      "output_bytes": 2914,
+      "read_bytes": 588,
+      "result_items": 46
+    }
+  },
+  "jarde_source_outcome": "performed",
+  "original_output": [
+    "enum=ZERO:1:0",
+    "enum=ONE:1:1",
+    "effects=2:0,1",
+    "declared-constructors=2,3"
+  ],
+  "original_xverify_run_exit": 0
+}

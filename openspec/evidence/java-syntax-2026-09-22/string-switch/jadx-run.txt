@@ -1,0 +1,10 @@
+choose:Aa:11
+once:Aa:11:calls=1
+choose:BB:22
+once:BB:22:calls=1
+choose:z:33
+once:z:33:calls=1
+choose:other:44
+once:other:44:calls=1
+choose:null:java.lang.NullPointerException
+once:null:java.lang.NullPointerException:calls=1

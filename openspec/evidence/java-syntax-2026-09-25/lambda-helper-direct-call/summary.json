@@ -1,0 +1,87 @@
+{
+  "modes": {
+    "-g": {
+      "source_runtime": [
+        "lambda=24",
+        "direct=125"
+      ],
+      "patched_runtime": [
+        "lambda=24",
+        "direct=14"
+      ],
+      "patched_verified": true,
+      "patch": {
+        "name_and_type_index": 18,
+        "methodref_index": 17,
+        "old_name": "directHelper",
+        "new_name": "lambda$build$0",
+        "descriptor": "(II)I",
+        "changed_classfile_byte_offsets": [
+          183
+        ]
+      },
+      "compile_exit": {
+        "jarde-original": 1,
+        "jadx-original": 0,
+        "jarde-patched": 1,
+        "jadx-patched": 1
+      },
+      "outputs": [
+        "javap-original.txt",
+        "jarde-original.java",
+        "jarde-original-report.json",
+        "jadx-original.java",
+        "jarde-original-javac.txt",
+        "jadx-original-javac.txt",
+        "javap-patched.txt",
+        "jarde-patched.java",
+        "jarde-patched-report.json",
+        "jadx-patched.java",
+        "jarde-patched-javac.txt",
+        "jadx-patched-javac.txt"
+      ]
+    },
+    "-g:none": {
+      "source_runtime": [
+        "lambda=24",
+        "direct=125"
+      ],
+      "patched_runtime": [
+        "lambda=24",
+        "direct=14"
+      ],
+      "patched_verified": true,
+      "patch": {
+        "name_and_type_index": 18,
+        "methodref_index": 17,
+        "old_name": "directHelper",
+        "new_name": "lambda$build$0",
+        "descriptor": "(II)I",
+        "changed_classfile_byte_offsets": [
+          183
+        ]
+      },
+      "compile_exit": {
+        "jarde-original": 1,
+        "jadx-original": 0,
+        "jarde-patched": 1,
+        "jadx-patched": 1
+      },
+      "outputs": [
+        "javap-original-g-none.txt",
+        "jarde-original-g-none.java",
+        "jarde-original-g-none-report.json",
+        "jadx-original-g-none.java",
+        "jarde-original-g-none-javac.txt",
+        "jadx-original-g-none-javac.txt",
+        "javap-patched-g-none.txt",
+        "jarde-patched-g-none.java",
+        "jarde-patched-g-none-report.json",
+        "jadx-patched-g-none.java",
+        "jarde-patched-g-none-javac.txt",
+        "jadx-patched-g-none-javac.txt"
+      ]
+    }
+  },
+  "temporary_build_directory_removed": true
+}

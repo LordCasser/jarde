@@ -1,0 +1,60 @@
+package defpackage;
+
+/* JADX INFO: loaded from: InstanceOfProbe.class */
+public class InstanceOfProbe {
+    public static boolean objectString(Object obj) {
+        return obj instanceof String;
+    }
+
+    public static boolean nullValue() {
+        Object obj = null;
+        return obj instanceof String;
+    }
+
+    public static boolean objectRunnable(Object obj) {
+        return obj instanceof Runnable;
+    }
+
+    public static boolean primitiveArray(Object obj) {
+        return obj instanceof int[];
+    }
+
+    public static boolean referenceArray(Object obj) {
+        return obj instanceof String[];
+    }
+
+    public static boolean multiArray(Object obj) {
+        return obj instanceof String[][];
+    }
+
+    public static boolean widenedString(String str) {
+        return str instanceof Integer;
+    }
+
+    public static boolean called() {
+        return InstanceOfSupport.value() instanceof Integer;
+    }
+
+    public static boolean local(Object obj) {
+        return obj instanceof String;
+    }
+
+    public static boolean parameter(Object obj) {
+        return keep(obj instanceof String);
+    }
+
+    public static int branch(Object obj) {
+        return obj instanceof String ? 1 : 0;
+    }
+
+    public static boolean functional() {
+        return InstanceOfProbe::empty instanceof Runnable;
+    }
+
+    private static boolean keep(boolean z) {
+        return z;
+    }
+
+    private static void empty() {
+    }
+}

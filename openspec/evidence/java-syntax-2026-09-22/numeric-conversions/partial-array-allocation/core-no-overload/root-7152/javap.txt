@@ -1,0 +1,162 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-inline-controls-im2j98zj/original/PartialArrays.class
+  Last modified 2026年9月23日; size 777 bytes
+  SHA-256 checksum 487389b770dbfdd226ae9ae3ff87c9d6be9df4e7df01781505f5d2a55e10e8f2
+public class PartialArrays
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #16                         // PartialArrays
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 10, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // "[I"
+   #8 = Utf8               [I
+   #9 = Class              #10            // "[Ljava/lang/String;"
+  #10 = Utf8               [Ljava/lang/String;
+  #11 = Class              #12            // "[[[I"
+  #12 = Utf8               [[[I
+  #13 = Class              #14            // "[[[Ljava/lang/Object;"
+  #14 = Utf8               [[[Ljava/lang/Object;
+  #15 = Fieldref           #16.#17        // PartialArrays.held:[[I
+  #16 = Class              #18            // PartialArrays
+  #17 = NameAndType        #19:#20        // held:[[I
+  #18 = Utf8               PartialArrays
+  #19 = Utf8               held
+  #20 = Utf8               [[I
+  #21 = Methodref          #22.#23        // PartialArrayEffects.dim:(II)I
+  #22 = Class              #24            // PartialArrayEffects
+  #23 = NameAndType        #25:#26        // dim:(II)I
+  #24 = Utf8               PartialArrayEffects
+  #25 = Utf8               dim
+  #26 = Utf8               (II)I
+  #27 = Class              #20            // "[[I"
+  #28 = Utf8               Code
+  #29 = Utf8               primitive
+  #30 = Utf8               (I)[[I
+  #31 = Utf8               reference
+  #32 = Utf8               (I)[[Ljava/lang/String;
+  #33 = Utf8               prefix
+  #34 = Utf8               (II)[[[I
+  #35 = Utf8               referencePrefix
+  #36 = Utf8               (II)[[[Ljava/lang/Object;
+  #37 = Utf8               local
+  #38 = Utf8               field
+  #39 = Utf8               (I)V
+  #40 = Utf8               length
+  #41 = Utf8               (I)I
+  #42 = Utf8               effects
+  #43 = Utf8               complete
+  #44 = Utf8               (II)[[I
+{
+  public static int[][] held;
+    descriptor: [[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public PartialArrays();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int[][] primitive(int);
+    descriptor: (I)[[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: anewarray     #7                  // class "[I"
+         4: areturn
+
+  public static java.lang.String[][] reference(int);
+    descriptor: (I)[[Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: anewarray     #9                  // class "[Ljava/lang/String;"
+         4: areturn
+
+  public static int[][][] prefix(int, int);
+    descriptor: (II)[[[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: multianewarray #11,  2            // class "[[[I"
+         6: areturn
+
+  public static java.lang.Object[][][] referencePrefix(int, int);
+    descriptor: (II)[[[Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: multianewarray #13,  2            // class "[[[Ljava/lang/Object;"
+         6: areturn
+
+  public static int[][] local(int);
+    descriptor: (I)[[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: iload_0
+         1: anewarray     #7                  // class "[I"
+         4: astore_1
+         5: aload_1
+         6: areturn
+
+  public static void field(int);
+    descriptor: (I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: anewarray     #7                  // class "[I"
+         4: putstatic     #15                 // Field held:[[I
+         7: return
+
+  public static int length(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: anewarray     #7                  // class "[I"
+         4: arraylength
+         5: ireturn
+
+  public static int[][][] effects(int, int);
+    descriptor: (II)[[[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: iconst_1
+         1: iload_0
+         2: invokestatic  #21                 // Method PartialArrayEffects.dim:(II)I
+         5: iconst_2
+         6: iload_1
+         7: invokestatic  #21                 // Method PartialArrayEffects.dim:(II)I
+        10: multianewarray #11,  2            // class "[[[I"
+        14: areturn
+
+  public static int[][] complete(int, int);
+    descriptor: (II)[[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: multianewarray #27,  2            // class "[[I"
+         6: areturn
+}

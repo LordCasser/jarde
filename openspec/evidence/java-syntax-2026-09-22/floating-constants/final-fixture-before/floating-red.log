@@ -1,0 +1,44 @@
+cargo test --locked --test p3_floating_constants
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.05s
+     Running tests/p3_floating_constants.rs (target/debug/deps/p3_floating_constants-493c2b91cf4415bb)
+
+running 4 tests
+test essential_and_all_have_the_same_text_but_only_all_has_source_origins ... FAILED
+test fixture_covers_typed_finite_and_special_float_values ... FAILED
+test recovered_complete_class_matches_frozen_original_raw_bits ... ignored, requires JDK: compile and execute the original and recovered complete classes
+test recovered_text_keeps_float_double_types_grouping_and_consumers ... FAILED
+
+failures:
+
+---- essential_and_all_have_the_same_text_but_only_all_has_source_origins stdout ----
+
+thread 'essential_and_all_have_the_same_text_but_only_all_has_source_origins' (24590002) panicked at tests/p3_floating_constants.rs:127:9:
+assertion `left == right` failed: `floatZero`
+  left: Mixed
+ right: Java
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- fixture_covers_typed_finite_and_special_float_values stdout ----
+
+thread 'fixture_covers_typed_finite_and_special_float_values' (24590003) panicked at tests/p3_floating_constants.rs:127:9:
+assertion `left == right` failed: `floatZero`
+  left: Mixed
+ right: Java
+
+---- recovered_text_keeps_float_double_types_grouping_and_consumers stdout ----
+
+thread 'recovered_text_keeps_float_double_types_grouping_and_consumers' (24590004) panicked at tests/p3_floating_constants.rs:127:9:
+assertion `left == right` failed: `floatZero`
+  left: Mixed
+ right: Java
+
+
+failures:
+    essential_and_all_have_the_same_text_but_only_all_has_source_origins
+    fixture_covers_typed_finite_and_special_float_values
+    recovered_text_keeps_float_double_types_grouping_and_consumers
+
+test result: FAILED. 0 passed; 3 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `--test p3_floating_constants`

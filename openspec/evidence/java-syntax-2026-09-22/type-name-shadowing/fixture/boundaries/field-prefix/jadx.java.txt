@@ -1,0 +1,10 @@
+package defpackage;
+
+/* JADX INFO: loaded from: FieldPrefixProbe.class */
+public class FieldPrefixProbe {
+    public static Object java;
+
+    public static int abs(int i) {
+        return Math.abs(i);
+    }
+}

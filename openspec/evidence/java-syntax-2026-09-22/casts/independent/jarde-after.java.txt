@@ -1,0 +1,98 @@
+// jarde: presentation of `CastAudit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class CastAudit extends java.lang.Object {
+    static java.lang.Object value;
+
+    static int calls;
+
+    java.lang.Object field;
+
+    public CastAudit() {
+        // @method <init>()V
+        // @declaration a constructor of `CastAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.field = "member";
+        return;
+    }
+
+    static java.lang.Object tick() {
+        // @method tick()Ljava/lang/Object;
+        // @declaration a static method of `CastAudit`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        CastAudit.calls = CastAudit.calls + 1;
+        return CastAudit.value;
+    }
+
+    public static java.lang.String direct(java.lang.Object arg0) {
+        // @method direct(Ljava/lang/Object;)Ljava/lang/String;
+        // @declaration a static method of `CastAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) arg0;
+    }
+
+    public static int receiver(java.lang.Object arg0) {
+        // @method receiver(Ljava/lang/Object;)I
+        // @declaration a static method of `CastAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ((java.lang.String) arg0).length();
+    }
+
+    public static int array(java.lang.Object arg0, int arg1) {
+        // @method array(Ljava/lang/Object;I)I
+        // @declaration a static method of `CastAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ((int[]) arg0)[arg1];
+    }
+
+    public static java.lang.String[][] multi(java.lang.Object arg0) {
+        // @method multi(Ljava/lang/Object;)[[Ljava/lang/String;
+        // @declaration a static method of `CastAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String[][]) arg0;
+    }
+
+    public static java.lang.Number nested(java.lang.Object arg0) {
+        // @method nested(Ljava/lang/Object;)Ljava/lang/Number;
+        // @declaration a static method of `CastAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.Number) (java.lang.Runnable) arg0;
+    }
+
+    public static java.lang.String staticField() {
+        // @method staticField()Ljava/lang/String;
+        // @declaration a static method of `CastAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) CastAudit.value;
+    }
+
+    public java.lang.String instanceField() {
+        // @method instanceField()Ljava/lang/String;
+        // @declaration an instance method of `CastAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) this.field;
+    }
+
+    public static java.lang.String local(java.lang.Object arg0) {
+        // @method local(Ljava/lang/Object;)Ljava/lang/String;
+        // @declaration a static method of `CastAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.String local1 = (java.lang.String) arg0;
+        return local1;
+    }
+
+    public static java.lang.String callCast() {
+        // @method callCast()Ljava/lang/String;
+        // @declaration a static method of `CastAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) tick();
+    }
+
+    public static java.lang.Object unusedLocal(java.lang.Object arg0) {
+        // @method unusedLocal(Ljava/lang/Object;)Ljava/lang/Object;
+        // @declaration a static method of `CastAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.String local1 = (java.lang.String) arg0;
+        return tick();
+    }
+}

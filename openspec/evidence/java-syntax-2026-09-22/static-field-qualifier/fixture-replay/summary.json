@@ -1,0 +1,52 @@
+{
+  "javac": [
+    "javac 23.0.1"
+  ],
+  "java": [
+    "openjdk version \"23.0.1\" 2024-10-15",
+    "OpenJDK Runtime Environment (build 23.0.1+11-39)",
+    "OpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)"
+  ],
+  "jadx": {
+    "javac": 0,
+    "runtime": 0,
+    "output": [
+      "read=5:select=1:rhs=0",
+      "write=7:select=1:rhs=1",
+      "sum=12:select=1:rhs=1",
+      "fail=ISE:select=1:rhs=0:value=5"
+    ]
+  },
+  "source_sha256": "15b9fac8342c6dad5dcadffa7ff63a7fc5bacd478655e7acbc3e49ce0d1a31a4",
+  "runner_sha256": "98ebf6ab2338cd732d68bf1e15d4e1d7812d080b893eca80e53f071f21147236",
+  "class_bytes": 721,
+  "class_sha256": "21cdace20a84accd06e52567c250b0359ef76e059df993cc6c00a9fe1d6b7266",
+  "code_methods": 7,
+  "javac_class_matches_fixture": true,
+  "original_javac": 0,
+  "original_runtime": {
+    "status": 0,
+    "output": [
+      "read=5:select=1:rhs=0",
+      "write=7:select=1:rhs=1",
+      "sum=12:select=1:rhs=1",
+      "fail=ISE:select=1:rhs=0:value=5"
+    ]
+  },
+  "jarde_cli": 0,
+  "jarde": {
+    "javac": 0,
+    "runtime": 0,
+    "output": [
+      "read=5:select=1:rhs=0",
+      "write=7:select=2:rhs=1",
+      "sum=12:select=1:rhs=1",
+      "fail=ISE:select=1:rhs=0:value=5"
+    ]
+  },
+  "jadx_decompile": 0,
+  "cli_sha256_before": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "cli_sha256_after": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "jarde_equal": false,
+  "jadx_equal": true
+}

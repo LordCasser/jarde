@@ -1,0 +1,8 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ShiftBoolDistance.class */
+public class ShiftBoolDistance {
+    public static int shift(int i, boolean z) {
+        return i >>> (z ? 1 : 0);
+    }
+}

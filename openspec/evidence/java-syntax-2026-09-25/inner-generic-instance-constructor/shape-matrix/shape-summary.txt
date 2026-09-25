@@ -1,0 +1,11 @@
+UsePlain: caller-only javac exit=1; return new Outer.A.Plain(Outer.A.mark(i));
+UseGenericObject: caller-only javac exit=1; return new Outer.A.Generic(Integer.valueOf(Outer.A.mark(i)));
+UseGenericTyped: caller-only javac exit=1; return new Outer.A.Generic<>(Integer.valueOf(Outer.A.mark(i)));
+UsePlainRaw: caller-only javac exit=1; return new Outer.A.Plain(Outer.A.mark(i));
+Outer declarations:
+public static class A<T> {
+public class Generic<V> {
+public Generic(V v) {
+public class Plain {
+public Plain(int i) {
+JADX Outer.java standalone javac exit=0

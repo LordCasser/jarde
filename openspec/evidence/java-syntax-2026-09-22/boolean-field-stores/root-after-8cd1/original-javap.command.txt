@@ -1,0 +1,1 @@
+javap -p -c -v /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/root-after-8cd1/work/source-classes/ZFieldStores.class

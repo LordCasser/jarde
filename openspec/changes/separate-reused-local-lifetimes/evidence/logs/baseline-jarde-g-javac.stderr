@@ -1,0 +1,14 @@
+/tmp/jarde-slot-reuse-investigation/jarde-g/ReuseAfterForEach.java:24: 错误: 不兼容的类型: int无法转换为int[]
+        first = sum + 1;
+                    ^
+/tmp/jarde-slot-reuse-investigation/jarde-g/ReuseAfterForEach.java:25: 错误: 二元运算符 '+' 的操作数类型错误
+        second = first + 2;
+                       ^
+  第一个类型:  int[]
+  第二个类型: int
+/tmp/jarde-slot-reuse-investigation/jarde-g/ReuseAfterForEach.java:26: 错误: 二元运算符 '+' 的操作数类型错误
+        return sum + first + second;
+                   ^
+  第一个类型:  int
+  第二个类型: int[]
+3 个错误

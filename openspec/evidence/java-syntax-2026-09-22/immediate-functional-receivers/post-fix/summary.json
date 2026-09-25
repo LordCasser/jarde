@@ -1,0 +1,50 @@
+{
+  "cli_sha256": "6e2fce612d014ed327c9891981805720a1d5d276e68daeb3be43f8f33ff2dd9a",
+  "cases": {
+    "direct-array": {
+      "class_sha256": "0c4544d1a9334c35d5a5191ba4ef2d17200a8ce9f0ca34b2bd6331538310ea98",
+      "class_bytes": 1039,
+      "code_count": 3,
+      "original_output": "0\n3\njava.lang.NegativeArraySizeException\n",
+      "jarde_references": 0,
+      "jarde_source_sha256": "27365efdc62a271814c5a4c205e54ec5b0133ab47f0faff1a99d2862b5c363b4",
+      "jadx_source_sha256": "110a46de40f9f956f49ecd2abd31c5373b4dd05f2d789a51d1ed45c3b282a67a",
+      "jarde_javac_exit": 0,
+      "jarde_java_exit": 0,
+      "jarde_output": "0\n3\njava.lang.NegativeArraySizeException\n",
+      "jadx_javac_exit": 0,
+      "jadx_java_exit": 0,
+      "jadx_output": "0\n3\njava.lang.NegativeArraySizeException\n"
+    },
+    "direct-method": {
+      "class_sha256": "de0b0e15bdb199295ce055f36e46cb7dcd56854a1738832ccd8931f5a5053dc3",
+      "class_bytes": 943,
+      "code_count": 2,
+      "original_output": "0\n3\n7\n",
+      "jarde_references": 0,
+      "jarde_source_sha256": "e437d9080e0b2438563969b88fe56474e369c0c5b7767d9fa808eb7685544256",
+      "jadx_source_sha256": "91550fb22146fb3d1232068a3c9e5228f30e5b68b8bbd335e1c1e68737138e52",
+      "jarde_javac_exit": 0,
+      "jarde_java_exit": 0,
+      "jarde_output": "0\n3\n7\n",
+      "jadx_javac_exit": 0,
+      "jadx_java_exit": 0,
+      "jadx_output": "0\n3\n7\n"
+    },
+    "bound-control": {
+      "class_sha256": "aa517756621a289f1a5cf9967a35b6c1e9f42e58e1d26bac74d06973073fd4b7",
+      "class_bytes": 1495,
+      "code_count": 4,
+      "original_output": "0|0\n3|3\njava.lang.NegativeArraySizeException|1\n",
+      "jarde_references": 0,
+      "jarde_source_sha256": "1f38127cab2c2c3d0e1c95f7676a4d72a426cde534176ad107d0b559cf48a4f9",
+      "jadx_source_sha256": "e8c4878529e7c0e5c9c25b327fcd5961a8c8e90417cb7023f8dde4749039ca38",
+      "jarde_javac_exit": 0,
+      "jarde_java_exit": 0,
+      "jarde_output": "0|0\n3|3\njava.lang.NegativeArraySizeException|1\n",
+      "jadx_javac_exit": 0,
+      "jadx_java_exit": 0,
+      "jadx_output": "0|0\n3|3\njava.lang.NegativeArraySizeException|1\n"
+    }
+  }
+}

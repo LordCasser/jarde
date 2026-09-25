@@ -1,0 +1,31 @@
+package defpackage;
+
+/* JADX INFO: loaded from: InstanceOfTypes.class */
+public class InstanceOfTypes {
+    public static boolean unrelated(String str) {
+        return str instanceof Integer;
+    }
+
+    public static boolean unrelatedArray(String[] strArr) {
+        return strArr instanceof int[];
+    }
+
+    public static boolean unrelatedInterface(String str) {
+        return str instanceof Runnable;
+    }
+
+    public static boolean related(String str) {
+        return str instanceof CharSequence;
+    }
+
+    public static boolean called() {
+        return TypeEffects.value() instanceof Integer;
+    }
+
+    public static void empty() {
+    }
+
+    public static boolean functional() {
+        return InstanceOfTypes::empty instanceof Runnable;
+    }
+}

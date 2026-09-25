@@ -1,0 +1,471 @@
+{
+  "cases": [
+    {
+      "case": "wrong-target-long",
+      "class_sha256": {
+        "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+        "DelegatingEnum.class": "4faecc43dfea89b4bf66ca39c737b005674f251b76dfbf5489a01b1194da8b87",
+        "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+      },
+      "expected_rejection": "ZERO selects the long overload `(String,int,long)`, not the unique source-int target.",
+      "jadx_compile_exit": 0,
+      "jadx_decompile_exit": 0,
+      "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+      "jadx_output": [
+        "enum=ZERO:0:0",
+        "enum=ONE:1:1",
+        "effects=2:0,1",
+        "declared-constructors=2,3,3"
+      ],
+      "jadx_xverify_run_exit": 0,
+      "jarde_java8_compile_exit": 1,
+      "jarde_source_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 493,
+          "archive_entries": 14,
+          "attribute_bytes": 1010,
+          "class_bytes": 2248,
+          "class_headers": 1,
+          "code_bytes": 118,
+          "dependency_depth": 0,
+          "elapsed_millis": 6,
+          "entry_bytes": 1124,
+          "input_bytes": 3028,
+          "ir_edges": 66,
+          "ir_items": 1494,
+          "method_bodies": 8,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 3828,
+          "read_bytes": 623,
+          "result_items": 51
+        }
+      },
+      "jarde_source_outcome": "performed",
+      "original_output": [
+        "enum=ZERO:0:0",
+        "enum=ONE:1:1",
+        "effects=2:0,1",
+        "declared-constructors=2,3,3"
+      ],
+      "original_xverify_run_exit": 0
+    },
+    {
+      "case": "extra-int-argument",
+      "class_sha256": {
+        "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+        "DelegatingEnum.class": "4c3d5eed09f58ec57d89863218871dd2ab136f1a87f0817290bcb3b1cac59188",
+        "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+      },
+      "expected_rejection": "ZERO passes two source ints to a distinct `(String,int,int,int)` overload.",
+      "jadx_compile_exit": 0,
+      "jadx_decompile_exit": 0,
+      "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+      "jadx_output": [
+        "enum=ZERO:0:7",
+        "enum=ONE:1:1",
+        "effects=2:7,1",
+        "declared-constructors=2,3,4"
+      ],
+      "jadx_xverify_run_exit": 0,
+      "jarde_java8_compile_exit": 1,
+      "jarde_source_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 510,
+          "archive_entries": 14,
+          "attribute_bytes": 1036,
+          "class_bytes": 2272,
+          "class_headers": 1,
+          "code_bytes": 124,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 1136,
+          "input_bytes": 3034,
+          "ir_edges": 71,
+          "ir_items": 1544,
+          "method_bodies": 8,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 3848,
+          "read_bytes": 629,
+          "result_items": 51
+        }
+      },
+      "jarde_source_outcome": "performed",
+      "original_output": [
+        "enum=ZERO:0:7",
+        "enum=ONE:1:1",
+        "effects=2:7,1",
+        "declared-constructors=2,3,4"
+      ],
+      "original_xverify_run_exit": 0
+    },
+    {
+      "case": "wrong-delegate-constant",
+      "class_sha256": {
+        "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+        "DelegatingEnum.class": "357beffafd365d8de945d57451e0ea6de9ce356bdd513836b72447a15d7d8a17",
+        "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+      },
+      "expected_rejection": "The exact delegation edge is present but carries 7 rather than the proven 0.",
+      "jadx_compile_exit": 0,
+      "jadx_decompile_exit": 0,
+      "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+      "jadx_output": [
+        "enum=ZERO:0:7",
+        "enum=ONE:1:1",
+        "effects=2:7,1",
+        "declared-constructors=2,3"
+      ],
+      "jadx_xverify_run_exit": 0,
+      "jarde_java8_compile_exit": 1,
+      "jarde_source_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 411,
+          "archive_entries": 14,
+          "attribute_bytes": 843,
+          "class_bytes": 2022,
+          "class_headers": 1,
+          "code_bytes": 101,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 1011,
+          "input_bytes": 2993,
+          "ir_edges": 52,
+          "ir_items": 1222,
+          "method_bodies": 7,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2920,
+          "read_bytes": 588,
+          "result_items": 46
+        }
+      },
+      "jarde_source_outcome": "performed",
+      "original_output": [
+        "enum=ZERO:0:7",
+        "enum=ONE:1:1",
+        "effects=2:7,1",
+        "declared-constructors=2,3"
+      ],
+      "original_xverify_run_exit": 0
+    },
+    {
+      "case": "delegate-argument-effect",
+      "class_sha256": {
+        "ConstructorEffects.class": "6218600e9d4384f695986059a7768d738f79c4c9b5bef687a97fe745641ed744",
+        "DelegatingEnum.class": "bc180bb462f392fef101733d987ae161537d77378749d28734246d303c98b30d",
+        "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+      },
+      "expected_rejection": "Argument evaluation calls a user helper before the this-delegation.",
+      "jadx_compile_exit": 0,
+      "jadx_decompile_exit": 0,
+      "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+      "jadx_output": [
+        "enum=ZERO:0:0",
+        "enum=ONE:1:1",
+        "effects=3:8,0,1",
+        "declared-constructors=2,3"
+      ],
+      "jadx_xverify_run_exit": 0,
+      "jarde_java8_compile_exit": 1,
+      "jarde_source_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 413,
+          "archive_entries": 14,
+          "attribute_bytes": 846,
+          "class_bytes": 2076,
+          "class_headers": 1,
+          "code_bytes": 102,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 1038,
+          "input_bytes": 3049,
+          "ir_edges": 52,
+          "ir_items": 1231,
+          "method_bodies": 7,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2986,
+          "read_bytes": 603,
+          "result_items": 46
+        }
+      },
+      "jarde_source_outcome": "performed",
+      "original_output": [
+        "enum=ZERO:0:0",
+        "enum=ONE:1:1",
+        "effects=3:8,0,1",
+        "declared-constructors=2,3"
+      ],
+      "original_xverify_run_exit": 0
+    },
+    {
+      "case": "delegate-post-effect",
+      "class_sha256": {
+        "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+        "DelegatingEnum.class": "a228a841ce211007387b407ca9680700ccf8bef59694b8ed411b268a0e7fedbc",
+        "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+      },
+      "expected_rejection": "The delegating constructor performs an additional user call after this().",
+      "jadx_compile_exit": 0,
+      "jadx_decompile_exit": 0,
+      "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+      "jadx_output": [
+        "enum=ZERO:0:0",
+        "enum=ONE:1:1",
+        "effects=3:0,9,1",
+        "declared-constructors=2,3"
+      ],
+      "jadx_xverify_run_exit": 0,
+      "jarde_java8_compile_exit": 1,
+      "jarde_source_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 424,
+          "archive_entries": 14,
+          "attribute_bytes": 855,
+          "class_bytes": 2030,
+          "class_headers": 1,
+          "code_bytes": 105,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 1015,
+          "input_bytes": 2995,
+          "ir_edges": 53,
+          "ir_items": 1252,
+          "method_bodies": 7,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2992,
+          "read_bytes": 590,
+          "result_items": 46
+        }
+      },
+      "jarde_source_outcome": "performed",
+      "original_output": [
+        "enum=ZERO:0:0",
+        "enum=ONE:1:1",
+        "effects=3:0,9,1",
+        "declared-constructors=2,3"
+      ],
+      "original_xverify_run_exit": 0
+    },
+    {
+      "case": "exception-handler",
+      "class_sha256": {
+        "ConstructorEffects.class": "2ae48ef539b84189d621c789251ad6b7fca189ec3459d555c22e0a822ecac976",
+        "DelegatingEnum.class": "3cd71a5f9342521e18d0127f4936b7f898de78f87debba6c23fd585abd86b8ef",
+        "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+      },
+      "expected_rejection": "The terminal constructor has a verifier-valid exception-table edge; the helper throws for ZERO and the handler suppresses it, exercising the edge during enum initialization.",
+      "jadx_compile_exit": 0,
+      "jadx_decompile_exit": 0,
+      "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+      "jadx_output": [
+        "enum=ZERO:0:0",
+        "enum=ONE:1:1",
+        "effects=2:0,1",
+        "declared-constructors=2,3"
+      ],
+      "jadx_xverify_run_exit": 0,
+      "jarde_java8_compile_exit": 1,
+      "jarde_source_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 481,
+          "archive_entries": 14,
+          "attribute_bytes": 960,
+          "class_bytes": 2240,
+          "class_headers": 1,
+          "code_bytes": 105,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 1120,
+          "input_bytes": 3133,
+          "ir_edges": 74,
+          "ir_items": 1416,
+          "method_bodies": 7,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 3557,
+          "read_bytes": 655,
+          "result_items": 46
+        }
+      },
+      "jarde_source_outcome": "performed",
+      "original_output": [
+        "enum=ZERO:0:0",
+        "enum=ONE:1:1",
+        "effects=2:0,1",
+        "declared-constructors=2,3"
+      ],
+      "original_xverify_run_exit": 0
+    },
+    {
+      "case": "name-not-forwarded",
+      "class_sha256": {
+        "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+        "DelegatingEnum.class": "5536cb069bcccce293710d490dd81cdc478d241b30f65d13f2de1e75b14e8b8b",
+        "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+      },
+      "expected_rejection": "At BCI 1, aconst_null replaces forwarding the incoming enum name; this is verifier-valid and the observed ZERO.name() becomes null.",
+      "jadx_compile_exit": 0,
+      "jadx_decompile_exit": 0,
+      "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+      "jadx_output": [
+        "enum=ZERO:0:0",
+        "enum=ONE:1:1",
+        "effects=2:0,1",
+        "declared-constructors=2,3"
+      ],
+      "jadx_xverify_run_exit": 0,
+      "jarde_java8_compile_exit": 1,
+      "jarde_source_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 412,
+          "archive_entries": 14,
+          "attribute_bytes": 840,
+          "class_bytes": 2020,
+          "class_headers": 1,
+          "code_bytes": 100,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 1010,
+          "input_bytes": 2992,
+          "ir_edges": 51,
+          "ir_items": 1220,
+          "method_bodies": 7,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2958,
+          "read_bytes": 587,
+          "result_items": 46
+        }
+      },
+      "jarde_source_outcome": "performed",
+      "original_output": [
+        "enum=null:0:0",
+        "enum=ONE:1:1",
+        "effects=2:0,1",
+        "declared-constructors=2,3"
+      ],
+      "original_xverify_run_exit": 0
+    },
+    {
+      "case": "ordinal-not-forwarded",
+      "class_sha256": {
+        "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+        "DelegatingEnum.class": "90a3c346977f327890bf2be4e8cec0cc7c1c528d6ded4edb2a27e4753902d06a",
+        "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+      },
+      "expected_rejection": "At BCI 2, iconst_1 replaces forwarding the incoming ordinal; verifier-valid, but ZERO receives ordinal 1.",
+      "jadx_compile_exit": 0,
+      "jadx_decompile_exit": 0,
+      "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+      "jadx_output": [
+        "enum=ZERO:0:0",
+        "enum=ONE:1:1",
+        "effects=2:0,1",
+        "declared-constructors=2,3"
+      ],
+      "jadx_xverify_run_exit": 0,
+      "jarde_java8_compile_exit": 1,
+      "jarde_source_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 411,
+          "archive_entries": 14,
+          "attribute_bytes": 840,
+          "class_bytes": 2020,
+          "class_headers": 1,
+          "code_bytes": 100,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 1010,
+          "input_bytes": 2993,
+          "ir_edges": 51,
+          "ir_items": 1219,
+          "method_bodies": 7,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2914,
+          "read_bytes": 588,
+          "result_items": 46
+        }
+      },
+      "jarde_source_outcome": "performed",
+      "original_output": [
+        "enum=ZERO:1:0",
+        "enum=ONE:1:1",
+        "effects=2:0,1",
+        "declared-constructors=2,3"
+      ],
+      "original_xverify_run_exit": 0
+    },
+    {
+      "case": "values-helper-order",
+      "class_sha256": {
+        "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+        "DelegatingEnum.class": "dba6b2431fa4607614cc412ef12e9fe7c04fb8ee6c6d8bf4b4f6763eb50ef18b",
+        "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+      },
+      "expected_rejection": "The implicit `$values()` helper stores ONE before ZERO; code remains verifier-valid and values() exposes the changed order.",
+      "jadx_compile_exit": 0,
+      "jadx_decompile_exit": 0,
+      "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+      "jadx_output": [
+        "enum=ONE:0:1",
+        "enum=ZERO:1:0",
+        "effects=2:1,0",
+        "declared-constructors=2,3"
+      ],
+      "jadx_xverify_run_exit": 0,
+      "jarde_java8_compile_exit": 1,
+      "jarde_source_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 411,
+          "archive_entries": 14,
+          "attribute_bytes": 840,
+          "class_bytes": 2020,
+          "class_headers": 1,
+          "code_bytes": 100,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 1010,
+          "input_bytes": 2991,
+          "ir_edges": 52,
+          "ir_items": 1222,
+          "method_bodies": 7,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2920,
+          "read_bytes": 586,
+          "result_items": 46
+        }
+      },
+      "jarde_source_outcome": "performed",
+      "original_output": [
+        "enum=ONE:1:1",
+        "enum=ZERO:0:0",
+        "effects=2:0,1",
+        "declared-constructors=2,3"
+      ],
+      "original_xverify_run_exit": 0
+    }
+  ],
+  "jarde_cli_sha256": "ca04265a4f412d59c29d6bd4a26b7d9cb961f72ae13e77684831c0b9e57b5145",
+  "tools": {
+    "jadx": "1.5.6",
+    "jarde_cli_sha256": "ca04265a4f412d59c29d6bd4a26b7d9cb961f72ae13e77684831c0b9e57b5145",
+    "java": "openjdk version \"23.0.1\" 2024-10-15",
+    "javac": "javac 23.0.1",
+    "javap": ""
+  }
+}

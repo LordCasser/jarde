@@ -1,0 +1,55 @@
+// jarde: presentation of `ConversionDouble` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ConversionDouble extends java.lang.Object {
+    public ConversionDouble() {
+        // @method <init>()V
+        // @declaration a constructor of `ConversionDouble`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int d2i(double arg0) {
+        // jarde: not recovered: the recovery run for `d2i(D)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method d2i(D)I
+        // @declaration a static method of `ConversionDouble`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static long d2l(double arg0) {
+        // jarde: not recovered: the recovery run for `d2l(D)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method d2l(D)J
+        // @declaration a static method of `ConversionDouble`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static float d2f(double arg0) {
+        // jarde: not recovered: the recovery run for `d2f(D)F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method d2f(D)F
+        // @declaration a static method of `ConversionDouble`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static int doubleToIntOverload(double arg0) {
+        // jarde: not recovered: the recovery run for `doubleToIntOverload(D)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleToIntOverload(D)I
+        // @declaration a static method of `ConversionDouble`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 5 2
+        // the value at BCI 5 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+}

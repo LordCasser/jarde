@@ -1,0 +1,112 @@
+// jarde: presentation of `InvocationAudit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class InvocationAudit extends PrologueParent {
+    public static int count;
+
+    public InvocationAudit(java.lang.Object arg1) {
+        // @method <init>(Ljava/lang/Object;)V
+        // @declaration a constructor of `InvocationAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super(arg1);
+        return;
+    }
+
+    public InvocationAudit(java.lang.String arg1) {
+        // @method <init>(Ljava/lang/String;)V
+        // @declaration a constructor of `InvocationAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super(arg1);
+        return;
+    }
+
+    public InvocationAudit(int arg1) {
+        // @method <init>(I)V
+        // @declaration a constructor of `InvocationAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super("x");
+        return;
+    }
+
+    public InvocationAudit(char arg1) {
+        // @method <init>(C)V
+        // @declaration a constructor of `InvocationAudit`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this("x");
+        return;
+    }
+
+    public static java.lang.String mark(int arg0, boolean arg1) {
+        // @method mark(IZ)Ljava/lang/String;
+        // @declaration a static method of `InvocationAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        InvocationAudit.count = InvocationAudit.count * 10 + arg0;
+        if (arg1) {
+            // @bytecode 15
+            // the instruction at BCI 15 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+            // @bytecode 18
+            // the instruction at BCI 18 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+            // @bytecode 19
+            // the value at BCI 19 comes from an Duplicate at BCI 18, which produces no expression this subset writes
+            // @bytecode 22
+            // the instruction at BCI 22 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+        } else {
+            return "x";
+        }
+    }
+
+    public static int select(java.lang.Object arg0, java.lang.Object arg1) {
+        // @method select(Ljava/lang/Object;Ljava/lang/Object;)I
+        // @declaration a static method of `InvocationAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 41;
+    }
+
+    public static int select(java.lang.String arg0, java.lang.String arg1) {
+        // @method select(Ljava/lang/String;Ljava/lang/String;)I
+        // @declaration a static method of `InvocationAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 42;
+    }
+
+    public static int ordered() {
+        // @method ordered()I
+        // @declaration a static method of `InvocationAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return select(mark(1, false), mark(2, false));
+    }
+
+    public static int failedFirst() {
+        // @method failedFirst()I
+        // @declaration a static method of `InvocationAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return select(mark(1, true), mark(2, false));
+    }
+
+    public static int failedSecond() {
+        // @method failedSecond()I
+        // @declaration a static method of `InvocationAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return select(mark(1, false), mark(2, true));
+    }
+
+    public static int objectIdentity(java.lang.Object arg0) {
+        // @method objectIdentity(Ljava/lang/Object;)I
+        // @declaration a static method of `InvocationAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return select(arg0, arg0);
+    }
+
+    public static int stringIdentity(java.lang.String arg0) {
+        // @method stringIdentity(Ljava/lang/String;)I
+        // @declaration a static method of `InvocationAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return select(arg0, arg0);
+    }
+
+    public static int castIdentity(java.lang.Object arg0) {
+        // @method castIdentity(Ljava/lang/Object;)I
+        // @declaration a static method of `InvocationAudit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return select((java.lang.String) arg0, (java.lang.String) arg0);
+    }
+}

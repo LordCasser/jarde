@@ -1,0 +1,17 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-instanceof-types/naive-hypothesis/InstanceOfTypes.java:2: 错误: 不兼容的类型: String无法转换为Integer
+  public static boolean unrelated(String value) { return value instanceof Integer; }
+                                                         ^
+/tmp/jarde-instanceof-types/naive-hypothesis/InstanceOfTypes.java:3: 错误: 不兼容的类型: String[]无法转换为int[]
+  public static boolean unrelatedArray(String[] value) { return value instanceof int[]; }
+                                                                ^
+/tmp/jarde-instanceof-types/naive-hypothesis/InstanceOfTypes.java:4: 错误: 不兼容的类型: String无法转换为Runnable
+  public static boolean unrelatedInterface(String value) { return value instanceof Runnable; }
+                                                                  ^
+/tmp/jarde-instanceof-types/naive-hypothesis/InstanceOfTypes.java:6: 错误: 不兼容的类型: String无法转换为Integer
+  public static boolean called() { return TypeEffects.value() instanceof Integer; }
+                                                           ^
+4 个错误
+3 个警告

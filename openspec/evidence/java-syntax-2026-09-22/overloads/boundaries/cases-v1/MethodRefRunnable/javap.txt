@@ -1,0 +1,23 @@
+public class MethodRefRunnable {
+  public MethodRefRunnable();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int action(java.lang.Runnable);
+    Code:
+       0: bipush        7
+       2: ireturn
+
+  public static int action(java.util.function.Supplier<java.lang.String>);
+    Code:
+       0: bipush        8
+       2: ireturn
+
+  public static int run();
+    Code:
+       0: invokedynamic #7,  0              // InvokeDynamic #0:run:()Ljava/lang/Runnable;
+       5: invokestatic  #11                 // Method action:(Ljava/lang/Runnable;)I
+       8: ireturn
+}

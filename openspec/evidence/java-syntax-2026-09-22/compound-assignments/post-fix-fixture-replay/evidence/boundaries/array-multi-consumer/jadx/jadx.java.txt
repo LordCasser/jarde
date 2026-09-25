@@ -1,0 +1,140 @@
+package defpackage;
+
+/* JADX INFO: loaded from: CompoundBoundaryProbe.class */
+public final class CompoundBoundaryProbe {
+    public static int calls;
+    public static int selects;
+    public static int extraConsumers;
+    public static int[] data;
+    public static int[] otherData;
+    public static long[] longData;
+    public static BoundaryBox box;
+    public static boolean badIndex;
+
+    public static void reset() {
+        calls = 0;
+        selects = 0;
+        extraConsumers = 0;
+        badIndex = false;
+        data = new int[2];
+        data[0] = 10;
+        data[1] = 20;
+        otherData = new int[2];
+        otherData[0] = 30;
+        otherData[1] = 40;
+        longData = new long[2];
+        longData[0] = 50;
+        longData[1] = 60;
+        box = new BoundaryBox(7, 70L);
+    }
+
+    public static int rhs(int i) {
+        calls++;
+        return i;
+    }
+
+    public static long longRhs() {
+        calls++;
+        return 2L;
+    }
+
+    public static BoundaryBox receiver() {
+        selects++;
+        return box;
+    }
+
+    public static int index() {
+        selects++;
+        return badIndex ? 1 : 0;
+    }
+
+    public static int rhsFieldMutation() {
+        calls++;
+        box.value = 100;
+        return 2;
+    }
+
+    public static int rhsArrayMutation() {
+        calls++;
+        data[0] = 100;
+        return 4;
+    }
+
+    public static void observeReceiver(BoundaryBox boundaryBox) {
+        extraConsumers++;
+    }
+
+    public static void observeElement(int[] iArr, int i) {
+        extraConsumers++;
+    }
+
+    public static void forceObserverReferences() {
+        observeReceiver(box);
+        observeElement(data, index());
+    }
+
+    public static void seedOther() {
+        box.other = 1;
+    }
+
+    public static void fieldDifferentMember() {
+        receiver().value += rhs(2);
+    }
+
+    public static void fieldMultiConsumer() {
+        receiver().value += rhs(2);
+    }
+
+    public static void arrayDifferentIndex() {
+        int[] iArr = data;
+        int iIndex = index();
+        iArr[iIndex] = iArr[iIndex] + rhs(4);
+    }
+
+    public static void arrayDifferentArray() {
+        int[] iArr = data;
+        int iIndex = index();
+        iArr[iIndex] = iArr[iIndex] + rhs(4);
+    }
+
+    public static void arrayMultiConsumer() {
+        int[] iArr = data;
+        int iIndex = index();
+        observeElement(iArr, iIndex);
+        iArr[iIndex] = iArr[iIndex] + rhs(4);
+    }
+
+    public static void fieldSnapshot() {
+        receiver().value += rhsFieldMutation();
+    }
+
+    public static void arraySnapshot() {
+        int[] iArr = data;
+        int iIndex = index();
+        iArr[iIndex] = iArr[iIndex] + rhsArrayMutation();
+    }
+
+    public static void arrayPrecheck() {
+        int[] iArr = data;
+        int iIndex = index();
+        iArr[iIndex] = iArr[iIndex] + rhs(4);
+    }
+
+    public static void ordinaryField() {
+        receiver().value = rhs(2);
+    }
+
+    public static void ordinaryArray() {
+        data[index()] = rhs(4);
+    }
+
+    public static void wideField() {
+        receiver().wide += longRhs();
+    }
+
+    public static void wideArray() {
+        long[] jArr = longData;
+        int iIndex = index();
+        jArr[iIndex] = jArr[iIndex] + longRhs();
+    }
+}

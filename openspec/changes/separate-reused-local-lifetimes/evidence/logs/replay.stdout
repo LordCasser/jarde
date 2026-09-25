@@ -1,0 +1,149 @@
+javac 23.0.1
+1.5.6
+=== original ReuseAfterForEach -g ===
+22
+4
+NullPointerException
+=== original ReuseAfterForEach -none ===
+22
+4
+NullPointerException
+=== boundary fixture -g ===
+11
+7
+9
+8
+3
+8
+4294967300
+=== boundary fixture -g:none ===
+11
+7
+9
+8
+3
+8
+4294967300
+g sameType javac_exit=0
+java_exit=0 output_matches_original=True
+11
+g exclusiveBranch javac_exit=0
+java_exit=0 output_matches_original=True
+7
+9
+g loopBodyReuse javac_exit=0
+java_exit=0 output_matches_original=True
+8
+g handlerReuse javac_exit=1
+/tmp/jarde-slot-reuse-evidence.PU7Sxb/isolated-g-handlerReuse/SlotReuseBoundaries.java:9: 错误: 缺少返回语句
+    }
+    ^
+1 个错误
+java=not-run (method source did not compile)
+g category2Adjacent javac_exit=0
+java_exit=0 output_matches_original=True
+4294967300
+none sameType javac_exit=0
+java_exit=0 output_matches_original=True
+11
+none exclusiveBranch javac_exit=0
+java_exit=0 output_matches_original=True
+7
+9
+none loopBodyReuse javac_exit=0
+java_exit=0 output_matches_original=False
+0
+none handlerReuse javac_exit=1
+/tmp/jarde-slot-reuse-evidence.PU7Sxb/isolated-none-handlerReuse/SlotReuseBoundaries.java:9: 错误: 缺少返回语句
+    }
+    ^
+1 个错误
+java=not-run (method source did not compile)
+none category2Adjacent javac_exit=1
+/tmp/jarde-slot-reuse-evidence.PU7Sxb/isolated-none-category2Adjacent/SlotReuseBoundaries.java:11: 错误: 缺少返回语句
+    }
+    ^
+1 个错误
+java=not-run (method source did not compile)
+=== frozen pre-fix Jarde baseline refuses javac (-g) ===
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/separate-reused-local-lifetimes/evidence/three-way/baseline-jarde/g/ReuseAfterForEach.java:24: 错误: 不兼容的类型: int无法转换为int[]
+        first = sum + 1;
+                    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/separate-reused-local-lifetimes/evidence/three-way/baseline-jarde/g/ReuseAfterForEach.java:25: 错误: 二元运算符 '+' 的操作数类型错误
+        second = first + 2;
+                       ^
+  第一个类型:  int[]
+  第二个类型: int
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/separate-reused-local-lifetimes/evidence/three-way/baseline-jarde/g/ReuseAfterForEach.java:26: 错误: 二元运算符 '+' 的操作数类型错误
+        return sum + first + second;
+                   ^
+  第一个类型:  int
+  第二个类型: int[]
+3 个错误
+=== current Jarde -g ===
+09bae31b07e4cb2b6063fff37af4ab59544a763c1e6090f42891d407bf37cd6d  /tmp/jarde-slot-reuse-evidence.PU7Sxb/jarde-g/ReuseAfterForEach.java
+22
+4
+NullPointerException
+=== frozen pre-fix Jarde baseline refuses javac (-none) ===
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/separate-reused-local-lifetimes/evidence/three-way/baseline-jarde/no-debug/ReuseAfterForEach.java:24: 错误: 不兼容的类型: int无法转换为int[]
+        local2 = local1 + 1;
+                        ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/separate-reused-local-lifetimes/evidence/three-way/baseline-jarde/no-debug/ReuseAfterForEach.java:25: 错误: 二元运算符 '+' 的操作数类型错误
+        local3 = local2 + 2;
+                        ^
+  第一个类型:  int[]
+  第二个类型: int
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/separate-reused-local-lifetimes/evidence/three-way/baseline-jarde/no-debug/ReuseAfterForEach.java:26: 错误: 二元运算符 '+' 的操作数类型错误
+        return local1 + local2 + local3;
+                      ^
+  第一个类型:  int
+  第二个类型: int[]
+3 个错误
+=== current Jarde -none ===
+be44c108fa06790ab99850c193e49d5d0b9422c1df0042f2051f18bb4db29416  /tmp/jarde-slot-reuse-evidence.PU7Sxb/jarde-none/ReuseAfterForEach.java
+22
+4
+NullPointerException
+g sameType javac_exit=0
+java_exit=0 output_matches_original=True
+11
+g exclusiveBranch javac_exit=0
+java_exit=0 output_matches_original=True
+7
+9
+g loopBodyReuse javac_exit=0
+java_exit=0 output_matches_original=True
+8
+g handlerReuse javac_exit=1
+/tmp/jarde-slot-reuse-evidence.PU7Sxb/isolated-g-handlerReuse/SlotReuseBoundaries.java:9: 错误: 缺少返回语句
+    }
+    ^
+1 个错误
+java=not-run (method source did not compile)
+g category2Adjacent javac_exit=0
+java_exit=0 output_matches_original=True
+4294967300
+none sameType javac_exit=0
+java_exit=0 output_matches_original=True
+11
+none exclusiveBranch javac_exit=0
+java_exit=0 output_matches_original=True
+7
+9
+none loopBodyReuse javac_exit=0
+java_exit=0 output_matches_original=False
+0
+none handlerReuse javac_exit=1
+/tmp/jarde-slot-reuse-evidence.PU7Sxb/isolated-none-handlerReuse/SlotReuseBoundaries.java:9: 错误: 缺少返回语句
+    }
+    ^
+1 个错误
+java=not-run (method source did not compile)
+none category2Adjacent javac_exit=1
+/tmp/jarde-slot-reuse-evidence.PU7Sxb/isolated-none-category2Adjacent/SlotReuseBoundaries.java:11: 错误: 缺少返回语句
+    }
+    ^
+1 个错误
+java=not-run (method source did not compile)
+=== private Cargo target is removed on exit: /tmp/jarde-slot-reuse-evidence.PU7Sxb/cargo-target ===

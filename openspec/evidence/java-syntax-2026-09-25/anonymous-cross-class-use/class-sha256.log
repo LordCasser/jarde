@@ -1,0 +1,6 @@
+5fcf758ae49663dc15849dad6847e4cb0a8a0babeaa230826442535b8c3fb0dc  tests/fixtures/proved-java-structure/anonymous-cross-class-use/Base.class
+37a216aa24a5dfb936c6aa94196526b04d7492275917b65280a48af39a64ecbe  tests/fixtures/proved-java-structure/anonymous-cross-class-use/Main.class
+0d5cef597b73f5ba3581a425511c4f9dc818d004e3ba658cbc7aad575bc46e45  tests/fixtures/proved-java-structure/anonymous-cross-class-use/Other$1.class
+258f29995f016d966cfaa3fa5e225a57e096d84b80420a2a2e94105a4f8d7210  tests/fixtures/proved-java-structure/anonymous-cross-class-use/Other.class
+377750e724cbe67b3c7b9a8518a0d7aa92448ba9fcd7e6625aa333d9dde797b8  tests/fixtures/proved-java-structure/anonymous-cross-class-use/Owner$1.class
+1b0093b9055a049cf5247e17f616f19c442167547addd09125e5a1aa77f87136  tests/fixtures/proved-java-structure/anonymous-cross-class-use/Owner.class

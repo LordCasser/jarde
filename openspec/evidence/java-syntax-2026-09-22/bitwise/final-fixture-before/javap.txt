@@ -1,0 +1,330 @@
+Classfile /tmp/jarde-bitwise-root-baseline/original/BitwiseProbe.class
+  Last modified 2026年9月23日; size 1237 bytes
+  SHA-256 checksum 20a3b3cb465564ca4b6a3e4eb4af9b32cda7805c750ec503ea4e5265216a3bda
+public class BitwiseProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #22                         // BitwiseProbe
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 22, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Long               -1l
+   #9 = Methodref          #10.#11        // BitwiseEffects.left:(Z)Z
+  #10 = Class              #12            // BitwiseEffects
+  #11 = NameAndType        #13:#14        // left:(Z)Z
+  #12 = Utf8               BitwiseEffects
+  #13 = Utf8               left
+  #14 = Utf8               (Z)Z
+  #15 = Methodref          #10.#16        // BitwiseEffects.right:(Z)Z
+  #16 = NameAndType        #17:#14        // right:(Z)Z
+  #17 = Utf8               right
+  #18 = Methodref          #10.#19        // BitwiseEffects.accept:(Z)I
+  #19 = NameAndType        #20:#21        // accept:(Z)I
+  #20 = Utf8               accept
+  #21 = Utf8               (Z)I
+  #22 = Class              #23            // BitwiseProbe
+  #23 = Utf8               BitwiseProbe
+  #24 = Utf8               Code
+  #25 = Utf8               andInt
+  #26 = Utf8               (II)I
+  #27 = Utf8               orInt
+  #28 = Utf8               xorInt
+  #29 = Utf8               andLong
+  #30 = Utf8               (JJ)J
+  #31 = Utf8               orLong
+  #32 = Utf8               xorLong
+  #33 = Utf8               nested
+  #34 = Utf8               complement
+  #35 = Utf8               (I)I
+  #36 = Utf8               complementLong
+  #37 = Utf8               (J)J
+  #38 = Utf8               andBoolean
+  #39 = Utf8               (ZZ)Z
+  #40 = Utf8               orBoolean
+  #41 = Utf8               xorBoolean
+  #42 = Utf8               constant
+  #43 = Utf8               ordered
+  #44 = Utf8               branch
+  #45 = Utf8               (ZZ)I
+  #46 = Utf8               StackMapTable
+  #47 = Utf8               (ZZZ)Z
+  #48 = Utf8               copied
+  #49 = Utf8               hoisted
+  #50 = Utf8               passed
+  #51 = Utf8               (ZZZ)I
+  #52 = Utf8               array
+  #53 = Utf8               ([Z)Z
+  #54 = Utf8               promoted
+  #55 = Utf8               (BC)I
+{
+  public BitwiseProbe();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int andInt(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: iand
+         3: ireturn
+
+  public static int orInt(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ior
+         3: ireturn
+
+  public static int xorInt(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ixor
+         3: ireturn
+
+  public static long andLong(long, long);
+    descriptor: (JJ)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: land
+         3: lreturn
+
+  public static long orLong(long, long);
+    descriptor: (JJ)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: lor
+         3: lreturn
+
+  public static long xorLong(long, long);
+    descriptor: (JJ)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: lxor
+         3: lreturn
+
+  public static int nested(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ior
+         3: iload_0
+         4: iload_1
+         5: iconst_1
+         6: iadd
+         7: iand
+         8: ixor
+         9: ireturn
+
+  public static int complement(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iload_0
+         1: iconst_m1
+         2: ixor
+         3: ireturn
+
+  public static long complementLong(long);
+    descriptor: (J)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=2, args_size=1
+         0: lload_0
+         1: ldc2_w        #7                  // long -1l
+         4: lxor
+         5: lreturn
+
+  public static boolean andBoolean(boolean, boolean);
+    descriptor: (ZZ)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: iand
+         3: ireturn
+
+  public static boolean orBoolean(boolean, boolean);
+    descriptor: (ZZ)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ior
+         3: ireturn
+
+  public static boolean xorBoolean(boolean, boolean);
+    descriptor: (ZZ)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ixor
+         3: ireturn
+
+  public static boolean constant(boolean);
+    descriptor: (Z)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iload_0
+         1: iconst_1
+         2: ixor
+         3: ireturn
+
+  public static boolean ordered(boolean, boolean);
+    descriptor: (ZZ)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: invokestatic  #9                  // Method BitwiseEffects.left:(Z)Z
+         4: iload_1
+         5: invokestatic  #15                 // Method BitwiseEffects.right:(Z)Z
+         8: iand
+         9: ireturn
+
+  public static int branch(boolean, boolean);
+    descriptor: (ZZ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ior
+         3: ifeq          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static boolean nested(boolean, boolean, boolean);
+    descriptor: (ZZZ)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=3, args_size=3
+         0: iload_0
+         1: iload_1
+         2: iload_2
+         3: iconst_1
+         4: ior
+         5: ixor
+         6: iand
+         7: ireturn
+
+  public static boolean copied(boolean, boolean, boolean);
+    descriptor: (ZZZ)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=6, args_size=3
+         0: iload_0
+         1: iload_1
+         2: ior
+         3: istore_3
+         4: iload_3
+         5: istore        4
+         7: iload         4
+         9: iload_2
+        10: iand
+        11: istore        5
+        13: iload         5
+        15: ireturn
+
+  public static boolean hoisted(boolean, boolean, boolean);
+    descriptor: (ZZZ)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=3
+         0: iload_0
+         1: iload_1
+         2: iand
+         3: istore_3
+         4: iload_2
+         5: ifeq          12
+         8: iload_0
+         9: iload_1
+        10: ior
+        11: istore_3
+        12: iload_3
+        13: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 12
+          locals = [ int ]
+
+  public static int passed(boolean, boolean, boolean);
+    descriptor: (ZZZ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: iload_0
+         1: iload_1
+         2: ixor
+         3: iload_2
+         4: iand
+         5: invokestatic  #18                 // Method BitwiseEffects.accept:(Z)I
+         8: ireturn
+
+  public static boolean array(boolean[]);
+    descriptor: ([Z)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: baload
+         3: aload_0
+         4: iconst_1
+         5: baload
+         6: ixor
+         7: ireturn
+
+  public static int promoted(byte, char);
+    descriptor: (BC)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ior
+         3: ireturn
+}

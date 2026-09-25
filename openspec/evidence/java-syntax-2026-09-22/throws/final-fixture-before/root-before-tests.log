@@ -1,0 +1,56 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.81s
+     Running tests/p3_throw.rs (target/debug/deps/p3_throw-2af5caca810cbbdb)
+
+running 5 tests
+test fixture_has_the_complete_positive_throw_surface ... ok
+test ordinary_throw_shapes_are_presented_with_their_source_types ... FAILED
+test recovered_throw_probe_matches_original_runtime ... ignored, requires JDK: compile Engine::class_source output and execute a temporary runner
+test source_map_is_not_built_by_default ... ok
+test throw_sources_keep_real_bcis_and_member_identity ... FAILED
+
+failures:
+
+---- ordinary_throw_shapes_are_presented_with_their_source_types stdout ----
+
+thread 'ordinary_throw_shapes_are_presented_with_their_source_types' (24223424) panicked at tests/p3_throw.rs:117:5:
+`nullValue()V` still quotes bytecode:
+    public static void nullValue() {
+        // jarde: not recovered: the recovery run for `nullValue()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nullValue()V
+        // @declaration a static method of `ThrowProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+    }
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- throw_sources_keep_real_bcis_and_member_identity stdout ----
+
+thread 'throw_sources_keep_real_bcis_and_member_identity' (24223426) panicked at tests/p3_throw.rs:144:9:
+`allocation()V` has no source-map segment for BCI 4:     public static void allocation() {
+        // jarde: not recovered: the recovery run for `allocation()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method allocation()V
+        // @declaration a static method of `ThrowProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 6
+        // the value at BCI 6 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        // @bytecode 9
+        // the instruction at BCI 9 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+    }
+
+
+
+failures:
+    ordinary_throw_shapes_are_presented_with_their_source_types
+    throw_sources_keep_real_bcis_and_member_identity
+
+test result: FAILED. 2 passed; 2 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test p3_throw`

@@ -1,0 +1,1 @@
+public class DeferredComposite {public static int callAdd(){return DeferredSupport.value()+1;}public static int callNeg(){return -DeferredSupport.value();}public static int fieldAdd(){return DeferredSupport.field+1;}public static int divAdd(int a,int b){return a/b+1;}public static void keepPool(){DeferredSupport.mark();}}

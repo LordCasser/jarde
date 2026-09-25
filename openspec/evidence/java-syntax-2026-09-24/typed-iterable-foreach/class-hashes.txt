@@ -1,0 +1,2 @@
+e5b01a9f1e58ec2c98f2bcecb207d2f87e23f7fc9bd413ef69773bbacb2b143e  openspec/evidence/java-syntax-2026-09-24/typed-iterable-foreach/with-g/TypedIterableForeachProbe.class
+669352af4a6ed4c79cea6e0ee0e8e6d724aaf865be88456d71ba075122ce9dc1  openspec/evidence/java-syntax-2026-09-24/typed-iterable-foreach/no-g/TypedIterableForeachProbe.class

@@ -1,0 +1,12 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-anonymous-cross-class-audit-efqzsb82/jadx/sources/defpackage/Other.java:22: 错误: 需要包含Owner.AnonymousClass1的封闭实例
+        return new Owner.AnonymousClass1();
+               ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-anonymous-cross-class-audit-efqzsb82/jadx/sources/defpackage/Owner.java:22: 错误: 无法从静态上下文中引用非静态 变量 this
+        return new AnonymousClass1();
+               ^
+2 个错误
+3 个警告
+exit=1

@@ -1,0 +1,91 @@
+{
+  "cli_path": "/tmp/jarde-cli-type-use-recovered-d5309996cbcf1da4",
+  "cli_sha256": "d5309996cbcf1da444550e19bc237e89e6aa13a59020f1a075b12b08643259f6",
+  "source_sha256": {
+    "TypeMark.java": "ff4b3edcf339399e20d0c22a2a7d2f749cba9113803ef7b6b853d39ad93435df",
+    "TypeUseSubject.java": "1f00f93409a03c9a0468370a0402d05eb6139710bc69391fb3a74e9557c42f47",
+    "TypeUseRunner.java": "e955a149ed7c6add8b6ecde0a7243e0738cb7431f6c5b6eee34e088264ee69f5"
+  },
+  "class_sha256": {
+    "TypeMark.class": "6de6c19b09a768a57f83574422396a1cbda5fad5f9abc969dce13cb940246d2d",
+    "TypeUseRunner.class": "24931e6cb6df55a303eaf4ae079881a4051e05fc037331300cc2c182cbd6fa4a",
+    "TypeUseSubject.class": "ca652feaf10023254cb32fef0e2ad07efebfb5ab97fc111bb192bc0b45c5619e"
+  },
+  "class_bytes": {
+    "TypeMark.class": 365,
+    "TypeUseRunner.class": 1468,
+    "TypeUseSubject.class": 429
+  },
+  "original": {
+    "javac_exit": 0,
+    "run_exit": 0,
+    "run_stdout": [
+      "field",
+      "return",
+      "parameter",
+      "[o, k]"
+    ],
+    "run_stderr": []
+  },
+  "jadx_source_paths": [
+    "jadx/sources/defpackage/TypeMark.java",
+    "jadx/sources/defpackage/TypeUseRunner.java",
+    "jadx/sources/defpackage/TypeUseSubject.java"
+  ],
+  "jadx": {
+    "javac_exit": 0,
+    "run_exit": 0,
+    "run_stdout": [
+      "null",
+      "null",
+      "null",
+      "[o, k]"
+    ],
+    "run_stderr": []
+  },
+  "jarde_source_paths": [
+    "jarde-src/TypeMark.java",
+    "jarde-src/TypeUseRunner.java",
+    "jarde-src/TypeUseSubject.java"
+  ],
+  "jarde": {
+    "javac_exit": 1
+  },
+  "jarde_subject_isolated": {
+    "javac_exit": 0,
+    "run_exit": 0,
+    "run_stdout": [
+      "field",
+      "return",
+      "parameter",
+      "[o, k]"
+    ],
+    "run_stderr": []
+  },
+  "jarde_subject_isolated_javap_exit": 0,
+  "invisible_original": {
+    "javac_exit": 0,
+    "run_exit": 0,
+    "run_stdout": [
+      "0,0,0"
+    ],
+    "run_stderr": []
+  },
+  "invisible_jarde": {
+    "javac_exit": 0,
+    "run_exit": 0,
+    "run_stdout": [
+      "0,0,0"
+    ],
+    "run_stderr": []
+  },
+  "invisible_class_sha256": "a4e69c1ded0524ea06c078b6e0af50a4a4707d1fe28be5cbf0beebc233f96985",
+  "invisible_jarde_json": "invisible-jarde-json.stdout",
+  "placement_jarde_javac_exit": 0,
+  "placement_jarde_json": "placement-jarde-json.stdout",
+  "jarde_json_paths": [
+    "jarde-TypeMark-json.stdout",
+    "jarde-TypeUseRunner-json.stdout",
+    "jarde-TypeUseSubject-json.stdout"
+  ]
+}

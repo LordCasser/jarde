@@ -1,0 +1,11 @@
+package defpackage;
+
+/* JADX INFO: loaded from: FinalSelfRead.class */
+public class FinalSelfRead {
+    public static final int VALUE = FinalSupport.next();
+    public static int mutable = VALUE + 2;
+
+    public static int result() {
+        return mutable;
+    }
+}

@@ -1,0 +1,319 @@
+// jarde: presentation of `FloatingConstants` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class FloatingConstants extends java.lang.Object {
+    public FloatingConstants() {
+        // @method <init>()V
+        // @declaration a constructor of `FloatingConstants`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static float floatZero() {
+        // jarde: not recovered: the recovery run for `floatZero()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatZero()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 1
+        // the value at BCI 1 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float floatNegativeZero() {
+        // jarde: not recovered: the recovery run for `floatNegativeZero()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatNegativeZero()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float floatOne() {
+        // jarde: not recovered: the recovery run for `floatOne()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatOne()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 1
+        // the value at BCI 1 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float floatTwo() {
+        // jarde: not recovered: the recovery run for `floatTwo()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatTwo()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 1
+        // the value at BCI 1 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float floatNegativeOne() {
+        // jarde: not recovered: the recovery run for `floatNegativeOne()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatNegativeOne()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float floatFraction() {
+        // jarde: not recovered: the recovery run for `floatFraction()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatFraction()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float floatMinimum() {
+        // jarde: not recovered: the recovery run for `floatMinimum()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatMinimum()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float floatNormal() {
+        // jarde: not recovered: the recovery run for `floatNormal()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatNormal()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float floatMaximum() {
+        // jarde: not recovered: the recovery run for `floatMaximum()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatMaximum()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float floatNan() {
+        // jarde: not recovered: the recovery run for `floatNan()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatNan()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float floatPositiveInfinity() {
+        // jarde: not recovered: the recovery run for `floatPositiveInfinity()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatPositiveInfinity()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float floatNegativeInfinity() {
+        // jarde: not recovered: the recovery run for `floatNegativeInfinity()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatNegativeInfinity()F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doubleZero() {
+        // jarde: not recovered: the recovery run for `doubleZero()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleZero()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 1
+        // the value at BCI 1 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doubleNegativeZero() {
+        // jarde: not recovered: the recovery run for `doubleNegativeZero()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleNegativeZero()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doubleOne() {
+        // jarde: not recovered: the recovery run for `doubleOne()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleOne()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 1
+        // the value at BCI 1 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doubleTwo() {
+        // jarde: not recovered: the recovery run for `doubleTwo()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleTwo()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doubleNegativeOne() {
+        // jarde: not recovered: the recovery run for `doubleNegativeOne()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleNegativeOne()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doubleFraction() {
+        // jarde: not recovered: the recovery run for `doubleFraction()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleFraction()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doubleMinimum() {
+        // jarde: not recovered: the recovery run for `doubleMinimum()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleMinimum()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doubleNormal() {
+        // jarde: not recovered: the recovery run for `doubleNormal()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleNormal()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doubleMaximum() {
+        // jarde: not recovered: the recovery run for `doubleMaximum()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleMaximum()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doubleNan() {
+        // jarde: not recovered: the recovery run for `doubleNan()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleNan()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 4
+        // the value at BCI 4 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doublePositiveInfinity() {
+        // jarde: not recovered: the recovery run for `doublePositiveInfinity()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doublePositiveInfinity()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double doubleNegativeInfinity() {
+        // jarde: not recovered: the recovery run for `doubleNegativeInfinity()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleNegativeInfinity()D
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static int floatArgument() {
+        // jarde: not recovered: the recovery run for `floatArgument()I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatArgument()I
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 5 2
+        // the value at BCI 5 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static int doubleArgument() {
+        // jarde: not recovered: the recovery run for `doubleArgument()I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleArgument()I
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 6 3
+        // the value at BCI 6 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static float nested(float arg0) {
+        // jarde: not recovered: the recovery run for `nested(F)F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nested(F)F
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 5
+        // the value at BCI 5 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static int threshold(float arg0) {
+        // jarde: not recovered: the recovery run for `threshold(F)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method threshold(F)I
+        // @declaration a static method of `FloatingConstants`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 0 6 9 3 2
+        // the value at BCI 3 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+}

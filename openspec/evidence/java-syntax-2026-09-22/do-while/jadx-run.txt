@@ -1,0 +1,9 @@
+basic:0=1:trace=1:checks=0
+basic:1=1:trace=1:checks=0
+basic:4=1234:trace=1234:checks=0
+continue:1=1:trace=1:checks=0
+continue:4=134:trace=134:checks=0
+break:1=1:trace=1:checks=0
+break:5=12:trace=12:checks=0
+effectful:1=1:trace=1:checks=1
+effectful:3=123:trace=123:checks=3

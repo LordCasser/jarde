@@ -1,0 +1,286 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-generic-return-probe-3xdze0sz/original/ReturnProbeRunner.class
+  Last modified 2026年9月23日; size 2351 bytes
+  SHA-256 checksum 8b5d66711907c3ed32ad8f6163e882344cae8cf60fb1d5687b99328c29049897
+public class ReturnProbeRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #51                         // ReturnProbeRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 5, attributes: 2
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Fieldref           #8.#9         // java/lang/System.out:Ljava/io/PrintStream;
+    #8 = Class              #10           // java/lang/System
+    #9 = NameAndType        #11:#12       // out:Ljava/io/PrintStream;
+   #10 = Utf8               java/lang/System
+   #11 = Utf8               out
+   #12 = Utf8               Ljava/io/PrintStream;
+   #13 = Class              #14           // java/lang/StringBuilder
+   #14 = Utf8               java/lang/StringBuilder
+   #15 = Methodref          #13.#3        // java/lang/StringBuilder."<init>":()V
+   #16 = Methodref          #13.#17       // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #17 = NameAndType        #18:#19       // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #18 = Utf8               append
+   #19 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #20 = String             #21           // :
+   #21 = Utf8               :
+   #22 = Methodref          #2.#23        // java/lang/Object.getClass:()Ljava/lang/Class;
+   #23 = NameAndType        #24:#25       // getClass:()Ljava/lang/Class;
+   #24 = Utf8               getClass
+   #25 = Utf8               ()Ljava/lang/Class;
+   #26 = Methodref          #27.#28       // java/lang/Class.getName:()Ljava/lang/String;
+   #27 = Class              #29           // java/lang/Class
+   #28 = NameAndType        #30:#31       // getName:()Ljava/lang/String;
+   #29 = Utf8               java/lang/Class
+   #30 = Utf8               getName
+   #31 = Utf8               ()Ljava/lang/String;
+   #32 = Methodref          #13.#33       // java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #33 = NameAndType        #18:#34       // append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #34 = Utf8               (Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #35 = Methodref          #13.#36       // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #36 = NameAndType        #37:#31       // toString:()Ljava/lang/String;
+   #37 = Utf8               toString
+   #38 = Methodref          #39.#40       // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #39 = Class              #41           // java/io/PrintStream
+   #40 = NameAndType        #42:#43       // println:(Ljava/lang/String;)V
+   #41 = Utf8               java/io/PrintStream
+   #42 = Utf8               println
+   #43 = Utf8               (Ljava/lang/String;)V
+   #44 = InterfaceMethodref #45.#46       // java/util/concurrent/Callable.call:()Ljava/lang/Object;
+   #45 = Class              #47           // java/util/concurrent/Callable
+   #46 = NameAndType        #48:#49       // call:()Ljava/lang/Object;
+   #47 = Utf8               java/util/concurrent/Callable
+   #48 = Utf8               call
+   #49 = Utf8               ()Ljava/lang/Object;
+   #50 = Methodref          #51.#52       // ReturnProbeRunner.print:(Ljava/lang/String;Ljava/lang/Object;)V
+   #51 = Class              #53           // ReturnProbeRunner
+   #52 = NameAndType        #54:#55       // print:(Ljava/lang/String;Ljava/lang/Object;)V
+   #53 = Utf8               ReturnProbeRunner
+   #54 = Utf8               print
+   #55 = Utf8               (Ljava/lang/String;Ljava/lang/Object;)V
+   #56 = Class              #57           // java/lang/Throwable
+   #57 = Utf8               java/lang/Throwable
+   #58 = String             #59           // integer
+   #59 = Utf8               integer
+   #60 = Methodref          #61.#62       // java/lang/String.equals:(Ljava/lang/Object;)Z
+   #61 = Class              #63           // java/lang/String
+   #62 = NameAndType        #64:#65       // equals:(Ljava/lang/Object;)Z
+   #63 = Utf8               java/lang/String
+   #64 = Utf8               equals
+   #65 = Utf8               (Ljava/lang/Object;)Z
+   #66 = Methodref          #67.#68       // java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+   #67 = Class              #69           // java/lang/Integer
+   #68 = NameAndType        #70:#71       // valueOf:(I)Ljava/lang/Integer;
+   #69 = Utf8               java/lang/Integer
+   #70 = Utf8               valueOf
+   #71 = Utf8               (I)Ljava/lang/Integer;
+   #72 = String             #73           // text
+   #73 = Utf8               text
+   #74 = Fieldref           #75.#76       // ReturnHelper.current:Ljava/lang/Object;
+   #75 = Class              #77           // ReturnHelper
+   #76 = NameAndType        #78:#79       // current:Ljava/lang/Object;
+   #77 = Utf8               ReturnHelper
+   #78 = Utf8               current
+   #79 = Utf8               Ljava/lang/Object;
+   #80 = Methodref          #81.#82       // ReturnProbe.genericString:()Ljava/util/function/Supplier;
+   #81 = Class              #83           // ReturnProbe
+   #82 = NameAndType        #84:#85       // genericString:()Ljava/util/function/Supplier;
+   #83 = Utf8               ReturnProbe
+   #84 = Utf8               genericString
+   #85 = Utf8               ()Ljava/util/function/Supplier;
+   #86 = String             #87           // raw
+   #87 = Utf8               raw
+   #88 = Methodref          #89.#90       // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+   #89 = Class              #91           // java/util/Objects
+   #90 = NameAndType        #92:#93       // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+   #91 = Utf8               java/util/Objects
+   #92 = Utf8               requireNonNull
+   #93 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+   #94 = InvokeDynamic      #0:#95        // #0:call:(Ljava/util/function/Supplier;)Ljava/util/concurrent/Callable;
+   #95 = NameAndType        #48:#96       // call:(Ljava/util/function/Supplier;)Ljava/util/concurrent/Callable;
+   #96 = Utf8               (Ljava/util/function/Supplier;)Ljava/util/concurrent/Callable;
+   #97 = Methodref          #51.#98       // ReturnProbeRunner.run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+   #98 = NameAndType        #99:#100      // run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+   #99 = Utf8               run
+  #100 = Utf8               (Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+  #101 = String             #102          // typed
+  #102 = Utf8               typed
+  #103 = InvokeDynamic      #1:#95        // #1:call:(Ljava/util/function/Supplier;)Ljava/util/concurrent/Callable;
+  #104 = InterfaceMethodref #105.#106     // java/util/function/Supplier.get:()Ljava/lang/Object;
+  #105 = Class              #107          // java/util/function/Supplier
+  #106 = NameAndType        #108:#49      // get:()Ljava/lang/Object;
+  #107 = Utf8               java/util/function/Supplier
+  #108 = Utf8               get
+  #109 = Utf8               Code
+  #110 = Utf8               StackMapTable
+  #111 = Utf8               Signature
+  #112 = Utf8               (Ljava/lang/String;Ljava/util/concurrent/Callable<Ljava/lang/Object;>;)V
+  #113 = Utf8               main
+  #114 = Utf8               ([Ljava/lang/String;)V
+  #115 = Utf8               lambda$main$0
+  #116 = Utf8               (Ljava/util/function/Supplier;)Ljava/lang/Object;
+  #117 = Utf8               Exceptions
+  #118 = Class              #119          // java/lang/Exception
+  #119 = Utf8               java/lang/Exception
+  #120 = Utf8               BootstrapMethods
+  #121 = MethodType         #49           //  ()Ljava/lang/Object;
+  #122 = MethodHandle       9:#104        // REF_invokeInterface java/util/function/Supplier.get:()Ljava/lang/Object;
+  #123 = MethodHandle       6:#124        // REF_invokeStatic ReturnProbeRunner.lambda$main$0:(Ljava/util/function/Supplier;)Ljava/lang/Object;
+  #124 = Methodref          #51.#125      // ReturnProbeRunner.lambda$main$0:(Ljava/util/function/Supplier;)Ljava/lang/Object;
+  #125 = NameAndType        #115:#116     // lambda$main$0:(Ljava/util/function/Supplier;)Ljava/lang/Object;
+  #126 = MethodHandle       6:#127        // REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #127 = Methodref          #128.#129     // java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #128 = Class              #130          // java/lang/invoke/LambdaMetafactory
+  #129 = NameAndType        #131:#132     // metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #130 = Utf8               java/lang/invoke/LambdaMetafactory
+  #131 = Utf8               metafactory
+  #132 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #133 = Utf8               InnerClasses
+  #134 = Class              #135          // java/lang/invoke/MethodHandles$Lookup
+  #135 = Utf8               java/lang/invoke/MethodHandles$Lookup
+  #136 = Class              #137          // java/lang/invoke/MethodHandles
+  #137 = Utf8               java/lang/invoke/MethodHandles
+  #138 = Utf8               Lookup
+{
+  public ReturnProbeRunner();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static void print(java.lang.String, java.lang.Object);
+    descriptor: (Ljava/lang/String;Ljava/lang/Object;)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: new           #13                 // class java/lang/StringBuilder
+         6: dup
+         7: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+        10: aload_0
+        11: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        14: ldc           #20                 // String :
+        16: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        19: aload_1
+        20: invokevirtual #22                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        23: invokevirtual #26                 // Method java/lang/Class.getName:()Ljava/lang/String;
+        26: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        29: ldc           #20                 // String :
+        31: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        34: aload_1
+        35: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        38: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        41: invokevirtual #38                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        44: return
+
+  static void run(java.lang.String, java.util.concurrent.Callable<java.lang.Object>);
+    descriptor: (Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokeinterface #44,  1           // InterfaceMethod java/util/concurrent/Callable.call:()Ljava/lang/Object;
+         7: invokestatic  #50                 // Method print:(Ljava/lang/String;Ljava/lang/Object;)V
+        10: goto          49
+        13: astore_2
+        14: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        17: new           #13                 // class java/lang/StringBuilder
+        20: dup
+        21: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+        24: aload_0
+        25: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        28: ldc           #20                 // String :
+        30: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        33: aload_2
+        34: invokevirtual #22                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        37: invokevirtual #26                 // Method java/lang/Class.getName:()Ljava/lang/String;
+        40: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        43: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        46: invokevirtual #38                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        49: return
+      Exception table:
+         from    to  target type
+             0    10    13   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 2
+        frame_type = 77 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 35 /* same */
+    Signature: #112                         // (Ljava/lang/String;Ljava/util/concurrent/Callable<Ljava/lang/Object;>;)V
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=1
+         0: aload_0
+         1: arraylength
+         2: ifle          24
+         5: aload_0
+         6: iconst_0
+         7: aaload
+         8: ldc           #58                 // String integer
+        10: invokevirtual #60                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        13: ifeq          24
+        16: bipush        7
+        18: invokestatic  #66                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        21: goto          26
+        24: ldc           #72                 // String text
+        26: putstatic     #74                 // Field ReturnHelper.current:Ljava/lang/Object;
+        29: invokestatic  #80                 // Method ReturnProbe.genericString:()Ljava/util/function/Supplier;
+        32: astore_1
+        33: ldc           #86                 // String raw
+        35: aload_1
+        36: dup
+        37: invokestatic  #88                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+        40: pop
+        41: invokedynamic #94,  0             // InvokeDynamic #0:call:(Ljava/util/function/Supplier;)Ljava/util/concurrent/Callable;
+        46: invokestatic  #97                 // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+        49: invokestatic  #80                 // Method ReturnProbe.genericString:()Ljava/util/function/Supplier;
+        52: astore_2
+        53: ldc           #101                // String typed
+        55: aload_2
+        56: invokedynamic #103,  0            // InvokeDynamic #1:call:(Ljava/util/function/Supplier;)Ljava/util/concurrent/Callable;
+        61: invokestatic  #97                 // Method run:(Ljava/lang/String;Ljava/util/concurrent/Callable;)V
+        64: return
+      StackMapTable: number_of_entries = 2
+        frame_type = 24 /* same */
+        frame_type = 65 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Object ]
+
+  private static java.lang.Object lambda$main$0(java.util.function.Supplier) throws java.lang.Exception;
+    descriptor: (Ljava/util/function/Supplier;)Ljava/lang/Object;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: aload_0
+         1: invokeinterface #104,  1          // InterfaceMethod java/util/function/Supplier.get:()Ljava/lang/Object;
+         6: checkcast     #61                 // class java/lang/String
+         9: astore_1
+        10: aload_1
+        11: areturn
+    Exceptions:
+      throws java.lang.Exception
+}
+BootstrapMethods:
+  0: #126 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #121 ()Ljava/lang/Object;
+      #122 REF_invokeInterface java/util/function/Supplier.get:()Ljava/lang/Object;
+      #121 ()Ljava/lang/Object;
+  1: #126 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #121 ()Ljava/lang/Object;
+      #123 REF_invokeStatic ReturnProbeRunner.lambda$main$0:(Ljava/util/function/Supplier;)Ljava/lang/Object;
+      #121 ()Ljava/lang/Object;
+InnerClasses:
+  public static final #138= #134 of #136; // Lookup=class java/lang/invoke/MethodHandles$Lookup of class java/lang/invoke/MethodHandles

@@ -1,0 +1,80 @@
+public final class minimal.UseObject {
+  private static int argumentCalls;
+    descriptor: I
+
+  public minimal.UseObject();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  private static int argument(int);
+    descriptor: (I)I
+    Code:
+       0: getstatic     #7                  // Field argumentCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field argumentCalls:I
+       8: iload_0
+       9: ireturn
+
+  public static java.lang.Object make(minimal.Outer, int);
+    descriptor: (Lminimal/Outer;I)Ljava/lang/Object;
+    Code:
+       0: new           #13                 // class minimal/Outer$Inner
+       3: dup
+       4: aload_0
+       5: dup
+       6: invokestatic  #15                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+       9: pop
+      10: iload_1
+      11: invokestatic  #21                 // Method argument:(I)I
+      14: invokestatic  #25                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      17: invokespecial #31                 // Method minimal/Outer$Inner."<init>":(Lminimal/Outer;Ljava/lang/Object;)V
+      20: areturn
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    Code:
+       0: new           #34                 // class minimal/Outer
+       3: dup
+       4: invokespecial #36                 // Method minimal/Outer."<init>":()V
+       7: bipush        7
+       9: invokestatic  #37                 // Method make:(Lminimal/Outer;I)Ljava/lang/Object;
+      12: astore_1
+      13: getstatic     #41                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      16: new           #47                 // class java/lang/StringBuilder
+      19: dup
+      20: invokespecial #49                 // Method java/lang/StringBuilder."<init>":()V
+      23: aload_1
+      24: invokevirtual #50                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      27: invokevirtual #54                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      30: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: ldc           #64                 // String :
+      35: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: getstatic     #7                  // Field argumentCalls:I
+      41: invokevirtual #66                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      44: invokevirtual #69                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      47: invokevirtual #72                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      50: aconst_null
+      51: bipush        9
+      53: invokestatic  #37                 // Method make:(Lminimal/Outer;I)Ljava/lang/Object;
+      56: pop
+      57: goto          88
+      60: astore_2
+      61: getstatic     #41                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      64: new           #47                 // class java/lang/StringBuilder
+      67: dup
+      68: invokespecial #49                 // Method java/lang/StringBuilder."<init>":()V
+      71: ldc           #80                 // String null:
+      73: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      76: getstatic     #7                  // Field argumentCalls:I
+      79: invokevirtual #66                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      82: invokevirtual #69                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      85: invokevirtual #72                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      88: return
+    Exception table:
+       from    to  target type
+          50    57    60   Class java/lang/NullPointerException
+}

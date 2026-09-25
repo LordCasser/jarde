@@ -1,0 +1,42 @@
+Classfile /tmp/jarde-shift-boolean-boundaries-0600/ShiftBoolLeft/original/ShiftBoolLeft.class
+  Last modified 2026年9月23日; size 174 bytes
+  SHA-256 checksum 3be5f2caf7c56a9ac86307bdde9065edfbf0c88b872622a5de9bc0fc1f20e5ca
+public class ShiftBoolLeft
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #7                          // ShiftBoolLeft
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // ShiftBoolLeft
+   #8 = Utf8               ShiftBoolLeft
+   #9 = Utf8               Code
+  #10 = Utf8               shift
+  #11 = Utf8               (ZI)I
+{
+  public ShiftBoolLeft();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int shift(boolean, int);
+    descriptor: (ZI)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ishl
+         3: ireturn
+}

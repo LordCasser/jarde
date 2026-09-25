@@ -1,0 +1,70 @@
+package defpackage;
+
+/* JADX INFO: loaded from: CompoundProbe.class */
+public final class CompoundProbe {
+    public static int calls;
+    public static int selects;
+    public static int[] data;
+    public static CompoundBox box;
+    public static boolean nullBox;
+    public static boolean badIndex;
+
+    public static void reset() {
+        calls = 0;
+        selects = 0;
+        data = new int[1];
+        data[0] = 10;
+        box = new CompoundBox(7);
+        nullBox = false;
+        badIndex = false;
+    }
+
+    public static int rhs(int i) {
+        calls++;
+        return i;
+    }
+
+    public static CompoundBox receiver() {
+        selects++;
+        if (nullBox) {
+            return null;
+        }
+        return box;
+    }
+
+    public static int index() {
+        selects++;
+        return badIndex ? 1 : 0;
+    }
+
+    public static int local(int i) {
+        return i + rhs(3);
+    }
+
+    public static int field() {
+        receiver().value += rhs(2);
+        return box.value;
+    }
+
+    public static int array() {
+        int[] iArr = data;
+        int iIndex = index();
+        iArr[iIndex] = iArr[iIndex] + rhs(4);
+        return data[0];
+    }
+
+    public static int postField() {
+        CompoundBox compoundBoxReceiver = receiver();
+        int i = compoundBoxReceiver.value;
+        compoundBoxReceiver.value = i + 1;
+        return i;
+    }
+
+    public static int postArray() {
+        int[] iArr = data;
+        int iIndex = index();
+        int i = iArr[iIndex];
+        iArr[iIndex] = i + 1;
+        return i;
+    }
+}

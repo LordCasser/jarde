@@ -1,0 +1,46 @@
+package defpackage;
+
+/* JADX INFO: loaded from: PartialArrays.class */
+public class PartialArrays {
+    public static int[][] held;
+
+    public static int[][] primitive(int i) {
+        return new int[i][];
+    }
+
+    public static String[][] reference(int i) {
+        return new String[i][];
+    }
+
+    public static int[][][] prefix(int i, int i2) {
+        return new int[i][i2][];
+    }
+
+    public static Object[][][] referencePrefix(int i, int i2) {
+        return new Object[i][i2][];
+    }
+
+    public static int[][] local(int i) {
+        return new int[i][];
+    }
+
+    public static String overload(int i) {
+        return PartialArrayEffects.pick(new int[i][]);
+    }
+
+    public static void field(int i) {
+        held = new int[i][];
+    }
+
+    public static int length(int i) {
+        return new int[i][].length;
+    }
+
+    public static int[][][] effects(int i, int i2) {
+        return new int[PartialArrayEffects.dim(1, i)][PartialArrayEffects.dim(2, i2)][];
+    }
+
+    public static int[][] complete(int i, int i2) {
+        return new int[i][i2];
+    }
+}

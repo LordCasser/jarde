@@ -1,0 +1,43 @@
+{
+  "source_class_sha256": "ae0bfc789051a30dd6779d57cea2f484d7e5fe4822f18102eb74915075d04eda",
+  "patched_class_sha256": "da7bbcebd61dda7221f5169200a68b11fbe9200b8a4bb1f9d970bccc559157a5",
+  "code_methods_unchanged": 49,
+  "fields": {
+    "byteField": "B",
+    "charField": "C",
+    "shortField": "S",
+    "staticByteField": "B",
+    "staticCharField": "C",
+    "staticShortField": "S"
+  },
+  "cases": 285,
+  "jarde_differences": 0,
+  "jarde_differences_by_type": {
+    "B": 0,
+    "C": 0,
+    "S": 0
+  },
+  "status": {
+    "source-javac": 0,
+    "patch": 0,
+    "original-runtime": 0,
+    "patched-runtime": 0,
+    "jarde-cli": 0,
+    "jarde-javac": 0,
+    "jarde-runtime": 0,
+    "jadx-javac": 1
+  },
+  "cli_sha256": "48edb9d2e3eec451983aabb4affcbcaf6d723c8a75b0284605f729743088cc76",
+  "jarde_quote_count": 0,
+  "jarde_runtime": {
+    "exit": 0,
+    "lines": 285,
+    "stdout_sha256": "e9f34f9e898b164fad2682d8706a5d502d61630a5d396f397015c1e7ce8ec690"
+  },
+  "patched_runtime": {
+    "exit": 0,
+    "lines": 285,
+    "stdout_sha256": "e9f34f9e898b164fad2682d8706a5d502d61630a5d396f397015c1e7ce8ec690"
+  },
+  "runtime_equal": true
+}

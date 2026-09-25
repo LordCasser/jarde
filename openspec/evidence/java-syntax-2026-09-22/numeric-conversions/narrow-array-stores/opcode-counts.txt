@@ -1,0 +1,8 @@
+original iastore 8
+patched iastore 0
+original bastore 6
+patched bastore 10
+original castore 3
+patched castore 5
+original sastore 3
+patched sastore 5

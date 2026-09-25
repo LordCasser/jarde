@@ -236,7 +236,7 @@ const LOCAL_REWRITE: Sample = Sample {
         java: "static Object make() { return LocalRewrite.make(); }",
     }],
     counter: Some("LocalRewrite.calls"),
-    // R2's substance is the count of `make` calls the refused `cast` text makes; the other three
+    // R2's substance is the count of `make` calls the now recovered `cast` text makes; the other three
     // refusals of this sample are counted for the same reason (their control compiles wherever the
     // text still holds the statement the count is about, and the row states where it does not).
     measured: &["post", "saved", "conditional", "cast"],
@@ -271,7 +271,7 @@ const LOCAL_REWRITE: Sample = Sample {
         },
         Member {
             name: "cast",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
             name: "make",
@@ -280,7 +280,8 @@ const LOCAL_REWRITE: Sample = Sample {
     ],
     point: "P3-R1 (`post`, `saved`, `conditional` refuse the read they cannot prove) with its \
             negative controls (`bump`, `doubleIt`, `loopAcross` still write the slot name), and \
-            P3-R2 (`cast` keeps the producer call: the count of `make` invocations is measured)",
+            P3-R2 (`cast` recovers the cast and keeps one producer call: the count of `make` \
+            invocations is measured)",
 };
 
 const SCOPE_MEMBERS: &[Member] = &[
@@ -392,7 +393,7 @@ const GUARDED: Sample = Sample {
         },
         Member {
             name: "boom",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
             name: "one",
@@ -446,13 +447,23 @@ const GUARDED: Sample = Sample {
             name: "main",
             expect: Expect::Executed,
         },
+        // `syncThrowsCatching` and `secondInitFailsCatching` are the sample's two plain
+        // `try`/`catch` bodies: each one wraps a call and catches `RuntimeException`. Both used to be
+        // quoted whole under `jre_guard_resource_init` — the row that protects the call begins at the
+        // body's own first instruction, and `resources()` read every row covering the block as a
+        // `try (…)` header that failed to prove. They were then presented as the `try` the exception
+        // table states (see `tests/p3_typed_catch.rs`) with the block that carries the call quoted
+        // inside it under `jre_region_exception_edge`. P3 2.7 writes that block too: the named row
+        // whose range covers it is the clause the `catch` around it already is, so the call is a
+        // statement of the `try` and both members are whole Java — the comparison therefore compiles
+        // and runs them instead of pinning a quote.
         Member {
             name: "syncThrowsCatching",
-            expect: Expect::Quoted(Some("jre_guard_resource_init")),
+            expect: Expect::Executed,
         },
         Member {
             name: "secondInitFailsCatching",
-            expect: Expect::Quoted(Some("jre_guard_resource_init")),
+            expect: Expect::Executed,
         },
         Member {
             name: "suppressedCatching",
@@ -481,20 +492,33 @@ const ECJ_V52: Sample = Sample {
             name: "add",
             expect: Expect::Executed,
         },
-        // P3-R7: `finallyPath` declares `Exception table: from 0 to 4 target 9 type any` while the
-        // decode reads BCI 9's four instructions and the graph's only node is `[0, 9)` — nothing of
-        // `[0, 4)` can throw synchronously, so the handler was never made a node and never listed as
-        // dead. The run refuses the body whole under the reason that quotes BCI 9/10/13/14; the `v45`
-        // body of the same class file keeps its handler inside a dead node and is refused for its own
-        // reasons instead (P3-R7's other half, `p3_java_recovery`).
+        // P3-R7, re-measured under P3 2.9: `finallyPath` declares `Exception table: from 0 to 4
+        // target 9 type any`, and nothing of `[0, 4)` can raise. The record is a fact of the table all
+        // the same, so the graph now states it — one edge from the block the range intersects — and
+        // the handler at BCI 9 is a node the run **accounts for**: no instruction of this body is left
+        // uncovered any more. The member still kept quoted bytecode, and for the reason the walk had
+        // for it then: the region that left through the catch-all row was quoted
+        // (`jre_region_exception_edge`) with the handler block named beside the code after it
+        // (`jre_region_uncovered_blocks`), because a catch-all row names no clause this walk writes.
+        // Before 2.9 the same member was quoted under `jre_region_unaccounted_instruction`, which is
+        // what the graph's silence about the record produced. The `v45` body of the same class file
+        // keeps its handler inside a dead node and is refused for its own reasons instead (P3-R7's
+        // other half, `p3_java_recovery`).
+        //
+        // Re-measured under P3 2.15: an edge no instruction of the block can take is not a way out of
+        // it, so 2.9's quote of the body is gone with it. The three statements the bytes hold are the
+        // method's normal flow and are written (`int local3 = arg1 + 1; arg1 = arg1 + 2; return
+        // local3;`), and what keeps this member's text mixed is the dead copy at BCI 9 — a live block
+        // no statement reached, named by `jre_region_uncovered_blocks`.
         Member {
             name: "finallyPath",
-            expect: Expect::Quoted(Some("jre_region_unaccounted_instruction")),
+            expect: Expect::Quoted(Some("jre_region_uncovered_blocks")),
         },
     ],
     point: "a second compiler at the same class-file version: `add` is presented whole by the same \
-            walk and the values agree, and `finallyPath` — whose graph is not an account of its own \
-            handler — is quoted instead of being presented as if it were the body",
+            walk and the values agree, and `finallyPath` — whose graph states a row no instruction \
+            can take — keeps quoted bytecode for the code nothing can reach: the body's statements \
+            are written and the dead copy is named",
 };
 
 const MISSING_DEPENDENCY: Sample = Sample {
@@ -574,13 +598,12 @@ const NESTED_EVAL: Sample = Sample {
     extends: Some("NestedEval"),
     scaffold: &[],
     counter: Some("NestedEval.calls"),
-    // A refused body of this sample quotes the call it could not write, so the count control — which
-    // runs the *written* fragment and compares how often it moves the counter — has no count to
-    // compare: nothing of the effect is in the text. What the refusal rests on is the original's own
-    // answer, and `baseline` is where that is executed.
+    // The original class's value and counter are kept as a committed baseline: `nestedCall` now
+    // writes its deferred call into a saved binding before the increment, so the generated body can
+    // be compiled and its result and one `tick` call compared against the original directly.
     measured: &[],
     inputs: None,
-    quotes: &[("nestedLocal", &[8, 0]), ("nestedCall", &[9, 1])],
+    quotes: &[("nestedLocal", &[8, 0])],
     baseline: Some(Baseline {
         class: "Baseline",
         source: include_str!("fixtures/p3-nested-eval/Baseline.java"),
@@ -601,13 +624,15 @@ const NESTED_EVAL: Sample = Sample {
         },
         Member {
             name: "nestedCall",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
     ],
-    point: "P3-R8: `(x + 1) + ++x` is refused because the load it needs is judged where the text is \
-            evaluated and the slot no longer holds it by then — the quote names the consumer and the \
-            read — while `(x + 1) + (x + 2)`, the same shape with no write in between, is written \
-            whole and executed (its trace is identical, with the counter moved once by `tick`)",
+    point: "P3-R8: `(x + 1) + ++x` remains refused because the load it needs is judged where the \
+            text is evaluated and the slot no longer holds it by then — the quote names the consumer \
+            and the read — while `tick(x) + ++x` binds `tick(x)` before the write and executes as \
+            `int saved0 = tick(arg0); arg0 = arg0 + 1; return saved0 + arg0;`; the original and \
+            recovered controls therefore agree on `nestedCall(3)=7` with one `tick` call, and \
+            `(x + 1) + (x + 2)` remains the no-write control",
 };
 
 const REFUSED_CAST: Sample = Sample {
@@ -627,16 +652,11 @@ const REFUSED_CAST: Sample = Sample {
     extends: Some("RefusedCast"),
     scaffold: &[],
     counter: Some("RefusedCast.calls"),
-    // The three refused members quote the read and the cast rather than writing them, so the written
-    // fragments perform none of the reads: their evidence is the committed original, run by
-    // `baseline`, and the quotes' own BCIs (the reads at BCI 0/1/3 down to the class initializer).
+    // Ordinary casts now preserve the read and cast in executable expressions. The original
+    // baseline also fixes class initialization, null dereference and the nested read's effects.
     measured: &[],
     inputs: None,
-    quotes: &[
-        ("fieldCast", &[0, 3, 6]),
-        ("instanceCast", &[1, 4, 7]),
-        ("chainCast", &[0, 3, 6, 9]),
-    ],
+    quotes: &[],
     baseline: Some(Baseline {
         class: "Baseline",
         source: include_str!("fixtures/p3-refused-cast/Baseline.java"),
@@ -654,15 +674,15 @@ const REFUSED_CAST: Sample = Sample {
     members: &[
         Member {
             name: "fieldCast",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
             name: "instanceCast",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
             name: "chainCast",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
             name: "leftRead",
@@ -677,9 +697,9 @@ const REFUSED_CAST: Sample = Sample {
             expect: Expect::Executed,
         },
     ],
-    point: "P3-R9: a refused cast keeps the observable producers its expression depended on — the \
-            `getstatic` that can run `External`'s static initializer (measured once by the driver), \
-            the `getfield` that can throw for a null receiver, and the read behind another read — \
+    point: "P3-R9: recovered casts keep the observable producers they depend on — the `getstatic` \
+            that can run `External`'s static initializer (measured once by the driver), the \
+            `getfield` that can throw for a null receiver, and the read behind another read — \
             while a claimed read composed with a deferred call stays written whole",
 };
 
@@ -2919,14 +2939,17 @@ fn run_sample(sample: &Sample, entry: Entry) -> SampleOutcome {
             );
         }
 
-        // The report's own account of a refusal: every bytecode index of a refused region is quoted
-        // in the text, and every quoted index is an anchor of the map. This holds for every member,
-        // refused or not: a body written whole quotes nothing.
+        // The report's own account of a refusal: no block of a region the run could not structure is
+        // silently dropped — the text quotes it, or the map anchors the text that took its place.
+        // This holds for every member, refused or not: a body written whole quotes nothing and leaves
+        // nothing unanchored. A region that holds a quote **and** presents the rest — an `if` whose
+        // arm is quoted, a `try` whose protected range is — is not a quote itself: its presented
+        // blocks are anchored like any other statement's, and the blocks it *did* refuse are quoted.
         for bci in &planned.refused_blocks {
             assert!(
-                planned.quotes.contains(bci),
-                "{}: `{name}{descriptor}` refuses a region that holds BCI {bci}, and the text must \
-                 quote it: {:?}",
+                planned.quotes.contains(bci) || !report.source_map.of_bci(*bci).is_empty(),
+                "{}: `{name}{descriptor}` does not structure a region that holds BCI {bci}, and the \
+                 text neither quotes it nor anchors it: quotes {:?}",
                 sample.label,
                 planned.quotes
             );
@@ -3008,17 +3031,16 @@ fn run_sample(sample: &Sample, entry: Entry) -> SampleOutcome {
     });
     let _ = fs::remove_file(dir.path().join(witness_file));
 
-    // R2's own requirement: the count of `make` calls has to be measurable, so `cast`'s body has to
-    // be compilable in the count control.
+    // R2's producer count is now measured by executing the recovered cast body itself, rather than
+    // by putting a refused fragment under a void declaration.
     if sample.class == "LocalRewrite" {
         assert!(
-            counted.iter().any(|name| name == "cast"),
-            "{}: the count control of `cast` must compile, or the number of producer calls the \
-             refused body makes cannot be measured: {:?}",
+            executed.iter().any(|name| name == "cast"),
+            "{}: the recovered `cast` body must compile for its producer count to be compared: {:?}",
             sample.label,
             rows.iter()
                 .find(|row| row.name == "cast")
-                .map(|row| row.count_control.clone())
+                .map(|row| row.refusal.clone())
         );
     }
 

@@ -1,0 +1,5 @@
+4741836f2efc18bd7f9ab519209edebeff9f7d9c830e436c851dfe1bc7656115  tests/fixtures/p3-conditional-values/mixed-short-circuit-instance-field/MixedShortCircuitField.java
+ddbaca94499c2ade8136fa5576d41ba2c12b455477d90c7c3d0d73aba18aa5fc  tests/fixtures/p3-conditional-values/mixed-short-circuit-instance-field/Runner.java
+e69f52f563c4c7e6b8be1aeb7be946f4af09649c48280863f56ed0fe42033fd1  tests/fixtures/p3-conditional-values/mixed-short-circuit-instance-field/MixedShortCircuitField.class
+0c7dbcc60afa116264aa3e44fc710b64fa6b199606b0b86b549a3f5a52247b76  tests/fixtures/p3-conditional-values/mixed-short-circuit-instance-field/MixedShortCircuitField$Box.class
+d77fddb5f2fe5e5bfafbd2116856f245ac7dec80c56f7c675de053e3a4f4f45d  tests/fixtures/p3-conditional-values/mixed-short-circuit-instance-field/Runner.class

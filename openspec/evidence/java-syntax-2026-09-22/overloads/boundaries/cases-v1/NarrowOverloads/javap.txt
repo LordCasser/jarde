@@ -1,0 +1,39 @@
+public class NarrowOverloads {
+  public NarrowOverloads();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int onlyByte(byte);
+    Code:
+       0: iconst_1
+       1: ireturn
+
+  public static int onlyByte(int);
+    Code:
+       0: iconst_2
+       1: ireturn
+
+  public static int onlyShort(short);
+    Code:
+       0: iconst_3
+       1: ireturn
+
+  public static int onlyShort(int);
+    Code:
+       0: iconst_4
+       1: ireturn
+
+  public static int runByte();
+    Code:
+       0: iconst_3
+       1: invokestatic  #7                  // Method onlyByte:(B)I
+       4: ireturn
+
+  public static int runShort();
+    Code:
+       0: iconst_3
+       1: invokestatic  #13                 // Method onlyShort:(S)I
+       4: ireturn
+}

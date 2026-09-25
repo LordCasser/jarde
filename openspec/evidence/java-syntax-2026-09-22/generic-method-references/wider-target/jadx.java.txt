@@ -1,0 +1,19 @@
+package defpackage;
+
+import java.util.function.ToIntFunction;
+
+/* JADX INFO: loaded from: WiderTarget.class */
+public class WiderTarget {
+    public static int calls;
+
+    public static int accept(Object obj) {
+        calls++;
+        return 7;
+    }
+
+    public static ToIntFunction<String> strings() {
+        return (v0) -> {
+            return accept(v0);
+        };
+    }
+}

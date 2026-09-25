@@ -1,0 +1,102 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-final-ecab-cfmq33vh/composite/original/DeferredComposite.class
+  Last modified 2026年9月23日; size 444 bytes
+  SHA-256 checksum 33aa4c3a213ae1aded1b72113efa85b20bda273106e07314189fb4579b4c3774
+public class DeferredComposite
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #20                         // DeferredComposite
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 6, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // DeferredSupport.value:()I
+   #8 = Class              #10            // DeferredSupport
+   #9 = NameAndType        #11:#12        // value:()I
+  #10 = Utf8               DeferredSupport
+  #11 = Utf8               value
+  #12 = Utf8               ()I
+  #13 = Fieldref           #8.#14         // DeferredSupport.field:I
+  #14 = NameAndType        #15:#16        // field:I
+  #15 = Utf8               field
+  #16 = Utf8               I
+  #17 = Methodref          #8.#18         // DeferredSupport.mark:()V
+  #18 = NameAndType        #19:#6         // mark:()V
+  #19 = Utf8               mark
+  #20 = Class              #21            // DeferredComposite
+  #21 = Utf8               DeferredComposite
+  #22 = Utf8               Code
+  #23 = Utf8               callAdd
+  #24 = Utf8               callNeg
+  #25 = Utf8               fieldAdd
+  #26 = Utf8               divAdd
+  #27 = Utf8               (II)I
+  #28 = Utf8               keepPool
+{
+  public DeferredComposite();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int callAdd();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: invokestatic  #7                  // Method DeferredSupport.value:()I
+         3: iconst_1
+         4: iadd
+         5: invokestatic  #17                 // Method DeferredSupport.mark:()V
+         8: ireturn
+
+  public static int callNeg();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokestatic  #7                  // Method DeferredSupport.value:()I
+         3: ineg
+         4: invokestatic  #17                 // Method DeferredSupport.mark:()V
+         7: ireturn
+
+  public static int fieldAdd();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #13                 // Field DeferredSupport.field:I
+         3: iconst_1
+         4: iadd
+         5: invokestatic  #17                 // Method DeferredSupport.mark:()V
+         8: ireturn
+
+  public static int divAdd(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: idiv
+         3: iconst_1
+         4: iadd
+         5: invokestatic  #17                 // Method DeferredSupport.mark:()V
+         8: ireturn
+
+  public static void keepPool();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=0, locals=0, args_size=0
+         0: invokestatic  #17                 // Method DeferredSupport.mark:()V
+         3: return
+}

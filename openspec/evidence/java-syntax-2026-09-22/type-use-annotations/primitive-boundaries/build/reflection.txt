@@ -1,0 +1,14 @@
+=== baseline reflection under full verification ===
+field.declaration=[A]
+field.type=[A]
+answer.declaration=[A]
+answer.returnType=[A]
+echo.parameter=[A]
+echo.parameterType=[A]
+=== patched reflection under full verification ===
+field.declaration=[]
+field.type=[A]
+answer.declaration=[]
+answer.returnType=[A]
+echo.parameter=[]
+echo.parameterType=[A]

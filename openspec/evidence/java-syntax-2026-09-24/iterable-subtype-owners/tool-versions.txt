@@ -1,0 +1,3 @@
+JADX 1.5.6
+javac 23.0.1 --release 8
+java 23.0.1 -Xverify:all

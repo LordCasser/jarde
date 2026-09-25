@@ -1,0 +1,19 @@
+public final class OwnerBoundaryProbe {
+  public OwnerBoundaryProbe();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static Child receiver();
+    Code:
+       0: aconst_null
+       1: areturn
+
+  public static int call();
+    Code:
+       0: invokestatic  #7                  // Method receiver:()LChild;
+       3: pop
+       4: invokestatic  #13                 // Method Child.ping:()I
+       7: ireturn
+}

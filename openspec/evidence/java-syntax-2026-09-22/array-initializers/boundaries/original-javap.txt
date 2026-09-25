@@ -1,0 +1,386 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-array-boundaries-4vrqi9w5/original-classes/ArrayInitializerBoundaries.class
+  Last modified 2026年9月23日; size 1741 bytes
+  SHA-256 checksum eda910510d9632dc52c1fe8555828ec9e215a05531ed371bbb1ee0ee67427d3b
+public final class ArrayInitializerBoundaries
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // ArrayInitializerBoundaries
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 3, methods: 15, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // ArrayInitializerBoundaries.TRACE:Ljava/lang/StringBuilder;
+   #8 = Class              #10            // ArrayInitializerBoundaries
+   #9 = NameAndType        #11:#12        // TRACE:Ljava/lang/StringBuilder;
+  #10 = Utf8               ArrayInitializerBoundaries
+  #11 = Utf8               TRACE
+  #12 = Utf8               Ljava/lang/StringBuilder;
+  #13 = Methodref          #14.#15        // java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+  #14 = Class              #16            // java/lang/StringBuilder
+  #15 = NameAndType        #17:#18        // append:(C)Ljava/lang/StringBuilder;
+  #16 = Utf8               java/lang/StringBuilder
+  #17 = Utf8               append
+  #18 = Utf8               (C)Ljava/lang/StringBuilder;
+  #19 = Fieldref           #8.#20         // ArrayInitializerBoundaries.escaped:[I
+  #20 = NameAndType        #21:#22        // escaped:[I
+  #21 = Utf8               escaped
+  #22 = Utf8               [I
+  #23 = Fieldref           #8.#24         // ArrayInitializerBoundaries.escapedFirstAtPublication:I
+  #24 = NameAndType        #25:#26        // escapedFirstAtPublication:I
+  #25 = Utf8               escapedFirstAtPublication
+  #26 = Utf8               I
+  #27 = Methodref          #14.#28        // java/lang/StringBuilder.setLength:(I)V
+  #28 = NameAndType        #29:#30        // setLength:(I)V
+  #29 = Utf8               setLength
+  #30 = Utf8               (I)V
+  #31 = Methodref          #8.#32         // ArrayInitializerBoundaries.mark:(CI)I
+  #32 = NameAndType        #33:#34        // mark:(CI)I
+  #33 = Utf8               mark
+  #34 = Utf8               (CI)I
+  #35 = Fieldref           #36.#37        // java/lang/System.out:Ljava/io/PrintStream;
+  #36 = Class              #38            // java/lang/System
+  #37 = NameAndType        #39:#40        // out:Ljava/io/PrintStream;
+  #38 = Utf8               java/lang/System
+  #39 = Utf8               out
+  #40 = Utf8               Ljava/io/PrintStream;
+  #41 = Methodref          #14.#3         // java/lang/StringBuilder."<init>":()V
+  #42 = String             #43            // effects=
+  #43 = Utf8               effects=
+  #44 = Methodref          #14.#45        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #45 = NameAndType        #17:#46        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #46 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #47 = Methodref          #14.#48        // java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #48 = NameAndType        #17:#49        // append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #49 = Utf8               (Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #50 = Methodref          #14.#51        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #51 = NameAndType        #52:#53        // toString:()Ljava/lang/String;
+  #52 = Utf8               toString
+  #53 = Utf8               ()Ljava/lang/String;
+  #54 = Methodref          #55.#56        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #55 = Class              #57            // java/io/PrintStream
+  #56 = NameAndType        #58:#59        // println:(Ljava/lang/String;)V
+  #57 = Utf8               java/io/PrintStream
+  #58 = Utf8               println
+  #59 = Utf8               (Ljava/lang/String;)V
+  #60 = Class              #61            // java/lang/String
+  #61 = Utf8               java/lang/String
+  #62 = String             #63            // left
+  #63 = Utf8               left
+  #64 = String             #65            // right
+  #65 = Utf8               right
+  #66 = Methodref          #8.#67         // ArrayInitializerBoundaries.escape:([I)V
+  #67 = NameAndType        #68:#69        // escape:([I)V
+  #68 = Utf8               escape
+  #69 = Utf8               ([I)V
+  #70 = Methodref          #8.#71         // ArrayInitializerBoundaries.exactOrderedStores:()[I
+  #71 = NameAndType        #72:#73        // exactOrderedStores:()[I
+  #72 = Utf8               exactOrderedStores
+  #73 = Utf8               ()[I
+  #74 = Utf8               Code
+  #75 = Utf8               exactEffectfulStores
+  #76 = Utf8               exactReferenceStores
+  #77 = Utf8               ()[Ljava/lang/String;
+  #78 = Utf8               dynamicLength
+  #79 = Utf8               (I)[I
+  #80 = Utf8               duplicateIndex
+  #81 = Utf8               skippedIndex
+  #82 = Utf8               escapedBeforeStores
+  #83 = Utf8               ()I
+  #84 = Utf8               storesAcrossBranch
+  #85 = Utf8               (Z)[I
+  #86 = Utf8               StackMapTable
+  #87 = Class              #22            // "[I"
+  #88 = Utf8               covariantAastoreThrows
+  #89 = Utf8               ()[Ljava/lang/Object;
+  #90 = Utf8               runTime
+  #91 = Utf8               <clinit>
+{
+  private static final java.lang.StringBuilder TRACE;
+    descriptor: Ljava/lang/StringBuilder;
+    flags: (0x001a) ACC_PRIVATE, ACC_STATIC, ACC_FINAL
+
+  private static int[] escaped;
+    descriptor: [I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private static int escapedFirstAtPublication;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private ArrayInitializerBoundaries();
+    descriptor: ()V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  private static int mark(char, int);
+    descriptor: (CI)I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: getstatic     #7                  // Field TRACE:Ljava/lang/StringBuilder;
+         3: iload_0
+         4: invokevirtual #13                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+         7: pop
+         8: iload_1
+         9: ireturn
+
+  private static void escape(int[]);
+    descriptor: ([I)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: putstatic     #19                 // Field escaped:[I
+         4: aload_0
+         5: iconst_0
+         6: iaload
+         7: putstatic     #23                 // Field escapedFirstAtPublication:I
+        10: return
+
+  public static int[] exactOrderedStores();
+    descriptor: ()[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_3
+         1: newarray       int
+         3: dup
+         4: iconst_0
+         5: bipush        11
+         7: iastore
+         8: dup
+         9: iconst_1
+        10: bipush        22
+        12: iastore
+        13: dup
+        14: iconst_2
+        15: bipush        33
+        17: iastore
+        18: areturn
+
+  public static int[] exactEffectfulStores();
+    descriptor: ()[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=1, args_size=0
+         0: getstatic     #7                  // Field TRACE:Ljava/lang/StringBuilder;
+         3: iconst_0
+         4: invokevirtual #27                 // Method java/lang/StringBuilder.setLength:(I)V
+         7: iconst_3
+         8: newarray       int
+        10: dup
+        11: iconst_0
+        12: bipush        97
+        14: bipush        11
+        16: invokestatic  #31                 // Method mark:(CI)I
+        19: iastore
+        20: dup
+        21: iconst_1
+        22: bipush        98
+        24: bipush        22
+        26: invokestatic  #31                 // Method mark:(CI)I
+        29: iastore
+        30: dup
+        31: iconst_2
+        32: bipush        99
+        34: bipush        33
+        36: invokestatic  #31                 // Method mark:(CI)I
+        39: iastore
+        40: astore_0
+        41: getstatic     #35                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        44: new           #14                 // class java/lang/StringBuilder
+        47: dup
+        48: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+        51: ldc           #42                 // String effects=
+        53: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        56: getstatic     #7                  // Field TRACE:Ljava/lang/StringBuilder;
+        59: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        62: invokevirtual #50                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        65: invokevirtual #54                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        68: aload_0
+        69: areturn
+
+  public static java.lang.String[] exactReferenceStores();
+    descriptor: ()[Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_3
+         1: anewarray     #60                 // class java/lang/String
+         4: dup
+         5: iconst_0
+         6: ldc           #62                 // String left
+         8: aastore
+         9: dup
+        10: iconst_1
+        11: aconst_null
+        12: aastore
+        13: dup
+        14: iconst_2
+        15: ldc           #64                 // String right
+        17: aastore
+        18: areturn
+
+  public static int[] dynamicLength(int);
+    descriptor: (I)[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: iload_0
+         1: newarray       int
+         3: astore_1
+         4: aload_1
+         5: iconst_0
+         6: bipush        11
+         8: iastore
+         9: aload_1
+        10: iconst_1
+        11: bipush        22
+        13: iastore
+        14: aload_1
+        15: areturn
+
+  public static int[] duplicateIndex();
+    descriptor: ()[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=0
+         0: iconst_2
+         1: newarray       int
+         3: astore_0
+         4: aload_0
+         5: iconst_0
+         6: bipush        11
+         8: iastore
+         9: aload_0
+        10: iconst_0
+        11: bipush        22
+        13: iastore
+        14: aload_0
+        15: areturn
+
+  public static int[] skippedIndex();
+    descriptor: ()[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=0
+         0: iconst_3
+         1: newarray       int
+         3: astore_0
+         4: aload_0
+         5: iconst_1
+         6: bipush        22
+         8: iastore
+         9: aload_0
+        10: iconst_2
+        11: bipush        33
+        13: iastore
+        14: aload_0
+        15: areturn
+
+  public static int[] escapedBeforeStores();
+    descriptor: ()[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=0
+         0: iconst_2
+         1: newarray       int
+         3: astore_0
+         4: aload_0
+         5: invokestatic  #66                 // Method escape:([I)V
+         8: aload_0
+         9: iconst_0
+        10: bipush        11
+        12: iastore
+        13: aload_0
+        14: iconst_1
+        15: bipush        22
+        17: iastore
+        18: aload_0
+        19: areturn
+
+  public static int escapedFirstAtPublication();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #23                 // Field escapedFirstAtPublication:I
+         3: ireturn
+
+  public static int[] storesAcrossBranch(boolean);
+    descriptor: (Z)[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: iconst_2
+         1: newarray       int
+         3: astore_1
+         4: iload_0
+         5: ifeq          16
+         8: aload_1
+         9: iconst_0
+        10: bipush        11
+        12: iastore
+        13: goto          21
+        16: aload_1
+        17: iconst_0
+        18: bipush        22
+        20: iastore
+        21: aload_1
+        22: iconst_1
+        23: bipush        33
+        25: iastore
+        26: aload_1
+        27: areturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 16
+          locals = [ class "[I" ]
+        frame_type = 4 /* same */
+
+  public static java.lang.Object[] covariantAastoreThrows();
+    descriptor: ()[Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=1, args_size=0
+         0: iconst_1
+         1: anewarray     #60                 // class java/lang/String
+         4: astore_0
+         5: aload_0
+         6: iconst_0
+         7: new           #2                  // class java/lang/Object
+        10: dup
+        11: invokespecial #1                  // Method java/lang/Object."<init>":()V
+        14: aastore
+        15: aload_0
+        16: areturn
+
+  public static int[] runTime();
+    descriptor: ()[I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokestatic  #70                 // Method exactOrderedStores:()[I
+         3: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #14                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+         7: putstatic     #7                  // Field TRACE:Ljava/lang/StringBuilder;
+        10: return
+}

@@ -1,0 +1,11 @@
+list=3,touches=2
+collection=3,touches=1
+skip=2
+empty=0,touches=0
+listNull=NullPointerException
+badCast=ClassCastException
+touchesAfterBadCast=1
+twice=3
+escape=1
+custom=4
+sameName=5

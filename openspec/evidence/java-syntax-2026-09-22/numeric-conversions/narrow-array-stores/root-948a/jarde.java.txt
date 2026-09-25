@@ -1,0 +1,131 @@
+// jarde: presentation of `NarrowArrayStores` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NarrowArrayStores extends java.lang.Object {
+    public NarrowArrayStores() {
+        // @method <init>()V
+        // @declaration a constructor of `NarrowArrayStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void storeByte(byte[] arg0, int arg1, int arg2) {
+        // @method storeByte([BII)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 3
+        // the value at BCI 2 is presented as `int` and the element written at BCI 3 is one of the `byte` array it indexes, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void storeChar(char[] arg0, int arg1, int arg2) {
+        // @method storeChar([CII)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 3
+        // the value at BCI 2 is presented as `int` and the element written at BCI 3 is one of the `char` array it indexes, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void storeShort(short[] arg0, int arg1, int arg2) {
+        // @method storeShort([SII)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 3
+        // the value at BCI 2 is presented as `int` and the element written at BCI 3 is one of the `short` array it indexes, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void storeBoolean(boolean[] arg0, int arg1, int arg2) {
+        // @method storeBoolean([ZII)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 3
+        // the element written at BCI 3 is one of a `boolean[]`, and this layer has no evidence that the value it reads at BCI 3 is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, a read of a `boolean[]` proven `[Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the array's own type rejects
+        return;
+    }
+
+    public static void storeByteProduced(byte[] arg0, int arg1, int arg2, boolean arg3) {
+        // @method storeByteProduced([BIIZ)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 7
+        // the value at BCI 4 is presented as `int` and the element written at BCI 7 is one of the `byte` array it indexes, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void storeCharProduced(char[] arg0, int arg1, int arg2, boolean arg3) {
+        // @method storeCharProduced([CIIZ)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 7
+        // the value at BCI 4 is presented as `int` and the element written at BCI 7 is one of the `char` array it indexes, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void storeShortProduced(short[] arg0, int arg1, int arg2, boolean arg3) {
+        // @method storeShortProduced([SIIZ)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 7
+        // the value at BCI 4 is presented as `int` and the element written at BCI 7 is one of the `short` array it indexes, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void storeBooleanProduced(boolean[] arg0, int arg1, int arg2, boolean arg3) {
+        // @method storeBooleanProduced([ZIIZ)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 7 4
+        // the element written at BCI 7 is one of a `boolean[]`, and this layer has no evidence that the value it reads at BCI 7 is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, a read of a `boolean[]` proven `[Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the array's own type rejects
+        return;
+    }
+
+    public static void ordinaryByte(byte[] arg0) {
+        // @method ordinaryByte([B)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 1;
+        // @bytecode 5
+        // the value at BCI 4 is presented as `int` and the element written at BCI 5 is one of the `byte` array it indexes, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        arg0[1] = 0;
+        arg0[2] = 1;
+        return;
+    }
+
+    public static void ordinaryChar(char[] arg0) {
+        // @method ordinaryChar([C)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 1;
+        // @bytecode 5
+        // the value at BCI 4 is presented as `int` and the element written at BCI 5 is one of the `char` array it indexes, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        arg0[1] = '\u0000';
+        arg0[2] = '\u0001';
+        return;
+    }
+
+    public static void ordinaryShort(short[] arg0) {
+        // @method ordinaryShort([S)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 1;
+        // @bytecode 5
+        // the value at BCI 4 is presented as `int` and the element written at BCI 5 is one of the `short` array it indexes, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        arg0[1] = 0;
+        arg0[2] = 1;
+        return;
+    }
+
+    public static void ordinaryBoolean(boolean[] arg0) {
+        // @method ordinaryBoolean([Z)V
+        // @declaration a static method of `NarrowArrayStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 1;
+        // @bytecode 5
+        // the element written at BCI 5 is one of a `boolean[]`, and this layer has no evidence that the value it reads at BCI 5 is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, a read of a `boolean[]` proven `[Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the array's own type rejects
+        arg0[1] = false;
+        arg0[2] = true;
+        return;
+    }
+}

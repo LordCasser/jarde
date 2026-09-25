@@ -1,0 +1,90 @@
+// jarde: presentation of `ConditionalBoundaryCases` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ConditionalBoundaryCases extends java.lang.Object {
+    static int trace;
+
+    static boolean fail;
+
+    public ConditionalBoundaryCases() {
+        // @method <init>()V
+        // @declaration a constructor of `ConditionalBoundaryCases`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static int left() {
+        // @method left()I
+        // @declaration a static method of `ConditionalBoundaryCases`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        ConditionalBoundaryCases.trace = ConditionalBoundaryCases.trace * 10 + 1;
+        if (ConditionalBoundaryCases.fail) {
+            throw new java.lang.IllegalStateException("left");
+        } else {
+            return 1;
+        }
+    }
+
+    static int right() {
+        // @method right()I
+        // @declaration a static method of `ConditionalBoundaryCases`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        ConditionalBoundaryCases.trace = ConditionalBoundaryCases.trace * 10 + 2;
+        if (ConditionalBoundaryCases.fail) {
+            throw new java.lang.IllegalArgumentException("right");
+        } else {
+            return 2;
+        }
+    }
+
+    static int loop(boolean arg0, int arg1) {
+        // @method loop(ZI)I
+        // @declaration a static method of `ConditionalBoundaryCases`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int local2 = 0;
+        // @bytecode 2 6 10 14
+        // the loop whose header is the block at BCI 2 has a test, an exit or a latch this subset does not prove
+        // @bytecode 33 16 24 28 29
+        // 5 live block(s) are reachable only through edges the normal-flow view leaves out: [33, 16, 24, 28, 29]
+    }
+
+    static int guarded(boolean arg0) {
+        // @method guarded(Z)I
+        // @declaration a static method of `ConditionalBoundaryCases`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0) {
+                // @bytecode 4
+                // block at BCI 4 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+            } else {
+                // @bytecode 10
+                // block at BCI 10 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+            }
+        } catch (java.lang.RuntimeException local2) {
+            int local1 = 3;
+        }
+        return local1;
+        // @bytecode 13
+        // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [13]
+    }
+
+    static int unknownType(boolean arg0) {
+        // jarde: not recovered: the recovery run for `unknownType(Z)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method unknownType(Z)I
+        // @declaration a static method of `ConditionalBoundaryCases`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 4 14 1
+        // the value at BCI 21 comes from an Duplicate at BCI 7, which produces no expression this subset writes
+        // @bytecode 21
+        // the dependency chain from BCI 21 to final consumer 24 is not bounded
+        // @bytecode 24 21
+        // the value at BCI 24 was produced by a saved declaration this run could not commit
+    }
+
+    static int consume(MarkerValue arg0) {
+        // @method consume(LMarkerValue;)I
+        // @declaration a static method of `ConditionalBoundaryCases`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.value();
+    }
+}

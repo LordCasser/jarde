@@ -1,0 +1,92 @@
+{
+  "positive": {
+    "class": "DoWhilePositive",
+    "source": "DoWhilePositive.java",
+    "runner": "DoWhilePositiveRunner.java",
+    "source_javac": 0,
+    "class_bytes": 532,
+    "class_sha256": "5c012250591c603adc1524e7721319fb284ed1e3f8480c067925348309e0b6ff",
+    "runner_javac": 0,
+    "original_run": 0,
+    "original_output_sha256": "28e0e52277783b453f2a615767eef04cc213afe30f1e17a74027293651e4b6bc",
+    "javap": 0,
+    "jadx_extract": 0,
+    "jadx_package": "defpackage",
+    "jadx": {
+      "javac": 0,
+      "run": 0,
+      "output_sha256": "28e0e52277783b453f2a615767eef04cc213afe30f1e17a74027293651e4b6bc"
+    },
+    "cli_sha256": "908c472560d6146354e1fd679c595e884afadf5ec7051727b51e79a1f95c6570",
+    "cli_sha256_expected": "908c472560d6146354e1fd679c595e884afadf5ec7051727b51e79a1f95c6570",
+    "cli_sha256_matches": true,
+    "jarde_class_source": 0,
+    "jarde_quotes": 0,
+    "jarde_package": "",
+    "jarde": {
+      "javac": 0,
+      "run": 0,
+      "output_sha256": "28e0e52277783b453f2a615767eef04cc213afe30f1e17a74027293651e4b6bc"
+    }
+  },
+  "full": {
+    "class": "DoWhileAudit",
+    "source": "DoWhileAudit.java",
+    "runner": "DoWhileRunner.java",
+    "source_javac": 0,
+    "class_bytes": 702,
+    "class_sha256": "d729768d3f533ee24790e1822dcaca609f84105a0ae6e0cc158bb3a1a2e1bff4",
+    "runner_javac": 0,
+    "original_run": 0,
+    "original_output_sha256": "8783e96b04133881325205d57b52b6538cd8a14cd13d48ec4c70bcd264a1257a",
+    "javap": 0,
+    "jadx_extract": 0,
+    "jadx_package": "defpackage",
+    "jadx": {
+      "javac": 0,
+      "run": 0,
+      "output_sha256": "8783e96b04133881325205d57b52b6538cd8a14cd13d48ec4c70bcd264a1257a"
+    },
+    "cli_sha256": "908c472560d6146354e1fd679c595e884afadf5ec7051727b51e79a1f95c6570",
+    "cli_sha256_expected": "908c472560d6146354e1fd679c595e884afadf5ec7051727b51e79a1f95c6570",
+    "cli_sha256_matches": true,
+    "jarde_class_source": 0,
+    "jarde_quotes": 4,
+    "jarde_package": "",
+    "jarde": {
+      "javac": 1,
+      "run": null,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "minimal_core": {
+    "class": "DoWhileCore",
+    "source": "DoWhileCore.java",
+    "runner": "DoWhileCoreRunner.java",
+    "source_javac": 0,
+    "class_bytes": 498,
+    "class_sha256": "9339878366306e65530aee489e15ca5ead92c4ff637b614141d9a8e552cb7a60",
+    "runner_javac": 0,
+    "original_run": 0,
+    "original_output_sha256": "5f3fa46c4a5fd6eebc38027bb8926e5e8500869574c35e4fbef01df2c057bee5",
+    "javap": 0,
+    "jadx_extract": 0,
+    "jadx_package": "defpackage",
+    "jadx": {
+      "javac": 0,
+      "run": 0,
+      "output_sha256": "5f3fa46c4a5fd6eebc38027bb8926e5e8500869574c35e4fbef01df2c057bee5"
+    },
+    "cli_sha256": "908c472560d6146354e1fd679c595e884afadf5ec7051727b51e79a1f95c6570",
+    "cli_sha256_expected": "908c472560d6146354e1fd679c595e884afadf5ec7051727b51e79a1f95c6570",
+    "cli_sha256_matches": true,
+    "jarde_class_source": 0,
+    "jarde_quotes": 4,
+    "jarde_package": "",
+    "jarde": {
+      "javac": 1,
+      "run": null,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

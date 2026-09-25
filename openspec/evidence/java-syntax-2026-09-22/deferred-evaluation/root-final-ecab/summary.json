@@ -1,0 +1,44 @@
+{
+  "cli_sha256": "ecab8244d1709765fa0f2b0effcebe49b9f066eea911843d11d34abec5837330",
+  "groups": {
+    "construction": {
+      "jarde_quotes": 0,
+      "jarde_javac": 0,
+      "jarde_same_complete_output": true,
+      "actual_original_lines": 3,
+      "jadx_equal": true
+    },
+    "values": {
+      "cases": 18,
+      "jarde_quotes": 0,
+      "jarde_javac": 0,
+      "jarde_same_complete_output": true,
+      "actual_original_lines": 18,
+      "jadx_equal": true
+    },
+    "checks": {
+      "cases": 24,
+      "jarde_quotes": 0,
+      "jarde_javac": 0,
+      "jarde_same_complete_output": true,
+      "actual_original_lines": 24,
+      "jadx_equal": true
+    },
+    "allocations": {
+      "cases": 12,
+      "jarde_quotes": 0,
+      "jarde_javac": 0,
+      "jarde_same_complete_output": true,
+      "actual_original_lines": 12,
+      "jadx_equal": true
+    },
+    "structured": {
+      "cases": 12,
+      "jarde_quotes": 0,
+      "jarde_javac": 0,
+      "jarde_same_complete_output": true,
+      "actual_original_lines": 12,
+      "jadx_equal": true
+    }
+  }
+}

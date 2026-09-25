@@ -1,0 +1,628 @@
+Classfile /tmp/jarde-numeric-lower-stack/NumericComparisons.class
+  Last modified 2026年9月23日; size 2321 bytes
+  SHA-256 checksum 5b628ff1e0c001e107d5f531c9089be2952a726518f46ee2dc3ce093ec814aa4
+public class NumericComparisons
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // NumericComparisons
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 35, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // NumericComparisons.calls:I
+   #8 = Class              #10            // NumericComparisons
+   #9 = NameAndType        #11:#12        // calls:I
+  #10 = Utf8               NumericComparisons
+  #11 = Utf8               calls
+  #12 = Utf8               I
+  #13 = Class              #14            // java/lang/IllegalStateException
+  #14 = Utf8               java/lang/IllegalStateException
+  #15 = String             #16            // left
+  #16 = Utf8               left
+  #17 = Methodref          #13.#18        // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #18 = NameAndType        #5:#19         // "<init>":(Ljava/lang/String;)V
+  #19 = Utf8               (Ljava/lang/String;)V
+  #20 = String             #21            // right
+  #21 = Utf8               right
+  #22 = Methodref          #8.#23         // NumericComparisons.left:(J)J
+  #23 = NameAndType        #16:#24        // left:(J)J
+  #24 = Utf8               (J)J
+  #25 = Methodref          #8.#26         // NumericComparisons.right:(J)J
+  #26 = NameAndType        #21:#24        // right:(J)J
+  #27 = Methodref          #8.#28         // NumericComparisons.throwingLeft:(J)J
+  #28 = NameAndType        #29:#24        // throwingLeft:(J)J
+  #29 = Utf8               throwingLeft
+  #30 = Methodref          #8.#31         // NumericComparisons.throwingRight:(J)J
+  #31 = NameAndType        #32:#24        // throwingRight:(J)J
+  #32 = Utf8               throwingRight
+  #33 = Utf8               Code
+  #34 = Utf8               long_eq
+  #35 = Utf8               (JJ)I
+  #36 = Utf8               StackMapTable
+  #37 = Utf8               long_ne
+  #38 = Utf8               long_lt
+  #39 = Utf8               long_le
+  #40 = Utf8               long_gt
+  #41 = Utf8               long_ge
+  #42 = Utf8               long_not_lt
+  #43 = Utf8               float_eq
+  #44 = Utf8               (FF)I
+  #45 = Utf8               float_ne
+  #46 = Utf8               float_lt
+  #47 = Utf8               float_le
+  #48 = Utf8               float_gt
+  #49 = Utf8               float_ge
+  #50 = Utf8               float_not_lt
+  #51 = Utf8               double_eq
+  #52 = Utf8               (DD)I
+  #53 = Utf8               double_ne
+  #54 = Utf8               double_lt
+  #55 = Utf8               double_le
+  #56 = Utf8               double_gt
+  #57 = Utf8               double_ge
+  #58 = Utf8               double_not_lt
+  #59 = Utf8               int_lt
+  #60 = Utf8               (II)I
+  #61 = Utf8               double_boolean
+  #62 = Utf8               (DD)Z
+  #63 = Utf8               resetCalls
+  #64 = Utf8               ()I
+  #65 = Utf8               callOrder
+  #66 = Utf8               callThrowLeft
+  #67 = Utf8               callThrowRight
+  #68 = Utf8               sameBlock
+  #69 = Utf8               booleanMerge
+{
+  public NumericComparisons();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int long_eq(long, long);
+    descriptor: (JJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=2
+         0: iconst_0
+         1: lload_0
+         2: lload_2
+         3: lcmp
+         4: ifne          10
+         7: bipush        7
+         9: ireturn
+        10: bipush        9
+        12: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 74 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  public static int long_ne(long, long);
+    descriptor: (JJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: lcmp
+         3: ifeq          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int long_lt(long, long);
+    descriptor: (JJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: lcmp
+         3: ifge          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int long_le(long, long);
+    descriptor: (JJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: lcmp
+         3: ifgt          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int long_gt(long, long);
+    descriptor: (JJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: lcmp
+         3: ifle          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int long_ge(long, long);
+    descriptor: (JJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: lcmp
+         3: iflt          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int long_not_lt(long, long);
+    descriptor: (JJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: lcmp
+         3: iflt          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int float_eq(float, float);
+    descriptor: (FF)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: fload_0
+         1: fload_1
+         2: fcmpl
+         3: ifne          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int float_ne(float, float);
+    descriptor: (FF)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: fload_0
+         1: fload_1
+         2: fcmpl
+         3: ifeq          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int float_lt(float, float);
+    descriptor: (FF)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: fload_0
+         1: fload_1
+         2: fcmpg
+         3: ifge          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int float_le(float, float);
+    descriptor: (FF)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: fload_0
+         1: fload_1
+         2: fcmpg
+         3: ifgt          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int float_gt(float, float);
+    descriptor: (FF)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: fload_0
+         1: fload_1
+         2: fcmpl
+         3: ifle          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int float_ge(float, float);
+    descriptor: (FF)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: fload_0
+         1: fload_1
+         2: fcmpl
+         3: iflt          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int float_not_lt(float, float);
+    descriptor: (FF)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: fload_0
+         1: fload_1
+         2: fcmpg
+         3: iflt          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int double_eq(double, double);
+    descriptor: (DD)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: dload_0
+         1: dload_2
+         2: dcmpl
+         3: ifne          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int double_ne(double, double);
+    descriptor: (DD)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: dload_0
+         1: dload_2
+         2: dcmpl
+         3: ifeq          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int double_lt(double, double);
+    descriptor: (DD)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: dload_0
+         1: dload_2
+         2: dcmpg
+         3: ifge          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int double_le(double, double);
+    descriptor: (DD)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: dload_0
+         1: dload_2
+         2: dcmpg
+         3: ifgt          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int double_gt(double, double);
+    descriptor: (DD)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: dload_0
+         1: dload_2
+         2: dcmpl
+         3: ifle          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int double_ge(double, double);
+    descriptor: (DD)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: dload_0
+         1: dload_2
+         2: dcmpl
+         3: iflt          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int double_not_lt(double, double);
+    descriptor: (DD)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: dload_0
+         1: dload_2
+         2: dcmpg
+         3: iflt          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int int_lt(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: if_icmpge     8
+         5: bipush        7
+         7: ireturn
+         8: bipush        9
+        10: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 8 /* same */
+
+  public static boolean double_boolean(double, double);
+    descriptor: (DD)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: dload_0
+         1: dload_2
+         2: dcmpg
+         3: ifge          10
+         6: iconst_1
+         7: goto          11
+        10: iconst_0
+        11: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 10 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  public static void resetCalls();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #7                  // Field calls:I
+         4: return
+
+  public static int calls();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #7                  // Field calls:I
+         3: ireturn
+
+  public static long left(long);
+    descriptor: (J)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: getstatic     #7                  // Field calls:I
+         3: bipush        10
+         5: imul
+         6: iconst_1
+         7: iadd
+         8: putstatic     #7                  // Field calls:I
+        11: lload_0
+        12: lreturn
+
+  public static long right(long);
+    descriptor: (J)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: getstatic     #7                  // Field calls:I
+         3: bipush        10
+         5: imul
+         6: iconst_2
+         7: iadd
+         8: putstatic     #7                  // Field calls:I
+        11: lload_0
+        12: lreturn
+
+  public static long throwingLeft(long);
+    descriptor: (J)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: getstatic     #7                  // Field calls:I
+         3: bipush        10
+         5: imul
+         6: iconst_1
+         7: iadd
+         8: putstatic     #7                  // Field calls:I
+        11: new           #13                 // class java/lang/IllegalStateException
+        14: dup
+        15: ldc           #15                 // String left
+        17: invokespecial #17                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        20: athrow
+
+  public static long throwingRight(long);
+    descriptor: (J)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: getstatic     #7                  // Field calls:I
+         3: bipush        10
+         5: imul
+         6: iconst_2
+         7: iadd
+         8: putstatic     #7                  // Field calls:I
+        11: new           #13                 // class java/lang/IllegalStateException
+        14: dup
+        15: ldc           #20                 // String right
+        17: invokespecial #17                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        20: athrow
+
+  public static int callOrder(long, long);
+    descriptor: (JJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: invokestatic  #22                 // Method left:(J)J
+         4: lload_2
+         5: invokestatic  #25                 // Method right:(J)J
+         8: lcmp
+         9: ifge          15
+        12: bipush        7
+        14: ireturn
+        15: bipush        9
+        17: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 15 /* same */
+
+  public static int callThrowLeft(long, long);
+    descriptor: (JJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: invokestatic  #27                 // Method throwingLeft:(J)J
+         4: lload_2
+         5: invokestatic  #25                 // Method right:(J)J
+         8: lcmp
+         9: ifge          15
+        12: bipush        7
+        14: ireturn
+        15: bipush        9
+        17: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 15 /* same */
+
+  public static int callThrowRight(long, long);
+    descriptor: (JJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: invokestatic  #22                 // Method left:(J)J
+         4: lload_2
+         5: invokestatic  #30                 // Method throwingRight:(J)J
+         8: lcmp
+         9: ifge          15
+        12: bipush        7
+        14: ireturn
+        15: bipush        9
+        17: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 15 /* same */
+
+  public static int sameBlock(long, long);
+    descriptor: (JJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: lload_0
+         1: lload_2
+         2: lcmp
+         3: ifge          9
+         6: bipush        7
+         8: ireturn
+         9: bipush        9
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static boolean booleanMerge(double, double);
+    descriptor: (DD)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: dload_0
+         1: dload_2
+         2: dcmpg
+         3: ifge          10
+         6: iconst_1
+         7: goto          11
+        10: iconst_0
+        11: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 10 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+}

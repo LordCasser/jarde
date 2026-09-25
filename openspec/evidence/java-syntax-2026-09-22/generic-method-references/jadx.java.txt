@@ -1,0 +1,22 @@
+package defpackage;
+
+import java.util.function.ToIntFunction;
+
+/* JADX INFO: loaded from: GenericReference.class */
+public class GenericReference {
+    public static int pick(Object obj) {
+        return 1;
+    }
+
+    public static int pick(String str) {
+        return 2;
+    }
+
+    public static ToIntFunction<String> strings() {
+        return GenericReference::pick;
+    }
+
+    public static ToIntFunction<Object> objects() {
+        return GenericReference::pick;
+    }
+}

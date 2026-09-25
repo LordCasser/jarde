@@ -1,0 +1,38 @@
+package defpackage;
+
+/* JADX INFO: loaded from: TableswitchFallthrough.class */
+public class TableswitchFallthrough {
+    private static int calls;
+
+    private static int selector(int i) {
+        calls++;
+        return i;
+    }
+
+    /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
+    public static int choose(int i) {
+        int i2;
+        int i3 = 0;
+        switch (selector(i)) {
+            case 1:
+            case 2:
+                i2 = i3 + 1;
+                break;
+            case 3:
+                i2 = 0 + 3;
+                break;
+            case 4:
+                i3 = 0 + 40;
+                i2 = i3 + 1;
+                break;
+            default:
+                i2 = 0 - 1;
+                break;
+        }
+        return i2;
+    }
+
+    public static int calls() {
+        return calls;
+    }
+}

@@ -1,0 +1,26 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DeferredArrays.class */
+public class DeferredArrays {
+    public static int[] ints(int i) {
+        int[] iArr = new int[i];
+        ArraySupport.mark();
+        return iArr;
+    }
+
+    public static String[] refs(int i) {
+        String[] strArr = new String[i];
+        ArraySupport.mark();
+        return strArr;
+    }
+
+    public static int[][] multi(int i, int i2) {
+        int[][] iArr = new int[i][i2];
+        ArraySupport.mark();
+        return iArr;
+    }
+
+    public static void keepPool() {
+        ArraySupport.mark();
+    }
+}

@@ -1,0 +1,10 @@
+package defpackage;
+
+import java.util.function.Supplier;
+
+/* JADX INFO: loaded from: ReturnProbe.class */
+public class ReturnProbe {
+    public static Supplier<String> genericString() {
+        return ReturnHelper::value;
+    }
+}

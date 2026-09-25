@@ -1,0 +1,15 @@
+callAdd0:10:21
+callNeg0:-9:21
+fieldAdd0:10:2
+div0:6:2
+divZero0:java.lang.ArithmeticException:false:2
+callAdd1:java.lang.IllegalStateException:true:21
+callNeg1:java.lang.IllegalStateException:true:21
+fieldAdd1:10:2
+div1:6:2
+divZero1:java.lang.ArithmeticException:false:2
+callAdd2:java.lang.IllegalStateException:true:2
+callNeg2:java.lang.IllegalStateException:true:2
+fieldAdd2:java.lang.IllegalStateException:true:2
+div2:java.lang.IllegalStateException:true:2
+divZero2:java.lang.IllegalStateException:true:2

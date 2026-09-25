@@ -1,0 +1,4 @@
+b965cfe869f436c2ea4fce4e2e374be2bb869d4cf4541186511b9a4f4c2da320  openspec/evidence/java-syntax-2026-09-24/catch-after-field-store/CatchAfterFieldStore.java
+5b4a4152e35f3f0d35f2e48c0d08f50182a5b884773917699d6c423c3238515f  openspec/evidence/java-syntax-2026-09-24/catch-after-field-store/CatchAfterFieldStoreRunner.java
+81b927f95b3651b69b9694eb6cdd49f7521c636fa278ce8daa3c97ba63429ee3  openspec/evidence/java-syntax-2026-09-24/catch-after-field-store/CatchAfterFieldStore.class
+a23f90d64f92fb1b764daa67f4bf2bbddc43985a1889579efb82e945f1e4d6fc  openspec/evidence/java-syntax-2026-09-24/catch-after-field-store/CatchAfterFieldStoreRunner.class

@@ -1,0 +1,50 @@
+// jarde: presentation of `CatchAfterFieldStore` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class CatchAfterFieldStore extends java.lang.Object {
+    private static int calls;
+
+    public CatchAfterFieldStore() {
+        // @method <init>()V
+        // @declaration a constructor of `CatchAfterFieldStore`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    private static void fail() {
+        // @method fail()V
+        // @declaration a static method of `CatchAfterFieldStore`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        throw new java.lang.IllegalArgumentException("probe");
+    }
+
+    private static void maybeFail(boolean arg0) {
+        // @method maybeFail(Z)V
+        // @declaration a static method of `CatchAfterFieldStore`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0) {
+            fail();
+        }
+        return;
+    }
+
+    public static int fieldStore(boolean arg0) {
+        // jarde: not recovered: the recovery run for `fieldStore(Z)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method fieldStore(Z)I
+        // @declaration a static method of `CatchAfterFieldStore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // BCI 2: the resource's own initialisation is not one statement of this block whose value lands in a slot: writing it in the header would move or drop an effect
+        // @bytecode 13
+        // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [13]
+    }
+
+    public static int localStore(boolean arg0) {
+        // jarde: not recovered: the recovery run for `localStore(Z)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method localStore(Z)I
+        // @declaration a static method of `CatchAfterFieldStore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 9
+        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+}

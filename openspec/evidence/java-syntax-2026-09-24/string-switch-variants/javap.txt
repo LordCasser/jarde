@@ -1,0 +1,134 @@
+public class StringSwitchMiddleDefault {
+  static int calls;
+
+  static int score;
+
+  public StringSwitchMiddleDefault();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static java.lang.String read(java.lang.String);
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: ldc           #13                 // String !
+      10: aload_0
+      11: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      14: ifeq          27
+      17: new           #21                 // class java/lang/IllegalStateException
+      20: dup
+      21: ldc           #23                 // String selector
+      23: invokespecial #25                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      26: athrow
+      27: aload_0
+      28: areturn
+
+  static void add(int);
+    Code:
+       0: getstatic     #28                 // Field score:I
+       3: bipush        100
+       5: imul
+       6: iload_0
+       7: iadd
+       8: putstatic     #28                 // Field score:I
+      11: return
+
+  public static int choose(java.lang.String);
+    Code:
+       0: iconst_0
+       1: putstatic     #28                 // Field score:I
+       4: aload_0
+       5: invokestatic  #31                 // Method read:(Ljava/lang/String;)Ljava/lang/String;
+       8: astore_1
+       9: iconst_m1
+      10: istore_2
+      11: aload_1
+      12: invokevirtual #35                 // Method java/lang/String.hashCode:()I
+      15: lookupswitch  { // 5
+            -980110702: 120
+            -891422895: 134
+                     0: 92
+                  2112: 64
+                 38634: 106
+               default: 146
+          }
+      64: aload_1
+      65: ldc           #39                 // String BB
+      67: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      70: ifeq          78
+      73: iconst_1
+      74: istore_2
+      75: goto          146
+      78: aload_1
+      79: ldc           #41                 // String Aa
+      81: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      84: ifeq          146
+      87: iconst_0
+      88: istore_2
+      89: goto          146
+      92: aload_1
+      93: ldc           #43                 // String
+      95: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      98: ifeq          146
+     101: iconst_3
+     102: istore_2
+     103: goto          146
+     106: aload_1
+     107: ldc           #45                 // String 雪
+     109: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     112: ifeq          146
+     115: iconst_4
+     116: istore_2
+     117: goto          146
+     120: aload_1
+     121: ldc           #47                 // String prefix
+     123: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     126: ifeq          146
+     129: iconst_5
+     130: istore_2
+     131: goto          146
+     134: aload_1
+     135: ldc           #49                 // String suffix
+     137: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     140: ifeq          146
+     143: bipush        6
+     145: istore_2
+     146: iload_2
+     147: tableswitch   { // 0 to 6
+                     0: 188
+                     1: 188
+                     2: 195
+                     3: 199
+                     4: 206
+                     5: 213
+                     6: 217
+               default: 195
+          }
+     188: iconst_1
+     189: invokestatic  #51                 // Method add:(I)V
+     192: goto          222
+     195: iconst_2
+     196: invokestatic  #51                 // Method add:(I)V
+     199: iconst_3
+     200: invokestatic  #51                 // Method add:(I)V
+     203: goto          222
+     206: iconst_4
+     207: invokestatic  #51                 // Method add:(I)V
+     210: goto          222
+     213: iconst_5
+     214: invokestatic  #51                 // Method add:(I)V
+     217: bipush        6
+     219: invokestatic  #51                 // Method add:(I)V
+     222: getstatic     #28                 // Field score:I
+     225: ireturn
+
+  public static int once(java.lang.String);
+    Code:
+       0: aload_0
+       1: invokestatic  #55                 // Method choose:(Ljava/lang/String;)I
+       4: ireturn
+}

@@ -1,0 +1,48 @@
+{
+  "cli_sha256_before": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "cli_sha256_after": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "class_bytes": 1113,
+  "class_sha256": "889f36d3a5c06951d32762c8914829c059d8b1d6692001c08df73404c92f673f",
+  "code_methods": 12,
+  "original_javac": 0,
+  "original_runtime": 0,
+  "original_output": [
+    "local=8:rhs=1",
+    "field=9:select=1:rhs=1",
+    "array=14:select=1:rhs=1",
+    "field-snapshot=9:select=1:rhs=1",
+    "array-snapshot=14:select=1:rhs=1",
+    "null=NPE:select=1:rhs=0",
+    "bounds=AIOOBE:select=1:rhs=0"
+  ],
+  "jarde_cli": 0,
+  "jarde": {
+    "javac": 0,
+    "runtime": 0,
+    "output": [
+      "local=8:rhs=1",
+      "field=7:select=1:rhs=0",
+      "array=10:select=1:rhs=0",
+      "field-snapshot=7:select=1:rhs=0",
+      "array-snapshot=10:select=1:rhs=0",
+      "null=returned",
+      "bounds=returned"
+    ]
+  },
+  "jadx_decompile": 0,
+  "jadx": {
+    "javac": 0,
+    "runtime": 0,
+    "output": [
+      "local=8:rhs=1",
+      "field=9:select=1:rhs=1",
+      "array=14:select=1:rhs=1",
+      "field-snapshot=9:select=1:rhs=1",
+      "array-snapshot=14:select=1:rhs=1",
+      "null=NPE:select=1:rhs=0",
+      "bounds=AIOOBE:select=1:rhs=0"
+    ]
+  },
+  "jarde_equal": false,
+  "jadx_equal": true
+}

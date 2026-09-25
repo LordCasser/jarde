@@ -1,0 +1,1 @@
+public class OverloadRunner { public static void main(String[] a){ OverloadProbe p=new OverloadProbe();System.out.println("super="+p.superObject());System.out.println("own="+p.ownObject());System.out.println("primitive="+p.primitive('a'));} }

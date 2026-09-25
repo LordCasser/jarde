@@ -1,0 +1,34 @@
+{
+  "class_sha256": "528cc1ded96882f78493144dc5c70c99788598ac1542c088422c77f3e1fe77ee",
+  "patches": [
+    {
+      "method": "call",
+      "before": "b80007ac",
+      "after": "b80007b80013ac"
+    },
+    {
+      "method": "field",
+      "before": "b2000dac",
+      "after": "b2000db80013ac"
+    },
+    {
+      "method": "array",
+      "before": "2a032eac",
+      "after": "2a032eb80013ac"
+    },
+    {
+      "method": "cast",
+      "before": "2ac00011b0",
+      "after": "2ac00011b80013b0"
+    }
+  ],
+  "cases": 18,
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_differences": 0,
+  "jadx_javac": 0,
+  "jadx_equal": true,
+  "jarde_same_complete_output": true,
+  "actual_original_lines": 18,
+  "cli_sha256": "feed5c377a439490efb12a2a46bdfa0e94c32dffd3a83bd1583b70fe89317350"
+}

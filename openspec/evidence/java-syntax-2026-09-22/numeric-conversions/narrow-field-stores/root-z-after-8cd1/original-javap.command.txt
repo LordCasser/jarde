@@ -1,0 +1,1 @@
+javap -p -c -v /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-5wrl0yyx/original/NarrowFieldStores.class

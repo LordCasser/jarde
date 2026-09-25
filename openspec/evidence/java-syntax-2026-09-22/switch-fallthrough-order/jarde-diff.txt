@@ -1,0 +1,12 @@
+--- original-run.txt
++++ jarde-run.txt
+@@ -1,7 +1,7 @@
+-9:91:calls:1
++9:90:calls:1
+ 1:1:calls:1
+ 4:4:calls:1
+ 0:-1:calls:1
+ -2:-1:calls:1
+ 10:-1:calls:1
+-9:91:calls:1
++9:90:calls:1

@@ -1,0 +1,1 @@
+public class GrammarRunner {public static void main(String[] a){for(int i=0;i<2;i++){try{Class.forName(a[0]);System.out.println("loaded");}catch(Throwable e){Throwable c=e.getCause();System.out.println(e.getClass().getName()+":"+(c==null?"-":c.getClass().getName())+":"+(c==null?"-":c.getMessage().split(" ")[0]));}}}}

@@ -1,0 +1,44 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DeferredChecks.class */
+public class DeferredChecks {
+    public static int divI(int i, int i2) {
+        int i3 = i / i2;
+        CheckSupport.mark();
+        return i3;
+    }
+
+    public static int remI(int i, int i2) {
+        int i3 = i % i2;
+        CheckSupport.mark();
+        return i3;
+    }
+
+    public static long divL(long j, long j2) {
+        long j3 = j / j2;
+        CheckSupport.mark();
+        return j3;
+    }
+
+    public static long remL(long j, long j2) {
+        long j3 = j % j2;
+        CheckSupport.mark();
+        return j3;
+    }
+
+    public static int field(CheckSupport checkSupport) {
+        int i = checkSupport.value;
+        CheckSupport.mark();
+        return i;
+    }
+
+    public static int length(int[] iArr) {
+        int length = iArr.length;
+        CheckSupport.mark();
+        return length;
+    }
+
+    public static void keepPool() {
+        CheckSupport.mark();
+    }
+}

@@ -1,0 +1,66 @@
+cargo test --locked --test p3_instanceof
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.10s
+     Running tests/p3_instanceof.rs (target/debug/deps/p3_instanceof-856782ff999301fb)
+
+running 6 tests
+test essential_and_all_have_the_same_text_but_only_all_has_source_origins ... FAILED
+test fixture_covers_positive_instanceof_shapes_without_merge_negative ... FAILED
+test frozen_instanceof_patches_have_expected_class_sizes ... ok
+test recovered_complete_class_matches_original_runtime ... ignored, requires JDK: compile and execute original and recovered complete classes
+test recovered_instanceof_text_keeps_operands_targets_and_boolean_consumers ... FAILED
+test unsupported_instanceof_consumers_keep_producers_and_real_boundary_sources ... FAILED
+
+failures:
+
+---- essential_and_all_have_the_same_text_but_only_all_has_source_origins stdout ----
+
+thread 'essential_and_all_have_the_same_text_but_only_all_has_source_origins' (24590134) panicked at tests/p3_instanceof.rs:112:9:
+assertion `left == right` failed: `objectString`
+  left: Mixed
+ right: Java
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- fixture_covers_positive_instanceof_shapes_without_merge_negative stdout ----
+
+thread 'fixture_covers_positive_instanceof_shapes_without_merge_negative' (24590135) panicked at tests/p3_instanceof.rs:112:9:
+assertion `left == right` failed: `objectString`
+  left: Mixed
+ right: Java
+
+---- recovered_instanceof_text_keeps_operands_targets_and_boolean_consumers stdout ----
+
+thread 'recovered_instanceof_text_keeps_operands_targets_and_boolean_consumers' (24590137) panicked at tests/p3_instanceof.rs:112:9:
+assertion `left == right` failed: `objectString`
+  left: Mixed
+ right: Java
+
+---- unsupported_instanceof_consumers_keep_producers_and_real_boundary_sources stdout ----
+
+thread 'unsupported_instanceof_consumers_keep_producers_and_real_boundary_sources' (24590138) panicked at tests/p3_instanceof.rs:520:9:
+`local(Ljava/lang/Object;)Z` invented forbidden source `Duplicate`:     public static boolean local(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `local(Ljava/lang/Object;)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method local(Ljava/lang/Object;)Z
+        // @declaration a static method of `InstanceOfProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 5 4
+        // the value at BCI 5 comes from an Other at BCI 1, which produces no expression this subset writes
+        // @bytecode 6 4
+        // the value at BCI 6 comes from an Duplicate at BCI 4, which produces no expression this subset writes
+        // @bytecode 8
+        // the value at BCI 8 is returned from a method whose own descriptor returns `Z`, and this layer has no evidence that the value is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the member's own signature rejects
+    }
+
+
+
+failures:
+    essential_and_all_have_the_same_text_but_only_all_has_source_origins
+    fixture_covers_positive_instanceof_shapes_without_merge_negative
+    recovered_instanceof_text_keeps_operands_targets_and_boolean_consumers
+    unsupported_instanceof_consumers_keep_producers_and_real_boundary_sources
+
+test result: FAILED. 1 passed; 4 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `--test p3_instanceof`

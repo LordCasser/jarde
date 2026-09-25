@@ -18,15 +18,20 @@
 //!
 //! 1. **No leaving edge carries structure.** A block with an exception edge is a handler's target
 //!    and a block with a `jsr` context entry is a subroutine body: neither is a Java statement, so
-//!    the region is unprovable and the bytecode is quoted instead.
+//!    the region is unprovable and the bytecode is quoted instead. The exception edge counts only
+//!    when an instruction of the block can take it (P3 2.15): a record no `may_throw` instruction
+//!    of the block covers is stated by its protected range (P3 2.9), and an edge nothing in the
+//!    block can raise from is not a way out of it ([`Walker::exception_edge_takeable`]).
 //! 2. **Straight means straight.** A block with no plain successor ends the run; a block with one
 //!    continues it; a block with two is an `if`. Three or more successors is a `switch`, which
 //!    1.3b recovers and this slice refuses.
 //! 3. **The graph is acyclic where it is claimed to be structured.** Reaching a block that is
 //!    already part of the recovered structure means a loop or a merge the subset does not model, and
 //!    the whole region falls back rather than being printed as a straight line that runs twice.
-//! 4. **Both arms meet.** The two successors of a branch must reach one join — the nearest block
-//!    every path out of the branch passes through — with the arms not reaching into each other.
+//! 4. **Both arms meet.** The two successors of a branch must reach one join — the branch's own
+//!    immediate post-dominator — with the arms not reaching into each other. A successor that *is*
+//!    the join is the one-armed shape the bytecode states: that arm is empty, the other successor's
+//!    region is the statement's one body, and the `if` is written without an `else`.
 //! 5. **The branch's own facts are there.** The branch instruction needs a decoded
 //!    [`Operation::Comparison`] and the arity that operation claims; the *polarity* is not guessed
 //!    from the shape (an `if (a)` and an `if (!a)` have the same graph), so a branch whose sense is
@@ -35,14 +40,17 @@
 //!    reported as a fallback region listing exactly those blocks, which is how a body reachable only
 //!    through exception or `jsr` edges stays visible instead of turning into an empty body.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
-use jarde_jvm::method_ir::{CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, SsaTable};
+use jarde_jvm::method_ir::{
+    CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, Definition, MethodIr, PhiInput, Slot,
+    SsaBlock, SsaTable, ValueId,
+};
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{ExceptionHandlerFact, MethodCodeFacts};
 
 use crate::decode::Operations;
-use crate::facts::Operation;
+use crate::facts::{CompareOp, ConstantValue, Operation};
 use crate::normal_flow::NormalFlowView;
 use crate::stop::{StopReason, charge, poll};
 
@@ -60,6 +68,9 @@ pub enum FallbackReason {
     BranchTargets { block_bci: u32, successors: usize },
     /// The region can be re-entered and the loop it belongs to is not one this subset proves.
     Loop { block_bci: u32 },
+    /// Two positions in the completed Region tree claim the same physical canonical block.
+    /// A repeated visit to a join does not by itself prove a loop.
+    OwnershipOverlap { block: CanonicalBlockId },
     /// The loop's own shape is not one of the two this subset proves: its test, its exit or its
     /// single latch does not line up with the blocks that iterate.
     LoopShape { block_bci: u32 },
@@ -86,6 +97,14 @@ pub enum FallbackReason {
     UnrenderableOperand { bci: u32 },
     /// The two arms do not meet at one join.
     ArmsDoNotMeet { block_bci: u32 },
+    /// A bounded short-circuit value shape has one physical owner, but its value has not yet been
+    /// proved by the SSA consumer rule. The builder must quote the complete shape until that rule
+    /// is available.
+    ShortCircuitValueUnproved {
+        first_branch_bci: u32,
+        last_branch_bci: u32,
+        consumer_bci: u32,
+    },
     /// A pass stated a precondition ([`crate::pass::Precondition`], P3 decision 1) and this run's
     /// evidence does not meet it: the shape was **not** claimed.
     ///
@@ -175,6 +194,7 @@ impl FallbackReason {
             Self::SubroutineEntry { .. } => "jre_region_subroutine_entry",
             Self::BranchTargets { .. } => "jre_region_branch_targets",
             Self::Loop { .. } => "jre_region_loop",
+            Self::OwnershipOverlap { .. } => "jre_region_ownership_overlap",
             Self::LoopShape { .. } => "jre_region_loop_shape",
             Self::LoopLeavesEarly { .. } => "jre_region_loop_leaves_early",
             Self::Irreducible { .. } => "jre_region_irreducible",
@@ -182,6 +202,7 @@ impl FallbackReason {
             Self::UnknownBranchSense { .. } => "jre_region_unknown_branch_sense",
             Self::UnrenderableOperand { .. } => "jre_region_unrenderable_operand",
             Self::ArmsDoNotMeet { .. } => "jre_region_arms_do_not_meet",
+            Self::ShortCircuitValueUnproved { .. } => "jre_region_short_circuit_value_unproved",
             Self::UnmetPrecondition { .. } => "jre_region_unmet_precondition",
             Self::SwitchArmsOverlap { .. } => "jre_region_switch_arms_overlap",
             Self::SwitchShape { .. } => "jre_region_switch_shape",
@@ -267,6 +288,11 @@ impl FallbackReason {
             Self::Loop { block_bci } => format!(
                 "block at BCI {block_bci} can be re-entered and belongs to no loop this subset proves"
             ),
+            Self::OwnershipOverlap { block } => format!(
+                "canonical block at BCI {} on jsr path {:?} has more than one owner in the completed Region tree; the whole method is quoted",
+                block.bci(),
+                block.path()
+            ),
             Self::LoopShape { block_bci } => format!(
                 "the loop whose header is the block at BCI {block_bci} has a test, an exit or a latch this subset does not prove"
             ),
@@ -297,6 +323,13 @@ impl FallbackReason {
             Self::ArmsDoNotMeet { block_bci } => {
                 format!("the arms of the branch in block {block_bci} do not meet at one join")
             }
+            Self::ShortCircuitValueUnproved {
+                first_branch_bci,
+                last_branch_bci,
+                consumer_bci,
+            } => format!(
+                "the short-circuit chain from BCI {first_branch_bci} through {last_branch_bci} reaches a shared value consumer at BCI {consumer_bci}, but this slice has no SSA proof for that value; the complete region is quoted"
+            ),
             Self::UnmetPrecondition {
                 pass,
                 requirement,
@@ -357,14 +390,29 @@ pub struct SwitchGroup {
     /// Whether the no-match case runs this arm too — either because the default target is this
     /// group's target, or because this group *is* the default alone (then `keys` is empty).
     pub default: bool,
+    /// This arm's straight-line code ends at the next case entry, so Java must continue into that
+    /// following arm without an intervening `break`.
+    pub fall_through: bool,
     /// The arm, which is an empty straight run when the target is the switch's own join — the
     /// `case 0: break;` shape.
     pub arm: Box<Region>,
 }
 
+/// A counted loop's two instructions that a `for` header may own. The latch block still belongs
+/// to the loop body in the region tree; only its single update statement moves to the header.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ForHeader {
+    pub init_bci: u32,
+    pub update_bci: u32,
+    pub update_block: CanonicalBlockId,
+    pub slot: u16,
+}
+
 /// What one region is.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Region {
+    /// An ordered sequence needed when one branch arm contains multiple child regions.
+    Sequence { regions: Vec<Region> },
     /// A run of blocks with at most one plain successor each, ending where the structure changes.
     Straight { blocks: Vec<CanonicalBlockId> },
     /// A straight-line prefix ending in a two-way branch, with both arms recovered.
@@ -380,15 +428,51 @@ pub enum Region {
         else_arm: Box<Region>,
         join: Option<CanonicalBlockId>,
     },
+    /// A bounded short-circuit value graph whose shared producer and consumer cannot be
+    /// represented by disjoint `If` arms. It claims each physical block once. The builder may
+    /// present its value and consumer only after its separate SSA and type proof succeeds.
+    ShortCircuitValue {
+        /// Blocks already walked before the outer test; they remain before the quoted shape.
+        prefix: Vec<CanonicalBlockId>,
+        tests: Vec<(CanonicalBlockId, u32)>,
+        /// Decoded fallthrough and taken successor for each test, in `tests` order.
+        test_edges: Vec<(CanonicalBlockId, CanonicalBlockId)>,
+        /// Pure direct forward transfers, retaining each physical node and its one successor.
+        gateways: Vec<(CanonicalBlockId, CanonicalBlockId)>,
+        true_producer: CanonicalBlockId,
+        false_producer: CanonicalBlockId,
+        consumer: CanonicalBlockId,
+        consumer_bci: u32,
+        reason: FallbackReason,
+    },
+    /// One bounded, single-entry test DAG ending at two shared boolean returns.
+    /// Ownership is committed once; the builder must independently prove its Java expression.
+    TwoExitReturn {
+        prefix: Vec<CanonicalBlockId>,
+        tests: Vec<(CanonicalBlockId, u32)>,
+        test_edges: Vec<(CanonicalBlockId, CanonicalBlockId)>,
+        gateways: Vec<(CanonicalBlockId, CanonicalBlockId)>,
+        true_return: CanonicalBlockId,
+        false_return: CanonicalBlockId,
+    },
     /// A prefix ending in a `tableswitch`/`lookupswitch`, with one arm per distinct target.
     ///
-    /// `groups` holds the arms in the order the decode first names each target, with the no-match
-    /// case stated on the group whose target it shares (or on a group of its own). A target that is
-    /// the join is an empty arm, which the emitter writes as a `case` that breaks immediately.
+    /// `groups` holds one arm per distinct target. It retains decode order unless a proven
+    /// fallthrough requires the targets' execution order; the no-match case is stated on the group
+    /// whose target it shares (or on a group of its own). A target that is the join is an empty
+    /// arm, which the emitter writes as a `case` that breaks immediately.
     Switch {
         prefix: Vec<CanonicalBlockId>,
         branch: CanonicalBlockId,
         branch_bci: u32,
+        groups: Vec<SwitchGroup>,
+        join: Option<CanonicalBlockId>,
+    },
+    /// One certified javac String dispatch. `dispatch` owns the hash switch, its comparison
+    /// branches and the final integer switch; only the final switch's bodies survive as arms.
+    StringSwitch {
+        dispatch: Vec<CanonicalBlockId>,
+        proof: crate::stringswitch::Proof,
         groups: Vec<SwitchGroup>,
         join: Option<CanonicalBlockId>,
     },
@@ -406,8 +490,25 @@ pub enum Region {
         test_bci: u32,
         form: LoopForm,
         continuation: Continuation,
-        body: Box<Region>,
+        for_header: Option<ForHeader>,
+        /// The regions of one iteration, in normal-flow order. A nested loop, `try`, or `switch`
+        /// can end before its enclosing loop does; the following regions are still part of this
+        /// body.
+        body: Vec<Region>,
         exit: Option<CanonicalBlockId>,
+    },
+    /// An edge in a loop body whose target is exactly this loop's exit.
+    LoopBreak {
+        /// The terminal instruction that transfers to the exit.
+        source_bci: u32,
+        /// The identity of the loop whose exit the edge reaches.
+        loop_header: CanonicalBlockId,
+    },
+    /// A transfer edge to the proved continue target of an enclosing loop: its test for a
+    /// `while`, or its unique update latch when a `for` header owns that update.
+    LoopContinue {
+        source_bci: u32,
+        loop_header: CanonicalBlockId,
     },
     /// A run of blocks that could not be shown to be a Java structure; the text quotes it.
     Fallback {
@@ -429,12 +530,73 @@ pub enum Region {
         /// What the rule proved: the shape, the guarded body and every block the statement owns.
         plan: crate::guard::Plan,
     },
+    /// `try { … } catch (T n) { … }` — a protected range the exception table states, with one clause
+    /// per row that names its `catch` type.
+    ///
+    /// This is the *structure the table states* and not a shape a rule of P3 2.4 proved: the walk
+    /// recovers the protected range and every handler body through the same recursion as any other
+    /// region, which is what lets a clause body hold a branch, a loop or a quote of its own. The
+    /// region is presented only where no guarded rule owns the block ([`crate::guard::catches`]), so
+    /// a `try`-with-resources or a `synchronized` block is never restated as this one.
+    Try {
+        /// The blocks written before the statement, in order.
+        prefix: Vec<CanonicalBlockId>,
+        /// The instructions of the statement's own block that are written **before** the `try`
+        /// ([`crate::guard::Catches::lead`]): the range from that block's start to the protected
+        /// range's start, empty where the two are the same. They are not instructions of the
+        /// protected range, so they are written before the statement — and because they live in the
+        /// block the body begins in, the body does not write them a second time.
+        lead: (u32, u32),
+        /// The protected range, recovered as a region of its own.
+        body: Box<Region>,
+        /// The clauses, in exception-table order.
+        catches: Vec<CatchClause>,
+    },
+}
+
+/// One `catch` clause of a presented `try`.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CatchClause {
+    /// Constant-pool indexes of the `catch` types this clause names, in exception-table order:
+    /// [`crate::build`] spells them from the class file's pool, one class for an ordinary clause and
+    /// `A | B` for the multi-catch rows that share one handler.
+    type_indices: Vec<u16>,
+    /// The canonical block the rows' handler entry maps to.
+    handler: CanonicalBlockId,
+    /// The local slot the handler's own first instruction stores the caught exception into: the
+    /// clause's parameter, named by the same table every other local is named by.
+    parameter: u16,
+    /// The handler's body, from its entry to where the code after the `try` begins.
+    body: Box<Region>,
+}
+
+impl CatchClause {
+    /// Constant-pool indexes of the `catch` types this clause names.
+    pub fn type_indices(&self) -> &[u16] {
+        &self.type_indices
+    }
+
+    /// The block this clause's handler entry is.
+    pub fn handler(&self) -> &CanonicalBlockId {
+        &self.handler
+    }
+
+    /// The slot the handler's first instruction stores the caught exception into.
+    pub fn parameter(&self) -> u16 {
+        self.parameter
+    }
+
+    /// The handler's body.
+    pub fn body(&self) -> &Region {
+        &self.body
+    }
 }
 
 impl Region {
     /// Every block this region claims, in the order the method runs them.
     pub fn blocks(&self) -> Vec<&CanonicalBlockId> {
         match self {
+            Self::Sequence { regions } => regions.iter().flat_map(Self::blocks).collect(),
             Self::Straight { blocks } => blocks.iter().collect(),
             Self::If {
                 prefix,
@@ -447,6 +609,47 @@ impl Region {
                 blocks.push(branch);
                 blocks.extend(then_arm.blocks());
                 blocks.extend(else_arm.blocks());
+                blocks
+            }
+            Self::ShortCircuitValue {
+                prefix,
+                tests,
+                gateways,
+                true_producer,
+                false_producer,
+                consumer,
+                ..
+            } => {
+                let mut blocks = prefix.iter().collect::<Vec<_>>();
+                for (block, _) in tests {
+                    if !blocks.contains(&block) {
+                        blocks.push(block);
+                    }
+                }
+                for (block, _) in gateways {
+                    if !blocks.contains(&block) {
+                        blocks.push(block);
+                    }
+                }
+                for block in [true_producer, false_producer, consumer] {
+                    if !blocks.contains(&block) {
+                        blocks.push(block);
+                    }
+                }
+                blocks
+            }
+            Self::TwoExitReturn {
+                prefix,
+                tests,
+                gateways,
+                true_return,
+                false_return,
+                ..
+            } => {
+                let mut blocks = prefix.iter().collect::<Vec<_>>();
+                blocks.extend(tests.iter().map(|(block, _)| block));
+                blocks.extend(gateways.iter().map(|(block, _)| block));
+                blocks.extend([true_return, false_return]);
                 blocks
             }
             Self::Switch {
@@ -462,20 +665,60 @@ impl Region {
                 }
                 blocks
             }
-            Self::Loop {
-                header, test, body, ..
+            Self::StringSwitch {
+                dispatch, groups, ..
             } => {
-                let mut blocks: Vec<&CanonicalBlockId> = vec![header];
-                if test != header {
-                    blocks.push(test);
+                let mut blocks: Vec<&CanonicalBlockId> = dispatch.iter().collect();
+                for group in groups {
+                    blocks.extend(group.arm.blocks());
                 }
-                blocks.extend(body.blocks());
+                blocks
+            }
+            Self::Loop {
+                header,
+                test,
+                form,
+                body,
+                ..
+            } => {
+                let mut blocks = Vec::new();
+                // A one-block `do … while` writes that block's statements in its body before
+                // testing the branch in the same block. The header/test fields name the shape,
+                // while the body is its one physical owner. Keep duplicates *inside* the body
+                // visible to the method-level ownership check.
+                if *form != LoopForm::DoWhile || header != test {
+                    blocks.push(header);
+                    if test != header {
+                        blocks.push(test);
+                    }
+                }
+                for region in body {
+                    blocks.extend(region.blocks());
+                }
+                if *form == LoopForm::DoWhile && header == test && !blocks.contains(&header) {
+                    blocks.insert(0, header);
+                }
                 blocks
             }
             Self::Fallback { blocks, .. } => blocks.iter().collect(),
+            Self::LoopBreak { .. } => Vec::new(),
+            Self::LoopContinue { .. } => Vec::new(),
             Self::Guard { prefix, plan } => {
                 let mut blocks: Vec<&CanonicalBlockId> = prefix.iter().collect();
                 blocks.extend(plan.owned());
+                blocks
+            }
+            Self::Try {
+                prefix,
+                body,
+                catches,
+                ..
+            } => {
+                let mut blocks: Vec<&CanonicalBlockId> = prefix.iter().collect();
+                blocks.extend(body.blocks());
+                for clause in catches {
+                    blocks.extend(clause.body.blocks());
+                }
                 blocks
             }
         }
@@ -484,23 +727,39 @@ impl Region {
     /// Whether this region is presented as Java structure rather than as quoted bytecode.
     pub fn is_structured(&self) -> bool {
         match self {
+            Self::Sequence { regions } => regions.iter().all(Self::is_structured),
             Self::Straight { .. } => true,
             Self::If {
                 then_arm, else_arm, ..
             } => then_arm.is_structured() && else_arm.is_structured(),
-            Self::Switch { groups, .. } => groups.iter().all(|group| group.arm.is_structured()),
-            Self::Loop { body, .. } => body.is_structured(),
+            Self::ShortCircuitValue { reason, .. } => {
+                !matches!(reason, FallbackReason::ExceptionEdge { .. })
+            }
+            Self::TwoExitReturn { .. } => true,
+            Self::Switch { groups, .. } | Self::StringSwitch { groups, .. } => {
+                groups.iter().all(|group| group.arm.is_structured())
+            }
+            Self::Loop { body, .. } => body.iter().all(Region::is_structured),
             // A guarded statement is presented when its rule proved it, and every link of that
             // proof is stated by the rule itself: there is no *nested* region inside it that could
             // have been quoted instead, because a body this rule cannot present is refused whole.
             Self::Guard { .. } => true,
+            // A `try` is presented when the protected range and every handler body are: a clause
+            // whose body is a quote keeps its header and states the quote inside it, which is a
+            // weaker presentation and not a structured one.
+            Self::Try { body, catches, .. } => {
+                body.is_structured() && catches.iter().all(|clause| clause.body.is_structured())
+            }
             Self::Fallback { .. } => false,
+            Self::LoopBreak { .. } => true,
+            Self::LoopContinue { .. } => true,
         }
     }
 
     /// Every fallback this region holds, in method order.
     pub fn fallbacks(&self) -> Vec<FallbackReason> {
         match self {
+            Self::Sequence { regions } => regions.iter().flat_map(Self::fallbacks).collect(),
             Self::Straight { .. } => Vec::new(),
             Self::If {
                 then_arm, else_arm, ..
@@ -509,13 +768,27 @@ impl Region {
                 reasons.extend(else_arm.fallbacks());
                 reasons
             }
-            Self::Switch { groups, .. } => groups
+            Self::ShortCircuitValue { reason, .. } => match reason {
+                FallbackReason::ExceptionEdge { .. } => vec![reason.clone()],
+                _ => Vec::new(),
+            },
+            Self::TwoExitReturn { .. } => Vec::new(),
+            Self::Switch { groups, .. } | Self::StringSwitch { groups, .. } => groups
                 .iter()
                 .flat_map(|group| group.arm.fallbacks())
                 .collect(),
-            Self::Loop { body, .. } => body.fallbacks(),
+            Self::Loop { body, .. } => body.iter().flat_map(Region::fallbacks).collect(),
             Self::Guard { .. } => Vec::new(),
+            Self::Try { body, catches, .. } => {
+                let mut reasons = body.fallbacks();
+                for clause in catches {
+                    reasons.extend(clause.body.fallbacks());
+                }
+                reasons
+            }
             Self::Fallback { reason, .. } => vec![reason.clone()],
+            Self::LoopBreak { .. } => Vec::new(),
+            Self::LoopContinue { .. } => Vec::new(),
         }
     }
 
@@ -527,14 +800,35 @@ impl Region {
     /// irreducible graph) states `None` rather than borrowing a rule's name.
     pub fn rule(&self) -> Option<crate::pass::RuleVersion> {
         match self {
+            Self::Sequence { .. } => None,
             Self::Straight { .. } => Some(crate::pass::STRAIGHT.rule()),
             Self::If { .. } => Some(crate::pass::IF.rule()),
-            Self::Switch { .. } => Some(crate::pass::SWITCH.rule()),
+            Self::ShortCircuitValue { .. } => None,
+            Self::TwoExitReturn { .. } => None,
+            Self::Switch { .. } | Self::StringSwitch { .. } => Some(crate::pass::SWITCH.rule()),
             Self::Loop { .. } => Some(crate::pass::LOOP.rule()),
+            Self::LoopBreak { .. } => Some(crate::pass::LOOP.rule()),
+            Self::LoopContinue { .. } => Some(crate::pass::LOOP.rule()),
             Self::Guard { plan, .. } => Some(plan.pass().rule()),
+            // No pass of this build claims a `try`/`catch`: the statement is the exception table's
+            // own structure, read here and written by the builder, and naming a rule for it would
+            // claim a proof that does not exist.
+            Self::Try { .. } => None,
             Self::Fallback { reason, .. } => reason.pass().map(|pass| pass.rule()),
         }
     }
+}
+
+fn sequence_region(regions: Vec<Region>) -> Region {
+    match regions.len() {
+        0 => Region::Straight { blocks: Vec::new() },
+        1 => regions.into_iter().next().expect("one region"),
+        _ => Region::Sequence { regions },
+    }
+}
+
+fn same_nodes(left: &[usize], right: &[usize]) -> bool {
+    left.len() == right.len() && left.iter().all(|node| right.contains(node))
 }
 
 /// The regions of one method, with what the walk claimed and what it could not.
@@ -577,6 +871,160 @@ impl Recovered {
     }
 }
 
+/// Publish a two-dispatch String structure only after both ordinary regions and the complete
+/// same-method certificate exist. A refusal does not modify either original region.
+pub(crate) fn project_string_switches(
+    recovered: &mut Recovered,
+    ir: &MethodIr,
+    budget: &mut Budget,
+) -> Result<(), StopReason> {
+    fn visit(region: &mut Region, ir: &MethodIr, budget: &mut Budget) -> Result<(), StopReason> {
+        match region {
+            Region::Sequence { regions } | Region::Loop { body: regions, .. } => {
+                project_sequence(regions, ir, budget)?;
+            }
+            Region::If {
+                then_arm, else_arm, ..
+            } => {
+                visit(then_arm, ir, budget)?;
+                visit(else_arm, ir, budget)?;
+            }
+            Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
+                for group in groups {
+                    visit(&mut group.arm, ir, budget)?;
+                }
+            }
+            Region::Try { body, catches, .. } => {
+                visit(body, ir, budget)?;
+                for clause in catches {
+                    visit(&mut clause.body, ir, budget)?;
+                }
+            }
+            Region::ShortCircuitValue { .. } | Region::TwoExitReturn { .. } => {}
+            Region::Straight { .. }
+            | Region::Fallback { .. }
+            | Region::Guard { .. }
+            | Region::LoopBreak { .. }
+            | Region::LoopContinue { .. } => {}
+        }
+        Ok(())
+    }
+
+    fn project_sequence(
+        regions: &mut Vec<Region>,
+        ir: &MethodIr,
+        budget: &mut Budget,
+    ) -> Result<(), StopReason> {
+        for region in regions.iter_mut() {
+            visit(region, ir, budget)?;
+        }
+        let mut index = 0;
+        while index + 1 < regions.len() {
+            poll(budget, None)?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+            if let Some(projected) =
+                string_switch_pair(&regions[index], &regions[index + 1], ir, budget)?
+            {
+                regions.splice(index..index + 2, [projected]);
+            } else {
+                index += 1;
+            }
+        }
+        Ok(())
+    }
+
+    project_sequence(&mut recovered.regions, ir, budget)
+}
+
+fn string_switch_pair(
+    first: &Region,
+    second: &Region,
+    ir: &MethodIr,
+    budget: &mut Budget,
+) -> Result<Option<Region>, StopReason> {
+    let (
+        Region::Switch {
+            branch_bci: hash_bci,
+            join: hash_join,
+            ..
+        },
+        Region::Switch {
+            prefix,
+            branch,
+            branch_bci: final_bci,
+            groups,
+            join,
+        },
+    ) = (first, second)
+    else {
+        return Ok(None);
+    };
+    if !prefix.is_empty()
+        || hash_join.as_ref() != Some(branch)
+        || !first.is_structured()
+        || !second.is_structured()
+    {
+        return Ok(None);
+    }
+    let Some(proof) = crate::stringswitch::prove(ir, *hash_bci, *final_bci, budget)? else {
+        return Ok(None);
+    };
+    let (Some(ssa), Some(code)) = (ir.ssa(), ir.code()) else {
+        return Ok(None);
+    };
+    let mut dispatch: Vec<CanonicalBlockId> = first.blocks().into_iter().cloned().collect();
+    if !dispatch.contains(branch) {
+        dispatch.push(branch.clone());
+    }
+    let dispatch_set: BTreeSet<_> = dispatch.iter().cloned().collect();
+    // The region structure must own precisely the removable interval. A certificate for a
+    // different shape is not authority to hide extra instructions in these blocks.
+    let actual: BTreeSet<u32> = ssa
+        .blocks()
+        .iter()
+        .filter(|block| dispatch_set.contains(block.block()))
+        .flat_map(|block| block.instructions())
+        .map(|instruction| instruction.bci())
+        .filter(|bci| *bci >= proof.selector_store_bci && *bci <= proof.final_switch_bci)
+        .collect();
+    if actual != proof.owned_bcis
+        || proof.owned_bcis.iter().any(|bci| {
+            !code
+                .instructions
+                .iter()
+                .any(|instruction| instruction.bci == *bci)
+        })
+    {
+        return Ok(None);
+    }
+    let mut mapped = BTreeSet::new();
+    let mut defaults = 0;
+    for group in groups {
+        defaults += usize::from(group.default);
+        for key in &group.keys {
+            if !mapped.insert(*key) {
+                return Ok(None);
+            }
+            let has_label = proof.labels.iter().any(|(_, label_key)| label_key == key);
+            if !has_label && (!group.default || !proof.default_holes.contains(key)) {
+                return Ok(None);
+            }
+        }
+    }
+    if defaults != 1
+        || proof.labels.iter().any(|(_, key)| !mapped.contains(key))
+        || proof.default_holes.iter().any(|key| !mapped.contains(key))
+    {
+        return Ok(None);
+    }
+    Ok(Some(Region::StringSwitch {
+        dispatch,
+        proof,
+        groups: groups.clone(),
+        join: join.clone(),
+    }))
+}
+
 /// Recovers the region tree of one method from the projection, the decoded operations and the
 /// decode facts the same read produced.
 ///
@@ -591,6 +1039,7 @@ pub(crate) fn recover(
     ssa: &SsaTable,
     operations: &Operations,
     code: &MethodCodeFacts,
+    method_synchronized: Option<bool>,
     profile: &crate::pass::RecoveryProfile,
     budget: &mut Budget,
 ) -> Result<Recovered, StopReason> {
@@ -607,7 +1056,25 @@ pub(crate) fn recover(
     // reader cannot see would hide exactly the fact that made it unprovable. A third fact of the
     // same kind is asked of the decode, and it is answered at the end of this function, because
     // what the body has to become then depends on what the walk found.
-    let irreducible = view.irreducible_blocks();
+    let catch_joins = proved_loop_catch_joins(canonical, view, code, budget)?;
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(canonical.edges().len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    let excluded_edge_nodes: BTreeSet<_> = canonical
+        .edges()
+        .iter()
+        .filter(|edge| {
+            matches!(
+                edge.kind(),
+                CanonicalEdgeKind::Exception { .. } | CanonicalEdgeKind::Call { .. }
+            )
+        })
+        .flat_map(|edge| [edge.from().clone(), edge.to().clone()])
+        .collect();
+    let irreducible = view.irreducible_blocks(&catch_joins);
     if !irreducible.is_empty() {
         let bcis = irreducible
             .iter()
@@ -635,6 +1102,56 @@ pub(crate) fn recover(
             canonical,
         ));
     }
+    let boundary_return_bci = if method_synchronized == Some(false) {
+        code.exception_handlers
+            .iter()
+            .filter(|row| row.catch_type_index.is_some())
+            .find_map(|row| {
+                canonical.blocks().iter().find_map(|span| {
+                    (row.start_bci < span.end_bci() && span.id().bci() < row.end_bci)
+                        .then(|| ssa.block(span.id()))
+                        .flatten()
+                        .and_then(|names| names.instructions().last())
+                        .filter(|last| {
+                            last.bci() == row.end_bci
+                                && operations.get(last.bci()) == Some(&Operation::Return)
+                        })
+                        .map(|last| last.bci())
+                })
+            })
+    } else {
+        None
+    };
+    let has_reachable_explicit_monitor = if let Some(at) = boundary_return_bci {
+        poll(budget, Some(at))?;
+        let scan_items = ssa
+            .blocks()
+            .iter()
+            .map(|block| block.instructions().len().saturating_add(1))
+            .sum::<usize>();
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(scan_items).unwrap_or(u64::MAX),
+            Some(at),
+        )?;
+        let mut found = false;
+        for entry in ssa.blocks() {
+            poll(budget, Some(at))?;
+            if canonical.unreachable().contains(entry.block()) {
+                continue;
+            }
+            found |= entry.instructions().iter().any(|instruction| {
+                matches!(
+                    operations.get(instruction.bci()),
+                    Some(Operation::Monitor { .. })
+                )
+            });
+        }
+        found
+    } else {
+        false
+    };
     // P3-R7's own check runs *after* the walk, because what the body has to become depends on what
     // the walk was going to say about it (see the end of this function).
     let mut walker = Walker {
@@ -642,9 +1159,14 @@ pub(crate) fn recover(
         view,
         ssa,
         operations,
+        code,
+        method_synchronized,
+        has_reachable_explicit_monitor,
         handlers: &code.exception_handlers,
         profile,
         budget,
+        catch_joins,
+        excluded_edge_nodes,
         visited: BTreeSet::new(),
         depth: 0,
     };
@@ -659,9 +1181,54 @@ pub(crate) fn recover(
         }
     }
     while let Some(node) = current {
-        let (region, next) = walker.region_at(&node, &Frame::default())?;
-        regions.push(region);
+        // One walk call may prove two regions: the blocks it proved before a gap and the quote the
+        // gap owes ([`Run`]). Both are regions of this method, in that order, and the run continues
+        // at the join the gap proved — or stops, with the live blocks it left behind named by the
+        // uncovered-blocks scan below.
+        let (run, next) = walker.region_at(&node, &Frame::default())?;
+        regions.extend(run);
         current = next;
+    }
+    if std::env::var_os("JRE_PREFIX_PROBE").is_some() {
+        eprintln!(
+            "P3VISITED blocks={:?} visited={:?}",
+            canonical
+                .blocks()
+                .iter()
+                .map(|block| block.id().bci())
+                .collect::<Vec<u32>>(),
+            walker
+                .visited
+                .iter()
+                .filter_map(|node| canonical.blocks().get(*node).map(|block| block.id().bci()))
+                .collect::<Vec<u32>>()
+        );
+    }
+    if std::env::var_os("JRE_PREFIX_PROBE").is_some() {
+        let held: BTreeSet<usize> = regions
+            .iter()
+            .flat_map(Region::blocks)
+            .filter_map(|block| walker.view.index_of(block))
+            .collect();
+        let lost: Vec<u32> = walker
+            .visited
+            .iter()
+            .filter(|node| !held.contains(node))
+            .filter_map(|node| canonical.blocks().get(*node).map(|block| block.id().bci()))
+            .collect();
+        if !lost.is_empty() {
+            eprintln!(
+                "P3LOST blocks={lost:?} regions={:?}",
+                regions
+                    .iter()
+                    .map(|region| region
+                        .blocks()
+                        .iter()
+                        .map(|block| block.bci())
+                        .collect::<Vec<u32>>())
+                    .collect::<Vec<Vec<u32>>>()
+            );
+        }
     }
     let uncovered: Vec<CanonicalBlockId> = canonical
         .blocks()
@@ -683,6 +1250,19 @@ pub(crate) fn recover(
             blocks: uncovered,
             reason: FallbackReason::UncoveredBlocks { blocks: bcis },
         });
+    }
+    // The walk's visited set prevents endless traversal, but an already claimed join can still
+    // appear in several returned regions. Those local decisions cannot jointly describe a Java
+    // body. Refuse the completed tree before the builder sees any of it; keep P3-R7's independent
+    // instruction check below so bytes missing from the canonical graph remain named too.
+    if let Some(block) = overlapping_owner(&regions, walker.budget)? {
+        regions = quoted_whole(
+            live.clone(),
+            FallbackReason::OwnershipOverlap { block },
+            canonical,
+        )
+        .regions;
+        walker.visited.clear();
     }
     // P3-R7, last: the graph has to be an account of the body it stands for **before** any region of
     // it is presented as that body. Every instruction the same read decoded is either covered by a
@@ -724,6 +1304,204 @@ pub(crate) fn recover(
         claimed: walker.visited,
         blocks: canonical.blocks().len(),
     })
+}
+
+/// Find the first repeated physical owner in method order. `Region::blocks` already folds
+/// intentional aliases *within* one shape (a loop header that is its test, or a short-circuit
+/// producer named by several edges). The identity includes the `jsr` path, so clones at one BCI
+/// remain separate owners. Charge each region before flattening it, then its references before
+/// checking them; a stop returns no partly validated tree.
+fn overlapping_owner(
+    regions: &[Region],
+    budget: &mut Budget,
+) -> Result<Option<CanonicalBlockId>, StopReason> {
+    let mut seen = BTreeSet::new();
+    for region in regions {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        let blocks = region.blocks();
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(blocks.len()).unwrap_or(u64::MAX),
+            blocks.first().map(|block| block.bci()),
+        )?;
+        for block in blocks {
+            poll(budget, Some(block.bci()))?;
+            if !seen.insert(block) {
+                return Ok(Some(block.clone()));
+            }
+        }
+    }
+    Ok(None)
+}
+
+/// A handler reached only through its stated exception row is not a second ordinary entry when
+/// its protected code belongs to one loop and both paths meet again inside that loop. Keep the
+/// ordinary edge in the view: the `try` walk still has to claim the handler and the join.
+fn proved_loop_catch_joins(
+    canonical: &CanonicalCfg,
+    view: &NormalFlowView,
+    code: &MethodCodeFacts,
+    budget: &mut Budget,
+) -> Result<BTreeSet<(usize, usize)>, StopReason> {
+    let mut joins = BTreeSet::new();
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(canonical.handler_rows().len()).unwrap_or(u64::MAX),
+        None,
+    )?;
+    let handlers: BTreeSet<usize> = canonical
+        .handler_rows()
+        .iter()
+        .filter_map(|row| row.handler().and_then(|id| view.index_of(id)))
+        .collect();
+    for handler in handlers {
+        let at = view.id_of(handler).map(CanonicalBlockId::bci);
+        poll(budget, at)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+        let successors = view.successors(handler);
+        let [join] = successors.as_slice() else {
+            continue;
+        };
+        // A second ordinary predecessor means this is no longer an exception-root handler.
+        if !view.predecessors(handler).is_empty() {
+            continue;
+        }
+        let rows: Vec<_> = canonical
+            .handler_rows()
+            .iter()
+            .filter(|row| row.handler().and_then(|id| view.index_of(id)) == Some(handler))
+            .collect();
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(code.exception_handlers.len()).unwrap_or(u64::MAX),
+            at,
+        )?;
+        // Every declared row targeting this physical entry must have a matching canonical row
+        // under this path. An unmapped row cannot silently grant the mapped one an exemption.
+        if code.exception_handlers.iter().any(|declared| {
+            Some(declared.handler_bci) == at
+                && !rows.iter().any(|row| row.ordinal() == declared.ordinal)
+        }) {
+            continue;
+        }
+        if rows
+            .iter()
+            .any(|row| row.catch_type_index().is_none() || row.protected().is_empty())
+        {
+            continue;
+        }
+        for header in 0..view.len() {
+            let Some(loop_of) = view.loop_entered_at(header) else {
+                continue;
+            };
+            if *join == header || !loop_of.blocks().contains(join) {
+                continue;
+            }
+            let mut compatible = true;
+            for row in &rows {
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(canonical.blocks().len()).unwrap_or(u64::MAX),
+                    at,
+                )?;
+                let Some(declared) = code
+                    .exception_handlers
+                    .iter()
+                    .find(|declared| declared.ordinal == row.ordinal())
+                else {
+                    compatible = false;
+                    break;
+                };
+                // `protected()` may list only actual throw-site blocks. The table's full range
+                // must also stay inside the loop body; a row covering the loop test or a block
+                // outside this loop cannot borrow a sibling row's valid handler entry.
+                for block in canonical.blocks().iter().filter(|block| {
+                    block.id().bci() < declared.end_bci && block.end_bci() > declared.start_bci
+                }) {
+                    let Some(node) = view.index_of(block.id()) else {
+                        compatible = false;
+                        break;
+                    };
+                    if node == header
+                        || !loop_of.blocks().contains(&node)
+                        || !view.dominates(header, node)
+                    {
+                        compatible = false;
+                        break;
+                    }
+                }
+                if !compatible {
+                    break;
+                }
+                for protected in row.protected() {
+                    let Some(node) = view.index_of(protected) else {
+                        compatible = false;
+                        break;
+                    };
+                    if !loop_of.blocks().contains(&node)
+                        || !view.dominates(header, node)
+                        || !plain_paths_reach_join(view, node, *join, budget)?
+                    {
+                        compatible = false;
+                        break;
+                    }
+                }
+                if !compatible {
+                    break;
+                }
+            }
+            if compatible {
+                joins.insert((handler, *join));
+            }
+        }
+    }
+    Ok(joins)
+}
+
+/// Every ordinary path must reach the join before a terminal or a cycle. A cycle that can avoid
+/// the join is not a proved rejoin, even if another route reaches it.
+fn plain_paths_reach_join(
+    view: &NormalFlowView,
+    start: usize,
+    join: usize,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let mut state = BTreeMap::new();
+    let mut pending = vec![(start, false)];
+    while let Some((node, finished)) = pending.pop() {
+        let at = view.id_of(node).map(CanonicalBlockId::bci);
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
+        if node == join {
+            continue;
+        }
+        if finished {
+            state.insert(node, 2u8);
+            continue;
+        }
+        match state.get(&node) {
+            Some(1) => return Ok(false),
+            Some(2) => continue,
+            _ => {}
+        }
+        let successors = view.successors(node);
+        if successors.is_empty() {
+            return Ok(false);
+        }
+        state.insert(node, 1u8);
+        pending.push((node, true));
+        pending.extend(
+            successors
+                .into_iter()
+                .rev()
+                .map(|successor| (successor, false)),
+        );
+    }
+    Ok(true)
 }
 
 /// One whole-body fallback: every live block quoted, under one reason.
@@ -838,34 +1616,131 @@ struct Frame {
     /// header is inside the structure it is building, which is a state it has already entered — not
     /// a nested loop — and the walk must not read it as one (see [`Walker::region_at`]).
     own_loop: Option<usize>,
+    /// The block of the `try` this frame is the protected range of. The range begins at that block,
+    /// so the walk that recovers it starts at it, and reading it as the start of *another* `try`
+    /// would be reading the statement it is already building (see [`Walker::try_region`]).
+    own_try: Option<usize>,
+    /// Other case-entry nodes of a switch arm. They end this arm before the next case claims them.
+    case_entries: Option<BTreeSet<usize>>,
+    /// The exact normal-flow target of a `break` from the loop whose body this frame walks.
+    loop_exit: Option<usize>,
+    /// Proven transfer destinations of enclosing loops, outermost first.
+    loop_targets: Vec<LoopTarget>,
+    /// Source instruction of an incoming branch/switch edge, when this arm is a transfer leaf.
+    transfer_source_bci: Option<u32>,
+    /// A switch's own join must remain a switch break instead of becoming a loop break.
+    switch_join: Option<usize>,
+}
+
+#[derive(Clone, Debug)]
+struct LoopTarget {
+    header: usize,
+    exits: BTreeSet<usize>,
+    break_target: Option<usize>,
+    continue_target: usize,
 }
 
 impl Frame {
     /// The frame of one loop body: the blocks that iterate, ending where the loop tests.
-    fn loop_body(&self, blocks: &BTreeSet<usize>, boundary: usize, header: usize) -> Self {
+    fn loop_body(
+        &self,
+        blocks: &BTreeSet<usize>,
+        boundary: usize,
+        header: usize,
+        continue_target: usize,
+        exit: Option<usize>,
+        exits: BTreeSet<usize>,
+        transfer_sources: &BTreeSet<usize>,
+    ) -> Self {
         // A loop inside a loop may not claim a block the enclosing loop's body does not hold: the
         // scope of a body is the intersection, so a nesting cannot widen it.
-        let scope = match &self.scope {
+        let mut scope = match &self.scope {
             Some(outer) => blocks.intersection(outer).copied().collect(),
             None => blocks.clone(),
         };
+        // A transfer instruction is part of the loop body even when its one outgoing edge makes
+        // its block absent from the natural-loop set. Admit only single-successor predecessors of
+        // an exact enclosing-loop exit/continue target; the walker will still verify that edge.
+        scope.extend(transfer_sources.iter().copied());
         Self {
             boundary: Some(boundary),
             scope: Some(scope),
             own_loop: Some(header),
+            own_try: None,
+            case_entries: self.case_entries.clone(),
+            loop_exit: exit,
+            loop_targets: {
+                let mut targets = self.loop_targets.clone();
+                targets.push(LoopTarget {
+                    header,
+                    exits,
+                    break_target: exit,
+                    continue_target,
+                });
+                targets
+            },
+            transfer_source_bci: None,
+            switch_join: self.switch_join,
         }
     }
 
     /// The frame of one arm of a branch: everything the enclosing frame allowed, ending at the join.
     ///
-    /// The arm is no longer the loop body's own walk: an arm that jumps back to the enclosing loop's
-    /// test is an ordinary continuation of the body (a `continue`), and reading it as "the walk
-    /// re-entered the loop it is building" would refuse a shape this layer has always answered.
-    fn arm(&self, join: Option<usize>) -> Self {
+    /// The arm keeps its enclosing loop identity so transfer edges reached through a branch are
+    /// attributed to the same loop. Entering a nested loop replaces that identity in its body frame.
+    fn arm(&self, join: Option<usize>, source_bci: Option<u32>) -> Self {
+        Self {
+            // A branch with no normal-flow join still stays inside its enclosing region. This is
+            // needed when one arm exits through a caught exception and the other reaches the try's
+            // join: the normal-flow graph alone has no post-dominator for that branch.
+            boundary: join.or(self.boundary),
+            scope: self.scope.clone(),
+            own_loop: None,
+            // An `if` inside a protected range is still inside that range in either arm. Keep
+            // its owner so a throwing arm's exception edges can be matched to this try's catches.
+            own_try: self.own_try,
+            case_entries: self.case_entries.clone(),
+            loop_exit: self.loop_exit,
+            loop_targets: self.loop_targets.clone(),
+            transfer_source_bci: source_bci.or(self.transfer_source_bci),
+            switch_join: self.switch_join,
+        }
+    }
+
+    /// One switch arm, bounded by the other proven case entries as well as its enclosing join.
+    fn switch_arm(&self, join: Option<usize>, entries: &BTreeSet<usize>, source_bci: u32) -> Self {
+        let mut case_entries = self.case_entries.clone().unwrap_or_default();
+        case_entries.extend(entries.iter().copied());
+        Self {
+            boundary: join.or(self.boundary),
+            scope: self.scope.clone(),
+            own_loop: None,
+            own_try: self.own_try,
+            case_entries: Some(case_entries),
+            loop_exit: self.loop_exit,
+            loop_targets: self.loop_targets.clone(),
+            transfer_source_bci: Some(source_bci),
+            switch_join: join.or(self.switch_join),
+        }
+    }
+
+    /// The frame of one `try`'s protected range: it ends where the code after the `try` begins.
+    ///
+    /// `start` is the node the statement's own range begins at, which is the node this walk is
+    /// entering: the range is *inside* the statement, so it may not present the statement again.
+    /// The enclosing frame's scope is kept — what a loop body may claim does not widen under a `try`
+    /// — exactly as an arm keeps it.
+    fn protected(&self, join: Option<usize>, start: usize) -> Self {
         Self {
             boundary: join,
             scope: self.scope.clone(),
             own_loop: None,
+            own_try: Some(start),
+            case_entries: self.case_entries.clone(),
+            loop_exit: self.loop_exit,
+            loop_targets: self.loop_targets.clone(),
+            transfer_source_bci: self.transfer_source_bci,
+            switch_join: self.switch_join,
         }
     }
 
@@ -873,9 +1748,21 @@ impl Frame {
     fn stops_at(&self, node: usize) -> bool {
         self.boundary == Some(node)
             || self
+                .case_entries
+                .as_ref()
+                .is_some_and(|entries| entries.contains(&node))
+            || self
                 .scope
                 .as_ref()
                 .is_some_and(|scope| !scope.contains(&node))
+    }
+
+    fn stops_at_switch_boundary(&self, node: usize) -> bool {
+        self.switch_join == Some(node)
+            || self
+                .case_entries
+                .as_ref()
+                .is_some_and(|entries| entries.contains(&node))
     }
 }
 
@@ -884,6 +1771,13 @@ struct Walker<'a> {
     view: &'a NormalFlowView,
     ssa: &'a SsaTable,
     operations: &'a Operations,
+    code: &'a MethodCodeFacts,
+    /// Whether the declaring method is synchronized, as the same recovery request states it. An
+    /// absent flag is not evidence that the JVM's implicit method monitor is absent.
+    method_synchronized: Option<bool>,
+    /// Whether a reachable instruction anywhere in this method enters or leaves an explicit
+    /// monitor. Computed once, only when a range-end return candidate could use the exception.
+    has_reachable_explicit_monitor: bool,
     /// The exception table the same decode stated: the guarded rules of P3 2.4 read the ranges and
     /// the catch types from it, and the walk reads it for the crossing-range refusal.
     handlers: &'a [ExceptionHandlerFact],
@@ -891,6 +1785,10 @@ struct Walker<'a> {
     /// presents the artifact as an older release does not admit it ([`crate::pass::Pass::admits`]).
     profile: &'a crate::pass::RecoveryProfile,
     budget: &'a mut Budget,
+    catch_joins: BTreeSet<(usize, usize)>,
+    /// Endpoints of exception and subroutine edges, computed once so bounded local shape probes do
+    /// not rescan the whole canonical edge table.
+    excluded_edge_nodes: BTreeSet<CanonicalBlockId>,
     visited: BTreeSet<usize>,
     /// How many [`Walker::region_at`] calls are on the stack: the region walk's own recursion
     /// depth, checked against [`MAX_REGION_DEPTH`] before the walk descends.
@@ -922,6 +1820,94 @@ struct Walker<'a> {
 /// exceeds it is refused before it descends rather than after the stack is gone.
 const MAX_REGION_DEPTH: usize = 32;
 
+/// One recovered `try`: the protected range, the instructions of the statement's own block written
+/// before it ([`crate::guard::Catches::lead`]), the clauses, where the code after it begins, and
+/// the sibling quotes a gap inside it left behind ([`Run`]).
+type OwnedTry = (
+    Box<Region>,
+    (u32, u32),
+    Vec<CatchClause>,
+    Option<CanonicalBlockId>,
+    Vec<Region>,
+);
+
+/// What one call of the walk proved, in the order the text writes it, and where the run continues.
+///
+/// A call normally proves one region. A gap after proved blocks returns a `Straight` prefix
+/// followed by a `Fallback`; a proved transfer after blocks similarly returns the prefix followed
+/// by `LoopBreak` or `LoopContinue`. A loop body keeps the ordered run directly, and an if/switch
+/// arm can keep it in `Sequence` so the transfer remains inside its branch. The try/catch slots
+/// still split a gap and report its quote beside their statement. A quote is not a statement; its
+/// BCIs are where it really runs. In every case a proved prefix stays outside the quote.
+///
+/// The successor is where the walk continues afterwards, when the gap itself states one: the join a
+/// branch proved is a block every path passes through, so reading it as the next region's start
+/// states the code after the gap instead of quoting it. A gap with no proven join stops the run,
+/// and the live blocks it left behind are named by the uncovered-blocks scan at the end of
+/// [`recover`].
+type Run = (Vec<Region>, Option<CanonicalBlockId>);
+
+/// The run one gap leaves behind, and the successor that continues it.
+///
+/// `prefix` is what the walk proved before the gap, `gap` the blocks the gap must quote — the block
+/// whose shape failed, then every block the walk entered and cannot claim, each named once — and
+/// `reason` the refusal itself. The invariant this function exists for: a prefix is **never** quoted
+/// (its statements stay statements) and no block a prefix holds appears in the quote.
+fn gap(
+    prefix: Vec<CanonicalBlockId>,
+    gap: Vec<CanonicalBlockId>,
+    reason: FallbackReason,
+    next: Option<CanonicalBlockId>,
+) -> Run {
+    let fallback = Region::Fallback {
+        blocks: gap,
+        reason,
+    };
+    if prefix.is_empty() {
+        (vec![fallback], next)
+    } else {
+        (vec![Region::Straight { blocks: prefix }, fallback], next)
+    }
+}
+
+/// The blocks one gap's quote names: the block whose shape failed, then every block the walk
+/// entered and cannot claim, each once.
+///
+/// The order is the walk's: the failing block is what the refusal is *about*, and the blocks the
+/// walk entered before it follow. A block that appears twice — an arm the walk entered twice, or a
+/// block already named as the failing one — is named once, because the quote is a set of
+/// instruction starts.
+fn gap_blocks(
+    current: &CanonicalBlockId,
+    entered: impl IntoIterator<Item = CanonicalBlockId>,
+) -> Vec<CanonicalBlockId> {
+    let mut blocks = vec![current.clone()];
+    for block in entered {
+        if !blocks.contains(&block) {
+            blocks.push(block);
+        }
+    }
+    blocks
+}
+
+/// Takes the head of a run for a try/catch slot that holds one region, and gives back the rest.
+///
+/// The remaining try/catch slots hold one [`Region`]. If a gap stops after a proved prefix, its
+/// quote is returned as a sibling beside that statement (see [`Run`]). If/switch arms instead
+/// retain an ordered run in `Sequence`; loop bodies hold a region list. An empty run is not a run.
+fn split(run: Vec<Region>) -> (Region, Vec<Region>) {
+    let mut run = run.into_iter();
+    let head = run
+        .next()
+        .expect("every walk run holds at least one region");
+    (head, run.collect())
+}
+
+/// A run of one region: the ordinary case, said once.
+fn one(region: Region, next: Option<CanonicalBlockId>) -> Run {
+    (vec![region], next)
+}
+
 impl Walker<'_> {
     /// The region that starts at one block, and the block the run continues at afterwards.
     ///
@@ -940,11 +1926,7 @@ impl Walker<'_> {
     ///   header: the state it is building, already entered. `loop_region` would take the same shape
     ///   decisions for it — none of them reads the frame — and arrive back here, which is the cycle
     ///   that drove the reported abort.
-    fn region_at(
-        &mut self,
-        start: &CanonicalBlockId,
-        frame: &Frame,
-    ) -> Result<(Region, Option<CanonicalBlockId>), StopReason> {
+    fn region_at(&mut self, start: &CanonicalBlockId, frame: &Frame) -> Result<Run, StopReason> {
         let reentered = self
             .view
             .index_of(start)
@@ -973,7 +1955,7 @@ impl Walker<'_> {
         &mut self,
         start: &CanonicalBlockId,
         frame: &Frame,
-    ) -> Result<(Region, Option<CanonicalBlockId>), StopReason> {
+    ) -> Result<Run, StopReason> {
         let mut prefix: Vec<CanonicalBlockId> = Vec::new();
         let mut current = start.clone();
         loop {
@@ -981,20 +1963,71 @@ impl Walker<'_> {
             poll(self.budget, at)?;
             charge(self.budget, CountedBudgetDimension::AnalysisSteps, 1, at)?;
             let Some(node) = self.view.index_of(&current) else {
-                return Ok((
-                    Region::Fallback {
-                        blocks: vec![current.clone()],
-                        reason: FallbackReason::UncoveredBlocks {
-                            blocks: vec![current.bci()],
-                        },
-                    },
-                    None,
-                ));
+                // A block the view holds no node for is not a shape this walk can read, and the
+                // prefix it reached the block from stays a `Straight` region of its own: the blocks
+                // proved so far are statements, and the quote its own reason states is the one
+                // beside them.
+                let reason = FallbackReason::UncoveredBlocks {
+                    blocks: vec![current.bci()],
+                };
+                return Ok(gap(prefix, vec![current.clone()], reason, None));
             };
+            if frame.stops_at_switch_boundary(node) {
+                return Ok(one(Region::Straight { blocks: prefix }, None));
+            }
+            let successors_here = self.view.successors(node);
+            let current_loop = frame.loop_targets.last().map(|target| target.header);
+            let is_transfer_gateway = frame.loop_targets.iter().any(|target| {
+                target.exits.contains(&node)
+                    && successors_here.len() == 1
+                    && frame
+                        .loop_targets
+                        .iter()
+                        .any(|destination| destination.break_target == Some(successors_here[0]))
+            });
+            let transfer = (!is_transfer_gateway)
+                .then(|| {
+                    frame.loop_targets.iter().rev().find_map(|target| {
+                        if target.break_target == Some(node) {
+                            Some((target.header, false))
+                        } else if current_loop != Some(target.header)
+                            && target.continue_target == node
+                        {
+                            Some((target.header, true))
+                        } else {
+                            None
+                        }
+                    })
+                })
+                .flatten();
+            if let Some((target_header, is_continue)) = transfer
+                && let Some(loop_header) = self.view.id_of(target_header).cloned()
+                && let Some(source_bci) = prefix
+                    .last()
+                    .and_then(|block| self.terminal_bci(block))
+                    .or(frame.transfer_source_bci)
+            {
+                let mut run = Vec::with_capacity(2);
+                if !prefix.is_empty() {
+                    run.push(Region::Straight { blocks: prefix });
+                }
+                run.push(if is_continue {
+                    Region::LoopContinue {
+                        source_bci,
+                        loop_header,
+                    }
+                } else {
+                    Region::LoopBreak {
+                        source_bci,
+                        loop_header,
+                    }
+                });
+                return Ok((run, None));
+            }
             if frame.stops_at(node) {
                 // The join of the enclosing structure, or the code after the enclosing loop: this
                 // region ends where its caller continues.
-                return Ok((Region::Straight { blocks: prefix }, None));
+                return Ok(one(Region::Straight { blocks: prefix }, None));
             }
             // A loop this walk enters from outside is a region of its own, and it *starts* one: the
             // run that led here ends before the loop, because the loop's test is written inside the
@@ -1005,18 +2038,35 @@ impl Walker<'_> {
                 if prefix.is_empty() {
                     return self.loop_region(&current, node, frame);
                 }
-                return Ok((Region::Straight { blocks: prefix }, Some(current)));
+                return Ok(one(Region::Straight { blocks: prefix }, Some(current)));
+            }
+            // A protected range the exception table states with a named `catch` type is the
+            // `try`/`catch` statement here, where the guarded rules of P3 2.4 say the region is not
+            // theirs. This is read **before** the block is marked visited: the statement's own range
+            // starts in this block, and the walk that recovers it starts there too
+            // ([`Self::try_region`]).
+            if frame.own_try != Some(node)
+                && self.starts_catch(&current)
+                && let Some((body, lead, catches, join, tails)) =
+                    self.try_region(&current, node, frame)?
+            {
+                let mut run = vec![Region::Try {
+                    prefix,
+                    lead,
+                    body,
+                    catches,
+                }];
+                run.extend(tails);
+                return Ok((run, join));
             }
             if !self.visited.insert(node) {
-                return Ok((
-                    Region::Fallback {
-                        blocks: vec![current.clone()],
-                        reason: FallbackReason::Loop {
-                            block_bci: current.bci(),
-                        },
-                    },
-                    None,
-                ));
+                // The block is already part of the recovered structure: the walk has re-entered one
+                // it is building, which is no shape this subset proves. The prefix keeps its
+                // statements; the block itself is quoted.
+                let reason = FallbackReason::Loop {
+                    block_bci: current.bci(),
+                };
+                return Ok(gap(prefix, vec![current.clone()], reason, None));
             }
             if let Some(reason) = self.leaving_edge(&current) {
                 // P3 2.4: the two edges this walk has always refused — an exception edge and a
@@ -1039,29 +2089,45 @@ impl Walker<'_> {
                             }
                         }
                         let join = plan.join().cloned();
-                        return Ok((Region::Guard { prefix, plan }, join));
+                        return Ok(one(Region::Guard { prefix, plan }, join));
                     }
                     crate::guard::Verdict::Refused { pass, refusal, at } => {
-                        let mut blocks = prefix;
-                        blocks.push(current);
-                        return Ok((
-                            Region::Fallback {
-                                blocks,
-                                reason: FallbackReason::Guard {
-                                    pass,
-                                    code: refusal.code(),
-                                    at,
-                                    message: refusal.message().to_string(),
-                                },
-                            },
-                            None,
-                        ));
+                        let reason = FallbackReason::Guard {
+                            pass,
+                            code: refusal.code(),
+                            at,
+                            message: refusal.message().to_string(),
+                        };
+                        return Ok(gap(prefix, vec![current], reason, None));
                     }
                     crate::guard::Verdict::NotGuarded => {}
                 }
-                let mut blocks = prefix;
-                blocks.push(current);
-                return Ok((Region::Fallback { blocks, reason }, None));
+                // P3 2.7: a block this walk reached as the protected range of a `try`, whose every
+                // exception edge is one a named `catch` row of the table accounts for, is written
+                // where it is. The `catch` that owns the edge is the clause this block already
+                // stands inside — the frame is that statement's own body — so the instruction that
+                // throws has its statement's place, and quoting the block would replace a statement
+                // the `catch` around it already owns with the bytecode it was read from. Nothing is
+                // moved and no edge is followed: the handler is written by the clause, not here.
+                //
+                // Every other leaving edge keeps the quote: a block no `try`'s own range reached
+                // (`frame.own_try` is `None`, a call outside a `try` among them) is not written
+                // under a clause it is not inside, and a catch-all row, a subroutine entry or one
+                // unaccounted edge among several is a shape this statement does not state.
+                //
+                // P3 2.15 excepts one case from all of that: a block that leaves only through edges
+                // no instruction of it can take does not leave, and the statement it holds is the
+                // method's normal flow. The guarded rules above are asked first, and they are asked
+                // about the block and not about the edge being takeable — a rule that refuses a shape
+                // states its reason and the quote stays exactly as it was — so what this exception
+                // says is that an edge which cannot be taken is not, on its own, a shape this walk
+                // must quote the block for. The handler it named is named by the uncovered-blocks
+                // scan below, like any other live block no statement reached.
+                if !self.leaves_only_through_dead_edges(&current)
+                    && (frame.own_try.is_none() || !self.edges_accounted_by_catches(&current))
+                {
+                    return Ok(gap(prefix, vec![current], reason, None));
+                }
             }
             // The successors this frame allows: the ones inside its scope, plus the one node it
             // ends at (a loop's own test), which is kept so the run can stop *on arrival* rather
@@ -1072,6 +2138,16 @@ impl Walker<'_> {
                 .filter(|successor| {
                     self.view.index_of(successor).is_some_and(|node| {
                         frame.boundary == Some(node)
+                            || frame.loop_exit == Some(node)
+                            || frame
+                                .loop_targets
+                                .iter()
+                                .any(|target| target.exits.contains(&node))
+                            || frame.loop_targets.iter().any(|target| {
+                                frame.loop_targets.last().map(|current| current.header)
+                                    != Some(target.header)
+                                    && target.continue_target == node
+                            })
                             || frame
                                 .scope
                                 .as_ref()
@@ -1093,17 +2169,10 @@ impl Walker<'_> {
                         operation.comparison().is_some() || operation.switch().is_some()
                     });
                 if branched {
-                    let mut blocks = prefix;
-                    blocks.push(current.clone());
-                    return Ok((
-                        Region::Fallback {
-                            blocks,
-                            reason: FallbackReason::LoopLeavesEarly {
-                                block_bci: current.bci(),
-                            },
-                        },
-                        None,
-                    ));
+                    let reason = FallbackReason::LoopLeavesEarly {
+                        block_bci: current.bci(),
+                    };
+                    return Ok(gap(prefix, vec![current], reason, None));
                 }
             }
             // A block whose terminal instruction the decode states as a `switch` is one, however
@@ -1133,7 +2202,7 @@ impl Walker<'_> {
                     // The run ends here: the AST builder writes the terminal statement of this
                     // block, and whether it is a `return` or a throw site is its question.
                     prefix.push(current);
-                    return Ok((Region::Straight { blocks: prefix }, None));
+                    return Ok(one(Region::Straight { blocks: prefix }, None));
                 }
                 1 => {
                     prefix.push(current.clone());
@@ -1145,17 +2214,10 @@ impl Walker<'_> {
                     let branch_bci = match self.terminal_bci(&branch) {
                         Some(bci) => bci,
                         None => {
-                            let mut blocks = prefix;
-                            blocks.push(branch.clone());
-                            return Ok((
-                                Region::Fallback {
-                                    blocks,
-                                    reason: FallbackReason::MissingEvidence {
-                                        block_bci: branch.bci(),
-                                    },
-                                },
-                                None,
-                            ));
+                            let reason = FallbackReason::MissingEvidence {
+                                block_bci: branch.bci(),
+                            };
+                            return Ok(gap(prefix, vec![branch], reason, None));
                         }
                     };
                     let Some((op, target)) = self
@@ -1163,56 +2225,164 @@ impl Walker<'_> {
                         .get(branch_bci)
                         .and_then(Operation::comparison)
                     else {
-                        let mut blocks = prefix;
-                        blocks.push(branch.clone());
-                        return Ok((
-                            Region::Fallback {
-                                blocks,
-                                reason: FallbackReason::UnknownBranchSense {
-                                    block_bci: branch.bci(),
-                                    branch_bci,
-                                },
-                            },
-                            None,
-                        ));
+                        let reason = FallbackReason::UnknownBranchSense {
+                            block_bci: branch.bci(),
+                            branch_bci,
+                        };
+                        return Ok(gap(prefix, vec![branch], reason, None));
                     };
                     let Some((fall_through, taken)) = self.split_arms(&successors, target) else {
-                        let mut blocks = prefix;
-                        blocks.push(branch.clone());
-                        return Ok((
-                            Region::Fallback {
-                                blocks,
-                                reason: FallbackReason::UnrenderableOperand { bci: branch_bci },
-                            },
-                            None,
-                        ));
+                        let reason = FallbackReason::UnrenderableOperand { bci: branch_bci };
+                        return Ok(gap(prefix, vec![branch], reason, None));
                     };
-                    let join_node = self
+                    if let Some((region, next)) =
+                        self.short_circuit_value(&prefix, &branch, branch_bci, frame)?
+                    {
+                        return Ok(one(region, next));
+                    }
+                    if let Some(region) =
+                        self.two_exit_return(&prefix, &branch, branch_bci, frame)?
+                    {
+                        return Ok(one(region, None));
+                    }
+                    let post_join = self
                         .view
                         .immediate_post_dominator(node)
-                        .filter(|join| *join != node);
-                    let join = join_node.and_then(|join| self.view.id_of(join).cloned());
+                        .filter(|join| *join != node)
+                        .filter(|join| {
+                            !frame.loop_targets.iter().any(|target| {
+                                frame.loop_targets.last().map(|current| current.header)
+                                    != Some(target.header)
+                                    && target.continue_target == *join
+                            })
+                        });
+                    // A branch inside a switch arm can finish either at the switch's local
+                    // join or at the enclosing loop's exit. The method-wide post-dominator is
+                    // then the loop exit, but it is not the join of this Java `if`.
+                    let join_node = if post_join.is_some_and(|join| {
+                        frame
+                            .loop_targets
+                            .iter()
+                            .any(|target| target.break_target == Some(join))
+                    }) {
+                        frame.switch_join.or(post_join)
+                    } else {
+                        post_join
+                    };
                     let then_node = self.view.index_of(&fall_through);
                     let else_node = self.view.index_of(&taken);
-                    if join_node.is_some() && (then_node == join_node || else_node == join_node) {
-                        // An arm that *is* the join is a one-armed branch. The subset models two
-                        // arms, and printing an empty `else` for it would claim a structure the
-                        // bytecode does not have, so it falls back instead.
-                        let mut blocks = prefix;
-                        blocks.push(branch.clone());
-                        return Ok((
-                            Region::Fallback {
-                                blocks,
-                                reason: FallbackReason::ArmsDoNotMeet {
-                                    block_bci: branch.bci(),
-                                },
-                            },
-                            None,
-                        ));
+                    // A successor that *is* the join is the whole arm: the branch arrives at the
+                    // place its structure ends at directly, so that arm holds no block of its own —
+                    // the block starting there belongs to whatever follows the `if` — and the other
+                    // successor's region is the one body the statement has. The builder writes no
+                    // `else` for an empty arm, which is exactly the one-armed `if` the bytecode
+                    // states. Nothing here is guessed from the addresses; the join is read in two
+                    // ways, and both are facts the graph states:
+                    //
+                    // * the branch's own **immediate post-dominator**, when one successor *is* it:
+                    //   the nearest block every path out of the branch passes through;
+                    // * the **forward join** of the two successors ([`Self::forward_join`]), when
+                    //   the post-dominator is further away because one arm leaves the method before
+                    //   the join — `javac` writes `if (a > 0 && b > 0) return 1; return 0;` as two
+                    //   forward branches onto one block, and that block is where both arms meet.
+                    //
+                    // A branch whose **two** successors are both the join states no arm at all and
+                    // keeps the refusal below.
+                    let forward_then = self.forward_join(node, then_node, else_node, frame);
+                    let forward_else = self.forward_join(node, else_node, then_node, frame);
+                    if std::env::var_os("JRE_JOIN_PROBE").is_some() {
+                        eprintln!(
+                            "P3JOIN branch={} ipdom={:?} then={:?} else={:?} ft={forward_then} fe={forward_else} frame_boundary={:?}",
+                            branch.bci(),
+                            join_node
+                                .and_then(|join| self.view.id_of(join).map(CanonicalBlockId::bci)),
+                            then_node
+                                .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
+                            else_node
+                                .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
+                            frame
+                                .boundary
+                                .and_then(|node| self.view.id_of(node).map(CanonicalBlockId::bci)),
+                        );
                     }
-                    let arm_frame = frame.arm(join_node);
-                    let (then_arm, _) = self.region_at(&fall_through, &arm_frame)?;
-                    let (else_arm, _) = self.region_at(&taken, &arm_frame)?;
+                    let one_armed = match join_node {
+                        Some(join_node)
+                            if (then_node == Some(join_node)) != (else_node == Some(join_node)) =>
+                        {
+                            Some(join_node)
+                        }
+                        // The post-dominator states no one-armed shape here: exactly one successor
+                        // being the forward join of the two does.
+                        _ if forward_then != forward_else => {
+                            if forward_then {
+                                then_node
+                            } else {
+                                else_node
+                            }
+                        }
+                        _ => None,
+                    };
+                    let join = one_armed
+                        .or(join_node)
+                        .and_then(|join| self.view.id_of(join).cloned());
+                    if let Some(join_node) = one_armed {
+                        let walk = if then_node == Some(join_node) {
+                            &taken
+                        } else {
+                            &fall_through
+                        };
+                        // The condition's arity is read *before* the arm is walked, so a branch the
+                        // builder would refuse claims no block on the way to being refused: an arm
+                        // walked and then dropped would leave the blocks it claimed out of the
+                        // uncovered-blocks statement as well as out of the text.
+                        if let Err(reason) = self.branch_arity_proved(&branch, branch_bci, op) {
+                            let next = self.unclaimed_join(join.as_ref());
+                            return Ok(gap(prefix, vec![branch], reason, next));
+                        }
+                        let (arm_run, _) =
+                            self.region_at(walk, &frame.arm(Some(join_node), Some(branch_bci)))?;
+                        let arm = sequence_region(arm_run);
+                        let empty = Box::new(Region::Straight { blocks: Vec::new() });
+                        let (then_arm, else_arm) = if then_node == Some(join_node) {
+                            (empty, Box::new(arm))
+                        } else {
+                            (Box::new(arm), empty)
+                        };
+                        let run = vec![Region::If {
+                            prefix,
+                            branch,
+                            branch_bci,
+                            then_arm,
+                            else_arm,
+                            join: join.clone(),
+                        }];
+                        return Ok((run, join));
+                    }
+                    // Two successors that are both the join state no arm at all: nothing in the
+                    // graph says which of them an arm would be, so the branch keeps its refusal
+                    // rather than becoming an `if` with two empty arms. The same holds when both
+                    // successors are a forward join: the graph states a convergence, but not which
+                    // of the two arms arrives empty, so neither is written.
+                    if (join_node.is_some() && then_node == join_node && else_node == join_node)
+                        || (forward_then && forward_else)
+                    {
+                        let reason = FallbackReason::ArmsDoNotMeet {
+                            block_bci: branch.bci(),
+                        };
+                        let next = self.unclaimed_join(join.as_ref());
+                        return Ok(gap(prefix, vec![branch], reason, next));
+                    }
+                    let arm_frame = frame.arm(join_node, Some(branch_bci));
+                    let (then_run, then_next) = self.region_at(&fall_through, &arm_frame)?;
+                    let (else_run, else_next) = self.region_at(&taken, &arm_frame)?;
+                    // An arm the branch cannot present is quoted, not dropped and not written as if
+                    // the branch had been: both arms' blocks are named by the refusal, each once.
+                    let arm_blocks: Vec<CanonicalBlockId> = then_run
+                        .iter()
+                        .chain(else_run.iter())
+                        .flat_map(Region::blocks)
+                        .cloned()
+                        .collect();
                     // Both arms must meet the join, or leave the method; anything else means the
                     // recovered structure runs into a block the branch did not describe.
                     if let Some(join_node) = join_node {
@@ -1220,73 +2390,50 @@ impl Walker<'_> {
                             then_node.is_some_and(|node| self.view.reaches(node, join_node));
                         let else_meets =
                             else_node.is_some_and(|node| self.view.reaches(node, join_node));
+                        let then_breaks = then_next.is_none()
+                            && matches!(then_run.last(), Some(Region::LoopBreak { .. }));
+                        let else_breaks = else_next.is_none()
+                            && matches!(else_run.last(), Some(Region::LoopBreak { .. }));
                         let both_end = !then_meets && !else_meets;
-                        if !(then_meets && else_meets) && !both_end {
-                            let mut blocks = prefix;
-                            blocks.push(branch.clone());
-                            return Ok((
-                                Region::Fallback {
-                                    blocks,
-                                    reason: FallbackReason::ArmsDoNotMeet {
-                                        block_bci: branch.bci(),
-                                    },
-                                },
-                                None,
-                            ));
+                        let local_switch_join = frame.switch_join == Some(join_node);
+                        if !(then_meets && else_meets)
+                            && !both_end
+                            && !(local_switch_join
+                                && ((then_meets && else_breaks) || (else_meets && then_breaks)))
+                        {
+                            let reason = FallbackReason::ArmsDoNotMeet {
+                                block_bci: branch.bci(),
+                            };
+                            let next = self.unclaimed_join(join.as_ref());
+                            let blocks = gap_blocks(&branch, arm_blocks);
+                            return Ok(gap(prefix, blocks, reason, next));
                         }
                     }
                     // The condition's arity is a precondition of the statement the builder writes.
-                    let reads = self
-                        .ssa
-                        .block(&branch)
-                        .map(|block| {
-                            block
-                                .instructions()
-                                .iter()
-                                .filter(|instruction| instruction.bci() == branch_bci)
-                                .map(|instruction| instruction.reads().len())
-                                .next()
-                                .unwrap_or(0)
-                        })
-                        .unwrap_or(0);
-                    let expected = if op.reads_two() { 2 } else { 1 };
-                    if reads != expected {
-                        let mut blocks = prefix;
-                        blocks.push(branch.clone());
-                        return Ok((
-                            Region::Fallback {
-                                blocks,
-                                reason: FallbackReason::UnrenderableOperand { bci: branch_bci },
-                            },
-                            None,
-                        ));
+                    if let Err(reason) = self.branch_arity_proved(&branch, branch_bci, op) {
+                        let next = self.unclaimed_join(join.as_ref());
+                        let blocks = gap_blocks(&branch, arm_blocks);
+                        return Ok(gap(prefix, blocks, reason, next));
                     }
-                    let region = Region::If {
+                    let run = vec![Region::If {
                         prefix,
                         branch,
                         branch_bci,
-                        then_arm: Box::new(then_arm),
-                        else_arm: Box::new(else_arm),
+                        then_arm: Box::new(sequence_region(then_run)),
+                        else_arm: Box::new(sequence_region(else_run)),
                         join: join.clone(),
-                    };
-                    return Ok((region, join));
+                    }];
+                    return Ok((run, join));
                 }
                 count => {
                     let branch = current.clone();
                     let branch_bci = match self.terminal_bci(&branch) {
                         Some(bci) => bci,
                         None => {
-                            let mut blocks = prefix;
-                            blocks.push(branch.clone());
-                            return Ok((
-                                Region::Fallback {
-                                    blocks,
-                                    reason: FallbackReason::MissingEvidence {
-                                        block_bci: branch.bci(),
-                                    },
-                                },
-                                None,
-                            ));
+                            let reason = FallbackReason::MissingEvidence {
+                                block_bci: branch.bci(),
+                            };
+                            return Ok(gap(prefix, vec![branch], reason, None));
                         }
                     };
                     let Some((cases, default)) =
@@ -1294,18 +2441,11 @@ impl Walker<'_> {
                     else {
                         // Three or more targets whose terminal instruction the decode does not
                         // state as a `switch`: no shape this subset knows.
-                        let mut blocks = prefix;
-                        blocks.push(branch.clone());
-                        return Ok((
-                            Region::Fallback {
-                                blocks,
-                                reason: FallbackReason::BranchTargets {
-                                    block_bci: branch.bci(),
-                                    successors: count,
-                                },
-                            },
-                            None,
-                        ));
+                        let reason = FallbackReason::BranchTargets {
+                            block_bci: branch.bci(),
+                            successors: count,
+                        };
+                        return Ok(gap(prefix, vec![branch], reason, None));
                     };
                     let cases = cases.to_vec();
                     return self.switch_region(
@@ -1323,7 +2463,204 @@ impl Walker<'_> {
         }
     }
 
+    /// A join the walk may continue at after a gap: the one the gap proved, when no region has
+    /// claimed it yet.
+    ///
+    /// A branch's immediate post-dominator is where every path out of the branch arrives, so its own
+    /// region is written once, after the quote, instead of being named as bytecode the walk never
+    /// reached. The block is read **only** when nothing claimed it: a join some region already holds
+    /// is that region's, and starting a second walk at it would read the same block twice — the
+    /// `visited` check in [`Self::region_at_inner`] would answer [`FallbackReason::Loop`], which is
+    /// a statement about a block that is no loop at all.
+    fn unclaimed_join(&self, join: Option<&CanonicalBlockId>) -> Option<CanonicalBlockId> {
+        join.filter(|join| {
+            self.view
+                .index_of(join)
+                .is_some_and(|node| !self.visited.contains(&node))
+        })
+        .cloned()
+    }
+
+    /// Whether a named row's protected range begins at one block.
+    ///
+    /// The cheap precondition of the `try`/`catch` shape, read before the shape is examined: a block
+    /// no named row begins at is not the head of one, and nothing is paid for asking.
+    /// Whether a block holds the head of a `try`: a row that names a `catch` type begins where the
+    /// block does, or **inside** it.
+    ///
+    /// The second half is the same fact as the canonical graph's fusion: `javac` puts a `try` after
+    /// a statement the compiler ran in the same straight-line run (`int x = 1; try { … }`), and the
+    /// two are one block — so the statement's own range begins inside the block that holds the
+    /// instructions before it. The range's start is what the statement is about, and the block's
+    /// instructions before it become the statement's [`Region::Try::lead`].
+    fn starts_catch(&self, block: &CanonicalBlockId) -> bool {
+        self.handlers.iter().any(|row| {
+            row.catch_type_index.is_some()
+                && row.start_bci >= block.bci()
+                && self
+                    .terminal_bci(block)
+                    .is_some_and(|last| row.start_bci <= last)
+        })
+    }
+
+    /// The protected range and the clauses of the `try` that begins in one block, when this block
+    /// states one.
+    ///
+    /// Everything the shape's own proof concludes is [`crate::guard::catches`]': which rows name a
+    /// `catch` type, which handler each reaches, which local each handler stores the exception into,
+    /// where the protected range begins (the statement's lead is what the block holds before it), and
+    /// where the code after the statement begins. What is recovered here is the **structure**: the
+    /// protected range as the region the plain flow states, and each handler body as a region of its
+    /// own, both ending where the code after the `try` begins. A handler body that cannot be
+    /// presented is still a clause: the quote inside it says why, and the clause header stays.
+    ///
+    /// A statement the table **nests** — two protected ranges that begin at one instruction — is
+    /// built by [`Self::try_level`] from the inside out: this block states both ranges, and the
+    /// returned body is the inner `try` written inside the outer one.
+    ///
+    /// `None` means this block is not the head of one — and then the walk reads it exactly as it did
+    /// before, because every reason `catches` refuses on is a reason this statement has no shape to
+    /// write, not a reason to quote the block.
+    fn try_region(
+        &mut self,
+        start: &CanonicalBlockId,
+        node: usize,
+        frame: &Frame,
+    ) -> Result<Option<OwnedTry>, StopReason> {
+        let Some(shape) = crate::guard::catches(
+            self.canonical,
+            self.view,
+            self.ssa,
+            self.operations,
+            self.handlers,
+            self.profile,
+            start,
+            self.budget,
+        )?
+        else {
+            return Ok(None);
+        };
+        let (body, catches, join, tails) = self.try_level(start, node, frame, &shape)?;
+        Ok(Some((Box::new(body), shape.lead, catches, join, tails)))
+    }
+
+    /// One level of a `try`/`catch` statement: its body, its clauses, the block the code after the
+    /// whole statement begins at, and the sibling quotes a gap inside it left behind ([`Run`]).
+    ///
+    /// A statement the exception table **nests** — two protected ranges that begin at one instruction
+    /// — is built from the inside out: the narrower range's `try` is the wider one's body
+    /// ([`crate::guard::Catches::inner`]), so the walk below runs once per level and only the
+    /// innermost level's body is a region of a protected range itself.
+    ///
+    /// The **boundary** every clause body ends at is the code after the whole statement. For a
+    /// statement of one range that is the level's own join; for a level whose body is the nested
+    /// inner `try` it is the inner statement's join — the code the outer statement runs on
+    /// completion, because its body *is* that inner statement — read through the transfer blocks
+    /// `javac` may leave between the two ([`Self::after_join`]).
+    fn try_level(
+        &mut self,
+        start: &CanonicalBlockId,
+        node: usize,
+        frame: &Frame,
+        shape: &crate::guard::Catches,
+    ) -> Result<
+        (
+            Region,
+            Vec<CatchClause>,
+            Option<CanonicalBlockId>,
+            Vec<Region>,
+        ),
+        StopReason,
+    > {
+        // A protected range or a clause body whose walk met a gap keeps its own statements inside
+        // the `try` and reports the quote the gap owes beside the statement ([`Run`]): the region a
+        // slot holds is one region, and the sibling quote is written after the `try` in the same
+        // method, where the bytecode it names still runs.
+        let mut tails: Vec<Region> = Vec::new();
+        let (body, boundary) = match &shape.inner {
+            Some(inner) => {
+                let (body, catches, join, inner_tails) =
+                    self.try_level(start, node, frame, inner)?;
+                let boundary = join.as_ref().map(|join| self.after_join(join));
+                let body = Region::Try {
+                    prefix: Vec::new(),
+                    lead: inner.lead,
+                    body: Box::new(body),
+                    catches,
+                };
+                tails.extend(inner_tails);
+                (body, boundary)
+            }
+            None => {
+                let boundary = shape.join.clone();
+                let boundary_node = boundary
+                    .as_ref()
+                    .and_then(|block| self.view.index_of(block));
+                let (body, _) = self.region_at(start, &frame.protected(boundary_node, node))?;
+                let (body, body_tails) = split(body);
+                tails.extend(body_tails);
+                (body, boundary)
+            }
+        };
+        let boundary_node = boundary
+            .as_ref()
+            .and_then(|block| self.view.index_of(block));
+        let mut catches = Vec::with_capacity(shape.sites.len());
+        for site in &shape.sites {
+            let (handler, _) = self.region_at(&site.handler, &frame.arm(boundary_node, None))?;
+            let (handler, handler_tails) = split(handler);
+            tails.extend(handler_tails);
+            catches.push(CatchClause {
+                type_indices: site.type_indices.clone(),
+                handler: site.handler.clone(),
+                parameter: site.parameter,
+                body: Box::new(handler),
+            });
+        }
+        Ok((body, catches, shape.join.clone(), tails))
+    }
+
+    /// The block the code after one `try` begins at: `join` itself, or the target of the transfer
+    /// blocks that stand between it and that code.
+    ///
+    /// A nested statement's join is the **inner** statement's, and the outer `try`'s own exit comes
+    /// after it: `javac` leaves that exit a `goto` (`goto` the code after the outer statement), and
+    /// so may a statement that follows. A clause body is written up to the code *after* the
+    /// statement — stopping at the transfer instead would let a handler that falls through the
+    /// transfer run the statement that follows the `try` as if the clause held it. The walk that
+    /// continues after the statement still starts at `join` itself, so the blocks read through here
+    /// are claimed by it and not left unread.
+    fn after_join(&self, join: &CanonicalBlockId) -> CanonicalBlockId {
+        let mut block = join.clone();
+        // A transfer cannot be followed forever: the bound is what keeps a `goto` cycle (a
+        // statement whose exits pass through the loop of another structure) from spinning here.
+        for _ in 0..8 {
+            let instructions = self
+                .ssa
+                .block(&block)
+                .map(|entry| entry.instructions())
+                .unwrap_or(&[]);
+            let [only] = instructions else {
+                break;
+            };
+            if !matches!(self.operations.get(only.bci()), Some(Operation::Transfer)) {
+                break;
+            }
+            let Some(next) = self.view.successor_ids(&block).first().cloned() else {
+                break;
+            };
+            block = next;
+        }
+        block
+    }
+
     /// Whether a block leaves through an edge the projection does not carry.
+    ///
+    /// Every edge the graph states is read as the graph states it; whether the block can *take* one
+    /// is [`Self::leaves_only_through_dead_edges`]'s question, asked where a quote is decided. The
+    /// two are separate on purpose: this edge is what sends a block to the guarded rules of P3 2.4
+    /// ([`crate::guard::examine`]), and a rule that refuses the block refuses it whatever an
+    /// instruction of it may raise.
     fn leaving_edge(&self, block: &CanonicalBlockId) -> Option<FallbackReason> {
         self.canonical
             .edges()
@@ -1344,6 +2681,225 @@ impl Walker<'_> {
             })
     }
 
+    /// Whether one exception edge is one an instruction of this block can actually take (P3 2.15).
+    ///
+    /// The graph states the exception table's rows in two ways, and the table is the same statement
+    /// either way (P3 2.9): a record a `may_throw` instruction of the body **covers** keeps the edge
+    /// its sites feed — the instruction's BCI lies inside the record's range — and a record **no**
+    /// such instruction covers is stated by its protected range, one edge per block the range
+    /// intersects. The second kind is an edge no instruction of the block can take: nothing in it can
+    /// raise, so no run of the block ever enters the handler. `javac --release 8` writes exactly that
+    /// row for `try { n = n + 1; } catch (RuntimeException e)` — and for the `try`/`finally` of
+    /// `finallyIncrements(I)I`, whose catch-all row `[2, 4)` covers `iload_0; istore_1`.
+    ///
+    /// `may_throw` is the raw CFG's own classification of an opcode (its site scan in
+    /// `jarde_jvm`'s `cfg` module), and [`CanonicalCfg::throw_sites`] is that same scan's published
+    /// result: one entry per throwing instruction, holding the block it runs in and the record
+    /// ordinals whose ranges cover it. Reading the predicate there rather than restating its opcode
+    /// table here is what keeps the two answers one: a second copy of that table in this crate is a
+    /// second answer to the same question, and the one the graph was built from would not be the one
+    /// this walk read.
+    fn exception_edge_takeable(&self, block: &CanonicalBlockId, handler_ordinal: u32) -> bool {
+        self.canonical
+            .throw_sites()
+            .iter()
+            .any(|site| site.block() == block && site.handlers().contains(&handler_ordinal))
+    }
+
+    /// Whether every edge the block leaves the normal flow through is an exception edge no
+    /// instruction of the block can take, and there is at least one (P3 2.15).
+    ///
+    /// Such a block does not leave the normal flow: the records its edges name are the table's
+    /// statement over a block nothing in can throw ([`Self::exception_edge_takeable`]), so quoting it
+    /// would replace a statement the bytes hold with bytecode — `finallyIncrements(I)I` was quoted
+    /// whole for exactly this reason, though the row it leaves by is stated over `iload_0; istore_1`
+    /// and the four statements of its body are the normal flow of the method. The handler the record
+    /// reaches is not lost: it is a live block no walk reached, so the uncovered-blocks scan at the
+    /// end of [`recover`] names it, exactly as it names a subroutine body.
+    ///
+    /// A block with a subroutine entry, or with one edge a `may_throw` instruction does feed, keeps
+    /// its quote: the reading is "nothing here can throw", never "nothing here leaves". The plain
+    /// transfer the block hands control on by ([`CanonicalEdgeKind::Normal`], a `Return`) is not a
+    /// way *out* in this sense — the walk follows it — so it is read no more here than
+    /// [`Self::leaving_edge`] reads it.
+    fn leaves_only_through_dead_edges(&self, block: &CanonicalBlockId) -> bool {
+        let mut dead = false;
+        for edge in self
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == block)
+        {
+            match edge.kind() {
+                CanonicalEdgeKind::Exception { handler_ordinal } => {
+                    if self.exception_edge_takeable(block, handler_ordinal) {
+                        return false;
+                    }
+                    dead = true;
+                }
+                CanonicalEdgeKind::Call { .. } => return false,
+                CanonicalEdgeKind::Normal | CanonicalEdgeKind::Return { .. } => {}
+            }
+        }
+        dead
+    }
+
+    /// Whether every edge this block leaves the normal flow through is one a named `catch` row of
+    /// the declared table accounts for (P3 2.7).
+    ///
+    /// The edges are read one by one rather than through [`Self::leaving_edge`]'s first match: a
+    /// block under two rows that reach two handlers carries two exception edges, and the statement
+    /// is written only when **both** handlers are clauses of the `try` this block is inside. A
+    /// block whose only leaving edge is a subroutine entry answers `false` at that edge, so the
+    /// caller's own reason ([`FallbackReason::SubroutineEntry`]) is never replaced by "nothing here
+    /// is wrong".
+    ///
+    /// An edge no instruction of the block can take settles nothing and blocks nothing (P3 2.15):
+    /// it is skipped, neither asked whether it is a clause's edge nor allowed to answer that the
+    /// block stays quoted. What it is *not* is `accounted = true` on its own — a block whose only
+    /// edges are dead ones has no clause to be written inside, which is
+    /// [`Self::leaves_only_through_dead_edges`]'s answer to give at the quote site.
+    fn edges_accounted_by_catches(&self, block: &CanonicalBlockId) -> bool {
+        let mut accounted = false;
+        for edge in self
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == block)
+        {
+            match edge.kind() {
+                CanonicalEdgeKind::Exception { handler_ordinal } => {
+                    if !self.exception_edge_takeable(block, handler_ordinal) {
+                        continue;
+                    }
+                    if !self.exception_edge_accounted(block, edge.to(), handler_ordinal) {
+                        return false;
+                    }
+                    accounted = true;
+                }
+                // A subroutine entry is no exception path: the `jsr` context is not a clause this
+                // statement holds, so the block keeps the quote its own reason states.
+                CanonicalEdgeKind::Call { .. } => return false,
+                CanonicalEdgeKind::Normal | CanonicalEdgeKind::Return { .. } => {}
+            }
+        }
+        accounted
+    }
+
+    /// Whether one exception edge is the one a named `catch` row accounts for: the row the edge's
+    /// ordinal names, whose `[start_bci, end_bci)` **intersects** this block's span and **reaches
+    /// its end**, and whose handler entry is the block the edge reaches.
+    ///
+    /// The row is read from the same decode's table ([`Walker::handlers`]) the graph's edges were
+    /// built from, and the handler is mapped the way the rest of this file maps a row to a block
+    /// ([`CanonicalCfg::handler_rows`]). A `catch_type == 0` row — the catch-all a `finally` copy is
+    /// written under — names no clause, so its handler is nobody this statement writes around the
+    /// block and the edge is not accounted for.
+    ///
+    /// P3 2.15 changed what the range has to meet. It used to have to **cover the block's start**
+    /// ([`CanonicalBlockId::bci`]), and that test read the canonical graph's fusion rather than the
+    /// table: a straight-line run is one node, so the narrower of two nested ranges begins *inside*
+    /// the block that holds the code before it — `nested(I)I`'s inner `[8, 11)` begins at the
+    /// `bipush -2` of the block `[7, 11)` the outer clause's own binding store opened — and a
+    /// statement whose range merely began inside its block was quoted as if no row protected it. The
+    /// edge is a graph fact since P3 2.9 and the handler is what the block may enter; where the
+    /// range begins is the *statement's* lead ([`crate::guard::Catches::lead`]), which
+    /// [`crate::build`] writes before the `try`. So the row's range and the block's span have to
+    /// meet, and the graph's own answer to "what does this block span" is the node's
+    /// [`jarde_jvm::method_ir::CanonicalBlock::end_bci`] — from its start BCI to just past its last
+    /// original block, the same half-open shape the raw pass read the record's range against when it
+    /// built the edge.
+    ///
+    /// Meeting is not the whole of it, because the walk writes **whole blocks**: everything the
+    /// block holds after the range end has to be the statement's own exit, or the block is quoted
+    /// instead (the check below). A range that stops inside its block and leaves real instructions
+    /// behind it — `Held.use`'s failed resource proof, whose close shares the block its row `[2, 7)`
+    /// protects only up to BCI 7 — would otherwise be written inside the clause, presenting
+    /// exceptions the bytes' own range does not catch.
+    fn exception_edge_accounted(
+        &self,
+        block: &CanonicalBlockId,
+        handler: &CanonicalBlockId,
+        handler_ordinal: u32,
+    ) -> bool {
+        let Some(row) = self
+            .handlers
+            .iter()
+            .find(|row| row.ordinal == handler_ordinal)
+        else {
+            return false;
+        };
+        let Some(span) = self
+            .canonical
+            .blocks()
+            .iter()
+            .find(|entry| entry.id() == block)
+        else {
+            return false;
+        };
+        if row.catch_type_index.is_none()
+            || row.start_bci >= span.end_bci()
+            || block.bci() >= row.end_bci
+        {
+            return false;
+        }
+        // ...and what the block holds **after** the range has to be the statement's own exit: the
+        // walk writes whole blocks, so a block with real instructions after the range cannot be
+        // written inside the clause — they are not protected by the row. `Held.use`'s failed
+        // resource proof is that shape: its row `[2, 7)` protects `aload_0; invokevirtual read;
+        // istore_2` and the close the compiler fills in after the range shares the block
+        // (`aload_1; ifnonnull 15; aload_1; invokevirtual close`), so writing the block inside the
+        // `catch` the row is read as would present an exception the bytecode's own range does not
+        // catch. A `goto` is the statement's exit and is written by the structure around it
+        // (`steps(I)I`'s block `[0, 7)` ends in one after its range `[0, 4)`), so it is allowed.
+        let Some(names) = self.ssa.block(block) else {
+            return false;
+        };
+        let after_range: Vec<_> = names
+            .instructions()
+            .iter()
+            .filter(|instruction| instruction.bci() >= row.end_bci)
+            .collect();
+        let transfers_are_accounted = after_range.iter().all(|instruction| {
+            matches!(
+                self.operations.get(instruction.bci()),
+                Some(Operation::Transfer)
+            )
+        });
+        let boundary_return_is_accounted = self.method_synchronized == Some(false)
+            && after_range.len() == 1
+            && after_range[0].bci() == row.end_bci
+            && names.instructions().last().is_some_and(|last| {
+                last.bci() == after_range[0].bci()
+                    && self.operations.get(last.bci()) == Some(&Operation::Return)
+                    && (0xac..=0xb0).contains(&last.opcode())
+                    && last.reads().len() == 1
+                    && last.reads().first().is_some_and(|(_, value_id)| {
+                        let value = self.ssa.value(*value_id);
+                        value.replaced_by().is_none()
+                            && matches!(
+                                value.def(),
+                                Definition::Instruction {
+                                    block: producer_block,
+                                    bci,
+                                } if producer_block == block
+                                    && *bci >= row.start_bci
+                                    && *bci < row.end_bci
+                            )
+                    })
+            })
+            && !self.has_reachable_explicit_monitor;
+        if !transfers_are_accounted && !boundary_return_is_accounted {
+            return false;
+        }
+        self.canonical
+            .handler_rows()
+            .iter()
+            .find(|entry| entry.ordinal() == handler_ordinal)
+            .and_then(|entry| entry.handler())
+            .is_some_and(|mapped| mapped == handler)
+    }
+
     /// The BCI of the last instruction of one block, as the names table states it.
     fn terminal_bci(&self, block: &CanonicalBlockId) -> Option<u32> {
         self.ssa.block(block).and_then(|block| {
@@ -1354,28 +2910,79 @@ impl Walker<'_> {
         })
     }
 
+    /// Whether the branch at one BCI reads exactly the values its decoded sense needs.
+    ///
+    /// The condition's arity is a precondition of the statement the builder writes: a branch whose
+    /// names record states a different number of reads than its operation has operands has no
+    /// condition this layer can prove, so its block is quoted instead of becoming an `if`.
+    fn branch_arity_proved(
+        &self,
+        branch: &CanonicalBlockId,
+        branch_bci: u32,
+        op: CompareOp,
+    ) -> Result<(), FallbackReason> {
+        let reads = self
+            .ssa
+            .block(branch)
+            .map(|block| {
+                block
+                    .instructions()
+                    .iter()
+                    .filter(|instruction| instruction.bci() == branch_bci)
+                    .map(|instruction| instruction.reads().len())
+                    .next()
+                    .unwrap_or(0)
+            })
+            .unwrap_or(0);
+        let expected = if op.reads_two() { 2 } else { 1 };
+        if reads == expected {
+            Ok(())
+        } else {
+            Err(FallbackReason::UnrenderableOperand { bci: branch_bci })
+        }
+    }
+
     /// Whether the test block of a structure holds nothing but the values its test reads.
     ///
     /// The test block's instructions are written *inside* the structure they decide — in a loop's
     /// condition, in an `if`'s condition — and only value-producing instructions have a place
     /// there: a `Push`, a `Load` or an `Arithmetic` becomes the text of an operand, so it runs
     /// exactly once per evaluation and in the same order the bytecode ran it. A store, an
-    /// increment, a call, a return or an operation this subset does not model is an **effect** of
-    /// the test block, and there is nowhere to write it that keeps its execution count and its
-    /// order relative to the structure it belongs to: hoisting it out of a loop would run it once,
-    /// and putting it in the body would run it after the test. So the structure is quoted instead.
+    /// increment, an unused call, a return or an operation this subset does not model is an
+    /// **effect** of the test block. A call or field read used by the branch can stay in the
+    /// condition expression; an unused call has nowhere to go that keeps its execution count and
+    /// order. Hoisting it out would run it once, and putting it in the body would run it after the
+    /// test, so the structure is quoted instead.
     fn test_is_pure(&self, block: &CanonicalBlockId, test_bci: u32) -> Result<(), FallbackReason> {
         let Some(names) = self.ssa.block(block) else {
             return Ok(());
         };
+        let condition_bcis = self.condition_value_bcis(block, test_bci, names);
         for instruction in names.instructions() {
             if instruction.bci() == test_bci {
                 continue;
             }
+            let operation = self.operations.get(instruction.bci());
             let value_only = matches!(
-                self.operations.get(instruction.bci()),
-                Some(Operation::Push(_) | Operation::Load { .. } | Operation::Arithmetic { .. })
-            );
+                operation,
+                Some(
+                    Operation::Push(_)
+                        | Operation::Load { .. }
+                        | Operation::Arithmetic { .. }
+                        | Operation::Negate
+                        | Operation::NumericComparison { .. },
+                )
+            ) || (condition_bcis.contains(&instruction.bci())
+                && matches!(
+                    operation,
+                    Some(
+                        Operation::Invoke(_)
+                            | Operation::Field {
+                                access: crate::facts::FieldAccess::Read,
+                                ..
+                            }
+                    )
+                ));
             if !value_only {
                 // The loop pass declares this precondition (`pass::LOOP.requires(StatementFree)`)
                 // and the check is stated through the declaration: the reason carries the rule
@@ -1390,6 +2997,50 @@ impl Walker<'_> {
             }
         }
         Ok(())
+    }
+
+    /// The same-block producers whose values the terminal branch consumes, directly or through
+    /// other value producers. Calls and field reads may remain in a loop condition only when this
+    /// walk proves that `test_expr` will render them there.
+    fn condition_value_bcis(
+        &self,
+        block: &CanonicalBlockId,
+        test_bci: u32,
+        names: &SsaBlock,
+    ) -> BTreeSet<u32> {
+        let Some(test) = names
+            .instructions()
+            .iter()
+            .find(|instruction| instruction.bci() == test_bci)
+        else {
+            return BTreeSet::new();
+        };
+        let mut pending: Vec<ValueId> = test.reads().iter().map(|(_, value)| *value).collect();
+        let mut seen = BTreeSet::new();
+        let mut producers = BTreeSet::new();
+        while let Some(value) = pending.pop() {
+            if !seen.insert(value) {
+                continue;
+            }
+            let Definition::Instruction {
+                block: producer_block,
+                bci,
+            } = self.ssa.value(value).def()
+            else {
+                continue;
+            };
+            if producer_block != block || *bci == test_bci || !producers.insert(*bci) {
+                continue;
+            }
+            if let Some(producer) = names
+                .instructions()
+                .iter()
+                .find(|instruction| instruction.bci() == *bci)
+            {
+                pending.extend(producer.reads().iter().map(|(_, value)| *value));
+            }
+        }
+        producers
     }
 
     /// Which successor control falls through to, and which one the branch transfers to.
@@ -1416,6 +3067,904 @@ impl Walker<'_> {
         Some((fall_through.clone(), taken.clone()))
     }
 
+    /// Claims a complete forward test DAG with two terminal returns before ordinary `If`
+    /// recursion can claim either shared leaf twice. This is ownership only; the builder proves
+    /// the return values and every test expression before publishing a statement.
+    fn two_exit_return(
+        &mut self,
+        prefix: &[CanonicalBlockId],
+        outer: &CanonicalBlockId,
+        outer_bci: u32,
+        frame: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        if frame.scope.is_some()
+            || frame.case_entries.is_some()
+            || frame.own_loop.is_some()
+            || frame.own_try.is_some()
+            || frame.boundary.is_some()
+            || frame.loop_exit.is_some()
+            || !frame.loop_targets.is_empty()
+            || frame.switch_join.is_some()
+        {
+            return Ok(None);
+        }
+        const MAX_TESTS: usize = 24;
+        let mut pending = vec![outer.clone()];
+        let mut seen = BTreeSet::new();
+        let mut tests = Vec::new();
+        let mut test_edges = Vec::new();
+        let mut gateways = Vec::new();
+        let mut returns = Vec::new();
+        let mut decoded = None;
+        while let Some(block) = pending.pop() {
+            poll(self.budget, Some(block.bci()))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(block.bci()),
+            )?;
+            let Some(node) = self.view.index_of(&block) else {
+                return Ok(None);
+            };
+            if !seen.insert(node) {
+                continue;
+            }
+            if seen.len() > MAX_TESTS * 2 + 2
+                || self.excluded_edge_nodes.contains(&block)
+                || block.path() != outer.path()
+            {
+                return Ok(None);
+            }
+            let successors = self.view.successor_ids(&block);
+            if successors.iter().any(|next| next.bci() <= block.bci()) {
+                return Ok(None);
+            }
+            match successors.len() {
+                2 => {
+                    let Some(bci) = self.terminal_bci(&block) else {
+                        return Ok(None);
+                    };
+                    let Some((op, target)) =
+                        self.operations.get(bci).and_then(Operation::comparison)
+                    else {
+                        return Ok(None);
+                    };
+                    let Some((fallthrough, taken)) = self.split_arms(&successors, target) else {
+                        return Ok(None);
+                    };
+                    if self.branch_arity_proved(&block, bci, op).is_err() {
+                        return Ok(None);
+                    }
+                    charge(
+                        self.budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(self.code.instructions.len()).unwrap_or(u64::MAX),
+                        Some(bci),
+                    )?;
+                    let Some(last) = self
+                        .code
+                        .instructions
+                        .iter()
+                        .position(|instruction| instruction.bci == bci)
+                    else {
+                        return Ok(None);
+                    };
+                    if self
+                        .code
+                        .instructions
+                        .get(last + 1)
+                        .map(|instruction| instruction.bci)
+                        != Some(fallthrough.bci())
+                    {
+                        return Ok(None);
+                    }
+                    tests.push((block, bci));
+                    test_edges.push((fallthrough.clone(), taken.clone()));
+                    pending.extend([fallthrough, taken]);
+                }
+                1 => {
+                    let Some(names) = self.ssa.block(&block) else {
+                        return Ok(None);
+                    };
+                    let [transfer] = names.instructions() else {
+                        return Ok(None);
+                    };
+                    let next = &successors[0];
+                    if !matches!(transfer.opcode(), 0xa7 | 0xc8)
+                        || !matches!(
+                            self.operations.get(transfer.bci()),
+                            Some(Operation::Transfer)
+                        )
+                        || !transfer.reads().is_empty()
+                        || !transfer.writes().is_empty()
+                    {
+                        return Ok(None);
+                    }
+                    if decoded.is_none() {
+                        charge(
+                            self.budget,
+                            CountedBudgetDimension::AnalysisSteps,
+                            u64::try_from(self.code.instructions.len()).unwrap_or(u64::MAX),
+                            Some(transfer.bci()),
+                        )?;
+                        decoded = self.code.control_flow_targets().ok();
+                    }
+                    if decoded.as_ref().is_none_or(|targets| {
+                        targets
+                            .iter()
+                            .filter(|target| target.instruction_bci == transfer.bci())
+                            .filter(|target| {
+                                matches!(
+                                    target.kind,
+                                    jarde_reader::classfile::ControlFlowTargetKind::Branch { .. }
+                                )
+                            })
+                            .map(|target| target.target_bci)
+                            .collect::<Vec<_>>()
+                            != [next.bci()]
+                    }) {
+                        return Ok(None);
+                    }
+                    gateways.push((block, next.clone()));
+                    pending.push(next.clone());
+                }
+                0 => {
+                    let Some(names) = self.ssa.block(&block) else {
+                        return Ok(None);
+                    };
+                    if !matches!(names.instructions().last(), Some(instruction) if instruction.opcode() == 0xac && matches!(self.operations.get(instruction.bci()), Some(Operation::Return)))
+                    {
+                        return Ok(None);
+                    }
+                    returns.push(block);
+                    if returns.len() > 2 {
+                        return Ok(None);
+                    }
+                }
+                _ => return Ok(None),
+            }
+        }
+        if tests.len() < 2 || tests.len() > MAX_TESTS || returns.len() != 2 {
+            return Ok(None);
+        }
+        let mut ordered = tests.into_iter().zip(test_edges).collect::<Vec<_>>();
+        ordered.sort_by_key(|((block, _), _)| block.bci());
+        let (tests, test_edges): (Vec<_>, Vec<_>) = ordered.into_iter().unzip();
+        gateways.sort_by_key(|(block, _)| block.bci());
+        if tests[0] != (outer.clone(), outer_bci) {
+            return Ok(None);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len().saturating_mul(seen.len()))
+                .unwrap_or(u64::MAX),
+            Some(outer_bci),
+        )?;
+        let mut participants = tests
+            .iter()
+            .skip(1)
+            .map(|(block, _)| block.clone())
+            .collect::<Vec<_>>();
+        participants.extend(gateways.iter().map(|(block, _)| block.clone()));
+        participants.extend(returns.iter().cloned());
+        for block in &participants {
+            let node = self.view.index_of(block).expect("discovered node");
+            if self.visited.contains(&node) {
+                return Ok(None);
+            }
+            let mut expected = tests
+                .iter()
+                .zip(&test_edges)
+                .filter(|(_, (fallthrough, taken))| fallthrough == block || taken == block)
+                .map(|((source, _), _)| self.view.index_of(source).expect("discovered test"))
+                .collect::<Vec<_>>();
+            expected.extend(
+                gateways
+                    .iter()
+                    .filter(|(_, target)| target == block)
+                    .map(|(source, _)| self.view.index_of(source).expect("discovered gateway")),
+            );
+            if expected.is_empty() || !same_nodes(&self.view.predecessors(node), &expected) {
+                return Ok(None);
+            }
+        }
+        // No exceptional, subroutine or other edge may enter or leave the closure.
+        for block in std::iter::once(outer).chain(participants.iter()) {
+            if self.canonical.edges().iter().any(|edge| {
+                if edge.from() != block && edge.to() != block {
+                    return false;
+                }
+                match edge.kind() {
+                    CanonicalEdgeKind::Normal => false,
+                    CanonicalEdgeKind::Return { .. } => {
+                        edge.from() != block || !returns.contains(block)
+                    }
+                    _ => true,
+                }
+            }) {
+                return Ok(None);
+            }
+        }
+        let Some(outer_node) = self.view.index_of(outer) else {
+            return Ok(None);
+        };
+        let predecessor_count = self.view.predecessors(outer_node).len();
+        if predecessor_count > 1 || (prefix.is_empty() && predecessor_count != 0) {
+            return Ok(None);
+        }
+        if predecessor_count == 1
+            && prefix.last().and_then(|block| self.view.index_of(block))
+                != self.view.predecessors(outer_node).first().copied()
+        {
+            return Ok(None);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(participants.len().saturating_add(prefix.len())).unwrap_or(u64::MAX),
+            Some(outer_bci),
+        )?;
+        for block in &participants {
+            self.visited
+                .insert(self.view.index_of(block).expect("discovered node"));
+        }
+        // This is only a candidate label for the two leaves. The builder separately requires
+        // exact `iconst_1; ireturn` and `iconst_0; ireturn` pairs before emitting Java.
+        returns.sort_by_key(|block| {
+            self.ssa
+                .block(block)
+                .and_then(|names| names.instructions().first())
+                .is_none_or(|instruction| instruction.opcode() != 0x04)
+        });
+        Ok(Some(Region::TwoExitReturn {
+            prefix: prefix.to_vec(),
+            tests,
+            test_edges,
+            gateways,
+            true_return: returns[0].clone(),
+            false_return: returns[1].clone(),
+        }))
+    }
+
+    /// Claims the bounded acyclic test graph whose two producers meet at one block with a
+    /// field write. This establishes physical ownership only; the value and its consumer
+    /// remain unproved and the builder quotes the node whole. Decoded edges and exact predecessor
+    /// sets can admit a shared test; the builder still proves the value and its field use.
+    /// A candidate at the head of one proven protected try is also claimed when a takeable
+    /// exception edge leaves it, so the complete candidate stays one exception-edge refusal.
+    fn short_circuit_value(
+        &mut self,
+        prefix: &[CanonicalBlockId],
+        outer_branch: &CanonicalBlockId,
+        outer_branch_bci: u32,
+        frame: &Frame,
+    ) -> Result<Option<(Region, Option<CanonicalBlockId>)>, StopReason> {
+        // Method-level candidates keep their original restriction. The only protected-range
+        // extension is a candidate that starts at the exact entry of one try body: its boundary
+        // and exception-table row then prove the complete local ownership without widening an
+        // enclosing if, loop, switch arm, or another try.
+        if frame.scope.is_some()
+            || frame.case_entries.is_some()
+            || frame.own_loop.is_some()
+            || frame.loop_exit.is_some()
+            || !frame.loop_targets.is_empty()
+            || frame.switch_join.is_some()
+        {
+            return Ok(None);
+        }
+        let protected_try = match (frame.own_try, frame.boundary) {
+            (None, None) => None,
+            (Some(start_node), Some(boundary_node)) => {
+                if self.view.index_of(outer_branch) != Some(start_node) {
+                    return Ok(None);
+                }
+                let (Some(start), Some(boundary)) =
+                    (self.view.id_of(start_node), self.view.id_of(boundary_node))
+                else {
+                    return Ok(None);
+                };
+                let Some(start_last_bci) = self.terminal_bci(start) else {
+                    return Ok(None);
+                };
+                let mut ranges = self
+                    .handlers
+                    .iter()
+                    .filter(|row| {
+                        row.catch_type_index.is_some()
+                            && row.start_bci >= start.bci()
+                            && row.start_bci <= start_last_bci
+                    })
+                    .map(|row| (row.start_bci, row.end_bci))
+                    .collect::<Vec<_>>();
+                ranges.sort_unstable();
+                ranges.dedup();
+                let [(range_start, range_end)] = ranges.as_slice() else {
+                    return Ok(None);
+                };
+                // This bounded extension handles one named handler for one range. Multiple rows,
+                // nested/overlapping ranges, and a boundary that does not exactly meet the range
+                // are ambiguous ownership and stay on the ordinary conservative path.
+                let matching_rows = self
+                    .handlers
+                    .iter()
+                    .filter(|row| row.start_bci == *range_start && row.end_bci == *range_end)
+                    .collect::<Vec<_>>();
+                let [handler_row] = matching_rows.as_slice() else {
+                    return Ok(None);
+                };
+                if handler_row.catch_type_index.is_none()
+                    || boundary.bci() < *range_end
+                    || self.handlers.iter().any(|row| {
+                        row.ordinal != handler_row.ordinal
+                            && row.start_bci < *range_end
+                            && *range_start < row.end_bci
+                    })
+                {
+                    return Ok(None);
+                }
+                Some((
+                    *range_start,
+                    *range_end,
+                    handler_row.ordinal,
+                    handler_row.handler_bci,
+                ))
+            }
+            _ => return Ok(None),
+        };
+        const MAX_SHORT_CIRCUIT_TESTS: usize = 24;
+        poll(self.budget, Some(outer_branch_bci))?;
+        // Collect comparison nodes, bounded pure transfers and two terminal value producers.
+        // Every discovered normal edge advances; exact physical predecessors are checked below.
+        let mut pending = vec![outer_branch.clone()];
+        let mut seen = BTreeSet::new();
+        let mut tests = Vec::new();
+        let mut test_edges = Vec::new();
+        let mut gateways = Vec::new();
+        let mut transfer_targets = None;
+        let mut producers = Vec::new();
+        while let Some(block) = pending.pop() {
+            poll(self.budget, Some(block.bci()))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(block.bci()),
+            )?;
+            let Some(node) = self.view.index_of(&block) else {
+                return Ok(None);
+            };
+            if !seen.insert(node) {
+                continue;
+            }
+            if seen.len() > MAX_SHORT_CIRCUIT_TESTS * 2 + 2 {
+                return Ok(None);
+            }
+            let successors = self.view.successor_ids(&block);
+            if successors.len() == 2 {
+                let Some(branch_bci) = self.terminal_bci(&block) else {
+                    return Ok(None);
+                };
+                let Some((_, target)) = self
+                    .operations
+                    .get(branch_bci)
+                    .and_then(Operation::comparison)
+                else {
+                    return Ok(None);
+                };
+                let Some((fallthrough, taken)) = self.split_arms(&successors, target) else {
+                    return Ok(None);
+                };
+                if successors.iter().any(|next| next.bci() <= block.bci()) {
+                    return Ok(None);
+                }
+                tests.push((block, branch_bci));
+                test_edges.push((fallthrough.clone(), taken.clone()));
+                pending.extend([fallthrough, taken]);
+            } else if successors.len() == 1 {
+                let Some(names) = self.ssa.block(&block) else {
+                    return Ok(None);
+                };
+                let Some(first) = names.instructions().first() else {
+                    return Ok(None);
+                };
+                if matches!(self.operations.get(first.bci()), Some(Operation::Push(_))) {
+                    producers.push(block);
+                    if producers.len() > 2 {
+                        return Ok(None);
+                    }
+                } else {
+                    let [transfer] = names.instructions() else {
+                        return Ok(None);
+                    };
+                    let successor = &successors[0];
+                    if !matches!(transfer.opcode(), 0xa7 | 0xc8)
+                        || !matches!(
+                            self.operations.get(transfer.bci()),
+                            Some(Operation::Transfer)
+                        )
+                        || !transfer.reads().is_empty()
+                        || !transfer.writes().is_empty()
+                        || successor.bci() <= block.bci()
+                        || successor.path() != block.path()
+                        || self.excluded_edge_nodes.contains(&block)
+                    {
+                        return Ok(None);
+                    }
+                    if transfer_targets.is_none() {
+                        charge(
+                            self.budget,
+                            CountedBudgetDimension::AnalysisSteps,
+                            u64::try_from(self.code.instructions.len()).unwrap_or(u64::MAX),
+                            Some(transfer.bci()),
+                        )?;
+                        let Ok(targets) = self.code.control_flow_targets() else {
+                            return Ok(None);
+                        };
+                        transfer_targets = Some(targets);
+                    }
+                    let targets = transfer_targets.as_ref().expect("decoded transfer targets");
+                    if targets
+                        .iter()
+                        .filter(|target| target.instruction_bci == transfer.bci())
+                        .filter(|target| {
+                            matches!(
+                                target.kind,
+                                jarde_reader::classfile::ControlFlowTargetKind::Branch { .. }
+                            )
+                        })
+                        .map(|target| target.target_bci)
+                        .collect::<Vec<_>>()
+                        != [successor.bci()]
+                    {
+                        return Ok(None);
+                    }
+                    gateways.push((block, successor.clone()));
+                    if gateways.len() > MAX_SHORT_CIRCUIT_TESTS {
+                        return Ok(None);
+                    }
+                    pending.push(successor.clone());
+                }
+            } else {
+                return Ok(None);
+            }
+        }
+        if tests.len() < 2 || tests.len() > MAX_SHORT_CIRCUIT_TESTS || producers.len() != 2 {
+            return Ok(None);
+        }
+        let mut ordered = tests.into_iter().zip(test_edges).collect::<Vec<_>>();
+        ordered.sort_by_key(|((block, _), _)| block.bci());
+        let (tests, test_edges): (Vec<_>, Vec<_>) = ordered.into_iter().unzip();
+        gateways.sort_by_key(|(block, _)| block.bci());
+        if tests[0] != (outer_branch.clone(), outer_branch_bci) {
+            return Ok(None);
+        }
+        let (last_fallthrough, last_taken) = test_edges.last().expect("at least two tests");
+        if !producers.contains(last_fallthrough) || !producers.contains(last_taken) {
+            return Ok(None);
+        }
+        let literal = |block: &CanonicalBlockId| {
+            self.ssa
+                .block(block)
+                .and_then(|names| names.instructions().first())
+                .and_then(|instruction| self.operations.get(instruction.bci()))
+                .and_then(|operation| match operation {
+                    Operation::Push(ConstantValue::Int(value)) => Some(*value),
+                    _ => None,
+                })
+        };
+        // Decode the leaf values before assigning polarity. The last comparison's taken
+        // edge can be either 1 or 0 (notably for OR versus AND). A near-miss non-boolean
+        // literal still retains one owner so the later value proof can quote it whole.
+        let (true_producer, false_producer) = match (literal(last_fallthrough), literal(last_taken))
+        {
+            (Some(0), _) | (_, Some(1)) => (last_taken.clone(), last_fallthrough.clone()),
+            _ => (last_fallthrough.clone(), last_taken.clone()),
+        };
+        let Some(consumer) = self.view.successor_ids(&true_producer).first().cloned() else {
+            return Ok(None);
+        };
+        let Some(consumer_node) = self.view.index_of(&consumer) else {
+            return Ok(None);
+        };
+        if self.view.successor_ids(&false_producer) != [consumer.clone()]
+            || self.view.successors(consumer_node).len() > 1
+        {
+            return Ok(None);
+        }
+        let comparisons = tests.len().saturating_mul(tests.len()).saturating_mul(4);
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(comparisons).unwrap_or(u64::MAX),
+            Some(outer_branch_bci),
+        )?;
+        let test_nodes = tests
+            .iter()
+            .map(|(block, _)| self.view.index_of(block).expect("collected node"))
+            .collect::<Vec<_>>();
+        let true_node = self
+            .view
+            .index_of(&true_producer)
+            .expect("collected producer");
+        let false_node = self
+            .view
+            .index_of(&false_producer)
+            .expect("collected producer");
+        let gateway_nodes = gateways
+            .iter()
+            .map(|(block, _)| self.view.index_of(block).expect("collected gateway"))
+            .collect::<Vec<_>>();
+        let mut participants = test_nodes[1..].to_vec();
+        participants.extend(&gateway_nodes);
+        participants.extend([true_node, false_node, consumer_node]);
+        if participants.iter().any(|node| self.visited.contains(node))
+            || participants.iter().copied().collect::<BTreeSet<_>>().len() != participants.len()
+        {
+            return Ok(None);
+        }
+        for node in test_nodes.iter().skip(1) {
+            let mut expected = tests
+                .iter()
+                .zip(&test_edges)
+                .filter(|(_, (fallthrough, taken))| {
+                    self.view.index_of(fallthrough) == Some(*node)
+                        || self.view.index_of(taken) == Some(*node)
+                })
+                .map(|((block, _), _)| self.view.index_of(block).expect("collected node"))
+                .collect::<Vec<_>>();
+            expected.extend(
+                gateways
+                    .iter()
+                    .filter(|(_, successor)| self.view.index_of(successor) == Some(*node))
+                    .map(|(gateway, _)| self.view.index_of(gateway).expect("collected gateway")),
+            );
+            if expected.is_empty() || !same_nodes(&self.view.predecessors(*node), &expected) {
+                return Ok(None);
+            }
+        }
+        for (gateway, successor) in &gateways {
+            let node = self.view.index_of(gateway).expect("collected gateway");
+            let mut expected = tests
+                .iter()
+                .zip(&test_edges)
+                .filter(|(_, (fallthrough, taken))| fallthrough == gateway || taken == gateway)
+                .map(|((block, _), _)| self.view.index_of(block).expect("collected node"))
+                .collect::<Vec<_>>();
+            expected.extend(
+                gateways
+                    .iter()
+                    .filter(|(_, target)| target == gateway)
+                    .map(|(prior, _)| self.view.index_of(prior).expect("collected gateway")),
+            );
+            if expected.len() != 1
+                || !same_nodes(&self.view.predecessors(node), &expected)
+                || self.view.successor_ids(gateway) != [successor.clone()]
+                || self.canonical.edges().iter().any(|edge| {
+                    (edge.from() == gateway || edge.to() == gateway)
+                        && edge.kind() != CanonicalEdgeKind::Normal
+                })
+            {
+                return Ok(None);
+            }
+        }
+        for producer_node in [true_node, false_node] {
+            let mut expected = tests
+                .iter()
+                .zip(&test_edges)
+                .filter(|(_, (fallthrough, taken))| {
+                    self.view.index_of(fallthrough) == Some(producer_node)
+                        || self.view.index_of(taken) == Some(producer_node)
+                })
+                .map(|((block, _), _)| self.view.index_of(block).expect("collected node"))
+                .collect::<Vec<_>>();
+            expected.extend(
+                gateways
+                    .iter()
+                    .filter(|(_, successor)| self.view.index_of(successor) == Some(producer_node))
+                    .map(|(gateway, _)| self.view.index_of(gateway).expect("collected gateway")),
+            );
+            if expected.is_empty() || !same_nodes(&self.view.predecessors(producer_node), &expected)
+            {
+                return Ok(None);
+            }
+        }
+        if !same_nodes(
+            &self.view.predecessors(consumer_node),
+            &[true_node, false_node],
+        ) {
+            return Ok(None);
+        }
+        let mut participant_ids = tests
+            .iter()
+            .skip(1)
+            .map(|(block, _)| block.clone())
+            .collect::<Vec<_>>();
+        participant_ids.extend(gateways.iter().map(|(block, _)| block.clone()));
+        participant_ids.extend([
+            true_producer.clone(),
+            false_producer.clone(),
+            consumer.clone(),
+        ]);
+        let scan_items = participant_ids
+            .iter()
+            .filter_map(|block| self.ssa.block(block))
+            .map(|block| block.instructions().len().saturating_add(1))
+            .sum::<usize>()
+            .saturating_add(prefix.len());
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(scan_items).unwrap_or(u64::MAX),
+            Some(outer_branch_bci),
+        )?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(participants.len().saturating_add(prefix.len())).unwrap_or(u64::MAX),
+            Some(outer_branch_bci),
+        )?;
+
+        let Some(consumer_block) = self.ssa.block(&consumer) else {
+            return Ok(None);
+        };
+        // Keep ownership broad enough to retain near-miss producers and consumers (including a
+        // dup before a field write). The builder proves the exact 1/0 values, unique Phi read and
+        // consumer type; this recognizer only needs an existing statement consumer anchor.
+        let Some(consumer_bci) = consumer_block
+            .instructions()
+            .iter()
+            .find_map(|instruction| {
+                (matches!(
+                    self.operations.get(instruction.bci()),
+                    Some(Operation::Field {
+                        access: crate::facts::FieldAccess::Write,
+                        ..
+                    })
+                ) || (instruction.opcode() == 0xac
+                    && matches!(
+                        self.operations.get(instruction.bci()),
+                        Some(Operation::Return)
+                    ))
+                    || matches!(
+                        self.operations.get(instruction.bci()),
+                        Some(Operation::Invoke(_))
+                    )
+                    || matches!(
+                        self.operations.get(instruction.bci()),
+                        Some(Operation::Store { .. })
+                    )
+                    || (instruction.opcode() == 0x54
+                        && matches!(
+                            self.operations.get(instruction.bci()),
+                            Some(Operation::ArrayStore { .. })
+                        )))
+                .then_some(instruction.bci())
+            })
+        else {
+            return Ok(None);
+        };
+        let Some(consumer_terminal) = consumer_block.instructions().last() else {
+            return Ok(None);
+        };
+        if self
+            .operations
+            .get(consumer_terminal.bci())
+            .is_some_and(|operation| {
+                operation.comparison().is_some() || operation.switch().is_some()
+            })
+        {
+            return Ok(None);
+        }
+        let next = self.view.successor_ids(&consumer).into_iter().next();
+
+        let mut reason = FallbackReason::ShortCircuitValueUnproved {
+            first_branch_bci: outer_branch_bci,
+            last_branch_bci: tests.last().expect("at least two tests").1,
+            consumer_bci,
+        };
+        let mut owned_blocks = prefix.to_vec();
+        owned_blocks.extend(tests.iter().map(|(block, _)| block.clone()));
+        owned_blocks.extend(gateways.iter().map(|(block, _)| block.clone()));
+        owned_blocks.extend([
+            true_producer.clone(),
+            false_producer.clone(),
+            consumer.clone(),
+        ]);
+        owned_blocks.sort_by_key(CanonicalBlockId::bci);
+        owned_blocks.dedup();
+        if let Some((range_start, range_end, handler_ordinal, handler_bci)) = protected_try {
+            // Every claimed physical block must be wholly inside this try's declared protected
+            // range. Its continuation must reach the try boundary directly or through
+            // transfer-only blocks: try_level does not walk the returned continuation.
+            let Some(boundary_node) = frame.boundary else {
+                return Ok(None);
+            };
+            for block in &owned_blocks {
+                let Some(node) = self.view.index_of(block) else {
+                    return Ok(None);
+                };
+                let Some(names) = self.ssa.block(block) else {
+                    return Ok(None);
+                };
+                if block.bci() < range_start
+                    || node == boundary_node
+                    || names.instructions().iter().any(|instruction| {
+                        instruction.bci() < range_start
+                            || (instruction.bci() >= range_end
+                                && !matches!(
+                                    self.operations.get(instruction.bci()),
+                                    Some(Operation::Transfer)
+                                ))
+                    })
+                {
+                    return Ok(None);
+                }
+            }
+            let Some(next) = next.as_ref() else {
+                return Ok(None);
+            };
+            if self.view.index_of(next) != Some(boundary_node)
+                && self.after_join(next).bci()
+                    != self
+                        .view
+                        .id_of(boundary_node)
+                        .map_or(u32::MAX, CanonicalBlockId::bci)
+            {
+                return Ok(None);
+            }
+
+            let Some(handler) = self
+                .canonical
+                .handler_rows()
+                .iter()
+                .find(|row| row.ordinal() == handler_ordinal)
+                .and_then(|row| row.handler())
+            else {
+                return Ok(None);
+            };
+            if handler.bci() != handler_bci {
+                return Ok(None);
+            }
+            let mut takeable_exception = None;
+            for block in &owned_blocks {
+                for edge in self
+                    .canonical
+                    .edges()
+                    .iter()
+                    .filter(|edge| edge.from() == block)
+                {
+                    match edge.kind() {
+                        CanonicalEdgeKind::Exception {
+                            handler_ordinal: edge_ordinal,
+                        } => {
+                            if edge_ordinal != handler_ordinal || edge.to() != handler {
+                                return Ok(None);
+                            }
+                            if self.exception_edge_takeable(block, edge_ordinal) {
+                                takeable_exception.get_or_insert((block.bci(), edge_ordinal));
+                            }
+                        }
+                        CanonicalEdgeKind::Call { .. } => return Ok(None),
+                        CanonicalEdgeKind::Normal | CanonicalEdgeKind::Return { .. } => {}
+                    }
+                }
+            }
+            let Some((block_bci, handler_ordinal)) = takeable_exception else {
+                // This change only extends try ownership to preserve a real throwing edge. A
+                // protected candidate with no takeable edge retains the prior method-level limit.
+                return Ok(None);
+            };
+            reason = FallbackReason::ExceptionEdge {
+                block_bci,
+                handler_ordinal,
+            };
+        } else if owned_blocks
+            .iter()
+            .any(|block| self.excluded_edge_nodes.contains(block))
+        {
+            return Ok(None);
+        }
+
+        // Commit ownership only after the entire local shape passed. The outer block was inserted
+        // by region_at_inner already; every other participant is inserted exactly once here.
+        for node in participants {
+            self.visited.insert(node);
+        }
+        Ok(Some((
+            Region::ShortCircuitValue {
+                prefix: prefix.to_vec(),
+                tests,
+                test_edges,
+                gateways,
+                true_producer,
+                false_producer,
+                consumer,
+                consumer_bci,
+                reason,
+            },
+            next,
+        )))
+    }
+
+    /// Whether one successor of a two-successor branch is the **forward join** of that branch: the
+    /// block both successors converge onto by forward edges, which the branch's own immediate
+    /// post-dominator does not state.
+    ///
+    /// `javac --release 8 -g:none` writes `if (a > 0 && b > 0) return 1; return 0;` as
+    ///
+    /// ```text
+    /// 0: iload_0
+    /// 1: ifle 10
+    /// 4: iload_1
+    /// 5: ifle 10
+    /// 8: iconst_1
+    /// 9: ireturn
+    /// 10: iconst_0
+    /// 11: ireturn
+    /// ```
+    ///
+    /// so block 10 is reached by the taken edge of both branches — and it is **not** the branch's
+    /// immediate post-dominator, because the `return 1` path leaves the method before passing
+    /// through it. The one-armed reading above (a successor that *is* the post-dominator) therefore
+    /// never fires, the walk claimed the shared block from the inner branch first, and the second
+    /// arrival at it was read as a loop ([`FallbackReason::Loop`]) — the `return 0` the bytecode
+    /// states disappeared from the text. The join is a fact of the graph all the same, and this is
+    /// the reading of it:
+    ///
+    /// * a **loop header** is never a join: the walk reads a loop as a region of its own before any
+    ///   branch arm is examined, and a block a back edge enters is where a structure begins, not
+    ///   where a branch's arms meet;
+    /// * the **other successor must be a different block** (`other`): two edges onto one block state
+    ///   no arm split at all;
+    /// * the frame's **own boundary** is where the enclosing structure continues, so a successor
+    ///   that *is* it ends this branch's structure without walking anything — the one-armed shape
+    ///   read off the frame rather than the graph. This is what makes an inner `if` one-armed once
+    ///   the join of the enclosing `if` is the arm's boundary: without it the inner branch would
+    ///   walk the shared block a second time;
+    /// * otherwise the **convergence** must be stated by the graph: every predecessor of the
+    ///   successor is dominated by this branch (every way into it comes through this branch), every
+    ///   edge into it is forward (the successor does not dominate the block the edge comes from,
+    ///   which is what a back edge is), and at least one predecessor is a block *other* than this
+    ///   branch — a successor whose only way in is this branch is the block this branch continues
+    ///   at, not a convergence of two arms.
+    ///
+    /// A branch whose two successors both satisfy this states no arm of its own and keeps
+    /// [`FallbackReason::ArmsDoNotMeet`] (see [`Walker::region_at_inner`]).
+    fn forward_join(
+        &self,
+        branch: usize,
+        successor: Option<usize>,
+        other: Option<usize>,
+        frame: &Frame,
+    ) -> bool {
+        let Some(join) = successor else {
+            return false;
+        };
+        if other.is_none_or(|other| other == join) {
+            return false;
+        }
+        if self.view.is_loop_header(join) {
+            return false;
+        }
+        if frame.boundary == Some(join) {
+            return true;
+        }
+        let predecessors = self.view.predecessors(join);
+        // A successor whose only way in is this branch is where this branch continues, not a block
+        // two arms meet at.
+        if predecessors
+            .iter()
+            .all(|predecessor| *predecessor == branch)
+        {
+            return false;
+        }
+        predecessors.iter().all(|predecessor| {
+            self.view.dominates(branch, *predecessor) && !self.view.dominates(join, *predecessor)
+        })
+    }
+
     /// The loop whose header this walk just entered.
     ///
     /// Two shapes are provable, and both put the test *inside* the loop statement: a header that
@@ -1428,20 +3977,18 @@ impl Walker<'_> {
         header: &CanonicalBlockId,
         header_node: usize,
         frame: &Frame,
-    ) -> Result<(Region, Option<CanonicalBlockId>), StopReason> {
+    ) -> Result<Run, StopReason> {
         let Some(loop_of) = self.view.loop_entered_at(header_node).cloned() else {
-            return Ok((
-                Region::Fallback {
-                    blocks: vec![header.clone()],
-                    reason: FallbackReason::LoopShape {
-                        block_bci: header.bci(),
-                    },
-                },
-                None,
-            ));
+            let reason = FallbackReason::LoopShape {
+                block_bci: header.bci(),
+            };
+            return Ok(gap(Vec::new(), vec![header.clone()], reason, None));
         };
         let blocks = loop_of.blocks().clone();
-        if loop_of.is_irreducible() {
+        if self
+            .view
+            .loop_is_irreducible(header_node, &self.catch_joins)
+        {
             // Defensive: `recover` refuses a whole body whose graph is irreducible before the walk
             // starts, so a header that is still irreducible here is a payload this layer did not
             // expect to see — and it is reported, not guessed at.
@@ -1449,13 +3996,8 @@ impl Walker<'_> {
                 .iter()
                 .filter_map(|node| self.view.id_of(*node).map(CanonicalBlockId::bci))
                 .collect();
-            return Ok((
-                Region::Fallback {
-                    blocks: vec![header.clone()],
-                    reason: FallbackReason::Irreducible { blocks: bcis },
-                },
-                None,
-            ));
+            let reason = FallbackReason::Irreducible { blocks: bcis };
+            return Ok(gap(Vec::new(), vec![header.clone()], reason, None));
         }
         if let Some(region) = self.header_tested_loop(header, header_node, &blocks, frame)? {
             return Ok(region);
@@ -1463,15 +4005,10 @@ impl Walker<'_> {
         if let Some(region) = self.latch_tested_loop(header, header_node, &blocks, frame)? {
             return Ok(region);
         }
-        Ok((
-            Region::Fallback {
-                blocks: vec![header.clone()],
-                reason: FallbackReason::LoopShape {
-                    block_bci: header.bci(),
-                },
-            },
-            None,
-        ))
+        let reason = FallbackReason::LoopShape {
+            block_bci: header.bci(),
+        };
+        Ok(gap(Vec::new(), vec![header.clone()], reason, None))
     }
 
     /// The `while`/`for` shape: the header's own branch tests and one of its arms leaves the loop.
@@ -1481,7 +4018,7 @@ impl Walker<'_> {
         header_node: usize,
         blocks: &BTreeSet<usize>,
         frame: &Frame,
-    ) -> Result<Option<(Region, Option<CanonicalBlockId>)>, StopReason> {
+    ) -> Result<Option<Run>, StopReason> {
         let successors = self.view.successor_ids(header);
         if successors.len() != 2 {
             return Ok(None);
@@ -1515,23 +4052,13 @@ impl Walker<'_> {
         else {
             return Ok(None);
         };
-        if let Some(reason) = self.leaving_edge(header) {
-            return Ok(Some((
-                Region::Fallback {
-                    blocks: vec![header.clone()],
-                    reason,
-                },
-                None,
-            )));
+        if let Some(reason) = self.leaving_edge(header)
+            && !self.leaves_only_through_dead_edges(header)
+        {
+            return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
         }
         if let Err(reason) = self.test_is_pure(header, test_bci) {
-            return Ok(Some((
-                Region::Fallback {
-                    blocks: vec![header.clone()],
-                    reason,
-                },
-                None,
-            )));
+            return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
         }
         // Which way through the test iterates: the branch's own target says it, and nothing else
         // can — the two successors are its arms, not its polarity.
@@ -1540,34 +4067,387 @@ impl Walker<'_> {
         } else {
             Continuation::FallThrough
         };
-        let body_frame = frame.loop_body(blocks, header_node, header_node);
-        let (body, _) = self.region_at(&inside, &body_frame)?;
+        let exit_node = self.view.index_of(&outside);
+        let for_header = self.prove_for_header(header, header_node, blocks)?;
+        let exits = self.loop_exit_nodes(blocks);
+        let mut all_exits: BTreeSet<usize> = frame
+            .loop_targets
+            .iter()
+            .flat_map(|target| target.exits.iter().copied())
+            .collect();
+        all_exits.extend(
+            frame
+                .loop_targets
+                .iter()
+                .map(|target| target.continue_target),
+        );
+        all_exits.extend(exits.iter().copied());
+        if let Some(proof) = &for_header
+            && let Some(update_node) = self.view.index_of(&proof.update_block)
+        {
+            all_exits.insert(update_node);
+        }
+        let transfer_sources = self.loop_transfer_sources(&all_exits);
+        let body_frame = frame.loop_body(
+            blocks,
+            header_node,
+            header_node,
+            for_header
+                .as_ref()
+                .and_then(|proof| self.view.index_of(&proof.update_block))
+                .unwrap_or(header_node),
+            exit_node,
+            exits,
+            &transfer_sources,
+        );
+        let (body, _) = self.loop_body_sequence(&inside, &body_frame, blocks)?;
         self.visited.insert(header_node);
         let mut expected = blocks.clone();
         expected.remove(&header_node);
         if !self.covers(&expected) {
-            return Ok(Some((
-                Region::Fallback {
-                    blocks: vec![header.clone()],
-                    reason: FallbackReason::LoopShape {
-                        block_bci: header.bci(),
-                    },
-                },
-                None,
-            )));
+            // The loop's shape is refused, and every block the body's walk claimed goes into the
+            // refusal with it: the body region is dropped here, so naming its blocks is the only
+            // thing that keeps them in the artifact at all (see [`Self::loop_fallback`]).
+            let reason = FallbackReason::LoopShape {
+                block_bci: header.bci(),
+            };
+            return Ok(Some(Self::loop_fallback(header, reason, body)));
         }
-        Ok(Some((
-            Region::Loop {
-                header: header.clone(),
-                test: header.clone(),
-                test_bci,
-                form: LoopForm::While,
-                continuation,
-                body: Box::new(body),
-                exit: Some(outside.clone()),
-            },
-            Some(outside),
-        )))
+        let run = vec![Region::Loop {
+            header: header.clone(),
+            test: header.clone(),
+            test_bci,
+            form: LoopForm::While,
+            continuation,
+            for_header,
+            body,
+            exit: Some(outside.clone()),
+        }];
+        Ok(Some((run, Some(outside))))
+    }
+
+    /// Proves the narrow indexed-loop spelling before walking nested bodies. The update block is
+    /// an actual CFG destination, so a nested `continue` may target it only after this proof has
+    /// established that Java's `for` update executes there. Checking every incoming edge prevents
+    /// a body effect before the update from being moved into the header with it.
+    fn prove_for_header(
+        &mut self,
+        header: &CanonicalBlockId,
+        header_node: usize,
+        blocks: &BTreeSet<usize>,
+    ) -> Result<Option<ForHeader>, StopReason> {
+        let at = Some(header.bci());
+        poll(self.budget, at)?;
+        let items = self
+            .ssa
+            .blocks()
+            .iter()
+            .map(|block| block.instructions().len().saturating_add(1))
+            .sum::<usize>()
+            .saturating_add(self.ssa.phis().len())
+            .saturating_add(self.canonical.edges().len().saturating_mul(3));
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(items).unwrap_or(u64::MAX),
+            at,
+        )?;
+        self.for_header_candidate(header, header_node, blocks)
+    }
+
+    fn for_header_candidate(
+        &mut self,
+        header: &CanonicalBlockId,
+        header_node: usize,
+        blocks: &BTreeSet<usize>,
+    ) -> Result<Option<ForHeader>, StopReason> {
+        let Some((proof, preheader, invariants)) = (|| {
+            let loop_fact = self.view.loop_entered_at(header_node)?;
+            let latch = *loop_fact.latches().iter().next()?;
+            if loop_fact.latches().len() != 1
+                || latch == header_node
+                || self.view.successors(latch) != [header_node]
+            {
+                return None;
+            }
+            let update_block = self.view.id_of(latch)?;
+            let update_instructions = self.ssa.block(update_block)?.instructions();
+            let (slot, update, step, induction_input) = if let Some(
+                [induction, step, add, update, transfer],
+            ) = update_instructions
+                .len()
+                .checked_sub(5)
+                .and_then(|start| update_instructions.get(start..))
+                && let Some(Operation::Load { slot }) = self.operations.get(induction.bci())
+                && matches!(self.operations.get(step.bci()), Some(Operation::Load { slot: read }) if read != slot)
+                && matches!(
+                    self.operations.get(add.bci()),
+                    Some(Operation::Arithmetic {
+                        op: crate::facts::ArithmeticOp::Add
+                    })
+                )
+                && matches!(self.operations.get(update.bci()), Some(Operation::Store { slot: target }) if target == slot)
+                && matches!(
+                    self.operations.get(transfer.bci()),
+                    Some(Operation::Transfer)
+                )
+                && matches!(induction.opcode(), 0x15 | 0x1a..=0x1d)
+                && matches!(step.opcode(), 0x15 | 0x1a..=0x1d)
+                && add.opcode() == 0x60
+                && matches!(update.opcode(), 0x36 | 0x3b..=0x3e)
+            {
+                let [(Slot::Local(read_slot), induction_input)] = induction.reads() else {
+                    return None;
+                };
+                if read_slot != slot {
+                    return None;
+                }
+                let induction_value = induction
+                    .writes()
+                    .iter()
+                    .find_map(|(at, value)| matches!(at, Slot::Stack(_)).then_some(*value))?;
+                let step_value = step
+                    .writes()
+                    .iter()
+                    .find_map(|(at, value)| matches!(at, Slot::Stack(_)).then_some(*value))?;
+                let sum_value = add
+                    .writes()
+                    .iter()
+                    .find_map(|(at, value)| matches!(at, Slot::Stack(_)).then_some(*value))?;
+                let add_inputs = add
+                    .reads()
+                    .iter()
+                    .filter(|(at, _)| matches!(at, Slot::Stack(_)))
+                    .map(|(_, value)| *value)
+                    .collect::<Vec<_>>();
+                if add_inputs.len() != 2
+                    || !add_inputs.contains(&induction_value)
+                    || !add_inputs.contains(&step_value)
+                    || update
+                        .reads()
+                        .iter()
+                        .filter(|(at, _)| matches!(at, Slot::Stack(_)))
+                        .map(|(_, value)| *value)
+                        .collect::<Vec<_>>()
+                        != [sum_value]
+                    || self.ssa.value(induction_value).uses().len() != 1
+                    || self.ssa.value(step_value).uses().len() != 1
+                    || self.ssa.value(sum_value).uses().len() != 1
+                {
+                    return None;
+                }
+                let Some(Operation::Load { slot: step_slot }) = self.operations.get(step.bci())
+                else {
+                    return None;
+                };
+                (*slot, update, Some(*step_slot), Some(*induction_input))
+            } else {
+                let update_tail =
+                    update_instructions.get(update_instructions.len().checked_sub(2)?..)?;
+                let [update, transfer] = update_tail else {
+                    return None;
+                };
+                let Some(Operation::Increment { slot, .. }) = self.operations.get(update.bci())
+                else {
+                    return None;
+                };
+                if !matches!(
+                    self.operations.get(transfer.bci()),
+                    Some(Operation::Transfer)
+                ) {
+                    return None;
+                }
+                (*slot, update, None, None)
+            };
+            if update
+                .reads()
+                .iter()
+                .filter(|(at, _)| *at == Slot::Local(slot))
+                .count()
+                != usize::from(step.is_none())
+                || update
+                    .writes()
+                    .iter()
+                    .filter(|(at, _)| *at == Slot::Local(slot))
+                    .count()
+                    != 1
+            {
+                return None;
+            }
+            let in_edges = self.view.predecessors(latch);
+            if in_edges.is_empty() || in_edges.iter().any(|source| !blocks.contains(source)) {
+                return None;
+            }
+            // If the latch also holds body effects, an early edge to its entry must execute those
+            // effects before the update. A Java `continue` would skip them, so only the plain
+            // header-to-body route may use such a shared block.
+            if update_instructions.len() > if step.is_some() { 5 } else { 2 }
+                && in_edges != [header_node]
+            {
+                return None;
+            }
+
+            let outside: Vec<_> = self
+                .view
+                .predecessors(header_node)
+                .into_iter()
+                .filter(|source| !blocks.contains(source))
+                .collect();
+            let [preheader] = outside.as_slice() else {
+                return None;
+            };
+            if self.view.successors(*preheader) != [header_node] {
+                return None;
+            }
+            let preheader_block = self.view.id_of(*preheader)?;
+            let initial_instructions = self.ssa.block(preheader_block)?.instructions();
+            let tail = initial_instructions.get(initial_instructions.len().checked_sub(2)?..)?;
+            let [producer, initial] = tail else {
+                return None;
+            };
+            if !matches!(
+                self.operations.get(producer.bci()),
+                Some(Operation::Push(crate::facts::ConstantValue::Int(_)))
+            ) || !matches!(self.operations.get(initial.bci()), Some(Operation::Store { slot: target }) if *target == slot)
+            {
+                return None;
+            }
+            let init_value = initial
+                .writes()
+                .iter()
+                .find_map(|(at, value)| (*at == Slot::Local(slot)).then_some(*value))?;
+            let update_value = update
+                .writes()
+                .iter()
+                .find_map(|(at, value)| (*at == Slot::Local(slot)).then_some(*value))?;
+            let stack_input = initial
+                .reads()
+                .iter()
+                .find_map(|(at, value)| matches!(at, Slot::Stack(_)).then_some(*value))?;
+            if !matches!(self.ssa.value(stack_input).def(), Definition::Instruction { bci, .. } if *bci == producer.bci())
+            {
+                return None;
+            }
+
+            let phi = self
+                .ssa
+                .phis()
+                .iter()
+                .find(|phi| phi.block() == header && phi.slot() == Slot::Local(slot))?;
+            if phi.inputs().len() != 2
+                || !phi.inputs().contains(&PhiInput::Value(init_value))
+                || !phi.inputs().contains(&PhiInput::Value(update_value))
+                || self.ssa.value(init_value).uses().len() != 1
+                || self.ssa.value(update_value).uses().len() != 1
+            {
+                return None;
+            }
+            // The first load of an add/store latch must read this header's induction value,
+            // not another merged local that happens to occupy the same slot.
+            if induction_input.is_some_and(|value| value != phi.value()) {
+                return None;
+            }
+
+            let test = self.ssa.block(header)?.instructions();
+            let mut reads_induction = false;
+            let mut invariants = BTreeSet::new();
+            if let Some(step) = step {
+                invariants.insert(step);
+            }
+            for instruction in test {
+                match self.operations.get(instruction.bci()) {
+                    Some(Operation::Load { slot: read }) if *read == slot => {
+                        reads_induction = true;
+                        if !instruction
+                            .reads()
+                            .iter()
+                            .any(|(at, value)| *at == Slot::Local(slot) && *value == phi.value())
+                        {
+                            return None;
+                        }
+                    }
+                    Some(Operation::Load { slot: read }) => {
+                        invariants.insert(*read);
+                    }
+                    Some(
+                        Operation::Push(_)
+                        | Operation::Arithmetic { .. }
+                        | Operation::Comparison { .. },
+                    ) => {}
+                    _ => return None,
+                }
+            }
+            if !reads_induction {
+                return None;
+            }
+            Some((
+                ForHeader {
+                    init_bci: initial.bci(),
+                    update_bci: update.bci(),
+                    update_block: update_block.clone(),
+                    slot,
+                },
+                *preheader,
+                invariants,
+            ))
+        })() else {
+            return Ok(None);
+        };
+        for names in self.ssa.blocks() {
+            poll(self.budget, Some(names.block().bci()))?;
+            let Some(node) = self.view.index_of(names.block()) else {
+                return Ok(None);
+            };
+            for instruction in names.instructions() {
+                if blocks.contains(&node)
+                    && instruction.bci() != proof.update_bci
+                    && instruction
+                        .writes()
+                        .iter()
+                        .any(|(at, _)| *at == Slot::Local(proof.slot))
+                {
+                    return Ok(None);
+                }
+                if blocks.contains(&node)
+                    && instruction.writes().iter().any(
+                        |(at, _)| matches!(at, Slot::Local(index) if invariants.contains(index)),
+                    )
+                {
+                    return Ok(None);
+                }
+                if !blocks.contains(&node)
+                    && node != preheader
+                    && instruction
+                        .reads()
+                        .iter()
+                        .chain(instruction.writes())
+                        .any(|(at, _)| *at == Slot::Local(proof.slot))
+                {
+                    return Ok(None);
+                }
+            }
+        }
+        Ok(Some(proof))
+    }
+
+    /// The run a refused loop leaves behind: one refusal naming the loop's own block and everything
+    /// the body's walk claimed, then the sibling quotes that walk left behind.
+    ///
+    /// A refused loop cannot be written — the statement is the loop — so the blocks its body proved
+    /// have no place as statements, and the body's region is **dropped** by the caller. A dropped
+    /// region is exactly what the exactly-once invariant forbids: those blocks were claimed, so the
+    /// uncovered-blocks scan will not name them, and a block named by no region is a silently lost
+    /// part of the body. The refusal therefore quotes the header and every block the body's run
+    /// holds, each once, in the walk's own order; the quotes the body left behind stay quotes and
+    /// are reported beside it ([`Run`]).
+    fn loop_fallback(header: &CanonicalBlockId, reason: FallbackReason, body: Vec<Region>) -> Run {
+        let blocks = gap_blocks(header, body.iter().flat_map(Region::blocks).cloned());
+        let mut run = vec![Region::Fallback { blocks, reason }];
+        run.extend(
+            body.into_iter()
+                .filter(|region| matches!(region, Region::Fallback { .. })),
+        );
+        (run, None)
     }
 
     /// The `do … while` shape: one latch, whose own branch tests and jumps back to the header.
@@ -1577,7 +4457,7 @@ impl Walker<'_> {
         header_node: usize,
         blocks: &BTreeSet<usize>,
         frame: &Frame,
-    ) -> Result<Option<(Region, Option<CanonicalBlockId>)>, StopReason> {
+    ) -> Result<Option<Run>, StopReason> {
         let latches = self
             .view
             .loop_entered_at(header_node)
@@ -1633,7 +4513,7 @@ impl Walker<'_> {
         // rather than a reason to refuse.
         if latch_node == header_node {
             self.visited.insert(header_node);
-            return Ok(Some((
+            return Ok(Some(one(
                 Region::Loop {
                     header: header.clone(),
                     test: header.clone(),
@@ -1644,67 +4524,123 @@ impl Walker<'_> {
                     } else {
                         Continuation::FallThrough
                     },
-                    body: Box::new(Region::Straight {
+                    for_header: None,
+                    body: vec![Region::Straight {
                         blocks: vec![header.clone()],
-                    }),
+                    }],
                     exit: Some(exit.clone()),
                 },
                 Some(exit),
             )));
         }
         for block in [header, &latch] {
-            if let Some(reason) = self.leaving_edge(block) {
-                return Ok(Some((
-                    Region::Fallback {
-                        blocks: vec![header.clone()],
-                        reason,
-                    },
-                    None,
-                )));
+            if let Some(reason) = self.leaving_edge(block)
+                && !self.leaves_only_through_dead_edges(block)
+            {
+                return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
             }
         }
         if let Err(reason) = self.test_is_pure(&latch, test_bci) {
-            return Ok(Some((
-                Region::Fallback {
-                    blocks: vec![header.clone()],
-                    reason,
-                },
-                None,
-            )));
+            return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
         }
         let continuation = if target == header.bci() {
             Continuation::Taken
         } else {
             Continuation::FallThrough
         };
-        let body_frame = frame.loop_body(blocks, latch_node, header_node);
-        let (body, _) = self.region_at(header, &body_frame)?;
+        let exit_node = self.view.index_of(&exit);
+        let exits = self.loop_exit_nodes(blocks);
+        let mut all_exits: BTreeSet<usize> = frame
+            .loop_targets
+            .iter()
+            .flat_map(|target| target.exits.iter().copied())
+            .collect();
+        all_exits.extend(
+            frame
+                .loop_targets
+                .iter()
+                .map(|target| target.continue_target),
+        );
+        all_exits.extend(exits.iter().copied());
+        let transfer_sources = self.loop_transfer_sources(&all_exits);
+        let body_frame = frame.loop_body(
+            blocks,
+            latch_node,
+            header_node,
+            latch_node,
+            exit_node,
+            exits,
+            &transfer_sources,
+        );
+        let (body, _) = self.loop_body_sequence(header, &body_frame, blocks)?;
         self.visited.insert(latch_node);
         let mut expected = blocks.clone();
         expected.remove(&latch_node);
         if !self.covers(&expected) {
-            return Ok(Some((
-                Region::Fallback {
-                    blocks: vec![header.clone()],
-                    reason: FallbackReason::LoopShape {
-                        block_bci: header.bci(),
-                    },
-                },
-                None,
-            )));
+            let reason = FallbackReason::LoopShape {
+                block_bci: header.bci(),
+            };
+            return Ok(Some(Self::loop_fallback(header, reason, body)));
         }
-        Ok(Some((
-            Region::Loop {
-                header: header.clone(),
-                test: latch,
-                test_bci,
-                form: LoopForm::DoWhile,
-                continuation,
-                body: Box::new(body),
-                exit: Some(exit.clone()),
-            },
-            Some(exit),
-        )))
+        let run = vec![Region::Loop {
+            header: header.clone(),
+            test: latch,
+            test_bci,
+            form: LoopForm::DoWhile,
+            continuation,
+            for_header: None,
+            body,
+            exit: Some(exit.clone()),
+        }];
+        Ok(Some((run, Some(exit))))
+    }
+
+    /// Collect every sequential region of one loop iteration until it reaches the loop's own
+    /// boundary or leaves its natural-loop scope. Nested structures report their unclaimed
+    /// successor through `Run`; that successor is still part of this body when the CFG says so.
+    fn loop_body_sequence(
+        &mut self,
+        start: &CanonicalBlockId,
+        frame: &Frame,
+        blocks: &BTreeSet<usize>,
+    ) -> Result<(Vec<Region>, Option<CanonicalBlockId>), StopReason> {
+        let mut body = Vec::new();
+        let mut current = Some(start.clone());
+        let mut starts = BTreeSet::new();
+        while let Some(block) = current.take() {
+            let Some(node) = self.view.index_of(&block) else {
+                return Ok((body, Some(block)));
+            };
+            if frame.stops_at(node) || !blocks.contains(&node) {
+                return Ok((body, Some(block)));
+            }
+            if !starts.insert(node) {
+                return Ok((body, Some(block)));
+            }
+            let (regions, next) = self.region_at(&block, frame)?;
+            body.extend(regions);
+            current = next;
+        }
+        Ok((body, None))
+    }
+
+    /// Every real normal-flow destination outside this natural loop.
+    fn loop_exit_nodes(&self, blocks: &BTreeSet<usize>) -> BTreeSet<usize> {
+        blocks
+            .iter()
+            .flat_map(|node| self.view.successors(*node))
+            .filter(|successor| !blocks.contains(successor))
+            .collect()
+    }
+
+    /// Exact normal-flow predecessors that consist of a single edge to an enclosing loop target.
+    fn loop_transfer_sources(&self, targets: &BTreeSet<usize>) -> BTreeSet<usize> {
+        (0..self.view.len())
+            .filter(|source| {
+                let successors = self.view.successors(*source);
+                successors.len() == 1 && targets.contains(&successors[0])
+            })
+            .collect()
     }
 
     /// Whether every expected block of a loop was walked.
@@ -1713,6 +4649,93 @@ impl Walker<'_> {
     /// loop the body never claimed would be a block whose execution the presentation dropped.
     fn covers(&self, expected: &BTreeSet<usize>) -> bool {
         expected.iter().all(|node| self.visited.contains(node))
+    }
+
+    /// Find the one join of switch paths that stay in the current loop. An arm may instead end
+    /// at an exact, already proved loop break target. This is a bounded proof over this switch's
+    /// own successor paths; it does not claim blocks or change the normal-flow graph.
+    fn switch_loop_join(
+        &mut self,
+        branch: usize,
+        successors: &[CanonicalBlockId],
+        frame: &Frame,
+        at: u32,
+    ) -> Result<Option<usize>, StopReason> {
+        let Some(scope) = &frame.scope else {
+            return Ok(None);
+        };
+        let entries: BTreeSet<usize> = successors
+            .iter()
+            .filter_map(|id| self.view.index_of(id))
+            .collect();
+        if entries.len() != successors.len() {
+            return Ok(None);
+        }
+        let exits: BTreeSet<usize> = frame
+            .loop_targets
+            .iter()
+            .filter_map(|target| target.break_target)
+            .collect();
+        let mut proved = Vec::new();
+        for candidate in scope {
+            if *candidate == branch
+                || entries.contains(candidate)
+                || frame.boundary == Some(*candidate)
+                || self.view.predecessors(*candidate).len() < 2
+                || !self.view.dominates(branch, *candidate)
+            {
+                continue;
+            }
+            let mut normal_arms = 0;
+            let mut valid = true;
+            for entry in &entries {
+                let mut seen = BTreeSet::new();
+                let mut work = vec![*entry];
+                let mut reaches_join = false;
+                while let Some(current) = work.pop() {
+                    poll(self.budget, Some(at))?;
+                    charge(
+                        self.budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        1,
+                        Some(at),
+                    )?;
+                    if current == *candidate {
+                        reaches_join = true;
+                        continue;
+                    }
+                    if exits.contains(&current) {
+                        continue;
+                    }
+                    if !scope.contains(&current)
+                        || frame.boundary == Some(current)
+                        || (current != *entry && entries.contains(&current))
+                        || !seen.insert(current)
+                    {
+                        valid = false;
+                        break;
+                    }
+                    let next = self.view.successors(current);
+                    if next.is_empty() {
+                        valid = false;
+                        break;
+                    }
+                    work.extend(next);
+                }
+                if !valid {
+                    break;
+                }
+                normal_arms += usize::from(reaches_join);
+            }
+            if valid && normal_arms >= 2 {
+                proved.push(*candidate);
+            }
+        }
+        Ok(if proved.len() == 1 {
+            proved.first().copied()
+        } else {
+            None
+        })
     }
 
     /// The region of one block whose terminal instruction is a decoded `switch`.
@@ -1736,33 +4759,71 @@ impl Walker<'_> {
         default: u32,
         node: usize,
         frame: &Frame,
-    ) -> Result<(Region, Option<CanonicalBlockId>), StopReason> {
-        let quoted = |reason: FallbackReason| {
-            let mut blocks: Vec<CanonicalBlockId> = prefix.to_vec();
-            blocks.push(branch.clone());
-            (Region::Fallback { blocks, reason }, None)
+    ) -> Result<Run, StopReason> {
+        // A refused `switch` keeps the prefix's statements, and every block the walk entered for it
+        // stays named: an arm already walked into a region is dropped with the statement, so its
+        // blocks are quoted beside the branch — the same exactly-once rule the body of a refused
+        // loop follows ([`Self::loop_fallback`]).
+        let quoted = |entered: &[Region], reason: FallbackReason| {
+            let blocks = gap_blocks(branch, entered.iter().flat_map(Region::blocks).cloned());
+            let (mut run, _) = gap(prefix.to_vec(), blocks, reason, None);
+            run.extend(
+                entered
+                    .iter()
+                    .filter(|region| matches!(region, Region::Fallback { .. }))
+                    .cloned(),
+            );
+            (run, None)
         };
-        let join_node = self
+        let post_join = self
             .view
             .immediate_post_dominator(node)
             .filter(|join| *join != node);
+        let post_is_loop_exit = post_join.is_some_and(|join| {
+            frame
+                .loop_targets
+                .iter()
+                .any(|target| target.break_target == Some(join))
+        });
+        let join_node = if post_is_loop_exit {
+            let Some(local_join) = self.switch_loop_join(node, successors, frame, branch_bci)?
+            else {
+                // An enclosing loop exit cannot stand in for a switch's local join. Without a
+                // unique in-loop meeting point the arm ownership remains unproved.
+                return Ok(quoted(
+                    &[],
+                    FallbackReason::SwitchShape {
+                        block_bci: branch.bci(),
+                    },
+                ));
+            };
+            Some(local_join)
+        } else {
+            post_join
+        };
         let join = join_node.and_then(|join| self.view.id_of(join).cloned());
         let join_bci = join.as_ref().map(CanonicalBlockId::bci);
         // Every target the decode names must be a successor the graph holds, and every successor a
         // target: a `switch` the decode and the graph disagree about is not a shape to present.
         let crosses = |target: u32| successors.iter().any(|successor| successor.bci() == target);
         if !crosses(default) || cases.iter().any(|(_, target)| !crosses(*target)) {
-            return Ok(quoted(FallbackReason::SwitchShape {
-                block_bci: branch.bci(),
-            }));
+            return Ok(quoted(
+                &[],
+                FallbackReason::SwitchShape {
+                    block_bci: branch.bci(),
+                },
+            ));
         }
         if successors.iter().any(|successor| {
             !cases.iter().any(|(_, target)| *target == successor.bci())
                 && successor.bci() != default
         }) {
-            return Ok(quoted(FallbackReason::SwitchShape {
-                block_bci: branch.bci(),
-            }));
+            return Ok(quoted(
+                &[],
+                FallbackReason::SwitchShape {
+                    block_bci: branch.bci(),
+                },
+            ));
         }
         // The groups, in the order the decode first names each target.
         let mut groups: Vec<(Vec<i64>, bool, u32)> = Vec::new();
@@ -1782,15 +4843,67 @@ impl Walker<'_> {
                 None => groups.push((Vec::new(), true, default)),
             }
         }
-        let arm_frame = frame.arm(join_node);
-        let mut built: Vec<SwitchGroup> = Vec::with_capacity(groups.len());
+
+        // A fallthrough is only a Java label ordering when one arm's complete normal path is a
+        // straight route into exactly one other case entry. Probe the unclaimed CFG first: walking
+        // arms to find this out would mutate `visited`, and a second walk could mistake that probe
+        // for a real re-entry. Ambiguous shapes keep the pre-existing walk and its overlap refusal.
+        let targets: BTreeMap<u32, usize> = groups
+            .iter()
+            .filter(|group| Some(group.2) != join_bci)
+            .filter_map(|group| {
+                successors
+                    .iter()
+                    .find(|successor| successor.bci() == group.2)
+                    .and_then(|target| self.view.index_of(target))
+                    .map(|node| (group.2, node))
+            })
+            .collect();
+        let fall_throughs =
+            self.switch_fallthroughs(&groups, &targets, join_node, join_bci, branch.bci())?;
+        let mut ordered_groups = groups.clone();
+        let case_entries: BTreeSet<usize> = targets.values().copied().collect();
+        if let Some(fall_throughs) = &fall_throughs
+            && !fall_throughs.is_empty()
+        {
+            ordered_groups.sort_by_key(|group| group.2);
+            let positions: BTreeMap<u32, usize> = ordered_groups
+                .iter()
+                .enumerate()
+                .map(|(index, group)| (group.2, index))
+                .collect();
+            let valid_order = fall_throughs.iter().all(|(from, to)| {
+                from < to
+                    && positions
+                        .get(to)
+                        .zip(positions.get(from))
+                        .is_some_and(|(to, from)| *to == from.saturating_add(1))
+            });
+            let real_entries = ordered_groups
+                .iter()
+                .filter(|group| Some(group.2) != join_bci)
+                .count();
+            if !valid_order || targets.len() != real_entries {
+                return Ok(quoted(
+                    &[],
+                    FallbackReason::SwitchArmsOverlap {
+                        block_bci: branch.bci(),
+                    },
+                ));
+            }
+        }
+        let mut built: Vec<SwitchGroup> = Vec::with_capacity(ordered_groups.len());
         let mut claimed: Vec<BTreeSet<usize>> = Vec::with_capacity(groups.len());
-        for (keys, is_default, target) in groups {
+        // Every arm the walk entered, in the order it entered them: what a refusal below has to
+        // keep naming ([`Self::switch_region`]'s own note on the exactly-once rule).
+        let mut entered: Vec<Region> = Vec::new();
+        for (keys, is_default, target) in ordered_groups.iter().cloned() {
             if Some(target) == join_bci {
                 // The arm is the join itself: the case runs no code and leaves the switch.
                 built.push(SwitchGroup {
                     keys,
                     default: is_default,
+                    fall_through: false,
                     arm: Box::new(Region::Straight { blocks: Vec::new() }),
                 });
                 claimed.push(BTreeSet::new());
@@ -1801,11 +4914,29 @@ impl Walker<'_> {
                 .find(|successor| successor.bci() == target)
                 .cloned()
             else {
-                return Ok(quoted(FallbackReason::SwitchShape {
-                    block_bci: branch.bci(),
-                }));
+                return Ok(quoted(
+                    &entered,
+                    FallbackReason::SwitchShape {
+                        block_bci: branch.bci(),
+                    },
+                ));
             };
-            let (arm, _) = self.region_at(&start, &arm_frame)?;
+            let case_frame = if fall_throughs
+                .as_ref()
+                .is_some_and(|fall_throughs| !fall_throughs.is_empty())
+                || join_node != post_join
+            {
+                let current = self.view.index_of(&start);
+                let mut other_entries = case_entries.clone();
+                if let Some(current) = current {
+                    other_entries.remove(&current);
+                }
+                frame.switch_arm(join_node, &other_entries, branch_bci)
+            } else {
+                frame.arm(join_node, Some(branch_bci))
+            };
+            let (arm_run, _) = self.region_at(&start, &case_frame)?;
+            let arm = sequence_region(arm_run);
             let arm_nodes: BTreeSet<usize> = arm
                 .blocks()
                 .iter()
@@ -1815,27 +4946,104 @@ impl Walker<'_> {
             // code: Java has a way to write that (`case 0: case 1:` shares a *target*, and those
             // are one group), but not two targets whose code overlaps.
             if claimed.iter().any(|other| !other.is_disjoint(&arm_nodes)) {
-                return Ok(quoted(FallbackReason::SwitchArmsOverlap {
-                    block_bci: branch.bci(),
-                }));
+                entered.push(arm);
+                return Ok(quoted(
+                    &entered,
+                    FallbackReason::SwitchArmsOverlap {
+                        block_bci: branch.bci(),
+                    },
+                ));
             }
             claimed.push(arm_nodes);
+            entered.push(arm.clone());
             built.push(SwitchGroup {
                 keys,
                 default: is_default,
+                fall_through: fall_throughs
+                    .as_ref()
+                    .is_some_and(|fall_throughs| fall_throughs.contains_key(&target)),
                 arm: Box::new(arm),
             });
         }
-        Ok((
-            Region::Switch {
-                prefix: prefix.to_vec(),
-                branch: branch.clone(),
-                branch_bci,
-                groups: built,
-                join: join.clone(),
-            },
-            join,
-        ))
+        // The sibling quotes the arms' own walks left behind are written after the statement, in
+        // the order the arms were read ([`Run`]); the arms themselves are inside it.
+        let tails: Vec<Region> = entered
+            .into_iter()
+            .filter(|region| matches!(region, Region::Fallback { .. }))
+            .collect();
+        let mut run = vec![Region::Switch {
+            prefix: prefix.to_vec(),
+            branch: branch.clone(),
+            branch_bci,
+            groups: built,
+            join: join.clone(),
+        }];
+        run.extend(tails);
+        Ok((run, join))
+    }
+
+    /// Prove the ordinary fallthrough edges that can be represented by ordering case labels.
+    ///
+    /// This intentionally handles only a straight, single-successor route from one case entry to
+    /// another. A branch, cycle, or any other ambiguous route returns `None`; the caller then uses
+    /// the ordinary arm walk, which will preserve its existing overlap refusal. `Some(empty)` is a
+    /// complete proof that no case entry flows directly into another case entry.
+    fn switch_fallthroughs(
+        &mut self,
+        groups: &[(Vec<i64>, bool, u32)],
+        targets: &BTreeMap<u32, usize>,
+        join: Option<usize>,
+        join_bci: Option<u32>,
+        switch_bci: u32,
+    ) -> Result<Option<BTreeMap<u32, u32>>, StopReason> {
+        let entries: BTreeMap<usize, u32> =
+            targets.iter().map(|(bci, node)| (*node, *bci)).collect();
+        if entries.len() != targets.len()
+            || groups
+                .iter()
+                .filter(|group| Some(group.2) != join_bci)
+                .count()
+                != targets.len()
+        {
+            return Ok(None);
+        }
+
+        let mut fallthroughs = BTreeMap::new();
+        for (from_bci, start) in targets {
+            let mut current = *start;
+            let mut seen = BTreeSet::new();
+            loop {
+                poll(self.budget, Some(switch_bci))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(switch_bci),
+                )?;
+                if !seen.insert(current) {
+                    return Ok(None);
+                }
+                let successors = self.view.successors(current);
+                match successors.as_slice() {
+                    [] => break,
+                    [next] => {
+                        if Some(*next) == join {
+                            break;
+                        }
+                        if let Some(to_bci) = entries.get(next) {
+                            if to_bci <= from_bci {
+                                return Ok(None);
+                            }
+                            fallthroughs.insert(*from_bci, *to_bci);
+                            break;
+                        }
+                        current = *next;
+                    }
+                    _ => return Ok(None),
+                }
+            }
+        }
+        Ok(Some(fallthroughs))
     }
 }
 

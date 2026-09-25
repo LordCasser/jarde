@@ -1,0 +1,7 @@
+loop=1
+guarded:true=1:trace=1
+guarded:false=2:trace=2
+guarded:throw=true=3:trace=1
+guarded:throw=false=3:trace=2
+unknown:true=4
+unknown:false=5

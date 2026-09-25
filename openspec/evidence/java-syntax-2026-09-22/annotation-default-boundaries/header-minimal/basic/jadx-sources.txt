@@ -1,0 +1,2 @@
+openspec/evidence/java-syntax-2026-09-22/annotation-default-boundaries/header-minimal/basic/jadx/sources/defpackage/Basic.java
+openspec/evidence/java-syntax-2026-09-22/annotation-default-boundaries/header-minimal/basic/jadx/sources/defpackage/BasicRunner.java

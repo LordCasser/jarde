@@ -1,0 +1,110 @@
+// jarde: presentation of `ConversionLongFloat` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ConversionLongFloat extends java.lang.Object {
+    public ConversionLongFloat() {
+        // @method <init>()V
+        // @declaration a constructor of `ConversionLongFloat`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int l2i(long arg0) {
+        // jarde: not recovered: the recovery run for `l2i(J)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method l2i(J)I
+        // @declaration a static method of `ConversionLongFloat`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static float l2f(long arg0) {
+        // jarde: not recovered: the recovery run for `l2f(J)F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method l2f(J)F
+        // @declaration a static method of `ConversionLongFloat`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static double l2d(long arg0) {
+        // jarde: not recovered: the recovery run for `l2d(J)D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method l2d(J)D
+        // @declaration a static method of `ConversionLongFloat`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static int f2i(float arg0) {
+        // jarde: not recovered: the recovery run for `f2i(F)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method f2i(F)I
+        // @declaration a static method of `ConversionLongFloat`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static long f2l(float arg0) {
+        // jarde: not recovered: the recovery run for `f2l(F)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method f2l(F)J
+        // @declaration a static method of `ConversionLongFloat`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static double f2d(float arg0) {
+        // jarde: not recovered: the recovery run for `f2d(F)D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method f2d(F)D
+        // @declaration a static method of `ConversionLongFloat`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static int longToIntOverload(long arg0) {
+        // jarde: not recovered: the recovery run for `longToIntOverload(J)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method longToIntOverload(J)I
+        // @declaration a static method of `ConversionLongFloat`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 5 2
+        // the value at BCI 5 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static double longToFloatOverload(long arg0) {
+        // jarde: not recovered: the recovery run for `longToFloatOverload(J)D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method longToFloatOverload(J)D
+        // @declaration a static method of `ConversionLongFloat`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 5 2
+        // the value at BCI 5 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static double floatToDoubleOverload(float arg0) {
+        // jarde: not recovered: the recovery run for `floatToDoubleOverload(F)D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatToDoubleOverload(F)D
+        // @declaration a static method of `ConversionLongFloat`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 5 2
+        // the value at BCI 5 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+}

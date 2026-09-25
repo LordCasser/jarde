@@ -1,0 +1,24 @@
+{
+  "class_sha256": "9642887887673b18174f2c315f6aa9b6a925eb1acf118afa5b3d4d29d88ed791",
+  "patches": [
+    {
+      "name": "branch",
+      "before": "1a990007b80007ac06ac",
+      "after": "1a99000ab80007b80011ac06ac"
+    },
+    {
+      "name": "prefix",
+      "before": "b8000d9900061007ac1009ac",
+      "after": "b8000db800119900061007ac1009ac"
+    }
+  ],
+  "cases": 12,
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_differences": 0,
+  "jadx_javac": 0,
+  "jadx_equal": true,
+  "jarde_same_complete_output": true,
+  "actual_original_lines": 12,
+  "cli_sha256": "feed5c377a439490efb12a2a46bdfa0e94c32dffd3a83bd1583b70fe89317350"
+}

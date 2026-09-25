@@ -1,0 +1,1 @@
+public class OrderEffects {public static int trace;public static int mode;public static final RuntimeException FAILURE=new IllegalStateException("chosen");public static void mark(){trace=trace*10+2;if(mode==2)throw FAILURE;}}

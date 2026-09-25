@@ -1,0 +1,4 @@
+<OUT>/negative/jarde/FakeBridge.java:21: 错误: 已在类 FakeBridge中定义了方法 get()
+    public java.lang.Object get() {
+                            ^
+1 个错误

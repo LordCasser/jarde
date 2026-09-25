@@ -1,0 +1,239 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-enum-ctor.bMRjBM/g/classes/DelegatingEnum.class
+  Last modified 2026年9月25日; size 1317 bytes
+  SHA-256 checksum 4c8ae5fea5ad7d4403a3d7c61b8927c4b8c4c215a9c17a22449be1a3ec543804
+  Compiled from "DelegatingEnum.java"
+public final class DelegatingEnum extends java.lang.Enum<DelegatingEnum>
+  minor version: 0
+  major version: 52
+  flags: (0x4031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_ENUM
+  this_class: #1                          // DelegatingEnum
+  super_class: #20                        // java/lang/Enum
+  interfaces: 0, fields: 4, methods: 7, attributes: 2
+Constant pool:
+   #1 = Class              #2             // DelegatingEnum
+   #2 = Utf8               DelegatingEnum
+   #3 = Fieldref           #1.#4          // DelegatingEnum.ZERO:LDelegatingEnum;
+   #4 = NameAndType        #5:#6          // ZERO:LDelegatingEnum;
+   #5 = Utf8               ZERO
+   #6 = Utf8               LDelegatingEnum;
+   #7 = Fieldref           #1.#8          // DelegatingEnum.ONE:LDelegatingEnum;
+   #8 = NameAndType        #9:#6          // ONE:LDelegatingEnum;
+   #9 = Utf8               ONE
+  #10 = Fieldref           #1.#11         // DelegatingEnum.$VALUES:[LDelegatingEnum;
+  #11 = NameAndType        #12:#13        // $VALUES:[LDelegatingEnum;
+  #12 = Utf8               $VALUES
+  #13 = Utf8               [LDelegatingEnum;
+  #14 = Methodref          #15.#16        // "[LDelegatingEnum;".clone:()Ljava/lang/Object;
+  #15 = Class              #13            // "[LDelegatingEnum;"
+  #16 = NameAndType        #17:#18        // clone:()Ljava/lang/Object;
+  #17 = Utf8               clone
+  #18 = Utf8               ()Ljava/lang/Object;
+  #19 = Methodref          #20.#21        // java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #20 = Class              #22            // java/lang/Enum
+  #21 = NameAndType        #23:#24        // valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #22 = Utf8               java/lang/Enum
+  #23 = Utf8               valueOf
+  #24 = Utf8               (Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #25 = Methodref          #1.#26         // DelegatingEnum."<init>":(Ljava/lang/String;II)V
+  #26 = NameAndType        #27:#28        // "<init>":(Ljava/lang/String;II)V
+  #27 = Utf8               <init>
+  #28 = Utf8               (Ljava/lang/String;II)V
+  #29 = Methodref          #20.#30        // java/lang/Enum."<init>":(Ljava/lang/String;I)V
+  #30 = NameAndType        #27:#31        // "<init>":(Ljava/lang/String;I)V
+  #31 = Utf8               (Ljava/lang/String;I)V
+  #32 = Methodref          #33.#34        // ConstructorEffects.record:(I)V
+  #33 = Class              #35            // ConstructorEffects
+  #34 = NameAndType        #36:#37        // record:(I)V
+  #35 = Utf8               ConstructorEffects
+  #36 = Utf8               record
+  #37 = Utf8               (I)V
+  #38 = Fieldref           #1.#39         // DelegatingEnum.value:I
+  #39 = NameAndType        #40:#41        // value:I
+  #40 = Utf8               value
+  #41 = Utf8               I
+  #42 = String             #5             // ZERO
+  #43 = Methodref          #1.#30         // DelegatingEnum."<init>":(Ljava/lang/String;I)V
+  #44 = String             #9             // ONE
+  #45 = Methodref          #1.#46         // DelegatingEnum.$values:()[LDelegatingEnum;
+  #46 = NameAndType        #47:#48        // $values:()[LDelegatingEnum;
+  #47 = Utf8               $values
+  #48 = Utf8               ()[LDelegatingEnum;
+  #49 = Utf8               values
+  #50 = Utf8               Code
+  #51 = Utf8               LineNumberTable
+  #52 = Utf8               (Ljava/lang/String;)LDelegatingEnum;
+  #53 = Utf8               LocalVariableTable
+  #54 = Utf8               name
+  #55 = Utf8               Ljava/lang/String;
+  #56 = Utf8               MethodParameters
+  #57 = Utf8               this
+  #58 = Utf8               Signature
+  #59 = Utf8               ()V
+  #60 = Utf8               ()I
+  #61 = Utf8               <clinit>
+  #62 = Utf8               Ljava/lang/Enum<LDelegatingEnum;>;
+  #63 = Utf8               SourceFile
+  #64 = Utf8               DelegatingEnum.java
+{
+  public static final DelegatingEnum ZERO;
+    descriptor: LDelegatingEnum;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final DelegatingEnum ONE;
+    descriptor: LDelegatingEnum;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  private final int value;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private static final DelegatingEnum[] $VALUES;
+    descriptor: [LDelegatingEnum;
+    flags: (0x101a) ACC_PRIVATE, ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public static DelegatingEnum[] values();
+    descriptor: ()[LDelegatingEnum;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #10                 // Field $VALUES:[LDelegatingEnum;
+         3: invokevirtual #14                 // Method "[LDelegatingEnum;".clone:()Ljava/lang/Object;
+         6: checkcast     #15                 // class "[LDelegatingEnum;"
+         9: areturn
+      LineNumberTable:
+        line 1: 0
+
+  public static DelegatingEnum valueOf(java.lang.String);
+    descriptor: (Ljava/lang/String;)LDelegatingEnum;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: ldc           #1                  // class DelegatingEnum
+         2: aload_0
+         3: invokestatic  #19                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+         6: checkcast     #1                  // class DelegatingEnum
+         9: areturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      10     0  name   Ljava/lang/String;
+    MethodParameters:
+      Name                           Flags
+      <no name>                      mandated
+
+  private DelegatingEnum();
+    descriptor: (Ljava/lang/String;I)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=4, locals=3, args_size=3
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: iconst_0
+         4: invokespecial #25                 // Method "<init>":(Ljava/lang/String;II)V
+         7: return
+      LineNumberTable:
+        line 8: 0
+        line 9: 7
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       8     0  this   LDelegatingEnum;
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+    Signature: #59                          // ()V
+
+  private DelegatingEnum(int);
+    descriptor: (Ljava/lang/String;II)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=3, locals=4, args_size=4
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: invokespecial #29                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+         6: iload_3
+         7: invokestatic  #32                 // Method ConstructorEffects.record:(I)V
+        10: aload_0
+        11: iload_3
+        12: putfield      #38                 // Field value:I
+        15: return
+      LineNumberTable:
+        line 11: 0
+        line 12: 6
+        line 13: 10
+        line 14: 15
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      16     0  this   LDelegatingEnum;
+            0      16     3 value   I
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+      <no name>
+    Signature: #37                          // (I)V
+
+  public int value();
+    descriptor: ()I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #38                 // Field value:I
+         4: ireturn
+      LineNumberTable:
+        line 17: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LDelegatingEnum;
+
+  private static DelegatingEnum[] $values();
+    descriptor: ()[LDelegatingEnum;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_2
+         1: anewarray     #1                  // class DelegatingEnum
+         4: dup
+         5: iconst_0
+         6: getstatic     #3                  // Field ZERO:LDelegatingEnum;
+         9: aastore
+        10: dup
+        11: iconst_1
+        12: getstatic     #7                  // Field ONE:LDelegatingEnum;
+        15: aastore
+        16: areturn
+      LineNumberTable:
+        line 1: 0
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=5, locals=0, args_size=0
+         0: new           #1                  // class DelegatingEnum
+         3: dup
+         4: ldc           #42                 // String ZERO
+         6: iconst_0
+         7: invokespecial #43                 // Method "<init>":(Ljava/lang/String;I)V
+        10: putstatic     #3                  // Field ZERO:LDelegatingEnum;
+        13: new           #1                  // class DelegatingEnum
+        16: dup
+        17: ldc           #44                 // String ONE
+        19: iconst_1
+        20: iconst_1
+        21: invokespecial #25                 // Method "<init>":(Ljava/lang/String;II)V
+        24: putstatic     #7                  // Field ONE:LDelegatingEnum;
+        27: invokestatic  #45                 // Method $values:()[LDelegatingEnum;
+        30: putstatic     #10                 // Field $VALUES:[LDelegatingEnum;
+        33: return
+      LineNumberTable:
+        line 2: 0
+        line 3: 13
+        line 1: 27
+}
+Signature: #62                          // Ljava/lang/Enum<LDelegatingEnum;>;
+SourceFile: "DelegatingEnum.java"

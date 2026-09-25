@@ -1,0 +1,9 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ReturnBoolean.class */
+public class ReturnBoolean {
+    /* JADX WARN: Multi-variable type inference failed */
+    public static boolean run(int i) {
+        return i;
+    }
+}

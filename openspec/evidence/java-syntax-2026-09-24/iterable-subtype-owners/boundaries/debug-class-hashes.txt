@@ -1,0 +1,8 @@
+19b5c0fc0e8d7ef55ef13a6a3520d63dd9d6c21695d58cd17a9f79503d4af16e  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/debug/IteratorSurface.class
+8d7cecac0f89abd0b44b252b1d7027570b2ee1b35f7745a6def33a5e522519d7  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/debug/PlatformIterableOwners.class
+f28a404b7cb6f77ff288fba2e60984588c9ca031918a66e098a05ebe61e7e534  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/debug/PlatformIterableOwnersRunner$1.class
+1167d58af21ab7305edc5c744f2641a8ee68b982073b1731aa6c5e0aee500a4d  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/debug/PlatformIterableOwnersRunner$2.class
+3badd33e3942a01782bf6eece6ce52a0b1e2e9d9526c9b587ba8250fa2699178  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/debug/PlatformIterableOwnersRunner$3.class
+295d1bca9f5eb0d4a0f24cf4b19d30ebfd1995e73ad1adefdf18ff7284973feb  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/debug/PlatformIterableOwnersRunner$4.class
+1d8fa5acd045f307c3523b667a795656990615f0f1b13c03c29332c64a96c384  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/debug/PlatformIterableOwnersRunner.class
+0e282688da0ca65db4c7c150bf5ac301142819bd5951f0f0bfad9b193e7a8a28  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/debug/TextIterable.class

@@ -1,0 +1,35 @@
+{
+  "baseline": {
+    "class_sha256": "9aed4bcc1f1e85d7222217592291091de1d42590fdd38edf3525ca962ffbd2e9",
+    "class_bytes": 947,
+    "code_attributes": 6,
+    "jadx_javac_status": 0,
+    "jarde_javac_status": 1,
+    "jarde_refs": 6,
+    "verified": true,
+    "source_output": "snapshot:return=41:field=99:trace=12\nsnapshot-throw:java.lang.IllegalArgumentException:same=true:trace=12\ncleanup-return:throw=java.lang.IllegalStateException:cleanup=true:try=false:trace=34\ncleanup-try-throw:throw=java.lang.IllegalStateException:cleanup=true:try=false:trace=56\n",
+    "actual_cli_hash": "8806d9aa06ad3b5fbcfe347144d09765dfbf3c9e172ee374eddf9313df893a44"
+  },
+  "copy-divergence": {
+    "class_sha256": "8d15a8e116f600e063ea892c453a5d73fba12753ef1807fc4eb693d0df49a472",
+    "class_bytes": 947,
+    "code_attributes": 6,
+    "jadx_javac_status": 0,
+    "jarde_javac_status": 1,
+    "jarde_refs": 6,
+    "verified": true,
+    "source_output": "snapshot:return=41:field=99:trace=12\nsnapshot-throw:java.lang.IllegalArgumentException:same=true:trace=13\ncleanup-return:throw=java.lang.IllegalStateException:cleanup=true:try=false:trace=34\ncleanup-try-throw:throw=java.lang.IllegalStateException:cleanup=true:try=false:trace=56\n",
+    "actual_cli_hash": "8806d9aa06ad3b5fbcfe347144d09765dfbf3c9e172ee374eddf9313df893a44"
+  },
+  "range-narrowed": {
+    "class_sha256": "a7906f48b9d30bf2e1cd513fcb6fb33ad7c236b2fd3453618ca62c3c765d0fe7",
+    "class_bytes": 947,
+    "code_attributes": 6,
+    "jadx_javac_status": 0,
+    "jarde_javac_status": 1,
+    "jarde_refs": 6,
+    "verified": true,
+    "source_output": "snapshot:return=41:field=99:trace=12\nsnapshot-throw:java.lang.IllegalArgumentException:same=true:trace=1\ncleanup-return:throw=java.lang.IllegalStateException:cleanup=true:try=false:trace=34\ncleanup-try-throw:throw=java.lang.IllegalStateException:cleanup=true:try=false:trace=56\n",
+    "actual_cli_hash": "8806d9aa06ad3b5fbcfe347144d09765dfbf3c9e172ee374eddf9313df893a44"
+  }
+}

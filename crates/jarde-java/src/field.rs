@@ -40,17 +40,22 @@
 //! is the invariant a constructor's initializer sequence depends on (`super(…)` first, then the
 //! instance initializers, then the rest of the constructor — JLS 12.5).
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use jarde_jvm::method_ir::{RefType, SsaInstruction, SsaTable, Value, ValueId};
+use jarde_reader::budget::{Budget, CountedBudgetDimension};
+use jarde_reader::classfile::MemberHeader;
 use serde::Serialize;
 
+use crate::ast::{AssignOp, Expr, ExprKind, Stmt, StmtKind};
 use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::evidence::Publication;
 use crate::facts::{DeclaringClass, FieldAccess, Operation, internal_form};
+use crate::names::is_java_identifier;
 use crate::pass::{FIELD, Precondition, RuleVersion};
 use crate::refusal::{Gap, Refusal};
+use crate::stop::{self, StopReason};
 
 /// The pass answerable for every verdict of this module.
 pub(crate) const RULE: RuleVersion = FIELD.rule();
@@ -77,14 +82,14 @@ pub(crate) struct Plan {
 
 /// One verdict of this rule's plan: the access it claimed, or the instruction it refused.
 enum Decision<'a> {
-    Claimed(&'a Evidence),
+    Claimed(&'a Evidence, bool),
     Refused(&'a Evidence, &'a Refusal),
 }
 
 impl Decision<'_> {
     fn at(&self) -> u32 {
         match self {
-            Self::Claimed(evidence) | Self::Refused(evidence, _) => evidence.bci,
+            Self::Claimed(evidence, _) | Self::Refused(evidence, _) => evidence.bci,
         }
     }
 
@@ -92,7 +97,12 @@ impl Decision<'_> {
     fn record(self) -> FieldRecord {
         crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
         match self {
-            Self::Claimed(evidence) => FieldRecord::of_presented(evidence),
+            Self::Claimed(evidence, true) => FieldRecord::of_presented(evidence),
+            Self::Claimed(evidence, false) => FieldRecord::of(
+                evidence,
+                false,
+                Some(FieldRefusal::not_emitted(evidence.bci)),
+            ),
             Self::Refused(evidence, refusal) => FieldRecord::of(
                 evidence,
                 false,
@@ -128,11 +138,61 @@ impl Plan {
             .map(|(evidence, shape)| (evidence, shape))
     }
 
+    /// Whether a claimed write is proven safe to spell with the current class's simple field name.
+    pub(crate) fn simple_static_final_write(&self, bci: u32) -> bool {
+        self.claimed
+            .get(&bci)
+            .is_some_and(|(_, shape)| shape.writes() && shape.simple_static_final)
+    }
+
+    /// The field names that the naming walk must reserve for this body's proven simple writes.
+    pub(crate) fn simple_static_final_names(
+        &self,
+        budget: &mut Budget,
+    ) -> Result<BTreeSet<String>, StopReason> {
+        stop::poll(budget, None)?;
+        let mut names = BTreeSet::new();
+        for (evidence, shape) in self.claimed.values() {
+            stop::charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(evidence.bci),
+            )?;
+            if shape.writes() && shape.simple_static_final {
+                names.insert(evidence.name.clone());
+            }
+        }
+        Ok(names)
+    }
+
     /// Every field instruction the rule read and did not present, in BCI order.
-    pub(crate) fn refusals(&self) -> impl Iterator<Item = Gap> + '_ {
-        self.refusals.iter().map(|(evidence, refusal)| {
-            let refusal = FieldRefusal::of(refusal, evidence.bci);
-            Gap::at(refusal.code, evidence.bci, refusal.message)
+    pub(crate) fn refusals<'a>(
+        &'a self,
+        presented: &'a BTreeSet<u32>,
+    ) -> impl Iterator<Item = Gap> + 'a {
+        let mut plan_refusals = self.refusals.iter().peekable();
+        let mut not_emitted = self
+            .claimed
+            .keys()
+            .filter(|at| !presented.contains(at))
+            .peekable();
+        std::iter::from_fn(move || {
+            let take_plan = match (plan_refusals.peek(), not_emitted.peek()) {
+                (Some((evidence, _)), Some(at)) => evidence.bci < **at,
+                (Some(_), None) => true,
+                (None, Some(_)) => false,
+                (None, None) => return None,
+            };
+            if take_plan {
+                let (evidence, refusal) = plan_refusals.next()?;
+                let refusal = FieldRefusal::of(refusal, evidence.bci);
+                Some(Gap::at(refusal.code, evidence.bci, refusal.message))
+            } else {
+                let at = *not_emitted.next()?;
+                let refusal = FieldRefusal::not_emitted(at);
+                Some(Gap::at(refusal.code, at, refusal.message))
+            }
         })
     }
 
@@ -145,6 +205,7 @@ impl Plan {
     /// remaining allowance.
     pub(crate) fn materialize(
         &self,
+        presented: &BTreeSet<u32>,
         publication: Publication,
         phase: &mut crate::evidence::EvidencePhase,
         budget: &mut jarde_reader::budget::Budget,
@@ -152,7 +213,7 @@ impl Plan {
         let mut decisions: Vec<Decision<'_>> = self
             .claimed
             .values()
-            .map(|(evidence, _)| Decision::Claimed(evidence))
+            .map(|(evidence, _)| Decision::Claimed(evidence, presented.contains(&evidence.bci)))
             .chain(
                 self.refusals
                     .iter()
@@ -172,11 +233,256 @@ impl Plan {
     /// How many field instructions the rule read, and how many of them it presented. The two counts
     /// are the rule's own work over the whole body, so the report states them whatever the caller
     /// selected and whatever range the selection carried.
-    pub(crate) fn counts(&self) -> (u64, u64) {
-        let presented = u64::try_from(self.claimed.len()).unwrap_or(u64::MAX);
+    pub(crate) fn counts(&self, receipt: &BTreeSet<u32>) -> (u64, u64) {
+        let claimed = u64::try_from(self.claimed.len()).unwrap_or(u64::MAX);
+        let presented = u64::try_from(
+            self.claimed
+                .keys()
+                .filter(|at| receipt.contains(at))
+                .count(),
+        )
+        .unwrap_or(u64::MAX);
         let refused = u64::try_from(self.refusals.len()).unwrap_or(u64::MAX);
-        (presented + refused, presented)
+        (claimed.saturating_add(refused), presented)
     }
+}
+
+/// Collects only real field operations in the final AST. Direct origins and the plan must agree;
+/// derived origins, bytecode quotes and synthetic accessor field text cannot create a receipt.
+pub(crate) fn committed_presentations(
+    program: &crate::build::Program,
+    plan: &Plan,
+    budget: &mut Budget,
+) -> Result<BTreeSet<u32>, StopReason> {
+    enum Node<'a> {
+        Stmt(&'a Stmt),
+        Expr(&'a Expr),
+    }
+    let mut pending: Vec<_> = program.stmts.iter().map(Node::Stmt).collect();
+    let mut presented = BTreeSet::new();
+    while let Some(node) = pending.pop() {
+        let at = match node {
+            Node::Stmt(stmt) => stmt.origin.primary().bci(),
+            Node::Expr(expr) => expr.origin.primary().bci(),
+        };
+        stop::charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+        stop::charge(budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
+        let mut record = |at: u32, access: FieldAccess, name: &str| {
+            if plan
+                .claim(at)
+                .is_some_and(|(evidence, _)| evidence.access == access && evidence.name == name)
+            {
+                presented.insert(at);
+            }
+        };
+        match node {
+            Node::Stmt(stmt) => match &stmt.kind {
+                StmtKind::Declare { value, .. } | StmtKind::Return { value } => {
+                    if let Some(value) = value {
+                        pending.push(Node::Expr(value));
+                    }
+                    if let StmtKind::Return { value: Some(value) } = &stmt.kind
+                        && stmt.origin.primary().method().is_none()
+                        && let Some(shape) = program.field_increments.get(&at)
+                    {
+                        let mut update = value;
+                        while let ExprKind::Cast { value, .. } = &update.kind {
+                            update = value;
+                        }
+                        if matches!(&update.kind, ExprKind::Local(_))
+                            && update.origin.primary().method().is_none()
+                            && update.origin.primary().bci() == shape.write
+                            && update.origin.derived().iter().any(|origin| {
+                                origin.method().is_none() && origin.bci() == shape.read
+                            })
+                        {
+                            if let Some((read, _)) = plan.claim(shape.read) {
+                                record(shape.read, FieldAccess::Read, &read.name);
+                            }
+                            if let Some((write, _)) = plan.claim(shape.write) {
+                                record(shape.write, FieldAccess::Write, &write.name);
+                            }
+                        }
+                    }
+                }
+                StmtKind::Assign { value, .. }
+                | StmtKind::Expr(value)
+                | StmtKind::Throw { value } => pending.push(Node::Expr(value)),
+                StmtKind::FieldAssign {
+                    receiver,
+                    name,
+                    op,
+                    value,
+                } => {
+                    if stmt.origin.primary().method().is_none() {
+                        record(at, FieldAccess::Write, name);
+                    }
+                    if *op == AssignOp::Add {
+                        for origin in stmt.origin.derived() {
+                            stop::charge(
+                                budget,
+                                CountedBudgetDimension::IrItems,
+                                1,
+                                Some(origin.bci()),
+                            )?;
+                            if origin.method().is_none() {
+                                record(origin.bci(), FieldAccess::Read, name);
+                            }
+                        }
+                    }
+                    if let Some(receiver) = receiver {
+                        pending.push(Node::Expr(receiver));
+                    }
+                    pending.push(Node::Expr(value));
+                }
+                StmtKind::IndexAssign {
+                    array,
+                    index,
+                    value,
+                    ..
+                } => {
+                    pending.extend([Node::Expr(array), Node::Expr(index), Node::Expr(value)]);
+                }
+                StmtKind::ConstructorCall { args, .. } => {
+                    pending.extend(args.iter().map(Node::Expr))
+                }
+                StmtKind::If {
+                    cond,
+                    then_body,
+                    else_body,
+                } => {
+                    pending.push(Node::Expr(cond));
+                    pending.extend(then_body.iter().map(Node::Stmt));
+                    pending.extend(else_body.iter().map(Node::Stmt));
+                }
+                StmtKind::While { cond, body, .. } | StmtKind::DoWhile { cond, body, .. } => {
+                    pending.push(Node::Expr(cond));
+                    pending.extend(body.iter().map(Node::Stmt));
+                }
+                StmtKind::For {
+                    init,
+                    cond,
+                    update,
+                    body,
+                    ..
+                } => {
+                    pending.extend([Node::Stmt(init), Node::Expr(cond), Node::Stmt(update)]);
+                    pending.extend(body.iter().map(Node::Stmt));
+                }
+                StmtKind::ForEach { iterable, body, .. } => {
+                    pending.push(Node::Expr(iterable));
+                    pending.extend(body.iter().map(Node::Stmt));
+                }
+                StmtKind::Switch { value, arms } => {
+                    pending.push(Node::Expr(value));
+                    for arm in arms {
+                        pending.extend(arm.body.iter().map(Node::Stmt));
+                    }
+                }
+                StmtKind::Try {
+                    resources,
+                    catches,
+                    body,
+                    finally_body,
+                } => {
+                    pending.extend(resources.iter().map(|resource| Node::Expr(&resource.value)));
+                    for clause in catches {
+                        pending.extend(clause.body.iter().map(Node::Stmt));
+                    }
+                    pending.extend(body.iter().map(Node::Stmt));
+                    if let Some(body) = finally_body {
+                        pending.extend(body.iter().map(Node::Stmt));
+                    }
+                }
+                StmtKind::Synchronized { lock, body } => {
+                    pending.push(Node::Expr(lock));
+                    pending.extend(body.iter().map(Node::Stmt));
+                }
+                StmtKind::Break { .. } | StmtKind::Continue { .. } | StmtKind::Fallback { .. } => {}
+            },
+            Node::Expr(expr) => match &expr.kind {
+                ExprKind::Field { receiver, name } => {
+                    if expr.origin.primary().method().is_none() {
+                        record(at, FieldAccess::Read, name);
+                    }
+                    pending.push(Node::Expr(receiver));
+                }
+                ExprKind::PostIncrement { target } => {
+                    if let ExprKind::Field { name, .. } = &target.kind
+                        && expr.origin.primary().method().is_none()
+                    {
+                        record(at, FieldAccess::Write, name);
+                    }
+                    pending.push(Node::Expr(target));
+                }
+                ExprKind::Call { receiver, args, .. } => {
+                    if let Some(receiver) = receiver {
+                        pending.push(Node::Expr(receiver));
+                    }
+                    pending.extend(args.iter().map(Node::Expr));
+                }
+                ExprKind::New {
+                    qualifier, args, ..
+                } => {
+                    if let Some(qualifier) = qualifier {
+                        pending.push(Node::Expr(qualifier));
+                    }
+                    pending.extend(args.iter().map(Node::Expr));
+                }
+                ExprKind::Lambda { body, .. }
+                | ExprKind::MethodReference {
+                    qualifier: body, ..
+                }
+                | ExprKind::InstanceOf { value: body, .. }
+                | ExprKind::ArrayLength { array: body }
+                | ExprKind::Cast { value: body, .. }
+                | ExprKind::Not { value: body }
+                | ExprKind::Neg { value: body } => pending.push(Node::Expr(body)),
+                ExprKind::Index { array, index }
+                | ExprKind::Binary {
+                    left: array,
+                    right: index,
+                    ..
+                } => {
+                    pending.extend([Node::Expr(array), Node::Expr(index)]);
+                }
+                ExprKind::NewArray {
+                    lengths,
+                    initializers,
+                    ..
+                } => {
+                    pending.extend(lengths.iter().map(Node::Expr));
+                    if let Some(values) = initializers {
+                        pending.extend(values.iter().map(Node::Expr));
+                    }
+                }
+                ExprKind::Conditional {
+                    test,
+                    when_true,
+                    when_false,
+                } => {
+                    pending.extend([
+                        Node::Expr(test),
+                        Node::Expr(when_true),
+                        Node::Expr(when_false),
+                    ]);
+                }
+                ExprKind::Concat { parts } => {
+                    pending.extend(parts.iter().map(|part| Node::Expr(&part.value)))
+                }
+                ExprKind::Local(_)
+                | ExprKind::Integer(_)
+                | ExprKind::Boolean(_)
+                | ExprKind::Long(_)
+                | ExprKind::Str(_)
+                | ExprKind::Null
+                | ExprKind::ClassLiteral { .. }
+                | ExprKind::Path(_)
+                | ExprKind::Super { .. } => {}
+            },
+        }
+    }
+    Ok(presented)
 }
 
 /// The member one field instruction names, as the pool and the instruction itself state it.
@@ -196,6 +502,8 @@ pub(crate) struct Shape {
     pub(crate) receiver: Option<ValueId>,
     /// The value a write stores; `None` for a read.
     pub(crate) value: Option<ValueId>,
+    /// Whether this claimed write has the same-class blank static-final declaration proof.
+    simple_static_final: bool,
 }
 
 impl Shape {
@@ -218,7 +526,11 @@ pub(crate) fn plan(
     ssa: &SsaTable,
     operations: &Operations,
     declaring: Option<&DeclaringClass>,
-) -> Plan {
+    method_name: &str,
+    method_descriptor: &str,
+    class_fields: Option<&[MemberHeader]>,
+    budget: &mut Budget,
+) -> Result<Plan, StopReason> {
     let mut plan = Plan::empty();
     for instruction in ssa.blocks().iter().flat_map(|block| block.instructions()) {
         let at = instruction.bci();
@@ -248,7 +560,101 @@ pub(crate) fn plan(
         }
     }
     plan.refusals.sort_by_key(|(evidence, _)| evidence.bci);
-    plan
+    prove_simple_static_final(
+        &mut plan,
+        declaring,
+        method_name,
+        method_descriptor,
+        class_fields,
+        budget,
+    )?;
+    Ok(plan)
+}
+
+/// Proves the narrow blank-`static final` spelling rule from the field plan's own claims and the
+/// already-read headers of the declaring class. A same-name field with another descriptor is still
+/// ambiguous in Java, so uniqueness is checked by name before the descriptor and flags.
+fn prove_simple_static_final(
+    plan: &mut Plan,
+    declaring: Option<&DeclaringClass>,
+    method_name: &str,
+    method_descriptor: &str,
+    class_fields: Option<&[MemberHeader]>,
+    budget: &mut Budget,
+) -> Result<(), StopReason> {
+    const ACC_FINAL: u16 = 0x0010;
+    const ACC_ENUM: u16 = 0x4000;
+
+    stop::poll(budget, None)?;
+    if method_name != "<clinit>" || method_descriptor != "()V" {
+        return Ok(());
+    }
+    let Some(declaring) = declaring else {
+        return Ok(());
+    };
+    if declaring.is_interface() || declaring.access_flags() & ACC_ENUM != 0 {
+        return Ok(());
+    }
+    let Some(class_fields) = class_fields else {
+        return Ok(());
+    };
+
+    // Index the already-read field headers once. `None` records a same-name ambiguity, including
+    // an otherwise matching descriptor, so the proof never becomes a name-plus-descriptor guess.
+    let mut declarations: BTreeMap<&[u8], Option<&MemberHeader>> = BTreeMap::new();
+    for field in class_fields {
+        stop::charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
+        let name = field.name.raw().0.as_slice();
+        match declarations.entry(name) {
+            std::collections::btree_map::Entry::Vacant(entry) => {
+                entry.insert(Some(field));
+            }
+            std::collections::btree_map::Entry::Occupied(mut entry) => {
+                entry.insert(None);
+            }
+        }
+    }
+
+    for (evidence, shape) in plan.claimed.values_mut() {
+        stop::charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(evidence.bci),
+        )?;
+        if !evidence.is_static
+            || !shape.writes()
+            || evidence.owner != declaring.name()
+            || !is_java_identifier(&evidence.name)
+        {
+            continue;
+        }
+
+        let Some(Some(field)) = declarations.get(evidence.name.as_bytes()) else {
+            continue;
+        };
+        if field.descriptor.raw().0.as_slice() != evidence.descriptor.as_bytes()
+            || field.access_flags & (crate::facts::ACC_STATIC | ACC_FINAL)
+                != (crate::facts::ACC_STATIC | ACC_FINAL)
+        {
+            continue;
+        }
+        let mut has_constant_value = false;
+        for attribute in &field.attributes {
+            stop::charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(evidence.bci),
+            )?;
+            has_constant_value |= attribute.name.raw().0.as_slice() == b"ConstantValue";
+        }
+        if has_constant_value {
+            continue;
+        }
+        shape.simple_static_final = true;
+    }
+    Ok(())
 }
 
 /// Verifies one field instruction, or states the link that failed.
@@ -278,6 +684,7 @@ fn verify(
         return Ok(Shape {
             receiver: None,
             value,
+            simple_static_final: false,
         });
     }
     let Some((_, receiver)) = operands.first().copied() else {
@@ -334,6 +741,7 @@ fn verify(
     Ok(Shape {
         receiver: Some(receiver),
         value,
+        simple_static_final: false,
     })
 }
 
@@ -422,6 +830,16 @@ pub struct FieldRefusal {
 }
 
 impl FieldRefusal {
+    fn not_emitted(bci: u32) -> Self {
+        Self {
+            code: "jre_field_not_emitted",
+            rule: RULE,
+            requirement: None,
+            message: format!(
+                "the field access at BCI {bci} passed field identity proof, but no matching Java field operation was emitted by the final body"
+            ),
+        }
+    }
     /// The refusal of one access, as the report records it.
     fn of(refusal: &Refusal, bci: u32) -> Self {
         Self {
@@ -439,7 +857,126 @@ impl FieldRefusal {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ast::AssignOp;
+    use crate::build::Program;
     use crate::pass::IrTable;
+    use crate::source_map::{Origin, OriginSet};
+    use jarde_reader::budget::{CancellationToken, Limits};
+
+    #[test]
+    fn final_refusal_gaps_keep_bci_order_across_plan_and_emission() {
+        let evidence = |bci| Evidence {
+            bci,
+            access: FieldAccess::Read,
+            is_static: true,
+            owner: "Example".to_owned(),
+            name: "value".to_owned(),
+            descriptor: "I".to_owned(),
+        };
+        let mut plan = Plan::empty();
+        plan.refusals.push((
+            evidence(2),
+            Refusal::shape("jre_field_shape", "unproved".to_owned()),
+        ));
+        plan.refusals.push((
+            evidence(8),
+            Refusal::shape("jre_field_shape", "unproved".to_owned()),
+        ));
+        plan.claimed.insert(
+            5,
+            (
+                evidence(5),
+                Shape {
+                    receiver: None,
+                    value: None,
+                    simple_static_final: false,
+                },
+            ),
+        );
+        let gaps = plan
+            .refusals(&BTreeSet::new())
+            .map(|gap| gap.message().to_owned())
+            .collect::<Vec<_>>();
+        for (gap, bci) in gaps.iter().zip([2, 5, 8]) {
+            assert!(gap.contains(&format!("BCI {bci}")), "{gaps:?}");
+        }
+    }
+
+    #[test]
+    fn receipt_budget_and_cancellation_never_return_a_partial_verdict() {
+        let mut plan = Plan::empty();
+        plan.claimed.insert(
+            7,
+            (
+                Evidence {
+                    bci: 7,
+                    access: FieldAccess::Write,
+                    is_static: true,
+                    owner: "Example".to_owned(),
+                    name: "value".to_owned(),
+                    descriptor: "I".to_owned(),
+                },
+                Shape {
+                    receiver: None,
+                    value: None,
+                    simple_static_final: false,
+                },
+            ),
+        );
+        let program = Program {
+            stmts: vec![Stmt::new(
+                StmtKind::FieldAssign {
+                    receiver: None,
+                    name: "value".to_owned(),
+                    op: AssignOp::Assign,
+                    value: Expr::direct(ExprKind::Integer(1), 6),
+                },
+                OriginSet::new(Origin::direct(7)),
+            )],
+            field_increments: BTreeMap::new(),
+            statements: 1,
+            ragged: false,
+            lambdas: Vec::new(),
+            accessors: Vec::new(),
+            lambda_refusals: Vec::new(),
+            accessor_refusals: Vec::new(),
+            lambdas_presented: 0,
+            accessors_presented: 0,
+        };
+        let limits = Limits {
+            analysis_steps: 1,
+            ir_items: u64::MAX,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        };
+        let mut limited = Budget::new(limits.clone());
+        assert!(matches!(
+            committed_presentations(&program, &plan, &mut limited),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut cancelled = Budget::with_cancellation_token(limits, token);
+        assert!(matches!(
+            committed_presentations(&program, &plan, &mut cancelled),
+            Err(StopReason::Cancelled { .. })
+        ));
+
+        let mut complete = Budget::new(Limits {
+            analysis_steps: u64::MAX,
+            ir_items: u64::MAX,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert_eq!(
+            committed_presentations(&program, &plan, &mut complete).expect("complete receipt"),
+            BTreeSet::from([7])
+        );
+    }
 
     #[test]
     fn the_rule_states_the_ir_it_reads_and_the_one_declaration_fact_it_needs() {
@@ -452,5 +989,91 @@ mod tests {
             "`x.f` and `x.f = v` are Java in every release"
         );
         assert_eq!(RULE.citation(), "field@1");
+    }
+
+    #[test]
+    fn simple_static_final_proof_charges_claimed_work() {
+        let mut plan = Plan::empty();
+        plan.claimed.insert(
+            7,
+            (
+                Evidence {
+                    bci: 7,
+                    access: FieldAccess::Write,
+                    is_static: true,
+                    owner: "FinalStaticProbe".to_owned(),
+                    name: "first".to_owned(),
+                    descriptor: "I".to_owned(),
+                },
+                Shape {
+                    receiver: None,
+                    value: None,
+                    simple_static_final: false,
+                },
+            ),
+        );
+        let declaring = DeclaringClass::new("FinalStaticProbe", 0);
+        let mut budget = Budget::new(Limits {
+            ir_items: 0,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            prove_simple_static_final(
+                &mut plan,
+                Some(&declaring),
+                "<clinit>",
+                "()V",
+                Some(&[]),
+                &mut budget,
+            ),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::IrItems,
+                at: Some(7),
+                ..
+            })
+        ));
+    }
+
+    #[test]
+    fn simple_static_final_proof_honors_cancellation_before_indexing() {
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut budget = Budget::with_cancellation_token(
+            Limits {
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            },
+            token,
+        );
+        let mut plan = Plan::empty();
+        let declaring = DeclaringClass::new("FinalStaticProbe", 0);
+        assert!(matches!(
+            prove_simple_static_final(
+                &mut plan,
+                Some(&declaring),
+                "<clinit>",
+                "()V",
+                Some(&[]),
+                &mut budget,
+            ),
+            Err(StopReason::Cancelled { at: None })
+        ));
+
+        let mut names_budget = Budget::with_cancellation_token(
+            Limits {
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            },
+            {
+                let token = CancellationToken::new();
+                token.cancel();
+                token
+            },
+        );
+        assert!(matches!(
+            plan.simple_static_final_names(&mut names_budget),
+            Err(StopReason::Cancelled { at: None })
+        ));
     }
 }

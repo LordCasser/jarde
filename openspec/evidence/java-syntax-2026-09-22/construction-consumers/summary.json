@@ -1,0 +1,8 @@
+{
+  "cases": 14,
+  "cli_sha256": "5fbbbe6bbee1f333b2af6d4976a919628b85c55ca1340384d507ad354e3a2dd1",
+  "jarde_quotes": 11,
+  "jarde_javac": 1,
+  "jadx_javac": 0,
+  "jadx_equal": true
+}

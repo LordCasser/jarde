@@ -1,0 +1,58 @@
+public class probe.DispatchAudit extends probe.ParentAudit implements probe.FaceAudit {
+  public probe.DispatchAudit();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method probe/ParentAudit."<init>":()V
+       4: return
+
+  public int read();
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method probe/ParentAudit.read:()I
+       4: iconst_1
+       5: iadd
+       6: ireturn
+
+  public int faceRead();
+    Code:
+       0: aload_0
+       1: invokespecial #11                 // InterfaceMethod probe/FaceAudit.read:()I
+       4: ireturn
+
+  public void add(int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: invokespecial #14                 // Method probe/ParentAudit.add:(I)V
+       5: bipush        100
+       7: invokestatic  #18                 // Method probe/ParentAudit.bump:(I)V
+      10: return
+
+  public void faceTouch(int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: invokespecial #21                 // InterfaceMethod probe/FaceAudit.touch:(I)V
+       5: return
+
+  public void evaluate();
+    Code:
+       0: aload_0
+       1: invokestatic  #24                 // Method probe/ParentAudit.argument:()I
+       4: invokespecial #14                 // Method probe/ParentAudit.add:(I)V
+       7: return
+
+  private int secret(int);
+    Code:
+       0: iload_1
+       1: bipush        10
+       3: iadd
+       4: ireturn
+
+  public int other(probe.DispatchAudit, int);
+    Code:
+       0: aload_1
+       1: iload_2
+       2: invokespecial #27                 // Method secret:(I)I
+       5: ireturn
+}

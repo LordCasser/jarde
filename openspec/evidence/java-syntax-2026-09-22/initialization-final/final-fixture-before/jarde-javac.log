@@ -1,0 +1,26 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-final-static-root-fixture/jarde/FinalStaticProbe.java:54: 错误: 无法为 static final 变量 first 分配值
+        FinalStaticProbe.first = FinalStaticSupport.next("first");
+                        ^
+/tmp/jarde-final-static-root-fixture/jarde/FinalStaticProbe.java:55: 错误: 无法为 static final 变量 second 分配值
+        FinalStaticProbe.second = FinalStaticSupport.next("second");
+                        ^
+/tmp/jarde-final-static-root-fixture/jarde/FinalStaticProbe.java:57: 错误: 无法为 static final 变量 local0 分配值
+        FinalStaticProbe.local0 = local0;
+                        ^
+/tmp/jarde-final-static-root-fixture/jarde/FinalStaticProbe.java:58: 错误: 无法为 static final 变量 local0_2 分配值
+        FinalStaticProbe.local0_2 = FinalStaticSupport.next("local0_2");
+                        ^
+/tmp/jarde-final-static-root-fixture/jarde/FinalStaticProbe.java:60: 错误: 无法为 static final 变量 branchValue 分配值
+            FinalStaticProbe.branchValue = FinalStaticSupport.next("branch-true");
+                            ^
+/tmp/jarde-final-static-root-fixture/jarde/FinalStaticProbe.java:62: 错误: 无法为 static final 变量 branchValue 分配值
+            FinalStaticProbe.branchValue = FinalStaticSupport.next("branch-false");
+                            ^
+/tmp/jarde-final-static-root-fixture/jarde/FinalStaticProbe.java:64: 错误: 无法为 static final 变量 afterAssign 分配值
+        FinalStaticProbe.afterAssign = FinalStaticProbe.first + FinalStaticProbe.second + FinalStaticProbe.branchValue;
+                        ^
+7 个错误
+3 个警告

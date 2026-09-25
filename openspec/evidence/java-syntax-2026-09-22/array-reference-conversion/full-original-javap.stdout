@@ -1,0 +1,316 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-array-reference-conversion-tn66p7j6/full/original/ArrayReferenceConversions.class
+  Last modified 2026年9月23日; size 1765 bytes
+  SHA-256 checksum 5298588750f47fdd68525c1d570b2226f5d1c00230101e572b390c782073baf2
+public class ArrayReferenceConversions
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #14                         // ArrayReferenceConversions
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 18, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = String             #8             // Object
+   #8 = Utf8               Object
+   #9 = String             #10            // Object[]
+  #10 = Utf8               Object[]
+  #11 = String             #12            // Object[][]
+  #12 = Utf8               Object[][]
+  #13 = Methodref          #14.#15        // ArrayReferenceConversions.overload:([Ljava/lang/Object;)Ljava/lang/String;
+  #14 = Class              #16            // ArrayReferenceConversions
+  #15 = NameAndType        #17:#18        // overload:([Ljava/lang/Object;)Ljava/lang/String;
+  #16 = Utf8               ArrayReferenceConversions
+  #17 = Utf8               overload
+  #18 = Utf8               ([Ljava/lang/Object;)Ljava/lang/String;
+  #19 = Methodref          #14.#20        // ArrayReferenceConversions.overload:([[Ljava/lang/Object;)Ljava/lang/String;
+  #20 = NameAndType        #17:#21        // overload:([[Ljava/lang/Object;)Ljava/lang/String;
+  #21 = Utf8               ([[Ljava/lang/Object;)Ljava/lang/String;
+  #22 = Methodref          #14.#23        // ArrayReferenceConversions.overload:(Ljava/lang/Object;)Ljava/lang/String;
+  #23 = NameAndType        #17:#24        // overload:(Ljava/lang/Object;)Ljava/lang/String;
+  #24 = Utf8               (Ljava/lang/Object;)Ljava/lang/String;
+  #25 = Class              #26            // java/lang/StringBuilder
+  #26 = Utf8               java/lang/StringBuilder
+  #27 = Methodref          #25.#3         // java/lang/StringBuilder."<init>":()V
+  #28 = String             #29            // int[][]:
+  #29 = Utf8               int[][]:
+  #30 = Methodref          #25.#31        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #31 = NameAndType        #32:#33        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #32 = Utf8               append
+  #33 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #34 = Methodref          #25.#35        // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #35 = NameAndType        #32:#36        // append:(I)Ljava/lang/StringBuilder;
+  #36 = Utf8               (I)Ljava/lang/StringBuilder;
+  #37 = Methodref          #25.#38        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #38 = NameAndType        #39:#40        // toString:()Ljava/lang/String;
+  #39 = Utf8               toString
+  #40 = Utf8               ()Ljava/lang/String;
+  #41 = String             #42            // String[]:
+  #42 = Utf8               String[]:
+  #43 = String             #44            // String[][]:
+  #44 = Utf8               String[][]:
+  #45 = String             #46            // Object[]:
+  #46 = Utf8               Object[]:
+  #47 = String             #48            // Object[][]:
+  #48 = Utf8               Object[][]:
+  #49 = Methodref          #2.#50         // java/lang/Object.getClass:()Ljava/lang/Class;
+  #50 = NameAndType        #51:#52        // getClass:()Ljava/lang/Class;
+  #51 = Utf8               getClass
+  #52 = Utf8               ()Ljava/lang/Class;
+  #53 = Methodref          #54.#55        // java/lang/Class.getName:()Ljava/lang/String;
+  #54 = Class              #56            // java/lang/Class
+  #55 = NameAndType        #57:#40        // getName:()Ljava/lang/String;
+  #56 = Utf8               java/lang/Class
+  #57 = Utf8               getName
+  #58 = String             #59            // :
+  #59 = Utf8               :
+  #60 = String             #61            // stored
+  #61 = Utf8               stored
+  #62 = Utf8               Code
+  #63 = Utf8               typedIntMatrix
+  #64 = Utf8               ([[I)Ljava/lang/String;
+  #65 = Utf8               typedStringArray
+  #66 = Utf8               ([Ljava/lang/String;)Ljava/lang/String;
+  #67 = Utf8               typedStringMatrix
+  #68 = Utf8               ([[Ljava/lang/String;)Ljava/lang/String;
+  #69 = Utf8               widenedObject
+  #70 = Utf8               widenedObjectArray
+  #71 = Utf8               exactIntMatrix
+  #72 = Utf8               exactStringArray
+  #73 = Utf8               exactStringMatrix
+  #74 = Utf8               exactObjectArray
+  #75 = Utf8               exactObjectMatrix
+  #76 = Utf8               describeObjectArray
+  #77 = Utf8               describeObjectMatrix
+  #78 = Utf8               writeObjectArray
+  #79 = Utf8               writeObjectMatrix
+{
+  public ArrayReferenceConversions();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static java.lang.String overload(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: ldc           #7                  // String Object
+         2: areturn
+
+  public static java.lang.String overload(java.lang.Object[]);
+    descriptor: ([Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: ldc           #9                  // String Object[]
+         2: areturn
+
+  public static java.lang.String overload(java.lang.Object[][]);
+    descriptor: ([[Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: ldc           #11                 // String Object[][]
+         2: areturn
+
+  public static java.lang.String typedIntMatrix(int[][]);
+    descriptor: ([[I)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokestatic  #13                 // Method overload:([Ljava/lang/Object;)Ljava/lang/String;
+         4: areturn
+
+  public static java.lang.String typedStringArray(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokestatic  #13                 // Method overload:([Ljava/lang/Object;)Ljava/lang/String;
+         4: areturn
+
+  public static java.lang.String typedStringMatrix(java.lang.String[][]);
+    descriptor: ([[Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokestatic  #19                 // Method overload:([[Ljava/lang/Object;)Ljava/lang/String;
+         4: areturn
+
+  public static java.lang.String widenedObject(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokestatic  #22                 // Method overload:(Ljava/lang/Object;)Ljava/lang/String;
+         4: areturn
+
+  public static java.lang.String widenedObjectArray(java.lang.Object[]);
+    descriptor: ([Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokestatic  #13                 // Method overload:([Ljava/lang/Object;)Ljava/lang/String;
+         4: areturn
+
+  public static java.lang.String exactIntMatrix(int[][]);
+    descriptor: ([[I)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #25                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+         7: ldc           #28                 // String int[][]:
+         9: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        12: aload_0
+        13: arraylength
+        14: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        17: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        20: areturn
+
+  public static java.lang.String exactStringArray(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #25                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+         7: ldc           #41                 // String String[]:
+         9: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        12: aload_0
+        13: arraylength
+        14: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        17: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        20: areturn
+
+  public static java.lang.String exactStringMatrix(java.lang.String[][]);
+    descriptor: ([[Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #25                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+         7: ldc           #43                 // String String[][]:
+         9: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        12: aload_0
+        13: arraylength
+        14: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        17: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        20: areturn
+
+  public static java.lang.String exactObjectArray(java.lang.Object[]);
+    descriptor: ([Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #25                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+         7: ldc           #45                 // String Object[]:
+         9: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        12: aload_0
+        13: arraylength
+        14: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        17: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        20: areturn
+
+  public static java.lang.String exactObjectMatrix(java.lang.Object[][]);
+    descriptor: ([[Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #25                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+         7: ldc           #47                 // String Object[][]:
+         9: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        12: aload_0
+        13: arraylength
+        14: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        17: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        20: areturn
+
+  public static java.lang.String describeObjectArray(java.lang.Object[]);
+    descriptor: ([Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #25                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+         7: aload_0
+         8: invokevirtual #49                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        11: invokevirtual #53                 // Method java/lang/Class.getName:()Ljava/lang/String;
+        14: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        17: ldc           #58                 // String :
+        19: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        22: aload_0
+        23: arraylength
+        24: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        27: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        30: areturn
+
+  public static java.lang.String describeObjectMatrix(java.lang.Object[][]);
+    descriptor: ([[Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #25                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+         7: aload_0
+         8: invokevirtual #49                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        11: invokevirtual #53                 // Method java/lang/Class.getName:()Ljava/lang/String;
+        14: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        17: ldc           #58                 // String :
+        19: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        22: aload_0
+        23: arraylength
+        24: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        27: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        30: areturn
+
+  public static java.lang.String writeObjectArray(java.lang.Object[]);
+    descriptor: ([Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: new           #2                  // class java/lang/Object
+         5: dup
+         6: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         9: aastore
+        10: ldc           #60                 // String stored
+        12: areturn
+
+  public static java.lang.String writeObjectMatrix(java.lang.Object[][]);
+    descriptor: ([[Ljava/lang/Object;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: iconst_0
+         3: anewarray     #2                  // class java/lang/Object
+         6: aastore
+         7: ldc           #60                 // String stored
+         9: areturn
+}

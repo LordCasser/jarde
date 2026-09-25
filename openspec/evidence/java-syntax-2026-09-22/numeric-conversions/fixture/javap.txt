@@ -1,0 +1,399 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-primitive-conversions-fixture-ee8loqsi/original/PrimitiveConversions.class
+  Last modified 2026年9月23日; size 1720 bytes
+  SHA-256 checksum 553c412824027fd41ad1176034bae95d3f2cf72fee7eb4fc2a06f02188b2179d
+public class PrimitiveConversions
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #37                         // PrimitiveConversions
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 31, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // PrimitiveConversionSupport.take:(B)I
+   #8 = Class              #10            // PrimitiveConversionSupport
+   #9 = NameAndType        #11:#12        // take:(B)I
+  #10 = Utf8               PrimitiveConversionSupport
+  #11 = Utf8               take
+  #12 = Utf8               (B)I
+  #13 = Methodref          #8.#14         // PrimitiveConversionSupport.take:(S)I
+  #14 = NameAndType        #11:#15        // take:(S)I
+  #15 = Utf8               (S)I
+  #16 = Methodref          #8.#17         // PrimitiveConversionSupport.take:(C)I
+  #17 = NameAndType        #11:#18        // take:(C)I
+  #18 = Utf8               (C)I
+  #19 = Methodref          #8.#20         // PrimitiveConversionSupport.take:(I)I
+  #20 = NameAndType        #11:#21        // take:(I)I
+  #21 = Utf8               (I)I
+  #22 = Methodref          #8.#23         // PrimitiveConversionSupport.take:(F)D
+  #23 = NameAndType        #11:#24        // take:(F)D
+  #24 = Utf8               (F)D
+  #25 = Methodref          #8.#26         // PrimitiveConversionSupport.take:(D)D
+  #26 = NameAndType        #11:#27        // take:(D)D
+  #27 = Utf8               (D)D
+  #28 = Methodref          #29.#30        // PrimitiveConversionEffects.left:(IZ)I
+  #29 = Class              #31            // PrimitiveConversionEffects
+  #30 = NameAndType        #32:#33        // left:(IZ)I
+  #31 = Utf8               PrimitiveConversionEffects
+  #32 = Utf8               left
+  #33 = Utf8               (IZ)I
+  #34 = Methodref          #29.#35        // PrimitiveConversionEffects.right:(IZ)I
+  #35 = NameAndType        #36:#33        // right:(IZ)I
+  #36 = Utf8               right
+  #37 = Class              #38            // PrimitiveConversions
+  #38 = Utf8               PrimitiveConversions
+  #39 = Utf8               Code
+  #40 = Utf8               i2l
+  #41 = Utf8               (I)J
+  #42 = Utf8               i2f
+  #43 = Utf8               (I)F
+  #44 = Utf8               i2d
+  #45 = Utf8               (I)D
+  #46 = Utf8               i2b
+  #47 = Utf8               (I)B
+  #48 = Utf8               i2c
+  #49 = Utf8               (I)C
+  #50 = Utf8               i2s
+  #51 = Utf8               (I)S
+  #52 = Utf8               l2i
+  #53 = Utf8               (J)I
+  #54 = Utf8               l2f
+  #55 = Utf8               (J)F
+  #56 = Utf8               l2d
+  #57 = Utf8               (J)D
+  #58 = Utf8               f2i
+  #59 = Utf8               (F)I
+  #60 = Utf8               f2l
+  #61 = Utf8               (F)J
+  #62 = Utf8               f2d
+  #63 = Utf8               d2i
+  #64 = Utf8               (D)I
+  #65 = Utf8               d2l
+  #66 = Utf8               (D)J
+  #67 = Utf8               d2f
+  #68 = Utf8               (D)F
+  #69 = Utf8               byteOverload
+  #70 = Utf8               shortOverload
+  #71 = Utf8               charOverload
+  #72 = Utf8               longIntOverload
+  #73 = Utf8               longFloatOverload
+  #74 = Utf8               floatDoubleOverload
+  #75 = Utf8               doubleIntOverload
+  #76 = Utf8               intFloatRound
+  #77 = Utf8               longFloatRound
+  #78 = Utf8               (J)J
+  #79 = Utf8               longDoubleRound
+  #80 = Utf8               doubleFloatRound
+  #81 = Utf8               floatByte
+  #82 = Utf8               (F)B
+  #83 = Utf8               doubleChar
+  #84 = Utf8               (D)C
+  #85 = Utf8               byteChar
+  #86 = Utf8               ordered
+  #87 = Utf8               (IZZ)J
+{
+  public PrimitiveConversions();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static long i2l(int);
+    descriptor: (I)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iload_0
+         1: i2l
+         2: lreturn
+
+  public static float i2f(int);
+    descriptor: (I)F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: i2f
+         2: freturn
+
+  public static double i2d(int);
+    descriptor: (I)D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iload_0
+         1: i2d
+         2: dreturn
+
+  public static byte i2b(int);
+    descriptor: (I)B
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: i2b
+         2: ireturn
+
+  public static char i2c(int);
+    descriptor: (I)C
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: i2c
+         2: ireturn
+
+  public static short i2s(int);
+    descriptor: (I)S
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: i2s
+         2: ireturn
+
+  public static int l2i(long);
+    descriptor: (J)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: lload_0
+         1: l2i
+         2: ireturn
+
+  public static float l2f(long);
+    descriptor: (J)F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: lload_0
+         1: l2f
+         2: freturn
+
+  public static double l2d(long);
+    descriptor: (J)D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: lload_0
+         1: l2d
+         2: dreturn
+
+  public static int f2i(float);
+    descriptor: (F)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: fload_0
+         1: f2i
+         2: ireturn
+
+  public static long f2l(float);
+    descriptor: (F)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: fload_0
+         1: f2l
+         2: lreturn
+
+  public static double f2d(float);
+    descriptor: (F)D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: fload_0
+         1: f2d
+         2: dreturn
+
+  public static int d2i(double);
+    descriptor: (D)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: dload_0
+         1: d2i
+         2: ireturn
+
+  public static long d2l(double);
+    descriptor: (D)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: dload_0
+         1: d2l
+         2: lreturn
+
+  public static float d2f(double);
+    descriptor: (D)F
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: dload_0
+         1: d2f
+         2: freturn
+
+  public static int byteOverload(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: i2b
+         2: invokestatic  #7                  // Method PrimitiveConversionSupport.take:(B)I
+         5: ireturn
+
+  public static int shortOverload(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: i2s
+         2: invokestatic  #13                 // Method PrimitiveConversionSupport.take:(S)I
+         5: ireturn
+
+  public static int charOverload(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: i2c
+         2: invokestatic  #16                 // Method PrimitiveConversionSupport.take:(C)I
+         5: ireturn
+
+  public static int longIntOverload(long);
+    descriptor: (J)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: lload_0
+         1: l2i
+         2: invokestatic  #19                 // Method PrimitiveConversionSupport.take:(I)I
+         5: ireturn
+
+  public static double longFloatOverload(long);
+    descriptor: (J)D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: lload_0
+         1: l2f
+         2: invokestatic  #22                 // Method PrimitiveConversionSupport.take:(F)D
+         5: dreturn
+
+  public static double floatDoubleOverload(float);
+    descriptor: (F)D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: fload_0
+         1: f2d
+         2: invokestatic  #25                 // Method PrimitiveConversionSupport.take:(D)D
+         5: dreturn
+
+  public static int doubleIntOverload(double);
+    descriptor: (D)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: dload_0
+         1: d2i
+         2: invokestatic  #19                 // Method PrimitiveConversionSupport.take:(I)I
+         5: ireturn
+
+  public static long intFloatRound(int);
+    descriptor: (I)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iload_0
+         1: i2f
+         2: f2l
+         3: lreturn
+
+  public static long longFloatRound(long);
+    descriptor: (J)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: lload_0
+         1: l2f
+         2: f2l
+         3: lreturn
+
+  public static long longDoubleRound(long);
+    descriptor: (J)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: lload_0
+         1: l2d
+         2: d2l
+         3: lreturn
+
+  public static double doubleFloatRound(double);
+    descriptor: (D)D
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: dload_0
+         1: d2f
+         2: f2d
+         3: dreturn
+
+  public static byte floatByte(float);
+    descriptor: (F)B
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: fload_0
+         1: f2i
+         2: i2b
+         3: ireturn
+
+  public static char doubleChar(double);
+    descriptor: (D)C
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: dload_0
+         1: d2i
+         2: i2c
+         3: ireturn
+
+  public static int byteChar(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: i2b
+         2: i2c
+         3: ireturn
+
+  public static long ordered(int, boolean, boolean);
+    descriptor: (IZZ)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=3, args_size=3
+         0: iload_0
+         1: iload_1
+         2: invokestatic  #28                 // Method PrimitiveConversionEffects.left:(IZ)I
+         5: i2l
+         6: iload_0
+         7: iload_2
+         8: invokestatic  #34                 // Method PrimitiveConversionEffects.right:(IZ)I
+        11: i2l
+        12: ladd
+        13: lreturn
+}

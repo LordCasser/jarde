@@ -1,0 +1,8 @@
+matrix.Outer$A$Plain:1
+plain-null:1
+matrix.Outer$A$Generic:2
+generic-object-null:2
+7:3
+generic-typed-null:3
+matrix.Outer$A$Plain:4
+plain-raw-null:4

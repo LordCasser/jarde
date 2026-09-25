@@ -1,0 +1,1 @@
+compile exit=1; see canonical-nan-fneg-dneg-jarde-javac.log

@@ -1,0 +1,20 @@
+--- original
++++ jadx
+@@ -7,7 +7,7 @@
+ floatMinimum=1
+ floatNormal=800000
+ floatMaximum=7f7fffff
+-floatNan=7f812345
++floatNan=7fc00000
+ floatPositiveInfinity=7f800000
+ floatNegativeInfinity=ff800000
+ doubleZero=0
+@@ -19,7 +19,7 @@
+ doubleMinimum=1
+ doubleNormal=10000000000000
+ doubleMaximum=7fefffffffffffff
+-doubleNan=7ff0123456789abc
++doubleNan=7ff8000000000000
+ doublePositiveInfinity=7ff0000000000000
+ doubleNegativeInfinity=fff0000000000000
+ floatArgument=1

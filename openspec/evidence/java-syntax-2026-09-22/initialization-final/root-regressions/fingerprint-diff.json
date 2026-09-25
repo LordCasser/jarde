@@ -1,0 +1,21 @@
+{
+  "previous": 219,
+  "current": 232,
+  "added": [
+    "tests/fixtures/p3-bitwise/BitwiseEffects.java",
+    "tests/fixtures/p3-bitwise/BitwiseProbe.java",
+    "tests/fixtures/p3-bitwise/BitwiseProbeRunner.java",
+    "tests/fixtures/p3-bitwise/v8/BitwiseProbe.class",
+    "tests/fixtures/p3-deferred-value-order/DeferredEffects.java",
+    "tests/fixtures/p3-deferred-value-order/DeferredValueOrder.java",
+    "tests/fixtures/p3-deferred-value-order/DeferredValueOrderRunner.java",
+    "tests/fixtures/p3-deferred-value-order/OrderValue.java",
+    "tests/fixtures/p3-deferred-value-order/v8/DeferredValueOrder.class",
+    "tests/fixtures/p3-floating-constants/FloatingConstants.java",
+    "tests/fixtures/p3-floating-constants/FloatingRunner.java",
+    "tests/fixtures/p3-floating-constants/FloatingSupport.java",
+    "tests/fixtures/p3-floating-constants/v8/FloatingConstants.class"
+  ],
+  "removed": [],
+  "changed_existing": []
+}

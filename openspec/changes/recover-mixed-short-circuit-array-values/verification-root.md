@@ -1,0 +1,7 @@
+# Root 独立验收
+
+root 在 agent 稳定后从共享源码独立构建 `jarde-cli`（SHA-256 `ad3dca5c4405e2e1f53ddae67f42b53497adfbbfbd7f018070b9b9a5baf73198`），对冻结的 `MixedArrayValue.class` 读取完整 `class-source --evidence all`。[报告](../../evidence/java-syntax-2026-09-25/mixed-short-circuit-array/jarde-after-array-root-report.json)中 `one(ZZI)V` 为 structured、零 fallback，只出现一次 `array(arg1)[index(arg2)] = …`，全部 15 个指令起点 0/1/4/5/8/9/12/15/18/21/24/25/28/29/30 均在 source map。
+
+[生成完整类](../../evidence/java-syntax-2026-09-25/mixed-short-circuit-array/jarde-after-array-root.java)以 `javac --release 8 -g:none -Xlint:-options` 成功重编（class SHA-256 `0aa35ea7204f352c2501e72e45364bb258bfaae0d798c431dc0069098de1acfe`）；`java -Xverify:all` 的 [24 行](../../evidence/java-syntax-2026-09-25/mixed-short-circuit-array/jarde-after-array-root-run.txt)与冻结[原 class](../../evidence/java-syntax-2026-09-25/mixed-short-circuit-array/original-run.txt)逐字节一致，JADX 冻结运行也一致。路径包括 array/index/b/c 的调用计数、null 与越界时首次异常位置。root 独立运行 `cargo test --test p3_mixed_short_circuit_array`，4/4 通过，包括 verifier-valid `[B`、未知数组类型、额外 use、异常/正常边、不可呈现标识符、预算/取消控制。
+
+代码审读确认 Region 只把真实 `bastore` 作为候选锚点，Builder 再逐项证明唯一 Phi 处于 Stack(2)、数组/下标各自单一来源与物理顺序、准确 `[Z` 组件和最终 `IndexAssign`；没有放宽 Region 的 overlap validator。尚未支持的跨块目标与未知组件保持拒绝。agent 的相邻 9 个 test target、普通 Clippy、格式和 OpenSpec strict 均通过；root 的 `cargo fmt --all -- --check`、`git diff --check` 和 strict 也通过。严格 Clippy 在已有 18 条仓内 lint 处失败，单独记为门禁债务。

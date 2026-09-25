@@ -1,0 +1,52 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ArrayInitializerProbe.class */
+public class ArrayInitializerProbe {
+    private static final StringBuilder trace = new StringBuilder();
+
+    private static void append(char c) {
+        trace.append(c);
+    }
+
+    private static int intElement(int i, int i2) {
+        append((char) (97 + i2));
+        return (i2 * 10) + (10 / (i2 - i));
+    }
+
+    private static String stringElement(int i, int i2) {
+        append((char) (65 + i2));
+        return "s" + i2 + (10 / (i2 - i));
+    }
+
+    public static int[] literalInts() {
+        return new int[]{1, 2, 3, -4};
+    }
+
+    public static int[] emptyInts() {
+        return new int[0];
+    }
+
+    public static String[] literalStrings() {
+        return new String[]{"left", null, "right"};
+    }
+
+    public static String[] emptyStrings() {
+        return new String[0];
+    }
+
+    public static int[] effectfulInts(int i) {
+        return new int[]{intElement(i, 0), intElement(i, 1), intElement(i, 2)};
+    }
+
+    public static String[] effectfulStrings(int i) {
+        return new String[]{stringElement(i, 0), stringElement(i, 1), stringElement(i, 2)};
+    }
+
+    public static String trace() {
+        return trace.toString();
+    }
+
+    public static void reset() {
+        trace.setLength(0);
+    }
+}

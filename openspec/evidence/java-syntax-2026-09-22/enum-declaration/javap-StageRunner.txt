@@ -1,0 +1,285 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/enum-declaration/classes-original/StageRunner.class
+  Last modified 2026年9月23日; size 1464 bytes
+  SHA-256 checksum 553e7789a234ff10cc5d02eaccb9119c0e7947cc0f0b0c0a0e0fd9038c7ad4eb
+class StageRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #21                         // StageRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 3, attributes: 0
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Class              #8            // java/lang/AssertionError
+    #8 = Utf8               java/lang/AssertionError
+    #9 = Methodref          #7.#10        // java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+   #10 = NameAndType        #5:#11        // "<init>":(Ljava/lang/Object;)V
+   #11 = Utf8               (Ljava/lang/Object;)V
+   #12 = Methodref          #13.#14       // Stage.values:()[LStage;
+   #13 = Class              #15           // Stage
+   #14 = NameAndType        #16:#17       // values:()[LStage;
+   #15 = Utf8               Stage
+   #16 = Utf8               values
+   #17 = Utf8               ()[LStage;
+   #18 = String             #19           // values length
+   #19 = Utf8               values length
+   #20 = Methodref          #21.#22       // StageRunner.check:(ZLjava/lang/String;)V
+   #21 = Class              #23           // StageRunner
+   #22 = NameAndType        #24:#25       // check:(ZLjava/lang/String;)V
+   #23 = Utf8               StageRunner
+   #24 = Utf8               check
+   #25 = Utf8               (ZLjava/lang/String;)V
+   #26 = Fieldref           #13.#27       // Stage.START:LStage;
+   #27 = NameAndType        #28:#29       // START:LStage;
+   #28 = Utf8               START
+   #29 = Utf8               LStage;
+   #30 = Fieldref           #13.#31       // Stage.FINISH:LStage;
+   #31 = NameAndType        #32:#29       // FINISH:LStage;
+   #32 = Utf8               FINISH
+   #33 = String             #34           // values declaration order
+   #34 = Utf8               values declaration order
+   #35 = String             #28           // START
+   #36 = Methodref          #13.#37       // Stage.valueOf:(Ljava/lang/String;)LStage;
+   #37 = NameAndType        #38:#39       // valueOf:(Ljava/lang/String;)LStage;
+   #38 = Utf8               valueOf
+   #39 = Utf8               (Ljava/lang/String;)LStage;
+   #40 = String             #41           // valueOf START
+   #41 = Utf8               valueOf START
+   #42 = String             #32           // FINISH
+   #43 = String             #44           // valueOf FINISH
+   #44 = Utf8               valueOf FINISH
+   #45 = Fieldref           #13.#46       // Stage.ordinalValue:I
+   #46 = NameAndType        #47:#48       // ordinalValue:I
+   #47 = Utf8               ordinalValue
+   #48 = Utf8               I
+   #49 = Methodref          #13.#50       // Stage.code:()I
+   #50 = NameAndType        #51:#52       // code:()I
+   #51 = Utf8               code
+   #52 = Utf8               ()I
+   #53 = String             #54           // START constructor field
+   #54 = Utf8               START constructor field
+   #55 = String             #56           // FINISH constructor field
+   #56 = Utf8               FINISH constructor field
+   #57 = Methodref          #58.#59       // java/lang/Class.getField:(Ljava/lang/String;)Ljava/lang/reflect/Field;
+   #58 = Class              #60           // java/lang/Class
+   #59 = NameAndType        #61:#62       // getField:(Ljava/lang/String;)Ljava/lang/reflect/Field;
+   #60 = Utf8               java/lang/Class
+   #61 = Utf8               getField
+   #62 = Utf8               (Ljava/lang/String;)Ljava/lang/reflect/Field;
+   #63 = Methodref          #64.#65       // java/lang/reflect/Field.isEnumConstant:()Z
+   #64 = Class              #66           // java/lang/reflect/Field
+   #65 = NameAndType        #67:#68       // isEnumConstant:()Z
+   #66 = Utf8               java/lang/reflect/Field
+   #67 = Utf8               isEnumConstant
+   #68 = Utf8               ()Z
+   #69 = String             #70           // constant fields
+   #70 = Utf8               constant fields
+   #71 = Methodref          #64.#72       // java/lang/reflect/Field.get:(Ljava/lang/Object;)Ljava/lang/Object;
+   #72 = NameAndType        #73:#74       // get:(Ljava/lang/Object;)Ljava/lang/Object;
+   #73 = Utf8               get
+   #74 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+   #75 = String             #76           // constant field values
+   #76 = Utf8               constant field values
+   #77 = Fieldref           #78.#79       // java/lang/System.out:Ljava/io/PrintStream;
+   #78 = Class              #80           // java/lang/System
+   #79 = NameAndType        #81:#82       // out:Ljava/io/PrintStream;
+   #80 = Utf8               java/lang/System
+   #81 = Utf8               out
+   #82 = Utf8               Ljava/io/PrintStream;
+   #83 = String             #84           // enum declaration checks: PASS
+   #84 = Utf8               enum declaration checks: PASS
+   #85 = Methodref          #86.#87       // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #86 = Class              #88           // java/io/PrintStream
+   #87 = NameAndType        #89:#90       // println:(Ljava/lang/String;)V
+   #88 = Utf8               java/io/PrintStream
+   #89 = Utf8               println
+   #90 = Utf8               (Ljava/lang/String;)V
+   #91 = Utf8               Code
+   #92 = Utf8               StackMapTable
+   #93 = Utf8               main
+   #94 = Utf8               ([Ljava/lang/String;)V
+   #95 = Class              #96           // "[LStage;"
+   #96 = Utf8               [LStage;
+   #97 = Utf8               Exceptions
+   #98 = Class              #99           // java/lang/Exception
+   #99 = Utf8               java/lang/Exception
+{
+  StageRunner();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static void check(boolean, java.lang.String);
+    descriptor: (ZLjava/lang/String;)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: iload_0
+         1: ifne          13
+         4: new           #7                  // class java/lang/AssertionError
+         7: dup
+         8: aload_1
+         9: invokespecial #9                  // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        12: athrow
+        13: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 13 /* same */
+
+  public static void main(java.lang.String[]) throws java.lang.Exception;
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=4, args_size=1
+         0: invokestatic  #12                 // Method Stage.values:()[LStage;
+         3: astore_1
+         4: aload_1
+         5: arraylength
+         6: iconst_2
+         7: if_icmpne     14
+        10: iconst_1
+        11: goto          15
+        14: iconst_0
+        15: ldc           #18                 // String values length
+        17: invokestatic  #20                 // Method check:(ZLjava/lang/String;)V
+        20: aload_1
+        21: iconst_0
+        22: aaload
+        23: getstatic     #26                 // Field Stage.START:LStage;
+        26: if_acmpne     42
+        29: aload_1
+        30: iconst_1
+        31: aaload
+        32: getstatic     #30                 // Field Stage.FINISH:LStage;
+        35: if_acmpne     42
+        38: iconst_1
+        39: goto          43
+        42: iconst_0
+        43: ldc           #33                 // String values declaration order
+        45: invokestatic  #20                 // Method check:(ZLjava/lang/String;)V
+        48: ldc           #35                 // String START
+        50: invokestatic  #36                 // Method Stage.valueOf:(Ljava/lang/String;)LStage;
+        53: getstatic     #26                 // Field Stage.START:LStage;
+        56: if_acmpne     63
+        59: iconst_1
+        60: goto          64
+        63: iconst_0
+        64: ldc           #40                 // String valueOf START
+        66: invokestatic  #20                 // Method check:(ZLjava/lang/String;)V
+        69: ldc           #42                 // String FINISH
+        71: invokestatic  #36                 // Method Stage.valueOf:(Ljava/lang/String;)LStage;
+        74: getstatic     #30                 // Field Stage.FINISH:LStage;
+        77: if_acmpne     84
+        80: iconst_1
+        81: goto          85
+        84: iconst_0
+        85: ldc           #43                 // String valueOf FINISH
+        87: invokestatic  #20                 // Method check:(ZLjava/lang/String;)V
+        90: getstatic     #26                 // Field Stage.START:LStage;
+        93: getfield      #45                 // Field Stage.ordinalValue:I
+        96: iconst_4
+        97: if_icmpne     114
+       100: getstatic     #26                 // Field Stage.START:LStage;
+       103: invokevirtual #49                 // Method Stage.code:()I
+       106: iconst_4
+       107: if_icmpne     114
+       110: iconst_1
+       111: goto          115
+       114: iconst_0
+       115: ldc           #53                 // String START constructor field
+       117: invokestatic  #20                 // Method check:(ZLjava/lang/String;)V
+       120: getstatic     #30                 // Field Stage.FINISH:LStage;
+       123: getfield      #45                 // Field Stage.ordinalValue:I
+       126: bipush        9
+       128: if_icmpne     146
+       131: getstatic     #30                 // Field Stage.FINISH:LStage;
+       134: invokevirtual #49                 // Method Stage.code:()I
+       137: bipush        9
+       139: if_icmpne     146
+       142: iconst_1
+       143: goto          147
+       146: iconst_0
+       147: ldc           #55                 // String FINISH constructor field
+       149: invokestatic  #20                 // Method check:(ZLjava/lang/String;)V
+       152: ldc           #13                 // class Stage
+       154: ldc           #35                 // String START
+       156: invokevirtual #57                 // Method java/lang/Class.getField:(Ljava/lang/String;)Ljava/lang/reflect/Field;
+       159: astore_2
+       160: ldc           #13                 // class Stage
+       162: ldc           #42                 // String FINISH
+       164: invokevirtual #57                 // Method java/lang/Class.getField:(Ljava/lang/String;)Ljava/lang/reflect/Field;
+       167: astore_3
+       168: aload_2
+       169: invokevirtual #63                 // Method java/lang/reflect/Field.isEnumConstant:()Z
+       172: ifeq          186
+       175: aload_3
+       176: invokevirtual #63                 // Method java/lang/reflect/Field.isEnumConstant:()Z
+       179: ifeq          186
+       182: iconst_1
+       183: goto          187
+       186: iconst_0
+       187: ldc           #69                 // String constant fields
+       189: invokestatic  #20                 // Method check:(ZLjava/lang/String;)V
+       192: aload_2
+       193: aconst_null
+       194: invokevirtual #71                 // Method java/lang/reflect/Field.get:(Ljava/lang/Object;)Ljava/lang/Object;
+       197: aload_1
+       198: iconst_0
+       199: aaload
+       200: if_acmpne     218
+       203: aload_3
+       204: aconst_null
+       205: invokevirtual #71                 // Method java/lang/reflect/Field.get:(Ljava/lang/Object;)Ljava/lang/Object;
+       208: aload_1
+       209: iconst_1
+       210: aaload
+       211: if_acmpne     218
+       214: iconst_1
+       215: goto          219
+       218: iconst_0
+       219: ldc           #75                 // String constant field values
+       221: invokestatic  #20                 // Method check:(ZLjava/lang/String;)V
+       224: getstatic     #77                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       227: ldc           #83                 // String enum declaration checks: PASS
+       229: invokevirtual #85                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       232: return
+      StackMapTable: number_of_entries = 16
+        frame_type = 252 /* append */
+          offset_delta = 14
+          locals = [ class "[LStage;" ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 26 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 19 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 19 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 28 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 30 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 253 /* append */
+          offset_delta = 38
+          locals = [ class java/lang/reflect/Field, class java/lang/reflect/Field ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 30 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+    Exceptions:
+      throws java.lang.Exception
+}

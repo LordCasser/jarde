@@ -1,0 +1,9 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ReturnByte.class */
+public class ReturnByte {
+    /* JADX WARN: Multi-variable type inference failed */
+    public static byte run(int i) {
+        return i;
+    }
+}

@@ -1,0 +1,32 @@
+package defpackage;
+
+/* JADX INFO: loaded from: OverloadProbe.class */
+public class OverloadProbe extends OverloadParent {
+    public int own(Object obj) {
+        return 3;
+    }
+
+    public int own(String str) {
+        return 4;
+    }
+
+    public int number(int i) {
+        return 7;
+    }
+
+    public int number(char c) {
+        return 8;
+    }
+
+    public int superObject() {
+        return super.pick("x");
+    }
+
+    public int ownObject() {
+        return own("x");
+    }
+
+    public int primitive(char c) {
+        return number((int) c);
+    }
+}

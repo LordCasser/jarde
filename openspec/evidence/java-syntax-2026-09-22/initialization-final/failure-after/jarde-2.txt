@@ -1,0 +1,2 @@
+0:java.lang.ExceptionInInitializerError:true:2:AB
+1:java.lang.NoClassDefFoundError:false:2:AB

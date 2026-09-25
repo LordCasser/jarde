@@ -1,0 +1,24 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ArrayReferenceOverloadTarget.class */
+public class ArrayReferenceOverloadTarget {
+    public static String overload(Object[] objArr) {
+        return "Object[]";
+    }
+
+    public static String overload(String[] strArr) {
+        return "String[]";
+    }
+
+    public static String explicitObjectTarget(String[] strArr) {
+        return overload((Object[]) strArr);
+    }
+
+    public static String localObjectTarget(String[] strArr) {
+        return overload((Object[]) strArr);
+    }
+
+    public static String implicitStringTarget(String[] strArr) {
+        return overload(strArr);
+    }
+}

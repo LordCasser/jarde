@@ -1,0 +1,7 @@
+# 异常区域边界对照
+
+此输入把value调用放在异常保护范围之前，将mark和后续消费放在try范围内；精确调整Code长度、异常表和StackMapTable后通过`-Xverify:all`。正常路径、producer失败和mark失败三行由原patched class与JADX实际完整类执行逐行核对，一致。
+
+当前jarde在进入表达式构造前已拒绝该guard形状：两处引用、完整javac失败。这里没有出现新的无引用错序，因此不把这三项算进57项正面/35项错值，也不要求求值顺序修复顺带扩展guard准入。
+
+它为作用域限制提供真实输入：producer不受catch保护，mark受保护。不能只因BCI较小或canonical block相同，就把producer初始化移入try，也不能把try内的声明名泄漏到外层。未来若现有区域规则能够表达，应在外层先保存value，再在try中消费；当前明确拒绝是独立、可见的覆盖边界。

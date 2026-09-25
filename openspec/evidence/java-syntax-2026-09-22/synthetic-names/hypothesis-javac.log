@@ -1,0 +1,17 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-synthetic-name-collision/hypothesis/SyntheticNames.java:30: 错误: 生成类 SyntheticNames 时出错
+    private static int lambda$repeated$1(int p0_, int v) {
+                       ^
+  (符号lambda$repeated$1(int,int)与SyntheticNames中的 compiler-synthesized 符号冲突)
+/tmp/jarde-synthetic-name-collision/hypothesis/SyntheticNames.java:37: 错误: 生成类 SyntheticNames 时出错
+    private static int lambda$repeated$0(int p0_, int v) {
+                       ^
+  (符号lambda$repeated$0(int,int)与SyntheticNames中的 compiler-synthesized 符号冲突)
+/tmp/jarde-synthetic-name-collision/hypothesis/SyntheticNames.java:1: 错误: 生成类 SyntheticNames 时出错
+// jarde: presentation of `SyntheticNames` from the class file's own declaration and one recovery run per member.
+^
+  (符号lambda$repeated$1(int,int)与SyntheticNames中的 compiler-synthesized 符号冲突)
+3 个错误
+3 个警告

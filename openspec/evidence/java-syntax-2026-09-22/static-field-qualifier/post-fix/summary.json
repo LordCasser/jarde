@@ -1,0 +1,138 @@
+{
+  "cli_path": "/private/tmp/jarde-cli-static-root-after",
+  "cli_sha256": "8806d9aa06ad3b5fbcfe347144d09765dfbf3c9e172ee374eddf9313df893a44",
+  "versions": {
+    "javac": [
+      "javac 23.0.1"
+    ],
+    "java": [
+      "openjdk version \"23.0.1\" 2024-10-15",
+      "OpenJDK Runtime Environment (build 23.0.1+11-39)",
+      "OpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)"
+    ],
+    "jadx": [
+      "1.5.6"
+    ]
+  },
+  "fixture": {
+    "class_bytes": 721,
+    "class_sha256": "21cdace20a84accd06e52567c250b0359ef76e059df993cc6c00a9fe1d6b7266",
+    "javap_code_methods": 7,
+    "source": [
+      "read=5:select=1:rhs=0",
+      "write=7:select=1:rhs=1",
+      "sum=12:select=1:rhs=1",
+      "fail=ISE:select=1:rhs=0:value=5"
+    ],
+    "jarde": [
+      "read=5:select=1:rhs=0",
+      "write=7:select=1:rhs=1",
+      "sum=12:select=1:rhs=1",
+      "fail=ISE:select=1:rhs=0:value=5"
+    ],
+    "jadx": [
+      "read=5:select=1:rhs=0",
+      "write=7:select=1:rhs=1",
+      "sum=12:select=1:rhs=1",
+      "fail=ISE:select=1:rhs=0:value=5"
+    ],
+    "all_match": true
+  },
+  "boundary": {
+    "class_bytes": 1388,
+    "class_sha256": "6fb9f6a79bd78d3d1491ed7b3fea157741f8246d24667e5f81c0e4283b7c9de8",
+    "javap_code_methods": 16,
+    "source": [
+      "read=5",
+      "read-state:select=1:rhs=0:marks=0:value=5",
+      "qualified-return=7",
+      "qualified-return-state:select=1:rhs=1:marks=0:value=5",
+      "plain-return=7",
+      "plain-return-state:select=1:rhs=1:marks=0:value=5",
+      "qualified-statement:select=1:rhs=0:marks=1:value=5",
+      "plain-statements:select=1:rhs=0:marks=1:value=5",
+      "static-write=7",
+      "static-write-state:select=1:rhs=1:marks=0:value=7",
+      "qualified-rhs-write=7",
+      "qualified-rhs-write-state:select=1:rhs=1:marks=0:value=7",
+      "plain-static-write=7",
+      "plain-static-write-state:select=1:rhs=1:marks=0:value=7",
+      "rhs-throw:select=1:rhs=1:marks=0:value=5",
+      "select-throw:select=1:rhs=0:marks=0:value=5"
+    ],
+    "jarde": [
+      "read=5",
+      "read-state:select=1:rhs=0:marks=0:value=5",
+      "qualified-return=7",
+      "qualified-return-state:select=1:rhs=1:marks=0:value=5",
+      "plain-return=7",
+      "plain-return-state:select=1:rhs=1:marks=0:value=5",
+      "qualified-statement:select=1:rhs=0:marks=1:value=5",
+      "plain-statements:select=1:rhs=0:marks=1:value=5",
+      "static-write=7",
+      "static-write-state:select=1:rhs=1:marks=0:value=7",
+      "qualified-rhs-write=7",
+      "qualified-rhs-write-state:select=1:rhs=1:marks=0:value=7",
+      "plain-static-write=7",
+      "plain-static-write-state:select=1:rhs=1:marks=0:value=7",
+      "rhs-throw:select=1:rhs=1:marks=0:value=5",
+      "select-throw:select=1:rhs=0:marks=0:value=5"
+    ],
+    "jadx": [
+      "read=5",
+      "read-state:select=1:rhs=0:marks=0:value=5",
+      "qualified-return=7",
+      "qualified-return-state:select=1:rhs=1:marks=0:value=5",
+      "plain-return=7",
+      "plain-return-state:select=1:rhs=1:marks=0:value=5",
+      "qualified-statement:select=1:rhs=0:marks=1:value=5",
+      "plain-statements:select=1:rhs=0:marks=1:value=5",
+      "static-write=7",
+      "static-write-state:select=1:rhs=1:marks=0:value=7",
+      "qualified-rhs-write=7",
+      "qualified-rhs-write-state:select=1:rhs=1:marks=0:value=7",
+      "plain-static-write=7",
+      "plain-static-write-state:select=1:rhs=1:marks=0:value=7",
+      "rhs-throw:select=1:rhs=1:marks=0:value=5",
+      "select-throw:select=1:rhs=0:marks=0:value=5"
+    ],
+    "all_match": true
+  },
+  "interface": {
+    "class_bytes": 344,
+    "class_sha256": "ec0c9caa6d67c9f367549f5a7d306c2e57cb7804cb891c1ecf298d39d5904151",
+    "javap_code_methods": 3,
+    "source": [
+      "value=17:selects=1"
+    ],
+    "jarde": [
+      "value=17:selects=1"
+    ],
+    "jadx": [
+      "value=17:selects=1"
+    ],
+    "all_match": true
+  },
+  "owner": {
+    "class_bytes": 269,
+    "class_sha256": "1ebaf124614d8ea868588a62b0ae69c4feaa6527e2541dddfb84d65a4757ac69",
+    "javap_code_methods": 3,
+    "source": [
+      "31"
+    ],
+    "jarde": [
+      "31"
+    ],
+    "jadx": [
+      "31"
+    ],
+    "all_match": true
+  },
+  "non_invoke_owner_mismatch": {
+    "class_bytes": 224,
+    "class_sha256": "5b6875ef447c448fa6dfaa65d5fdbeb0aa7e0848400bec8308df8e7649ce1180",
+    "jarde_compile_status": 1,
+    "refusal_source_contains_bytecode_quote": true,
+    "rebound_to_child_ping": false
+  }
+}

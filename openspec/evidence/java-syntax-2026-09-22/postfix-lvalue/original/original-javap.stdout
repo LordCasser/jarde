@@ -1,0 +1,142 @@
+public final class PostfixProbe {
+  public static final PostfixProbe INSTANCE;
+
+  public static java.lang.String trace;
+
+  public static PostfixBox selected;
+
+  public static int[] values;
+
+  public static int selectedIndex;
+
+  public int simpleField;
+
+  public PostfixProbe();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void reset();
+    Code:
+       0: ldc           #7                  // String
+       2: putstatic     #9                  // Field trace:Ljava/lang/String;
+       5: new           #15                 // class PostfixBox
+       8: dup
+       9: bipush        41
+      11: invokespecial #17                 // Method PostfixBox."<init>":(I)V
+      14: putstatic     #20                 // Field selected:LPostfixBox;
+      17: iconst_1
+      18: newarray       int
+      20: dup
+      21: iconst_0
+      22: bipush        70
+      24: iastore
+      25: putstatic     #24                 // Field values:[I
+      28: iconst_0
+      29: putstatic     #28                 // Field selectedIndex:I
+      32: return
+
+  public static PostfixBox receiver();
+    Code:
+       0: new           #32                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+       7: getstatic     #9                  // Field trace:Ljava/lang/String;
+      10: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      13: ldc           #39                 // String R
+      15: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      18: invokevirtual #41                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      21: putstatic     #9                  // Field trace:Ljava/lang/String;
+      24: getstatic     #20                 // Field selected:LPostfixBox;
+      27: areturn
+
+  public static int[] array();
+    Code:
+       0: new           #32                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+       7: getstatic     #9                  // Field trace:Ljava/lang/String;
+      10: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      13: ldc           #45                 // String A
+      15: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      18: invokevirtual #41                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      21: putstatic     #9                  // Field trace:Ljava/lang/String;
+      24: getstatic     #24                 // Field values:[I
+      27: areturn
+
+  public static int index();
+    Code:
+       0: new           #32                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+       7: getstatic     #9                  // Field trace:Ljava/lang/String;
+      10: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      13: ldc           #47                 // String I
+      15: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      18: invokevirtual #41                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      21: putstatic     #9                  // Field trace:Ljava/lang/String;
+      24: getstatic     #28                 // Field selectedIndex:I
+      27: ireturn
+
+  public static int postReceiver();
+    Code:
+       0: invokestatic  #48                 // Method receiver:()LPostfixBox;
+       3: dup
+       4: getfield      #52                 // Field PostfixBox.value:I
+       7: dup_x1
+       8: iconst_1
+       9: iadd
+      10: putfield      #52                 // Field PostfixBox.value:I
+      13: ireturn
+
+  public static int postArray();
+    Code:
+       0: invokestatic  #55                 // Method array:()[I
+       3: invokestatic  #59                 // Method index:()I
+       6: dup2
+       7: iaload
+       8: dup_x2
+       9: iconst_1
+      10: iadd
+      11: iastore
+      12: ireturn
+
+  public static int localIncrement(int);
+    Code:
+       0: iload_0
+       1: istore_1
+       2: iinc          1, 1
+       5: iload_1
+       6: ireturn
+
+  public int postSimpleField();
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #63                 // Field simpleField:I
+       5: dup_x1
+       6: iconst_1
+       7: iadd
+       8: putfield      #63                 // Field simpleField:I
+      11: ireturn
+
+  public int preSimpleField();
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #63                 // Field simpleField:I
+       5: iconst_1
+       6: iadd
+       7: dup_x1
+       8: putfield      #63                 // Field simpleField:I
+      11: ireturn
+
+  static {};
+    Code:
+       0: new           #10                 // class PostfixProbe
+       3: dup
+       4: invokespecial #66                 // Method "<init>":()V
+       7: putstatic     #67                 // Field INSTANCE:LPostfixProbe;
+      10: return
+}

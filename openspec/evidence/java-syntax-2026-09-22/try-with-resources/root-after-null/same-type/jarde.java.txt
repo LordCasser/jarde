@@ -1,0 +1,93 @@
+// jarde: presentation of `NullResourceCore` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class NullResourceCore extends java.lang.Object implements java.lang.AutoCloseable {
+    private static int bodyCalls;
+
+    private static int closes;
+
+    public NullResourceCore() {
+        // @method <init>()V
+        // @declaration a constructor of `NullResourceCore`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void reset() {
+        // @method reset()V
+        // @declaration a static method of `NullResourceCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NullResourceCore.bodyCalls = 0;
+        NullResourceCore.closes = 0;
+        return;
+    }
+
+    public static int bodyCalls() {
+        // @method bodyCalls()I
+        // @declaration a static method of `NullResourceCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return NullResourceCore.bodyCalls;
+    }
+
+    public static int closes() {
+        // @method closes()I
+        // @declaration a static method of `NullResourceCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return NullResourceCore.closes;
+    }
+
+    public static void useNullResource() throws java.lang.Exception {
+        // @method useNullResource()V
+        // @declaration a static method of `NullResourceCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (NullResourceCore local0 = null) {
+            NullResourceCore.bodyCalls = NullResourceCore.bodyCalls + 1;
+        }
+        return;
+    }
+
+    public void close() {
+        // @method close()V
+        // @declaration an instance method of `NullResourceCore`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        NullResourceCore.closes = NullResourceCore.closes + 1;
+        return;
+    }
+
+    public static void ordinaryNullThenCatch() {
+        // @method ordinaryNullThenCatch()V
+        // @declaration a static method of `NullResourceCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        Object local0 = null;
+        try {
+            local0.toString();
+        } catch (java.lang.RuntimeException local1) {
+            NullResourceCore.bodyCalls = NullResourceCore.bodyCalls + 1;
+        }
+        return;
+    }
+
+    public static void closeWithoutSuppression() throws java.lang.Throwable {
+        // @method closeWithoutSuppression()V
+        // @declaration a static method of `NullResourceCore`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        Object local0;
+        local0 = null;
+        try {
+            NullResourceCore.bodyCalls = NullResourceCore.bodyCalls + 1;
+        } catch (java.lang.Throwable local1) {
+            if (local0 != null) {
+                try {
+                    local0.close();
+                } catch (java.lang.Throwable local2) {
+                }
+            }
+        }
+        if (local0 != null) {
+            local0.close();
+        }
+        return;
+        // @bytecode 26
+        // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [26]
+    }
+}

@@ -1,0 +1,8 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-root-deferred-negative-switch-core-7747/jarde/SwitchDeferredCore.java:21: 错误: 缺少返回语句
+    }
+    ^
+1 个错误
+3 个警告

@@ -1,0 +1,10 @@
+package defpackage;
+
+import java.util.function.Function;
+
+/* JADX INFO: loaded from: MethodQualifierProbe.class */
+public class MethodQualifierProbe {
+    public static Function<String, Integer> ref(MethodQualifierOther methodQualifierOther) {
+        return arg0::pick;
+    }
+}

@@ -1,0 +1,2 @@
+  major version: 52
+  interfaces: 0, fields: 0, methods: 4, attributes: 1

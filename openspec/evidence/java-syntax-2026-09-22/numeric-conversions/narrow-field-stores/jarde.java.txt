@@ -1,0 +1,467 @@
+// jarde: presentation of `NarrowFieldStores` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NarrowFieldStores extends java.lang.Object {
+    public byte byteField;
+
+    public char charField;
+
+    public short shortField;
+
+    public boolean booleanField;
+
+    public static byte staticByteField;
+
+    public static char staticCharField;
+
+    public static short staticShortField;
+
+    public static boolean staticBooleanField;
+
+    public byte ordinaryByteField;
+
+    public char ordinaryCharField;
+
+    public short ordinaryShortField;
+
+    public boolean ordinaryBooleanField;
+
+    public static byte ordinaryStaticByteField;
+
+    public static char ordinaryStaticCharField;
+
+    public static short ordinaryStaticShortField;
+
+    public static boolean ordinaryStaticBooleanField;
+
+    public NarrowFieldStores() {
+        // @method <init>()V
+        // @declaration a constructor of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void setByte(int arg1) {
+        // @method setByte(I)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the value at BCI 1 is presented as `int` and the field written at BCI 2 is declared `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public void setChar(int arg1) {
+        // @method setChar(I)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the value at BCI 1 is presented as `int` and the field written at BCI 2 is declared `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public void setShort(int arg1) {
+        // @method setShort(I)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the value at BCI 1 is presented as `int` and the field written at BCI 2 is declared `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public void setBoolean(int arg1) {
+        // @method setBoolean(I)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the field written at BCI 2 is declared `boolean`, and this layer has no evidence that the value it reads at BCI 2 is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the field's own type rejects
+        return;
+    }
+
+    public void setByteProduced(int arg1, boolean arg2) {
+        // @method setByteProduced(IZ)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6
+        // the value at BCI 3 is presented as `int` and the field written at BCI 6 is declared `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setByteOn(NarrowFieldStores arg0, int arg1) {
+        // @method setByteOn(LNarrowFieldStores;I)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the value at BCI 1 is presented as `int` and the field written at BCI 2 is declared `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setByteProducedOn(NarrowFieldStores arg0, int arg1, boolean arg2) {
+        // @method setByteProducedOn(LNarrowFieldStores;IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6
+        // the value at BCI 3 is presented as `int` and the field written at BCI 6 is declared `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public void setCharProduced(int arg1, boolean arg2) {
+        // @method setCharProduced(IZ)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6
+        // the value at BCI 3 is presented as `int` and the field written at BCI 6 is declared `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setCharOn(NarrowFieldStores arg0, int arg1) {
+        // @method setCharOn(LNarrowFieldStores;I)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the value at BCI 1 is presented as `int` and the field written at BCI 2 is declared `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setCharProducedOn(NarrowFieldStores arg0, int arg1, boolean arg2) {
+        // @method setCharProducedOn(LNarrowFieldStores;IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6
+        // the value at BCI 3 is presented as `int` and the field written at BCI 6 is declared `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public void setShortProduced(int arg1, boolean arg2) {
+        // @method setShortProduced(IZ)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6
+        // the value at BCI 3 is presented as `int` and the field written at BCI 6 is declared `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setShortOn(NarrowFieldStores arg0, int arg1) {
+        // @method setShortOn(LNarrowFieldStores;I)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the value at BCI 1 is presented as `int` and the field written at BCI 2 is declared `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setShortProducedOn(NarrowFieldStores arg0, int arg1, boolean arg2) {
+        // @method setShortProducedOn(LNarrowFieldStores;IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6
+        // the value at BCI 3 is presented as `int` and the field written at BCI 6 is declared `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public void setBooleanProduced(int arg1, boolean arg2) {
+        // @method setBooleanProduced(IZ)V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6
+        // the field written at BCI 6 is declared `boolean`, and this layer has no evidence that the value it reads at BCI 6 is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the field's own type rejects
+        return;
+    }
+
+    public static void setBooleanOn(NarrowFieldStores arg0, int arg1) {
+        // @method setBooleanOn(LNarrowFieldStores;I)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the field written at BCI 2 is declared `boolean`, and this layer has no evidence that the value it reads at BCI 2 is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the field's own type rejects
+        return;
+    }
+
+    public static void setBooleanProducedOn(NarrowFieldStores arg0, int arg1, boolean arg2) {
+        // @method setBooleanProducedOn(LNarrowFieldStores;IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6
+        // the field written at BCI 6 is declared `boolean`, and this layer has no evidence that the value it reads at BCI 6 is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the field's own type rejects
+        return;
+    }
+
+    public static void setStaticByte(int arg0) {
+        // @method setStaticByte(I)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the value at BCI 0 is presented as `int` and the field written at BCI 1 is declared `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setStaticChar(int arg0) {
+        // @method setStaticChar(I)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the value at BCI 0 is presented as `int` and the field written at BCI 1 is declared `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setStaticShort(int arg0) {
+        // @method setStaticShort(I)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the value at BCI 0 is presented as `int` and the field written at BCI 1 is declared `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setStaticBoolean(int arg0) {
+        // @method setStaticBoolean(I)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the field written at BCI 1 is declared `boolean`, and this layer has no evidence that the value it reads at BCI 1 is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the field's own type rejects
+        return;
+    }
+
+    public static void setStaticByteProduced(int arg0, boolean arg1) {
+        // @method setStaticByteProduced(IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 5
+        // the value at BCI 2 is presented as `int` and the field written at BCI 5 is declared `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setStaticCharProduced(int arg0, boolean arg1) {
+        // @method setStaticCharProduced(IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 5
+        // the value at BCI 2 is presented as `int` and the field written at BCI 5 is declared `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setStaticShortProduced(int arg0, boolean arg1) {
+        // @method setStaticShortProduced(IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 5
+        // the value at BCI 2 is presented as `int` and the field written at BCI 5 is declared `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void setStaticBooleanProduced(int arg0, boolean arg1) {
+        // @method setStaticBooleanProduced(IZ)V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 5
+        // the field written at BCI 5 is declared `boolean`, and this layer has no evidence that the value it reads at BCI 5 is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the field's own type rejects
+        return;
+    }
+
+    public void ordinaryByteLocal() {
+        // @method ordinaryByteLocal()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 1;
+        // @bytecode 4
+        // the value at BCI 3 is presented as `int` and the field written at BCI 4 is declared `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public void ordinaryByteZero() {
+        // @method ordinaryByteZero()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.ordinaryByteField = 0;
+        return;
+    }
+
+    public void ordinaryByteOne() {
+        // @method ordinaryByteOne()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.ordinaryByteField = 1;
+        return;
+    }
+
+    public void ordinaryCharLocal() {
+        // @method ordinaryCharLocal()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 1;
+        // @bytecode 4
+        // the value at BCI 3 is presented as `int` and the field written at BCI 4 is declared `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public void ordinaryCharZero() {
+        // @method ordinaryCharZero()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.ordinaryCharField = '\u0000';
+        return;
+    }
+
+    public void ordinaryCharOne() {
+        // @method ordinaryCharOne()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.ordinaryCharField = '\u0001';
+        return;
+    }
+
+    public void ordinaryShortLocal() {
+        // @method ordinaryShortLocal()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 1;
+        // @bytecode 4
+        // the value at BCI 3 is presented as `int` and the field written at BCI 4 is declared `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public void ordinaryShortZero() {
+        // @method ordinaryShortZero()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.ordinaryShortField = 0;
+        return;
+    }
+
+    public void ordinaryShortOne() {
+        // @method ordinaryShortOne()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.ordinaryShortField = 1;
+        return;
+    }
+
+    public void ordinaryBooleanLocal() {
+        // @method ordinaryBooleanLocal()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 1;
+        // @bytecode 4
+        // the field written at BCI 4 is declared `boolean`, and this layer has no evidence that the value it reads at BCI 4 is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the field's own type rejects
+        return;
+    }
+
+    public void ordinaryBooleanFalse() {
+        // @method ordinaryBooleanFalse()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.ordinaryBooleanField = false;
+        return;
+    }
+
+    public void ordinaryBooleanTrue() {
+        // @method ordinaryBooleanTrue()V
+        // @declaration an instance method of `NarrowFieldStores`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.ordinaryBooleanField = true;
+        return;
+    }
+
+    public static void ordinaryStaticByteLocal() {
+        // @method ordinaryStaticByteLocal()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local0 = 1;
+        // @bytecode 3
+        // the value at BCI 2 is presented as `int` and the field written at BCI 3 is declared `byte`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void ordinaryStaticByteZero() {
+        // @method ordinaryStaticByteZero()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.ordinaryStaticByteField = 0;
+        return;
+    }
+
+    public static void ordinaryStaticByteOne() {
+        // @method ordinaryStaticByteOne()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.ordinaryStaticByteField = 1;
+        return;
+    }
+
+    public static void ordinaryStaticCharLocal() {
+        // @method ordinaryStaticCharLocal()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local0 = 1;
+        // @bytecode 3
+        // the value at BCI 2 is presented as `int` and the field written at BCI 3 is declared `char`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void ordinaryStaticCharZero() {
+        // @method ordinaryStaticCharZero()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.ordinaryStaticCharField = '\u0000';
+        return;
+    }
+
+    public static void ordinaryStaticCharOne() {
+        // @method ordinaryStaticCharOne()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.ordinaryStaticCharField = '\u0001';
+        return;
+    }
+
+    public static void ordinaryStaticShortLocal() {
+        // @method ordinaryStaticShortLocal()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local0 = 1;
+        // @bytecode 3
+        // the value at BCI 2 is presented as `int` and the field written at BCI 3 is declared `short`, and no conversion this layer's evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the only one a position performs for itself, so the region is refused rather than published with the value the position would convert differently or with text `javac` refuses
+        return;
+    }
+
+    public static void ordinaryStaticShortZero() {
+        // @method ordinaryStaticShortZero()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.ordinaryStaticShortField = 0;
+        return;
+    }
+
+    public static void ordinaryStaticShortOne() {
+        // @method ordinaryStaticShortOne()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.ordinaryStaticShortField = 1;
+        return;
+    }
+
+    public static void ordinaryStaticBooleanLocal() {
+        // @method ordinaryStaticBooleanLocal()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local0 = 1;
+        // @bytecode 3
+        // the field written at BCI 3 is declared `boolean`, and this layer has no evidence that the value it reads at BCI 3 is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the field's own type rejects
+        return;
+    }
+
+    public static void ordinaryStaticBooleanFalse() {
+        // @method ordinaryStaticBooleanFalse()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.ordinaryStaticBooleanField = false;
+        return;
+    }
+
+    public static void ordinaryStaticBooleanTrue() {
+        // @method ordinaryStaticBooleanTrue()V
+        // @declaration a static method of `NarrowFieldStores`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NarrowFieldStores.ordinaryStaticBooleanField = true;
+        return;
+    }
+}

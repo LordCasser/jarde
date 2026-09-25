@@ -1,0 +1,5 @@
+javac 23.0.1 --release 8 -g:none -Xlint:-options
+java OpenJDK 23.0.1; java -Xverify:all
+JADX 1.5.6
+Jarde CLI SHA256 1329ab0e69268d1c726ae232753c8b8c00333ce2da036312db14ea48de1bae30
+Git HEAD a83b5572a93dd316dac1eb7697208fecd6a6fdbc; working tree contained concurrent uncommitted implementation changes

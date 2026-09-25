@@ -1,0 +1,363 @@
+Classfile <TMP>/build/extra-int-argument/classes/DelegatingEnum.class
+  Last modified 2026年9月25日; size 1136 bytes
+  SHA-256 checksum 4c3d5eed09f58ec57d89863218871dd2ab136f1a87f0817290bcb3b1cac59188
+public final class DelegatingEnum extends java.lang.Enum<DelegatingEnum>
+  minor version: 0
+  major version: 52
+  flags: (0x4031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_ENUM
+  this_class: #1                          // DelegatingEnum
+  super_class: #20                        // java/lang/Enum
+  interfaces: 0, fields: 4, methods: 8, attributes: 1
+Constant pool:
+   #1 = Class              #2             // DelegatingEnum
+   #2 = Utf8               DelegatingEnum
+   #3 = Fieldref           #1.#4          // DelegatingEnum.ZERO:LDelegatingEnum;
+   #4 = NameAndType        #5:#6          // ZERO:LDelegatingEnum;
+   #5 = Utf8               ZERO
+   #6 = Utf8               LDelegatingEnum;
+   #7 = Fieldref           #1.#8          // DelegatingEnum.ONE:LDelegatingEnum;
+   #8 = NameAndType        #9:#6          // ONE:LDelegatingEnum;
+   #9 = Utf8               ONE
+  #10 = Fieldref           #1.#11         // DelegatingEnum.$VALUES:[LDelegatingEnum;
+  #11 = NameAndType        #12:#13        // $VALUES:[LDelegatingEnum;
+  #12 = Utf8               $VALUES
+  #13 = Utf8               [LDelegatingEnum;
+  #14 = Methodref          #15.#16        // "[LDelegatingEnum;".clone:()Ljava/lang/Object;
+  #15 = Class              #13            // "[LDelegatingEnum;"
+  #16 = NameAndType        #17:#18        // clone:()Ljava/lang/Object;
+  #17 = Utf8               clone
+  #18 = Utf8               ()Ljava/lang/Object;
+  #19 = Methodref          #20.#21        // java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #20 = Class              #22            // java/lang/Enum
+  #21 = NameAndType        #23:#24        // valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #22 = Utf8               java/lang/Enum
+  #23 = Utf8               valueOf
+  #24 = Utf8               (Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #25 = Methodref          #1.#26         // DelegatingEnum."<init>":(Ljava/lang/String;III)V
+  #26 = NameAndType        #27:#28        // "<init>":(Ljava/lang/String;III)V
+  #27 = Utf8               <init>
+  #28 = Utf8               (Ljava/lang/String;III)V
+  #29 = Methodref          #20.#30        // java/lang/Enum."<init>":(Ljava/lang/String;I)V
+  #30 = NameAndType        #27:#31        // "<init>":(Ljava/lang/String;I)V
+  #31 = Utf8               (Ljava/lang/String;I)V
+  #32 = Methodref          #33.#34        // ConstructorEffects.record:(I)V
+  #33 = Class              #35            // ConstructorEffects
+  #34 = NameAndType        #36:#37        // record:(I)V
+  #35 = Utf8               ConstructorEffects
+  #36 = Utf8               record
+  #37 = Utf8               (I)V
+  #38 = Fieldref           #1.#39         // DelegatingEnum.value:I
+  #39 = NameAndType        #40:#41        // value:I
+  #40 = Utf8               value
+  #41 = Utf8               I
+  #42 = String             #5             // ZERO
+  #43 = Methodref          #1.#30         // DelegatingEnum."<init>":(Ljava/lang/String;I)V
+  #44 = String             #9             // ONE
+  #45 = Methodref          #1.#46         // DelegatingEnum."<init>":(Ljava/lang/String;II)V
+  #46 = NameAndType        #27:#47        // "<init>":(Ljava/lang/String;II)V
+  #47 = Utf8               (Ljava/lang/String;II)V
+  #48 = Methodref          #1.#49         // DelegatingEnum.$values:()[LDelegatingEnum;
+  #49 = NameAndType        #50:#51        // $values:()[LDelegatingEnum;
+  #50 = Utf8               $values
+  #51 = Utf8               ()[LDelegatingEnum;
+  #52 = Utf8               values
+  #53 = Utf8               Code
+  #54 = Utf8               (Ljava/lang/String;)LDelegatingEnum;
+  #55 = Utf8               MethodParameters
+  #56 = Utf8               Signature
+  #57 = Utf8               ()V
+  #58 = Utf8               (II)V
+  #59 = Utf8               ()I
+  #60 = Utf8               <clinit>
+  #61 = Utf8               Ljava/lang/Enum<LDelegatingEnum;>;
+{
+  public static final DelegatingEnum ZERO;
+    descriptor: LDelegatingEnum;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final DelegatingEnum ONE;
+    descriptor: LDelegatingEnum;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  private final int value;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private static final DelegatingEnum[] $VALUES;
+    descriptor: [LDelegatingEnum;
+    flags: (0x101a) ACC_PRIVATE, ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public static DelegatingEnum[] values();
+    descriptor: ()[LDelegatingEnum;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #10                 // Field $VALUES:[LDelegatingEnum;
+         3: invokevirtual #14                 // Method "[LDelegatingEnum;".clone:()Ljava/lang/Object;
+         6: checkcast     #15                 // class "[LDelegatingEnum;"
+         9: areturn
+
+  public static DelegatingEnum valueOf(java.lang.String);
+    descriptor: (Ljava/lang/String;)LDelegatingEnum;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: ldc           #1                  // class DelegatingEnum
+         2: aload_0
+         3: invokestatic  #19                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+         6: checkcast     #1                  // class DelegatingEnum
+         9: areturn
+    MethodParameters:
+      Name                           Flags
+      <no name>                      mandated
+
+  private DelegatingEnum();
+    descriptor: (Ljava/lang/String;I)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=5, locals=3, args_size=3
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: iconst_0
+         4: bipush        7
+         6: invokespecial #25                 // Method "<init>":(Ljava/lang/String;III)V
+         9: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+    Signature: #57                          // ()V
+
+  private DelegatingEnum(int);
+    descriptor: (Ljava/lang/String;II)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=3, locals=4, args_size=4
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: invokespecial #29                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+         6: iload_3
+         7: invokestatic  #32                 // Method ConstructorEffects.record:(I)V
+        10: aload_0
+        11: iload_3
+        12: putfield      #38                 // Field value:I
+        15: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+      <no name>
+    Signature: #37                          // (I)V
+
+  private DelegatingEnum(int, int);
+    descriptor: (Ljava/lang/String;III)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=3, locals=5, args_size=5
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: invokespecial #29                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+         6: iload_3
+         7: iload         4
+         9: iadd
+        10: invokestatic  #32                 // Method ConstructorEffects.record:(I)V
+        13: aload_0
+        14: iload_3
+        15: iload         4
+        17: iadd
+        18: putfield      #38                 // Field value:I
+        21: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+      <no name>
+      <no name>
+    Signature: #58                          // (II)V
+
+  public int value();
+    descriptor: ()I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #38                 // Field value:I
+         4: ireturn
+
+  private static DelegatingEnum[] $values();
+    descriptor: ()[LDelegatingEnum;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_2
+         1: anewarray     #1                  // class DelegatingEnum
+         4: dup
+         5: iconst_0
+         6: getstatic     #3                  // Field ZERO:LDelegatingEnum;
+         9: aastore
+        10: dup
+        11: iconst_1
+        12: getstatic     #7                  // Field ONE:LDelegatingEnum;
+        15: aastore
+        16: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=5, locals=0, args_size=0
+         0: new           #1                  // class DelegatingEnum
+         3: dup
+         4: ldc           #42                 // String ZERO
+         6: iconst_0
+         7: invokespecial #43                 // Method "<init>":(Ljava/lang/String;I)V
+        10: putstatic     #3                  // Field ZERO:LDelegatingEnum;
+        13: new           #1                  // class DelegatingEnum
+        16: dup
+        17: ldc           #44                 // String ONE
+        19: iconst_1
+        20: iconst_1
+        21: invokespecial #45                 // Method "<init>":(Ljava/lang/String;II)V
+        24: putstatic     #7                  // Field ONE:LDelegatingEnum;
+        27: invokestatic  #48                 // Method $values:()[LDelegatingEnum;
+        30: putstatic     #10                 // Field $VALUES:[LDelegatingEnum;
+        33: return
+}
+Signature: #61                          // Ljava/lang/Enum<LDelegatingEnum;>;
+Classfile <TMP>/build/extra-int-argument/classes/ConstructorEffects.class
+  Last modified 2026年9月25日; size 699 bytes
+  SHA-256 checksum 4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7
+public final class ConstructorEffects
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // ConstructorEffects
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 5, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // ConstructorEffects.calls:I
+   #8 = Class              #10            // ConstructorEffects
+   #9 = NameAndType        #11:#12        // calls:I
+  #10 = Utf8               ConstructorEffects
+  #11 = Utf8               calls
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // ConstructorEffects.events:Ljava/lang/String;
+  #14 = NameAndType        #15:#16        // events:Ljava/lang/String;
+  #15 = Utf8               events
+  #16 = Utf8               Ljava/lang/String;
+  #17 = Methodref          #18.#19        // java/lang/String.isEmpty:()Z
+  #18 = Class              #20            // java/lang/String
+  #19 = NameAndType        #21:#22        // isEmpty:()Z
+  #20 = Utf8               java/lang/String
+  #21 = Utf8               isEmpty
+  #22 = Utf8               ()Z
+  #23 = Class              #24            // java/lang/StringBuilder
+  #24 = Utf8               java/lang/StringBuilder
+  #25 = Methodref          #23.#3         // java/lang/StringBuilder."<init>":()V
+  #26 = Methodref          #23.#27        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #27 = NameAndType        #28:#29        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #28 = Utf8               append
+  #29 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #30 = String             #31            // ,
+  #31 = Utf8               ,
+  #32 = Methodref          #23.#33        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #33 = NameAndType        #34:#35        // toString:()Ljava/lang/String;
+  #34 = Utf8               toString
+  #35 = Utf8               ()Ljava/lang/String;
+  #36 = Methodref          #23.#37        // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #37 = NameAndType        #28:#38        // append:(I)Ljava/lang/StringBuilder;
+  #38 = Utf8               (I)Ljava/lang/StringBuilder;
+  #39 = String             #40            //
+  #40 = Utf8
+  #41 = Utf8               Code
+  #42 = Utf8               record
+  #43 = Utf8               (I)V
+  #44 = Utf8               StackMapTable
+  #45 = Utf8               ()I
+  #46 = Utf8               <clinit>
+{
+  private static int calls;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private static java.lang.String events;
+    descriptor: Ljava/lang/String;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  private ConstructorEffects();
+    descriptor: ()V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void record(int);
+    descriptor: (I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #7                  // Field calls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field calls:I
+         8: getstatic     #13                 // Field events:Ljava/lang/String;
+        11: invokevirtual #17                 // Method java/lang/String.isEmpty:()Z
+        14: ifne          41
+        17: new           #23                 // class java/lang/StringBuilder
+        20: dup
+        21: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+        24: getstatic     #13                 // Field events:Ljava/lang/String;
+        27: invokevirtual #26                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        30: ldc           #30                 // String ,
+        32: invokevirtual #26                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        35: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        38: putstatic     #13                 // Field events:Ljava/lang/String;
+        41: new           #23                 // class java/lang/StringBuilder
+        44: dup
+        45: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+        48: getstatic     #13                 // Field events:Ljava/lang/String;
+        51: invokevirtual #26                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        54: iload_0
+        55: invokevirtual #36                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        58: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        61: putstatic     #13                 // Field events:Ljava/lang/String;
+        64: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 41 /* same */
+
+  public static int calls();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #7                  // Field calls:I
+         3: ireturn
+
+  public static java.lang.String events();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #13                 // Field events:Ljava/lang/String;
+         3: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #39                 // String
+         2: putstatic     #13                 // Field events:Ljava/lang/String;
+         5: return
+}

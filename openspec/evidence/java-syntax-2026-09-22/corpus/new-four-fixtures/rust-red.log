@@ -1,0 +1,131 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.41s
+     Running tests/p3_lambda_adaptation.rs (target/debug/deps/p3_lambda_adaptation-fd5b9aad4ed4d1f2)
+
+running 4 tests
+test all_fixture_methods_are_structured ... ok
+test essential_and_all_have_the_same_text_but_only_all_has_source_origins ... ok
+test recovered_complete_class_matches_original_order_exceptions_and_calls ... ignored, requires JDK: compile and execute the original and recovered complete classes
+test recovered_text_keeps_dynamic_checks_receiver_order_and_controls ... FAILED
+
+failures:
+
+---- recovered_text_keeps_dynamic_checks_receiver_order_and_controls stdout ----
+
+thread 'recovered_text_keeps_dynamic_checks_receiver_order_and_controls' (24809621) panicked at tests/p3_lambda_adaptation.rs:140:5:
+dynamic String check was lost:
+// @method strings()Ljava/util/function/ToIntFunction;
+// @declaration a static method of `LambdaAdaptationProbe`, member flags 0x0009
+// recovered from bytecode; presentation is not claimed to compile
+{
+    return LambdaAdaptationSupport::pick;
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    recovered_text_keeps_dynamic_checks_receiver_order_and_controls
+
+test result: FAILED. 2 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p jarde --test p3_lambda_adaptation`
+     Running tests/p3_narrow_integer_returns.rs (target/debug/deps/p3_narrow_integer_returns-e40716f6131de365)
+
+running 3 tests
+test essential_and_all_share_the_narrow_return_body ... FAILED
+test fixture_has_only_ireturn_narrowing_and_all_return_shapes ... FAILED
+test recovered_complete_class_matches_descriptor_patched_original ... ignored, requires JDK: compile and execute the original and recovered complete classes
+
+failures:
+
+---- essential_and_all_share_the_narrow_return_body stdout ----
+
+thread 'essential_and_all_share_the_narrow_return_body' (24809623) panicked at tests/p3_narrow_integer_returns.rs:124:9:
+assertion `left == right` failed: `directByte`
+  left: Mixed
+ right: Java
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- fixture_has_only_ireturn_narrowing_and_all_return_shapes stdout ----
+
+thread 'fixture_has_only_ireturn_narrowing_and_all_return_shapes' (24809624) panicked at tests/p3_narrow_integer_returns.rs:124:9:
+assertion `left == right` failed: `directByte`
+  left: Mixed
+ right: Java
+
+
+failures:
+    essential_and_all_share_the_narrow_return_body
+    fixture_has_only_ireturn_narrowing_and_all_return_shapes
+
+test result: FAILED. 0 passed; 2 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p jarde --test p3_narrow_integer_returns`
+     Running tests/p3_primitive_conversions.rs (target/debug/deps/p3_primitive_conversions-db7ec5be0b9a12c8)
+
+running 3 tests
+test all_fixture_methods_are_structured_with_sources ... FAILED
+test essential_and_all_share_one_conversion_body ... FAILED
+test recovered_complete_class_matches_frozen_original ... ignored, requires JDK: compile and execute the original and recovered complete classes
+
+failures:
+
+---- all_fixture_methods_are_structured_with_sources stdout ----
+
+thread 'all_fixture_methods_are_structured_with_sources' (24809626) panicked at tests/p3_primitive_conversions.rs:128:9:
+assertion `left == right` failed: `i2l`
+  left: Mixed
+ right: Java
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- essential_and_all_share_one_conversion_body stdout ----
+
+thread 'essential_and_all_share_one_conversion_body' (24809627) panicked at tests/p3_primitive_conversions.rs:128:9:
+assertion `left == right` failed: `i2l`
+  left: Mixed
+ right: Java
+
+
+failures:
+    all_fixture_methods_are_structured_with_sources
+    essential_and_all_share_one_conversion_body
+
+test result: FAILED. 0 passed; 2 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `-p jarde --test p3_primitive_conversions`
+     Running tests/p3_type_qualifier.rs (target/debug/deps/p3_type_qualifier-dcd6bc078d61e116)
+
+running 4 tests
+test all_fixture_methods_are_structured_with_sources ... ok
+test essential_and_all_share_text_but_only_all_publishes_sources ... ok
+test recovered_complete_class_matches_frozen_original ... ignored, requires JDK: compile and execute the original and recovered complete classes
+test static_owners_survive_generated_parameter_and_suffix_names ... FAILED
+
+failures:
+
+---- static_owners_survive_generated_parameter_and_suffix_names stdout ----
+
+thread 'static_owners_survive_generated_parameter_and_suffix_names' (24809631) panicked at tests/p3_type_qualifier.rs:161:5:
+an unaffected method was renamed by a class-wide owner scan:
+// @method ownPick(I)I
+// @declaration a static method of `TypeQualifierProbe`, member flags 0x0009
+// recovered from bytecode; presentation is not claimed to compile
+{
+    return arg0 + 50;
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    static_owners_survive_generated_parameter_and_suffix_names
+
+test result: FAILED. 2 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p jarde --test p3_type_qualifier`
+error: 4 targets failed:
+    `-p jarde --test p3_lambda_adaptation`
+    `-p jarde --test p3_narrow_integer_returns`
+    `-p jarde --test p3_primitive_conversions`
+    `-p jarde --test p3_type_qualifier`

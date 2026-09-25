@@ -1,0 +1,116 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-conditional-values/mixed-short-circuit-return/MixedLocalReturn.class
+  Last modified 2026年9月25日; size 455 bytes
+  SHA-256 checksum 688ad8ed65e7da2cd3663b497ac6caa94e53885acae7656f468d457be5bd3288
+public final class MixedLocalReturn
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // MixedLocalReturn
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 4, methods: 4, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // MixedLocalReturn.bCalls:I
+   #8 = Class              #10            // MixedLocalReturn
+   #9 = NameAndType        #11:#12        // bCalls:I
+  #10 = Utf8               MixedLocalReturn
+  #11 = Utf8               bCalls
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // MixedLocalReturn.bValue:Z
+  #14 = NameAndType        #15:#16        // bValue:Z
+  #15 = Utf8               bValue
+  #16 = Utf8               Z
+  #17 = Fieldref           #8.#18         // MixedLocalReturn.cCalls:I
+  #18 = NameAndType        #19:#12        // cCalls:I
+  #19 = Utf8               cCalls
+  #20 = Fieldref           #8.#21         // MixedLocalReturn.cValue:Z
+  #21 = NameAndType        #22:#16        // cValue:Z
+  #22 = Utf8               cValue
+  #23 = Methodref          #8.#24         // MixedLocalReturn.rhsB:()Z
+  #24 = NameAndType        #25:#26        // rhsB:()Z
+  #25 = Utf8               rhsB
+  #26 = Utf8               ()Z
+  #27 = Methodref          #8.#28         // MixedLocalReturn.rhsC:()Z
+  #28 = NameAndType        #29:#26        // rhsC:()Z
+  #29 = Utf8               rhsC
+  #30 = Utf8               Code
+  #31 = Utf8               value
+  #32 = Utf8               (Z)Z
+  #33 = Utf8               StackMapTable
+{
+  static boolean bValue;
+    descriptor: Z
+    flags: (0x0008) ACC_STATIC
+
+  static boolean cValue;
+    descriptor: Z
+    flags: (0x0008) ACC_STATIC
+
+  static int bCalls;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  static int cCalls;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  public MixedLocalReturn();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static boolean rhsB();
+    descriptor: ()Z
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #7                  // Field bCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field bCalls:I
+         8: getstatic     #13                 // Field bValue:Z
+        11: ireturn
+
+  static boolean rhsC();
+    descriptor: ()Z
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #17                 // Field cCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #17                 // Field cCalls:I
+         8: getstatic     #20                 // Field cValue:Z
+        11: ireturn
+
+  public static boolean value(boolean);
+    descriptor: (Z)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: ifeq          10
+         4: invokestatic  #23                 // Method rhsB:()Z
+         7: ifne          16
+        10: invokestatic  #27                 // Method rhsC:()Z
+        13: ifeq          20
+        16: iconst_1
+        17: goto          21
+        20: iconst_0
+        21: ireturn
+      StackMapTable: number_of_entries = 4
+        frame_type = 10 /* same */
+        frame_type = 5 /* same */
+        frame_type = 3 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+}

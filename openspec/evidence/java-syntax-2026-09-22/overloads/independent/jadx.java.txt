@@ -1,0 +1,56 @@
+package defpackage;
+
+/* JADX INFO: loaded from: InvocationAudit.class */
+public class InvocationAudit extends PrologueParent {
+    public InvocationAudit(Object obj) {
+        super(obj);
+    }
+
+    public InvocationAudit(String str) {
+        super(str);
+    }
+
+    public InvocationAudit(int i) {
+        super("x");
+    }
+
+    public InvocationAudit(char c) {
+        this((Object) "x");
+    }
+
+    public static String mark(int i, boolean z) {
+        return AuditEffects.mark(i, z);
+    }
+
+    public static int select(Object obj, Object obj2) {
+        return 41;
+    }
+
+    public static int select(String str, String str2) {
+        return 42;
+    }
+
+    public static int ordered() {
+        return select((Object) mark(1, false), (Object) mark(2, false));
+    }
+
+    public static int failedFirst() {
+        return select((Object) mark(1, true), (Object) mark(2, false));
+    }
+
+    public static int failedSecond() {
+        return select((Object) mark(1, false), (Object) mark(2, true));
+    }
+
+    public static int objectIdentity(Object obj) {
+        return select(obj, obj);
+    }
+
+    public static int stringIdentity(String str) {
+        return select(str, str);
+    }
+
+    public static int castIdentity(Object obj) {
+        return select((String) obj, (String) obj);
+    }
+}

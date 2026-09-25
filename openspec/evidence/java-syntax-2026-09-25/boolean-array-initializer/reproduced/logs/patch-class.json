@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/patch_class.py",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/original/BoolInit.class",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/patched/BoolInit.class",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/patch.json"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "{\n  \"major_version\": 52,\n  \"input\": \"/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/original/BoolInit.class\",\n  \"input_sha256\": \"5304fa21e9594a0ab6e04e0f79ee0da3bbcdcbc85e3019183d7cdd5e7b22da7d\",\n  \"output\": \"/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/classes/patched/BoolInit.class\",\n  \"output_sha256\": \"e0e8cf5cf99fdb3e402db16e6d0b86db1b8b8672df2e684523c72a67df724a3f\",\n  \"bytes_equal\": true,\n  \"descriptor_edits\": [\n    {\n      \"from\": \"()[I\",\n      \"to\": \"()[Z\",\n      \"entries\": 1\n    }\n  ],\n  \"method\": \"values()[Z\",\n  \"original_code_hex\": \"08bc0a5903034f5904044f5905054f5906064f5907024fb0\",\n  \"patched_code_hex\": \"08bc045903035459040454590505545906065459070254b0\",\n  \"newarray_atype_patch\": {\n    \"code_offset\": 2,\n    \"from\": 10,\n    \"to\": 4\n  },\n  \"store_opcode_patches\": [\n    {\n      \"code_offset\": 6,\n      \"from\": \"0x4f\",\n      \"to\": \"0x54\"\n    },\n    {\n      \"code_offset\": 10,\n      \"from\": \"0x4f\",\n      \"to\": \"0x54\"\n    },\n    {\n      \"code_offset\": 14,\n      \"from\": \"0x4f\",\n      \"to\": \"0x54\"\n    },\n    {\n      \"code_offset\": 18,\n      \"from\": \"0x4f\",\n      \"to\": \"0x54\"\n    },\n    {\n      \"code_offset\": 22,\n      \"from\": \"0x4f\",\n      \"to\": \"0x54\"\n    }\n  ]\n}\n",
+  "stderr": ""
+}

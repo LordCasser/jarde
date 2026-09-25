@@ -1,0 +1,89 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:21: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:32: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:43: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:54: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:65: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:76: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:87: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:98: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:109: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:120: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:131: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:142: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:153: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:164: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:175: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:186: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:197: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:208: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:219: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:230: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:241: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:252: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:263: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:274: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:287: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:300: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:311: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/positive-quiet-jarde-helpers/FloatingConstants.java:322: 错误: 缺少返回语句
+    }
+    ^
+28 个错误
+3 个警告

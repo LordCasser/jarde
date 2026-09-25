@@ -1,0 +1,128 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberRunner.class
+  Last modified 2026年9月23日; size 858 bytes
+  SHA-256 checksum dc14d1bca61343c000119bd1ff45c231b51948199986a722f8ebdb0aadff6d2b
+public class MemberRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #54                         // MemberRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // MemberTagged
+   #8 = Utf8               MemberTagged
+   #9 = Methodref          #10.#11        // java/lang/Class.getDeclaredFields:()[Ljava/lang/reflect/Field;
+  #10 = Class              #12            // java/lang/Class
+  #11 = NameAndType        #13:#14        // getDeclaredFields:()[Ljava/lang/reflect/Field;
+  #12 = Utf8               java/lang/Class
+  #13 = Utf8               getDeclaredFields
+  #14 = Utf8               ()[Ljava/lang/reflect/Field;
+  #15 = Methodref          #10.#16        // java/lang/Class.getDeclaredMethods:()[Ljava/lang/reflect/Method;
+  #16 = NameAndType        #17:#18        // getDeclaredMethods:()[Ljava/lang/reflect/Method;
+  #17 = Utf8               getDeclaredMethods
+  #18 = Utf8               ()[Ljava/lang/reflect/Method;
+  #19 = Fieldref           #20.#21        // java/lang/System.out:Ljava/io/PrintStream;
+  #20 = Class              #22            // java/lang/System
+  #21 = NameAndType        #23:#24        // out:Ljava/io/PrintStream;
+  #22 = Utf8               java/lang/System
+  #23 = Utf8               out
+  #24 = Utf8               Ljava/io/PrintStream;
+  #25 = Class              #26            // java/lang/reflect/Field
+  #26 = Utf8               java/lang/reflect/Field
+  #27 = Class              #28            // java/lang/Deprecated
+  #28 = Utf8               java/lang/Deprecated
+  #29 = Methodref          #25.#30        // java/lang/reflect/Field.isAnnotationPresent:(Ljava/lang/Class;)Z
+  #30 = NameAndType        #31:#32        // isAnnotationPresent:(Ljava/lang/Class;)Z
+  #31 = Utf8               isAnnotationPresent
+  #32 = Utf8               (Ljava/lang/Class;)Z
+  #33 = Methodref          #34.#35        // java/io/PrintStream.println:(Z)V
+  #34 = Class              #36            // java/io/PrintStream
+  #35 = NameAndType        #37:#38        // println:(Z)V
+  #36 = Utf8               java/io/PrintStream
+  #37 = Utf8               println
+  #38 = Utf8               (Z)V
+  #39 = Class              #40            // java/lang/reflect/Method
+  #40 = Utf8               java/lang/reflect/Method
+  #41 = Methodref          #39.#30        // java/lang/reflect/Method.isAnnotationPresent:(Ljava/lang/Class;)Z
+  #42 = Methodref          #39.#43        // java/lang/reflect/Method.getParameterAnnotations:()[[Ljava/lang/annotation/Annotation;
+  #43 = NameAndType        #44:#45        // getParameterAnnotations:()[[Ljava/lang/annotation/Annotation;
+  #44 = Utf8               getParameterAnnotations
+  #45 = Utf8               ()[[Ljava/lang/annotation/Annotation;
+  #46 = Methodref          #34.#47        // java/io/PrintStream.println:(I)V
+  #47 = NameAndType        #37:#48        // println:(I)V
+  #48 = Utf8               (I)V
+  #49 = Methodref          #7.#3          // MemberTagged."<init>":()V
+  #50 = Methodref          #7.#51         // MemberTagged.value:(I)I
+  #51 = NameAndType        #52:#53        // value:(I)I
+  #52 = Utf8               value
+  #53 = Utf8               (I)I
+  #54 = Class              #55            // MemberRunner
+  #55 = Utf8               MemberRunner
+  #56 = Utf8               Code
+  #57 = Utf8               main
+  #58 = Utf8               ([Ljava/lang/String;)V
+  #59 = Utf8               Exceptions
+  #60 = Class              #61            // java/lang/Exception
+  #61 = Utf8               java/lang/Exception
+{
+  public MemberRunner();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void main(java.lang.String[]) throws java.lang.Exception;
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=1
+         0: ldc           #7                  // class MemberTagged
+         2: invokevirtual #9                  // Method java/lang/Class.getDeclaredFields:()[Ljava/lang/reflect/Field;
+         5: iconst_0
+         6: aaload
+         7: astore_1
+         8: ldc           #7                  // class MemberTagged
+        10: invokevirtual #15                 // Method java/lang/Class.getDeclaredMethods:()[Ljava/lang/reflect/Method;
+        13: iconst_0
+        14: aaload
+        15: astore_2
+        16: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        19: aload_1
+        20: checkcast     #25                 // class java/lang/reflect/Field
+        23: ldc           #27                 // class java/lang/Deprecated
+        25: invokevirtual #29                 // Method java/lang/reflect/Field.isAnnotationPresent:(Ljava/lang/Class;)Z
+        28: invokevirtual #33                 // Method java/io/PrintStream.println:(Z)V
+        31: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        34: aload_2
+        35: checkcast     #39                 // class java/lang/reflect/Method
+        38: ldc           #27                 // class java/lang/Deprecated
+        40: invokevirtual #41                 // Method java/lang/reflect/Method.isAnnotationPresent:(Ljava/lang/Class;)Z
+        43: invokevirtual #33                 // Method java/io/PrintStream.println:(Z)V
+        46: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        49: aload_2
+        50: checkcast     #39                 // class java/lang/reflect/Method
+        53: invokevirtual #42                 // Method java/lang/reflect/Method.getParameterAnnotations:()[[Ljava/lang/annotation/Annotation;
+        56: iconst_0
+        57: aaload
+        58: arraylength
+        59: invokevirtual #46                 // Method java/io/PrintStream.println:(I)V
+        62: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        65: new           #7                  // class MemberTagged
+        68: dup
+        69: invokespecial #49                 // Method MemberTagged."<init>":()V
+        72: iconst_2
+        73: invokevirtual #50                 // Method MemberTagged.value:(I)I
+        76: invokevirtual #46                 // Method java/io/PrintStream.println:(I)V
+        79: return
+    Exceptions:
+      throws java.lang.Exception
+}

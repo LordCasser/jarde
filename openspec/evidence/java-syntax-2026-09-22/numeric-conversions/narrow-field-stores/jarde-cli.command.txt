@@ -1,0 +1,1 @@
+/tmp/jarde-cli-deferred-final-ecab class-source --input /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-field-stores-v7ci0pmi/patched/NarrowFieldStores.class --class NarrowFieldStores --policy single-class --release 8 --format text --evidence all

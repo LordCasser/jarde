@@ -1,0 +1,2 @@
+observed=captured-value
+visibleDuringSuper=false

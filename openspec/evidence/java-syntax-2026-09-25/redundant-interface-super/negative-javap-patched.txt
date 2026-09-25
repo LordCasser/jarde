@@ -1,0 +1,46 @@
+Classfile <TMP>/negative-patched/RedundantDirectSuperProbe.class
+  SHA-256 checksum 3cda45d8d4b20e33a99426c97475f42c8860df0f16518f6913b18a45a29272cd
+public final class RedundantDirectSuperProbe implements RedundantParent,RedundantChild
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #13                         // RedundantDirectSuperProbe
+  super_class: #2                         // java/lang/Object
+  interfaces: 2, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = InterfaceMethodref #15.#9         // RedundantParent.value:()I
+   #8 = Class              #10            // RedundantChild
+   #9 = NameAndType        #11:#12        // value:()I
+  #10 = Utf8               RedundantChild
+  #11 = Utf8               value
+  #12 = Utf8               ()I
+  #13 = Class              #14            // RedundantDirectSuperProbe
+  #14 = Utf8               RedundantDirectSuperProbe
+  #15 = Class              #16            // RedundantParent
+  #16 = Utf8               RedundantParent
+  #17 = Utf8               Code
+{
+  public RedundantDirectSuperProbe();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public int value();
+    descriptor: ()I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #7                  // InterfaceMethod RedundantParent.value:()I
+         4: ireturn
+}

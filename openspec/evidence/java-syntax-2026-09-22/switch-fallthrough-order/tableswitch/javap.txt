@@ -1,0 +1,98 @@
+Classfile /tmp/jarde-tableswitch-fallthrough-audit/original-class/TableswitchFallthrough.class
+  Last modified 2026年9月23日; size 390 bytes
+  SHA-256 checksum f45d78320286e1912b30f4b01524b17695a1cef269a0204b18d3d7191ce16f84
+public class TableswitchFallthrough
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // TableswitchFallthrough
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 4, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // TableswitchFallthrough.calls:I
+   #8 = Class              #10            // TableswitchFallthrough
+   #9 = NameAndType        #11:#12        // calls:I
+  #10 = Utf8               TableswitchFallthrough
+  #11 = Utf8               calls
+  #12 = Utf8               I
+  #13 = Methodref          #8.#14         // TableswitchFallthrough.selector:(I)I
+  #14 = NameAndType        #15:#16        // selector:(I)I
+  #15 = Utf8               selector
+  #16 = Utf8               (I)I
+  #17 = Utf8               Code
+  #18 = Utf8               choose
+  #19 = Utf8               StackMapTable
+  #20 = Utf8               ()I
+{
+  private static int calls;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  public TableswitchFallthrough();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  private static int selector(int);
+    descriptor: (I)I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #7                  // Field calls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field calls:I
+         8: iload_0
+         9: ireturn
+
+  public static int choose(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: iconst_0
+         1: istore_1
+         2: iload_0
+         3: invokestatic  #13                 // Method selector:(I)I
+         6: tableswitch   { // 1 to 4
+                       1: 39
+                       2: 39
+                       3: 45
+                       4: 36
+                 default: 51
+            }
+        36: iinc          1, 40
+        39: iinc          1, 1
+        42: goto          54
+        45: iinc          1, 3
+        48: goto          54
+        51: iinc          1, -1
+        54: iload_1
+        55: ireturn
+      StackMapTable: number_of_entries = 5
+        frame_type = 252 /* append */
+          offset_delta = 36
+          locals = [ int ]
+        frame_type = 2 /* same */
+        frame_type = 5 /* same */
+        frame_type = 5 /* same */
+        frame_type = 2 /* same */
+
+  public static int calls();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #7                  // Field calls:I
+         3: ireturn
+}

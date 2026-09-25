@@ -1,0 +1,2 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running `/private/tmp/jarde-guard-return-target/debug/jarde-cli class-source --input tests/fixtures/p3-sync-return/v8/Locked.class --class Locked --policy single-class --format json --evidence essential`

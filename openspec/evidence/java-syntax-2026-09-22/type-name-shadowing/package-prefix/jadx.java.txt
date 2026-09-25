@@ -1,0 +1,8 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ShadowMath.class */
+public class ShadowMath {
+    public static int abs(Object java, int value) {
+        return Math.abs(value);
+    }
+}

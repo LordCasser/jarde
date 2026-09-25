@@ -1,0 +1,37 @@
+package defpackage;
+
+/* JADX INFO: loaded from: BoundaryProbe.class */
+public final class BoundaryProbe {
+    public static int trace;
+
+    public static int mixedLeft(int i, int i2, long j) {
+        return i & i2;
+    }
+
+    public static int mixedRight(int i, int i2, byte b) {
+        return i | i2;
+    }
+
+    public static int pureIntegerLiterals(int i, int i2) {
+        return (i & 1) | (i2 ^ 0);
+    }
+
+    public static int overwrittenLocal(int i, int i2) {
+        return i & i2;
+    }
+
+    public static int observeOnce(int i, int i2) {
+        int i3 = i & i2;
+        observe(i3);
+        return i3;
+    }
+
+    public static int observe(int i) {
+        trace = (trace * 31) + i;
+        return i;
+    }
+
+    public static int seedObserve(int i) {
+        return observe(i);
+    }
+}

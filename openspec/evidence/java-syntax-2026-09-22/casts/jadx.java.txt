@@ -1,0 +1,42 @@
+package defpackage;
+
+import java.util.function.Supplier;
+
+/* JADX INFO: loaded from: CastProbe.class */
+public class CastProbe {
+    public static String direct(Object obj) {
+        return (String) obj;
+    }
+
+    public static int receiver(Object obj) {
+        return ((String) obj).length();
+    }
+
+    public static int array(Object obj, int i) {
+        return ((int[]) obj)[i];
+    }
+
+    public static String[] referenceArray(Object obj) {
+        return (String[]) obj;
+    }
+
+    public static Object widen(Object obj) {
+        return (String) obj;
+    }
+
+    public static String twice(Object obj) {
+        return (String) ((CharSequence) obj);
+    }
+
+    public static String invocation(Supplier<Object> supplier) {
+        return (String) supplier.get();
+    }
+
+    public static int catches(Object obj) {
+        try {
+            return ((String) obj).length();
+        } catch (ClassCastException e) {
+            return 7;
+        }
+    }
+}

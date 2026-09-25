@@ -1,0 +1,110 @@
+Classfile /tmp/jarde-ternary-values-root-7747/core/original/TernaryCore.class
+  Last modified 2026年9月23日; size 424 bytes
+  SHA-256 checksum 9c867c925fb0f42b7fe11af18bb4e90645fe6ac8fcd2718114100161378b6ce4
+public class TernaryCore
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // TernaryCore
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 6, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // TernaryCore.trace:I
+   #8 = Class              #10            // TernaryCore
+   #9 = NameAndType        #11:#12        // trace:I
+  #10 = Utf8               TernaryCore
+  #11 = Utf8               trace
+  #12 = Utf8               I
+  #13 = Methodref          #8.#14         // TernaryCore.a:()I
+  #14 = NameAndType        #15:#16        // a:()I
+  #15 = Utf8               a
+  #16 = Utf8               ()I
+  #17 = Methodref          #8.#18         // TernaryCore.b:()I
+  #18 = NameAndType        #19:#16        // b:()I
+  #19 = Utf8               b
+  #20 = Utf8               Code
+  #21 = Utf8               reset
+  #22 = Utf8               returned
+  #23 = Utf8               (Z)I
+  #24 = Utf8               StackMapTable
+{
+  private static int trace;
+    descriptor: I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+
+  public TernaryCore();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void reset();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #7                  // Field trace:I
+         4: return
+
+  public static int trace();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #7                  // Field trace:I
+         3: ireturn
+
+  private static int a();
+    descriptor: ()I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #7                  // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iconst_1
+         7: iadd
+         8: putstatic     #7                  // Field trace:I
+        11: bipush        7
+        13: ireturn
+
+  private static int b();
+    descriptor: ()I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #7                  // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iconst_2
+         7: iadd
+         8: putstatic     #7                  // Field trace:I
+        11: bipush        11
+        13: ireturn
+
+  public static int returned(boolean);
+    descriptor: (Z)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: ifeq          10
+         4: invokestatic  #13                 // Method a:()I
+         7: goto          13
+        10: invokestatic  #17                 // Method b:()I
+        13: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 10 /* same */
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ int ]
+}

@@ -1,0 +1,75 @@
+// jarde: presentation of `BoundaryProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class BoundaryProbe extends java.lang.Object {
+    public static int trace;
+
+    public BoundaryProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `BoundaryProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int mixedLeft(boolean arg0, int arg1, long arg2) {
+        // jarde: not recovered: the recovery run for `mixedLeft(ZIJ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method mixedLeft(ZIJ)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 3 2
+        // the bitwise operator `&` at BCI 2 has operands presented as `boolean` and `int`, which no Java integral or boolean bitwise expression accepts
+    }
+
+    public static int mixedRight(int arg0, boolean arg1, byte arg2) {
+        // jarde: not recovered: the recovery run for `mixedRight(IZB)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method mixedRight(IZB)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 3 2
+        // the bitwise operator `|` at BCI 2 has operands presented as `int` and `boolean`, which no Java integral or boolean bitwise expression accepts
+    }
+
+    public static int pureIntegerLiterals(int arg0, int arg1) {
+        // @method pureIntegerLiterals(II)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0 & 1 | arg1 ^ 0;
+    }
+
+    public static int overwrittenLocal(int arg0, int arg1) {
+        // @method overwrittenLocal(II)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local2 = arg0;
+        arg0 = 31;
+        return local2 & arg1;
+    }
+
+    public static int observeOnce(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `observeOnce(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method observeOnce(II)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 3 2
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4 7 2
+        // the value at BCI 4 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        // @bytecode 8 2
+        // the value at BCI 8 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+    }
+
+    public static int observe(int arg0) {
+        // @method observe(I)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BoundaryProbe.trace = BoundaryProbe.trace * 31 + arg0;
+        return arg0;
+    }
+
+    public static int seedObserve(int arg0) {
+        // @method seedObserve(I)I
+        // @declaration a static method of `BoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return observe(arg0);
+    }
+}

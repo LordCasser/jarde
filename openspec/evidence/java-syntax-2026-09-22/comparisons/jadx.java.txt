@@ -1,0 +1,96 @@
+package defpackage;
+
+/* JADX INFO: loaded from: CompareProbe.class */
+public class CompareProbe {
+    public static int long_eq(long j, long j2) {
+        return j == j2 ? 7 : 9;
+    }
+
+    public static int long_ne(long j, long j2) {
+        return j != j2 ? 7 : 9;
+    }
+
+    public static int long_lt(long j, long j2) {
+        return j < j2 ? 7 : 9;
+    }
+
+    public static int long_le(long j, long j2) {
+        return j <= j2 ? 7 : 9;
+    }
+
+    public static int long_gt(long j, long j2) {
+        return j > j2 ? 7 : 9;
+    }
+
+    public static int long_ge(long j, long j2) {
+        return j >= j2 ? 7 : 9;
+    }
+
+    public static int long_not_lt(long j, long j2) {
+        return j >= j2 ? 7 : 9;
+    }
+
+    public static int float_eq(float f, float f2) {
+        return f == f2 ? 7 : 9;
+    }
+
+    public static int float_ne(float f, float f2) {
+        return f != f2 ? 7 : 9;
+    }
+
+    public static int float_lt(float f, float f2) {
+        return f < f2 ? 7 : 9;
+    }
+
+    public static int float_le(float f, float f2) {
+        return f <= f2 ? 7 : 9;
+    }
+
+    public static int float_gt(float f, float f2) {
+        return f > f2 ? 7 : 9;
+    }
+
+    public static int float_ge(float f, float f2) {
+        return f >= f2 ? 7 : 9;
+    }
+
+    public static int float_not_lt(float f, float f2) {
+        return f >= f2 ? 7 : 9;
+    }
+
+    public static int double_eq(double d, double d2) {
+        return d == d2 ? 7 : 9;
+    }
+
+    public static int double_ne(double d, double d2) {
+        return d != d2 ? 7 : 9;
+    }
+
+    public static int double_lt(double d, double d2) {
+        return d < d2 ? 7 : 9;
+    }
+
+    public static int double_le(double d, double d2) {
+        return d <= d2 ? 7 : 9;
+    }
+
+    public static int double_gt(double d, double d2) {
+        return d > d2 ? 7 : 9;
+    }
+
+    public static int double_ge(double d, double d2) {
+        return d >= d2 ? 7 : 9;
+    }
+
+    public static int double_not_lt(double d, double d2) {
+        return d >= d2 ? 7 : 9;
+    }
+
+    public static int int_lt(int i, int i2) {
+        return i < i2 ? 7 : 9;
+    }
+
+    public static boolean double_boolean(double d, double d2) {
+        return d < d2;
+    }
+}

@@ -1,0 +1,32 @@
+package defpackage;
+
+/* JADX INFO: loaded from: CloneProbe.class */
+public final class CloneProbe {
+    public static int[] ints(int[] iArr) {
+        return (int[]) iArr.clone();
+    }
+
+    public static String[] refs(String[] strArr) {
+        return (String[]) strArr.clone();
+    }
+
+    public static int[][] outer(int[][] iArr) {
+        return (int[][]) iArr.clone();
+    }
+
+    public static Object[] widen(String[] strArr) {
+        return (Object[]) strArr.clone();
+    }
+
+    public static int accept(Object obj) {
+        return 1;
+    }
+
+    public static int accept(int[] iArr) {
+        return 2;
+    }
+
+    public static int overload(int[] iArr) {
+        return accept((int[]) iArr.clone());
+    }
+}

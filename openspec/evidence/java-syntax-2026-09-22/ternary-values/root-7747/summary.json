@@ -1,0 +1,48 @@
+{
+  "class": "TernaryValues",
+  "runner": "TernaryRunner",
+  "javac": "/usr/bin/javac",
+  "java": "/usr/bin/java",
+  "jadx": {
+    "javac": 0,
+    "run": 0
+  },
+  "cli": "/tmp/jarde-cli-deferred-accepted-7747",
+  "cli_sha256": "7747b60a17dc635f0e8402d867cb9e74f9472a62057eb4865dbd8f4a207dfb34",
+  "source_javac": 0,
+  "class_bytes": 1414,
+  "class_sha256": "a2e96a4bb220fc3a61f4635827c628b84ad4571d8e71fd9da42a4c0e94c9a80f",
+  "original_javap": 0,
+  "original": {
+    "javac": 0,
+    "run": 0
+  },
+  "jadx_extract": 0,
+  "jadx_package": "package defpackage;",
+  "frozen_class_source": 0,
+  "frozen_quotes": 20,
+  "frozen_package": "",
+  "frozen": {
+    "javac": 1,
+    "run": null
+  },
+  "minimal_core": {
+    "source_javac": 0,
+    "class_bytes": 424,
+    "class_sha256": "9c867c925fb0f42b7fe11af18bb4e90645fe6ac8fcd2718114100161378b6ce4",
+    "runner_javac": 0,
+    "original_run": 0,
+    "javap": 0,
+    "jadx_extract": 0,
+    "jadx_package": "package defpackage;",
+    "jadx": {
+      "javac": 0,
+      "run": 0
+    },
+    "frozen_class_source": 0,
+    "frozen": {
+      "javac": 1,
+      "run": null
+    }
+  }
+}

@@ -1,0 +1,24 @@
+   Compiling jarde-cli v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.18s
+     Running tests/class_source_cli.rs (target/debug/deps/class_source_cli-2ca5db1de0c66973)
+
+running 16 tests
+test a_budget_override_this_command_cannot_read_is_a_usage_error ... ok
+test a_class_parameter_that_is_not_a_definition_is_a_usage_error ... ok
+test a_definition_of_another_artifact_is_a_usage_error ... ok
+test a_member_that_cannot_be_spelled_is_stated_in_the_text ... ok
+test a_member_without_a_body_and_a_stopped_member_are_marked_in_the_text ... ok
+test a_missing_class_parameter_is_a_usage_error ... ok
+test a_name_two_definitions_answer_to_exits_three ... ok
+test a_policy_that_does_not_fit_the_input_is_a_usage_error ... ok
+test an_invocation_that_states_no_evidence_asks_for_none ... ok
+test an_unknown_evidence_category_is_a_usage_error ... ok
+test every_category_of_the_vocabulary_is_a_selection_this_entry_answers ... ok
+test the_command_reads_no_standard_input ... ok
+test the_json_mode_is_the_librarys_own_document ... ok
+test the_output_file_receives_the_same_document_as_standard_output ... ok
+test the_same_command_twice_writes_the_same_bytes ... ok
+test the_text_mode_writes_the_librarys_own_source ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+

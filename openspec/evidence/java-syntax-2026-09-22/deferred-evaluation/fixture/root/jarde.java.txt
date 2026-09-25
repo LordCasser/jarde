@@ -1,0 +1,160 @@
+// jarde: presentation of `DeferredValueOrder` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class DeferredValueOrder extends java.lang.Object {
+    public DeferredValueOrder() {
+        // @method <init>()V
+        // @declaration a constructor of `DeferredValueOrder`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int call() {
+        // @method call()I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return DeferredEffects.value();
+    }
+
+    public static int field() {
+        // @method field()I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return DeferredEffects.field;
+    }
+
+    public static int array(int[] arg0) {
+        // @method array([I)I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return arg0[0];
+    }
+
+    public static int instanceField(OrderValue arg0) {
+        // @method instanceField(LOrderValue;)I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return arg0.value;
+    }
+
+    public static int arrayLength(int[] arg0) {
+        // @method arrayLength([I)I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return arg0.length;
+    }
+
+    public static int[] newArray(int arg0) {
+        // @method newArray(I)[I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return new int[arg0];
+    }
+
+    public static java.lang.String[] anewArray(int arg0) {
+        // @method anewArray(I)[Ljava/lang/String;
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return new java.lang.String[arg0];
+    }
+
+    public static int[][] multiArray(int arg0) {
+        // @method multiArray(I)[[I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return new int[arg0][1];
+    }
+
+    public static int divInt(int arg0) {
+        // @method divInt(I)I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return arg0 / DeferredEffects.divisor;
+    }
+
+    public static int remInt(int arg0) {
+        // @method remInt(I)I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return arg0 % DeferredEffects.divisor;
+    }
+
+    public static long divLong(long arg0) {
+        // @method divLong(J)J
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return arg0 / DeferredEffects.longDivisor;
+    }
+
+    public static long remLong(long arg0) {
+        // @method remLong(J)J
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return arg0 % DeferredEffects.longDivisor;
+    }
+
+    public static java.lang.String cast(java.lang.Object arg0) {
+        // @method cast(Ljava/lang/Object;)Ljava/lang/String;
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return (java.lang.String) arg0;
+    }
+
+    public static OrderValue direct() {
+        // @method direct()LOrderValue;
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return new OrderValue();
+    }
+
+    public static int nested() {
+        // @method nested()I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return DeferredEffects.left() + DeferredEffects.right();
+    }
+
+    public static int branch(int[] arg0, boolean arg1) {
+        // @method branch([IZ)I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg1) {
+            return arg0[0] + DeferredEffects.right();
+        } else {
+            return DeferredEffects.left();
+        }
+    }
+
+    public static int prefix(int[] arg0) {
+        // @method prefix([I)I
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 == null) {
+            return -1;
+        } else {
+            return arg0.length;
+        }
+    }
+
+    public static void keepPool() {
+        // @method keepPool()V
+        // @declaration a static method of `DeferredValueOrder`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DeferredEffects.mark();
+        return;
+    }
+}

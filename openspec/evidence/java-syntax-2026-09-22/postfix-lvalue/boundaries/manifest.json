@@ -1,0 +1,443 @@
+{
+  "tools": {
+    "jarde": "/tmp/jarde-cli-bitwise-root-after",
+    "jarde_sha256": "88f2e7aa9b5b8172da02f5af5d4d2c029e72a52d9b3298b46b82774e0bd5fdfd",
+    "jadx": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "jadx_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+  },
+  "sources": {
+    "BoundaryBaseBox.java": "c73bcab950d044bd05237e6ff5904d42f6c8ed7d8a15beed90856d9d546a5a0e",
+    "BoundarySubBox.java": "b1525dc1b262d044a6acc20b6ff93bb4933f78d3b70d81a69a5f17f949fb45b9",
+    "BoundaryProbe.java": "3f9594ceb46c31ed912f53ae225bd081d46746ff8167bdaf25235bf615f1aa8f",
+    "BoundaryRunner.java": "c8333a791d26de63c5b2524e47eff76ac48bb0a44a90f25ed8be3fbc94c6d5e7"
+  },
+  "base_class_sha256": "aeefc51382b8cb5d6f7c2e664789d869250cf0fa5246da48a5f1803342769ec7",
+  "base_class_bytes": 1993,
+  "base_code_methods": 22,
+  "constant_pool_indices": {
+    "sub_other": 70,
+    "base_value": 77,
+    "other_values": 22,
+    "tick": 60,
+    "observe": 56
+  },
+  "cases": {
+    "field-different-member": {
+      "class_sha256": "4d294ec802243ec50964ca654304e5e6df819635d6146f93d41407be2194946b",
+      "class_bytes": 1993,
+      "patch": {
+        "method": "fieldDifferentMember",
+        "change": "putfield BoundarySubBox.value:I -> BoundarySubBox.other:I"
+      },
+      "verifier_runtime": 0,
+      "original_output": [
+        "return.old=10",
+        "sub.value=10",
+        "sub.other=11",
+        "base.value=5",
+        "trace=R"
+      ],
+      "code_methods": 22
+    },
+    "field-different-owner": {
+      "class_sha256": "ba1c81613025f73cd199b321f4dcf3ddaa579fbe4aa50ea792fb7633c18bf631",
+      "class_bytes": 1993,
+      "patch": {
+        "method": "fieldDifferentOwner",
+        "change": "putfield BoundarySubBox.value:I -> BoundaryBaseBox.value:I"
+      },
+      "verifier_runtime": 0,
+      "original_output": [
+        "return.old=10",
+        "sub.value=10",
+        "base.value=11",
+        "trace=R"
+      ],
+      "code_methods": 22
+    },
+    "array-different-index": {
+      "class_sha256": "0ef5ea638ee9208f65266f8efd405917470c4fec87858b49433d5d86fa0c050b",
+      "class_bytes": 2001,
+      "patch": {
+        "method": "arrayDifferentIndex",
+        "change": "spill array/index/value; store to index + 1",
+        "code_patch": "replace iastore with istore_2; istore_1; astore_0; aload_0; iload_1; iconst_1; iadd; iload_2; iastore",
+        "max_stack": 5,
+        "max_locals": 3
+      },
+      "verifier_runtime": 0,
+      "original_output": [
+        "return.old=30",
+        "values=30,31",
+        "otherValues=50,60",
+        "trace=AI"
+      ],
+      "code_methods": 22
+    },
+    "array-different-array": {
+      "class_sha256": "7f7d39c8e7f0114bea28ce6d8dd737d52b33d9913fca04773dff250327e026c5",
+      "class_bytes": 2001,
+      "patch": {
+        "method": "arrayDifferentArray",
+        "change": "spill array/index/value; iastore into getstatic otherValues",
+        "cp_ref": 22,
+        "max_stack": 5,
+        "max_locals": 3
+      },
+      "verifier_runtime": 0,
+      "original_output": [
+        "return.old=30",
+        "values=30,40",
+        "otherValues=31,60",
+        "trace=AI"
+      ],
+      "code_methods": 22
+    },
+    "field-extra-consumer": {
+      "class_sha256": "b243af36ad9efa5240df872a7ccb0fbc15896aaa0d6dee398e5feba7f3bf6dfa",
+      "class_bytes": 1997,
+      "patch": {
+        "method": "fieldExtraConsumer",
+        "change": "before ireturn: dup; invokestatic observe(I)V",
+        "cp_ref": 56,
+        "max_stack_delta": 1
+      },
+      "verifier_runtime": 0,
+      "original_output": [
+        "return.old=10",
+        "sub.value=11",
+        "observed=10",
+        "trace=R"
+      ],
+      "code_methods": 22
+    },
+    "array-extra-consumer": {
+      "class_sha256": "f9186055b804176b60ba3c8da39a832a4c153db81323c22a0a28c0a197075bc3",
+      "class_bytes": 1997,
+      "patch": {
+        "method": "arrayExtraConsumer",
+        "change": "before ireturn: dup; invokestatic observe(I)V",
+        "cp_ref": 56,
+        "max_stack_delta": 1
+      },
+      "verifier_runtime": 0,
+      "original_output": [
+        "return.old=30",
+        "values=31,40",
+        "observed=30",
+        "trace=AI"
+      ],
+      "code_methods": 22
+    },
+    "field-gap-effect": {
+      "class_sha256": "10de5f35f01f3a384ed7e7388c27f92f37925d78b5ce0a97d94a5837f7f52d67",
+      "class_bytes": 1996,
+      "patch": {
+        "method": "fieldGap",
+        "change": "insert invokestatic tick()V after receiver() and before dup",
+        "cp_ref": 60,
+        "expected_trace": "RT"
+      },
+      "verifier_runtime": 0,
+      "original_output": [
+        "return.old=10",
+        "sub.value=11",
+        "trace=RT"
+      ],
+      "code_methods": 22
+    },
+    "array-gap-effect": {
+      "class_sha256": "0612674aeaa0f0606dac3ee4d5ae4b8f44de26d64033aecea6225c555cc94007",
+      "class_bytes": 1996,
+      "patch": {
+        "method": "arrayGap",
+        "change": "insert invokestatic tick()V after index() and before dup2",
+        "cp_ref": 60,
+        "expected_trace": "AIT"
+      },
+      "verifier_runtime": 0,
+      "original_output": [
+        "return.old=30",
+        "values=31,40",
+        "trace=AIT"
+      ],
+      "code_methods": 22
+    },
+    "control-prefix": {
+      "class_sha256": "aeefc51382b8cb5d6f7c2e664789d869250cf0fa5246da48a5f1803342769ec7",
+      "class_bytes": 1993,
+      "patch": {
+        "method": "prefixReceiver",
+        "change": "none; source-compiled prefix return-new-value control"
+      },
+      "verifier_runtime": 0,
+      "original_output": [
+        "return.new=11",
+        "sub.value=11",
+        "trace=R"
+      ],
+      "code_methods": 22
+    },
+    "control-assignment": {
+      "class_sha256": "aeefc51382b8cb5d6f7c2e664789d869250cf0fa5246da48a5f1803342769ec7",
+      "class_bytes": 1993,
+      "patch": {
+        "method": "ordinaryAssignment",
+        "change": "none; source-compiled ordinary assignment control"
+      },
+      "verifier_runtime": 0,
+      "original_output": [
+        "return.assigned=99",
+        "sub.value=99",
+        "trace=R"
+      ],
+      "code_methods": 22
+    }
+  },
+  "results": {
+    "field-different-member": {
+      "original_runtime": 0,
+      "original_output": [
+        "return.old=10",
+        "sub.value=10",
+        "sub.other=11",
+        "base.value=5",
+        "trace=R"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "return.old=10",
+          "sub.value=10",
+          "sub.other=11",
+          "base.value=5",
+          "trace=R"
+        ]
+      },
+      "jarde_decompile": 0,
+      "jarde": {
+        "javac": 1
+      },
+      "jadx_equal_original": true,
+      "jarde_equal_original": null
+    },
+    "field-different-owner": {
+      "original_runtime": 0,
+      "original_output": [
+        "return.old=10",
+        "sub.value=10",
+        "base.value=11",
+        "trace=R"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "return.old=10",
+          "sub.value=10",
+          "base.value=11",
+          "trace=R"
+        ]
+      },
+      "jarde_decompile": 0,
+      "jarde": {
+        "javac": 1
+      },
+      "jadx_equal_original": true,
+      "jarde_equal_original": null
+    },
+    "array-different-index": {
+      "original_runtime": 0,
+      "original_output": [
+        "return.old=30",
+        "values=30,31",
+        "otherValues=50,60",
+        "trace=AI"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "return.old=30",
+          "values=30,31",
+          "otherValues=50,60",
+          "trace=AI"
+        ]
+      },
+      "jarde_decompile": 0,
+      "jarde": {
+        "javac": 1
+      },
+      "jadx_equal_original": true,
+      "jarde_equal_original": null
+    },
+    "array-different-array": {
+      "original_runtime": 0,
+      "original_output": [
+        "return.old=30",
+        "values=30,40",
+        "otherValues=31,60",
+        "trace=AI"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "return.old=30",
+          "values=30,40",
+          "otherValues=31,60",
+          "trace=AI"
+        ]
+      },
+      "jarde_decompile": 0,
+      "jarde": {
+        "javac": 1
+      },
+      "jadx_equal_original": true,
+      "jarde_equal_original": null
+    },
+    "field-extra-consumer": {
+      "original_runtime": 0,
+      "original_output": [
+        "return.old=10",
+        "sub.value=11",
+        "observed=10",
+        "trace=R"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "return.old=10",
+          "sub.value=11",
+          "observed=10",
+          "trace=R"
+        ]
+      },
+      "jarde_decompile": 0,
+      "jarde": {
+        "javac": 1
+      },
+      "jadx_equal_original": true,
+      "jarde_equal_original": null
+    },
+    "array-extra-consumer": {
+      "original_runtime": 0,
+      "original_output": [
+        "return.old=30",
+        "values=31,40",
+        "observed=30",
+        "trace=AI"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "return.old=30",
+          "values=31,40",
+          "observed=30",
+          "trace=AI"
+        ]
+      },
+      "jarde_decompile": 0,
+      "jarde": {
+        "javac": 1
+      },
+      "jadx_equal_original": true,
+      "jarde_equal_original": null
+    },
+    "field-gap-effect": {
+      "original_runtime": 0,
+      "original_output": [
+        "return.old=10",
+        "sub.value=11",
+        "trace=RT"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "return.old=10",
+          "sub.value=11",
+          "trace=RT"
+        ]
+      },
+      "jarde_decompile": 0,
+      "jarde": {
+        "javac": 1
+      },
+      "jadx_equal_original": true,
+      "jarde_equal_original": null
+    },
+    "array-gap-effect": {
+      "original_runtime": 0,
+      "original_output": [
+        "return.old=30",
+        "values=31,40",
+        "trace=AIT"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "return.old=30",
+          "values=31,40",
+          "trace=AIT"
+        ]
+      },
+      "jarde_decompile": 0,
+      "jarde": {
+        "javac": 1
+      },
+      "jadx_equal_original": true,
+      "jarde_equal_original": null
+    },
+    "control-prefix": {
+      "original_runtime": 0,
+      "original_output": [
+        "return.new=11",
+        "sub.value=11",
+        "trace=R"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "return.new=11",
+          "sub.value=11",
+          "trace=R"
+        ]
+      },
+      "jarde_decompile": 0,
+      "jarde": {
+        "javac": 1
+      },
+      "jadx_equal_original": true,
+      "jarde_equal_original": null
+    },
+    "control-assignment": {
+      "original_runtime": 0,
+      "original_output": [
+        "return.assigned=99",
+        "sub.value=99",
+        "trace=R"
+      ],
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "return.assigned=99",
+          "sub.value=99",
+          "trace=R"
+        ]
+      },
+      "jarde_decompile": 0,
+      "jarde": {
+        "javac": 1
+      },
+      "jadx_equal_original": true,
+      "jarde_equal_original": null
+    }
+  }
+}

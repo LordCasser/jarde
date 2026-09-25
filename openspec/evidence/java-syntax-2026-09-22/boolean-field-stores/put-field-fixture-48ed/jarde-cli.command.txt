@@ -1,0 +1,1 @@
+/tmp/jarde-cli-narrow-field-stores-48ed class-source --input /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/boolean-field-stores/put-field-fixture-48ed/work/patched-classes/ZFieldStores.class --class ZFieldStores --policy single-class --release 8 --format text --evidence all

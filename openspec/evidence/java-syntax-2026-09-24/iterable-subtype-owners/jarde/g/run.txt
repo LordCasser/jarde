@@ -1,0 +1,3 @@
+list=6
+collection=6
+textIterable=6

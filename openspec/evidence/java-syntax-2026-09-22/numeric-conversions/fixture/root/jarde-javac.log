@@ -1,0 +1,95 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:21: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:32: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:43: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:54: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:65: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:76: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:87: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:98: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:109: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:120: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:131: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:142: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:153: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:164: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:175: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:186: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:197: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:208: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:219: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:230: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:241: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:252: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:265: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:278: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:291: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:304: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:317: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:330: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:343: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-root-primitive-fixture-xy6ax_i2/jarde-root/PrimitiveConversions.java:357: 错误: 缺少返回语句
+    }
+    ^
+30 个错误
+3 个警告

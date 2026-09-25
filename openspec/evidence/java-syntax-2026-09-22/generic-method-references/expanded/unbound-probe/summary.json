@@ -1,0 +1,69 @@
+{
+  "class_sha256": "ce90899f9a1e598719539af44b4b34740fa89842d903fd8464171598da66803d",
+  "class_bytes": 1134,
+  "methods": 3,
+  "code_attributes": 3,
+  "bootstrap_entries": 2,
+  "original_exit": 0,
+  "jarde_cli_exit": 0,
+  "jarde_javac_exit": 1,
+  "jarde_run_exit": null,
+  "jadx_exit": 0,
+  "jadx_javac_exit": 0,
+  "jadx_run_exit": 0,
+  "jarde_quotes": 0,
+  "original_output": [
+    "string:41",
+    "null:41",
+    "integer:java.lang.ClassCastException",
+    "array:43",
+    "objectArray:java.lang.ClassCastException"
+  ],
+  "jarde_output": [],
+  "jadx_output": [
+    "string:41",
+    "null:41",
+    "integer:java.lang.ClassCastException",
+    "array:43",
+    "objectArray:java.lang.ClassCastException"
+  ],
+  "cases": [
+    {
+      "case": "string",
+      "original": "string:41",
+      "jarde": null,
+      "jadx": "string:41",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "null",
+      "original": "null:41",
+      "jarde": null,
+      "jadx": "null:41",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "integer",
+      "original": "integer:java.lang.ClassCastException",
+      "jarde": null,
+      "jadx": "integer:java.lang.ClassCastException",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "array",
+      "original": "array:43",
+      "jarde": null,
+      "jadx": "array:43",
+      "failure_stage": "jarde-compile"
+    },
+    {
+      "case": "objectArray",
+      "original": "objectArray:java.lang.ClassCastException",
+      "jarde": null,
+      "jadx": "objectArray:java.lang.ClassCastException",
+      "failure_stage": "jarde-compile"
+    }
+  ],
+  "jarde_equal": false,
+  "jadx_equal": true
+}

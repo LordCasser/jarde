@@ -1,0 +1,5 @@
+<TMP>/RedundantDirectSuperProbe.java:16: 错误: 默认超级调用中的类型限定符RedundantParent错误
+        return RedundantParent.super.value();
+                              ^
+  冗余接口 RedundantParent 已由 RedundantChild 扩展
+1 个错误

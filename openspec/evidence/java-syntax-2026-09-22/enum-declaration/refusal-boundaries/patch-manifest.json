@@ -1,0 +1,22 @@
+{
+  "input": "classes-original/Measure.class",
+  "class_major": 52,
+  "original_sha256": "286005bc6edb857700851506740ba1e30139f1ae4348afc1bb219917a04cc7fd",
+  "member_tables_unchanged": true,
+  "patches": {
+    "name-alias": {
+      "path": "patched-name-alias/Measure.class",
+      "sha256": "17512d21cc493ff73ca1bc33fe02d33594232c1140f4cd6b4d780800a519c944",
+      "length": 935,
+      "edit": "retarget the CONSTANT_String used for constructor name \"LOW\" to a new Utf8 \"ALIAS\"",
+      "member_tables_unchanged": true
+    },
+    "ordinal-two": {
+      "path": "patched-ordinal-two/Measure.class",
+      "sha256": "5b206ba13360fe3a5fb4d595ad4f0124ffb3470b19dc362d4ec85de1e79ddb38",
+      "length": 927,
+      "edit": "change HIGH constructor ordinal operand from iconst_1 to iconst_2",
+      "member_tables_unchanged": true
+    }
+  }
+}

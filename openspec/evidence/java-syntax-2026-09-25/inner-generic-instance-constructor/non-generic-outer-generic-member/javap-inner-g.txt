@@ -1,0 +1,114 @@
+Classfile <CLASS_DIR>/minimal/Outer$Inner.class
+  Last modified 2026年9月25日; size 823 bytes
+  SHA-256 checksum f2c2a68b957c9c05f2e05dbafa10eee3e0c6a74646012735e4b42c5930c67e6a
+  Compiled from "Outer.java"
+public class minimal.Outer$Inner<V extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #2                          // minimal/Outer$Inner
+  super_class: #8                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 2, attributes: 3
+Constant pool:
+   #1 = Fieldref           #2.#3          // minimal/Outer$Inner.this$0:Lminimal/Outer;
+   #2 = Class              #4             // minimal/Outer$Inner
+   #3 = NameAndType        #5:#6          // this$0:Lminimal/Outer;
+   #4 = Utf8               minimal/Outer$Inner
+   #5 = Utf8               this$0
+   #6 = Utf8               Lminimal/Outer;
+   #7 = Methodref          #8.#9          // java/lang/Object."<init>":()V
+   #8 = Class              #10            // java/lang/Object
+   #9 = NameAndType        #11:#12        // "<init>":()V
+  #10 = Utf8               java/lang/Object
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Fieldref           #2.#14         // minimal/Outer$Inner.value:Ljava/lang/Object;
+  #14 = NameAndType        #15:#16        // value:Ljava/lang/Object;
+  #15 = Utf8               value
+  #16 = Utf8               Ljava/lang/Object;
+  #17 = Utf8               Signature
+  #18 = Utf8               TV;
+  #19 = Utf8               (Lminimal/Outer;Ljava/lang/Object;)V
+  #20 = Utf8               Code
+  #21 = Utf8               LineNumberTable
+  #22 = Utf8               LocalVariableTable
+  #23 = Utf8               this
+  #24 = Utf8               Lminimal/Outer$Inner;
+  #25 = Utf8               LocalVariableTypeTable
+  #26 = Utf8               Lminimal/Outer$Inner<TV;>;
+  #27 = Utf8               MethodParameters
+  #28 = Utf8               (TV;)V
+  #29 = Utf8               ()Ljava/lang/Object;
+  #30 = Utf8               ()TV;
+  #31 = Utf8               <V:Ljava/lang/Object;>Ljava/lang/Object;
+  #32 = Utf8               SourceFile
+  #33 = Utf8               Outer.java
+  #34 = Utf8               InnerClasses
+  #35 = Class              #36            // minimal/Outer
+  #36 = Utf8               minimal/Outer
+  #37 = Utf8               Inner
+{
+  private final V value;
+    descriptor: Ljava/lang/Object;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+    Signature: #18                          // TV;
+
+  final minimal.Outer this$0;
+    descriptor: Lminimal/Outer;
+    flags: (0x1010) ACC_FINAL, ACC_SYNTHETIC
+
+  public minimal.Outer$Inner(V);
+    descriptor: (Lminimal/Outer;Ljava/lang/Object;)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: aload_1
+         2: putfield      #1                  // Field this$0:Lminimal/Outer;
+         5: aload_0
+         6: invokespecial #7                  // Method java/lang/Object."<init>":()V
+         9: aload_0
+        10: aload_2
+        11: putfield      #13                 // Field value:Ljava/lang/Object;
+        14: return
+      LineNumberTable:
+        line 7: 0
+        line 8: 9
+        line 9: 14
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      15     0  this   Lminimal/Outer$Inner;
+            0      15     1 this$0   Lminimal/Outer;
+            0      15     2 value   Ljava/lang/Object;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      15     0  this   Lminimal/Outer$Inner<TV;>;
+            0      15     2 value   TV;
+    MethodParameters:
+      Name                           Flags
+      <no name>                      final mandated
+      <no name>
+    Signature: #28                          // (TV;)V
+
+  public V value();
+    descriptor: ()Ljava/lang/Object;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #13                 // Field value:Ljava/lang/Object;
+         4: areturn
+      LineNumberTable:
+        line 12: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lminimal/Outer$Inner;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lminimal/Outer$Inner<TV;>;
+    Signature: #30                          // ()TV;
+}
+Signature: #31                          // <V:Ljava/lang/Object;>Ljava/lang/Object;
+SourceFile: "Outer.java"
+InnerClasses:
+  public #37= #2 of #35;                  // Inner=class minimal/Outer$Inner of class minimal/Outer

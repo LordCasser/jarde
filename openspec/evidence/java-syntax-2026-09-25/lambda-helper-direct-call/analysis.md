@@ -1,0 +1,20 @@
+# Java lambda helper called directly from an ordinary method
+
+This fixture isolates a legal Java 8 classfile shape where an ordinary method invokes a javac lambda implementation helper. `LambdaAlias.build(int)` compiles to an `invokedynamic` whose bootstrap target is the synthetic instance method `lambda$build$0:(II)I`. The ordinary method `direct(int,int)` originally calls the private `directHelper:(II)I`.
+
+`replay.py` independently compiles the checked-in sources with both `javac --release 8 -g` and `javac --release 8 -g:none` inside a `TemporaryDirectory`. Each build mode produces an original and patched class, runs both with `java -Xverify:all`, and runs JADX/Jarde whole-class source generation plus javac compilation attempts. It then changes only the `name_index` in the existing `NameAndType` referenced by the direct method's `Methodref`: `directHelper` becomes the already-present `lambda$build$0`; the `(II)I` descriptor and the physical synthetic declaration are unchanged. It does not rename a declaration, edit bytecode instructions, or adjust the bootstrap handle. The output class is then executed by `java -Xverify:all`.
+
+Both debug modes produce the same runtime pair: the original class prints `lambda=24` and `direct=125`; the patched class prints `lambda=24` and `direct=14`. The `-g:none` build therefore independently confirms verifier acceptance and the changed dispatch result without debug attributes. This establishes that the rewritten call resolves to the existing helper and changes only the direct method's selected implementation. `javap` shows the untouched synthetic declaration with flags `ACC_PRIVATE, ACC_SYNTHETIC`, the unchanged bootstrap handle to that method, and `direct`'s `invokespecial` targeting it. The original and patched class SHA-256 values and the exact constant-pool indices are recorded in `classfile-sha256.txt` and `patch.json`.
+
+JADX 1.5.6 reconstructs the lambda and omits the synthetic helper declaration in both cases. For the original class it retains `directHelper`; for the patched class it emits `return lambda$build$0(left, right);` with no such source method. The original JADX output compiles; patched JADX output fails with `cannot find symbol` for `lambda$build$0(int,int)`. This is concrete evidence that hiding the helper while retaining its direct call can produce uncompilable Java.
+
+The `/tmp/jarde-generic-accepted-cli` baseline class-source output retains the physical synthetic helper declaration and correctly projects `direct` as `this.lambda$build$0(left, right)` for the patched class. It likewise emits that helper call for the lambda expression. Both Jarde outputs fail javac because Java source lambda compilation synthesizes a method with the same reserved helper name, which collides with the explicitly emitted `lambda$build$0` declaration. The `-g:none` results repeat the same compile matrix: JADX original succeeds while JADX patched and both Jarde sources fail. The baseline output does not silently redirect the direct call to `directHelper`; its current limitation is the unprojected helper declaration/source representation. The original and patched Jarde text and reports are preserved for follow-up work. The matrix in `summary.json` records verification output and each whole-class compile exit code for both modes; `*-g-none.*` files keep the no-debug evidence independently named while the original `-g` filenames remain unchanged.
+
+Replay from the repository root with:
+
+```sh
+python3 openspec/evidence/java-syntax-2026-09-25/lambda-helper-direct-call/replay.py \
+  --jarde-cli /tmp/jarde-generic-accepted-cli
+```
+
+Set `JADX` or pass `--jadx` if JADX 1.5.6 is installed elsewhere. The recorded environment is `javac 23.0.1`, OpenJDK 23.0.1, JADX 1.5.6, and Jarde CLI 0.1.0. Every compiled class, decompiler workspace, and compile attempt for both modes lives under Python `TemporaryDirectory` and is removed on exit; only source fixtures, textual evidence, hashes, and the replay script remain here.

@@ -1,0 +1,28 @@
+{
+  "original": {
+    "bytes": 1548,
+    "sha256": "d8f4a437d0cd0f3ec12672791f27b1c11cfbcdc6885d10eddcd3114aa0838e56"
+  },
+  "variants": {
+    "pop": {
+      "bytes": 1549,
+      "sha256": "1fc6aa18b969dcacea3416fea2909f3a11a37f43b83f220f30a8346daff37d41",
+      "output": "pop=returned:1\n"
+    },
+    "duplicate": {
+      "bytes": 1550,
+      "sha256": "4cafa37ea546a00d782e844e5a45fb05f6e050d7a6f7d0a3d8ae39d5eafe45cb",
+      "output": "duplicate-true=true\nduplicate-false=false\n"
+    },
+    "stale": {
+      "bytes": 1550,
+      "sha256": "f9140750647f9c1fafa80bacf38a6c284d52c92e190235dc8b1d8d4f72196364",
+      "output": "stale-true=false\nstale-false=false\n"
+    },
+    "int": {
+      "bytes": 1535,
+      "sha256": "b32bc59222d83c708d9bd23e9877554e6c8658abbf2305b0082128a3a9395c4e",
+      "output": "int-string=1\nint-number=0\nint-null=0\n"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "check": "java-package",
+    "exit": 0
+  },
+  {
+    "check": "adjacent",
+    "exit": 0
+  },
+  {
+    "check": "final-static-jdk",
+    "exit": 0
+  },
+  {
+    "check": "census-before",
+    "exit": 101
+  },
+  {
+    "check": "deferred-red",
+    "exit": 101
+  },
+  {
+    "check": "floating-red",
+    "exit": 101
+  },
+  {
+    "check": "bitwise-red",
+    "exit": 101
+  },
+  {
+    "check": "instanceof-red",
+    "exit": 101
+  },
+  {
+    "check": "fmt",
+    "exit": 0
+  },
+  {
+    "check": "clippy",
+    "exit": 101
+  }
+]

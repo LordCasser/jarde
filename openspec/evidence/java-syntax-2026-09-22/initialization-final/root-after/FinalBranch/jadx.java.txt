@@ -1,0 +1,18 @@
+package defpackage;
+
+/* JADX INFO: loaded from: FinalBranch.class */
+public class FinalBranch {
+    public static final int VALUE;
+
+    public static int result() {
+        return VALUE;
+    }
+
+    static {
+        if (FinalSupport.flag()) {
+            VALUE = 7;
+        } else {
+            VALUE = 9;
+        }
+    }
+}

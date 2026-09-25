@@ -1,0 +1,63 @@
+{
+  "method": "sumThenReuse([I)I",
+  "regions": [
+    {
+      "bci": 0,
+      "blocks": [
+        0
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "straight",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 10,
+      "blocks": [
+        10,
+        16
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "loop",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 33,
+      "blocks": [
+        33
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "straight",
+        "version": "1"
+      },
+      "structured": true
+    }
+  ],
+  "rules": [
+    {
+      "rule": "straight",
+      "version": "1"
+    },
+    {
+      "rule": "loop",
+      "version": "1"
+    },
+    {
+      "rule": "enumswitch",
+      "version": "1"
+    },
+    {
+      "rule": "declaration",
+      "version": "1"
+    }
+  ]
+}

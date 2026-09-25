@@ -1,0 +1,72 @@
+Classfile /tmp/jarde-throw-grammar/ThrowClinitBranch/original/ThrowClinitBranch.class
+  Last modified 2026年9月23日; size 401 bytes
+  SHA-256 checksum 4efa7039b5a38b4bb3af0687500edc5ab0767f0d992b2ac80a92be41958d35e0
+public class ThrowClinitBranch
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #25                         // ThrowClinitBranch
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // java/lang/System.nanoTime:()J
+   #8 = Class              #10            // java/lang/System
+   #9 = NameAndType        #11:#12        // nanoTime:()J
+  #10 = Utf8               java/lang/System
+  #11 = Utf8               nanoTime
+  #12 = Utf8               ()J
+  #13 = Class              #14            // java/lang/IllegalArgumentException
+  #14 = Utf8               java/lang/IllegalArgumentException
+  #15 = String             #16            // a
+  #16 = Utf8               a
+  #17 = Methodref          #13.#18        // java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+  #18 = NameAndType        #5:#19         // "<init>":(Ljava/lang/String;)V
+  #19 = Utf8               (Ljava/lang/String;)V
+  #20 = Class              #21            // java/lang/IllegalStateException
+  #21 = Utf8               java/lang/IllegalStateException
+  #22 = String             #23            // b
+  #23 = Utf8               b
+  #24 = Methodref          #20.#18        // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #25 = Class              #26            // ThrowClinitBranch
+  #26 = Utf8               ThrowClinitBranch
+  #27 = Utf8               Code
+  #28 = Utf8               <clinit>
+  #29 = Utf8               StackMapTable
+{
+  public ThrowClinitBranch();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: invokestatic  #7                  // Method java/lang/System.nanoTime:()J
+         3: lconst_0
+         4: lcmp
+         5: ifne          18
+         8: new           #13                 // class java/lang/IllegalArgumentException
+        11: dup
+        12: ldc           #15                 // String a
+        14: invokespecial #17                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+        17: athrow
+        18: new           #20                 // class java/lang/IllegalStateException
+        21: dup
+        22: ldc           #22                 // String b
+        24: invokespecial #24                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        27: athrow
+      StackMapTable: number_of_entries = 1
+        frame_type = 18 /* same */
+}

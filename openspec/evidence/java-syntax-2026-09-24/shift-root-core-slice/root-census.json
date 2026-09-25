@@ -1,0 +1,12 @@
+{
+  "class_bytes": 719,
+  "class_sha256": "db5a3053fb7b38ddf22cff1e9ec93048d41ab29e94d5809c0f1f611f8ac86bba",
+  "cli_sha256": "336fda92b93df11a33299cb015df7b925b4ade22970727a21ff09b4b32156b71",
+  "rows": 723,
+  "original_output_sha256": "f34b05eb6a7ec009b2a6ce621f0479d5a9eb56e4c40ebdf350572408213a317d",
+  "jadx_equal": true,
+  "jadx_output_sha256": "f34b05eb6a7ec009b2a6ce621f0479d5a9eb56e4c40ebdf350572408213a317d",
+  "jarde_quotes": 29,
+  "jarde_javac": 1,
+  "jarde_cli": 0
+}

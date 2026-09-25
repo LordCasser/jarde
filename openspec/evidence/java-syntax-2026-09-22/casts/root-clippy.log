@@ -1,0 +1,19 @@
+    Checking jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error: very complex type used. Consider factoring parts into `type` definitions
+    --> crates/jarde-java/src/region.rs:1736:10
+     |
+1736 |       ) -> Result<
+     |  __________^
+1737 | |         (
+1738 | |             Region,
+1739 | |             Vec<CatchClause>,
+...    |
+1743 | |         StopReason,
+1744 | |     > {
+     | |_____^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#type_complexity
+     = note: `-D clippy::type-complexity` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::type_complexity)]`
+
+error: could not compile `jarde-java` (lib) due to 1 previous error

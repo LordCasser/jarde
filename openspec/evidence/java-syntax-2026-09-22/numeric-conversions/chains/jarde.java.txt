@@ -1,0 +1,116 @@
+// jarde: presentation of `ConversionChain` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ConversionChain extends java.lang.Object {
+    public ConversionChain() {
+        // @method <init>()V
+        // @declaration a constructor of `ConversionChain`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int intRound(int arg0) {
+        // jarde: not recovered: the recovery run for `intRound(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method intRound(I)I
+        // @declaration a static method of `ConversionChain`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static long longFloatRound(long arg0) {
+        // jarde: not recovered: the recovery run for `longFloatRound(J)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method longFloatRound(J)J
+        // @declaration a static method of `ConversionChain`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static long longDoubleRound(long arg0) {
+        // jarde: not recovered: the recovery run for `longDoubleRound(J)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method longDoubleRound(J)J
+        // @declaration a static method of `ConversionChain`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static double doubleFloatRound(double arg0) {
+        // jarde: not recovered: the recovery run for `doubleFloatRound(D)D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleFloatRound(D)D
+        // @declaration a static method of `ConversionChain`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static byte floatByte(float arg0) {
+        // jarde: not recovered: the recovery run for `floatByte(F)B` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method floatByte(F)B
+        // @declaration a static method of `ConversionChain`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static char doubleChar(double arg0) {
+        // jarde: not recovered: the recovery run for `doubleChar(D)C` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method doubleChar(D)C
+        // @declaration a static method of `ConversionChain`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int byteChar(int arg0) {
+        // jarde: not recovered: the recovery run for `byteChar(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method byteChar(I)I
+        // @declaration a static method of `ConversionChain`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static long ordered(int arg0, boolean arg1, boolean arg2) {
+        // @method ordered(IZZ)J
+        // @declaration a static method of `ConversionChain`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ConversionEffects.left(arg0, arg1);
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        ConversionEffects.right(arg0, arg2);
+        // @bytecode 11
+        // the instruction at BCI 11 is not part of the provable subset
+        // @bytecode 13
+        // the value at BCI 13 comes from an Other at BCI 5, which produces no expression this subset writes
+    }
+}

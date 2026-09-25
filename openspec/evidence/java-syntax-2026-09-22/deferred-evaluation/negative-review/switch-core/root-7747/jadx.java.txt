@@ -1,0 +1,17 @@
+package defpackage;
+
+/* JADX INFO: loaded from: SwitchDeferredCore.class */
+public class SwitchDeferredCore {
+    public static int run(int i) {
+        switch (i) {
+            case 1:
+                int iValue = SwitchSupport.value();
+                SwitchSupport.mark();
+                return iValue;
+            default:
+                int iOther = SwitchSupport.other();
+                SwitchSupport.mark();
+                return iOther;
+        }
+    }
+}

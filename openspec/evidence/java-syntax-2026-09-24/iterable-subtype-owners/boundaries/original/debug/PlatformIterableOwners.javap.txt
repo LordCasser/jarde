@@ -1,0 +1,205 @@
+Compiled from "PlatformIterableOwners.java"
+final class PlatformIterableOwners {
+  static int touches;
+
+  PlatformIterableOwners();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static int listCast(java.util.List);
+    Code:
+       0: aload_0
+       1: invokeinterface #7,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+       6: astore_1
+       7: iconst_0
+       8: istore_2
+       9: aload_1
+      10: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      15: ifeq          50
+      18: aload_1
+      19: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      24: astore_3
+      25: aload_3
+      26: checkcast     #23                 // class java/lang/String
+      29: astore        4
+      31: getstatic     #25                 // Field touches:I
+      34: iconst_1
+      35: iadd
+      36: putstatic     #25                 // Field touches:I
+      39: iload_2
+      40: aload         4
+      42: invokevirtual #31                 // Method java/lang/String.length:()I
+      45: iadd
+      46: istore_2
+      47: goto          9
+      50: iload_2
+      51: ireturn
+
+  static int collectionCast(java.util.Collection);
+    Code:
+       0: aload_0
+       1: invokeinterface #35,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+       6: astore_1
+       7: iconst_0
+       8: istore_2
+       9: aload_1
+      10: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      15: ifeq          50
+      18: aload_1
+      19: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      24: astore_3
+      25: aload_3
+      26: checkcast     #23                 // class java/lang/String
+      29: astore        4
+      31: getstatic     #25                 // Field touches:I
+      34: iconst_1
+      35: iadd
+      36: putstatic     #25                 // Field touches:I
+      39: iload_2
+      40: aload         4
+      42: invokevirtual #31                 // Method java/lang/String.length:()I
+      45: iadd
+      46: istore_2
+      47: goto          9
+      50: iload_2
+      51: ireturn
+
+  static int listSkipEmpty(java.util.List);
+    Code:
+       0: aload_0
+       1: invokeinterface #7,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+       6: astore_1
+       7: iconst_0
+       8: istore_2
+       9: aload_1
+      10: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      15: ifeq          53
+      18: aload_1
+      19: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      24: astore_3
+      25: aload_3
+      26: checkcast     #23                 // class java/lang/String
+      29: astore        4
+      31: aload         4
+      33: invokevirtual #38                 // Method java/lang/String.isEmpty:()Z
+      36: ifeq          42
+      39: goto          9
+      42: iload_2
+      43: aload         4
+      45: invokevirtual #31                 // Method java/lang/String.length:()I
+      48: iadd
+      49: istore_2
+      50: goto          9
+      53: iload_2
+      54: ireturn
+
+  static int listConsumesTwice(java.util.List);
+    Code:
+       0: aload_0
+       1: invokeinterface #7,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+       6: astore_1
+       7: iconst_0
+       8: istore_2
+       9: aload_1
+      10: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      15: ifeq          55
+      18: aload_1
+      19: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      24: astore_3
+      25: aload_1
+      26: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      31: astore        4
+      33: iload_2
+      34: aload_3
+      35: invokevirtual #41                 // Method java/lang/Object.toString:()Ljava/lang/String;
+      38: invokevirtual #31                 // Method java/lang/String.length:()I
+      41: aload         4
+      43: invokevirtual #41                 // Method java/lang/Object.toString:()Ljava/lang/String;
+      46: invokevirtual #31                 // Method java/lang/String.length:()I
+      49: iadd
+      50: iadd
+      51: istore_2
+      52: goto          9
+      55: iload_2
+      56: ireturn
+
+  static int collectionEscapes(java.util.Collection);
+    Code:
+       0: aload_0
+       1: invokeinterface #35,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+       6: astore_1
+       7: iconst_0
+       8: istore_2
+       9: aload_1
+      10: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      15: ifeq          42
+      18: aload_1
+      19: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      24: astore_3
+      25: aload_3
+      26: checkcast     #23                 // class java/lang/String
+      29: astore        4
+      31: iload_2
+      32: aload         4
+      34: invokevirtual #31                 // Method java/lang/String.length:()I
+      37: iadd
+      38: istore_2
+      39: goto          9
+      42: iload_2
+      43: aload_1
+      44: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      49: ifeq          56
+      52: iconst_1
+      53: goto          57
+      56: iconst_0
+      57: iadd
+      58: ireturn
+
+  static int userSubtype(TextIterable);
+    Code:
+       0: aload_0
+       1: invokeinterface #45,  1           // InterfaceMethod TextIterable.iterator:()Ljava/util/Iterator;
+       6: astore_1
+       7: iconst_0
+       8: istore_2
+       9: aload_1
+      10: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      15: ifeq          38
+      18: aload_1
+      19: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      24: astore_3
+      25: iload_2
+      26: aload_3
+      27: invokevirtual #41                 // Method java/lang/Object.toString:()Ljava/lang/String;
+      30: invokevirtual #31                 // Method java/lang/String.length:()I
+      33: iadd
+      34: istore_2
+      35: goto          9
+      38: iload_2
+      39: ireturn
+
+  static int sameNameOnly(IteratorSurface);
+    Code:
+       0: aload_0
+       1: invokeinterface #48,  1           // InterfaceMethod IteratorSurface.iterator:()Ljava/util/Iterator;
+       6: astore_1
+       7: iconst_0
+       8: istore_2
+       9: aload_1
+      10: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      15: ifeq          38
+      18: aload_1
+      19: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      24: astore_3
+      25: iload_2
+      26: aload_3
+      27: invokevirtual #41                 // Method java/lang/Object.toString:()Ljava/lang/String;
+      30: invokevirtual #31                 // Method java/lang/String.length:()I
+      33: iadd
+      34: istore_2
+      35: goto          9
+      38: iload_2
+      39: ireturn
+}

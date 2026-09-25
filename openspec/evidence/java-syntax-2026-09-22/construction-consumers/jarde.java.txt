@@ -1,0 +1,68 @@
+// jarde: presentation of `NewConsumers` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NewConsumers extends java.lang.Object {
+    public NewConsumers() {
+        // @method <init>()V
+        // @declaration a constructor of `NewConsumers`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.Runnable cast() {
+        // jarde: not recovered: the recovery run for `cast()Ljava/lang/Runnable;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method cast()Ljava/lang/Runnable;
+        // @declaration a static method of `NewConsumers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 10 7 4
+        // the value at BCI 10 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+    }
+
+    public static void array(ConsumerValue[] arg0, int arg1) {
+        // @method array([LConsumerValue;I)V
+        // @declaration a static method of `NewConsumers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 5
+        // the instruction at BCI 5 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 9 6
+        // the value at BCI 9 comes from an Duplicate at BCI 5, which produces no expression this subset writes
+        return;
+    }
+
+    public static boolean type() {
+        // jarde: not recovered: the recovery run for `type()Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method type()Z
+        // @declaration a static method of `NewConsumers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4
+        // the value at BCI 4 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 10
+        // the value at BCI 10 comes from an Other at BCI 7, which produces no expression this subset writes
+    }
+
+    public static int field() {
+        // @method field()I
+        // @declaration a static method of `NewConsumers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new ConsumerValue().number;
+    }
+
+    public static int call() {
+        // @method call()I
+        // @declaration a static method of `NewConsumers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new ConsumerValue().get();
+    }
+}

@@ -1,0 +1,2 @@
+ae0bfc789051a30dd6779d57cea2f484d7e5fe4822f18102eb74915075d04eda  NarrowFieldStores.source.class
+da7bbcebd61dda7221f5169200a68b11fbe9200b8a4bb1f9d970bccc559157a5  NarrowFieldStores.patched.class

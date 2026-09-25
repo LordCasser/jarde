@@ -1,0 +1,1 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-23/bridge-source-projection/results/negative/patched-classes/FakeBridge.class

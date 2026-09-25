@@ -1,0 +1,180 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-narrow-switch-returns-62au93sj/patched/NarrowSwitchReturns.class
+  Last modified 2026年9月23日; size 665 bytes
+  SHA-256 checksum 3ea6861fdfc8ff741c55a1ee3ac61cb235b21281239e3e048d9be7d8deeab1de
+public final class NarrowSwitchReturns
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #10                         // NarrowSwitchReturns
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 7, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Integer            65535
+   #8 = Integer            32768
+   #9 = Integer            -32769
+  #10 = Class              #11            // NarrowSwitchReturns
+  #11 = Utf8               NarrowSwitchReturns
+  #12 = Utf8               Code
+  #13 = Utf8               runByte
+  #14 = Utf8               (I)I
+  #15 = Utf8               StackMapTable
+  #16 = Utf8               runChar
+  #17 = Utf8               runShort
+  #18 = Utf8               boolByte
+  #19 = Utf8               (Z)I
+  #20 = Utf8               boolChar
+  #21 = Utf8               boolShort
+  #22 = Utf8               (I)B
+  #23 = Utf8               (I)C
+  #24 = Utf8               (I)S
+  #25 = Utf8               (Z)B
+  #26 = Utf8               (Z)C
+  #27 = Utf8               (Z)S
+{
+  private NarrowSwitchReturns();
+    descriptor: ()V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static byte runByte(int);
+    descriptor: (I)B
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: iload_0
+         1: lookupswitch  { // 1
+                       1: 20
+                 default: 27
+            }
+        20: sipush        130
+        23: istore_1
+        24: goto          31
+        27: sipush        -129
+        30: istore_1
+        31: iload_1
+        32: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 20 /* same */
+        frame_type = 6 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 3
+          locals = [ int ]
+
+  public static char runChar(int);
+    descriptor: (I)C
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: iload_0
+         1: lookupswitch  { // 1
+                       1: 20
+                 default: 26
+            }
+        20: ldc           #7                  // int 65535
+        22: istore_1
+        23: goto          29
+        26: bipush        -2
+        28: istore_1
+        29: iload_1
+        30: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 20 /* same */
+        frame_type = 5 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 2
+          locals = [ int ]
+
+  public static short runShort(int);
+    descriptor: (I)S
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: iload_0
+         1: lookupswitch  { // 1
+                       1: 20
+                 default: 26
+            }
+        20: ldc           #8                  // int 32768
+        22: istore_1
+        23: goto          29
+        26: ldc           #9                  // int -32769
+        28: istore_1
+        29: iload_1
+        30: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 20 /* same */
+        frame_type = 5 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 2
+          locals = [ int ]
+
+  public static byte boolByte(boolean);
+    descriptor: (Z)B
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: iload_0
+         1: ifeq          11
+         4: sipush        255
+         7: istore_1
+         8: goto          15
+        11: sipush        -256
+        14: istore_1
+        15: iload_1
+        16: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 11 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 3
+          locals = [ int ]
+
+  public static char boolChar(boolean);
+    descriptor: (Z)C
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: iload_0
+         1: ifeq          10
+         4: ldc           #7                  // int 65535
+         6: istore_1
+         7: goto          13
+        10: bipush        -2
+        12: istore_1
+        13: iload_1
+        14: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 10 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 2
+          locals = [ int ]
+
+  public static short boolShort(boolean);
+    descriptor: (Z)S
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: iload_0
+         1: ifeq          10
+         4: ldc           #8                  // int 32768
+         6: istore_1
+         7: goto          13
+        10: ldc           #9                  // int -32769
+        12: istore_1
+        13: iload_1
+        14: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 10 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 2
+          locals = [ int ]
+}

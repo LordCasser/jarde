@@ -591,6 +591,10 @@ pub struct ClassMemberFacts {
     /// [`ClassMemberFacts::field_count`].
     pub method_count: u64,
     pub methods: Vec<MemberHeader>,
+    /// Class-level attribute shells, in physical order, when both member tables were reached.
+    /// Content remains lazy; an empty vector after a member-table stop means the class tail was not
+    /// reached, not that the class declares no attributes.
+    pub attributes: Vec<AttributeShell>,
     /// `None` exactly when both member tables were read to their declared end.
     pub stopped_at: Option<MemberTableStop>,
 }
@@ -685,6 +689,11 @@ pub fn class_member_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassMemb
             &mut methods,
         )?,
     };
+    let attributes = if stopped_at.is_some() {
+        Vec::new()
+    } else {
+        read_attribute_shell_records(bytes, &layout, budget, &mut offset)?
+    };
 
     Ok(ClassMemberFacts {
         access_flags,
@@ -695,6 +704,7 @@ pub fn class_member_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassMemb
         fields,
         method_count: u64::from(method_count),
         methods,
+        attributes,
         stopped_at,
     })
 }
@@ -756,11 +766,26 @@ fn read_member_record(
     *offset = offset_plus(*offset, 2)?;
     let descriptor_index = read_u16(bytes, *offset)?;
     *offset = offset_plus(*offset, 2)?;
-    let attribute_count = read_u16(bytes, *offset)?;
-    *offset = offset_plus(*offset, 2)?;
     let name = jvm_string_from_raw(&utf8_index(bytes, layout, name_index)?.0)?;
     let descriptor = jvm_string_from_raw(&utf8_index(bytes, layout, descriptor_index)?.0)?;
+    let attributes = read_attribute_shell_records(bytes, layout, budget, offset)?;
 
+    Ok(MemberHeader {
+        name,
+        descriptor,
+        access_flags,
+        attributes,
+    })
+}
+
+fn read_attribute_shell_records(
+    bytes: &[u8],
+    layout: &[CpSlotLayout],
+    budget: &mut Budget,
+    offset: &mut usize,
+) -> Result<Vec<AttributeShell>> {
+    let attribute_count = read_u16(bytes, *offset)?;
+    *offset = offset_plus(*offset, 2)?;
     let mut attributes = Vec::with_capacity(usize::from(attribute_count));
     for _ in 0..attribute_count {
         budget.poll()?;
@@ -773,7 +798,7 @@ fn read_member_record(
         let content_span = checked_span(bytes, to_u64(content_start)?, to_u64(content_length)?)?;
         let span_length = u64::from(ATTRIBUTE_HEADER_LENGTH as u16)
             .checked_add(content_span.length)
-            .ok_or_else(|| span_overflow("class-member attribute shell"))?;
+            .ok_or_else(|| span_overflow("class attribute shell"))?;
         let span = checked_span(bytes, to_u64(shell_start)?, span_length)?;
         *offset = offset_plus(content_start, content_length)?;
         budget.charge(CountedBudgetDimension::AttributeBytes, span_length)?;
@@ -784,13 +809,7 @@ fn read_member_record(
             content_span,
         });
     }
-
-    Ok(MemberHeader {
-        name,
-        descriptor,
-        access_flags,
-        attributes,
-    })
+    Ok(attributes)
 }
 
 /// Whether one failure is damage in the class structure rather than the request ending.
@@ -2297,7 +2316,7 @@ fn cp_guard_overflow() -> Error {
 
 /// A recorded constant-pool index whose entry is resolved by the consumer.
 #[allow(dead_code)]
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct CpIndexOf(pub u16);
 
 /// Payload of one constant-pool entry.
@@ -2474,9 +2493,8 @@ pub struct ModuleFacts {
 /// single-valued attribute that appears twice, and attribute content that does
 /// not match its declared structure, are structured errors.
 ///
-/// `Signature` strings and annotation content are deliberately not parsed here;
-/// generic signature syntax and annotation element values belong to the
-/// metadata consumer that owns those rules.
+/// `Signature` strings are deliberately not parsed here; generic signature
+/// syntax belongs to the metadata consumer that owns those rules.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct AttributeFacts {
@@ -2496,8 +2514,150 @@ pub struct AttributeFacts {
     pub permitted_subclasses: Vec<JvmBytes>,
     /// `ConstantValue` (field): the raw index.
     pub constant_value: Option<CpIndexOf>,
+    /// `AnnotationDefault` (method): the one `element_value` the attribute declares.
+    pub annotation_default: Option<ElementValueFacts>,
+    /// `RuntimeVisibleAnnotations`: annotation uses in class-file order.
+    pub runtime_visible_annotations: Vec<ElementValueFacts>,
+    /// `RuntimeInvisibleAnnotations`: annotation uses in class-file order.
+    pub runtime_invisible_annotations: Vec<ElementValueFacts>,
+    /// `RuntimeVisibleParameterAnnotations`: one ordered group per attribute-declared parameter.
+    pub runtime_visible_parameter_annotations: Option<ParameterAnnotationFacts>,
+    /// `RuntimeInvisibleParameterAnnotations`: one ordered group per attribute-declared parameter.
+    pub runtime_invisible_parameter_annotations: Option<ParameterAnnotationFacts>,
+    /// `RuntimeVisibleTypeAnnotations`: target, path and complete annotation in attribute order.
+    pub runtime_visible_type_annotations: Vec<TypeAnnotationFacts>,
+    /// `RuntimeInvisibleTypeAnnotations`: target, path and complete annotation in attribute order.
+    pub runtime_invisible_type_annotations: Vec<TypeAnnotationFacts>,
     /// `Module` (class).
     pub module: Option<ModuleFacts>,
+}
+
+/// One type annotation exactly as an annotation attribute declares it (JVMS 4.7.20).
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct TypeAnnotationFacts {
+    /// The `target_type` byte.
+    pub target_type: u8,
+    /// The complete target_info bytes, excluding `target_type`.
+    pub target_info: Vec<u8>,
+    /// Ordered `(kind, index)` entries from `type_path`.
+    pub type_path: Vec<TypePathEntry>,
+    /// The shared complete annotation value tree.
+    pub annotation: ElementValueFacts,
+}
+
+/// One validated `type_path` entry (JVMS 4.7.20.2).
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+pub struct TypePathEntry {
+    pub kind: u8,
+    pub index: u8,
+}
+
+/// The tag of one `element_value` whose payload is a constant (JVMS 4.7.22.1).
+///
+/// The eight constant tags share one shape — a single `const_value_index` — and the tag is the only
+/// thing that says which constant it is: `B`, `C`, `I`, `S` and `Z` all name a `CONSTANT_Integer`,
+/// `J` a `CONSTANT_Long`, `F` a `CONSTANT_Float` and `D` a `CONSTANT_Double`. The tag is kept
+/// instead of being folded into the value, because the same integer is `1`, `true` or `'A'`
+/// depending on the one the attribute wrote, and no consumer can tell those apart from the number.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+pub enum ElementConstantTag {
+    /// `B`: a `byte`, held in a `CONSTANT_Integer`.
+    Byte,
+    /// `C`: a `char`, held in a `CONSTANT_Integer`.
+    Char,
+    /// `D`: a `double`, held in a `CONSTANT_Double`.
+    Double,
+    /// `F`: a `float`, held in a `CONSTANT_Float`.
+    Float,
+    /// `I`: an `int`, held in a `CONSTANT_Integer`.
+    Integer,
+    /// `J`: a `long`, held in a `CONSTANT_Long`.
+    Long,
+    /// `S`: a `short`, held in a `CONSTANT_Integer`.
+    Short,
+    /// `Z`: a `boolean`, held in a `CONSTANT_Integer`.
+    Boolean,
+}
+
+impl ElementConstantTag {
+    /// The tag one attribute's own byte is, or `None` when that byte is no constant tag.
+    fn of(tag: u8) -> Option<Self> {
+        Some(match tag {
+            b'B' => Self::Byte,
+            b'C' => Self::Char,
+            b'D' => Self::Double,
+            b'F' => Self::Float,
+            b'I' => Self::Integer,
+            b'J' => Self::Long,
+            b'S' => Self::Short,
+            b'Z' => Self::Boolean,
+            _ => return None,
+        })
+    }
+}
+
+/// One `element_value` (JVMS 4.7.22.1), as the attribute's own bytes state it.
+///
+/// Every tag of the production is here, including the ones no consumer writes into a declaration. The
+/// walk has to read a value whole to find the attribute's own end, and a fact type that held only the
+/// tags some consumer spells would state the same thing about two different class files: one whose
+/// member declares no `AnnotationDefault` at all, and one whose value is a `double`. "The attribute is
+/// absent" and "the attribute's value is one this engine has no literal for" are two facts, and the
+/// consumer that writes the declaration has to be able to tell them apart to decide between writing a
+/// `default` and writing none.
+///
+/// What this type never carries is a spelling. The constant tags publish the pool index they write,
+/// the same rule [`AttributeFacts::constant_value`] follows; the tags that name a `CONSTANT_Utf8`
+/// publish those bytes resolved. Which of these values a consumer can write as source is the
+/// consumer's decision, and a value it cannot write stays the structure the class file states.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub enum ElementValueFacts {
+    /// `B`, `C`, `D`, `F`, `I`, `J`, `S`, `Z`: one constant, by the tag that says which it is and
+    /// the constant-pool index the attribute writes for it.
+    Constant {
+        tag: ElementConstantTag,
+        index: CpIndexOf,
+    },
+    /// `s`: the text of the `CONSTANT_Utf8` the attribute names.
+    Utf8(JvmBytes),
+    /// `e`: an enum constant: the field descriptor the type index names, and the simple name the
+    /// constant-name index names.
+    Enum {
+        type_descriptor: JvmBytes,
+        constant_name: JvmBytes,
+    },
+    /// `c`: a class literal's return descriptor (JVMS 4.3.2/4.3.3).
+    Class(JvmBytes),
+    /// `@`: a nested annotation: the descriptor of the annotation type, and the pairs it declares in
+    /// the order it declares them.
+    Annotation {
+        type_descriptor: JvmBytes,
+        elements: Vec<ElementValuePairFacts>,
+    },
+    /// `[`: the elements the array declares, in order. An empty list is an array the attribute
+    /// itself declares empty, never an array this reader failed to read.
+    Array(Vec<ElementValueFacts>),
+}
+
+/// One `element_value_pair` of a nested annotation (JVMS 4.7.22.1): the element's own simple name
+/// and the value the pair gives it.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct ElementValuePairFacts {
+    /// The element's simple name, from the pair's `element_name_index`.
+    pub name: JvmBytes,
+    /// The value the pair gives that element.
+    pub value: ElementValueFacts,
+}
+
+/// The parameter groups one `Runtime*ParameterAnnotations` attribute declares (JVMS 4.7.18/19).
+///
+/// `parameter_count` is the attribute's leading `u1`, not a count inferred from a method descriptor.
+/// Each group is the annotations for that descriptor position when the count agrees; callers must
+/// refuse to align the groups when it does not.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct ParameterAnnotationFacts {
+    pub parameter_count: u8,
+    pub parameters: Vec<Vec<ElementValueFacts>>,
 }
 
 /// One `BootstrapMethods` entry.
@@ -2682,6 +2842,25 @@ pub(crate) fn read_class_structure<'a>(
         class,
         methods: method_records,
     })
+}
+
+/// The constant pool of one class, measured and resolved the way the tolerant member walk measures
+/// it.
+///
+/// This is the pool a caller resolves an **attribute's content** through when the member records of
+/// [`class_member_facts`] are the only facts it holds: a member record carries its attribute shells,
+/// and a shell's own indexes resolve against the class's pool. Publishing it on its own is what lets
+/// such a caller read one member attribute without reading the class's declaration or structure a
+/// second time ([`crate::prepared::PreparedClass`] hands its own pool out instead, through
+/// [`ClassFacts::constant_pool`]).
+///
+/// Nothing is charged: the bytes the pool lives in are the ones the caller's own read of that class
+/// already paid `ClassBytes` for, and this is a second **view** of them rather than a second read —
+/// the same rule [`read_class_member_prefix`] follows when it resolves the pool of a class whose
+/// member table stopped.
+pub fn class_constant_pool(bytes: &[u8], budget: &Budget) -> Result<Vec<CpEntryFacts>> {
+    let layout = measure_constant_pool(bytes, budget)?;
+    resolve_constant_pool(bytes, &layout, budget)
 }
 
 /// The structure facts of a class whose member table did not read to its declared end.
@@ -2904,6 +3083,53 @@ pub fn attribute_facts(
                 reader.expect_end()?;
                 facts.constant_value = Some(CpIndexOf(constant_value_index));
             }
+            b"AnnotationDefault" => {
+                ensure_unique(&mut seen, "AnnotationDefault")?;
+                let mut reader = AttributeReader::new(attribute_content(bytes, shell, budget)?);
+                let value = read_element_value(&mut reader, pool, budget, 0)?;
+                reader.expect_end()?;
+                facts.annotation_default = Some(value);
+            }
+            b"RuntimeVisibleAnnotations" => {
+                ensure_unique(&mut seen, "RuntimeVisibleAnnotations")?;
+                let mut reader = AttributeReader::new(attribute_content(bytes, shell, budget)?);
+                facts.runtime_visible_annotations = read_annotations(&mut reader, pool, budget)?;
+                reader.expect_end()?;
+            }
+            b"RuntimeInvisibleAnnotations" => {
+                ensure_unique(&mut seen, "RuntimeInvisibleAnnotations")?;
+                let mut reader = AttributeReader::new(attribute_content(bytes, shell, budget)?);
+                facts.runtime_invisible_annotations = read_annotations(&mut reader, pool, budget)?;
+                reader.expect_end()?;
+            }
+            b"RuntimeVisibleParameterAnnotations" => {
+                ensure_unique(&mut seen, "RuntimeVisibleParameterAnnotations")?;
+                let mut reader = AttributeReader::new(attribute_content(bytes, shell, budget)?);
+                let parameters = read_parameter_annotations(&mut reader, pool, budget)?;
+                reader.expect_end()?;
+                facts.runtime_visible_parameter_annotations = Some(parameters);
+            }
+            b"RuntimeInvisibleParameterAnnotations" => {
+                ensure_unique(&mut seen, "RuntimeInvisibleParameterAnnotations")?;
+                let mut reader = AttributeReader::new(attribute_content(bytes, shell, budget)?);
+                let parameters = read_parameter_annotations(&mut reader, pool, budget)?;
+                reader.expect_end()?;
+                facts.runtime_invisible_parameter_annotations = Some(parameters);
+            }
+            b"RuntimeVisibleTypeAnnotations" => {
+                ensure_unique(&mut seen, "RuntimeVisibleTypeAnnotations")?;
+                let mut reader = AttributeReader::new(attribute_content(bytes, shell, budget)?);
+                facts.runtime_visible_type_annotations =
+                    read_type_annotations(&mut reader, pool, budget)?;
+                reader.expect_end()?;
+            }
+            b"RuntimeInvisibleTypeAnnotations" => {
+                ensure_unique(&mut seen, "RuntimeInvisibleTypeAnnotations")?;
+                let mut reader = AttributeReader::new(attribute_content(bytes, shell, budget)?);
+                facts.runtime_invisible_type_annotations =
+                    read_type_annotations(&mut reader, pool, budget)?;
+                reader.expect_end()?;
+            }
             b"Module" => {
                 ensure_unique(&mut seen, "Module")?;
                 let mut reader = AttributeReader::new(attribute_content(bytes, shell, budget)?);
@@ -2914,6 +3140,200 @@ pub fn attribute_facts(
         }
     }
     Ok(facts)
+}
+
+/// Reads the shared `annotation` production used by both annotation element values and the
+/// class-level Runtime*Annotations attributes.
+fn read_annotation(
+    reader: &mut AttributeReader<'_>,
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+    depth: usize,
+) -> Result<ElementValueFacts> {
+    let type_descriptor = cp_utf8(pool, reader.u16()?)?;
+    let count = reader.u16()?;
+    let mut elements = Vec::new();
+    for _ in 0..count {
+        budget.poll()?;
+        let name = cp_utf8(pool, reader.u16()?)?;
+        let value = read_element_value(reader, pool, budget, depth + 1)?;
+        elements.push(ElementValuePairFacts { name, value });
+    }
+    Ok(ElementValueFacts::Annotation {
+        type_descriptor,
+        elements,
+    })
+}
+
+fn read_annotations(
+    reader: &mut AttributeReader<'_>,
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+) -> Result<Vec<ElementValueFacts>> {
+    let count = reader.u16()?;
+    let mut annotations = Vec::new();
+    for _ in 0..count {
+        budget.poll()?;
+        annotations.push(read_annotation(reader, pool, budget, 0)?);
+    }
+    Ok(annotations)
+}
+
+/// Reads the `u1 num_parameters` groups of a Runtime*ParameterAnnotations attribute.
+fn read_parameter_annotations(
+    reader: &mut AttributeReader<'_>,
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+) -> Result<ParameterAnnotationFacts> {
+    let parameter_count = reader.u8()?;
+    let mut parameters = Vec::with_capacity(usize::from(parameter_count));
+    for _ in 0..parameter_count {
+        budget.poll()?;
+        parameters.push(read_annotations(reader, pool, budget)?);
+    }
+    Ok(ParameterAnnotationFacts {
+        parameter_count,
+        parameters,
+    })
+}
+
+fn read_type_annotations(
+    reader: &mut AttributeReader<'_>,
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+) -> Result<Vec<TypeAnnotationFacts>> {
+    let count = reader.u16()?;
+    let mut annotations = Vec::new();
+    for _ in 0..count {
+        budget.poll()?;
+        let target_type = reader.u8()?;
+        let target_info = read_type_target_info(reader, target_type, budget)?;
+        let path_length = reader.u8()?;
+        let mut type_path = Vec::new();
+        for _ in 0..path_length {
+            budget.poll()?;
+            let kind = reader.u8()?;
+            let index = reader.u8()?;
+            if kind > 3 || (kind != 3 && index != 0) {
+                return Err(Error::invalid_input(
+                    "classfile_invalid_attribute_content",
+                    format!("invalid type_path entry kind={kind} index={index}"),
+                ));
+            }
+            type_path.push(TypePathEntry { kind, index });
+        }
+        let annotation = read_annotation(reader, pool, budget, 0)?;
+        annotations.push(TypeAnnotationFacts {
+            target_type,
+            target_info,
+            type_path,
+            annotation,
+        });
+    }
+    Ok(annotations)
+}
+
+/// Consumes every JVMS 4.7.20 target_info shape while preserving its exact bytes.
+fn read_type_target_info(
+    reader: &mut AttributeReader<'_>,
+    target_type: u8,
+    budget: &mut Budget,
+) -> Result<Vec<u8>> {
+    let length = match target_type {
+        0x00 | 0x01 | 0x16 => 1,
+        0x10 | 0x17 | 0x42 | 0x43..=0x46 => 2,
+        0x11 | 0x12 => 2,
+        0x13..=0x15 => 0,
+        0x47..=0x4b => 3,
+        0x40 | 0x41 => {
+            let count = reader.u16()?;
+            let mut bytes = vec![(count >> 8) as u8, count as u8];
+            for _ in 0..count {
+                budget.poll()?;
+                budget.charge(CountedBudgetDimension::ResultItems, 1)?;
+                bytes.extend_from_slice(&[
+                    reader.u8()?,
+                    reader.u8()?,
+                    reader.u8()?,
+                    reader.u8()?,
+                    reader.u8()?,
+                    reader.u8()?,
+                ]);
+            }
+            return Ok(bytes);
+        }
+        _ => {
+            return Err(Error::invalid_input(
+                "classfile_invalid_attribute_content",
+                format!("unknown type_annotation target_type 0x{target_type:02x}"),
+            ));
+        }
+    };
+    (0..length).map(|_| reader.u8()).collect()
+}
+
+/// The deepest `element_value` this reader walks (JVMS 4.7.22.1).
+///
+/// The production nests without a bound of its own — an array of arrays of …, or an annotation whose
+/// element is another annotation, is one level per production, and the class bytes are input — so
+/// the walk is bounded here rather than by the call stack. The bound is far above anything a
+/// compiler writes (an annotation inside an array inside an annotation is depth 3), and a value
+/// that nests deeper is a structured error rather than a fact read only in part.
+const MAX_ELEMENT_VALUE_DEPTH: usize = 32;
+
+/// Reads one `element_value` (JVMS 4.7.22.1) and every value nested inside it.
+///
+/// Every tag of the production is walked, so the bytes an attribute declares are consumed exactly
+/// as JVMS 4.7.22.1 states them and the attribute's own end is found wherever it is; what the walk
+/// publishes is [`ElementValueFacts`]. `depth` is how many `[`/`@` productions already enclose this
+/// value; see [`MAX_ELEMENT_VALUE_DEPTH`].
+fn read_element_value(
+    reader: &mut AttributeReader<'_>,
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+    depth: usize,
+) -> Result<ElementValueFacts> {
+    if depth > MAX_ELEMENT_VALUE_DEPTH {
+        return Err(Error::invalid_input(
+            "classfile_element_value_depth",
+            format!("annotation element value nests deeper than {MAX_ELEMENT_VALUE_DEPTH} levels"),
+        ));
+    }
+    budget.poll()?;
+    let tag = reader.u8()?;
+    Ok(match tag {
+        b's' => ElementValueFacts::Utf8(cp_utf8(pool, reader.u16()?)?),
+        b'e' => {
+            let type_index = reader.u16()?;
+            let constant_index = reader.u16()?;
+            ElementValueFacts::Enum {
+                type_descriptor: cp_utf8(pool, type_index)?,
+                constant_name: cp_utf8(pool, constant_index)?,
+            }
+        }
+        b'c' => ElementValueFacts::Class(cp_utf8(pool, reader.u16()?)?),
+        b'@' => read_annotation(reader, pool, budget, depth)?,
+        b'[' => {
+            let count = reader.u16()?;
+            let mut elements = Vec::new();
+            for _ in 0..count {
+                elements.push(read_element_value(reader, pool, budget, depth + 1)?);
+            }
+            ElementValueFacts::Array(elements)
+        }
+        _ => {
+            let Some(tag) = ElementConstantTag::of(tag) else {
+                return Err(Error::invalid_input(
+                    "classfile_invalid_attribute_content",
+                    format!("annotation element value tag 0x{tag:02x} is unknown"),
+                ));
+            };
+            ElementValueFacts::Constant {
+                tag,
+                index: CpIndexOf(reader.u16()?),
+            }
+        }
+    })
 }
 
 /// Reads one `BootstrapMethods` attribute.
@@ -5616,6 +6036,16 @@ impl<'a> AttributeReader<'a> {
         self.position
     }
 
+    /// One byte of the content, or the end-of-content error when none is left.
+    pub(crate) fn u8(&mut self) -> Result<u8> {
+        let byte = *self
+            .content
+            .get(self.position)
+            .ok_or_else(|| attribute_eoi(self.position))?;
+        self.position += 1;
+        Ok(byte)
+    }
+
     pub(crate) fn u16(&mut self) -> Result<u16> {
         let start = self.position;
         let end = offset_plus(start, 2)?;
@@ -6952,6 +7382,302 @@ mod reader_facts_tests {
                 implementations: vec![JvmBytes(b"pkg/Provider".to_vec())],
             }]
         );
+    }
+
+    /// The member table and class tail of one `AnnotationDefault` fixture: a class whose method table
+    /// declares one member per element of `members`, each carrying one `AnnotationDefault` attribute
+    /// per content of its own list — an empty list is a member that declares no attribute at all.
+    fn annotation_default_tail(
+        this_class: u16,
+        super_class: u16,
+        name: u16,
+        descriptor: u16,
+        attribute_name: u16,
+        members: &[Vec<Vec<u8>>],
+    ) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        buf_u16(&mut bytes, 0x0021);
+        buf_u16(&mut bytes, this_class);
+        buf_u16(&mut bytes, super_class);
+        buf_u16(&mut bytes, 0); // interfaces
+        buf_u16(&mut bytes, 0); // fields
+        buf_u16(&mut bytes, u16::try_from(members.len()).unwrap());
+        for contents in members {
+            buf_u16(&mut bytes, 0x0401); // public abstract
+            buf_u16(&mut bytes, name);
+            buf_u16(&mut bytes, descriptor);
+            buf_u16(&mut bytes, u16::try_from(contents.len()).unwrap());
+            for content in contents {
+                attribute(&mut bytes, attribute_name, content);
+            }
+        }
+        buf_u16(&mut bytes, 0); // class attributes
+        bytes
+    }
+
+    /// One `element_value` content: the tag byte and the one index every one-index tag names.
+    fn tag_with_index(tag: u8, index: u16) -> Vec<u8> {
+        let mut content = vec![tag];
+        buf_u16(&mut content, index);
+        content
+    }
+
+    /// One `element_value` content of a tag that names two indexes (`e`, `@`).
+    fn tag_with_indices(tag: u8, first: u16, second: u16) -> Vec<u8> {
+        let mut content = vec![tag];
+        buf_u16(&mut content, first);
+        buf_u16(&mut content, second);
+        content
+    }
+
+    /// Every member's own `AnnotationDefault`, in the fixture's method-table order, as the attribute
+    /// read publishes it.
+    fn annotation_defaults_of(bytes: &[u8]) -> Vec<Option<ElementValueFacts>> {
+        let mut budget = budget();
+        let facts = class_facts(bytes, &mut budget).expect("the default fixture is decodable");
+        facts
+            .methods
+            .iter()
+            .map(|method| {
+                attribute_facts(bytes, &method.attributes, &facts.constant_pool, &mut budget)
+                    .expect("the annotation defaults read")
+                    .annotation_default
+            })
+            .collect()
+    }
+
+    /// How many `[` productions one value nests around whatever it holds, the outermost counted.
+    fn array_depth(value: &ElementValueFacts) -> usize {
+        match value {
+            ElementValueFacts::Array(elements) if elements.len() == 1 => {
+                1 + array_depth(&elements[0])
+            }
+            ElementValueFacts::Array(_) => 1,
+            _ => 0,
+        }
+    }
+
+    /// One `AnnotationDefault` content whose value nests `levels` arrays around one `I#index`.
+    fn nested_array(levels: usize, index: u16) -> Vec<u8> {
+        let mut value = tag_with_index(b'I', index);
+        for _ in 0..levels {
+            let mut wrapper = vec![b'['];
+            buf_u16(&mut wrapper, 1);
+            wrapper.extend_from_slice(&value);
+            value = wrapper;
+        }
+        value
+    }
+
+    #[test]
+    fn annotation_default_reads_every_element_value_tag() {
+        let mut cp = CpBuilder::new();
+        let u_test = cp.utf8(b"Test");
+        let c_test = cp.class(u_test.index);
+        let u_object = cp.utf8(b"java/lang/Object");
+        let c_object = cp.class(u_object.index);
+        let u_method = cp.utf8(b"value");
+        let u_descriptor = cp.utf8(b"()V");
+        let a_default = cp.utf8(b"AnnotationDefault");
+        let integer = cp.integer(7);
+        let letter = cp.integer(65);
+        let flag = cp.integer(1);
+        let long = cp.long(5);
+        let float = cp.float(0x3f00_0000);
+        let double = cp.double(0x3fe0_0000_0000_0000);
+        let text = cp.utf8(b"x");
+        let kind = cp.utf8(b"LKind;");
+        let one = cp.utf8(b"ONE");
+        let string = cp.utf8(b"Ljava/lang/String;");
+        let count = cp.utf8(b"count");
+        let (mut bytes, _) = cp.finish();
+        bytes.extend_from_slice(&annotation_default_tail(
+            c_test.index,
+            c_object.index,
+            u_method.index,
+            u_descriptor.index,
+            a_default.index,
+            &[
+                vec![tag_with_index(b'I', integer.index)],
+                vec![tag_with_index(b'S', integer.index)],
+                vec![tag_with_index(b'B', integer.index)],
+                vec![tag_with_index(b'Z', flag.index)],
+                vec![tag_with_index(b'C', letter.index)],
+                vec![tag_with_index(b'J', long.index)],
+                vec![tag_with_index(b'F', float.index)],
+                vec![tag_with_index(b'D', double.index)],
+                vec![tag_with_index(b's', text.index)],
+                vec![tag_with_indices(b'e', kind.index, one.index)],
+                vec![tag_with_index(b'c', string.index)],
+                // One annotation with two pairs, the second of them an array: the `@` and `[`
+                // productions nest, so a walk that consumed either one alone could not find the
+                // attribute's own end.
+                vec![{
+                    let mut content = vec![b'@'];
+                    buf_u16(&mut content, kind.index);
+                    buf_u16(&mut content, 2); // element_value_pairs
+                    buf_u16(&mut content, count.index);
+                    content.extend_from_slice(&tag_with_index(b'I', integer.index));
+                    buf_u16(&mut content, count.index);
+                    content.extend_from_slice(&tag_with_index(b'[', 2));
+                    content.extend_from_slice(&tag_with_index(b'Z', flag.index));
+                    content.extend_from_slice(&tag_with_index(b'C', letter.index));
+                    content
+                }],
+                vec![],
+            ],
+        ));
+
+        let constant = |tag, index| {
+            Some(ElementValueFacts::Constant {
+                tag,
+                index: CpIndexOf(index),
+            })
+        };
+        let defaults = annotation_defaults_of(&bytes);
+        assert_eq!(
+            defaults[0],
+            constant(ElementConstantTag::Integer, integer.index)
+        );
+        assert_eq!(
+            defaults[1],
+            constant(ElementConstantTag::Short, integer.index)
+        );
+        assert_eq!(
+            defaults[2],
+            constant(ElementConstantTag::Byte, integer.index)
+        );
+        assert_eq!(
+            defaults[3],
+            constant(ElementConstantTag::Boolean, flag.index)
+        );
+        assert_eq!(
+            defaults[4],
+            constant(ElementConstantTag::Char, letter.index)
+        );
+        assert_eq!(defaults[5], constant(ElementConstantTag::Long, long.index));
+        assert_eq!(
+            defaults[6],
+            constant(ElementConstantTag::Float, float.index)
+        );
+        assert_eq!(
+            defaults[7],
+            constant(ElementConstantTag::Double, double.index)
+        );
+        assert_eq!(
+            defaults[8],
+            Some(ElementValueFacts::Utf8(JvmBytes(b"x".to_vec())))
+        );
+        assert_eq!(
+            defaults[9],
+            Some(ElementValueFacts::Enum {
+                type_descriptor: JvmBytes(b"LKind;".to_vec()),
+                constant_name: JvmBytes(b"ONE".to_vec()),
+            })
+        );
+        assert_eq!(
+            defaults[10],
+            Some(ElementValueFacts::Class(JvmBytes(
+                b"Ljava/lang/String;".to_vec()
+            )))
+        );
+        assert_eq!(
+            defaults[11],
+            Some(ElementValueFacts::Annotation {
+                type_descriptor: JvmBytes(b"LKind;".to_vec()),
+                elements: vec![
+                    ElementValuePairFacts {
+                        name: JvmBytes(b"count".to_vec()),
+                        value: ElementValueFacts::Constant {
+                            tag: ElementConstantTag::Integer,
+                            index: CpIndexOf(integer.index),
+                        },
+                    },
+                    ElementValuePairFacts {
+                        name: JvmBytes(b"count".to_vec()),
+                        value: ElementValueFacts::Array(vec![
+                            ElementValueFacts::Constant {
+                                tag: ElementConstantTag::Boolean,
+                                index: CpIndexOf(flag.index),
+                            },
+                            ElementValueFacts::Constant {
+                                tag: ElementConstantTag::Char,
+                                index: CpIndexOf(letter.index),
+                            },
+                        ]),
+                    },
+                ],
+            })
+        );
+        // The last member declares no attribute: no `element_value` is invented for it, and the
+        // `AnnotationDefault` of the members beside it is not leaked into it.
+        assert_eq!(defaults[12], None);
+    }
+
+    #[test]
+    fn a_damaged_annotation_default_is_a_structured_error() {
+        let mut cp = CpBuilder::new();
+        let u_test = cp.utf8(b"Test");
+        let c_test = cp.class(u_test.index);
+        let u_object = cp.utf8(b"java/lang/Object");
+        let c_object = cp.class(u_object.index);
+        let u_method = cp.utf8(b"value");
+        let u_descriptor = cp.utf8(b"()V");
+        let a_default = cp.utf8(b"AnnotationDefault");
+        let integer = cp.integer(7);
+        let text = cp.utf8(b"x");
+        let (mut bytes, _) = cp.finish();
+        // One class, one member per way an `AnnotationDefault` can be damaged: two attributes, an
+        // unknown tag, content the attribute's own structure does not fill, nesting deeper than the
+        // reader walks, and — the control — the deepest nesting it does walk.
+        let single = tag_with_index(b's', text.index);
+        bytes.extend_from_slice(&annotation_default_tail(
+            c_test.index,
+            c_object.index,
+            u_method.index,
+            u_descriptor.index,
+            a_default.index,
+            &[
+                vec![single.clone(), single.clone()],
+                vec![tag_with_index(b'Q', integer.index)],
+                {
+                    let mut trailing = single;
+                    trailing.push(0xff);
+                    vec![trailing]
+                },
+                vec![nested_array(MAX_ELEMENT_VALUE_DEPTH + 2, integer.index)],
+                vec![nested_array(MAX_ELEMENT_VALUE_DEPTH, integer.index)],
+            ],
+        ));
+
+        let mut budget = budget();
+        let facts = class_facts(&bytes, &mut budget).expect("the default fixture is decodable");
+        let mut error = |member: usize| {
+            attribute_facts(
+                &bytes,
+                &facts.methods[member].attributes,
+                &facts.constant_pool,
+                &mut budget,
+            )
+            .expect_err("the attribute is damaged")
+        };
+        assert_eq!(error_code(error(0)), "classfile_duplicate_attribute");
+        assert_eq!(error_code(error(1)), "classfile_invalid_attribute_content");
+        assert_eq!(error_code(error(2)), "classfile_invalid_attribute_content");
+        assert_eq!(error_code(error(3)), "classfile_element_value_depth");
+
+        // The deepest value the reader walks is still a value it reads whole: the bound is a bound
+        // on nesting, not a refusal of a deep declaration that is still inside it.
+        let deepest = attribute_facts(
+            &bytes,
+            &facts.methods[4].attributes,
+            &facts.constant_pool,
+            &mut budget,
+        )
+        .expect("the deepest value inside the bound reads")
+        .annotation_default
+        .expect("the member declares an attribute");
+        assert_eq!(array_depth(&deepest), MAX_ELEMENT_VALUE_DEPTH);
     }
 
     #[test]
@@ -10658,6 +11384,79 @@ mod tests {
     /// table, branches, or — like every other P3 sample — a subroutine. The increment is the whole
     /// of this sample's contribution: it is a class javac 23.0.1 compiled for Java 8 like the rest,
     /// read by the same structural path.
+    ///
+    /// The `p3-one-armed-if` sample adds its own class and four bodies (three `static` methods and
+    /// the default constructor) and raises the branch/switch targets by five: `oneArmed` branches
+    /// once and falls through into its join, so its arm needs no `goto`, while `elseOnly` and
+    /// `bothArms` each branch once and `goto` over the arm the branch did not take. No body declares
+    /// an exception table or — like every other P3 sample — a subroutine, so the third and fifth
+    /// counts stay where they are.
+    ///
+    /// The `p3-typed-catch` sample adds its own class and five bodies (four `static` methods and the
+    /// default constructor), moves the branch/switch targets by six and — the first P3 sample to do
+    /// so — declares **six** exception-table records: `namedCatch`'s one row
+    /// (`[0,13) → 14 IllegalArgumentException`), `twoCatches`' two (`[0,27)` to 28 and 31) and
+    /// `multiCatch`'s two (`[0,27)` to 28 twice, the multi-catch the compiler writes as one row per
+    /// class), each with the `ifge`/`if_icmple` its `if`s compile to, and `finallyIncrements`' one
+    /// `any` row (`[2,4) → 11`) with the `goto` that jumps over the copy the compiler made. The
+    /// subroutine count stays where it is: like every other P3 sample, javac 23.0.1 emits none.
+    ///
+    /// The `p3-typed-catch` sample's sixth member (`initialisedBeforeTry`, two assignments before a
+    /// `try`) moves one of each of the three middle counts and nothing else: one body, one
+    /// exception-table record (`[4,17) → 18 IllegalArgumentException`) and one branch target (the
+    /// `ifge` its `if` compiles to, against the `return` of the arm the branch transfers to). So the
+    /// sample moves the sweep's own counts to 269 bodies, 51 records and 137 branch/switch targets,
+    /// and leaves the class and subroutine counts where they were.
+    ///
+    /// The `p3-chained-store` sample adds its own class and three bodies (`chain`, `fill3` and the
+    /// default constructor) and moves neither of the last three: `chain` is a load, a copy and two
+    /// stores with an add, and `fill3` an array initializer with three stores into the array — and
+    /// no instruction of either is a branch, so no body declares an exception table, branches, or a
+    /// subroutine. So the sample moves the class count to 55 and the body count to 272, and leaves
+    /// the three structural counts where they were.
+    ///
+    /// The `p3-forward-join` sample adds one class and four bodies (`both`, `either`, `again` and
+    /// the default constructor). None of them has an exception table or a subroutine. `both` and
+    /// `either` are two forward branches each, and `again` is one branch plus the `goto` back to
+    /// the header, so the branch/switch target count moves by six: 56 classes, 276 bodies, 143
+    /// branch targets.
+    ///
+    /// Seven samples already on disk are counted once, together. `p3-concat-char` (`Letters`) is one
+    /// class and three straight-line bodies. `p3-mutf8` (`Controls`) is one class and two bodies,
+    /// and neither branches. `p3-field-increment` (`Bump`) is one class and three bodies (`post`,
+    /// `pre` and the constructor); neither update is a branch. `p3-nested-try` (`Nest`) is one class
+    /// and two bodies, two exception-table records, and two `goto`s. `p3-char-switch` (`Letters`)
+    /// is one class and three bodies; `letter`'s `lookupswitch` names two keys and a default, and
+    /// `number`'s names one key and a default. `p3-static-call` (`Calls`) is one class and four
+    /// bodies (`own`, `boxed`, `local` and the constructor); none of them branches or declares an
+    /// exception table. `p3-sync-return` (`Locked`) is one class and two bodies (the constructor and
+    /// `locked`); `locked`'s monitor states two exception-table records and no branch. The historical
+    /// paragraph above ended at 63 classes, 295 bodies, 55 handler records and 150 branch/switch
+    /// targets. The committed population has since grown to 81 classes before the current additions.
+    /// `p3-unary-negation` adds `UnaryNegation`, while `p3-special-dispatch` adds `BaseProbe`,
+    /// `DefaultProbe` and `SpecialProbe`; its `SpecialRunner` remains source-only. The later
+    /// `p3-reference-cast` fixture adds `ReferenceCastProbe`; numeric-comparison and invocation-
+    /// arguments each add one class, with 35 and 14 bodies respectively. The repository sweep now
+    /// measured 88 classes, 480 bodies, 74 handler records and 227 branch/switch targets. The
+    /// `p3-throw`, `p3-final-static` and `p3-instanceof` fixtures add one class each, with 9, 5 and
+    /// 15 bodies respectively; their runners and boundary variants remain source-only. The current
+    /// sweep measured 91 classes, 509 bodies, 75 handler records and 231 branch/switch targets.
+    /// Bitwise, deferred-value-order and floating-constant fixtures add three classes, 70 bodies
+    /// and five branch targets, reaching 94 classes and 579 bodies. Lambda adaptation, type
+    /// qualifiers, primitive conversions and narrow returns add four classes, 60 bodies and six
+    /// monitor handler records. Partial array allocation and B/C/S field-store fixtures add two
+    /// classes and 29 bodies. The current sweep measures 100 classes, 668 bodies, 81 handler
+    /// records and 236 branch/switch targets, with the same eight historical subroutines. Four
+    /// frozen Class-literal/type-name classes add 15 bodies without new handlers or targets:
+    /// the current census is 104 classes and 683 bodies. The verifier-valid boolean-field-store
+    /// fixture adds one class with 11 bodies and no new handlers or branch targets, reaching 105
+    /// classes and 694 bodies. Six null-resource fixtures add 32 bodies, 13 handler records and
+    /// 25 branch targets; that census was 111 classes, 726 bodies, 94 handler records and
+    /// 261 branch targets. The permanent compound-lvalue fixture adds two source classes and their
+    /// helpers/runners plus five verifier-valid patched boundary classes; the popped-static-
+    /// qualifier fixture adds one class. Together these 12 classes add 170 bodies, four handler
+    /// records and 79 branch/switch targets. The current census is 123 classes, 896 bodies,
+    /// 98 handler records and 340 branch/switch targets.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -10737,7 +11536,14 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (52, 259, 44, 125, 8),
+            // The class-annotation fixtures add 12 classes and nine Code methods. The array
+            // initializer fixture adds one class and 13 Code methods. The interface-field
+            // initializer fixture adds nine classes and 24 Code methods. The three immediate
+            // functional receiver fixtures add nine more Code methods. The bridge-projection
+            // fixtures add four classes and eleven Code methods without branches or handlers.
+            // The conditional-value and assert-core inputs add six subject/patched classes,
+            // 46 Code methods and 35 branch targets; their runners remain source-only.
+            (164, 1152, 98, 381, 8),
             "fixture population changed: re-measure these counts"
         );
     }
@@ -10773,6 +11579,7 @@ mod tests {
     /// the first method's text, `#7`/`#8` the second's and `#9` the attribute's name. The first
     /// method has no attribute at all, so the walk's own position arithmetic is what the tests
     /// below exercise: one shell-less record, then one record whose attribute is the damage.
+    /// A zero class-attribute count closes the valid case after the member tables.
     fn two_method_fixture(second_attribute_length: u32) -> Vec<u8> {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(&0xcafebabe_u32.to_be_bytes());
@@ -10805,6 +11612,7 @@ mod tests {
                 bytes.push(0xb1);
             }
         }
+        u16_be(&mut bytes, 0);
         bytes
     }
 
@@ -10823,9 +11631,9 @@ mod tests {
         assert_eq!(walked.interfaces, header.interfaces);
         assert_eq!(walked.fields, header.fields);
         assert_eq!(walked.methods, header.methods);
+        assert_eq!(walked.attributes, header.attributes);
         assert_eq!(walked.stopped_at, None);
-        // The walk stops at the method table, so the class attribute table is the one thing the
-        // whole-structure read holds and this read does not claim.
+        // Both reads retain class attribute shells while leaving their content lazy.
         assert!(!header.attributes.is_empty());
         assert!(
             walked.methods[0]

@@ -1,0 +1,13 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-UnboundProbe-0uifej9s/jarde/UnboundProbe.java:16: 错误: 不兼容的类型: lambda 表达式中的参数类型不兼容
+        return (UnboundHelper p0, java.lang.String p1) -> p0.pick(p1);
+               ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-UnboundProbe-0uifej9s/jarde/UnboundProbe.java:23: 错误: 不兼容的类型: lambda 表达式中的参数类型不兼容
+        return (UnboundHelper p0, java.lang.String[] p1) -> p0.pick(p1);
+               ^
+注: /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-UnboundProbe-0uifej9s/jarde/UnboundRunner.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+2 个错误
+3 个警告

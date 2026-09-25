@@ -1,0 +1,107 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DeferredValueOrder.class */
+public class DeferredValueOrder {
+    public static int call() {
+        int iValue = DeferredEffects.value();
+        DeferredEffects.mark();
+        return iValue;
+    }
+
+    public static int field() {
+        int i = DeferredEffects.field;
+        DeferredEffects.mark();
+        return i;
+    }
+
+    public static int array(int[] iArr) {
+        int i = iArr[0];
+        DeferredEffects.mark();
+        return i;
+    }
+
+    public static int instanceField(OrderValue orderValue) {
+        int i = orderValue.value;
+        DeferredEffects.mark();
+        return i;
+    }
+
+    public static int arrayLength(int[] iArr) {
+        int length = iArr.length;
+        DeferredEffects.mark();
+        return length;
+    }
+
+    public static int[] newArray(int i) {
+        int[] iArr = new int[i];
+        DeferredEffects.mark();
+        return iArr;
+    }
+
+    public static String[] anewArray(int i) {
+        String[] strArr = new String[i];
+        DeferredEffects.mark();
+        return strArr;
+    }
+
+    public static int[][] multiArray(int i) {
+        int[][] iArr = new int[i][1];
+        DeferredEffects.mark();
+        return iArr;
+    }
+
+    public static int divInt(int i) {
+        int i2 = i / DeferredEffects.divisor;
+        DeferredEffects.mark();
+        return i2;
+    }
+
+    public static int remInt(int i) {
+        int i2 = i % DeferredEffects.divisor;
+        DeferredEffects.mark();
+        return i2;
+    }
+
+    public static long divLong(long j) {
+        long j2 = j / DeferredEffects.longDivisor;
+        DeferredEffects.mark();
+        return j2;
+    }
+
+    public static long remLong(long j) {
+        long j2 = j % DeferredEffects.longDivisor;
+        DeferredEffects.mark();
+        return j2;
+    }
+
+    public static String cast(Object obj) {
+        String str = (String) obj;
+        DeferredEffects.mark();
+        return str;
+    }
+
+    public static OrderValue direct() {
+        OrderValue orderValue = new OrderValue();
+        DeferredEffects.mark();
+        return orderValue;
+    }
+
+    public static int nested() {
+        return DeferredEffects.left() + DeferredEffects.right();
+    }
+
+    public static int branch(int[] iArr, boolean z) {
+        return z ? iArr[0] + DeferredEffects.right() : DeferredEffects.left();
+    }
+
+    public static int prefix(int[] iArr) {
+        if (iArr == null) {
+            return -1;
+        }
+        return iArr.length;
+    }
+
+    public static void keepPool() {
+        DeferredEffects.mark();
+    }
+}

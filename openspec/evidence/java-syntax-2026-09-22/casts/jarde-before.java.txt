@@ -1,0 +1,104 @@
+// jarde: presentation of `CastProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class CastProbe extends java.lang.Object {
+    public CastProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `CastProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.String direct(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `direct(Ljava/lang/Object;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method direct(Ljava/lang/Object;)Ljava/lang/String;
+        // @declaration a static method of `CastProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4
+        // the cast at BCI 1 is not one this run proved to be the erasure of the value it casts
+    }
+
+    public static int receiver(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `receiver(Ljava/lang/Object;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method receiver(Ljava/lang/Object;)I
+        // @declaration a static method of `CastProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7 4
+        // the cast at BCI 1 is not one this run proved to be the erasure of the value it casts
+    }
+
+    public static int array(java.lang.Object arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `array(Ljava/lang/Object;I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method array(Ljava/lang/Object;I)I
+        // @declaration a static method of `CastProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 6 5
+        // the cast at BCI 1 is not one this run proved to be the erasure of the value it casts
+    }
+
+    public static java.lang.String[] referenceArray(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `referenceArray(Ljava/lang/Object;)[Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method referenceArray(Ljava/lang/Object;)[Ljava/lang/String;
+        // @declaration a static method of `CastProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4
+        // the cast at BCI 1 is not one this run proved to be the erasure of the value it casts
+    }
+
+    public static java.lang.Object widen(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `widen(Ljava/lang/Object;)Ljava/lang/Object;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method widen(Ljava/lang/Object;)Ljava/lang/Object;
+        // @declaration a static method of `CastProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4
+        // the cast at BCI 1 is not one this run proved to be the erasure of the value it casts
+        // @bytecode 5 6
+        // the statement at BCI 6 reads `local1`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+    }
+
+    public static java.lang.String twice(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `twice(Ljava/lang/Object;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method twice(Ljava/lang/Object;)Ljava/lang/String;
+        // @declaration a static method of `CastProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 4
+        // the instruction at BCI 4 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7
+        // the cast at BCI 4 is not one this run proved to be the erasure of the value it casts
+    }
+
+    public static java.lang.String invocation(java.util.function.Supplier arg0) {
+        // @method invocation(Ljava/util/function/Supplier;)Ljava/lang/String;
+        // @declaration a static method of `CastProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.get();
+        // @bytecode 6
+        // the instruction at BCI 6 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 9
+        // the cast at BCI 6 is not one this run proved to be the erasure of the value it casts
+    }
+
+    public static int catches(java.lang.Object arg0) {
+        // @method catches(Ljava/lang/Object;)I
+        // @declaration a static method of `CastProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            // @bytecode 0
+            // block at BCI 0 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+        } catch (java.lang.ClassCastException local1) {
+            return 7;
+        }
+    }
+}

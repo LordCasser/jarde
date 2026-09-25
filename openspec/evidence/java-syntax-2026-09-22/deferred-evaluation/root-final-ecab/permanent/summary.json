@@ -1,0 +1,13 @@
+{
+  "fixture_sha256": "44eaaf23c354566f25ba429e49f7d34a73a114c7de35909360b705dcc63c3d04",
+  "bytes": 1338,
+  "code_methods": 19,
+  "source_or_patched_bytes_equal": true,
+  "cases": 83,
+  "jarde_cli_sha256": "ecab8244d1709765fa0f2b0effcebe49b9f066eea911843d11d34abec5837330",
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_differences": [],
+  "jadx_javac": 0,
+  "jadx_equal": true
+}

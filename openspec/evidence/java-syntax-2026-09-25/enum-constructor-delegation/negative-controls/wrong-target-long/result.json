@@ -1,0 +1,51 @@
+{
+  "case": "wrong-target-long",
+  "class_sha256": {
+    "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+    "DelegatingEnum.class": "4faecc43dfea89b4bf66ca39c737b005674f251b76dfbf5489a01b1194da8b87",
+    "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+  },
+  "expected_rejection": "ZERO selects the long overload `(String,int,long)`, not the unique source-int target.",
+  "jadx_compile_exit": 0,
+  "jadx_decompile_exit": 0,
+  "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+  "jadx_output": [
+    "enum=ZERO:0:0",
+    "enum=ONE:1:1",
+    "effects=2:0,1",
+    "declared-constructors=2,3,3"
+  ],
+  "jadx_xverify_run_exit": 0,
+  "jarde_java8_compile_exit": 1,
+  "jarde_source_execution": {
+    "status": "complete",
+    "usage": {
+      "analysis_steps": 493,
+      "archive_entries": 14,
+      "attribute_bytes": 1010,
+      "class_bytes": 2248,
+      "class_headers": 1,
+      "code_bytes": 118,
+      "dependency_depth": 0,
+      "elapsed_millis": 6,
+      "entry_bytes": 1124,
+      "input_bytes": 3028,
+      "ir_edges": 66,
+      "ir_items": 1494,
+      "method_bodies": 8,
+      "nested_depth": 0,
+      "normalization_clones": 0,
+      "output_bytes": 3828,
+      "read_bytes": 623,
+      "result_items": 51
+    }
+  },
+  "jarde_source_outcome": "performed",
+  "original_output": [
+    "enum=ZERO:0:0",
+    "enum=ONE:1:1",
+    "effects=2:0,1",
+    "declared-constructors=2,3,3"
+  ],
+  "original_xverify_run_exit": 0
+}

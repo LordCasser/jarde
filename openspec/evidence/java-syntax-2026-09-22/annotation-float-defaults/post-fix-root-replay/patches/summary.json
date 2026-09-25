@@ -1,0 +1,29 @@
+{
+  "cli_sha256": "f2fb24241c2692dff53060576e185eb282617a6881e81900140bb2eb62006544",
+  "modes": {
+    "positive-infinity-to-negative-qnan": {
+      "patched_class_sha256": "7a8f0cc5993cc9c65b60fb77c39ce9f2c6d71dd0dc78f5ebbeb9f571dfe9f0a3",
+      "original_raw_bits": [
+        "80000000",
+        "1",
+        "ffc00000",
+        "7ff8000000000000"
+      ],
+      "jarde_default_count": 3,
+      "jarde_javac": 0,
+      "jarde_run": 1
+    },
+    "canonical-nan-to-payload-nan": {
+      "patched_class_sha256": "760d18b05e75ca54adf144bd75df0ac77bd9643ef369d5a03a5143be6237c642",
+      "original_raw_bits": [
+        "80000000",
+        "1",
+        "7f800000",
+        "7ff8000000000001"
+      ],
+      "jarde_default_count": 3,
+      "jarde_javac": 0,
+      "jarde_run": 1
+    }
+  }
+}

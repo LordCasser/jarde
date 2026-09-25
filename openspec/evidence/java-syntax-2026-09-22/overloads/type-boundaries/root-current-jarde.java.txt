@@ -1,0 +1,33 @@
+// jarde: presentation of `InterfaceBoundaryProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class InterfaceBoundaryProbe extends java.lang.Object {
+    public InterfaceBoundaryProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `InterfaceBoundaryProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int take(java.lang.Runnable arg0) {
+        // @method take(Ljava/lang/Runnable;)I
+        // @declaration a static method of `InterfaceBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return 7;
+    }
+
+    public static int caller(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `caller(Ljava/lang/Object;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method caller(Ljava/lang/Object;)I
+        // @declaration a static method of `InterfaceBoundaryProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 7 4
+        // the parameter 0 of the invocation at BCI 4 is declared `java.lang.Runnable` presents `java.lang.Object` but the invocation requires `java.lang.Runnable` and this layer has no safe reference conversion evidence
+    }
+}

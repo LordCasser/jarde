@@ -1,0 +1,13 @@
+# `instanceof` 的 0/1 汇合：正确但冗长的布尔源码
+
+[`InstanceOfMerge.java`](InstanceOfMerge.java)用 `javac --release 8 -g:none -Xlint:-options` 编译为 424 B、SHA-256 `cf9066c3257306c9d7e3235daa70ae2f66bed835810ada637c013bbe95642efe` 的 class。`inverted(Object)` 对带一次可观察调用的 `instanceof` 做 `false/true` 三元选择；`direct(Object)` 直接返回类型测试。[`javap.txt`](javap.txt)显示前者的 BCI 4 `instanceof`、7 `ifeq`、10/14 两个 `iconst_0/1`、15 `ireturn`，是既有条件值机制可证明的 0/1 stack Phi；后者是直接的 BCI 7 `ireturn`。
+
+四种输入（null、String、Integer、Object）各跑两个方法。原 class、仅去掉虚构 `package defpackage;` 后重编的 JADX 1.5.6 完整类，以及未手改的 Jarde 完整类均经 Java 8 编译及 `java -Xverify:all`，三份八行逐字一致，且 `calls` 均为 1；日志为[`original-run.txt`](original-run.txt)、[`jadx-run.txt`](jadx-run.txt)、[`jarde-run.txt`](jarde-run.txt)。本轮 Jarde CLI SHA-256 `f821728e250e27ababf17ec5043b3ae2aad92245a541e58f0871cff1dc46499e` 来自当前工作树（含并行在途改动），[`jarde-report.json`](jarde-report.json)中四个方法都为 `structured/java`，没有 fallback。这里不是语义失败，也不能再把此 0/1 形状称为未恢复。
+
+输出质量仍有差别：JADX 将 `inverted` 写成 `return !(value(obj) instanceof java.lang.String);`，Jarde 写成 `return (value(arg0) instanceof java.lang.String ? 0 : 1) % 2 != 0;`。后者忠实保持 Java 8 可编译性和 JVM 对任意整数 `ireturn Z` 的低位语义，却对**已证明两臂恰为 0/1**的具体值多输出了一层整数条件及取余。`build.rs::build_conditional_value` 当前按两臂 `Integer` 构造 `ExprKind::Conditional`，`ast.rs` 因两臂同为 `int` 给整个表达式 `int` 类型，`build.rs::adapt_return` 对 `ireturn Z` 统一调用 `integer_low_bit_boolean`。这一链条解释了文本，并非 JADX 算法的必要组成。
+
+后续若追求与 JADX 同等清晰的源码，可在现有条件值/布尔消费接缝做**精确 0/1 常量证明**：两臂无其它效果、值只有此 Phi 消费、test 已呈现为 Boolean 且映射与分支极性相符，才把这一候选写成 test 或 `!test`；所有分支/转接 BCI 仍挂在来源。非 0/1、未知 Phi 输入或额外值使用继续走通用低位适配，不能为美化文本破坏已经验收的 verifier-valid `2/3` 返回语义。[`recover-integer-boolean-returns`](../../../changes/recover-integer-boolean-returns/verification-root.md) 的低位合同仍优先于源码缩写。此项是低优先级的输出质量改进，暂不与实例字段或命名 catch 的行为修复混入。
+
+追加的 [`BooleanMergeControls.java`](BooleanMergeControls.java) 同时固定 1/0 正极性和 0/1 反极性；Java 8 class SHA-256 `f521c4330cbb789fa69b81c4ff623b97d416cccbc1fe17861cb2e29c4d5e682b`，[`boolean-merge-javap.txt`](boolean-merge-javap.txt)显示两方法的 BCI 4/7/10/11/14/15 形状相同而两常量对调。原 class 和去掉虚构 package 的 [JADX 完整类](boolean-merge-jadx.java)均重编并在 `-Xverify:all` 下通过八行；[`boolean-merge-original-run.txt`](boolean-merge-original-run.txt)与[`boolean-merge-jadx-run.txt`](boolean-merge-jadx-run.txt)逐字相同。JADX 对正极性输出测试本身，对反极性输出 `!` 测试。Jarde 的实施后文本与行为将由独立 CLI 验收补录；本条不预称已经实现简写。
+
+实施后的[根代理独立验收](../../../changes/simplify-proved-boolean-conditional-returns/verification-root.md)已经补录：最新 Jarde 对 1/0、0/1 输出测试或 `!`，两份完整类的原/JADX/Jarde 八行各自一致；Jarde 重编 class 与 JADX 重编 class 各自逐字节相同。另存的 verifier-valid 2/3 改码负例仍输出 `% 2 != 0`，其 Jarde 重编运行与改码原 class 八行一致。旧报告仍保留为修前基线。

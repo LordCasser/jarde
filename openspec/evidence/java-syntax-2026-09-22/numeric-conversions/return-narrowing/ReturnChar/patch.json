@@ -1,0 +1,20 @@
+{
+  "descriptor_before": "(I)I",
+  "descriptor_after": "(I)C",
+  "descriptor_occurrences": 1,
+  "changed_byte_range": [
+    92,
+    93
+  ],
+  "changed_byte_count": 1,
+  "original_sha256": "89c6fc1cbc8899085a9122384cf2ec9be61829fa3a4dd621adb75332aed21458",
+  "patched_sha256": "a07ecdb8c34f43aa1aa0a64c7da8713632a05a24108cda2afd65386952ac592e",
+  "code_attribute_sha256_before": [
+    "de5c6e26e5b57db170f5e5309abcc484053bc472d19034e22ecfc14fc743d16e",
+    "19ee1e2cfa08f152f43843b7ef4e8ef6c2af82952fadb6c26b5a4f13cfc4c74c"
+  ],
+  "code_attribute_sha256_after": [
+    "de5c6e26e5b57db170f5e5309abcc484053bc472d19034e22ecfc14fc743d16e",
+    "19ee1e2cfa08f152f43843b7ef4e8ef6c2af82952fadb6c26b5a4f13cfc4c74c"
+  ]
+}

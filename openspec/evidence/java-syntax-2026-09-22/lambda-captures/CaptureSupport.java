@@ -1,0 +1,1 @@
+public class CaptureSupport {public static int calls;public static int failAt;public static final RuntimeException FAILURE=new IllegalStateException("capture");public static int next(){calls++;if(calls==failAt)throw FAILURE;return calls*10;}}

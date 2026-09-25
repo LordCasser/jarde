@@ -1,0 +1,101 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/short-circuit-chain-extra-entry/ChainExtraBoundary.class
+  Last modified 2026年9月25日; size 392 bytes
+  SHA-256 checksum 2630a7ea3e395b74121053dfa9370288dc510ea4d1fbfcf3bd9fbb9d04e1ba55
+public final class ChainExtraBoundary
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // ChainExtraBoundary
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 3, methods: 3, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // ChainExtraBoundary.calls:I
+   #8 = Class              #10            // ChainExtraBoundary
+   #9 = NameAndType        #11:#12        // calls:I
+  #10 = Utf8               ChainExtraBoundary
+  #11 = Utf8               calls
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // ChainExtraBoundary.rhsValue:Z
+  #14 = NameAndType        #15:#16        // rhsValue:Z
+  #15 = Utf8               rhsValue
+  #16 = Utf8               Z
+  #17 = Methodref          #8.#18         // ChainExtraBoundary.rhs:()Z
+  #18 = NameAndType        #19:#20        // rhs:()Z
+  #19 = Utf8               rhs
+  #20 = Utf8               ()Z
+  #21 = Fieldref           #8.#22         // ChainExtraBoundary.result:Z
+  #22 = NameAndType        #23:#16        // result:Z
+  #23 = Utf8               result
+  #24 = Utf8               Code
+  #25 = Utf8               assign
+  #26 = Utf8               (ZZZZ)V
+  #27 = Utf8               StackMapTable
+{
+  static boolean result;
+    descriptor: Z
+    flags: (0x0008) ACC_STATIC
+
+  static boolean rhsValue;
+    descriptor: Z
+    flags: (0x0008) ACC_STATIC
+
+  static int calls;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  public ChainExtraBoundary();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static boolean rhs();
+    descriptor: ()Z
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #7                  // Field calls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field calls:I
+         8: getstatic     #13                 // Field rhsValue:Z
+        11: ireturn
+
+  static void assign(boolean, boolean, boolean, boolean);
+    descriptor: (ZZZZ)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=4, args_size=4
+         0: iload_0
+         1: ifeq          11
+         4: iload_1
+         5: ifeq          15
+         8: goto          25
+        11: iload_2
+        12: ifne          25
+        15: iload_3
+        16: ifne          25
+        19: invokestatic  #17                 // Method rhs:()Z
+        22: ifeq          29
+        25: iconst_1
+        26: goto          30
+        29: iconst_0
+        30: putstatic     #21                 // Field result:Z
+        33: return
+      StackMapTable: number_of_entries = 5
+        frame_type = 11 /* same */
+        frame_type = 3 /* same */
+        frame_type = 9 /* same */
+        frame_type = 3 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+}

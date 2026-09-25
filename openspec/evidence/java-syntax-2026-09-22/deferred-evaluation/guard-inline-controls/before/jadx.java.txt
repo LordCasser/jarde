@@ -1,0 +1,33 @@
+package defpackage;
+
+/* JADX INFO: loaded from: GuardInlineControls.class */
+public class GuardInlineControls {
+    public static void locked() {
+        synchronized (GuardEffects.lock()) {
+            GuardEffects.mark();
+        }
+    }
+
+    public static int returned() {
+        int iValue;
+        synchronized (GuardEffects.shared) {
+            iValue = GuardEffects.value();
+        }
+        return iValue;
+    }
+
+    public static void resource() {
+        GuardResource guardResource = new GuardResource();
+        try {
+            GuardEffects.mark();
+            guardResource.close();
+        } catch (Throwable th) {
+            try {
+                guardResource.close();
+            } catch (Throwable th2) {
+                th.addSuppressed(th2);
+            }
+            throw th;
+        }
+    }
+}

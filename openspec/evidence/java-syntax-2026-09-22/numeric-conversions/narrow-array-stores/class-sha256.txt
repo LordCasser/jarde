@@ -1,0 +1,2 @@
+e7f92710bf26eb45bb3fb01dcd6e22d0d370d53cd3a9fa28468f51753a9528b5  NarrowArrayStores.source.class
+8bbb683045fdc2a85ee376383515920331fd15c53710176e447ba93f0d04004b  NarrowArrayStores.patched.class

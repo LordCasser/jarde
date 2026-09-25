@@ -1,0 +1,4 @@
+80000000
+1
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.lang.Float.floatValue()" because the return value of "java.lang.reflect.Method.getDefaultValue()" is null
+	at FloatRunner.main(Unknown Source)

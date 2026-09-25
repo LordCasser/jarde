@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-lowbit/patch_classfiles.py",
+    "RawBool",
+    "--source",
+    "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/original/RawBool.class",
+    "--destination",
+    "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/patched/RawBool.class",
+    "--manifest",
+    "/private/tmp/jarde-bastore-evidence.aBYQFV/out/patches/RawBool.json"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "",
+  "stderr": ""
+}

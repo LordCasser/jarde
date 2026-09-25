@@ -1,0 +1,180 @@
+public class NarrowFieldStores {
+  public byte byteField;
+    descriptor: B
+  public char charField;
+    descriptor: C
+  public short shortField;
+    descriptor: S
+  public int booleanField;
+    descriptor: I
+  public static byte staticByteField;
+    descriptor: B
+  public static char staticCharField;
+    descriptor: C
+  public static short staticShortField;
+    descriptor: S
+  public static int staticBooleanField;
+    descriptor: I
+  public byte ordinaryByteField;
+    descriptor: B
+  public char ordinaryCharField;
+    descriptor: C
+  public short ordinaryShortField;
+    descriptor: S
+  public boolean ordinaryBooleanField;
+    descriptor: Z
+  public static byte ordinaryStaticByteField;
+    descriptor: B
+  public static char ordinaryStaticCharField;
+    descriptor: C
+  public static short ordinaryStaticShortField;
+    descriptor: S
+  public static boolean ordinaryStaticBooleanField;
+    descriptor: Z
+  public NarrowFieldStores();
+    descriptor: ()V
+
+  public void setByte(int);
+    descriptor: (I)V
+
+  public void setChar(int);
+    descriptor: (I)V
+
+  public void setShort(int);
+    descriptor: (I)V
+
+  public void setBoolean(int);
+    descriptor: (I)V
+
+  public void setByteProduced(int, boolean);
+    descriptor: (IZ)V
+
+  public static void setByteOn(NarrowFieldStores, int);
+    descriptor: (LNarrowFieldStores;I)V
+
+  public static void setByteProducedOn(NarrowFieldStores, int, boolean);
+    descriptor: (LNarrowFieldStores;IZ)V
+
+  public void setCharProduced(int, boolean);
+    descriptor: (IZ)V
+
+  public static void setCharOn(NarrowFieldStores, int);
+    descriptor: (LNarrowFieldStores;I)V
+
+  public static void setCharProducedOn(NarrowFieldStores, int, boolean);
+    descriptor: (LNarrowFieldStores;IZ)V
+
+  public void setShortProduced(int, boolean);
+    descriptor: (IZ)V
+
+  public static void setShortOn(NarrowFieldStores, int);
+    descriptor: (LNarrowFieldStores;I)V
+
+  public static void setShortProducedOn(NarrowFieldStores, int, boolean);
+    descriptor: (LNarrowFieldStores;IZ)V
+
+  public void setBooleanProduced(int, boolean);
+    descriptor: (IZ)V
+
+  public static void setBooleanOn(NarrowFieldStores, int);
+    descriptor: (LNarrowFieldStores;I)V
+
+  public static void setBooleanProducedOn(NarrowFieldStores, int, boolean);
+    descriptor: (LNarrowFieldStores;IZ)V
+
+  public static void setStaticByte(int);
+    descriptor: (I)V
+
+  public static void setStaticChar(int);
+    descriptor: (I)V
+
+  public static void setStaticShort(int);
+    descriptor: (I)V
+
+  public static void setStaticBoolean(int);
+    descriptor: (I)V
+
+  public static void setStaticByteProduced(int, boolean);
+    descriptor: (IZ)V
+
+  public static void setStaticCharProduced(int, boolean);
+    descriptor: (IZ)V
+
+  public static void setStaticShortProduced(int, boolean);
+    descriptor: (IZ)V
+
+  public static void setStaticBooleanProduced(int, boolean);
+    descriptor: (IZ)V
+
+  public void ordinaryByteLocal();
+    descriptor: ()V
+
+  public void ordinaryByteZero();
+    descriptor: ()V
+
+  public void ordinaryByteOne();
+    descriptor: ()V
+
+  public void ordinaryCharLocal();
+    descriptor: ()V
+
+  public void ordinaryCharZero();
+    descriptor: ()V
+
+  public void ordinaryCharOne();
+    descriptor: ()V
+
+  public void ordinaryShortLocal();
+    descriptor: ()V
+
+  public void ordinaryShortZero();
+    descriptor: ()V
+
+  public void ordinaryShortOne();
+    descriptor: ()V
+
+  public void ordinaryBooleanLocal();
+    descriptor: ()V
+
+  public void ordinaryBooleanFalse();
+    descriptor: ()V
+
+  public void ordinaryBooleanTrue();
+    descriptor: ()V
+
+  public static void ordinaryStaticByteLocal();
+    descriptor: ()V
+
+  public static void ordinaryStaticByteZero();
+    descriptor: ()V
+
+  public static void ordinaryStaticByteOne();
+    descriptor: ()V
+
+  public static void ordinaryStaticCharLocal();
+    descriptor: ()V
+
+  public static void ordinaryStaticCharZero();
+    descriptor: ()V
+
+  public static void ordinaryStaticCharOne();
+    descriptor: ()V
+
+  public static void ordinaryStaticShortLocal();
+    descriptor: ()V
+
+  public static void ordinaryStaticShortZero();
+    descriptor: ()V
+
+  public static void ordinaryStaticShortOne();
+    descriptor: ()V
+
+  public static void ordinaryStaticBooleanLocal();
+    descriptor: ()V
+
+  public static void ordinaryStaticBooleanFalse();
+    descriptor: ()V
+
+  public static void ordinaryStaticBooleanTrue();
+    descriptor: ()V
+}

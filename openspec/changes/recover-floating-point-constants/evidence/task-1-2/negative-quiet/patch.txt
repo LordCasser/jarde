@@ -1,0 +1,1 @@
+pool Float=0xffc12345, Double=0xfff8123456789abc

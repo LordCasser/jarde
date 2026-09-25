@@ -1,0 +1,27 @@
+{
+  "before": 232,
+  "after": 251,
+  "added": [
+    "tests/fixtures/p3-lambda-adaptation/LambdaAdaptationBox.java",
+    "tests/fixtures/p3-lambda-adaptation/LambdaAdaptationProbe.java",
+    "tests/fixtures/p3-lambda-adaptation/LambdaAdaptationRunner.java",
+    "tests/fixtures/p3-lambda-adaptation/LambdaAdaptationSupport.java",
+    "tests/fixtures/p3-lambda-adaptation/v8/LambdaAdaptationProbe.class",
+    "tests/fixtures/p3-narrow-integer-returns/NarrowIntegerReturns.java",
+    "tests/fixtures/p3-narrow-integer-returns/NarrowIntegerReturnsRunner.java",
+    "tests/fixtures/p3-narrow-integer-returns/v8/NarrowIntegerReturns.class",
+    "tests/fixtures/p3-primitive-conversions/PrimitiveConversionEffects.java",
+    "tests/fixtures/p3-primitive-conversions/PrimitiveConversionSupport.java",
+    "tests/fixtures/p3-primitive-conversions/PrimitiveConversions.java",
+    "tests/fixtures/p3-primitive-conversions/PrimitiveConversionsRunner.java",
+    "tests/fixtures/p3-primitive-conversions/v8/PrimitiveConversions.class",
+    "tests/fixtures/p3-type-qualifier/ShadowOther.java",
+    "tests/fixtures/p3-type-qualifier/TypeQualifierProbe.java",
+    "tests/fixtures/p3-type-qualifier/TypeQualifierRunner.java",
+    "tests/fixtures/p3-type-qualifier/arg0.java",
+    "tests/fixtures/p3-type-qualifier/arg0_2.java",
+    "tests/fixtures/p3-type-qualifier/v8/TypeQualifierProbe.class"
+  ],
+  "removed": [],
+  "changed": []
+}

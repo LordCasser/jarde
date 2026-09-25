@@ -1,0 +1,18 @@
+package defpackage;
+
+/* JADX INFO: loaded from: DeferredScope.class */
+public class DeferredScope {
+    public static int direct() {
+        int iValue = ScopeSupport.value();
+        try {
+            ScopeSupport.mark();
+            return iValue;
+        } catch (IllegalStateException e) {
+            return 7;
+        }
+    }
+
+    public static void keepPool() {
+        ScopeSupport.mark();
+    }
+}

@@ -1,0 +1,43 @@
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 32.04s
+     Running unittests src/lib.rs (target/debug/deps/jarde_java-962e3f8838370d64)
+
+running 20 tests
+test emit::tests::a_char_selector_writes_character_keys_and_every_other_selector_stays_decimal ... ok
+test emit::tests::a_comment_cannot_carry_an_escape_or_end_its_own_line ... ok
+test emit::tests::a_concatenation_starts_in_a_string_context_and_keeps_its_parts_groups ... ok
+test emit::tests::a_delimited_or_already_grouped_position_gains_no_parentheses ... ok
+test emit::tests::a_lambda_in_a_receiver_position_keeps_its_own_group ... ok
+test emit::tests::a_negation_keeps_nested_groups_and_negative_literals_lexically_separate ... ok
+test emit::tests::a_nested_return_is_kept_when_the_static_initializer_tail_is_projected ... ok
+test emit::tests::a_prefix_position_and_a_not_receiver_keep_their_groups ... ok
+test emit::tests::a_primary_operand_and_an_already_stated_group_gain_nothing ... ok
+test emit::tests::a_refused_write_empties_the_buffer_it_had_already_filled ... ok
+test emit::tests::a_static_initializer_projection_keeps_budget_stop_atomic ... ok
+test emit::tests::a_static_initializer_tail_return_closes_the_block_and_keeps_its_origin ... ok
+test emit::tests::a_stop_inside_a_node_leaves_nothing_behind ... ok
+test emit::tests::a_string_literal_escapes_what_it_cannot_hold_literally_and_nothing_else ... ok
+test emit::tests::a_suffix_position_keeps_the_group_of_its_operand ... ok
+test emit::tests::an_empty_static_initializer_has_no_statement_but_maps_its_terminator ... ok
+test emit::tests::grouping_writes_parentheses_into_the_parents_span_and_moves_no_anchor ... ok
+test emit::tests::non_initializer_returns_are_not_projected ... ok
+test emit::tests::the_budget_is_checked_before_every_write_and_a_refusal_discards_the_buffer ... ok
+test emit::tests::the_segment_table_covers_the_nodes_in_writing_order ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 78 filtered out; finished in 0.00s
+
+     Running tests/p3_java_recovery.rs (target/debug/deps/p3_java_recovery-86e838281a7a0058)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 32 filtered out; finished in 0.00s
+
+     Running tests/p3_patterns.rs (target/debug/deps/p3_patterns-4d7676605fcc0f84)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 43 filtered out; finished in 0.00s
+

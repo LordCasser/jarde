@@ -1,0 +1,47 @@
+public class InstanceOfTypes {
+  public InstanceOfTypes();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static boolean unrelated(java.lang.String);
+    Code:
+       0: aload_0
+       1: instanceof    #7                  // class java/lang/Integer
+       4: ireturn
+
+  public static boolean unrelatedArray(java.lang.String[]);
+    Code:
+       0: aload_0
+       1: instanceof    #9                  // class "[I"
+       4: ireturn
+
+  public static boolean unrelatedInterface(java.lang.String);
+    Code:
+       0: aload_0
+       1: instanceof    #11                 // class java/lang/Runnable
+       4: ireturn
+
+  public static boolean related(java.lang.String);
+    Code:
+       0: aload_0
+       1: instanceof    #13                 // class java/lang/CharSequence
+       4: ireturn
+
+  public static boolean called();
+    Code:
+       0: invokestatic  #15                 // Method TypeEffects.value:()Ljava/lang/String;
+       3: instanceof    #7                  // class java/lang/Integer
+       6: ireturn
+
+  public static void empty();
+    Code:
+       0: return
+
+  public static boolean functional();
+    Code:
+       0: invokedynamic #21,  0             // InvokeDynamic #0:run:()Ljava/lang/Runnable;
+       5: instanceof    #11                 // class java/lang/Runnable
+       8: ireturn
+}

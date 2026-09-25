@@ -1,0 +1,76 @@
+{
+  "class_sha256": "44eaaf23c354566f25ba429e49f7d34a73a114c7de35909360b705dcc63c3d04",
+  "class_bytes": 1338,
+  "patches": [
+    {
+      "method": "call",
+      "before": "b80007ac",
+      "after": "b80007b80027ac"
+    },
+    {
+      "method": "field",
+      "before": "b2000dac",
+      "after": "b2000db80027ac"
+    },
+    {
+      "method": "array",
+      "before": "2a032eac",
+      "after": "2a032eb80027ac"
+    },
+    {
+      "method": "instanceField",
+      "before": "2ab40011ac",
+      "after": "2ab40011b80027ac"
+    },
+    {
+      "method": "arrayLength",
+      "before": "2abeac",
+      "after": "2abeb80027ac"
+    },
+    {
+      "method": "newArray",
+      "before": "1abc0ab0",
+      "after": "1abc0ab80027b0"
+    },
+    {
+      "method": "anewArray",
+      "before": "1abd0015b0",
+      "after": "1abd0015b80027b0"
+    },
+    {
+      "method": "multiArray",
+      "before": "1a04c5001702b0",
+      "after": "1a04c5001702b80027b0"
+    },
+    {
+      "method": "divInt",
+      "before": "1ab200196cac",
+      "after": "1ab200196cb80027ac"
+    },
+    {
+      "method": "remInt",
+      "before": "1ab2001970ac",
+      "after": "1ab2001970b80027ac"
+    },
+    {
+      "method": "divLong",
+      "before": "1eb2001c6dad",
+      "after": "1eb2001c6db80027ad"
+    },
+    {
+      "method": "remLong",
+      "before": "1eb2001c71ad",
+      "after": "1eb2001c71b80027ad"
+    },
+    {
+      "method": "cast",
+      "before": "2ac00015b0",
+      "after": "2ac00015b80027b0"
+    },
+    {
+      "method": "direct",
+      "before": "bb001259b70020b0",
+      "after": "bb001259b70020b80027b0"
+    }
+  ]
+}

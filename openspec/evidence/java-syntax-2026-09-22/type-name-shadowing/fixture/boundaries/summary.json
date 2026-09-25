@@ -1,0 +1,49 @@
+{
+  "cli_hash_input": "feed5c377a439490efb12a2a46bdfa0e94c32dffd3a83bd1583b70fe89317350",
+  "cli_hash_end": "feed5c377a439490efb12a2a46bdfa0e94c32dffd3a83bd1583b70fe89317350",
+  "cli_hash_unchanged": true,
+  "cases": {
+    "method-qualifier": {
+      "note": "A method-reference qualifier is outside this change's ordinary static owner collection. Reserving its owner could avoid local capture, but requires the existing lambda proof; this probe does not justify a second bootstrap analysis.",
+      "original_exit": 0,
+      "jarde_cli_exit": 0,
+      "jarde_javac_exit": 1,
+      "jarde_run_exit": null,
+      "jadx_exit": 0,
+      "jadx_javac_exit": 0,
+      "jadx_run_exit": 0,
+      "failure_stage": "jarde-javac",
+      "original_output": "61\n",
+      "jarde_output": null,
+      "jadx_output": "61\n"
+    },
+    "debug-prefix": {
+      "note": "A debug parameter named java can hide the first package component of java.lang.Math; this is source-only evidence for the package-prefix boundary.",
+      "original_exit": 0,
+      "jarde_cli_exit": 0,
+      "jarde_javac_exit": 1,
+      "jarde_run_exit": null,
+      "jadx_exit": 0,
+      "jadx_javac_exit": 0,
+      "jadx_run_exit": 0,
+      "failure_stage": "jarde-javac",
+      "original_output": "7\n",
+      "jarde_output": null,
+      "jadx_output": "7\n"
+    },
+    "field-prefix": {
+      "note": "A real field named java is a separate package-prefix boundary; it cannot be fixed by renaming a generated local.",
+      "original_exit": 0,
+      "jarde_cli_exit": 0,
+      "jarde_javac_exit": 1,
+      "jarde_run_exit": null,
+      "jadx_exit": 0,
+      "jadx_javac_exit": 0,
+      "jadx_run_exit": 0,
+      "failure_stage": "jarde-javac",
+      "original_output": "7\n",
+      "jarde_output": null,
+      "jadx_output": "7\n"
+    }
+  }
+}

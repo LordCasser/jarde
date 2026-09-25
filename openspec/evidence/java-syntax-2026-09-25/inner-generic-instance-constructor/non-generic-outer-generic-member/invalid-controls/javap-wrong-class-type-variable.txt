@@ -1,0 +1,83 @@
+Classfile jar:file:///Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/non-generic-outer-generic-member/invalid-controls/wrong-class-type-variable.jar!/minimal/Outer$Inner.class
+  Last modified 2000年1月1日; size 531 bytes
+  SHA-256 checksum 9c589eb0c384c566ad432f2ab1c635df468dc6b82ed22a4e6222c0767123a82e
+public class minimal.Outer$Inner<W extends java.lang.Object> extends java.lang.Object
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #2                          // minimal/Outer$Inner
+  super_class: #8                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 2, attributes: 2
+Constant pool:
+   #1 = Fieldref           #2.#3          // minimal/Outer$Inner.this$0:Lminimal/Outer;
+   #2 = Class              #4             // minimal/Outer$Inner
+   #3 = NameAndType        #5:#6          // this$0:Lminimal/Outer;
+   #4 = Utf8               minimal/Outer$Inner
+   #5 = Utf8               this$0
+   #6 = Utf8               Lminimal/Outer;
+   #7 = Methodref          #8.#9          // java/lang/Object."<init>":()V
+   #8 = Class              #10            // java/lang/Object
+   #9 = NameAndType        #11:#12        // "<init>":()V
+  #10 = Utf8               java/lang/Object
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Fieldref           #2.#14         // minimal/Outer$Inner.value:Ljava/lang/Object;
+  #14 = NameAndType        #15:#16        // value:Ljava/lang/Object;
+  #15 = Utf8               value
+  #16 = Utf8               Ljava/lang/Object;
+  #17 = Utf8               Signature
+  #18 = Utf8               TV;
+  #19 = Utf8               (Lminimal/Outer;Ljava/lang/Object;)V
+  #20 = Utf8               Code
+  #21 = Utf8               MethodParameters
+  #22 = Utf8               (TV;)V
+  #23 = Utf8               ()Ljava/lang/Object;
+  #24 = Utf8               ()TV;
+  #25 = Utf8               <W:Ljava/lang/Object;>Ljava/lang/Object;
+  #26 = Utf8               InnerClasses
+  #27 = Class              #28            // minimal/Outer
+  #28 = Utf8               minimal/Outer
+  #29 = Utf8               Inner
+{
+  private final V value;
+    descriptor: Ljava/lang/Object;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+    Signature: #18                          // TV;
+
+  final minimal.Outer this$0;
+    descriptor: Lminimal/Outer;
+    flags: (0x1010) ACC_FINAL, ACC_SYNTHETIC
+
+  public minimal.Outer$Inner(V);
+    descriptor: (Lminimal/Outer;Ljava/lang/Object;)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: aload_1
+         2: putfield      #1                  // Field this$0:Lminimal/Outer;
+         5: aload_0
+         6: invokespecial #7                  // Method java/lang/Object."<init>":()V
+         9: aload_0
+        10: aload_2
+        11: putfield      #13                 // Field value:Ljava/lang/Object;
+        14: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      final mandated
+      <no name>
+    Signature: #22                          // (TV;)V
+
+  public V value();
+    descriptor: ()Ljava/lang/Object;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #13                 // Field value:Ljava/lang/Object;
+         4: areturn
+    Signature: #24                          // ()TV;
+}
+Signature: #25                          // <W:Ljava/lang/Object;>Ljava/lang/Object;
+InnerClasses:
+  public #29= #2 of #27;                  // Inner=class minimal/Outer$Inner of class minimal/Outer

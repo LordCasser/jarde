@@ -1,0 +1,10 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running tests/p3_invocation_arguments.rs (target/debug/deps/p3_invocation_arguments-795dea53a8392d17)
+
+running 3 tests
+test fixture_has_one_real_class_and_all_argument_shapes ... ok
+test recovered_calls_keep_their_invocation_argument_types ... ok
+test recovered_invocation_arguments_match_original_runtime ... ignored, requires JDK: compile Engine::class_source output and execute a temporary runner
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

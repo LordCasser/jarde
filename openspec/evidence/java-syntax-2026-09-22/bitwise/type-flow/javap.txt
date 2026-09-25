@@ -1,0 +1,138 @@
+Classfile /tmp/jarde-bitwise-types/original/BitwiseAudit.class
+  Last modified 2026年9月23日; size 506 bytes
+  SHA-256 checksum 7e046fac3992980bb1a4878b686963fe1d46783b2b9b5aefbbb86f8692b3a243
+public class BitwiseAudit
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #13                         // BitwiseAudit
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 7, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // BitwiseEffects.accept:(Z)I
+   #8 = Class              #10            // BitwiseEffects
+   #9 = NameAndType        #11:#12        // accept:(Z)I
+  #10 = Utf8               BitwiseEffects
+  #11 = Utf8               accept
+  #12 = Utf8               (Z)I
+  #13 = Class              #14            // BitwiseAudit
+  #14 = Utf8               BitwiseAudit
+  #15 = Utf8               Code
+  #16 = Utf8               nested
+  #17 = Utf8               (ZZZ)Z
+  #18 = Utf8               copied
+  #19 = Utf8               hoisted
+  #20 = Utf8               StackMapTable
+  #21 = Utf8               passed
+  #22 = Utf8               (ZZZ)I
+  #23 = Utf8               array
+  #24 = Utf8               ([Z)Z
+  #25 = Utf8               promoted
+  #26 = Utf8               (BC)I
+{
+  public BitwiseAudit();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static boolean nested(boolean, boolean, boolean);
+    descriptor: (ZZZ)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=3, args_size=3
+         0: iload_0
+         1: iload_1
+         2: iload_2
+         3: iconst_1
+         4: ior
+         5: ixor
+         6: iand
+         7: ireturn
+
+  public static boolean copied(boolean, boolean, boolean);
+    descriptor: (ZZZ)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=6, args_size=3
+         0: iload_0
+         1: iload_1
+         2: ior
+         3: istore_3
+         4: iload_3
+         5: istore        4
+         7: iload         4
+         9: iload_2
+        10: iand
+        11: istore        5
+        13: iload         5
+        15: ireturn
+
+  public static boolean hoisted(boolean, boolean, boolean);
+    descriptor: (ZZZ)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=3
+         0: iload_0
+         1: iload_1
+         2: iand
+         3: istore_3
+         4: iload_2
+         5: ifeq          12
+         8: iload_0
+         9: iload_1
+        10: ior
+        11: istore_3
+        12: iload_3
+        13: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 12
+          locals = [ int ]
+
+  public static int passed(boolean, boolean, boolean);
+    descriptor: (ZZZ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: iload_0
+         1: iload_1
+         2: ixor
+         3: iload_2
+         4: iand
+         5: invokestatic  #7                  // Method BitwiseEffects.accept:(Z)I
+         8: ireturn
+
+  public static boolean array(boolean[]);
+    descriptor: ([Z)Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: aload_0
+         1: iconst_0
+         2: baload
+         3: aload_0
+         4: iconst_1
+         5: baload
+         6: ixor
+         7: ireturn
+
+  public static int promoted(byte, char);
+    descriptor: (BC)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ior
+         3: ireturn
+}

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "javap",
+    "-classpath",
+    "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/patched",
+    "-c",
+    "-s",
+    "RawBool"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "public class RawBool {\n  public RawBool();\n    descriptor: ()V\n    Code:\n       0: aload_0\n       1: invokespecial #1                  // Method java/lang/Object.\"<init>\":()V\n       4: return\n\n  public static boolean put(boolean[], int, int);\n    descriptor: ([ZII)Z\n    Code:\n       0: aload_0\n       1: iload_1\n       2: iload_2\n       3: bastore\n       4: aload_0\n       5: iload_1\n       6: baload\n       7: ireturn\n}\n",
+  "stderr": ""
+}

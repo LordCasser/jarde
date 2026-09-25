@@ -1,0 +1,154 @@
+Classfile /tmp/jarde-numeric-flow-independent/original/NumericFlowAudit.class
+  Last modified 2026年9月23日; size 585 bytes
+  SHA-256 checksum 63eb79d5d5240b0c2d73b52b2cd65ea119f41c51cdbaa59f941bc74cede77ebe
+public class NumericFlowAudit
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #16                         // NumericFlowAudit
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 6, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // NumericEffects.left:(F)F
+   #8 = Class              #10            // NumericEffects
+   #9 = NameAndType        #11:#12        // left:(F)F
+  #10 = Utf8               NumericEffects
+  #11 = Utf8               left
+  #12 = Utf8               (F)F
+  #13 = Methodref          #8.#14         // NumericEffects.right:(F)F
+  #14 = NameAndType        #15:#12        // right:(F)F
+  #15 = Utf8               right
+  #16 = Class              #17            // NumericFlowAudit
+  #17 = Utf8               NumericFlowAudit
+  #18 = Utf8               Code
+  #19 = Utf8               floatNegated
+  #20 = Utf8               (FF)I
+  #21 = Utf8               StackMapTable
+  #22 = Utf8               doubleChoice
+  #23 = Utf8               (DD)I
+  #24 = Utf8               longChain
+  #25 = Utf8               (JJJ)I
+  #26 = Utf8               ordered
+  #27 = Utf8               doubleLoop
+  #28 = Utf8               (DDD)I
+{
+  public NumericFlowAudit();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int floatNegated(float, float);
+    descriptor: (FF)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: fload_0
+         1: fload_1
+         2: fcmpl
+         3: ifge          9
+         6: bipush        11
+         8: ireturn
+         9: bipush        13
+        11: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 9 /* same */
+
+  public static int doubleChoice(double, double);
+    descriptor: (DD)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=2
+         0: dload_0
+         1: dload_2
+         2: dcmpg
+         3: ifge          9
+         6: bipush        17
+         8: ireturn
+         9: dload_0
+        10: dload_2
+        11: dcmpl
+        12: iflt          18
+        15: bipush        19
+        17: ireturn
+        18: bipush        23
+        20: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 9 /* same */
+        frame_type = 8 /* same */
+
+  public static int longChain(long, long, long);
+    descriptor: (JJJ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=6, args_size=3
+         0: lload_0
+         1: lload_2
+         2: lcmp
+         3: ifge          19
+         6: lload_2
+         7: lload         4
+         9: lcmp
+        10: ifge          16
+        13: bipush        37
+        15: ireturn
+        16: bipush        41
+        18: ireturn
+        19: bipush        43
+        21: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 16 /* same */
+        frame_type = 2 /* same */
+
+  public static int ordered(float, float);
+    descriptor: (FF)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: fload_0
+         1: invokestatic  #7                  // Method NumericEffects.left:(F)F
+         4: fload_1
+         5: invokestatic  #13                 // Method NumericEffects.right:(F)F
+         8: fcmpl
+         9: ifle          15
+        12: bipush        29
+        14: ireturn
+        15: bipush        31
+        17: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 15 /* same */
+
+  public static int doubleLoop(double, double, double);
+    descriptor: (DDD)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=7, args_size=3
+         0: iconst_0
+         1: istore        6
+         3: dload_0
+         4: dload_2
+         5: dcmpg
+         6: ifge          20
+         9: dload_0
+        10: dload         4
+        12: dadd
+        13: dstore_0
+        14: iinc          6, 1
+        17: goto          3
+        20: iload         6
+        22: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 3
+          locals = [ int ]
+        frame_type = 16 /* same */
+}

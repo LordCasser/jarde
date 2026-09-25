@@ -1,0 +1,15 @@
+
+/* JADX INFO: loaded from: GenericOverloadProbe.class */
+public class GenericOverloadProbe {
+    public static int choose(Object obj) {
+        return 1;
+    }
+
+    public static int choose(String str) {
+        return 2;
+    }
+
+    public static int genericObjectCast() {
+        return choose(GenericFactory.make());
+    }
+}

@@ -1,0 +1,9 @@
+# Root 独立验收：2.2 终端构造器正文
+
+Root 审查了同轮构造器 AST sidecar、facade 交接与 `prove_terminal_constructor_body`。sidecar 仅在已读物理表恰有 `(String,int)` 和 `(String,int,int)` 两条枚举构造器时采集；分析/恢复未 Complete 或正文未 Produced 时清除。终端证明同时核对两条结构化 `Signature`、Code 的完整 BCI/成员引用清单、AST 顶层顺序、入口 name/ordinal、slot 3 的两次读取、helper Methodref、`field@1` 的实例字段 claim、无 handler 和终结 return。helper、字段的原始名字与 AST 拼写必须是单个合法 Java 标识符；非法名字的测试候选同步修改 Code 引用、成员使用记录、字段身份及 AST，避免因候选内部不一致而虚假通过拒绝测试。通用 Signature 擦除规则和物理报告未放宽。完整组投影尚未证明，因此双构造器结果仍为 `Refused`。
+
+Root 从最终源码重新运行 `enum_constants::tests` **22/22**、`class_source` **47/47**、`anonymous_allocation_candidates` **4/4**，并重建 CLI，SHA-256 为 `8c8769974033e187912ff0cbcd7abb650d4f9a605e3c565219f236f748216641`。冻结 `DelegatingEnum` 源码在 `-g`/`-g:none` 下重编后，Jarde essential 类正文 SHA-256 分别为 `1aec24f5daef893e2ea09dcc48198ddc57a175088d1132838ed8334b9031b7e4`、`5f9320bca7b8fa9bf1b27b5bb25e7e34b66ac5eb8554074d34c885448237b195`，逐字等于 [2.1 基线](verification-root-2.1.md)；all 与 essential 正文一致。仍显示普通常量字段，未提前输出 `ZERO, ONE(1)`。JSON 中两条物理构造器分别以 `(Ljava/lang/String;I)V` 和 `(Ljava/lang/String;II)V`、`recovered` outcome 保留。
+
+Root 在仓库外复制 [九组 verifier-valid 负例](../../evidence/java-syntax-2026-09-25/enum-constructor-delegation/negative-controls/analysis.md)，仅将脚本的预期 CLI SHA 更新为上述最终二进制 SHA，再运行原/JADX/Jarde 对照；九组全部完成，Jarde 仍拒绝类级投影。单构造器 `Stage`、`Measure` 的源码 SHA-256 分别保持 `edc4e0bf9d78654f3b16247a709d43be717261edeaaf4362c81f80c583a5d5d7`、`a639494bc370c73056aa70f5da4e210d88ab587f181a8cab7ea4ffb1b8bd42c9`。
+
+`cargo fmt --all -- --check`、`git diff --check` 和 `openspec validate recover-proved-enum-constructor-delegation --strict` 均通过；`cargo clippy -p jarde --lib --no-deps` 退出 0，仍为此前 10 条告警，无新增。相邻 `class_initializer_candidates` 两项与 `p3_patterns` 一项失败是 [共享工作树既有基线](../align-class-source-test-callers/verification.md)，这些调用关闭本次 sidecar，未混入修复。2.3 的完整类投影、反射 `{2,3}` 和最终 3.1 验收仍待进行。本轮私有 `/tmp/jarde-enum-delegate-body-target` 在记录验收后清理。

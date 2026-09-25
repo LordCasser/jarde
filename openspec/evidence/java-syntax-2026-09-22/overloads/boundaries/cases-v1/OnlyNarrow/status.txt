@@ -1,0 +1,4 @@
+cli_rc=0
+jarde_javac_rc=1
+jadx_rc=0
+jadx_javac_rc=0

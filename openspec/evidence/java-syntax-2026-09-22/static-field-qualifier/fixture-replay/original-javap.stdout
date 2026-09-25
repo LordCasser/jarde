@@ -1,0 +1,79 @@
+public final class StaticQualifierProbe {
+  public static int selects;
+
+  public static int rightCalls;
+
+  public static int value;
+
+  public static boolean failSelect;
+
+  public StaticQualifierProbe();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void reset();
+    Code:
+       0: iconst_0
+       1: putstatic     #7                  // Field selects:I
+       4: iconst_0
+       5: putstatic     #13                 // Field rightCalls:I
+       8: iconst_5
+       9: putstatic     #16                 // Field value:I
+      12: iconst_0
+      13: putstatic     #19                 // Field failSelect:Z
+      16: return
+
+  public static StaticQualifierProbe receiver();
+    Code:
+       0: getstatic     #7                  // Field selects:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field selects:I
+       8: getstatic     #19                 // Field failSelect:Z
+      11: ifeq          24
+      14: new           #23                 // class java/lang/IllegalStateException
+      17: dup
+      18: ldc           #25                 // String select
+      20: invokespecial #27                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      23: athrow
+      24: aconst_null
+      25: areturn
+
+  public static int rhs();
+    Code:
+       0: getstatic     #13                 // Field rightCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #13                 // Field rightCalls:I
+       8: bipush        7
+      10: ireturn
+
+  public static int read();
+    Code:
+       0: invokestatic  #30                 // Method receiver:()LStaticQualifierProbe;
+       3: pop
+       4: getstatic     #16                 // Field value:I
+       7: ireturn
+
+  public static int write();
+    Code:
+       0: invokestatic  #30                 // Method receiver:()LStaticQualifierProbe;
+       3: pop
+       4: invokestatic  #34                 // Method rhs:()I
+       7: putstatic     #16                 // Field value:I
+      10: getstatic     #16                 // Field value:I
+      13: ireturn
+
+  public static int writeSum();
+    Code:
+       0: invokestatic  #30                 // Method receiver:()LStaticQualifierProbe;
+       3: pop
+       4: getstatic     #16                 // Field value:I
+       7: invokestatic  #34                 // Method rhs:()I
+      10: iadd
+      11: putstatic     #16                 // Field value:I
+      14: getstatic     #16                 // Field value:I
+      17: ireturn
+}

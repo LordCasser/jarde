@@ -1,0 +1,198 @@
+Classfile /tmp/jarde-shifts-root-core-0549/basic/original/ShiftCore.class
+  Last modified 2026年9月23日; size 719 bytes
+  SHA-256 checksum db5a3053fb7b38ddf22cff1e9ec93048d41ab29e94d5809c0f1f611f8ac86bba
+public class ShiftCore
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #16                         // ShiftCore
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 12, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // ShiftEffects.left:(ZI)I
+   #8 = Class              #10            // ShiftEffects
+   #9 = NameAndType        #11:#12        // left:(ZI)I
+  #10 = Utf8               ShiftEffects
+  #11 = Utf8               left
+  #12 = Utf8               (ZI)I
+  #13 = Methodref          #8.#14         // ShiftEffects.right:(ZI)I
+  #14 = NameAndType        #15:#12        // right:(ZI)I
+  #15 = Utf8               right
+  #16 = Class              #17            // ShiftCore
+  #17 = Utf8               ShiftCore
+  #18 = Utf8               Code
+  #19 = Utf8               (II)I
+  #20 = Utf8               unsigned
+  #21 = Utf8               leftLong
+  #22 = Utf8               (JI)J
+  #23 = Utf8               rightLong
+  #24 = Utf8               unsignedLong
+  #25 = Utf8               nested
+  #26 = Utf8               local
+  #27 = Utf8               branch
+  #28 = Utf8               (IIZ)I
+  #29 = Utf8               StackMapTable
+  #30 = Utf8               byteChar
+  #31 = Utf8               (BCI)I
+  #32 = Utf8               ordered
+  #33 = Utf8               (ZZII)I
+{
+  public ShiftCore();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int left(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ishl
+         3: ireturn
+
+  public static int right(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ishr
+         3: ireturn
+
+  public static int unsigned(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: iushr
+         3: ireturn
+
+  public static long leftLong(long, int);
+    descriptor: (JI)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=2
+         0: lload_0
+         1: iload_2
+         2: lshl
+         3: lreturn
+
+  public static long rightLong(long, int);
+    descriptor: (JI)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=2
+         0: lload_0
+         1: iload_2
+         2: lshr
+         3: lreturn
+
+  public static long unsignedLong(long, int);
+    descriptor: (JI)J
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=2
+         0: lload_0
+         1: iload_2
+         2: lushr
+         3: lreturn
+
+  public static int nested(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=2, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ishl
+         3: iload_0
+         4: iload_1
+         5: iconst_1
+         6: iadd
+         7: iushr
+         8: iconst_2
+         9: imul
+        10: iadd
+        11: ireturn
+
+  public static int local(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=2
+         0: iload_0
+         1: iload_1
+         2: ishl
+         3: istore_2
+         4: iload_2
+         5: iload_2
+         6: iconst_3
+         7: iushr
+         8: iadd
+         9: ireturn
+
+  public static int branch(int, int, boolean);
+    descriptor: (IIZ)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=3
+         0: iload_0
+         1: iload_1
+         2: ishl
+         3: istore_3
+         4: iload_2
+         5: ifeq          10
+         8: iload_3
+         9: ireturn
+        10: iload_0
+        11: iload_1
+        12: ishr
+        13: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 10
+          locals = [ int ]
+
+  public static int byteChar(byte, char, int);
+    descriptor: (BCI)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: iload_0
+         1: iload_2
+         2: ishl
+         3: iload_1
+         4: iload_2
+         5: iushr
+         6: iadd
+         7: ireturn
+
+  public static int ordered(boolean, boolean, int, int);
+    descriptor: (ZZII)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=4, args_size=4
+         0: iload_0
+         1: iload_2
+         2: invokestatic  #7                  // Method ShiftEffects.left:(ZI)I
+         5: iload_1
+         6: iload_3
+         7: invokestatic  #13                 // Method ShiftEffects.right:(ZI)I
+        10: ishl
+        11: ireturn
+}

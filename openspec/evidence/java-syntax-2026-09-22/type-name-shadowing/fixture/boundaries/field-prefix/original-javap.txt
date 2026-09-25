@@ -1,0 +1,51 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-type-qualifier-boundaries-pdwfkmvk/field-prefix-original/classes/FieldPrefixProbe.class
+  Last modified 2026年9月23日; size 241 bytes
+  SHA-256 checksum 89e1618570b677f394552f6b664298f29761312aee2ed69bb7e83bb0db475186
+public class FieldPrefixProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #13                         // FieldPrefixProbe
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // java/lang/Math.abs:(I)I
+   #8 = Class              #10            // java/lang/Math
+   #9 = NameAndType        #11:#12        // abs:(I)I
+  #10 = Utf8               java/lang/Math
+  #11 = Utf8               abs
+  #12 = Utf8               (I)I
+  #13 = Class              #14            // FieldPrefixProbe
+  #14 = Utf8               FieldPrefixProbe
+  #15 = Utf8               java
+  #16 = Utf8               Ljava/lang/Object;
+  #17 = Utf8               Code
+{
+  public static java.lang.Object java;
+    descriptor: Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public FieldPrefixProbe();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int abs(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: invokestatic  #7                  // Method java/lang/Math.abs:(I)I
+         4: ireturn
+}

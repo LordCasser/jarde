@@ -1,0 +1,88 @@
+{
+  "cli_sha256": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "source_sha256": {
+    "NonInvokeQualifierProbe.java": "6335b22e1578549ccd562a855e021c0b83aaf5dfd173046289e45d45f48128a4",
+    "NonInvokeQualifierRunner.java": "0b9c283cddf2947c38d1e6466d9932f71a6d19f01944a03360cc80e37ce1fed7",
+    "Base.java": "a5e617e609572b3b724cc04f410ac6339dbc43fb4534a27b64b350b67224e40d",
+    "Child.java": "559ddd4ea92aef398f8e949654f9c2a67d8d380d253ba9c86f4a16ebaf0928e6",
+    "Other.java": "7048fba71da1e9a89013dd5711429ab12661f5052d3238f2511e965f82b3c2af"
+  },
+  "javac": "javac 23.0.1",
+  "class_bytes": 224,
+  "original_class_sha256": "e56d77cbee428319c37cd5f43e63efee7554a06892b1ab7d9cf0188a4329e962",
+  "methodref_cp_index": 7,
+  "original_methodref": {
+    "owner": "Child",
+    "name": "ping",
+    "descriptor": "()I"
+  },
+  "patched_methodref": {
+    "owner": "Other",
+    "name": "ping",
+    "descriptor": "()I"
+  },
+  "owner_patch_changed_byte_offsets": [
+    73,
+    74,
+    75,
+    76,
+    77
+  ],
+  "patched_class_sha256": "5b6875ef447c448fa6dfaa65d5fdbeb0aa7e0848400bec8308df8e7649ce1180",
+  "source_compile": 0,
+  "source_runtime": {
+    "status": 0,
+    "output": [
+      "value=31"
+    ]
+  },
+  "patched_verify_runtime": {
+    "status": 0,
+    "output": [
+      "value=41"
+    ]
+  },
+  "original_code": "public final class NonInvokeQualifierProbe {\n  public NonInvokeQualifierProbe();\n    Code:\n       0: aload_0\n       1: invokespecial #1                  // Method java/lang/Object.\"<init>\":()V\n       4: return\n\n  public static int call(Child);\n    Code:\n       0: aload_0\n       1: pop\n       2: invokestatic  #7                  // Method Child.ping:()I\n       5: ireturn\n}\n",
+  "patched_code": "public final class NonInvokeQualifierProbe {\n  public NonInvokeQualifierProbe();\n    Code:\n       0: aload_0\n       1: invokespecial #1                  // Method java/lang/Object.\"<init>\":()V\n       4: return\n\n  public static int call(Child);\n    Code:\n       0: aload_0\n       1: pop\n       2: invokestatic  #7                  // Method Other.ping:()I\n       5: ireturn\n}\n",
+  "original_code_attribute_count": 2,
+  "patched_code_attribute_count": 2,
+  "decompilers": {
+    "original": {
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "value=31"
+        ]
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "value=31"
+        ]
+      },
+      "jadx_call_line": "return Child.ping();",
+      "jarde_call_line": "return arg0.ping();"
+    },
+    "patched": {
+      "jadx": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "value=41"
+        ]
+      },
+      "jarde": {
+        "javac": 0,
+        "runtime": 0,
+        "output": [
+          "value=31"
+        ]
+      },
+      "jadx_call_line": "return Other.ping();",
+      "jarde_call_line": "return arg0.ping();"
+    }
+  },
+  "cli_sha256_after": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c"
+}

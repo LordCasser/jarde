@@ -1,0 +1,8 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/tmp/jarde-throw-grammar/ThrowClinitBranch/jarde/ThrowClinitBranch.java:12: 错误: 初始化程序必须能够正常完成
+    static {
+    ^
+1 个错误
+3 个警告

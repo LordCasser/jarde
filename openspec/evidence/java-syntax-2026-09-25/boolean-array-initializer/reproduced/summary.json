@@ -1,0 +1,74 @@
+{
+  "versions": {
+    "java-version": {
+      "command": [
+        "java",
+        "-version"
+      ],
+      "status": 0,
+      "stdout": "",
+      "stderr": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)\n",
+      "executable": "/usr/bin/java"
+    },
+    "javac-version": {
+      "command": [
+        "javac",
+        "-version"
+      ],
+      "status": 0,
+      "stdout": "javac 23.0.1\n",
+      "stderr": "",
+      "executable": "/usr/bin/javac"
+    },
+    "jadx-version": {
+      "command": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "status": 0,
+      "stdout": "1.5.6\n",
+      "stderr": "",
+      "executable": "/opt/homebrew/bin/jadx"
+    },
+    "jarde-version": {
+      "command": [
+        "/tmp/jarde-bool-array-init-audit-target/debug/jarde-cli",
+        "--version"
+      ],
+      "status": 0,
+      "stdout": "jarde-cli 0.1.0\n",
+      "stderr": "",
+      "executable": "/tmp/jarde-bool-array-init-audit-target/debug/jarde-cli"
+    }
+  },
+  "class_hashes": {
+    "original": "5304fa21e9594a0ab6e04e0f79ee0da3bbcdcbc85e3019183d7cdd5e7b22da7d",
+    "patched": "e0e8cf5cf99fdb3e402db16e6d0b86db1b8b8672df2e684523c72a67df724a3f"
+  },
+  "cli_sha256": "a651e4ab31f512b794277c05ec788d74122a7a7c8495e8d67d601d0c9e28dd00",
+  "jvm": {
+    "original": {
+      "status": 0,
+      "stdout": "[0, 1, 2, 3, -1]",
+      "stderr": ""
+    },
+    "patched": {
+      "status": 0,
+      "stdout": "[false, true, false, true, true]",
+      "stderr": ""
+    }
+  },
+  "jadx": {
+    "exit_status": 0,
+    "source": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced/jadx/sources/defpackage/BoolInit.java",
+    "source_sha256": "2a969b54d5e54d3fb6efc2164f18be2e0d2bf5913875f6c197844c6ab7d39d7f",
+    "javac_status": 1
+  },
+  "jarde": {
+    "exit_status": 0,
+    "stdout_sha256": "66c801c3e965ecaa551c45dd1e6afa1f35570562e22754a46a661b5cfbcc32f4",
+    "stderr_sha256": "428d9788f44ec051b6bdad7551a68c3c123fbd87157839dc231422b0ce124dfe",
+    "bytecode_markers": 1
+  },
+  "all_generated_outputs_under": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/boolean-array-initializer/reproduced"
+}

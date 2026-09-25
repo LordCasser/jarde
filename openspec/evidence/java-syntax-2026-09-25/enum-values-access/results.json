@@ -1,0 +1,22 @@
+[
+  {
+    "mode": "debug",
+    "input_E_sha256": "e6916ff579a748d246d528bd1ab1bfa03f30cf32ce59c0bd8847fe1d046da41a",
+    "input_Runner_sha256": "2e75b63dbe7262620fdafe9982a893538fde63d5b95b772142dae053e4e0122a",
+    "original_stdout": "first=B,raw=B\n",
+    "jadx_stdout": "first=A,raw=A\n",
+    "jarde_raw_read_preserved": true,
+    "jarde_javac_exit": 1,
+    "patch": "raw() invokestatic #29 -> getstatic #10, same 3-byte width"
+  },
+  {
+    "mode": "no-debug",
+    "input_E_sha256": "eb963f46ba8042fa7e4df0570a5cc8e3d0415bd8b30a2c18a29f5cd0142808bc",
+    "input_Runner_sha256": "ea9fe0e2fed2ab906be355bd5ee742cd05a69698ea090042d5868fb7f71da22f",
+    "original_stdout": "first=B,raw=B\n",
+    "jadx_stdout": "first=A,raw=A\n",
+    "jarde_raw_read_preserved": true,
+    "jarde_javac_exit": 1,
+    "patch": "raw() invokestatic #29 -> getstatic #10, same 3-byte width"
+  }
+]

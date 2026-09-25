@@ -1,0 +1,1 @@
+public class NanNegationRunner {public static void main(String[] args){System.out.println(Integer.toHexString(Float.floatToRawIntBits(FloatingConstants.floatNan())));System.out.println(Long.toHexString(Double.doubleToRawLongBits(FloatingConstants.doubleNan())));}}

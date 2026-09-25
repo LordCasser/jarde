@@ -1,0 +1,8 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-primitive-boundaries-e6anz23g/jadx-BooleanDescriptor/sources/defpackage/BooleanDescriptor.java:7: 错误: 不兼容的类型: byte无法转换为boolean
+        return z ? (byte) 1 : (byte) 0;
+                 ^
+1 个错误
+3 个警告

@@ -1,0 +1,4 @@
+badb3186f3589e86459427ecd440d91c2620ec127a54e388c7d052dda9f1268a  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/handler/PlatformIterableHandlerBoundary$OneShotFailure$1.class
+fe3c98bf3ad753f4903ba0896f8d7103ee63e255d51c3c306db5d0464c5af404  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/handler/PlatformIterableHandlerBoundary$OneShotFailure.class
+0843647c94ddcb1a18eec100ad2556b1c713ec359af9c6f6cd3cf883dcb6748d  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/handler/PlatformIterableHandlerBoundary.class
+8be78a72aeed67ef3bd3a8a6ab411b67b8db98729e5aa1060b14caf8a6fc4f3f  openspec/evidence/java-syntax-2026-09-24/iterable-subtype-owners/boundaries/original/handler/PlatformIterableHandlerBoundaryRunner.class

@@ -1,0 +1,1 @@
+public class ShiftWidth { public static long wide(int x){ return ((long)x) << 32; } public static long narrow(int x){ return x << 32; } public static long mixed(int x,int d){ return ((long)x) >>> d; } public static void main(String[] z){ for(int x:new int[]{1,-1,7}){System.out.println(wide(x)+","+narrow(x)+","+mixed(x,33));} } }

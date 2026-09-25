@@ -1,0 +1,9 @@
+{
+  "stage": "after",
+  "cases": 15,
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_equal": true,
+  "jadx_javac": 0,
+  "jadx_equal_after_package_normalization": true
+}

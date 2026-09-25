@@ -1,0 +1,36 @@
+// jarde: presentation of `FailedDeclaration` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class FailedDeclaration extends java.lang.Object {
+    public FailedDeclaration() {
+        // @method <init>()V
+        // @declaration a constructor of `FailedDeclaration`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int run(int arg0) {
+        // @method run(I)I
+        // @declaration a static method of `FailedDeclaration`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 4 5
+        // the statement at BCI 5 reads `local1`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        Support.mark();
+        // @bytecode 11 5
+        // the value at BCI 11 was produced by a saved declaration this run could not commit
+    }
+
+    public static void keepPool() {
+        // @method keepPool()V
+        // @declaration a static method of `FailedDeclaration`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        Support.take(1);
+        // @bytecode 5 4
+        // the call at BCI 5 is the static call whose qualifier the bytecode evaluated and the `pop` at BCI 4 discarded, and that evaluation presents `int`: only an expression of a reference type can be a call's qualifier
+        return;
+    }
+}

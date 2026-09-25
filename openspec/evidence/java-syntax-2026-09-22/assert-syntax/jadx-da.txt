@@ -1,0 +1,5 @@
+assertions=false
+success: outcome=returned, detail=-, same=-, conditionCalls=0, messageCalls=0, trace=0
+failure: outcome=returned, detail=-, same=-, conditionCalls=0, messageCalls=0, trace=0
+condition-exception: outcome=returned, detail=-, same=false, conditionCalls=0, messageCalls=0, trace=0
+message-exception: outcome=returned, detail=-, same=false, conditionCalls=0, messageCalls=0, trace=0

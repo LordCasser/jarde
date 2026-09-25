@@ -1,0 +1,24 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+warning: function `facts_without_declaring_class` is never used
+   --> crates/jarde-java/tests/p3_patterns.rs:173:4
+    |
+173 | fn facts_without_declaring_class(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `present_without_declaring_class` is never used
+   --> crates/jarde-java/tests/p3_patterns.rs:325:4
+    |
+325 | fn present_without_declaring_class(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `jarde-java` (test "p3_patterns") generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.87s
+     Running tests/p3_patterns.rs (target/debug/deps/p3_patterns-4d7676605fcc0f84)
+
+running 1 test
+test a_static_initializer_source_map_stop_keeps_the_artifact_and_unpaid_tail_unmapped ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 43 filtered out; finished in 0.00s
+

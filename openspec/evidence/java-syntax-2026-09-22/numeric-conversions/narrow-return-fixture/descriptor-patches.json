@@ -1,0 +1,127 @@
+{
+  "code_attributes": 14,
+  "code_sha256_before": "a7ef3394ae6f5a31888dbded6f0d3afc2bca973c80348be8b55b2a89edc13128",
+  "code_sha256_after": "a7ef3394ae6f5a31888dbded6f0d3afc2bca973c80348be8b55b2a89edc13128",
+  "patches": [
+    {
+      "method": "directByte",
+      "from": "(Ljava/lang/String;I)I",
+      "to": "(Ljava/lang/String;I)B",
+      "code_span": [
+        546,
+        574
+      ],
+      "descriptor_index": 44
+    },
+    {
+      "method": "directChar",
+      "from": "(Ljava/lang/Number;I)I",
+      "to": "(Ljava/lang/Number;I)C",
+      "code_span": [
+        574,
+        602
+      ],
+      "descriptor_index": 45
+    },
+    {
+      "method": "directShort",
+      "from": "(ZI)I",
+      "to": "(ZI)S",
+      "code_span": [
+        602,
+        630
+      ],
+      "descriptor_index": 46
+    },
+    {
+      "method": "byteLocal",
+      "from": "(B)I",
+      "to": "(B)B",
+      "code_span": [
+        630,
+        660
+      ],
+      "descriptor_index": 47
+    },
+    {
+      "method": "charLocal",
+      "from": "(C)I",
+      "to": "(C)C",
+      "code_span": [
+        660,
+        690
+      ],
+      "descriptor_index": 48
+    },
+    {
+      "method": "shortLocal",
+      "from": "(S)I",
+      "to": "(S)S",
+      "code_span": [
+        690,
+        720
+      ],
+      "descriptor_index": 49
+    },
+    {
+      "method": "postByte",
+      "from": "(I)I",
+      "to": "(I)B",
+      "code_span": [
+        750,
+        788
+      ],
+      "descriptor_index": 50
+    },
+    {
+      "method": "preChar",
+      "from": "(J)I",
+      "to": "(J)C",
+      "code_span": [
+        788,
+        826
+      ],
+      "descriptor_index": 51
+    },
+    {
+      "method": "postShort",
+      "from": "(F)I",
+      "to": "(F)S",
+      "code_span": [
+        826,
+        864
+      ],
+      "descriptor_index": 52
+    },
+    {
+      "method": "syncByte",
+      "from": "(Ljava/lang/Object;I)I",
+      "to": "(Ljava/lang/Object;I)B",
+      "code_span": [
+        864,
+        944
+      ],
+      "descriptor_index": 53
+    },
+    {
+      "method": "syncChar",
+      "from": "(Ljava/lang/String;I)I",
+      "to": "(Ljava/lang/String;I)C",
+      "code_span": [
+        944,
+        1024
+      ],
+      "descriptor_index": 54
+    },
+    {
+      "method": "syncShort",
+      "from": "(Ljava/lang/Object;JI)I",
+      "to": "(Ljava/lang/Object;JI)S",
+      "code_span": [
+        1024,
+        1110
+      ],
+      "descriptor_index": 55
+    }
+  ]
+}

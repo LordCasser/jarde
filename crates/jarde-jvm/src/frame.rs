@@ -1320,9 +1320,10 @@ impl Frame {
 /// A disagreement is not a refusal here, and that is the rule the design fixes: a local only two
 /// paths disagree about is a local no read may use, so the merge answers `Top` and the failure
 /// moves to the read. References are the one family with a real least upper bound available
-/// without a class hierarchy: two different names merge to a conservative unknown reference,
-/// `null` merges with a named reference into that reference, and the null type with itself stays
-/// the null type.
+/// without a class hierarchy: two names that are not one class merge to a conservative unknown
+/// reference ([`merged_reference`] is where the two spellings one class reaches this table in are
+/// told apart from two classes), `null` merges with a named reference into that reference, and the
+/// null type with itself stays the null type.
 /// The merge of two locals arrays entering one block: slot by slot, under the rule that a local
 /// this pass cannot decide becomes [`Value::Top`].
 ///
@@ -1343,12 +1344,45 @@ fn merge_local(left: &Value, right: &Value) -> Value {
         (Value::Null, Value::Ref(other)) | (Value::Ref(other), Value::Null) => {
             Value::Ref(other.clone())
         }
-        (Value::Ref(left), Value::Ref(right)) => Value::Ref(if left == right {
-            left.clone()
-        } else {
-            RefType::Unknown
-        }),
+        (Value::Ref(left), Value::Ref(right)) => Value::Ref(merged_reference(left, right)),
         _ => Value::Top,
+    }
+}
+
+/// The type two references merge into: the class both of them name, or the conservative unknown
+/// reference when they do not name one.
+///
+/// Equality alone is not the question, because one class reaches this table in **two spellings**: a
+/// class entry states its own internal name (`Test`, `Lazy$Holder`), while a field or method
+/// descriptor states the type as the descriptor slice it is (`LTest;`, `LLazy$Holder;`). The two are
+/// one type, and every reader of the published table treats them as one — the oracle projects both
+/// into the internal name for exactly this reason ([`crate::frame_oracle::internal_name`]), and so
+/// does the recovery layer's own comparison of a receiver with the class file's owner. Comparing the
+/// raw bytes here would answer `Unknown` for a merge of the two spellings and drop a class the class
+/// file's own `StackMapTable` states for the slot, which is a fact this table carries rather than
+/// loses: the merge of the two writes of `local0 = Lazy.h; … local0 = new Holder();` is a
+/// `Lazy$Holder`, not an unknown reference.
+fn merged_reference(left: &RefType, right: &RefType) -> RefType {
+    match (left, right) {
+        (
+            RefType::Named { name, loader },
+            RefType::Named {
+                name: other,
+                loader: other_loader,
+            },
+        ) if loader == other_loader && class_of(name) == class_of(other) => left.clone(),
+        _ => RefType::Unknown,
+    }
+}
+
+/// One named reference's class, with the descriptor wrapping off.
+///
+/// `LLazy$Holder;` and `Lazy$Holder` are one class. An array descriptor (`[LLazy$Holder;`) is a type
+/// of its own and keeps its spelling, as does every name the class file did not wrap in `L…;`.
+fn class_of(name: &[u8]) -> &[u8] {
+    match name {
+        [b'L', rest @ .., b';'] => rest,
+        other => other,
     }
 }
 
@@ -1380,11 +1414,7 @@ fn merge_stack(left: &[Value], right: &[Value], block: &CanonicalBlockId) -> Nor
                 merged.push(Value::Ref(other.clone()));
             }
             (Value::Ref(left), Value::Ref(right)) => {
-                merged.push(Value::Ref(if left == right {
-                    left.clone()
-                } else {
-                    RefType::Unknown
-                }));
+                merged.push(Value::Ref(merged_reference(left, right)));
             }
             (Value::UninitializedThis | Value::Uninitialized { .. }, _)
             | (_, Value::UninitializedThis | Value::Uninitialized { .. }) => {
@@ -2474,14 +2504,17 @@ fn transfer_block(
 
 /// One input an exception edge carries into its handler.
 struct ExceptionInput {
-    /// BCI of the throwing instruction the input is taken at.
-    bci: u32,
+    /// BCI of the throwing instruction the input is taken at, for an input a throw site hands
+    /// over; `None` for the input of a record whose protected range covers no throwing
+    /// instruction of its source block, which no site anchors.
+    bci: Option<u32>,
     /// The handler's entry state along this input.
     frame: Frame,
 }
 
 /// The frames one exception edge carries into its handler: **one input per throw site** of the
-/// source block that the record covers.
+/// source block that the record covers, or one input taken from the block's own exit when the
+/// record covers no site at all.
 ///
 /// The canonical edge aggregates a block's throw sites into a single edge — the raw graph keeps
 /// one edge per `(block, ordinal)` pair — and this is where that aggregation is undone: each site
@@ -2490,12 +2523,21 @@ struct ExceptionInput {
 /// catch type when the class file names one, and a conservative unknown reference for a catch-all
 /// record, whose type no fact of this request establishes.
 ///
+/// A record whose range intersects the block but covers **no** throwing instruction of it — the
+/// shape `javac --release 8` emits for a `try` whose body cannot raise — is still a row of the
+/// table and still an edge of the graph, and a handler with no input at all is a handler no later
+/// pass could present. Nothing can be raised at such a block, so no state is pinned by the bytes;
+/// the input is the one state this block really derives, its own exit, with the same caught
+/// reference on the stack. It names no throw site, and [`LogicalInput::exception`] is what says
+/// which record's handler it enters.
+///
 /// Charges one `IrItems` per slot of every input it builds, before that input's locals are copied.
 fn exception_inputs(
     method: &FrameMethod<'_>,
     canonical: &CanonicalCfg,
     block: &CanonicalBlock,
     throw_points: &[ThrowPoint],
+    exit: &Frame,
     handler_ordinal: u32,
     budget: &mut Budget,
 ) -> Norm<Vec<ExceptionInput>> {
@@ -2521,7 +2563,7 @@ fn exception_inputs(
         // from: charged before the copy is made, not after it is handed over.
         charge_slots(budget, point.locals.len().saturating_add(1))?;
         inputs.push(ExceptionInput {
-            bci: point.bci,
+            bci: Some(point.bci),
             frame: Frame {
                 locals: point.locals.clone(),
                 stack: vec![thrown.clone()],
@@ -2530,12 +2572,18 @@ fn exception_inputs(
         });
     }
     if inputs.is_empty() {
-        return inconsistent(format!(
-            "block {:?} leaves through the exception edge of handler record {handler_ordinal} but \
-             holds no throw site that record covers: the edge and the sites are built from one \
-             fact and cannot disagree",
-            block.id
-        ));
+        // The record protects this block and the block raises nothing: the handler is entered
+        // from the block's own exit, whose locals are the last state the protected instructions
+        // leave, with the caught reference as the whole stack.
+        charge_slots(budget, exit.locals.len().saturating_add(1))?;
+        inputs.push(ExceptionInput {
+            bci: None,
+            frame: Frame {
+                locals: exit.locals.clone(),
+                stack: vec![thrown],
+                touches: None,
+            },
+        });
     }
     Ok(inputs)
 }
@@ -2644,8 +2692,10 @@ pub(crate) enum FrameOutcome {
 /// A logical input is finer than a canonical edge. One exception edge aggregates every throw site
 /// its record covers, and each of those sites hands the handler its *own* state, so a consumer
 /// that asks "how many values does this slot take here" must count these records and never the
-/// aggregated edges. The source block names the normalization context too, because a clone of a
-/// subroutine is a different node from the original and from another clone.
+/// aggregated edges — and an edge of a record that covers no throwing instruction of its source
+/// hands over that source's exit as one input of its own. The source block names the normalization
+/// context too, because a clone of a subroutine is a different node from the original and from
+/// another clone.
 ///
 /// One edge of a graph is one group of records, and the records of one group are the ones that
 /// edge carried the last time its source ran. Two records of an exception table can name the same
@@ -2662,8 +2712,19 @@ pub(crate) enum FrameOutcome {
 pub struct LogicalInput {
     /// The block the state comes from.
     pub(crate) from: CanonicalBlockId,
+    /// Ordinal of the exception-table record this input arrives through, for an input an
+    /// exception edge carries into its handler; `None` for a plain transfer.
+    ///
+    /// This is the record the handler is entered by, and it is read off the edge itself. An input
+    /// that a throw site hands over names that site in `throw_site` as well; an input the edge
+    /// takes from its source's own exit — a record whose protected range covers no throwing
+    /// instruction of that source — names none, and this field is the only statement of which
+    /// record's handler it enters.
+    pub(crate) exception: Option<u32>,
     /// BCI of the throwing instruction this input is taken at, for an input that arrives through
-    /// an exception edge; `None` for a plain transfer, whose state is the source's exit.
+    /// an exception edge a throw site of the source feeds; `None` for a plain transfer, whose
+    /// state is the source's exit, and for the exception edge of a record that covers no throwing
+    /// instruction of the source, whose input is that same exit.
     pub(crate) throw_site: Option<u32>,
 }
 
@@ -2673,7 +2734,14 @@ impl LogicalInput {
         &self.from
     }
 
-    /// BCI of the throwing instruction this input is taken at, or `None` for a plain transfer.
+    /// Ordinal of the exception-table record this input arrives through, or `None` for a plain
+    /// transfer.
+    pub fn exception(&self) -> Option<u32> {
+        self.exception
+    }
+
+    /// BCI of the throwing instruction this input is taken at, or `None` for a plain transfer and
+    /// for the exception edge of a record that covers no throwing instruction of its source.
     pub fn throw_site(&self) -> Option<u32> {
         self.throw_site
     }
@@ -3046,11 +3114,12 @@ fn run(
                     canonical,
                     &block,
                     &transfer.throw_points,
+                    &transfer.exit,
                     *handler_ordinal,
                     budget,
                 )?
                 .into_iter()
-                .map(|input| (input.frame, Some(input.bci)))
+                .map(|input| (input.frame, input.bci))
                 .collect(),
                 CanonicalEdgeKind::Normal
                 | CanonicalEdgeKind::Call { .. }
@@ -3059,6 +3128,15 @@ fn run(
                     vec![(transfer.exit.clone(), None)]
                 }
             };
+            // The record an input arrives through is the edge's own ordinal, for every kind of
+            // edge but a plain transfer: the handler is entered by that record, whether or not a
+            // throw site of this block is what hands the state over.
+            let exception = match kind {
+                CanonicalEdgeKind::Exception { handler_ordinal } => Some(*handler_ordinal),
+                CanonicalEdgeKind::Normal
+                | CanonicalEdgeKind::Call { .. }
+                | CanonicalEdgeKind::Return { .. } => None,
+            };
             let target_id = &canonical.blocks[*target].id;
             let fed = u64::try_from(contributions.len()).unwrap_or(u64::MAX);
             let mut records = Vec::with_capacity(contributions.len());
@@ -3066,6 +3144,7 @@ fn run(
                 budget.charge(CountedBudgetDimension::IrItems, 1)?;
                 records.push(LogicalInput {
                     from: block.id.clone(),
+                    exception,
                     throw_site,
                 });
                 match entries[*target].as_mut() {
@@ -5196,6 +5275,7 @@ mod tests {
                     bci: 0,
                     path: Vec::new(),
                 },
+                exception: Some(0),
                 throw_site: Some(2),
             }],
             "the single site of the block is the single logical input of the handler"
@@ -5530,6 +5610,7 @@ mod tests {
                         bci: 0,
                         path: Vec::new(),
                     },
+                    exception: Some(0),
                     throw_site: Some(6),
                 },
                 LogicalInput {
@@ -5537,6 +5618,7 @@ mod tests {
                         bci: 0,
                         path: Vec::new(),
                     },
+                    exception: Some(0),
                     throw_site: Some(12),
                 },
             ],
@@ -5619,6 +5701,7 @@ mod tests {
                     bci: 0,
                     path: Vec::new(),
                 },
+                exception: Some(0),
                 throw_site: Some(1),
             },
             "the site the test states is the first input, by its own BCI"
@@ -5698,6 +5781,7 @@ mod tests {
                     bci: 0,
                     path: Vec::new(),
                 },
+                exception: Some(0),
                 throw_site: Some(3),
             }],
             "the call is the one throwing instruction of this block"
@@ -5777,6 +5861,7 @@ mod tests {
                         bci: 4,
                         path: Vec::new(),
                     },
+                    exception: None,
                     throw_site: None,
                 },
                 LogicalInput {
@@ -5784,6 +5869,7 @@ mod tests {
                         bci: 9,
                         path: Vec::new(),
                     },
+                    exception: None,
                     throw_site: None,
                 },
             ],
@@ -5814,6 +5900,7 @@ mod tests {
         };
         let record = LogicalInput {
             from: source.clone(),
+            exception: Some(0),
             throw_site: Some(5),
         };
         // The two edges the graph holds: one handler named by two records, which is what makes

@@ -1,0 +1,127 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-interface-field-initializers/evidence/task-3-1-replay-final/refusal-branch/BoundaryProbe.class
+  Last modified 2026年9月23日; size 723 bytes
+  SHA-256 checksum c61471f60100781f462145d958428840c730e7c98cb7a23e2c77c45b554cd254
+public interface BoundaryProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0601) ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT
+  this_class: #20                         // BoundaryProbe
+  super_class: #48                        // java/lang/Object
+  interfaces: 0, fields: 2, methods: 3, attributes: 0
+Constant pool:
+   #1 = Class              #2             // java/lang/StringBuilder
+   #2 = Utf8               java/lang/StringBuilder
+   #3 = Methodref          #1.#4          // java/lang/StringBuilder."<init>":()V
+   #4 = NameAndType        #5:#6          // "<init>":()V
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // BoundaryEffects.trace:Ljava/lang/String;
+   #8 = Class              #10            // BoundaryEffects
+   #9 = NameAndType        #11:#12        // trace:Ljava/lang/String;
+  #10 = Utf8               BoundaryEffects
+  #11 = Utf8               trace
+  #12 = Utf8               Ljava/lang/String;
+  #13 = Methodref          #1.#14         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #14 = NameAndType        #15:#16        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #15 = Utf8               append
+  #16 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #17 = String             #18            // |
+  #18 = Utf8               |
+  #19 = Fieldref           #20.#21        // BoundaryProbe.FIRST:Ljava/lang/String;
+  #20 = Class              #22            // BoundaryProbe
+  #21 = NameAndType        #23:#12        // FIRST:Ljava/lang/String;
+  #22 = Utf8               BoundaryProbe
+  #23 = Utf8               FIRST
+  #24 = Fieldref           #20.#25        // BoundaryProbe.SECOND:Ljava/lang/String;
+  #25 = NameAndType        #26:#12        // SECOND:Ljava/lang/String;
+  #26 = Utf8               SECOND
+  #27 = Methodref          #1.#28         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #28 = NameAndType        #29:#30        // toString:()Ljava/lang/String;
+  #29 = Utf8               toString
+  #30 = Utf8               ()Ljava/lang/String;
+  #31 = Methodref          #8.#32         // BoundaryEffects.independent:()V
+  #32 = NameAndType        #33:#6         // independent:()V
+  #33 = Utf8               independent
+  #34 = Methodref          #8.#35         // BoundaryEffects.choose:()Z
+  #35 = NameAndType        #36:#37        // choose:()Z
+  #36 = Utf8               choose
+  #37 = Utf8               ()Z
+  #38 = String             #39            // A
+  #39 = Utf8               A
+  #40 = Methodref          #8.#41         // BoundaryEffects.next:(Ljava/lang/String;)Ljava/lang/String;
+  #41 = NameAndType        #42:#43        // next:(Ljava/lang/String;)Ljava/lang/String;
+  #42 = Utf8               next
+  #43 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #44 = String             #45            // Z
+  #45 = Utf8               Z
+  #46 = String             #47            // B
+  #47 = Utf8               B
+  #48 = Class              #49            // java/lang/Object
+  #49 = Utf8               java/lang/Object
+  #50 = Utf8               observe
+  #51 = Utf8               Code
+  #52 = Utf8               patchAnchor
+  #53 = Utf8               <clinit>
+  #54 = Utf8               StackMapTable
+  #55 = Class              #56            // java/lang/String
+  #56 = Utf8               java/lang/String
+{
+  public static final java.lang.String FIRST;
+    descriptor: Ljava/lang/String;
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static final java.lang.String SECOND;
+    descriptor: Ljava/lang/String;
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static java.lang.String observe();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #1                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #7                  // Field BoundaryEffects.trace:Ljava/lang/String;
+        10: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        13: ldc           #17                 // String |
+        15: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: getstatic     #19                 // Field FIRST:Ljava/lang/String;
+        21: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        24: ldc           #17                 // String |
+        26: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        29: getstatic     #24                 // Field SECOND:Ljava/lang/String;
+        32: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        35: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        38: areturn
+
+  public static void patchAnchor();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=0, locals=0, args_size=0
+         0: invokestatic  #31                 // Method BoundaryEffects.independent:()V
+         3: return
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokestatic  #34                 // Method BoundaryEffects.choose:()Z
+         3: ifeq          14
+         6: ldc           #38                 // String A
+         8: invokestatic  #40                 // Method BoundaryEffects.next:(Ljava/lang/String;)Ljava/lang/String;
+        11: goto          19
+        14: ldc           #44                 // String Z
+        16: invokestatic  #40                 // Method BoundaryEffects.next:(Ljava/lang/String;)Ljava/lang/String;
+        19: putstatic     #19                 // Field FIRST:Ljava/lang/String;
+        22: ldc           #46                 // String B
+        24: invokestatic  #40                 // Method BoundaryEffects.next:(Ljava/lang/String;)Ljava/lang/String;
+        27: putstatic     #24                 // Field SECOND:Ljava/lang/String;
+        30: return
+      StackMapTable: number_of_entries = 2
+        frame_type = 14 /* same */
+        frame_type = 68 /* same_locals_1_stack_item */
+          stack = [ class java/lang/String ]
+}

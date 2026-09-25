@@ -1,0 +1,44 @@
+{
+  "cli_sha256": "30481c1449b5a1869773d21b934789d42bb1d6a9cab8d81f873d50055af4e34c",
+  "cases": {
+    "broken-suppression": {
+      "class_bytes": 670,
+      "class_sha256": "9b1799db42e4ebafb1f8bf129d7156f870bd57b7dfe1b4ba29224bb7a5a289ee",
+      "cli_exit": 0,
+      "javap_exit": 0,
+      "method": "useNullResource",
+      "method_has_resource": false,
+      "method_has_runtime_catch": false,
+      "method_has_throwable_catch": false,
+      "method_has_fallback": true,
+      "suppression_refusal": true,
+      "direct_interface_refusal": false
+    },
+    "inherited-only": {
+      "class_bytes": 492,
+      "class_sha256": "c71386e7dc539ab9ffbc4dac2ec6fcb71b0d30164cbf5bbc93ac2ae03c07424e",
+      "cli_exit": 0,
+      "javap_exit": 0,
+      "method": "useNullResource",
+      "method_has_resource": false,
+      "method_has_runtime_catch": false,
+      "method_has_throwable_catch": false,
+      "method_has_fallback": true,
+      "suppression_refusal": false,
+      "direct_interface_refusal": true
+    },
+    "ordinary-catch": {
+      "class_bytes": 1003,
+      "class_sha256": "03438338c836ef6e890bbeeb50104d5f479687075c2606ad8a34c8105f956adb",
+      "cli_exit": 0,
+      "javap_exit": 0,
+      "method": "ordinaryNullThenCatch",
+      "method_has_resource": false,
+      "method_has_runtime_catch": true,
+      "method_has_throwable_catch": false,
+      "method_has_fallback": false,
+      "suppression_refusal": false,
+      "direct_interface_refusal": false
+    }
+  }
+}

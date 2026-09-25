@@ -1,0 +1,9 @@
+package defpackage;
+
+/* JADX INFO: loaded from: BooleanDescriptor.class */
+public class BooleanDescriptor {
+    /* JADX WARN: Type inference failed for: r0v1, types: [boolean, byte] */
+    public static boolean convert(boolean z) {
+        return z ? (byte) 1 : (byte) 0;
+    }
+}

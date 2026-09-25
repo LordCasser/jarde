@@ -1,0 +1,31 @@
+public class NarrowArrayStores {
+  public NarrowArrayStores();
+    descriptor: ()V
+
+  public static void storeByte(byte[], int, int);
+    descriptor: ([BII)V
+
+  public static void storeChar(char[], int, int);
+    descriptor: ([CII)V
+
+  public static void storeShort(short[], int, int);
+    descriptor: ([SII)V
+
+  public static void storeByteProduced(byte[], int, int, boolean);
+    descriptor: ([BIIZ)V
+
+  public static void storeCharProduced(char[], int, int, boolean);
+    descriptor: ([CIIZ)V
+
+  public static void storeShortProduced(short[], int, int, boolean);
+    descriptor: ([SIIZ)V
+
+  public static void ordinaryByte(byte[]);
+    descriptor: ([B)V
+
+  public static void ordinaryChar(char[]);
+    descriptor: ([C)V
+
+  public static void ordinaryShort(short[]);
+    descriptor: ([S)V
+}

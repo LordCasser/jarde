@@ -1,0 +1,15 @@
+Compiled from "DirectMethodRef.java"
+public class DirectMethodRef {
+  public DirectMethodRef();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int abs(int);
+    Code:
+       0: invokedynamic #7,  0              // InvokeDynamic #0:applyAsInt:()Ljava/util/function/IntUnaryOperator;
+       5: iload_0
+       6: invokeinterface #11,  2           // InterfaceMethod java/util/function/IntUnaryOperator.applyAsInt:(I)I
+      11: ireturn
+}

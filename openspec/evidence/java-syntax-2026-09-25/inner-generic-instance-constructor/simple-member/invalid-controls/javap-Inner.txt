@@ -1,0 +1,82 @@
+Classfile jar:file:///Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/full-target.jar!/nested/SimpleOuter$Inner.class
+  Last modified 2026年9月25日; size 447 bytes
+  SHA-256 checksum 7ce649089f60472371b1a2ca9308175d601dd3df259752dd2451d941459d2c4d
+public final class nested.SimpleOuter$Inner
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #2                          // nested/SimpleOuter$Inner
+  super_class: #8                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 2, attributes: 1
+Constant pool:
+   #1 = Fieldref           #2.#3          // nested/SimpleOuter$Inner.this$0:Lnested/SimpleOuter;
+   #2 = Class              #4             // nested/SimpleOuter$Inner
+   #3 = NameAndType        #5:#6          // this$0:Lnested/SimpleOuter;
+   #4 = Utf8               nested/SimpleOuter$Inner
+   #5 = Utf8               this$0
+   #6 = Utf8               Lnested/SimpleOuter;
+   #7 = Methodref          #8.#9          // java/lang/Object."<init>":()V
+   #8 = Class              #10            // java/lang/Object
+   #9 = NameAndType        #11:#12        // "<init>":()V
+  #10 = Utf8               java/lang/Object
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Fieldref           #2.#14         // nested/SimpleOuter$Inner.value:I
+  #14 = NameAndType        #15:#16        // value:I
+  #15 = Utf8               value
+  #16 = Utf8               I
+  #17 = Methodref          #18.#19        // nested/SimpleOuter.access$000:(Lnested/SimpleOuter;)I
+  #18 = Class              #20            // nested/SimpleOuter
+  #19 = NameAndType        #21:#22        // access$000:(Lnested/SimpleOuter;)I
+  #20 = Utf8               nested/SimpleOuter
+  #21 = Utf8               access$000
+  #22 = Utf8               (Lnested/SimpleOuter;)I
+  #23 = Utf8               (Lnested/SimpleOuter;I)V
+  #24 = Utf8               Code
+  #25 = Utf8               MethodParameters
+  #26 = Utf8               ()I
+  #27 = Utf8               InnerClasses
+  #28 = Utf8               Inner
+{
+  private final int value;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  final nested.SimpleOuter this$0;
+    descriptor: Lnested/SimpleOuter;
+    flags: (0x1010) ACC_FINAL, ACC_SYNTHETIC
+
+  public nested.SimpleOuter$Inner(nested.SimpleOuter, int);
+    descriptor: (Lnested/SimpleOuter;I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: aload_1
+         2: putfield      #1                  // Field this$0:Lnested/SimpleOuter;
+         5: aload_0
+         6: invokespecial #7                  // Method java/lang/Object."<init>":()V
+         9: aload_0
+        10: iload_2
+        11: putfield      #13                 // Field value:I
+        14: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      final mandated
+      <no name>
+
+  public int value();
+    descriptor: ()I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #1                  // Field this$0:Lnested/SimpleOuter;
+         4: invokestatic  #17                 // Method nested/SimpleOuter.access$000:(Lnested/SimpleOuter;)I
+         7: aload_0
+         8: getfield      #13                 // Field value:I
+        11: iadd
+        12: ireturn
+}
+InnerClasses:
+  public final #28= #2 of #18;            // Inner=class nested/SimpleOuter$Inner of class nested/SimpleOuter

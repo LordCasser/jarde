@@ -1,0 +1,28 @@
+package defpackage;
+
+/* JADX INFO: loaded from: SwitchLoopExits.class */
+final class SwitchLoopExits {
+    SwitchLoopExits() {
+    }
+
+    static int run(int i, int i2, boolean z) {
+        int i3 = 0;
+        for (int i4 = i; i4 < i2; i4++) {
+            switch (i4) {
+                case 0:
+                    if (z) {
+                        return i3;
+                    }
+                    i3++;
+                    break;
+                    break;
+                case 1:
+                    i3 += 2;
+                    break;
+                default:
+                    return i3;
+            }
+        }
+        return i3;
+    }
+}

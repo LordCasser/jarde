@@ -1,0 +1,36 @@
+{
+  "bytes": 340,
+  "class_sha256": "ab42b65ce6bdec23cf980037232d946203c2459f07858fb1804cfb6935992445",
+  "cli_sha256": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+  "cases": 6,
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_differences": [
+    {
+      "original": "null:invoke:11",
+      "jarde": "null:invoke:21"
+    },
+    {
+      "original": "null:read:3",
+      "jarde": "null:read:7"
+    },
+    {
+      "original": "null:write:9:7",
+      "jarde": "null:write:3:9"
+    },
+    {
+      "original": "object:invoke:11",
+      "jarde": "object:invoke:21"
+    },
+    {
+      "original": "object:read:3",
+      "jarde": "object:read:7"
+    },
+    {
+      "original": "object:write:9:7",
+      "jarde": "object:write:3:9"
+    }
+  ],
+  "jadx_javac": 0,
+  "jadx_equal": true
+}

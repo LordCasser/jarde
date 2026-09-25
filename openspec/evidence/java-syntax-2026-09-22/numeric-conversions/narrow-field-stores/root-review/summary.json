@@ -1,0 +1,68 @@
+{
+  "original_class_sha256": "ae0bfc789051a30dd6779d57cea2f484d7e5fe4822f18102eb74915075d04eda",
+  "patched_class_sha256": "713e821a6e182505d412ae2b8b01823e426cd436ac154073044fc19f1c6d2f10",
+  "class_methods_code_unchanged": 49,
+  "target_fields": {
+    "byteField": "B",
+    "charField": "C",
+    "shortField": "S",
+    "booleanField": "Z",
+    "staticByteField": "B",
+    "staticCharField": "C",
+    "staticShortField": "S",
+    "staticBooleanField": "Z"
+  },
+  "patched_cases": 380,
+  "jarde_cases": 380,
+  "jarde_differences": 330,
+  "differences_by_type": {
+    "B": 84,
+    "C": 88,
+    "S": 88,
+    "Z": 70
+  },
+  "jarde_javac": 0,
+  "jadx_javac": 1,
+  "examples": [
+    {
+      "class": "B:instance:value:-32769:stored:-1",
+      "jarde": "B:instance:value:-32769:stored:0"
+    },
+    {
+      "class": "B:instance:value:-257:stored:-1",
+      "jarde": "B:instance:value:-257:stored:0"
+    },
+    {
+      "class": "B:instance:value:-129:stored:127",
+      "jarde": "B:instance:value:-129:stored:0"
+    },
+    {
+      "class": "B:instance:value:-128:stored:-128",
+      "jarde": "B:instance:value:-128:stored:0"
+    },
+    {
+      "class": "B:instance:value:-2:stored:-2",
+      "jarde": "B:instance:value:-2:stored:0"
+    },
+    {
+      "class": "B:instance:value:-1:stored:-1",
+      "jarde": "B:instance:value:-1:stored:0"
+    },
+    {
+      "class": "B:instance:value:1:stored:1",
+      "jarde": "B:instance:value:1:stored:0"
+    },
+    {
+      "class": "B:instance:value:2:stored:2",
+      "jarde": "B:instance:value:2:stored:0"
+    },
+    {
+      "class": "B:instance:value:127:stored:127",
+      "jarde": "B:instance:value:127:stored:0"
+    },
+    {
+      "class": "B:instance:value:128:stored:-128",
+      "jarde": "B:instance:value:128:stored:0"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+exit=1
+<WORK>/Probe.java:16: 错误: 无法直接访问Child中的抽象方法 value()
+        return Child.super.value();
+                          ^
+1 个错误

@@ -1,0 +1,66 @@
+// jarde: presentation of `FinalStaticProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class FinalStaticProbe extends java.lang.Object {
+    public static final int first;
+
+    public static final int second;
+
+    public static final int branchValue;
+
+    public static final int local0;
+
+    public static final int local0_2;
+
+    public static final int afterAssign;
+
+    public static final int constantValue = 17;
+
+    private final int instanceValue;
+
+    public FinalStaticProbe(int arg1) {
+        // @method <init>(I)V
+        // @declaration a constructor of `FinalStaticProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.instanceValue = arg1;
+        return;
+    }
+
+    public int instanceValue() {
+        // @method instanceValue()I
+        // @declaration an instance method of `FinalStaticProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.instanceValue;
+    }
+
+    public static int readAfterAssign() {
+        // @method readAfterAssign()I
+        // @declaration a static method of `FinalStaticProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return FinalStaticProbe.afterAssign;
+    }
+
+    public static java.lang.String snapshot() {
+        // @method snapshot()Ljava/lang/String;
+        // @declaration a static method of `FinalStaticProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.lang.StringBuilder().append(FinalStaticProbe.first).append(":").append(FinalStaticProbe.second).append(":").append(FinalStaticProbe.branchValue).append(":").append(FinalStaticProbe.local0).append(":").append(FinalStaticProbe.local0_2).append(":").append(FinalStaticProbe.afterAssign).append(":").append(17).toString();
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `FinalStaticProbe`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        FinalStaticProbe.first = FinalStaticSupport.next("first");
+        FinalStaticProbe.second = FinalStaticSupport.next("second");
+        int local0 = FinalStaticSupport.next("local");
+        FinalStaticProbe.local0 = local0;
+        FinalStaticProbe.local0_2 = FinalStaticSupport.next("local0_2");
+        if (FinalStaticSupport.branch()) {
+            FinalStaticProbe.branchValue = FinalStaticSupport.next("branch-true");
+        } else {
+            FinalStaticProbe.branchValue = FinalStaticSupport.next("branch-false");
+        }
+        FinalStaticProbe.afterAssign = FinalStaticProbe.first + FinalStaticProbe.second + FinalStaticProbe.branchValue;
+    }
+}

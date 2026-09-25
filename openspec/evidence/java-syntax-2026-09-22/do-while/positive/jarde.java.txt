@@ -1,0 +1,72 @@
+// jarde: presentation of `DoWhilePositive` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class DoWhilePositive extends java.lang.Object {
+    private static int trace;
+
+    private static int checks;
+
+    public DoWhilePositive() {
+        // @method <init>()V
+        // @declaration a constructor of `DoWhilePositive`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void reset() {
+        // @method reset()V
+        // @declaration a static method of `DoWhilePositive`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        DoWhilePositive.trace = 0;
+        DoWhilePositive.checks = 0;
+        return;
+    }
+
+    public static int trace() {
+        // @method trace()I
+        // @declaration a static method of `DoWhilePositive`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return DoWhilePositive.trace;
+    }
+
+    public static int checks() {
+        // @method checks()I
+        // @declaration a static method of `DoWhilePositive`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return DoWhilePositive.checks;
+    }
+
+    public static int basic(int arg0) {
+        // @method basic(I)I
+        // @declaration a static method of `DoWhilePositive`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        local1 = 0;
+        do {
+            local1 = local1 + 1;
+            DoWhilePositive.trace = DoWhilePositive.trace * 10 + local1;
+        } while (local1 < arg0);
+        return DoWhilePositive.trace;
+    }
+
+    private static int touch() {
+        // @method touch()I
+        // @declaration a static method of `DoWhilePositive`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        DoWhilePositive.checks = DoWhilePositive.checks + 1;
+        return 0;
+    }
+
+    public static int effectfulCondition(int arg0) {
+        // @method effectfulCondition(I)I
+        // @declaration a static method of `DoWhilePositive`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1;
+        local1 = 0;
+        do {
+            local1 = local1 + 1;
+            DoWhilePositive.trace = DoWhilePositive.trace * 10 + local1;
+        } while (touch() + local1 < arg0);
+        return DoWhilePositive.trace;
+    }
+}

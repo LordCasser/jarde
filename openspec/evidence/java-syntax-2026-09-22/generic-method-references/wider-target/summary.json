@@ -1,0 +1,16 @@
+{
+  "class_sha256": "97e69596434f2fdf8373c74ba29853aa4e267252b949088f2822256ca7f584c3",
+  "bytes": 884,
+  "jarde_cli_sha256": "c050b502ba3fc23f33937ac607b1da7b51447e02e1a6d41b1d060c2b93b5b8d9",
+  "jarde_quotes": 0,
+  "cases": 3,
+  "jarde_javac": 0,
+  "jarde_differences": [
+    {
+      "original": "integer:java.lang.ClassCastException:0",
+      "jarde": "integer:7:1"
+    }
+  ],
+  "jadx_javac": 0,
+  "jadx_equal": true
+}

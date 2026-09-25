@@ -1,0 +1,101 @@
+{
+  "input": "generated/source/source-baseline/Measure.class",
+  "class_major": 52,
+  "original_sha256": "286005bc6edb857700851506740ba1e30139f1ae4348afc1bb219917a04cc7fd",
+  "field_and_method_tables_unchanged": true,
+  "member_table_sha256": "eacfcf2b849335d8d08be730d84d701ba8e3ebd15f2bbe3d8d51dfd8ca81b002",
+  "member_tables": [
+    {
+      "table": "fields",
+      "declarations": [
+        {
+          "access_flags": 16409,
+          "name": "LOW",
+          "descriptor": "LMeasure;"
+        },
+        {
+          "access_flags": 16409,
+          "name": "HIGH",
+          "descriptor": "LMeasure;"
+        },
+        {
+          "access_flags": 16,
+          "name": "units",
+          "descriptor": "I"
+        },
+        {
+          "access_flags": 8,
+          "name": "totalUnits",
+          "descriptor": "I"
+        },
+        {
+          "access_flags": 4122,
+          "name": "$VALUES",
+          "descriptor": "[LMeasure;"
+        }
+      ]
+    },
+    {
+      "table": "methods",
+      "declarations": [
+        {
+          "access_flags": 9,
+          "name": "values",
+          "descriptor": "()[LMeasure;"
+        },
+        {
+          "access_flags": 9,
+          "name": "valueOf",
+          "descriptor": "(Ljava/lang/String;)LMeasure;"
+        },
+        {
+          "access_flags": 2,
+          "name": "<init>",
+          "descriptor": "(Ljava/lang/String;II)V"
+        },
+        {
+          "access_flags": 8,
+          "name": "sumUnits",
+          "descriptor": "()I"
+        },
+        {
+          "access_flags": 4106,
+          "name": "$values",
+          "descriptor": "()[LMeasure;"
+        },
+        {
+          "access_flags": 8,
+          "name": "<clinit>",
+          "descriptor": "()V"
+        }
+      ]
+    }
+  ],
+  "patches": {
+    "values-order": {
+      "path": "generated/patched-values-order/Measure.class",
+      "sha256": "3198a0ec08ff2c0f714d422e2e02413449a63fd54b1d0f340eebb040ba2eaac8",
+      "length": 927,
+      "changed_code_bcis": [
+        6,
+        12
+      ],
+      "edit": "swap only the LOW/HIGH getstatic operands in $values()",
+      "field_and_method_tables_unchanged": true,
+      "member_table_sha256": "eacfcf2b849335d8d08be730d84d701ba8e3ebd15f2bbe3d8d51dfd8ca81b002",
+      "changed_offsets_confined_to_target_method_code": true
+    },
+    "valueof-null-argument": {
+      "path": "generated/patched-valueof-null-argument/Measure.class",
+      "sha256": "492167c5455c548b0a098119d550ade7454c9e69221409fc334e63a450776758",
+      "length": 927,
+      "changed_code_bcis": [
+        2
+      ],
+      "edit": "replace valueOf(String) argument load with aconst_null",
+      "field_and_method_tables_unchanged": true,
+      "member_table_sha256": "eacfcf2b849335d8d08be730d84d701ba8e3ebd15f2bbe3d8d51dfd8ca81b002",
+      "changed_offsets_confined_to_target_method_code": true
+    }
+  }
+}

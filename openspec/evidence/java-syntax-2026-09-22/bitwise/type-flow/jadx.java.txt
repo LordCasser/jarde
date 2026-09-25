@@ -1,0 +1,32 @@
+package defpackage;
+
+/* JADX INFO: loaded from: BitwiseAudit.class */
+public class BitwiseAudit {
+    public static boolean nested(boolean z, boolean z2, boolean z3) {
+        return z & (z2 ^ (z3 | true));
+    }
+
+    public static boolean copied(boolean z, boolean z2, boolean z3) {
+        return (z | z2) & z3;
+    }
+
+    public static boolean hoisted(boolean z, boolean z2, boolean z3) {
+        boolean z4 = z & z2;
+        if (z3) {
+            z4 = z | z2;
+        }
+        return z4;
+    }
+
+    public static int passed(boolean z, boolean z2, boolean z3) {
+        return BitwiseEffects.accept((z ^ z2) & z3);
+    }
+
+    public static boolean array(boolean[] zArr) {
+        return zArr[0] ^ zArr[1];
+    }
+
+    public static int promoted(byte b, char c) {
+        return b | c;
+    }
+}

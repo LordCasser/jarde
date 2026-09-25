@@ -1,0 +1,13 @@
+{
+  "command": [
+    "java",
+    "-Xverify:all",
+    "-cp",
+    "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/patched:/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/runners",
+    "OrderRunner"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit_status": 0,
+  "stdout": "success: return=false, trace=123\nnull array: throws=NullPointerException, trace=123\nout of bounds: throws=ArrayIndexOutOfBoundsException, trace=123\nvalue throws: throws=IllegalStateException, trace=123\n",
+  "stderr": ""
+}

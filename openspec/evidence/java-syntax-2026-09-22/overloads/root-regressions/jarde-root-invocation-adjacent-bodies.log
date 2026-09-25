@@ -1,0 +1,164 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running tests/p3_eval_context.rs (target/debug/deps/p3_eval_context-89d135dc32204181)
+
+running 10 tests
+test a_call_argument_is_checked_where_the_consuming_expression_is_evaluated ... ok
+test a_nested_arithmetic_is_checked_where_its_text_is_evaluated ... ok
+test a_nested_expression_that_crosses_no_write_is_still_written ... ok
+test a_read_behind_another_read_is_named_too ... ok
+test a_recursion_that_re_enters_its_own_loop_stops_instead_of_aborting ... ok
+test a_refused_instance_read_keeps_the_null_pointer_it_can_throw ... ok
+test a_refused_static_read_keeps_the_class_initialization_it_can_run ... ok
+test every_presented_field_read_is_accounted_for_by_its_artifact ... ok
+test the_printed_text_keeps_the_arithmetic_tree ... ok
+test the_printed_text_keeps_the_grouping_of_every_position ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_instance_receiver.rs (target/debug/deps/p3_instance_receiver-0a579578e91afb6b)
+
+running 4 tests
+test a_constructors_own_receiver_is_this_and_its_writes_keep_their_place ... ok
+test a_receiver_the_body_never_reads_is_not_written_and_is_no_longer_an_alias ... ok
+test a_static_members_slot_zero_is_still_its_ordinal_parameter ... ok
+test an_instance_members_receiver_is_written_as_this_where_the_body_reads_it ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_invocation_arguments.rs (target/debug/deps/p3_invocation_arguments-795dea53a8392d17)
+
+running 4 tests
+test call_casts_keep_their_call_site_as_derived_provenance ... ok
+test fixture_has_one_real_class_and_all_argument_shapes ... ok
+test recovered_calls_keep_their_invocation_argument_types ... ok
+test recovered_invocation_arguments_match_original_runtime ... ignored, requires JDK: compile Engine::class_source output and execute a temporary runner
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_meeting.rs (target/debug/deps/p3_meeting-c336542e195ade41)
+
+running 6 tests
+test a_char_return_spells_the_code_unit_its_constant_stands_for ... ok
+test a_conversion_with_a_real_instruction_is_still_refused ... ok
+test a_discarded_call_result_is_the_calls_own_statement ... FAILED
+test a_popped_evaluation_is_the_static_calls_qualifier ... ok
+test a_position_performs_its_own_widening ... FAILED
+test no_shape_of_the_rule_claims_a_pop2 ... ok
+
+failures:
+
+---- a_discarded_call_result_is_the_calls_own_statement stdout ----
+
+thread 'a_discarded_call_result_is_the_calls_own_statement' (24085840) panicked at tests/p3_meeting.rs:300:5:
+the call is written as the statement its discarded result makes it:
+    static void unchecked(java.util.List arg0) {
+        // @method unchecked(Ljava/util/List;)V
+        // @declaration a static method of `Meet`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.add((java.lang.Object) "x");
+        return;
+    }
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- a_position_performs_its_own_widening stdout ----
+
+thread 'a_position_performs_its_own_widening' (24085842) panicked at tests/p3_meeting.rs:163:5:
+the callee's own parameter widens the value:
+    static int fieldArg(java.lang.String arg0) {
+        // @method fieldArg(Ljava/lang/String;)I
+        // @declaration a static method of `Meet`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return pass((int) arg0.charAt(0));
+    }
+
+
+
+failures:
+    a_discarded_call_result_is_the_calls_own_statement
+    a_position_performs_its_own_widening
+
+test result: FAILED. 4 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `--test p3_meeting`
+     Running tests/p3_new_value.rs (target/debug/deps/p3_new_value-e8c5600069976e83)
+
+running 4 tests
+test a_field_write_takes_the_construction_as_its_value ... ok
+test a_leftover_two_instructions_read_keeps_its_refusal ... ok
+test a_return_and_an_argument_write_the_construction_in_place ... ok
+test the_store_consumer_keeps_the_spelling_it_had ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_reference_cast.rs (target/debug/deps/p3_reference_cast-9643107f7de77bce)
+
+running 6 tests
+test discarded_cast_patch_retains_check_and_call_sources ... ok
+test fixture_declares_the_cast_shapes_and_real_java_source ... ok
+test nested_casts_keep_the_intermediate_runtime_check ... ok
+test ordinary_reference_casts_are_written_at_each_consumer ... ok
+test recovered_reference_casts_match_original_runtime ... ignored, requires JDK: compile Engine::class_source output and execute a temporary runner
+test unsupported_nested_consumer_retains_invocation_and_both_cast_bcis ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_required_conversions.rs (target/debug/deps/p3_required_conversions-e7130439423f86ef)
+
+running 8 tests
+test a_conversion_no_evidence_states_is_refused ... ok
+test a_converted_part_states_the_appends_own_type ... ok
+test a_part_that_already_meets_its_parameter_gains_nothing ... ok
+test a_return_states_the_members_own_type ... ok
+test a_write_states_the_written_types_own_type ... ok
+test an_argument_states_the_callees_parameter_type ... FAILED
+test every_declared_member_of_the_sample_is_covered ... ok
+test the_conversion_costs_no_ir_item_and_no_normalization_clone ... ok
+
+failures:
+
+---- an_argument_states_the_callees_parameter_type stdout ----
+
+thread 'an_argument_states_the_callees_parameter_type' (24085861) panicked at tests/p3_required_conversions.rs:316:5:
+assertion `left == right` failed
+  left: "return widen((int) arg0);"
+ right: "return widen(arg0);"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    an_argument_states_the_callees_parameter_type
+
+test result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `--test p3_required_conversions`
+     Running tests/p3_special_dispatch.rs (target/debug/deps/p3_special_dispatch-14126f0f530aa881)
+
+running 4 tests
+test generated_special_dispatch_matches_original_runtime ... ignored, 需要 JDK：从 Engine::class_source 生成真实文本后用 javac/java 编译执行；cargo test 默认跳过
+test special_dispatch_arguments_keep_super_shape_and_producers ... ok
+test special_dispatch_keeps_receiver_and_call_origins ... ok
+test special_dispatch_text_keeps_each_declared_receiver ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_special_refusal.rs (target/debug/deps/p3_special_refusal-a0f8602fae65b30b)
+
+running 4 tests
+test discarded_result_special_keeps_argument_and_call_sources ... ok
+test nonprivate_current_special_is_refused_instead_of_becoming_this_virtual ... ok
+test nonthis_direct_super_special_is_refused_instead_of_becoming_super ... ok
+test refused_nested_special_keeps_argument_outer_call_and_return_sources ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_static_call.rs (target/debug/deps/p3_static_call-4e38ee3c066253f4)
+
+running 1 test
+test a_static_call_names_the_class_its_pool_entry_names ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: 2 targets failed:
+    `--test p3_meeting`
+    `--test p3_required_conversions`

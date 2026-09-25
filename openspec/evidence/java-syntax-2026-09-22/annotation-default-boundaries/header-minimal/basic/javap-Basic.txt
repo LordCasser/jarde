@@ -1,0 +1,50 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/annotation-default-boundaries/header-minimal/basic/classes-original/Basic.class
+  Last modified 2026年9月23日; size 262 bytes
+  SHA-256 checksum 66f3a8d95424b352bef9fe5b73e4c0d9204672ee97093ef975c2ec104eae0da3
+interface Basic extends java.lang.annotation.Annotation
+  minor version: 0
+  major version: 52
+  flags: (0x2600) ACC_INTERFACE, ACC_ABSTRACT, ACC_ANNOTATION
+  this_class: #1                          // Basic
+  super_class: #3                         // java/lang/Object
+  interfaces: 1, fields: 0, methods: 3, attributes: 0
+Constant pool:
+   #1 = Class              #2             // Basic
+   #2 = Utf8               Basic
+   #3 = Class              #4             // java/lang/Object
+   #4 = Utf8               java/lang/Object
+   #5 = Class              #6             // java/lang/annotation/Annotation
+   #6 = Utf8               java/lang/annotation/Annotation
+   #7 = Utf8               count
+   #8 = Utf8               ()I
+   #9 = Utf8               AnnotationDefault
+  #10 = Integer            5
+  #11 = Utf8               label
+  #12 = Utf8               ()Ljava/lang/String;
+  #13 = Utf8               source-only
+  #14 = Utf8               codes
+  #15 = Utf8               ()[I
+  #16 = Integer            2
+  #17 = Integer            4
+{
+  public abstract int count();
+    descriptor: ()I
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: I#10
+        5
+
+  public abstract java.lang.String label();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: s#13
+        "source-only"
+
+  public abstract int[] codes();
+    descriptor: ()[I
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+    AnnotationDefault:
+      default_value: [I#16,I#17]
+        [2,4]
+}

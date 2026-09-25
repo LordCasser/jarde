@@ -1,0 +1,12 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/p3_declarations.rs (target/debug/deps/p3_declarations-8ecbcae24d28241c)
+
+running 5 tests
+test a_field_whose_constant_value_cannot_be_read_is_never_spelled_without_it ... ok
+test a_fields_initializer_is_the_constant_its_own_attribute_states ... ok
+test a_members_throws_clause_is_its_own_exceptions_attribute ... ok
+test an_interface_member_is_default_exactly_when_the_class_and_the_member_say_so ... ok
+test the_package_line_is_the_package_the_classs_own_name_states ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

@@ -1,0 +1,9 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/replay-baseline/swapped/EnumSwitchSubject.java:41: 错误: 找不到符号
+        switch (EnumSwitchSubject$1.$SwitchMap$Hue[arg0.ordinal()]) {
+                                   ^
+  符号: 变量 $SwitchMap$Hue
+1 个错误
+3 个警告

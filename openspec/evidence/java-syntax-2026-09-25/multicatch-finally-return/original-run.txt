@@ -1,0 +1,4 @@
+0:ok:ok:1
+1:IllegalArgumentException:a:IllegalArgumentException:a:1
+2:IllegalStateException:s:IllegalStateException:s:1
+3:ok:ok:1

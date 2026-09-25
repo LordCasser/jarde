@@ -1,0 +1,110 @@
+// jarde: presentation of `ConversionIntegers` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ConversionIntegers extends java.lang.Object {
+    public ConversionIntegers() {
+        // @method <init>()V
+        // @declaration a constructor of `ConversionIntegers`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static long i2l(int arg0) {
+        // jarde: not recovered: the recovery run for `i2l(I)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method i2l(I)J
+        // @declaration a static method of `ConversionIntegers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static float i2f(int arg0) {
+        // jarde: not recovered: the recovery run for `i2f(I)F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method i2f(I)F
+        // @declaration a static method of `ConversionIntegers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static double i2d(int arg0) {
+        // jarde: not recovered: the recovery run for `i2d(I)D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method i2d(I)D
+        // @declaration a static method of `ConversionIntegers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static byte i2b(int arg0) {
+        // jarde: not recovered: the recovery run for `i2b(I)B` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method i2b(I)B
+        // @declaration a static method of `ConversionIntegers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static char i2c(int arg0) {
+        // jarde: not recovered: the recovery run for `i2c(I)C` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method i2c(I)C
+        // @declaration a static method of `ConversionIntegers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static short i2s(int arg0) {
+        // jarde: not recovered: the recovery run for `i2s(I)S` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method i2s(I)S
+        // @declaration a static method of `ConversionIntegers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static int byteOverload(int arg0) {
+        // jarde: not recovered: the recovery run for `byteOverload(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method byteOverload(I)I
+        // @declaration a static method of `ConversionIntegers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 5 2
+        // the value at BCI 5 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static int shortOverload(int arg0) {
+        // jarde: not recovered: the recovery run for `shortOverload(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method shortOverload(I)I
+        // @declaration a static method of `ConversionIntegers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 5 2
+        // the value at BCI 5 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static int charOverload(int arg0) {
+        // jarde: not recovered: the recovery run for `charOverload(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method charOverload(I)I
+        // @declaration a static method of `ConversionIntegers`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 5 2
+        // the value at BCI 5 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+}

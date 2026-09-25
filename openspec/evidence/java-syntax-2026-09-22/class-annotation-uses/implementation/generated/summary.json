@@ -1,0 +1,846 @@
+{
+  "cli_path": "/tmp/jarde-cli-class-ann-impl",
+  "cli_sha256": "b4568344e6b0d7e7e2584e31e3693f72f412a597b56fde70776db3e06e459453",
+  "java_version": [
+    "openjdk version \"23.0.1\" 2024-10-15",
+    "OpenJDK Runtime Environment (build 23.0.1+11-39)",
+    "OpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)"
+  ],
+  "base_visible_and_reflection": {
+    "source_sha256": {
+      "Tagged.java": "c6bde2f7356c0a0de8de0fa8485f5d7af023b9331ea9f87e06a2854506138817",
+      "RetentionTagged.java": "9bea2bf8dcc45040d2f1d13991ccb7ce075f141691af6bd09b7cb0aabbff6b94",
+      "TagRunner.java": "6223e86d4bdca890b01e6171ee9a988f976a63350011821f11f11cf2addeb003"
+    },
+    "class_sha256": {
+      "RetentionTagged.class": "c40639586a3f68c33470b2cc873b30cf06394d76f74bad9defb9823a708ee183",
+      "TagRunner.class": "fc9389dd804b772248a2141a7c0a65144dba741812d4afb9afbe246d063e4ec6",
+      "Tagged.class": "2ba5e42e8e00e7ec9fb46a9152d3dd403f85a872ddc579d54c245f8c76be693c"
+    },
+    "class_bytes": {
+      "RetentionTagged.class": 247,
+      "TagRunner.class": 659,
+      "Tagged.class": 247
+    },
+    "outputs": {
+      "original": [
+        "true",
+        "3",
+        "@java.lang.annotation.Retention(RUNTIME)"
+      ],
+      "jadx": [
+        "true",
+        "3",
+        "@java.lang.annotation.Retention(RUNTIME)"
+      ],
+      "jarde": [
+        "true",
+        "3",
+        "@java.lang.annotation.Retention(RUNTIME)"
+      ]
+    }
+  },
+  "class_retention_and_boundaries": {
+    "source_sha256": {
+      "BoundaryRunner.java": "24d15f8385d943a97345f5577302920547ba630616ae5bd505b483affc5e17df",
+      "DuplicateTarget.java": "3a0111d1c4c5b7d6259f13038a7773ef1405289ad1d4c31b8f05397a82a5c685",
+      "EmptyTarget.java": "8cdc767c3ee50921c7becdddb35396448e3491bea8fbaa62ad031a898bd78172",
+      "HiddenTag.java": "1192ccd836c7b01dbaac2f421f515cbc3ac92cec585e9ce5d1daafb89a6820a6",
+      "HiddenTarget.java": "808410505269dc635f74d021684753ca67ed68ff4bde27eeb921925066c40355",
+      "MemberPlacement.java": "3a18007118e46672e3f7ff45daf2062e65d6d5b353efbefef06bbd0270ca9533",
+      "MemberPlacementTarget.java": "86766e370a04df8f9b5d962e1f0f645c0b2e31a2324caa298b88cde2dbe53fb9",
+      "MixedTarget.java": "7d6f011492f73ebc056f75a3098857c5a72a344e3e02f0ed031531cdbc6c697c",
+      "Tag.java": "c2469d81605c3996e20b23f46699d1ef9e9830d50ec29af2d15a991f09830efe",
+      "Tags.java": "8e9771d789874976837d3d84ec9382f46cc04e794a2b297f5f679c912fd5bb2a",
+      "VisibleTag.java": "15030413d3585d4a986ee503b3a439a33e9c72696b4f2257a35ab120e1fce6da",
+      "VisibleTarget.java": "bd41567aaf918bae03c4b7a4b0086ee56abb51c6ce4f5c1568c978c039a0d99e"
+    },
+    "class_sha256": {
+      "BoundaryRunner.class": "5e249d7a32f7fe19586caaeb540caa3673a6ae5dce9449daeb1d71bea20a3923",
+      "DuplicateTarget.class": "9e4c13bb65c0c0632d4a6dff493b06455696a9a9684d0d3863f49aa71a84d5bb",
+      "EmptyTarget.class": "b1384cf70cbea94fc63f77772ffedb78c60ade53ea27730b19fc83d89391d38d",
+      "HiddenTag.class": "1437011ace8002cd0ae01bcf6814da7c3e6e794ccb7d5d2421b984bea8919cea",
+      "HiddenTarget.class": "40e417638a6d37edc4b3fd2a6cd2564637a63bd4b1e8ec9b8f112d48c1a87adf",
+      "MixedTarget.class": "35a12d30943ac89f7fc3816ab54e119d66a53fd006d0411263f0fa16a4c5b35a",
+      "Tag.class": "955e653f87bfaa2367f9a26b66e00cbac22db69441de68e2eeb22611e9adab2a",
+      "Tags.class": "ca5267b25c23c98d29979f28f598ae52b1e0844d8077dd3efb531a98f1f30c4d",
+      "VisibleTag.class": "beb7452ae9925d70fad7d13bc17ae7847a95bf3d20ac4ada3c57589a4fe54e8b",
+      "VisibleTarget.class": "a612ed58a15d275c7d2a227e3a1ab673dafa71a551feda8538580c2e35b6342c"
+    },
+    "class_bytes": {
+      "BoundaryRunner.class": 570,
+      "DuplicateTarget.class": 234,
+      "EmptyTarget.class": 126,
+      "HiddenTag.class": 253,
+      "HiddenTarget.class": 201,
+      "MixedTarget.class": 270,
+      "Tag.class": 318,
+      "Tags.class": 253,
+      "VisibleTag.class": 273,
+      "VisibleTarget.class": 206
+    },
+    "outputs": {
+      "original": [
+        "0",
+        "null"
+      ],
+      "jadx": [
+        "0",
+        "null"
+      ],
+      "jarde": [
+        "0",
+        "null"
+      ]
+    },
+    "javap_runtime_invisible_same_type_and_value": true,
+    "boundary_reports": {
+      "DuplicateEntries.class": {
+        "text": "// jarde: presentation of `HiddenTarget` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\n// jarde: class annotation refused: duplicate annotation type `LHiddenTag;` is conservatively refused\n// jarde: class annotation refused: duplicate annotation type `LHiddenTag;` is conservatively refused\n\nclass HiddenTarget extends java.lang.Object {\n    HiddenTarget() {\n        // @method <init>()V\n        // @declaration a constructor of `HiddenTarget`, member flags 0x0000\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n}\n",
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 26,
+            "archive_entries": 0,
+            "attribute_bytes": 147,
+            "class_bytes": 420,
+            "class_headers": 1,
+            "code_bytes": 5,
+            "dependency_depth": 0,
+            "elapsed_millis": 0,
+            "entry_bytes": 0,
+            "input_bytes": 210,
+            "ir_edges": 2,
+            "ir_items": 62,
+            "method_bodies": 1,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 396,
+            "read_bytes": 210,
+            "result_items": 5
+          }
+        },
+        "diagnostics": [],
+        "declaration": {
+          "annotation_attributes": [
+            {
+              "annotations": [
+                {
+                  "Annotation": {
+                    "elements": [
+                      {
+                        "name": [
+                          118,
+                          97,
+                          108,
+                          117,
+                          101
+                        ],
+                        "value": {
+                          "Constant": {
+                            "index": 13,
+                            "tag": "Integer"
+                          }
+                        }
+                      }
+                    ],
+                    "type_descriptor": [
+                      76,
+                      72,
+                      105,
+                      100,
+                      100,
+                      101,
+                      110,
+                      84,
+                      97,
+                      103,
+                      59
+                    ]
+                  }
+                },
+                {
+                  "Annotation": {
+                    "elements": [
+                      {
+                        "name": [
+                          118,
+                          97,
+                          108,
+                          117,
+                          101
+                        ],
+                        "value": {
+                          "Constant": {
+                            "index": 13,
+                            "tag": "Integer"
+                          }
+                        }
+                      }
+                    ],
+                    "type_descriptor": [
+                      76,
+                      72,
+                      105,
+                      100,
+                      100,
+                      101,
+                      110,
+                      84,
+                      97,
+                      103,
+                      59
+                    ]
+                  }
+                }
+              ],
+              "attribute": {
+                "content_span": {
+                  "length": 20,
+                  "start": 190
+                },
+                "name": {
+                  "escaped": "RuntimeInvisibleAnnotations",
+                  "raw": [
+                    82,
+                    117,
+                    110,
+                    116,
+                    105,
+                    109,
+                    101,
+                    73,
+                    110,
+                    118,
+                    105,
+                    115,
+                    105,
+                    98,
+                    108,
+                    101,
+                    65,
+                    110,
+                    110,
+                    111,
+                    116,
+                    97,
+                    116,
+                    105,
+                    111,
+                    110,
+                    115
+                  ],
+                  "utf16": [
+                    82,
+                    117,
+                    110,
+                    116,
+                    105,
+                    109,
+                    101,
+                    73,
+                    110,
+                    118,
+                    105,
+                    115,
+                    105,
+                    98,
+                    108,
+                    101,
+                    65,
+                    110,
+                    110,
+                    111,
+                    116,
+                    97,
+                    116,
+                    105,
+                    111,
+                    110,
+                    115
+                  ]
+                },
+                "span": {
+                  "length": 26,
+                  "start": 184
+                }
+              }
+            }
+          ],
+          "annotation_refusals": [
+            "duplicate annotation type `LHiddenTag;` is conservatively refused",
+            "duplicate annotation type `LHiddenTag;` is conservatively refused"
+          ],
+          "annotation_uses": [],
+          "declaration": "class HiddenTarget extends java.lang.Object",
+          "item": {
+            "binding": {
+              "kind": "standalone_root"
+            },
+            "declaration": {
+              "access_flags": 32,
+              "interfaces": [],
+              "super_class": {
+                "escaped": "java/lang/Object",
+                "raw": [
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  79,
+                  98,
+                  106,
+                  101,
+                  99,
+                  116
+                ],
+                "utf16": [
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  79,
+                  98,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              "this_class": {
+                "escaped": "HiddenTarget",
+                "raw": [
+                  72,
+                  105,
+                  100,
+                  100,
+                  101,
+                  110,
+                  84,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ],
+                "utf16": [
+                  72,
+                  105,
+                  100,
+                  100,
+                  101,
+                  110,
+                  84,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ]
+              }
+            },
+            "definition": {
+              "class_bytes": {
+                "digest": "f6583bd711ddc582612c7bcae7be8cbc005742a0cf05e947ffd2e8a16f542c8e",
+                "length": 210
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "f6583bd711ddc582612c7bcae7be8cbc005742a0cf05e947ffd2e8a16f542c8e"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            },
+            "member_table": null
+          },
+          "name": "HiddenTarget"
+        }
+      },
+      "DamagedValueTag.class": {
+        "text": "// jarde: presentation of `HiddenTarget` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\n// jarde: class annotation refused: annotation attribute read stopped: invalid input (classfile_invalid_attribute_content): annotation element value tag 0x51 is unknown\n\nclass HiddenTarget extends java.lang.Object {\n    HiddenTarget() {\n        // @method <init>()V\n        // @declaration a constructor of `HiddenTarget`, member flags 0x0000\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n}\n",
+        "execution": {
+          "reason": {
+            "code": "classfile_invalid_attribute_content",
+            "kind": "error"
+          },
+          "status": "failed",
+          "usage": {
+            "analysis_steps": 26,
+            "archive_entries": 0,
+            "attribute_bytes": 120,
+            "class_bytes": 402,
+            "class_headers": 1,
+            "code_bytes": 5,
+            "dependency_depth": 0,
+            "elapsed_millis": 0,
+            "entry_bytes": 0,
+            "input_bytes": 201,
+            "ir_edges": 2,
+            "ir_items": 62,
+            "method_bodies": 1,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 387,
+            "read_bytes": 201,
+            "result_items": 5
+          }
+        },
+        "diagnostics": [
+          {
+            "code": "classfile_invalid_attribute_content",
+            "message": "invalid input (classfile_invalid_attribute_content): annotation element value tag 0x51 is unknown",
+            "provenance": {
+              "location": {
+                "definition": {
+                  "class_bytes": {
+                    "digest": "76b8ac43905a8d360cf0afcc7da3f09059622ade00dbcbba2e4a123c2ea34a3b",
+                    "length": 201
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "76b8ac43905a8d360cf0afcc7da3f09059622ade00dbcbba2e4a123c2ea34a3b"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                },
+                "kind": "class_offset",
+                "offset": 0
+              }
+            },
+            "severity": "error"
+          }
+        ],
+        "declaration": {
+          "annotation_attributes": [
+            {
+              "annotations": [],
+              "attribute": {
+                "content_span": {
+                  "length": 11,
+                  "start": 190
+                },
+                "name": {
+                  "escaped": "RuntimeInvisibleAnnotations",
+                  "raw": [
+                    82,
+                    117,
+                    110,
+                    116,
+                    105,
+                    109,
+                    101,
+                    73,
+                    110,
+                    118,
+                    105,
+                    115,
+                    105,
+                    98,
+                    108,
+                    101,
+                    65,
+                    110,
+                    110,
+                    111,
+                    116,
+                    97,
+                    116,
+                    105,
+                    111,
+                    110,
+                    115
+                  ],
+                  "utf16": [
+                    82,
+                    117,
+                    110,
+                    116,
+                    105,
+                    109,
+                    101,
+                    73,
+                    110,
+                    118,
+                    105,
+                    115,
+                    105,
+                    98,
+                    108,
+                    101,
+                    65,
+                    110,
+                    110,
+                    111,
+                    116,
+                    97,
+                    116,
+                    105,
+                    111,
+                    110,
+                    115
+                  ]
+                },
+                "span": {
+                  "length": 17,
+                  "start": 184
+                }
+              }
+            }
+          ],
+          "annotation_refusals": [
+            "annotation attribute read stopped: invalid input (classfile_invalid_attribute_content): annotation element value tag 0x51 is unknown"
+          ],
+          "annotation_uses": [],
+          "declaration": "class HiddenTarget extends java.lang.Object",
+          "item": {
+            "binding": {
+              "kind": "standalone_root"
+            },
+            "declaration": {
+              "access_flags": 32,
+              "interfaces": [],
+              "super_class": {
+                "escaped": "java/lang/Object",
+                "raw": [
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  79,
+                  98,
+                  106,
+                  101,
+                  99,
+                  116
+                ],
+                "utf16": [
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  79,
+                  98,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              "this_class": {
+                "escaped": "HiddenTarget",
+                "raw": [
+                  72,
+                  105,
+                  100,
+                  100,
+                  101,
+                  110,
+                  84,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ],
+                "utf16": [
+                  72,
+                  105,
+                  100,
+                  100,
+                  101,
+                  110,
+                  84,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ]
+              }
+            },
+            "definition": {
+              "class_bytes": {
+                "digest": "76b8ac43905a8d360cf0afcc7da3f09059622ade00dbcbba2e4a123c2ea34a3b",
+                "length": 201
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "76b8ac43905a8d360cf0afcc7da3f09059622ade00dbcbba2e4a123c2ea34a3b"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            },
+            "member_table": null
+          },
+          "name": "HiddenTarget"
+        }
+      },
+      "UnspellableType.class": {
+        "text": "// jarde: presentation of `HiddenTarget` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\n// jarde: class annotation refused: annotation type `LHidden-xx;` is not a Java source name\n\nclass HiddenTarget extends java.lang.Object {\n    HiddenTarget() {\n        // @method <init>()V\n        // @declaration a constructor of `HiddenTarget`, member flags 0x0000\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n}\n",
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 26,
+            "archive_entries": 0,
+            "attribute_bytes": 120,
+            "class_bytes": 402,
+            "class_headers": 1,
+            "code_bytes": 5,
+            "dependency_depth": 0,
+            "elapsed_millis": 0,
+            "entry_bytes": 0,
+            "input_bytes": 201,
+            "ir_edges": 2,
+            "ir_items": 62,
+            "method_bodies": 1,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 387,
+            "read_bytes": 201,
+            "result_items": 5
+          }
+        },
+        "diagnostics": [],
+        "declaration": {
+          "annotation_attributes": [
+            {
+              "annotations": [
+                {
+                  "Annotation": {
+                    "elements": [
+                      {
+                        "name": [
+                          118,
+                          97,
+                          108,
+                          117,
+                          101
+                        ],
+                        "value": {
+                          "Constant": {
+                            "index": 13,
+                            "tag": "Integer"
+                          }
+                        }
+                      }
+                    ],
+                    "type_descriptor": [
+                      76,
+                      72,
+                      105,
+                      100,
+                      100,
+                      101,
+                      110,
+                      45,
+                      120,
+                      120,
+                      59
+                    ]
+                  }
+                }
+              ],
+              "attribute": {
+                "content_span": {
+                  "length": 11,
+                  "start": 190
+                },
+                "name": {
+                  "escaped": "RuntimeInvisibleAnnotations",
+                  "raw": [
+                    82,
+                    117,
+                    110,
+                    116,
+                    105,
+                    109,
+                    101,
+                    73,
+                    110,
+                    118,
+                    105,
+                    115,
+                    105,
+                    98,
+                    108,
+                    101,
+                    65,
+                    110,
+                    110,
+                    111,
+                    116,
+                    97,
+                    116,
+                    105,
+                    111,
+                    110,
+                    115
+                  ],
+                  "utf16": [
+                    82,
+                    117,
+                    110,
+                    116,
+                    105,
+                    109,
+                    101,
+                    73,
+                    110,
+                    118,
+                    105,
+                    115,
+                    105,
+                    98,
+                    108,
+                    101,
+                    65,
+                    110,
+                    110,
+                    111,
+                    116,
+                    97,
+                    116,
+                    105,
+                    111,
+                    110,
+                    115
+                  ]
+                },
+                "span": {
+                  "length": 17,
+                  "start": 184
+                }
+              }
+            }
+          ],
+          "annotation_refusals": [
+            "annotation type `LHidden-xx;` is not a Java source name"
+          ],
+          "annotation_uses": [],
+          "declaration": "class HiddenTarget extends java.lang.Object",
+          "item": {
+            "binding": {
+              "kind": "standalone_root"
+            },
+            "declaration": {
+              "access_flags": 32,
+              "interfaces": [],
+              "super_class": {
+                "escaped": "java/lang/Object",
+                "raw": [
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  79,
+                  98,
+                  106,
+                  101,
+                  99,
+                  116
+                ],
+                "utf16": [
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  79,
+                  98,
+                  106,
+                  101,
+                  99,
+                  116
+                ]
+              },
+              "this_class": {
+                "escaped": "HiddenTarget",
+                "raw": [
+                  72,
+                  105,
+                  100,
+                  100,
+                  101,
+                  110,
+                  84,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ],
+                "utf16": [
+                  72,
+                  105,
+                  100,
+                  100,
+                  101,
+                  110,
+                  84,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ]
+              }
+            },
+            "definition": {
+              "class_bytes": {
+                "digest": "408eff04f05db42c8e93136c19fbf014f1267cb757b21eccde1ca90666385e76",
+                "length": 201
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "408eff04f05db42c8e93136c19fbf014f1267cb757b21eccde1ca90666385e76"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            },
+            "member_table": null
+          },
+          "name": "HiddenTarget"
+        }
+      }
+    }
+  }
+}

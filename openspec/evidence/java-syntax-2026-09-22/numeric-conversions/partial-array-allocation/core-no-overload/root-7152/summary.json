@@ -1,0 +1,13 @@
+{
+  "class_sha256": "487389b770dbfdd226ae9ae3ff87c9d6be9df4e7df01781505f5d2a55e10e8f2",
+  "bytes": 777,
+  "cases": 69,
+  "cli_sha256": "7152f4358111c313e0641256f2b118ea233d8ddbdae32d58b92f72e62f377b92",
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_java": 0,
+  "jarde_differences": [],
+  "jadx_javac": 0,
+  "jadx_java": 0,
+  "jadx_equal": true
+}

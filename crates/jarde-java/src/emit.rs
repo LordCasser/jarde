@@ -31,10 +31,12 @@
 //!
 //! # Escaping and comments
 //!
-//! String literals are escaped by UTF-16 code unit, so a supplementary character becomes a surrogate
-//! pair (`😀` → `\ud83d\ude00`) and every control character becomes `\uXXXX` rather than a raw byte
-//! the artifact would carry literally. A `\` is escaped, which is what keeps a source string that
-//! already reads `\u0041` from turning into `A` when the artifact is compiled again.
+//! String literals are escaped by Unicode scalar: a proved scalar is written as the character it is
+//! (`😀` stays `😀`, and `正在` stays `正在`), and only the characters a literal cannot hold as
+//! themselves stay escapes — the delimiter, the backslash, the line terminators and the controls,
+//! spelled by [`escape_unit`]'s table (`\n`, `\u0007`) rather than carried as raw bytes. A `\` is
+//! escaped, which is what keeps a source string that already reads `\u0041` from turning into `A`
+//! when the artifact is compiled again.
 //!
 //! Comments are the other lexical hazard: Java processes `\uXXXX` *before* it lexes, so a comment
 //! containing `\u000a` ends the line it is on. The emitter therefore writes comments through
@@ -53,7 +55,7 @@
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::model::PhysicalMethodId;
 
-use crate::ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind};
+use crate::ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind, Type};
 use crate::declaration::Declaration;
 use crate::evidence::{EvidencePhase, Materialized, SegmentPublication};
 use crate::facts::RecoveryFacts;
@@ -108,8 +110,7 @@ pub(crate) fn emit(
     let mut emitter = Emitter::commit(budget, member);
     match emitter
         .envelope(facts, declaration)
-        .and_then(|()| emitter.stmts(stmts, 1))
-        .and_then(|()| emitter.put("}\n", None))
+        .and_then(|()| emitter.body(stmts, declaration))
     {
         Ok(()) => Ok(emitter.finish()),
         // A committing pass has no phase to stop for and no artifact to disagree with: what it
@@ -117,6 +118,46 @@ pub(crate) fn emit(
         Err(Halt::Stop(stop)) => Err(stop),
         Err(Halt::PhaseStopped) => unreachable!("the committing pass runs no evidence phase"),
         Err(Halt::Gate(_)) => unreachable!("the committing pass verifies against no artifact"),
+    }
+}
+
+/// Emits one already-proved initializer fragment for the class-source adapter.
+///
+/// The fragment includes its assignment separator so every byte the adapter appends to a field
+/// declaration is written and charged by the same expression formatter as a method body. The
+/// caller stages every fragment before mutating any declaration, making a stop atomic at group
+/// scope.
+pub(crate) fn emit_class_initializer_value(
+    value: &Expr,
+    member: &PhysicalMethodId,
+    budget: &mut Budget,
+) -> Result<String, StopReason> {
+    let mut emitter = Emitter::commit(budget, Some(member));
+    let at = Some(value.origin.primary().bci());
+    match emitter.put(" = ", at).and_then(|()| emitter.expr(value)) {
+        Ok(()) => Ok(emitter.finish().text),
+        Err(Halt::Stop(stop)) => Err(stop),
+        Err(Halt::PhaseStopped) => unreachable!("initializer emission has no evidence phase"),
+        Err(Halt::Gate(_)) => unreachable!("initializer emission does not replay an artifact"),
+    }
+}
+
+/// Emits already-proved enum-constructor user statements at constructor-body indentation.
+///
+/// The caller supplies only the same-run AST statements retained by the enum group proof. This
+/// keeps their expression precedence and escaping on the ordinary Java emitter path while omitting
+/// the method envelope, which the class-source assembler writes from the proved source Signature.
+pub(crate) fn emit_class_enum_constructor_statements(
+    statements: &[Stmt],
+    member: &PhysicalMethodId,
+    budget: &mut Budget,
+) -> Result<String, StopReason> {
+    let mut emitter = Emitter::commit(budget, Some(member));
+    match emitter.stmts(statements, 2) {
+        Ok(()) => Ok(emitter.finish().text),
+        Err(Halt::Stop(stop)) => Err(stop),
+        Err(Halt::PhaseStopped) => unreachable!("constructor statement emission has no phase"),
+        Err(Halt::Gate(_)) => unreachable!("constructor statement emission has no replay"),
     }
 }
 
@@ -163,8 +204,7 @@ pub(crate) fn emit_source_map(
     let mut emitter = Emitter::replay(budget, member, &artifact.text, publication, phase);
     let halt = emitter
         .envelope(facts, declaration)
-        .and_then(|()| emitter.stmts(stmts, 1))
-        .and_then(|()| emitter.put("}\n", None))
+        .and_then(|()| emitter.body(stmts, declaration))
         .err();
     let (map, covered) = emitter.finish_replay();
     match halt {
@@ -416,13 +456,63 @@ impl<'a> Emitter<'a> {
         Ok(())
     }
 
+    /// Writes one body and its closing brace. A class initializer's final void return is the
+    /// bytecode terminator, but Java spells that normal completion with the block's closing brace.
+    /// The return's origin is retained on that brace so commit and replay publish the same source
+    /// span. Only the top-level final statement is eligible; nested and non-final returns remain
+    /// ordinary statements.
+    fn body(&mut self, stmts: &[Stmt], declaration: Option<&Declaration>) -> Result<(), Halt> {
+        let projected_return = declaration
+            .is_some_and(|declaration| {
+                declaration.form == crate::declaration::DeclarationForm::StaticInitializer
+            })
+            .then(|| stmts.last())
+            .flatten()
+            .filter(|stmt| matches!(&stmt.kind, StmtKind::Return { value: None }));
+
+        let body_stmts = projected_return
+            .map(|_| &stmts[..stmts.len() - 1])
+            .unwrap_or(stmts);
+        self.stmts(body_stmts, 1)?;
+        if let Some(stmt) = projected_return {
+            let at = Some(stmt.origin.primary().bci());
+            self.node(&stmt.origin, |emitter| emitter.put("}\n", at))
+        } else {
+            self.put("}\n", None)
+        }
+    }
+
+    /// Writes a proved `for` header assignment without the statement terminator.
+    fn for_clause(&mut self, stmt: &Stmt) -> Result<(), Halt> {
+        let at = Some(stmt.origin.primary().bci());
+        match &stmt.kind {
+            StmtKind::Declare {
+                ty,
+                name,
+                value: Some(value),
+            } => {
+                self.put(ty.spell(), at)?;
+                self.put(" ", at)?;
+                self.put(name, at)?;
+                self.put(" = ", at)?;
+                self.expr(value)
+            }
+            StmtKind::Assign { name, value } => {
+                self.put(name, at)?;
+                self.put(" = ", at)?;
+                self.expr(value)
+            }
+            _ => unreachable!("a for header contains only proved local initialisation/update"),
+        }
+    }
+
     /// Appends one statement.
     fn stmt(&mut self, stmt: &Stmt, indent: usize) -> Result<(), Halt> {
         let at = Some(stmt.origin.primary().bci());
         let pad = indent_text(indent);
         // What a statement is, stated where statements are written: a fallback writes the reason and
         // the bytecode it could not present, so it is not one. Everything else this emitter spells —
-        // a declaration, an assignment, a call, a constructor call, `return` and the control-flow
+        // a declaration, an assignment, a call, a constructor call, `return`, `throw` and the control-flow
         // statements — is. The count is only ever read out of a finished [`Emitted`], so a stop
         // inside this call discards it with the text.
         if !matches!(stmt.kind, StmtKind::Fallback { .. }) {
@@ -455,14 +545,37 @@ impl<'a> Emitter<'a> {
             StmtKind::FieldAssign {
                 receiver,
                 name,
+                op,
                 value,
             } => {
                 self.put(&pad, at)?;
-                // A write's receiver is a receiver position exactly like a read's.
-                self.operand(receiver, PRIMARY)?;
-                self.put(".", at)?;
+                if let Some(receiver) = receiver {
+                    // A qualified write's receiver is a receiver position exactly like a read's.
+                    self.operand(receiver, PRIMARY)?;
+                    self.put(".", at)?;
+                }
                 self.put(name, at)?;
-                self.put(" = ", at)?;
+                self.put(" ", at)?;
+                self.put(op.spell(), at)?;
+                self.put(" ", at)?;
+                self.expr(value)?;
+                self.put(";\n", at)
+            }
+            // `array[index] = value;` — the left-hand side is the subscript the read is, written in
+            // the indexee position for the same reason (`[` is a suffix).
+            StmtKind::IndexAssign {
+                array,
+                index,
+                op,
+                value,
+            } => {
+                self.put(&pad, at)?;
+                self.operand(array, PRIMARY)?;
+                self.put("[", at)?;
+                self.expr(index)?;
+                self.put("] ", at)?;
+                self.put(op.spell(), at)?;
+                self.put(" ", at)?;
                 self.expr(value)?;
                 self.put(";\n", at)
             }
@@ -473,6 +586,30 @@ impl<'a> Emitter<'a> {
                     self.put(" ", at)?;
                     self.expr(value)?;
                 }
+                self.put(";\n", at)
+            }
+            StmtKind::Break { label } => {
+                self.put(&pad, at)?;
+                self.put("break", at)?;
+                if let Some(label) = label {
+                    self.put(" ", at)?;
+                    self.put(label, at)?;
+                }
+                self.put(";\n", at)
+            }
+            StmtKind::Continue { label } => {
+                self.put(&pad, at)?;
+                self.put("continue", at)?;
+                if let Some(label) = label {
+                    self.put(" ", at)?;
+                    self.put(label, at)?;
+                }
+                self.put(";\n", at)
+            }
+            StmtKind::Throw { value } => {
+                self.put(&pad, at)?;
+                self.put("throw ", at)?;
+                self.expr(value)?;
                 self.put(";\n", at)
             }
             StmtKind::ConstructorCall { target, args } => {
@@ -511,8 +648,12 @@ impl<'a> Emitter<'a> {
                     self.put("}\n", at)
                 }
             }
-            StmtKind::While { cond, body } => {
+            StmtKind::While { label, cond, body } => {
                 self.put(&pad, at)?;
+                if let Some(label) = label {
+                    self.put(label, at)?;
+                    self.put(": ", at)?;
+                }
                 self.put("while (", at)?;
                 self.expr(cond)?;
                 self.put(") {\n", at)?;
@@ -520,8 +661,58 @@ impl<'a> Emitter<'a> {
                 self.put(&pad, at)?;
                 self.put("}\n", at)
             }
-            StmtKind::DoWhile { cond, body } => {
+            StmtKind::For {
+                label,
+                init,
+                cond,
+                update,
+                body,
+            } => {
                 self.put(&pad, at)?;
+                if let Some(label) = label {
+                    self.put(label, at)?;
+                    self.put(": ", at)?;
+                }
+                self.put("for (", at)?;
+                self.node(&init.origin, |emitter| emitter.for_clause(init))?;
+                self.put("; ", at)?;
+                self.expr(cond)?;
+                self.put("; ", at)?;
+                self.node(&update.origin, |emitter| emitter.for_clause(update))?;
+                self.put(") {\n", at)?;
+                self.stmts(body, indent + 1)?;
+                self.put(&pad, at)?;
+                self.put("}\n", at)
+            }
+            StmtKind::ForEach {
+                label,
+                ty,
+                name,
+                iterable,
+                body,
+            } => {
+                self.put(&pad, at)?;
+                if let Some(label) = label {
+                    self.put(label, at)?;
+                    self.put(": ", at)?;
+                }
+                self.put("for (", at)?;
+                self.put(ty.spell(), at)?;
+                self.put(" ", at)?;
+                self.put(name, at)?;
+                self.put(" : ", at)?;
+                self.expr(iterable)?;
+                self.put(") {\n", at)?;
+                self.stmts(body, indent + 1)?;
+                self.put(&pad, at)?;
+                self.put("}\n", at)
+            }
+            StmtKind::DoWhile { label, cond, body } => {
+                self.put(&pad, at)?;
+                if let Some(label) = label {
+                    self.put(label, at)?;
+                    self.put(": ", at)?;
+                }
                 self.put("do {\n", at)?;
                 self.stmts(body, indent + 1)?;
                 self.put(&pad, at)?;
@@ -529,28 +720,60 @@ impl<'a> Emitter<'a> {
                 self.expr(cond)?;
                 self.put(");\n", at)
             }
-            StmtKind::Try { resources, body } => {
+            StmtKind::Try {
+                resources,
+                catches,
+                body,
+                finally_body,
+            } => {
                 self.put(&pad, at)?;
-                self.put("try (", at)?;
-                for (index, resource) in resources.iter().enumerate() {
-                    if index > 0 {
-                        self.put("; ", at)?;
+                // No resources is no header: the statement is the one the exception table states,
+                // and writing `try (` with nothing in it would state a guarded shape the class file
+                // does not have.
+                if resources.is_empty() {
+                    self.put("try {\n", at)?;
+                } else {
+                    self.put("try (", at)?;
+                    for (index, resource) in resources.iter().enumerate() {
+                        if index > 0 {
+                            self.put("; ", at)?;
+                        }
+                        // The declaration's own text is anchored where the value it stores is
+                        // produced: the header is the only place that initialisation runs, and the
+                        // segment says which instruction it came from.
+                        self.node(&resource.value.origin, |emitter| {
+                            emitter.put(resource.ty.spell(), at)?;
+                            emitter.put(" ", at)?;
+                            emitter.put(&resource.name, at)?;
+                            emitter.put(" = ", at)?;
+                            emitter.expr(&resource.value)
+                        })?;
                     }
-                    // The declaration's own text is anchored where the value it stores is produced:
-                    // the header is the only place that initialisation runs, and the segment says
-                    // which instruction it came from.
-                    self.node(&resource.value.origin, |emitter| {
-                        emitter.put(resource.ty.spell(), at)?;
-                        emitter.put(" ", at)?;
-                        emitter.put(&resource.name, at)?;
-                        emitter.put(" = ", at)?;
-                        emitter.expr(&resource.value)
-                    })?;
+                    self.put(") {\n", at)?;
                 }
-                self.put(") {\n", at)?;
                 self.stmts(body, indent + 1)?;
                 self.put(&pad, at)?;
-                self.put("}\n", at)
+                self.put("}", at)?;
+                for clause in catches {
+                    // The clause is written `} catch (T n) { … }` after the block it catches for:
+                    // the type is the row's own class and the parameter the local the handler stores
+                    // into, both stated by the node the builder made from the table.
+                    self.put(" catch (", at)?;
+                    self.put(&clause.ty, at)?;
+                    self.put(" ", at)?;
+                    self.put(&clause.name, at)?;
+                    self.put(") {\n", at)?;
+                    self.stmts(&clause.body, indent + 1)?;
+                    self.put(&pad, at)?;
+                    self.put("}", at)?;
+                }
+                if let Some(finally_body) = finally_body {
+                    self.put(" finally {\n", at)?;
+                    self.stmts(finally_body, indent + 1)?;
+                    self.put(&pad, at)?;
+                    self.put("}", at)?;
+                }
+                self.put("\n", at)
             }
             StmtKind::Synchronized { lock, body } => {
                 self.put(&pad, at)?;
@@ -566,13 +789,39 @@ impl<'a> Emitter<'a> {
                 self.put("switch (", at)?;
                 self.expr(value)?;
                 self.put(") {\n", at)?;
+                // How a key is written is decided by the type the selector's own text presents, and by
+                // nothing else: a `char` selector writes its keys as the characters the payload's
+                // numbers are, and every other selector — an `int` one whose key happens to be `97`
+                // included — keeps the number. The class file states the same `int` key either way
+                // (`case 97:` over a `char` is legal and means the same character), so the selector's
+                // presented type is the only fact that states which spelling the text has.
+                let char_selector = matches!(value.presented, Some(Type::Char));
                 for arm in arms {
                     // One label per key, then the no-match label when this arm is the default too.
                     // Labels nest no further: the arm's statements are written one level in.
                     let label_pad = indent_text(indent + 1);
-                    for key in &arm.keys {
-                        self.put(&label_pad, at)?;
-                        self.put(&format!("case {key}:\n"), at)?;
+                    match &arm.labels {
+                        Some(crate::ast::SwitchLabels::Enum(labels)) => {
+                            for label in labels {
+                                self.put(&label_pad, at)?;
+                                self.put(&format!("case {label}:\n"), at)?;
+                            }
+                        }
+                        Some(crate::ast::SwitchLabels::String(labels)) => {
+                            for literal in labels {
+                                self.put(&label_pad, at)?;
+                                self.put(&format!("case \"{}\":\n", escape_string(literal)), at)?;
+                            }
+                        }
+                        None => {
+                            for key in &arm.keys {
+                                self.put(&label_pad, at)?;
+                                self.put(
+                                    &format!("case {}:\n", switch_key(*key, char_selector)),
+                                    at,
+                                )?;
+                            }
+                        }
                     }
                     if arm.default {
                         self.put(&label_pad, at)?;
@@ -587,13 +836,10 @@ impl<'a> Emitter<'a> {
                         self.put("break;\n", at)?;
                     } else {
                         self.stmts(&arm.body, indent + 2)?;
-                        // A `break` after a `return` would be unreachable; every other arm needs
-                        // one, because a Java case does fall into the case that follows it.
-                        let returns = matches!(
-                            arm.body.last().map(|stmt| &stmt.kind),
-                            Some(StmtKind::Return { .. })
-                        );
-                        if !returns {
+                        // A case needs its own break only when control can reach the end of its
+                        // body. In particular, a loop break inside this switch is already an
+                        // abrupt completion, including when both paths of a final `if` exit.
+                        if !arm.fall_through && statements_can_complete(&arm.body) {
                             self.put(&body_pad, at)?;
                             self.put("break;\n", at)?;
                         }
@@ -626,7 +872,18 @@ impl<'a> Emitter<'a> {
             ExprKind::Long(value) => emitter.put(&format!("{value}L"), at),
             ExprKind::Str(value) => emitter.put(&format!("\"{}\"", escape_string(value)), at),
             ExprKind::Null => emitter.put("null", at),
+            ExprKind::ClassLiteral { ty } => {
+                emitter.put(ty, at)?;
+                emitter.put(".class", at)
+            }
             ExprKind::Path(path) => emitter.put(path, at),
+            ExprKind::Super { qualifier } => {
+                if let Some(qualifier) = qualifier {
+                    emitter.put(qualifier, at)?;
+                    emitter.put(".", at)?;
+                }
+                emitter.put("super", at)
+            }
             ExprKind::Call {
                 receiver,
                 name,
@@ -648,9 +905,24 @@ impl<'a> Emitter<'a> {
                 }
                 emitter.put(")", at)
             }
-            ExprKind::New { ty, args } => {
-                emitter.put("new ", at)?;
-                emitter.put(ty, at)?;
+            ExprKind::New {
+                ty,
+                qualifier,
+                member_name,
+                diamond,
+                args,
+            } => {
+                if let (Some(qualifier), Some(member_name)) = (qualifier, member_name) {
+                    emitter.operand(qualifier, PRIMARY)?;
+                    emitter.put(".new ", at)?;
+                    emitter.put(member_name, at)?;
+                    if *diamond {
+                        emitter.put("<>", at)?;
+                    }
+                } else {
+                    emitter.put("new ", at)?;
+                    emitter.put(ty, at)?;
+                }
                 emitter.put("(", at)?;
                 for (index, arg) in args.iter().enumerate() {
                     if index > 0 {
@@ -697,10 +969,73 @@ impl<'a> Emitter<'a> {
                 emitter.expr(index)?;
                 emitter.put("]", at)
             }
+            ExprKind::PostIncrement { target } => {
+                // The writable target is already proved by recovery. Its value is written in the
+                // same suffix position as a field receiver or array indexee, then the postfix
+                // operator is anchored at the update node's own origin.
+                emitter.operand(target, PRIMARY)?;
+                emitter.put("++", at)
+            }
+            // `array.length`: `.` is the same suffix `[` is, so the array is written in the indexee
+            // position and the member is spelled by the node (P3 2b). It is deliberately not a
+            // field-access node: no member is proved here, and the two must not be confused.
+            ExprKind::ArrayLength { array } => {
+                emitter.operand(array, PRIMARY)?;
+                emitter.put(".length", at)
+            }
+            // `new T[n]`: a Primary like `new T(args)`, with one bracketed length per dimension the
+            // instruction allocated. The element type is the node's own (the fact the instruction
+            // stated) and the lengths are delimited by their brackets.
+            ExprKind::NewArray {
+                element,
+                lengths,
+                initializers,
+                total_dimensions,
+            } => {
+                emitter.put("new ", at)?;
+                emitter.put(element.spell(), at)?;
+                if let Some(initializers) = initializers {
+                    for _ in 0..*total_dimensions {
+                        emitter.put("[]", at)?;
+                    }
+                    emitter.put("{", at)?;
+                    for (index, initializer) in initializers.iter().enumerate() {
+                        if index > 0 {
+                            emitter.put(", ", at)?;
+                        }
+                        emitter.expr(initializer)?;
+                    }
+                    emitter.put("}", at)
+                } else {
+                    for length in lengths {
+                        emitter.put("[", at)?;
+                        emitter.expr(length)?;
+                        emitter.put("]", at)?;
+                    }
+                    for _ in lengths.len()..usize::from(*total_dimensions) {
+                        emitter.put("[]", at)?;
+                    }
+                    Ok(())
+                }
+            }
             ExprKind::Binary { op, left, right } => {
                 emitter.binary_operand(left, *op, Side::Left)?;
                 emitter.put(&format!(" {} ", op.spell()), at)?;
                 emitter.binary_operand(right, *op, Side::Right)
+            }
+            ExprKind::Conditional {
+                test,
+                when_true,
+                when_false,
+            } => {
+                // `?:` binds more loosely than every binary expression this printer writes and
+                // more tightly than a lambda. Each arm is an AssignmentExpression and therefore
+                // can contain a conditional of its own without changing its tree.
+                emitter.operand(test, CONDITIONAL + 1)?;
+                emitter.put(" ? ", at)?;
+                emitter.expr(when_true)?;
+                emitter.put(" : ", at)?;
+                emitter.expr(when_false)
             }
             ExprKind::Concat { parts } => {
                 // The parts are written in the chain's own order, each in the position it holds in
@@ -742,11 +1077,32 @@ impl<'a> Emitter<'a> {
                 emitter.put(") ", at)?;
                 emitter.operand(value, UNARY)
             }
+            ExprKind::InstanceOf { value, ty } => {
+                emitter.operand(value, binary_binding(BinaryOp::Less))?;
+                emitter.put(" instanceof ", at)?;
+                emitter.put(ty, at)
+            }
             ExprKind::Not { value } => {
                 // The operand of `!` is at the unary level, so a looser value keeps its own group:
                 // `!a + b` would be `(!a) + b`, another tree than `!(a + b)`.
                 emitter.put("!", at)?;
                 emitter.operand(value, UNARY)
+            }
+            ExprKind::Neg { value } => {
+                // A nested negation or a negative integer literal needs a lexical group: without
+                // it the two minus tokens merge into `--`, which Java parses as decrement (and
+                // rejects for a value operand) rather than as two unary negations.
+                emitter.put("-", at)?;
+                let lexical_group = matches!(&value.kind, ExprKind::Neg { .. })
+                    || matches!(&value.kind, ExprKind::Integer(value) if *value < 0)
+                    || matches!(&value.kind, ExprKind::Long(value) if *value < 0);
+                if lexical_group {
+                    emitter.put("(", Some(value.origin.primary().bci()))?;
+                    emitter.expr(value)?;
+                    emitter.put(")", Some(value.origin.primary().bci()))
+                } else {
+                    emitter.operand(value, UNARY)
+                }
             }
         })
     }
@@ -900,6 +1256,23 @@ impl<'a> Emitter<'a> {
     }
 }
 
+/// Whether Java control can reach the statement following this sequence. The direct transfers
+/// and both sides of an `if` are enough to decide the switch-arm exits this recovery proves.
+fn statements_can_complete(body: &[Stmt]) -> bool {
+    body.last().is_none_or(|statement| match &statement.kind {
+        StmtKind::Break { .. }
+        | StmtKind::Continue { .. }
+        | StmtKind::Return { .. }
+        | StmtKind::Throw { .. } => false,
+        StmtKind::If {
+            then_body,
+            else_body,
+            ..
+        } => statements_can_complete(then_body) || statements_can_complete(else_body),
+        _ => true,
+    })
+}
+
 /// The indentation of one depth: four spaces, fixed, because this emitter never reflows.
 fn indent_text(indent: usize) -> String {
     "    ".repeat(indent)
@@ -917,11 +1290,17 @@ enum Side {
 
 /// The level at which a following `.`, `::` or `[` applies to the whole expression: a Primary or an
 /// ExpressionName (JLS 15.8, 6.5.6) is the tightest text this subset writes.
-const PRIMARY: u8 = 6;
+const PRIMARY: u8 = 11;
+
+/// The postfix operators (JLS 15.14) bind above unary operators and primary suffixes.
+const POSTFIX: u8 = 12;
 
 /// The level of the unary `!` (JLS 15.15.6): tighter than every binary operator, looser than a
 /// primary — `!b.f()` reads as `!(b.f())`, so a `!` in a primary position keeps its own group.
-const UNARY: u8 = 5;
+const UNARY: u8 = 10;
+
+/// The conditional operator binds below every binary operator and above assignment/lambda text.
+const CONDITIONAL: u8 = 1;
 
 /// How tightly one whole expression this subset writes binds: a larger value binds tighter, and a
 /// position that accepts only tighter text is written through [`Emitter::operand`].
@@ -935,7 +1314,10 @@ const UNARY: u8 = 5;
 fn expression_binding(kind: &ExprKind) -> u8 {
     match kind {
         ExprKind::Lambda { .. } => 0,
+        ExprKind::PostIncrement { .. } => POSTFIX,
+        ExprKind::Conditional { .. } => CONDITIONAL,
         ExprKind::Binary { op, .. } => binary_binding(*op),
+        ExprKind::InstanceOf { .. } => binary_binding(BinaryOp::Less),
         // A concatenation is an additive expression: the parts are the operands of its `+`s, so it
         // binds where `+` binds — which is what makes it keep its own group in a receiver, an
         // argument that binds tighter, and the right-hand position of another `+`.
@@ -943,50 +1325,122 @@ fn expression_binding(kind: &ExprKind) -> u8 {
         // A cast and a `!` are the same level: both are UnaryExpressions (JLS 15.15–15.16), tighter
         // than every binary operator and looser than a primary, so `(int) a + b` is `((int) a) + b`
         // and a cast in a receiver position keeps its own group.
-        ExprKind::Not { .. } | ExprKind::Cast { .. } => UNARY,
-        // A call, `new`, a field read, an array read, a literal, a name, a type name: every one of
-        // them is read whole before any suffix or operator applies.
+        ExprKind::Not { .. } | ExprKind::Neg { .. } | ExprKind::Cast { .. } => UNARY,
+        // A call, `new`, an array creation (`new int[n]`, whose own `[` groups belong to it), a
+        // field read, an array read, a `length` read over an array, a literal, a name, a type name:
+        // every one of them is read whole before any suffix or operator applies.
         _ => PRIMARY,
     }
 }
 
-/// How tightly Java binds one binary operator, in the units [`expression_binding`] compares: the
-/// four values are Java's own groups (JLS 15.17 multiplicative, 15.18 additive, 15.20 relational
-/// then equality).
+/// How tightly Java binds one binary operator, in the units [`expression_binding`] compares. The
+/// values descend in Java precedence order from multiplicative through additive, shift, relational,
+/// equality, bitwise `&`, `^` and `|`.
 fn binary_binding(op: BinaryOp) -> u8 {
     match op {
-        BinaryOp::Multiply | BinaryOp::Divide | BinaryOp::Remainder => 4,
-        BinaryOp::Add | BinaryOp::Subtract => 3,
-        BinaryOp::Less | BinaryOp::LessOrEqual | BinaryOp::Greater | BinaryOp::GreaterOrEqual => 2,
-        BinaryOp::Equal | BinaryOp::NotEqual => 1,
+        BinaryOp::Multiply | BinaryOp::Divide | BinaryOp::Remainder => 9,
+        BinaryOp::Add | BinaryOp::Subtract => 8,
+        BinaryOp::LeftShift | BinaryOp::RightShift | BinaryOp::UnsignedRightShift => 7,
+        BinaryOp::Less | BinaryOp::LessOrEqual | BinaryOp::Greater | BinaryOp::GreaterOrEqual => 6,
+        BinaryOp::Equal | BinaryOp::NotEqual => 5,
+        BinaryOp::BitwiseAnd => 4,
+        BinaryOp::BitwiseXor => 3,
+        BinaryOp::BitwiseOr => 2,
     }
 }
 
-/// One string literal's text, escaped by UTF-16 code unit.
+/// One string literal's text, escaped by Unicode scalar.
 ///
-/// The unit matters: a Java string literal is a sequence of UTF-16 code units, so a supplementary
-/// character must leave this function as the two escapes its surrogate pair is, not as the one
-/// `\uXXXX` its code point would be (which is not a Java escape at all).
+/// A proved scalar is written as the character it is: `正在` stays `正在`, and a supplementary
+/// character stays the one character it is (`😀`, not the two escapes its surrogate pair would be).
+/// Only the characters a literal cannot hold as themselves are escaped, and every one of them is
+/// inside the BMP, so it is a code unit [`escape_unit`]'s table can spell.
 ///
 /// Published rather than private because it is a *rule* and not an implementation detail: 3.3's
 /// controlled recompilation compares what this crate writes against what a compiler reads back, and
 /// a checker has to be able to state the escaping it is checking.
 pub fn escape_string(value: &str) -> String {
     let mut escaped = String::with_capacity(value.len());
-    for unit in value.encode_utf16() {
-        match unit {
-            0x22 => escaped.push_str("\\\""),
-            0x5c => escaped.push_str("\\\\"),
-            0x08 => escaped.push_str("\\b"),
-            0x09 => escaped.push_str("\\t"),
-            0x0a => escaped.push_str("\\n"),
-            0x0c => escaped.push_str("\\f"),
-            0x0d => escaped.push_str("\\r"),
-            0x20..=0x7e => escaped.push(char::from_u32(u32::from(unit)).unwrap_or('?')),
-            other => escaped.push_str(&format!("\\u{other:04x}")),
+    for scalar in value.chars() {
+        // The table spells the units this literal cannot write as themselves; every other scalar, a
+        // supplementary one included, is written as the character it is.
+        match u16::try_from(scalar) {
+            Ok(unit) if needs_escape(unit) => escape_unit(unit, '"', &mut escaped),
+            _ => escaped.push(scalar),
         }
     }
     escaped
+}
+
+/// Whether one UTF-16 code unit is escaped in a string literal rather than written as itself: the
+/// delimiter, the backslash, the line terminators (LF, CR, U+2028, U+2029) and the controls
+/// U+0000–U+001F and U+007F.
+///
+/// The set is the literal's own rule and it is complete on its own: every member is inside the BMP,
+/// so [`escape_unit`] can spell it, and no scalar outside it is escaped at all — a unit the table
+/// would spell as `\uXXXX` for no reason but not being ASCII stays the character it is.
+fn needs_escape(unit: u16) -> bool {
+    matches!(unit, 0x00..=0x1f | 0x22 | 0x5c | 0x7f | 0x2028 | 0x2029)
+}
+
+/// One `switch` key's own text in a `case` label, from the key the payload states and the type the
+/// selector's text presents.
+///
+/// The key is the signed number `tableswitch`/`lookupswitch` carries, and the class file cannot say
+/// which spelling the source gave that number: `case 97:` over a `char` is legal and selects the
+/// same character as `case 'a':`. What it does state is the type the selector's text presents, so
+/// that is the type the key is written as — a selector that presents `char` writes the character
+/// literal, whose escapes [`escape_unit`] gives with this literal's own quote, and every other
+/// selector keeps the decimal number. A `char` selector whose key is outside `0..=0xFFFF` keeps the
+/// number too: such a key is not any character's value, so no character literal can state it.
+///
+/// The decision reads [`crate::ast::Expr::presented`] and never the key's own value — the number 97
+/// alone types nothing.
+fn switch_key(key: i64, char_selector: bool) -> String {
+    match u16::try_from(key) {
+        Ok(unit) if char_selector => {
+            let mut literal = String::from("'");
+            escape_unit(unit, '\'', &mut literal);
+            literal.push('\'');
+            literal
+        }
+        _ => key.to_string(),
+    }
+}
+
+/// One UTF-16 code unit's own text as a **character literal** (`'a'`, `'\n'`, `'\''`).
+///
+/// This is [`switch_key`]'s `char` spelling of one unit and nothing else, for the other place the
+/// class file states a character as a number: a position whose required type is `char` and whose
+/// value is an in-range `int` constant writes the character that constant stands for (`return 'A';`
+/// for the `bipush 65` of a `char`-returning member, P3 2c.30). The build states the value and the
+/// type; the *spelling* is this module's, which is why the table stays here rather than being
+/// copied into the builder — one table, so the `case` labels and the literals cannot disagree about
+/// what a character a class file cannot hold literally is written as.
+pub(crate) fn char_literal(unit: u16) -> String {
+    switch_key(i64::from(unit), true)
+}
+
+/// One UTF-16 code unit's own text inside a literal, appended to `escaped`.
+///
+/// `quote` is the literal's own delimiter — `"` for a string literal, `'` for a character one — and
+/// it is the only difference between the two: the escaping table is one table, so a reader comparing
+/// a string literal with a character literal does not have to check two lists against each other.
+/// The delimiter is escaped as a two-character escape and the *other* quote is an ordinary character
+/// of its own literal, which is why the quote is a parameter rather than a second table.
+fn escape_unit(unit: u16, quote: char, escaped: &mut String) {
+    match unit {
+        0x22 if quote == '"' => escaped.push_str("\\\""),
+        0x27 if quote == '\'' => escaped.push_str("\\'"),
+        0x5c => escaped.push_str("\\\\"),
+        0x08 => escaped.push_str("\\b"),
+        0x09 => escaped.push_str("\\t"),
+        0x0a => escaped.push_str("\\n"),
+        0x0c => escaped.push_str("\\f"),
+        0x0d => escaped.push_str("\\r"),
+        0x20..=0x7e => escaped.push(char::from_u32(u32::from(unit)).unwrap_or('?')),
+        other => escaped.push_str(&format!("\\u{other:04x}")),
+    }
 }
 
 /// One comment's text: no character that can start a Unicode escape, and no character that ends a
@@ -1010,7 +1464,8 @@ pub fn comment_text(value: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ast::{BinaryOp, ConcatPart, Expr, ExprKind, Stmt, StmtKind, Type};
+    use crate::ast::{AssignOp, BinaryOp, ConcatPart, Expr, ExprKind, Stmt, StmtKind, Type};
+    use crate::declaration::{Declaration, DeclarationForm};
     use crate::facts::{MethodFacts, RecoveryFacts};
     use crate::source_map::Origin;
     use jarde_reader::budget::Limits;
@@ -1044,14 +1499,186 @@ mod tests {
         )]
     }
 
+    fn declaration(form: DeclarationForm) -> Declaration {
+        Declaration {
+            form,
+            declaring_class: Some("Test".to_string()),
+            interface: Some(false),
+            member_flags: 0,
+        }
+    }
+
     #[test]
-    fn a_string_literal_escapes_by_utf16_unit() {
+    fn a_static_initializer_tail_return_closes_the_block_and_keeps_its_origin() {
+        let stmts = vec![
+            Stmt::new(
+                StmtKind::Expr(Expr::direct(
+                    ExprKind::Call {
+                        receiver: None,
+                        name: "run".to_string(),
+                        args: Vec::new(),
+                    },
+                    4,
+                )),
+                OriginSet::new(Origin::direct(4)),
+            ),
+            Stmt::new(
+                StmtKind::Return { value: None },
+                OriginSet::new(Origin::direct(9)),
+            ),
+        ];
+        let static_initializer = declaration(DeclarationForm::StaticInitializer);
+        let mut budget = budget_with(1 << 20);
+        let (emitted, map) = artifact(
+            &stmts,
+            &facts(),
+            Some(&static_initializer),
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        );
+        assert!(emitted.text.contains("run();"), "{}", emitted.text);
+        assert!(!emitted.text.contains("return;"), "{}", emitted.text);
+        assert_eq!(emitted.statements, 1, "{}", emitted.text);
+        assert_eq!(map.text_of_bci(&emitted.text, 9), vec!["}\n"]);
+    }
+
+    #[test]
+    fn an_empty_static_initializer_has_no_statement_but_maps_its_terminator() {
+        let stmts = vec![Stmt::new(
+            StmtKind::Return { value: None },
+            OriginSet::new(Origin::direct(12)),
+        )];
+        let static_initializer = declaration(DeclarationForm::StaticInitializer);
+        let mut budget = budget_with(1 << 20);
+        let (emitted, map) = artifact(
+            &stmts,
+            &facts(),
+            Some(&static_initializer),
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        );
+        assert!(emitted.text.ends_with("{\n}\n"), "{}", emitted.text);
+        assert_eq!(emitted.statements, 0, "{}", emitted.text);
+        assert_eq!(map.text_of_bci(&emitted.text, 12), vec!["}\n"]);
+    }
+
+    #[test]
+    fn non_initializer_returns_are_not_projected() {
+        let stmts = vec![Stmt::new(
+            StmtKind::Return { value: None },
+            OriginSet::new(Origin::direct(3)),
+        )];
+        for form in [
+            Some(DeclarationForm::StaticMethod),
+            Some(DeclarationForm::Constructor),
+            None,
+        ] {
+            let declared = form.map(declaration);
+            let mut budget = budget_with(1 << 20);
+            let (emitted, map) = artifact(
+                &stmts,
+                &facts(),
+                declared.as_ref(),
+                None,
+                SegmentPublication::Whole,
+                &mut budget,
+            );
+            assert!(emitted.text.contains("return;"), "{}", emitted.text);
+            assert_eq!(emitted.statements, 1, "{}", emitted.text);
+            assert_eq!(map.text_of_bci(&emitted.text, 3), vec!["    return;\n"]);
+        }
+    }
+
+    #[test]
+    fn a_nested_return_is_kept_when_the_static_initializer_tail_is_projected() {
+        let stmts = vec![
+            Stmt::new(
+                StmtKind::If {
+                    cond: Expr::direct(ExprKind::Boolean(true), 1),
+                    then_body: vec![Stmt::new(
+                        StmtKind::Return { value: None },
+                        OriginSet::new(Origin::direct(2)),
+                    )],
+                    else_body: Vec::new(),
+                },
+                OriginSet::new(Origin::direct(1)),
+            ),
+            Stmt::new(
+                StmtKind::Return { value: None },
+                OriginSet::new(Origin::direct(8)),
+            ),
+        ];
+        let static_initializer = declaration(DeclarationForm::StaticInitializer);
+        let mut budget = budget_with(1 << 20);
+        let (emitted, map) = artifact(
+            &stmts,
+            &facts(),
+            Some(&static_initializer),
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        );
+        assert_eq!(
+            emitted.text.matches("return;").count(),
+            1,
+            "{}",
+            emitted.text
+        );
+        assert_eq!(emitted.statements, 2, "{}", emitted.text);
+        assert_eq!(map.text_of_bci(&emitted.text, 2), vec!["        return;\n"]);
+        assert_eq!(map.text_of_bci(&emitted.text, 8), vec!["}\n"]);
+    }
+
+    #[test]
+    fn a_static_initializer_projection_keeps_budget_stop_atomic() {
+        let stmts = vec![Stmt::new(
+            StmtKind::Return { value: None },
+            OriginSet::new(Origin::direct(12)),
+        )];
+        let static_initializer = declaration(DeclarationForm::StaticInitializer);
+        let exact = {
+            let mut budget = budget_with(1 << 20);
+            emit(
+                &stmts,
+                &facts(),
+                Some(&static_initializer),
+                None,
+                &mut budget,
+            )
+            .expect("ample")
+            .written
+        };
+        let mut budget = budget_with(exact - 1);
+        let stop = emit(
+            &stmts,
+            &facts(),
+            Some(&static_initializer),
+            None,
+            &mut budget,
+        )
+        .expect_err("one byte short");
+        assert!(matches!(stop, StopReason::Budget { .. }), "{stop:?}");
+    }
+
+    #[test]
+    fn a_string_literal_escapes_what_it_cannot_hold_literally_and_nothing_else() {
         assert_eq!(escape_string("a\"b"), "a\\\"b");
         assert_eq!(escape_string("a\\b"), "a\\\\b");
         assert_eq!(escape_string("a\nb"), "a\\nb");
         assert_eq!(escape_string("\u{0}\u{7}\u{7f}"), "\\u0000\\u0007\\u007f");
         assert_eq!(escape_string("\u{2028}"), "\\u2028");
-        assert_eq!(escape_string("😀"), "\\ud83d\\ude00", "a surrogate pair");
+        assert_eq!(
+            escape_string("😀"),
+            "😀",
+            "a supplementary scalar is written as the one character it is, not as its surrogate pair"
+        );
+        assert_eq!(
+            escape_string("正在"),
+            "正在",
+            "a non-ASCII scalar is written as itself: no `\\uXXXX` is invented for it"
+        );
         assert_eq!(
             escape_string("\\u0041"),
             "\\\\u0041",
@@ -1061,6 +1688,92 @@ mod tests {
             !escape_string("\u{1}").contains('\u{1}'),
             "no raw control byte survives"
         );
+    }
+
+    #[test]
+    fn proven_switch_labels_use_one_closed_spelling_and_keep_integer_evidence() {
+        let (string, _) = emitted_stmt(
+            StmtKind::Switch {
+                value: local_at("arg0", 1),
+                arms: vec![crate::ast::SwitchArm {
+                    keys: vec![17],
+                    labels: Some(crate::ast::SwitchLabels::String(vec![
+                        "a\"\\\nb".to_owned(),
+                    ])),
+                    default: false,
+                    fall_through: false,
+                    body: vec![],
+                }],
+            },
+            &[2],
+        );
+        assert!(
+            string.text.contains("case \"a\\\"\\\\\\nb\":"),
+            "{}",
+            string.text
+        );
+        assert!(!string.text.contains("case 17:"), "{}", string.text);
+
+        let (enum_case, _) = emitted_stmt(
+            StmtKind::Switch {
+                value: local_at("arg0", 1),
+                arms: vec![crate::ast::SwitchArm {
+                    keys: vec![17],
+                    labels: Some(crate::ast::SwitchLabels::Enum(vec!["READY".to_owned()])),
+                    default: false,
+                    fall_through: false,
+                    body: vec![],
+                }],
+            },
+            &[2],
+        );
+        assert!(enum_case.text.contains("case READY:"), "{}", enum_case.text);
+        assert!(!enum_case.text.contains("case 17:"), "{}", enum_case.text);
+    }
+
+    #[test]
+    fn a_char_selector_writes_character_keys_and_every_other_selector_stays_decimal() {
+        // A `char` selector writes the key as the character it is, delimited and escaped by its own
+        // literal's rules: the delimiter is `'` and not the string's `"`, and every character the
+        // string literal escapes is escaped the same way — so no raw control character, no raw
+        // delimiter and no raw backslash ever reaches the artifact.
+        assert_eq!(switch_key(97, true), "'a'");
+        assert_eq!(switch_key(0x27, true), "'\\''");
+        assert_eq!(
+            switch_key(0x22, true),
+            "'\"'",
+            "the other quote is ordinary"
+        );
+        assert_eq!(switch_key(0x5c, true), "'\\\\'");
+        assert_eq!(switch_key(0x0a, true), "'\\n'");
+        assert_eq!(
+            switch_key(0x7f, true),
+            "'\\u007f'",
+            "DEL is not a printable byte"
+        );
+        assert_eq!(switch_key(0x0, true), "'\\u0000'");
+        assert_eq!(switch_key(0x2028, true), "'\\u2028'", "a line separator");
+        assert_eq!(switch_key(0xffff, true), "'\\uffff'");
+        for (key, raw) in [
+            (0x0au16, '\n'),
+            (0x0du16, '\r'),
+            (0x7fu16, '\u{7f}'),
+            (0x2028u16, '\u{2028}'),
+            (0x0u16, '\u{0}'),
+        ] {
+            let literal = switch_key(i64::from(key), true);
+            assert!(
+                !literal.contains(raw),
+                "no raw character of the key survives in `{literal}`"
+            );
+        }
+
+        // The key's own value types nothing: only a selector that already presents `char` writes a
+        // character, and a key outside one code unit's range is not any character's value, so even a
+        // `char` selector keeps it decimal.
+        assert_eq!(switch_key(97, false), "97");
+        assert_eq!(switch_key(-1, true), "-1");
+        assert_eq!(switch_key(0x10000, true), "65536");
     }
 
     #[test]
@@ -1136,6 +1849,69 @@ mod tests {
             }
             other => panic!("expected the output bound, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn a_throw_stops_atomically_at_the_output_bound() {
+        let stmts = vec![Stmt::new(
+            StmtKind::Throw {
+                value: Expr::direct(ExprKind::Null, 1),
+            },
+            OriginSet::new(Origin::direct(1)),
+        )];
+        let exact = {
+            let mut budget = budget_with(1 << 20);
+            emit(&stmts, &facts(), None, None, &mut budget)
+                .expect("an ample budget writes the throw")
+                .written
+        };
+        let mut budget = budget_with(exact - 1);
+        let stop = emit(&stmts, &facts(), None, None, &mut budget)
+            .expect_err("one byte short refuses the throw artifact");
+        assert!(
+            matches!(
+                stop,
+                StopReason::Budget {
+                    dimension: CountedBudgetDimension::OutputBytes,
+                    ..
+                }
+            ),
+            "the throw output bound is the reported stop: {stop:?}"
+        );
+    }
+
+    #[test]
+    fn a_throw_source_map_budget_stops_before_publishing_a_partial_node() {
+        let stmts = vec![Stmt::new(
+            StmtKind::Throw {
+                value: Expr::direct(ExprKind::Null, 2),
+            },
+            OriginSet::new(Origin::direct(1)),
+        )];
+        let emitted = {
+            let mut budget = budget_with(1 << 20);
+            emit(&stmts, &facts(), None, None, &mut budget)
+                .expect("an ample budget writes the throw")
+        };
+        let mut budget = Budget::new(Limits {
+            ir_items: 0,
+            output_bytes: 1 << 20,
+            ..Limits::default()
+        });
+        let mut phase = EvidencePhase::new();
+        let (map, reached) = emit_source_map(
+            &stmts,
+            &facts(),
+            None,
+            None,
+            SegmentPublication::Whole,
+            &emitted,
+            &mut phase,
+            &mut budget,
+        )
+        .expect("a source-map phase stop delivers a partial evidence result");
+        assert_eq!(reached, Materialized::None);
+        assert!(map.is_empty(), "the throw node was not partially published");
     }
 
     #[test]
@@ -1322,6 +2098,17 @@ mod tests {
         )
     }
 
+    fn binary_at(op: BinaryOp, left: Expr, right: Expr, bci: u32) -> Expr {
+        Expr::direct(
+            ExprKind::Binary {
+                op,
+                left: Box::new(left),
+                right: Box::new(right),
+            },
+            bci,
+        )
+    }
+
     fn call_at(receiver: Option<Expr>, name: &str, args: Vec<Expr>, bci: u32) -> Expr {
         Expr::direct(
             ExprKind::Call {
@@ -1403,6 +2190,98 @@ mod tests {
         )
     }
 
+    #[test]
+    fn enhanced_for_spells_its_label_element_and_array_with_folded_origins() {
+        let array = Expr::direct(ExprKind::Local("captured".to_owned()), 4)
+            .presenting(Type::Reference("int[]".to_owned()));
+        let (emitted, map) = emitted_stmt(
+            StmtKind::ForEach {
+                label: Some("outer".to_owned()),
+                ty: Type::Int,
+                name: "element".to_owned(),
+                iterable: array,
+                body: vec![Stmt::new(
+                    StmtKind::Continue {
+                        label: Some("outer".to_owned()),
+                    },
+                    OriginSet::new(Origin::direct(20)),
+                )],
+            },
+            &[13, 5, 8, 19, 27],
+        );
+        assert!(
+            emitted
+                .text
+                .contains("outer: for (int element : captured) {\n        continue outer;\n    }"),
+            "{}",
+            emitted.text
+        );
+        for bci in [4, 5, 8, 13, 19, 20, 27] {
+            assert!(!map.text_of_bci(&emitted.text, bci).is_empty(), "BCI {bci}");
+        }
+    }
+
+    #[test]
+    fn compound_lvalues_emit_receiver_and_index_once_with_all_origins() {
+        let receiver = call_at(None, "select", vec![], 2);
+        let rhs = call_at(None, "rhs", vec![], 7);
+        let (field, field_map) = emitted_stmt(
+            StmtKind::FieldAssign {
+                receiver: Some(receiver),
+                name: "value".to_string(),
+                op: AssignOp::Add,
+                value: rhs,
+            },
+            &[12, 3, 6, 9],
+        );
+        assert_eq!(field.text.matches("select()").count(), 1, "{}", field.text);
+        assert_eq!(field.text.matches("rhs()").count(), 1, "{}", field.text);
+        assert!(
+            field.text.contains("select().value += rhs();"),
+            "{}",
+            field.text
+        );
+        for bci in [2, 3, 6, 7, 9, 12] {
+            assert!(
+                !field_map.text_of_bci(&field.text, bci).is_empty(),
+                "the field update lost BCI {bci}: {:#?}",
+                field_map.segments()
+            );
+        }
+
+        let array = local_at("data", 20);
+        let index = call_at(None, "index", vec![], 21);
+        let rhs = call_at(None, "rhs", vec![], 24);
+        let (element, element_map) = emitted_stmt(
+            StmtKind::IndexAssign {
+                array,
+                index,
+                op: AssignOp::Add,
+                value: rhs,
+            },
+            &[29, 22, 23, 25, 27],
+        );
+        assert_eq!(
+            element.text.matches("index()").count(),
+            1,
+            "{}",
+            element.text
+        );
+        assert_eq!(element.text.matches("rhs()").count(), 1, "{}", element.text);
+        assert!(
+            element.text.contains("data[index()] += rhs();"),
+            "{}",
+            element.text
+        );
+        for bci in [20, 21, 22, 23, 24, 25, 27, 29] {
+            assert!(
+                !element_map.text_of_bci(&element.text, bci).is_empty(),
+                "the array update lost BCI {bci}: {:#?}",
+                element_map.segments()
+            );
+        }
+    }
+
     /// Every position whose text is followed by something that binds tighter than a binary
     /// expression — `.`, `::`, `[` — takes the operand's whole text, so a subexpression that binds
     /// looser than a primary keeps its own group in parentheses.
@@ -1467,6 +2346,167 @@ mod tests {
             "`::` applies to the whole qualifier, so a binary one keeps its group:\n{}",
             reference.text
         );
+
+        let member = Expr::new(
+            ExprKind::New {
+                ty: "sample.SimpleOuter$Inner".to_string(),
+                qualifier: Some(Box::new(sum_at(
+                    local_at("arg0", 12),
+                    local_at("arg1", 13),
+                    14,
+                ))),
+                member_name: Some("Inner".to_string()),
+                diamond: false,
+                args: vec![integer_at(1, 17)],
+            },
+            OriginSet::new(Origin::direct(18)),
+        );
+        assert_eq!(
+            member.presented,
+            Some(Type::Reference("sample.SimpleOuter$Inner".to_string())),
+            "the source simple member name must not replace the full semantic allocation type"
+        );
+        let (constructed, construction_map) = emitted_value(member);
+        assert!(
+            constructed.text.contains("(arg0 + arg1).new Inner(1);"),
+            "qualified creation is a suffix position and keeps the receiver's group:\n{}",
+            constructed.text
+        );
+        assert_eq!(
+            construction_map.text_of_bci(&constructed.text, 14),
+            vec!["arg0 + arg1"],
+            "the qualifier keeps its own span, while grouping remains attached to that receiver"
+        );
+        assert_eq!(
+            construction_map.text_of_bci(&constructed.text, 18),
+            vec!["(arg0 + arg1).new Inner(1)"],
+            "the construction root maps the complete qualified source expression"
+        );
+
+        let generic_member = Expr::new(
+            ExprKind::New {
+                ty: "sample.SimpleOuter$Inner".to_string(),
+                qualifier: Some(Box::new(local_at("arg0", 21))),
+                member_name: Some("Inner".to_string()),
+                diamond: true,
+                args: vec![integer_at(2, 22)],
+            },
+            OriginSet::new(Origin::direct(23)),
+        );
+        assert_eq!(
+            generic_member.presented,
+            Some(Type::Reference("sample.SimpleOuter$Inner".to_string()))
+        );
+        let (generic, generic_map) = emitted_value(generic_member);
+        assert!(
+            generic.text.contains("arg0.new Inner<>(2);"),
+            "{}",
+            generic.text
+        );
+        assert_eq!(
+            generic_map.text_of_bci(&generic.text, 23),
+            vec!["arg0.new Inner<>(2)"],
+        );
+    }
+
+    #[test]
+    fn postfix_increment_keeps_nested_writable_targets_and_their_origins() {
+        let simple_target = Expr::new(
+            ExprKind::Field {
+                receiver: Box::new(local_at("arg0", 3)),
+                name: "count".to_owned(),
+            },
+            OriginSet::new(Origin::direct(4)),
+        )
+        .presenting(Type::Int);
+        let negated_increment = Expr::direct(
+            ExprKind::Neg {
+                value: Box::new(Expr::new(
+                    ExprKind::PostIncrement {
+                        target: Box::new(simple_target),
+                    },
+                    OriginSet::new(Origin::direct(5)),
+                )),
+            },
+            6,
+        );
+        let (negated, _) = emitted_value(negated_increment);
+        assert!(
+            negated.text.contains("-arg0.count++;"),
+            "postfix increment binds more tightly than unary negation:\n{}",
+            negated.text
+        );
+
+        let receiver = sum_at(
+            call_at(None, "left", vec![], 10),
+            call_at(None, "right", vec![], 11),
+            12,
+        );
+        let field_target = Expr::new(
+            ExprKind::Field {
+                receiver: Box::new(receiver.clone()),
+                name: "value".to_owned(),
+            },
+            OriginSet::new(Origin::direct(16)),
+        )
+        .presenting(Type::Int);
+        let field_increment = Expr::new(
+            ExprKind::PostIncrement {
+                target: Box::new(field_target),
+            },
+            OriginSet::new(Origin::direct(20)).plus_derived(Origin::derived(17)),
+        );
+        assert_eq!(field_increment.presented, Some(Type::Int));
+        let (field, field_map) = emitted_value(field_increment);
+        assert!(
+            field.text.contains("(left() + right()).value++;"),
+            "the postfix node must preserve a grouped nested receiver:\n{}",
+            field.text
+        );
+        assert!(
+            field_map
+                .text_of_bci(&field.text, 16)
+                .contains(&"(left() + right()).value")
+        );
+        assert!(
+            field_map
+                .text_of_bci(&field.text, 20)
+                .contains(&"(left() + right()).value++")
+        );
+        assert!(!field_map.text_of_bci(&field.text, 10).is_empty());
+        assert!(!field_map.text_of_bci(&field.text, 11).is_empty());
+
+        let index_target = Expr::new(
+            ExprKind::Index {
+                array: Box::new(receiver),
+                index: Box::new(call_at(None, "index", vec![], 22)),
+            },
+            OriginSet::new(Origin::direct(24)),
+        )
+        .presenting(Type::Int);
+        let index_increment = Expr::new(
+            ExprKind::PostIncrement {
+                target: Box::new(index_target),
+            },
+            OriginSet::new(Origin::direct(25)),
+        );
+        let (index, index_map) = emitted_value(index_increment);
+        assert!(
+            index.text.contains("(left() + right())[index()]++;"),
+            "the postfix node must preserve the grouped array receiver and index:\n{}",
+            index.text
+        );
+        assert!(
+            index_map
+                .text_of_bci(&index.text, 24)
+                .contains(&"(left() + right())[index()]")
+        );
+        assert!(
+            index_map
+                .text_of_bci(&index.text, 25)
+                .contains(&"(left() + right())[index()]++")
+        );
+        assert!(!index_map.text_of_bci(&index.text, 22).is_empty());
     }
 
     /// The operator positions of the same scale: `!` binds tighter than every binary operator, so a
@@ -1501,6 +2541,80 @@ mod tests {
             not_receiver.text.contains("(!arg0).f();"),
             "`!a.f()` is `!(a.f())`, so a negation in a receiver position keeps its own group:\n{}",
             not_receiver.text
+        );
+    }
+
+    #[test]
+    fn instanceof_uses_relational_precedence_under_not() {
+        let test = Expr::direct(
+            ExprKind::InstanceOf {
+                value: Box::new(local_at("arg0", 2)),
+                ty: "java.lang.String".to_string(),
+            },
+            3,
+        );
+        let (plain, _) = emitted_value(test.clone());
+        assert!(
+            plain.text.contains("arg0 instanceof java.lang.String;"),
+            "{}",
+            plain.text
+        );
+        let (negated, _) = emitted_value(Expr::direct(
+            ExprKind::Not {
+                value: Box::new(test),
+            },
+            4,
+        ));
+        assert!(
+            negated
+                .text
+                .contains("!(arg0 instanceof java.lang.String);"),
+            "{}",
+            negated.text
+        );
+    }
+
+    #[test]
+    fn a_negation_keeps_nested_groups_and_negative_literals_lexically_separate() {
+        let (nested, _map) = emitted_value(Expr::direct(
+            ExprKind::Neg {
+                value: Box::new(Expr::direct(
+                    ExprKind::Neg {
+                        value: Box::new(local_at("arg0", 2)),
+                    },
+                    3,
+                )),
+            },
+            4,
+        ));
+        assert!(
+            nested.text.contains("-(-arg0);"),
+            "nested negation must not become decrement syntax:\n{}",
+            nested.text
+        );
+
+        let (literal, _map) = emitted_value(Expr::direct(
+            ExprKind::Neg {
+                value: Box::new(Expr::direct(ExprKind::Integer(-1), 6)),
+            },
+            7,
+        ));
+        assert!(
+            literal.text.contains("-(-1);"),
+            "a negative integer literal must stay separate from the outer minus:\n{}",
+            literal.text
+        );
+
+        let (long_literal, _map) = emitted_value(Expr::direct(
+            ExprKind::Neg {
+                value: Box::new(Expr::direct(ExprKind::Long(-1), 8)),
+            },
+            9,
+        ));
+        assert!(
+            long_literal.text.contains("-(-1L);"),
+            "a negative long literal must stay separate from the outer minus:\n{}",
+            long_literal.text
         );
     }
 
@@ -1661,6 +2775,28 @@ mod tests {
             returned.text
         );
 
+        let (thrown, thrown_map) = emitted_stmt(
+            StmtKind::Throw {
+                value: local_at("arg0", 2),
+            },
+            &[1],
+        );
+        assert!(
+            thrown.text.contains("throw arg0;"),
+            "a throw value is the whole expression to the `;`:\n{}",
+            thrown.text
+        );
+        assert_eq!(
+            thrown_map.text_of_bci(&thrown.text, 1),
+            vec!["    throw arg0;\n"],
+            "the throw statement keeps its own source anchor"
+        );
+        assert_eq!(
+            thrown_map.text_of_bci(&thrown.text, 2),
+            vec!["arg0"],
+            "the thrown expression keeps its producer anchor"
+        );
+
         let (declared, _map) = emitted_stmt(
             StmtKind::Declare {
                 ty: crate::ast::Type::Int,
@@ -1700,7 +2836,9 @@ mod tests {
                 value: sum_at(local_at("arg0", 2), local_at("arg1", 3), 4),
                 arms: vec![crate::ast::SwitchArm {
                     keys: vec![0],
+                    labels: None,
                     default: false,
+                    fall_through: false,
                     body: vec![Stmt::new(
                         StmtKind::Expr(call_at(None, "f", vec![], 6)),
                         OriginSet::new(Origin::direct(6)),
@@ -1713,6 +2851,108 @@ mod tests {
             switch.text.contains("switch (arg0 + arg1) {"),
             "a switch selector is written inside its own parentheses:\n{}",
             switch.text
+        );
+
+        let (throwing_switch, _map) = emitted_stmt(
+            StmtKind::Switch {
+                value: local_at("arg0", 2),
+                arms: vec![crate::ast::SwitchArm {
+                    keys: vec![0],
+                    labels: None,
+                    default: false,
+                    fall_through: false,
+                    body: vec![Stmt::new(
+                        StmtKind::Throw {
+                            value: Expr::direct(ExprKind::Null, 6),
+                        },
+                        OriginSet::new(Origin::direct(6)),
+                    )],
+                }],
+            },
+            &[4],
+        );
+        assert!(
+            throwing_switch.text.contains("throw null;"),
+            "a switch arm keeps its throwing terminator:\n{}",
+            throwing_switch.text
+        );
+        assert!(
+            !throwing_switch.text.contains("break;"),
+            "a throwing switch arm does not gain an unreachable break:\n{}",
+            throwing_switch.text
+        );
+
+        let (exiting_switch, _map) = emitted_stmt(
+            StmtKind::Switch {
+                value: local_at("arg0", 2),
+                arms: vec![crate::ast::SwitchArm {
+                    keys: vec![0],
+                    labels: None,
+                    default: false,
+                    fall_through: false,
+                    body: vec![Stmt::new(
+                        StmtKind::If {
+                            cond: local_at("arg1", 5),
+                            then_body: vec![Stmt::new(
+                                StmtKind::Break {
+                                    label: Some("outer".to_owned()),
+                                },
+                                OriginSet::new(Origin::direct(6)),
+                            )],
+                            else_body: vec![Stmt::new(
+                                StmtKind::Continue { label: None },
+                                OriginSet::new(Origin::direct(7)),
+                            )],
+                        },
+                        OriginSet::new(Origin::direct(5)),
+                    )],
+                }],
+            },
+            &[2],
+        );
+        assert!(exiting_switch.text.contains("break outer;"));
+        assert!(exiting_switch.text.contains("continue;"));
+        assert!(
+            !exiting_switch
+                .text
+                .lines()
+                .any(|line| line.trim() == "break;"),
+            "both paths leave the switch arm, so a trailing switch break is unreachable:\n{}",
+            exiting_switch.text
+        );
+
+        let (partly_exiting_switch, _map) = emitted_stmt(
+            StmtKind::Switch {
+                value: local_at("arg0", 2),
+                arms: vec![crate::ast::SwitchArm {
+                    keys: vec![0],
+                    labels: None,
+                    default: false,
+                    fall_through: false,
+                    body: vec![Stmt::new(
+                        StmtKind::If {
+                            cond: local_at("arg1", 5),
+                            then_body: vec![Stmt::new(
+                                StmtKind::Break {
+                                    label: Some("outer".to_owned()),
+                                },
+                                OriginSet::new(Origin::direct(6)),
+                            )],
+                            else_body: Vec::new(),
+                        },
+                        OriginSet::new(Origin::direct(5)),
+                    )],
+                }],
+            },
+            &[2],
+        );
+        assert!(
+            partly_exiting_switch
+                .text
+                .lines()
+                .any(|line| line.trim() == "break;"),
+            "the path that completes normally still needs the switch break:\n{}",
+            partly_exiting_switch.text
         );
 
         let (lock, _map) = emitted_stmt(
@@ -1817,6 +3057,164 @@ mod tests {
             not_operand.text.contains("!arg0 == arg1;"),
             "`!` binds tighter than `==`, so the text already reads as the tree:\n{}",
             not_operand.text
+        );
+    }
+
+    #[test]
+    fn bitwise_operators_keep_java_precedence_and_mixed_grouping() {
+        let expression = binary_at(
+            BinaryOp::BitwiseXor,
+            binary_at(
+                BinaryOp::BitwiseOr,
+                local_at("arg0", 2),
+                local_at("arg1", 3),
+                4,
+            ),
+            binary_at(
+                BinaryOp::BitwiseAnd,
+                local_at("arg2", 5),
+                sum_at(local_at("arg3", 6), local_at("arg4", 7), 8),
+                9,
+            ),
+            10,
+        );
+        let (emitted, _map) = emitted_value(expression);
+        assert!(
+            emitted.text.contains("(arg0 | arg1) ^ arg2 & arg3 + arg4;"),
+            "`&` binds more tightly than `^`, which binds more tightly than `|`, while `+`\n\
+             binds more tightly than bitwise operators:\n{}",
+            emitted.text
+        );
+
+        let additive = binary_at(
+            BinaryOp::Add,
+            local_at("arg0", 11),
+            binary_at(
+                BinaryOp::BitwiseOr,
+                local_at("arg1", 12),
+                local_at("arg2", 13),
+                14,
+            ),
+            15,
+        );
+        let (emitted, _map) = emitted_value(additive);
+        assert!(
+            emitted.text.contains("arg0 + (arg1 | arg2);"),
+            "a lower-precedence bitwise child of `+` keeps its required parentheses:\n{}",
+            emitted.text
+        );
+    }
+
+    #[test]
+    fn shifts_keep_precedence_associativity_casts_and_primary_operands() {
+        let shift = |op, left, right, at| binary_at(op, left, right, at);
+        let nested_right = shift(
+            BinaryOp::LeftShift,
+            local_at("arg0", 2),
+            shift(
+                BinaryOp::UnsignedRightShift,
+                local_at("arg1", 3),
+                local_at("arg2", 4),
+                5,
+            ),
+            6,
+        );
+        assert!(
+            emitted_value(nested_right)
+                .0
+                .text
+                .contains("arg0 << (arg1 >>> arg2);")
+        );
+
+        let nested_left = shift(
+            BinaryOp::UnsignedRightShift,
+            shift(
+                BinaryOp::LeftShift,
+                local_at("arg0", 2),
+                local_at("arg1", 3),
+                4,
+            ),
+            local_at("arg2", 5),
+            6,
+        );
+        assert!(
+            emitted_value(nested_left)
+                .0
+                .text
+                .contains("arg0 << arg1 >>> arg2;")
+        );
+
+        let grouped_add = sum_at(
+            local_at("arg0", 2),
+            shift(
+                BinaryOp::LeftShift,
+                local_at("arg1", 3),
+                local_at("arg2", 4),
+                5,
+            ),
+            6,
+        );
+        assert!(
+            emitted_value(grouped_add)
+                .0
+                .text
+                .contains("arg0 + (arg1 << arg2);")
+        );
+
+        let multiplied = shift(
+            BinaryOp::RightShift,
+            binary_at(
+                BinaryOp::Multiply,
+                local_at("arg0", 2),
+                local_at("arg1", 3),
+                4,
+            ),
+            sum_at(local_at("arg2", 5), local_at("arg3", 6), 7),
+            8,
+        );
+        assert!(
+            emitted_value(multiplied)
+                .0
+                .text
+                .contains("arg0 * arg1 >> arg2 + arg3;")
+        );
+
+        let cast = Expr::direct(
+            ExprKind::Cast {
+                ty: Type::Long,
+                value: Box::new(local_at("arg0", 2)),
+            },
+            3,
+        );
+        let width = shift(BinaryOp::LeftShift, cast, local_at("arg1", 4), 5);
+        assert!(emitted_value(width).0.text.contains("(long) arg0 << arg1;"));
+
+        let calls = shift(
+            BinaryOp::LeftShift,
+            call_at(None, "left", vec![], 2),
+            call_at(None, "right", vec![], 3),
+            4,
+        );
+        assert!(emitted_value(calls).0.text.contains("left() << right();"));
+
+        let relation = binary_at(
+            BinaryOp::Less,
+            shift(
+                BinaryOp::LeftShift,
+                local_at("arg0", 2),
+                local_at("arg1", 3),
+                4,
+            ),
+            local_at("arg2", 5),
+            6,
+        );
+        let equality = binary_at(BinaryOp::Equal, relation, local_at("arg3", 7), 8);
+        let bitwise = binary_at(BinaryOp::BitwiseAnd, equality, local_at("arg4", 9), 10);
+        assert!(
+            emitted_value(bitwise)
+                .0
+                .text
+                .contains("arg0 << arg1 < arg2 == arg3 & arg4;")
         );
     }
 }

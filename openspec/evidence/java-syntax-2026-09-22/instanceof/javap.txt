@@ -1,0 +1,91 @@
+public class InstanceOfAudit {
+  public static int calls;
+
+  public InstanceOfAudit();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static java.lang.Object source(java.lang.Object);
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: aload_0
+       9: areturn
+
+  public static boolean string(java.lang.Object);
+    Code:
+       0: aload_0
+       1: instanceof    #13                 // class java/lang/String
+       4: ireturn
+
+  public static boolean number(java.lang.Object);
+    Code:
+       0: aload_0
+       1: instanceof    #15                 // class java/lang/Number
+       4: ireturn
+
+  public static boolean runnable(java.lang.Object);
+    Code:
+       0: aload_0
+       1: instanceof    #17                 // class java/lang/Runnable
+       4: ireturn
+
+  public static boolean primitiveArray(java.lang.Object);
+    Code:
+       0: aload_0
+       1: instanceof    #19                 // class "[I"
+       4: ireturn
+
+  public static boolean referenceArray(java.lang.Object);
+    Code:
+       0: aload_0
+       1: instanceof    #21                 // class "[Ljava/lang/String;"
+       4: ireturn
+
+  public static boolean multiArray(java.lang.Object);
+    Code:
+       0: aload_0
+       1: instanceof    #23                 // class "[[Ljava/lang/String;"
+       4: ireturn
+
+  public static boolean called(java.lang.Object);
+    Code:
+       0: aload_0
+       1: invokestatic  #25                 // Method source:(Ljava/lang/Object;)Ljava/lang/Object;
+       4: instanceof    #13                 // class java/lang/String
+       7: ireturn
+
+  public static boolean local(java.lang.Object);
+    Code:
+       0: aload_0
+       1: instanceof    #13                 // class java/lang/String
+       4: istore_1
+       5: iload_1
+       6: ireturn
+
+  public static int branch(java.lang.Object);
+    Code:
+       0: aload_0
+       1: instanceof    #13                 // class java/lang/String
+       4: ifeq          15
+       7: aload_0
+       8: checkcast     #13                 // class java/lang/String
+      11: invokevirtual #29                 // Method java/lang/String.length:()I
+      14: ireturn
+      15: iconst_m1
+      16: ireturn
+
+  public static boolean negated(java.lang.Object);
+    Code:
+       0: aload_0
+       1: instanceof    #13                 // class java/lang/String
+       4: ifne          11
+       7: iconst_1
+       8: goto          12
+      11: iconst_0
+      12: ireturn
+}

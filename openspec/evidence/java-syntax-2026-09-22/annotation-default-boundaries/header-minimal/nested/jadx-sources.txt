@@ -1,0 +1,3 @@
+openspec/evidence/java-syntax-2026-09-22/annotation-default-boundaries/header-minimal/nested/jadx/sources/defpackage/NestedRunner.java
+openspec/evidence/java-syntax-2026-09-22/annotation-default-boundaries/header-minimal/nested/jadx/sources/defpackage/Inner.java
+openspec/evidence/java-syntax-2026-09-22/annotation-default-boundaries/header-minimal/nested/jadx/sources/defpackage/Nested.java

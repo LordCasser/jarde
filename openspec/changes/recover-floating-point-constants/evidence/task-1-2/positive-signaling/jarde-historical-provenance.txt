@@ -1,0 +1,1 @@
+Copied from openspec/evidence/java-syntax-2026-09-22/floating-constants/ for an earlier run of the same SHA-256 class bytes. This is historical fixture evidence, not a fresh invocation of the currently unavailable Jarde executable.

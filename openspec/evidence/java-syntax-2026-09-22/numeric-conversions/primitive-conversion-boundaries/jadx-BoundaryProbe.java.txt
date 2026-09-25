@@ -1,0 +1,41 @@
+package defpackage;
+
+/* JADX INFO: loaded from: BoundaryProbe.class */
+public class BoundaryProbe {
+    public static long longField;
+    public static double[] doubles = new double[4];
+    public static byte[] bytes = new byte[4];
+
+    public static int savedOldValue(int i) {
+        return (i * 31) + i + 1;
+    }
+
+    public static int grouped(int i) {
+        return (int) ((i + 1) * 2.0f);
+    }
+
+    public static long fieldConsumer(int i) {
+        longField = i;
+        return longField;
+    }
+
+    public static double arrayConsumer(int i, long j) {
+        doubles[i] = j;
+        return doubles[i];
+    }
+
+    public static int arrayNarrowConsumer(int i, int i2) {
+        bytes[i] = (byte) i2;
+        return bytes[i];
+    }
+
+    public static int discardConvertedProducer() {
+        BoundaryEffects.discard((byte) BoundaryEffects.next());
+        return BoundaryEffects.trace;
+    }
+
+    public static int repeatConvertedValue() {
+        int next = BoundaryEffects.next();
+        return next + next;
+    }
+}

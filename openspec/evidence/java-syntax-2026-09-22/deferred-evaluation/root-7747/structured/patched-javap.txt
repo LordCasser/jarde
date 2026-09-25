@@ -1,0 +1,86 @@
+Classfile /tmp/jarde-deferred-root-7747/structured/original/DeferredStructured.class
+  Last modified 2026年9月23日; size 400 bytes
+  SHA-256 checksum 9642887887673b18174f2c315f6aa9b6a925eb1acf118afa5b3d4d29d88ed791
+public class DeferredStructured
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #20                         // DeferredStructured
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 4, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // StructuredSupport.value:()I
+   #8 = Class              #10            // StructuredSupport
+   #9 = NameAndType        #11:#12        // value:()I
+  #10 = Utf8               StructuredSupport
+  #11 = Utf8               value
+  #12 = Utf8               ()I
+  #13 = Methodref          #8.#14         // StructuredSupport.flag:()Z
+  #14 = NameAndType        #15:#16        // flag:()Z
+  #15 = Utf8               flag
+  #16 = Utf8               ()Z
+  #17 = Methodref          #8.#18         // StructuredSupport.mark:()V
+  #18 = NameAndType        #19:#6         // mark:()V
+  #19 = Utf8               mark
+  #20 = Class              #21            // DeferredStructured
+  #21 = Utf8               DeferredStructured
+  #22 = Utf8               Code
+  #23 = Utf8               branch
+  #24 = Utf8               (Z)I
+  #25 = Utf8               StackMapTable
+  #26 = Utf8               prefix
+  #27 = Utf8               keepPool
+{
+  public DeferredStructured();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int branch(boolean);
+    descriptor: (Z)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: ifeq          11
+         4: invokestatic  #7                  // Method StructuredSupport.value:()I
+         7: invokestatic  #17                 // Method StructuredSupport.mark:()V
+        10: ireturn
+        11: iconst_3
+        12: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 11 /* same */
+
+  public static int prefix();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokestatic  #13                 // Method StructuredSupport.flag:()Z
+         3: invokestatic  #17                 // Method StructuredSupport.mark:()V
+         6: ifeq          12
+         9: bipush        7
+        11: ireturn
+        12: bipush        9
+        14: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 12 /* same */
+
+  public static void keepPool();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=0, locals=0, args_size=0
+         0: invokestatic  #17                 // Method StructuredSupport.mark:()V
+         3: return
+}

@@ -1,0 +1,197 @@
+// jarde: presentation of `ArrayInitializerBoundaries` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class ArrayInitializerBoundaries extends java.lang.Object {
+    private static final java.lang.StringBuilder TRACE;
+
+    private static int[] escaped;
+
+    private static int escapedFirstAtPublication;
+
+    private ArrayInitializerBoundaries() {
+        // @method <init>()V
+        // @declaration a constructor of `ArrayInitializerBoundaries`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    private static int mark(char arg0, int arg1) {
+        // @method mark(CI)I
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        ArrayInitializerBoundaries.TRACE.append(arg0);
+        return arg1;
+    }
+
+    private static void escape(int[] arg0) {
+        // @method escape([I)V
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        ArrayInitializerBoundaries.escaped = arg0;
+        ArrayInitializerBoundaries.escapedFirstAtPublication = arg0[0];
+        return;
+    }
+
+    public static int[] exactOrderedStores() {
+        // jarde: not recovered: the recovery run for `exactOrderedStores()[I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method exactOrderedStores()[I
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the array instruction at BCI 1 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 3 1
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 7 1
+        // the value at BCI 7 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        // @bytecode 8 1
+        // the instruction at BCI 8 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 12 1
+        // the value at BCI 12 comes from an Duplicate at BCI 8, which produces no expression this subset writes
+        // @bytecode 13 1
+        // the instruction at BCI 13 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 17 1
+        // the value at BCI 17 comes from an Duplicate at BCI 13, which produces no expression this subset writes
+        // @bytecode 18 1
+        // the value at BCI 18 comes from an Duplicate at BCI 13, which produces no expression this subset writes
+    }
+
+    public static int[] exactEffectfulStores() {
+        // @method exactEffectfulStores()[I
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ArrayInitializerBoundaries.TRACE.setLength(0);
+        // @bytecode 8
+        // the array instruction at BCI 8 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 10 8
+        // the instruction at BCI 10 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 19 8 16
+        // the value at BCI 19 comes from an Duplicate at BCI 10, which produces no expression this subset writes
+        // @bytecode 20 8
+        // the instruction at BCI 20 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 29 8 26
+        // the value at BCI 29 comes from an Duplicate at BCI 20, which produces no expression this subset writes
+        // @bytecode 30 8
+        // the instruction at BCI 30 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 39 8 36
+        // the value at BCI 39 comes from an Duplicate at BCI 30, which produces no expression this subset writes
+        // @bytecode 40 8
+        // the value at BCI 40 comes from an Duplicate at BCI 30, which produces no expression this subset writes
+        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("effects=").append((java.lang.Object) ArrayInitializerBoundaries.TRACE).toString());
+        // @bytecode 68 69
+        // the statement at BCI 69 reads `local0`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+    }
+
+    public static java.lang.String[] exactReferenceStores() {
+        // jarde: not recovered: the recovery run for `exactReferenceStores()[Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method exactReferenceStores()[Ljava/lang/String;
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the array instruction at BCI 1 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 4 1
+        // the instruction at BCI 4 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 8 1
+        // the value at BCI 8 comes from an Duplicate at BCI 4, which produces no expression this subset writes
+        // @bytecode 9 1
+        // the instruction at BCI 9 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 12 1
+        // the value at BCI 12 comes from an Duplicate at BCI 9, which produces no expression this subset writes
+        // @bytecode 13 1
+        // the instruction at BCI 13 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 17 1
+        // the value at BCI 17 comes from an Duplicate at BCI 13, which produces no expression this subset writes
+        // @bytecode 18 1
+        // the value at BCI 18 comes from an Duplicate at BCI 13, which produces no expression this subset writes
+    }
+
+    public static int[] dynamicLength(int arg0) {
+        // @method dynamicLength(I)[I
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int[] local1 = new int[arg0];
+        local1[0] = 11;
+        local1[1] = 22;
+        return local1;
+    }
+
+    public static int[] duplicateIndex() {
+        // @method duplicateIndex()[I
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int[] local0 = new int[2];
+        local0[0] = 11;
+        local0[0] = 22;
+        return local0;
+    }
+
+    public static int[] skippedIndex() {
+        // @method skippedIndex()[I
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int[] local0 = new int[3];
+        local0[1] = 22;
+        local0[2] = 33;
+        return local0;
+    }
+
+    public static int[] escapedBeforeStores() {
+        // @method escapedBeforeStores()[I
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int[] local0 = new int[2];
+        escape(local0);
+        local0[0] = 11;
+        local0[1] = 22;
+        return local0;
+    }
+
+    public static int escapedFirstAtPublication() {
+        // @method escapedFirstAtPublication()I
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArrayInitializerBoundaries.escapedFirstAtPublication;
+    }
+
+    public static int[] storesAcrossBranch(boolean arg0) {
+        // @method storesAcrossBranch(Z)[I
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int[] local1;
+        local1 = new int[2];
+        if (arg0) {
+            local1[0] = 11;
+        } else {
+            local1[0] = 22;
+        }
+        local1[1] = 33;
+        return local1;
+    }
+
+    public static java.lang.Object[] covariantAastoreThrows() {
+        // @method covariantAastoreThrows()[Ljava/lang/Object;
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.String[] local0 = new java.lang.String[1];
+        // @bytecode 7
+        // the instruction at BCI 7 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 10
+        // the instruction at BCI 10 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 14 11
+        // the value at BCI 14 comes from an Duplicate at BCI 10, which produces no expression this subset writes
+        return local0;
+    }
+
+    public static int[] runTime() {
+        // @method runTime()[I
+        // @declaration a static method of `ArrayInitializerBoundaries`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return exactOrderedStores();
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `ArrayInitializerBoundaries`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        TRACE = new java.lang.StringBuilder();
+    }
+}

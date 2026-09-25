@@ -1,0 +1,45 @@
+{
+  "class": "RawBool",
+  "classfile_major_version": 52,
+  "original": {
+    "path": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/original/RawBool.class",
+    "sha256": "e38d0e46a055d5183001d2e51ed329c2a0f121409f27ead257d34f6ab76317e3",
+    "bytes": 172
+  },
+  "patched": {
+    "path": "/private/tmp/jarde-bastore-evidence.aBYQFV/out/classes/patched/RawBool.class",
+    "sha256": "32286d138ace6a328a8c5ba7d0a0d66fadb4bf9dbbab79385e6dc3a01dcd6c2b",
+    "bytes": 172
+  },
+  "descriptor_edits": [
+    {
+      "from": "([III)I",
+      "to": "([ZII)Z",
+      "constant_pool_entries": 1
+    }
+  ],
+  "method": {
+    "name": "put",
+    "patched_descriptor": "([ZII)Z",
+    "access_flags": "0x0009",
+    "code_length": 8,
+    "original_code_hex": "2a1b1c4f2a1b2eac",
+    "array_opcode_edits": [
+      {
+        "offset_in_code": [
+          3
+        ],
+        "from": "0x4f",
+        "to": "0x54"
+      },
+      {
+        "offset_in_code": [
+          6
+        ],
+        "from": "0x2e",
+        "to": "0x33"
+      }
+    ]
+  },
+  "scope": "Only the stated method descriptor(s) and the sole iastore/iaload pair in put are changed."
+}

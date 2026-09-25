@@ -1,0 +1,79 @@
+package defpackage;
+
+/* JADX INFO: loaded from: NarrowIntegerReturns.class */
+public class NarrowIntegerReturns {
+    public int value;
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static byte directByte(String str, int i) {
+        return i;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static char directChar(Number number, int i) {
+        return i;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static short directShort(boolean z, int i) {
+        return i;
+    }
+
+    public static byte byteLocal(byte b) {
+        return b;
+    }
+
+    public static char charLocal(char c) {
+        return c;
+    }
+
+    public static short shortLocal(short s) {
+        return s;
+    }
+
+    public static int integerControl(byte b, boolean z) {
+        return b;
+    }
+
+    /* JADX WARN: Type inference failed for: r1v1, types: [byte, int] */
+    public byte postByte(int i) {
+        ?? r1 = this.value;
+        this.value = r1 + 1;
+        return r1;
+    }
+
+    /* JADX WARN: Type inference failed for: r1v2, types: [char, int] */
+    public char preChar(long j) {
+        ?? r1 = this.value + 1;
+        this.value = r1;
+        return r1;
+    }
+
+    /* JADX WARN: Type inference failed for: r1v1, types: [int, short] */
+    public short postShort(float f) {
+        ?? r1 = this.value;
+        this.value = r1 + 1;
+        return r1;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static byte syncByte(Object obj, int i) {
+        synchronized (obj) {
+        }
+        return i;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static char syncChar(String str, int i) {
+        synchronized (str) {
+        }
+        return i;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static short syncShort(Object obj, long j, int i) {
+        synchronized (obj) {
+        }
+        return i;
+    }
+}

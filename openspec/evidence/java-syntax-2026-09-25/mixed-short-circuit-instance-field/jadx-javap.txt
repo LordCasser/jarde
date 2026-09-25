@@ -1,0 +1,77 @@
+public final class MixedShortCircuitField {
+  static boolean bValue;
+    descriptor: Z
+
+  static boolean cValue;
+    descriptor: Z
+
+  static int bCalls;
+    descriptor: I
+
+  static int cCalls;
+    descriptor: I
+
+  static int receiverCalls;
+    descriptor: I
+
+  static MixedShortCircuitField$Box receiver;
+    descriptor: LMixedShortCircuitField$Box;
+
+  public MixedShortCircuitField();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static MixedShortCircuitField$Box target(boolean);
+    descriptor: (Z)LMixedShortCircuitField$Box;
+    Code:
+       0: getstatic     #7                  // Field receiverCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field receiverCalls:I
+       8: iload_0
+       9: ifeq          14
+      12: aconst_null
+      13: areturn
+      14: getstatic     #13                 // Field receiver:LMixedShortCircuitField$Box;
+      17: areturn
+
+  static void one(boolean, boolean);
+    descriptor: (ZZ)V
+    Code:
+       0: iload_1
+       1: invokestatic  #17                 // Method target:(Z)LMixedShortCircuitField$Box;
+       4: iload_0
+       5: ifeq          14
+       8: invokestatic  #21                 // Method b:()Z
+      11: ifne          20
+      14: invokestatic  #25                 // Method c:()Z
+      17: ifeq          24
+      20: iconst_1
+      21: goto          25
+      24: iconst_0
+      25: putfield      #28                 // Field MixedShortCircuitField$Box.result:Z
+      28: return
+
+  static boolean b();
+    descriptor: ()Z
+    Code:
+       0: getstatic     #34                 // Field bCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #34                 // Field bCalls:I
+       8: getstatic     #37                 // Field bValue:Z
+      11: ireturn
+
+  static boolean c();
+    descriptor: ()Z
+    Code:
+       0: getstatic     #40                 // Field cCalls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #40                 // Field cCalls:I
+       8: getstatic     #43                 // Field cValue:Z
+      11: ireturn
+}

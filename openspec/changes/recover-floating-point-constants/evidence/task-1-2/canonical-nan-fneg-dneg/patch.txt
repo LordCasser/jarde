@@ -1,0 +1,1 @@
+exact Code patch inserts fneg/dneg after canonical NaN ldc/ldc2_w

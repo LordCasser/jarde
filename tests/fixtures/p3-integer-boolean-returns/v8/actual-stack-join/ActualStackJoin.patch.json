@@ -1,0 +1,12 @@
+{
+  "source_sha256": "ad9b88a41ec56ed7a5ff553388dcf3867f8d00bc5a6a27404da4976b7b684149",
+  "output_sha256": "3b727e5b7bb8b630eca95ada5f0ff6516063e58fa94718ba36cf1c649ca107e2",
+  "patches": {
+    "runByte": {
+      "from": "(I)B",
+      "to": "(I)Z"
+    }
+  },
+  "code_sha256_before": "0ce0e123f556ebfeb08ada927a60db37218f7ec5c7ec407df2d3c51f61c26a12",
+  "code_sha256_after": "0ce0e123f556ebfeb08ada927a60db37218f7ec5c7ec407df2d3c51f61c26a12"
+}

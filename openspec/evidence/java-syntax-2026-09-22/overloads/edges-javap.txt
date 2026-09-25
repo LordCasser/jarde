@@ -1,0 +1,95 @@
+public class OverloadEdges {
+  public OverloadEdges();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int choose(java.lang.Object);
+    Code:
+       0: iconst_1
+       1: ireturn
+
+  public static int choose(java.lang.String);
+    Code:
+       0: iconst_2
+       1: ireturn
+
+  public static int arr(java.lang.Object);
+    Code:
+       0: iconst_3
+       1: ireturn
+
+  public static int arr(java.lang.String[]);
+    Code:
+       0: iconst_4
+       1: ireturn
+
+  public static int boxed(java.lang.Object);
+    Code:
+       0: iconst_5
+       1: ireturn
+
+  public static int boxed(java.lang.Integer);
+    Code:
+       0: bipush        6
+       2: ireturn
+
+  public static int action(java.lang.Runnable);
+    Code:
+       0: bipush        7
+       2: ireturn
+
+  public static int action(java.util.function.Supplier<java.lang.String>);
+    Code:
+       0: bipush        8
+       2: ireturn
+
+  public static int nullObject();
+    Code:
+       0: aconst_null
+       1: invokestatic  #7                  // Method choose:(Ljava/lang/Object;)I
+       4: ireturn
+
+  public static int arrayObject(java.lang.String[]);
+    Code:
+       0: aload_0
+       1: invokestatic  #13                 // Method arr:(Ljava/lang/Object;)I
+       4: ireturn
+
+  public static int boxObject(int);
+    Code:
+       0: iload_0
+       1: invokestatic  #16                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       4: invokestatic  #22                 // Method boxed:(Ljava/lang/Object;)I
+       7: ireturn
+
+  public static int lambdaRunnable();
+    Code:
+       0: invokedynamic #25,  0             // InvokeDynamic #0:run:()Ljava/lang/Runnable;
+       5: invokestatic  #29                 // Method action:(Ljava/lang/Runnable;)I
+       8: ireturn
+
+  public static int lambdaSupplier();
+    Code:
+       0: invokedynamic #33,  0             // InvokeDynamic #1:get:()Ljava/util/function/Supplier;
+       5: invokestatic  #37                 // Method action:(Ljava/util/function/Supplier;)I
+       8: ireturn
+
+  public static int methodRefRunnable();
+    Code:
+       0: invokedynamic #40,  0             // InvokeDynamic #2:run:()Ljava/lang/Runnable;
+       5: invokestatic  #29                 // Method action:(Ljava/lang/Runnable;)I
+       8: ireturn
+
+  private static java.lang.String lambda$lambdaSupplier$1();
+    Code:
+       0: ldc           #41                 // String s
+       2: areturn
+
+  private static void lambda$lambdaRunnable$0();
+    Code:
+       0: invokestatic  #43                 // Method java/lang/System.nanoTime:()J
+       3: pop2
+       4: return
+}

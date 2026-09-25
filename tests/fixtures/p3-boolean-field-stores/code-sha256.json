@@ -1,0 +1,90 @@
+[
+  {
+    "method": "<init>",
+    "descriptor": "()V",
+    "code_length": 5,
+    "source_code_sha256": "d6f7264189858f154b120ac2e9b76f4b4dae9ddb629e4ec627af7810207e1a24",
+    "patched_code_sha256": "d6f7264189858f154b120ac2e9b76f4b4dae9ddb629e4ec627af7810207e1a24",
+    "unchanged": true
+  },
+  {
+    "method": "putInstance",
+    "descriptor": "(I)V",
+    "code_length": 6,
+    "source_code_sha256": "dbf6b3f1c183e9edd237770d4eb6df9ed7c18a85984a7c8323f77292ccfa9f6f",
+    "patched_code_sha256": "dbf6b3f1c183e9edd237770d4eb6df9ed7c18a85984a7c8323f77292ccfa9f6f",
+    "unchanged": true
+  },
+  {
+    "method": "putInstanceProduced",
+    "descriptor": "(IZ)V",
+    "code_length": 10,
+    "source_code_sha256": "c1bcc19a204574cdfafa60f81741c6373916db41a54d203f68019a94ab967c21",
+    "patched_code_sha256": "c1bcc19a204574cdfafa60f81741c6373916db41a54d203f68019a94ab967c21",
+    "unchanged": true
+  },
+  {
+    "method": "putStatic",
+    "descriptor": "(I)V",
+    "code_length": 5,
+    "source_code_sha256": "1ecd515a652c5f6059f90461d6da6224883ff267d37aced50993087f12aa668e",
+    "patched_code_sha256": "1ecd515a652c5f6059f90461d6da6224883ff267d37aced50993087f12aa668e",
+    "unchanged": true
+  },
+  {
+    "method": "putStaticProduced",
+    "descriptor": "(IZ)V",
+    "code_length": 9,
+    "source_code_sha256": "dfd905c9c78bf2c4c666715cf56b4b2dd95d00bc8012cc328a57e12268d4087a",
+    "patched_code_sha256": "dfd905c9c78bf2c4c666715cf56b4b2dd95d00bc8012cc328a57e12268d4087a",
+    "unchanged": true
+  },
+  {
+    "method": "putOn",
+    "descriptor": "(LZFieldStores;I)V",
+    "code_length": 6,
+    "source_code_sha256": "dbf6b3f1c183e9edd237770d4eb6df9ed7c18a85984a7c8323f77292ccfa9f6f",
+    "patched_code_sha256": "dbf6b3f1c183e9edd237770d4eb6df9ed7c18a85984a7c8323f77292ccfa9f6f",
+    "unchanged": true
+  },
+  {
+    "method": "putProducedOn",
+    "descriptor": "(LZFieldStores;IZ)V",
+    "code_length": 10,
+    "source_code_sha256": "c1bcc19a204574cdfafa60f81741c6373916db41a54d203f68019a94ab967c21",
+    "patched_code_sha256": "c1bcc19a204574cdfafa60f81741c6373916db41a54d203f68019a94ab967c21",
+    "unchanged": true
+  },
+  {
+    "method": "putOrdinaryInstance",
+    "descriptor": "(Z)V",
+    "code_length": 6,
+    "source_code_sha256": "7219da784c3356986243ab7c21ee693a4c1ee8340bc544be9069ecdac498c260",
+    "patched_code_sha256": "7219da784c3356986243ab7c21ee693a4c1ee8340bc544be9069ecdac498c260",
+    "unchanged": true
+  },
+  {
+    "method": "putOrdinaryInstanceTrue",
+    "descriptor": "()V",
+    "code_length": 6,
+    "source_code_sha256": "3cebcd8b56c9cc33230b7cc9c397108cc042d6dc6f4fa470dee8e6ddc3ff24b1",
+    "patched_code_sha256": "3cebcd8b56c9cc33230b7cc9c397108cc042d6dc6f4fa470dee8e6ddc3ff24b1",
+    "unchanged": true
+  },
+  {
+    "method": "putOrdinaryStatic",
+    "descriptor": "(Z)V",
+    "code_length": 5,
+    "source_code_sha256": "e85f027235e2ee04561020707e6f983c6358d1b7d590965b2fe75bdadc5a1285",
+    "patched_code_sha256": "e85f027235e2ee04561020707e6f983c6358d1b7d590965b2fe75bdadc5a1285",
+    "unchanged": true
+  },
+  {
+    "method": "putOrdinaryStaticTrue",
+    "descriptor": "()V",
+    "code_length": 5,
+    "source_code_sha256": "ff6ea4c2f54cbd5907ae437904ca56c1d81697072ce5de5dc47fec3fb8093b1a",
+    "patched_code_sha256": "ff6ea4c2f54cbd5907ae437904ca56c1d81697072ce5de5dc47fec3fb8093b1a",
+    "unchanged": true
+  }
+]

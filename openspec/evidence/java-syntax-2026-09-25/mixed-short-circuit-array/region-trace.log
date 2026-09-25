@@ -1,0 +1,105 @@
+ARRAY_TRACE entry branch=9
+ARRAY_TRACE entry branch=9
+ARRAY_TRACE after-walk branch=9
+ARRAY_TRACE after-producers branch=9
+ARRAY_TRACE before-visited branch=9
+ARRAY_TRACE before-consumer-preds branch=9
+ARRAY_TRACE before-anchor branch=9
+ARRAY_CONSUMER branch=9 consumer=CanonicalBlockId { bci: 29, path: [] } ssa_present=true
+ARRAY_SSA consumer_bci=29 opcode=0x54 reads=[(Stack(2), ValueId(18)), (Stack(1), ValueId(22)), (Stack(0), ValueId(20))] writes=[]
+ARRAY_SSA consumer_bci=30 opcode=0xb1 reads=[] writes=[]
+ARRAY_TRACE entry branch=15
+ARRAY_TRACE entry branch=21
+ARRAY_TRACE after-walk branch=21
+ARRAY_REGIONS [
+    If {
+        prefix: [],
+        branch: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        branch_bci: 9,
+        then_arm: If {
+            prefix: [],
+            branch: CanonicalBlockId {
+                bci: 12,
+                path: [],
+            },
+            branch_bci: 15,
+            then_arm: Straight {
+                blocks: [],
+            },
+            else_arm: Straight {
+                blocks: [
+                    CanonicalBlockId {
+                        bci: 24,
+                        path: [],
+                    },
+                    CanonicalBlockId {
+                        bci: 29,
+                        path: [],
+                    },
+                ],
+            },
+            join: Some(
+                CanonicalBlockId {
+                    bci: 18,
+                    path: [],
+                },
+            ),
+        },
+        else_arm: Straight {
+            blocks: [],
+        },
+        join: Some(
+            CanonicalBlockId {
+                bci: 18,
+                path: [],
+            },
+        ),
+    },
+    If {
+        prefix: [],
+        branch: CanonicalBlockId {
+            bci: 18,
+            path: [],
+        },
+        branch_bci: 21,
+        then_arm: Fallback {
+            blocks: [
+                CanonicalBlockId {
+                    bci: 24,
+                    path: [],
+                },
+            ],
+            reason: Loop {
+                block_bci: 24,
+            },
+        },
+        else_arm: Straight {
+            blocks: [
+                CanonicalBlockId {
+                    bci: 28,
+                    path: [],
+                },
+            ],
+        },
+        join: Some(
+            CanonicalBlockId {
+                bci: 29,
+                path: [],
+            },
+        ),
+    },
+    Fallback {
+        blocks: [
+            CanonicalBlockId {
+                bci: 29,
+                path: [],
+            },
+        ],
+        reason: Loop {
+            block_bci: 29,
+        },
+    },
+]

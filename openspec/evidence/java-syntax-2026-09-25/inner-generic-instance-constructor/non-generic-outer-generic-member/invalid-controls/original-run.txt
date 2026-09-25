@@ -1,0 +1,2 @@
+minimal.Outer$Inner:1
+null:1

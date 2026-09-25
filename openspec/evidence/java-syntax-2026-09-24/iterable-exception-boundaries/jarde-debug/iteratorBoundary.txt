@@ -1,0 +1,7 @@
+// @method iteratorBoundary(Ljava/lang/Iterable;)I
+// @declaration a static method of `IterableExceptionProbe`, member flags 0x0008
+// recovered from bytecode; presentation is not claimed to compile
+{
+    // @bytecode 0 34 69 71 80 100 135 203 240
+    // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+}

@@ -1,0 +1,3 @@
+ADD:0=10/runtimeIsEnum=false/class=demo.Op$1/declaring=Op
+MULTIPLY:1=21/runtimeIsEnum=false/class=demo.Op$2/declaring=Op
+exit=0

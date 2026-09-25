@@ -1,0 +1,8 @@
+methods.0.outcome.report.syntax_status = "unchecked"
+methods.0.outcome.report.verification = "not_performed"
+methods.1.outcome.report.syntax_status = "unchecked"
+methods.1.outcome.report.verification = "not_performed"
+methods.2.outcome.report.syntax_status = "unchecked"
+methods.2.outcome.report.verification = "not_performed"
+methods.3.outcome.report.syntax_status = "unchecked"
+methods.3.outcome.report.verification = "not_performed"

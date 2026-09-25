@@ -1,0 +1,89 @@
+{
+  "cli_sha256": "a3a29b59aa85c2d174b06033f874eb7d60a104dbccf1d20f5d88908273e92dd5",
+  "cases": {
+    "TernaryCore": {
+      "class_sha256": "9c867c925fb0f42b7fe11af18bb4e90645fe6ac8fcd2718114100161378b6ce4",
+      "class_bytes": 424,
+      "original": {
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "true=7:trace=1\nfalse=11:trace=2\n"
+      },
+      "jadx": {
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "true=7:trace=1\nfalse=11:trace=2\n"
+      },
+      "jarde_essential": {
+        "source_sha256": "6241832e17a0b7ff7fe7c9756b2561768114f142e54b65fee2571af846b7fc89",
+        "bytecode_references": 0,
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "true=7:trace=1\nfalse=11:trace=2\n"
+      },
+      "jarde_all": {
+        "source_sha256": "6241832e17a0b7ff7fe7c9756b2561768114f142e54b65fee2571af846b7fc89",
+        "bytecode_references": 0,
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "true=7:trace=1\nfalse=11:trace=2\n"
+      }
+    },
+    "TernaryValues": {
+      "class_sha256": "a2e96a4bb220fc3a61f4635827c628b84ad4571d8e71fd9da42a4c0e94c9a80f",
+      "class_bytes": 1414,
+      "original": {
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "returned:true=7:trace=1\nreturned:false=11:trace=2\nassigned:true=7:trace=1\nassigned:false=11:trace=2\narithmetic:true=15:trace=1\narithmetic:false=23:trace=2\ncall:true=107:trace=13\ncall:false=111:trace=23\nreference:true=null:trace=0\nreference:false=value:trace=0\noverload:true=string:trace=4\noverload:false=string:trace=4\nthrowing:true:failA=throws:java.lang.IllegalStateException:a:trace=1\nthrowing:false:failB=throws:java.lang.IllegalArgumentException:b:trace=2\nthrowing:true:onlyA=throws:java.lang.IllegalStateException:a:trace=1\nthrowing:false:onlyB=throws:java.lang.IllegalArgumentException:b:trace=12\n"
+      },
+      "jadx": {
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "returned:true=7:trace=1\nreturned:false=11:trace=2\nassigned:true=7:trace=1\nassigned:false=11:trace=2\narithmetic:true=15:trace=1\narithmetic:false=23:trace=2\ncall:true=107:trace=13\ncall:false=111:trace=23\nreference:true=null:trace=0\nreference:false=value:trace=0\noverload:true=string:trace=4\noverload:false=string:trace=4\nthrowing:true:failA=throws:java.lang.IllegalStateException:a:trace=1\nthrowing:false:failB=throws:java.lang.IllegalArgumentException:b:trace=2\nthrowing:true:onlyA=throws:java.lang.IllegalStateException:a:trace=1\nthrowing:false:onlyB=throws:java.lang.IllegalArgumentException:b:trace=12\n"
+      },
+      "jarde_essential": {
+        "source_sha256": "73f501355cae10cdbf445125e0558d75cc19503ea16684fded764a06d62e1592",
+        "bytecode_references": 0,
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "returned:true=7:trace=1\nreturned:false=11:trace=2\nassigned:true=7:trace=1\nassigned:false=11:trace=2\narithmetic:true=15:trace=1\narithmetic:false=23:trace=2\ncall:true=107:trace=13\ncall:false=111:trace=23\nreference:true=null:trace=0\nreference:false=value:trace=0\noverload:true=string:trace=4\noverload:false=string:trace=4\nthrowing:true:failA=throws:java.lang.IllegalStateException:a:trace=1\nthrowing:false:failB=throws:java.lang.IllegalArgumentException:b:trace=2\nthrowing:true:onlyA=throws:java.lang.IllegalStateException:a:trace=1\nthrowing:false:onlyB=throws:java.lang.IllegalArgumentException:b:trace=12\n"
+      },
+      "jarde_all": {
+        "source_sha256": "73f501355cae10cdbf445125e0558d75cc19503ea16684fded764a06d62e1592",
+        "bytecode_references": 0,
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "returned:true=7:trace=1\nreturned:false=11:trace=2\nassigned:true=7:trace=1\nassigned:false=11:trace=2\narithmetic:true=15:trace=1\narithmetic:false=23:trace=2\ncall:true=107:trace=13\ncall:false=111:trace=23\nreference:true=null:trace=0\nreference:false=value:trace=0\noverload:true=string:trace=4\noverload:false=string:trace=4\nthrowing:true:failA=throws:java.lang.IllegalStateException:a:trace=1\nthrowing:false:failB=throws:java.lang.IllegalArgumentException:b:trace=2\nthrowing:true:onlyA=throws:java.lang.IllegalStateException:a:trace=1\nthrowing:false:onlyB=throws:java.lang.IllegalArgumentException:b:trace=12\n"
+      }
+    },
+    "ConditionalBoundarySwitch": {
+      "class_sha256": "453c00b9ebb0974d084aca7a28e465c52c42ab8b92112ac0e913eb9c8d55a7ee",
+      "class_bytes": 545,
+      "original": {
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "0=101:trace=1\n1=202:trace=2\n2=303:trace=3\n-1=303:trace=3\n"
+      },
+      "jadx": {
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "0=101:trace=1\n1=202:trace=2\n2=303:trace=3\n-1=303:trace=3\n"
+      },
+      "jarde_essential": {
+        "source_sha256": "38502c98367023502d89d51832868b734af5923dcc6b997030c834130d734bf1",
+        "bytecode_references": 0,
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "0=101:trace=1\n1=202:trace=2\n2=303:trace=3\n-1=303:trace=3\n"
+      },
+      "jarde_all": {
+        "source_sha256": "38502c98367023502d89d51832868b734af5923dcc6b997030c834130d734bf1",
+        "bytecode_references": 0,
+        "javac_exit": 0,
+        "java_exit": 0,
+        "output": "0=101:trace=1\n1=202:trace=2\n2=303:trace=3\n-1=303:trace=3\n"
+      }
+    }
+  }
+}

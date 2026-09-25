@@ -1,0 +1,14 @@
+/tmp/jarde-slot-reuse-investigation/jarde-no-debug/ReuseAfterForEach.java:24: 错误: 不兼容的类型: int无法转换为int[]
+        local2 = local1 + 1;
+                        ^
+/tmp/jarde-slot-reuse-investigation/jarde-no-debug/ReuseAfterForEach.java:25: 错误: 二元运算符 '+' 的操作数类型错误
+        local3 = local2 + 2;
+                        ^
+  第一个类型:  int[]
+  第二个类型: int
+/tmp/jarde-slot-reuse-investigation/jarde-no-debug/ReuseAfterForEach.java:26: 错误: 二元运算符 '+' 的操作数类型错误
+        return local1 + local2 + local3;
+                      ^
+  第一个类型:  int
+  第二个类型: int[]
+3 个错误

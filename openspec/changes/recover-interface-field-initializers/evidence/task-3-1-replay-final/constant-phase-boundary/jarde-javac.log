@@ -1,0 +1,14 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-interface-field-initializers/evidence/task-3-1-replay-final/constant-phase-boundary/jarde-sources/PhaseProbe.java:4: 错误: 需要=
+    public static final int EARLY;
+                                 ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-interface-field-initializers/evidence/task-3-1-replay-final/constant-phase-boundary/jarde-sources/PhaseProbe.java:6: 错误: 需要=
+    public static final int LATE;
+                                ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-interface-field-initializers/evidence/task-3-1-replay-final/constant-phase-boundary/jarde-sources/PhaseProbe.java:15: 错误: 接口中不允许有初始化程序
+    static {
+           ^
+3 个错误
+3 个警告

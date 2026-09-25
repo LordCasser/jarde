@@ -1,0 +1,11 @@
+# `(I)Z` 返回的冻结三方基线
+
+2026-09-25。root 独立重放 `tests/fixtures/p3-narrow-integer-returns/v8/boolean-boundaries/BooleanReturnBoundaries.class`，SHA-256 `336f8f291987fa9fdc583e62ffb99b522d37d19ffef8db6cfd64e5d77db973a4`。`BooleanRawTwoCaller.class` SHA-256 `e791af87e373254d2c107956813488042258894553f200fd5cfe0957805cbcc1`。源码是 `BooleanReturnBoundaries.java`；`BooleanReturnBoundaries.patch.json` 记录 `(I)I`→`(I)Z` 和三个独立的 `(Z)Z`→`(Z)B/C/S` descriptor 改动，Code 总 SHA 在补丁前后均为 `0dd4d14a537d60061121469bce88ad0f0e83d3b527037aa534acd94305dd3016`。`javap -c -p` 确认前者 Code 只含 BCI 0 `iload_0`、BCI 1 `ireturn`。
+
+root 在隔离临时目录复制两份 class 与 `ReturnBoundaryRunner.java`，运行 `javac --release 8 -g:none -cp <目录> -d <目录> ReturnBoundaryRunner.java`，再以 `java -Xverify:all -cp <目录> ReturnBoundaryRunner` 执行。`integerAsBoolean(0,1,2,3,-1)` 分别输出 `false,true,false,true,true`；本案新正例仍须补齐 -2、两个 int 极值及效果顺序。Jarde 修前 `CARGO_TARGET_DIR=/tmp/jarde-intbool-root-target cargo test --locked --test p3_narrow_return_boundaries boolean_operands_are_refused_at_numeric_returns_and_z_keeps_low_bit_semantics` 为 1/1：该测试明确断言 `(I)Z` 是 Mixed/Fallback、正文写出 `returns Z` 与 `no evidence`，并保留 `ireturn@1` source map。这是诚实拒绝，不是已恢复。
+
+root 用安装的 JADX 1.5.6 原样 `jadx -d <目录>/jadx BooleanReturnBoundaries.class BooleanRawTwoCaller.class`，输出 `public static boolean integerAsBoolean(int i) { return i; }`；随后原样 `javac --release 8 -d <目录>/jadx-compiled <目录>/jadx/sources/defpackage/*.java` 失败，报 `int无法转换为boolean`。没有修改 JADX 输出后再算执行成功。本地 JADX 源码 commit `2fb1b16386941660fda07e9017285aec40fcb37f`，`jadx-core/src/main/java/jadx/core/codegen/InsnGen.java` SHA-256 `c6308a71dd870d7f13bb8ac7efdb58191966cd6a5254aa11e443c95af6bafed6`；RETURN 分支只写 `return ` 加 `addArg`，没有读取 JVM `ireturn` 对 Z 的最低位语义。它的 descriptor 导向转换可作为消费位置线索，直接输出算法不能照搬。
+
+相同输入中的 `(Z)B/C/S` 是**另一方向**：verifier-valid 的 `BooleanRawTwoCaller.class` 把每个调用前 `iconst_0` 改为 `iconst_2`，原 JVM 三个返回均为 2。JADX 把实参 2 写成 `true`，又把目标返回写为 `z ? 1 : 0` 的窄类型三元式，运行会归一化到 1；Jarde 在 boolean 参数调用和 boolean→整数返回两处仍保持可定位拒绝。本案只处理 int 值由 `ireturn Z` 取最低位，不可因此放宽 raw 2 调用。
+
+语义依据：[JVMS `ireturn`](https://docs.oracle.com/javase/specs/jvms/se23/html/jvms-6.html#jvms-6.5.ireturn) 对 Z 规定 `value & 1`；JLS 整数余数规则使 `value % 2 != 0` 对所有 32 位有符号值等价，包括负奇数和 `Integer.MIN_VALUE`。现有 Z 字段写入已经用这个 AST 形状，但真实返回、字段写入和调用三处的准入证据仍各自独立。

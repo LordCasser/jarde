@@ -1,0 +1,102 @@
+// jarde: presentation of `InvocationArgumentsProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class InvocationArgumentsProbe extends java.lang.Object {
+    public InvocationArgumentsProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `InvocationArgumentsProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int objectString() {
+        // @method objectString()I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArgumentTarget.object((java.lang.Object) "x");
+    }
+
+    public static int objectNull() {
+        // @method objectNull()I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArgumentTarget.object((java.lang.Object) null);
+    }
+
+    public static int objectArray(java.lang.String[] arg0) {
+        // @method objectArray([Ljava/lang/String;)I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArgumentTarget.array((java.lang.Object) arg0);
+    }
+
+    public static int objectBoxed() {
+        // @method objectBoxed()I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArgumentTarget.boxed((java.lang.Object) java.lang.Integer.valueOf(3));
+    }
+
+    public static int widening(char arg0) {
+        // @method widening(C)I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArgumentTarget.number((int) arg0);
+    }
+
+    public static int narrowByte() {
+        // @method narrowByte()I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArgumentTarget.narrow((byte) 1);
+    }
+
+    public static int narrowShort() {
+        // @method narrowShort()I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArgumentTarget.narrow((short) 1);
+    }
+
+    public static int constructorObject() {
+        // @method constructorObject()I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new ArgumentTarget((java.lang.Object) "x").value();
+    }
+
+    public static int multiple(char arg0) {
+        // @method multiple(C)I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArgumentTarget.multi((java.lang.Object) "a", (java.lang.Object) "b", (int) arg0);
+    }
+
+    public static int genericObject() {
+        // @method genericObject()I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArgumentTarget.object((java.lang.Object) GenericFactory.make());
+    }
+
+    public static int functionalRunnable() {
+        // @method functionalRunnable()I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArgumentTarget.functional((java.lang.Runnable) InvocationArgumentsProbe::returnFive);
+    }
+
+    public static int functionalObject() {
+        // @method functionalObject()I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ArgumentTarget.objectFunctional((java.lang.Object) (java.lang.Runnable) InvocationArgumentsProbe::returnFive);
+    }
+
+    private static int returnFive() {
+        // @method returnFive()I
+        // @declaration a static method of `InvocationArgumentsProbe`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        return 5;
+    }
+}

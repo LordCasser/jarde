@@ -1,0 +1,5 @@
+cdc10bfb3d1396779edbabd3e2d258c32996a915e00d33c1af0ff8445af38b01  tests/fixtures/proved-java-structure/anonymous-member-base/AnonymousMemberBase$1.class
+4105fff279d1f89f4d50676bc704430b9ec48ae54fe6ed64e3d107a52ea49f31  tests/fixtures/proved-java-structure/anonymous-member-base/AnonymousMemberBase$2.class
+ab1f19e36382f8a96519b0450e3327a9e41d2aa1fdb2262ed3310f92febbb81c  tests/fixtures/proved-java-structure/anonymous-member-base/AnonymousMemberBase$Outer$Base.class
+19ab42816fc39f8ab685170c0d3ff833741fd6e2459b6d0503be43c056c882bb  tests/fixtures/proved-java-structure/anonymous-member-base/AnonymousMemberBase$Outer.class
+fe436b9b44e420fa9b9c768661b3405389652cb56136ea82eb2e83728bbcd31b  tests/fixtures/proved-java-structure/anonymous-member-base/AnonymousMemberBase.class

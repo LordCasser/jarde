@@ -1,0 +1,75 @@
+{
+  "original_sha256": "1e979a725f0f17d0686f1678537d173b725c728aeb1504b6c2aef8092cf21070",
+  "patched_sha256": "cc8901164d3aac1206b65fc03c69d8798359b88c0bd300c5202ef614ccc79d0b",
+  "original_code_hex": "1a04783c1bb80007ac",
+  "patched_code_hex": "1a04783c1bb80007b8000dac",
+  "old_code_length": 9,
+  "new_code_length": 12,
+  "inserted_opcode": "invokestatic Support.mark()V before ireturn",
+  "class_major": 52,
+  "cli_sha256_before": "7747b60a17dc635f0e8402d867cb9e74f9472a62057eb4865dbd8f4a207dfb34",
+  "cli_sha256_after": "7747b60a17dc635f0e8402d867cb9e74f9472a62057eb4865dbd8f4a207dfb34",
+  "stable_cli_sha256": "feed5c377a439490efb12a2a46bdfa0e94c32dffd3a83bd1583b70fe89317350",
+  "jarde_cli_returncode": 0,
+  "stable_jarde_cli_returncode": 0,
+  "stable_source_equal_current": true,
+  "jarde_full_evidence_returncode": 0,
+  "jarde_quotes": 5,
+  "jarde_javac_returncode": 1,
+  "jadx_returncode": 0,
+  "jadx_javac_returncode": 0,
+  "original_lines": 6,
+  "run_body_executable": "\n        Support.mark();",
+  "run_body_take_count": 0,
+  "run_body_saved_name": false,
+  "run_body_local_name": false,
+  "run_source_map_bcis": [
+    {
+      "start": 164,
+      "end": 250,
+      "primary": 2,
+      "derived": []
+    },
+    {
+      "start": 250,
+      "end": 373,
+      "primary": 3,
+      "derived": []
+    },
+    {
+      "start": 373,
+      "end": 584,
+      "primary": 5,
+      "derived": [
+        4
+      ]
+    },
+    {
+      "start": 588,
+      "end": 595,
+      "primary": 8,
+      "derived": []
+    },
+    {
+      "start": 588,
+      "end": 602,
+      "primary": 8,
+      "derived": []
+    },
+    {
+      "start": 584,
+      "end": 604,
+      "primary": 8,
+      "derived": []
+    },
+    {
+      "start": 604,
+      "end": 715,
+      "primary": 11,
+      "derived": [
+        5
+      ]
+    }
+  ],
+  "jadx_equal": true
+}

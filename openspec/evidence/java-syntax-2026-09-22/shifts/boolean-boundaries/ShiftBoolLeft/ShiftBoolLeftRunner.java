@@ -1,0 +1,1 @@
+public class ShiftBoolLeftRunner {public static void main(String[] args){for(boolean v:new boolean[]{false,true})for(int d:new int[]{-33,-1,0,1,31,32,63})System.out.println(v+":"+d+":"+ShiftBoolLeft.shift(v,d));}}

@@ -1,0 +1,49 @@
+{
+  "cli_sha256": "7a33dbed5b390009cb65802fd9264367e1d5854b9cc70dbced5ae1878109c822",
+  "cases": {
+    "basic": {
+      "class_hashes": [
+        "66f3a8d95424b352bef9fe5b73e4c0d9204672ee97093ef975c2ec104eae0da3  Basic.class",
+        "bf5fe4a905198eed3547c2c3c3f9cebe4d426b2ad50f766a8ef609f0ff91228b  BasicRunner.class"
+      ],
+      "original": [
+        "5",
+        "source-only",
+        "[2, 4]"
+      ],
+      "jadx": [
+        "5",
+        "source-only",
+        "[2, 4]"
+      ],
+      "jarde": [
+        "5",
+        "source-only",
+        "[2, 4]"
+      ],
+      "jarde_javac_exit": 0,
+      "jarde_runtime_exit": 0
+    },
+    "nested": {
+      "class_hashes": [
+        "06612cd90415d077d494394e703e2fca618365d5cc00889be0aa021a7969fbef  Inner.class",
+        "7f90b3460b1fdbe2cdf25e4bd5442911b049aa57f58efa84964970697c771fe3  Nested.class",
+        "d32efe57d462724adde1dc0b7df0712c6c0f0a3f8fe80b83ee4fc2e7ab310a65  NestedRunner.class"
+      ],
+      "original": [
+        "6",
+        "2"
+      ],
+      "jadx": [
+        "6",
+        "2"
+      ],
+      "jarde": [
+        "Exception in thread \"main\" java.lang.NullPointerException: Cannot invoke \"Inner.value()\" because the return value of \"java.lang.reflect.Method.getDefaultValue()\" is null",
+        "\tat NestedRunner.main(Unknown Source)"
+      ],
+      "jarde_javac_exit": 0,
+      "jarde_runtime_exit": 1
+    }
+  }
+}

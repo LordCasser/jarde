@@ -9,16 +9,20 @@
 //! themselves.
 
 use crate::class_source::{
-    self, ClassSourceDeclaration, ClassSourceField, ClassSourceMethod, ClassSourceReport,
-    ClassSourceRequest, ClassSourceRunFacts,
+    self, ClassSourceDeclaration, ClassSourceField, ClassSourceInitializerField,
+    ClassSourceInitializerProof, ClassSourceMethod, ClassSourceReport, ClassSourceRequest,
+    ClassSourceRunFacts,
 };
 use crate::environment::{EnvironmentIdentity, EnvironmentProblem, ResolutionEnvironment};
 use crate::ir::{AnalysisStage, NoBodyKind, Quality};
 use crate::resolver::{
-    DeclarationRefItem, DeclarationRefReport, HeaderRead, ResolutionAnalysis, ResolvedMemberRef,
+    DeclarationRefItem, DeclarationRefReport, HeaderRead, ReferenceUse, ResolutionAnalysis,
+    ResolutionRequest, ResolutionState, ResolvedMemberRef,
 };
+use jarde_java::ast::{Expr, ExprKind, Type as JavaType};
 use jarde_java::{
     RecoveryContent, RecoveryEvidenceKind, RecoveryEvidenceRequest, RecoveryReport, StopReason,
+    type_of_component,
 };
 // The artifact binding (change `add-demand-driven-core-results`, D3') crosses the facade here, the
 // way the recovery layer's other product names do: a caller reads it off the report it already
@@ -43,9 +47,10 @@ use jarde_reader::artifact::{
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension, Limits, UsageSnapshot};
 use jarde_reader::classfile::{
-    AttributeShell, BytecodeStop, BytecodeStopPhase, ClassMemberFacts, ExceptionHandlerFact,
-    InspectionMode, InstructionFact, MemberHeader, MemberTablePhase, MemberTableStop,
-    MethodSelector, class_member_facts, method_code_coverage,
+    AttributeShell, BytecodeStop, BytecodeStopPhase, ClassMemberFacts, CpEntryFacts, CpEntryKind,
+    DescriptorKind, ExceptionHandlerFact, InspectionMode, InstructionFact, MemberHeader,
+    MemberTablePhase, MemberTableStop, MethodSelector, attribute_facts, class_constant_pool,
+    class_member_facts, descriptor_facts, method_code_coverage,
 };
 use jarde_reader::error::{Error, Result};
 use jarde_reader::inspect::{
@@ -66,6 +71,10 @@ use jarde_reader::view::{
     PhysicalView, RuntimeProfile, RuntimeUncertainty, RuntimeView,
 };
 use serde::{Deserialize, Serialize};
+
+const ACC_INTERFACE: u16 = 0x0200;
+const ACC_ANNOTATION: u16 = 0x2000;
+use std::borrow::Cow;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Engine;
@@ -1357,7 +1366,19 @@ impl Engine {
             unreachable!("a class read publishes a class declaration item")
         };
         let definition = item.definition.clone();
-        let declaration = ClassSourceDeclaration::of(item);
+        let mut declaration = ClassSourceDeclaration::of(item);
+        let annotation_shells: Vec<AttributeShell> = read
+            .facts
+            .attributes
+            .iter()
+            .filter(|attribute| {
+                matches!(
+                    attribute.name.raw().0.as_slice(),
+                    b"RuntimeVisibleAnnotations" | b"RuntimeInvisibleAnnotations"
+                )
+            })
+            .cloned()
+            .collect();
         // The class and member planes are complete on their own evidence, taken before any member is
         // run, so that a member which stopped below cannot rewrite what the member table really was
         // (A13/A14) — the same rule the class view applies to its bodies.
@@ -1374,6 +1395,19 @@ impl Engine {
                 stages,
                 fields: Vec::new(),
                 methods: Vec::new(),
+                bridge_proofs: Vec::new(),
+                enum_switch_proofs: Vec::new(),
+                initializer_proof: if read.facts.access_flags & ACC_INTERFACE != 0
+                    && read.facts.access_flags & ACC_ANNOTATION == 0
+                {
+                    ClassSourceInitializerProof::Refused {
+                        reason: "the class declaration was not published, so its interface initializer group cannot be proved".to_owned(),
+                    }
+                } else {
+                    ClassSourceInitializerProof::NotApplicable
+                },
+                enum_constant_proof:
+                    crate::enum_constants::ClassSourceEnumConstantProof::NotApplicable,
                 text: String::new(),
                 limits: budget.limits().clone(),
                 usage: budget.usage(),
@@ -1383,21 +1417,6 @@ impl Engine {
             }));
         }
         let class_provenance = Some(definition_provenance(&definition));
-        // The fields of the same read, in declaration order, each charged as the item it is.
-        let mut fields = Vec::new();
-        let mut ended = false;
-        for (index, field) in read.facts.fields.iter().enumerate() {
-            if let Err(error) = charge_item(budget) {
-                merge_execution(&mut execution, stop_execution(&error, budget));
-                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                ended = true;
-                break;
-            }
-            let ClassContentItem::Field(item) = field_item(&definition, index, field)? else {
-                unreachable!("a field record publishes a field item")
-            };
-            fields.push(ClassSourceField::of(item));
-        }
         // How many members this presentation could run a body for at all: one that declares a `Code`
         // attribute and whose descriptor this presentation can read. A member outside that set is a
         // declaration without a body — a declaration, never work left undone — or a member whose
@@ -1467,8 +1486,285 @@ impl Engine {
             }
             (None, None) => ClassBodies::NotNeeded,
         };
+        let capture_enum_group_code = match &bodies {
+            ClassBodies::Prepared(prepared) => crate::enum_constants::may_capture_group_code(
+                prepared.class_facts(),
+                prepared.member_table_stop().is_none(),
+            ),
+            ClassBodies::Refused(_) | ClassBodies::NotNeeded => false,
+        };
+        let mut constructor_count = 0_usize;
+        let mut has_no_arg_enum_constructor = false;
+        let mut has_int_enum_constructor = false;
+        if capture_enum_group_code {
+            // This is an eligibility check over the one prepared member table already read for the
+            // class. The class-header read billed every physical member record; the enum proof
+            // below bills its complete table walk. Poll each record here, and charge the two
+            // selected constructor identities only when this exact pair enables AST retention.
+            for method in &read.facts.methods {
+                budget.poll()?;
+                if method.name.raw().0 == b"<init>" {
+                    constructor_count += 1;
+                    has_no_arg_enum_constructor |=
+                        method.descriptor.raw().0 == b"(Ljava/lang/String;I)V";
+                    has_int_enum_constructor |=
+                        method.descriptor.raw().0 == b"(Ljava/lang/String;II)V";
+                }
+            }
+        }
+        let capture_enum_constructor_ast = capture_enum_group_code
+            && constructor_count == 2
+            && has_no_arg_enum_constructor
+            && has_int_enum_constructor;
+        if capture_enum_constructor_ast {
+            budget.charge(CountedBudgetDimension::IrItems, 2)?;
+        }
         let mut attempted = 0_u64;
         let mut methods = Vec::new();
+        // Same-run method candidates stay private to this assembly pass until the complete
+        // class-level proof selects the unique `<clinit>()V` result. Other member bodies also
+        // carry this sidecar handoff, so the physical method identity is the selector.
+        let mut initializer_candidate_runs = Vec::new();
+        let mut enum_constructor_candidate_runs = Vec::new();
+        let mut enum_code_candidates = Vec::new();
+        let mut enum_switch_candidate_runs = Vec::new();
+        let mut enum_switch_field_use_runs = Vec::new();
+        let mut enum_switch_scanned_members = Vec::new();
+        // The anonymous-body follow-up consumes these method-scoped scans from this same assembly.
+        // A missing entry remains distinct from a completed empty scan.
+        let mut anonymous_allocation_scans: Vec<(
+            PhysicalMethodId,
+            Option<jarde_java::report::AnonymousAllocationScan>,
+        )> = Vec::new();
+        // Bridge decisions are also kept from the same member runs, independently of whether
+        // RuleDetails were requested. They remain associated with physical member identity and
+        // are not derived again from the serialized recovery report.
+        let mut _bridge_candidate_runs = Vec::new();
+        // The constant pool every declaration attribute this presentation spells is resolved
+        // against — class/member Runtime*Annotations and Runtime*TypeAnnotations, parameter
+        // annotations, a field's `ConstantValue` (JVMS 4.7.2) or `Signature` (JVMS 4.7.9),
+        // a member's `Exceptions` (JVMS 4.7.4) or `AnnotationDefault` (JVMS 4.7.22) — read only
+        // when one of those shells exists:
+        // a class without them reads no pool for declarations. When there is a
+        // preparation it holds that pool already — the same bytes, read once for the whole
+        // presentation — and a class that is never prepared (one whose members all declare no body,
+        // which is every annotation type) has its own resolved here. Neither read is charged: the
+        // binding read paid for the class's bytes, and this is another view of them.
+        let pool: Cow<'_, [CpEntryFacts]> = match (
+            &prepared,
+            read.facts
+                .fields
+                .iter()
+                .any(class_source::declares_constant_value)
+                || read
+                    .facts
+                    .fields
+                    .iter()
+                    .any(class_source::declares_signature)
+                || read
+                    .facts
+                    .fields
+                    .iter()
+                    .any(class_source::declares_member_annotations)
+                || read.facts.methods.iter().any(|member| {
+                    class_source::declares_member_annotations(member)
+                        || class_source::declares_parameter_annotations(member)
+                })
+                || !annotation_shells.is_empty()
+                || read.facts.attributes.iter().any(|attribute| {
+                    matches!(
+                        attribute.name.raw().0.as_slice(),
+                        b"Signature" | b"InnerClasses" | b"EnclosingMethod"
+                    )
+                })
+                || read.facts.methods.iter().any(|member| {
+                    class_source::declares_annotation_default(member)
+                        || class_source::declares_exceptions(member)
+                        || class_source::declares_signature(member)
+                }),
+        ) {
+            (Some(prepared), _) => Cow::Borrowed(prepared.class_facts().constant_pool.as_slice()),
+            (None, true) => Cow::Owned(class_constant_pool(&read.bytes, budget)?),
+            (None, false) => Cow::Borrowed(&[]),
+        };
+        // Class nesting is an assembly fact, not method IR. Decode the two already recognized
+        // class attributes once from the selected read and keep them in a private handoff for the
+        // source assembler. In particular, do not re-slice these attributes from a sibling class
+        // or infer their meaning from `$` names.
+        let nesting_shells: Vec<AttributeShell> = read
+            .facts
+            .attributes
+            .iter()
+            .filter(|attribute| {
+                matches!(
+                    attribute.name.raw().0.as_slice(),
+                    b"InnerClasses" | b"EnclosingMethod"
+                )
+            })
+            .cloned()
+            .collect();
+        let mut assembly_context = class_source::ClassSourceAssemblyContext::default();
+        if !nesting_shells.is_empty() {
+            match class_source::read_class_source_assembly_context(
+                &read.bytes,
+                &nesting_shells,
+                &pool,
+                budget,
+            ) {
+                Ok(context) => assembly_context = context,
+                Err(error) => {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                }
+            }
+        }
+        let mut class_scope = None;
+        let class_signature_present = read
+            .facts
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Signature");
+        let mut class_signature_stop = false;
+        match declaration.project_generic_signature(
+            &read.bytes,
+            &read.facts.attributes,
+            &pool,
+            budget,
+        ) {
+            Ok(proof) => class_scope = proof,
+            Err(error) => {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                class_signature_stop = true;
+            }
+        }
+        let physical_interfaces_raw: Vec<Vec<u8>> = read
+            .facts
+            .interfaces
+            .iter()
+            .map(|name| name.raw().0.clone())
+            .collect();
+        if !class_signature_stop && !annotation_shells.is_empty() {
+            match attribute_facts(&read.bytes, &annotation_shells, &pool, budget) {
+                Ok(facts) => {
+                    let attributes = annotation_shells
+                        .iter()
+                        .map(|attribute| {
+                            let annotations = match attribute.name.raw().0.as_slice() {
+                                b"RuntimeVisibleAnnotations" => {
+                                    facts.runtime_visible_annotations.clone()
+                                }
+                                b"RuntimeInvisibleAnnotations" => {
+                                    facts.runtime_invisible_annotations.clone()
+                                }
+                                _ => unreachable!("only annotation shells were selected"),
+                            };
+                            class_source::ClassAnnotationAttribute {
+                                attribute: attribute.clone(),
+                                annotations,
+                            }
+                        })
+                        .collect();
+                    declaration = declaration.with_annotations(attributes, &pool);
+                }
+                Err(error) => {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    declaration
+                        .annotation_refusals
+                        .push(format!("annotation attribute read stopped: {}", error));
+                    declaration.annotation_attributes = annotation_shells
+                        .into_iter()
+                        .map(|attribute| class_source::ClassAnnotationAttribute {
+                            attribute,
+                            annotations: Vec::new(),
+                        })
+                        .collect();
+                }
+            }
+        }
+        // The fields of the same read, in declaration order, each charged as the item it is and each
+        // spelled from its own `ConstantValue` when it declares one. They are read after the pool
+        // above because that attribute's own index resolves through it. This loop spells only that
+        // attribute's value; the separate private `<clinit>` candidate handoff does not change field
+        // declarations in this task.
+        let mut fields = Vec::new();
+        let mut constant_value_spellable = Vec::new();
+        let mut ended = class_signature_stop;
+        for (index, field) in read.facts.fields.iter().enumerate() {
+            if ended {
+                break;
+            }
+            if let Err(error) = charge_item(budget) {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                ended = true;
+                break;
+            }
+            let ClassContentItem::Field(item) = field_item(&definition, index, field)? else {
+                unreachable!("a field record publishes a field item")
+            };
+            // The field's own `ConstantValue`, read **once** here: the declaration below is written
+            // from this one value, so no second reading can state a second initializer. A value this
+            // presentation has no literal for — a `float`/`double` constant — is no initializer at
+            // all, which is the declaration the bytes state.
+            let constant =
+                match class_source::declared_constant_value(&read.bytes, field, &pool, budget) {
+                    Ok(constant) => constant,
+                    Err(error) => {
+                        // A field record states no refusal of its own in this report, so a field whose
+                        // attribute could not be read stops the presentation where that read happened
+                        // rather than being published as a declaration without its initializer: which
+                        // constants a field declares is exactly what these bytes did not establish.
+                        // The fields before it keep their spellings and the reader's own code states
+                        // why it stopped.
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        ended = true;
+                        break;
+                    }
+                };
+            constant_value_spellable.push(constant.is_some());
+            let annotation_read =
+                class_source::declared_member_annotations(&read.bytes, field, &pool, budget);
+            let mut annotation_stop = None;
+            for error in &annotation_read.errors {
+                let stop = stop_execution(error, budget);
+                merge_execution(&mut execution, stop.clone());
+                diagnostics.push(stop_diagnostic(error, class_provenance.clone()));
+                if ends_the_request(&stop) && annotation_stop.is_none() {
+                    annotation_stop = Some(error.clone());
+                }
+            }
+            let mut source_field =
+                ClassSourceField::of(item, constant.as_ref(), annotation_read.facts, &pool);
+            if annotation_stop.is_some() {
+                fields.push(source_field);
+                ended = true;
+                break;
+            }
+            if let Err(error) = class_source::project_field_signature(
+                &mut source_field,
+                field,
+                &read.bytes,
+                &pool,
+                &declaration.item.declaration.this_class.raw().0,
+                declaration.item.declaration.access_flags,
+                class_scope
+                    .as_ref()
+                    .map(|proof| proof.type_parameters.as_slice())
+                    .unwrap_or(&[]),
+                constant.as_ref(),
+                budget,
+            ) {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                fields.push(source_field);
+                ended = true;
+                break;
+            }
+            fields.push(source_field);
+        }
         for (index, member) in read.facts.methods.iter().enumerate() {
             if ended {
                 break;
@@ -1476,7 +1772,101 @@ impl Engine {
             let ClassContentItem::Method(item) = method_item(&definition, index, member)? else {
                 unreachable!("a method record publishes a method item")
             };
-            let spelled = class_source::spell_method(&item, None, &declaration.name);
+            let annotation_read =
+                class_source::declared_member_annotations(&read.bytes, member, &pool, budget);
+            let mut annotation_stop = None;
+            for error in &annotation_read.errors {
+                let stop = stop_execution(error, budget);
+                merge_execution(&mut execution, stop.clone());
+                diagnostics.push(stop_diagnostic(error, class_provenance.clone()));
+                if ends_the_request(&stop) && annotation_stop.is_none() {
+                    annotation_stop = Some(error.clone());
+                }
+            }
+            if let Some(error) = annotation_stop {
+                let stop = stop_execution(&error, budget);
+                let spelled = class_source::spell_method(
+                    &item,
+                    None,
+                    &declaration.name,
+                    read.facts.access_flags,
+                    None,
+                    &annotation_read.facts,
+                    &pool,
+                );
+                let record = ClassSourceMethod::refused(
+                    item,
+                    spelled,
+                    stop.clone(),
+                    vec![stop_diagnostic(&error, class_provenance.clone())],
+                );
+                if let Err(charge) = charge_item(budget) {
+                    merge_execution(&mut execution, stop_execution(&charge, budget));
+                    diagnostics.push(stop_diagnostic(&charge, class_provenance.clone()));
+                    break;
+                }
+                methods.push(record);
+                break;
+            }
+            // The member's own declaration attributes, read **once** here: the `AnnotationDefault`
+            // (JVMS 4.7.22) the declaration's `default` is written from and the `Exceptions`
+            // (JVMS 4.7.4) its `throws` clause is written from. Both spellings below — before and
+            // after the member's run — are written from these two values, so a second reading cannot
+            // state a second clause. A request-ending failure (a budget, a cancellation) is this
+            // request's stop, exactly like a refused item charge above; damage inside one member's
+            // attribute is that member's read failing, and the member is still published with the
+            // declaration the flags and the descriptor state — neither attribute was read to write
+            // either clause from — while the engine keeps the reader's own code for it.
+            let attributes = match class_source::declared_member_attributes(
+                &read.bytes,
+                member,
+                &pool,
+                budget,
+            ) {
+                Ok(attributes) => attributes,
+                Err(error) => {
+                    let stop = stop_execution(&error, budget);
+                    let ends = ends_the_request(&stop);
+                    let spelled = class_source::spell_method(
+                        &item,
+                        None,
+                        &declaration.name,
+                        read.facts.access_flags,
+                        None,
+                        &annotation_read.facts,
+                        &pool,
+                    );
+                    let record = ClassSourceMethod::refused(
+                        item,
+                        spelled,
+                        stop.clone(),
+                        vec![stop_diagnostic(&error, class_provenance.clone())],
+                    );
+                    merge_execution(&mut execution, stop);
+                    // The member is published, so it is charged as the item it is, exactly as the
+                    // members below are: a refusal that could not pay for its own record is the
+                    // request's stop and the record is not written.
+                    if let Err(charge) = charge_item(budget) {
+                        merge_execution(&mut execution, stop_execution(&charge, budget));
+                        diagnostics.push(stop_diagnostic(&charge, class_provenance.clone()));
+                        break;
+                    }
+                    methods.push(record);
+                    if ends {
+                        break;
+                    }
+                    continue;
+                }
+            };
+            let spelled = class_source::spell_method(
+                &item,
+                None,
+                &declaration.name,
+                read.facts.access_flags,
+                Some(&attributes),
+                &annotation_read.facts,
+                &pool,
+            );
             let (record, stops, ends) =
                 if !class_source::spellable_descriptor(&item.descriptor.raw().0) {
                     // A member this presentation cannot spell: no run is performed for it, because the
@@ -1487,15 +1877,39 @@ impl Engine {
                         false,
                     )
                 } else if !class_source_runs_body(member) {
-                    (
-                        ClassSourceMethod::no_body(
-                            item,
-                            no_body_kind(member.access_flags),
-                            spelled,
-                        ),
-                        Vec::new(),
-                        false,
-                    )
+                    let mut record = ClassSourceMethod::no_body(
+                        item,
+                        no_body_kind(member.access_flags),
+                        spelled,
+                    );
+                    let mut stops = Vec::new();
+                    if let Err(error) = class_source::project_method_signature(
+                        &mut record,
+                        member,
+                        &attributes,
+                        None,
+                        None,
+                        &read.bytes,
+                        &pool,
+                        &read.facts.this_class.raw().0,
+                        read.facts.access_flags,
+                        read.facts
+                            .super_class
+                            .as_ref()
+                            .map(|name| name.raw().0.as_slice()),
+                        &physical_interfaces_raw,
+                        class_scope
+                            .as_ref()
+                            .map(|proof| proof.type_parameters.as_slice())
+                            .unwrap_or(&[]),
+                        class_signature_present,
+                        budget,
+                    ) {
+                        stops.push(stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    }
+                    let ends = stops.iter().any(ends_the_request);
+                    (record, stops, ends)
                 } else {
                     let request = crate::ir::MethodAnalysisRequest {
                         environment: environment.clone(),
@@ -1509,33 +1923,116 @@ impl Engine {
                             // not be prepared — stays in that plane's skipped range.
                             attempted = attempted.saturating_add(1);
                             match recover_prepared_member(
-                                content, &request, prepared, evidence, budget,
+                                content,
+                                &request,
+                                prepared,
+                                &assembly_context,
+                                item.index,
+                                evidence,
+                                PreparedMemberOptions {
+                                    prove_generic_return: member
+                                        .attributes
+                                        .iter()
+                                        .any(|attribute| attribute.name.raw().0 == b"Signature"),
+                                    capture_enum_group_code,
+                                    capture_enum_constructor_ast,
+                                },
+                                budget,
                             ) {
-                                Ok(recovered) => {
+                                Ok(PreparedMemberRecovery {
+                                    recovered,
+                                    initializer: candidates_for_member,
+                                    enum_constructor: enum_constructor_candidates,
+                                    bridge: bridge_candidate,
+                                    enum_switches: enum_switch_candidates,
+                                    enum_switch_field_uses,
+                                    generic_return,
+                                    generic_constructor,
+                                    anonymous_allocations,
+                                    enum_code: enum_code_candidate,
+                                }) => {
+                                    if let Some(candidates) = candidates_for_member {
+                                        initializer_candidate_runs.push(candidates);
+                                    }
+                                    if let Some(candidate) = enum_constructor_candidates {
+                                        enum_constructor_candidate_runs.push(candidate);
+                                    }
+                                    if let Some(candidate) = enum_code_candidate {
+                                        enum_code_candidates.push(candidate);
+                                    }
+                                    if let Some(candidate) = bridge_candidate {
+                                        _bridge_candidate_runs.push(candidate);
+                                    }
+                                    if let Some(candidates) = enum_switch_candidates {
+                                        enum_switch_candidate_runs.extend(candidates);
+                                    }
+                                    if let Some(uses) = enum_switch_field_uses {
+                                        enum_switch_scanned_members.push(item.identity.clone());
+                                        enum_switch_field_use_runs.extend(uses);
+                                    }
+                                    anonymous_allocation_scans
+                                        .push((item.identity.clone(), anonymous_allocations));
                                     let analysis = ClassSourceRunFacts {
                                         execution: recovered.analysis().execution.clone(),
                                         diagnostics: to_u64(
                                             recovered.analysis().diagnostics.len(),
                                         )?,
                                     };
+                                    // The declaration is spelled again with the run's own facts (the
+                                    // parameter names the body's statements use); the declared
+                                    // attributes are the ones already resolved for this member, so
+                                    // the two spellings cannot state two different clauses.
                                     let spelled = class_source::spell_method(
                                         &item,
                                         Some(recovered.facts()),
                                         &declaration.name,
+                                        read.facts.access_flags,
+                                        Some(&attributes),
+                                        &annotation_read.facts,
+                                        &pool,
                                     );
                                     let (_, report, _) = recovered.into_parts();
-                                    let stops =
+                                    let mut stops =
                                         vec![analysis.execution.clone(), report.execution.clone()];
-                                    let ends = stops.iter().any(ends_the_request);
-                                    let record = ClassSourceMethod::recovered(
+                                    let mut record = ClassSourceMethod::recovered(
                                         item,
                                         spelled,
                                         Box::new(report),
                                         analysis,
                                     );
+                                    if let Err(error) = class_source::project_method_signature(
+                                        &mut record,
+                                        member,
+                                        &attributes,
+                                        generic_return.as_ref(),
+                                        generic_constructor.as_ref(),
+                                        &read.bytes,
+                                        &pool,
+                                        &read.facts.this_class.raw().0,
+                                        read.facts.access_flags,
+                                        read.facts
+                                            .super_class
+                                            .as_ref()
+                                            .map(|name| name.raw().0.as_slice()),
+                                        &physical_interfaces_raw,
+                                        class_scope
+                                            .as_ref()
+                                            .map(|proof| proof.type_parameters.as_slice())
+                                            .unwrap_or(&[]),
+                                        class_signature_present,
+                                        budget,
+                                    ) {
+                                        stops.push(stop_execution(&error, budget));
+                                        diagnostics.push(stop_diagnostic(
+                                            &error,
+                                            class_provenance.clone(),
+                                        ));
+                                    }
+                                    let ends = stops.iter().any(ends_the_request);
                                     (record, stops, ends)
                                 }
                                 Err(error) => {
+                                    anonymous_allocation_scans.push((item.identity.clone(), None));
                                     let stop = stop_execution(&error, budget);
                                     let ends = ends_the_request(&stop);
                                     let record = ClassSourceMethod::refused(
@@ -1582,17 +2079,617 @@ impl Engine {
                 ended = true;
             }
         }
+        let mut enum_switch_proofs = Vec::new();
+        // Keep the same-run census local until its class-level proof is implemented. Methods whose
+        // preparation or body run never happened are absent; they are not empty scans.
+        let _anonymous_allocation_scans = anonymous_allocation_scans;
+        let enum_projection_complete = structure_complete
+            && !ended
+            && methods.len() == read.facts.methods.len()
+            && read
+                .facts
+                .methods
+                .iter()
+                .zip(&methods)
+                .all(|(header, method)| {
+                    if !class_source_runs_body(header) {
+                        return true;
+                    }
+                    enum_switch_scanned_members.contains(&method.item.identity)
+                        && matches!(
+                            &method.outcome,
+                            class_source::ClassSourceOutcome::Recovered { analysis, .. }
+                                if matches!(&analysis.execution, ExecutionReport::Complete { .. })
+                        )
+                });
+        let mut staged_enum_projections: Vec<(usize, String, String, usize)> = Vec::new();
+        let mut enum_projection_stopped = false;
+        if enum_projection_complete && !enum_switch_candidate_runs.is_empty() {
+            let mut by_method: Vec<(
+                PhysicalMethodId,
+                Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>,
+            )> = Vec::new();
+            for candidate in enum_switch_candidate_runs.iter().cloned() {
+                if let Some(member) = &candidate.member {
+                    if let Some((_, candidates)) =
+                        by_method.iter_mut().find(|(known, _)| known == member)
+                    {
+                        candidates.push(candidate);
+                    } else {
+                        by_method.push((member.clone(), vec![candidate]));
+                    }
+                }
+            }
+            for (member, candidates) in by_method {
+                // Until the emitter can stage several switch sites in one copied AST, a method
+                // with multiple candidates stays entirely on its original integer path.
+                if candidates.len() != 1 {
+                    for candidate in candidates {
+                        if let Some(member) = candidate.member.clone() {
+                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                                member,
+                                switch_bci: candidate.switch_bci,
+                                read_bci: candidate.read_bci,
+                                table_owner: candidate.table.owner,
+                                table_name: candidate.table.name,
+                                helper: None,
+                                enum_definition: None,
+                                entries: Vec::new(),
+                                projected: false,
+                                refusal: Some("the method has multiple enum switch sites and grouped AST projection is not available".to_owned()),
+                            });
+                        }
+                    }
+                    continue;
+                }
+                let Some(method_index) = methods
+                    .iter()
+                    .position(|method| method.item.identity == member)
+                else {
+                    continue;
+                };
+                let method_complete = matches!(
+                    &methods[method_index].outcome,
+                    class_source::ClassSourceOutcome::Recovered { report, analysis }
+                        if report.produced()
+                            && report.quality == Quality::Structured
+                            && report.fallbacks.is_empty()
+                            && matches!(&report.execution, ExecutionReport::Complete { .. })
+                            && matches!(&analysis.execution, ExecutionReport::Complete { .. })
+                );
+                if !method_complete {
+                    let candidate = &candidates[0];
+                    enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                        member: member.clone(),
+                        switch_bci: candidate.switch_bci,
+                        read_bci: candidate.read_bci,
+                        table_owner: candidate.table.owner.clone(),
+                        table_name: candidate.table.name.clone(),
+                        helper: None,
+                        enum_definition: None,
+                        entries: Vec::new(),
+                        projected: false,
+                        refusal: Some(
+                            "the candidate method did not recover completely as structured Java"
+                                .to_owned(),
+                        ),
+                    });
+                    continue;
+                }
+                let candidate = &candidates[0];
+                let extra_table_use = enum_switch_field_use_runs.iter().find(|use_site| {
+                    use_site.owner == candidate.table.owner
+                        && use_site.name == candidate.table.name
+                        && use_site.descriptor == candidate.table.descriptor
+                        && !(use_site.member.as_ref() == Some(&member)
+                            && use_site.bci == candidate.table.bci
+                            && use_site.is_static
+                            && !use_site.write)
+                });
+                if let Some(use_site) = extra_table_use {
+                    enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                        member: member.clone(),
+                        switch_bci: candidate.switch_bci,
+                        read_bci: candidate.read_bci,
+                        table_owner: candidate.table.owner.clone(),
+                        table_name: candidate.table.name.clone(),
+                        helper: None,
+                        enum_definition: None,
+                        entries: Vec::new(),
+                        projected: false,
+                        refusal: Some(format!(
+                            "visible method writes or reads the selected table outside the proved candidate at BCI {}",
+                            use_site.bci,
+                        )),
+                    });
+                    continue;
+                }
+                let mut method_staged = Vec::new();
+                let mut method_proved = true;
+                for candidate in &candidates {
+                    let map = match prove_class_source_enum_switch(
+                        content,
+                        &environment,
+                        &request.environment.policy,
+                        &definition,
+                        candidate,
+                        &mut execution,
+                        budget,
+                    ) {
+                        Ok(Ok(map)) => map,
+                        Ok(Err(reason)) => {
+                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                                member: member.clone(),
+                                switch_bci: candidate.switch_bci,
+                                read_bci: candidate.read_bci,
+                                table_owner: candidate.table.owner.clone(),
+                                table_name: candidate.table.name.clone(),
+                                helper: None,
+                                enum_definition: None,
+                                entries: Vec::new(),
+                                projected: false,
+                                refusal: Some(reason),
+                            });
+                            method_proved = false;
+                            break;
+                        }
+                        Err(error) => {
+                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                                member: member.clone(),
+                                switch_bci: candidate.switch_bci,
+                                read_bci: candidate.read_bci,
+                                table_owner: candidate.table.owner.clone(),
+                                table_name: candidate.table.name.clone(),
+                                helper: None,
+                                enum_definition: None,
+                                entries: Vec::new(),
+                                projected: false,
+                                refusal: Some(format!("cross-class proof stopped: {error}")),
+                            });
+                            let stop = stop_execution(&error, budget);
+                            merge_execution(&mut execution, stop);
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            enum_projection_stopped = true;
+                            method_proved = false;
+                            break;
+                        }
+                    };
+                    let recovery_text = match jarde_java::report::emit_class_source_enum_switch(
+                        candidate,
+                        &map.labels,
+                        budget,
+                    ) {
+                        Ok(Some(text)) => text,
+                        Ok(None) => {
+                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                                member: member.clone(), switch_bci: candidate.switch_bci,
+                                read_bci: candidate.read_bci, table_owner: candidate.table.owner.clone(),
+                                table_name: candidate.table.name.clone(), helper: Some(map.helper.clone()),
+                                enum_definition: Some(map.enum_definition.clone()), entries: Vec::new(),
+                                projected: false, refusal: Some("the same-run AST did not contain the matching enum switch shape".to_owned()),
+                            });
+                            method_proved = false;
+                            break;
+                        }
+                        Err(stop) => {
+                            let error = enum_projection_stop_error(
+                                stop,
+                                "enum switch projection",
+                                "enum_switch_ir_missing",
+                            );
+                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                                member: member.clone(),
+                                switch_bci: candidate.switch_bci,
+                                read_bci: candidate.read_bci,
+                                table_owner: candidate.table.owner.clone(),
+                                table_name: candidate.table.name.clone(),
+                                helper: Some(map.helper.clone()),
+                                enum_definition: Some(map.enum_definition.clone()),
+                                entries: Vec::new(),
+                                projected: false,
+                                refusal: Some(format!("projection emission stopped: {error}")),
+                            });
+                            let execution_stop = stop_execution(&error, budget);
+                            merge_execution(&mut execution, execution_stop);
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            enum_projection_stopped = true;
+                            method_proved = false;
+                            break;
+                        }
+                    };
+                    let map_text = map
+                        .stores
+                        .iter()
+                        .map(|entry| {
+                            format!(
+                                "{}={}@{}[field {}, ordinal {}, read {}, handler {}:{}]",
+                                entry.key,
+                                String::from_utf8_lossy(&entry.constant),
+                                entry.store_bci,
+                                entry.constant_field_bci,
+                                entry.ordinal_bci,
+                                entry.table_read_bci,
+                                entry.handler_ordinal,
+                                entry.handler_bci,
+                            )
+                        })
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    let marker = format!(
+                        "// jarde: enum switch projected at BCI {} from {:?}.{} via {:?}; initializer stores [{}]",
+                        candidate.switch_bci,
+                        map.helper,
+                        candidate.table.name,
+                        map.enum_definition,
+                        map_text,
+                    );
+                    if let Err(error) = budget.charge(
+                        CountedBudgetDimension::OutputBytes,
+                        u64::try_from(marker.len()).unwrap_or(u64::MAX),
+                    ) {
+                        let stop = stop_execution(&error, budget);
+                        enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                            member: member.clone(),
+                            switch_bci: candidate.switch_bci,
+                            read_bci: candidate.read_bci,
+                            table_owner: candidate.table.owner.clone(),
+                            table_name: candidate.table.name.clone(),
+                            helper: Some(map.helper.clone()),
+                            enum_definition: Some(map.enum_definition.clone()),
+                            entries: Vec::new(),
+                            projected: false,
+                            refusal: Some(format!("projection marker output was stopped: {error}")),
+                        });
+                        merge_execution(&mut execution, stop);
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        enum_projection_stopped = true;
+                        method_proved = false;
+                        break;
+                    }
+                    let proof_index = enum_switch_proofs.len();
+                    enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                        member: member.clone(),
+                        switch_bci: candidate.switch_bci,
+                        read_bci: candidate.read_bci,
+                        table_owner: candidate.table.owner.clone(),
+                        table_name: candidate.table.name.clone(),
+                        helper: Some(map.helper.clone()),
+                        enum_definition: Some(map.enum_definition.clone()),
+                        entries: map
+                            .stores
+                            .iter()
+                            .map(|entry| class_source::ClassSourceEnumSwitchEntry {
+                                key: entry.key,
+                                constant: entry.constant.clone(),
+                                constant_field_bci: entry.constant_field_bci,
+                                ordinal_bci: entry.ordinal_bci,
+                                table_read_bci: entry.table_read_bci,
+                                store_bci: entry.store_bci,
+                                handler_ordinal: entry.handler_ordinal,
+                                handler_bci: entry.handler_bci,
+                            })
+                            .collect(),
+                        projected: false,
+                        refusal: None,
+                    });
+                    method_staged.push((recovery_text, marker, proof_index));
+                }
+                if method_proved {
+                    for (recovery_text, marker, proof_index) in method_staged {
+                        staged_enum_projections.push((
+                            method_index,
+                            recovery_text,
+                            marker,
+                            proof_index,
+                        ));
+                    }
+                }
+                if enum_projection_stopped {
+                    break;
+                }
+            }
+        }
+        if !enum_projection_stopped {
+            let mut projected_methods = methods.clone();
+            let mut projected_proof_indices = Vec::new();
+            for (method_index, recovery_text, marker, proof_index) in staged_enum_projections {
+                if !projected_methods[method_index].project_enum_switch(&recovery_text, marker) {
+                    enum_projection_stopped = true;
+                    enum_switch_proofs[proof_index].refusal = Some(
+                        "the emitted method could not be atomically placed in its physical member"
+                            .to_owned(),
+                    );
+                    break;
+                }
+                projected_proof_indices.push(proof_index);
+            }
+            if !enum_projection_stopped {
+                methods = projected_methods;
+                for proof_index in projected_proof_indices {
+                    enum_switch_proofs[proof_index].projected = true;
+                }
+            }
+        }
+        if enum_projection_stopped {
+            for proof in &mut enum_switch_proofs {
+                if proof.refusal.is_none() && !proof.projected {
+                    proof.refusal = Some(
+                        "the class-source enum projection batch stopped before commit".to_owned(),
+                    );
+                }
+            }
+        }
+        let mut bridge_proofs = prove_class_source_bridges(
+            content,
+            &environment,
+            &request.environment.policy,
+            &definition,
+            &read.facts,
+            &methods,
+            &_bridge_candidate_runs,
+            &mut execution,
+            budget,
+        );
+        // Stage every proof note and pay for all of its output before changing a member. If a
+        // later note cannot be funded (or cancellation is observed by the charge), the original
+        // method texts remain together as a complete, unprojected prefix.
+        let staged_bridge_projections =
+            stage_class_source_bridge_projections(&bridge_proofs, &methods);
+        let mut bridge_projection_ready = staged_bridge_projections.is_some();
+        if let Some(staged) = &staged_bridge_projections {
+            for (_, marker) in staged {
+                if let Err(error) = budget.charge(
+                    CountedBudgetDimension::OutputBytes,
+                    u64::try_from(marker.len()).unwrap_or(u64::MAX),
+                ) {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    bridge_projection_ready = false;
+                    break;
+                }
+            }
+        }
+        if bridge_projection_ready {
+            if let Some(staged) = staged_bridge_projections {
+                for (method_index, marker) in staged {
+                    methods[method_index].project_bridge(marker);
+                }
+                for proof in &mut bridge_proofs {
+                    proof.projected = proof.admitted;
+                }
+            }
+        }
         if let Some(stop) = &read.facts.stopped_at {
             merge_execution(&mut execution, member_stop_execution(stop, budget));
         }
-        let text = class_source::source_text(
-            &declaration,
-            &fields,
+        let mut initializer_proof = if read.facts.access_flags & ACC_INTERFACE != 0
+            && read.facts.access_flags & ACC_ANNOTATION == 0
+        {
+            match prove_interface_initializer_group(
+                &declaration,
+                &read.facts.fields,
+                read.facts.field_count,
+                read.facts.stopped_at.is_none(),
+                &fields,
+                &constant_value_spellable,
+                &read.facts.methods,
+                read.facts.method_count,
+                read.facts.stopped_at.is_none(),
+                &methods,
+                &initializer_candidate_runs,
+                budget,
+            ) {
+                Ok(proof) => proof,
+                Err(error) => {
+                    let stop = stop_execution(&error, budget);
+                    merge_execution(&mut execution, stop);
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    ClassSourceInitializerProof::Refused {
+                        reason: format!("initializer proof stopped: {error}"),
+                    }
+                }
+            }
+        } else {
+            ClassSourceInitializerProof::NotApplicable
+        };
+        let initializer_field_order = match project_interface_initializer_group(
+            &initializer_proof,
+            &mut fields,
             &methods,
-            read.facts.method_count,
-            read.facts.stopped_at.as_ref(),
-            &execution,
-        );
+            &initializer_candidate_runs,
+            budget,
+        ) {
+            Ok(order) => order,
+            Err(InitializerProjectionFailure::Refused(reason)) => {
+                initializer_proof = ClassSourceInitializerProof::Refused { reason };
+                None
+            }
+            Err(InitializerProjectionFailure::Stopped(stop)) => {
+                let (stop, diagnostic) =
+                    initializer_projection_stop(&stop, budget, class_provenance.clone());
+                merge_execution(&mut execution, stop);
+                diagnostics.push(diagnostic);
+                None
+            }
+        };
+        let mut enum_constant_proof = if read.facts.stopped_at.is_some()
+            || !matches!(&execution, ExecutionReport::Complete { .. })
+        {
+            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                reason: "the class-source member run stopped before the complete enum proof"
+                    .to_owned(),
+            }
+        } else {
+            match crate::enum_constants::prove_group(
+                &declaration,
+                prepared.as_ref().map_or((0, 0), |prepared| {
+                    (
+                        prepared.class_facts().major_version,
+                        prepared.class_facts().minor_version,
+                    )
+                }),
+                &read.facts.fields,
+                read.facts.field_count,
+                read.facts.stopped_at.is_none(),
+                &fields,
+                &read.facts.methods,
+                read.facts.method_count,
+                read.facts.stopped_at.is_none(),
+                &methods,
+                &enum_code_candidates,
+                &initializer_candidate_runs,
+                &enum_constructor_candidate_runs,
+                budget,
+            ) {
+                Ok(proof) => proof,
+                Err(error) => {
+                    let stop = stop_execution(&error, budget);
+                    merge_execution(&mut execution, stop);
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                        reason: format!("enum constant proof stopped: {error}"),
+                    }
+                }
+            }
+        };
+        let mut projection_tail = None;
+        if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(group) =
+            &enum_constant_proof
+        {
+            if crate::enum_constants::has_only_terminal_initializer_return(
+                group,
+                &enum_code_candidates,
+                &initializer_candidate_runs,
+                &methods,
+            ) {
+                projection_tail = Some((group.clone(), None));
+            } else {
+                match crate::enum_constants::prove_static_assignment_suffix(
+                    crate::enum_constants::EnumStaticAssignmentInput {
+                        group,
+                        owner: &declaration.item.declaration.this_class.raw().0,
+                        field_headers: &read.facts.fields,
+                        source_fields: &fields,
+                        method_headers: &read.facts.methods,
+                        source_methods: &methods,
+                        code_candidates: &enum_code_candidates,
+                        initializer_candidates: &initializer_candidate_runs,
+                        budget,
+                    },
+                ) {
+                    Ok(Some(suffix)) => {
+                        match jarde_java::report::emit_class_initializer_value(
+                            &suffix.value,
+                            &suffix.initializer_member,
+                            budget,
+                        ) {
+                            Ok(fragment) => {
+                                let initializer_text = format!(
+                                    "    static {{\n        {}{};\n    }}\n",
+                                    suffix.field_name, fragment
+                                );
+                                projection_tail = Some((
+                                    group.clone(),
+                                    Some((suffix.field_index, initializer_text)),
+                                ));
+                            }
+                            Err(stop) => {
+                                let (stop_execution_report, diagnostic) =
+                                    initializer_projection_stop(
+                                        &stop,
+                                        budget,
+                                        class_provenance.clone(),
+                                    );
+                                merge_execution(&mut execution, stop_execution_report);
+                                diagnostics.push(diagnostic);
+                                enum_constant_proof =
+                                    crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                        reason: format!(
+                                            "enum static suffix expression stopped: {stop:?}"
+                                        ),
+                                    };
+                            }
+                        }
+                    }
+                    Ok(None) => {}
+                    Err(error) => {
+                        let stop = stop_execution(&error, budget);
+                        merge_execution(&mut execution, stop);
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        enum_constant_proof =
+                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                reason: format!("enum static suffix proof stopped: {error}"),
+                            };
+                    }
+                }
+            }
+        }
+        let enum_projection = match projection_tail {
+            Some((group, initializer)) => {
+                let mut terminal_constructor_body = None;
+                let mut terminal_emission_error = None;
+                if let Some(body) = group.constructor_body.as_deref()
+                    && let Ok(index) = usize::try_from(group.constructor_method_index)
+                    && let Some(method) = methods.get(index)
+                {
+                    match jarde_java::report::emit_class_enum_constructor_body(
+                        &body.candidate,
+                        &method.item.identity,
+                        budget,
+                    ) {
+                        Ok(text) => terminal_constructor_body = text,
+                        Err(stop) => {
+                            terminal_emission_error = Some(enum_projection_stop_error(
+                                stop,
+                                "enum constructor source emission",
+                                "enum_constructor_ir_missing",
+                            ));
+                        }
+                    }
+                }
+                if let Some(error) = terminal_emission_error {
+                    let stop = stop_execution(&error, budget);
+                    merge_execution(&mut execution, stop);
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    enum_constant_proof =
+                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                            reason: format!("enum constructor source emission stopped: {error}"),
+                        };
+                    None
+                } else {
+                    match class_source::prepare_enum_constant_source_projection(
+                        &declaration,
+                        &fields,
+                        &methods,
+                        &group,
+                        terminal_constructor_body,
+                        initializer,
+                        budget,
+                    ) {
+                        Ok(projection) => projection,
+                        Err(error) => {
+                            let stop = stop_execution(&error, budget);
+                            merge_execution(&mut execution, stop);
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            enum_constant_proof =
+                                crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                    reason: format!("enum source projection stopped: {error}"),
+                                };
+                            None
+                        }
+                    }
+                }
+            }
+            None => None,
+        };
+        let text_context = class_source::ClassSourceTextContext {
+            initializer_field_order: initializer_field_order.as_deref(),
+            declared_methods: read.facts.method_count,
+            member_table: read.facts.stopped_at.as_ref(),
+            execution: &execution,
+            enum_projection: enum_projection.as_ref(),
+        };
+        let text = class_source::source_text(&declaration, &fields, &methods, &text_context);
         let coverage = class_source_coverage(
             class_view_coverage(search_coverage.as_ref(), &read.facts, structure_complete),
             attempted,
@@ -1606,6 +2703,10 @@ impl Engine {
             stages,
             fields,
             methods,
+            bridge_proofs,
+            enum_switch_proofs,
+            initializer_proof,
+            enum_constant_proof,
             text,
             limits: budget.limits().clone(),
             usage: budget.usage(),
@@ -1614,6 +2715,909 @@ impl Engine {
             diagnostics,
         }))
     }
+}
+
+/// One physical interface field and the facts needed to join it to a same-run `<clinit>` write.
+struct InterfaceInitializerField {
+    index: u64,
+    name: String,
+    ty: JavaType,
+    has_constant_value: bool,
+}
+
+/// The all-or-nothing structural proof for the ordinary-interface field initializer group.
+///
+/// This consumes the existing member read, source field records and same-run AST sidecars. It
+/// performs no class read or recovery, and never consults either report text. The result is only a
+/// verdict and origin mapping; source emission remains a later step.
+#[allow(clippy::too_many_arguments)]
+fn prove_interface_initializer_group(
+    declaration: &ClassSourceDeclaration,
+    field_headers: &[MemberHeader],
+    field_count: u64,
+    fields_complete: bool,
+    source_fields: &[ClassSourceField],
+    constant_value_spellable: &[bool],
+    method_headers: &[MemberHeader],
+    method_count: u64,
+    methods_complete: bool,
+    source_methods: &[ClassSourceMethod],
+    initializer_candidates: &[jarde_java::report::ClassInitializerCandidates],
+    budget: &mut Budget,
+) -> Result<ClassSourceInitializerProof> {
+    let class_facts = &declaration.item.declaration;
+    let class_name = String::from_utf16(class_facts.this_class.utf16()).ok();
+    let Some(class_name) = class_name else {
+        return Ok(initializer_refused(
+            "the interface's internal name is not a Unicode Java name",
+        ));
+    };
+    if !fields_complete
+        || !methods_complete
+        || u64::try_from(field_headers.len()).unwrap_or(u64::MAX) != field_count
+        || source_fields.len() != field_headers.len()
+        || constant_value_spellable.len() != field_headers.len()
+        || u64::try_from(method_headers.len()).unwrap_or(u64::MAX) != method_count
+        || source_methods.len() != method_headers.len()
+    {
+        return Ok(initializer_refused(
+            "the class member table or its published declarations are incomplete",
+        ));
+    }
+
+    let mut fields = Vec::with_capacity(field_headers.len());
+    let mut field_by_identity = std::collections::BTreeMap::<(String, Vec<u8>), usize>::new();
+    let mut field_names = std::collections::BTreeSet::<String>::new();
+    for (index, (header, source)) in field_headers.iter().zip(source_fields).enumerate() {
+        budget.charge(CountedBudgetDimension::IrItems, 1)?;
+        let Some(name) = String::from_utf16(header.name.utf16()).ok() else {
+            return Ok(initializer_refused(format!(
+                "field at physical index {index} has no Java name"
+            )));
+        };
+        if !jarde_java::is_java_identifier(&name) || source.declaration.is_none() {
+            return Ok(initializer_refused(format!(
+                "field `{name}` at physical index {index} has no faithful Java declaration"
+            )));
+        }
+        if !field_names.insert(name.clone()) {
+            return Ok(initializer_refused(format!(
+                "interface field name `{name}` is ambiguous in Java source"
+            )));
+        }
+        let required_flags = 0x0001 | 0x0008 | 0x0010;
+        let forbidden_flags = 0x0002 | 0x0004 | 0x0040 | 0x0080 | 0x4000;
+        if header.access_flags & required_flags != required_flags
+            || header.access_flags & forbidden_flags != 0
+        {
+            return Ok(initializer_refused(format!(
+                "interface field `{name}` does not have an unambiguous public static final declaration"
+            )));
+        }
+        if source.item.index != u64::try_from(index).unwrap_or(u64::MAX)
+            || source.item.name != header.name
+            || source.item.descriptor != header.descriptor
+            || source.item.access_flags != header.access_flags
+        {
+            return Ok(initializer_refused(format!(
+                "field `{name}` at physical index {index} does not match the published field identity"
+            )));
+        }
+        let descriptor = header.descriptor.raw().0.clone();
+        let Some(ty) = interface_field_type(&descriptor) else {
+            return Ok(initializer_refused(format!(
+                "field `{name}` has a descriptor with no Java source type"
+            )));
+        };
+        let constant_value_count = header
+            .attributes
+            .iter()
+            .filter(|attribute| attribute.name.raw().0 == b"ConstantValue")
+            .count();
+        if constant_value_count > 1 {
+            return Ok(initializer_refused(format!(
+                "field `{name}` has more than one ConstantValue attribute"
+            )));
+        }
+        let has_constant_value = constant_value_count == 1;
+        if has_constant_value && !constant_value_spellable[index] {
+            return Ok(initializer_refused(format!(
+                "field `{name}` declares a ConstantValue that has no complete Java spelling"
+            )));
+        }
+        let key = (name.clone(), descriptor.clone());
+        let field_index = fields.len();
+        if field_by_identity.insert(key, field_index).is_some() {
+            return Ok(initializer_refused(format!(
+                "field `{name}` and its descriptor are duplicated"
+            )));
+        }
+        fields.push(InterfaceInitializerField {
+            index: source.item.index,
+            name,
+            ty,
+            has_constant_value,
+        });
+    }
+
+    let clinit_positions: Vec<usize> = method_headers
+        .iter()
+        .enumerate()
+        .filter_map(|(index, method)| (method.name.raw().0 == b"<clinit>").then_some(index))
+        .collect();
+    if clinit_positions
+        .iter()
+        .any(|index| method_headers[*index].descriptor.raw().0 != b"()V")
+        || clinit_positions.len() > 1
+    {
+        return Ok(initializer_refused(
+            "the class does not have one unique `<clinit>()V` member",
+        ));
+    }
+
+    let runtime_field_count = fields
+        .iter()
+        .filter(|field| !field.has_constant_value)
+        .count();
+    let Some(&clinit_index) = clinit_positions.first() else {
+        if runtime_field_count == 0 {
+            return Ok(ClassSourceInitializerProof::Proved { fields: Vec::new() });
+        }
+        return Ok(initializer_refused(
+            "the interface has runtime-initialized fields but no `<clinit>()V` member",
+        ));
+    };
+    let clinit_header = &method_headers[clinit_index];
+    if clinit_header.access_flags & 0x0008 == 0
+        || clinit_header
+            .attributes
+            .iter()
+            .filter(|attribute| attribute.name.raw().0 == b"Code")
+            .count()
+            != 1
+    {
+        return Ok(initializer_refused(
+            "the unique `<clinit>()V` is not one complete static Code member",
+        ));
+    }
+    let Some(clinit_method) = source_methods.get(clinit_index) else {
+        return Ok(initializer_refused(
+            "the `<clinit>()V` declaration was not published",
+        ));
+    };
+    let expected_clinit_name = jarde_reader::model::JvmBytes(b"<clinit>".to_vec());
+    let expected_clinit_descriptor = jarde_reader::model::JvmBytes(b"()V".to_vec());
+    if clinit_method.item.identity.name != expected_clinit_name
+        || clinit_method.item.identity.descriptor != expected_clinit_descriptor
+    {
+        return Ok(initializer_refused(
+            "the published initializer identity does not match `<clinit>()V`",
+        ));
+    }
+    let crate::class_source::ClassSourceOutcome::Recovered { report, analysis } =
+        &clinit_method.outcome
+    else {
+        return Ok(initializer_refused(
+            "the `<clinit>()V` body has no completed recovery",
+        ));
+    };
+    if !report.produced()
+        || !matches!(analysis.execution, ExecutionReport::Complete { .. })
+        || !matches!(report.execution, ExecutionReport::Complete { .. })
+        || report.quality != Quality::Structured
+        || !report.fallbacks.is_empty()
+    {
+        return Ok(initializer_refused(
+            "the `<clinit>()V` analysis or recovery did not complete without fallback",
+        ));
+    }
+    let matching_candidates: Vec<_> = initializer_candidates
+        .iter()
+        .filter(|candidates| candidates.member.as_ref() == Some(&clinit_method.item.identity))
+        .collect();
+    let [candidates] = matching_candidates.as_slice() else {
+        return Ok(initializer_refused(
+            "the completed `<clinit>()V` run has no unique same-run candidate sequence",
+        ));
+    };
+    if candidates.has_exception_handlers {
+        return Ok(initializer_refused(
+            "the `<clinit>()V` Code has an exception-table edge or an incomplete handler read",
+        ));
+    }
+
+    let mut writes_by_field = vec![None::<(usize, u32)>; fields.len()];
+    let mut ordered_writes = Vec::<(usize, &jarde_java::report::ClassInitializerFieldWrite)>::new();
+    let mut last_write_bci = None;
+    let mut saw_return = false;
+    for (position, step) in candidates.steps.iter().enumerate() {
+        budget.charge(CountedBudgetDimension::IrItems, 1)?;
+        match step {
+            jarde_java::report::ClassInitializerStep::FieldWrite(write) => {
+                if write.order != position
+                    || write.source.primary().bci() != write.bci
+                    || last_write_bci.is_some_and(|previous| previous >= write.bci)
+                {
+                    return Ok(initializer_refused(
+                        "the `<clinit>()V` candidate order does not match its write origins",
+                    ));
+                }
+                last_write_bci = Some(write.bci);
+                if write.owner != class_name || !write.is_static {
+                    return Ok(initializer_refused(format!(
+                        "write at BCI {} does not target a static field of this interface",
+                        write.bci
+                    )));
+                }
+                let key = (write.name.clone(), write.descriptor.as_bytes().to_vec());
+                let Some(&field_index) = field_by_identity.get(&key) else {
+                    return Ok(initializer_refused(format!(
+                        "write at BCI {} does not name one field in the complete interface field table",
+                        write.bci
+                    )));
+                };
+                let field = &fields[field_index];
+                if field.has_constant_value {
+                    return Ok(initializer_refused(format!(
+                        "write at BCI {} duplicates the ConstantValue initialization of field `{}`",
+                        write.bci, field.name
+                    )));
+                }
+                if write.spelled_name != field.name || write.op != jarde_java::ast::AssignOp::Assign
+                {
+                    return Ok(initializer_refused(format!(
+                        "write at BCI {} is not a simple assignment to field `{}`",
+                        write.bci, field.name
+                    )));
+                }
+                if writes_by_field[field_index]
+                    .replace((write.order, write.bci))
+                    .is_some()
+                {
+                    return Ok(initializer_refused(format!(
+                        "field `{}` is written more than once by `<clinit>()V`",
+                        field.name
+                    )));
+                }
+                ordered_writes.push((field_index, write));
+            }
+            jarde_java::report::ClassInitializerStep::Other {
+                order,
+                kind: jarde_java::report::ClassInitializerStatementKind::Return,
+                ..
+            } if *order == position && position + 1 == candidates.steps.len() && !saw_return => {
+                saw_return = true;
+            }
+            jarde_java::report::ClassInitializerStep::Other { kind, .. } => {
+                return Ok(initializer_refused(format!(
+                    "`<clinit>()V` contains an unclaimed top-level effect ({kind:?})"
+                )));
+            }
+        }
+    }
+    if !saw_return {
+        return Ok(initializer_refused(
+            "the `<clinit>()V` candidate sequence has no unique trailing normal return",
+        ));
+    }
+    for (index, field) in fields.iter().enumerate() {
+        if field.has_constant_value {
+            if writes_by_field[index].is_some() {
+                return Ok(initializer_refused(format!(
+                    "ConstantValue field `{}` also has a `<clinit>()V` write",
+                    field.name
+                )));
+            }
+        } else if writes_by_field[index].is_none() {
+            return Ok(initializer_refused(format!(
+                "runtime field `{}` has no unique `<clinit>()V` write",
+                field.name
+            )));
+        }
+    }
+
+    let mut proof_fields = Vec::with_capacity(runtime_field_count);
+    for (field_index, write) in ordered_writes {
+        let field = &fields[field_index];
+        if write.field_reads.is_none() {
+            return Ok(initializer_refused(format!(
+                "field read identity inside RHS of `{}` is unproved",
+                field.name
+            )));
+        }
+        let type_matches = match write.value.presented.as_ref() {
+            Some(actual_type) => actual_type == &field.ty,
+            None => {
+                matches!(write.value.kind, ExprKind::Null)
+                    && matches!(field.ty, JavaType::Reference(_))
+            }
+        };
+        if !type_matches {
+            let actual = write
+                .value
+                .presented
+                .as_ref()
+                .map(JavaType::spell)
+                .unwrap_or("unknown");
+            return Ok(initializer_refused(format!(
+                "RHS of field `{}` is presented as `{}` but its descriptor requires `{}`",
+                field.name,
+                actual,
+                field.ty.spell()
+            )));
+        }
+        let Some(reads) = write.field_reads.as_ref() else {
+            unreachable!("the sidecar read identity was checked above")
+        };
+        let mut read_claims = std::collections::BTreeMap::<
+            u32,
+            Vec<&jarde_java::report::ClassInitializerFieldRead>,
+        >::new();
+        for read in reads {
+            read_claims.entry(read.bci).or_default().push(read);
+        }
+        let mut consumed_reads = std::collections::BTreeSet::new();
+        let mut own_runtime_reads = Vec::<(u32, usize)>::new();
+        let mut expression_state = InitializerExpressionState::default();
+        if let Some(reason) = validate_initializer_expression(
+            &write.value,
+            write.bci,
+            &class_name,
+            &fields,
+            &field_by_identity,
+            &read_claims,
+            &mut consumed_reads,
+            &mut own_runtime_reads,
+            &mut expression_state,
+            budget,
+        )? {
+            return Ok(initializer_refused(reason));
+        }
+        if consumed_reads.len() != reads.len() {
+            return Ok(initializer_refused(format!(
+                "the AST and field@1 read claims inside RHS of `{}` are not one-to-one",
+                field.name
+            )));
+        }
+        if expression_state.has_unknown_static_field {
+            return Ok(initializer_refused(format!(
+                "RHS of field `{}` reads an external static field whose ConstantValue and source-level initialization behavior are unknown",
+                field.name
+            )));
+        }
+        if !expression_state.has_nonconstant_shape {
+            return Ok(initializer_refused(format!(
+                "RHS of field `{}` is a Java constant expression and would change initialization phase",
+                field.name
+            )));
+        }
+        for (read_bci, target_index) in own_runtime_reads {
+            let Some((target_order, target_write_bci)) = writes_by_field[target_index] else {
+                return Ok(initializer_refused(format!(
+                    "read at BCI {read_bci} names a runtime field with no proved write"
+                )));
+            };
+            let source_read_precedes_target_write = write.order <= target_order;
+            let bytecode_read_precedes_target_write = read_bci < target_write_bci;
+            if source_read_precedes_target_write != bytecode_read_precedes_target_write {
+                return Ok(initializer_refused(format!(
+                    "read at BCI {read_bci} would observe a different initialization phase after source-order projection"
+                )));
+            }
+        }
+        proof_fields.push(ClassSourceInitializerField {
+            field_index: field.index,
+            write_order: write.order,
+            write_bci: write.bci,
+        });
+    }
+    Ok(ClassSourceInitializerProof::Proved {
+        fields: proof_fields,
+    })
+}
+
+enum InitializerProjectionFailure {
+    Refused(String),
+    Stopped(StopReason),
+}
+
+/// Commits an admitted runtime initializer group only after every RHS fragment has been emitted.
+/// The returned indices are source order; the `fields` vector itself stays in classfile order.
+fn project_interface_initializer_group(
+    proof: &ClassSourceInitializerProof,
+    fields: &mut [ClassSourceField],
+    methods: &[ClassSourceMethod],
+    candidate_runs: &[jarde_java::report::ClassInitializerCandidates],
+    budget: &mut Budget,
+) -> std::result::Result<Option<Vec<usize>>, InitializerProjectionFailure> {
+    let ClassSourceInitializerProof::Proved {
+        fields: proved_fields,
+    } = proof
+    else {
+        return Ok(None);
+    };
+
+    let clinit_methods: Vec<_> = methods
+        .iter()
+        .filter(|method| {
+            method.item.identity.name.0 == b"<clinit>"
+                && method.item.identity.descriptor.0 == b"()V"
+        })
+        .collect();
+    let clinit_method = match clinit_methods.as_slice() {
+        [method] => Some(*method),
+        [] if proved_fields.is_empty() => None,
+        [] => {
+            return Err(InitializerProjectionFailure::Refused(
+                "the proved initializer writes have no retained `<clinit>()V` member".to_owned(),
+            ));
+        }
+        _ => {
+            return Err(InitializerProjectionFailure::Refused(
+                "the proved initializer group has more than one `<clinit>()V` member".to_owned(),
+            ));
+        }
+    };
+    if proved_fields.is_empty() {
+        return Ok(Some((0..fields.len()).collect()));
+    }
+    let Some(clinit_method) = clinit_method else {
+        return Err(InitializerProjectionFailure::Refused(
+            "the proved initializer writes have no retained `<clinit>()V` member".to_owned(),
+        ));
+    };
+
+    let matching: Vec<_> = candidate_runs
+        .iter()
+        .filter(|candidates| candidates.member.as_ref() == Some(&clinit_method.item.identity))
+        .collect();
+    let candidates = match matching.as_slice() {
+        [candidates] => *candidates,
+        _ => {
+            return Err(InitializerProjectionFailure::Refused(
+                "the proved initializer group has no unique retained `<clinit>()V` candidate"
+                    .to_owned(),
+            ));
+        }
+    };
+
+    let mut field_order = Vec::with_capacity(fields.len());
+    let mut projected_fields = std::collections::BTreeSet::new();
+    let mut staged_initializers = Vec::with_capacity(proved_fields.len());
+    let mut previous_write_order = None;
+    for proved in proved_fields {
+        if previous_write_order.is_some_and(|previous| previous >= proved.write_order) {
+            return Err(InitializerProjectionFailure::Refused(
+                "the proved field list is not in strict `<clinit>()V` write order".to_owned(),
+            ));
+        }
+        previous_write_order = Some(proved.write_order);
+        let matching_fields: Vec<_> = fields
+            .iter()
+            .enumerate()
+            .filter_map(|(index, field)| (field.item.index == proved.field_index).then_some(index))
+            .collect();
+        let [physical_index] = matching_fields.as_slice() else {
+            return Err(InitializerProjectionFailure::Refused(format!(
+                "proved physical field index {} is absent or ambiguous during projection",
+                proved.field_index
+            )));
+        };
+        let physical_index = *physical_index;
+        if !projected_fields.insert(physical_index) {
+            return Err(InitializerProjectionFailure::Refused(format!(
+                "physical field index {} occurs more than once in the projection",
+                proved.field_index
+            )));
+        }
+        field_order.push(physical_index);
+
+        let Some(jarde_java::report::ClassInitializerStep::FieldWrite(write)) =
+            candidates.steps.get(proved.write_order)
+        else {
+            return Err(InitializerProjectionFailure::Refused(format!(
+                "proved write position {} is absent from the retained `<clinit>()V` candidate",
+                proved.write_order
+            )));
+        };
+        if write.order != proved.write_order || write.bci != proved.write_bci {
+            return Err(InitializerProjectionFailure::Refused(format!(
+                "proved field index {} no longer matches write position {} at BCI {}",
+                proved.field_index, proved.write_order, proved.write_bci
+            )));
+        }
+        if fields[physical_index].declaration.is_none() {
+            return Err(InitializerProjectionFailure::Refused(format!(
+                "proved field index {} has no retained declaration",
+                proved.field_index
+            )));
+        }
+        let fragment = jarde_java::report::emit_class_initializer_value(
+            &write.value,
+            &clinit_method.item.identity,
+            budget,
+        )
+        .map_err(InitializerProjectionFailure::Stopped)?;
+        staged_initializers.push((physical_index, fragment));
+    }
+
+    for (physical_index, _) in fields.iter().enumerate() {
+        if projected_fields.insert(physical_index) {
+            field_order.push(physical_index);
+        }
+    }
+    if field_order.len() != fields.len() {
+        return Err(InitializerProjectionFailure::Refused(
+            "the projected source field order is not a complete physical-field permutation"
+                .to_owned(),
+        ));
+    }
+
+    // The plan is complete and every output byte was paid for; only now publish any initializer.
+    for (physical_index, fragment) in staged_initializers {
+        fields[physical_index]
+            .declaration
+            .as_mut()
+            .expect("the staged declaration was checked")
+            .push_str(&fragment);
+    }
+    Ok(Some(field_order))
+}
+
+/// Maps an expression formatter stop into the class-source request's execution and diagnostic
+/// planes. The original proof remains available, while the absence of a source order keeps the
+/// untouched `<clinit>` presentation in place.
+fn initializer_projection_stop(
+    stop: &StopReason,
+    budget: &Budget,
+    provenance: Option<Provenance>,
+) -> (ExecutionReport, Diagnostic) {
+    let usage = budget.usage();
+    let (execution, code, severity, message) = match stop {
+        StopReason::Budget {
+            dimension,
+            written,
+            limit,
+            at,
+        } => {
+            let dimension = jarde_reader::budget::BudgetDimension::from(*dimension);
+            (
+                ExecutionReport::Partial {
+                    reason: TerminationReason::BudgetExceeded { dimension },
+                    usage,
+                },
+                format!("budget_exceeded_{}", budget_dimension_code(dimension)),
+                DiagnosticSeverity::Error,
+                format!(
+                    "initializer projection stopped on {dimension:?} after {written} byte(s) of {limit}, at {}",
+                    at.map_or("no node".to_owned(), |bci| format!("BCI {bci}"))
+                ),
+            )
+        }
+        StopReason::Cancelled { at } => (
+            ExecutionReport::Cancelled { usage },
+            "jre_cancelled".to_owned(),
+            DiagnosticSeverity::Warning,
+            format!(
+                "initializer projection was cancelled{}",
+                at.map_or(String::new(), |bci| format!(" at BCI {bci}"))
+            ),
+        ),
+        StopReason::Interrupted { code, at } => (
+            ExecutionReport::Partial {
+                reason: TerminationReason::Error {
+                    code: (*code).to_owned(),
+                },
+                usage,
+            },
+            (*code).to_owned(),
+            DiagnosticSeverity::Error,
+            format!(
+                "initializer projection stopped ({code}){}",
+                at.map_or(String::new(), |bci| format!(" at BCI {bci}"))
+            ),
+        ),
+        StopReason::EvidenceRefused { code, at, message } => (
+            ExecutionReport::Partial {
+                reason: TerminationReason::Unsupported {
+                    code: (*code).to_owned(),
+                },
+                usage,
+            },
+            (*code).to_owned(),
+            DiagnosticSeverity::Error,
+            format!(
+                "initializer projection was refused: {message}{}",
+                at.map_or(String::new(), |bci| format!(" at BCI {bci}"))
+            ),
+        ),
+        StopReason::IrTableMissing { table } => (
+            ExecutionReport::Partial {
+                reason: TerminationReason::Unsupported {
+                    code: "jre_ir_table_missing".to_owned(),
+                },
+                usage,
+            },
+            "jre_ir_table_missing".to_owned(),
+            DiagnosticSeverity::Error,
+            format!(
+                "initializer projection has no {table} table, so its expression cannot be emitted"
+            ),
+        ),
+    };
+    (
+        execution,
+        Diagnostic {
+            code,
+            severity,
+            message,
+            provenance,
+        },
+    )
+}
+
+/// Returns a reason in the report's existing refusal vocabulary without making a partial proof.
+fn initializer_refused(reason: impl Into<String>) -> ClassSourceInitializerProof {
+    ClassSourceInitializerProof::Refused {
+        reason: reason.into(),
+    }
+}
+
+fn interface_field_type(descriptor: &[u8]) -> Option<JavaType> {
+    let facts = descriptor_facts(descriptor, DescriptorKind::Field).ok()?;
+    type_of_component(facts.single()?)
+}
+
+fn is_java_constant_variable_type(ty: &JavaType) -> bool {
+    matches!(
+        ty,
+        JavaType::Boolean
+            | JavaType::Byte
+            | JavaType::Char
+            | JavaType::Short
+            | JavaType::Int
+            | JavaType::Long
+            | JavaType::Float
+            | JavaType::Double
+    ) || matches!(ty, JavaType::Reference(name) if name == "java.lang.String")
+}
+
+#[derive(Default)]
+struct InitializerExpressionState {
+    has_nonconstant_shape: bool,
+    has_unknown_static_field: bool,
+    effect_bcis: std::collections::BTreeSet<u32>,
+}
+
+/// Walks one RHS AST once, matching every field node to its exact sidecar read and finding whether
+/// the emitted source could be a Java constant expression. The explicit stack keeps a deep but
+/// already-bounded expression from adding recursion to class-source assembly.
+#[allow(clippy::too_many_arguments)]
+fn validate_initializer_expression(
+    root: &Expr,
+    write_bci: u32,
+    class_name: &str,
+    fields: &[InterfaceInitializerField],
+    field_by_identity: &std::collections::BTreeMap<(String, Vec<u8>), usize>,
+    read_claims: &std::collections::BTreeMap<
+        u32,
+        Vec<&jarde_java::report::ClassInitializerFieldRead>,
+    >,
+    consumed_reads: &mut std::collections::BTreeSet<u32>,
+    own_runtime_reads: &mut Vec<(u32, usize)>,
+    state: &mut InitializerExpressionState,
+    budget: &mut Budget,
+) -> Result<Option<String>> {
+    let mut pending = vec![root];
+    while let Some(expression) = pending.pop() {
+        budget.charge(CountedBudgetDimension::IrItems, 1)?;
+        match &expression.kind {
+            ExprKind::Field { receiver, name } => {
+                let read_bci = expression.origin.primary().bci();
+                if read_bci >= write_bci {
+                    return Ok(Some(format!(
+                        "field read at BCI {read_bci} is not before its owning putstatic at BCI {write_bci}"
+                    )));
+                }
+                let Some([claim]) = read_claims.get(&read_bci).map(Vec::as_slice) else {
+                    return Ok(Some(format!(
+                        "field read at BCI {read_bci} has no unique field@1 claim"
+                    )));
+                };
+                if !consumed_reads.insert(read_bci)
+                    || claim.name != *name
+                    || !claim.is_static && claim.owner == class_name
+                {
+                    return Ok(Some(format!(
+                        "field read at BCI {read_bci} does not match its unique claim"
+                    )));
+                }
+                let Some(claim_type) = interface_field_type(claim.descriptor.as_bytes()) else {
+                    return Ok(Some(format!(
+                        "field read at BCI {read_bci} has an unspellable claimed descriptor"
+                    )));
+                };
+                if expression.presented.as_ref() != Some(&claim_type) {
+                    return Ok(Some(format!(
+                        "field read at BCI {read_bci} does not have its claimed descriptor type"
+                    )));
+                }
+                let expected_owner_path = claim.owner.replace('/', ".");
+                if claim.is_static {
+                    if !matches!(&receiver.kind, ExprKind::Path(path) if *path == expected_owner_path)
+                    {
+                        return Ok(Some(format!(
+                            "static field read at BCI {read_bci} is not qualified by its proven owner `{expected_owner_path}`"
+                        )));
+                    }
+                } else {
+                    let expected_receiver = JavaType::Reference(expected_owner_path);
+                    if receiver.presented.as_ref() != Some(&expected_receiver) {
+                        return Ok(Some(format!(
+                            "instance field read at BCI {read_bci} has no receiver of its proven owner type"
+                        )));
+                    }
+                    pending.push(receiver);
+                }
+                if claim.owner == class_name {
+                    let key = (claim.name.clone(), claim.descriptor.as_bytes().to_vec());
+                    let Some(&target_index) = field_by_identity.get(&key) else {
+                        return Ok(Some(format!(
+                            "same-interface field read at BCI {read_bci} does not resolve to one declared field"
+                        )));
+                    };
+                    let field = &fields[target_index];
+                    if field.has_constant_value {
+                        // A ConstantValue with a primitive or String type is a Java constant
+                        // variable. Other reference-typed ConstantValue attributes (legal as class
+                        // file data but not Java constant variables) still require a field read.
+                        if !is_java_constant_variable_type(&field.ty) {
+                            state.has_nonconstant_shape = true;
+                        }
+                    } else {
+                        own_runtime_reads.push((read_bci, target_index));
+                        state.has_nonconstant_shape = true;
+                    }
+                } else if !claim.is_static {
+                    state.has_nonconstant_shape = true;
+                } else {
+                    state.has_unknown_static_field = true;
+                }
+            }
+            ExprKind::Call { receiver, args, .. } => {
+                if let Some(reason) = record_initializer_effect(expression, write_bci, state) {
+                    return Ok(Some(reason));
+                }
+                state.has_nonconstant_shape = true;
+                for argument in args.iter().rev() {
+                    pending.push(argument);
+                }
+                if let Some(receiver) = receiver {
+                    pending.push(receiver);
+                }
+            }
+            ExprKind::New {
+                qualifier, args, ..
+            } => {
+                if let Some(reason) = record_initializer_effect(expression, write_bci, state) {
+                    return Ok(Some(reason));
+                }
+                state.has_nonconstant_shape = true;
+                for argument in args.iter().rev() {
+                    pending.push(argument);
+                }
+                if let Some(qualifier) = qualifier {
+                    pending.push(qualifier);
+                }
+            }
+            ExprKind::NewArray {
+                lengths,
+                initializers,
+                ..
+            } => {
+                if let Some(reason) = record_initializer_effect(expression, write_bci, state) {
+                    return Ok(Some(reason));
+                }
+                state.has_nonconstant_shape = true;
+                if let Some(initializers) = initializers {
+                    pending.extend(initializers.iter().rev());
+                }
+                pending.extend(lengths.iter().rev());
+            }
+            ExprKind::Index { array, index } => {
+                if let Some(reason) = record_initializer_effect(expression, write_bci, state) {
+                    return Ok(Some(reason));
+                }
+                state.has_nonconstant_shape = true;
+                pending.push(index);
+                pending.push(array);
+            }
+            ExprKind::PostIncrement { .. } => {
+                return Ok(Some(
+                    "a postfix update has no interface-initializer evaluation proof".to_owned(),
+                ));
+            }
+            ExprKind::ArrayLength { array } => {
+                if let Some(reason) = record_initializer_effect(expression, write_bci, state) {
+                    return Ok(Some(reason));
+                }
+                state.has_nonconstant_shape = true;
+                pending.push(array);
+            }
+            ExprKind::Cast { ty, value } => {
+                if !matches!(
+                    ty,
+                    JavaType::Boolean
+                        | JavaType::Byte
+                        | JavaType::Char
+                        | JavaType::Short
+                        | JavaType::Int
+                        | JavaType::Long
+                        | JavaType::Float
+                        | JavaType::Double
+                ) && !matches!(ty, JavaType::Reference(name) if name == "java.lang.String")
+                {
+                    state.has_nonconstant_shape = true;
+                }
+                pending.push(value);
+            }
+            ExprKind::Not { value } | ExprKind::Neg { value } => pending.push(value),
+            ExprKind::InstanceOf { value, .. } => {
+                state.has_nonconstant_shape = true;
+                pending.push(value);
+            }
+            ExprKind::Binary { left, right, .. } => {
+                pending.push(right);
+                pending.push(left);
+            }
+            ExprKind::Concat { parts } => {
+                pending.extend(parts.iter().rev().map(|part| &part.value));
+            }
+            ExprKind::Lambda { .. } | ExprKind::MethodReference { .. } => {
+                return Ok(Some(
+                    "a lambda or method reference has no complete initializer type and evaluation proof".to_owned(),
+                ));
+            }
+            ExprKind::Conditional { .. } => {
+                return Ok(Some(
+                    "conditional expression constant-expression phase proof is unavailable"
+                        .to_owned(),
+                ));
+            }
+            ExprKind::Local(name) => {
+                return Ok(Some(format!("RHS refers to unscoped local `{name}`")));
+            }
+            ExprKind::Null | ExprKind::ClassLiteral { .. } => {
+                state.has_nonconstant_shape = true;
+            }
+            ExprKind::Integer(_)
+            | ExprKind::Boolean(_)
+            | ExprKind::Long(_)
+            | ExprKind::Str(_)
+            | ExprKind::Path(_)
+            | ExprKind::Super { .. } => {}
+        }
+    }
+    Ok(None)
+}
+
+fn record_initializer_effect(
+    expression: &Expr,
+    write_bci: u32,
+    state: &mut InitializerExpressionState,
+) -> Option<String> {
+    let bci = expression.origin.primary().bci();
+    if bci >= write_bci {
+        return Some(format!(
+            "RHS effect at BCI {bci} is not before its owning putstatic at BCI {write_bci}"
+        ));
+    }
+    if !state.effect_bcis.insert(bci) {
+        return Some(format!(
+            "RHS effect at BCI {bci} would be evaluated more than once"
+        ));
+    }
+    None
 }
 
 /// Whether this presentation runs a body for one member record: it declares a `Code` attribute whose
@@ -1667,20 +3671,98 @@ struct ClassBodyRefusal {
 /// evidence comes from: [`jarde_jvm::callee::read_prepared_callees`], which reads no class either.
 /// A member recovered here and the same member recovered through [`Engine::recover_method`] cannot
 /// drift, because the two share everything but that read.
+struct PreparedMemberRecovery {
+    recovered: RecoveredMethod,
+    initializer: Option<jarde_java::report::ClassInitializerCandidates>,
+    enum_constructor: Option<jarde_java::report::ClassEnumConstructorCandidates>,
+    bridge: Option<jarde_java::bridge::ClassSourceBridgeCandidate>,
+    enum_switches: Option<Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>>,
+    enum_switch_field_uses: Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
+    generic_return: Option<jarde_java::report::GenericReturnCandidate>,
+    generic_constructor: Option<jarde_java::report::GenericConstructorCandidate>,
+    anonymous_allocations: Option<jarde_java::report::AnonymousAllocationScan>,
+    enum_code: Option<crate::enum_constants::EnumMethodCodeCandidate>,
+}
+
+struct PreparedMemberOptions {
+    prove_generic_return: bool,
+    capture_enum_group_code: bool,
+    capture_enum_constructor_ast: bool,
+}
+
 fn recover_prepared_member(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
     prepared: &jarde_reader::prepared::PreparedClass<'_>,
+    assembly_context: &class_source::ClassSourceAssemblyContext,
+    method_index: u64,
     evidence: &RecoveryEvidenceRequest,
+    options: PreparedMemberOptions,
     budget: &mut Budget,
-) -> Result<RecoveredMethod> {
+) -> Result<PreparedMemberRecovery> {
     let analyzed = jarde_jvm::analyze_prepared_method_ir(content, prepared, request, budget)?;
+    let enum_code_candidate = if options.capture_enum_group_code {
+        crate::enum_constants::capture_method_code(
+            method_index,
+            &request.method,
+            analyzed.ir(),
+            budget,
+        )?
+    } else {
+        None
+    };
     if analyzed.ir().code().is_some() {
         // The prepared half of the same demand-path decode (`crate::d0_counts`): one count per
         // member body this presentation really decoded.
         crate::d0_counts::body_decoded();
     }
-    recovery_presented(content, request, analyzed, Some(prepared), evidence, budget)
+    let (
+        recovered,
+        initializer,
+        enum_constructor,
+        bridge,
+        enum_switches,
+        enum_switch_field_uses,
+        generic_return,
+        generic_constructor,
+        anonymous_allocations,
+    ) = recovery_presented_for_class_source(
+        content,
+        request,
+        analyzed,
+        prepared,
+        assembly_context,
+        evidence,
+        options.prove_generic_return,
+        options.capture_enum_constructor_ast,
+        budget,
+    )?;
+    // The constructor AST is an evidence handoff from this exact run. Keep it only when both the
+    // analysis and the class-source presentation completed and the latter committed its report;
+    // otherwise a budget stop could leave an apparently usable partial candidate beside a refused
+    // member result.
+    let enum_constructor = enum_constructor.filter(|_| {
+        matches!(
+            &recovered.analysis().execution,
+            ExecutionReport::Complete { .. }
+        ) && recovered.recovery().produced()
+            && matches!(
+                &recovered.recovery().execution,
+                ExecutionReport::Complete { .. }
+            )
+    });
+    Ok(PreparedMemberRecovery {
+        recovered,
+        initializer,
+        enum_constructor,
+        bridge,
+        enum_switches,
+        enum_switch_field_uses,
+        generic_return,
+        generic_constructor,
+        anonymous_allocations,
+        enum_code: enum_code_candidate,
+    })
 }
 
 /// The class view's own coverage plus this presentation's one plane: the members a body run was
@@ -1716,6 +3798,2830 @@ fn class_source_coverage(
         coverage.artifact_structural.state = CoverageState::Partial;
     }
     coverage
+}
+
+struct ProvedEnumSwitchMap {
+    labels: std::collections::BTreeMap<i64, String>,
+    stores: Vec<jarde_java::enumswitch::EnumSwitchMapEntry>,
+    helper: PhysicalDefinitionId,
+    enum_definition: PhysicalDefinitionId,
+}
+
+fn enum_projection_stop_error(
+    stop: jarde_java::StopReason,
+    operation: &str,
+    missing_table_code: &'static str,
+) -> Error {
+    match stop {
+        jarde_java::StopReason::Budget {
+            dimension,
+            limit,
+            written,
+            ..
+        } => Error::BudgetExceeded {
+            dimension: dimension.into(),
+            limit,
+            consumed: written,
+            requested: 1,
+        },
+        jarde_java::StopReason::Cancelled { .. } => Error::Cancelled {
+            reason: format!("{operation} was cancelled"),
+        },
+        jarde_java::StopReason::Interrupted { code, .. } => {
+            Error::unsupported(code, format!("{operation} was interrupted"))
+        }
+        jarde_java::StopReason::IrTableMissing { table } => Error::unsupported(
+            missing_table_code,
+            format!("required IR table `{table}` is missing"),
+        ),
+        jarde_java::StopReason::EvidenceRefused { code, message, .. } => {
+            Error::unsupported(code, message)
+        }
+    }
+}
+
+fn prove_class_source_enum_switch(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    policy: &EnvironmentPolicy,
+    target: &PhysicalDefinitionId,
+    candidate: &jarde_java::enumswitch::ClassSourceEnumSwitchCandidate,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<ProvedEnumSwitchMap, String>> {
+    use std::collections::BTreeMap;
+
+    if matches!(policy, EnvironmentPolicy::SingleClass) {
+        return Ok(Err(
+            "the SingleClass environment does not provide the helper and enum dependencies"
+                .to_owned(),
+        ));
+    }
+    if candidate
+        .member
+        .as_ref()
+        .is_none_or(|member| &member.owner != target)
+    {
+        return Ok(Err(
+            "the candidate does not belong to the class-source physical definition".to_owned(),
+        ));
+    }
+    let Some(receiver) = candidate.selector_receiver_type.as_deref() else {
+        return Ok(Err(
+            "the selector receiver has no exact verifier class type".to_owned(),
+        ));
+    };
+    let Some(enum_owner) = receiver
+        .strip_prefix(b"L")
+        .and_then(|name| name.strip_suffix(b";"))
+    else {
+        return Ok(Err(
+            "the selector receiver verifier type is not one exact object class".to_owned(),
+        ));
+    };
+    let enum_owner_text = match std::str::from_utf8(enum_owner) {
+        Ok(name) if !name.is_empty() => name,
+        _ => {
+            return Ok(Err(
+                "the selector receiver class name is not valid UTF-8".to_owned()
+            ));
+        }
+    };
+    if candidate.index.name != "ordinal"
+        || candidate.index.descriptor != "()I"
+        || (candidate.index.owner != enum_owner_text && candidate.index.owner != "java/lang/Enum")
+    {
+        return Ok(Err(
+            "the table index call is not the receiver enum's inherited ordinal()I".to_owned(),
+        ));
+    }
+
+    let Some((helper_definition, helper_facts)) = resolve_class_source_dependency(
+        content,
+        environment,
+        candidate.member.as_ref(),
+        &candidate.table.owner,
+        execution,
+        budget,
+    )?
+    else {
+        return Ok(Err(
+            "the selected environment did not uniquely resolve the helper class".to_owned(),
+        ));
+    };
+    let Some((enum_definition, enum_facts)) = resolve_class_source_dependency(
+        content,
+        environment,
+        candidate.member.as_ref(),
+        enum_owner_text,
+        execution,
+        budget,
+    )?
+    else {
+        return Ok(Err(
+            "the selected environment did not uniquely resolve the enum class".to_owned(),
+        ));
+    };
+    if helper_facts.stopped_at.is_some()
+        || helper_facts.this_class.raw().0.as_slice() != candidate.table.owner.as_bytes()
+        || helper_facts.access_flags & 0x1000 == 0
+    {
+        return Ok(Err(
+            "the selected helper definition is incomplete, mismatched, or not synthetic".to_owned(),
+        ));
+    }
+    if enum_facts.stopped_at.is_some()
+        || enum_facts.this_class.raw().0.as_slice() != enum_owner
+        || enum_facts.access_flags & 0x4000 == 0
+        || enum_facts
+            .super_class
+            .as_ref()
+            .map(|name| name.raw().0.as_slice())
+            != Some(b"java/lang/Enum".as_slice())
+    {
+        return Ok(Err("the selected verifier receiver definition is not a complete ACC_ENUM class extending java/lang/Enum".to_owned()));
+    }
+    let helper_tables: Vec<_> = helper_facts
+        .fields
+        .iter()
+        .filter(|field| {
+            field.name.raw().0.as_slice() == candidate.table.name.as_bytes()
+                && field.descriptor.raw().0.as_slice() == b"[I"
+        })
+        .collect();
+    if helper_tables.len() != 1
+        || helper_tables[0].access_flags & (0x0008 | 0x0010 | 0x1000) != (0x0008 | 0x0010 | 0x1000)
+    {
+        return Ok(Err(
+            "the helper does not declare one unique static final synthetic int[] table field"
+                .to_owned(),
+        ));
+    }
+    let values_descriptor = format!("()[L{enum_owner_text};");
+    let values_methods: Vec<_> = enum_facts
+        .methods
+        .iter()
+        .filter(|method| {
+            method.name.raw().0.as_slice() == b"values"
+                && method.descriptor.raw().0.as_slice() == values_descriptor.as_bytes()
+                && method.access_flags & (0x0001 | 0x0008) == (0x0001 | 0x0008)
+        })
+        .collect();
+    let overrides_ordinal = enum_facts.methods.iter().any(|method| {
+        method.name.raw().0.as_slice() == b"ordinal"
+            && method.descriptor.raw().0.as_slice() == b"()I"
+    });
+    if values_methods.len() != 1 || overrides_ordinal {
+        return Ok(Err(
+            "the enum lacks one real static values() method or declares its own ordinal()I"
+                .to_owned(),
+        ));
+    }
+    let initializer_headers: Vec<_> = helper_facts
+        .methods
+        .iter()
+        .filter(|method| {
+            method.name.raw().0.as_slice() == b"<clinit>"
+                && method.descriptor.raw().0.as_slice() == b"()V"
+        })
+        .collect();
+    if initializer_headers.len() != 1 || helper_facts.methods.len() != 1 {
+        return Ok(Err("the helper has missing/duplicate <clinit> or another method that could expose a table alias".to_owned()));
+    }
+    let constants: Vec<Vec<u8>> = enum_facts
+        .fields
+        .iter()
+        .filter(|field| {
+            field.access_flags & 0x4000 != 0
+                && field.access_flags & 0x0008 != 0
+                && field.access_flags & 0x0010 != 0
+                && field.descriptor.raw().0.as_slice() == format!("L{enum_owner_text};").as_bytes()
+        })
+        .map(|field| field.name.raw().0.clone())
+        .collect();
+    if constants.is_empty()
+        || constants
+            .iter()
+            .collect::<std::collections::BTreeSet<_>>()
+            .len()
+            != constants.len()
+        || constants.iter().any(|constant| {
+            std::str::from_utf8(constant)
+                .ok()
+                .is_none_or(|name| !jarde_java::names::is_java_identifier(name))
+        })
+    {
+        return Ok(Err(
+            "the enum has no uniquely spellable ACC_ENUM constant fields".to_owned(),
+        ));
+    }
+
+    let enum_clinit_headers: Vec<_> = enum_facts
+        .methods
+        .iter()
+        .filter(|method| {
+            method.name.raw().0.as_slice() == b"<clinit>"
+                && method.descriptor.raw().0.as_slice() == b"()V"
+        })
+        .collect();
+    let enum_constructor_headers: Vec<_> = enum_facts
+        .methods
+        .iter()
+        .filter(|method| {
+            method.name.raw().0.as_slice() == b"<init>"
+                && method.descriptor.raw().0.as_slice() == b"(Ljava/lang/String;I)V"
+        })
+        .collect();
+    let values_field_descriptor = format!("[L{enum_owner_text};");
+    let values_fields: Vec<_> = enum_facts
+        .fields
+        .iter()
+        .filter(|field| {
+            field.access_flags & (0x0008 | 0x0010 | 0x1000) == (0x0008 | 0x0010 | 0x1000)
+                && field.descriptor.raw().0.as_slice() == values_field_descriptor.as_bytes()
+        })
+        .collect();
+    if enum_clinit_headers.len() != 1
+        || enum_constructor_headers.len() != 1
+        || values_fields.len() != 1
+    {
+        return Ok(Err(
+            "the enum has no unique <clinit> and (String,int) constructor for constant-identity proof".to_owned(),
+        ));
+    }
+    let enum_clinit = PhysicalMethodId {
+        owner: enum_definition.clone(),
+        name: JvmBytes(b"<clinit>".to_vec()),
+        descriptor: JvmBytes(b"()V".to_vec()),
+    };
+    let enum_constructor = PhysicalMethodId {
+        owner: enum_definition.clone(),
+        name: JvmBytes(b"<init>".to_vec()),
+        descriptor: JvmBytes(b"(Ljava/lang/String;I)V".to_vec()),
+    };
+    let values_field_name = std::str::from_utf8(&values_fields[0].name.raw().0).map_err(|_| {
+        Error::unsupported(
+            "enum_values_field_name",
+            "the enum values field name is not UTF-8",
+        )
+    })?;
+    let enum_clinit_analysis = jarde_jvm::analyze_method_ir(
+        content,
+        &crate::ir::MethodAnalysisRequest {
+            environment: environment.clone(),
+            method: enum_clinit.clone(),
+            stages: MethodOperation::Analysis.stages().to_vec(),
+        },
+        budget,
+    )?;
+    merge_execution(execution, enum_clinit_analysis.report().execution.clone());
+    if enum_clinit_analysis.report().method != enum_clinit
+        || !matches!(
+            enum_clinit_analysis.report().execution,
+            ExecutionReport::Complete { .. }
+        )
+    {
+        return Ok(Err(
+            "the enum <clinit> IR did not complete for the selected physical definition".to_owned(),
+        ));
+    }
+    let factory_name = match jarde_java::enumswitch::enum_values_factory_name(
+        enum_clinit_analysis.ir(),
+        enum_owner_text,
+        values_field_name,
+        budget,
+    ) {
+        Ok(Ok(name)) => name,
+        Ok(Err(reason)) => return Ok(Err(reason)),
+        Err(stop) => {
+            return Err(enum_projection_stop_error(
+                stop,
+                "enum switch projection",
+                "enum_switch_ir_missing",
+            ));
+        }
+    };
+    let factory_headers: Vec<_> = enum_facts
+        .methods
+        .iter()
+        .filter(|method| {
+            method.name.raw().0.as_slice() == factory_name.as_bytes()
+                && method.descriptor.raw().0.as_slice() == values_descriptor.as_bytes()
+                && method.access_flags & (0x0002 | 0x0008 | 0x1000) == (0x0002 | 0x0008 | 0x1000)
+        })
+        .collect();
+    if factory_headers.len() != 1 || factory_name == "values" {
+        return Ok(Err(
+            "the enum <clinit> target is not one private static synthetic values-array factory"
+                .to_owned(),
+        ));
+    }
+    let enum_values_factory = PhysicalMethodId {
+        owner: enum_definition.clone(),
+        name: JvmBytes(factory_name.as_bytes().to_vec()),
+        descriptor: JvmBytes(values_descriptor.as_bytes().to_vec()),
+    };
+    let enum_constructor_analysis = jarde_jvm::analyze_method_ir(
+        content,
+        &crate::ir::MethodAnalysisRequest {
+            environment: environment.clone(),
+            method: enum_constructor.clone(),
+            stages: MethodOperation::Analysis.stages().to_vec(),
+        },
+        budget,
+    )?;
+    merge_execution(
+        execution,
+        enum_constructor_analysis.report().execution.clone(),
+    );
+    if enum_constructor_analysis.report().method != enum_constructor
+        || !matches!(
+            enum_constructor_analysis.report().execution,
+            ExecutionReport::Complete { .. }
+        )
+    {
+        return Ok(Err(
+            "the enum constructor IR did not complete for the selected physical definition"
+                .to_owned(),
+        ));
+    }
+    let enum_factory_analysis = jarde_jvm::analyze_method_ir(
+        content,
+        &crate::ir::MethodAnalysisRequest {
+            environment: environment.clone(),
+            method: enum_values_factory.clone(),
+            stages: MethodOperation::Analysis.stages().to_vec(),
+        },
+        budget,
+    )?;
+    merge_execution(execution, enum_factory_analysis.report().execution.clone());
+    if enum_factory_analysis.report().method != enum_values_factory
+        || !matches!(
+            enum_factory_analysis.report().execution,
+            ExecutionReport::Complete { .. }
+        )
+    {
+        return Ok(Err(
+            "the enum values-array factory IR did not complete for the selected physical definition".to_owned(),
+        ));
+    }
+    let enum_values_method = PhysicalMethodId {
+        owner: enum_definition.clone(),
+        name: JvmBytes(b"values".to_vec()),
+        descriptor: JvmBytes(values_descriptor.as_bytes().to_vec()),
+    };
+    let enum_values_analysis = jarde_jvm::analyze_method_ir(
+        content,
+        &crate::ir::MethodAnalysisRequest {
+            environment: environment.clone(),
+            method: enum_values_method.clone(),
+            stages: MethodOperation::Analysis.stages().to_vec(),
+        },
+        budget,
+    )?;
+    merge_execution(execution, enum_values_analysis.report().execution.clone());
+    if enum_values_analysis.report().method != enum_values_method
+        || !matches!(
+            enum_values_analysis.report().execution,
+            ExecutionReport::Complete { .. }
+        )
+    {
+        return Ok(Err(
+            "the enum public values() IR did not complete for the selected physical definition"
+                .to_owned(),
+        ));
+    }
+    match jarde_java::enumswitch::prove_enum_constant_ordinals(
+        enum_clinit_analysis.ir(),
+        enum_constructor_analysis.ir(),
+        (enum_factory_analysis.ir(), enum_values_analysis.ir()),
+        enum_owner_text,
+        &constants,
+        values_field_name,
+        budget,
+    ) {
+        Ok(Ok(())) => {}
+        Ok(Err(reason)) => return Ok(Err(reason)),
+        Err(stop) => {
+            return Err(match stop {
+                jarde_java::StopReason::Budget {
+                    dimension, limit, ..
+                } => Error::BudgetExceeded {
+                    dimension: dimension.into(),
+                    limit,
+                    consumed: budget.usage().counted_usage(dimension),
+                    requested: 1,
+                },
+                jarde_java::StopReason::Cancelled { .. } => Error::Cancelled {
+                    reason: "enum constant identity proof was cancelled".to_owned(),
+                },
+                jarde_java::StopReason::Interrupted { code, .. } => {
+                    Error::unsupported(code, "enum constant identity proof was interrupted")
+                }
+                jarde_java::StopReason::IrTableMissing { table } => Error::unsupported(
+                    "enum_switch_ir_missing",
+                    format!("required IR table `{table}` is missing"),
+                ),
+                jarde_java::StopReason::EvidenceRefused { code, message, .. } => {
+                    Error::unsupported(code, message)
+                }
+            });
+        }
+    }
+
+    let initializer = PhysicalMethodId {
+        owner: helper_definition.clone(),
+        name: JvmBytes(b"<clinit>".to_vec()),
+        descriptor: JvmBytes(b"()V".to_vec()),
+    };
+    let analysis = jarde_jvm::analyze_method_ir(
+        content,
+        &crate::ir::MethodAnalysisRequest {
+            environment: environment.clone(),
+            method: initializer.clone(),
+            stages: MethodOperation::Analysis.stages().to_vec(),
+        },
+        budget,
+    )?;
+    if analysis.report().method != initializer
+        || !matches!(
+            analysis.report().execution,
+            ExecutionReport::Complete { .. }
+        )
+    {
+        return Ok(Err(
+            "the helper <clinit> IR did not complete for the selected physical method".to_owned(),
+        ));
+    }
+    let proof = match jarde_java::enumswitch::prove_enum_switch_map_initializer(
+        analysis.ir(),
+        &candidate.table.owner,
+        &candidate.table.name,
+        enum_owner_text,
+        &constants,
+        &candidate.keys,
+        budget,
+    ) {
+        Ok(Ok(proof)) => proof,
+        Ok(Err(reason)) => return Ok(Err(reason)),
+        Err(stop) => {
+            return Err(match stop {
+                jarde_java::StopReason::Budget {
+                    dimension, limit, ..
+                } => Error::BudgetExceeded {
+                    dimension: dimension.into(),
+                    limit,
+                    consumed: budget.usage().counted_usage(dimension),
+                    requested: 1,
+                },
+                jarde_java::StopReason::Cancelled { .. } => Error::Cancelled {
+                    reason: "enum switch proof was cancelled".to_owned(),
+                },
+                jarde_java::StopReason::Interrupted { code, .. } => {
+                    Error::unsupported(code, "enum switch proof was interrupted")
+                }
+                jarde_java::StopReason::IrTableMissing { table } => Error::unsupported(
+                    "enum_switch_ir_missing",
+                    format!("required IR table `{table}` is missing"),
+                ),
+                jarde_java::StopReason::EvidenceRefused { code, message, .. } => {
+                    Error::unsupported(code, message)
+                }
+            });
+        }
+    };
+    if proof.initializer.as_ref() != Some(&initializer) {
+        return Ok(Err(
+            "initializer proof identity differs from the selected physical <clinit>".to_owned(),
+        ));
+    }
+    let mut labels = BTreeMap::new();
+    let mut stores = Vec::new();
+    for entry in proof.entries {
+        let Ok(label) = std::str::from_utf8(&entry.constant) else {
+            return Ok(Err("an enum constant name is not UTF-8".to_owned()));
+        };
+        if !jarde_java::names::is_java_identifier(label)
+            || labels.insert(entry.key, label.to_owned()).is_some()
+        {
+            return Ok(Err(
+                "the proven enum map has an invalid or repeated key/label".to_owned(),
+            ));
+        }
+        stores.push(entry);
+    }
+    if candidate.keys.iter().any(|key| !labels.contains_key(key)) {
+        return Ok(Err(
+            "the proven initializer map does not cover every switch integer key".to_owned(),
+        ));
+    }
+    Ok(Ok(ProvedEnumSwitchMap {
+        labels,
+        stores,
+        helper: helper_definition,
+        enum_definition,
+    }))
+}
+
+fn resolve_class_source_dependency(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    enclosing: Option<&PhysicalMethodId>,
+    owner: &str,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<Option<(PhysicalDefinitionId, ClassMemberFacts)>> {
+    Ok(resolve_class_source_dependency_read(
+        content,
+        environment,
+        enclosing,
+        owner,
+        execution,
+        budget,
+    )?
+    .map(|(definition, read)| (definition, read.facts)))
+}
+
+/// The same selected-definition chain used by class-source's enum proof, retaining the bytes for
+/// a member constructor's target-only attribute and prologue proof.
+fn resolve_class_source_dependency_read(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    enclosing: Option<&PhysicalMethodId>,
+    owner: &str,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<Option<(PhysicalDefinitionId, ConfirmedRead)>> {
+    resolve_class_source_dependency_read_raw(
+        content,
+        environment,
+        enclosing,
+        owner.as_bytes(),
+        execution,
+        budget,
+    )
+}
+
+/// The same selected-definition read for a JVM internal name retained in its original bytes.
+fn resolve_class_source_dependency_read_raw(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    enclosing: Option<&PhysicalMethodId>,
+    owner: &[u8],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<Option<(PhysicalDefinitionId, ConfirmedRead)>> {
+    let resolution = jarde_jvm::resolve_symbol(
+        content,
+        &ResolutionRequest {
+            environment: environment.clone(),
+            target: jarde_reader::model::SymbolRef::Class {
+                owner: JvmBytes(owner.to_vec()),
+            },
+            use_kind: ReferenceUse::ClassReference,
+            caller: jarde_jvm::environment::CallerContext {
+                loader: environment.runtime.load_domain.loader.clone(),
+                enclosing: enclosing.cloned(),
+            },
+            dispatch: None,
+        },
+        budget,
+    )?;
+    merge_execution(execution, resolution.execution.clone());
+    if resolution.state != Some(ResolutionState::Resolved)
+        || !matches!(resolution.execution, ExecutionReport::Complete { .. })
+        || !resolution.environment_problems.is_empty()
+        || !resolution.unresolved_dependencies.is_empty()
+        || !resolution.candidates.is_empty()
+    {
+        return Ok(None);
+    }
+    let Some(resolved) = resolution.resolved else {
+        return Ok(None);
+    };
+    if !matches!(&resolved.member, jarde_reader::model::SymbolRef::Class { owner: name } if name.0 == owner)
+        || resolution.reads.len() != 1
+        || resolution.reads[0].definition != resolved.definition
+        || resolution.reads[0].reason != jarde_jvm::resolver::ReadReason::RequestedDefinition
+    {
+        return Ok(None);
+    }
+    let Some(snapshot) = content
+        .iter()
+        .find(|snapshot| snapshot.id() == resolved.definition.snapshot())
+    else {
+        return Ok(None);
+    };
+    let (read, _) = read_definition(snapshot, &resolved.definition, budget)?;
+    if read.facts.stopped_at.is_some() || read.facts.this_class.raw().0.as_slice() != owner {
+        return Ok(None);
+    }
+    Ok(Some((resolved.definition, read)))
+}
+
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+struct InterfaceSuperTarget {
+    owner: String,
+    name: String,
+    descriptor: String,
+}
+
+struct SelectedInterfaceNode {
+    definition: PhysicalDefinitionId,
+    facts: ClassMemberFacts,
+}
+
+/// Selected definitions shared by every interface-super candidate in one method request.
+struct InterfaceSuperReads<'a> {
+    content: &'a [ArtifactSnapshot],
+    environment: &'a ResolutionEnvironment,
+    enclosing: &'a PhysicalMethodId,
+    budget: &'a mut Budget,
+    execution: ExecutionReport,
+    attempted: std::collections::BTreeSet<Vec<u8>>,
+    by_name: std::collections::BTreeMap<Vec<u8>, usize>,
+    nodes: Vec<SelectedInterfaceNode>,
+}
+
+impl InterfaceSuperReads<'_> {
+    fn node(&mut self, owner: &[u8], depth: u64) -> Result<Option<usize>> {
+        self.budget.observe_dependency_depth(depth)?;
+        if let Some(index) = self.by_name.get(owner) {
+            return Ok(Some(*index));
+        }
+        if !self.attempted.insert(owner.to_vec()) {
+            return Ok(None);
+        }
+        self.budget
+            .charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let Some((definition, read)) = resolve_class_source_dependency_read_raw(
+            self.content,
+            self.environment,
+            Some(self.enclosing),
+            owner,
+            &mut self.execution,
+            self.budget,
+        )?
+        else {
+            member_inner_resolution_stop(&self.execution, self.budget)?;
+            return Ok(None);
+        };
+        member_inner_resolution_stop(&self.execution, self.budget)?;
+        if read.facts.stopped_at.is_some() || read.facts.this_class.raw().0.as_slice() != owner {
+            return Ok(None);
+        }
+        if let Some(index) = self
+            .nodes
+            .iter()
+            .position(|node| node.definition == definition)
+        {
+            self.by_name.insert(owner.to_vec(), index);
+            return Ok(Some(index));
+        }
+        let index = self.nodes.len();
+        self.nodes.push(SelectedInterfaceNode {
+            definition,
+            facts: read.facts,
+        });
+        self.by_name.insert(owner.to_vec(), index);
+        Ok(Some(index))
+    }
+}
+
+/// Add a fully selected interface closure to this request's small graph. The height memo checks
+/// the dependency-depth limit even when a diamond reuses a completed node.
+fn ensure_interface_closure(
+    owner: &[u8],
+    depth: u64,
+    reads: &mut InterfaceSuperReads<'_>,
+    graph: &mut std::collections::BTreeMap<Vec<u8>, Vec<Vec<u8>>>,
+    heights: &mut std::collections::BTreeMap<Vec<u8>, u64>,
+    active: &mut Vec<Vec<u8>>,
+) -> Result<bool> {
+    reads.budget.poll()?;
+    if active.iter().any(|ancestor| ancestor.as_slice() == owner) {
+        return Ok(false);
+    }
+    if let Some(height) = heights.get(owner) {
+        reads
+            .budget
+            .observe_dependency_depth(depth.saturating_add(*height))?;
+        return Ok(true);
+    }
+    reads.budget.observe_dependency_depth(depth)?;
+    let Some(index) = reads.node(owner, depth)? else {
+        return Ok(false);
+    };
+    let facts = &reads.nodes[index].facts;
+    if facts.access_flags & ACC_INTERFACE == 0 {
+        return Ok(false);
+    }
+    let mut seen = std::collections::BTreeSet::new();
+    let mut parents = Vec::with_capacity(facts.interfaces.len());
+    for parent in &facts.interfaces {
+        reads
+            .budget
+            .charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let raw = parent.raw().0.clone();
+        if !seen.insert(raw.clone()) {
+            return Ok(false);
+        }
+        parents.push(raw);
+    }
+    active.push(owner.to_vec());
+    let mut height = 0_u64;
+    for parent in &parents {
+        let child_depth = depth.saturating_add(1);
+        if !ensure_interface_closure(parent, child_depth, reads, graph, heights, active)? {
+            active.pop();
+            return Ok(false);
+        }
+        height = height.max(heights.get(parent).copied().unwrap_or(0).saturating_add(1));
+    }
+    active.pop();
+    graph.insert(owner.to_vec(), parents);
+    heights.insert(owner.to_vec(), height);
+    reads
+        .budget
+        .observe_dependency_depth(depth.saturating_add(height))?;
+    Ok(true)
+}
+
+fn interface_reaches(
+    start: &[u8],
+    target: &[u8],
+    graph: &std::collections::BTreeMap<Vec<u8>, Vec<Vec<u8>>>,
+    budget: &mut Budget,
+) -> Result<Option<bool>> {
+    let mut pending = vec![start.to_vec()];
+    let mut visited = std::collections::BTreeSet::new();
+    while let Some(owner) = pending.pop() {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if owner.as_slice() == target {
+            return Ok(Some(true));
+        }
+        if !visited.insert(owner.clone()) {
+            continue;
+        }
+        let Some(parents) = graph.get(&owner) else {
+            return Ok(None);
+        };
+        pending.extend(parents.iter().cloned());
+    }
+    Ok(Some(false))
+}
+
+fn interface_source_type_accessible(current: &[u8], owner: &[u8], flags: u16) -> bool {
+    // Nested source names need InnerClasses evidence; this first slice leaves them mapped to the
+    // existing refusal path instead of treating a binary `$` name as a source qualifier.
+    !owner.contains(&b'$') && (flags & 0x0001 != 0 || package_name(current) == package_name(owner))
+}
+
+fn package_name(owner: &[u8]) -> &[u8] {
+    owner
+        .iter()
+        .rposition(|byte| *byte == b'/')
+        .map_or(&[], |slash| &owner[..slash])
+}
+
+fn prove_interface_super_calls(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    budget: &mut Budget,
+) -> Result<Vec<jarde_java::report::ProvedInterfaceSuperCall>> {
+    use std::collections::{BTreeMap, BTreeSet};
+
+    let Some(code) = ir.code() else {
+        return Ok(Vec::new());
+    };
+    let mut candidates = BTreeSet::new();
+    for instruction in &code.instructions {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if instruction.opcode != 0xb7 {
+            continue;
+        }
+        let Some(index) = instruction.constant_pool_index else {
+            continue;
+        };
+        let Ok(entry) = jarde_reader::classfile::cp_entry(ir.constant_pool(), index) else {
+            continue;
+        };
+        let CpEntryKind::InterfaceMethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        } = &entry.kind
+        else {
+            continue;
+        };
+        if ir
+            .direct_interfaces()
+            .iter()
+            .filter(|interface| interface.raw().0 == owner.0)
+            .count()
+            != 1
+        {
+            continue;
+        }
+        let (Ok(owner), Ok(name), Ok(descriptor)) = (
+            std::str::from_utf8(&owner.0),
+            std::str::from_utf8(&name.0),
+            std::str::from_utf8(&descriptor.0),
+        ) else {
+            continue;
+        };
+        candidates.insert(InterfaceSuperTarget {
+            owner: owner.to_owned(),
+            name: name.to_owned(),
+            descriptor: descriptor.to_owned(),
+        });
+    }
+    if candidates.is_empty() {
+        return Ok(Vec::new());
+    }
+    let Some(declaration) = ir.declaration() else {
+        return Ok(Vec::new());
+    };
+    let current_class = declaration.class_name().0.as_slice();
+    let class_is_interface = declaration.class_access_flags() & ACC_INTERFACE != 0;
+    let direct_interfaces = ir
+        .direct_interfaces()
+        .iter()
+        .map(|name| name.raw().0.clone())
+        .collect::<Vec<_>>();
+    let distinct_direct_interfaces = direct_interfaces.iter().collect::<BTreeSet<_>>();
+    if distinct_direct_interfaces.len() != direct_interfaces.len() {
+        return Ok(Vec::new());
+    }
+    let initial_usage = budget.usage();
+    let mut reads = InterfaceSuperReads {
+        content,
+        environment: &request.environment,
+        enclosing: &request.method,
+        budget,
+        execution: ExecutionReport::Complete {
+            usage: initial_usage,
+        },
+        attempted: BTreeSet::new(),
+        by_name: BTreeMap::new(),
+        nodes: Vec::new(),
+    };
+    let mut graph = BTreeMap::new();
+    let mut heights = BTreeMap::new();
+    let mut active = Vec::new();
+    let mut proved = Vec::new();
+    for candidate in candidates {
+        let owner = candidate.owner.as_bytes();
+        let Some(owner_index) = reads.node(owner, 0)? else {
+            continue;
+        };
+        let owner_flags = reads.nodes[owner_index].facts.access_flags;
+        if owner_flags & ACC_INTERFACE == 0
+            || !interface_source_type_accessible(current_class, owner, owner_flags)
+            || !ensure_interface_closure(
+                owner,
+                0,
+                &mut reads,
+                &mut graph,
+                &mut heights,
+                &mut active,
+            )?
+        {
+            continue;
+        }
+        let mut nonredundant = true;
+        for direct in &direct_interfaces {
+            reads
+                .budget
+                .charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if direct.as_slice() == owner {
+                continue;
+            }
+            if !ensure_interface_closure(
+                direct,
+                0,
+                &mut reads,
+                &mut graph,
+                &mut heights,
+                &mut active,
+            )? || interface_reaches(direct, owner, &graph, reads.budget)? != Some(false)
+            {
+                nonredundant = false;
+                break;
+            }
+        }
+        if !nonredundant {
+            continue;
+        }
+        if !class_is_interface {
+            let mut parent = ir.direct_super_class().map(|name| name.0.clone());
+            let mut seen_classes = BTreeSet::new();
+            let mut depth = 0_u64;
+            if parent.is_none() && current_class != b"java/lang/Object" {
+                continue;
+            }
+            let mut class_chain_clear = true;
+            while let Some(class_name) = parent {
+                reads.budget.poll()?;
+                if class_name == b"java/lang/Object" {
+                    // `java/lang/Object` is the JVM's fixed root: no host JDK bytes are needed.
+                    break;
+                }
+                if !seen_classes.insert(class_name.clone()) {
+                    class_chain_clear = false;
+                    break;
+                }
+                depth = depth.saturating_add(1);
+                let Some(class_index) = reads.node(&class_name, depth)? else {
+                    class_chain_clear = false;
+                    break;
+                };
+                let facts = &reads.nodes[class_index].facts;
+                if facts.access_flags & ACC_INTERFACE != 0 {
+                    class_chain_clear = false;
+                    break;
+                }
+                let implemented = facts
+                    .interfaces
+                    .iter()
+                    .map(|name| name.raw().0.clone())
+                    .collect::<Vec<_>>();
+                let next_parent = facts.super_class.as_ref().map(|name| name.raw().0.clone());
+                let mut seen_implemented = BTreeSet::new();
+                for interface in &implemented {
+                    reads
+                        .budget
+                        .charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if !seen_implemented.insert(interface.clone())
+                        || !ensure_interface_closure(
+                            interface,
+                            depth,
+                            &mut reads,
+                            &mut graph,
+                            &mut heights,
+                            &mut active,
+                        )?
+                        || interface_reaches(interface, owner, &graph, reads.budget)? != Some(false)
+                    {
+                        class_chain_clear = false;
+                        break;
+                    }
+                }
+                if !class_chain_clear {
+                    break;
+                }
+                if next_parent.is_none() {
+                    class_chain_clear = false;
+                    break;
+                }
+                parent = next_parent;
+            }
+            if !class_chain_clear {
+                continue;
+            }
+        }
+        let (nodes, by_name, proof_budget) = (&reads.nodes, &reads.by_name, &mut *reads.budget);
+        if unique_source_default(
+            owner,
+            candidate.name.as_bytes(),
+            candidate.descriptor.as_bytes(),
+            nodes,
+            by_name,
+            &graph,
+            proof_budget,
+        )? {
+            proved.push(jarde_java::report::ProvedInterfaceSuperCall {
+                owner: candidate.owner,
+                name: candidate.name,
+                descriptor: candidate.descriptor,
+            });
+        }
+    }
+    Ok(proved)
+}
+
+fn unique_source_default(
+    root: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    nodes: &[SelectedInterfaceNode],
+    by_name: &std::collections::BTreeMap<Vec<u8>, usize>,
+    graph: &std::collections::BTreeMap<Vec<u8>, Vec<Vec<u8>>>,
+    budget: &mut Budget,
+) -> Result<bool> {
+    const ACC_PUBLIC: u16 = 0x0001;
+    const ACC_PRIVATE: u16 = 0x0002;
+    const ACC_STATIC: u16 = 0x0008;
+    const ACC_BRIDGE: u16 = 0x0040;
+    const ACC_NATIVE: u16 = 0x0100;
+    const ACC_ABSTRACT: u16 = 0x0400;
+    const ACC_SYNTHETIC: u16 = 0x1000;
+
+    let mut pending = vec![root.to_vec()];
+    let mut closure = std::collections::BTreeSet::new();
+    while let Some(owner) = pending.pop() {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if !closure.insert(owner.clone()) {
+            continue;
+        }
+        let Some(parents) = graph.get(&owner) else {
+            return Ok(false);
+        };
+        pending.extend(parents.iter().cloned());
+    }
+    let mut declarations: Vec<(Vec<u8>, &MemberHeader)> = Vec::new();
+    for owner in &closure {
+        budget.poll()?;
+        let Some(index) = by_name.get(owner) else {
+            return Ok(false);
+        };
+        let mut exact = 0_u32;
+        for method in &nodes[*index].facts.methods {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if method.name.raw().0.as_slice() != name {
+                continue;
+            }
+            if method.descriptor.raw().0.as_slice() != descriptor {
+                // This first slice cannot establish which same-named overload Java would bind.
+                return Ok(false);
+            }
+            exact = exact.saturating_add(1);
+            if exact > 1
+                || method.access_flags & (ACC_BRIDGE | ACC_SYNTHETIC) != 0
+                || method
+                    .attributes
+                    .iter()
+                    .any(|attribute| attribute.name.raw().0.as_slice() == b"Signature")
+            {
+                return Ok(false);
+            }
+            declarations.push((owner.clone(), method));
+        }
+    }
+    if declarations.is_empty() {
+        return Ok(false);
+    }
+    let mut maximal = Vec::new();
+    'candidate: for (owner, method) in &declarations {
+        for (other_owner, _) in &declarations {
+            if owner == other_owner {
+                continue;
+            }
+            if interface_reaches(other_owner, owner, graph, budget)? != Some(false) {
+                continue 'candidate;
+            }
+        }
+        maximal.push(method);
+    }
+    let [method] = maximal.as_slice() else {
+        return Ok(false);
+    };
+    let flags = method.access_flags;
+    let code_count = method
+        .attributes
+        .iter()
+        .filter(|attribute| attribute.name.raw().0.as_slice() == b"Code")
+        .count();
+    Ok(flags & ACC_PUBLIC != 0
+        && flags & (ACC_PRIVATE | ACC_STATIC | ACC_ABSTRACT | ACC_NATIVE) == 0
+        && code_count == 1)
+}
+
+/// Discover exact constructor references that share a decoded allocation owner. The `$` test is
+/// only a cheap demand filter: the target-side InnerClasses row, not this name, proves membership.
+/// A target this first slice can spell as `Outer.Inner` necessarily has that binary separator.
+fn class_source_member_inner_candidates(
+    ir: &jarde_jvm::method_ir::MethodIr,
+    budget: &mut Budget,
+) -> Result<Vec<(String, String)>> {
+    use jarde_reader::classfile::{CpEntryKind, cp_class_name, cp_entry};
+    use std::collections::BTreeSet;
+
+    let Some(code) = ir.code() else {
+        return Ok(Vec::new());
+    };
+    let pool = ir.constant_pool();
+    let mut allocated = BTreeSet::new();
+    for instruction in &code.instructions {
+        budget.poll()?;
+        if instruction.opcode == 0xbb
+            && let Some(index) = instruction.constant_pool_index
+            && let Ok(name) = cp_class_name(pool, index)
+        {
+            allocated.insert(name.0);
+        }
+    }
+    let mut candidates = BTreeSet::new();
+    for instruction in &code.instructions {
+        budget.poll()?;
+        if instruction.opcode != 0xb7 {
+            continue;
+        }
+        let Some(index) = instruction.constant_pool_index else {
+            continue;
+        };
+        let Ok(entry) = cp_entry(pool, index) else {
+            continue;
+        };
+        let CpEntryKind::MethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        } = &entry.kind
+        else {
+            continue;
+        };
+        if name.0 != b"<init>" || !allocated.contains(&owner.0) || !owner.0.contains(&b'$') {
+            continue;
+        }
+        let (Ok(owner), Ok(descriptor)) = (
+            std::str::from_utf8(&owner.0),
+            std::str::from_utf8(&descriptor.0),
+        ) else {
+            continue;
+        };
+        candidates.insert((owner.to_owned(), descriptor.to_owned()));
+    }
+    Ok(candidates.into_iter().collect())
+}
+
+/// A caller row, when present for the exact target, must agree with the selected target's proof.
+/// Absence is not a contradiction: Java verification does not require the caller to duplicate the
+/// member declaration's InnerClasses attribute.
+fn caller_member_relation_agrees(
+    ir: &jarde_jvm::method_ir::MethodIr,
+    caller: &class_source::ClassSourceAssemblyContext,
+    proof: &crate::member_inner::MemberInnerTarget,
+    budget: &mut Budget,
+) -> Result<bool> {
+    use jarde_reader::classfile::cp_class_name;
+
+    let pool = ir.constant_pool();
+    let mut match_entry = None;
+    for entry in &caller.inner_classes {
+        budget.poll()?;
+        if !cp_class_name(pool, entry.class_index)
+            .is_ok_and(|name| name.0 == proof.owner.as_bytes())
+        {
+            continue;
+        }
+        if match_entry.replace(entry).is_some() {
+            return Ok(false);
+        }
+    }
+    let Some(entry) = match_entry else {
+        return Ok(true);
+    };
+    if entry.outer_class_index == 0 || entry.access_flags & (0x0001 | 0x0008) != 0x0001 {
+        return Ok(false);
+    }
+    Ok(cp_class_name(pool, entry.outer_class_index)
+        .is_ok_and(|outer| outer.0 == proof.outer.as_bytes())
+        && entry
+            .inner_name
+            .as_ref()
+            .is_some_and(|name| name.0 == proof.simple_name.as_bytes()))
+}
+
+fn source_type_path_segment(
+    definition: &PhysicalDefinitionId,
+    binary_name: &str,
+    source_name: String,
+    type_parameter_count: usize,
+    enclosing_binary_name: Option<String>,
+    is_static: bool,
+) -> jarde_java::report::ProvedMemberInnerSourceSegment {
+    jarde_java::report::ProvedMemberInnerSourceSegment {
+        definition: definition.clone(),
+        binary_name: binary_name.to_owned(),
+        source_name,
+        type_parameter_count,
+        enclosing_binary_name,
+        is_static,
+    }
+}
+
+fn member_inner_source_type_path(
+    target_definition: &PhysicalDefinitionId,
+    target: &crate::member_inner::MemberInnerTarget,
+    outer_definition: &PhysicalDefinitionId,
+    generic_outer: &crate::member_inner::GenericOuterRelationProof,
+    enclosing_definition: &PhysicalDefinitionId,
+    enclosing_facts: &ClassMemberFacts,
+) -> Option<Vec<jarde_java::report::ProvedMemberInnerSourceSegment>> {
+    if generic_outer.top_level_non_generic_owner {
+        if generic_outer.type_parameter_count != 0
+            || !generic_outer.simple_name.is_empty()
+            || target.outer != generic_outer.enclosing
+            || target.owner != format!("{}${}", target.outer, target.simple_name)
+            || target.source_type_parameter_count != 0
+            || enclosing_facts.this_class.raw().0 != generic_outer.enclosing.as_bytes()
+        {
+            return None;
+        }
+        let enclosing_binary = std::str::from_utf8(&enclosing_facts.this_class.raw().0).ok()?;
+        let package_and_simple: Vec<_> = enclosing_binary.split('/').collect();
+        if package_and_simple
+            .iter()
+            .any(|part| !jarde_java::names::is_java_identifier(part) || part.contains('$'))
+        {
+            return None;
+        }
+        let root_source_name = enclosing_binary.replace('/', ".");
+        let target_source_name = format!("{root_source_name}.{}", target.simple_name);
+        return Some(vec![
+            source_type_path_segment(
+                enclosing_definition,
+                enclosing_binary,
+                root_source_name,
+                0,
+                None,
+                true,
+            ),
+            source_type_path_segment(
+                target_definition,
+                &target.owner,
+                target_source_name,
+                0,
+                Some(target.outer.clone()),
+                false,
+            ),
+        ]);
+    }
+    if generic_outer.type_parameter_count != 1
+        || enclosing_facts.this_class.raw().0 != generic_outer.enclosing.as_bytes()
+        || target.outer != format!("{}${}", generic_outer.enclosing, generic_outer.simple_name)
+        || target.owner != format!("{}${}", target.outer, target.simple_name)
+    {
+        return None;
+    }
+    let enclosing_binary = std::str::from_utf8(&enclosing_facts.this_class.raw().0).ok()?;
+    let package_and_simple: Vec<_> = enclosing_binary.split('/').collect();
+    if package_and_simple
+        .iter()
+        .any(|part| !jarde_java::names::is_java_identifier(part))
+    {
+        return None;
+    }
+    let root_source_name = enclosing_binary.replace('/', ".");
+    let outer_source_name = format!("{root_source_name}.{}", generic_outer.simple_name);
+    let target_source_name = format!("{outer_source_name}.{}", target.simple_name);
+    Some(vec![
+        source_type_path_segment(
+            enclosing_definition,
+            enclosing_binary,
+            root_source_name,
+            0,
+            None,
+            true,
+        ),
+        source_type_path_segment(
+            outer_definition,
+            &target.outer,
+            outer_source_name,
+            generic_outer.type_parameter_count,
+            Some(generic_outer.enclosing.clone()),
+            true,
+        ),
+        source_type_path_segment(
+            target_definition,
+            &target.owner,
+            target_source_name,
+            target.source_type_parameter_count,
+            Some(target.outer.clone()),
+            false,
+        ),
+    ])
+}
+
+fn member_inner_resolution_stop(execution: &ExecutionReport, budget: &mut Budget) -> Result<()> {
+    match execution {
+        ExecutionReport::Cancelled { .. } => Err(Error::Cancelled {
+            reason: "member constructor target resolution was cancelled".to_owned(),
+        }),
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded { dimension },
+            ..
+        }
+        | ExecutionReport::Failed {
+            reason: TerminationReason::BudgetExceeded { dimension },
+            ..
+        } => {
+            if let Ok(counted) = CountedBudgetDimension::try_from(*dimension)
+                && let Err(error) = budget.charge(counted, 1)
+            {
+                return Err(error);
+            }
+            use jarde_reader::budget::BudgetDimension as D;
+            let limits = budget.limits();
+            let usage = budget.usage();
+            let (limit, consumed) = match dimension {
+                D::InputBytes => (limits.input_bytes, usage.input_bytes),
+                D::ArchiveEntries => (limits.archive_entries, usage.archive_entries),
+                D::EntryBytes => (limits.entry_bytes, usage.entry_bytes),
+                D::ReadBytes => (limits.read_bytes, usage.read_bytes),
+                D::ClassBytes => (limits.class_bytes, usage.class_bytes),
+                D::AttributeBytes => (limits.attribute_bytes, usage.attribute_bytes),
+                D::CodeBytes => (limits.code_bytes, usage.code_bytes),
+                D::ResultItems => (limits.result_items, usage.result_items),
+                D::OutputBytes => (limits.output_bytes, usage.output_bytes),
+                D::ClassHeaders => (limits.class_headers, usage.class_headers),
+                D::MethodBodies => (limits.method_bodies, usage.method_bodies),
+                D::IrItems => (limits.ir_items, usage.ir_items),
+                D::IrEdges => (limits.ir_edges, usage.ir_edges),
+                D::AnalysisSteps => (limits.analysis_steps, usage.analysis_steps),
+                D::NormalizationClones => (limits.normalization_clones, usage.normalization_clones),
+                D::NestedDepth => (limits.nested_depth, usage.nested_depth),
+                D::DependencyDepth => (limits.dependency_depth, usage.dependency_depth),
+                D::ElapsedMillis => (limits.elapsed_millis, usage.elapsed_millis),
+            };
+            Err(Error::BudgetExceeded {
+                dimension: *dimension,
+                limit,
+                consumed,
+                requested: 1,
+            })
+        }
+        _ => Ok(()),
+    }
+}
+
+fn read_class_source_member_inner_targets(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    caller: &class_source::ClassSourceAssemblyContext,
+    budget: &mut Budget,
+) -> Result<Vec<jarde_java::report::ProvedMemberInnerTarget>> {
+    let mut targets = Vec::new();
+    let mut execution = ExecutionReport::Complete {
+        usage: budget.usage(),
+    };
+    for (owner, descriptor) in class_source_member_inner_candidates(ir, budget)? {
+        let resolved = resolve_class_source_dependency_read(
+            content,
+            &request.environment,
+            Some(&request.method),
+            &owner,
+            &mut execution,
+            budget,
+        )?;
+        member_inner_resolution_stop(&execution, budget)?;
+        let Some((definition, read)) = resolved else {
+            continue;
+        };
+        let Some(proof) = crate::member_inner::prove_target(
+            &read.bytes,
+            &read.facts,
+            &owner,
+            &descriptor,
+            budget,
+        )?
+        else {
+            continue;
+        };
+        if !caller_member_relation_agrees(ir, caller, &proof, budget)? {
+            continue;
+        }
+        // A generic enclosing declaration brings type variables into the member's source scope
+        // even when this target declares no Signature of its own. This first slice does not project
+        // that scope, so confirm the selected outer definition before handing the target fact over.
+        let outer_read = resolve_class_source_dependency_read(
+            content,
+            &request.environment,
+            Some(&request.method),
+            &proof.outer,
+            &mut execution,
+            budget,
+        )?;
+        member_inner_resolution_stop(&execution, budget)?;
+        let Some((outer_definition, outer_read)) = outer_read else {
+            continue;
+        };
+        let Some(generic_outer) = crate::member_inner::outer_relation_agrees(
+            &outer_read.bytes,
+            &outer_read.facts,
+            &proof,
+            budget,
+        )?
+        else {
+            continue;
+        };
+        let enclosing_read = resolve_class_source_dependency_read(
+            content,
+            &request.environment,
+            Some(&request.method),
+            &generic_outer.enclosing,
+            &mut execution,
+            budget,
+        )?;
+        member_inner_resolution_stop(&execution, budget)?;
+        let Some((enclosing_definition, enclosing_read)) = enclosing_read else {
+            continue;
+        };
+        if !crate::member_inner::enclosing_relation_agrees(
+            &enclosing_read.bytes,
+            &enclosing_read.facts,
+            &generic_outer,
+            budget,
+        )? {
+            continue;
+        }
+        let Some(source_type_path) = member_inner_source_type_path(
+            &definition,
+            &proof,
+            &outer_definition,
+            &generic_outer,
+            &enclosing_definition,
+            &enclosing_read.facts,
+        ) else {
+            continue;
+        };
+        targets.push(jarde_java::report::ProvedMemberInnerTarget {
+            definition,
+            owner: proof.owner,
+            outer: proof.outer,
+            simple_name: proof.simple_name,
+            constructor_descriptor: proof.constructor_descriptor,
+            capture_field: proof.capture_field,
+            generic_diamond: proof.generic_diamond,
+            source_type_path,
+        });
+    }
+    Ok(targets)
+}
+
+#[cfg(test)]
+mod member_inner_target_tests {
+    use super::*;
+    use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
+    use std::io::{Cursor, Write};
+
+    const FULL_JAR: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/full-target.jar"
+    );
+    const MISSING_JAR: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/missing-target.jar"
+    );
+    const WRONG_RELATION_JAR: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-relation.jar"
+    );
+    const WRONG_OUTER_RELATION_JAR: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/invalid-controls/byte-variants/wrong-outer-relation.jar"
+    );
+    const OUTER: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter.class"
+    );
+    const INNER: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter$Inner.class"
+    );
+    const CALLER: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/UseInner.class"
+    );
+    const RUNNER: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/InnerRunner.class"
+    );
+    const MATRIX_OUTER: &[u8] = include_bytes!(
+        "../tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer.class"
+    );
+    const MATRIX_A: &[u8] = include_bytes!(
+        "../tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A.class"
+    );
+    const MATRIX_PLAIN: &[u8] = include_bytes!(
+        "../tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A$Plain.class"
+    );
+    const MATRIX_GENERIC: &[u8] = include_bytes!(
+        "../tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/Outer$A$Generic.class"
+    );
+    const MATRIX_CALLERS: [(&str, &[u8]); 4] = [
+        (
+            "UsePlainRaw",
+            include_bytes!(
+                "../tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlainRaw.class"
+            ),
+        ),
+        (
+            "UsePlain",
+            include_bytes!(
+                "../tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UsePlain.class"
+            ),
+        ),
+        (
+            "UseGenericObject",
+            include_bytes!(
+                "../tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericObject.class"
+            ),
+        ),
+        (
+            "UseGenericTyped",
+            include_bytes!(
+                "../tests/fixtures/recover-generic-enclosing-member-call-sites/matrix/UseGenericTyped.class"
+            ),
+        ),
+    ];
+
+    fn test_budget() -> Budget {
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.input_bytes = u64::MAX;
+        limits.archive_entries = u64::MAX;
+        limits.entry_bytes = u64::MAX;
+        limits.read_bytes = u64::MAX;
+        limits.class_bytes = u64::MAX;
+        limits.attribute_bytes = u64::MAX;
+        limits.code_bytes = u64::MAX;
+        limits.class_headers = u64::MAX;
+        limits.method_bodies = u64::MAX;
+        limits.ir_items = u64::MAX;
+        limits.ir_edges = u64::MAX;
+        limits.analysis_steps = u64::MAX;
+        limits.result_items = u64::MAX;
+        limits.elapsed_millis = u64::MAX;
+        Budget::new(limits)
+    }
+
+    fn fixture(
+        jar: &[u8],
+    ) -> (
+        ArtifactSnapshot,
+        crate::ir::MethodAnalysisRequest,
+        jarde_jvm::method_ir::MethodIrAnalysis,
+        class_source::ClassSourceAssemblyContext,
+    ) {
+        let engine = Engine::new();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(jar.to_vec()), &mut test_budget())
+            .unwrap();
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: jarde_reader::view::LoaderId("app".to_owned()),
+        };
+        let report = match engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("nested/UseInner"),
+                    },
+                    environment: environment.clone(),
+                },
+                &mut test_budget(),
+            )
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("caller selection must be unique: {other:?}"),
+        };
+        let mut budget = test_budget();
+        let (caller, _) = read_definition(&snapshot, &report.class, &mut budget).unwrap();
+        let pool = class_constant_pool(&caller.bytes, &budget).unwrap();
+        let shells: Vec<_> = caller
+            .facts
+            .attributes
+            .iter()
+            .filter(|attribute| {
+                matches!(
+                    attribute.name.raw().0.as_slice(),
+                    b"InnerClasses" | b"EnclosingMethod"
+                )
+            })
+            .cloned()
+            .collect();
+        let context = class_source::read_class_source_assembly_context(
+            &caller.bytes,
+            &shells,
+            &pool,
+            &mut budget,
+        )
+        .unwrap();
+        let caller_definition = report.class.clone();
+        let request = crate::ir::MethodAnalysisRequest {
+            environment: environment.build(std::slice::from_ref(&snapshot)).unwrap(),
+            method: PhysicalMethodId {
+                owner: caller_definition,
+                name: JvmBytes(b"make".to_vec()),
+                descriptor: JvmBytes(b"(Lnested/SimpleOuter;I)Ljava/lang/Object;".to_vec()),
+            },
+            stages: MethodOperation::Recovery.stages().to_vec(),
+        };
+        let analyzed =
+            jarde_jvm::analyze_method_ir(std::slice::from_ref(&snapshot), &request, &mut budget)
+                .unwrap();
+        (snapshot, request, analyzed, context)
+    }
+
+    fn jar_of(entries: &[(&[u8], &[u8])]) -> Vec<u8> {
+        let mut output = Cursor::new(Vec::new());
+        {
+            let mut zip = ZipArchiveWriter::new(&mut output);
+            for (name, bytes) in entries {
+                let (mut entry, config) = zip
+                    .new_file(EntryPath::verbatim(name.to_vec()))
+                    .compression_method(CompressionMethod::new(0))
+                    .start()
+                    .unwrap();
+                let mut writer = config.wrap(&mut entry);
+                writer.write_all(bytes).unwrap();
+                let (_, descriptor) = writer.finish().unwrap();
+                entry.finish(descriptor).unwrap();
+            }
+            zip.finish().unwrap();
+        }
+        output.into_inner()
+    }
+
+    fn duplicate_target_jar() -> Vec<u8> {
+        jar_of(&[
+            (b"nested/SimpleOuter.class", OUTER),
+            (b"nested/UseInner.class", CALLER),
+            (b"nested/SimpleOuter$Inner.class", INNER),
+            (b"nested/SimpleOuter$Inner.class", INNER),
+        ])
+    }
+
+    fn matrix_jar(outer_a: &[u8], duplicate_a: bool) -> Vec<u8> {
+        matrix_jar_variant(outer_a, duplicate_a, None)
+    }
+
+    fn matrix_jar_variant(
+        outer_a: &[u8],
+        duplicate_a: bool,
+        omitted_class: Option<&str>,
+    ) -> Vec<u8> {
+        let mut entries = vec![
+            (b"matrix/Outer.class".as_slice(), MATRIX_OUTER),
+            (b"matrix/Outer$A.class".as_slice(), outer_a),
+            (b"matrix/Outer$A$Plain.class".as_slice(), MATRIX_PLAIN),
+            (b"matrix/Outer$A$Generic.class".as_slice(), MATRIX_GENERIC),
+        ];
+        if let Some(omitted_class) = omitted_class {
+            entries.retain(|(name, _)| *name != omitted_class.as_bytes());
+        }
+        if duplicate_a {
+            entries.push((b"matrix/Outer$A.class".as_slice(), outer_a));
+        }
+        let caller_paths = MATRIX_CALLERS
+            .iter()
+            .map(|(name, _)| format!("matrix/{name}.class"))
+            .collect::<Vec<_>>();
+        for (path, (_, bytes)) in caller_paths.iter().zip(&MATRIX_CALLERS) {
+            entries.push((path.as_bytes(), bytes));
+        }
+        jar_of(&entries)
+    }
+
+    fn wrong_matrix_a_relation() -> Vec<u8> {
+        let mut bytes = MATRIX_A.to_vec();
+        let mut budget = test_budget();
+        let facts = class_member_facts(MATRIX_A, &mut budget).unwrap();
+        let pool = class_constant_pool(MATRIX_A, &budget).unwrap();
+        let inner_classes = facts
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0 == b"InnerClasses")
+            .expect("matrix A carries its nested member rows");
+        let content_start = usize::try_from(inner_classes.content_span.start).unwrap();
+        let content_end =
+            content_start + usize::try_from(inner_classes.content_span.length).unwrap();
+        let entries = &bytes[content_start..content_end];
+        let count = usize::from(u16::from_be_bytes([entries[0], entries[1]]));
+        let matching_rows = (0..count)
+            .filter(|index| {
+                let at = 2 + index * 8;
+                let class_index = u16::from_be_bytes([entries[at], entries[at + 1]]);
+                jarde_reader::classfile::cp_class_name(&pool, class_index)
+                    .is_ok_and(|name| name.0 == b"matrix/Outer$A")
+            })
+            .collect::<Vec<_>>();
+        let [row] = matching_rows.as_slice() else {
+            panic!("matrix A has one self row in InnerClasses");
+        };
+        let outer_index = content_start + 2 + *row * 8 + 2;
+        bytes[outer_index..outer_index + 2].copy_from_slice(&0_u16.to_be_bytes());
+        bytes
+    }
+
+    fn matrix_fixture(
+        jar: &[u8],
+        caller_name: &str,
+        method_descriptor: &[u8],
+    ) -> (
+        ArtifactSnapshot,
+        crate::ir::MethodAnalysisRequest,
+        jarde_jvm::method_ir::MethodIrAnalysis,
+        class_source::ClassSourceAssemblyContext,
+        class_source::ClassSourceReport,
+    ) {
+        let engine = Engine::new();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(jar.to_vec()), &mut test_budget())
+            .unwrap();
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: jarde_reader::view::LoaderId("app".to_owned()),
+        };
+        let report = match engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal(format!("matrix/{caller_name}")),
+                    },
+                    environment: environment.clone(),
+                },
+                &mut test_budget(),
+            )
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("matrix caller selection must be unique: {other:?}"),
+        };
+        let mut budget = test_budget();
+        let (caller, _) = read_definition(&snapshot, &report.class, &mut budget).unwrap();
+        let pool = class_constant_pool(&caller.bytes, &budget).unwrap();
+        let shells: Vec<_> = caller
+            .facts
+            .attributes
+            .iter()
+            .filter(|attribute| {
+                matches!(
+                    attribute.name.raw().0.as_slice(),
+                    b"InnerClasses" | b"EnclosingMethod"
+                )
+            })
+            .cloned()
+            .collect();
+        let context = class_source::read_class_source_assembly_context(
+            &caller.bytes,
+            &shells,
+            &pool,
+            &mut budget,
+        )
+        .unwrap();
+        let caller_definition = report.class.clone();
+        let request = crate::ir::MethodAnalysisRequest {
+            environment: environment.build(std::slice::from_ref(&snapshot)).unwrap(),
+            method: PhysicalMethodId {
+                owner: caller_definition,
+                name: JvmBytes(b"make".to_vec()),
+                descriptor: JvmBytes(method_descriptor.to_vec()),
+            },
+            stages: MethodOperation::Recovery.stages().to_vec(),
+        };
+        let analyzed =
+            jarde_jvm::analyze_method_ir(std::slice::from_ref(&snapshot), &request, &mut budget)
+                .unwrap();
+        (snapshot, request, analyzed, context, report)
+    }
+
+    fn wrong_matrix_a_signature() -> Vec<u8> {
+        let mut bytes = MATRIX_A.to_vec();
+        let original = b"<T:Ljava/lang/Object;>Ljava/lang/Object;";
+        let replacement = b"<T:Ljava/lang/Number;>Ljava/lang/Object;";
+        assert_eq!(original.len(), replacement.len());
+        let matches: Vec<_> = bytes
+            .windows(original.len())
+            .enumerate()
+            .filter_map(|(index, window)| (window == original).then_some(index))
+            .collect();
+        let [index] = matches.as_slice() else {
+            panic!("matrix A has one class Signature byte sequence");
+        };
+        bytes[*index..*index + original.len()].copy_from_slice(replacement);
+        bytes
+    }
+
+    fn caller_without_inner_classes_jar() -> Vec<u8> {
+        let mut budget = test_budget();
+        let facts = class_member_facts(CALLER, &mut budget).unwrap();
+        let [attribute] = facts.attributes.as_slice() else {
+            panic!("the frozen caller has one class attribute");
+        };
+        assert_eq!(attribute.name.raw().0, b"InnerClasses");
+        let start = usize::try_from(attribute.span.start).unwrap();
+        let end = start + usize::try_from(attribute.span.length).unwrap();
+        let mut caller = CALLER.to_vec();
+        caller[start - 2..start].copy_from_slice(&0_u16.to_be_bytes());
+        caller.drain(start..end);
+        assert!(
+            class_member_facts(&caller, &mut budget)
+                .unwrap()
+                .attributes
+                .is_empty()
+        );
+        jar_of(&[
+            (b"nested/SimpleOuter.class", OUTER),
+            (b"nested/UseInner.class", &caller),
+            (b"nested/SimpleOuter$Inner.class", INNER),
+            (b"nested/InnerRunner.class", RUNNER),
+        ])
+    }
+
+    #[test]
+    fn selected_target_is_required_and_ambiguous_definitions_do_not_prove() {
+        for (jar, expected) in [
+            (FULL_JAR.to_vec(), 1),
+            (MISSING_JAR.to_vec(), 0),
+            (WRONG_RELATION_JAR.to_vec(), 0),
+            (WRONG_OUTER_RELATION_JAR.to_vec(), 0),
+            (duplicate_target_jar(), 0),
+        ] {
+            let (snapshot, request, analyzed, context) = fixture(&jar);
+            let targets = read_class_source_member_inner_targets(
+                std::slice::from_ref(&snapshot),
+                &request,
+                analyzed.ir(),
+                &context,
+                &mut test_budget(),
+            )
+            .unwrap();
+            assert_eq!(targets.len(), expected);
+            if let [target] = targets.as_slice() {
+                assert_eq!(target.owner, "nested/SimpleOuter$Inner");
+                assert_eq!(target.constructor_descriptor, "(Lnested/SimpleOuter;I)V");
+                assert_eq!(target.definition.snapshot(), snapshot.id());
+            }
+        }
+    }
+
+    #[test]
+    fn caller_relation_is_optional_but_a_present_row_must_agree() {
+        let absent_jar = caller_without_inner_classes_jar();
+        let (absent_snapshot, absent_request, absent_analyzed, absent_context) =
+            fixture(&absent_jar);
+        assert!(absent_context.inner_classes.is_empty());
+        let targets = read_class_source_member_inner_targets(
+            std::slice::from_ref(&absent_snapshot),
+            &absent_request,
+            absent_analyzed.ir(),
+            &absent_context,
+            &mut test_budget(),
+        )
+        .unwrap();
+        assert_eq!(
+            targets.len(),
+            1,
+            "the selected target's own relation proves membership"
+        );
+
+        let (snapshot, request, analyzed, context) = fixture(FULL_JAR);
+        let mut contradictory = context.clone();
+        let row = contradictory
+            .inner_classes
+            .iter_mut()
+            .find(|row| {
+                row.inner_name
+                    .as_ref()
+                    .is_some_and(|name| name.0 == b"Inner")
+            })
+            .unwrap();
+        row.outer_class_index = 0;
+        assert!(
+            read_class_source_member_inner_targets(
+                std::slice::from_ref(&snapshot),
+                &request,
+                analyzed.ir(),
+                &contradictory,
+                &mut test_budget(),
+            )
+            .unwrap()
+            .is_empty()
+        );
+
+        let mut duplicate = context.clone();
+        duplicate
+            .inner_classes
+            .push(context.inner_classes[0].clone());
+        assert!(
+            read_class_source_member_inner_targets(
+                std::slice::from_ref(&snapshot),
+                &request,
+                analyzed.ir(),
+                &duplicate,
+                &mut test_budget(),
+            )
+            .unwrap()
+            .is_empty()
+        );
+    }
+
+    #[test]
+    fn generic_outer_path_and_all_member_call_shapes_remain_selected_and_emittable() {
+        let jar = matrix_jar(MATRIX_A, false);
+        for (caller_name, descriptor, expected_header, expected_target, generic_diamond) in [
+            (
+                "UsePlainRaw",
+                b"(Lmatrix/Outer$A;I)Ljava/lang/Object;".as_slice(),
+                "java.lang.Object make(matrix.Outer.A arg0, int arg1)",
+                "matrix/Outer$A$Plain",
+                false,
+            ),
+            (
+                "UsePlain",
+                b"(Lmatrix/Outer$A;I)Ljava/lang/Object;".as_slice(),
+                "java.lang.Object make(matrix.Outer.A<java.lang.String> arg0, int arg1)",
+                "matrix/Outer$A$Plain",
+                false,
+            ),
+            (
+                "UseGenericObject",
+                b"(Lmatrix/Outer$A;I)Ljava/lang/Object;".as_slice(),
+                "java.lang.Object make(matrix.Outer.A<java.lang.String> arg0, int arg1)",
+                "matrix/Outer$A$Generic",
+                true,
+            ),
+            (
+                "UseGenericTyped",
+                b"(Lmatrix/Outer$A;I)Lmatrix/Outer$A$Generic;".as_slice(),
+                "matrix.Outer.A<java.lang.String>.Generic<java.lang.Integer> make(",
+                "matrix/Outer$A$Generic",
+                true,
+            ),
+        ] {
+            let (snapshot, request, analyzed, context, report) =
+                matrix_fixture(&jar, caller_name, descriptor);
+            let targets = read_class_source_member_inner_targets(
+                std::slice::from_ref(&snapshot),
+                &request,
+                analyzed.ir(),
+                &context,
+                &mut test_budget(),
+            )
+            .unwrap();
+            let [target] = targets.as_slice() else {
+                panic!("{caller_name} must resolve one selected member target: {targets:?}");
+            };
+            assert_eq!(target.owner, expected_target);
+            assert_eq!(
+                target
+                    .source_type_path
+                    .iter()
+                    .map(|segment| segment.source_name.as_str())
+                    .collect::<Vec<_>>(),
+                [
+                    "matrix.Outer",
+                    "matrix.Outer.A",
+                    if expected_target.ends_with("Plain") {
+                        "matrix.Outer.A.Plain"
+                    } else {
+                        "matrix.Outer.A.Generic"
+                    }
+                ]
+            );
+            assert_eq!(target.generic_diamond, generic_diamond);
+
+            let method = report
+                .methods
+                .iter()
+                .find(|method| method.item.name.raw().0 == b"make")
+                .expect("matrix caller publishes make");
+            let declaration = method.declaration.as_deref().unwrap_or_default();
+            assert!(
+                declaration.contains(expected_header),
+                "{caller_name}: {declaration}"
+            );
+            assert!(
+                method.text.contains("matrix.Outer.A.mark(arg1)"),
+                "{caller_name}: {}",
+                method.text
+            );
+            if expected_target.ends_with("Plain") {
+                assert!(
+                    method.text.contains(".new Plain("),
+                    "{caller_name}: {}",
+                    method.text
+                );
+            } else {
+                assert!(
+                    method.text.contains(".new Generic<>("),
+                    "{caller_name}: {}",
+                    method.text
+                );
+            }
+            let class_source::ClassSourceOutcome::Recovered { .. } = &method.outcome else {
+                panic!("{caller_name} body must be recovered");
+            };
+            let evidence = jarde_java::RecoveryEvidenceRequest::essential()
+                .with_kind(jarde_java::RecoveryEvidenceKind::RuleDetails);
+            let (detailed, _, _, _, _, _, generic_return, _, _) =
+                recovery_from_with_class_candidates(
+                    std::slice::from_ref(&snapshot),
+                    &request,
+                    analyzed,
+                    CalleeClass::None,
+                    Some(&context),
+                    &evidence,
+                    &mut test_budget(),
+                    true,
+                    true,
+                    false,
+                )
+                .unwrap();
+            assert!(matches!(
+                generic_return.map(|candidate| candidate.value),
+                Some(jarde_java::report::GenericReturnValue::MemberCreation { .. })
+            ));
+            let report = detailed.recovery();
+            let [new_record] = report.news.as_slice() else {
+                panic!(
+                    "{caller_name} must retain one physical new@1 record: {:?}",
+                    report.news
+                );
+            };
+            assert!(new_record.presented);
+            assert_eq!(new_record.class, expected_target);
+            assert_eq!(new_record.arguments.len(), 2);
+            assert_eq!(new_record.arguments[0], 5, "physical outer argument BCI");
+            assert!(new_record.arguments[0] < new_record.arguments[1]);
+            assert!(new_record.head < new_record.arguments[0]);
+            assert!(new_record.constructor.unwrap() > new_record.arguments[1]);
+        }
+    }
+
+    #[test]
+    fn malformed_generic_outer_signature_and_ambiguous_outer_definitions_do_not_prove() {
+        let wrong_signature = wrong_matrix_a_signature();
+        let wrong_relation = wrong_matrix_a_relation();
+        for jar in [
+            matrix_jar(&wrong_signature, false),
+            matrix_jar(&wrong_relation, false),
+            matrix_jar(MATRIX_A, true),
+            matrix_jar_variant(MATRIX_A, false, Some("matrix/Outer$A$Plain.class")),
+            matrix_jar_variant(MATRIX_A, false, Some("matrix/Outer.class")),
+        ] {
+            let (snapshot, request, analyzed, context, _) =
+                matrix_fixture(&jar, "UsePlain", b"(Lmatrix/Outer$A;I)Ljava/lang/Object;");
+            let targets = read_class_source_member_inner_targets(
+                std::slice::from_ref(&snapshot),
+                &request,
+                analyzed.ir(),
+                &context,
+                &mut test_budget(),
+            )
+            .unwrap();
+            assert!(targets.is_empty());
+        }
+    }
+
+    #[test]
+    fn target_selection_observes_budget_and_cancellation() {
+        let (snapshot, request, analyzed, context) = fixture(FULL_JAR);
+        let mut limits = test_budget().limits().clone();
+        limits.class_headers = 0;
+        let error = read_class_source_member_inner_targets(
+            std::slice::from_ref(&snapshot),
+            &request,
+            analyzed.ir(),
+            &context,
+            &mut Budget::new(limits),
+        )
+        .unwrap_err();
+        assert!(matches!(error, Error::BudgetExceeded { .. }));
+
+        let cancellation = jarde_reader::budget::CancellationToken::new();
+        cancellation.cancel();
+        let error = read_class_source_member_inner_targets(
+            std::slice::from_ref(&snapshot),
+            &request,
+            analyzed.ir(),
+            &context,
+            &mut Budget::with_cancellation_token(test_budget().limits().clone(), cancellation),
+        )
+        .unwrap_err();
+        assert!(matches!(error, Error::Cancelled { .. }));
+    }
+}
+
+#[cfg(test)]
+mod interface_super_proof_tests {
+    use super::*;
+    use jarde_reader::view::MultiReleasePolicy;
+    use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
+    use std::io::{Cursor, Write};
+
+    const SPECIAL: &[u8] =
+        include_bytes!("../tests/fixtures/p3-special-dispatch/v8/SpecialProbe.class");
+    const BASE: &[u8] = include_bytes!("../tests/fixtures/p3-special-dispatch/v8/BaseProbe.class");
+    const DEFAULT: &[u8] =
+        include_bytes!("../tests/fixtures/p3-special-dispatch/v8/DefaultProbe.class");
+    const LEFT_DEFAULT: &[u8] = include_bytes!(
+        "../tests/fixtures/p3-special-dispatch/interface-super-proof/proof/LeftDefault.class"
+    );
+    const RIGHT_DEFAULT: &[u8] = include_bytes!(
+        "../tests/fixtures/p3-special-dispatch/interface-super-proof/proof/RightDefault.class"
+    );
+    const BOTH_DEFAULT: &[u8] = include_bytes!(
+        "../tests/fixtures/p3-special-dispatch/interface-super-proof/proof/BothDefault.class"
+    );
+
+    fn budget() -> Budget {
+        let mut limits = crate::facade::task_limits(&[]).expect("default task limits");
+        limits.input_bytes = u64::MAX;
+        limits.archive_entries = u64::MAX;
+        limits.entry_bytes = u64::MAX;
+        limits.read_bytes = u64::MAX;
+        limits.class_bytes = u64::MAX;
+        limits.attribute_bytes = u64::MAX;
+        limits.code_bytes = u64::MAX;
+        limits.class_headers = u64::MAX;
+        limits.method_bodies = u64::MAX;
+        limits.ir_items = u64::MAX;
+        limits.ir_edges = u64::MAX;
+        limits.analysis_steps = u64::MAX;
+        limits.normalization_clones = u64::MAX;
+        limits.elapsed_millis = u64::MAX;
+        Budget::new(limits)
+    }
+
+    fn jar(entries: &[(&[u8], &[u8])]) -> Vec<u8> {
+        let mut output = Cursor::new(Vec::new());
+        {
+            let mut archive = ZipArchiveWriter::new(&mut output);
+            for (name, bytes) in entries {
+                let (mut entry, config) = archive
+                    .new_file(EntryPath::verbatim(name.to_vec()))
+                    .compression_method(CompressionMethod::new(0))
+                    .start()
+                    .unwrap();
+                let mut writer = config.wrap(&mut entry);
+                writer.write_all(bytes).unwrap();
+                let (_, descriptor) = writer.finish().unwrap();
+                entry.finish(descriptor).unwrap();
+            }
+            archive.finish().unwrap();
+        }
+        output.into_inner()
+    }
+
+    fn fixture() -> (
+        ArtifactSnapshot,
+        crate::ir::MethodAnalysisRequest,
+        jarde_jvm::method_ir::MethodIrAnalysis,
+    ) {
+        let engine = Engine::new();
+        let snapshot = engine
+            .open(
+                ArtifactInput::bytes(jar(&[
+                    (b"SpecialProbe.class", SPECIAL),
+                    (b"BaseProbe.class", BASE),
+                    (b"DefaultProbe.class", DEFAULT),
+                ])),
+                &mut budget(),
+            )
+            .unwrap();
+        let environment_request = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let source = engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("SpecialProbe"),
+                    },
+                    environment: environment_request.clone(),
+                },
+                &mut budget(),
+            )
+            .unwrap();
+        let OperationOutcome::Performed(source) = source else {
+            panic!("fixture selection must be unique");
+        };
+        let method = source
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"defaultCall")
+            .unwrap()
+            .item
+            .identity
+            .clone();
+        let request = crate::ir::MethodAnalysisRequest {
+            environment: environment_request
+                .build(std::slice::from_ref(&snapshot))
+                .unwrap(),
+            method,
+            stages: MethodOperation::Recovery.stages().to_vec(),
+        };
+        let analyzed =
+            jarde_jvm::analyze_method_ir(std::slice::from_ref(&snapshot), &request, &mut budget())
+                .unwrap();
+        (snapshot, request, analyzed)
+    }
+
+    fn conflicting_default_closure() -> (
+        Vec<SelectedInterfaceNode>,
+        std::collections::BTreeMap<Vec<u8>, usize>,
+        std::collections::BTreeMap<Vec<u8>, Vec<Vec<u8>>>,
+    ) {
+        let engine = Engine::new();
+        let snapshot = engine
+            .open(
+                ArtifactInput::bytes(jar(&[
+                    (b"proof/LeftDefault.class", LEFT_DEFAULT),
+                    (b"proof/RightDefault.class", RIGHT_DEFAULT),
+                    (b"proof/BothDefault.class", BOTH_DEFAULT),
+                ])),
+                &mut budget(),
+            )
+            .unwrap();
+        let request = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let environment = request.build(std::slice::from_ref(&snapshot)).unwrap();
+        let mut read_budget = budget();
+        let mut execution = ExecutionReport::Complete {
+            usage: read_budget.usage(),
+        };
+        let mut nodes = Vec::new();
+        let mut by_name = std::collections::BTreeMap::new();
+        let mut graph = std::collections::BTreeMap::new();
+        for owner in [
+            "proof/LeftDefault",
+            "proof/RightDefault",
+            "proof/BothDefault",
+        ] {
+            let (definition, read) = resolve_class_source_dependency_read(
+                std::slice::from_ref(&snapshot),
+                &environment,
+                None,
+                owner,
+                &mut execution,
+                &mut read_budget,
+            )
+            .unwrap()
+            .expect("the selected plain JAR contains every proof interface");
+            let mut facts = read.facts;
+            assert!(facts.stopped_at.is_none());
+            assert_eq!(facts.method_count as usize, facts.methods.len());
+            let raw_owner = facts.this_class.raw().0.clone();
+            let parents = facts
+                .interfaces
+                .iter()
+                .map(|parent| parent.raw().0.clone())
+                .collect::<Vec<_>>();
+            if raw_owner.as_slice() == b"proof/BothDefault" {
+                assert!(facts.methods.iter().any(|method| {
+                    method.name.raw().0.as_slice() == b"value"
+                        && method.descriptor.raw().0.as_slice() == b"()I"
+                }));
+                // javac needs the conflict-resolving override. Remove that one declaration from
+                // these already selected facts to present the inherited multi-default case
+                // directly to unique_source_default; this test covers the proof function only.
+                facts
+                    .methods
+                    .retain(|method| method.name.raw().0.as_slice() != b"value");
+            }
+            let index = nodes.len();
+            by_name.insert(raw_owner.clone(), index);
+            graph.insert(raw_owner, parents);
+            nodes.push(SelectedInterfaceNode { definition, facts });
+        }
+        (nodes, by_name, graph)
+    }
+
+    #[test]
+    fn interface_hierarchy_cycles_are_unknown() {
+        let (snapshot, request, _) = fixture();
+        let mut selection_budget = budget();
+        let mut execution = ExecutionReport::Complete {
+            usage: selection_budget.usage(),
+        };
+        let (definition, read) = resolve_class_source_dependency_read(
+            std::slice::from_ref(&snapshot),
+            &request.environment,
+            Some(&request.method),
+            "DefaultProbe",
+            &mut execution,
+            &mut selection_budget,
+        )
+        .unwrap()
+        .expect("the selected environment supplies DefaultProbe");
+        let mut facts = read.facts;
+        let owner = facts.this_class.raw().0.clone();
+        facts.interfaces.push(facts.this_class.clone());
+        let mut read_budget = budget();
+        let usage = read_budget.usage();
+        let mut reads = InterfaceSuperReads {
+            content: std::slice::from_ref(&snapshot),
+            environment: &request.environment,
+            enclosing: &request.method,
+            budget: &mut read_budget,
+            execution: ExecutionReport::Complete { usage },
+            attempted: std::collections::BTreeSet::from([owner.clone()]),
+            by_name: std::collections::BTreeMap::from([(owner.clone(), 0)]),
+            nodes: vec![SelectedInterfaceNode { definition, facts }],
+        };
+        let complete = ensure_interface_closure(
+            &owner,
+            0,
+            &mut reads,
+            &mut std::collections::BTreeMap::new(),
+            &mut std::collections::BTreeMap::new(),
+            &mut Vec::new(),
+        )
+        .unwrap();
+        assert!(!complete, "a repeated active interface edge is not a proof");
+    }
+
+    #[test]
+    fn interface_hierarchy_observes_dependency_depth_and_cancellation() {
+        let (snapshot, request, analyzed) = fixture();
+        let mut limits = budget().limits().clone();
+        limits.dependency_depth = 0;
+        let error = prove_interface_super_calls(
+            std::slice::from_ref(&snapshot),
+            &request,
+            analyzed.ir(),
+            &mut Budget::new(limits),
+        )
+        .unwrap_err();
+        assert!(matches!(
+            error,
+            Error::BudgetExceeded {
+                dimension: jarde_reader::budget::BudgetDimension::DependencyDepth,
+                ..
+            }
+        ));
+
+        let (snapshot, request, analyzed) = fixture();
+        let cancellation = jarde_reader::budget::CancellationToken::new();
+        cancellation.cancel();
+        let error = prove_interface_super_calls(
+            std::slice::from_ref(&snapshot),
+            &request,
+            analyzed.ir(),
+            &mut Budget::with_cancellation_token(budget().limits().clone(), cancellation),
+        )
+        .unwrap_err();
+        assert!(matches!(error, Error::Cancelled { .. }));
+    }
+
+    #[test]
+    fn unique_source_default_rejects_multiple_inherited_defaults() {
+        let (nodes, by_name, graph) = conflicting_default_closure();
+        assert!(
+            !unique_source_default(
+                b"proof/BothDefault",
+                b"value",
+                b"()I",
+                &nodes,
+                &by_name,
+                &graph,
+                &mut budget(),
+            )
+            .unwrap()
+        );
+    }
+}
+
+fn prove_class_source_bridges(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    policy: &EnvironmentPolicy,
+    definition: &PhysicalDefinitionId,
+    facts: &ClassMemberFacts,
+    methods: &[ClassSourceMethod],
+    candidates: &[jarde_java::bridge::ClassSourceBridgeCandidate],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Vec<class_source::ClassSourceBridgeProof> {
+    const ACC_PUBLIC: u16 = 0x0001;
+    const ACC_PRIVATE: u16 = 0x0002;
+    const ACC_STATIC: u16 = 0x0008;
+    const ACC_BRIDGE: u16 = 0x0040;
+    const ACC_ABSTRACT: u16 = 0x0400;
+    const ACC_NATIVE: u16 = 0x0100;
+    const ACC_SYNTHETIC: u16 = 0x1000;
+    const RECONSTRUCTIBLE_BRIDGE_FLAGS: u16 = ACC_PUBLIC | ACC_BRIDGE | ACC_SYNTHETIC;
+
+    let class_name = facts.this_class.raw().0.as_slice();
+    let mut proofs = Vec::new();
+    for candidate in candidates {
+        let Some(member) = candidate.member.as_ref() else {
+            continue;
+        };
+        let refuse = |reason: &str| class_source::ClassSourceBridgeProof {
+            member: member.clone(),
+            target: None,
+            call_bci: candidate.call_bci,
+            admitted: false,
+            projected: false,
+            refusal: Some(reason.to_owned()),
+        };
+        if &member.owner != definition {
+            proofs.push(refuse(
+                "the sidecar identity belongs to another physical class",
+            ));
+            continue;
+        }
+        if facts.stopped_at.is_some() {
+            proofs.push(refuse("the physical class method table is incomplete"));
+            continue;
+        }
+        let Some(flags) = candidate.access_flags else {
+            proofs.push(refuse("the bridge member flags were not stated"));
+            continue;
+        };
+        if flags != RECONSTRUCTIBLE_BRIDGE_FLAGS {
+            proofs.push(refuse(
+                "the physical bridge has modifiers beyond public bridge synthetic that source reconstruction does not prove",
+            ));
+            continue;
+        }
+        if candidate.has_exception_handlers {
+            proofs.push(refuse(
+                "the bridge Code declares an exception handler or was unavailable",
+            ));
+            continue;
+        }
+        if !candidate.presented || !candidate.pure_forward {
+            proofs.push(refuse("bridge@1 did not prove a pure single forward"));
+            continue;
+        }
+        let Some(target) = candidate.target.as_ref() else {
+            proofs.push(refuse("bridge@1 did not retain a structured call target"));
+            continue;
+        };
+        let Some(call_bci) = candidate.call_bci else {
+            proofs.push(refuse("bridge@1 did not retain the forward call BCI"));
+            continue;
+        };
+        let bridge_headers: Vec<_> = facts
+            .methods
+            .iter()
+            .filter(|header| {
+                header.name.raw().0 == member.name.0
+                    && header.descriptor.raw().0 == member.descriptor.0
+            })
+            .collect();
+        let [bridge_header] = bridge_headers.as_slice() else {
+            proofs.push(refuse("the physical bridge header is missing or ambiguous"));
+            continue;
+        };
+        if bridge_header.access_flags != flags {
+            proofs.push(refuse(
+                "bridge sidecar flags disagree with the unique physical method header",
+            ));
+            continue;
+        }
+        if bridge_header
+            .attributes
+            .iter()
+            .filter(|attribute| attribute.name.raw().0.as_slice() == b"Code")
+            .count()
+            != 1
+        {
+            proofs.push(refuse(
+                "the physical bridge header does not declare exactly one Code attribute",
+            ));
+            continue;
+        }
+        if bridge_header
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0.as_slice() != b"Code")
+        {
+            proofs.push(refuse(
+                "the bridge declares method metadata whose source copying is unproved",
+            ));
+            continue;
+        }
+        let bridge_methods: Vec<_> = methods
+            .iter()
+            .filter(|method| method.item.identity == *member)
+            .collect();
+        let [bridge_method] = bridge_methods.as_slice() else {
+            proofs.push(refuse(
+                "the physical bridge has no unique class-source method record",
+            ));
+            continue;
+        };
+        let complete_bridge = matches!(
+            &bridge_method.outcome,
+            class_source::ClassSourceOutcome::Recovered { report, analysis }
+                if report.produced()
+                    && report.quality == Quality::Structured
+                    && report.fallbacks.is_empty()
+                    && matches!(&report.execution, ExecutionReport::Complete { .. })
+                    && matches!(&analysis.execution, ExecutionReport::Complete { .. })
+        );
+        if !complete_bridge {
+            proofs.push(refuse(
+                "the bridge body recovery did not complete as a structured artifact",
+            ));
+            continue;
+        }
+        if target.kind() != jarde_java::facts::InvokeKind::Virtual {
+            proofs.push(refuse("the verified invocation is not the instance virtual call required for source override"));
+            continue;
+        }
+        if target.owner().as_bytes() != class_name
+            || target.name().as_bytes() != member.name.0.as_slice()
+            || target.is_interface_reference()
+        {
+            proofs.push(refuse(
+                "the verified invocation does not name this class's source method",
+            ));
+            continue;
+        }
+        let Some((bridge_parameters, bridge_return)) =
+            method_descriptor_parts(&member.descriptor.0)
+        else {
+            proofs.push(refuse(
+                "the bridge descriptor is not a complete method descriptor",
+            ));
+            continue;
+        };
+        let Some((target_parameters, target_return)) =
+            method_descriptor_parts(target.descriptor().as_bytes())
+        else {
+            proofs.push(refuse(
+                "the invocation descriptor is not a complete method descriptor",
+            ));
+            continue;
+        };
+        if bridge_parameters != target_parameters
+            || target.name().as_bytes() != member.name.0.as_slice()
+        {
+            proofs.push(refuse(
+                "the bridge and invoked method do not share a name and parameter descriptor",
+            ));
+            continue;
+        }
+        if bridge_return == target_return
+            || bridge_return != b"Ljava/lang/Object;"
+            || !(target_return.starts_with(b"L") || target_return.starts_with(b"["))
+        {
+            proofs.push(refuse("the source return type is not a proved covariant subtype of the erased Object return"));
+            continue;
+        }
+        let matching: Vec<_> = methods
+            .iter()
+            .filter(|method| {
+                method.item.identity.name.0 == member.name.0
+                    && method.item.identity.descriptor.0.as_slice()
+                        == target.descriptor().as_bytes()
+            })
+            .collect();
+        let [source] = matching.as_slice() else {
+            proofs.push(refuse(
+                "the invoked source method is missing or not unique in the current class",
+            ));
+            continue;
+        };
+        let source_headers: Vec<_> = facts
+            .methods
+            .iter()
+            .filter(|header| {
+                header.name.raw().0 == source.item.identity.name.0
+                    && header.descriptor.raw().0 == source.item.identity.descriptor.0
+            })
+            .collect();
+        let [source_header] = source_headers.as_slice() else {
+            proofs.push(refuse("the source method header is missing or ambiguous"));
+            continue;
+        };
+        let source_flags = source.item.access_flags;
+        if source_flags != source_header.access_flags {
+            proofs.push(refuse(
+                "the source record flags disagree with the unique physical method header",
+            ));
+            continue;
+        }
+        if source_flags & ACC_BRIDGE != 0
+            || source_flags & ACC_PUBLIC == 0
+            || source_flags & (ACC_PRIVATE | ACC_STATIC | ACC_ABSTRACT | ACC_NATIVE) != 0
+            || source_flags & ACC_SYNTHETIC != 0
+            || source.declaration.is_none()
+        {
+            proofs.push(refuse(
+                "the unique target is not a spellable, concrete public source method",
+            ));
+            continue;
+        }
+        if source_header
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0.as_slice() != b"Code")
+            || source_header
+                .attributes
+                .iter()
+                .filter(|attribute| attribute.name.raw().0.as_slice() == b"Code")
+                .count()
+                != 1
+        {
+            proofs.push(refuse("the source method metadata could be copied to an elided bridge and is not proved reconstructible"));
+            continue;
+        }
+        let complete_source = matches!(
+            &source.outcome,
+            class_source::ClassSourceOutcome::Recovered { report, analysis }
+                if report.produced()
+                    && report.quality == Quality::Structured
+                    && report.fallbacks.is_empty()
+                    && matches!(&report.execution, ExecutionReport::Complete { .. })
+                    && matches!(&analysis.execution, ExecutionReport::Complete { .. })
+        );
+        if !complete_source {
+            proofs.push(refuse(
+                "the unique source method did not recover completely",
+            ));
+            continue;
+        }
+        let mut inherited = false;
+        let mut saw_unresolved = false;
+        let mut reloaded_current = false;
+        let mut stopped = false;
+        let mut direct_supers: Vec<(jarde_reader::model::JvmBytes, ReferenceUse)> = facts
+            .interfaces
+            .iter()
+            .map(|name| (name.raw().clone(), ReferenceUse::InvokeInterface))
+            .collect();
+        if let Some(super_class) = &facts.super_class {
+            direct_supers.push((super_class.raw().clone(), ReferenceUse::InvokeVirtual));
+        }
+        for (owner, use_kind) in direct_supers {
+            if owner.0.as_slice() == class_name {
+                saw_unresolved = true;
+                continue;
+            }
+            // Object is the implicit root for every class. It is not evidence that a direct
+            // bridge contract exists, and this explicit environment need not carry a JRE image.
+            if use_kind == ReferenceUse::InvokeVirtual && owner.0.as_slice() == b"java/lang/Object"
+            {
+                continue;
+            }
+            if matches!(policy, EnvironmentPolicy::SingleClass) {
+                saw_unresolved = true;
+                continue;
+            }
+            let resolution = match jarde_jvm::resolve_symbol(
+                content,
+                &ResolutionRequest {
+                    environment: environment.clone(),
+                    target: jarde_reader::model::SymbolRef::Method {
+                        owner: owner.clone(),
+                        name: member.name.clone(),
+                        descriptor: member.descriptor.clone(),
+                    },
+                    use_kind,
+                    caller: jarde_jvm::environment::CallerContext {
+                        loader: environment.runtime.load_domain.loader.clone(),
+                        enclosing: None,
+                    },
+                    dispatch: None,
+                },
+                budget,
+            ) {
+                Ok(resolution) => resolution,
+                Err(error) => {
+                    merge_execution(execution, stop_execution(&error, budget));
+                    stopped = true;
+                    break;
+                }
+            };
+            merge_execution(execution, resolution.execution.clone());
+            if !matches!(&resolution.execution, ExecutionReport::Complete { .. }) {
+                stopped = true;
+                break;
+            }
+            reloaded_current |= resolution
+                .reads
+                .iter()
+                .any(|read| &read.definition == definition);
+            if resolution.state == Some(ResolutionState::Resolved)
+                && matches!(&resolution.execution, ExecutionReport::Complete { .. })
+                && resolution.unresolved_dependencies.is_empty()
+                && !resolution
+                    .diagnostics
+                    .iter()
+                    .any(|diagnostic| diagnostic.code == "resolution_access_not_checked")
+                && !reloaded_current
+                && resolution.resolved.as_ref().is_some_and(|resolved| {
+                    matches!(
+                        &resolved.member,
+                        jarde_reader::model::SymbolRef::Method { name, descriptor, .. }
+                            if name.0.as_slice() == member.name.0.as_slice()
+                                && descriptor.0.as_slice() == member.descriptor.0.as_slice()
+                    ) && resolution
+                        .reads
+                        .iter()
+                        .any(|read| read.definition == resolved.definition)
+                })
+            {
+                inherited = true;
+                break;
+            }
+            if resolution.state == Some(ResolutionState::UnresolvedDependency)
+                || resolution.state == Some(ResolutionState::Missing)
+                || resolution.state == Some(ResolutionState::Ambiguous)
+                || !resolution.unresolved_dependencies.is_empty()
+            {
+                saw_unresolved = true;
+            }
+        }
+        if !inherited {
+            let reason = if stopped {
+                "resolution of a direct parent or interface stopped before it proved the erased method"
+            } else if reloaded_current {
+                "the existing resolver traversed back into this prepared class; admission is refused"
+            } else if saw_unresolved {
+                "a direct parent or interface needed for the erased method is unresolved"
+            } else {
+                "no resolved direct parent or interface requires the erased method descriptor"
+            };
+            if stopped {
+                proofs.clear();
+                proofs.push(refuse(reason));
+                return proofs;
+            }
+            proofs.push(refuse(reason));
+            continue;
+        }
+        proofs.push(class_source::ClassSourceBridgeProof {
+            member: member.clone(),
+            target: Some(source.item.identity.clone()),
+            call_bci: Some(call_bci),
+            admitted: true,
+            projected: false,
+            refusal: None,
+        });
+    }
+    proofs
+}
+
+fn method_descriptor_parts(descriptor: &[u8]) -> Option<(&[u8], &[u8])> {
+    descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
+    let close = descriptor.iter().position(|byte| *byte == b')')?;
+    Some((&descriptor[..=close], &descriptor[close + 1..]))
+}
+
+/// Plans all bridge source replacements without mutating the physical member records. A missing or
+/// ambiguous join is a fail-closed class projection: no staged note is committed.
+fn stage_class_source_bridge_projections(
+    proofs: &[class_source::ClassSourceBridgeProof],
+    methods: &[ClassSourceMethod],
+) -> Option<Vec<(usize, String)>> {
+    let mut staged = Vec::new();
+    for proof in proofs.iter().filter(|proof| proof.admitted) {
+        let target = proof.target.as_ref()?;
+        let call_bci = proof.call_bci?;
+        let bridge_matches: Vec<_> = methods
+            .iter()
+            .enumerate()
+            .filter(|(_, method)| method.item.identity == proof.member)
+            .collect();
+        let [(bridge_index, bridge)] = bridge_matches.as_slice() else {
+            return None;
+        };
+        let target_matches: Vec<_> = methods
+            .iter()
+            .filter(|method| method.item.identity == *target)
+            .collect();
+        let [target_method] = target_matches.as_slice() else {
+            return None;
+        };
+        staged.push((
+            *bridge_index,
+            bridge.bridge_projection_marker(target_method, call_bci),
+        ));
+    }
+    Some(staged)
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -3218,6 +8124,43 @@ pub(crate) fn recovery_presented(
     recovery_from(content, request, analyzed, callee_class, evidence, budget)
 }
 
+/// The class-source member path, which keeps same-run `<clinit>` AST candidates private until the
+/// class-level field projection consumes them.
+fn recovery_presented_for_class_source(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    analyzed: jarde_jvm::method_ir::MethodIrAnalysis,
+    prepared: &jarde_reader::prepared::PreparedClass<'_>,
+    assembly_context: &class_source::ClassSourceAssemblyContext,
+    evidence: &RecoveryEvidenceRequest,
+    prove_generic_return: bool,
+    capture_enum_constructor_ast: bool,
+    budget: &mut Budget,
+) -> Result<(
+    RecoveredMethod,
+    Option<jarde_java::report::ClassInitializerCandidates>,
+    Option<jarde_java::report::ClassEnumConstructorCandidates>,
+    Option<jarde_java::bridge::ClassSourceBridgeCandidate>,
+    Option<Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>>,
+    Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
+    Option<jarde_java::report::GenericReturnCandidate>,
+    Option<jarde_java::report::GenericConstructorCandidate>,
+    Option<jarde_java::report::AnonymousAllocationScan>,
+)> {
+    recovery_from_with_class_candidates(
+        content,
+        request,
+        analyzed,
+        CalleeClass::Prepared(prepared),
+        Some(assembly_context),
+        evidence,
+        budget,
+        true,
+        prove_generic_return,
+        capture_enum_constructor_ast,
+    )
+}
+
 /// The same presentation for a caller that holds the read the run performed, not a preparation
 /// (D2 3.1/3.3).
 ///
@@ -3283,6 +8226,43 @@ fn recovery_from(
     evidence: &RecoveryEvidenceRequest,
     budget: &mut Budget,
 ) -> Result<RecoveredMethod> {
+    recovery_from_with_class_candidates(
+        content,
+        request,
+        analyzed,
+        callee_class,
+        None,
+        evidence,
+        budget,
+        false,
+        false,
+        false,
+    )
+    .map(|(recovered, _, _, _, _, _, _, _, _)| recovered)
+}
+
+fn recovery_from_with_class_candidates(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    analyzed: jarde_jvm::method_ir::MethodIrAnalysis,
+    callee_class: CalleeClass<'_>,
+    assembly_context: Option<&class_source::ClassSourceAssemblyContext>,
+    evidence: &RecoveryEvidenceRequest,
+    budget: &mut Budget,
+    include_class_source_candidates: bool,
+    prove_generic_return: bool,
+    capture_enum_constructor_ast: bool,
+) -> Result<(
+    RecoveredMethod,
+    Option<jarde_java::report::ClassInitializerCandidates>,
+    Option<jarde_java::report::ClassEnumConstructorCandidates>,
+    Option<jarde_java::bridge::ClassSourceBridgeCandidate>,
+    Option<Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>>,
+    Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
+    Option<jarde_java::report::GenericReturnCandidate>,
+    Option<jarde_java::report::GenericConstructorCandidate>,
+    Option<jarde_java::report::AnonymousAllocationScan>,
+)> {
     let facts = crate::facade::recovery_facts(
         analyzed.ir().declaration(),
         analyzed.ir().code(),
@@ -3326,6 +8306,14 @@ fn recovery_from(
         }
     };
     let members = callees.as_ref().map(member_table);
+    let member_inner_targets = match assembly_context {
+        Some(caller) => {
+            read_class_source_member_inner_targets(content, request, analyzed.ir(), caller, budget)?
+        }
+        None => Vec::new(),
+    };
+    let interface_super_calls =
+        prove_interface_super_calls(content, request, analyzed.ir(), budget)?;
     // What the artifact this run is about to commit is *of*, as this entry's own trusted read states
     // it (D3'): the physical identity the run was bound to, the member record the selection above
     // established and the environment the run was validated under. This is the entry's statement and
@@ -3338,14 +8326,81 @@ fn recovery_from(
     );
     let request = jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile)
         .with_evidence(evidence.clone())
-        .with_subject(subject);
-    let mut recovery = jarde_java::recover(
-        &match &members {
-            Some(members) => request.with_members(members),
-            None => request,
-        },
-        budget,
-    );
+        .with_subject(subject)
+        .with_member_inner_targets(&member_inner_targets)
+        .with_interface_super_calls(&interface_super_calls);
+    let (
+        mut recovery,
+        initializer_candidates,
+        enum_constructor_candidates,
+        bridge_candidate,
+        enum_switch_candidates,
+        enum_switch_field_uses,
+        generic_return,
+        generic_constructor,
+        anonymous_allocations,
+    ) = match &members {
+        Some(members) if include_class_source_candidates => {
+            let result = jarde_java::report::recover_for_class_source(
+                &request.with_members(members),
+                budget,
+                prove_generic_return || !member_inner_targets.is_empty(),
+                capture_enum_constructor_ast,
+            );
+            (
+                result.report,
+                result.initializer,
+                result.enum_constructor,
+                result.bridge,
+                Some(result.enum_switches),
+                Some(result.enum_switch_field_uses),
+                result.generic_return,
+                result.generic_constructor,
+                result.anonymous_allocations,
+            )
+        }
+        None if include_class_source_candidates => {
+            let result = jarde_java::report::recover_for_class_source(
+                &request,
+                budget,
+                prove_generic_return || !member_inner_targets.is_empty(),
+                capture_enum_constructor_ast,
+            );
+            (
+                result.report,
+                result.initializer,
+                result.enum_constructor,
+                result.bridge,
+                Some(result.enum_switches),
+                Some(result.enum_switch_field_uses),
+                result.generic_return,
+                result.generic_constructor,
+                result.anonymous_allocations,
+            )
+        }
+        Some(members) => (
+            jarde_java::recover(&request.with_members(members), budget),
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        ),
+        None => (
+            jarde_java::recover(&request, budget),
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        ),
+    };
     // What the read evidence publishes (change `add-demand-driven-core-results`, D3). The read above
     // is the accessor rule's own input whatever the caller selected — the member table it decides
     // from — so what the selection decides is the **record**: the callee facts and the header-read
@@ -3387,12 +8442,22 @@ fn recovery_from(
             + u64::try_from(analysis.reads.len()).unwrap_or(u64::MAX)
             + u64::try_from(analysis.diagnostics.len()).unwrap_or(u64::MAX),
     );
-    Ok(RecoveredMethod {
-        analysis: analysis.clone(),
-        recovery,
-        callees,
-        facts,
-    })
+    Ok((
+        RecoveredMethod {
+            analysis: analysis.clone(),
+            recovery,
+            callees,
+            facts,
+        },
+        initializer_candidates,
+        enum_constructor_candidates,
+        bridge_candidate,
+        enum_switch_candidates,
+        enum_switch_field_uses,
+        generic_return,
+        generic_constructor,
+        anonymous_allocations,
+    ))
 }
 
 /// The facts of one member: what the run's own header read declared about it, or nothing but the

@@ -1,0 +1,17 @@
+package defpackage;
+
+/* JADX INFO: loaded from: FinalLocalCollision.class */
+public class FinalLocalCollision {
+    public static final int local0;
+    public static final int local0_2;
+
+    public static int result() {
+        return (local0 * 10) + local0_2;
+    }
+
+    static {
+        int next = FinalSupport.next();
+        local0 = next + next;
+        local0_2 = FinalSupport.next();
+    }
+}

@@ -1,0 +1,14 @@
+false:-33:0
+false:-1:0
+false:0:0
+false:1:0
+false:31:0
+false:32:0
+false:63:0
+true:-33:-2147483648
+true:-1:-2147483648
+true:0:1
+true:1:2
+true:31:-2147483648
+true:32:1
+true:63:-2147483648

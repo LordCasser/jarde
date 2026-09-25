@@ -390,9 +390,18 @@ fn a_store_of_a_superseded_load_is_refused_with_the_read_named() {
     // the value the load produced, so `local1 = arg0;` would carry the incremented value instead.
     let report = recover(&engine, &fixture, b"saved", b"(I)I");
     let text = &report.text;
+    // The write the body does have is still presented. The return that read slot 1 is not: P3 2b.2
+    // refuses a statement whose local no statement declared, and the store that would have declared
+    // `local1` is the very one quoted here — so the return is quoted too, naming the load it read
+    // and the `return` it is, instead of spelling a name nothing declares.
     assert!(
-        text.contains("arg0 = arg0 + 1;") && text.contains("return local1;"),
-        "the write and the return this body does have are still presented:\n{text}"
+        text.contains("arg0 = arg0 + 1;"),
+        "the write this body does have is still presented:\n{text}"
+    );
+    assert!(
+        !text.contains("return local1;")
+            && text.contains("no statement of this body declared that local"),
+        "the return of a local nothing declared is quoted, not spelled:\n{text}"
     );
     assert!(
         !text.contains("local1 = arg0;"),

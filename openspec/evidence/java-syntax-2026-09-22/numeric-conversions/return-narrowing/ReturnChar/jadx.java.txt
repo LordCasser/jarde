@@ -1,0 +1,9 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ReturnChar.class */
+public class ReturnChar {
+    /* JADX WARN: Multi-variable type inference failed */
+    public static char run(int i) {
+        return i;
+    }
+}

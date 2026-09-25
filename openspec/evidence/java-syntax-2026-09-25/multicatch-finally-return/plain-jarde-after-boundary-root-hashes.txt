@@ -1,0 +1,4 @@
+b6aa940a277693c7b89867bf36add7a9b7863d18a0ac70cf91582220b4c4a04c  /tmp/jarde-instance-root-target/debug/jarde-cli
+ac46b05865c086ccb03eea8e1e1890c3bdff1e45771a71c7acc0579c833b8eef  /tmp/jarde-typed-root-accept/original/PlainMultiCatch.class
+ac46b05865c086ccb03eea8e1e1890c3bdff1e45771a71c7acc0579c833b8eef  /tmp/jarde-typed-root-accept/jadx/PlainMultiCatch.class
+ac46b05865c086ccb03eea8e1e1890c3bdff1e45771a71c7acc0579c833b8eef  /tmp/jarde-typed-root-accept/jarde/PlainMultiCatch.class

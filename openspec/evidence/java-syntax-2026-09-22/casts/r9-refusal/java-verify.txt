@@ -1,0 +1,3 @@
+null
+java.lang.NullPointerException
+null

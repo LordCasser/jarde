@@ -1,0 +1,30 @@
+[
+  {
+    "class": "ShiftBoolLeft",
+    "bytes": 174,
+    "class_sha256": "3be5f2caf7c56a9ac86307bdde9065edfbf0c88b872622a5de9bc0fc1f20e5ca",
+    "patched_descriptor": "(ZI)I",
+    "cli_sha256": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+    "cases": 14,
+    "jarde_quotes": 2,
+    "jarde_javac": 1,
+    "jadx": 0,
+    "jadx_javac": 0,
+    "jadx_run": 0,
+    "jadx_equal": true
+  },
+  {
+    "class": "ShiftBoolDistance",
+    "bytes": 178,
+    "class_sha256": "97908938bf5dfc76c392c78c376a961c8a20d11619c2d3dbee060c8cfe23d472",
+    "patched_descriptor": "(IZ)I",
+    "cli_sha256": "7527b03abc1e487121d204672b52043ca5f3aa1148c6d65b136e36f2bbe1f4aa",
+    "cases": 10,
+    "jarde_quotes": 2,
+    "jarde_javac": 1,
+    "jadx": 0,
+    "jadx_javac": 0,
+    "jadx_run": 0,
+    "jadx_equal": true
+  }
+]

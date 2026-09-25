@@ -1,0 +1,7 @@
+command: jadx -d /tmp/jarde-overload-boundaries/cases-v1/ArrayObject/jadx /tmp/jarde-overload-boundaries/cases-v1/ArrayObject/ArrayObject.class
+exit: 0
+INFO  - loading ...
+INFO  - processing ...
+INFO  - progress: 0 of 1 (0%)
+                                                             
+INFO  - done

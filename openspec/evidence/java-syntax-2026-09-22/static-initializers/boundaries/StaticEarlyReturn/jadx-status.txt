@@ -1,0 +1,4 @@
+jadx_rc=0
+javac_rc=0
+runtrue_rc=0
+runfalse_rc=0

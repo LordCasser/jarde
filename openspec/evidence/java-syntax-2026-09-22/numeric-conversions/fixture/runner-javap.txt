@@ -1,0 +1,878 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-primitive-conversions-fixture-ee8loqsi/original/PrimitiveConversionsRunner.class
+  Last modified 2026年9月23日; size 3691 bytes
+  SHA-256 checksum e194b68bdae77bfee1615e99e6af5e5026ec3593ef90e9eb4823b52ce2ac2b24
+public class PrimitiveConversionsRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #67                         // PrimitiveConversionsRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 4, attributes: 0
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Methodref          #8.#9         // java/lang/Float.floatToRawIntBits:(F)I
+    #8 = Class              #10           // java/lang/Float
+    #9 = NameAndType        #11:#12       // floatToRawIntBits:(F)I
+   #10 = Utf8               java/lang/Float
+   #11 = Utf8               floatToRawIntBits
+   #12 = Utf8               (F)I
+   #13 = Methodref          #14.#15       // java/lang/Integer.toHexString:(I)Ljava/lang/String;
+   #14 = Class              #16           // java/lang/Integer
+   #15 = NameAndType        #17:#18       // toHexString:(I)Ljava/lang/String;
+   #16 = Utf8               java/lang/Integer
+   #17 = Utf8               toHexString
+   #18 = Utf8               (I)Ljava/lang/String;
+   #19 = Methodref          #20.#21       // java/lang/Double.doubleToRawLongBits:(D)J
+   #20 = Class              #22           // java/lang/Double
+   #21 = NameAndType        #23:#24       // doubleToRawLongBits:(D)J
+   #22 = Utf8               java/lang/Double
+   #23 = Utf8               doubleToRawLongBits
+   #24 = Utf8               (D)J
+   #25 = Methodref          #26.#27       // java/lang/Long.toHexString:(J)Ljava/lang/String;
+   #26 = Class              #28           // java/lang/Long
+   #27 = NameAndType        #17:#29       // toHexString:(J)Ljava/lang/String;
+   #28 = Utf8               java/lang/Long
+   #29 = Utf8               (J)Ljava/lang/String;
+   #30 = Integer            -2147483648
+   #31 = Integer            16777217
+   #32 = Integer            2147483647
+   #33 = Fieldref           #34.#35       // java/lang/System.out:Ljava/io/PrintStream;
+   #34 = Class              #36           // java/lang/System
+   #35 = NameAndType        #37:#38       // out:Ljava/io/PrintStream;
+   #36 = Utf8               java/lang/System
+   #37 = Utf8               out
+   #38 = Utf8               Ljava/io/PrintStream;
+   #39 = Class              #40           // java/lang/StringBuilder
+   #40 = Utf8               java/lang/StringBuilder
+   #41 = Methodref          #39.#3        // java/lang/StringBuilder."<init>":()V
+   #42 = String             #43           // i:
+   #43 = Utf8               i:
+   #44 = Methodref          #39.#45       // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #45 = NameAndType        #46:#47       // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #46 = Utf8               append
+   #47 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #48 = Methodref          #39.#49       // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+   #49 = NameAndType        #46:#50       // append:(I)Ljava/lang/StringBuilder;
+   #50 = Utf8               (I)Ljava/lang/StringBuilder;
+   #51 = String             #52           // :
+   #52 = Utf8               :
+   #53 = Methodref          #54.#55       // PrimitiveConversions.i2l:(I)J
+   #54 = Class              #56           // PrimitiveConversions
+   #55 = NameAndType        #57:#58       // i2l:(I)J
+   #56 = Utf8               PrimitiveConversions
+   #57 = Utf8               i2l
+   #58 = Utf8               (I)J
+   #59 = Methodref          #39.#60       // java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+   #60 = NameAndType        #46:#61       // append:(J)Ljava/lang/StringBuilder;
+   #61 = Utf8               (J)Ljava/lang/StringBuilder;
+   #62 = Methodref          #54.#63       // PrimitiveConversions.i2f:(I)F
+   #63 = NameAndType        #64:#65       // i2f:(I)F
+   #64 = Utf8               i2f
+   #65 = Utf8               (I)F
+   #66 = Methodref          #67.#68       // PrimitiveConversionsRunner.floatBits:(F)Ljava/lang/String;
+   #67 = Class              #69           // PrimitiveConversionsRunner
+   #68 = NameAndType        #70:#71       // floatBits:(F)Ljava/lang/String;
+   #69 = Utf8               PrimitiveConversionsRunner
+   #70 = Utf8               floatBits
+   #71 = Utf8               (F)Ljava/lang/String;
+   #72 = Methodref          #54.#73       // PrimitiveConversions.i2d:(I)D
+   #73 = NameAndType        #74:#75       // i2d:(I)D
+   #74 = Utf8               i2d
+   #75 = Utf8               (I)D
+   #76 = Methodref          #67.#77       // PrimitiveConversionsRunner.doubleBits:(D)Ljava/lang/String;
+   #77 = NameAndType        #78:#79       // doubleBits:(D)Ljava/lang/String;
+   #78 = Utf8               doubleBits
+   #79 = Utf8               (D)Ljava/lang/String;
+   #80 = Methodref          #54.#81       // PrimitiveConversions.i2b:(I)B
+   #81 = NameAndType        #82:#83       // i2b:(I)B
+   #82 = Utf8               i2b
+   #83 = Utf8               (I)B
+   #84 = Methodref          #54.#85       // PrimitiveConversions.i2c:(I)C
+   #85 = NameAndType        #86:#87       // i2c:(I)C
+   #86 = Utf8               i2c
+   #87 = Utf8               (I)C
+   #88 = Methodref          #54.#89       // PrimitiveConversions.i2s:(I)S
+   #89 = NameAndType        #90:#91       // i2s:(I)S
+   #90 = Utf8               i2s
+   #91 = Utf8               (I)S
+   #92 = Methodref          #39.#93       // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #93 = NameAndType        #94:#95       // toString:()Ljava/lang/String;
+   #94 = Utf8               toString
+   #95 = Utf8               ()Ljava/lang/String;
+   #96 = Methodref          #97.#98       // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #97 = Class              #99           // java/io/PrintStream
+   #98 = NameAndType        #100:#101     // println:(Ljava/lang/String;)V
+   #99 = Utf8               java/io/PrintStream
+  #100 = Utf8               println
+  #101 = Utf8               (Ljava/lang/String;)V
+  #102 = String             #103          // io:
+  #103 = Utf8               io:
+  #104 = Methodref          #54.#105      // PrimitiveConversions.byteOverload:(I)I
+  #105 = NameAndType        #106:#107     // byteOverload:(I)I
+  #106 = Utf8               byteOverload
+  #107 = Utf8               (I)I
+  #108 = Methodref          #54.#109      // PrimitiveConversions.shortOverload:(I)I
+  #109 = NameAndType        #110:#107     // shortOverload:(I)I
+  #110 = Utf8               shortOverload
+  #111 = Methodref          #54.#112      // PrimitiveConversions.charOverload:(I)I
+  #112 = NameAndType        #113:#107     // charOverload:(I)I
+  #113 = Utf8               charOverload
+  #114 = Methodref          #54.#115      // PrimitiveConversions.intFloatRound:(I)J
+  #115 = NameAndType        #116:#58      // intFloatRound:(I)J
+  #116 = Utf8               intFloatRound
+  #117 = Long               -9223372036854775808l
+  #119 = Long               -9007199254740993l
+  #121 = Long               9007199254740993l
+  #123 = Long               9223372036854775807l
+  #125 = String             #126          // l:
+  #126 = Utf8               l:
+  #127 = Methodref          #54.#128      // PrimitiveConversions.l2i:(J)I
+  #128 = NameAndType        #129:#130     // l2i:(J)I
+  #129 = Utf8               l2i
+  #130 = Utf8               (J)I
+  #131 = Methodref          #54.#132      // PrimitiveConversions.l2f:(J)F
+  #132 = NameAndType        #133:#134     // l2f:(J)F
+  #133 = Utf8               l2f
+  #134 = Utf8               (J)F
+  #135 = Methodref          #54.#136      // PrimitiveConversions.l2d:(J)D
+  #136 = NameAndType        #137:#138     // l2d:(J)D
+  #137 = Utf8               l2d
+  #138 = Utf8               (J)D
+  #139 = Methodref          #54.#140      // PrimitiveConversions.longIntOverload:(J)I
+  #140 = NameAndType        #141:#130     // longIntOverload:(J)I
+  #141 = Utf8               longIntOverload
+  #142 = Methodref          #54.#143      // PrimitiveConversions.longFloatOverload:(J)D
+  #143 = NameAndType        #144:#138     // longFloatOverload:(J)D
+  #144 = Utf8               longFloatOverload
+  #145 = String             #146          // lr:
+  #146 = Utf8               lr:
+  #147 = Methodref          #54.#148      // PrimitiveConversions.longFloatRound:(J)J
+  #148 = NameAndType        #149:#150     // longFloatRound:(J)J
+  #149 = Utf8               longFloatRound
+  #150 = Utf8               (J)J
+  #151 = Methodref          #54.#152      // PrimitiveConversions.longDoubleRound:(J)J
+  #152 = NameAndType        #153:#150     // longDoubleRound:(J)J
+  #153 = Utf8               longDoubleRound
+  #154 = Float              -Infinityf
+  #155 = Float              -0.0f
+  #156 = Float              1.5f
+  #157 = Float              1.4E-45f
+  #158 = Float              NaNf
+  #159 = Float              Infinityf
+  #160 = String             #161          // f:
+  #161 = Utf8               f:
+  #162 = Methodref          #54.#163      // PrimitiveConversions.f2i:(F)I
+  #163 = NameAndType        #164:#12      // f2i:(F)I
+  #164 = Utf8               f2i
+  #165 = Methodref          #54.#166      // PrimitiveConversions.f2l:(F)J
+  #166 = NameAndType        #167:#168     // f2l:(F)J
+  #167 = Utf8               f2l
+  #168 = Utf8               (F)J
+  #169 = Methodref          #54.#170      // PrimitiveConversions.f2d:(F)D
+  #170 = NameAndType        #171:#172     // f2d:(F)D
+  #171 = Utf8               f2d
+  #172 = Utf8               (F)D
+  #173 = Methodref          #54.#174      // PrimitiveConversions.floatDoubleOverload:(F)D
+  #174 = NameAndType        #175:#172     // floatDoubleOverload:(F)D
+  #175 = Utf8               floatDoubleOverload
+  #176 = Methodref          #54.#177      // PrimitiveConversions.floatByte:(F)B
+  #177 = NameAndType        #178:#179     // floatByte:(F)B
+  #178 = Utf8               floatByte
+  #179 = Utf8               (F)B
+  #180 = Double             -Infinityd
+  #182 = Double             -0.0d
+  #184 = Double             1.5d
+  #186 = Double             4.9E-324d
+  #188 = Double             NaNd
+  #190 = Double             Infinityd
+  #192 = String             #193          // d:
+  #193 = Utf8               d:
+  #194 = Methodref          #54.#195      // PrimitiveConversions.d2i:(D)I
+  #195 = NameAndType        #196:#197     // d2i:(D)I
+  #196 = Utf8               d2i
+  #197 = Utf8               (D)I
+  #198 = Methodref          #54.#199      // PrimitiveConversions.d2l:(D)J
+  #199 = NameAndType        #200:#24      // d2l:(D)J
+  #200 = Utf8               d2l
+  #201 = Methodref          #54.#202      // PrimitiveConversions.d2f:(D)F
+  #202 = NameAndType        #203:#204     // d2f:(D)F
+  #203 = Utf8               d2f
+  #204 = Utf8               (D)F
+  #205 = Methodref          #54.#206      // PrimitiveConversions.doubleIntOverload:(D)I
+  #206 = NameAndType        #207:#197     // doubleIntOverload:(D)I
+  #207 = Utf8               doubleIntOverload
+  #208 = Methodref          #54.#209      // PrimitiveConversions.doubleChar:(D)C
+  #209 = NameAndType        #210:#211     // doubleChar:(D)C
+  #210 = Utf8               doubleChar
+  #211 = Utf8               (D)C
+  #212 = String             #213          // chain:
+  #213 = Utf8               chain:
+  #214 = Double             1.6777217E7d
+  #216 = Methodref          #54.#217      // PrimitiveConversions.doubleFloatRound:(D)D
+  #217 = NameAndType        #218:#219     // doubleFloatRound:(D)D
+  #218 = Utf8               doubleFloatRound
+  #219 = Utf8               (D)D
+  #220 = Methodref          #54.#221      // PrimitiveConversions.byteChar:(I)I
+  #221 = NameAndType        #222:#107     // byteChar:(I)I
+  #222 = Utf8               byteChar
+  #223 = Fieldref           #224.#225     // PrimitiveConversionEffects.trace:I
+  #224 = Class              #226          // PrimitiveConversionEffects
+  #225 = NameAndType        #227:#228     // trace:I
+  #226 = Utf8               PrimitiveConversionEffects
+  #227 = Utf8               trace
+  #228 = Utf8               I
+  #229 = String             #230          // order:
+  #230 = Utf8               order:
+  #231 = Methodref          #39.#232      // java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+  #232 = NameAndType        #46:#233      // append:(Z)Ljava/lang/StringBuilder;
+  #233 = Utf8               (Z)Ljava/lang/StringBuilder;
+  #234 = Methodref          #54.#235      // PrimitiveConversions.ordered:(IZZ)J
+  #235 = NameAndType        #236:#237     // ordered:(IZZ)J
+  #236 = Utf8               ordered
+  #237 = Utf8               (IZZ)J
+  #238 = Class              #239          // java/lang/Throwable
+  #239 = Utf8               java/lang/Throwable
+  #240 = Methodref          #2.#241       // java/lang/Object.getClass:()Ljava/lang/Class;
+  #241 = NameAndType        #242:#243     // getClass:()Ljava/lang/Class;
+  #242 = Utf8               getClass
+  #243 = Utf8               ()Ljava/lang/Class;
+  #244 = Methodref          #245.#246     // java/lang/Class.getName:()Ljava/lang/String;
+  #245 = Class              #247          // java/lang/Class
+  #246 = NameAndType        #248:#95      // getName:()Ljava/lang/String;
+  #247 = Utf8               java/lang/Class
+  #248 = Utf8               getName
+  #249 = Utf8               Code
+  #250 = Utf8               main
+  #251 = Utf8               ([Ljava/lang/String;)V
+  #252 = Utf8               StackMapTable
+  #253 = Class              #254          // "[Ljava/lang/String;"
+  #254 = Utf8               [Ljava/lang/String;
+  #255 = Class              #256          // "[I"
+  #256 = Utf8               [I
+  #257 = Class              #258          // "[J"
+  #258 = Utf8               [J
+  #259 = Class              #260          // "[F"
+  #260 = Utf8               [F
+  #261 = Class              #262          // "[D"
+  #262 = Utf8               [D
+  #263 = Class              #264          // "[Z"
+  #264 = Utf8               [Z
+{
+  public PrimitiveConversionsRunner();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  private static java.lang.String floatBits(float);
+    descriptor: (F)Ljava/lang/String;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: fload_0
+         1: invokestatic  #7                  // Method java/lang/Float.floatToRawIntBits:(F)I
+         4: invokestatic  #13                 // Method java/lang/Integer.toHexString:(I)Ljava/lang/String;
+         7: areturn
+
+  private static java.lang.String doubleBits(double);
+    descriptor: (D)Ljava/lang/String;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: dload_0
+         1: invokestatic  #19                 // Method java/lang/Double.doubleToRawLongBits:(D)J
+         4: invokestatic  #25                 // Method java/lang/Long.toHexString:(J)Ljava/lang/String;
+         7: areturn
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=18, args_size=1
+         0: iconst_5
+         1: newarray       int
+         3: dup
+         4: iconst_0
+         5: ldc           #30                 // int -2147483648
+         7: iastore
+         8: dup
+         9: iconst_1
+        10: iconst_m1
+        11: iastore
+        12: dup
+        13: iconst_2
+        14: iconst_0
+        15: iastore
+        16: dup
+        17: iconst_3
+        18: ldc           #31                 // int 16777217
+        20: iastore
+        21: dup
+        22: iconst_4
+        23: ldc           #32                 // int 2147483647
+        25: iastore
+        26: astore_1
+        27: aload_1
+        28: astore_2
+        29: aload_2
+        30: arraylength
+        31: istore_3
+        32: iconst_0
+        33: istore        4
+        35: iload         4
+        37: iload_3
+        38: if_icmpge     241
+        41: aload_2
+        42: iload         4
+        44: iaload
+        45: istore        5
+        47: getstatic     #33                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        50: new           #39                 // class java/lang/StringBuilder
+        53: dup
+        54: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+        57: ldc           #42                 // String i:
+        59: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        62: iload         5
+        64: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        67: ldc           #51                 // String :
+        69: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        72: iload         5
+        74: invokestatic  #53                 // Method PrimitiveConversions.i2l:(I)J
+        77: invokevirtual #59                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+        80: ldc           #51                 // String :
+        82: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        85: iload         5
+        87: invokestatic  #62                 // Method PrimitiveConversions.i2f:(I)F
+        90: invokestatic  #66                 // Method floatBits:(F)Ljava/lang/String;
+        93: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        96: ldc           #51                 // String :
+        98: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       101: iload         5
+       103: invokestatic  #72                 // Method PrimitiveConversions.i2d:(I)D
+       106: invokestatic  #76                 // Method doubleBits:(D)Ljava/lang/String;
+       109: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       112: ldc           #51                 // String :
+       114: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       117: iload         5
+       119: invokestatic  #80                 // Method PrimitiveConversions.i2b:(I)B
+       122: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       125: ldc           #51                 // String :
+       127: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       130: iload         5
+       132: invokestatic  #84                 // Method PrimitiveConversions.i2c:(I)C
+       135: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       138: ldc           #51                 // String :
+       140: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       143: iload         5
+       145: invokestatic  #88                 // Method PrimitiveConversions.i2s:(I)S
+       148: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       151: invokevirtual #92                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       154: invokevirtual #96                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       157: getstatic     #33                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       160: new           #39                 // class java/lang/StringBuilder
+       163: dup
+       164: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+       167: ldc           #102                // String io:
+       169: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       172: iload         5
+       174: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       177: ldc           #51                 // String :
+       179: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       182: iload         5
+       184: invokestatic  #104                // Method PrimitiveConversions.byteOverload:(I)I
+       187: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       190: ldc           #51                 // String :
+       192: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       195: iload         5
+       197: invokestatic  #108                // Method PrimitiveConversions.shortOverload:(I)I
+       200: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       203: ldc           #51                 // String :
+       205: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       208: iload         5
+       210: invokestatic  #111                // Method PrimitiveConversions.charOverload:(I)I
+       213: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       216: ldc           #51                 // String :
+       218: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       221: iload         5
+       223: invokestatic  #114                // Method PrimitiveConversions.intFloatRound:(I)J
+       226: invokevirtual #59                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+       229: invokevirtual #92                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       232: invokevirtual #96                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       235: iinc          4, 1
+       238: goto          35
+       241: iconst_5
+       242: newarray       long
+       244: dup
+       245: iconst_0
+       246: ldc2_w        #117                // long -9223372036854775808l
+       249: lastore
+       250: dup
+       251: iconst_1
+       252: ldc2_w        #119                // long -9007199254740993l
+       255: lastore
+       256: dup
+       257: iconst_2
+       258: lconst_0
+       259: lastore
+       260: dup
+       261: iconst_3
+       262: ldc2_w        #121                // long 9007199254740993l
+       265: lastore
+       266: dup
+       267: iconst_4
+       268: ldc2_w        #123                // long 9223372036854775807l
+       271: lastore
+       272: astore_2
+       273: aload_2
+       274: astore_3
+       275: aload_3
+       276: arraylength
+       277: istore        4
+       279: iconst_0
+       280: istore        5
+       282: iload         5
+       284: iload         4
+       286: if_icmpge     453
+       289: aload_3
+       290: iload         5
+       292: laload
+       293: lstore        6
+       295: getstatic     #33                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       298: new           #39                 // class java/lang/StringBuilder
+       301: dup
+       302: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+       305: ldc           #125                // String l:
+       307: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       310: lload         6
+       312: invokevirtual #59                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+       315: ldc           #51                 // String :
+       317: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       320: lload         6
+       322: invokestatic  #127                // Method PrimitiveConversions.l2i:(J)I
+       325: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       328: ldc           #51                 // String :
+       330: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       333: lload         6
+       335: invokestatic  #131                // Method PrimitiveConversions.l2f:(J)F
+       338: invokestatic  #66                 // Method floatBits:(F)Ljava/lang/String;
+       341: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       344: ldc           #51                 // String :
+       346: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       349: lload         6
+       351: invokestatic  #135                // Method PrimitiveConversions.l2d:(J)D
+       354: invokestatic  #76                 // Method doubleBits:(D)Ljava/lang/String;
+       357: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       360: ldc           #51                 // String :
+       362: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       365: lload         6
+       367: invokestatic  #139                // Method PrimitiveConversions.longIntOverload:(J)I
+       370: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       373: ldc           #51                 // String :
+       375: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       378: lload         6
+       380: invokestatic  #142                // Method PrimitiveConversions.longFloatOverload:(J)D
+       383: invokestatic  #76                 // Method doubleBits:(D)Ljava/lang/String;
+       386: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       389: invokevirtual #92                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       392: invokevirtual #96                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       395: getstatic     #33                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       398: new           #39                 // class java/lang/StringBuilder
+       401: dup
+       402: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+       405: ldc           #145                // String lr:
+       407: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       410: lload         6
+       412: invokevirtual #59                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+       415: ldc           #51                 // String :
+       417: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       420: lload         6
+       422: invokestatic  #147                // Method PrimitiveConversions.longFloatRound:(J)J
+       425: invokevirtual #59                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+       428: ldc           #51                 // String :
+       430: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       433: lload         6
+       435: invokestatic  #151                // Method PrimitiveConversions.longDoubleRound:(J)J
+       438: invokevirtual #59                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+       441: invokevirtual #92                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       444: invokevirtual #96                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       447: iinc          5, 1
+       450: goto          282
+       453: bipush        6
+       455: newarray       float
+       457: dup
+       458: iconst_0
+       459: ldc           #154                // float -Infinityf
+       461: fastore
+       462: dup
+       463: iconst_1
+       464: ldc           #155                // float -0.0f
+       466: fastore
+       467: dup
+       468: iconst_2
+       469: ldc           #156                // float 1.5f
+       471: fastore
+       472: dup
+       473: iconst_3
+       474: ldc           #157                // float 1.4E-45f
+       476: fastore
+       477: dup
+       478: iconst_4
+       479: ldc           #158                // float NaNf
+       481: fastore
+       482: dup
+       483: iconst_5
+       484: ldc           #159                // float Infinityf
+       486: fastore
+       487: astore_3
+       488: aload_3
+       489: astore        4
+       491: aload         4
+       493: arraylength
+       494: istore        5
+       496: iconst_0
+       497: istore        6
+       499: iload         6
+       501: iload         5
+       503: if_icmpge     619
+       506: aload         4
+       508: iload         6
+       510: faload
+       511: fstore        7
+       513: getstatic     #33                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       516: new           #39                 // class java/lang/StringBuilder
+       519: dup
+       520: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+       523: ldc           #160                // String f:
+       525: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       528: fload         7
+       530: invokestatic  #66                 // Method floatBits:(F)Ljava/lang/String;
+       533: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       536: ldc           #51                 // String :
+       538: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       541: fload         7
+       543: invokestatic  #162                // Method PrimitiveConversions.f2i:(F)I
+       546: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       549: ldc           #51                 // String :
+       551: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       554: fload         7
+       556: invokestatic  #165                // Method PrimitiveConversions.f2l:(F)J
+       559: invokevirtual #59                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+       562: ldc           #51                 // String :
+       564: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       567: fload         7
+       569: invokestatic  #169                // Method PrimitiveConversions.f2d:(F)D
+       572: invokestatic  #76                 // Method doubleBits:(D)Ljava/lang/String;
+       575: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       578: ldc           #51                 // String :
+       580: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       583: fload         7
+       585: invokestatic  #173                // Method PrimitiveConversions.floatDoubleOverload:(F)D
+       588: invokestatic  #76                 // Method doubleBits:(D)Ljava/lang/String;
+       591: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       594: ldc           #51                 // String :
+       596: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       599: fload         7
+       601: invokestatic  #176                // Method PrimitiveConversions.floatByte:(F)B
+       604: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       607: invokevirtual #92                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       610: invokevirtual #96                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       613: iinc          6, 1
+       616: goto          499
+       619: bipush        6
+       621: newarray       double
+       623: dup
+       624: iconst_0
+       625: ldc2_w        #180                // double -Infinityd
+       628: dastore
+       629: dup
+       630: iconst_1
+       631: ldc2_w        #182                // double -0.0d
+       634: dastore
+       635: dup
+       636: iconst_2
+       637: ldc2_w        #184                // double 1.5d
+       640: dastore
+       641: dup
+       642: iconst_3
+       643: ldc2_w        #186                // double 4.9E-324d
+       646: dastore
+       647: dup
+       648: iconst_4
+       649: ldc2_w        #188                // double NaNd
+       652: dastore
+       653: dup
+       654: iconst_5
+       655: ldc2_w        #190                // double Infinityd
+       658: dastore
+       659: astore        4
+       661: aload         4
+       663: astore        5
+       665: aload         5
+       667: arraylength
+       668: istore        6
+       670: iconst_0
+       671: istore        7
+       673: iload         7
+       675: iload         6
+       677: if_icmpge     790
+       680: aload         5
+       682: iload         7
+       684: daload
+       685: dstore        8
+       687: getstatic     #33                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       690: new           #39                 // class java/lang/StringBuilder
+       693: dup
+       694: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+       697: ldc           #192                // String d:
+       699: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       702: dload         8
+       704: invokestatic  #76                 // Method doubleBits:(D)Ljava/lang/String;
+       707: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       710: ldc           #51                 // String :
+       712: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       715: dload         8
+       717: invokestatic  #194                // Method PrimitiveConversions.d2i:(D)I
+       720: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       723: ldc           #51                 // String :
+       725: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       728: dload         8
+       730: invokestatic  #198                // Method PrimitiveConversions.d2l:(D)J
+       733: invokevirtual #59                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+       736: ldc           #51                 // String :
+       738: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       741: dload         8
+       743: invokestatic  #201                // Method PrimitiveConversions.d2f:(D)F
+       746: invokestatic  #66                 // Method floatBits:(F)Ljava/lang/String;
+       749: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       752: ldc           #51                 // String :
+       754: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       757: dload         8
+       759: invokestatic  #205                // Method PrimitiveConversions.doubleIntOverload:(D)I
+       762: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       765: ldc           #51                 // String :
+       767: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       770: dload         8
+       772: invokestatic  #208                // Method PrimitiveConversions.doubleChar:(D)C
+       775: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       778: invokevirtual #92                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       781: invokevirtual #96                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       784: iinc          7, 1
+       787: goto          673
+       790: getstatic     #33                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       793: new           #39                 // class java/lang/StringBuilder
+       796: dup
+       797: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+       800: ldc           #212                // String chain:
+       802: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       805: ldc2_w        #214                // double 1.6777217E7d
+       808: invokestatic  #216                // Method PrimitiveConversions.doubleFloatRound:(D)D
+       811: invokestatic  #76                 // Method doubleBits:(D)Ljava/lang/String;
+       814: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       817: ldc           #51                 // String :
+       819: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       822: sipush        257
+       825: invokestatic  #220                // Method PrimitiveConversions.byteChar:(I)I
+       828: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       831: invokevirtual #92                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       834: invokevirtual #96                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       837: iconst_2
+       838: newarray       int
+       840: dup
+       841: iconst_0
+       842: ldc           #30                 // int -2147483648
+       844: iastore
+       845: dup
+       846: iconst_1
+       847: ldc           #32                 // int 2147483647
+       849: iastore
+       850: astore        5
+       852: aload         5
+       854: arraylength
+       855: istore        6
+       857: iconst_0
+       858: istore        7
+       860: iload         7
+       862: iload         6
+       864: if_icmpge     1118
+       867: aload         5
+       869: iload         7
+       871: iaload
+       872: istore        8
+       874: iconst_2
+       875: newarray       boolean
+       877: dup
+       878: iconst_0
+       879: iconst_0
+       880: bastore
+       881: dup
+       882: iconst_1
+       883: iconst_1
+       884: bastore
+       885: astore        9
+       887: aload         9
+       889: arraylength
+       890: istore        10
+       892: iconst_0
+       893: istore        11
+       895: iload         11
+       897: iload         10
+       899: if_icmpge     1112
+       902: aload         9
+       904: iload         11
+       906: baload
+       907: istore        12
+       909: iconst_2
+       910: newarray       boolean
+       912: dup
+       913: iconst_0
+       914: iconst_0
+       915: bastore
+       916: dup
+       917: iconst_1
+       918: iconst_1
+       919: bastore
+       920: astore        13
+       922: aload         13
+       924: arraylength
+       925: istore        14
+       927: iconst_0
+       928: istore        15
+       930: iload         15
+       932: iload         14
+       934: if_icmpge     1106
+       937: aload         13
+       939: iload         15
+       941: baload
+       942: istore        16
+       944: iconst_0
+       945: putstatic     #223                // Field PrimitiveConversionEffects.trace:I
+       948: getstatic     #33                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       951: new           #39                 // class java/lang/StringBuilder
+       954: dup
+       955: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+       958: ldc           #229                // String order:
+       960: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       963: iload         8
+       965: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       968: ldc           #51                 // String :
+       970: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       973: iload         12
+       975: invokevirtual #231                // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+       978: ldc           #51                 // String :
+       980: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       983: iload         16
+       985: invokevirtual #231                // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+       988: ldc           #51                 // String :
+       990: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       993: iload         8
+       995: iload         12
+       997: iload         16
+       999: invokestatic  #234                // Method PrimitiveConversions.ordered:(IZZ)J
+      1002: invokevirtual #59                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      1005: ldc           #51                 // String :
+      1007: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      1010: getstatic     #223                // Field PrimitiveConversionEffects.trace:I
+      1013: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      1016: invokevirtual #92                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      1019: invokevirtual #96                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      1022: goto          1100
+      1025: astore        17
+      1027: getstatic     #33                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      1030: new           #39                 // class java/lang/StringBuilder
+      1033: dup
+      1034: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+      1037: ldc           #229                // String order:
+      1039: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      1042: iload         8
+      1044: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      1047: ldc           #51                 // String :
+      1049: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      1052: iload         12
+      1054: invokevirtual #231                // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+      1057: ldc           #51                 // String :
+      1059: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      1062: iload         16
+      1064: invokevirtual #231                // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+      1067: ldc           #51                 // String :
+      1069: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      1072: aload         17
+      1074: invokevirtual #240                // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      1077: invokevirtual #244                // Method java/lang/Class.getName:()Ljava/lang/String;
+      1080: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      1083: ldc           #51                 // String :
+      1085: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      1088: getstatic     #223                // Field PrimitiveConversionEffects.trace:I
+      1091: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      1094: invokevirtual #92                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      1097: invokevirtual #96                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      1100: iinc          15, 1
+      1103: goto          930
+      1106: iinc          11, 1
+      1109: goto          895
+      1112: iinc          7, 1
+      1115: goto          860
+      1118: return
+      Exception table:
+         from    to  target type
+           948  1022  1025   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 16
+        frame_type = 255 /* full_frame */
+          offset_delta = 35
+          locals = [ class "[Ljava/lang/String;", class "[I", class "[I", int, int ]
+          stack = []
+        frame_type = 248 /* chop */
+          offset_delta = 205
+        frame_type = 255 /* full_frame */
+          offset_delta = 40
+          locals = [ class "[Ljava/lang/String;", class "[I", class "[J", class "[J", int, int ]
+          stack = []
+        frame_type = 248 /* chop */
+          offset_delta = 170
+        frame_type = 255 /* full_frame */
+          offset_delta = 45
+          locals = [ class "[Ljava/lang/String;", class "[I", class "[J", class "[F", class "[F", int, int ]
+          stack = []
+        frame_type = 248 /* chop */
+          offset_delta = 119
+        frame_type = 255 /* full_frame */
+          offset_delta = 53
+          locals = [ class "[Ljava/lang/String;", class "[I", class "[J", class "[F", class "[D", class "[D", int, int ]
+          stack = []
+        frame_type = 248 /* chop */
+          offset_delta = 116
+        frame_type = 254 /* append */
+          offset_delta = 69
+          locals = [ class "[I", int, int ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 34
+          locals = [ class "[Ljava/lang/String;", class "[I", class "[J", class "[F", class "[D", class "[I", int, int, int, class "[Z", int, int ]
+          stack = []
+        frame_type = 255 /* full_frame */
+          offset_delta = 34
+          locals = [ class "[Ljava/lang/String;", class "[I", class "[J", class "[F", class "[D", class "[I", int, int, int, class "[Z", int, int, int, class "[Z", int, int ]
+          stack = []
+        frame_type = 255 /* full_frame */
+          offset_delta = 94
+          locals = [ class "[Ljava/lang/String;", class "[I", class "[J", class "[F", class "[D", class "[I", int, int, int, class "[Z", int, int, int, class "[Z", int, int, int ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 250 /* chop */
+          offset_delta = 74
+        frame_type = 255 /* full_frame */
+          offset_delta = 5
+          locals = [ class "[Ljava/lang/String;", class "[I", class "[J", class "[F", class "[D", class "[I", int, int, int, class "[Z", int, int ]
+          stack = []
+        frame_type = 255 /* full_frame */
+          offset_delta = 5
+          locals = [ class "[Ljava/lang/String;", class "[I", class "[J", class "[F", class "[D", class "[I", int, int ]
+          stack = []
+        frame_type = 248 /* chop */
+          offset_delta = 5
+}

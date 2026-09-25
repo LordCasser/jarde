@@ -15,12 +15,15 @@
 //!   BCI passes it, and the artifact writes `return arg0 + 1 + arg0;` after `arg0 = arg0 + 1;`,
 //!   which answers 17 where `nestedLocal(7)` answers 16. The same rule is checked at the *call*
 //!   argument: `nestedCall(I)I` is `iload_0; invokestatic tick; iinc 0,1; iload_0; iadd; ireturn`,
-//!   and the text `tick(arg0) + arg0` after the increment calls `tick` on the incremented value.
-//!   The property here is that neither statement is written, that the write the layer can prove is
-//!   still written (`arg0 = arg0 + 1;`), and that the quote names the consumer *and* the read it
-//!   refused.
+//!   and the text `tick(arg0) + arg0` after the increment would call `tick` on the incremented
+//!   value. The recovered body now binds the deferred call before the write —
+//!   `int saved0 = tick(arg0); arg0 = arg0 + 1; return saved0 + arg0;` — so the original argument
+//!   and one-call effect stay intact while `nestedLocal` continues to quote the value it cannot
+//!   name.
 //! * **P3-R9.** `fieldCast()Ljava/lang/String;` is `getstatic External.value; checkcast; areturn`.
-//!   The cast is refused, and the `getstatic` writes no statement of its own (a claimed field
+//!   Historically the cast was refused. The current refusal tests replace the final return with
+//!   `pop; aconst_null; areturn` in memory, since ordinary casts now recover. The `getstatic`
+//!   writes no statement of its own (a claimed field
 //!   *read* is a value: its text lands where it is consumed) — so before the fix the artifact
 //!   quoted BCI 3 and 6 alone and named BCI 0 nowhere, while `report.fields` still recorded that
 //!   read as `presented`. Running `External`'s static initializer is an observable effect of that
@@ -216,17 +219,61 @@ fn quoted_bcis(text: &str) -> Vec<u32> {
         .collect()
 }
 
+/// Make one refused-cast consumer explicit without a class-file parser. The three committed
+/// methods below have unique complete Code byte sequences and no trailing instructions; replacing
+/// their final `areturn` with `pop; aconst_null; areturn` keeps the declared String return type while
+/// making the cast result genuinely unused. The two enclosing Code lengths are adjusted for the
+/// inserted bytes, and every other class byte stays unchanged.
+fn cast_result_is_popped(bytes: &[u8], code: &[u8]) -> Vec<u8> {
+    assert!(code.ends_with(&[0xb0]), "the patch target ends in areturn");
+    let sites: Vec<usize> = bytes
+        .windows(code.len())
+        .enumerate()
+        .filter_map(|(index, window)| (window == code).then_some(index))
+        .collect();
+    assert_eq!(
+        sites.len(),
+        1,
+        "the complete method Code is unique in the frozen fixture"
+    );
+    let start = sites[0];
+    let code_length_at = start
+        .checked_sub(4)
+        .expect("Code length precedes the method code");
+    let attribute_length_at = start
+        .checked_sub(12)
+        .expect("Code attribute length precedes the method code");
+    let old_code_length = u32::from_be_bytes(
+        bytes[code_length_at..code_length_at + 4]
+            .try_into()
+            .expect("Code length is four bytes"),
+    );
+    assert_eq!(
+        old_code_length,
+        code.len() as u32,
+        "the frozen Code length matches"
+    );
+    let old_attribute_length = u32::from_be_bytes(
+        bytes[attribute_length_at..attribute_length_at + 4]
+            .try_into()
+            .expect("Code attribute length is four bytes"),
+    );
+    let mut patched = bytes.to_vec();
+    patched.splice(start + code.len() - 1..start + code.len() - 1, [0x57, 0x01]);
+    patched[code_length_at..code_length_at + 4]
+        .copy_from_slice(&(old_code_length + 2).to_be_bytes());
+    patched[attribute_length_at..attribute_length_at + 4]
+        .copy_from_slice(&(old_attribute_length + 2).to_be_bytes());
+    patched
+}
+
 /// The member a field record names, spelled the way the artifact spells it (`External.value`).
 fn spelled(owner: &str, name: &str) -> String {
     format!("{}.{}", owner.replace('/', "."), name)
 }
 
-/// Every presented field **read** of one run is accounted for by the artifact it came with: the text
-/// spells the member, or the source map answers for the instruction's own BCI.
-///
-/// This is the review's "`FieldRecord.presented` agrees with the artifact" as an assertion: a record
-/// that claims presentation while the quotes and the map account for nothing is a record about the
-/// run's *intent*, not about an answer a caller can use.
+/// A presented read needs its own field expression span. A quoted BCI has a source span too, so
+/// merely finding the BCI in the map does not establish field presentation.
 fn presented_reads_are_accounted_for(member: &str, report: &RecoveryReport) {
     for record in report
         .fields
@@ -234,10 +281,15 @@ fn presented_reads_are_accounted_for(member: &str, report: &RecoveryReport) {
         .filter(|record| record.presented && record.access == "read")
     {
         assert!(
-            report.text.contains(&spelled(&record.owner, &record.name))
-                || !report.text_of_bci(record.bci).is_empty(),
-            "{member}: the field read at BCI {} is recorded as presented, and the artifact \
-             accounts for it nowhere: neither `{}` nor any text is mapped to that bytecode:\n{}",
+            report
+                .source_map
+                .direct_of_bci(record.bci)
+                .iter()
+                .any(|segment| {
+                    let text = segment.text(&report.text);
+                    text.contains(&record.name) && !text.contains("@bytecode")
+                }),
+            "{member}: BCI {} has no direct field expression for `{}`:\n{}",
             record.bci,
             spelled(&record.owner, &record.name),
             report.text
@@ -350,65 +402,83 @@ fn a_nested_arithmetic_is_checked_where_its_text_is_evaluated() {
     assert!(report.produced(), "a degraded body is still an answer");
 }
 
-/// P3-R8, at a call argument: the call's own BCI is where its statement is written, but the value it
-/// reads is evaluated where the *consumer* of its result is, and that is the position the argument's
-/// load is judged at.
+/// P3-R8, at a call argument: bind the call's value before the following write changes the slot.
 #[test]
-fn a_call_argument_is_checked_where_the_consuming_expression_is_evaluated() {
+fn a_call_argument_is_saved_before_a_following_write() {
     let engine = Engine::new();
     let fixture = fixture(&engine, NESTED);
     let report = recover(&engine, &fixture, b"nestedCall", b"(I)I");
     let text = &report.text;
 
     assert!(
+        text.contains("int saved0 = tick(arg0);"),
+        "the call argument is evaluated and saved before the slot mutation:\n{text}"
+    );
+    assert!(
         text.contains("arg0 = arg0 + 1;"),
-        "the increment at BCI 4 is a write this layer writes:\n{text}"
-    );
-    // The call at BCI 1 reads the value the load at BCI 0 produced, and that load's value is not
-    // what slot 0 holds where the outer sum at BCI 8 is evaluated: `tick(arg0) + arg0` after
-    // `arg0 = arg0 + 1;` calls `tick` on 4 where `nestedCall(3)` calls it on 3 (`3 + 4` against
-    // `4 + 4`, so 7 against 8).
-    assert!(
-        !text.contains("tick(arg0)"),
-        "the argument the call reads is the value local 0 held at BCI 0, and the increment wrote \
-         the slot before the call's value is consumed: `tick(arg0) + arg0` after `arg0 = arg0 + 1;` \
-         is a different program than `nestedCall(3)`:\n{text}"
-    );
-    // The call is a producer whose statement was deferred to a reader that could not write it, so
-    // the quote names the call — and the read the call's argument could not be written from.
-    let quoted = quoted_bcis(text);
-    assert!(
-        quoted.contains(&9) && quoted.contains(&1),
-        "the quote states the `ireturn` at BCI 9 and the deferred invocation at BCI 1: \
-         {quoted:?}\n{text}"
+        "the increment at BCI 4 remains a statement after the saved call:\n{text}"
     );
     assert!(
-        text.contains("BCI 9") && text.contains("BCI 0"),
-        "and the reason states the consumer's bytecode and the read it refused in words:\n{text}"
+        text.contains("return saved0 + arg0;"),
+        "the outer sum consumes the saved call value after the mutation:\n{text}"
     );
-    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
-    assert_eq!(report.quality, Quality::Fallback, "{report:?}");
+    assert!(
+        text.matches("tick(").count() == 1,
+        "the deferred call is emitted exactly once:\n{text}"
+    );
+    let saved = text
+        .find("int saved0 = tick(arg0);")
+        .expect("the saved call binding is present");
+    let increment = text
+        .find("arg0 = arg0 + 1;")
+        .expect("the increment is present");
+    let returned = text
+        .find("return saved0 + arg0;")
+        .expect("the return is present");
+    assert!(
+        saved < increment && increment < returned,
+        "the source order follows call, mutation, return:\n{text}"
+    );
+    assert!(
+        quoted_bcis(text).is_empty(),
+        "the saved call is fully structured instead of quoted:\n{text}"
+    );
+    assert_eq!(report.representation, Representation::Java, "{report:?}");
+    assert_eq!(report.quality, Quality::Structured, "{report:?}");
+    for bci in [0, 1, 4, 9] {
+        assert!(
+            !report.text_of_bci(bci).is_empty(),
+            "the source map accounts for BCI {bci}:\n{text}"
+        );
+    }
 }
 
 /// P3-R9, static read: the quote names the `getstatic` whose class initialization it can run.
 #[test]
 fn a_refused_static_read_keeps_the_class_initialization_it_can_run() {
     let engine = Engine::new();
-    let fixture = fixture(&engine, REFUSED);
+    let fixture = fixture(
+        &engine,
+        &cast_result_is_popped(REFUSED, &[0xb2, 0x00, 0x0d, 0xc0, 0x00, 0x13, 0xb0]),
+    );
     let report = recover(&engine, &fixture, b"fieldCast", b"()Ljava/lang/String;");
     let text = &report.text;
 
-    // The bytecode is `getstatic External.value; checkcast; areturn`: reading the field can run
-    // `External`'s static initializer, which is an effect the answer owes whoever calls it — the
-    // fixture's driver shows the initializer really runs once for the original member.
+    // The patched bytecode is `getstatic External.value; checkcast; pop; aconst_null; areturn`:
+    // the field read and the failed cast have no supported consumer, while the final null return
+    // remains a valid Java statement. Reading the field can still run External's static initializer.
     let quoted = quoted_bcis(text);
     for bci in [0u32, 3, 6] {
         assert!(
             quoted.contains(&bci),
-            "the quote names the `getstatic` at BCI 0, the `checkcast` at BCI 3 and the `areturn` \
-             at BCI 6: {quoted:?}\n{text}"
+            "the quote names the `getstatic` at BCI 0, the `checkcast` at BCI 3 and the `pop` at \
+             BCI 6: {quoted:?}\n{text}"
         );
     }
+    assert!(
+        text.contains("return null;"),
+        "the patched final return remains valid:\n{text}"
+    );
     assert!(
         !report.text_of_bci(0).is_empty(),
         "the read at BCI 0 is an anchor of the quote that accounts for it:\n{text}"
@@ -419,8 +489,12 @@ fn a_refused_static_read_keeps_the_class_initialization_it_can_run() {
         .find(|record| record.bci == 0)
         .expect("the run read the field instruction at BCI 0");
     assert!(
-        read.presented,
-        "`field@1` presented the static read at BCI 0: {read:?}"
+        !read.presented
+            && read
+                .refusal
+                .as_ref()
+                .is_some_and(|reason| reason.code == "jre_field_not_emitted"),
+        "the quoted static read is traceable but not presented: {read:?}"
     );
     presented_reads_are_accounted_for("fieldCast", &report);
     assert_eq!(report.representation, Representation::Mixed, "{report:?}");
@@ -431,7 +505,10 @@ fn a_refused_static_read_keeps_the_class_initialization_it_can_run() {
 #[test]
 fn a_refused_instance_read_keeps_the_null_pointer_it_can_throw() {
     let engine = Engine::new();
-    let fixture = fixture(&engine, REFUSED);
+    let fixture = fixture(
+        &engine,
+        &cast_result_is_popped(REFUSED, &[0x2a, 0xb4, 0x00, 0x15, 0xc0, 0x00, 0x13, 0xb0]),
+    );
     let report = recover(
         &engine,
         &fixture,
@@ -440,16 +517,22 @@ fn a_refused_instance_read_keeps_the_null_pointer_it_can_throw() {
     );
     let text = &report.text;
 
-    // The bytecode is `aload_0; getfield External.instance; checkcast; areturn`: the read at BCI 1
-    // dereferences the argument, so the original throws for a null receiver — the fixture's driver
-    // runs it — and a quote that dropped the read would drop that observable failure too.
+    // The patched bytecode is `aload_0; getfield External.instance; checkcast; pop; aconst_null;
+    // areturn`: the getfield at BCI 1 still dereferences the argument, so the original throws for a
+    // null receiver — the fixture's driver runs it — and a quote that dropped the read would drop
+    // that observable failure too.
     let quoted = quoted_bcis(text);
     for bci in [1u32, 4, 7] {
         assert!(
             quoted.contains(&bci),
-            "the quote names the `getfield` at BCI 1 and the consumer at BCI 4/7: {quoted:?}\n{text}"
+            "the quote names the `getfield` at BCI 1, the `checkcast` at BCI 4 and `pop` at BCI 7: \
+             {quoted:?}\n{text}"
         );
     }
+    assert!(
+        text.contains("return null;"),
+        "the patched final return remains valid:\n{text}"
+    );
     assert!(
         !report.text_of_bci(1).is_empty(),
         "the read at BCI 1 is an anchor of the quote that accounts for it:\n{text}"
@@ -460,8 +543,13 @@ fn a_refused_instance_read_keeps_the_null_pointer_it_can_throw() {
         .find(|record| record.bci == 1)
         .expect("the run read the field instruction at BCI 1");
     assert!(
-        read.presented && !read.is_static,
-        "`field@1` presented the instance read at BCI 1: {read:?}"
+        !read.presented
+            && !read.is_static
+            && read
+                .refusal
+                .as_ref()
+                .is_some_and(|reason| reason.code == "jre_field_not_emitted"),
+        "the quoted instance read is traceable but not presented: {read:?}"
     );
     presented_reads_are_accounted_for("instanceCast", &report);
     assert_eq!(report.representation, Representation::Mixed, "{report:?}");
@@ -472,21 +560,31 @@ fn a_refused_instance_read_keeps_the_null_pointer_it_can_throw() {
 #[test]
 fn a_read_behind_another_read_is_named_too() {
     let engine = Engine::new();
-    let fixture = fixture(&engine, REFUSED);
+    let fixture = fixture(
+        &engine,
+        &cast_result_is_popped(
+            REFUSED,
+            &[0xb2, 0x00, 0x18, 0xb4, 0x00, 0x1c, 0xc0, 0x00, 0x13, 0xb0],
+        ),
+    );
     let report = recover(&engine, &fixture, b"chainCast", b"()Ljava/lang/String;");
     let text = &report.text;
 
-    // `getstatic External.holder; getfield Holder.value; checkcast; areturn`: the `getfield` at BCI 3
-    // reads the value the `getstatic` at BCI 0 produced, so naming the read that the refusal consumed
-    // means naming the read behind it as well — and the `areturn` at BCI 9 is the consumer.
+    // The patched bytecode is `getstatic External.holder; getfield Holder.value; checkcast; pop;
+    // aconst_null; areturn`: the `getfield` at BCI 3 reads the value the `getstatic` at BCI 0
+    // produced, so naming the read that the refusal consumed means naming the read behind it too.
     let quoted = quoted_bcis(text);
     for bci in [0u32, 3, 6, 9] {
         assert!(
             quoted.contains(&bci),
-            "the quote names both reads (BCI 0 and BCI 3), the refused cast (BCI 6) and the \
-             `areturn` (BCI 9): {quoted:?}\n{text}"
+            "the quote names both reads (BCI 0 and BCI 3), the checkcast (BCI 6) and the pop \
+             (BCI 9): {quoted:?}\n{text}"
         );
     }
+    assert!(
+        text.contains("return null;"),
+        "the patched final return remains valid:\n{text}"
+    );
     for bci in [0u32, 3] {
         assert!(
             !report.text_of_bci(bci).is_empty(),

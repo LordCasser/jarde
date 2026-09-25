@@ -1,0 +1,42 @@
+{
+  "cli_sha256": "6e2fce612d014ed327c9891981805720a1d5d276e68daeb3be43f8f33ff2dd9a",
+  "cases": {
+    "positive": {
+      "class_sha256": "03499dad67f54ce855af6f102b61c19916f72718a6d8756a35b019e3cda2af2f",
+      "class_bytes": 762,
+      "code_count": 4,
+      "original_output": "value|value|value\n",
+      "jarde_references": 0,
+      "jarde_javac_exit": 1,
+      "jarde_source_sha256": "57bcc6680dc2b84a7b4839defdc43199d141fce439ba031fad19b27b08cd108e",
+      "jadx_javac_exit": 0,
+      "jadx_source_sha256": "35722429dec0ea0b1087cd2c47c1e84212aff81247faf922485e777fb9b43d1a",
+      "jadx_java_exit": 0,
+      "jadx_output": "value|value|value\n"
+    },
+    "negative": {
+      "class_sha256": "1a51179c7d05a89d71b46e86dd010bc9a4f74aeae6834a56a7e76fc17bf1a420",
+      "class_bytes": 552,
+      "code_count": 4,
+      "original_output": "value|value|1\n",
+      "jarde_references": 0,
+      "jarde_javac_exit": 1,
+      "jarde_source_sha256": "e3b8bf4a1a20cb6558272f579d70873396e517a3047bccba9de775264a77cbb2",
+      "jadx_javac_exit": 0,
+      "jadx_source_sha256": "ce0d2a0577e3245252985280ed5487834fbcd2d95b3a22974b7c95768e95d0c9",
+      "jadx_java_exit": 1,
+      "jadx_output": ""
+    },
+    "orphan": {
+      "class_sha256": "68262cf87e3242aa0a8d4927caab3f30f9ce9911e2ae1d9290f06beb66a2de0f",
+      "class_bytes": 460,
+      "code_count": 3,
+      "original_output": "value|value\n",
+      "jarde_references": 0,
+      "jarde_javac_exit": 1,
+      "jarde_source_sha256": "67606b50a1aa2101eb14b316d3ba506ec10a7a7cac2298ae07ab1a641cf8f4ea",
+      "jadx_javac_exit": 1,
+      "jadx_source_sha256": "6b101164e933d72383c3218a2df7ed4eadc994d28ca793b5f90110a1cdb34e8a"
+    }
+  }
+}

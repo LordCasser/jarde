@@ -1,0 +1,14 @@
+literalInts:array=[1, 2, 3, -4]:trace=
+emptyInts:array=[]:trace=
+literalStrings:array=[left, null, right]:trace=
+emptyStrings:array=[]:trace=
+effectfulInts-1:array=[10, 15, 23]:trace=abc
+effectfulInts0:exception=java.lang.ArithmeticException:message=/ by zero:trace=a
+effectfulInts1:exception=java.lang.ArithmeticException:message=/ by zero:trace=ab
+effectfulInts2:exception=java.lang.ArithmeticException:message=/ by zero:trace=abc
+effectfulInts3:array=[-3, 5, 10]:trace=abc
+effectfulStrings-1:array=[s010, s15, s23]:trace=ABC
+effectfulStrings0:exception=java.lang.ArithmeticException:message=/ by zero:trace=A
+effectfulStrings1:exception=java.lang.ArithmeticException:message=/ by zero:trace=AB
+effectfulStrings2:exception=java.lang.ArithmeticException:message=/ by zero:trace=ABC
+effectfulStrings3:array=[s0-3, s1-5, s2-10]:trace=ABC

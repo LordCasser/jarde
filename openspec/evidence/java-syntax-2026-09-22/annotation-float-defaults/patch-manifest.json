@@ -1,0 +1,48 @@
+{
+  "baseline": {
+    "path": "classes-original/FloatDefaults.class",
+    "length": 293,
+    "sha256": "c257ba990cb21bd1769ad7a949e65a8338934a3b7e202e0bc9ab964ab509ecad"
+  },
+  "class_major": 52,
+  "member_tables_unchanged": true,
+  "patches": {
+    "positive-infinity-to-negative-qnan": {
+      "path": "positive-infinity-to-negative-qnan/FloatDefaults.class",
+      "annotation_element": "positiveInfinity",
+      "element_tag": "F",
+      "constant_pool_index": 16,
+      "constant_pool_payload_offset": 181,
+      "old_raw_bits": "7f800000",
+      "new_raw_bits": "ffc00000",
+      "changed_byte_offsets": [
+        181,
+        182
+      ],
+      "length": 293,
+      "sha256": "7a8f0cc5993cc9c65b60fb77c39ce9f2c6d71dd0dc78f5ebbeb9f571dfe9f0a3",
+      "class_major": 52,
+      "member_tables_unchanged": true,
+      "member_table_bytes_unchanged": true,
+      "non_target_bytes_unchanged": true
+    },
+    "canonical-nan-to-payload-nan": {
+      "path": "canonical-nan-to-payload-nan/FloatDefaults.class",
+      "annotation_element": "canonicalNaN",
+      "element_tag": "D",
+      "constant_pool_index": 18,
+      "constant_pool_payload_offset": 201,
+      "old_raw_bits": "7ff8000000000000",
+      "new_raw_bits": "7ff8000000000001",
+      "changed_byte_offsets": [
+        208
+      ],
+      "length": 293,
+      "sha256": "760d18b05e75ca54adf144bd75df0ac77bd9643ef369d5a03a5143be6237c642",
+      "class_major": 52,
+      "member_tables_unchanged": true,
+      "member_table_bytes_unchanged": true,
+      "non_target_bytes_unchanged": true
+    }
+  }
+}

@@ -1,0 +1,8 @@
+NestedArrayInitializer.java:58: 错误: 缺少返回语句
+    }
+    ^
+NestedArrayInitializer.java:93: 错误: 缺少返回语句
+    }
+    ^
+2 个错误
+exit=1

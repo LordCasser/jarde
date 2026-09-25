@@ -1,0 +1,64 @@
+package defpackage;
+
+/* JADX INFO: loaded from: BitwiseAudit.class */
+public class BitwiseAudit {
+    public static int andInt(int i, int i2) {
+        return i & i2;
+    }
+
+    public static int orInt(int i, int i2) {
+        return i | i2;
+    }
+
+    public static int xorInt(int i, int i2) {
+        return i ^ i2;
+    }
+
+    public static long andLong(long j, long j2) {
+        return j & j2;
+    }
+
+    public static long orLong(long j, long j2) {
+        return j | j2;
+    }
+
+    public static long xorLong(long j, long j2) {
+        return j ^ j2;
+    }
+
+    public static int nested(int i, int i2) {
+        return (i | i2) ^ (i & (i2 + 1));
+    }
+
+    public static int complement(int i) {
+        return i ^ (-1);
+    }
+
+    public static long complementLong(long j) {
+        return j ^ (-1);
+    }
+
+    public static boolean andBoolean(boolean z, boolean z2) {
+        return z & z2;
+    }
+
+    public static boolean orBoolean(boolean z, boolean z2) {
+        return z | z2;
+    }
+
+    public static boolean xorBoolean(boolean z, boolean z2) {
+        return z ^ z2;
+    }
+
+    public static boolean constant(boolean z) {
+        return !z;
+    }
+
+    public static boolean ordered(boolean z, boolean z2) {
+        return BitwiseEffects.left(z) & BitwiseEffects.right(z2);
+    }
+
+    public static int branch(boolean z, boolean z2) {
+        return z | z2 ? 7 : 9;
+    }
+}

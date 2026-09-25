@@ -1571,9 +1571,8 @@ fn the_nested_eval_sample_crosses_the_wire_field_by_field() {
         "the increment is a statement written beside the quote: {report}"
     );
 
-    // `nestedCall` is the same rule at a call argument: the deferred invocation at BCI 1 reads the
-    // load at BCI 0, and its value is consumed by the `ireturn` at BCI 9 after the increment wrote
-    // the slot, so `tick(arg0) + arg0` after it would call `tick` on the incremented value.
+    // `nestedCall` saves the invocation value before the slot changes, then the return uses that
+    // saved value after the increment. The original calls `tick` on the old argument exactly once.
     let report = &call["result"]["report"];
     let text = report["text"]
         .as_str()
@@ -1582,21 +1581,12 @@ fn the_nested_eval_sample_crosses_the_wire_field_by_field() {
         text.contains("arg0 = arg0 + 1;"),
         "the increment at BCI 4 is a write this layer writes:\n{text}"
     );
-    assert!(
-        !text.contains("tick(arg0)"),
-        "the argument the call reads is the value local 0 held at BCI 0:\n{text}"
-    );
-    assert_eq!(
-        quoted_bcis(text),
-        vec![9, 1],
-        "the quote states the `ireturn` at BCI 9 and the deferred invocation at BCI 1:\n{text}"
-    );
-    assert!(
-        text.contains("BCI 9") && text.contains("BCI 0"),
-        "and the reason states the consumer's bytecode and the read it refused in words:\n{text}"
-    );
-    assert_eq!(report["representation"], "mixed", "{report}");
-    assert_eq!(report["quality"], "fallback", "{report}");
+    assert!(text.contains("int saved0 = tick(arg0);"), "{text}");
+    assert!(text.contains("return saved0 + arg0;"), "{text}");
+    assert_eq!(text.matches("tick(").count(), 1, "{text}");
+    assert!(quoted_bci_set(text).is_empty(), "{text}");
+    assert_eq!(report["representation"], "java", "{report}");
+    assert_eq!(report["quality"], "structured", "{report}");
 
     // `nestedPlain` is the control: the same left-nested `+` shape with no write between the loads
     // and the outer sum, so the names still hold what each load read and nothing is quoted.

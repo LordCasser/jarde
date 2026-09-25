@@ -1,0 +1,40 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ConversionLongFloat.class */
+public class ConversionLongFloat {
+    public static int l2i(long j) {
+        return (int) j;
+    }
+
+    public static float l2f(long j) {
+        return j;
+    }
+
+    public static double l2d(long j) {
+        return j;
+    }
+
+    public static int f2i(float f) {
+        return (int) f;
+    }
+
+    public static long f2l(float f) {
+        return (long) f;
+    }
+
+    public static double f2d(float f) {
+        return f;
+    }
+
+    public static int longToIntOverload(long j) {
+        return ConversionSupport.take((int) j);
+    }
+
+    public static double longToFloatOverload(long j) {
+        return ConversionSupport.take(j);
+    }
+
+    public static double floatToDoubleOverload(float f) {
+        return ConversionSupport.take(f);
+    }
+}

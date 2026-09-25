@@ -1,0 +1,22 @@
+Compiled from "DirectArrayCtorRef.java"
+public class DirectArrayCtorRef {
+  public DirectArrayCtorRef();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int[] make(int);
+    Code:
+       0: invokedynamic #7,  0              // InvokeDynamic #0:apply:()Ljava/util/function/IntFunction;
+       5: iload_0
+       6: invokeinterface #11,  2           // InterfaceMethod java/util/function/IntFunction.apply:(I)Ljava/lang/Object;
+      11: checkcast     #16                 // class "[I"
+      14: areturn
+
+  private static int[] lambda$make$0(int);
+    Code:
+       0: iload_0
+       1: newarray       int
+       3: areturn
+}

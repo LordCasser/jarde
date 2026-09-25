@@ -1,0 +1,213 @@
+// jarde: presentation of `SyntaxProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class SyntaxProbe extends java.lang.Object {
+    public SyntaxProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `SyntaxProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int unaryInt(int arg0) {
+        // jarde: not recovered: the recovery run for `unaryInt(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method unaryInt(I)I
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static long unaryLong(long arg0) {
+        // jarde: not recovered: the recovery run for `unaryLong(J)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method unaryLong(J)J
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 10
+        // the value at BCI 10 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static float unaryFloat(float arg0) {
+        // jarde: not recovered: the recovery run for `unaryFloat(F)F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method unaryFloat(F)F
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 9
+        // the value at BCI 9 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static double unaryDouble(double arg0) {
+        // jarde: not recovered: the recovery run for `unaryDouble(D)D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method unaryDouble(D)D
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 10
+        // the value at BCI 10 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static float negativeZeroFloat() {
+        // jarde: not recovered: the recovery run for `negativeZeroFloat()F` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method negativeZeroFloat()F
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the value at BCI 2 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static double negativeZeroDouble() {
+        // jarde: not recovered: the recovery run for `negativeZeroDouble()D` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method negativeZeroDouble()D
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 0, which produces no expression this subset writes
+    }
+
+    public static java.lang.String checkAndCast(java.lang.Object arg0) {
+        // jarde: not recovered: the recovery run for `checkAndCast(Ljava/lang/Object;)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method checkAndCast(Ljava/lang/Object;)Ljava/lang/String;
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the instruction at BCI 1 is not part of the provable subset
+        // @bytecode 0 7 12 4
+        // the value at BCI 4 comes from an Other at BCI 1, which produces no expression this subset writes
+    }
+
+    public static boolean compareLong(long arg0, long arg2) {
+        // jarde: not recovered: the recovery run for `compareLong(JJ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method compareLong(JJ)Z
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 16 17 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 17
+        // block at BCI 17 can be re-entered and belongs to no loop this subset proves
+    }
+
+    public static boolean compareFloating(double arg0, double arg2) {
+        // jarde: not recovered: the recovery run for `compareFloating(DD)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method compareFloating(DD)Z
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 16 17 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 17
+        // block at BCI 17 can be re-entered and belongs to no loop this subset proves
+    }
+
+    private static int conditionValue(int[] arg0, int arg1) {
+        // @method conditionValue([II)I
+        // @declaration a static method of `SyntaxProbe`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0[arg1];
+    }
+
+    public static int loopConditionCall(int[] arg0) {
+        // @method loopConditionCall([I)I
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local1 = 0;
+        // @bytecode 2
+        // the loop@1 rule did not claim the block at BCI 2: it requires a test block whose every instruction is part of a value expression, and the instruction at BCI 4 is not part of one, so presenting the structure would have moved that effect out of the shape it decides
+        // @bytecode 2 11 17
+        // 3 live block(s) are reachable only through edges the normal-flow view leaves out: [2, 11, 17]
+    }
+
+    public static int bitMix(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `bitMix(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method bitMix(II)I
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 11
+        // the instruction at BCI 11 is not part of the provable subset
+        // @bytecode 12
+        // the instruction at BCI 12 is not part of the provable subset
+        // @bytecode 13
+        // the value at BCI 13 comes from an Other at BCI 12, which produces no expression this subset writes
+    }
+
+    public static int[] arrayInitializer() {
+        // jarde: not recovered: the recovery run for `arrayInitializer()[I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method arrayInitializer()[I
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 1
+        // the array instruction at BCI 1 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 3 1
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 6 1
+        // the value at BCI 6 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        // @bytecode 7 1
+        // the instruction at BCI 7 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 10 1
+        // the value at BCI 10 comes from an Duplicate at BCI 7, which produces no expression this subset writes
+        // @bytecode 11 1
+        // the instruction at BCI 11 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 14 1
+        // the value at BCI 14 comes from an Duplicate at BCI 11, which produces no expression this subset writes
+        // @bytecode 15 1
+        // the instruction at BCI 15 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 19 1
+        // the value at BCI 19 comes from an Duplicate at BCI 15, which produces no expression this subset writes
+        // @bytecode 20 1
+        // the value at BCI 20 comes from an Duplicate at BCI 15, which produces no expression this subset writes
+    }
+
+    public static void throwParameter(java.lang.String arg0) {
+        // jarde: not recovered: the recovery run for `throwParameter(Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method throwParameter(Ljava/lang/String;)V
+        // @declaration a static method of `SyntaxProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 3
+        // the instruction at BCI 3 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 5
+        // the value at BCI 5 comes from an Duplicate at BCI 3, which produces no expression this subset writes
+        // @bytecode 8
+        // the instruction at BCI 8 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+    }
+}

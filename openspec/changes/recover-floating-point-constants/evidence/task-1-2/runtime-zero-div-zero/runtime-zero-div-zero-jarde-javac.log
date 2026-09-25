@@ -1,0 +1,89 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:21: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:32: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:43: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:54: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:65: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:76: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:87: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:98: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:109: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:124: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:135: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:146: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:157: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:168: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:179: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:190: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:201: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:212: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:223: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:234: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:245: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:260: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:271: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:282: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:295: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:308: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:319: 错误: 缺少返回语句
+    }
+    ^
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-task-1-2-ekhldsb9/runtime-zero-div-zero-jarde-helpers/FloatingConstants.java:330: 错误: 缺少返回语句
+    }
+    ^
+28 个错误
+3 个警告

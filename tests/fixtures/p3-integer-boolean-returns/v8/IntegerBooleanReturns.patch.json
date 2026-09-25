@@ -1,0 +1,32 @@
+{
+  "source_sha256": "bd01689fb7dca3b832ec258edfb755b1cf62fb2d58866fc84cd87b6ef167b3a4",
+  "output_sha256": "5b993e7c5b28588ded97dc53b6982608895745fdd625a77e0feb69ee6783eade",
+  "patches": {
+    "direct": {
+      "from": "(I)I",
+      "to": "(I)Z"
+    },
+    "once": {
+      "from": "(LIntegerBooleanReturns;I)I",
+      "to": "(LIntegerBooleanReturns;I)Z"
+    },
+    "post": {
+      "from": "()I",
+      "to": "()Z"
+    },
+    "pre": {
+      "from": "()I",
+      "to": "()Z"
+    },
+    "sync": {
+      "from": "(LIntegerBooleanReturns;I)I",
+      "to": "(LIntegerBooleanReturns;I)Z"
+    },
+    "syncOn": {
+      "from": "(Ljava/lang/Object;I)I",
+      "to": "(Ljava/lang/Object;I)Z"
+    }
+  },
+  "code_sha256_before": "347f163f2497b8b8cb0a3cd7f246f0ee9db9179a4c7660d68df506301bdff854",
+  "code_sha256_after": "347f163f2497b8b8cb0a3cd7f246f0ee9db9179a4c7660d68df506301bdff854"
+}

@@ -1,0 +1,8 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ThrowClinit.class */
+public class ThrowClinit {
+    static {
+        throw new IllegalStateException("init");
+    }
+}

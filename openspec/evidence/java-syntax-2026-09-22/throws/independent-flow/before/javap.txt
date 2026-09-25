@@ -1,0 +1,118 @@
+Classfile /tmp/jarde-throw-flow-independent/original/ThrowFlow.class
+  Last modified 2026年9月23日; size 831 bytes
+  SHA-256 checksum 6f0d7c257342ed9073d678c9bfb8ff18c56417df6e7e6186f2ae2ad5b7c705c0
+public class ThrowFlow
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #32                         // ThrowFlow
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 6, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // ThrowFlowException
+   #8 = Utf8               ThrowFlowException
+   #9 = Methodref          #10.#11        // ThrowFlowEffects.argument:(Ljava/lang/String;)Ljava/lang/String;
+  #10 = Class              #12            // ThrowFlowEffects
+  #11 = NameAndType        #13:#14        // argument:(Ljava/lang/String;)Ljava/lang/String;
+  #12 = Utf8               ThrowFlowEffects
+  #13 = Utf8               argument
+  #14 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #15 = Methodref          #7.#16         // ThrowFlowException."<init>":(Ljava/lang/String;)V
+  #16 = NameAndType        #5:#17         // "<init>":(Ljava/lang/String;)V
+  #17 = Utf8               (Ljava/lang/String;)V
+  #18 = Methodref          #10.#19        // ThrowFlowEffects.problem:()Ljava/lang/RuntimeException;
+  #19 = NameAndType        #20:#21        // problem:()Ljava/lang/RuntimeException;
+  #20 = Utf8               problem
+  #21 = Utf8               ()Ljava/lang/RuntimeException;
+  #22 = Methodref          #10.#23        // ThrowFlowEffects.wrapper:(Ljava/lang/RuntimeException;)Ljava/lang/RuntimeException;
+  #23 = NameAndType        #24:#25        // wrapper:(Ljava/lang/RuntimeException;)Ljava/lang/RuntimeException;
+  #24 = Utf8               wrapper
+  #25 = Utf8               (Ljava/lang/RuntimeException;)Ljava/lang/RuntimeException;
+  #26 = Fieldref           #27.#28        // ThrowFlowHolder.error:Ljava/lang/RuntimeException;
+  #27 = Class              #29            // ThrowFlowHolder
+  #28 = NameAndType        #30:#31        // error:Ljava/lang/RuntimeException;
+  #29 = Utf8               ThrowFlowHolder
+  #30 = Utf8               error
+  #31 = Utf8               Ljava/lang/RuntimeException;
+  #32 = Class              #33            // ThrowFlow
+  #33 = Utf8               ThrowFlow
+  #34 = Utf8               Code
+  #35 = Utf8               constructed
+  #36 = Utf8               nested
+  #37 = Utf8               array
+  #38 = Utf8               ([Ljava/lang/RuntimeException;I)V
+  #39 = Utf8               field
+  #40 = Utf8               (LThrowFlowHolder;)V
+  #41 = Utf8               branch
+  #42 = Utf8               (ZLjava/lang/RuntimeException;Ljava/lang/RuntimeException;)V
+  #43 = Utf8               StackMapTable
+{
+  public ThrowFlow();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void constructed(java.lang.String);
+    descriptor: (Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: new           #7                  // class ThrowFlowException
+         3: dup
+         4: aload_0
+         5: invokestatic  #9                  // Method ThrowFlowEffects.argument:(Ljava/lang/String;)Ljava/lang/String;
+         8: invokespecial #15                 // Method ThrowFlowException."<init>":(Ljava/lang/String;)V
+        11: athrow
+
+  public static void nested();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokestatic  #18                 // Method ThrowFlowEffects.problem:()Ljava/lang/RuntimeException;
+         3: invokestatic  #22                 // Method ThrowFlowEffects.wrapper:(Ljava/lang/RuntimeException;)Ljava/lang/RuntimeException;
+         6: athrow
+
+  public static void array(java.lang.RuntimeException[], int);
+    descriptor: ([Ljava/lang/RuntimeException;I)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: aaload
+         3: athrow
+
+  public static void field(ThrowFlowHolder);
+    descriptor: (LThrowFlowHolder;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #26                 // Field ThrowFlowHolder.error:Ljava/lang/RuntimeException;
+         4: athrow
+
+  public static void branch(boolean, java.lang.RuntimeException, java.lang.RuntimeException);
+    descriptor: (ZLjava/lang/RuntimeException;Ljava/lang/RuntimeException;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=3
+         0: iload_0
+         1: ifeq          6
+         4: aload_1
+         5: athrow
+         6: aload_2
+         7: athrow
+      StackMapTable: number_of_entries = 1
+        frame_type = 6 /* same */
+}

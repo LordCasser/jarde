@@ -1,0 +1,6 @@
+Aa:10:calls=1
+BB:20:calls=1
+abc:30:calls=1
+x:40:calls=1
+a:41:calls=1
+null:throws=NullPointerException:calls=1

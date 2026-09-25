@@ -1,0 +1,3 @@
+SPECIAL:0:7:runtimeIsEnum=false:class=demo.Mixed$1:declaring=Mixed
+PLAIN:1:0:runtimeIsEnum=true:class=demo.Mixed:declaring=Mixed
+exit=0

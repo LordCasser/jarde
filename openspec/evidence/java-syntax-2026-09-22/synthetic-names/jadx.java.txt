@@ -1,0 +1,20 @@
+package defpackage;
+
+import java.util.function.IntUnaryOperator;
+
+/* JADX INFO: loaded from: SyntheticNames.class */
+public class SyntheticNames {
+    public static int repeated(int seed, int value) {
+        IntUnaryOperator a = v -> {
+            return v + seed;
+        };
+        IntUnaryOperator b = v2 -> {
+            return v2 - seed;
+        };
+        return a.applyAsInt(value) + b.applyAsInt(value);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(repeated(7, 11));
+    }
+}

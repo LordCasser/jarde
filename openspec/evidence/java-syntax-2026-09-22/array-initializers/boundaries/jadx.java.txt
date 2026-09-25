@@ -1,0 +1,83 @@
+package defpackage;
+
+/* JADX INFO: loaded from: ArrayInitializerBoundaries.class */
+public final class ArrayInitializerBoundaries {
+    private static final StringBuilder TRACE = new StringBuilder();
+    private static int[] escaped;
+    private static int escapedFirstAtPublication;
+
+    private ArrayInitializerBoundaries() {
+    }
+
+    private static int mark(char c, int i) {
+        TRACE.append(c);
+        return i;
+    }
+
+    private static void escape(int[] iArr) {
+        escaped = iArr;
+        escapedFirstAtPublication = iArr[0];
+    }
+
+    public static int[] exactOrderedStores() {
+        return new int[]{11, 22, 33};
+    }
+
+    public static int[] exactEffectfulStores() {
+        TRACE.setLength(0);
+        int[] iArr = {mark('a', 11), mark('b', 22), mark('c', 33)};
+        System.out.println("effects=" + ((Object) TRACE));
+        return iArr;
+    }
+
+    public static String[] exactReferenceStores() {
+        return new String[]{"left", null, "right"};
+    }
+
+    public static int[] dynamicLength(int i) {
+        int[] iArr = new int[i];
+        iArr[0] = 11;
+        iArr[1] = 22;
+        return iArr;
+    }
+
+    public static int[] duplicateIndex() {
+        int[] iArr = {11, 0};
+        iArr[0] = 22;
+        return iArr;
+    }
+
+    public static int[] skippedIndex() {
+        return new int[]{0, 22, 33};
+    }
+
+    public static int[] escapedBeforeStores() {
+        int[] iArr = {11, 22};
+        escape(iArr);
+        return iArr;
+    }
+
+    public static int escapedFirstAtPublication() {
+        return escapedFirstAtPublication;
+    }
+
+    public static int[] storesAcrossBranch(boolean z) {
+        int[] iArr = new int[2];
+        if (z) {
+            iArr[0] = 11;
+        } else {
+            iArr[0] = 22;
+        }
+        iArr[1] = 33;
+        return iArr;
+    }
+
+    /* JADX WARN: Multi-variable type inference failed */
+    public static Object[] covariantAastoreThrows() {
+        return new String[]{new Object()};
+    }
+
+    public static int[] runTime() {
+        return exactOrderedStores();
+    }
+}

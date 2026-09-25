@@ -1,0 +1,182 @@
+Classfile /tmp/jarde-synthetic-name-collision/original/SyntheticNames.class
+  Last modified 2026年9月23日; size 1408 bytes
+  SHA-256 checksum 7f756182d4fe018cd695676870d477bf458949e8fa3bb3a1adf62b312840ce6b
+public class SyntheticNames
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #24                         // SyntheticNames
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 5, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = InvokeDynamic      #0:#8          // #0:applyAsInt:(I)Ljava/util/function/IntUnaryOperator;
+   #8 = NameAndType        #9:#10         // applyAsInt:(I)Ljava/util/function/IntUnaryOperator;
+   #9 = Utf8               applyAsInt
+  #10 = Utf8               (I)Ljava/util/function/IntUnaryOperator;
+  #11 = InvokeDynamic      #1:#8          // #1:applyAsInt:(I)Ljava/util/function/IntUnaryOperator;
+  #12 = InterfaceMethodref #13.#14        // java/util/function/IntUnaryOperator.applyAsInt:(I)I
+  #13 = Class              #15            // java/util/function/IntUnaryOperator
+  #14 = NameAndType        #9:#16         // applyAsInt:(I)I
+  #15 = Utf8               java/util/function/IntUnaryOperator
+  #16 = Utf8               (I)I
+  #17 = Fieldref           #18.#19        // java/lang/System.out:Ljava/io/PrintStream;
+  #18 = Class              #20            // java/lang/System
+  #19 = NameAndType        #21:#22        // out:Ljava/io/PrintStream;
+  #20 = Utf8               java/lang/System
+  #21 = Utf8               out
+  #22 = Utf8               Ljava/io/PrintStream;
+  #23 = Methodref          #24.#25        // SyntheticNames.repeated:(II)I
+  #24 = Class              #26            // SyntheticNames
+  #25 = NameAndType        #27:#28        // repeated:(II)I
+  #26 = Utf8               SyntheticNames
+  #27 = Utf8               repeated
+  #28 = Utf8               (II)I
+  #29 = Methodref          #30.#31        // java/io/PrintStream.println:(I)V
+  #30 = Class              #32            // java/io/PrintStream
+  #31 = NameAndType        #33:#34        // println:(I)V
+  #32 = Utf8               java/io/PrintStream
+  #33 = Utf8               println
+  #34 = Utf8               (I)V
+  #35 = Utf8               Code
+  #36 = Utf8               LocalVariableTable
+  #37 = Utf8               this
+  #38 = Utf8               LSyntheticNames;
+  #39 = Utf8               seed
+  #40 = Utf8               I
+  #41 = Utf8               value
+  #42 = Utf8               p0_
+  #43 = Utf8               a
+  #44 = Utf8               Ljava/util/function/IntUnaryOperator;
+  #45 = Utf8               b
+  #46 = Utf8               main
+  #47 = Utf8               ([Ljava/lang/String;)V
+  #48 = Utf8               args
+  #49 = Utf8               [Ljava/lang/String;
+  #50 = Utf8               lambda$repeated$1
+  #51 = Utf8               v
+  #52 = Utf8               lambda$repeated$0
+  #53 = Utf8               BootstrapMethods
+  #54 = MethodType         #16            //  (I)I
+  #55 = MethodHandle       6:#56          // REF_invokeStatic SyntheticNames.lambda$repeated$0:(II)I
+  #56 = Methodref          #24.#57        // SyntheticNames.lambda$repeated$0:(II)I
+  #57 = NameAndType        #52:#28        // lambda$repeated$0:(II)I
+  #58 = MethodHandle       6:#59          // REF_invokeStatic SyntheticNames.lambda$repeated$1:(II)I
+  #59 = Methodref          #24.#60        // SyntheticNames.lambda$repeated$1:(II)I
+  #60 = NameAndType        #50:#28        // lambda$repeated$1:(II)I
+  #61 = MethodHandle       6:#62          // REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #62 = Methodref          #63.#64        // java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #63 = Class              #65            // java/lang/invoke/LambdaMetafactory
+  #64 = NameAndType        #66:#67        // metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #65 = Utf8               java/lang/invoke/LambdaMetafactory
+  #66 = Utf8               metafactory
+  #67 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #68 = Utf8               InnerClasses
+  #69 = Class              #70            // java/lang/invoke/MethodHandles$Lookup
+  #70 = Utf8               java/lang/invoke/MethodHandles$Lookup
+  #71 = Class              #72            // java/lang/invoke/MethodHandles
+  #72 = Utf8               java/lang/invoke/MethodHandles
+  #73 = Utf8               Lookup
+{
+  public SyntheticNames();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LSyntheticNames;
+
+  public static int repeated(int, int);
+    descriptor: (II)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=5, args_size=2
+         0: iload_0
+         1: istore_2
+         2: iload_2
+         3: invokedynamic #7,  0              // InvokeDynamic #0:applyAsInt:(I)Ljava/util/function/IntUnaryOperator;
+         8: astore_3
+         9: iload_2
+        10: invokedynamic #11,  0             // InvokeDynamic #1:applyAsInt:(I)Ljava/util/function/IntUnaryOperator;
+        15: astore        4
+        17: aload_3
+        18: iload_1
+        19: invokeinterface #12,  2           // InterfaceMethod java/util/function/IntUnaryOperator.applyAsInt:(I)I
+        24: aload         4
+        26: iload_1
+        27: invokeinterface #12,  2           // InterfaceMethod java/util/function/IntUnaryOperator.applyAsInt:(I)I
+        32: iadd
+        33: ireturn
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      34     0  seed   I
+            0      34     1 value   I
+            2      32     2   p0_   I
+            9      25     3     a   Ljava/util/function/IntUnaryOperator;
+           17      17     4     b   Ljava/util/function/IntUnaryOperator;
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: getstatic     #17                 // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: bipush        7
+         5: bipush        11
+         7: invokestatic  #23                 // Method repeated:(II)I
+        10: invokevirtual #29                 // Method java/io/PrintStream.println:(I)V
+        13: return
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      14     0  args   [Ljava/lang/String;
+
+  private static int lambda$repeated$1(int, int);
+    descriptor: (II)I
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_1
+         1: iload_0
+         2: isub
+         3: ireturn
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       4     0   p0_   I
+            0       4     1     v   I
+
+  private static int lambda$repeated$0(int, int);
+    descriptor: (II)I
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_1
+         1: iload_0
+         2: iadd
+         3: ireturn
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       4     0   p0_   I
+            0       4     1     v   I
+}
+BootstrapMethods:
+  0: #61 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #54 (I)I
+      #55 REF_invokeStatic SyntheticNames.lambda$repeated$0:(II)I
+      #54 (I)I
+  1: #61 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #54 (I)I
+      #58 REF_invokeStatic SyntheticNames.lambda$repeated$1:(II)I
+      #54 (I)I
+InnerClasses:
+  public static final #73= #69 of #71;    // Lookup=class java/lang/invoke/MethodHandles$Lookup of class java/lang/invoke/MethodHandles

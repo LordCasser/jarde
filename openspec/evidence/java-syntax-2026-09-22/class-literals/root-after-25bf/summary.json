@@ -1,0 +1,19 @@
+{
+  "javac_path": "/usr/bin/javac",
+  "jadx_path": "/opt/homebrew/bin/jadx",
+  "cli": "/tmp/jarde-cli-class-literals-root",
+  "cli_sha256": "25bf181ccf0d879351a16710818e27efba0df6b3851931a29eb98d9f41adb1e0",
+  "source_javac": 0,
+  "class_bytes": 851,
+  "class_sha256": "11b1724cd33490629a115dfdd8104fed394f3569b03aa6ecfe9007ca1bedfc4b",
+  "javap": 0,
+  "original_javac": 0,
+  "original_run": 0,
+  "jadx_extract": 0,
+  "jadx_javac": 0,
+  "jadx_run": 0,
+  "jarde_class_source": 0,
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_run": 0
+}

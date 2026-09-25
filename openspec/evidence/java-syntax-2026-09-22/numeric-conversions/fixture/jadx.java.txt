@@ -1,0 +1,124 @@
+package defpackage;
+
+/* JADX INFO: loaded from: PrimitiveConversions.class */
+public class PrimitiveConversions {
+    public static long i2l(int i) {
+        return i;
+    }
+
+    public static float i2f(int i) {
+        return i;
+    }
+
+    public static double i2d(int i) {
+        return i;
+    }
+
+    public static byte i2b(int i) {
+        return (byte) i;
+    }
+
+    public static char i2c(int i) {
+        return (char) i;
+    }
+
+    public static short i2s(int i) {
+        return (short) i;
+    }
+
+    public static int l2i(long j) {
+        return (int) j;
+    }
+
+    public static float l2f(long j) {
+        return j;
+    }
+
+    public static double l2d(long j) {
+        return j;
+    }
+
+    public static int f2i(float f) {
+        return (int) f;
+    }
+
+    public static long f2l(float f) {
+        return (long) f;
+    }
+
+    public static double f2d(float f) {
+        return f;
+    }
+
+    public static int d2i(double d) {
+        return (int) d;
+    }
+
+    public static long d2l(double d) {
+        return (long) d;
+    }
+
+    public static float d2f(double d) {
+        return (float) d;
+    }
+
+    public static int byteOverload(int i) {
+        return PrimitiveConversionSupport.take((byte) i);
+    }
+
+    public static int shortOverload(int i) {
+        return PrimitiveConversionSupport.take((short) i);
+    }
+
+    public static int charOverload(int i) {
+        return PrimitiveConversionSupport.take((char) i);
+    }
+
+    public static int longIntOverload(long j) {
+        return PrimitiveConversionSupport.take((int) j);
+    }
+
+    public static double longFloatOverload(long j) {
+        return PrimitiveConversionSupport.take(j);
+    }
+
+    public static double floatDoubleOverload(float f) {
+        return PrimitiveConversionSupport.take(f);
+    }
+
+    public static int doubleIntOverload(double d) {
+        return PrimitiveConversionSupport.take((int) d);
+    }
+
+    public static long intFloatRound(int i) {
+        return i;
+    }
+
+    public static long longFloatRound(long j) {
+        return j;
+    }
+
+    public static long longDoubleRound(long j) {
+        return j;
+    }
+
+    public static double doubleFloatRound(double d) {
+        return (float) d;
+    }
+
+    public static byte floatByte(float f) {
+        return (byte) f;
+    }
+
+    public static char doubleChar(double d) {
+        return (char) d;
+    }
+
+    public static int byteChar(int i) {
+        return (char) ((byte) i);
+    }
+
+    public static long ordered(int i, boolean z, boolean z2) {
+        return ((long) PrimitiveConversionEffects.left(i, z)) + ((long) PrimitiveConversionEffects.right(i, z2));
+    }
+}

@@ -1,0 +1,39 @@
+package defpackage;
+
+/* JADX INFO: loaded from: NegAudit.class */
+public class NegAudit {
+    public static int mixed(int i) {
+        return (-(-i)) * (-(i - 1));
+    }
+
+    public static long longMin() {
+        return -Long.MIN_VALUE;
+    }
+
+    public static String concat(int i) {
+        return "v=" + (-i);
+    }
+
+    public static Integer boxed(int i) {
+        return Integer.valueOf(-i);
+    }
+
+    public static int branch(int i) {
+        return (-i) > 0 ? 1 : 2;
+    }
+
+    public static int loop(int i) {
+        while ((-i) < 0) {
+            i--;
+        }
+        return i;
+    }
+
+    public static double floating(double d, double d2) {
+        return (-(d + d2)) / (-d);
+    }
+
+    public static int stored(int i) {
+        return (-i) + i + 1;
+    }
+}

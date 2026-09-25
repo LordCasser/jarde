@@ -1,0 +1,15 @@
+constructed=defpackage.ThrowFlowException:message:false:false:12
+argumentFailure=java.lang.IllegalStateException:-:true:false:1
+constructorFailure=java.lang.IllegalStateException:-:true:false:12
+nested=java.lang.IllegalArgumentException:-:false:true:34
+problemFailure=java.lang.IllegalStateException:-:true:false:3
+wrapperFailure=java.lang.IllegalStateException:-:true:false:34
+arrayValue=java.lang.IllegalArgumentException:-:false:true:0
+arrayElementNull=java.lang.NullPointerException:-:false:false:0
+arrayNull=java.lang.NullPointerException:-:false:false:0
+arrayBounds=java.lang.ArrayIndexOutOfBoundsException:-:false:false:0
+fieldValue=java.lang.IllegalArgumentException:-:false:true:0
+fieldNull=java.lang.NullPointerException:-:false:false:0
+receiverNull=java.lang.NullPointerException:-:false:false:0
+first=java.lang.IllegalArgumentException:-:false:true:0
+second=java.lang.IllegalStateException:-:true:false:0

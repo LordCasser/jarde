@@ -1,0 +1,378 @@
+// jarde: presentation of `NumericComparisons` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class NumericComparisons extends java.lang.Object {
+    private static int calls;
+
+    public NumericComparisons() {
+        // @method <init>()V
+        // @declaration a constructor of `NumericComparisons`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int long_eq(long arg0, long arg2) {
+        // @method long_eq(JJ)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0 = 0L;
+        // @bytecode 0 8 11 5 4
+        // the value at BCI 5 is the value local 0 held at BCI 0, and the slot does not hold it at BCI 5: the slot's name would read the value the body wrote in between
+    }
+
+    public static int long_ne(long arg0, long arg2) {
+        // @method long_ne(JJ)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 != arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int long_lt(long arg0, long arg2) {
+        // @method long_lt(JJ)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 < arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int long_le(long arg0, long arg2) {
+        // @method long_le(JJ)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 <= arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int long_gt(long arg0, long arg2) {
+        // @method long_gt(JJ)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 > arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int long_ge(long arg0, long arg2) {
+        // @method long_ge(JJ)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 >= arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int long_not_lt(long arg0, long arg2) {
+        // @method long_not_lt(JJ)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 >= arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int float_eq(float arg0, float arg1) {
+        // @method float_eq(FF)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 == arg1) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int float_ne(float arg0, float arg1) {
+        // @method float_ne(FF)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 != arg1) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int float_lt(float arg0, float arg1) {
+        // @method float_lt(FF)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 < arg1) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int float_le(float arg0, float arg1) {
+        // @method float_le(FF)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 <= arg1) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int float_gt(float arg0, float arg1) {
+        // @method float_gt(FF)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 > arg1) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int float_ge(float arg0, float arg1) {
+        // @method float_ge(FF)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 >= arg1) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int float_not_lt(float arg0, float arg1) {
+        // @method float_not_lt(FF)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (!(arg0 < arg1)) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int double_eq(double arg0, double arg2) {
+        // @method double_eq(DD)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 == arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int double_ne(double arg0, double arg2) {
+        // @method double_ne(DD)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 != arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int double_lt(double arg0, double arg2) {
+        // @method double_lt(DD)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 < arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int double_le(double arg0, double arg2) {
+        // @method double_le(DD)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 <= arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int double_gt(double arg0, double arg2) {
+        // @method double_gt(DD)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 > arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int double_ge(double arg0, double arg2) {
+        // @method double_ge(DD)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 >= arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int double_not_lt(double arg0, double arg2) {
+        // @method double_not_lt(DD)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (!(arg0 < arg2)) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int int_lt(int arg0, int arg1) {
+        // @method int_lt(II)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 < arg1) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static boolean double_boolean(double arg0, double arg2) {
+        // @method double_boolean(DD)Z
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 < arg2) {
+        }
+        // @bytecode 11
+        // the value at BCI 11 is the entry state of stack depth 0, which no instruction produced
+    }
+
+    public static void resetCalls() {
+        // @method resetCalls()V
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NumericComparisons.calls = 0;
+        return;
+    }
+
+    public static int calls() {
+        // @method calls()I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return NumericComparisons.calls;
+    }
+
+    public static long left(long arg0) {
+        // @method left(J)J
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NumericComparisons.calls = NumericComparisons.calls * 10 + 1;
+        return arg0;
+    }
+
+    public static long right(long arg0) {
+        // @method right(J)J
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NumericComparisons.calls = NumericComparisons.calls * 10 + 2;
+        return arg0;
+    }
+
+    public static long throwingLeft(long arg0) {
+        // @method throwingLeft(J)J
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NumericComparisons.calls = NumericComparisons.calls * 10 + 1;
+        // @bytecode 11
+        // the instruction at BCI 11 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 14
+        // the instruction at BCI 14 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 17
+        // the value at BCI 17 comes from an Duplicate at BCI 14, which produces no expression this subset writes
+        // @bytecode 20
+        // the instruction at BCI 20 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+    }
+
+    public static long throwingRight(long arg0) {
+        // @method throwingRight(J)J
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        NumericComparisons.calls = NumericComparisons.calls * 10 + 2;
+        // @bytecode 11
+        // the instruction at BCI 11 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 14
+        // the instruction at BCI 14 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 17
+        // the value at BCI 17 comes from an Duplicate at BCI 14, which produces no expression this subset writes
+        // @bytecode 20
+        // the instruction at BCI 20 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+    }
+
+    public static int callOrder(long arg0, long arg2) {
+        // @method callOrder(JJ)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (left(arg0) < right(arg2)) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int callThrowLeft(long arg0, long arg2) {
+        // @method callThrowLeft(JJ)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (throwingLeft(arg0) < right(arg2)) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int callThrowRight(long arg0, long arg2) {
+        // @method callThrowRight(JJ)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (left(arg0) < throwingRight(arg2)) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static int sameBlock(long arg0, long arg2) {
+        // @method sameBlock(JJ)I
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 < arg2) {
+            return 7;
+        } else {
+            return 9;
+        }
+    }
+
+    public static boolean booleanMerge(double arg0, double arg2) {
+        // @method booleanMerge(DD)Z
+        // @declaration a static method of `NumericComparisons`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 < arg2) {
+        }
+        // @bytecode 11
+        // the value at BCI 11 is the entry state of stack depth 0, which no instruction produced
+    }
+}

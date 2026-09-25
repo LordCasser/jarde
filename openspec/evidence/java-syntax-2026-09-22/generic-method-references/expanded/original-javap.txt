@@ -1,0 +1,435 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-generic-method-references-expanded-9s1jj20f/original/GenericReferenceExpanded.class
+  Last modified 2026年9月23日; size 3728 bytes
+  SHA-256 checksum 592347dcc9201756c6bda19edf0517052bff41ff7640fceff79ebf892ac4e49a
+public class GenericReferenceExpanded
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #50                         // GenericReferenceExpanded
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 21, attributes: 2
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = InvokeDynamic      #0:#8         // #0:applyAsInt:()Ljava/util/function/ToIntFunction;
+    #8 = NameAndType        #9:#10        // applyAsInt:()Ljava/util/function/ToIntFunction;
+    #9 = Utf8               applyAsInt
+   #10 = Utf8               ()Ljava/util/function/ToIntFunction;
+   #11 = InvokeDynamic      #1:#8         // #1:applyAsInt:()Ljava/util/function/ToIntFunction;
+   #12 = InvokeDynamic      #2:#8         // #2:applyAsInt:()Ljava/util/function/ToIntFunction;
+   #13 = InvokeDynamic      #3:#14        // #3:applyAsInt:()Ljava/util/function/IntUnaryOperator;
+   #14 = NameAndType        #9:#15        // applyAsInt:()Ljava/util/function/IntUnaryOperator;
+   #15 = Utf8               ()Ljava/util/function/IntUnaryOperator;
+   #16 = InvokeDynamic      #4:#17        // #4:apply:()Ljava/util/function/Function;
+   #17 = NameAndType        #18:#19       // apply:()Ljava/util/function/Function;
+   #18 = Utf8               apply
+   #19 = Utf8               ()Ljava/util/function/Function;
+   #20 = InvokeDynamic      #5:#21        // #5:applyAsInt:()Ljava/util/function/ToIntBiFunction;
+   #21 = NameAndType        #9:#22        // applyAsInt:()Ljava/util/function/ToIntBiFunction;
+   #22 = Utf8               ()Ljava/util/function/ToIntBiFunction;
+   #23 = InvokeDynamic      #6:#21        // #6:applyAsInt:()Ljava/util/function/ToIntBiFunction;
+   #24 = Methodref          #25.#26       // ReferenceHelper.make:()LReferenceHelper;
+   #25 = Class              #27           // ReferenceHelper
+   #26 = NameAndType        #28:#29       // make:()LReferenceHelper;
+   #27 = Utf8               ReferenceHelper
+   #28 = Utf8               make
+   #29 = Utf8               ()LReferenceHelper;
+   #30 = Methodref          #31.#32       // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+   #31 = Class              #33           // java/util/Objects
+   #32 = NameAndType        #34:#35       // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+   #33 = Utf8               java/util/Objects
+   #34 = Utf8               requireNonNull
+   #35 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+   #36 = InvokeDynamic      #7:#37        // #7:apply:(LReferenceHelper;)Ljava/util/function/Function;
+   #37 = NameAndType        #18:#38       // apply:(LReferenceHelper;)Ljava/util/function/Function;
+   #38 = Utf8               (LReferenceHelper;)Ljava/util/function/Function;
+   #39 = InvokeDynamic      #8:#37        // #8:apply:(LReferenceHelper;)Ljava/util/function/Function;
+   #40 = Methodref          #25.#41       // ReferenceHelper.nullReceiver:()LReferenceHelper;
+   #41 = NameAndType        #42:#29       // nullReceiver:()LReferenceHelper;
+   #42 = Utf8               nullReceiver
+   #43 = InvokeDynamic      #9:#17        // #9:apply:()Ljava/util/function/Function;
+   #44 = InvokeDynamic      #10:#45       // #10:get:()Ljava/util/function/Supplier;
+   #45 = NameAndType        #46:#47       // get:()Ljava/util/function/Supplier;
+   #46 = Utf8               get
+   #47 = Utf8               ()Ljava/util/function/Supplier;
+   #48 = InvokeDynamic      #11:#45       // #11:get:()Ljava/util/function/Supplier;
+   #49 = InvokeDynamic      #12:#45       // #12:get:()Ljava/util/function/Supplier;
+   #50 = Class              #51           // GenericReferenceExpanded
+   #51 = Utf8               GenericReferenceExpanded
+   #52 = Utf8               Code
+   #53 = Utf8               staticPick
+   #54 = Utf8               (Ljava/lang/Object;)I
+   #55 = Utf8               (Ljava/lang/String;)I
+   #56 = Utf8               ([Ljava/lang/Object;)I
+   #57 = Utf8               ([Ljava/lang/String;)I
+   #58 = Utf8               (I)I
+   #59 = Utf8               (Ljava/lang/Integer;)I
+   #60 = Utf8               staticStrings
+   #61 = Utf8               Signature
+   #62 = Utf8               ()Ljava/util/function/ToIntFunction<Ljava/lang/String;>;
+   #63 = Utf8               staticStringArrays
+   #64 = Utf8               ()Ljava/util/function/ToIntFunction<[Ljava/lang/String;>;
+   #65 = Utf8               staticObjectArrays
+   #66 = Utf8               ()Ljava/util/function/ToIntFunction<[Ljava/lang/Object;>;
+   #67 = Utf8               staticInts
+   #68 = Utf8               staticBoxedInts
+   #69 = Utf8               ()Ljava/util/function/Function<Ljava/lang/Integer;Ljava/lang/Integer;>;
+   #70 = Utf8               unboundStrings
+   #71 = Utf8               ()Ljava/util/function/ToIntBiFunction<LReferenceHelper;Ljava/lang/String;>;
+   #72 = Utf8               unboundArrays
+   #73 = Utf8               ()Ljava/util/function/ToIntBiFunction<LReferenceHelper;[Ljava/lang/String;>;
+   #74 = Utf8               boundStrings
+   #75 = Utf8               ()Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/Integer;>;
+   #76 = Utf8               boundArrays
+   #77 = Utf8               ()Ljava/util/function/Function<[Ljava/lang/String;Ljava/lang/Integer;>;
+   #78 = Utf8               boundNull
+   #79 = Utf8               constructor
+   #80 = Utf8               ()Ljava/util/function/Function<Ljava/lang/String;LReferenceBox;>;
+   #81 = Utf8               noArgString
+   #82 = Utf8               ()Ljava/util/function/Supplier<Ljava/lang/String;>;
+   #83 = Utf8               noArgCharSequence
+   #84 = Utf8               ()Ljava/util/function/Supplier<Ljava/lang/CharSequence;>;
+   #85 = Utf8               noArgGenericString
+   #86 = Utf8               BootstrapMethods
+   #87 = MethodType         #54           //  (Ljava/lang/Object;)I
+   #88 = MethodHandle       6:#89         // REF_invokeStatic GenericReferenceExpanded.staticPick:(Ljava/lang/String;)I
+   #89 = Methodref          #50.#90       // GenericReferenceExpanded.staticPick:(Ljava/lang/String;)I
+   #90 = NameAndType        #53:#55       // staticPick:(Ljava/lang/String;)I
+   #91 = MethodType         #55           //  (Ljava/lang/String;)I
+   #92 = MethodHandle       6:#93         // REF_invokeStatic GenericReferenceExpanded.staticPick:([Ljava/lang/String;)I
+   #93 = Methodref          #50.#94       // GenericReferenceExpanded.staticPick:([Ljava/lang/String;)I
+   #94 = NameAndType        #53:#57       // staticPick:([Ljava/lang/String;)I
+   #95 = MethodType         #57           //  ([Ljava/lang/String;)I
+   #96 = MethodHandle       6:#97         // REF_invokeStatic GenericReferenceExpanded.staticPick:([Ljava/lang/Object;)I
+   #97 = Methodref          #50.#98       // GenericReferenceExpanded.staticPick:([Ljava/lang/Object;)I
+   #98 = NameAndType        #53:#56       // staticPick:([Ljava/lang/Object;)I
+   #99 = MethodType         #56           //  ([Ljava/lang/Object;)I
+  #100 = MethodType         #58           //  (I)I
+  #101 = MethodHandle       6:#102        // REF_invokeStatic GenericReferenceExpanded.staticPick:(I)I
+  #102 = Methodref          #50.#103      // GenericReferenceExpanded.staticPick:(I)I
+  #103 = NameAndType        #53:#58       // staticPick:(I)I
+  #104 = MethodType         #35           //  (Ljava/lang/Object;)Ljava/lang/Object;
+  #105 = MethodHandle       6:#106        // REF_invokeStatic GenericReferenceExpanded.staticPick:(Ljava/lang/Integer;)I
+  #106 = Methodref          #50.#107      // GenericReferenceExpanded.staticPick:(Ljava/lang/Integer;)I
+  #107 = NameAndType        #53:#59       // staticPick:(Ljava/lang/Integer;)I
+  #108 = MethodType         #109          //  (Ljava/lang/Integer;)Ljava/lang/Integer;
+  #109 = Utf8               (Ljava/lang/Integer;)Ljava/lang/Integer;
+  #110 = MethodType         #111          //  (Ljava/lang/Object;Ljava/lang/Object;)I
+  #111 = Utf8               (Ljava/lang/Object;Ljava/lang/Object;)I
+  #112 = MethodHandle       5:#113        // REF_invokeVirtual ReferenceHelper.pick:(Ljava/lang/String;)I
+  #113 = Methodref          #25.#114      // ReferenceHelper.pick:(Ljava/lang/String;)I
+  #114 = NameAndType        #115:#55      // pick:(Ljava/lang/String;)I
+  #115 = Utf8               pick
+  #116 = MethodType         #117          //  (LReferenceHelper;Ljava/lang/String;)I
+  #117 = Utf8               (LReferenceHelper;Ljava/lang/String;)I
+  #118 = MethodHandle       5:#119        // REF_invokeVirtual ReferenceHelper.pick:([Ljava/lang/String;)I
+  #119 = Methodref          #25.#120      // ReferenceHelper.pick:([Ljava/lang/String;)I
+  #120 = NameAndType        #115:#57      // pick:([Ljava/lang/String;)I
+  #121 = MethodType         #122          //  (LReferenceHelper;[Ljava/lang/String;)I
+  #122 = Utf8               (LReferenceHelper;[Ljava/lang/String;)I
+  #123 = MethodType         #124          //  (Ljava/lang/String;)Ljava/lang/Integer;
+  #124 = Utf8               (Ljava/lang/String;)Ljava/lang/Integer;
+  #125 = MethodType         #126          //  ([Ljava/lang/String;)Ljava/lang/Integer;
+  #126 = Utf8               ([Ljava/lang/String;)Ljava/lang/Integer;
+  #127 = MethodHandle       8:#128        // REF_newInvokeSpecial ReferenceBox."<init>":(Ljava/lang/String;)V
+  #128 = Methodref          #129.#130     // ReferenceBox."<init>":(Ljava/lang/String;)V
+  #129 = Class              #131          // ReferenceBox
+  #130 = NameAndType        #5:#132       // "<init>":(Ljava/lang/String;)V
+  #131 = Utf8               ReferenceBox
+  #132 = Utf8               (Ljava/lang/String;)V
+  #133 = MethodType         #134          //  (Ljava/lang/String;)LReferenceBox;
+  #134 = Utf8               (Ljava/lang/String;)LReferenceBox;
+  #135 = MethodType         #136          //  ()Ljava/lang/Object;
+  #136 = Utf8               ()Ljava/lang/Object;
+  #137 = MethodHandle       6:#138        // REF_invokeStatic ReferenceHelper.text:()Ljava/lang/String;
+  #138 = Methodref          #25.#139      // ReferenceHelper.text:()Ljava/lang/String;
+  #139 = NameAndType        #140:#141     // text:()Ljava/lang/String;
+  #140 = Utf8               text
+  #141 = Utf8               ()Ljava/lang/String;
+  #142 = MethodType         #141          //  ()Ljava/lang/String;
+  #143 = MethodType         #144          //  ()Ljava/lang/CharSequence;
+  #144 = Utf8               ()Ljava/lang/CharSequence;
+  #145 = MethodHandle       6:#146        // REF_invokeStatic ReferenceHelper.genericText:()Ljava/lang/Object;
+  #146 = Methodref          #25.#147      // ReferenceHelper.genericText:()Ljava/lang/Object;
+  #147 = NameAndType        #148:#136     // genericText:()Ljava/lang/Object;
+  #148 = Utf8               genericText
+  #149 = MethodHandle       6:#150        // REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #150 = Methodref          #151.#152     // java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #151 = Class              #153          // java/lang/invoke/LambdaMetafactory
+  #152 = NameAndType        #154:#155     // metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #153 = Utf8               java/lang/invoke/LambdaMetafactory
+  #154 = Utf8               metafactory
+  #155 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #156 = Utf8               InnerClasses
+  #157 = Class              #158          // java/lang/invoke/MethodHandles$Lookup
+  #158 = Utf8               java/lang/invoke/MethodHandles$Lookup
+  #159 = Class              #160          // java/lang/invoke/MethodHandles
+  #160 = Utf8               java/lang/invoke/MethodHandles
+  #161 = Utf8               Lookup
+{
+  public GenericReferenceExpanded();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int staticPick(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: bipush        10
+         2: ireturn
+
+  public static int staticPick(java.lang.String);
+    descriptor: (Ljava/lang/String;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: bipush        11
+         2: ireturn
+
+  public static int staticPick(java.lang.Object[]);
+    descriptor: ([Ljava/lang/Object;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: bipush        12
+         2: ireturn
+
+  public static int staticPick(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: bipush        13
+         2: ireturn
+
+  public static int staticPick(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: bipush        14
+         2: ireturn
+
+  public static int staticPick(java.lang.Integer);
+    descriptor: (Ljava/lang/Integer;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: bipush        15
+         2: ireturn
+
+  public static java.util.function.ToIntFunction<java.lang.String> staticStrings();
+    descriptor: ()Ljava/util/function/ToIntFunction;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #7,  0              // InvokeDynamic #0:applyAsInt:()Ljava/util/function/ToIntFunction;
+         5: areturn
+    Signature: #62                          // ()Ljava/util/function/ToIntFunction<Ljava/lang/String;>;
+
+  public static java.util.function.ToIntFunction<java.lang.String[]> staticStringArrays();
+    descriptor: ()Ljava/util/function/ToIntFunction;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #11,  0             // InvokeDynamic #1:applyAsInt:()Ljava/util/function/ToIntFunction;
+         5: areturn
+    Signature: #64                          // ()Ljava/util/function/ToIntFunction<[Ljava/lang/String;>;
+
+  public static java.util.function.ToIntFunction<java.lang.Object[]> staticObjectArrays();
+    descriptor: ()Ljava/util/function/ToIntFunction;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #12,  0             // InvokeDynamic #2:applyAsInt:()Ljava/util/function/ToIntFunction;
+         5: areturn
+    Signature: #66                          // ()Ljava/util/function/ToIntFunction<[Ljava/lang/Object;>;
+
+  public static java.util.function.IntUnaryOperator staticInts();
+    descriptor: ()Ljava/util/function/IntUnaryOperator;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #13,  0             // InvokeDynamic #3:applyAsInt:()Ljava/util/function/IntUnaryOperator;
+         5: areturn
+
+  public static java.util.function.Function<java.lang.Integer, java.lang.Integer> staticBoxedInts();
+    descriptor: ()Ljava/util/function/Function;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #16,  0             // InvokeDynamic #4:apply:()Ljava/util/function/Function;
+         5: areturn
+    Signature: #69                          // ()Ljava/util/function/Function<Ljava/lang/Integer;Ljava/lang/Integer;>;
+
+  public static java.util.function.ToIntBiFunction<ReferenceHelper, java.lang.String> unboundStrings();
+    descriptor: ()Ljava/util/function/ToIntBiFunction;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #20,  0             // InvokeDynamic #5:applyAsInt:()Ljava/util/function/ToIntBiFunction;
+         5: areturn
+    Signature: #71                          // ()Ljava/util/function/ToIntBiFunction<LReferenceHelper;Ljava/lang/String;>;
+
+  public static java.util.function.ToIntBiFunction<ReferenceHelper, java.lang.String[]> unboundArrays();
+    descriptor: ()Ljava/util/function/ToIntBiFunction;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #23,  0             // InvokeDynamic #6:applyAsInt:()Ljava/util/function/ToIntBiFunction;
+         5: areturn
+    Signature: #73                          // ()Ljava/util/function/ToIntBiFunction<LReferenceHelper;[Ljava/lang/String;>;
+
+  public static java.util.function.Function<java.lang.String, java.lang.Integer> boundStrings();
+    descriptor: ()Ljava/util/function/Function;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: invokestatic  #24                 // Method ReferenceHelper.make:()LReferenceHelper;
+         3: dup
+         4: invokestatic  #30                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+         7: pop
+         8: invokedynamic #36,  0             // InvokeDynamic #7:apply:(LReferenceHelper;)Ljava/util/function/Function;
+        13: areturn
+    Signature: #75                          // ()Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/Integer;>;
+
+  public static java.util.function.Function<java.lang.String[], java.lang.Integer> boundArrays();
+    descriptor: ()Ljava/util/function/Function;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: invokestatic  #24                 // Method ReferenceHelper.make:()LReferenceHelper;
+         3: dup
+         4: invokestatic  #30                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+         7: pop
+         8: invokedynamic #39,  0             // InvokeDynamic #8:apply:(LReferenceHelper;)Ljava/util/function/Function;
+        13: areturn
+    Signature: #77                          // ()Ljava/util/function/Function<[Ljava/lang/String;Ljava/lang/Integer;>;
+
+  public static java.util.function.Function<java.lang.String, java.lang.Integer> boundNull();
+    descriptor: ()Ljava/util/function/Function;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: invokestatic  #40                 // Method ReferenceHelper.nullReceiver:()LReferenceHelper;
+         3: dup
+         4: invokestatic  #30                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+         7: pop
+         8: invokedynamic #36,  0             // InvokeDynamic #7:apply:(LReferenceHelper;)Ljava/util/function/Function;
+        13: areturn
+    Signature: #75                          // ()Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/Integer;>;
+
+  public static java.util.function.Function<java.lang.String, ReferenceBox> constructor();
+    descriptor: ()Ljava/util/function/Function;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #43,  0             // InvokeDynamic #9:apply:()Ljava/util/function/Function;
+         5: areturn
+    Signature: #80                          // ()Ljava/util/function/Function<Ljava/lang/String;LReferenceBox;>;
+
+  public static java.util.function.Supplier<java.lang.String> noArgString();
+    descriptor: ()Ljava/util/function/Supplier;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #44,  0             // InvokeDynamic #10:get:()Ljava/util/function/Supplier;
+         5: areturn
+    Signature: #82                          // ()Ljava/util/function/Supplier<Ljava/lang/String;>;
+
+  public static java.util.function.Supplier<java.lang.CharSequence> noArgCharSequence();
+    descriptor: ()Ljava/util/function/Supplier;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #48,  0             // InvokeDynamic #11:get:()Ljava/util/function/Supplier;
+         5: areturn
+    Signature: #84                          // ()Ljava/util/function/Supplier<Ljava/lang/CharSequence;>;
+
+  public static java.util.function.Supplier<java.lang.String> noArgGenericString();
+    descriptor: ()Ljava/util/function/Supplier;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #49,  0             // InvokeDynamic #12:get:()Ljava/util/function/Supplier;
+         5: areturn
+    Signature: #82                          // ()Ljava/util/function/Supplier<Ljava/lang/String;>;
+}
+BootstrapMethods:
+  0: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #87 (Ljava/lang/Object;)I
+      #88 REF_invokeStatic GenericReferenceExpanded.staticPick:(Ljava/lang/String;)I
+      #91 (Ljava/lang/String;)I
+  1: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #87 (Ljava/lang/Object;)I
+      #92 REF_invokeStatic GenericReferenceExpanded.staticPick:([Ljava/lang/String;)I
+      #95 ([Ljava/lang/String;)I
+  2: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #87 (Ljava/lang/Object;)I
+      #96 REF_invokeStatic GenericReferenceExpanded.staticPick:([Ljava/lang/Object;)I
+      #99 ([Ljava/lang/Object;)I
+  3: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #100 (I)I
+      #101 REF_invokeStatic GenericReferenceExpanded.staticPick:(I)I
+      #100 (I)I
+  4: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #104 (Ljava/lang/Object;)Ljava/lang/Object;
+      #105 REF_invokeStatic GenericReferenceExpanded.staticPick:(Ljava/lang/Integer;)I
+      #108 (Ljava/lang/Integer;)Ljava/lang/Integer;
+  5: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #110 (Ljava/lang/Object;Ljava/lang/Object;)I
+      #112 REF_invokeVirtual ReferenceHelper.pick:(Ljava/lang/String;)I
+      #116 (LReferenceHelper;Ljava/lang/String;)I
+  6: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #110 (Ljava/lang/Object;Ljava/lang/Object;)I
+      #118 REF_invokeVirtual ReferenceHelper.pick:([Ljava/lang/String;)I
+      #121 (LReferenceHelper;[Ljava/lang/String;)I
+  7: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #104 (Ljava/lang/Object;)Ljava/lang/Object;
+      #112 REF_invokeVirtual ReferenceHelper.pick:(Ljava/lang/String;)I
+      #123 (Ljava/lang/String;)Ljava/lang/Integer;
+  8: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #104 (Ljava/lang/Object;)Ljava/lang/Object;
+      #118 REF_invokeVirtual ReferenceHelper.pick:([Ljava/lang/String;)I
+      #125 ([Ljava/lang/String;)Ljava/lang/Integer;
+  9: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #104 (Ljava/lang/Object;)Ljava/lang/Object;
+      #127 REF_newInvokeSpecial ReferenceBox."<init>":(Ljava/lang/String;)V
+      #133 (Ljava/lang/String;)LReferenceBox;
+  10: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #135 ()Ljava/lang/Object;
+      #137 REF_invokeStatic ReferenceHelper.text:()Ljava/lang/String;
+      #142 ()Ljava/lang/String;
+  11: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #135 ()Ljava/lang/Object;
+      #137 REF_invokeStatic ReferenceHelper.text:()Ljava/lang/String;
+      #143 ()Ljava/lang/CharSequence;
+  12: #149 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #135 ()Ljava/lang/Object;
+      #145 REF_invokeStatic ReferenceHelper.genericText:()Ljava/lang/Object;
+      #142 ()Ljava/lang/String;
+InnerClasses:
+  public static final #161= #157 of #159; // Lookup=class java/lang/invoke/MethodHandles$Lookup of class java/lang/invoke/MethodHandles

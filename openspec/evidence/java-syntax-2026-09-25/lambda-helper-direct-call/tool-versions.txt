@@ -1,0 +1,6 @@
+javac: javac 23.0.1
+java: openjdk version "23.0.1" 2024-10-15
+OpenJDK Runtime Environment (build 23.0.1+11-39)
+OpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)
+jadx: 1.5.6
+jarde: jarde-cli 0.1.0

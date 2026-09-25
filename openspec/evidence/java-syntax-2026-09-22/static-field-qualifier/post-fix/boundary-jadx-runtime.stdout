@@ -1,0 +1,16 @@
+read=5
+read-state:select=1:rhs=0:marks=0:value=5
+qualified-return=7
+qualified-return-state:select=1:rhs=1:marks=0:value=5
+plain-return=7
+plain-return-state:select=1:rhs=1:marks=0:value=5
+qualified-statement:select=1:rhs=0:marks=1:value=5
+plain-statements:select=1:rhs=0:marks=1:value=5
+static-write=7
+static-write-state:select=1:rhs=1:marks=0:value=7
+qualified-rhs-write=7
+qualified-rhs-write-state:select=1:rhs=1:marks=0:value=7
+plain-static-write=7
+plain-static-write-state:select=1:rhs=1:marks=0:value=7
+rhs-throw:select=1:rhs=1:marks=0:value=5
+select-throw:select=1:rhs=0:marks=0:value=5

@@ -70,8 +70,11 @@ refusal that names the consumer (BCI 8) and the read (BCI 0).
 
 `nestedCall` is the same rule at a call argument: `tick(x) + ++x` loads `x` at BCI 0 as the call's
 argument, and the call's value is consumed by the `iadd` at BCI 8 after the increment wrote slot 0.
-Writing `tick(arg0) + arg0` after the increment calls `tick` on the incremented value: the refusal
-names the deferred call (BCI 1) and the read (BCI 0) instead.
+The recovered body binds that value before the write —
+`int saved0 = tick(arg0); arg0 = arg0 + 1; return saved0 + arg0;` — so `tick` still receives the
+original argument, the invocation is emitted once, and the final sum keeps the original runtime
+answer. The `nestedLocal` refusal remains the quote control for a value that cannot be named after the
+write.
 
 `nestedPlain` is the **control**: `(x + 1) + (x + 2)` is the same left-nested `+` shape with no write
 between the two loads and the outer sum, so both loads still hold what they read where the text is
@@ -83,8 +86,8 @@ comparison.
 ## Baseline driver
 
 `Baseline.java` is compiled beside the sample by the ignored comparison test and run as its own
-program: `nestedLocal(7)` and `nestedCall(3)` are the original's own answers — the numbers the
-refusals are about — and `tick calls` states that the executed control called `tick` exactly once.
+program: `nestedLocal(7)` is the original answer the refusal is about, while `nestedCall(3)=7` and
+`tick calls=1` are the runtime values the saved binding must preserve.
 
 ## What the comparison answered
 
@@ -96,7 +99,7 @@ run that introduced this sample:
 | `tick(I)I` | Java/Structured | compiles | executed: traces identical |
 | `nestedLocal(I)I` | Mixed/Fallback | javac refuses: `GennestedLocal.java:9: error: missing return statement` | boundary: 2 quoted BCI(s), refused regions `[]` |
 | `nestedPlain(I)I` | Java/Structured | compiles | executed: traces identical |
-| `nestedCall(I)I` | Mixed/Fallback | javac refuses: `GennestedCall.java:9: error: missing return statement` | boundary: 2 quoted BCI(s), refused regions `[]` |
+| `nestedCall(I)I` | Java/Structured | compiles | executed: traces identical |
 
 - the member declarations the comparison derived: `static int tick(int arg0)`,
   `public static int nestedLocal(int arg0)`, `public static int nestedPlain(int arg0)`,

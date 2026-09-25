@@ -1,0 +1,7 @@
+exit=1
+openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/fixture/UseInner.java:5: 错误: 找不到符号
+        return outer.new Inner(SimpleOuter.mark("A", value));
+                         ^
+  符号:   类 Inner
+  位置: 类 SimpleOuter
+1 个错误

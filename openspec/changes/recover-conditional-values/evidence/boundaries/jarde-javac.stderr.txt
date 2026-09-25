@@ -1,0 +1,6 @@
+/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/tmp.2munLsMzgP/jarde-src/ConditionalBoundaryCases.java:66: 错误: 找不到符号
+        return local1;
+               ^
+  符号:   变量 local1
+  位置: 类 ConditionalBoundaryCases
+1 个错误

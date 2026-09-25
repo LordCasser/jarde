@@ -1,0 +1,43 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-22/type-use-annotations/placement-boundaries/generated/classes/PlaceMark.class
+  Last modified 2026年9月23日; size 410 bytes
+  SHA-256 checksum d3727692c895a9953a6f9fbfad2798efc2ed1fb0db03852b52e2aa866b52b09f
+public interface PlaceMark extends java.lang.annotation.Annotation
+  minor version: 0
+  major version: 52
+  flags: (0x2601) ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT, ACC_ANNOTATION
+  this_class: #1                          // PlaceMark
+  super_class: #3                         // java/lang/Object
+  interfaces: 1, fields: 0, methods: 1, attributes: 1
+Constant pool:
+   #1 = Class              #2             // PlaceMark
+   #2 = Utf8               PlaceMark
+   #3 = Class              #4             // java/lang/Object
+   #4 = Utf8               java/lang/Object
+   #5 = Class              #6             // java/lang/annotation/Annotation
+   #6 = Utf8               java/lang/annotation/Annotation
+   #7 = Utf8               value
+   #8 = Utf8               ()Ljava/lang/String;
+   #9 = Utf8               RuntimeVisibleAnnotations
+  #10 = Utf8               Ljava/lang/annotation/Retention;
+  #11 = Utf8               Ljava/lang/annotation/RetentionPolicy;
+  #12 = Utf8               RUNTIME
+  #13 = Utf8               Ljava/lang/annotation/Target;
+  #14 = Utf8               Ljava/lang/annotation/ElementType;
+  #15 = Utf8               FIELD
+  #16 = Utf8               METHOD
+  #17 = Utf8               PARAMETER
+  #18 = Utf8               TYPE_USE
+{
+  public abstract java.lang.String value();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0401) ACC_PUBLIC, ACC_ABSTRACT
+}
+RuntimeVisibleAnnotations:
+  0: #10(#7=e#11.#12)
+    java.lang.annotation.Retention(
+      value=Ljava/lang/annotation/RetentionPolicy;.RUNTIME
+    )
+  1: #13(#7=[e#14.#15,e#14.#16,e#14.#17,e#14.#18])
+    java.lang.annotation.Target(
+      value=[Ljava/lang/annotation/ElementType;.FIELD,Ljava/lang/annotation/ElementType;.METHOD,Ljava/lang/annotation/ElementType;.PARAMETER,Ljava/lang/annotation/ElementType;.TYPE_USE]
+    )

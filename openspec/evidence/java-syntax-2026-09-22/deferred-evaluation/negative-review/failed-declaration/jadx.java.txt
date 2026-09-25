@@ -1,0 +1,15 @@
+package defpackage;
+
+/* JADX INFO: loaded from: FailedDeclaration.class */
+public class FailedDeclaration {
+    public static int run(int i) {
+        int iTake = Support.take(i << 1);
+        Support.mark();
+        return iTake;
+    }
+
+    public static void keepPool() {
+        Support.take(1);
+        Support.mark();
+    }
+}

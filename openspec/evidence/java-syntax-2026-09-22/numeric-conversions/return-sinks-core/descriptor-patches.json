@@ -1,0 +1,12 @@
+[
+  {
+    "offset": 117,
+    "from": "()I",
+    "to": "()B"
+  },
+  {
+    "offset": 139,
+    "from": "(Ljava/lang/Object;I)I",
+    "to": "(Ljava/lang/Object;I)B"
+  }
+]

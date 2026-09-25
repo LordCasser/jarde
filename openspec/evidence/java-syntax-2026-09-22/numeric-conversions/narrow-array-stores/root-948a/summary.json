@@ -1,0 +1,18 @@
+{
+  "class_sha256": "8bbb683045fdc2a85ee376383515920331fd15c53710176e447ba93f0d04004b",
+  "bytes": 952,
+  "code_methods": 13,
+  "cases": 196,
+  "jarde_lines": 196,
+  "jarde_differences": 186,
+  "jarde_quotes": 12,
+  "cli_sha256": "948a6f9b7db009fbb89a792f83328c9ab63e42ac0cb62e691d97bec28c2c8ba0",
+  "statuses": {
+    "source-javac": 0,
+    "original-runtime": 0,
+    "patched-runtime": 0,
+    "jarde-javac": 0,
+    "jarde-runtime": 0,
+    "jadx-javac": 1
+  }
+}

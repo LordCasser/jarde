@@ -1,0 +1,28 @@
+// jarde: presentation of `VoidControl` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class VoidControl extends java.lang.Object {
+    static int calls;
+
+    public VoidControl() {
+        // @method <init>()V
+        // @declaration a constructor of `VoidControl`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void init() {
+        // @method init()V
+        // @declaration a static method of `VoidControl`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        VoidControl.calls = 1;
+        return;
+    }
+
+    public static int get() {
+        // @method get()I
+        // @declaration a static method of `VoidControl`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return VoidControl.calls;
+    }
+}

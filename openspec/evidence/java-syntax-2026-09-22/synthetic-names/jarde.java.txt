@@ -1,0 +1,43 @@
+// jarde: presentation of `SyntheticNames` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class SyntheticNames extends java.lang.Object {
+    public SyntheticNames() {
+        // @method <init>()V
+        // @declaration a constructor of `SyntheticNames`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int repeated(int seed, int value) {
+        // @method repeated(II)I
+        // @declaration a static method of `SyntheticNames`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int p0_ = seed;
+        java.util.function.IntUnaryOperator a = (int p0) -> SyntheticNames.lambda$repeated$0(p0_, p0);
+        java.util.function.IntUnaryOperator b = (int p0_) -> SyntheticNames.lambda$repeated$1(p0_, p0_);
+        return a.applyAsInt(value) + b.applyAsInt(value);
+    }
+
+    public static void main(java.lang.String[] args) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `SyntheticNames`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(repeated(7, 11));
+        return;
+    }
+
+    private static int lambda$repeated$1(int p0_, int v) {
+        // @method lambda$repeated$1(II)I
+        // @declaration a static method of `SyntheticNames`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return v - p0_;
+    }
+
+    private static int lambda$repeated$0(int p0_, int v) {
+        // @method lambda$repeated$0(II)I
+        // @declaration a static method of `SyntheticNames`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return v + p0_;
+    }
+}

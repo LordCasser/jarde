@@ -1,0 +1,5 @@
+exit=1
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-25/method-type-variable-shadowing/fixture/StrongCaller.java:9: 错误: 不兼容的类型: CharSequence无法转换为String
+        return ShadowBounded.<String>echo("bounded");
+                                         ^
+1 个错误

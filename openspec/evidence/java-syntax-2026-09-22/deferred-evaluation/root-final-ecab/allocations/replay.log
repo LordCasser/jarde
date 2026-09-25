@@ -1,0 +1,26 @@
+{
+  "class_sha256": "dc0c51484acb8c9d5d82080e2a44a138e3ee4dd73a7bc6ea56fea2afa4858963",
+  "patches": [
+    {
+      "name": "ints",
+      "before": "1abc0ab0",
+      "after": "1abc0ab8000bb0"
+    },
+    {
+      "name": "refs",
+      "before": "1abd0007b0",
+      "after": "1abd0007b8000bb0"
+    },
+    {
+      "name": "multi",
+      "before": "1a1bc5000902b0",
+      "after": "1a1bc5000902b8000bb0"
+    }
+  ],
+  "cases": 12,
+  "jarde_quotes": 0,
+  "jarde_javac": 0,
+  "jarde_differences": 0,
+  "jadx_javac": 0,
+  "jadx_equal": true
+}

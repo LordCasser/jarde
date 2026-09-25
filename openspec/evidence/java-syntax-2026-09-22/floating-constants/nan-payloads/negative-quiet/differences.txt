@@ -1,0 +1,4 @@
+original floatNan=ffc12345
+jadx floatNan=7fc00000
+original doubleNan=fff8123456789abc
+jadx doubleNan=7ff8000000000000

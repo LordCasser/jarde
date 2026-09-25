@@ -1,0 +1,1 @@
+public class OrderRunner {public static void main(String[]a){for(int mode=0;mode<3;mode++){OrderEffects.trace=0;OrderEffects.mode=mode;try{System.out.println(mode+":"+(ConstructionOrder.direct()!=null)+":"+OrderEffects.trace);}catch(RuntimeException e){System.out.println(mode+":"+e.getClass().getName()+":"+(e==OrderEffects.FAILURE)+":"+OrderEffects.trace);}}}}

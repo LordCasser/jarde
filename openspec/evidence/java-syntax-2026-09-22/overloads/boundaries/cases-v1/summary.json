@@ -1,0 +1,83 @@
+{
+  "NullObject": {
+    "original_compile": true,
+    "original_run": true,
+    "jarde_cli": true,
+    "jarde_compile": true,
+    "jarde_run": true,
+    "jadx_compile": true,
+    "jadx_run": true
+  },
+  "ArrayObject": {
+    "original_compile": true,
+    "original_run": true,
+    "jarde_cli": true,
+    "jarde_compile": true,
+    "jarde_run": true,
+    "jadx_compile": true,
+    "jadx_run": true
+  },
+  "BoxObject": {
+    "original_compile": true,
+    "original_run": true,
+    "jarde_cli": true,
+    "jarde_compile": true,
+    "jarde_run": true,
+    "jadx_compile": true,
+    "jadx_run": true
+  },
+  "LambdaRunnable": {
+    "original_compile": true,
+    "original_run": true,
+    "jarde_cli": true,
+    "jarde_compile": false,
+    "jarde_run": false,
+    "jadx_compile": true,
+    "jadx_run": true
+  },
+  "LambdaSupplier": {
+    "original_compile": true,
+    "original_run": true,
+    "jarde_cli": true,
+    "jarde_compile": true,
+    "jarde_run": true,
+    "jadx_compile": true,
+    "jadx_run": true
+  },
+  "MethodRefRunnable": {
+    "original_compile": true,
+    "original_run": true,
+    "jarde_cli": true,
+    "jarde_compile": true,
+    "jarde_run": true,
+    "jadx_compile": true,
+    "jadx_run": true
+  },
+  "MultiArgs": {
+    "original_compile": true,
+    "original_run": true,
+    "jarde_cli": true,
+    "jarde_compile": true,
+    "jarde_run": true,
+    "jadx_compile": true,
+    "jadx_run": true
+  },
+  "CtorOverloads": {
+    "original_compile": true,
+    "original_run": true,
+    "jarde_cli": true,
+    "jarde_compile": true,
+    "jarde_run": true,
+    "jadx_compile": true,
+    "jadx_run": true
+  },
+  "NarrowOverloads": {
+    "original_compile": true,
+    "original_run": true,
+    "jarde_cli": true,
+    "jarde_compile": true,
+    "jarde_run": true,
+    "jadx_compile": true,
+    "jadx_run": true
+  }
+}

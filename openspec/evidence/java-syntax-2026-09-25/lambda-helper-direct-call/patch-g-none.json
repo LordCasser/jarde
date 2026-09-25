@@ -1,0 +1,10 @@
+{
+  "name_and_type_index": 18,
+  "methodref_index": 17,
+  "old_name": "directHelper",
+  "new_name": "lambda$build$0",
+  "descriptor": "(II)I",
+  "changed_classfile_byte_offsets": [
+    183
+  ]
+}

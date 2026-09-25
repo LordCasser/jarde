@@ -1,0 +1,7 @@
+locals:536870912
+grouped:33554432
+field:16777216
+array:4340000000000000
+narrow-array:1
+discard:79:79
+repeat:33554432:7

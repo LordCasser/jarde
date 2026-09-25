@@ -1,0 +1,50 @@
+// jarde: presentation of `ThrowFlow` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ThrowFlow extends java.lang.Object {
+    public ThrowFlow() {
+        // @method <init>()V
+        // @declaration a constructor of `ThrowFlow`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void constructed(java.lang.String arg0) {
+        // @method constructed(Ljava/lang/String;)V
+        // @declaration a static method of `ThrowFlow`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        throw new ThrowFlowException((java.lang.String) ThrowFlowEffects.argument(arg0));
+    }
+
+    public static void nested() {
+        // @method nested()V
+        // @declaration a static method of `ThrowFlow`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        throw ThrowFlowEffects.wrapper((java.lang.RuntimeException) ThrowFlowEffects.problem());
+    }
+
+    public static void array(java.lang.RuntimeException[] arg0, int arg1) {
+        // @method array([Ljava/lang/RuntimeException;I)V
+        // @declaration a static method of `ThrowFlow`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        throw arg0[arg1];
+    }
+
+    public static void field(ThrowFlowHolder arg0) {
+        // @method field(LThrowFlowHolder;)V
+        // @declaration a static method of `ThrowFlow`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        throw arg0.error;
+    }
+
+    public static void branch(boolean arg0, java.lang.RuntimeException arg1, java.lang.RuntimeException arg2) {
+        // @method branch(ZLjava/lang/RuntimeException;Ljava/lang/RuntimeException;)V
+        // @declaration a static method of `ThrowFlow`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0) {
+            throw arg1;
+        } else {
+            throw arg2;
+        }
+    }
+}

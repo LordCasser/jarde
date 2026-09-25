@@ -1,0 +1,273 @@
+// jarde: presentation of `BitwiseProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class BitwiseProbe extends java.lang.Object {
+    public BitwiseProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `BitwiseProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int andInt(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `andInt(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method andInt(II)I
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int orInt(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `orInt(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method orInt(II)I
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int xorInt(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `xorInt(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method xorInt(II)I
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static long andLong(long arg0, long arg2) {
+        // jarde: not recovered: the recovery run for `andLong(JJ)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method andLong(JJ)J
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static long orLong(long arg0, long arg2) {
+        // jarde: not recovered: the recovery run for `orLong(JJ)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method orLong(JJ)J
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static long xorLong(long arg0, long arg2) {
+        // jarde: not recovered: the recovery run for `xorLong(JJ)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method xorLong(JJ)J
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static int nested(int arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `nested(II)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nested(II)I
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 7
+        // the instruction at BCI 7 is not part of the provable subset
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 9
+        // the value at BCI 9 comes from an Other at BCI 8, which produces no expression this subset writes
+    }
+
+    public static int complement(int arg0) {
+        // jarde: not recovered: the recovery run for `complement(I)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method complement(I)I
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static long complementLong(long arg0) {
+        // jarde: not recovered: the recovery run for `complementLong(J)J` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method complementLong(J)J
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 5
+        // the value at BCI 5 comes from an Other at BCI 4, which produces no expression this subset writes
+    }
+
+    public static boolean andBoolean(boolean arg0, boolean arg1) {
+        // jarde: not recovered: the recovery run for `andBoolean(ZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method andBoolean(ZZ)Z
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static boolean orBoolean(boolean arg0, boolean arg1) {
+        // jarde: not recovered: the recovery run for `orBoolean(ZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method orBoolean(ZZ)Z
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static boolean xorBoolean(boolean arg0, boolean arg1) {
+        // jarde: not recovered: the recovery run for `xorBoolean(ZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method xorBoolean(ZZ)Z
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static boolean constant(boolean arg0) {
+        // jarde: not recovered: the recovery run for `constant(Z)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method constant(Z)Z
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static boolean ordered(boolean arg0, boolean arg1) {
+        // @method ordered(ZZ)Z
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        BitwiseEffects.left(arg0);
+        BitwiseEffects.right(arg1);
+        // @bytecode 8
+        // the instruction at BCI 8 is not part of the provable subset
+        // @bytecode 9
+        // the value at BCI 9 comes from an Other at BCI 8, which produces no expression this subset writes
+    }
+
+    public static int branch(boolean arg0, boolean arg1) {
+        // jarde: not recovered: the recovery run for `branch(ZZ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method branch(ZZ)I
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 0 6 9 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+
+    public static boolean nested(boolean arg0, boolean arg1, boolean arg2) {
+        // jarde: not recovered: the recovery run for `nested(ZZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method nested(ZZZ)Z
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 5
+        // the instruction at BCI 5 is not part of the provable subset
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7
+        // the value at BCI 7 comes from an Other at BCI 6, which produces no expression this subset writes
+    }
+
+    public static boolean copied(boolean arg0, boolean arg1, boolean arg2) {
+        // jarde: not recovered: the recovery run for `copied(ZZZ)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method copied(ZZZ)Z
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        // @bytecode 4 5
+        // the statement at BCI 5 reads `local3`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        // @bytecode 10
+        // the instruction at BCI 10 is not part of the provable subset
+        // @bytecode 11
+        // the value at BCI 11 comes from an Other at BCI 10, which produces no expression this subset writes
+        // @bytecode 15
+        // the value at BCI 15 is returned from a method whose own descriptor returns `Z`, and this layer has no evidence that the value is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the member's own signature rejects
+    }
+
+    public static boolean hoisted(boolean arg0, boolean arg1, boolean arg2) {
+        // @method hoisted(ZZZ)Z
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local3;
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+        if (arg2) {
+            // @bytecode 10
+            // the instruction at BCI 10 is not part of the provable subset
+            // @bytecode 11
+            // the value at BCI 11 comes from an Other at BCI 10, which produces no expression this subset writes
+        }
+        // @bytecode 13
+        // the value at BCI 13 is returned from a method whose own descriptor returns `Z`, and this layer has no evidence that the value is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the member's own signature rejects
+    }
+
+    public static int passed(boolean arg0, boolean arg1, boolean arg2) {
+        // jarde: not recovered: the recovery run for `passed(ZZZ)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method passed(ZZZ)I
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 8 5
+        // the value at BCI 8 comes from an Other at BCI 4, which produces no expression this subset writes
+    }
+
+    public static boolean array(boolean[] arg0) {
+        // jarde: not recovered: the recovery run for `array([Z)Z` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method array([Z)Z
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the array instruction at BCI 2 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 5
+        // the array instruction at BCI 5 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 6
+        // the instruction at BCI 6 is not part of the provable subset
+        // @bytecode 7 2 5
+        // the value at BCI 7 comes from an Other at BCI 6, which produces no expression this subset writes
+    }
+
+    public static int promoted(byte arg0, char arg1) {
+        // jarde: not recovered: the recovery run for `promoted(BC)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method promoted(BC)I
+        // @declaration a static method of `BitwiseProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the instruction at BCI 2 is not part of the provable subset
+        // @bytecode 3
+        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes
+    }
+}

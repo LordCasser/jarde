@@ -52,17 +52,16 @@
 //!   or two rows that both cover it, is refused: partial coverage is exactly the case where writing
 //!   the `try` would drop a close.
 //!
-//! # No `finally` copy is merged
+//! # A narrow `finally` copy can be claimed
 //!
 //! A `finally` clause is not a region with a handler: javac **copies** its code onto every exit path
 //! of the `try` (the fixture's `fin()` shows the two copies of `tail()`, one on the normal path and
 //! one in the handler that rethrows), and presenting that as one `try { … } finally { … }` restates
-//! the source only if the copies are provably the same code. Proving *that* means comparing operands
-//! this layer does not model and showing that every exit of the `try` runs exactly one copy — the
-//! number of times the copy runs is what is at stake. This build does not prove it, so the shape is
-//! **refused** and stated ([`Unproven::FinallyCopy`], reported under `jre_guard_finally_copy` with
-//! the copy's own BCI): quoting it is the honest answer, and it is the one the spec's fallback
-//! clause asks for.
+//! the source only if the copies are provably the same code and every exit runs exactly one copy.
+//! The narrow `finally@1` rule claims matching straight copies only when its protected body has
+//! no branch or transfer, the half-open exception range excludes both copies, and every owned
+//! instruction belongs to the proof. A candidate outside that slice remains **refused** and stated
+//! ([`Unproven::FinallyCopy`], reported under `jre_guard_finally_copy` with the copy's own BCI).
 //!
 //! # The boundary this module does not cross
 //!
@@ -99,10 +98,11 @@ use jarde_jvm::method_ir::{
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::ExceptionHandlerFact;
 
+use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::facts::{CompareOp, Operation};
 use crate::normal_flow::NormalFlowView;
-use crate::pass::{MONITOR, Pass, TWR};
+use crate::pass::{FINALLY, MONITOR, Pass, TWR};
 use crate::refusal::Refusal;
 use crate::stop::{StopReason, charge, poll};
 
@@ -119,6 +119,10 @@ pub struct Resource {
     /// The BCI of the `close` call the **normal** path makes on it: the anchor the header's own text
     /// carries.
     close_bci: u32,
+    /// The BCI of the `close` call the **exceptional** path makes on it. This is the same handler
+    /// proof that established the close, carried with this resource so its owner can be checked
+    /// without guessing among a plan's other facts.
+    exceptional_close_bci: u32,
 }
 
 impl Resource {
@@ -136,6 +140,11 @@ impl Resource {
     pub fn close_bci(&self) -> u32 {
         self.close_bci
     }
+
+    /// The BCI of the `close` call the exceptional path makes on it.
+    pub fn exceptional_close_bci(&self) -> u32 {
+        self.exceptional_close_bci
+    }
 }
 
 /// Which guarded statement a region is.
@@ -145,7 +154,24 @@ pub enum Shape {
     Resources(Vec<Resource>),
     /// `synchronized (lock) { body }`, with the BCI of the `monitorenter` the header reads its lock
     /// from.
-    Monitor { enter_bci: u32 },
+    Monitor {
+        /// The BCI of the `monitorenter` the header reads its lock from.
+        enter_bci: u32,
+        /// The unique normal-path `monitorexit` proved by this shape. It is distinct from the
+        /// handler exit and is carried explicitly so later value placement never infers ownership
+        /// from instruction order or from the aggregate proof anchors.
+        normal_exit_bci: u32,
+        /// The BCI of the `return` the **normal** path ends in, where it ends in one: `None` is the
+        /// `goto` shape, whose run continues after the statement, and `Some(bci)` the shape whose
+        /// region returns the value the body left on the stack — the return is written *inside* the
+        /// braces, and the statement continues nowhere.
+        returns: Option<u32>,
+    },
+    /// A straight protected body whose saved return and two cleanup copies were proved.
+    Finally {
+        normal_cleanup: (u32, u32),
+        returns: u32,
+    },
 }
 
 /// One proved guarded region: the shape, the body it guards, every block it owns, and where the run
@@ -208,6 +234,7 @@ impl Plan {
         match self.shape {
             Shape::Resources(_) => &TWR,
             Shape::Monitor { .. } => &MONITOR,
+            Shape::Finally { .. } => &FINALLY,
         }
     }
 }
@@ -219,7 +246,7 @@ pub(crate) enum Verdict {
     /// edge it cannot present.
     NotGuarded,
     /// A guarded shape was examined and **refused**, and this is why. `pass` is the rule that
-    /// examined it, or `None` for a shape no rule of this build owns (the `finally` copy).
+    /// examined it, or `None` for a candidate outside a registered rule's claim.
     Refused {
         /// The rule that examined the shape and refused it.
         pass: Option<&'static Pass>,
@@ -259,6 +286,9 @@ pub(crate) enum Unproven {
     /// The resource's own initialisation is not one statement of this block whose value lands in a
     /// slot.
     ResourceInit,
+    /// The statement's normal path runs on into the rest of the statement's own block, where no
+    /// block begins: what the method runs after the statement has nowhere for the walk to continue.
+    Continuation,
     /// Two resources of one header would be declared on one slot.
     ResourceSlot,
     /// The handler does not close the resource of its own level.
@@ -297,6 +327,7 @@ impl Unproven {
             Self::RowsOverlap => "jre_guard_rows_overlap",
             Self::RangeStart | Self::RangeEnd => "jre_guard_handler_range",
             Self::ResourceInit => "jre_guard_resource_init",
+            Self::Continuation => "jre_guard_continuation",
             Self::ResourceSlot => "jre_guard_resource_slot",
             Self::CloseTarget => "jre_guard_close_target",
             Self::CloseOrder => "jre_guard_close_order",
@@ -327,6 +358,9 @@ impl Unproven {
             }
             Self::ResourceInit => {
                 "the resource's own initialisation is not one statement of this block whose value lands in a slot: writing it in the header would move or drop an effect"
+            }
+            Self::Continuation => {
+                "the statement's normal path runs on inside the statement's own block, where no block begins: what the method runs after the `try` cannot be written from there, and the guarded statement is refused rather than presented without it"
             }
             Self::ResourceSlot => "two resources of this header would be declared on one slot",
             Self::CloseTarget => {
@@ -363,7 +397,7 @@ impl Unproven {
                 "the run's profile does not admit this rule's output: a `try`-with-resources header is Java 7 syntax, and this run presents the artifact as an older release"
             }
             Self::FinallyCopy => {
-                "the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; merging the copies into one `finally` restates the source only if they are provably equal, which this build does not prove"
+                "the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`"
             }
         }
     }
@@ -618,6 +652,7 @@ impl<'a> Facts<'a> {
                     | Some(Operation::Load { .. })
                     | Some(Operation::Store { .. })
                     | Some(Operation::Arithmetic { .. })
+                    | Some(Operation::Negate)
                     | Some(Operation::Increment { .. })
                     | Some(Operation::Invoke(_))
                     | Some(Operation::Allocate { .. })
@@ -748,6 +783,147 @@ fn initialisation(facts: &Facts<'_>, end: u32, floor: u32) -> Result<((u32, u32)
     Ok(((start, end), *slot))
 }
 
+/// Whether the store before a row's protected range is a resource's own initialisation.
+///
+/// The distinction is the **value**: `Res r = open(…)` and `Res r = new Res()` fill a local from an
+/// invocation or a `new`, and a header is what the range that follows can be; `int x = 1`, `x = n`
+/// and `x = obj.field` fill it from a value no resource's construction produced, and the row is a
+/// `catch` rather than a resource of the shape. What is read is the statement that **ends** at the
+/// store — the run [`single_statement`] grows backwards from it, the same reading
+/// [`initialisation`] takes of a header's own initialisation — and the `new`/invocation has to be
+/// part of that run: a value that was already on the stack when the statement began belongs to
+/// another statement, and `int y = 2; int x = 1;` answers about `int x = 1;` alone.
+///
+/// The growth stops at the instruction that is not part of the statement, which is the end of the
+/// statement *before* this one: that boundary is not evidence about this statement's value, so what
+/// is inspected below is the run the store ends. A store whose own statement cannot be read at all —
+/// its first step grows into an instruction that does not feed the value, or its whole run lies
+/// outside the block the row was examined in — keeps today's refusal (`true`): "not a resource" is a
+/// conclusion about a value, and a statement the proof could not read is not evidence for it.
+fn initialises_resource(facts: &Facts<'_>, store: u32, floor: u32) -> bool {
+    let end = facts.span_end(store);
+    let mut start = store;
+    let mut read = false;
+    while let Some(previous) = facts
+        .previous_bci(start)
+        .filter(|previous| *previous >= floor)
+    {
+        if !single_statement(facts, (previous, end), store) {
+            if !read {
+                return true;
+            }
+            break;
+        }
+        read = true;
+        start = previous;
+    }
+    if !read {
+        return true;
+    }
+    facts.bcis((start, end)).into_iter().any(|bci| {
+        matches!(
+            facts.op(bci),
+            Some(Operation::Allocate { .. })
+                | Some(Operation::Invoke(_))
+                | Some(Operation::InvokeDynamic(_))
+        )
+    })
+}
+
+/// Whether one proved initialisation is exactly `aconst_null; astore resource`.
+fn exact_null_initializer(facts: &Facts<'_>, init: (u32, u32), slot: u16) -> bool {
+    let instructions = facts.bcis(init);
+    let [push, store] = instructions.as_slice() else {
+        return false;
+    };
+    facts.op(*push) == Some(&Operation::Push(crate::facts::ConstantValue::Null))
+        && facts.op(*store) == Some(&Operation::Store { slot })
+}
+
+/// Whether a direct null initializer has both nullable close contours needed to enter the full
+/// try-with-resources proof.
+fn null_resource_close_outline(facts: &Facts<'_>, row: &ExceptionHandlerFact, slot: u16) -> bool {
+    normal_close(facts, row.end_bci, slot).is_some()
+        && facts
+            .row_handler(row)
+            .is_some_and(|entry| close_of_level(facts, &entry, slot).is_ok())
+}
+
+/// Whether the store before a row's protected range is a `catch` clause's own **binding**.
+///
+/// A handler is entered with the exception reference on the operand stack, and the first instruction
+/// of the clause's body stores it into the clause's parameter: `astore_1` for `catch (E e)`. The
+/// value such a store writes is therefore the reference the handler was entered with, and that is a
+/// value **no instruction of this body produced** — the SSA defines it at the edge that carried the
+/// exception, once per throw site ([`Definition::Caught`]), or, where several throw sites enter one
+/// handler, as the value the handler block's own entry phi names for the operand stack's slot 0.
+///
+/// Neither is a resource's initialisation, whatever the store's own statement looks like: a header
+/// fills its slot from a `new` or an invocation ([`initialises_resource`]), and the run backwards
+/// from this store ends at the handler's entry, which is not an instruction. So this is the one
+/// place the conservative reading of a statement that cannot be read is *not* what the bytes say,
+/// which is what a row whose range begins inside a handler body needs — the nested `try` of
+/// `nested(I)I`, whose range `[8, 10)` follows the outer clause's binding store at BCI 7.
+///
+/// The question is asked of the **store**, not of the slot it fills and not of the local it might
+/// have loaded: a `try (AutoCloseable c = e)` inside a `catch` copies the reference through a load,
+/// and that store's own value is the load's, which this answers `false` for.
+fn handler_binding(facts: &Facts<'_>, store: u32) -> bool {
+    let Some(block) = facts.block_of(store) else {
+        return false;
+    };
+    let Some(step) = facts.step(store) else {
+        return false;
+    };
+    step.instruction.reads().iter().any(|(_, read)| {
+        let value = facts.resolve(*read);
+        match facts.ssa.value(value).def() {
+            // The reference one exception edge hands one handler: the edge is its definition, and
+            // its own block is the **source** the throw site sits in, not the handler.
+            Definition::Caught { .. } => true,
+            // Several edges enter this handler, so the reference is the handler block's own entry
+            // value for the stack slot the JVM hands it in.
+            Definition::Phi { block: phi, slot } => {
+                *slot == Slot::Stack(0)
+                    && phi == block
+                    && facts
+                        .handlers
+                        .iter()
+                        .any(|row| facts.row_handler(row).as_ref() == Some(phi))
+            }
+            Definition::Instruction { .. } | Definition::Entry { .. } => false,
+        }
+    })
+}
+
+/// The slot the store before a row's protected range copied, when its own statement is one `Load`
+/// of another local — the copy `javac` makes of the variable a `try (r)` header names.
+///
+/// `try (r)` is Java 9 syntax: the header declares no variable of its own, and the compiler keeps
+/// the value in a local of its own before the protected range (`aload r; astore copy`). The store is
+/// the statement that **ends** there — the same run [`single_statement`] reads for
+/// `initialises_resource` — and what it holds is the value of the slot the load read, which is the
+/// expression [`initialisation`] grows the header's range to cover: the header writes
+/// `try (T copy = r)`, and the close the compiler performs is on the copy of that same value.
+///
+/// A store of the slot it read (`r = r`) answers `None`: the header would declare the local the
+/// source already names, and the copy is not what the compiler wrote.
+fn copied_local(facts: &Facts<'_>, store: u32, floor: u32) -> Option<u16> {
+    let Some(Operation::Store { slot: stored }) = facts.op(store) else {
+        return None;
+    };
+    let previous = facts
+        .previous_bci(store)
+        .filter(|previous| *previous >= floor)?;
+    let Some(Operation::Load { slot: loaded }) = facts.op(previous) else {
+        return None;
+    };
+    if loaded == stored || !single_statement(facts, (previous, facts.span_end(store)), store) {
+        return None;
+    }
+    Some(*loaded)
+}
+
 /// Whether one range is exactly one initialisation: a value expression that ends in the store.
 fn single_statement(facts: &Facts<'_>, span: (u32, u32), store: u32) -> bool {
     let Some(step) = facts.step(store) else {
@@ -794,6 +970,86 @@ fn single_statement(facts: &Facts<'_>, span: (u32, u32), store: u32) -> bool {
     })
 }
 
+/// A completed static-field assignment before a protected range is an ordinary statement, not a
+/// resource header. Keep the proof within the current straight-line block: every value made by the
+/// assignment must be consumed there, and none of its stack values may survive into the range.
+fn completed_field_assignment(facts: &Facts<'_>, before: u32, floor: u32, range: u32) -> bool {
+    if !matches!(
+        facts.op(before),
+        Some(Operation::Field {
+            access: crate::facts::FieldAccess::Write,
+            is_static: true,
+            ..
+        })
+    ) || facts.span_end(before) != range
+    {
+        return false;
+    }
+    let mut start = before;
+    while let Some(previous) = facts.previous_bci(start).filter(|bci| *bci >= floor) {
+        if !single_statement(facts, (previous, range), before) {
+            break;
+        }
+        start = previous;
+    }
+    if start == before || !single_statement(facts, (start, range), before) {
+        return false;
+    }
+    let statement = facts.bcis((start, range));
+    if !statement.iter().all(|bci| {
+        facts.step(*bci).is_some_and(|reader| {
+            reader
+                .instruction
+                .reads()
+                .iter()
+                .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+                .all(|(_, read)| {
+                    statement
+                        .iter()
+                        .take_while(|producer| **producer < *bci)
+                        .any(|producer| {
+                            facts.step(*producer).is_some_and(|writer| {
+                                writer
+                                    .instruction
+                                    .writes()
+                                    .iter()
+                                    .any(|(_, written)| facts.same(*written, *read))
+                            })
+                        })
+                })
+        })
+    }) {
+        return false;
+    }
+    let Some(block) = facts.block_of(before) else {
+        return false;
+    };
+    let Some(entry) = facts.ssa.block(block) else {
+        return false;
+    };
+    if entry
+        .entry()
+        .iter()
+        .any(|(slot, _)| matches!(slot, Slot::Stack(_)))
+    {
+        return false;
+    }
+    let mut depth = 0i64;
+    for effect in facts
+        .ssa
+        .effects()
+        .instructions()
+        .iter()
+        .filter(|effect| effect.block() == block && effect.bci() < range)
+    {
+        depth += i64::from(effect.stack_delta());
+        if depth < 0 {
+            return false;
+        }
+    }
+    depth == 0
+}
+
 /// One level's handler, as the close proof reads it.
 struct CloseHandler {
     /// The handler's own instruction range.
@@ -822,66 +1078,12 @@ fn close_handler(
     let entry = facts
         .row_handler(row)
         .ok_or((Unproven::Handler, row.handler_bci))?;
-    let head = facts.sequence(&entry);
-    let [
-        head_store,
-        head_exception,
-        (
-            _,
-            Some(Operation::Comparison {
-                op: CompareOp::JumpIfNull,
-                target,
-            }),
-        ),
-    ] = head.as_slice()
-    else {
-        return Err((Unproven::Handler, entry.bci()));
-    };
-    let (Some(Operation::Store { slot: primary }), Some(Operation::Load { slot: loaded })) =
-        (head_store.1, head_exception.1)
-    else {
-        return Err((Unproven::Handler, entry.bci()));
-    };
-    let (primary, target) = (*primary, *target);
-    if *loaded != slot {
-        return Err((Unproven::CloseTarget, head_exception.0));
-    }
-    let successors = facts.view.successor_ids(&entry);
-    let exit = facts
-        .block_at(target)
-        .ok_or((Unproven::Handler, entry.bci()))?;
-    let Some(close_block) = successors.iter().find(|block| **block != exit).cloned() else {
-        return Err((Unproven::Handler, entry.bci()));
-    };
-    if successors.len() != 2 {
-        return Err((Unproven::Handler, entry.bci()));
-    }
-    let close = facts.sequence(&close_block);
-    let [
-        (load_bci, Some(Operation::Load { slot: close_slot })),
-        (call_bci, Some(Operation::Invoke(called))),
-        (_, Some(Operation::Transfer)),
-    ] = close.as_slice()
-    else {
-        return Err((Unproven::Handler, close_block.bci()));
-    };
-    if *close_slot != slot || called.name() != "close" || called.descriptor() != "()V" {
-        return Err((Unproven::CloseTarget, *call_bci));
-    }
-    let (Some(load), Some(call)) = (facts.step(*load_bci), facts.step(*call_bci)) else {
-        return Err((Unproven::Handler, close_block.bci()));
-    };
-    if !receiver_is(facts, call.instruction, load.instruction) {
-        return Err((Unproven::CloseTarget, *call_bci));
-    }
-    if facts.view.successor_ids(&close_block) != vec![exit.clone()] {
-        return Err((Unproven::Handler, close_block.bci()));
-    }
+    let (primary, close_bci, exit) = close_of_level(facts, &entry, slot)?;
     // The close's own row: the innermost one that covers it, and its handler suppresses into the
     // primary. A close the table does not protect at all has no place to record its own failure, and
     // the region is refused.
-    let Some(guard) = facts.innermost(*call_bci).cloned() else {
-        return Err((Unproven::CloseGuard, *call_bci));
+    let Some(guard) = facts.innermost(close_bci).cloned() else {
+        return Err((Unproven::CloseGuard, close_bci));
     };
     let guard_entry = facts
         .row_handler(&guard)
@@ -923,8 +1125,8 @@ fn close_handler(
     Ok(CloseHandler {
         span: (entry.bci(), facts.span_end(last.bci())),
         guard,
-        primary_bci: head_store.0,
-        close_bci: *call_bci,
+        primary_bci: entry.bci(),
+        close_bci,
         suppression_bci: suppression[1].0,
         suppression_call_bci: suppression[3].0,
         rethrow_bci: facts
@@ -933,6 +1135,101 @@ fn close_handler(
             .map(|last| last.bci())
             .unwrap_or(exit.bci()),
     })
+}
+
+/// Where one level's handler closes its resource: the primary it kept, the `close` call, and the
+/// block the run leaves through.
+///
+/// `javac` writes two shapes for the close, and both say the same thing. When the resource's own
+/// initialisation **could** be null the close is guarded by a test and the handler reads
+/// `astore p; aload r; ifnull L` with the close (and its own guard) in the other successor; when the
+/// initialisation **proves** the resource non-null (`new Res(…)`) the compiler writes no test at
+/// all and the handler reads `astore p; aload r; invokevirtual close; goto L`. The second shape is
+/// the same level read one instruction shorter, and the rest of the proof — the row that protects
+/// the close, the suppression, the rethrow — is read identically from both.
+fn close_of_level(
+    facts: &Facts<'_>,
+    entry: &CanonicalBlockId,
+    slot: u16,
+) -> Result<(u16, u32, CanonicalBlockId), Cause> {
+    let head = facts.sequence(entry);
+    match head.as_slice() {
+        [
+            (_, Some(Operation::Store { slot: primary })),
+            (head_exception, Some(Operation::Load { slot: loaded })),
+            (
+                _,
+                Some(Operation::Comparison {
+                    op: CompareOp::JumpIfNull,
+                    target,
+                }),
+            ),
+        ] => {
+            if *loaded != slot {
+                return Err((Unproven::CloseTarget, *head_exception));
+            }
+            let successors = facts.view.successor_ids(entry);
+            let exit = facts
+                .block_at(*target)
+                .ok_or((Unproven::Handler, entry.bci()))?;
+            let Some(close_block) = successors.iter().find(|block| **block != exit).cloned() else {
+                return Err((Unproven::Handler, entry.bci()));
+            };
+            if successors.len() != 2 {
+                return Err((Unproven::Handler, entry.bci()));
+            }
+            let close = facts.sequence(&close_block);
+            let [
+                (load_bci, Some(Operation::Load { slot: close_slot })),
+                (call_bci, Some(Operation::Invoke(called))),
+                (_, Some(Operation::Transfer)),
+            ] = close.as_slice()
+            else {
+                return Err((Unproven::Handler, close_block.bci()));
+            };
+            if *close_slot != slot || called.name() != "close" || called.descriptor() != "()V" {
+                return Err((Unproven::CloseTarget, *call_bci));
+            }
+            let (Some(load), Some(call)) = (facts.step(*load_bci), facts.step(*call_bci)) else {
+                return Err((Unproven::Handler, close_block.bci()));
+            };
+            if !receiver_is(facts, call.instruction, load.instruction) {
+                return Err((Unproven::CloseTarget, *call_bci));
+            }
+            if facts.view.successor_ids(&close_block) != vec![exit.clone()] {
+                return Err((Unproven::Handler, close_block.bci()));
+            }
+            Ok((*primary, *call_bci, exit))
+        }
+        [
+            (_, Some(Operation::Store { slot: primary })),
+            (head_exception, Some(Operation::Load { slot: loaded })),
+            (call_bci, Some(Operation::Invoke(called))),
+            (_, Some(Operation::Transfer)),
+        ] => {
+            if *loaded != slot {
+                return Err((Unproven::CloseTarget, *head_exception));
+            }
+            if called.name() != "close" || called.descriptor() != "()V" {
+                return Err((Unproven::CloseTarget, *call_bci));
+            }
+            let (Some(load), Some(call)) = (facts.step(*head_exception), facts.step(*call_bci))
+            else {
+                return Err((Unproven::Handler, entry.bci()));
+            };
+            if !receiver_is(facts, call.instruction, load.instruction) {
+                return Err((Unproven::CloseTarget, *call_bci));
+            }
+            // The transfer the handler ends in is where the run leaves; the close is the last thing
+            // that runs before it.
+            let successors = facts.view.successor_ids(entry);
+            let [exit] = successors.as_slice() else {
+                return Err((Unproven::Handler, entry.bci()));
+            };
+            Ok((*primary, *call_bci, exit.clone()))
+        }
+        _ => Err((Unproven::Handler, entry.bci())),
+    }
 }
 
 /// One `synchronized` handler, as the monitor proof reads it.
@@ -1043,6 +1340,564 @@ fn finally_copy(facts: &Facts<'_>, row: &ExceptionHandlerFact) -> Option<u32> {
     (!closes).then_some(entry.bci())
 }
 
+/// The physical pieces read by the narrow copy proof. No region owns them until a later step
+/// turns this certificate into a `Plan`.
+#[derive(Debug)]
+struct FinallyCopyProof {
+    row_ordinal: u32,
+    protected: (u32, u32),
+    normal_cleanup: (u32, u32),
+    handler_cleanup: (u32, u32),
+    saved_return: (u32, u32),
+    primary: (u32, u32, u32),
+    owned: Vec<CanonicalBlockId>,
+    join: Option<CanonicalBlockId>,
+    origins: Vec<u32>,
+}
+
+/// Each stack operand must come from an earlier instruction of this copy. The returned producer
+/// ordinals make SSA value names local to the copy, so two copies can be compared structurally
+/// without accidentally equating unrelated physical `ValueId`s.
+fn cleanup_sequence(facts: &Facts<'_>, copy: &[u32]) -> Option<Vec<(Operation, Vec<usize>)>> {
+    if copy.is_empty() || copy.len() > 32 {
+        return None;
+    }
+    let mut normalized = Vec::new();
+    let mut effects = 0;
+    let mut calls = 0;
+    for (ordinal, bci) in copy.iter().enumerate() {
+        let operation = facts.op(*bci)?;
+        let instruction = facts.step(*bci)?.instruction;
+        match operation {
+            Operation::Push(_) => {}
+            Operation::Invoke(_) => {
+                effects += 1;
+                calls += 1;
+            }
+            Operation::Field { .. } => effects += 1,
+            Operation::Other if instruction.opcode() == 0x57 => {}
+            _ => return None,
+        }
+        let mut producers = Vec::new();
+        for (_, read) in stack_operands(instruction) {
+            let producer = copy[..ordinal]
+                .iter()
+                .enumerate()
+                .rev()
+                .find_map(|(index, bci)| {
+                    facts
+                        .step(*bci)?
+                        .instruction
+                        .writes()
+                        .iter()
+                        .any(|(slot, written)| {
+                            matches!(slot, Slot::Stack(_)) && facts.same(*written, read)
+                        })
+                        .then_some(index)
+                })?;
+            producers.push(producer);
+        }
+        normalized.push((operation.clone(), producers));
+    }
+    if effects == 0 || calls > 1 {
+        return None;
+    }
+    for (ordinal, bci) in copy.iter().enumerate() {
+        let stack_outputs = facts
+            .step(*bci)?
+            .instruction
+            .writes()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .count();
+        if stack_outputs > 1
+            || (stack_outputs == 1
+                && normalized
+                    .iter()
+                    .map(|(_, inputs)| inputs.iter().filter(|input| **input == ordinal).count())
+                    .sum::<usize>()
+                    != 1)
+        {
+            return None;
+        }
+    }
+    Some(normalized)
+}
+
+/// Prove only a straight return/handler pair, before any region ownership or emission. The row's
+/// half-open range is checked first: a cleanup call caught by its own handler can run twice.
+fn prove_finally_copy(
+    facts: &mut Facts<'_>,
+    row: &ExceptionHandlerFact,
+) -> Result<Option<FinallyCopyProof>, StopReason> {
+    let Some(handler) = facts.row_handler(row) else {
+        return Ok(None);
+    };
+    if row.catch_type_index.is_some() || row.start_bci >= row.end_bci {
+        return Ok(None);
+    }
+    // This slice does not infer a `try` boundary after a call that may throw. In the narrowed
+    // snapshot variant that call is `mark(1)`; moving the row start past it loses cleanup.
+    for before in facts.bcis((0, row.start_bci)) {
+        facts.charge(before)?;
+        if matches!(facts.op(before), Some(Operation::Invoke(_))) {
+            return Ok(None);
+        }
+    }
+    let before_handler = facts.bcis((row.start_bci, handler.bci()));
+    let exceptional: Vec<u32> = facts
+        .in_block(&handler)
+        .iter()
+        .map(SsaInstruction::bci)
+        .collect();
+    for bci in before_handler.iter().chain(&exceptional) {
+        facts.charge(*bci)?;
+    }
+    let Some((&normal_return, normal_middle)) = before_handler.split_last() else {
+        return Ok(None);
+    };
+    let Some((&return_load, before_return_load)) = normal_middle.split_last() else {
+        return Ok(None);
+    };
+    let Some((&primary_store, handler_tail)) = exceptional.split_first() else {
+        return Ok(None);
+    };
+    let Some((&rethrow, handler_middle)) = handler_tail.split_last() else {
+        return Ok(None);
+    };
+    let Some((&primary_load, handler_cleanup)) = handler_middle.split_last() else {
+        return Ok(None);
+    };
+    let Some(cleanup_start) = before_return_load.len().checked_sub(handler_cleanup.len()) else {
+        return Ok(None);
+    };
+    let normal_cleanup = &before_return_load[cleanup_start..];
+    let Some(save) = cleanup_start
+        .checked_sub(1)
+        .and_then(|index| before_return_load.get(index))
+        .copied()
+    else {
+        return Ok(None);
+    };
+    // Find the normal copy from the return suffix, independently of the exception row's end.
+    // This lets the widened [0,23) row reveal that BCI 20 lies *inside* its own protection.
+    if normal_cleanup.is_empty() || handler_cleanup.is_empty() {
+        return Ok(None);
+    }
+    if normal_cleanup
+        .iter()
+        .chain(handler_cleanup)
+        .any(|bci| row.start_bci <= *bci && *bci < row.end_bci)
+    {
+        return Ok(None);
+    }
+    if row.end_bci != normal_cleanup[0] {
+        return Ok(None);
+    }
+    // A branch target inside either copy splits a canonical block. Requiring the entire normal
+    // suffix in one block (the handler suffix was read from one block above) therefore prevents
+    // an extra predecessor from entering after some cleanup instructions have already run.
+    let normal_block = facts.block_of(normal_cleanup[0]);
+    if normal_block.is_none()
+        || normal_cleanup
+            .iter()
+            .chain([&return_load, &normal_return])
+            .any(|bci| facts.block_of(*bci) != normal_block)
+    {
+        return Ok(None);
+    }
+    let (
+        Some(Operation::Store { slot: saved }),
+        Some(Operation::Load { slot: returned }),
+        Some(Operation::Store { slot: primary }),
+        Some(Operation::Load { slot: reloaded }),
+    ) = (
+        facts.op(save),
+        facts.op(return_load),
+        facts.op(primary_store),
+        facts.op(primary_load),
+    )
+    else {
+        return Ok(None);
+    };
+    if saved != returned
+        || primary != reloaded
+        || facts.op(normal_return) != Some(&Operation::Return)
+        || facts.op(rethrow) != Some(&Operation::Throw)
+        || !facts.view.successor_ids(&handler).is_empty()
+    {
+        return Ok(None);
+    }
+    let (Some(normal_code), Some(handler_code)) = (
+        cleanup_sequence(facts, normal_cleanup),
+        cleanup_sequence(facts, handler_cleanup),
+    ) else {
+        return Ok(None);
+    };
+    if normal_code != handler_code {
+        return Ok(None);
+    }
+    // Every protected normal edge stays protected or reaches the one normal copy. A throw has no
+    // normal successor and is handled by the row. A return inside the range would skip cleanup.
+    let mut protected_blocks = facts.blocks_in((row.start_bci, row.end_bci));
+    protected_blocks.sort_by_key(CanonicalBlockId::bci);
+    for block in &protected_blocks {
+        facts.charge(block.bci())?;
+        let mut last_protected = None;
+        for instruction in facts.in_block(block) {
+            if instruction.bci() < row.start_bci || instruction.bci() >= row.end_bci {
+                continue;
+            }
+            last_protected = Some(instruction.bci());
+            if facts.op(instruction.bci()) == Some(&Operation::Return) {
+                return Ok(None);
+            }
+        }
+        let successors = facts.view.successor_ids(block);
+        if successors.is_empty()
+            && facts.end_of(block) <= row.end_bci
+            && last_protected.is_some_and(|last| facts.op(last) != Some(&Operation::Throw))
+        {
+            return Ok(None);
+        }
+        for successor in successors {
+            if !protected_blocks.contains(&successor) && successor.bci() != row.end_bci {
+                return Ok(None);
+            }
+        }
+    }
+    for block in facts.canonical.blocks() {
+        facts.charge(block.id().bci())?;
+        for successor in facts.view.successor_ids(block.id()) {
+            if successor == handler && block.id() != &handler {
+                return Ok(None);
+            }
+            if normal_block == Some(&successor)
+                && block.id() != &successor
+                && !protected_blocks.contains(block.id())
+            {
+                return Ok(None);
+            }
+        }
+    }
+    // The return and rethrow consume precisely the loads of the saved value and primary.
+    let (
+        Some(saved_step),
+        Some(return_load_step),
+        Some(return_step),
+        Some(primary_step),
+        Some(primary_load_step),
+        Some(throw_step),
+    ) = (
+        facts.step(save),
+        facts.step(return_load),
+        facts.step(normal_return),
+        facts.step(primary_store),
+        facts.step(primary_load),
+        facts.step(rethrow),
+    )
+    else {
+        return Ok(None);
+    };
+    let one_link = |producer: &SsaInstruction, consumer: &SsaInstruction| {
+        let produced = producer
+            .writes()
+            .iter()
+            .find(|(slot, _)| matches!(slot, Slot::Stack(_)));
+        let consumed = stack_operands(consumer);
+        produced.is_some_and(|(_, value)| consumed.len() == 1 && facts.same(*value, consumed[0].1))
+    };
+    if !one_link(return_load_step.instruction, return_step.instruction)
+        || !one_link(primary_load_step.instruction, throw_step.instruction)
+        || !primary_step
+            .instruction
+            .writes()
+            .iter()
+            .any(|(_, written)| {
+                primary_load_step
+                    .instruction
+                    .reads()
+                    .iter()
+                    .any(|(_, read)| facts.same(*written, *read))
+            })
+        || !saved_step.instruction.writes().iter().any(|(_, written)| {
+            return_load_step
+                .instruction
+                .reads()
+                .iter()
+                .any(|(_, read)| facts.same(*written, *read))
+        })
+    {
+        return Ok(None);
+    }
+    // No other exception-table row may intercept a protected instruction or either cleanup.
+    for bci in facts
+        .bcis((row.start_bci, row.end_bci))
+        .into_iter()
+        .chain(normal_cleanup.iter().copied())
+        .chain(handler_cleanup.iter().copied())
+    {
+        facts.charge(bci)?;
+        if facts
+            .covering(bci)
+            .iter()
+            .any(|other| other.ordinal != row.ordinal)
+        {
+            return Ok(None);
+        }
+    }
+    let mut owned = facts.blocks_in((row.start_bci, facts.span_end(normal_return)));
+    if !owned.contains(&handler) {
+        owned.push(handler);
+    }
+    owned.sort_by_key(CanonicalBlockId::bci);
+    let mut origins = facts.bcis((row.start_bci, facts.span_end(rethrow)));
+    origins.sort_unstable();
+    origins.dedup();
+    Ok(Some(FinallyCopyProof {
+        row_ordinal: row.ordinal,
+        protected: (row.start_bci, row.end_bci),
+        normal_cleanup: (
+            normal_cleanup[0],
+            facts.span_end(*normal_cleanup.last().unwrap()),
+        ),
+        handler_cleanup: (
+            handler_cleanup[0],
+            facts.span_end(*handler_cleanup.last().unwrap()),
+        ),
+        saved_return: (save, normal_return),
+        primary: (primary_store, primary_load, rethrow),
+        owned,
+        join: None,
+        origins,
+    }))
+}
+
+#[cfg(test)]
+mod finally_copy_tests {
+    use super::*;
+    use jarde_jvm::engine::analyze_method_ir;
+    use jarde_jvm::environment::ResolutionEnvironment;
+    use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+    use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+    use jarde_reader::budget::{CancellationToken, Limits};
+    use jarde_reader::model::{
+        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+        PhysicalMethodId, PhysicalVariant,
+    };
+    use jarde_reader::view::{
+        DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+        MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+        RuntimeView,
+    };
+
+    fn limits() -> Limits {
+        Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 1_000,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 10,
+            method_bodies: 10,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 8,
+            dependency_depth: 4,
+            elapsed_millis: u64::MAX,
+        }
+    }
+
+    fn proof(class: &[u8], name: &str) -> Option<FinallyCopyProof> {
+        proof_with_row(class, name, false)
+    }
+
+    fn proof_with_row(class: &[u8], name: &str, competing: bool) -> Option<FinallyCopyProof> {
+        probe(class, name, competing, None).unwrap()
+    }
+
+    fn probe(
+        class: &[u8],
+        name: &str,
+        competing: bool,
+        stop: Option<&str>,
+    ) -> Result<Option<FinallyCopyProof>, StopReason> {
+        let mut budget = Budget::new(limits());
+        let snapshot =
+            ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget).unwrap();
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(class).to_hex().to_string()),
+                length: class.len() as u64,
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let method = PhysicalMethodId {
+            owner: definition,
+            name: JvmBytes(name.as_bytes().to_vec()),
+            descriptor: JvmBytes(b"()I".to_vec()),
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_string()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let request = MethodAnalysisRequest {
+            environment: ResolutionEnvironment {
+                runtime: RuntimeView {
+                    physical: PhysicalView {
+                        snapshot: snapshot.id().clone(),
+                        scope: PhysicalScope::SnapshotAll,
+                    },
+                    profile: RuntimeProfile {
+                        java_release: 8,
+                        multi_release: MultiReleasePolicy::Disabled,
+                        layout: LayoutMode::Generic,
+                    },
+                    load_domain: domain.clone(),
+                },
+                domains: vec![domain],
+                providers: Vec::new(),
+            },
+            method,
+            stages: AnalysisStage::ALL.to_vec(),
+        };
+        let analyzed = analyze_method_ir(&[snapshot], &request, &mut budget).unwrap();
+        let ir = analyzed.ir();
+        let canonical = ir.canonical().unwrap();
+        let ssa = ir.ssa().unwrap();
+        let code = ir.code().unwrap();
+        let ops = Operations::of(code, ir.constant_pool());
+        let view = NormalFlowView::build(canonical, &mut budget).unwrap();
+        let mut rows = code.exception_handlers.clone();
+        if competing {
+            let mut other = rows[0].clone();
+            other.ordinal = rows.len() as u32;
+            other.handler_bci += 1;
+            rows.push(other);
+        }
+        let row = rows.first().unwrap();
+        let mut proof_limits = limits();
+        if stop == Some("budget") {
+            proof_limits.analysis_steps = 0;
+        }
+        let token = CancellationToken::new();
+        if stop == Some("cancel") {
+            token.cancel();
+        }
+        let mut proof_budget = Budget::with_cancellation_token(proof_limits, token);
+        let mut facts = Facts::new(canonical, &view, ssa, &ops, &rows, &mut proof_budget);
+        prove_finally_copy(&mut facts, row)
+    }
+
+    #[test]
+    fn implicit_cleanup_has_a_physical_copy_certificate() {
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
+        );
+        let proved = proof(class, "run").expect("the straight call copies match");
+        assert_eq!(proved.protected, (0, 20));
+        assert_eq!(proved.normal_cleanup, (20, 23));
+        assert_eq!(proved.handler_cleanup, (26, 29));
+        assert_eq!(proved.saved_return, (19, 24));
+        assert_eq!(proved.primary, (25, 29, 30));
+        assert_eq!(proved.row_ordinal, 0);
+        assert!(proved.join.is_none());
+        assert!(proved.owned.iter().any(|block| block.bci() == 25));
+        assert!(proved.origins.contains(&20) && proved.origins.contains(&26));
+    }
+
+    #[test]
+    fn widened_range_cannot_reenter_the_proved_cleanup() {
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class"
+        );
+        assert!(proof(class, "run").is_none());
+    }
+
+    #[test]
+    fn a_competing_row_refuses_the_same_otherwise_proved_copy() {
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
+        );
+        assert!(proof(class, "run").is_some());
+        assert!(proof_with_row(class, "run", true).is_none());
+    }
+
+    #[test]
+    fn changed_argument_or_missing_coverage_refuses_the_copy() {
+        let baseline = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/baseline/CleanupBoundaries.class"
+        );
+        let divergent = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/copy-divergence/CleanupBoundaries.class"
+        );
+        let narrowed = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/snapshot-boundaries/range-narrowed/CleanupBoundaries.class"
+        );
+        let proved = proof(baseline, "snapshotReturn").expect("the matching snapshot copies prove");
+        assert_eq!(proved.protected, (5, 14));
+        assert_eq!(proved.normal_cleanup, (14, 24));
+        assert_eq!(proved.handler_cleanup, (27, 37));
+        assert_eq!(proved.saved_return, (13, 25));
+        assert!(proof(divergent, "snapshotReturn").is_none());
+        assert!(proof(narrowed, "snapshotReturn").is_none());
+    }
+
+    #[test]
+    fn different_cleanup_member_refuses_the_copy() {
+        let baseline =
+            include_bytes!("../../../tests/fixtures/p3-finally-proof/TargetCopies.class");
+        let changed = include_bytes!(
+            "../../../tests/fixtures/p3-finally-proof/TargetCopiesDifferentTarget.class"
+        );
+        assert!(proof(baseline, "run").is_some());
+        assert!(proof(changed, "run").is_none());
+    }
+
+    #[test]
+    fn repeated_cleanup_calls_stay_outside_the_single_call_slice() {
+        let class = include_bytes!("../../../tests/fixtures/p3-finally-proof/RepeatedCopies.class");
+        assert!(proof(class, "run").is_none());
+    }
+
+    #[test]
+    fn an_extra_cleanup_result_consumer_is_refused() {
+        let class = include_bytes!("../../../tests/fixtures/p3-finally-proof/ExtraConsumer.class");
+        assert!(proof(class, "run").is_none());
+    }
+
+    #[test]
+    fn proof_propagates_the_existing_budget_and_cancellation_stops() {
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
+        );
+        assert!(matches!(
+            probe(class, "run", false, Some("budget")),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            probe(class, "run", false, Some("cancel")),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
+}
+
 /// Examines one block the walk cannot leave through the normal flow.
 ///
 /// The canonical graph fuses straight-line code, so the statement is **not** a block: the resource's
@@ -1063,10 +1918,345 @@ pub(crate) fn examine(
 ) -> Result<Verdict, StopReason> {
     let mut facts = Facts::new(canonical, view, ssa, ops, handlers, budget);
     facts.charge(current.bci())?;
-    if let Some(verdict) = monitor(&mut facts, profile, current)? {
-        return Ok(verdict);
+    match guarded(&mut facts, profile, current)? {
+        Some(verdict) => Ok(verdict),
+        None => Ok(Verdict::NotGuarded),
     }
-    resources(&mut facts, profile, current)
+}
+
+/// What the guarded rules of P3 2.4 say about one block: a verdict, or `None` when no rule owns it.
+///
+/// The order is the examination's own: the `synchronized` shape is asked first because its header is
+/// a `monitorenter` and nothing else, and the `try` header second. "No rule owns it" is the `try`
+/// header's own [`Verdict::NotGuarded`] as well: a block neither rule claims or refuses is a block
+/// whose guarded shapes are *not here*, which is what the `try`/`catch` shape is read on.
+fn guarded(
+    facts: &mut Facts<'_>,
+    profile: &crate::pass::RecoveryProfile,
+    current: &CanonicalBlockId,
+) -> Result<Option<Verdict>, StopReason> {
+    if let Some(verdict) = monitor(facts, profile, current)? {
+        return Ok(Some(verdict));
+    }
+    match resources(facts, profile, current)? {
+        Verdict::NotGuarded => Ok(None),
+        verdict => Ok(Some(verdict)),
+    }
+}
+
+/// One `catch` clause of a `try` the walk presents.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct CatchSite {
+    /// Constant-pool indexes of the `catch` types this clause names, in exception-table order.
+    ///
+    /// One entry is an ordinary clause. Several entries are the **multi-catch** the table states:
+    /// consecutive rows that name different classes and reach the *same* handler are one clause, and
+    /// the compiler writes them `catch (A | B n)`. Reading them as one clause is what keeps the
+    /// handler's body from being walked — and written — once per row.
+    pub(crate) type_indices: Vec<u16>,
+    /// The canonical block the rows' handler entry maps to.
+    pub(crate) handler: CanonicalBlockId,
+    /// The local slot the handler's own first instruction stores the caught exception into: the
+    /// clause's parameter.
+    pub(crate) parameter: u16,
+}
+
+/// One `try`/`catch` statement: where its clauses are and where the code after it begins.
+///
+/// This is not a guarded shape a rule of P3 2.4 proves: a `try` whose rows name their `catch` types
+/// is presented as the structure the table states, and the walk recovers both the protected range and
+/// every handler body as ordinary regions ([`crate::region`]).
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct Catches {
+    /// One site per clause (per handler entry), in exception-table order.
+    pub(crate) sites: Vec<CatchSite>,
+    /// The block the code after the `try` begins at, when the protected range is followed by a
+    /// transfer; `None` when nothing follows it (every path out of the range leaves the method).
+    pub(crate) join: Option<CanonicalBlockId>,
+    /// The instructions of the block the statement begins in that are written **before** the `try`:
+    /// the half-open range from that block's own start to the protected range's start. Empty where
+    /// the range begins where its block does, which is where `javac` puts it whenever no statement
+    /// runs before the `try` in the same straight-line block.
+    ///
+    /// The canonical graph fuses straight-line code, so the statement's own block may hold the
+    /// instructions the block ran *before* the range began — `int x = 1;` in front of `try { … }`.
+    /// They are not part of the protected range, so they are written before the `try` and the body
+    /// does not write them again ([`crate::region::Region::Try`]).
+    pub(crate) lead: (u32, u32),
+    /// The `try` this statement's own body **is**, when two protected ranges that begin at one
+    /// instruction nest: the narrower range's statement, with its own clauses and join.
+    ///
+    /// The wider statement's body is then that inner statement and not a second clause of its own —
+    /// [`crate::region::Region::Try`]'s body is a region already, so the nesting needs no region kind
+    /// — and the levels are built from the inside out ([`crate::region::Walker::try_region`]).
+    /// `None` is the ordinary statement of one protected range.
+    pub(crate) inner: Option<Box<Catches>>,
+}
+
+/// Examines one block as the `try` of a `try`/`catch`: the rows that name `catch` types and protect
+/// a range beginning in it.
+///
+/// `None` is the answer for everything this shape is not, and every one of them is a *reason the
+/// shape was refused*, not a silent skip:
+///
+/// * no row begins in this block, or the rows that do name no `catch` type;
+/// * the rows that begin in the block do not all begin at **one instruction**: several clauses of
+///   one `try` share their range's start, and two statements merely written in one straight-line
+///   block are not one statement's ranges;
+/// * the rows that begin at one instruction declare more than two protected ranges: two nest (the
+///   narrower one inside the wider one, [`nests`]), and a third is a shape this statement does not
+///   state;
+/// * a guarded rule of P3 2.4 owns the region — it claimed it, or refused it as its own shape. A
+///   `try`-with-resources this build cannot prove is never spelled as a user `catch`;
+/// * a row's handler stores the exception into no local: a clause has no parameter to write, and
+///   inventing one is exactly what this layer may not do.
+///
+/// The rows are the ones that begin in this block, which is not the same as the ones that begin
+/// *where the block does*: the block may hold the statement before the `try` too, and then the range
+/// begins inside it. What that costs is a [`Catches::lead`], written before the statement — never a
+/// body that swallows the instructions the range does not protect.
+///
+/// One clause per **handler**, not per row: consecutive rows that name different classes and reach
+/// the same handler entry are the multi-catch the compiler writes `catch (A | B n)`, and the body of
+/// that handler is one body. Rows that reach *different* handlers are different clauses, in table
+/// order — which is the order the JVM dispatches in, and therefore the order the text must state.
+/// The clauses of the nested level are read the same way, so each level may state several of them.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn catches(
+    canonical: &CanonicalCfg,
+    view: &NormalFlowView,
+    ssa: &SsaTable,
+    ops: &Operations,
+    handlers: &[ExceptionHandlerFact],
+    profile: &crate::pass::RecoveryProfile,
+    current: &CanonicalBlockId,
+    budget: &mut Budget,
+) -> Result<Option<Catches>, StopReason> {
+    // The block's own last instruction: the same reading the region walk's `starts_catch` takes, so
+    // the two agree on which blocks hold the head of a `try`. The rows are read before the facts are
+    // built: a block whose rows are none of this shape's costs nothing.
+    let last = ssa
+        .block(current)
+        .and_then(|block| block.instructions().last())
+        .map(|instruction| instruction.bci());
+    let rows_here: Vec<&ExceptionHandlerFact> = handlers
+        .iter()
+        .filter(|row| {
+            row.catch_type_index.is_some()
+                && row.start_bci >= current.bci()
+                && last.is_some_and(|last| row.start_bci <= last)
+        })
+        .collect();
+    if rows_here.is_empty() {
+        return Ok(None);
+    }
+    // How one set of rows reads as **clauses**: every range begins at one instruction, and there are
+    // at most two ends — one `try`, or the nesting of P3 2.5 (the narrower range inside the wider
+    // one). Anything else is no statement this function states.
+    let clauses_of = |rows: &[&ExceptionHandlerFact]| -> Option<(u32, Vec<u32>)> {
+        let start = rows.first()?.start_bci;
+        if rows.iter().any(|row| row.start_bci != start) {
+            return None;
+        }
+        let mut ends: Vec<u32> = rows.iter().map(|row| row.end_bci).collect();
+        ends.sort_unstable();
+        ends.dedup();
+        (ends.len() <= 2).then_some((start, ends))
+    };
+    // What the guarded rules of P3 2.4 say about this block decides which of its rows are **clauses**
+    // at all. A rule that **claimed** the block wrote a `try (…)` statement here, and the rows that
+    // reach the handlers it proved are the compiler's own — the synthetic `Throwable` rows of that
+    // header's cleanup. They are no `catch` a source wrote, and the clauses of the statement are the
+    // rows that reach *other* handlers: the user's `catch`, which the walk writes around the
+    // statement. A rule that **refused** the block keeps today's answer — a `try`-with-resources
+    // this build cannot prove is never spelled as a user `catch` — and where no rule owns the block
+    // every row that begins here is a clause, exactly as before.
+    //
+    // The two orders differ in what they cost, so both are stated. A block whose rows already read
+    // as clauses is asked the rules in today's order, and for today's bill; a block whose rows hold
+    // the union of the header's own ranges and the clause's is asked **first**, because only the
+    // rule can say which of them are its own, and the reading left over is what this statement
+    // writes. Both answer `None` for a block the rules own and do not present.
+    let mut facts = Facts::new(canonical, view, ssa, ops, handlers, budget);
+    let (named, (start, ends)): (Vec<&ExceptionHandlerFact>, (u32, Vec<u32>)) =
+        match clauses_of(&rows_here) {
+            Some(plain) => {
+                facts.charge(current.bci())?;
+                match guarded(&mut facts, profile, current)? {
+                    Some(Verdict::Claimed(plan)) => {
+                        let clauses: Vec<&ExceptionHandlerFact> = rows_here
+                            .iter()
+                            .copied()
+                            .filter(|row| !plan.facts().contains(&row.handler_bci))
+                            .collect();
+                        let Some(reading) = clauses_of(&clauses) else {
+                            return Ok(None);
+                        };
+                        if reading.1 == plain.1 && clauses.len() == rows_here.len() {
+                            // The rule claimed a block whose rows read as clauses already, without
+                            // taking one of them for itself: no `try (…)` header is part of this
+                            // reading, and the block keeps today's answer.
+                            return Ok(None);
+                        }
+                        (clauses, reading)
+                    }
+                    Some(_) => return Ok(None),
+                    None => (rows_here, plain),
+                }
+            }
+            None => {
+                let Some(Verdict::Claimed(plan)) = guarded(&mut facts, profile, current)? else {
+                    return Ok(None);
+                };
+                let clauses: Vec<&ExceptionHandlerFact> = rows_here
+                    .iter()
+                    .copied()
+                    .filter(|row| !plan.facts().contains(&row.handler_bci))
+                    .collect();
+                let Some(reading) = clauses_of(&clauses) else {
+                    return Ok(None);
+                };
+                (clauses, reading)
+            }
+        };
+    let lead = (current.bci(), start);
+    let rows_of = |end: u32| -> Vec<&ExceptionHandlerFact> {
+        named
+            .iter()
+            .copied()
+            .filter(|row| row.end_bci == end)
+            .collect()
+    };
+    match ends.as_slice() {
+        [end] => {
+            let Some(sites) = clause_sites(&facts, &rows_of(*end)) else {
+                return Ok(None);
+            };
+            Ok(Some(Catches {
+                sites,
+                join: join_after(&facts, *end),
+                lead,
+                inner: None,
+            }))
+        }
+        [inner_end, outer_end] => {
+            let (inner, outer) = (rows_of(*inner_end), rows_of(*outer_end));
+            if !nests(&inner, &outer, handlers) {
+                return Ok(None);
+            }
+            let Some(inner_sites) = clause_sites(&facts, &inner) else {
+                return Ok(None);
+            };
+            let Some(outer_sites) = clause_sites(&facts, &outer) else {
+                return Ok(None);
+            };
+            // The outer statement's body **is** the inner statement, so the code after the outer
+            // `try` is the code after the inner one: both levels state that join.
+            let join = join_after(&facts, *inner_end);
+            Ok(Some(Catches {
+                sites: outer_sites,
+                join: join.clone(),
+                lead,
+                inner: Some(Box::new(Catches {
+                    sites: inner_sites,
+                    join,
+                    lead,
+                    inner: None,
+                })),
+            }))
+        }
+        _ => Ok(None),
+    }
+}
+
+/// Whether two protected ranges that begin at one instruction are one `try`'s nesting.
+///
+/// The table states the pair, and this is what has to be read off it for the nesting to be the
+/// shape the bytes hold:
+///
+/// * the narrower row's **handler entry lies inside the wider range**: `handler_bci >= inner end`
+///   (a handler runs after the code it protects) and `handler_bci < outer end` (the wider range
+///   protects the code the handler is entered from — which is also what makes the inner `try`,
+///   handler and all, the wider statement's body rather than a second clause beside it);
+/// * every clause's handler is reached by **that clause's own rows alone**. A handler a second range
+///   also reaches is one body the table protects twice — `javac` splits one `try`'s protection
+///   around code that cannot throw, and the wider range then covers instructions this statement's
+///   body would have to hold as statements of its own.
+fn nests(
+    inner: &[&ExceptionHandlerFact],
+    outer: &[&ExceptionHandlerFact],
+    handlers: &[ExceptionHandlerFact],
+) -> bool {
+    let (Some(inner_end), Some(outer_end)) = (
+        inner.first().map(|row| row.end_bci),
+        outer.first().map(|row| row.end_bci),
+    ) else {
+        return false;
+    };
+    let handler_inside = inner
+        .iter()
+        .all(|row| inner_end <= row.handler_bci && row.handler_bci < outer_end);
+    let own_rows_only = inner.iter().chain(outer.iter()).all(|row| {
+        handlers
+            .iter()
+            .filter(|other| {
+                other.catch_type_index.is_some() && other.handler_bci == row.handler_bci
+            })
+            .all(|other| (other.start_bci, other.end_bci) == (row.start_bci, row.end_bci))
+    });
+    handler_inside && own_rows_only
+}
+
+/// The clauses of one protected range: one site per handler entry, in exception-table order.
+///
+/// `rows` are the rows of **one** range, in the table's own order, which is the order the JVM
+/// dispatches in and therefore the order the clauses are written in.
+fn clause_sites(facts: &Facts<'_>, rows: &[&ExceptionHandlerFact]) -> Option<Vec<CatchSite>> {
+    let mut sites: Vec<CatchSite> = Vec::new();
+    for row in rows {
+        let handler = facts.row_handler(row)?;
+        let entry = facts.in_block(&handler).first()?;
+        let Some(Operation::Store { slot }) = facts.op(entry.bci()) else {
+            return None;
+        };
+        let type_index = row
+            .catch_type_index
+            .expect("a named row states its catch type");
+        // The multi-catch: the run of rows that end at the same handler this one starts at, with a
+        // class each of them names once. A row whose handler differs opens a clause of its own, and
+        // so does a handler that came back after another one — the table's order is the priority the
+        // clauses state, and merging across it would hand an exception to the wrong body.
+        match sites.last_mut() {
+            Some(site) if site.handler == handler && !site.type_indices.contains(&type_index) => {
+                site.type_indices.push(type_index);
+            }
+            _ => sites.push(CatchSite {
+                type_indices: vec![type_index],
+                handler,
+                parameter: *slot,
+            }),
+        }
+    }
+    Some(sites)
+}
+
+/// The block the code after one `try` begins at.
+///
+/// `javac` protects the instructions that may throw, so the transfer that carries the protected
+/// range's **normal** completion to the code after the statement is the instruction the range stops
+/// before: reading its own target — the one plain successor of the block that holds it — is that
+/// block. A range with no transfer there is one whose normal completion leaves the method (the body
+/// returned), and then the statement has no continuation to state.
+fn join_after(facts: &Facts<'_>, end_bci: u32) -> Option<CanonicalBlockId> {
+    if !matches!(facts.op(end_bci), Some(Operation::Transfer)) {
+        return None;
+    }
+    let block = facts.block_of(end_bci)?;
+    let successors = facts.view.successor_ids(block);
+    let [only] = successors.as_slice() else {
+        return None;
+    };
+    Some(only.clone())
 }
 
 /// The `synchronized` shape: one `monitorenter`, one `monitorexit` on each path out of the region.
@@ -1179,26 +2369,71 @@ fn monitor(
     if facts.op(exit_load) != Some(&Operation::Load { slot: lock }) {
         return Ok(Some(refuse(Unproven::Monitor, exit_load)));
     }
-    // The range a monitor's row declares ends between the exit and the `goto` that follows it: the
-    // exit is protected (it may raise), the transfer is not.
-    let Some(goto) = facts.next_bci(*normal_exit) else {
+    // The instruction after the normal exit: `javac` writes either the `goto` that carries the run
+    // on after the statement or — where the statement's body returns — the `return` itself. The
+    // range a monitor's row declares ends between the exit and that instruction in both shapes: the
+    // exit is protected (it may raise), the instruction after it is not. Any other instruction, and
+    // a `return` whose own links the proof below cannot read, is a shape this rule does not present.
+    let Some(after) = facts.next_bci(*normal_exit) else {
         return Ok(Some(refuse(Unproven::Monitor, *normal_exit)));
     };
-    if !matches!(facts.op(goto), Some(Operation::Transfer)) {
-        return Ok(Some(refuse(Unproven::Monitor, goto)));
-    }
-    if row.end_bci != goto {
+    let returns: Option<u32> = match facts.op(after) {
+        // Today's shape: the statement's run continues at the transfer's own target.
+        Some(Operation::Transfer) => None,
+        // The `return` shape: the method ends with the value the region's own instructions left on
+        // the stack. That value is read off the stack — not out of a local, and not a second read of
+        // anything — and what proves it is the **definition** of the value the return reads: it has
+        // to be an instruction inside the guarded body, which is where the statement's own run is.
+        Some(Operation::Return) => {
+            let Some(instruction) = facts.step(after).map(|step| step.instruction) else {
+                return Ok(Some(refuse(Unproven::Monitor, after)));
+            };
+            let operands = stack_operands(instruction);
+            // A void `return` reads no stack value, and one that reads several is not a return this
+            // subset writes: both are refused rather than presented.
+            let [(_slot, value)] = operands.as_slice() else {
+                return Ok(Some(refuse(Unproven::Monitor, after)));
+            };
+            let Definition::Instruction { bci: produced, .. } =
+                facts.ssa.value(facts.resolve(*value)).def()
+            else {
+                return Ok(Some(refuse(Unproven::Monitor, after)));
+            };
+            // A value produced before the `monitorenter` (the header's own load of `this`, say) is
+            // outside the region the statement guards, and writing the statement would move where it
+            // is read from: it stays refused.
+            if *produced < row.start_bci || *produced >= exit_load {
+                return Ok(Some(refuse(Unproven::Monitor, after)));
+            }
+            Some(after)
+        }
+        _ => return Ok(Some(refuse(Unproven::Monitor, after))),
+    };
+    if row.end_bci != after {
         return Ok(Some(refuse(Unproven::RangeEnd, row.end_bci)));
     }
-    let join_bci = facts.block_of(goto).and_then(|block| {
-        facts
-            .view
-            .successor_ids(block)
-            .first()
-            .map(|joins| joins.bci())
-    });
-    let Some(join_bci) = join_bci else {
-        return Ok(Some(refuse(Unproven::Monitor, goto)));
+    // Where the statement's claim ends: the join the run continues at, or — where the normal path
+    // returns — the instruction after the return, which is the end of the method. The handler's own
+    // range lies between the transfer and that join in the `goto` shape, and *after* the return in
+    // the `return` shape, which is why it is claimed explicitly below.
+    let (end, join): (u32, Option<CanonicalBlockId>) = match returns {
+        Some(return_bci) => (facts.span_end(return_bci), None),
+        None => {
+            let join_bci = facts.block_of(after).and_then(|block| {
+                facts
+                    .view
+                    .successor_ids(block)
+                    .first()
+                    .map(|joins| joins.bci())
+            });
+            let Some(join_bci) = join_bci else {
+                return Ok(Some(refuse(Unproven::Monitor, after)));
+            };
+            let Some(join) = facts.block_at(join_bci) else {
+                return Ok(Some(refuse(Unproven::Monitor, after)));
+            };
+            (join_bci, Some(join))
+        }
     };
     // The handler leaves the same monitor, and its own exit is protected by itself: a `monitorexit`
     // may raise, and an exit outside every range would leave the monitor held.
@@ -1220,30 +2455,46 @@ fn monitor(
     if body.0 >= body.1 || !facts.statement_free(body) {
         return Ok(Some(refuse(Unproven::Body, body.0)));
     }
-    // Everything between the statement's own start and the join belongs to it.
-    let mut pieces: Vec<(u32, u32)> = vec![(start, facts.span_end(goto)), handler.span];
-    let Some(join) = facts.block_at(join_bci) else {
-        return Ok(Some(refuse(Unproven::Monitor, goto)));
-    };
-    if let Err(cause) = explained(facts, start, join_bci, &pieces) {
+    // Everything between the statement's own start and where it ends belongs to it: its own run,
+    // from the enter through the instruction after the exit's transfer or return, and the handler's
+    // range beside it.
+    let mut pieces: Vec<(u32, u32)> = vec![(start, facts.span_end(after)), handler.span];
+    if let Err(cause) = explained(facts, start, end, &pieces) {
         return Ok(Some(refuse(cause.0, cause.1)));
     }
-    let mut owned: Vec<CanonicalBlockId> = facts.blocks_in((start, join_bci));
+    let mut owned: Vec<CanonicalBlockId> = facts.blocks_in((start, end));
+    // The handler's block is claimed even where it lies *outside* the statement's own range — after
+    // a `return` that ends the method — because the statement writes the handler's exit: a block the
+    // statement claimed and did not write would drop the statements it holds, and one it does not
+    // claim at all is quoted as an uncovered block.
+    if !owned.contains(&handler.entry) {
+        owned.push(handler.entry.clone());
+    }
     owned.sort_by_key(|block| block.bci());
     pieces.clear();
-    let facts_read: Vec<u32> = vec![
+    let mut facts_read: Vec<u32> = vec![
         enter,
         exit_load,
         *normal_exit,
         handler.entry.bci(),
         handler.exit_bci,
     ];
+    if let Some(return_bci) = returns {
+        // The `return` the normal path ends in is an instruction the proof read, and an anchor of
+        // the statement's own text: the value it returns is the one the body's read produced.
+        facts_read.push(return_bci);
+        facts_read.sort_unstable();
+    }
     Ok(Some(Verdict::Claimed(Plan {
-        shape: Shape::Monitor { enter_bci: enter },
+        shape: Shape::Monitor {
+            enter_bci: enter,
+            normal_exit_bci: *normal_exit,
+            returns,
+        },
         lead: (start, start),
         body,
         owned,
-        join: Some(join),
+        join,
         facts: facts_read,
     })))
 }
@@ -1267,11 +2518,60 @@ fn resources(
     if candidates.is_empty() {
         return Ok(Verdict::NotGuarded);
     }
-    // The `finally` copy is recognised before anything else, because it is not a guarded region at
-    // all: it is a handler that runs code and rethrows, and the only statement that would present it
-    // is one this build refuses to write without proving the copies equal.
+    // A catch-all copy is only a candidate. Claim it after the complete certificate and the
+    // straight-body presentation gate both pass; otherwise preserve the original refusal.
     for row in &candidates {
         if let Some(at) = finally_copy(facts, row) {
+            if FINALLY.admits(profile)
+                && let Some(proof) = prove_finally_copy(facts, row)?
+                && proof.row_ordinal == row.ordinal
+                && start <= proof.protected.0
+                && proof.protected.0 < end
+                && (start == proof.protected.0
+                    || facts.previous_bci(proof.protected.0).is_some_and(|before| {
+                        completed_field_assignment(facts, before, start, proof.protected.0)
+                            && single_statement(facts, (start, proof.protected.0), before)
+                    }))
+                && facts.statement_free((start, proof.protected.0))
+                && facts.bcis((start, proof.protected.0)).iter().all(|bci| {
+                    facts.block_of(*bci) == Some(current) && facts.covering(*bci).is_empty()
+                })
+                && facts.statement_free(proof.protected)
+            {
+                let return_end = facts.span_end(proof.saved_return.1);
+                let handler_end = facts.span_end(proof.primary.2);
+                let pieces = [
+                    (start, proof.protected.0),
+                    proof.protected,
+                    proof.normal_cleanup,
+                    (proof.normal_cleanup.1, return_end),
+                    (proof.primary.0, proof.handler_cleanup.0),
+                    proof.handler_cleanup,
+                    (proof.handler_cleanup.1, handler_end),
+                ];
+                if explained(facts, start, handler_end, &pieces).is_ok()
+                    && proof.owned.iter().all(|block| {
+                        facts.in_block(block).iter().all(|instruction| {
+                            let bci = instruction.bci();
+                            start <= bci
+                                && bci < handler_end
+                                && pieces.iter().any(|piece| piece.0 <= bci && bci < piece.1)
+                        })
+                    })
+                {
+                    return Ok(Verdict::Claimed(Plan {
+                        shape: Shape::Finally {
+                            normal_cleanup: proof.normal_cleanup,
+                            returns: proof.saved_return.1,
+                        },
+                        lead: (start, proof.protected.0),
+                        body: proof.protected,
+                        owned: proof.owned,
+                        join: proof.join,
+                        facts: proof.origins,
+                    }));
+                }
+            }
             return Ok(Verdict::refused(None, Unproven::FinallyCopy, at));
         }
     }
@@ -1282,16 +2582,124 @@ fn resources(
     let mut ordered = candidates.clone();
     ordered.sort_by_key(|row| (row.end_bci.saturating_sub(row.start_bci), row.start_bci));
     let mut failure: Option<Cause> = None;
+    let mut header = false;
     for row in ordered {
+        // A row whose protected range no instruction precedes protects no initialisation: a header
+        // declares a resource the statement *before* the range filled, and with no instruction there
+        // at all there is nothing the range's own start could be the end of. Such a row is a
+        // `catch` — or a `finally` — and not a resource of this shape, so it is not examined as one.
+        //
+        // [`initialisation`] refuses both this and a resource whose store is not one statement under
+        // the same `ResourceInit`; the difference is that here there is no store *at all*, which is
+        // the one case that is not a resource header a rule could have read. A row with an
+        // instruction before its range keeps the refusal it has today — a `try` whose initialisation
+        // this build cannot state is never spelled as a user `catch`.
+        //
+        // The instruction before the range answers the same question from the other side: it is
+        // where a header's own initialisation *ends*, and an ordinary assignment — a store of a
+        // value no `new` and no invocation produced — means the `try` after `int x = 1;` is a
+        // `try`/`catch` rather than a header `initialisation` could read
+        // ([`initialises_resource`]). A store filled by `new Res()` or by a call keeps the row
+        // examined: a `try`-with-resources this build cannot prove keeps degrading as one, and is
+        // never spelled as a user `catch`.
+        //
+        // The third value a header's own store can hold is a **local**: `try (r)` is Java 9 syntax,
+        // and javac keeps the variable's value in a local of its own before the protected range
+        // (`aload r; astore copy`), so the store the range follows reads another slot
+        // ([`copied_local`]). That row is this rule's own shape too — the header writes
+        // `try (T copy = r)`, the declaration [`initialisation`] already reads — but the reading is
+        // claimed only when the **whole** proof succeeds: an ordinary `r = other; try { … }
+        // catch (E e) { … }` compiles to the same store, and a copy this rule cannot prove must stay
+        // the `catch` its own table names rather than becoming a `try`-with-resources refusal.
+        //
+        // So the questions are one — "is what precedes this range a resource's own initialisation?" —
+        // and a row answers *no* where no instruction precedes it in this block and where an
+        // ordinary assignment precedes it. Neither row is examined as a resource, and when every
+        // candidate answers no the shape is not this rule's at all.
+        let Some(before) = facts
+            .previous_bci(row.start_bci)
+            .filter(|before| *before >= start)
+        else {
+            continue;
+        };
+        // A store that binds a `catch` clause's parameter writes the reference its handler was
+        // **entered** with ([`handler_binding`]), and no resource's initialisation does that. A row
+        // whose range begins after such a store is the clause's own body — the nested `try` of
+        // `nested(I)I`, whose range `[8, 10)` follows the outer clause's `astore_1` at BCI 7 — so it
+        // is not examined as a header this rule could state: it is left to [`catches`].
+        //
+        // The row is skipped rather than refused, because what precedes the range is read here and
+        // is no initialisation at all: the conservative refusal below is for a store whose statement
+        // could not be read, and this is one whose statement is the handler's own entry.
+        if matches!(facts.op(before), Some(Operation::Store { .. }))
+            && handler_binding(facts, before)
+        {
+            continue;
+        }
+        if row.catch_type_index.is_some()
+            && completed_field_assignment(facts, before, start, row.start_bci)
+        {
+            continue;
+        }
+        // A direct null literal is not enough to call an ordinary `try` a resource header. Admit it
+        // to the existing full proof only when both paths already have the close contour of a
+        // nullable resource: the normal close group and the exceptional handler's guarded close.
+        // The close handler's suppression and rethrow are deliberately left to `twr`, so a damaged
+        // suppression remains a refusal with this rule's source instead of silently becoming a
+        // user catch.
+        let null_resource = initialisation(facts, row.start_bci, start)
+            .ok()
+            .filter(|(init, slot)| exact_null_initializer(facts, *init, *slot));
+        if let Some((_, slot)) = null_resource {
+            if !null_resource_close_outline(facts, row, slot) {
+                continue;
+            }
+            header = true;
+        }
+        // The copy `javac` makes of the variable a header names, when the store before the range is
+        // one: the slot its load read. `None` for every other store — including one this rule claims
+        // under [`initialises_resource`], which keeps today's refusal when the rest of the shape
+        // fails to prove.
+        let mut copy: Option<u16> = None;
+        if null_resource.is_none()
+            && matches!(facts.op(before), Some(Operation::Store { .. }))
+            && !initialises_resource(facts, before, start)
+        {
+            let Some(loaded) = copied_local(facts, before, start) else {
+                continue;
+            };
+            // The body must not store the original slot again: the header declares the copy, and a
+            // body that wrote the name the header reads would present a resource the bytecode's own
+            // value flow does not have.
+            if facts.bcis((row.start_bci, row.end_bci)).into_iter().any(
+                |bci| matches!(facts.op(bci), Some(Operation::Store { slot }) if *slot == loaded),
+            ) {
+                continue;
+            }
+            copy = Some(loaded);
+        }
+        if copy.is_none() {
+            header = true;
+        }
         facts.charge(row.start_bci)?;
         match twr(facts, profile, current, row) {
             Ok(plan) => return Ok(Verdict::Claimed(plan)),
+            // A copy the rest of the shape does not prove is no header of this rule: the row is read
+            // as the `catch` its own table names, exactly as one after an ordinary assignment is.
+            Err(_) if copy.is_some() => continue,
             Err(cause) => {
                 if failure.is_none() {
                     failure = Some(cause);
                 }
             }
         }
+    }
+    // Every candidate was a row no instruction precedes, or one an ordinary assignment precedes: no
+    // initialisation of this block's own run is what a header would be read from, so nothing of the
+    // shape's own is here. The walk states its own reason for the edge it cannot leave and no `try`
+    // header is claimed — which is what lets the rows that name `catch` types be read as clauses.
+    if !header {
+        return Ok(Verdict::NotGuarded);
     }
     let (unproven, at) = failure.unwrap_or((Unproven::Handler, start));
     Ok(Verdict::refused(Some(&TWR), unproven, at))
@@ -1350,6 +2758,7 @@ fn twr(
             slot,
             init,
             close_bci: 0,
+            exceptional_close_bci: handler.close_bci,
         });
         handlers.push(handler);
     }
@@ -1388,15 +2797,39 @@ fn twr(
     for (index, resource) in resources.iter_mut().enumerate() {
         resource.close_bci = closes[index];
     }
-    let Some(join) = facts.block_at(at) else {
-        return Err((Unproven::CloseOrder, at));
-    };
-    // Every row that protects part of the statement's span has to be one of its own rows: the
-    // `catch` a compiler wraps a `try`-with-resources in is a handler this rule does not present.
+    // The join is where the run continues after the statement. `javac` writes a `goto` there
+    // whenever the statement is followed by code of its own method — the target is then a block —
+    // and a statement whose normal path ends the method (`try (…) { return …; }`) has no code to
+    // continue at all: the row itself ends where the close chain does.
+    let join = facts.block_at(at);
+    if join.is_none() && at < facts.end_of(current) {
+        // The close chain runs into the rest of the statement's own block, and no block begins
+        // where it continues: the instructions after the statement are those of a block this shape
+        // has already claimed, and the walk can present neither them nor a place to continue at.
+        // This is the `try (…) { return …; }` javac writes without any branch — the value is kept
+        // in a local, the resources are closed, and the `return` reads the local back — and it is
+        // refused rather than presented with the statements that follow the statement dropped.
+        //
+        // Writing that tail is the one increment left of this shape, and it is P3 2.6's mechanism
+        // applied to the resource header: a `returns` on the shape, proved the way the monitor's is
+        // (the value the `return` reads is written **inside** the body's own range), appended by
+        // `build.rs` to the text **inside** the statement's braces, with the closes it replaced
+        // excluded from the range the body's statements are written from.
+        return Err((Unproven::Continuation, at));
+    }
+    // Every row that protects part of the statement's span has to be one of its own rows — or one of
+    // the clauses of the `try` this statement sits inside, which the walk writes around it. The two
+    // cases are told apart by the table's own geometry, and the geometry is javac's: a `try (…) { … }
+    // catch (…) { … }` whose body falls through to the code after it emits **two** user rows, because
+    // the clause has to cover the cleanup's rethrow as well as the statement's own code, and neither
+    // of them spans the statement from its first instruction to the end of its handler. A **single**
+    // row that does span it is the `catch` a compiler winds around the whole construct — the shape
+    // `tests/p3_guard.rs`'s `withCatch` states — and it keeps today's refusal.
     let mut rows: Vec<u32> = chain.iter().map(|row| row.ordinal).collect();
     for handler in &handlers {
         rows.push(handler.guard.ordinal);
     }
+    let enclosure = enclosing_clauses(facts, current, &rows, handlers[0].span.1);
     for row in facts.handlers {
         if rows.contains(&row.ordinal) {
             continue;
@@ -1405,7 +2838,15 @@ fn twr(
             .bcis((start, at))
             .into_iter()
             .any(|bci| row.start_bci <= bci && bci < row.end_bci);
-        if covers {
+        if !covers {
+            continue;
+        }
+        let enclosed = enclosure.as_ref().is_some_and(|clauses| {
+            clauses
+                .iter()
+                .any(|clause| clause.handler_bci == row.handler_bci)
+        });
+        if !enclosed {
             return Err((Unproven::Unexplained, row.start_bci));
         }
     }
@@ -1446,9 +2887,71 @@ fn twr(
         lead,
         body,
         owned,
-        join: Some(join),
+        join,
         facts: facts_read,
     })
+}
+
+/// The clause rows of the `try` this statement sits inside, when the table states one.
+///
+/// `javac` splits one enclosing clause's protection along the pieces of the statement it wraps: the
+/// statement's own code up to the normal close is one range, and the compiler's cleanup — the
+/// handlers that close the resource and suppress into the primary — is another, because the code
+/// that runs between them cannot raise (it is the `return` the statement's body filled a local for,
+/// or the `goto` that carries the run past the statement). The clause's rows therefore begin where
+/// the statement's own row does **not** have to: in the statement's own block, where [`catches`]
+/// reads them, reaching one handler that is not one of the shape's own.
+///
+/// What is read here is exactly what [`catches`] will write around the statement: the rows that name
+/// a `catch` type, begin inside the statement's own block, reach a handler the shape did not prove —
+/// and read as **one** statement's clauses. Every range begins at one instruction and there are at
+/// most two ends (the nesting of P3 2.5); a set that does not read that way is no enclosure this
+/// rule may lean on, because the walk would not write its clauses and this rule would have claimed a
+/// statement with the handler they name dropped from the artifact.
+///
+/// A row covering the shape from its first instruction to the end of its handler is **not** part of
+/// such a set: one range that spans the whole construct is the `catch` a compiler winds around it
+/// (the shape `tests/p3_guard.rs` pins as `jre_guard_unexplained_row`), not a clause the source's
+/// `try (…)` header sits inside.
+fn enclosing_clauses<'a>(
+    facts: &Facts<'a>,
+    current: &CanonicalBlockId,
+    own: &[u32],
+    handler_end: u32,
+) -> Option<Vec<&'a ExceptionHandlerFact>> {
+    let shape_start = current.bci();
+    let own_handlers: Vec<u32> = facts
+        .handlers
+        .iter()
+        .filter(|row| own.contains(&row.ordinal))
+        .map(|row| row.handler_bci)
+        .collect();
+    let last = facts
+        .in_block(current)
+        .last()
+        .map(|instruction| instruction.bci());
+    let clauses: Vec<&ExceptionHandlerFact> = facts
+        .handlers
+        .iter()
+        .filter(|row| {
+            row.catch_type_index.is_some()
+                && row.start_bci >= shape_start
+                && last.is_some_and(|last| row.start_bci <= last)
+                && !own_handlers.contains(&row.handler_bci)
+                && !(row.start_bci <= shape_start && row.end_bci >= handler_end)
+        })
+        .collect();
+    let start = clauses.first()?.start_bci;
+    if clauses.iter().any(|row| row.start_bci != start) {
+        return None;
+    }
+    let mut ends: Vec<u32> = clauses.iter().map(|row| row.end_bci).collect();
+    ends.sort_unstable();
+    ends.dedup();
+    if ends.len() > 2 {
+        return None;
+    }
+    Some(clauses)
 }
 
 /// Whether every instruction between a statement's own start and its join belongs to one of the
@@ -1466,15 +2969,41 @@ fn explained(facts: &Facts<'_>, start: u32, join: u32, pieces: &[(u32, u32)]) ->
     Ok(())
 }
 
-/// `aload r; ifnull L; aload r; invokevirtual close()V; goto L` on the **normal** path.
+/// `aload r; ifnull L; aload r; invokevirtual close()V` and then `goto L` on the **normal** path.
 ///
-/// The group's `L` is where the run continues — the next resource's own close, or the join.
+/// The group's `L` is where the run continues — the next resource's own close, or the join. A close
+/// the compiler leaves as the last instruction of its own block states the same thing by falling
+/// through: `L` is then the very next instruction, and the close's block has `L` as its only
+/// successor just the same. Either way nothing else runs between the close and the continuation.
 fn normal_close(facts: &Facts<'_>, at: u32, slot: u16) -> Option<(u32, u32)> {
     let first = facts.step(at)?;
     if facts.op(first.instruction.bci()) != Some(&Operation::Load { slot }) {
         return None;
     }
     let second = facts.step(facts.next_bci(at)?)?;
+    // The unchecked shape: the resource's own initialisation proves it non-null (`new Res(…)`), so
+    // `javac` writes the close alone on the normal path too — no test to skip it. The run then
+    // continues where the close's own run leaves: at the block the `goto` that follows reaches when
+    // the compiler wrote one (`try { … } catch (…) { … }` whose body does not return), and
+    // otherwise at the instruction after the close, inside the statement's own block.
+    if let Some(Operation::Invoke(called)) = facts.op(second.instruction.bci()) {
+        if called.name() != "close" || called.descriptor() != "()V" {
+            return None;
+        }
+        if !receiver_is(facts, second.instruction, first.instruction) {
+            return None;
+        }
+        let after = facts.next_bci(second.instruction.bci())?;
+        if matches!(facts.op(after), Some(Operation::Transfer)) {
+            let leaving = facts.block_of(second.instruction.bci())?;
+            let jump = facts.view.successor_ids(leaving);
+            let [continuation] = jump.as_slice() else {
+                return None;
+            };
+            return Some((second.instruction.bci(), continuation.bci()));
+        }
+        return Some((second.instruction.bci(), after));
+    }
     let Some(Operation::Comparison {
         op: CompareOp::JumpIfNull,
         target,
@@ -1507,13 +3036,23 @@ fn normal_close(facts: &Facts<'_>, at: u32, slot: u16) -> Option<(u32, u32)> {
     if !receiver_is(facts, fourth.instruction, third.instruction) {
         return None;
     }
-    let fifth = facts.step(facts.next_bci(fourth.instruction.bci())?)?;
-    if !matches!(facts.op(fifth.instruction.bci()), Some(Operation::Transfer)) {
-        return None;
-    }
-    // The close's own block runs straight to the continuation: the `goto` that ends it is what the
-    // graph states as its only successor.
-    let jump = facts.view.successor_ids(fifth.block);
+    // The run that leaves the close: the `goto` that ends its block when the compiler wrote one, and
+    // otherwise the close's own fall-through, which is the continuation itself as the next
+    // instruction. Nothing else may run in between.
+    let after = facts.next_bci(fourth.instruction.bci())?;
+    let leaving = match after {
+        next if next == target => facts.block_of(fourth.instruction.bci())?,
+        next => {
+            let fifth = facts.step(next)?;
+            if !matches!(facts.op(fifth.instruction.bci()), Some(Operation::Transfer)) {
+                return None;
+            }
+            fifth.block
+        }
+    };
+    // The close's own block runs straight to the continuation: what the graph states as its only
+    // successor is where the run continues, and it is `L`.
+    let jump = facts.view.successor_ids(leaving);
     if jump.len() != 1 || jump[0].bci() != target {
         return None;
     }

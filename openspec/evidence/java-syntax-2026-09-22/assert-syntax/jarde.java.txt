@@ -1,0 +1,128 @@
+// jarde: presentation of `AssertProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class AssertProbe extends java.lang.Object {
+    public static int conditionCalls;
+
+    public static int messageCalls;
+
+    public static int trace;
+
+    static final boolean $assertionsDisabled;
+
+    private AssertProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `AssertProbe`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void reset() {
+        // @method reset()V
+        // @declaration a static method of `AssertProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        AssertProbe.conditionCalls = 0;
+        AssertProbe.messageCalls = 0;
+        AssertProbe.trace = 0;
+        return;
+    }
+
+    public static boolean condition(boolean arg0) {
+        // @method condition(Z)Z
+        // @declaration a static method of `AssertProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        AssertProbe.conditionCalls = AssertProbe.conditionCalls + 1;
+        AssertProbe.trace = AssertProbe.trace * 10 + 1;
+        return arg0;
+    }
+
+    public static boolean conditionThrows(java.lang.RuntimeException arg0) {
+        // @method conditionThrows(Ljava/lang/RuntimeException;)Z
+        // @declaration a static method of `AssertProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        AssertProbe.conditionCalls = AssertProbe.conditionCalls + 1;
+        AssertProbe.trace = AssertProbe.trace * 10 + 1;
+        throw arg0;
+    }
+
+    public static java.lang.Object message(java.lang.String arg0) {
+        // @method message(Ljava/lang/String;)Ljava/lang/Object;
+        // @declaration a static method of `AssertProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        AssertProbe.messageCalls = AssertProbe.messageCalls + 1;
+        AssertProbe.trace = AssertProbe.trace * 10 + 2;
+        return arg0;
+    }
+
+    public static java.lang.Object messageThrows(java.lang.RuntimeException arg0) {
+        // @method messageThrows(Ljava/lang/RuntimeException;)Ljava/lang/Object;
+        // @declaration a static method of `AssertProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        AssertProbe.messageCalls = AssertProbe.messageCalls + 1;
+        AssertProbe.trace = AssertProbe.trace * 10 + 2;
+        throw arg0;
+    }
+
+    public static void succeeds() {
+        // @method succeeds()V
+        // @declaration a static method of `AssertProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (!AssertProbe.$assertionsDisabled) {
+            if (!condition(true)) {
+                throw new java.lang.AssertionError((java.lang.Object) message("success-message"));
+            }
+        }
+        return;
+    }
+
+    public static void fails() {
+        // @method fails()V
+        // @declaration a static method of `AssertProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (!AssertProbe.$assertionsDisabled) {
+            if (!condition(false)) {
+                throw new java.lang.AssertionError((java.lang.Object) message("failure-message"));
+            }
+        }
+        return;
+    }
+
+    public static void conditionException(java.lang.RuntimeException arg0) {
+        // @method conditionException(Ljava/lang/RuntimeException;)V
+        // @declaration a static method of `AssertProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (!AssertProbe.$assertionsDisabled) {
+            if (!conditionThrows(arg0)) {
+                throw new java.lang.AssertionError((java.lang.Object) message("unreachable-message"));
+            }
+        }
+        return;
+    }
+
+    public static void messageException(java.lang.RuntimeException arg0) {
+        // @method messageException(Ljava/lang/RuntimeException;)V
+        // @declaration a static method of `AssertProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (!AssertProbe.$assertionsDisabled) {
+            if (!condition(false)) {
+                throw new java.lang.AssertionError((java.lang.Object) messageThrows(arg0));
+            }
+        }
+        return;
+    }
+
+    static {
+        // jarde: not recovered: the recovery run for `<clinit>()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method <clinit>()V
+        // @declaration a static initializer of `AssertProbe`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0
+        // the instruction at BCI 0 is not part of the provable subset
+        // @bytecode 2
+        // the dependency chain from BCI 2 to final consumer 5 is not bounded
+        // @bytecode 0 8 12 5 2
+        // the value at BCI 5 was produced by a saved declaration this run could not commit
+        // @bytecode 13
+        // the value at BCI 13 is the entry state of stack depth 0, which no instruction produced
+    }
+}

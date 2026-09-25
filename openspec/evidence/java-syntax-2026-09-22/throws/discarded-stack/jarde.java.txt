@@ -1,0 +1,32 @@
+// jarde: presentation of `ThrowStack` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class ThrowStack extends java.lang.Object {
+    public static int calls;
+
+    public ThrowStack() {
+        // @method <init>()V
+        // @declaration a constructor of `ThrowStack`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.Object mark() {
+        // @method mark()Ljava/lang/Object;
+        // @declaration a static method of `ThrowStack`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ThrowStack.calls = ThrowStack.calls + 1;
+        return null;
+    }
+
+    public static void probe(java.lang.RuntimeException arg0) {
+        // @method probe(Ljava/lang/RuntimeException;)V
+        // @declaration a static method of `ThrowStack`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        mark();
+        // @bytecode 3
+        // the instruction at BCI 3 is not part of the provable subset
+        // @bytecode 5
+        // the instruction at BCI 5 belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it
+    }
+}

@@ -1,0 +1,50 @@
+public final class TernaryInIfProbe {
+  private final java.lang.String a;
+
+  private final java.lang.String b;
+
+  public TernaryInIfProbe(java.lang.String, java.lang.String);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #7                  // Field a:Ljava/lang/String;
+       9: aload_0
+      10: aload_2
+      11: putfield      #13                 // Field b:Ljava/lang/String;
+      14: return
+
+  public boolean bothMatch(TernaryInIfProbe);
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field a:Ljava/lang/String;
+       4: ifnonnull     17
+       7: aload_1
+       8: getfield      #7                  // Field a:Ljava/lang/String;
+      11: ifnonnull     64
+      14: goto          31
+      17: aload_0
+      18: getfield      #7                  // Field a:Ljava/lang/String;
+      21: aload_1
+      22: getfield      #7                  // Field a:Ljava/lang/String;
+      25: invokevirtual #16                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      28: ifeq          64
+      31: aload_0
+      32: getfield      #13                 // Field b:Ljava/lang/String;
+      35: ifnonnull     48
+      38: aload_1
+      39: getfield      #13                 // Field b:Ljava/lang/String;
+      42: ifnonnull     64
+      45: goto          62
+      48: aload_0
+      49: getfield      #13                 // Field b:Ljava/lang/String;
+      52: aload_1
+      53: getfield      #13                 // Field b:Ljava/lang/String;
+      56: invokevirtual #16                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      59: ifeq          64
+      62: iconst_2
+      63: ireturn
+      64: iconst_0
+      65: ireturn
+}

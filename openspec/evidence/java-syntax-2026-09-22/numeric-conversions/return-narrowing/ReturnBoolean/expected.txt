@@ -1,0 +1,13 @@
+-2147483648:false
+2147483647:true
+-65537:true
+-32769:true
+-129:true
+-2:false
+-1:true
+0:false
+1:true
+2:false
+128:false
+32768:false
+65535:true

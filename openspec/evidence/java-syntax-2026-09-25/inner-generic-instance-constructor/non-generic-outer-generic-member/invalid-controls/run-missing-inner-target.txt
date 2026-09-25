@@ -1,0 +1,11 @@
+exit=1
+stdout:
+stderr:
+Exception in thread "main" java.lang.NoClassDefFoundError: minimal/Outer$Inner
+	at minimal.UseObject.make(Unknown Source)
+	at minimal.UseObject.main(Unknown Source)
+Caused by: java.lang.ClassNotFoundException: minimal.Outer$Inner
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:528)
+	... 2 more

@@ -77,6 +77,15 @@ pub enum BinaryOp {
     Multiply,
     Divide,
     Remainder,
+    LeftShift,
+    RightShift,
+    UnsignedRightShift,
+    /// `&` as an integral or eager boolean operation.
+    BitwiseAnd,
+    /// `^` as an integral or eager boolean operation.
+    BitwiseXor,
+    /// `|` as an integral or eager boolean operation.
+    BitwiseOr,
     /// `==` as it appears in a condition.
     Equal,
     /// `!=` as it appears in a condition.
@@ -100,6 +109,12 @@ impl BinaryOp {
             Self::Multiply => "*",
             Self::Divide => "/",
             Self::Remainder => "%",
+            Self::LeftShift => "<<",
+            Self::RightShift => ">>",
+            Self::UnsignedRightShift => ">>>",
+            Self::BitwiseAnd => "&",
+            Self::BitwiseXor => "^",
+            Self::BitwiseOr => "|",
             Self::Equal => "==",
             Self::NotEqual => "!=",
             Self::Less => "<",
@@ -134,16 +149,34 @@ pub enum ExprKind {
     Str(String),
     /// `null`.
     Null,
+    /// `T.class` — a Java class literal whose type name was validated from a `CONSTANT_Class` pool
+    /// entry reached by `ldc` or `ldc_w`.
+    ClassLiteral { ty: String },
+    /// A JVM reference type test, spelled with Java's relational precedence.
+    InstanceOf { value: Box<Expr>, ty: String },
     /// A type name used as an expression, as a static call's receiver: `java.lang.Math`.
     Path(String),
+    /// `super` or `Type.super`, used only as the receiver of a proven `invokespecial` call.
+    Super { qualifier: Option<String> },
     /// A call: an optional receiver expression, a member name, and the argument expressions.
     Call {
         receiver: Option<Box<Expr>>,
         name: String,
         args: Vec<Expr>,
     },
-    /// `new Type(args…)` — the body of a lambda whose implementation handle is a constructor.
-    New { ty: String, args: Vec<Expr> },
+    /// `new Type(args…)`, or a proved member creation `receiver.new Inner(args…)`.
+    ///
+    /// `ty` always retains the complete semantic allocation type. The optional simple member
+    /// name is only the source spelling for a proved member construction; it is not used to infer
+    /// the constructed type from a binary name.
+    New {
+        ty: String,
+        qualifier: Option<Box<Expr>>,
+        member_name: Option<String>,
+        /// Only a proved generic member target may request `receiver.new Inner<>(args…)`.
+        diamond: bool,
+        args: Vec<Expr>,
+    },
     /// `(params) -> body` — a lambda expression, with the parameters the SAM states.
     ///
     /// The parameters are written with their types ([`LambdaParam`]) rather than left to inference:
@@ -168,15 +201,63 @@ pub enum ExprKind {
     Field { receiver: Box<Expr>, name: String },
     /// `array[index]` — one element of an array, written where the value is consumed.
     ///
-    /// This node is written for one shape: the `int`-shaped dispatch table a compiler's `switch`
-    /// over an enum reads its case index out of ([`crate::enumswitch`]). An array read no rule
-    /// claimed stays quoted.
+    /// Two shapes reach this node: the `int`-shaped dispatch table a compiler's `switch` over an
+    /// enum reads its case index out of ([`crate::enumswitch`]), and the ordinary read of one
+    /// element (P3 2b) — `a[i]` for a read of an `int[]`, a `char[]`, a `boolean[]` or an array of
+    /// references, whose element type is the array's own. An array read this layer cannot present —
+    /// one whose array or index is bytecode it cannot write — stays quoted, like every other value
+    /// whose producers refuse.
+    ///
+    /// The element type is not on the node: the text is the same `array[index]` whatever the
+    /// element is, and what the element *is* is stated by the type the node presents
+    /// ([`Expr::presented`]), which [`crate::build`] reads from the array's own type.
     Index { array: Box<Expr>, index: Box<Expr> },
+    /// `target++` — the old value of one already-proved writable `int` field or `int[]` element,
+    /// after the target has been incremented.
+    ///
+    /// The target remains an expression so its receiver, array and index retain their own grouping
+    /// and origins. Recovery builds this node only after proving the bytecode's read, write and old
+    /// value return refer to the same writable target.
+    PostIncrement { target: Box<Expr> },
+    /// `array.length` — the length of an array, written where the value is consumed.
+    ///
+    /// It is a node of its own and never a field access (P3 2b): `array.length` is an operator of
+    /// the array type and not a member this layer would have to prove, and the `field@1` rule's
+    /// proofs must not be asked about it.
+    ArrayLength { array: Box<Expr> },
+    /// `new T[n]`, `new T[n][m][]` for a partial multi-dimensional creation, or a proved
+    /// `new T[]{…}` — one array allocation.
+    ///
+    /// `element` is the **element** type the creation states, `lengths` is one length per
+    /// dimension the instruction allocates, `initializers` is present only when a same-block
+    /// store chain was proved complete at every included array level, and
+    /// `total_dimensions` is the complete array rank.
+    /// The type of the expression is the full array (`int[][]` for one allocated prefix of rank
+    /// two), which [`Expr::presented`] carries; the element type is spelled as a Java type
+    /// ([`Type::spell`]).
+    ///
+    /// A creation whose element type no descriptor, `atype` code or pool class states is a
+    /// [`StmtKind::Fallback`]. An unproved initializer remains its existing array statements or a
+    /// complete fallback; it never becomes this node with only part of the chain attached.
+    NewArray {
+        element: Type,
+        lengths: Vec<Expr>,
+        initializers: Option<Vec<Expr>>,
+        total_dimensions: u8,
+    },
     /// A binary operation over two expressions.
     Binary {
         op: BinaryOp,
         left: Box<Expr>,
         right: Box<Expr>,
+    },
+    /// `test ? when_true : when_false` — a stack value whose two inputs and consumer were proved
+    /// to be the straight arms of one `if`. Its type is stated only when the two arms have the
+    /// same primitive/reference type, or one arm is `null` and the other states a reference type.
+    Conditional {
+        test: Box<Expr>,
+        when_true: Box<Expr>,
+        when_false: Box<Expr>,
     },
     /// A verified concatenation chain: one [`ConcatPart`] per `append`, in the order the chain
     /// calls them (`concat@1`).
@@ -201,18 +282,24 @@ pub enum ExprKind {
     /// `"" + a` with in front of it (see [`ConcatPart::is_a_string`]), so the first part's
     /// conversion happens where the chain converts it.
     Concat { parts: Vec<ConcatPart> },
-    /// `(int) arg0` — one conversion this layer's own evidence requires, written by the text.
+    /// `(int) arg0` — one conversion a **conversion instruction** in the body performed, written by
+    /// the text.
     ///
-    /// This node exists because the conversion is a **build-time decision** and never a permission
-    /// the printer takes from the position it happens to write into. A `char`, a `byte` and a
-    /// `short` share one slot shape with an `int`, so a compiler writes no instruction when it
-    /// widens one of them: `append((int) c)` is `iload` plus the `append`, and a presentation that
-    /// writes the value's own text publishes the *other* conversion — `"" + c` converts a
-    /// character where the bytecode converted the code unit, and both texts compile. The build
-    /// compares the type the expression presents as ([`Expr::presented`]) with the type the
-    /// position requires (the `append`'s parameter descriptor, the callee's parameter, the member's
-    /// return type, the written variable's declaration, the field's descriptor) and writes this
-    /// node where the two differ and a **widening primitive conversion** (JLS 5.1.2) connects them.
+    /// This node exists because such a conversion is a **build-time decision** and never a permission
+    /// the printer takes from the position it happens to write into: an `i2l` or an `i2b` is an
+    /// instruction of the body, and the value it produced is presented as the narrow type while the
+    /// position that reads it may require another one — a text that leaves the conversion to the
+    /// position would state a program the bytecode does not have where the two differ.
+    ///
+    /// What this node is deliberately **not** is a widening a position makes for itself (P3 2c.29). A
+    /// `char`, a `byte` and a `short` share one slot shape with an `int`, so a compiler writes no
+    /// instruction when an assignment or `return` position widens one of them, and the value's own
+    /// text already says what it is. Invocation arguments are different: their descriptor selects an
+    /// overload, so the build may add this node to preserve that selection. The build compares the
+    /// type the expression presents as ([`Expr::presented`]) with the type the position requires (the
+    /// `append`'s parameter descriptor, the callee's parameter, the member's return type, the written
+    /// variable's declaration, the field's descriptor) and writes a cast where that consuming position
+    /// needs one.
     ///
     /// The printer writes exactly this node and nothing else: a cast's text is its own type and the
     /// value it converts, so a position can no longer decide the value's type by writing the value
@@ -226,6 +313,12 @@ pub enum ExprKind {
     /// descriptor, and a zero test on a `boolean`-typed slot is written with this node rather than as
     /// a comparison the method's signature would refuse to compile (P3-R5).
     Not { value: Box<Expr> },
+    /// `-value` — the numeric negation performed by `ineg`, `lneg`, `fneg` or `dneg`.
+    ///
+    /// The operand remains a child so nested negations retain their grouping and source anchors.
+    /// Its type follows Java's unary numeric promotion: byte, short and char become int, while
+    /// int, long, float and double keep the type the opcode produces.
+    Neg { value: Box<Expr> },
 }
 
 /// Which constructor one instance initializer calls first.
@@ -257,7 +350,8 @@ impl ConstructorTarget {
 /// One parameter of a lambda: the type its SAM states and the name this layer gave it.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LambdaParam {
-    /// The parameter's type, as the implementation handle's own descriptor states it.
+    /// The parameter's type, as the erased SAM descriptor states it. Checks and implementation
+    /// conversions belong inside the lambda body, after the call supplies this parameter.
     pub ty: Type,
     /// The name the presentation gave it ([`crate::names::NameTable::free_name`]): the class file
     /// does not name a lambda's parameters, so the name is derived and guaranteed not to collide
@@ -318,8 +412,12 @@ pub struct Expr {
     /// The type this expression's **text** is presented as, when this layer's own evidence states
     /// one.
     ///
-    /// This is the value the consuming positions read: a position that requires a type compares it
-    /// with its own requirement and writes [`ExprKind::Cast`] where the two differ. `None` is "this
+    /// This is the value the consuming positions read: a position whose **text** performs a
+    /// conversion (`+`'s string part, P3 2c.29's `Widening::Text`) states it, while assignment and
+    /// return positions Java converts implicitly write the value as it is. Invocation arguments use
+    /// the callee descriptor and may add an explicit [`ExprKind::Cast`] to preserve overload
+    /// selection. A real conversion instruction is also a [`ExprKind::Cast`] the value's own layer
+    /// writes. `None` is "this
     /// layer states no type", never "no type": a `null`, a lambda and a method reference each state
     /// none (a lambda's target type is not declared anywhere in a recovered body), an arithmetic
     /// whose operands state none states none, and a position that requires a type converts nothing
@@ -387,18 +485,69 @@ fn presented_of(kind: &ExprKind) -> Option<Type> {
         ExprKind::Long(_) => Some(Type::Long),
         ExprKind::Boolean(_) => Some(Type::Boolean),
         ExprKind::Str(_) => Some(Type::Reference("java.lang.String".to_string())),
+        ExprKind::ClassLiteral { .. } => Some(Type::Reference("java.lang.Class".to_string())),
         ExprKind::New { ty, .. } => Some(Type::Reference(ty.clone())),
+        // An array's length is an `int` (JLS 10.7), whatever the array's element is.
+        ExprKind::ArrayLength { .. } => Some(Type::Int),
+        // Java's postfix increment expression has the type of its variable; this recovery node is
+        // built only for the proved `int` field and array-element shapes.
+        ExprKind::PostIncrement { target } => target.presented.clone(),
+        // A creation's own shape states the array it builds: the element type and one dimension per
+        // length. A node with no length at all states no array — it builds nothing — and presents
+        // none rather than the bare element.
+        ExprKind::NewArray {
+            element,
+            lengths,
+            initializers,
+            total_dimensions,
+        } => {
+            if initializers.is_some() {
+                (lengths.is_empty() && *total_dimensions > 0).then(|| {
+                    Type::Reference(format!(
+                        "{}{}",
+                        element.spell(),
+                        "[]".repeat(usize::from(*total_dimensions))
+                    ))
+                })
+            } else {
+                (!lengths.is_empty() && usize::from(*total_dimensions) >= lengths.len()).then(
+                    || {
+                        Type::Reference(format!(
+                            "{}{}",
+                            element.spell(),
+                            "[]".repeat(usize::from(*total_dimensions))
+                        ))
+                    },
+                )
+            }
+        }
         ExprKind::Cast { ty, .. } => Some(ty.clone()),
         ExprKind::Concat { .. } => Some(Type::Reference("java.lang.String".to_string())),
         ExprKind::Not { .. } => Some(Type::Boolean),
+        ExprKind::InstanceOf { .. } => Some(Type::Boolean),
+        ExprKind::Neg { value } => promotion_rank(value.presented.as_ref()?).map(promoted),
         ExprKind::Binary { op, left, right } => binary_type(*op, left, right),
+        ExprKind::Conditional {
+            when_true,
+            when_false,
+            ..
+        } => match (when_true.presented.as_ref(), when_false.presented.as_ref()) {
+            (Some(left), Some(right)) if left == right => Some(left.clone()),
+            (None, Some(Type::Reference(_))) if matches!(when_true.kind, ExprKind::Null) => {
+                when_false.presented.clone()
+            }
+            (Some(Type::Reference(_)), None) if matches!(when_false.kind, ExprKind::Null) => {
+                when_true.presented.clone()
+            }
+            _ => None,
+        },
         _ => None,
     }
 }
 
 /// The type a binary expression's text is presented as, from the types its operands state.
 ///
-/// An arithmetic is JLS 5.6.2's binary numeric promotion over its two operands, which is a rule over
+/// Arithmetic is JLS 5.6.2's binary numeric promotion over its two operands, which is a rule over
 /// the operand *types* and therefore a rule this layer can state exactly when both operands state
 /// theirs: `int + long` is a `long`, and a `char`, a `byte` and a `short` operand all promote to
 /// `int` — which is the same fact that makes a chain of `iadd`s on them an `int` value. A
@@ -406,23 +555,61 @@ fn presented_of(kind: &ExprKind) -> Option<Type> {
 /// never read one: a test is written as the statement it is.
 ///
 /// A `boolean` or reference operand states no arithmetic at all (`b + 1` is not a Java expression,
-/// and `a + b` on two references is a string concatenation, not an addition), so the layer states
-/// **no** type for it rather than a type no text of that shape has: the positions that require one
-/// then convert nothing, exactly as they did before this rule existed.
+/// and `a + b` on two references is a string concatenation, not an addition). Bitwise operations
+/// accept either two booleans or two integral values; they never turn an int-shaped mixed pair into
+/// a Java expression. The layer states **no** type for a shape it cannot write.
 fn binary_type(op: BinaryOp, left: &Expr, right: &Expr) -> Option<Type> {
-    if !matches!(
+    if matches!(
         op,
-        BinaryOp::Add
-            | BinaryOp::Subtract
-            | BinaryOp::Multiply
-            | BinaryOp::Divide
-            | BinaryOp::Remainder
+        BinaryOp::LeftShift | BinaryOp::RightShift | BinaryOp::UnsignedRightShift
+    ) {
+        integral_promotion_rank(right.presented.as_ref()?)?;
+        return Some(if integral_promotion_rank(left.presented.as_ref()?)? == 1 {
+            Type::Long
+        } else {
+            Type::Int
+        });
+    }
+    if matches!(
+        op,
+        BinaryOp::Equal
+            | BinaryOp::NotEqual
+            | BinaryOp::Less
+            | BinaryOp::LessOrEqual
+            | BinaryOp::Greater
+            | BinaryOp::GreaterOrEqual
     ) {
         return Some(Type::Boolean);
+    }
+    if matches!(
+        op,
+        BinaryOp::BitwiseAnd | BinaryOp::BitwiseXor | BinaryOp::BitwiseOr
+    ) {
+        let left = left.presented.as_ref()?;
+        let right = right.presented.as_ref()?;
+        if matches!((left, right), (Type::Boolean, Type::Boolean)) {
+            return Some(Type::Boolean);
+        }
+        let left = integral_promotion_rank(left)?;
+        let right = integral_promotion_rank(right)?;
+        return Some(if left.max(right) == 1 {
+            Type::Long
+        } else {
+            Type::Int
+        });
     }
     let left = promotion_rank(left.presented.as_ref()?)?;
     let right = promotion_rank(right.presented.as_ref()?)?;
     Some(promoted(left.max(right)))
+}
+
+/// The integral promotion rank for `&`, `^` and `|` (JLS 15.22).
+fn integral_promotion_rank(ty: &Type) -> Option<u8> {
+    match ty {
+        Type::Byte | Type::Short | Type::Char | Type::Int => Some(0),
+        Type::Long => Some(1),
+        Type::Boolean | Type::Float | Type::Double | Type::Reference(_) => None,
+    }
 }
 
 /// Where one operand's type sits in Java's binary numeric promotion (JLS 5.6.2), or `None` for a
@@ -447,6 +634,25 @@ fn promoted(rank: u8) -> Type {
     }
 }
 
+/// The operator one field or array assignment writes.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AssignOp {
+    /// `=`
+    Assign,
+    /// `+=`
+    Add,
+}
+
+impl AssignOp {
+    /// The assignment token this statement writes.
+    pub fn spell(self) -> &'static str {
+        match self {
+            Self::Assign => "=",
+            Self::Add => "+=",
+        }
+    }
+}
+
 /// What one statement is.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum StmtKind {
@@ -463,17 +669,36 @@ pub enum StmtKind {
     Assign { name: String, value: Expr },
     /// `<expr>;` — a call whose result is not used.
     Expr(Expr),
-    /// `receiver.name = value;` — the write a synthetic accessor's call performed, or one a
-    /// `putfield`/`putstatic` of the presented body performed where `field@1` proved the member it
-    /// writes.
+    /// `receiver.name = value;` or `name = value;` — the write a synthetic accessor's call
+    /// performed, or one a `putfield`/`putstatic` of the presented body performed where `field@1`
+    /// proved the member it writes. A missing receiver is only used for a same-class blank static
+    /// final write whose declaration proof makes the simple name unambiguous.
     ///
     /// A write accessor returns nothing, so the call site that used to spell it is a statement:
     /// the receiver is the first argument the site passed, and the value is the second. A `putfield`
     /// reaches the same node with the value and the receiver the instruction itself read, and a
     /// `putstatic` with the owner type as the receiver.
     FieldAssign {
-        receiver: Expr,
+        receiver: Option<Expr>,
         name: String,
+        op: AssignOp,
+        value: Expr,
+    },
+    /// `array[index] = value;` — one element written (P3 2b).
+    ///
+    /// An element write is a statement and not an assignment to a name: [`StmtKind::Assign`] writes
+    /// a local's name, and `a[i] = v` writes a location the bytecode names with three values (the
+    /// array, the index and the value). The array is spelled exactly as it is in the read
+    /// ([`ExprKind::Index`]), so `a[i][j] = v` is this node over an `Index`, and the index and the
+    /// value are the expressions their own producers write.
+    ///
+    /// The value meets the element type the **array's** own type states — not a type this node
+    /// carries: the check is [`crate::build`]'s, taken where the instruction's operands are read,
+    /// and the node is only the text (`array[index] = value;`).
+    IndexAssign {
+        array: Expr,
+        index: Expr,
+        op: AssignOp,
         value: Expr,
     },
     /// `super(args);` or `this(args);` — the constructor call an instance initializer starts with.
@@ -490,6 +715,16 @@ pub enum StmtKind {
     },
     /// `return;` or `return <expr>;`
     Return { value: Option<Expr> },
+    /// `break;` — an edge whose target is the active loop's proven exit.
+    Break { label: Option<String> },
+    /// `continue label;` — the target is a proved enclosing loop's header or `for` update.
+    Continue { label: Option<String> },
+    /// `throw <expr>;` — the exception expression evaluated by an ordinary `athrow`.
+    ///
+    /// The expression is the value the throw instruction actually reads. Its source type is left to
+    /// the expression's own evidence; this node does not infer a `Throwable` hierarchy or insert a
+    /// cast the class file did not perform.
+    Throw { value: Expr },
     /// `if (<cond>) { … } else { … }`, with an empty `else_body` when the source had none.
     If {
         cond: Expr,
@@ -497,20 +732,57 @@ pub enum StmtKind {
         else_body: Vec<Stmt>,
     },
     /// `while (<cond>) { … }` — the test runs before every iteration, the body only when it holds.
-    While { cond: Expr, body: Vec<Stmt> },
+    While {
+        label: Option<String>,
+        cond: Expr,
+        body: Vec<Stmt>,
+    },
+    /// `for (init; condition; update)`: the init and update each retain their original statement
+    /// anchor even though the header, rather than the body, writes them.
+    For {
+        label: Option<String>,
+        init: Box<Stmt>,
+        cond: Expr,
+        update: Box<Stmt>,
+        body: Vec<Stmt>,
+    },
+    /// `for (T element : iterable) { … }` after the loop's traversal and element uses are proved.
+    ForEach {
+        label: Option<String>,
+        ty: Type,
+        name: String,
+        iterable: Expr,
+        body: Vec<Stmt>,
+    },
     /// `do { … } while (<cond>);` — the body runs once before the test is read.
-    DoWhile { cond: Expr, body: Vec<Stmt> },
+    DoWhile {
+        label: Option<String>,
+        cond: Expr,
+        body: Vec<Stmt>,
+    },
     /// `switch (<value>) { … }`, with one arm per distinct target of the decoded `switch`.
     Switch { value: Expr, arms: Vec<SwitchArm> },
-    /// `try (T n = expr; …) { … }` — the guarded statement the `twr@1` rule proved.
+    /// `try (T n = expr; …) { … }` — the guarded statement the `twr@1` rule proved — or, with no
+    /// resources, the `try { … } catch (T n) { … }` the exception table itself states.
     ///
     /// The resources are written in **declaration** order, which is the order the rule read their
     /// initialisations in, and the compiler closes them in the reverse order — the order the bytecode
     /// really closed them in, because that is the order the rule matched the normal path's close
     /// chain against before it may write this node ([`crate::guard`]).
+    ///
+    /// An **empty** `resources` is what makes this the other statement: there is no header to write,
+    /// the `try` is a plain block, and the statement's clauses are the named rows the exception table
+    /// states, in table order ([`crate::region::Region::Try`]). Which of the two a node is, is
+    /// therefore read off the node itself and never guessed from the clauses beside it — a `try` of
+    /// a guarded shape has no clauses, and the one the table states has no resources.
     Try {
         resources: Vec<ResourceDecl>,
+        /// The `catch` clauses, in exception-table order. Empty for a guarded statement: a header
+        /// with a `catch` beside it is one this build refuses rather than partially presents.
+        catches: Vec<CatchClause>,
         body: Vec<Stmt>,
+        /// Present only when a guard proved both physical cleanup copies.
+        finally_body: Option<Vec<Stmt>>,
     },
     /// `synchronized (<lock>) { … }` — the guarded statement the `monitor@1` rule proved, with every
     /// path out of the body leaving the monitor it entered.
@@ -539,15 +811,45 @@ pub struct ResourceDecl {
     pub value: Expr,
 }
 
+/// One `catch` clause of a `try`.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CatchClause {
+    /// The class — or the classes, joined with `|` in exception-table order, of a multi-catch — the
+    /// clause catches, spelled as Java source (`java.lang.IllegalArgumentException`).
+    ///
+    /// They are the exception-table rows' own `catch_type`s and no others: the class file states
+    /// which classes the handler catches, and widening one to a superclass would claim the handler
+    /// catches exceptions the table says it does not, while narrowing it would catch fewer.
+    pub ty: String,
+    /// The parameter's name. It is the local the handler's own entry store fills, named by the body's
+    /// name table — its slot's ordinal (`localN`, `argN`) when the body was compiled without debug
+    /// metadata. No name is invented for it.
+    pub name: String,
+    /// The handler's statements, from its entry to where the code after the `try` begins.
+    pub body: Vec<Stmt>,
+}
+
 /// One arm of a `switch` statement.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SwitchArm {
     /// The labels this arm is reached by. Empty means the arm is the no-match case alone.
     pub keys: Vec<i64>,
+    /// One proven presentation of the original integer keys. The keys stay as bytecode evidence.
+    pub labels: Option<SwitchLabels>,
     /// Whether the no-match case reaches this arm too (a `default:` label beside the keys).
     pub default: bool,
+    /// Whether execution falls into the next arm in source order rather than leaving the switch.
+    pub fall_through: bool,
     /// The statements of the arm, each of which runs at most once per execution of the switch.
     pub body: Vec<Stmt>,
+}
+
+/// A closed choice of case-label spelling. String labels originate only from the same-method
+/// String dispatch certificate; enum labels originate only from complete class-source proof.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum SwitchLabels {
+    Enum(Vec<String>),
+    String(Vec<String>),
 }
 
 /// One statement and the anchors behind its text.
@@ -585,13 +887,80 @@ mod tests {
     }
 
     #[test]
+    fn a_class_literal_expression_presents_the_class_type() {
+        let literal = Expr::direct(
+            ExprKind::ClassLiteral {
+                ty: "java.lang.String".to_owned(),
+            },
+            0,
+        );
+        assert_eq!(
+            literal.presented,
+            Some(Type::Reference("java.lang.Class".to_owned()))
+        );
+    }
+
+    #[test]
     fn the_subset_spells_the_operators_and_types_it_claims() {
         assert_eq!(BinaryOp::Remainder.spell(), "%");
         assert_eq!(BinaryOp::NotEqual.spell(), "!=");
+        assert_eq!(BinaryOp::BitwiseAnd.spell(), "&");
+        assert_eq!(BinaryOp::BitwiseXor.spell(), "^");
+        assert_eq!(BinaryOp::BitwiseOr.spell(), "|");
         assert_eq!(
             Type::Reference("java.lang.String".into()).spell(),
             "java.lang.String"
         );
         assert_eq!(Type::Long.spell(), "long");
+    }
+
+    #[test]
+    fn bitwise_types_require_two_booleans_or_integral_operands() {
+        let expression = |ty| Expr::direct(ExprKind::Integer(1), 1).presenting(ty);
+        let ty = |op, left, right| binary_type(op, &expression(left), &expression(right));
+
+        assert_eq!(
+            ty(BinaryOp::BitwiseAnd, Type::Byte, Type::Char),
+            Some(Type::Int),
+            "byte and char undergo unary integer promotion"
+        );
+        assert_eq!(
+            ty(BinaryOp::BitwiseXor, Type::Long, Type::Short),
+            Some(Type::Long),
+            "a long operand retains the long result width"
+        );
+        assert_eq!(
+            ty(BinaryOp::BitwiseOr, Type::Boolean, Type::Boolean),
+            Some(Type::Boolean)
+        );
+        assert_eq!(
+            ty(BinaryOp::BitwiseAnd, Type::Boolean, Type::Int),
+            None,
+            "JVM int-shaped mixed values have no direct Java bitwise expression"
+        );
+        assert_eq!(
+            ty(BinaryOp::BitwiseXor, Type::Int, Type::Float),
+            None,
+            "floating values are not integer bitwise operands"
+        );
+    }
+
+    #[test]
+    fn shift_result_width_comes_only_from_integral_left_operand() {
+        let expression = |ty| Expr::direct(ExprKind::Integer(1), 1).presenting(ty);
+        let ty = |op, left, right| binary_type(op, &expression(left), &expression(right));
+        for op in [
+            BinaryOp::LeftShift,
+            BinaryOp::RightShift,
+            BinaryOp::UnsignedRightShift,
+        ] {
+            for left in [Type::Byte, Type::Short, Type::Char, Type::Int] {
+                assert_eq!(ty(op, left, Type::Long), Some(Type::Int));
+            }
+            assert_eq!(ty(op, Type::Long, Type::Int), Some(Type::Long));
+            assert_eq!(ty(op, Type::Int, Type::Boolean), None);
+            assert_eq!(ty(op, Type::Boolean, Type::Int), None);
+            assert_eq!(ty(op, Type::Float, Type::Int), None);
+        }
     }
 }

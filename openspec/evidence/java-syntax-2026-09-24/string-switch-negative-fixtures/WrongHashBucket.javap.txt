@@ -1,0 +1,125 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-string-switch-negative-gud6y0ot/original/WrongHashBucket.class
+  Last modified 2026年9月24日; size 560 bytes
+  SHA-256 checksum f0a22997ff6974a252ab5279b2aa1f07cb315ea2cde0b5e4dccdf443cd22dc16
+public class WrongHashBucket
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // WrongHashBucket
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 3, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // WrongHashBucket.calls:I
+   #8 = Class              #10            // WrongHashBucket
+   #9 = NameAndType        #11:#12        // calls:I
+  #10 = Utf8               WrongHashBucket
+  #11 = Utf8               calls
+  #12 = Utf8               I
+  #13 = Methodref          #8.#14         // WrongHashBucket.read:(Ljava/lang/String;)Ljava/lang/String;
+  #14 = NameAndType        #15:#16        // read:(Ljava/lang/String;)Ljava/lang/String;
+  #15 = Utf8               read
+  #16 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #17 = Methodref          #18.#19        // java/lang/String.hashCode:()I
+  #18 = Class              #20            // java/lang/String
+  #19 = NameAndType        #21:#22        // hashCode:()I
+  #20 = Utf8               java/lang/String
+  #21 = Utf8               hashCode
+  #22 = Utf8               ()I
+  #23 = String             #24            // Aa
+  #24 = Utf8               Aa
+  #25 = Methodref          #18.#26        // java/lang/String.equals:(Ljava/lang/Object;)Z
+  #26 = NameAndType        #27:#28        // equals:(Ljava/lang/Object;)Z
+  #27 = Utf8               equals
+  #28 = Utf8               (Ljava/lang/Object;)Z
+  #29 = String             #30            // abc
+  #30 = Utf8               abc
+  #31 = Utf8               Code
+  #32 = Utf8               choose
+  #33 = Utf8               (Ljava/lang/String;)I
+  #34 = Utf8               StackMapTable
+{
+  static int calls;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  public WrongHashBucket();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static java.lang.String read(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #7                  // Field calls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field calls:I
+         8: aload_0
+         9: areturn
+
+  public static int choose(java.lang.String);
+    descriptor: (Ljava/lang/String;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=1
+         0: aload_0
+         1: invokestatic  #13                 // Method read:(Ljava/lang/String;)Ljava/lang/String;
+         4: astore_1
+         5: aload_1
+         6: invokevirtual #17                 // Method java/lang/String.hashCode:()I
+         9: istore_2
+        10: iconst_m1
+        11: istore_3
+        12: iload_2
+        13: lookupswitch  { // 2
+                    2112: 54
+                   96354: 40
+                 default: 65
+            }
+        40: aload_1
+        41: ldc           #23                 // String Aa
+        43: invokevirtual #25                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        46: ifeq          65
+        49: iconst_0
+        50: istore_3
+        51: goto          65
+        54: aload_1
+        55: ldc           #29                 // String abc
+        57: invokevirtual #25                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        60: ifeq          65
+        63: iconst_1
+        64: istore_3
+        65: iload_3
+        66: lookupswitch  { // 2
+                       0: 92
+                       1: 95
+                 default: 98
+            }
+        92: bipush        10
+        94: ireturn
+        95: bipush        20
+        97: ireturn
+        98: bipush        40
+       100: ireturn
+      StackMapTable: number_of_entries = 6
+        frame_type = 254 /* append */
+          offset_delta = 40
+          locals = [ class java/lang/String, int, int ]
+        frame_type = 13 /* same */
+        frame_type = 10 /* same */
+        frame_type = 26 /* same */
+        frame_type = 2 /* same */
+        frame_type = 2 /* same */
+}

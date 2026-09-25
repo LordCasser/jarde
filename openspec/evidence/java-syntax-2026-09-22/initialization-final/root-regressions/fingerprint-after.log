@@ -1,0 +1,13 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running tests/p5_corpus_fingerprint.rs (target/debug/deps/p5_corpus_fingerprint-2598fd54007ae6c2)
+
+running 6 tests
+test corpus_files_match_the_recorded_fingerprint ... ok
+test every_acceptance_row_is_indexed_against_existing_corpus ... ok
+test every_dimension_is_carried_by_existing_corpus ... ok
+test regenerate_corpus_fingerprint ... ignored, writes tests/fixtures/corpus-fingerprint.json; run explicitly for an intended corpus change
+test the_indexed_rows_are_the_rows_the_acceptance_table_names ... ok
+test the_manifest_matches_its_rendered_classification ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.05s
+

@@ -1,0 +1,4 @@
+ConstructorPairProbe.java:16: 错误: 可能尚未初始化变量first
+        return;
+        ^
+1 个错误

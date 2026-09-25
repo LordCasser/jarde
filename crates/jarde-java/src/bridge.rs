@@ -46,7 +46,7 @@ use crate::ast::Type;
 use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::evidence::Publication;
-use crate::facts::{ACC_STATIC, InvokeKind, MethodFacts, Operation};
+use crate::facts::{ACC_STATIC, CallTarget, InvokeKind, MethodFacts, Operation};
 use crate::lambda::parse_method;
 use crate::pass::{BRIDGE, Precondition, RuleVersion};
 use crate::refusal::{Gap, Refusal};
@@ -69,8 +69,14 @@ pub(crate) struct Plan {
     /// The verdict is a decision about the whole body rather than about one position, so a driver
     /// range neither selects nor drops it.
     presented: bool,
+    /// Whether the body independently satisfies the bytecode-only pure-forward shape.
+    pure_forward: bool,
     /// What the forward was read as, as the record states it.
     forwarded: Option<String>,
+    /// The symbolic call identity the verified forward uses, whether or not it has an erasure cast.
+    target: Option<CallTarget>,
+    /// The BCI of the invocation in a verified forward.
+    call_bci: Option<u32>,
     /// What the erased cast was read as, as the record states it.
     erased: Option<String>,
     /// Why the body was not presented as a forward, when it was not.
@@ -95,6 +101,41 @@ impl Plan {
             .map(|refusal| Gap::whole(refusal.code, refusal.message.clone()))
     }
 
+    /// Builds the bounded class-source handoff from this same plan, regardless of evidence
+    /// selection. No body or text is reread to create it.
+    pub(crate) fn class_source_candidate(
+        &self,
+        member: Option<jarde_reader::model::PhysicalMethodId>,
+        access_flags: Option<u16>,
+        has_exception_handlers: bool,
+        budget: &mut jarde_reader::budget::Budget,
+    ) -> Result<ClassSourceBridgeCandidate, crate::stop::StopReason> {
+        let owned_items = 1
+            + u64::from(member.is_some() as u8)
+            + u64::from(self.target.is_some() as u8)
+            + u64::from(self.refusal.is_some() as u8);
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            owned_items,
+            self.call_bci,
+        )?;
+        crate::stop::poll(budget, self.call_bci)?;
+        let candidate = ClassSourceBridgeCandidate {
+            member,
+            access_flags,
+            has_exception_handlers,
+            target: self.target.clone(),
+            call_bci: self.call_bci,
+            cast_bci: self.cast,
+            pure_forward: self.pure_forward,
+            presented: self.presented,
+            refusal: self.refusal.clone(),
+        };
+        crate::stop::poll(budget, self.call_bci)?;
+        Ok(candidate)
+    }
+
     /// The verdict's own record, when the request selected rule records and the phase can pay for
     /// it: the one owning record of this rule, built after the artifact was committed.
     ///
@@ -112,6 +153,10 @@ impl Plan {
             crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
             BridgeRecord {
                 forwarded: self.forwarded.clone(),
+                target: self.target.clone(),
+                call_bci: self.call_bci,
+                cast_bci: self.cast,
+                pure_forward: self.pure_forward,
                 erased: self.erased.clone(),
                 presented: self.presented,
                 refusal: self.refusal.clone(),
@@ -124,8 +169,11 @@ impl Plan {
 /// One verdict as the rule read it, before the plan states it.
 struct Verdict {
     forwarded: Option<String>,
+    target: Option<CallTarget>,
+    call_bci: Option<u32>,
     erased: Option<String>,
     presented: bool,
+    pure_forward: bool,
     refusal: Option<BridgeRefusal>,
 }
 
@@ -135,7 +183,10 @@ impl Verdict {
         Plan {
             cast,
             presented: self.presented,
+            pure_forward: self.pure_forward,
             forwarded: self.forwarded,
+            target: self.target,
+            call_bci: self.call_bci,
             erased: self.erased,
             refusal: self.refusal,
         }
@@ -145,9 +196,8 @@ impl Verdict {
 /// The verdict of one member's body, when this rule has one to state.
 ///
 /// `Some` for a member the facts declare a bridge (the rule states whether it presented it), and
-/// for a member whose body is exactly the forward-with-cast shape but whose declaration the run
-/// does not hold (the rule states the declaration it is missing). `None` for every other body: an
-/// ordinary member is not this rule's business, and it records nothing about it.
+/// for a no-flag or non-bridge member whose body is exactly the forward-with-cast shape (the rule
+/// states the declaration it is missing). `None` for every other body.
 pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations) -> Option<Plan> {
     let instructions: Vec<&SsaInstruction> = ssa
         .blocks()
@@ -160,12 +210,18 @@ pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations)
         // nothing — except for a body that *is* the forward-with-cast shape, where the honest answer
         // is the fact the run is missing rather than a presentation on a guess.
         (None, _) => {
-            let forward = forward.ok().flatten()?;
+            let forward = forward.ok()?;
+            // Without the declaration flags, a no-cast forward is not evidence that the class
+            // declared this member as a bridge. Preserve the existing undecided behavior.
+            let cast_bci = forward.cast_bci?;
             Some(
                 Verdict {
-                    forwarded: Some(forward.target.clone()),
-                    erased: Some(forward.cast_type.clone()),
+                    forwarded: Some(forward.target_spelling()),
+                    target: Some(forward.target),
+                    call_bci: Some(forward.call_bci),
+                    erased: forward.cast_type.clone(),
                     presented: false,
+                    pure_forward: true,
                     refusal: Some(BridgeRefusal::of(
                         &Refusal::unmet(
                             &BRIDGE,
@@ -174,10 +230,10 @@ pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations)
                             },
                             format!(
                                 "the body casts the value the invocation at BCI {} returned, and this run states no access flags for the member: whether the class declared it a bridge is not decided",
-                                forward.cast_bci
+                                cast_bci
                             ),
                         ),
-                        forward.cast_bci,
+                        cast_bci,
                     )),
                 }
                 .plan(None),
@@ -187,18 +243,22 @@ pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations)
         // it looks like a forward — keeps its cast quoted, and the run states that the declaration
         // is what kept it.
         (Some(_), false) => {
-            let forward = forward.ok().flatten()?;
+            let forward = forward.ok()?;
+            let cast_bci = forward.cast_bci?;
             Some(
                 Verdict {
-                    forwarded: Some(forward.target.clone()),
-                    erased: Some(forward.cast_type.clone()),
+                    forwarded: Some(forward.target_spelling()),
+                    target: Some(forward.target),
+                    call_bci: Some(forward.call_bci),
+                    erased: forward.cast_type.clone(),
                     presented: false,
+                    pure_forward: true,
                     refusal: Some(BridgeRefusal::of(
                         &Refusal::shape(
                             "jre_bridge_not_declared",
                             "the class declares this member without the bridge flag, so this rule does not erase its cast: a body that merely looks like a forward is not a bridge".to_string(),
                         ),
-                        forward.cast_bci,
+                        cast_bci,
                     )),
                 }
                 .plan(None),
@@ -206,29 +266,26 @@ pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations)
         }
         // A declared bridge: the rule states whether it presented the forward.
         (Some(_), true) => match forward {
-            Ok(Some(forward)) => Some(
+            Ok(forward) => Some(
                 Verdict {
-                    forwarded: Some(forward.target.clone()),
-                    erased: Some(forward.cast_type.clone()),
+                    forwarded: Some(forward.target_spelling()),
+                    target: Some(forward.target),
+                    call_bci: Some(forward.call_bci),
+                    erased: forward.cast_type.clone(),
                     presented: true,
+                    pure_forward: true,
                     refusal: None,
                 }
-                .plan(Some(forward.cast_bci)),
-            ),
-            Ok(None) => Some(
-                Verdict {
-                    forwarded: None,
-                    erased: None,
-                    presented: true,
-                    refusal: None,
-                }
-                .plan(None),
+                .plan(forward.cast_bci),
             ),
             Err(refusal) => Some(
                 Verdict {
                     forwarded: None,
+                    target: None,
+                    call_bci: None,
                     erased: None,
                     presented: false,
+                    pure_forward: false,
                     refusal: Some(BridgeRefusal::of(&refusal, 0)),
                 }
                 .plan(None),
@@ -237,23 +294,34 @@ pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations)
     }
 }
 
-/// One verified forward: what it calls, the cast that is the erasure, and where that cast is.
+/// One verified pure forward, with the invocation and its optional return cast kept separately.
 struct Forward {
-    target: String,
-    cast_type: String,
-    cast_bci: u32,
+    target: CallTarget,
+    call_bci: u32,
+    cast_type: Option<String>,
+    cast_bci: Option<u32>,
+}
+
+impl Forward {
+    fn target_spelling(&self) -> String {
+        format!(
+            "{}.{}{}",
+            source_name(self.target.owner()),
+            self.target.name(),
+            self.target.descriptor()
+        )
+    }
 }
 
 /// Verifies the forward shape of one body.
 ///
-/// `Ok(Some(forward))` is the forward *with* a redundant cast, `Ok(None)` the same forward without
-/// one (which needs no erasure and no ownership: its instructions are presented by the ordinary
-/// path already), and `Err` the shape this rule will not present.
+/// A successful result is every verified pure forward. Its cast is optional; the call identity is
+/// retained in either case. `Err` is a shape this rule will not present.
 fn forward_shape(
     facts: &MethodFacts,
     instructions: &[&SsaInstruction],
     operations: &Operations,
-) -> Result<Option<Forward>, Refusal> {
+) -> Result<Forward, Refusal> {
     let descriptor = facts.descriptor();
     let Some((parameters, _)) = parse_method(descriptor) else {
         return Err(Refusal::shape(
@@ -444,16 +512,12 @@ fn forward_shape(
             "the return does not return the value the forward produced",
         ));
     }
-    Ok(cast.map(|(instruction, ty)| Forward {
-        target: format!(
-            "{}.{}{}",
-            source_name(target.owner()),
-            target.name(),
-            target.descriptor()
-        ),
-        cast_type: ty,
-        cast_bci: instruction.bci(),
-    }))
+    Ok(Forward {
+        target: target.clone(),
+        call_bci: invoke.bci(),
+        cast_type: cast.as_ref().map(|(_, ty)| ty.clone()),
+        cast_bci: cast.map(|(instruction, _)| instruction.bci()),
+    })
 }
 
 /// A shape refusal that names the forward the body failed to be.
@@ -482,11 +546,47 @@ fn source_name(internal: &str) -> String {
 pub struct BridgeRecord {
     /// The member the body forwards to, as `owner.name(descriptor)`, when a forward was read.
     pub forwarded: Option<String>,
+    /// The invocation identity retained from the same `bridge@1` shape proof.
+    pub target: Option<CallTarget>,
+    /// The invocation BCI within the bridge method, when its target was proven.
+    pub call_bci: Option<u32>,
+    /// The BCI of the optional redundant return cast owned by `bridge@1`.
+    pub cast_bci: Option<u32>,
+    /// Whether the bytecode satisfies the pure-forward shape, independent of bridge flags.
+    pub pure_forward: bool,
     /// The erased type the bridge casts to, when it casts.
     pub erased: Option<String>,
     /// Whether the body was presented as the forward it is.
     pub presented: bool,
     /// Why it was not, when it was not.
+    pub refusal: Option<BridgeRefusal>,
+}
+
+/// One bounded, same-run bridge verdict for the class-source assembler.
+///
+/// This is an adapter handoff, not serialized recovery evidence. Its method identity and flags come
+/// from the same request that supplied the bridge plan; its target and verdict come from that plan.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceBridgeCandidate {
+    /// The physical method this same-run bridge conclusion belongs to, when the entry stated it.
+    pub member: Option<jarde_reader::model::PhysicalMethodId>,
+    /// The original declaration flags supplied to the bridge rule.
+    pub access_flags: Option<u16>,
+    /// Whether the same decoded `Code` facts declare exception handlers. Missing code is unknown,
+    /// so it conservatively refuses class-source admission.
+    pub has_exception_handlers: bool,
+    /// The symbolic invocation target proven by the bridge rule, when the shape has one.
+    pub target: Option<CallTarget>,
+    /// The call instruction's BCI in the bridge body, when the shape has one.
+    pub call_bci: Option<u32>,
+    /// The redundant return cast's BCI when `bridge@1` owns that cast.
+    pub cast_bci: Option<u32>,
+    /// Whether the complete body satisfies the pure-forward shape.
+    pub pure_forward: bool,
+    /// Whether `bridge@1` presented the method as a forward under the supplied flags.
+    pub presented: bool,
+    /// The `bridge@1` refusal, when the shape or declaration precondition was not met.
     pub refusal: Option<BridgeRefusal>,
 }
 
@@ -534,7 +634,11 @@ impl BridgeRefusal {
 
 #[cfg(test)]
 mod tests {
-    use crate::facts::MethodFacts;
+    use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+
+    use crate::facts::{CallTarget, InvokeKind, MethodFacts};
+
+    use super::Plan;
 
     #[test]
     fn only_a_declared_bridge_is_this_rules_business() {
@@ -548,5 +652,45 @@ mod tests {
         assert_eq!(ordinary.access_flags(), Some(0x0001));
         assert_eq!(MethodFacts::new("get", "()V", 0).access_flags(), None);
         assert!(!MethodFacts::new("get", "()V", 0).is_bridge());
+    }
+
+    #[test]
+    fn class_source_candidate_obeys_budget_and_cancellation() {
+        let plan = Plan {
+            cast: None,
+            presented: true,
+            pure_forward: true,
+            forwarded: Some("Owner.get()Ljava/lang/String;".to_string()),
+            target: Some(CallTarget::new(
+                InvokeKind::Virtual,
+                "Owner",
+                "get",
+                "()Ljava/lang/String;",
+                false,
+            )),
+            call_bci: Some(1),
+            erased: None,
+            refusal: None,
+        };
+
+        let mut bounded = Budget::new(Limits {
+            ir_items: 0,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            plan.class_source_candidate(None, Some(0x1041), false, &mut bounded),
+            Err(crate::stop::StopReason::Budget {
+                dimension: CountedBudgetDimension::IrItems,
+                ..
+            })
+        ));
+
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut cancelled = Budget::with_cancellation_token(Limits::default(), token);
+        assert_eq!(
+            plan.class_source_candidate(None, Some(0x1041), false, &mut cancelled),
+            Err(crate::stop::StopReason::Cancelled { at: Some(1) })
+        );
     }
 }

@@ -1,0 +1,76 @@
+// jarde: presentation of `StaticQualifierProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class StaticQualifierProbe extends java.lang.Object {
+    public static int selects;
+
+    public static int rightCalls;
+
+    public static int value;
+
+    public static boolean failSelect;
+
+    public StaticQualifierProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `StaticQualifierProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void reset() {
+        // @method reset()V
+        // @declaration a static method of `StaticQualifierProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        StaticQualifierProbe.selects = 0;
+        StaticQualifierProbe.rightCalls = 0;
+        StaticQualifierProbe.value = 5;
+        StaticQualifierProbe.failSelect = false;
+        return;
+    }
+
+    public static StaticQualifierProbe receiver() {
+        // @method receiver()LStaticQualifierProbe;
+        // @declaration a static method of `StaticQualifierProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        StaticQualifierProbe.selects = StaticQualifierProbe.selects + 1;
+        if (StaticQualifierProbe.failSelect) {
+            throw new java.lang.IllegalStateException("select");
+        } else {
+            return null;
+        }
+    }
+
+    public static int rhs() {
+        // @method rhs()I
+        // @declaration a static method of `StaticQualifierProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        StaticQualifierProbe.rightCalls = StaticQualifierProbe.rightCalls + 1;
+        return 7;
+    }
+
+    public static int read() {
+        // @method read()I
+        // @declaration a static method of `StaticQualifierProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        return StaticQualifierProbe.value;
+    }
+
+    public static int write() {
+        // @method write()I
+        // @declaration a static method of `StaticQualifierProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        StaticQualifierProbe.value = receiver().rhs();
+        return StaticQualifierProbe.value;
+    }
+
+    public static int writeSum() {
+        // @method writeSum()I
+        // @declaration a static method of `StaticQualifierProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        receiver();
+        StaticQualifierProbe.value = StaticQualifierProbe.value + rhs();
+        return StaticQualifierProbe.value;
+    }
+}

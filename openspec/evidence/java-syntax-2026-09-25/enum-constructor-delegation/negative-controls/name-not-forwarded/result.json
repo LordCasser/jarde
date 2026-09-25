@@ -1,0 +1,51 @@
+{
+  "case": "name-not-forwarded",
+  "class_sha256": {
+    "ConstructorEffects.class": "4460871da9c948491e6c4a6eb236220c64df238a97979b8d9f0c56920003fde7",
+    "DelegatingEnum.class": "5536cb069bcccce293710d490dd81cdc478d241b30f65d13f2de1e75b14e8b8b",
+    "NegativeProbe.class": "16813bf6247811b7b7e9d6ed5424f460179403bbd62103523b38f4c0c1e6defc"
+  },
+  "expected_rejection": "At BCI 1, aconst_null replaces forwarding the incoming enum name; this is verifier-valid and the observed ZERO.name() becomes null.",
+  "jadx_compile_exit": 0,
+  "jadx_decompile_exit": 0,
+  "jadx_decompile_log": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 7 (0%)\n                                                             \nINFO  - done\n",
+  "jadx_output": [
+    "enum=ZERO:0:0",
+    "enum=ONE:1:1",
+    "effects=2:0,1",
+    "declared-constructors=2,3"
+  ],
+  "jadx_xverify_run_exit": 0,
+  "jarde_java8_compile_exit": 1,
+  "jarde_source_execution": {
+    "status": "complete",
+    "usage": {
+      "analysis_steps": 412,
+      "archive_entries": 14,
+      "attribute_bytes": 840,
+      "class_bytes": 2020,
+      "class_headers": 1,
+      "code_bytes": 100,
+      "dependency_depth": 0,
+      "elapsed_millis": 3,
+      "entry_bytes": 1010,
+      "input_bytes": 2992,
+      "ir_edges": 51,
+      "ir_items": 1220,
+      "method_bodies": 7,
+      "nested_depth": 0,
+      "normalization_clones": 0,
+      "output_bytes": 2958,
+      "read_bytes": 587,
+      "result_items": 46
+    }
+  },
+  "jarde_source_outcome": "performed",
+  "original_output": [
+    "enum=null:0:0",
+    "enum=ONE:1:1",
+    "effects=2:0,1",
+    "declared-constructors=2,3"
+  ],
+  "original_xverify_run_exit": 0
+}

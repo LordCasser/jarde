@@ -1,0 +1,92 @@
+{
+  "compiler": "javac 23.0.1",
+  "release": 8,
+  "reflection_output": [
+    "0",
+    "null"
+  ],
+  "original_class_sha256": {
+    "HiddenTarget.class": "40e417638a6d37edc4b3fd2a6cd2564637a63bd4b1e8ec9b8f112d48c1a87adf",
+    "HiddenTag.class": "1437011ace8002cd0ae01bcf6814da7c3e6e794ccb7d5d2421b984bea8919cea",
+    "DuplicateTarget.class": "9e4c13bb65c0c0632d4a6dff493b06455696a9a9684d0d3863f49aa71a84d5bb",
+    "Tag.class": "955e653f87bfaa2367f9a26b66e00cbac22db69441de68e2eeb22611e9adab2a",
+    "Tags.class": "ca5267b25c23c98d29979f28f598ae52b1e0844d8077dd3efb531a98f1f30c4d",
+    "EmptyTarget.class": "b1384cf70cbea94fc63f77772ffedb78c60ade53ea27730b19fc83d89391d38d"
+  },
+  "original_class_bytes": {
+    "HiddenTarget.class": 201,
+    "HiddenTag.class": 253,
+    "DuplicateTarget.class": 234,
+    "Tag.class": 318,
+    "Tags.class": 253,
+    "EmptyTarget.class": 126
+  },
+  "class_retention_attribute": {
+    "name": "RuntimeInvisibleAnnotations",
+    "shell_start": 184,
+    "content_start": 190,
+    "content_length": 11,
+    "shell_end": 201,
+    "annotation_count": 1,
+    "annotations": [
+      {
+        "type_descriptor": "LHiddenTag;",
+        "pairs": [
+          {
+            "name": "value",
+            "tag": "I",
+            "cp_index": 13,
+            "tag_offset": 198
+          }
+        ]
+      }
+    ]
+  },
+  "controlled_boundaries": {
+    "DuplicateEntries.class": {
+      "sha256": "ea9a31a3be1f771f2c5bb7e5dba7e9a8d98f136932bff2567872aa7c4cb4916f",
+      "bytes": 210,
+      "annotation_attribute": {
+        "name": "RuntimeInvisibleAnnotations",
+        "shell_start": 184,
+        "content_start": 190,
+        "content_length": 20,
+        "shell_end": 210
+      },
+      "provenance": "\u590d\u5236\u540c\u4e00\u4e2a\u5408\u6cd5 CLASS-retention annotation_info \u4e24\u6b21\u5e76\u5c06 count \u6539\u4e3a 2"
+    },
+    "DamagedValueTag.class": {
+      "sha256": "875ffe534d46063745b9e8a13a1a4ed9cb9a6ab940779f1b7d693167adcae68b",
+      "bytes": 201,
+      "annotation_attribute": {
+        "name": "RuntimeInvisibleAnnotations",
+        "shell_start": 184,
+        "content_start": 190,
+        "content_length": 11,
+        "shell_end": 201
+      },
+      "provenance": "\u5c06\u539f annotation element_value tag \u5728 class byte offset 198 \u6539\u4e3a Q"
+    },
+    "UnspellableType.class": {
+      "sha256": "78a76d3f1ab51d470861f1b21a5b2e4808dcb1272f65017971b716f43b08bd54",
+      "bytes": 201,
+      "annotation_attribute": {
+        "name": "RuntimeInvisibleAnnotations",
+        "shell_start": 184,
+        "content_start": 190,
+        "content_length": 11,
+        "shell_end": 201
+      },
+      "provenance": "\u5c06\u539f CONSTANT_Utf8 \u63cf\u8ff0\u7b26\u5b57\u8282\u5728 class byte offset 115 \u66ff\u6362\u4e3a LHidden-xx;"
+    }
+  },
+  "javap_confirms_runtime_invisible": true,
+  "javap_confirms_javac_repeatable_container": true,
+  "reader_expected_outcomes": {
+    "HiddenTarget.class": "one complete annotation fact; not runtime visible",
+    "DuplicateEntries.class": "two complete facts; class-source presentation refuses both as duplicate type",
+    "DamagedValueTag.class": "classfile_invalid_attribute_content; no partial facts",
+    "UnspellableType.class": "one complete raw fact; class-source presentation refuses the name",
+    "attribute_budget": "covered by class_annotation_facts integration test"
+  }
+}

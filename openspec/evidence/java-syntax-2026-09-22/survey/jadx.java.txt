@@ -1,0 +1,67 @@
+package defpackage;
+
+/* JADX INFO: loaded from: SyntaxProbe.class */
+public class SyntaxProbe {
+    public static int unaryInt(int i) {
+        return -(-i);
+    }
+
+    public static long unaryLong(long j) {
+        return (-(-j)) * (100 / (-j));
+    }
+
+    public static float unaryFloat(float f) {
+        return (-(-f)) * (100.0f / (-f));
+    }
+
+    public static double unaryDouble(double d) {
+        return (-(-d)) * (100.0d / (-d));
+    }
+
+    public static float negativeZeroFloat() {
+        return -0.0f;
+    }
+
+    public static double negativeZeroDouble() {
+        return -0.0d;
+    }
+
+    public static String checkAndCast(Object obj) {
+        if (obj instanceof String) {
+            return (String) obj;
+        }
+        return null;
+    }
+
+    public static boolean compareLong(long j, long j2) {
+        return j < j2 || j == j2;
+    }
+
+    public static boolean compareFloating(double d, double d2) {
+        return d <= d2 || d != d2;
+    }
+
+    private static int conditionValue(int[] iArr, int i) {
+        return iArr[i];
+    }
+
+    public static int loopConditionCall(int[] iArr) {
+        int i = 0;
+        while (conditionValue(iArr, i) < 3) {
+            i++;
+        }
+        return i;
+    }
+
+    public static int bitMix(int i, int i2) {
+        return (i & i2) | ((i ^ i2) << 1) | (i >>> 2);
+    }
+
+    public static int[] arrayInitializer() {
+        return new int[]{1, 2, 3, -4};
+    }
+
+    public static void throwParameter(String str) {
+        throw new IllegalArgumentException(str);
+    }
+}

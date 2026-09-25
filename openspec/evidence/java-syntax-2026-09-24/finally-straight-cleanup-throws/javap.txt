@@ -1,0 +1,168 @@
+Classfile /private/tmp/jarde-finally-cleanup-throws-_x5il6fb/original/FinallyStraightThrow.class
+  Last modified 2026年9月24日; size 786 bytes
+  SHA-256 checksum ce79125f7752333349583e6b1ca4a0297143b6b62bb002467db8934da314bdf9
+public class FinallyStraightThrow
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // FinallyStraightThrow
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 5, methods: 5, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // FinallyStraightThrow.trace:I
+   #8 = Class              #10            // FinallyStraightThrow
+   #9 = NameAndType        #11:#12        // trace:I
+  #10 = Utf8               FinallyStraightThrow
+  #11 = Utf8               trace
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // FinallyStraightThrow.failTry:Z
+  #14 = NameAndType        #15:#16        // failTry:Z
+  #15 = Utf8               failTry
+  #16 = Utf8               Z
+  #17 = Fieldref           #8.#18         // FinallyStraightThrow.TRY_FAILURE:Ljava/lang/RuntimeException;
+  #18 = NameAndType        #19:#20        // TRY_FAILURE:Ljava/lang/RuntimeException;
+  #19 = Utf8               TRY_FAILURE
+  #20 = Utf8               Ljava/lang/RuntimeException;
+  #21 = Fieldref           #8.#22         // FinallyStraightThrow.failCleanup:Z
+  #22 = NameAndType        #23:#16        // failCleanup:Z
+  #23 = Utf8               failCleanup
+  #24 = Fieldref           #8.#25         // FinallyStraightThrow.CLEANUP_FAILURE:Ljava/lang/RuntimeException;
+  #25 = NameAndType        #26:#20        // CLEANUP_FAILURE:Ljava/lang/RuntimeException;
+  #26 = Utf8               CLEANUP_FAILURE
+  #27 = Methodref          #8.#28         // FinallyStraightThrow.value:()I
+  #28 = NameAndType        #29:#30        // value:()I
+  #29 = Utf8               value
+  #30 = Utf8               ()I
+  #31 = Methodref          #8.#32         // FinallyStraightThrow.cleanup:()V
+  #32 = NameAndType        #33:#6         // cleanup:()V
+  #33 = Utf8               cleanup
+  #34 = Class              #35            // java/lang/IllegalArgumentException
+  #35 = Utf8               java/lang/IllegalArgumentException
+  #36 = String             #37            // try
+  #37 = Utf8               try
+  #38 = Methodref          #34.#39        // java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+  #39 = NameAndType        #5:#40         // "<init>":(Ljava/lang/String;)V
+  #40 = Utf8               (Ljava/lang/String;)V
+  #41 = Class              #42            // java/lang/IllegalStateException
+  #42 = Utf8               java/lang/IllegalStateException
+  #43 = String             #33            // cleanup
+  #44 = Methodref          #41.#39        // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #45 = Utf8               Code
+  #46 = Utf8               StackMapTable
+  #47 = Utf8               run
+  #48 = Class              #49            // java/lang/Throwable
+  #49 = Utf8               java/lang/Throwable
+  #50 = Utf8               <clinit>
+{
+  public static int trace;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static boolean failTry;
+    descriptor: Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static boolean failCleanup;
+    descriptor: Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static final java.lang.RuntimeException TRY_FAILURE;
+    descriptor: Ljava/lang/RuntimeException;
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static final java.lang.RuntimeException CLEANUP_FAILURE;
+    descriptor: Ljava/lang/RuntimeException;
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public FinallyStraightThrow();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  private static int value();
+    descriptor: ()I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #7                  // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iconst_1
+         7: iadd
+         8: putstatic     #7                  // Field trace:I
+        11: getstatic     #13                 // Field failTry:Z
+        14: ifeq          21
+        17: getstatic     #17                 // Field TRY_FAILURE:Ljava/lang/RuntimeException;
+        20: athrow
+        21: bipush        41
+        23: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 21 /* same */
+
+  private static void cleanup();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #7                  // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iconst_2
+         7: iadd
+         8: putstatic     #7                  // Field trace:I
+        11: getstatic     #21                 // Field failCleanup:Z
+        14: ifeq          21
+        17: getstatic     #24                 // Field CLEANUP_FAILURE:Ljava/lang/RuntimeException;
+        20: athrow
+        21: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 21 /* same */
+
+  public static int run();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=0
+         0: invokestatic  #27                 // Method value:()I
+         3: istore_0
+         4: invokestatic  #31                 // Method cleanup:()V
+         7: iload_0
+         8: ireturn
+         9: astore_1
+        10: invokestatic  #31                 // Method cleanup:()V
+        13: aload_1
+        14: athrow
+      Exception table:
+         from    to  target type
+             0     4     9   any
+      StackMapTable: number_of_entries = 1
+        frame_type = 73 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=0, args_size=0
+         0: new           #34                 // class java/lang/IllegalArgumentException
+         3: dup
+         4: ldc           #36                 // String try
+         6: invokespecial #38                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+         9: putstatic     #17                 // Field TRY_FAILURE:Ljava/lang/RuntimeException;
+        12: new           #41                 // class java/lang/IllegalStateException
+        15: dup
+        16: ldc           #43                 // String cleanup
+        18: invokespecial #44                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        21: putstatic     #24                 // Field CLEANUP_FAILURE:Ljava/lang/RuntimeException;
+        24: return
+}

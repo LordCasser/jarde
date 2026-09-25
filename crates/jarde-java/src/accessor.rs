@@ -642,9 +642,16 @@ mod tests {
         // A call whose member the run does not hold is refused *with the marker named*, and an
         // ordinary call is not this rule's business at all — which is the difference between "this
         // looks like an accessor and could not be decided" and "this is not an accessor question".
-        let accessor_call = CallTarget::new(InvokeKind::Static, "Test", "access$100", "(LTest;)I");
-        let ordinary_call = CallTarget::new(InvokeKind::Static, "Test", "size", "()I");
-        let virtual_call = CallTarget::new(InvokeKind::Virtual, "Test", "access$100", "(LTest;)I");
+        let accessor_call =
+            CallTarget::new(InvokeKind::Static, "Test", "access$100", "(LTest;)I", false);
+        let ordinary_call = CallTarget::new(InvokeKind::Static, "Test", "size", "()I", false);
+        let virtual_call = CallTarget::new(
+            InvokeKind::Virtual,
+            "Test",
+            "access$100",
+            "(LTest;)I",
+            false,
+        );
         assert!(matches!(
             verify(&ordinary_call, None, &[]),
             Verdict::Ordinary
