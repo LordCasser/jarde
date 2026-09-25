@@ -160,6 +160,35 @@ fn facts_of(
             String::from_utf8_lossy(&member.descriptor.raw().0),
             parameters,
         )
+        .with_access_flags(member.access_flags)
+        .with_declaring_class(DeclaringClass::new(
+            String::from_utf8_lossy(&header.this_class.raw().0).into_owned(),
+            header.access_flags,
+        )),
+    )
+    .with_debug_locals(stated_names(debug))
+}
+
+/// The old facts seam, kept for tests whose subject is the absence of the declaring-class fact.
+fn facts_without_declaring_class(
+    class: &[u8],
+    name: &[u8],
+    parameters: u16,
+    debug: Vec<Option<String>>,
+) -> RecoveryFacts {
+    let mut budget = Budget::new(limits());
+    let header = class_facts(class, &mut budget).expect("the fixture is a class file");
+    let member = header
+        .methods
+        .iter()
+        .find(|member| member.name.raw().0 == name)
+        .expect("the fixture declares the method");
+    RecoveryFacts::new(
+        MethodFacts::new(
+            String::from_utf8_lossy(name),
+            String::from_utf8_lossy(&member.descriptor.raw().0),
+            parameters,
+        )
         .with_access_flags(member.access_flags),
     )
     .with_debug_locals(stated_names(debug))
@@ -287,6 +316,110 @@ fn present(
 ) -> jarde_java::RecoveryReport {
     let payload = analyze(class, name, descriptor);
     let facts = facts_of(class, name, parameters, debug);
+    let members = members_of(class);
+    let mut budget = Budget::new(limits());
+    recover_body(&payload, &facts, Some(&members), &mut budget)
+}
+
+/// Presents one specifically identified overload, for fixtures whose bridge and source method share
+/// a name but differ in their return descriptors.
+fn present_exact(
+    class: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    parameters: u16,
+    debug: Vec<Option<String>>,
+) -> jarde_java::RecoveryReport {
+    let payload = analyze(class, name, descriptor);
+    let facts = facts_of_exact(class, name, descriptor, parameters, debug);
+    let members = members_of(class);
+    let mut budget = Budget::new(limits());
+    recover_body(&payload, &facts, Some(&members), &mut budget)
+}
+
+fn facts_of_exact(
+    class: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    parameters: u16,
+    debug: Vec<Option<String>>,
+) -> RecoveryFacts {
+    let mut fact_budget = Budget::new(limits());
+    let header = class_facts(class, &mut fact_budget).expect("the fixture is a class file");
+    let member = header
+        .methods
+        .iter()
+        .find(|member| member.name.raw().0 == name && member.descriptor.raw().0 == descriptor)
+        .expect("the class declares the exact method identity");
+    RecoveryFacts::new(
+        MethodFacts::new(
+            String::from_utf8_lossy(name),
+            String::from_utf8_lossy(descriptor),
+            parameters,
+        )
+        .with_access_flags(member.access_flags)
+        .with_declaring_class(DeclaringClass::new(
+            String::from_utf8_lossy(&header.this_class.raw().0).into_owned(),
+            header.access_flags,
+        )),
+    )
+    .with_debug_locals(stated_names(debug))
+}
+
+fn recover_class_source_exact(
+    class: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    parameters: u16,
+    evidence: jarde_java::RecoveryEvidenceRequest,
+    budget: &mut Budget,
+) -> jarde_java::report::ClassSourceRecovery {
+    let payload = analyze(class, name, descriptor);
+    let facts = facts_of_exact(
+        class,
+        name,
+        descriptor,
+        parameters,
+        vec![Some("self".into())],
+    );
+    let members = members_of(class);
+    let request = RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
+        .with_evidence(evidence)
+        .with_members(&members);
+    jarde_java::report::recover_for_class_source(&request, budget, false, false)
+}
+
+/// Presents one body with an explicit IR-item limit, returning the budget so a test can assert
+/// where a bounded quote walk stopped.
+fn present_with_ir_limit(
+    class: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    parameters: u16,
+    debug: Vec<Option<String>>,
+    ir_items: u64,
+) -> (jarde_java::RecoveryReport, Budget) {
+    let payload = analyze(class, name, descriptor);
+    let facts = facts_of(class, name, parameters, debug);
+    let members = members_of(class);
+    let mut budget = Budget::new(Limits {
+        ir_items,
+        ..limits()
+    });
+    let report = recover_body(&payload, &facts, Some(&members), &mut budget);
+    (report, budget)
+}
+
+/// Presents one fixture body while deliberately omitting its declaring-class fact.
+fn present_without_declaring_class(
+    class: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    parameters: u16,
+    debug: Vec<Option<String>>,
+) -> jarde_java::RecoveryReport {
+    let payload = analyze(class, name, descriptor);
+    let facts = facts_without_declaring_class(class, name, parameters, debug);
     let members = members_of(class);
     let mut budget = Budget::new(limits());
     recover_body(&payload, &facts, Some(&members), &mut budget)
@@ -1140,6 +1273,25 @@ fn a_single_append_is_not_a_concatenation() {
 // A bridge method: the forward it is, and the three bodies it may not be
 // ---------------------------------------------------------------------------
 
+fn assert_bridge_target(
+    record: &jarde_java::BridgeRecord,
+    owner: &str,
+    name: &str,
+    descriptor: &str,
+    kind: jarde_java::facts::InvokeKind,
+    interface_reference: bool,
+) {
+    let target = record
+        .target
+        .as_ref()
+        .expect("the forward target is retained");
+    assert_eq!(target.owner(), owner);
+    assert_eq!(target.name(), name);
+    assert_eq!(target.descriptor(), descriptor);
+    assert_eq!(target.kind(), kind);
+    assert_eq!(target.is_interface_reference(), interface_reference);
+}
+
 /// The `real()Ljava/lang/String;` member every bridge fixture forwards to.
 fn real_member(pool: &mut Pool, test: u16) -> (u16, u16, Vec<u8>, u16) {
     let name = pool.utf8("real");
@@ -1285,6 +1437,17 @@ fn a_declared_bridge_is_presented_as_the_forward_it_is_with_the_cast_it_erases()
         bridge.forwarded.as_deref(),
         Some("Test.real()Ljava/lang/String;")
     );
+    assert_bridge_target(
+        bridge,
+        "Test",
+        "real",
+        "()Ljava/lang/String;",
+        jarde_java::facts::InvokeKind::Virtual,
+        false,
+    );
+    assert_eq!(bridge.call_bci, Some(1));
+    assert_eq!(bridge.cast_bci, Some(4));
+    assert!(bridge.pure_forward);
     assert_eq!(bridge.erased.as_deref(), Some("java/lang/String"));
     assert_eq!(bridge.rule().citation(), "bridge@1");
     assert!(report.rules.contains(&bridge.rule()));
@@ -1331,14 +1494,234 @@ fn a_bridge_without_a_cast_is_presented_without_any_erasure() {
         report.text
     );
     assert_eq!(report.bridges.len(), 1);
-    assert!(report.bridges[0].presented());
-    assert_eq!(report.bridges[0].erased, None);
+    let bridge = &report.bridges[0];
+    assert!(bridge.presented());
+    assert!(bridge.pure_forward);
+    assert_bridge_target(
+        bridge,
+        "Test",
+        "real",
+        "()Ljava/lang/String;",
+        jarde_java::facts::InvokeKind::Virtual,
+        false,
+    );
+    assert_eq!(bridge.call_bci, Some(1));
+    assert_eq!(bridge.cast_bci, None);
+    assert_eq!(bridge.erased, None);
+}
+
+fn read_bridge_fixture(relative: &str) -> Vec<u8> {
+    std::fs::read(format!(
+        "{}/../../tests/fixtures/p3-bridge-projection/{relative}",
+        env!("CARGO_MANIFEST_DIR")
+    ))
+    .expect("the permanent bridge fixture is present")
+}
+
+fn bridge_fixture_flags(class: &[u8], name: &[u8], descriptor: &[u8]) -> u16 {
+    let mut budget = Budget::new(limits());
+    let header = class_facts(class, &mut budget).expect("the fixture is a class file");
+    header
+        .methods
+        .iter()
+        .find(|method| method.name.raw().0 == name && method.descriptor.raw().0 == descriptor)
+        .expect("the physical bridge declaration is present")
+        .access_flags
+}
+
+#[test]
+fn bridge_projection_fixtures_retain_same_pass_targets_or_the_shape_refusal() {
+    let descriptor = b"()Ljava/lang/Object;";
+    let flags = 0x0001 | 0x0040 | 0x1000;
+
+    let positive = read_bridge_fixture("positive/v8/BridgeProbe.class");
+    assert_eq!(
+        bridge_fixture_flags(&positive, b"get", descriptor) & flags,
+        flags
+    );
+    let report = present_exact(&positive, b"get", descriptor, 1, vec![Some("self".into())]);
+    assert_eq!(report.method, "get()Ljava/lang/Object;");
+    let bridge = report
+        .bridges
+        .first()
+        .expect("bridge@1 records the physical bridge");
+    assert!(bridge.pure_forward && bridge.presented());
+    assert_eq!(bridge.call_bci, Some(1));
+    assert_eq!(bridge.cast_bci, None);
+    assert_bridge_target(
+        bridge,
+        "BridgeProbe",
+        "get",
+        "()Ljava/lang/String;",
+        jarde_java::facts::InvokeKind::Virtual,
+        false,
+    );
+
+    let negative = read_bridge_fixture("negative/v8/FakeBridge.class");
+    assert_eq!(
+        bridge_fixture_flags(&negative, b"get", descriptor) & flags,
+        flags
+    );
+    let report = present_exact(&negative, b"get", descriptor, 1, vec![Some("self".into())]);
+    assert_eq!(report.method, "get()Ljava/lang/Object;");
+    let bridge = report
+        .bridges
+        .first()
+        .expect("the effectful physical bridge is reported");
+    assert!(!bridge.pure_forward && !bridge.presented());
+    assert_eq!(bridge.target, None);
+    assert_eq!(
+        bridge.refusal.as_ref().map(|refusal| refusal.code),
+        Some("jre_bridge_shape")
+    );
+    assert!(bridge.refusal.as_ref().unwrap().message.contains("slot 0"));
+
+    let orphan = read_bridge_fixture("orphan/v8/OrphanBridge.class");
+    assert_eq!(
+        bridge_fixture_flags(&orphan, b"get", descriptor) & flags,
+        flags
+    );
+    let report = present_exact(&orphan, b"get", descriptor, 1, vec![Some("self".into())]);
+    assert_eq!(report.method, "get()Ljava/lang/Object;");
+    let bridge = report
+        .bridges
+        .first()
+        .expect("the isolated physical bridge is reported");
+    assert!(bridge.pure_forward && bridge.presented());
+    assert_eq!(bridge.call_bci, Some(1));
+    assert_eq!(bridge.cast_bci, None);
+    assert_bridge_target(
+        bridge,
+        "OrphanBridge",
+        "get",
+        "()Ljava/lang/String;",
+        jarde_java::facts::InvokeKind::Virtual,
+        false,
+    );
+}
+
+#[test]
+fn class_source_bridge_sidecar_is_same_run_and_independent_of_rule_details() {
+    let descriptor = b"()Ljava/lang/Object;";
+    let flags = 0x0001 | 0x0040 | 0x1000;
+    let positive = read_bridge_fixture("positive/v8/BridgeProbe.class");
+
+    let mut essential_budget = Budget::new(limits());
+    let essential = recover_class_source_exact(
+        &positive,
+        b"get",
+        descriptor,
+        1,
+        jarde_java::RecoveryEvidenceRequest::essential(),
+        &mut essential_budget,
+    );
+    assert!(
+        essential.report.produced(),
+        "{:?}",
+        essential.report.outcome
+    );
+    assert!(essential.report.bridges.is_empty());
+    let candidate = essential
+        .bridge
+        .as_ref()
+        .expect("the sidecar is returned without RuleDetails");
+    assert_eq!(
+        candidate.member.as_ref(),
+        Some(&member_identity(&positive, b"get", descriptor))
+    );
+    assert_eq!(
+        candidate.access_flags.map(|value| value & flags),
+        Some(flags)
+    );
+    assert!(candidate.pure_forward && candidate.presented);
+    assert_eq!(candidate.call_bci, Some(1));
+    assert_eq!(candidate.cast_bci, None);
+    assert_eq!(candidate.refusal, None);
+    let target = candidate
+        .target
+        .as_ref()
+        .expect("same-run target is retained");
+    assert_eq!(target.owner(), "BridgeProbe");
+    assert_eq!(target.name(), "get");
+    assert_eq!(target.descriptor(), "()Ljava/lang/String;");
+    assert_eq!(target.kind(), jarde_java::facts::InvokeKind::Virtual);
+    assert!(!target.is_interface_reference());
+
+    let mut detailed_budget = Budget::new(limits());
+    let detailed = recover_class_source_exact(
+        &positive,
+        b"get",
+        descriptor,
+        1,
+        jarde_java::RecoveryEvidenceRequest::all(),
+        &mut detailed_budget,
+    );
+    assert_eq!(detailed.bridge.as_ref(), Some(candidate));
+    assert_eq!(detailed.report.bridges.len(), 1);
+
+    let negative = read_bridge_fixture("negative/v8/FakeBridge.class");
+    let mut negative_budget = Budget::new(limits());
+    let rejected = recover_class_source_exact(
+        &negative,
+        b"get",
+        descriptor,
+        1,
+        jarde_java::RecoveryEvidenceRequest::essential(),
+        &mut negative_budget,
+    );
+    let candidate = rejected
+        .bridge
+        .expect("the refusal verdict is handed to the class source");
+    assert!(!candidate.pure_forward && !candidate.presented);
+    assert_eq!(candidate.target, None);
+    assert_eq!(
+        candidate.refusal.as_ref().map(|item| item.code),
+        Some("jre_bridge_shape")
+    );
+
+    let orphan = read_bridge_fixture("orphan/v8/OrphanBridge.class");
+    let mut orphan_budget = Budget::new(limits());
+    let isolated = recover_class_source_exact(
+        &orphan,
+        b"get",
+        descriptor,
+        1,
+        jarde_java::RecoveryEvidenceRequest::essential(),
+        &mut orphan_budget,
+    );
+    let candidate = isolated
+        .bridge
+        .expect("the pure isolated bridge is retained");
+    assert!(candidate.pure_forward && candidate.presented);
+    assert_eq!(
+        candidate.target.as_ref().map(|item| item.owner()),
+        Some("OrphanBridge")
+    );
+
+    let token = jarde_reader::budget::CancellationToken::new();
+    token.cancel();
+    let mut cancelled_budget = Budget::with_cancellation_token(limits(), token);
+    let cancelled = recover_class_source_exact(
+        &positive,
+        b"get",
+        descriptor,
+        1,
+        jarde_java::RecoveryEvidenceRequest::essential(),
+        &mut cancelled_budget,
+    );
+    assert!(
+        !cancelled.report.produced(),
+        "{:?}",
+        cancelled.report.outcome
+    );
+    assert!(cancelled.bridge.is_none());
 }
 
 #[test]
 fn a_member_the_class_does_not_declare_a_bridge_keeps_its_cast_quoted() {
     // The same body as the positive case, and the class declares the member **without** the bridge
-    // flag: the rule reads the declaration, not the shape, so the cast stays quoted.
+    // flag: the rule reads the declaration, not the shape, so the cast is not erased by bridge@1;
+    // ordinary cast recovery still writes the runtime check.
     let class = bridge_class(
         "c",
         "()Ljava/lang/Object;",
@@ -1355,6 +1738,17 @@ fn a_member_the_class_does_not_declare_a_bridge_keeps_its_cast_quoted() {
     assert_eq!(report.bridges.len(), 1);
     let bridge = &report.bridges[0];
     assert!(!bridge.presented());
+    assert!(bridge.pure_forward);
+    assert_eq!(bridge.call_bci, Some(1));
+    assert_eq!(bridge.cast_bci, None);
+    assert_bridge_target(
+        bridge,
+        "Test",
+        "real",
+        "()Ljava/lang/String;",
+        jarde_java::facts::InvokeKind::Virtual,
+        false,
+    );
     let refusal = bridge.refusal.as_ref().expect("the refusal is recorded");
     assert_eq!(refusal.code, "jre_bridge_not_declared");
     assert!(
@@ -1362,8 +1756,15 @@ fn a_member_the_class_does_not_declare_a_bridge_keeps_its_cast_quoted() {
         "{}",
         refusal.message
     );
-    assert!(report.text.contains("// @bytecode"), "{}", report.text);
-    assert_eq!(report.representation, Representation::Mixed);
+    assert!(
+        report
+            .text
+            .contains("return (java.lang.String) this.real();"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(report.representation, Representation::Java);
 }
 
 #[test]
@@ -1384,6 +1785,10 @@ fn a_bridge_that_does_something_besides_forward_is_refused_and_its_body_kept() {
     assert_eq!(report.bridges.len(), 1);
     let bridge = &report.bridges[0];
     assert!(!bridge.presented());
+    assert!(!bridge.pure_forward);
+    assert_eq!(bridge.target, None);
+    assert_eq!(bridge.call_bci, None);
+    assert_eq!(bridge.cast_bci, None);
     let refusal = bridge.refusal.as_ref().expect("the refusal is recorded");
     assert_eq!(refusal.code, "jre_bridge_shape");
     // The body is still presented the ordinary way: refusing the *bridge shape* is not a refusal of
@@ -1414,12 +1819,24 @@ fn a_cast_a_bridge_applies_to_a_parameter_is_not_an_erasure() {
     assert_eq!(report.bridges.len(), 1);
     let bridge = &report.bridges[0];
     assert!(!bridge.presented());
+    assert!(!bridge.pure_forward);
+    assert_eq!(bridge.target, None);
+    assert_eq!(bridge.call_bci, None);
+    assert_eq!(bridge.cast_bci, None);
     let refusal = bridge.refusal.as_ref().expect("the refusal is recorded");
     assert_eq!(refusal.code, "jre_bridge_cast_not_erasure");
     assert!(refusal.message.contains("can fail"), "{}", refusal.message);
-    // The cast is a check this layer cannot prove cannot fail, so the body is quoted where it is.
-    assert!(report.text.contains("// @bytecode"), "{}", report.text);
-    assert_eq!(report.representation, Representation::Mixed);
+    // The bridge verdict remains a refusal, while ordinary cast recovery keeps the parameter check
+    // in the call argument and writes the body as Java.
+    assert!(
+        report
+            .text
+            .contains("return this.real2((java.lang.String) value);"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(report.representation, Representation::Java);
 }
 
 #[test]
@@ -1443,7 +1860,15 @@ fn a_run_that_states_no_access_flags_cannot_decide_a_bridge() {
         refusal.requirement.as_deref(),
         Some("the `access_flags` attribute")
     );
-    assert!(report.text.contains("// @bytecode"), "{}", report.text);
+    assert!(
+        report
+            .text
+            .contains("return (java.lang.String) arg0.real();"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(report.representation, Representation::Java);
 }
 
 // ---------------------------------------------------------------------------
@@ -1683,6 +2108,275 @@ fn accessor_class() -> Vec<u8> {
             },
         ],
     )
+}
+
+/// A verifier-valid narrow write accessor: the JVM descriptor admits the int-shaped local in the
+/// value slot, while the accessor's field proof states the B/C/S position precisely.
+fn narrow_write_accessor_class() -> Vec<u8> {
+    let (mut pool, _code, test, object) = base_pool();
+    let field_name = pool.utf8("f");
+    let field_descriptor = pool.utf8("B");
+    let field = field_ref(&mut pool, test, "f", "B");
+    let accessor_name = pool.utf8("access$102");
+    let accessor_descriptor = pool.utf8("(LTest;B)V");
+    let accessor = member_ref(&mut pool, test, "access$102", "(LTest;B)V");
+    let write_name = pool.utf8("write");
+    let write_descriptor = pool.utf8("(I)V");
+    let accessor_body = Code::default()
+        .op(0x2a) // 0: aload_0
+        .op(0x1b) // 1: iload_1
+        .op(0xb5)
+        .index(field) // 2: putfield Test.f:B
+        .op(0xb1) // 5: return
+        .done();
+    let write_body = Code::default()
+        .op(0x2a) // 0: aload_0
+        .op(0x1b) // 1: iload_1
+        .op(0xb8)
+        .index(accessor) // 2: invokestatic access$102(LTest;B)V
+        .op(0xb1) // 5: return
+        .done();
+    class_bytes(
+        &pool,
+        test,
+        object,
+        &[FieldDef {
+            flags: 0x0002,
+            name: field_name,
+            descriptor: field_descriptor,
+        }],
+        &[
+            MemberDef {
+                flags: 0x1008,
+                name: accessor_name,
+                descriptor: accessor_descriptor,
+                max_stack: 2,
+                max_locals: 2,
+                code: accessor_body,
+            },
+            MemberDef {
+                flags: 0x0001,
+                name: write_name,
+                descriptor: write_descriptor,
+                max_stack: 2,
+                max_locals: 2,
+                code: write_body,
+            },
+        ],
+    )
+}
+
+/// A verifier-valid `Z` write accessor whose argument remains an int in both descriptors.
+fn boolean_write_accessor_class(extra_write: bool) -> Vec<u8> {
+    let (mut pool, _code, test, object) = base_pool();
+    let field_name = pool.utf8("f");
+    let field = field_ref(&mut pool, test, "f", "Z");
+    let extra_field = if extra_write {
+        let name = pool.utf8("g");
+        let field = field_ref(&mut pool, test, "g", "Z");
+        Some((name, field))
+    } else {
+        None
+    };
+    let accessor_name = pool.utf8("access$102");
+    let accessor_descriptor = pool.utf8("(LTest;Z)V");
+    let accessor = member_ref(&mut pool, test, "access$102", "(LTest;Z)V");
+    let write_name = pool.utf8("write");
+    let write_descriptor = pool.utf8("(I)V");
+    let mut accessor_body = Code::default()
+        .op(0x2a) // 0: aload_0
+        .op(0x1b) // 1: iload_1
+        .op(0xb5)
+        .index(field); // 2: putfield Test.f:Z
+    if let Some((_, extra_field)) = extra_field {
+        accessor_body = accessor_body
+            .op(0x2a) // 5: aload_0
+            .op(0x04) // 6: iconst_1
+            .op(0xb5)
+            .index(extra_field); // 7: a second write invalidates the accessor shape
+    }
+    let accessor_body = accessor_body.op(0xb1).done();
+    let write_body = Code::default()
+        .op(0x2a) // 0: aload_0
+        .op(0x1b) // 1: iload_1
+        .op(0xb8)
+        .index(accessor) // 2: invokestatic access$102(LTest;Z)V; caller stack value is int-shaped
+        .op(0xb1) // 5: return
+        .done();
+    let mut fields = vec![FieldDef {
+        flags: 0x0002,
+        name: field_name,
+        descriptor: pool.utf8("Z"),
+    }];
+    if let Some((name, _)) = extra_field {
+        fields.push(FieldDef {
+            flags: 0x0002,
+            name,
+            descriptor: pool.utf8("Z"),
+        });
+    }
+    class_bytes(
+        &pool,
+        test,
+        object,
+        &fields,
+        &[
+            MemberDef {
+                flags: 0x1008,
+                name: accessor_name,
+                descriptor: accessor_descriptor,
+                max_stack: 2,
+                max_locals: 2,
+                code: accessor_body,
+            },
+            MemberDef {
+                flags: 0x0001,
+                name: write_name,
+                descriptor: write_descriptor,
+                max_stack: 2,
+                max_locals: 2,
+                code: write_body,
+            },
+        ],
+    )
+}
+
+#[test]
+fn a_verified_narrow_write_accessor_keeps_the_field_cast() {
+    let class = narrow_write_accessor_class();
+    let report = present(
+        &class,
+        b"write",
+        b"(I)V",
+        2,
+        vec![Some("self".into()), Some("value".into())],
+    );
+    assert!(report.produced(), "{:?}", report.stop());
+    assert_eq!(report.representation, Representation::Java);
+    assert!(
+        report.text.contains("this.f = (byte) value;"),
+        "{}",
+        report.text
+    );
+    assert!(
+        !report.text.contains("% 2"),
+        "a B field keeps its own conversion"
+    );
+    let accessor = report
+        .accessors
+        .iter()
+        .find(|accessor| accessor.name == "access$102")
+        .expect("the write accessor is recorded");
+    assert!(accessor.presented());
+    assert_eq!(accessor.shape, Some(AccessorShape::FieldWrite));
+    assert_eq!(
+        accessor
+            .field
+            .as_ref()
+            .map(|field| field.descriptor.as_str()),
+        Some("B")
+    );
+}
+
+#[test]
+fn a_verified_boolean_write_accessor_keeps_call_and_callee_put_origins() {
+    let class = boolean_write_accessor_class(false);
+    let report = present(
+        &class,
+        b"write",
+        b"(I)V",
+        2,
+        vec![Some("self".into()), Some("value".into())],
+    );
+    assert!(report.produced(), "{:?}", report.stop());
+    assert_eq!(report.representation, Representation::Java);
+    assert!(
+        report.text.contains("this.f = value % 2 != 0;"),
+        "{}",
+        report.text
+    );
+    assert_eq!(report.accessors.len(), 1);
+    let accessor = &report.accessors[0];
+    assert!(accessor.presented());
+    assert_eq!(accessor.shape, Some(AccessorShape::FieldWrite));
+    assert_eq!(accessor.call_site, 2);
+    assert_eq!(
+        accessor
+            .field
+            .as_ref()
+            .map(|field| field.descriptor.as_str()),
+        Some("Z")
+    );
+
+    let assignment = report
+        .source_map
+        .segments()
+        .iter()
+        .find(|segment| {
+            segment
+                .text(&report.text)
+                .contains("this.f = value % 2 != 0;")
+        })
+        .expect("the assignment is anchored to its call site");
+    assert_eq!(assignment.origin().primary().bci(), 2);
+    assert_eq!(
+        assignment.origin().primary().method().unwrap().name.0,
+        b"write"
+    );
+    assert_eq!(assignment.origin().derived().len(), 1);
+    assert_eq!(assignment.origin().derived()[0].bci(), 2);
+    assert_eq!(
+        assignment.origin().derived()[0].method().unwrap().name.0,
+        b"access$102"
+    );
+
+    let callee = present(
+        &class,
+        b"access$102",
+        b"(LTest;Z)V",
+        2,
+        vec![Some("receiver".into()), Some("value".into())],
+    );
+    assert!(callee.produced(), "{:?}", callee.stop());
+    assert!(
+        callee.text.contains("receiver.f = value;"),
+        "{}",
+        callee.text
+    );
+    assert!(
+        !callee.text.contains("% 2"),
+        "the callee's Z parameter is already boolean"
+    );
+    assert!(
+        !callee.source_map.direct_of_bci(2).is_empty(),
+        "{}",
+        callee.text
+    );
+}
+
+#[test]
+fn an_unverified_boolean_write_accessor_stays_a_call() {
+    let class = boolean_write_accessor_class(true);
+    let report = present(
+        &class,
+        b"write",
+        b"(I)V",
+        2,
+        vec![Some("self".into()), Some("value".into())],
+    );
+    assert!(report.produced(), "{:?}", report.stop());
+    assert_eq!(report.accessors.len(), 1);
+    let accessor = &report.accessors[0];
+    assert!(!accessor.presented());
+    assert_eq!(accessor.shape, None);
+    assert_eq!(accessor.refusal.as_ref().unwrap().code, "jre_accessor_body");
+    assert!(report.text.contains("@bytecode 2"), "{}", report.text);
+    assert!(
+        report.text.contains("no proven conversion to `boolean`"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("% 2"), "{}", report.text);
 }
 
 #[test]
@@ -2967,12 +3661,140 @@ fn refused_argument_class() -> Vec<u8> {
     )
 }
 
+/// Two descriptor-aware invocation boundaries share this tiny class: a static caller passes an
+/// `Object` to an interface parameter, while an instance caller passes its declared receiver to
+/// an `Object` parameter. The `take` body is deliberately inert; only the call-site descriptor is
+/// under test.
+fn reference_invocation_class(instance: bool) -> Vec<u8> {
+    let (mut pool, _code, test, object) = base_pool();
+    let runnable_name = pool.utf8("java/lang/Runnable");
+    let _runnable = pool.class(runnable_name);
+    let take_descriptor = if instance {
+        "(Ljava/lang/Object;)I"
+    } else {
+        "(Ljava/lang/Runnable;)I"
+    };
+    let take = member_ref(&mut pool, test, "take", take_descriptor);
+    let caller_name = pool.utf8("caller");
+    let caller_descriptor = if instance {
+        pool.utf8("()I")
+    } else {
+        pool.utf8("(Ljava/lang/Object;)I")
+    };
+    let take_name = pool.utf8("take");
+    let take_descriptor = pool.utf8(take_descriptor);
+    let caller = Code::default()
+        .op(0x2a) // 0: aload_0
+        .op(0xb8)
+        .index(take) // 1: invokestatic Test.take
+        .op(0xac) // 4: ireturn
+        .done();
+    let take_body = Code::default()
+        .op(0x10)
+        .byte(7) // 0: bipush 7
+        .op(0xac) // 2: ireturn
+        .done();
+    class_bytes(
+        &pool,
+        test,
+        object,
+        &[],
+        &[
+            MemberDef {
+                flags: if instance { 0x0001 } else { 0x0009 },
+                name: caller_name,
+                descriptor: caller_descriptor,
+                max_stack: 1,
+                max_locals: 1,
+                code: caller,
+            },
+            MemberDef {
+                flags: 0x0009,
+                name: take_name,
+                descriptor: take_descriptor,
+                max_stack: 1,
+                max_locals: 1,
+                code: take_body,
+            },
+        ],
+    )
+}
+
+/// A refused two-argument call reads one deferred `RuntimeException` value twice through `dup`.
+/// The verifier accepts the concrete-to-supertype boundary, while this source recovery path keeps
+/// the unknown reference relation conservative. Both call operands therefore reach the same SSA
+/// value during quote collection.
+fn shared_deferred_argument_class() -> Vec<u8> {
+    let (mut pool, _code, test, object) = base_pool();
+    let value = member_ref(&mut pool, test, "value", "()Ljava/lang/RuntimeException;");
+    let take = member_ref(
+        &mut pool,
+        test,
+        "take",
+        "(Ljava/lang/Exception;Ljava/lang/Exception;)I",
+    );
+    let caller_name = pool.utf8("caller");
+    let caller_descriptor = pool.utf8("()I");
+    let value_name = pool.utf8("value");
+    let value_descriptor = pool.utf8("()Ljava/lang/RuntimeException;");
+    let take_name = pool.utf8("take");
+    let take_descriptor = pool.utf8("(Ljava/lang/Exception;Ljava/lang/Exception;)I");
+    let caller = Code::default()
+        .op(0xb8)
+        .index(value) // 0: invokestatic Test.value()Ljava/lang/RuntimeException;
+        .op(0x59) // 3: dup; both call arguments are one SSA value
+        .op(0xb8)
+        .index(take) // 4: invokestatic Test.take(Exception,Exception)
+        .op(0xac) // 7: ireturn
+        .done();
+    let value_body = Code::default()
+        .op(0x01) // 0: aconst_null
+        .op(0xb0) // 1: areturn
+        .done();
+    let take_body = Code::default()
+        .op(0x10)
+        .byte(7) // 0: bipush 7
+        .op(0xac) // 2: ireturn
+        .done();
+    class_bytes(
+        &pool,
+        test,
+        object,
+        &[],
+        &[
+            MemberDef {
+                flags: 0x0009,
+                name: caller_name,
+                descriptor: caller_descriptor,
+                max_stack: 2,
+                max_locals: 0,
+                code: caller,
+            },
+            MemberDef {
+                flags: 0x0009,
+                name: value_name,
+                descriptor: value_descriptor,
+                max_stack: 1,
+                max_locals: 0,
+                code: value_body,
+            },
+            MemberDef {
+                flags: 0x0009,
+                name: take_name,
+                descriptor: take_descriptor,
+                max_stack: 2,
+                max_locals: 2,
+                code: take_body,
+            },
+        ],
+    )
+}
+
 #[test]
-fn an_invocation_whose_only_reader_is_quoted_is_written_rather_than_lost() {
-    // P3 2.3 §0, measured before the guard existed: this artifact named BCI 3 (the cast) and BCI 6
-    // (the store) and **neither** BCI 0 — the invocation `Test.value()` was in no segment and in no
-    // quote, so its effect had silently left the artifact. The reader set now excludes an instruction
-    // this build quotes, and the invocation is written where it runs.
+fn an_invocation_is_written_once_with_its_recovered_cast() {
+    // The invocation's value reaches a local through an ordinary checkcast. Both instructions are
+    // now recovered as one declaration, so the producer still appears exactly once and the cast's
+    // runtime check remains in the expression.
     let class = refused_cast_consumer_class();
     let report = present(&class, b"method", b"()V", 0, Vec::new());
     assert!(report.produced(), "{:?}", report.stop());
@@ -2982,10 +3804,12 @@ fn an_invocation_whose_only_reader_is_quoted_is_written_rather_than_lost() {
         "the invocation is written exactly once:\n{}",
         report.text
     );
-    assert!(report.text.contains("    value();\n"), "{}", report.text);
-    // The cast no rule claimed is still quoted, with its own BCI and the store's.
-    assert!(report.text.contains("// @bytecode 3"), "{}", report.text);
-    assert!(report.text.contains("// @bytecode 6"), "{}", report.text);
+    assert!(
+        report.text.contains("local1 = (java.lang.String) value();"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
     assert_eq!(
         unaccounted_instructions(&report, &[0, 3, 6, 7]),
         Vec::<u32>::new(),
@@ -2997,25 +3821,174 @@ fn an_invocation_whose_only_reader_is_quoted_is_written_rather_than_lost() {
         "the invocation's own BCI reaches a segment: {:?}",
         report.text_of_bci(0)
     );
-    assert_eq!(report.representation, Representation::Mixed);
+    assert_eq!(report.representation, Representation::Java);
 }
 
 #[test]
-fn an_invocation_a_quoted_reader_cannot_write_is_named_by_the_quote() {
-    // The other half of the same invariant: the reader here *is* one this build presents (a store),
-    // and it cannot write the value after all because its own operand is bytecode no rule claimed. The
-    // invocation is then named by the quote rather than dropped.
+fn an_invocation_argument_keeps_its_recovered_cast() {
+    // An ordinary cast used as a call argument remains in the local assignment and the invocation
+    // is written once. The unsupported-reader quote control lives in p3_reference_cast's nestedCall.
     let class = refused_argument_class();
     let report = present(&class, b"method", b"(Ljava/lang/Object;)V", 0, Vec::new());
     assert!(report.produced(), "{:?}", report.stop());
-    assert!(!report.text.contains("take("), "{}", report.text);
-    // BCI 7 is the store that could not write; BCI 4 is the invocation it could not write with it.
-    assert!(report.text.contains("// @bytecode 7 4"), "{}", report.text);
+    assert_eq!(report.text.matches("take(").count(), 1, "{}", report.text);
+    assert!(
+        report
+            .text
+            .contains("local1 = take((java.lang.String) local0);"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
     assert_eq!(
         unaccounted_instructions(&report, &[1, 4, 7, 8]),
         Vec::<u32>::new(),
         "{}",
         report.text
+    );
+}
+
+#[test]
+fn a_static_object_to_interface_call_is_quoted_without_an_invented_cast() {
+    let class = reference_invocation_class(false);
+    let report = present(
+        &class,
+        b"caller",
+        b"(Ljava/lang/Object;)I",
+        1,
+        vec![Some("value".into())],
+    );
+    assert!(report.produced(), "{:?}", report.stop());
+    assert_eq!(report.representation, Representation::Mixed);
+    assert_eq!(report.quality, Quality::Fallback);
+    assert_eq!(
+        report
+            .evidence
+            .state(jarde_java::RecoveryEvidenceKind::SourceMap),
+        jarde_java::EvidenceState::Complete
+    );
+    let quoted = quoted_bcis(&report);
+    assert!(
+        quoted.contains(&1),
+        "the invocation BCI is quoted: {quoted:?}"
+    );
+    assert!(quoted.contains(&4), "the return BCI is quoted: {quoted:?}");
+    assert!(
+        !report.text.contains("take((java.lang.Runnable)"),
+        "the refusal cannot invent an interface cast:\n{}",
+        report.text
+    );
+
+    let caller = member_identity(&class, b"caller", b"(Ljava/lang/Object;)I");
+    let quote = report
+        .source_map
+        .segments()
+        .iter()
+        .find(|segment| segment.text(&report.text).contains("@bytecode"))
+        .expect("the refused call is mapped to its quoted source");
+    assert_eq!(quote.origin().primary().bci(), 4);
+    assert_eq!(quote.origin().primary().method(), Some(&caller));
+    assert!(
+        quote
+            .origin()
+            .derived()
+            .iter()
+            .any(|origin| origin.bci() == 1 && origin.method() == Some(&caller))
+    );
+}
+
+#[test]
+fn a_shared_deferred_argument_dag_is_quoted_once_and_budgeted() {
+    let class = shared_deferred_argument_class();
+    let (report, full_budget) =
+        present_with_ir_limit(&class, b"caller", b"()I", 0, vec![], 1 << 20);
+    assert!(report.produced(), "{:?}", report.stop());
+    assert_eq!(report.representation, Representation::Mixed);
+    assert_eq!(report.quality, Quality::Fallback);
+    let quoted = quoted_bcis(&report);
+    assert_eq!(
+        quoted,
+        [3, 7, 4],
+        "the shared quote keeps its first-visit order"
+    );
+    assert_eq!(quoted.iter().filter(|bci| **bci == 4).count(), 1);
+    assert!(
+        !report.text.contains("take((java.lang.Exception)"),
+        "{}",
+        report.text
+    );
+
+    let used = full_budget
+        .usage()
+        .counted_usage(jarde_reader::budget::CountedBudgetDimension::IrItems);
+    assert!(used > 1, "the shared quote walk charged IR work");
+    let low_limit = 1;
+    let (limited, limited_budget) =
+        present_with_ir_limit(&class, b"caller", b"()I", 0, vec![], low_limit);
+    assert!(
+        limited.stop().is_some(),
+        "the lower bound stops the same walk (full used={used}, limit={low_limit}, used={})",
+        limited_budget
+            .usage()
+            .counted_usage(jarde_reader::budget::CountedBudgetDimension::IrItems)
+    );
+    assert!(
+        limited_budget
+            .usage()
+            .counted_usage(jarde_reader::budget::CountedBudgetDimension::IrItems)
+            <= low_limit
+    );
+}
+
+#[test]
+fn an_instance_call_upcasts_this_to_object_from_the_declaring_class_fact() {
+    let class = reference_invocation_class(true);
+    let report = present(&class, b"caller", b"()I", 1, vec![Some("self".into())]);
+    assert!(report.produced(), "{:?}", report.stop());
+    assert_eq!(report.representation, Representation::Java);
+    assert_eq!(report.quality, Quality::Structured);
+    assert!(
+        report
+            .text
+            .contains("return take((java.lang.Object) this);"),
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report
+            .evidence
+            .state(jarde_java::RecoveryEvidenceKind::SourceMap),
+        jarde_java::EvidenceState::Complete
+    );
+    let caller = member_identity(&class, b"caller", b"()I");
+    let calls = report.source_map.of_bci(1);
+    assert!(!calls.is_empty(), "the call BCI is mapped: {}", report.text);
+    assert!(
+        calls
+            .iter()
+            .all(|segment| segment.origin().primary().method() == Some(&caller))
+    );
+    let returns = report.source_map.direct_of_bci(4);
+    assert!(
+        !returns.is_empty(),
+        "the return BCI is mapped: {}",
+        report.text
+    );
+    assert!(
+        returns
+            .iter()
+            .all(|segment| segment.origin().primary().method() == Some(&caller))
+    );
+    let casts = report.source_map.derived_of_bci(1);
+    assert!(
+        !casts.is_empty(),
+        "the cast keeps the call as derived source: {}",
+        report.text
+    );
+    assert!(
+        casts
+            .iter()
+            .all(|segment| segment.origin().primary().method() == Some(&caller))
     );
 }
 
@@ -3111,14 +4084,14 @@ fn line_with(report: &jarde_java::RecoveryReport, needle: &str) -> usize {
 // A: an anonymous class's use site, and the nesting this slice does not claim
 // ---------------------------------------------------------------------------
 
-/// `p/Outer$1.method()Lp/Outer$1;` — an instance method that creates the class the compiler minted for
+/// `p/Outer.method()Lp/Outer$1;` — an instance method that creates the class the compiler minted for
 /// an anonymous class, handing the synthetic constructor the enclosing instance the source captured.
 /// The body's bytes come back with the class, for the oracle's own decoder.
 fn anonymous_use_class() -> (Vec<u8>, Vec<u8>) {
     let mut pool = Pool::default();
     let _code = code_attribute(&mut pool);
     let outer_name = pool.utf8("p/Outer");
-    let _outer = pool.class(outer_name);
+    let outer = pool.class(outer_name);
     let anonymous_name = pool.utf8("p/Outer$1");
     let anonymous = pool.class(anonymous_name);
     let object_name = pool.utf8("java/lang/Object");
@@ -3137,14 +4110,14 @@ fn anonymous_use_class() -> (Vec<u8>, Vec<u8>) {
         .done();
     let class = class_bytes(
         &pool,
-        anonymous,
+        outer,
         object,
         &[],
         &[MemberDef {
             flags: 0x0001,
             name: method,
             descriptor: method_descriptor,
-            max_stack: 2,
+            max_stack: 3,
             max_locals: 1,
             code: code.clone(),
         }],
@@ -3159,7 +4132,7 @@ fn anonymous_use_twice_class() -> Vec<u8> {
     let mut pool = Pool::default();
     let _code = code_attribute(&mut pool);
     let outer_name = pool.utf8("p/Outer");
-    let _outer = pool.class(outer_name);
+    let outer = pool.class(outer_name);
     let anonymous_name = pool.utf8("p/Outer$1");
     let anonymous = pool.class(anonymous_name);
     let object_name = pool.utf8("java/lang/Object");
@@ -3182,14 +4155,14 @@ fn anonymous_use_twice_class() -> Vec<u8> {
         .done();
     class_bytes(
         &pool,
-        anonymous,
+        outer,
         object,
         &[],
         &[MemberDef {
             flags: 0x0001,
             name: method,
             descriptor: method_descriptor,
-            max_stack: 2,
+            max_stack: 3,
             max_locals: 3,
             code,
         }],
@@ -3408,7 +4381,56 @@ fn an_enum_switch_is_presented_as_the_table_read_the_bytecode_performs() {
 }
 
 #[test]
-fn a_table_read_indexed_by_a_local_is_refused_and_the_whole_switch_stays_quoted() {
+fn class_source_enum_candidate_keeps_same_run_table_switch_and_receiver_identity() {
+    let (class, _code, statements) = enum_switch_class(true);
+    let mut essential_budget = Budget::new(limits());
+    let essential = recover_class_source_exact(
+        &class,
+        b"method",
+        b"(Lp/Order;)I",
+        1,
+        jarde_java::RecoveryEvidenceRequest::essential(),
+        &mut essential_budget,
+    );
+    assert!(
+        essential.report.produced(),
+        "{:?}",
+        essential.report.outcome
+    );
+    assert_eq!(essential.enum_switches.len(), 1);
+    let candidate = &essential.enum_switches[0];
+    let member = candidate.member.as_ref().expect("same-run member identity");
+    assert_eq!(member.name.0, b"method");
+    assert_eq!(member.descriptor.0, b"(Lp/Order;)I");
+    assert_eq!(candidate.table.owner, "p/Outer$1");
+    assert_eq!(candidate.table.name, "$SwitchMap$p$Order");
+    assert_eq!(candidate.table.descriptor, "[I");
+    assert_eq!(candidate.index.owner, "p/Order");
+    assert_eq!(candidate.index.name, "ordinal");
+    assert_eq!(candidate.index.descriptor, "()I");
+    assert_eq!(candidate.read_bci, statements[1]);
+    assert_eq!(candidate.switch_bci, statements[2]);
+    assert_eq!(candidate.keys, [1, 2]);
+    assert_eq!(
+        candidate.selector_receiver_type.as_deref(),
+        Some(&b"Lp/Order;"[..])
+    );
+
+    let mut all_budget = Budget::new(limits());
+    let all = recover_class_source_exact(
+        &class,
+        b"method",
+        b"(Lp/Order;)I",
+        1,
+        jarde_java::RecoveryEvidenceRequest::all(),
+        &mut all_budget,
+    );
+    assert!(all.report.produced(), "{:?}", all.report.outcome);
+    assert_eq!(all.enum_switches, essential.enum_switches);
+}
+
+#[test]
+fn a_table_read_indexed_by_a_local_is_refused_and_the_subscript_is_written() {
     let (class, _code, statements) = enum_switch_class(false);
     let report = present_in(&class, b"method", b"(I)I", 1, Vec::new());
     assert_eq!(report.enum_switches.len(), 1);
@@ -3421,8 +4443,24 @@ fn a_table_read_indexed_by_a_local_is_refused_and_the_whole_switch_stays_quoted(
         "{}",
         refusal.message
     );
-    assert!(!report.text.contains("switch ("), "{}", report.text);
-    // The refused region names **every** instruction it covers — the selector's, the arms' and the
+    // P3 2b.1 supersedes what this test used to pin. `enumswitch@1` still refuses the read — the
+    // index is a local and not a call, and the refusal is still recorded above — but a read no rule
+    // claimed is no longer a reason to quote the block around it: the subscript is written, and the
+    // switch is the statement its own decode states (its keys, its arms and its default), which is
+    // measured here. The enum class's constants are still not claimed, so the arms keep the numbers
+    // the payload's keys are.
+    assert!(
+        report
+            .text
+            .contains("switch (p.Outer$1.$SwitchMap$p$Order[arg0])"),
+        "{}",
+        report.text
+    );
+    assert!(report.text.contains("case 1:"), "{}", report.text);
+    assert!(report.text.contains("case 2:"), "{}", report.text);
+    assert!(report.text.contains("default:"), "{}", report.text);
+    assert!(!report.text.contains("p.Order."), "{}", report.text);
+    // The region names **every** instruction it covers — the selector's, the arms' and the
     // returns' — not just the `tableswitch`: P3 2.3 §0's other half.
     assert_eq!(
         unaccounted_instructions(&report, &statements),
@@ -3430,7 +4468,13 @@ fn a_table_read_indexed_by_a_local_is_refused_and_the_whole_switch_stays_quoted(
         "{}",
         report.text
     );
-    assert_eq!(report.representation, Representation::Mixed);
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}",
+        report.text
+    );
+    assert_eq!(report.quality, Quality::Structured, "{}", report.text);
 }
 
 // ---------------------------------------------------------------------------
@@ -3542,7 +4586,8 @@ fn a_run_that_was_not_told_the_declaring_class_states_no_declaration() {
     // them from there — which is why this case drives the recovery layer directly, with facts that
     // state the member but not the class.)
     let class = one_method_class(0x0601, 0x0001);
-    let report = present(&class, b"run", b"()V", 1, vec![Some("self".into())]);
+    let report =
+        present_without_declaring_class(&class, b"run", b"()V", 1, vec![Some("self".into())]);
     let declaration = report.declaration.as_ref().expect("the record is written");
     assert!(!declaration.presented());
     assert_eq!(declaration.form, None);
@@ -3799,6 +4844,27 @@ fn a_static_initializer_is_written_as_the_writes_it_performs_and_declared_as_one
     let report = present_in(&class, b"<clinit>", b"()V", 0, Vec::new());
     assert!(report.produced(), "{:?}", report.stop());
     assert!(report.text.contains("Test.g = 7;"), "{}", report.text);
+    assert!(!report.text.contains("return;"), "{}", report.text);
+    let members = members_of(&class);
+    let clinit = members
+        .members()
+        .iter()
+        .find(|member| member.name() == "<clinit>" && member.descriptor() == "()V")
+        .expect("the fixture declares the static initializer");
+    let closing = report.source_map.direct_of_bci(5);
+    assert_eq!(
+        closing.len(),
+        1,
+        "the tail return maps once: {}",
+        report.text
+    );
+    assert_eq!(closing[0].text(&report.text), "}\n");
+    assert_eq!(closing[0].origin().primary().bci(), 5);
+    assert_eq!(
+        closing[0].origin().primary().method(),
+        Some(clinit.identity()),
+        "the closing brace keeps the <clinit> member identity"
+    );
     assert_eq!(report.fields.len(), 1);
     assert!(report.fields[0].presented());
     assert_eq!(report.fields[0].name, "g");
@@ -3819,6 +4885,78 @@ fn a_static_initializer_is_written_as_the_writes_it_performs_and_declared_as_one
     );
     // There is no constructor prologue to present: the body is not an instance initializer.
     assert!(report.init.is_none(), "{:?}", report.init);
+
+    let payload = analyze(&class, b"<clinit>", b"()V");
+    let facts = facts_of_in(&class, b"<clinit>", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let essential = recover(
+        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
+            .with_members(&members),
+        &mut budget,
+    );
+    assert!(essential.produced(), "{:?}", essential.stop());
+    assert_eq!(essential.text, report.text);
+    assert!(essential.source_map.is_empty());
+    assert_eq!(
+        essential
+            .evidence
+            .state(jarde_java::RecoveryEvidenceKind::SourceMap),
+        jarde_java::EvidenceState::NotRequested
+    );
+}
+
+#[test]
+fn a_static_initializer_source_map_stop_keeps_the_artifact_and_unpaid_tail_unmapped() {
+    let class = static_initializer_class();
+    let payload = analyze(&class, b"<clinit>", b"()V");
+    let facts = facts_of_in(&class, b"<clinit>", 0, Vec::new());
+    let members = members_of(&class);
+    let selection = jarde_java::RecoveryEvidenceRequest::essential()
+        .with_kind(jarde_java::RecoveryEvidenceKind::SourceMap);
+    let (full, used) = {
+        let mut budget = Budget::new(limits());
+        let full = recover(
+            &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
+                .with_members(&members)
+                .with_evidence(selection.clone()),
+            &mut budget,
+        );
+        assert!(full.produced(), "{:?}", full.stop());
+        assert!(full.source_map.len() >= 2, "{}", full.text);
+        assert_eq!(
+            full.evidence
+                .state(jarde_java::RecoveryEvidenceKind::SourceMap),
+            jarde_java::EvidenceState::Complete
+        );
+        let used = budget
+            .usage()
+            .counted_usage(jarde_reader::budget::CountedBudgetDimension::IrItems);
+        (full, used)
+    };
+    let mut budget = Budget::new(Limits {
+        ir_items: used.saturating_sub(1),
+        ..limits()
+    });
+    let partial = recover(
+        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
+            .with_members(&members)
+            .with_evidence(selection),
+        &mut budget,
+    );
+    assert!(partial.produced(), "{:?}", partial.stop());
+    assert_eq!(
+        partial.text, full.text,
+        "evidence cannot mutate the artifact"
+    );
+    assert_eq!(partial.content, full.content);
+    assert!(partial.source_map.len() < full.source_map.len());
+    assert!(partial.source_map.direct_of_bci(5).is_empty());
+    assert!(matches!(
+        partial
+            .evidence
+            .state(jarde_java::RecoveryEvidenceKind::SourceMap),
+        jarde_java::EvidenceState::Partial { .. }
+    ));
 }
 
 #[test]
@@ -3866,7 +5004,7 @@ fn a_run_that_was_not_told_the_class_refuses_the_pre_call_write_and_the_prologue
     // prologue can be decided, and both are *stated* refusals with the missing fact named — not a
     // dropped assignment, not a guessed `super`/`this`.
     let class = inner_constructor_class();
-    let report = present(
+    let report = present_without_declaring_class(
         &class,
         b"<init>",
         b"(Lp/Outer;)V",

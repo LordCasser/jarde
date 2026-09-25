@@ -33,9 +33,10 @@ use std::slice;
 /// D0/D2 gates count on.
 const SCOPE: &[u8] = include_bytes!("fixtures/p3-scope/v8/Scope.class");
 
-/// A body this slice refuses in the middle: `getstatic External.value; checkcast String; areturn`
-/// is quoted rather than presented, so its refusal and its quality are the case's own.
-const REFUSED: &[u8] = include_bytes!("fixtures/p3-refused-cast/v8/RefusedCast.class");
+/// A valid javac class whose `localNew` body is patched in memory below from `astore_1; aload_1`
+/// to `dup; pop`. The leftover construction then has two readers, so the evidence test keeps a
+/// genuine explanation-only refusal without depending on ordinary checkcast support.
+const MULTI_CONSUMER_SOURCE: &[u8] = include_bytes!("fixtures/p3-new-value/v8/Built.class");
 
 /// A class with a member that declares no `Code` at all: the case where a request for a *position in
 /// a body* has no body to read.
@@ -802,7 +803,18 @@ fn a_selected_category_that_stopped_states_its_prefix() {
 #[test]
 fn closing_the_rule_records_keeps_the_refusals_and_the_explanation() {
     let engine = Engine::new();
-    let scope = open(REFUSED);
+    let mut multi_consumer = MULTI_CONSUMER_SOURCE.to_vec();
+    let needle = [0x4c, 0x2b];
+    let replacement = [0x59, 0x57];
+    let sites: Vec<usize> = multi_consumer
+        .windows(needle.len())
+        .enumerate()
+        .filter_map(|(index, window)| (window == needle).then_some(index))
+        .collect();
+    assert_eq!(sites.len(), 1, "localNew keeps one store/load pair");
+    let at = sites[0];
+    multi_consumer[at..at + replacement.len()].copy_from_slice(&replacement);
+    let scope = open(&multi_consumer);
     let definition = definition_of(&engine, &scope);
     let mut inspection_budget = Budget::new(limits());
     let inspected = engine

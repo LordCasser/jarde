@@ -1,0 +1,5 @@
+# 带资源的扩展控制及独立债务
+
+普通javac输入724B/SHA `d98d79395bbd2348ec4c51ceb8af14813a35ccf6edfb912425c1f17c72d06636`，共21行原JVM输出。feed5c与ecab表现相同：锁的14项行为正确，资源方法因guard已有shape拒绝留下2个引用，整类可编译但资源7项未恢复。不得把此21项称作整类恢复成功。用于deferred必须保持的14项另从输入源码重建guard-inline-core完整类，不能剪改此恢复文本。
+
+JADX整类可编译，正常close抛错模式重复close，trace534变5344，再因同一异常对象self-suppression变为IllegalArgumentException；其它20项相同。这是自建resource反例的实际JADX错误，原class是oracle。当前jarde资源shape拒绝属于后续guard审计债务，不混入deferred修复。

@@ -19,14 +19,17 @@
 //!
 //! # The conversion is not lost, and that is why `append` is checked per overload
 //!
-//! `append` is overloaded, and its overloads do **not** all mean what `+` means: `append(char)`
-//! writes one character while `+` on two int-shaped operands adds numbers, `append(char[])` writes
-//! the characters where `+` would write the array's `toString`, and `append(CharSequence)` writes
-//! the sequence where `+` converts through `String.valueOf`. So the parameter type the `append`
-//! instruction really names is read out of the pool, and only the overloads whose text under `+`
-//! is the same text are accepted ([`keeps_its_conversion`]). An overload this rule does not know
-//! makes the *whole chain* a refusal, and the bytecode is quoted: a conversion that cannot be
-//! proven is never written away.
+//! `append` is overloaded, and its overloads do **not** all mean what `+` means: `append(char[])`
+//! writes the characters where `+` would write the array's `toString`, and `append(CharSequence)`
+//! writes the sequence where `+` converts through `String.valueOf`. `append(char)` writes one
+//! character, which is what `+` writes for it as well — but only from a **string context**, since
+//! `+` on two int-shaped operands adds numbers: an expression whose first part is not a `String`
+//! starts from the empty string (`crate::emit`'s `Concat` arm writes `"" +`), so the character is
+//! concatenated and never added as the code unit the `append(C)` instruction pushed. So the
+//! parameter type the `append` instruction really names is read out of the pool, and only the
+//! overloads whose text under `+` is the same text are accepted ([`keeps_its_conversion`]). An
+//! overload this rule does not know makes the *whole chain* a refusal, and the bytecode is quoted:
+//! a conversion that cannot be proven is never written away.
 //!
 //! # The order of evaluation is the invariant
 //!
@@ -627,7 +630,12 @@ fn verify(
             // renders. Anything that produces a statement — a store, a void call, an increment, a
             // field access, an operation this subset does not model — ends the walk: writing the
             // concatenation would have to move that effect.
-            Some(Operation::Push(_) | Operation::Load { .. } | Operation::Arithmetic { .. }) => {
+            Some(
+                Operation::Push(_)
+                | Operation::Load { .. }
+                | Operation::Arithmetic { .. }
+                | Operation::Negate,
+            ) => {
                 owned.insert(at);
             }
             Some(Operation::Invoke(_)) if produces_a_read_value(instruction, block, at) => {
@@ -773,6 +781,7 @@ fn renders_its_reads(operation: Option<&Operation>) -> bool {
                 | Operation::Comparison { .. }
                 | Operation::Switch { .. }
                 | Operation::Arithmetic { .. }
+                | Operation::Negate
                 | Operation::Field { .. }
         )
     )
@@ -783,16 +792,18 @@ fn renders_its_reads(operation: Option<&Operation>) -> bool {
 /// The int-shaped family, the floating-point family and `boolean` are the same text either way: the
 /// overloads are the ones `String.valueOf` converts with. `String` and `Object` are the convention
 /// Java's `+` uses for references (`+` on a reference converts it with `String.valueOf`), so
-/// `append(Object)` is written as the same text. **Everything else is refused** — most importantly
-/// `char`, which `+` would add as a number when both operands are int-shaped, `char[]`, which `+`
-/// would write as the array's own `toString`, and `CharSequence`, which `append` writes character by
-/// character where `+` converts with `toString`.
+/// `append(Object)` is written as the same text. `char` is the same text **in a string context**:
+/// `"" + c` concatenates the one character `append(C)` writes, and the first `+` of every chain this
+/// rule presents stands in that context whenever its first part is not a `String` (`crate::emit`'s
+/// `Concat` arm), so the code unit is never added as a number. **Everything else is refused** — most
+/// importantly `char[]`, which `+` would write as the array's own `toString`, and `CharSequence`,
+/// which `append` writes character by character where `+` converts with `toString`.
 fn keeps_its_conversion(parameter: &Type) -> bool {
     match parameter {
-        Type::Int | Type::Long | Type::Float | Type::Double | Type::Boolean => true,
+        Type::Int | Type::Long | Type::Float | Type::Double | Type::Boolean | Type::Char => true,
         Type::Reference(name) => name == "java.lang.String" || name == "java.lang.Object",
-        // `byte`, `short`, `char` and every other reference: an overload this rule cannot prove
-        // writes the text `+` would write.
+        // `byte`, `short` and every other reference: an overload this rule cannot prove writes the
+        // text `+` would write.
         _ => false,
     }
 }
@@ -831,6 +842,9 @@ mod tests {
             Type::Float,
             Type::Double,
             Type::Boolean,
+            // `"" + c` concatenates the one character `append(C)` writes: the chain's own text
+            // starts in a string context, so the code unit is never added as a number.
+            Type::Char,
             Type::Reference("java.lang.String".to_string()),
             Type::Reference("java.lang.Object".to_string()),
         ] {
@@ -839,11 +853,11 @@ mod tests {
                 "{accepted:?} is written the same way by `+`"
             );
         }
-        // The ones that are not: `char` would be added as a number, `char[]` would be written as an
-        // array, a `CharSequence` would be converted through `toString`, and a `StringBuffer` (the
-        // Java 5 overload) writes characters where `+` converts.
+        // The ones that are not: `char[]` would be written as an array, a `CharSequence` would be
+        // converted through `toString`, `byte` and `short` are the same slot shape but not the same
+        // conversion, and a `StringBuffer`/`StringBuilder` (the Java 5 overload) writes characters
+        // where `+` converts.
         for refused in [
-            Type::Char,
             Type::Byte,
             Type::Short,
             Type::Reference("char[]".to_string()),

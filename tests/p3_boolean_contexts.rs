@@ -719,9 +719,9 @@ struct HandMember {
 /// ```
 ///
 /// `intReturn` is the JVM's own view of the two int-shaped primitives: an `ireturn` in a method
-/// whose descriptor says `Z` verifies, and a compiler cannot write it. `intLiteral` is the same
-/// question with a literal that is *not* a boolean: `2` is an `int` value in a boolean context, and
-/// the layer has no fact that says otherwise. `literalCondition` is a branch whose operand is the
+/// whose descriptor says `Z` verifies, and a compiler cannot write it directly. `intLiteral`
+/// exercises the same low-bit return conversion for the integer literal `2`. `literalCondition`
+/// is a branch whose operand is the
 /// literal `1` — a truth test in a boolean context, and the *only* shape that reaches the literal
 /// evidence in the condition position (`javac` folds a constant condition away). `overwrite` writes
 /// a value no evidence proves boolean into a local its own first write declared `boolean`, and
@@ -858,35 +858,41 @@ fn hand_class() -> Vec<u8> {
 }
 
 #[test]
-fn a_value_without_boolean_evidence_is_refused_in_a_z_return() {
-    // `intReturn(I)Z` returns an `int` value from a `boolean` method. Before this rule the layer
-    // published `return arg0;` under the member's own `Z` descriptor — text javac refuses
-    // (`incompatible types: int cannot be converted to boolean`) while the report claimed Java and
-    // full structure. The value has no evidence that it is a boolean, so the region is refused.
+fn an_integer_operand_in_a_z_return_uses_its_low_bit() {
+    // `intReturn(I)Z` and `intLiteral()Z` use a real `ireturn` under a `Z` descriptor.
+    // The JVM consumes their low bit; Java needs that conversion spelled explicitly.
     let engine = Engine::new();
     let bytes = hand_class();
     let fixture = fixture(&engine, &bytes);
     let report = recover(&engine, &fixture, b"intReturn", b"(I)Z");
-    assert_refused(&report, "intReturn", 1);
-    assert!(
-        !report.text.contains("return arg0;"),
-        "the refused value may not be published in its `int` spelling:\n{}",
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}",
         report.text
     );
+    assert_eq!(report.quality, Quality::Structured, "{}", report.text);
     assert!(
-        report.text.contains("returns `Z`") && report.text.contains("no evidence"),
-        "the refusal states the context that could not be typed:\n{}",
+        report.text.contains("return arg0 % 2 != 0;"),
+        "{}",
         report.text
     );
+    assert!(!report.text_of_bci(1).is_empty(), "{}", report.text);
 
-    // And the same rule for a literal that is not a boolean: `2` is an `int` in a `Z` return.
-    let report = recover(&engine, &fixture, b"intLiteral", b"()Z");
-    assert_refused(&report, "intLiteral", 1);
-    assert!(
-        !report.text.contains("return 2;"),
-        "a non-boolean literal is not published in a boolean context:\n{}",
-        report.text
+    let literal = recover(&engine, &fixture, b"intLiteral", b"()Z");
+    assert_eq!(
+        literal.representation,
+        Representation::Java,
+        "{}",
+        literal.text
     );
+    assert_eq!(literal.quality, Quality::Structured, "{}", literal.text);
+    assert!(
+        literal.text.contains("return 2 % 2 != 0;"),
+        "{}",
+        literal.text
+    );
+    assert!(!literal.text_of_bci(1).is_empty(), "{}", literal.text);
 }
 
 #[test]

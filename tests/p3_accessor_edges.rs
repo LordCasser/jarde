@@ -649,6 +649,10 @@ fn the_two_original_edges_survive_a_recovery_run_field_by_field() {
     );
     assert_eq!(report.accessors.len(), 1);
     assert!(report.accessors[0].presented());
+    assert!(
+        report.fields.is_empty(),
+        "the caller has an accessor invocation, not its callee's field instruction"
+    );
 
     // The class's own members were read for the call site the body named — and only for it.
     let callees = recovered.callees().expect("the body named a call site");

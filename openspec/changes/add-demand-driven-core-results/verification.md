@@ -1,4 +1,8 @@
-# D0 验证记录：冻结 revision、字段角色与计数见证（1.1 / 1.2 / 1.3）
+# D0–D5 验证记录
+
+本 change 已在 `ba2076a` 记录 32/32 收尾；下文按阶段保留历史观测。D0 的“未完成”指当时状态，后续 D3、D3'、D4 与收尾记录给出之后的实现和验证，不能将历史段落读成当前待办。2026-09-22 的关键复跑见文件末尾。
+
+## D0 记录说明（历史基线）
 
 本文件是 `add-demand-driven-core-results` **D0 阶段**的实施记录。它只登记已在本机真实执行的观测、命令与结果：
 冻结的实施 revision 与 dirty 范围（1.1）、逐字段角色清点和 CFG/SSA 分离复核（1.2）、有界计数见证与人为变异证据（1.3）。
@@ -458,7 +462,7 @@ test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; fini
 
 第一次跑全量时 `tests/p5_benchmark.rs::no_ordinary_entry_reaches_the_bulk_module_or_recover_all` 曾失败（新文件的文档里出现了 `crate::bulk` 字样，被守卫当成了 bulk 模块的第二个入口）；改写那句文档后该守卫通过。守卫本身保留且未被放宽。
 
-## 9. 与 tasks 原文的偏差、未完成项
+## 9. D0 当时与 tasks 原文的偏差、未完成项
 
 * **端口位置**：tasks 1.3 写的是 `crates/*/src/*` 内的计数口或测试内 harness。本轮的端口放在**根 crate**（新增 `src/d0_counts.rs`，`src/lib.rs` 一行声明，`src/facade.rs` 内只加计数调用），因为被计数的事件就是 facade 自己组合出来的需求路径（bulk 的同类端口 `src/bulk/observation.rs` 也在根 crate）。三个并行流的文件无一被改动；未改 `Cargo.toml`（模块声明不需要 feature 变更）。
 * **诚实标注为下界的见证**：三项（consumer work、可选记录构造、release）本轮用公开面统计；其中“可选记录构造”只能看到**已发布**的记录，构造后丢弃的记录不可见（§7.4）。D3 的 hook 必须在 `jarde-java` 内放置，才满足 D04 的“构造完整表再截断必须失败”。
@@ -539,4 +543,15 @@ test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; fini
 
 测量与原始样本见 `evidence/measurement-7-3.md` 与 `evidence/raw-7-3-*.jsonl`；能力清单更新见 `docs/support-matrix.md`（证据选择、产物绑定与追问、增量分页三行）。
 
-**完整变更的已知边界（不随完成而消失）**：CLI 未加 `expected_artifact` 旗标；`read_details` 本层不物化（选择它被显式拒绝）；局部证据的范围过滤是"记录/segment 与范围相交"，跨记录 origin 闭包的完整验证只在 region 记录上给出投影比较；查询的目录验证仍是容器粒度、`SnapshotAll` 不下降入 nested；`EntryCursor` 未在门面再导出；`export_cli` 的 `a_counted_dimension_override` 偶发红（既有 flake，单跑与复跑均绿）。
+**完整变更的已知边界（不随完成而消失）**：CLI 未加 `expected_artifact` 旗标；`read_details` 由执行读取的 facade 交付，`jarde-java` 自身不物化该载荷（不能再表述为选择该类别即被拒绝，五种类别均在支持词汇中）；局部证据的范围过滤是"记录/segment 与范围相交"，跨记录 origin 闭包的完整验证只在 region 记录上给出投影比较；查询的目录验证仍是容器粒度、`SnapshotAll` 不下降入 nested；`EntryCursor` 未在门面再导出；`export_cli` 的 `a_counted_dimension_override` 偶发红（既有 flake，单跑与复跑均绿）。
+
+## 2026-09-22 实施状态核对与关键复跑
+
+用户要求直接实施时，当前分支已包含 `ba2076a` 的收尾记录，OpenSpec apply 为 32/32。入口检查的 HEAD 为 `a83b557`；工作区同时有其它源码恢复工作的未提交改动，本次保留原样，在该工作区运行下列门禁。因此这些是当前工作区的复跑结果，不是对纯 HEAD 或新冻结性能候选的独立全量验收。本次没有新增生产实现，只修正 proposal 的 0/32、tasks 页首的 3/32、D4 旧进度与读取明细支持状态等文档矛盾。
+
+| 本次命令 | 结果 |
+| --- | --- |
+| `cargo test --locked --all-features --test d0_demand_counts --test d1_evidence_selection --test d2_prepared_handoff --test d3_artifact_binding --test d5_semantic_comparison --test d5_acceptance_ledger --test p1_query_demand --test p1_query_positions --test p1_query_planes -- --test-threads=1` | 9 个目标，56 passed / 0 failed / 1 ignored；被忽略的执行对照由下一命令单独运行 |
+| `cargo test --locked --all-features --test d5_semantic_comparison --test d5_process_release -- --ignored --test-threads=1` | 6 passed / 0 failed：5 项 debug 子进程/释放门禁及 1 项 JDK 编译执行对照 |
+
+这两组共 62 项通过。未重跑全 workspace、release 门禁或性能采样，不更新前述历史全量计数和时间结论。其余 change 的完成状态与未提交实现不在本次文档修正范围内；本 change 尚保留在 changes 目录，未执行同步/归档。

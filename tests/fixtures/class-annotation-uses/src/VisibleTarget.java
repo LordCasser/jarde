@@ -1,0 +1,2 @@
+@VisibleTag("visible")
+class VisibleTarget {}

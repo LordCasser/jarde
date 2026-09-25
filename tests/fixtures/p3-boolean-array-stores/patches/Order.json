@@ -1,0 +1,50 @@
+{
+  "class": "Order",
+  "classfile_major_version": 52,
+  "original": {
+    "path": "Order.java compiled with javac --release 8 -g:none",
+    "sha256": "63dc18e93763ffbf9d6ce73a299a7d140023eb278dd2d430f6e47d208bb55ef0",
+    "bytes": 532
+  },
+  "patched": {
+    "path": "v8/Order.class",
+    "sha256": "31d8fc3394c39cfe9a9e62da435af9245d2f26cd24e62e077e7310e1bf97d414",
+    "bytes": 532
+  },
+  "descriptor_edits": [
+    {
+      "from": "([I)[I",
+      "to": "([Z)[Z",
+      "constant_pool_entries": 1
+    },
+    {
+      "from": "([II)I",
+      "to": "([ZI)Z",
+      "constant_pool_entries": 1
+    }
+  ],
+  "method": {
+    "name": "put",
+    "patched_descriptor": "([ZI)Z",
+    "access_flags": "0x0009",
+    "code_length": 16,
+    "original_code_hex": "2ab80014b800181bb8001c4f2a032eac",
+    "array_opcode_edits": [
+      {
+        "offset_in_code": [
+          11
+        ],
+        "from": "0x4f",
+        "to": "0x54"
+      },
+      {
+        "offset_in_code": [
+          14
+        ],
+        "from": "0x2e",
+        "to": "0x33"
+      }
+    ]
+  },
+  "scope": "Only the stated method descriptor(s) and the sole iastore/iaload pair in put are changed."
+}

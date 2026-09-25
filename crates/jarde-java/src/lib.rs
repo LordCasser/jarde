@@ -74,6 +74,7 @@ pub mod region;
 pub mod report;
 pub mod source_map;
 pub mod stop;
+pub(crate) mod stringswitch;
 
 pub(crate) mod build;
 pub(crate) mod decode;
@@ -108,12 +109,12 @@ pub use report::{
     RecoveryContent, RecoveryOutcome, RecoveryReport, RecoveryRequest, RegionRecord, recover,
 };
 
-pub use ast::{BinaryOp, ConstructorTarget, Expr, ExprKind, Stmt, StmtKind, Type};
+pub use ast::{AssignOp, BinaryOp, ConstructorTarget, Expr, ExprKind, Stmt, StmtKind, Type};
 pub use emit::{comment_text, escape_string};
 pub use facts::{
-    ACC_BRIDGE, ACC_PUBLIC, ACC_STATIC, ACC_SYNTHETIC, ArithmeticOp, CallTarget, ClassMembers,
-    CompareOp, ConstantValue, DeclaringClass, FieldAccess, InvokeKind, MemberBody, MethodFacts,
-    Operation, RecoveryFacts,
+    ACC_BRIDGE, ACC_PRIVATE, ACC_PUBLIC, ACC_STATIC, ACC_SYNTHETIC, ArithmeticOp, CallTarget,
+    ClassMembers, CompareOp, ConstantValue, DeclaringClass, FieldAccess, InvokeKind, MemberBody,
+    MethodFacts, Operation, RecoveryFacts,
 };
 pub use guard::{Plan as GuardPlan, Resource as GuardResource, Shape as GuardShape};
 pub use names::{

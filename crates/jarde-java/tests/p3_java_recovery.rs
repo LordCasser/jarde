@@ -1059,7 +1059,8 @@ fn a_keyword_name_takes_a_deterministic_alias_and_the_syntax_plane_says_so() {
     );
 
     // The lexical rules themselves, through the published rule rather than through a body: every
-    // vector is one the route decision recorded, including a surrogate pair and a line separator.
+    // vector is one the route decision recorded, including a supplementary scalar and a line
+    // separator.
     assert_eq!(escape_string("a\"b"), "a\\\"b");
     assert_eq!(escape_string("a\\b"), "a\\\\b");
     assert_eq!(escape_string("a\nb"), "a\\nb");
@@ -1067,7 +1068,11 @@ fn a_keyword_name_takes_a_deterministic_alias_and_the_syntax_plane_says_so() {
     assert_eq!(escape_string("\u{7}"), "\\u0007");
     assert_eq!(escape_string("\u{7f}"), "\\u007f");
     assert_eq!(escape_string("\u{2028}"), "\\u2028");
-    assert_eq!(escape_string("😀"), "\\ud83d\\ude00");
+    assert_eq!(
+        escape_string("😀"),
+        "😀",
+        "a supplementary scalar is written as the one character it is, not as its surrogate pair"
+    );
     assert_eq!(escape_string("\\u0041"), "\\\\u0041");
 }
 
@@ -1185,20 +1190,25 @@ fn a_body_the_subset_cannot_prove_is_quoted_rather_than_emptied() {
     );
 }
 
-/// P3-R7: the very body of the finding, driven through the entry point on the committed fixture.
+/// P3-R7: the body the finding was reported on, driven through the entry point on the committed
+/// fixture.
 ///
-/// `finallyPath(I)I` of the ECJ 4.6.1 **v52** class is the one committed body whose decode and
-/// canonical graph disagree: the class declares `Exception table: from 0 to 4 target 9 type any`,
-/// the decode reads eleven instructions (BCI 9's `astore_2`, 10's `iinc`, 13's `aload_2` and 14's
-/// `athrow` among them), and the graph holds a single block `[0, 9)` with nothing dead. Before this
-/// change the run presented the three statements of `[0, 8)` under `java`/`structured` and never
-/// mentioned BCI 9/10/13/14 — a reader could not tell "judged dead" from "never seen".
+/// `finallyPath(I)I` of the ECJ 4.6.1 **v52** class is the body the finding named: the class declares
+/// `Exception table: from 0 to 4 target 9 type any`, the decode reads eleven instructions (BCI 9's
+/// `astore_2`, 10's `iinc`, 13's `aload_2` and 14's `athrow` among them), and the graph, before the
+/// change, held a single block `[0, 9)` with nothing dead — the run presented the three statements of
+/// `[0, 8)` under `java`/`structured` and never mentioned BCI 9/10/13/14, so a reader could not tell
+/// "judged dead" from "never seen".
 ///
 /// What this test states is the invariant, not the shape of one message: every decoded instruction
 /// of the body is either covered by a canonical block or named as unreachable, **or** the body is
-/// refused whole under a reason that quotes every instruction the graph failed to account for.
+/// refused whole under a reason that quotes every instruction the graph failed to account for. For
+/// this member the first half is what holds today — P3 2.9 made the table's own `any` row a graph
+/// fact, so the handler's instructions are in a block, and P3 2.15 stopped reading that row's edge as
+/// a way out of `[0, 4)` (no instruction of it can raise) — and the product states it: the body's
+/// statements are presented and the copy nothing can reach is named by `jre_region_uncovered_blocks`.
 #[test]
-fn an_instruction_no_block_covers_refuses_the_body_it_belongs_to() {
+fn a_body_the_graph_accounts_for_names_the_copy_nothing_reaches() {
     let payload = analyze(HISTORICAL_V52, b"finallyPath", b"(I)I");
     let facts = facts_of(
         HISTORICAL_V52,
@@ -1239,43 +1249,38 @@ fn an_instruction_no_block_covers_refuses_the_body_it_belongs_to() {
         "the class file's own exception table"
     );
 
-    // The graph's account of the same body, computed from the payload's own tables: an instruction
-    // is accounted for by a block's half-open span or by a dead node, and nothing else.
+    // The graph's account of the same body, computed from the payload's own tables. P3 2.9 made the
+    // exception table's own rows graph facts: this fixture's `any` row names no throw site, and its
+    // handler's instructions are in blocks now, so the unaccounted check answers nothing.
+    //
+    // P3 2.15, on the same member: the edge that row states is one **no instruction of the block can
+    // take** — nothing in `[0, 4)` can raise — so it is no longer a way out of the block, and the
+    // instrument it drove (2.9's `jre_region_exception_edge` quote of the body) is gone with it. What
+    // the product states now is the body's normal flow plus the copy nothing can reach: the same
+    // reading `tests/p3_prefix_survival.rs` pins for this member at the entry point.
     let unaccounted = unaccounted_of(&payload);
-    assert_eq!(
-        unaccounted,
-        vec![9, 10, 13, 14],
-        "the handler's four instructions are in no block and in no dead node:\n{}",
+    assert!(
+        unaccounted.is_empty(),
+        "P3 2.9: the stated `any` row's handler instructions are in blocks:\n{}",
         describe(&payload)
     );
 
-    // The product: the whole body is quoted under the reason that names all four, with an anchor for
-    // every quoted BCI, and no statement survives that the graph cannot account for.
+    // The product: the statements the bytes hold are presented, the dead copy is quoted under the
+    // walk's own reason with an anchor for it, and no statement the walk could not prove appears.
     assert_eq!(report.representation, Representation::Mixed);
     assert_eq!(report.quality, Quality::Fallback);
     assert_eq!(report.syntax_status, SyntaxStatus::NotJava);
     assert_eq!(
         report.fallbacks,
-        vec!["jre_region_unaccounted_instruction"],
+        vec!["jre_region_uncovered_blocks"],
         "{:?}",
         report.regions
     );
-    let diagnostic = report
-        .diagnostics
-        .iter()
-        .find(|diagnostic| diagnostic.code == "jre_region_unaccounted_instruction")
-        .expect("the refusal is diagnosed");
-    for bci in &unaccounted {
-        assert!(
-            diagnostic.message.contains(&bci.to_string()),
-            "the reason names BCI {bci}: {}",
-            diagnostic.message
-        );
-    }
     assert_eq!(
         quoted_bcis(&report),
-        vec![0, 9, 10, 13, 14],
-        "the quote names the blocks it refuses *and* every instruction the graph missed:\n{}",
+        vec![9],
+        "the quotes name the handler block the normal flow never reaches, and the block that holds \
+         the statements is not quoted:\n{}",
         report.text
     );
     for bci in quoted_bcis(&report) {
@@ -1285,10 +1290,14 @@ fn an_instruction_no_block_covers_refuses_the_body_it_belongs_to() {
             report.text
         );
     }
-    for presented in ["int local3", "return local3", "arg1 = arg1 + 2"] {
+    for presented in [
+        "int local3 = arg1 + 1;",
+        "arg1 = arg1 + 2;",
+        "return local3;",
+    ] {
         assert!(
-            !report.text.contains(presented),
-            "the body the graph cannot account for is not presented (`{presented}`):\n{}",
+            report.text.contains(presented),
+            "the body's own statement is presented (`{presented}`):\n{}",
             report.text
         );
     }
@@ -1298,8 +1307,8 @@ fn an_instruction_no_block_covers_refuses_the_body_it_belongs_to() {
         report.outcome
     );
 
-    // The member the graph *does* account for is untouched by the check: one class file, one body
-    // refused and the other still presented.
+    // The member the graph accounts for without a quote is untouched by the check: one class file,
+    // one body with a block nothing reaches and the other presented whole.
     let add = analyze(HISTORICAL_V52, b"add", b"(II)I");
     let add_facts = facts_of(HISTORICAL_V52, b"add", 3, Vec::new());
     let mut add_budget = Budget::new(limits());
@@ -2899,19 +2908,23 @@ fn a_verified_site_is_recorded_with_its_bootstrap_use_site_and_captures() {
 }
 
 #[test]
-fn a_bound_receiver_becomes_a_method_reference_and_a_static_member_a_type_reference() {
-    // The bound case: the site's captures are exactly what the handle's receiver needs.
+fn a_bound_receiver_without_capture_proof_is_refused_and_a_static_reference_is_adapted() {
+    // The handcrafted bound case loads `null` through an Object-typed local for a Runnable
+    // capture. The frame, site descriptor and implementation do not prove a source-level
+    // receiver type or a creation-time null check. `local1::run` would not compile here.
     let report = recover_class(&bound_reference_class());
     assert!(report.produced(), "{:?}", report.outcome);
     assert!(
-        report
-            .text
-            .contains("java.lang.Runnable local2 = local1::run;"),
+        report.text.contains("@bytecode") && !report.text.contains("local1::run"),
         "{}",
         report.text
     );
     let site = site_of(&report, 3);
-    assert_eq!(site.form, Some(jarde_java::LambdaForm::MethodReference));
+    assert_eq!(site.form, None);
+    assert_eq!(
+        site.refusal.as_ref().map(|refusal| refusal.code),
+        Some("jre_lambda_sam_types")
+    );
     assert_eq!(
         site.implementation.as_deref(),
         Some("java.lang.Runnable.run()V (REF_invokeInterface)")
@@ -2920,25 +2933,21 @@ fn a_bound_receiver_becomes_a_method_reference_and_a_static_member_a_type_refere
         site.captures,
         vec![jarde_java::LambdaCapture { bci: Some(2) }]
     );
-    assert_eq!(
-        report.representation,
-        Representation::Java,
-        "{}",
-        report.text
-    );
-
-    // The static case: nothing is captured, and the member is another class's.
+    // The static case needs a dynamic String check before selecting the Object implementation.
+    // A raw Function target cannot express that through `String::valueOf` alone.
     let report = recover_class(&static_reference_class());
     assert!(report.produced(), "{:?}", report.outcome);
     assert!(
-        report
-            .text
-            .contains("java.util.function.Function local1 = java.lang.String::valueOf;"),
+        report.text.contains("(java.lang.String) p0")
+            && report
+                .text
+                .contains("(java.lang.Object) (java.lang.String) p0")
+            && !report.text.contains("::valueOf"),
         "{}",
         report.text
     );
     let site = site_of(&report, 0);
-    assert_eq!(site.form, Some(jarde_java::LambdaForm::MethodReference));
+    assert_eq!(site.form, Some(jarde_java::LambdaForm::Lambda));
     assert!(site.captures.is_empty(), "{site:?}");
     assert_eq!(site.sam_name, "apply");
 

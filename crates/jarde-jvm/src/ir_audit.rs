@@ -39,7 +39,9 @@ use jarde_reader::model::{
 use jarde_reader::view::LoaderId;
 
 use crate::call_context::{CallContextOutcome, call_contexts};
-use crate::canonical::{CanonicalBlockId, CanonicalCfg, CanonicalOutcome, canonical_cfg};
+use crate::canonical::{
+    CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, CanonicalOutcome, canonical_cfg,
+};
 use crate::cfg::raw_cfg;
 use crate::frame::{FrameMethod, FrameOutcome, FrameTable, RefType, Value, frames};
 use crate::ssa::{Definition, PhiInput, SsaOutcome, SsaTable, ValueId, ssa};
@@ -728,12 +730,25 @@ mod tests {
                         assert!(witnesses >= 1, "{name}: and the table holds it");
                     }
                     Definition::Caught { block, bci } => {
+                        // A caught value is defined by one exception edge, and the graph states
+                        // which: the state is either the one a throw site of the source hands over
+                        // (its BCI is the site's) or the source block's own exit, which a record
+                        // covering no throwing instruction of that block hands over (2.9). An
+                        // anchor that is neither is a definition no edge of the graph states.
+                        let site = body
+                            .canonical
+                            .throw_sites
+                            .iter()
+                            .any(|site| site.block == *block && site.bci == *bci);
+                        let site_less_edge = *bci == block.bci()
+                            && body.canonical.edges.iter().any(|edge| {
+                                edge.from == *block
+                                    && matches!(edge.kind, CanonicalEdgeKind::Exception { .. })
+                            });
                         assert!(
-                            body.canonical
-                                .throw_sites
-                                .iter()
-                                .any(|site| site.block == *block && site.bci == *bci),
-                            "{name}: a caught value names a throw site the graph holds"
+                            site || site_less_edge,
+                            "{name}: a caught value names a throw site the graph holds or the edge \
+                             of a record that covers none of the source's sites"
                         );
                     }
                 }

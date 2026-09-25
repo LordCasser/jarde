@@ -257,8 +257,8 @@ impl CanonicalThrowSite {
 /// One exception-table record as the graph's exception edges use it, under one call path.
 ///
 /// A row exists for exactly the (record, call path) pairs the graph builds an exception edge for:
-/// a record no throw site of the body names is no row, and a record two call paths reach is one row
-/// per path.
+/// every record whose protected range intersects a block of that path is one row, and a record two
+/// call paths reach is one row per path.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CanonicalHandlerRow {
     /// Ordinal of the original record, in declaration order.
@@ -270,12 +270,14 @@ pub struct CanonicalHandlerRow {
     /// `None` means no clone of this path reaches the handler entry: the exception path leaves
     /// the graph instead of being replaced by an invented successor.
     pub(crate) handler: Option<CanonicalBlockId>,
-    /// The canonical blocks of this row's call path that hold a throw site the record covers, in
-    /// the order the sites name them (resolved and deduplicated before the graph is published).
+    /// The canonical blocks of this row's call path an exception edge of this ordinal leaves, in
+    /// the order the edges name them (resolved and deduplicated before the graph is published).
     ///
-    /// This is the *sites* of the record, not the BCI range it declares: the range decided the
-    /// sites' own handler lists, and a node is covered when one of its throwing instructions is.
-    /// A row whose record covers no site of the body is not a row at all.
+    /// This is the graph's own statement, read out of its exception edges rather than out of the
+    /// throw sites a second time: the raw pass builds the edges of a record with a throw site out of
+    /// those sites and the edges of a record with none out of the protected range the record
+    /// declares, so a block a record protects is here whether or not it holds an instruction that
+    /// can throw. The throw sites stay the runtime fact beside it.
     pub(crate) protected: Vec<CanonicalBlockId>,
 }
 
@@ -302,7 +304,7 @@ impl CanonicalHandlerRow {
         self.handler.as_ref()
     }
 
-    /// The canonical blocks of this row's call path that hold a throw site the record covers.
+    /// The canonical blocks this row's exception edges leave, in edge order.
     pub fn protected(&self) -> &[CanonicalBlockId] {
         &self.protected
     }
@@ -955,12 +957,12 @@ fn build(
     state.drain(&mut queue, budget)?;
 
     checkpoint(Phase::Handlers, budget)?;
-    // The sites come first: a handler row states a record under a call path because a throw site
-    // of that path names the record, so the rows are read out of the sites instead of out of the
-    // table's BCI ranges a second time. One fact, read once: the rows and the exception edges the
-    // graph builds cannot disagree about which (block, ordinal) pairs exist.
+    // The rows come first, read out of the graph's own exception edges: the raw pass builds the
+    // edges of a record out of its throw sites where it has any and out of its declared range where
+    // it has none, and a row states exactly the blocks those edges leave. One fact, read once: the
+    // rows and the exception edges cannot disagree about which (block, ordinal) pairs exist.
     let mut throw_sites = throw_sites(cfg, &state.drafts, method, budget)?;
-    let mut handler_rows = handler_rows(cfg, &state.drafts, &throw_sites, budget)?;
+    let mut handler_rows = handler_rows(cfg, &state.drafts, &state.edges, budget)?;
 
     checkpoint(Phase::Fusion, budget)?;
     let CloneState {
@@ -1095,16 +1097,17 @@ fn origin_of(blocks: &[u32], method: &PhysicalMethodId) -> OriginSet {
 
 /// The exception table as the graph's exception edges use it, one row per (record, call path).
 ///
-/// A row is derived from the throw sites, exactly like the raw graph's exception edges are: a
-/// record appears under one call path when some canonical block of that path holds a throw site the
-/// record covers — the site's own feasible-handler list names the ordinal — and `protected` is
-/// exactly those blocks. The record's BCI range decides nothing here. It already decided every
-/// site's handler list in the raw graph ([`crate::cfg`]), and reading it a second time, against the
-/// blocks' *starts*, is what let a range that begins inside a block produce an edge that no row of
-/// the table stated.
+/// A row is read out of the graph's **own** exception edges, one row per (ordinal, path) an edge
+/// carries and `protected` exactly the blocks those edges leave: the edges are the graph's
+/// statement of which blocks the table's records protect, and a row that re-derived that set from
+/// the throw sites would be a second, weaker statement of the same thing. The raw pass builds the
+/// edges of a record with a throw site out of those sites and the edges of a record with none out of
+/// the protected range it declares, so a record whose range holds no throwing instruction still has
+/// its handler block in the graph and still earns a row — which is what keeps a `catch` the bytes
+/// declare from being dropped when the graph is presented.
 ///
-/// A record no site of the body names is not a row at all: the graph builds no exception edge of
-/// it, so a row would state nothing and its `protected` would be empty.
+/// A record no block of the graph intersects is not a row at all: the graph builds no exception
+/// edge of it, so a row would state nothing and its `protected` would be empty.
 ///
 /// Charges one `IrItems` per row, before the row exists. The `(ordinal, path)` table the rows are
 /// read out of is the same size as they are and its lists are moved into them, so nothing is
@@ -1112,30 +1115,31 @@ fn origin_of(blocks: &[u32], method: &PhysicalMethodId) -> OriginSet {
 fn handler_rows(
     cfg: &crate::cfg::RawCfg,
     drafts: &[Draft],
-    throw_sites: &[CanonicalThrowSite],
+    edges: &[EdgeDraft],
     budget: &mut Budget,
 ) -> std::result::Result<Vec<CanonicalHandlerRow>, Norm> {
     let mut covered: BTreeMap<(u32, Vec<u32>), Vec<CanonicalBlockId>> = BTreeMap::new();
-    for site in throw_sites {
-        for ordinal in &site.handlers {
-            let blocks = covered
-                .entry((*ordinal, site.block.path.clone()))
-                .or_default();
-            // Two sites of one block covered by one record are one entry of `protected`: the
-            // record covers the block, not each instruction.
-            if !blocks.contains(&site.block) {
-                blocks.push(site.block.clone());
-            }
+    for (from, _, kind) in edges {
+        let CanonicalEdgeKind::Exception { handler_ordinal } = kind else {
+            continue;
+        };
+        let blocks = covered
+            .entry((*handler_ordinal, from.path.clone()))
+            .or_default();
+        // Two edges of one block entering one record are one entry of `protected`: the record
+        // protects the block, not each edge.
+        if !blocks.contains(from) {
+            blocks.push(from.clone());
         }
     }
     let mut rows = Vec::with_capacity(covered.len());
     for ((ordinal, path), protected) in covered {
         budget.charge(CountedBudgetDimension::IrItems, 1)?;
         let Some(record) = cfg.handlers.iter().find(|record| record.ordinal == ordinal) else {
-            // A site's handler list is built from this very table, so the two cannot disagree;
-            // refuse rather than invent a catch type or a handler entry.
+            // The edges are built from this very table, so the two cannot disagree; refuse
+            // rather than invent a catch type or a handler entry.
             return unproven(format!(
-                "the throw sites name the exception record {ordinal}, which the raw graph does \
+                "an exception edge names the exception record {ordinal}, which the raw graph does \
                  not publish"
             ));
         };
@@ -1819,9 +1823,10 @@ mod tests {
     fn the_historical_finally_clones_its_shared_subroutine_per_call_site() {
         // The ECJ 4.6 `finallyPath(I)I` of every jsr-era dialect: one subroutine at BCI 17,
         // entered by the `jsr` at BCI 5 (the normal path) and by the `jsr` at BCI 12 (the
-        // handler path the raw graph cannot enter), and one `ret` at BCI 21 whose payload
-        // names both call sites, each with its own return address. The canonical graph must
-        // hold one clone per call site — not one shared clone, and not only the live one.
+        // handler path — dead before 2.9, entered since by the edge the exception table's own
+        // row states), and one `ret` at BCI 21 whose payload names both call sites, each with
+        // its own return address. The canonical graph must hold one clone per call site — not
+        // one shared clone, and not only the live one.
         for (version, bytes) in [(45, V45), (46, V46), (47, V47), (48, V48)] {
             let (facts, method, graph) = historical_graph(bytes, b"finallyPath");
             graph
@@ -1850,7 +1855,7 @@ mod tests {
                 bci: 17,
                 path: vec![5],
             };
-            let dead = CanonicalBlockId {
+            let handler_clone = CanonicalBlockId {
                 bci: 17,
                 path: vec![12],
             };
@@ -1866,7 +1871,7 @@ mod tests {
                 "the clone of the call at BCI 5 returns to BCI 8, major {version}"
             );
             assert_eq!(
-                returns_of(&graph, &dead),
+                returns_of(&graph, &handler_clone),
                 vec![(
                     12,
                     CanonicalBlockId {
@@ -1895,7 +1900,7 @@ mod tests {
                     .filter(|edge| edge.kind == CanonicalEdgeKind::Call { call_site: 12 })
                     .map(|edge| edge.to.clone())
                     .collect::<Vec<_>>(),
-                vec![dead.clone()],
+                vec![handler_clone.clone()],
                 "major {version}"
             );
             // Every canonical block maps back to an original BCI, and the origin of a clone
@@ -1904,39 +1909,55 @@ mod tests {
                 assert_eq!(block.origin_bcis(), block.blocks, "major {version}");
                 assert!(!block.origin.is_empty(), "major {version}");
             }
-            // The dead handler path is listed, not dropped: the raw graph cannot enter it, the
-            // canonical graph holds it, and the truth table says so.
+            // The handler path is **live**: record 0's range is `[0, 8)` — `iload_1`, `iconst_1`,
+            // `iadd`, `istore 4` and the `jsr`, none of which may throw — and the table states the
+            // row anyway, so the raw pass builds one exception edge per block the range intersects
+            // (2.9) and the canonical graph reaches the handler through it. The one throwing
+            // instruction of the body is the `athrow` at BCI 16, which the range does not cover, so
+            // that `athrow` still feeds nothing; the throw sites stay instruction level.
+            //
+            // Before 2.9 this record was invisible to the graph (no site named it), no edge was
+            // built, and the three nodes below were truth-table entries: `[11, 15)` and `[15, 17)`
+            // on the method's own path, and the clone of the `jsr` at BCI 12 under that path.
+            assert!(graph.unreachable.is_empty(), "major {version}");
             assert_eq!(
-                graph.unreachable,
-                vec![
+                graph
+                    .handler_rows
+                    .iter()
+                    .map(|row| (row.ordinal, row.handler_bci, row.protected.clone()))
+                    .collect::<Vec<_>>(),
+                vec![(
+                    0,
+                    11,
+                    vec![CanonicalBlockId {
+                        bci: 0,
+                        path: Vec::new()
+                    }]
+                )],
+                "the table's one row is a row of the graph, and the block its range intersects is \
+                 the block it protects, major {version}"
+            );
+            assert_eq!(
+                graph
+                    .edges
+                    .iter()
+                    .filter(|edge| matches!(edge.kind, CanonicalEdgeKind::Exception { .. }))
+                    .map(|edge| (edge.from.clone(), edge.to.clone(), edge.kind))
+                    .collect::<Vec<_>>(),
+                vec![(
+                    CanonicalBlockId {
+                        bci: 0,
+                        path: Vec::new()
+                    },
                     CanonicalBlockId {
                         bci: 11,
                         path: Vec::new()
                     },
-                    CanonicalBlockId {
-                        bci: 15,
-                        path: Vec::new()
-                    },
-                    dead.clone(),
-                ],
-                "the handler path of the `jsr` at BCI 12 is a truth table entry, major {version}"
-            );
-            // Record 0's range is `[0, 8)`: it holds `iload_1`, `iconst_1`, `iadd`, `istore 4` and
-            // the `jsr` — none of which may throw — while the one throwing instruction of the body
-            // is the `athrow` at BCI 16, which the range does not cover. The record therefore
-            // covers no throw site, the raw graph builds no exception edge of it, and the graph
-            // states no row for it: a row exists for the (record, path) pairs the exception edges
-            // are built from, not for every range a block start happens to fall into.
-            assert!(graph.handler_rows.is_empty(), "major {version}");
-            assert!(
-                graph
-                    .edges
-                    .iter()
-                    .all(|edge| !matches!(edge.kind, CanonicalEdgeKind::Exception { .. })),
-                "no throw site of this body is covered, so no exception edge is built, major \
+                    CanonicalEdgeKind::Exception { handler_ordinal: 0 },
+                )],
+                "the record's own edge, built without a throwing instruction of the range, major \
                  {version}"
             );
-            // The throwing instruction of the finally's rethrow path stays instruction level.
             assert_eq!(
                 graph
                     .throw_sites
@@ -2531,15 +2552,15 @@ mod tests {
     }
 
     #[test]
-    fn a_row_states_the_sites_its_record_covers_not_the_blocks_its_range_contains() {
+    fn every_record_that_intersects_a_block_is_an_edge_and_a_row() {
         // Three records over one body, and the row each one earns:
         //
-        //    0: iconst_1     block 0 starts here
-        //    1: iconst_0     record 0's range [1, 4) starts *inside* that block
+        //    0: aconst_null  block 0 starts here
+        //    1: iconst_1     record 0's range [1, 4) starts *inside* that block
         //    2: idiv         throws, covered by record 0 - the only throwing instruction in it
         //    3: pop          the range ends here
         //    4: goto 7       block 0 ends
-        //    7: iconst_1     block 1 starts, the `goto` target
+        //    7: aconst_null  block 1 starts, the `goto` target
         //    8: iconst_0
         //    9: idiv         throws, covered by record 1, whose range [7, 10) starts with the block
         //   10: pop
@@ -2548,15 +2569,21 @@ mod tests {
         //   13: return
         //   14: astore_0     the handler entry of record 1
         //   15: return
-        //   16: astore_0     the handler entry of record 2, which no edge ever enters
+        //   16: astore_0     the handler entry of record 2, whose range [0, 1) holds no throw site
         //   17: return
         //
-        // Record 2's range [0, 1) *does* contain the block start at BCI 0 - and covers no
-        // throwing instruction, because `iconst_1` cannot raise. A criterion read off the blocks'
-        // starts therefore stated a row for record 2 and none for record 0, while the raw graph
-        // built exactly the opposite pair of exception edges: the `idiv` at BCI 2 feeds record 0,
-        // and nothing feeds record 2. 4.2 reads the pair it is given as one fact, so the missing
-        // row for record 0 came back as a contradiction of the bytes.
+        // The table is the artifact's own statement about what a record protects, and the graph
+        // reads it once: one exception edge per (block, record) the record's range intersects, and
+        // one row per (record, path) an edge names, `protected` being the blocks those edges leave.
+        // The three ranges of this body intersect three blocks, so the graph holds three edges and
+        // three rows — including record 2's, whose range `[0, 1)` covers only `aconst_null` and
+        // can raise nothing. The sites stay the runtime fact beside them: they list the two `idiv`s
+        // and invent no entry for record 2.
+        //
+        // The two criteria this rule replaced stated the other pair: reading the records' ranges a
+        // second time against the blocks' *starts* stated a row for record 2 and none for record 0
+        // (whose range begins inside block 0), and reading them against the throw sites stated
+        // records 0 and 1 and none for record 2.
         let facts = body(
             vec![
                 plain(0, 0x01), // aconst_null
@@ -2581,7 +2608,7 @@ mod tests {
                 plain(13, 0xb1), // return
                 astore(14, 0),  // the handler entry of record 1
                 plain(15, 0xb1), // return
-                astore(16, 0),  // the handler entry of record 2, entered by no edge
+                astore(16, 0),  // the handler entry of record 2
                 plain(17, 0xb1), // return
             ],
             vec![
@@ -2597,9 +2624,8 @@ mod tests {
             .postcondition(&facts, &method)
             .expect("every exception edge is stated by a row of its own ordinal");
 
-        // The nodes the body reaches: the entry, the second block, and the two handler entries the
-        // covered sites open. Record 2's entry is not a node at all, because no edge of this body
-        // can enter it.
+        // The nodes the body reaches: the entry, the second block, and the three handler entries
+        // the three records' edges open.
         let entry = CanonicalBlockId {
             bci: 0,
             path: Vec::new(),
@@ -2608,14 +2634,18 @@ mod tests {
             bci: 7,
             path: Vec::new(),
         };
+        let only_site_less = CanonicalBlockId {
+            bci: 16,
+            path: Vec::new(),
+        };
         assert_eq!(
             graph
                 .blocks
                 .iter()
                 .map(|block| block.id.bci)
                 .collect::<Vec<_>>(),
-            vec![0, 7, 12, 14],
-            "the four blocks the two covered sites reach, and nothing for record 2"
+            vec![0, 7, 12, 16, 14],
+            "every record's handler entry is a node, in the order the traversal reached them"
         );
         assert_eq!(
             graph
@@ -2623,8 +2653,8 @@ mod tests {
                 .iter()
                 .map(|row| (row.ordinal, row.handler_bci))
                 .collect::<Vec<_>>(),
-            vec![(0, 12), (1, 14)],
-            "a record earns a row by the sites it covers: record 2 covers none and has none"
+            vec![(0, 12), (1, 14), (2, 16)],
+            "one row per record the graph builds an edge of, in declaration order"
         );
         let row = &graph.handler_rows[0];
         assert_eq!(
@@ -2646,16 +2676,28 @@ mod tests {
             "the record whose range starts with a block names the block the site is in"
         );
         assert_eq!(
+            graph.handler_rows[2].protected,
+            vec![entry.clone()],
+            "record 2 protects the entry block although its range holds no throwing instruction, \
+             and its row is read out of that edge"
+        );
+        assert_eq!(
+            graph.handler_rows[2].handler,
+            Some(only_site_less.clone()),
+            "and its handler entry is a node of the graph, reached by that edge"
+        );
+        assert_eq!(
             graph
                 .throw_sites
                 .iter()
                 .map(|site| (site.bci, site.handlers.clone(), site.block.clone()))
                 .collect::<Vec<_>>(),
             vec![(2, vec![0], entry.clone()), (9, vec![1], second.clone())],
-            "the sites are the fact the rows and the edges are read out of"
+            "the sites are the runtime fact beside the rows: record 2 covers none and earns no \
+             entry here"
         );
         // The pair 4.2 reads back: an exception edge and the row of its ordinal naming the block
-        // the edge leaves. Record 2's exclusion is what keeps the two in step.
+        // the edge leaves, for every record the table declares.
         assert_eq!(
             edges_from(&graph, &entry),
             vec![
@@ -2672,9 +2714,14 @@ mod tests {
                     },
                     kind: CanonicalEdgeKind::Exception { handler_ordinal: 0 },
                 },
+                &CanonicalEdge {
+                    from: entry.clone(),
+                    to: only_site_less.clone(),
+                    kind: CanonicalEdgeKind::Exception { handler_ordinal: 2 },
+                },
             ],
-            "record 0's exception edge leaves the block that holds the site the row lists, beside \
-             the `goto` the record does not touch"
+            "record 0's edge leaves the block that holds its site and record 2's leaves the same \
+             block with no site at all, beside the `goto` neither record touches"
         );
         assert_eq!(
             edges_from(&graph, &second),
@@ -2691,10 +2738,7 @@ mod tests {
             graph.blocks.iter().all(|block| block.id.bci != 1),
             "no node starts inside record 0's range: the row cannot be read off a block start"
         );
-        assert!(
-            graph.blocks.iter().all(|block| block.id.bci != 16),
-            "record 2's handler entry is entered by no edge, so it is not a node"
-        );
+        assert!(graph.unreachable.is_empty(), "every node is entered");
     }
 
     #[test]

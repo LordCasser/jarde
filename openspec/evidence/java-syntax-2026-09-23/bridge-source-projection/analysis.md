@@ -1,0 +1,17 @@
+# 桥接方法的类源码投影
+
+入口：`python3 replay.py --cli /path/to/jarde-cli --out /path/to/output`。root 使用工作树 CLI SHA-256 `6e2fce612d014ed327c9891981805720a1d5d276e68daeb3be43f8f33ff2dd9a` 分别输出到 `results/` 与 `/tmp/jarde-bridge-replay-root-three-20260923/`，三个案例的 `summary.json` 逐字节相同。环境是 javac 23.0.1 的 `--release 8`、JADX 1.5.6、`java -Xverify:all`。`replay.py` 重编原源码并强制核对 class SHA；正例将实现类及接口装入同一 JAR 交给两款反编译器，因此 JADX 能看到完整接口。只给 source-only runner 补 JADX 的 `defpackage` 包声明，不编辑反编译出的 subject。
+
+| 输入 | 原 class 的可复核事实 | Jarde 完整类 | JADX 完整类 |
+| --- | --- | --- | --- |
+| `positive/`：`BridgeProbe implements BridgeApi<String>`，源代码只声明 `String get()` | 762 B、4 Code、SHA `03499dad67f54ce855af6f102b61c19916f72718a6d8756a35b019e3cda2af2f`；javac 另生成 `ACC_BRIDGE|ACC_SYNTHETIC Object get()`，其 Code 为 `aload_0; invokevirtual get:()String; areturn`；原类执行 `value|value|value` | 零引用，却同时声明 `String get()` 与 `Object get()`；javac 报“已在类 BridgeProbe 中定义了方法 get()” | 只呈现源级覆写；完整类编译、验证执行并输出 `value|value|value` |
+| `negative/`：在无继承接口的 `FakeBridge` 中将已有 `Object geh()` 的池名改为 `get`，并给此方法标记 `ACC_BRIDGE|ACC_SYNTHETIC`，Code 保留 `calls++` | 552 B、4 Code、SHA `1a51179c7d05a89d71b46e86dd010bc9a4f74aeae6834a56a7e76fc17bf1a420`；补丁只改等长 UTF8 名称与方法 flags，原 class 经 JVM 验证，`MethodHandles` 按 `get()Object` 调用得到 `value|value|1` | 零引用但两个 `get()` 仍不能同时作为 Java 声明编译 | 将桥接方法改名为 `m0get()` 后可编译，但原 `get()Object` 消失，受控运行抛 `NoSuchMethodException`/`NoSuchMethodError` |
+| `orphan/`：无继承接口，但 `ACC_BRIDGE|ACC_SYNTHETIC Object get()` 只作纯转发 | 460 B、3 Code、SHA `68262cf87e3242aa0a8d4927caab3f30f9ce9911e2ae1d9290f06beb66a2de0f`；原 class 验证执行 `value|value` | 两个 `get()` 仍不能编译 | 将转发桥接合并/改名后，完整 runner 找不到源级 `get()`，javac 失败；证明即使转发纯净，缺少继承需求也不能投影 |
+
+`results/<case>/` 保存完整原/JADX/Jarde 类源码、javac 和 JVM 输出、`javap`，`negative/patch.py` 可重放附带效果与孤立纯转发两类精确字节补丁。正例接口 class SHA 是 `6452b573128f0943f407b4408704d8238fe7a9f1b50450c15d900290f9f0012a`。`mechanism-only/` 是**手工删除已证冗余桥接声明的实验，不是 Jarde 输出**：保留 Jarde 的原覆写与 raw `implements BridgeApi`，javac 自动重新生成 `get()Object`，完整类编译并运行同样的三段值，`javap.txt` 可见重新生成的桥接 Code。这证明在有已证继承契约时可以投影；两个负例分别证明纯转发与桥接 flag 任一条件都不足以单独许可。
+
+架构定位：`jarde-java::bridge@1` 已读同次 method facts、SSA 和调用形状，可区别纯转发与附带效果，但当前仅决定**方法体呈现**；`src/class_source.rs::source_text` 仍按物理方法表逐项写声明，Java 不允许仅返回类型不同的重载。因此需要类级一次性证明：桥接标志、纯转发目标与真实覆写、已解析的继承方法需求、生成源码可重建同一擦除签名。优先把 `bridge@1` 的结构化结论沿现有 class-source 同次恢复接缝带到装配层，保留物理 `methods`/`RecoveryReport`，只投影源文本；不反解析 `RecoveryReport.text`，不再造第二套桥接识别 pass。找不到继承定义、转发不纯或属性不明时拒绝投影，不把 JADX 的改名当保语义方案。历史 `present-proved-java-structure` 的“不隐藏 bridge”是该 change 的局部非目标，本 change 针对另一个已证类级问题提出新范围。
+
+永久 fixture 的独立复编发现 `BridgeProbe.java` 已内嵌 `BridgeApi` 定义，额外的独立 `BridgeApi.java` 会令 javac 报重复类；已删掉多余源文件并修正复编命令。root 在临时目录重新编译三个案例，两个正例 class 与两个补丁 class 的 SHA-256 均与冻结字节一致，三个 source-only runner 的 `-Xverify:all` 输出分别为 `value|value|value`、`value|value|1`、`value|value`。`javap -p -v` 独立确认三份 `get()Object` 都带 `ACC_BRIDGE|ACC_SYNTHETIC`，正例与孤立例只有 `aload_0; invokevirtual get()String; areturn`，附带效果例在调用前还写 `calls`。对全部永久 fixture 逐个运行 `javap -v -p`，158 个 class 均可读，共 1,106 个 Code 属性；新四个 class 贡献 11 个。`jarde-reader` 的 `repository_class_fixtures_validate_without_false_target_rejections` 定向测试通过。`p5_corpus_fingerprint` 重生后有 388 个输入文件、其中 10 个桥接 source/class 文件；5 项正式检查通过，A01–A18 行没有增加虚构编号。OpenSpec 1.2 已通过并勾选。
+
+实现接缝另有一处不能漏掉：当前 `bridge::plan` 对**没有返回值 `checkcast` 的纯转发**返回 `Ok(None)`，把 `presented` 设为 true，却不在 `Plan` 或 `BridgeRecord` 留下调用目标；正例就是这条路径。类级投影必须让这一路径也从既有 SSA/调用事实给出结构化目标及 BCI，不能把 `presented=true` 当成纯转发目标证明。

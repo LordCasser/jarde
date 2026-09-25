@@ -304,14 +304,17 @@ impl NormalFlowView {
 
     /// Every node of a cycle the projection cannot spell as a Java structure, in node order.
     ///
-    /// Irreducible *here* means a fact about the graph, not a limit of the subset, and it is decided
-    /// the way the textbook decides it: a strongly connected component that holds a cycle is
+    /// `catch_joins` names only handler-root edges whose exception-table ownership and in-loop
+    /// rejoin the region layer has proved. Those edges remain in the view, but are not ordinary
+    /// entries to a loop for this decision. All other edges retain the graph's verdict.
+    ///
+    /// A strongly connected component that holds a cycle is
     /// reducible exactly when **one** of its nodes is entered from outside the component and that
     /// node dominates every other node of the component. A cycle two edges enter — or one whose
     /// single entry does not dominate it — has no header a Java structure could name, and no back
     /// edge either (nothing in it dominates anything else), which is why this is a component-level
     /// question and not a back-edge one.
-    pub fn irreducible_blocks(&self) -> Vec<usize> {
+    pub fn irreducible_blocks(&self, catch_joins: &BTreeSet<(usize, usize)>) -> Vec<usize> {
         let mut blocks = BTreeSet::new();
         for component in tarjan_scc(&self.graph) {
             let nodes: BTreeSet<usize> = component.iter().map(|node| node.index()).collect();
@@ -336,7 +339,10 @@ impl NormalFlowView {
                                 petgraph::graph::NodeIndex::new(*node),
                                 petgraph::Direction::Incoming,
                             )
-                            .any(|predecessor| !nodes.contains(&predecessor.index()))
+                            .any(|predecessor| {
+                                !nodes.contains(&predecessor.index())
+                                    && !catch_joins.contains(&(predecessor.index(), *node))
+                            })
                 })
                 .collect();
             let reducible =
@@ -351,11 +357,44 @@ impl NormalFlowView {
         for loop_of in self
             .loops
             .values()
-            .filter(|loop_of| loop_of.is_irreducible())
+            .filter(|loop_of| self.loop_is_irreducible(loop_of.header(), catch_joins))
         {
             blocks.extend(loop_of.blocks().iter().copied());
         }
         blocks.into_iter().collect()
+    }
+
+    /// Recheck an apparent second entry after a catch row has proved its exceptional origin.
+    /// The original natural-loop fact stays unchanged; only this structure decision may exclude
+    /// the specific handler-to-join edge.
+    pub fn loop_is_irreducible(
+        &self,
+        header: usize,
+        catch_joins: &BTreeSet<(usize, usize)>,
+    ) -> bool {
+        let Some(loop_of) = self.loops.get(&header) else {
+            return false;
+        };
+        if !loop_of.is_irreducible() {
+            return false;
+        }
+        let second_entry = loop_of.blocks().iter().any(|block| {
+            *block != header
+                && self.predecessors(*block).into_iter().any(|predecessor| {
+                    !loop_of.blocks().contains(&predecessor)
+                        && !catch_joins.contains(&(predecessor, *block))
+                })
+        });
+        let crossing = self.loops.iter().any(|(other, other_loop)| {
+            *other != header
+                && other_loop
+                    .blocks()
+                    .iter()
+                    .any(|block| loop_of.blocks().contains(block))
+                && !loop_of.blocks().contains(other)
+                && !other_loop.blocks().contains(&header)
+        });
+        second_entry || crossing
     }
 
     /// How many natural loops the projection has, stated for the reader of a report.

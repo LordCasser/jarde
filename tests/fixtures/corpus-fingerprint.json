@@ -726,6 +726,46 @@
         },
         {
           "kind": "file",
+          "path": "tests/fixtures/p3-bridge-projection/positive/v8/BridgeApi.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-bridge-projection/positive/v8/BridgeProbe.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-bridge-projection/negative/v8/FakeBridge.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-bridge-projection/orphan/v8/OrphanBridge.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-conditional-values/v8/TernaryCore.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-conditional-values/v8/TernaryValues.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-conditional-values/v8/ConditionalBoundarySwitch.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-assert-core/v8/AssertCore.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-assert-core/AssertCore-wrong-owner.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-assert-core/AssertCore-non01-arms.class"
+        },
+        {
+          "kind": "file",
           "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
         },
         {
@@ -911,6 +951,126 @@
       "path": "tests/fixtures/b2-bootstrap-descriptor/v8/LambdaSample.class"
     },
     {
+      "blake3": "bd224b424b0f2b7d9a9566c51f62909b45887c230075b70c2ac080f25ec157f9",
+      "bytes": 248,
+      "path": "tests/fixtures/class-annotation-uses/src/BoundaryRunner.java"
+    },
+    {
+      "blake3": "344f8a05d93d0e2e59b1f72983a27f8a2646ca746850fe4659128b7c993f827f",
+      "bytes": 49,
+      "path": "tests/fixtures/class-annotation-uses/src/DuplicateTarget.java"
+    },
+    {
+      "blake3": "5ef6eb0feab13a5c583173548a42e271a63ff5e7c78c07b5f9752d4c971c935d",
+      "bytes": 21,
+      "path": "tests/fixtures/class-annotation-uses/src/EmptyTarget.java"
+    },
+    {
+      "blake3": "5beca6b05ae5de07e6a97c822157b67a700312d01d262cf9d99e6e0ae295e115",
+      "bytes": 161,
+      "path": "tests/fixtures/class-annotation-uses/src/HiddenTag.java"
+    },
+    {
+      "blake3": "aa82700a73fdc5d4651c7d6f3e36ce8eccb97d0ae7d52852aefe3d8d14cb2d8a",
+      "bytes": 36,
+      "path": "tests/fixtures/class-annotation-uses/src/HiddenTarget.java"
+    },
+    {
+      "blake3": "6b6f4ef66202e4ce91189b645fd53a4c369eaf28024bb7346f06cfe78c9d84ee",
+      "bytes": 322,
+      "path": "tests/fixtures/class-annotation-uses/src/MemberPlacement.java"
+    },
+    {
+      "blake3": "e2f90d8d3148b8206f0c006fec7509ef0acd5806c78bc73bb6aea66014ed8c08",
+      "bytes": 198,
+      "path": "tests/fixtures/class-annotation-uses/src/MemberPlacementTarget.java"
+    },
+    {
+      "blake3": "5f35caf85cf3cfe3ef4db3e6ddae90818a45a047e4757d9062a43dc81acd99c0",
+      "bytes": 58,
+      "path": "tests/fixtures/class-annotation-uses/src/MixedTarget.java"
+    },
+    {
+      "blake3": "910488bd9fa5de241fcb968981ab203a840f691020e9fe61bea2da0068a02ccc",
+      "bytes": 222,
+      "path": "tests/fixtures/class-annotation-uses/src/Tag.java"
+    },
+    {
+      "blake3": "4d985c6f8b386d5f585f6f9120a7af44b37749b8c6f902105bb16748488bcf40",
+      "bytes": 158,
+      "path": "tests/fixtures/class-annotation-uses/src/Tags.java"
+    },
+    {
+      "blake3": "1dabbc6fcbff6bfd9b658502fc0796f52b5500b46e2b856fd55204f70dc1372f",
+      "bytes": 167,
+      "path": "tests/fixtures/class-annotation-uses/src/VisibleTag.java"
+    },
+    {
+      "blake3": "974805c29091da1d543ef356fdc2958e1811f1095cdfdd1a05de9a466c2fef61",
+      "bytes": 46,
+      "path": "tests/fixtures/class-annotation-uses/src/VisibleTarget.java"
+    },
+    {
+      "blake3": "fb06a15744764e2815808042bbd862a603f24d417772edbf558ea05dcb0ca11c",
+      "bytes": 570,
+      "path": "tests/fixtures/class-annotation-uses/v8/BoundaryRunner.class"
+    },
+    {
+      "blake3": "c0b3e366ce421360b421a41bc26c1859291dd6763fce46876d8b4d1579236a69",
+      "bytes": 234,
+      "path": "tests/fixtures/class-annotation-uses/v8/DuplicateTarget.class"
+    },
+    {
+      "blake3": "e3e63c7e2080fffa137508bd22ee6a15422748a6a63dd23d845537d6912b1263",
+      "bytes": 126,
+      "path": "tests/fixtures/class-annotation-uses/v8/EmptyTarget.class"
+    },
+    {
+      "blake3": "ac4170906f8dcc4645fce91d9ff087641021bddf9a85fdcbd428690d33641ded",
+      "bytes": 253,
+      "path": "tests/fixtures/class-annotation-uses/v8/HiddenTag.class"
+    },
+    {
+      "blake3": "5f96dfcdc9e804c1f264e53690a328624070409a235eaa3af60a2d50b3c43867",
+      "bytes": 201,
+      "path": "tests/fixtures/class-annotation-uses/v8/HiddenTarget.class"
+    },
+    {
+      "blake3": "d9adf573798026faf9c7a1cf8de8ef278809fca4e10479f8ad6e9ad1c5a64b2f",
+      "bytes": 385,
+      "path": "tests/fixtures/class-annotation-uses/v8/MemberPlacement.class"
+    },
+    {
+      "blake3": "3e312a7b217c868290f92c74b123049d4a79d13c6eae5986cc681122113456e3",
+      "bytes": 457,
+      "path": "tests/fixtures/class-annotation-uses/v8/MemberPlacementTarget.class"
+    },
+    {
+      "blake3": "bfba8a41c6aa578dcf6863d1cc9abf562832ca563a748ddccaeeed86665dbff7",
+      "bytes": 270,
+      "path": "tests/fixtures/class-annotation-uses/v8/MixedTarget.class"
+    },
+    {
+      "blake3": "873b5e2bab4793caf4514caa0122c23c65ea4c9df384c48c5a4b3e08b0f83080",
+      "bytes": 318,
+      "path": "tests/fixtures/class-annotation-uses/v8/Tag.class"
+    },
+    {
+      "blake3": "36930515818c89a4c6cd8f0fc1ad90a1393b5805bae1b2565efe7fe3466b7127",
+      "bytes": 253,
+      "path": "tests/fixtures/class-annotation-uses/v8/Tags.class"
+    },
+    {
+      "blake3": "e8d81d1fde4fb0514be55e76df7ef2f29ba936873cc92ec5eeb3e7a4174f7d5e",
+      "bytes": 273,
+      "path": "tests/fixtures/class-annotation-uses/v8/VisibleTag.class"
+    },
+    {
+      "blake3": "41b4a2d3c9cfafeecb665d18e2895bdd3f516ed3a3b3a611717d49b7e9b8f043",
+      "bytes": 206,
+      "path": "tests/fixtures/class-annotation-uses/v8/VisibleTarget.class"
+    },
+    {
       "blake3": "3856f83dd932214e8ebf98abe429ba5b3ab514ba9ea72da259081eaeda4e8527",
       "bytes": 268,
       "path": "tests/fixtures/historical/ecj-4.6.1/src/HistoricalControlFlow.java"
@@ -1051,6 +1211,141 @@
       "path": "tests/fixtures/p2-golden/wide-switch.json"
     },
     {
+      "blake3": "c5f7ec03790bfe6151242f491ab495807ea2764e743ae9d7c83ccb0ac4e6d228",
+      "bytes": 394,
+      "path": "tests/fixtures/p3-alias-field/Lazy.java"
+    },
+    {
+      "blake3": "69d3a59a4cd2fea35fe3cc8819fbacfb05b76661f2da22a5e90d5b8c7a35cc98",
+      "bytes": 192,
+      "path": "tests/fixtures/p3-alias-field/v8/Lazy$Holder.class"
+    },
+    {
+      "blake3": "47646af3d5fc3d7bbf3b1e861cf9bed79da161f5d59be1c2e45e79d83f414eec",
+      "bytes": 445,
+      "path": "tests/fixtures/p3-alias-field/v8/Lazy.class"
+    },
+    {
+      "blake3": "cffe8fe3fd4c8c1bef03f17a6cbf84bd0af7b44e191e331fd814f6037d728bf5",
+      "bytes": 830,
+      "path": "tests/fixtures/p3-annotation-default/Marker.java"
+    },
+    {
+      "blake3": "5ba039117da29371ee99a1b31eeb2361a05e898062ca01799cefd4f5ac3e9e6f",
+      "bytes": 725,
+      "path": "tests/fixtures/p3-annotation-default/v8/Kind.class"
+    },
+    {
+      "blake3": "314c50ce75171b1e9c3c200acb13e365e7eab05e3bc4492532eee9d34ced9ec2",
+      "bytes": 448,
+      "path": "tests/fixtures/p3-annotation-default/v8/Marker.class"
+    },
+    {
+      "blake3": "d1e71d9d35ee0037706ea5790faa5187124b1ae7d9a94397b41e5a76b8883d03",
+      "bytes": 1650,
+      "path": "tests/fixtures/p3-array-access/Grid.java"
+    },
+    {
+      "blake3": "fc701b28fb4ba281eb186cb7d6dcdb7bba7e8534317bdea3e84fea30eca0449b",
+      "bytes": 1184,
+      "path": "tests/fixtures/p3-array-access/v8/Grid.class"
+    },
+    {
+      "blake3": "2a9058ead53031d9c1bc6ff6c56db2119f49e06f28911d7a6093c505169a72df",
+      "bytes": 1304,
+      "path": "tests/fixtures/p3-array-initializers/ArrayInitializerProbe.java"
+    },
+    {
+      "blake3": "d3285af851abdc46aa2ef4ca8455a1e3452e1b3d13776daf62a1e9b494f92e26",
+      "bytes": 2111,
+      "path": "tests/fixtures/p3-array-initializers/ArrayInitializerRunner.java"
+    },
+    {
+      "blake3": "cb74d75ea71f01845332f1ec0f7f9be25a1ed079fcd57ff9e57693f1b5fae1d5",
+      "bytes": 1281,
+      "path": "tests/fixtures/p3-array-initializers/v8/ArrayInitializerProbe.class"
+    },
+    {
+      "blake3": "e0ed2c1fe3575953ef1b9f4827ffca095b304c96b20be747bbd4be6ed7553a00",
+      "bytes": 706,
+      "path": "tests/fixtures/p3-array-invocation-widening/ArrayInterfaceProbe.java"
+    },
+    {
+      "blake3": "049c4c0880babe4ef3f2cb4463af95931f409b2b799ec7d53f325ce5d294f088",
+      "bytes": 327,
+      "path": "tests/fixtures/p3-array-invocation-widening/ArrayInterfaceRunner.java"
+    },
+    {
+      "blake3": "5df8cff051e5aa5d05855b45d368019f3aba386be6a060e6e7c0c252661be4e4",
+      "bytes": 1612,
+      "path": "tests/fixtures/p3-array-invocation-widening/ArrayReferenceCore.java"
+    },
+    {
+      "blake3": "ed525b7d1230c8d0bca357aaa58d2f028263ad72eb2486b19b35425cf9027cb5",
+      "bytes": 3663,
+      "path": "tests/fixtures/p3-array-invocation-widening/ArrayReferenceCoreRunner.java"
+    },
+    {
+      "blake3": "4071e8cc39041cbc8d0d75a8a926feddbb17b6cf2839ea047e85a354e1a3c6bb",
+      "bytes": 823,
+      "path": "tests/fixtures/p3-array-invocation-widening/ArrayReferenceOverloadTarget.java"
+    },
+    {
+      "blake3": "bd354226f75df9534447d0ccfd665227bc02782bc7ec0b789ff2ef0da25a7c9c",
+      "bytes": 1301,
+      "path": "tests/fixtures/p3-array-invocation-widening/ArrayReferenceOverloadTargetRunner.java"
+    },
+    {
+      "blake3": "a5f7bd19ae261414551be6998177d0e2d581f988dbb0b211e8438a33eac83ef2",
+      "bytes": 605,
+      "path": "tests/fixtures/p3-array-invocation-widening/UnknownArrayRelation.java"
+    },
+    {
+      "blake3": "713b8ca3e7486e3b2229148cff77970e4a80c3f1b789afaf4584f762f35716c2",
+      "bytes": 297,
+      "path": "tests/fixtures/p3-array-invocation-widening/UnknownArrayRelationRunner.java"
+    },
+    {
+      "blake3": "e6a3f51138b363b505699d3928df4c54ce80052ba71cef1c13f34740549e8c48",
+      "bytes": 65,
+      "path": "tests/fixtures/p3-array-invocation-widening/expected-array-interfaces.txt"
+    },
+    {
+      "blake3": "0484da3edcd77dbe6eb4cc0711d3b114f9036f3c739bb67381ca7ab2da28c4a7",
+      "bytes": 1070,
+      "path": "tests/fixtures/p3-array-invocation-widening/expected-core.txt"
+    },
+    {
+      "blake3": "ff549948cded0706f6019c83c6f6264f23cde15821120ed08139db30c57b0b8d",
+      "bytes": 176,
+      "path": "tests/fixtures/p3-array-invocation-widening/expected-overload-target.txt"
+    },
+    {
+      "blake3": "50cae6852ad46beaea455c2bd9360bdd4254cefaf372967cfcd351afa573f241",
+      "bytes": 24,
+      "path": "tests/fixtures/p3-array-invocation-widening/expected-unknown-relation.txt"
+    },
+    {
+      "blake3": "66a1639b5da6c55b00ab25f7441ad8e9c559d535fbec3c7f55eae84e0c9f27d9",
+      "bytes": 1038,
+      "path": "tests/fixtures/p3-array-invocation-widening/v8/ArrayInterfaceProbe.class"
+    },
+    {
+      "blake3": "e1888313f0b854954cc3c146007ac7d10aa699cef8a454e968003cf37b1413d6",
+      "bytes": 1632,
+      "path": "tests/fixtures/p3-array-invocation-widening/v8/ArrayReferenceCore.class"
+    },
+    {
+      "blake3": "dca1b0d03c09983d7b343e493382280737d16693f1161f6495dfc54104b67d2d",
+      "bytes": 744,
+      "path": "tests/fixtures/p3-array-invocation-widening/v8/ArrayReferenceOverloadTarget.class"
+    },
+    {
+      "blake3": "fdd6644a1ede8b2e5faf79fd2fba16e7ef62c1d8f6ff3ad0425df93bbc560c56",
+      "bytes": 1036,
+      "path": "tests/fixtures/p3-array-invocation-widening/v8/UnknownArrayRelation.class"
+    },
+    {
       "blake3": "5d11b9f1fbdb940e39c7819a2a9058540f10f288fddfcb98ae5f19aa3ac9869f",
       "bytes": 691,
       "path": "tests/fixtures/p3-array-types/ArrayTypes.java"
@@ -1064,6 +1359,166 @@
       "blake3": "69bcd9b9dcf040a51b03c9787fda205180f04aede328d0143d293f48eb2e40e7",
       "bytes": 511,
       "path": "tests/fixtures/p3-array-types/v8/ArrayTypes.class"
+    },
+    {
+      "blake3": "b2822ce4c1fe8ee815f661e9c9fea466246dbc5c2528ccf055ddea4b8e86f75c",
+      "bytes": 1187,
+      "path": "tests/fixtures/p3-assert-core/AssertCore-non01-arms.class"
+    },
+    {
+      "blake3": "485a40a1ca418272daae3f02efe20f4ae590a36374b4731ed3014fd130c4bebf",
+      "bytes": 1187,
+      "path": "tests/fixtures/p3-assert-core/AssertCore-wrong-owner.class"
+    },
+    {
+      "blake3": "a772950ecc04847dffd4dd75b17199ce72872256563fdf4f04b124032ea5a2be",
+      "bytes": 509,
+      "path": "tests/fixtures/p3-assert-core/AssertCore.java"
+    },
+    {
+      "blake3": "34f40d05e529897d32ba3e4c85ca0d8b88e80df7770de439d412b08999ed437a",
+      "bytes": 365,
+      "path": "tests/fixtures/p3-assert-core/AssertRunner.java"
+    },
+    {
+      "blake3": "c14767325d14b247d78dd97bfbd5304414fd2cf5218b5aba6edc159dfde422f2",
+      "bytes": 985,
+      "path": "tests/fixtures/p3-assert-core/JadxAssertCore-non01-arms.java"
+    },
+    {
+      "blake3": "8d7b237a0812dd939a235c8ec98ee994c45a5d7c632e564afc5847b2600c3299",
+      "bytes": 805,
+      "path": "tests/fixtures/p3-assert-core/JadxAssertCore-wrong-owner.java"
+    },
+    {
+      "blake3": "49c0113c311aef6240dd774d6fcf2ad8bfbe6e9e86d50a2d3f104d2959e69201",
+      "bytes": 802,
+      "path": "tests/fixtures/p3-assert-core/JadxAssertCore.java"
+    },
+    {
+      "blake3": "ccbb2a6e255c80c3e4fb06c09b8ac314d4d07ed9469e5408d94557771bde66ea",
+      "bytes": 2775,
+      "path": "tests/fixtures/p3-assert-core/JardeAssertCore-wrong-owner.java"
+    },
+    {
+      "blake3": "f39148278f956cd78bd9ec6f14d26b738ae412403de6004227f783055389baa1",
+      "bytes": 2762,
+      "path": "tests/fixtures/p3-assert-core/JardeAssertCore.java"
+    },
+    {
+      "blake3": "749bc0d408dd9e57f6edcfd95a1f9054d98982c65b5a6595baa21a078c4a0bd4",
+      "bytes": 1187,
+      "path": "tests/fixtures/p3-assert-core/v8/AssertCore.class"
+    },
+    {
+      "blake3": "a261a13df1525a976e206f3376073830f25e88417fff24088c30632e0ded5472",
+      "bytes": 398,
+      "path": "tests/fixtures/p3-bitwise/BitwiseEffects.java"
+    },
+    {
+      "blake3": "1ddfc3f929311080a9e0bde2bd6f0fd0c9e17ba661e22ce990e7c8399411202c",
+      "bytes": 1629,
+      "path": "tests/fixtures/p3-bitwise/BitwiseProbe.java"
+    },
+    {
+      "blake3": "126b91fe92fba203c321dd0720b08f800c0c8301e9e9245d9529e9ea823f7161",
+      "bytes": 2752,
+      "path": "tests/fixtures/p3-bitwise/BitwiseProbeRunner.java"
+    },
+    {
+      "blake3": "fc8b7c0376a0083afb699de841aa7a18a3b413c441049650a4e058d0f84e493b",
+      "bytes": 1303,
+      "path": "tests/fixtures/p3-bitwise/v8/BitwiseProbe.class"
+    },
+    {
+      "blake3": "f529cf8ef2c06871fc898ccde0b4776e732eeec7ae2872a89f856569177c9136",
+      "bytes": 102,
+      "path": "tests/fixtures/p3-boolean-array-initializers/BoolInit.java"
+    },
+    {
+      "blake3": "62b261afba7b4e29e9123858fa0aa58205bbbd59c95b06dc95f8e80b511c6c70",
+      "bytes": 508,
+      "path": "tests/fixtures/p3-boolean-array-initializers/BoolInitEffectful.java"
+    },
+    {
+      "blake3": "3595a7092c9cf00983c7080c0d476690866403a413a6a3e1e886cf207d58130e",
+      "bytes": 1133,
+      "path": "tests/fixtures/p3-boolean-array-initializers/BoolInitEffectfulRunner.java"
+    },
+    {
+      "blake3": "c1edb6b7956bb0602941cb4f7525c67c0930b2286d99f742f104e7bd8ca1157b",
+      "bytes": 559,
+      "path": "tests/fixtures/p3-boolean-array-initializers/BoolInitRunner.java"
+    },
+    {
+      "blake3": "2a9051d0cdc9b79f777a944636f3accc4d17ceb164742d86408d1ba1e1f75c8b",
+      "bytes": 284,
+      "path": "tests/fixtures/p3-boolean-array-initializers/expected-effectful.txt"
+    },
+    {
+      "blake3": "8bec6260b94c260c784c7e347a5976244bcde78b29785ea76db8517a94214f7b",
+      "bytes": 33,
+      "path": "tests/fixtures/p3-boolean-array-initializers/expected.txt"
+    },
+    {
+      "blake3": "a142dec1b099d3eade36464ea52a7581e54352a078501136b9cabb7831ff61ca",
+      "bytes": 189,
+      "path": "tests/fixtures/p3-boolean-array-initializers/v8/BoolInit.class"
+    },
+    {
+      "blake3": "35b5684bce08ea8d3c590175c6163f8acd2aae8a72a54b4aa4144f711426457d",
+      "bytes": 614,
+      "path": "tests/fixtures/p3-boolean-array-initializers/v8/BoolInitEffectful.class"
+    },
+    {
+      "blake3": "590da499e4360b559d55af2791e8efe18dcf2a4bf1f394d9e1311f1771d573f3",
+      "bytes": 713,
+      "path": "tests/fixtures/p3-boolean-array-stores/Order.java"
+    },
+    {
+      "blake3": "db30bce9e49b0a1df36c0f44061cefa9d801217d81edc5ae7fe86a3a22d6ab5c",
+      "bytes": 1335,
+      "path": "tests/fixtures/p3-boolean-array-stores/OrderRunner.java"
+    },
+    {
+      "blake3": "fabd2761b964ade05700afce617652728d12b6ff9812ec24fb3e9397de2f5425",
+      "bytes": 405,
+      "path": "tests/fixtures/p3-boolean-array-stores/RawBool.java"
+    },
+    {
+      "blake3": "a386b70027d3582622cecb5161a1db73aab40a8a805443b1fe324bc05a9de1cc",
+      "bytes": 642,
+      "path": "tests/fixtures/p3-boolean-array-stores/RawBoolRunner.java"
+    },
+    {
+      "blake3": "2e6a63f0365b62a99fe762e9b1643644b4cee1938ea16b1c418f8b38a7e3e469",
+      "bytes": 202,
+      "path": "tests/fixtures/p3-boolean-array-stores/expected/Order.stdout"
+    },
+    {
+      "blake3": "019a4e6828e87137501f6f93f222a8229a9c00124c65aa9ddb3727dc7090de61",
+      "bytes": 165,
+      "path": "tests/fixtures/p3-boolean-array-stores/expected/RawBool.stdout"
+    },
+    {
+      "blake3": "8a3533e579d0be778703d2a83acf8d0e8840ab7847a2e95b00976d9405025dfa",
+      "bytes": 1156,
+      "path": "tests/fixtures/p3-boolean-array-stores/patches/Order.json"
+    },
+    {
+      "blake3": "9e83c301fa840d56933aa028786066ccf1fcec4f08a12232424207736672076e",
+      "bytes": 1054,
+      "path": "tests/fixtures/p3-boolean-array-stores/patches/RawBool.json"
+    },
+    {
+      "blake3": "564bace3dc444d4e10caed58c13ef21775a734a9e60aacc74f5491c3624bde7c",
+      "bytes": 532,
+      "path": "tests/fixtures/p3-boolean-array-stores/v8/Order.class"
+    },
+    {
+      "blake3": "1b29c4d7160c9e093fe2e4bbf439fd4a587ff0061a92e9839e8a73fea5ea3066",
+      "bytes": 172,
+      "path": "tests/fixtures/p3-boolean-array-stores/v8/RawBool.class"
     },
     {
       "blake3": "b6d4c2c17514025a3826305fc306048531a32b14c3a27b54235fcf908b707d18",
@@ -1081,6 +1536,301 @@
       "path": "tests/fixtures/p3-boolean-contexts/v8/BooleanContexts.class"
     },
     {
+      "blake3": "0bb9acc114d7503708f04e832263cada7ebd8e5ecc6d10590f3361b5c4067366",
+      "bytes": 312,
+      "path": "tests/fixtures/p3-boolean-field-stores/ZFieldStoreEffects.java"
+    },
+    {
+      "blake3": "13a755dfbcf0dab365367622743faa2dc04bd1ae6833323933e79219267ee3b9",
+      "bytes": 1271,
+      "path": "tests/fixtures/p3-boolean-field-stores/ZFieldStores.java"
+    },
+    {
+      "blake3": "ff3bfacb216b0a96c33739f17825ae9b2e01a9edf9164e299d9684c9b13419a5",
+      "bytes": 6400,
+      "path": "tests/fixtures/p3-boolean-field-stores/ZFieldStoresRunner.java"
+    },
+    {
+      "blake3": "8f61762517331adc90f6ce9a24069fa1b4a122e6b3f0494a64df0e1c7f146e7a",
+      "bytes": 3339,
+      "path": "tests/fixtures/p3-boolean-field-stores/code-sha256.json"
+    },
+    {
+      "blake3": "8e960b376bcdd3f7b7343c5d7ee4032b5b9d2763689761461905586bb27832f5",
+      "bytes": 1405,
+      "path": "tests/fixtures/p3-boolean-field-stores/patched-runtime.stdout"
+    },
+    {
+      "blake3": "9d3ae3858dda3a75714e2753db00316a173f26357b73f2c3f44029ad53b6e23a",
+      "bytes": 99,
+      "path": "tests/fixtures/p3-boolean-field-stores/pre-implementation-red.txt"
+    },
+    {
+      "blake3": "9bf15eaecd6ac4fbb76a61fdd2af4c9a14a22124a5b6cd7abb7d53fce9875916",
+      "bytes": 1285,
+      "path": "tests/fixtures/p3-boolean-field-stores/pre-implementation-runtime.stdout"
+    },
+    {
+      "blake3": "01e4b53095d31d94c5580938f2f5d765b75731adfb79c65535ed0374bb5f8b1e",
+      "bytes": 914,
+      "path": "tests/fixtures/p3-boolean-field-stores/v8/ZFieldStores.class"
+    },
+    {
+      "blake3": "c95477c5aadfca1c4442aaa56d8ed2e3c736eafea866bfe801e3c4f91902aee5",
+      "bytes": 254,
+      "path": "tests/fixtures/p3-bridge-projection/negative/FakeBridge.java"
+    },
+    {
+      "blake3": "5a9c9638c4dfba011e2b8166384c86660857072a448c9a8df048aeba0f2f71c9",
+      "bytes": 480,
+      "path": "tests/fixtures/p3-bridge-projection/negative/FakeRunner.java"
+    },
+    {
+      "blake3": "af4fb2d30f92d94982f4c733c73b68f5597ee58247da72561e1dd88874df8078",
+      "bytes": 552,
+      "path": "tests/fixtures/p3-bridge-projection/negative/v8/FakeBridge.class"
+    },
+    {
+      "blake3": "586b06859735d94583da2d499465207ea4ea282199d6054d366fd17a75702667",
+      "bytes": 147,
+      "path": "tests/fixtures/p3-bridge-projection/orphan/OrphanBridge.java"
+    },
+    {
+      "blake3": "bf6de13039866b180b1413c017e8da69ddf8abc178a302efd53decbb5ff785c8",
+      "bytes": 461,
+      "path": "tests/fixtures/p3-bridge-projection/orphan/OrphanRunner.java"
+    },
+    {
+      "blake3": "7e10a7e72739a55aeb2784134eace0a84a15219ec2495ee86f4c565f70014002",
+      "bytes": 460,
+      "path": "tests/fixtures/p3-bridge-projection/orphan/v8/OrphanBridge.class"
+    },
+    {
+      "blake3": "3325a3a6bb3e0d67551ad546ba31bf28afe542e85c9821afec4cd1351e925139",
+      "bytes": 296,
+      "path": "tests/fixtures/p3-bridge-projection/positive/BridgeProbe.java"
+    },
+    {
+      "blake3": "171c2317efdcfad0f77211b0053bcfc2c1f8e719e093371ff50749f004c4a3d7",
+      "bytes": 254,
+      "path": "tests/fixtures/p3-bridge-projection/positive/BridgeRunner.java"
+    },
+    {
+      "blake3": "175e2ca92463763a6afe024d8f4fb884a6d9975e8a3e34a5cc1d6d575a7bdce2",
+      "bytes": 217,
+      "path": "tests/fixtures/p3-bridge-projection/positive/v8/BridgeApi.class"
+    },
+    {
+      "blake3": "6b36e9bcdaae2935b5f453668aa3cd607019eb8f03f705bd2d7d4361c30f1e77",
+      "bytes": 762,
+      "path": "tests/fixtures/p3-bridge-projection/positive/v8/BridgeProbe.class"
+    },
+    {
+      "blake3": "e3277bf4d42f208bf8af6ae6883191478608ed5ce8fd7afc827e7a6285f9e26d",
+      "bytes": 238,
+      "path": "tests/fixtures/p3-catch-binding-escape/CatchEscape.java"
+    },
+    {
+      "blake3": "0f896bd33f49ad2b9545cdb914b1207f8ae9fe3a730567812ed555bb459b66b6",
+      "bytes": 347,
+      "path": "tests/fixtures/p3-catch-binding-escape/v8/CatchEscape.class"
+    },
+    {
+      "blake3": "575d1e95c99fd5380aafb3b9dcb692d4ef92aba0306f5187c00494db1fb3ac8b",
+      "bytes": 202,
+      "path": "tests/fixtures/p3-chained-store/Chain.java"
+    },
+    {
+      "blake3": "218ca5f5baa66584ebb9bf266e6328b34be65f500e7e5e886fb299f9428ae7ff",
+      "bytes": 226,
+      "path": "tests/fixtures/p3-chained-store/v8/Chain.class"
+    },
+    {
+      "blake3": "09c3d90d01933847133bc363928f0f657e21a9fc1e392b1d2072147755763f04",
+      "bytes": 400,
+      "path": "tests/fixtures/p3-char-switch/Letters.java"
+    },
+    {
+      "blake3": "dde0a652c867708d726c6612136886c4cf8479b51ffbc965f3d4b010e614a05f",
+      "bytes": 301,
+      "path": "tests/fixtures/p3-char-switch/v8/Letters.class"
+    },
+    {
+      "blake3": "1484d8fef590b0e262dbf38309380620b066d51fc627a726335bdd08680d7f60",
+      "bytes": 696,
+      "path": "tests/fixtures/p3-class-literals/ClassLiteralProbe.java"
+    },
+    {
+      "blake3": "79209a79cb9ad446eb2aca119e0a90be0c095e2859afcb81a891a6705b12b9e0",
+      "bytes": 769,
+      "path": "tests/fixtures/p3-class-literals/ClassLiteralRunner.java"
+    },
+    {
+      "blake3": "99e535306e3aa13f8905a258eb1d1cdbe6b2cd77a9fdd24c8622dbc3642f10ac",
+      "bytes": 262,
+      "path": "tests/fixtures/p3-class-literals/LocalNameQualifier.java"
+    },
+    {
+      "blake3": "34ddd88f3862a1956bbb02184a04c095e85971f9b7ff2997436b4d1cfd2aec39",
+      "bytes": 180,
+      "path": "tests/fixtures/p3-class-literals/TypeNameCollision.java"
+    },
+    {
+      "blake3": "47edeae2e0bc432c05739a5a1b18d2550454035a38720179ce85106832ad7b0f",
+      "bytes": 187,
+      "path": "tests/fixtures/p3-class-literals/TypeNameString.java"
+    },
+    {
+      "blake3": "9571d77c38849d40fc5928b96d92d4fb17a1793c35ef89ff7b2b1d11d03127e4",
+      "bytes": 851,
+      "path": "tests/fixtures/p3-class-literals/v8/ClassLiteralProbe.class"
+    },
+    {
+      "blake3": "da7536db5b159331dd8d00bdf1ad6205662efe6abf5c29d92323a741e8d4fc07",
+      "bytes": 264,
+      "path": "tests/fixtures/p3-class-literals/v8/LocalNameQualifier.class"
+    },
+    {
+      "blake3": "80703f893eb7517061860d789955632894bac101c3cbc08f8c55056b21a496e5",
+      "bytes": 248,
+      "path": "tests/fixtures/p3-class-literals/v8/String.class"
+    },
+    {
+      "blake3": "62da3670025e5d5003a2476aff316697685c725494a8dcdb85999c49abc2f733",
+      "bytes": 246,
+      "path": "tests/fixtures/p3-class-literals/v8/java.class"
+    },
+    {
+      "blake3": "e6ab7e4e0acc7844f50545fa9f44a5d9563219d651f26c48a4a77e747daddd59",
+      "bytes": 209,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/BoundaryBox.java"
+    },
+    {
+      "blake3": "eb1cf889ce866c4ba58748263b9c9edd34a9b2ce995133e4b144cabcf836a733",
+      "bytes": 2755,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/CompoundBoundaryProbe.java"
+    },
+    {
+      "blake3": "b7e5187f20a2beee10dd812bd8ce2f1498b8222eb2c5a1c05ce1a3e3f959b87d",
+      "bytes": 4976,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/CompoundBoundaryRunner.java"
+    },
+    {
+      "blake3": "6cd994166ecea31554048e839a709f6255d4d18e108cab00de992aac08fcf48c",
+      "bytes": 128,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/CompoundBox.java"
+    },
+    {
+      "blake3": "85f1115a17ec0d65e9679ef6c02cdad8ff6a31ecbf5b88eec355925bfeb4bdf6",
+      "bytes": 1559,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/CompoundProbe.java"
+    },
+    {
+      "blake3": "6332cc512df614005ed83f4d9776ad6b746ff6d960797642e0c4794c6675db9e",
+      "bytes": 1591,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/CompoundRunner.java"
+    },
+    {
+      "blake3": "527a4c0c133e78891a57481b985afeff198e557e28267950fb3b7482687084b2",
+      "bytes": 3637,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/manifest.json"
+    },
+    {
+      "blake3": "12adcfbf89de1bb986b1dc50160445975dced59b6de6739cb8edac81d86bc6bb",
+      "bytes": 2060,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-different-array-copy/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "c805c823102133de62ae71084b79cc037ffea4f2537f63fc918fba4e93589d1c",
+      "bytes": 2057,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-different-index-copy/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "b322dab9f7c2d497317a6143fcf28013b153fe35383968617ec975666ffe76b3",
+      "bytes": 2060,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-after-dup/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "dd12efe51ff191035b1764a732f0adc82903f660853aa63e82b49cf23f548315",
+      "bytes": 2060,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-before-index/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "9883c52ef2fed6abcf3e6e20eee2b5f98a528a34105edf12588b2d57415a9b92",
+      "bytes": 2060,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-before-store/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "59a19d5d07d5e96232511c937f1d3a5c5be5c707b247fd412845691ea362a706",
+      "bytes": 2059,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-multi-consumer/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "fde5a5d7fd8324c3a78966b82232d1dd9d5eb5685bd8158a123d6a60b3f8d318",
+      "bytes": 2055,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-different-member/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "3f2fd512451727305363fee22d66a7be0005a489ccdbae7863fc271dfc00c268",
+      "bytes": 2060,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-after-dup/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "80a5f3a4507f4bc2d51bf72d9bbe4740db73be2fd10691e5000999ee41ff5809",
+      "bytes": 2060,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-before-dup/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "eb6ddd8d1906e30e5cb7372ee10813cc978d239614c49be1a5d148be632f03ba",
+      "bytes": 2060,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-before-store/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "31db7d84320e906a38b7be8a1783408807f352087c93ebb917459ad95cb2a8c3",
+      "bytes": 2059,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-multi-consumer/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "0d4e1e3ba7c1d8dda5a5fb4c07999a4c2e286ad6946ecd8e4ce0a37fe5a8c8fe",
+      "bytes": 219,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/v8/BoundaryBox.class"
+    },
+    {
+      "blake3": "28b96e14872b4e9a44f98cda106afca7ee8e3b4b70c469fdde3b76a42dfb2122",
+      "bytes": 2055,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/v8/CompoundBoundaryProbe.class"
+    },
+    {
+      "blake3": "b72beaec2ad24e32761c983515232ff34c492d1364a757d95c24d1ee7ccf8bb5",
+      "bytes": 3156,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/boundaries/v8/CompoundBoundaryRunner.class"
+    },
+    {
+      "blake3": "cf001c33982caa4a972b8cabd12a082cae77b9664c039695614a2acc534d97a4",
+      "bytes": 168,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/v8/CompoundBox.class"
+    },
+    {
+      "blake3": "66ee4f990e6e0cfc91fc5c274aa1db2738d176ac1290d782a923e9d1f48146be",
+      "bytes": 1113,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/v8/CompoundProbe.class"
+    },
+    {
+      "blake3": "b8a000aa77250d529e491e8a958af12bad49b0fbc5d8f64dc1e2db3eb96c1f1d",
+      "bytes": 1446,
+      "path": "tests/fixtures/p3-compound-lvalue-updates/v8/CompoundRunner.class"
+    },
+    {
+      "blake3": "f262a339d37432e4dff4bc018259ba5cc328877ab237c881868e6a73c007e169",
+      "bytes": 1390,
+      "path": "tests/fixtures/p3-concat-char/Letters.java"
+    },
+    {
+      "blake3": "ce3eb8ae27b0bcc379d935de0b5cedbb4fd53d407eef29a7162314b5e366ba78",
+      "bytes": 453,
+      "path": "tests/fixtures/p3-concat-char/v8/Letters.class"
+    },
+    {
       "blake3": "3e4f49ea485c9afc9bd8f69a55874110f73f645c40fb2b5a186d9d01c0808428",
       "bytes": 3630,
       "path": "tests/fixtures/p3-concat-conversion/Baseline.java"
@@ -1094,6 +1844,96 @@
       "blake3": "00ac14bf1906344fbe8768a3f7c2094707d8b05ac35a9f0f6ea1a3570a366be3",
       "bytes": 1461,
       "path": "tests/fixtures/p3-concat-conversion/v8/ConcatConversion.class"
+    },
+    {
+      "blake3": "2a1ed1c0e81a01d6db1cf25d8cf25b85d6ec5c1f2cfc95759a8495a91fa6887e",
+      "bytes": 956,
+      "path": "tests/fixtures/p3-conditional-values/ConditionalBoundaryCases.java"
+    },
+    {
+      "blake3": "a912c1884c2ebbf3d0b2b37cd6ccbb68010ce0c1893bb64518cba021bd776e72",
+      "bytes": 1185,
+      "path": "tests/fixtures/p3-conditional-values/ConditionalBoundaryCasesRunner.java"
+    },
+    {
+      "blake3": "cbb57739a8c1663db536da542b22c105f9c536c03cd4d2407782d43528f858b4",
+      "bytes": 835,
+      "path": "tests/fixtures/p3-conditional-values/ConditionalBoundarySwitch.java"
+    },
+    {
+      "blake3": "a711675a4658460cf49d4afdcb62915ab7e4846b068f74a5182200b20ede3df7",
+      "bytes": 369,
+      "path": "tests/fixtures/p3-conditional-values/ConditionalBoundarySwitchRunner.java"
+    },
+    {
+      "blake3": "cbc09ae04c4c087b0d2ca5cb2d4e5a2487ebb1c1d392a7ecd395785d2cb098be",
+      "bytes": 82,
+      "path": "tests/fixtures/p3-conditional-values/LeftValue.java"
+    },
+    {
+      "blake3": "0ecd3237b437c10894bfb12cbd50c7a6911f67ffe2c0e818a84a5fa38fe4f224",
+      "bytes": 39,
+      "path": "tests/fixtures/p3-conditional-values/MarkerValue.java"
+    },
+    {
+      "blake3": "73468d53de3055f4ed8fca8131dbacab6916928dcad6353c793d3c63becf7e84",
+      "bytes": 83,
+      "path": "tests/fixtures/p3-conditional-values/RightValue.java"
+    },
+    {
+      "blake3": "0d74d1f5c281afa2efa3782f7b8e75db8464cf3f10ea3859cb8d6f226b113e70",
+      "bytes": 449,
+      "path": "tests/fixtures/p3-conditional-values/TernaryCore.java"
+    },
+    {
+      "blake3": "c5c67350bf6f716e2fccc92031b8aa8ab3c43ce7c58551e346e616407643cf1d",
+      "bytes": 346,
+      "path": "tests/fixtures/p3-conditional-values/TernaryCoreRunner.java"
+    },
+    {
+      "blake3": "57c7e726977973307d360877b8886d93034fc2b1f73e819f92ddb9c224ed142b",
+      "bytes": 1999,
+      "path": "tests/fixtures/p3-conditional-values/TernaryRunner.java"
+    },
+    {
+      "blake3": "ac830f198c5032c1d6e638c53e164649b000d274ca426b00afd2f2810d02f7dd",
+      "bytes": 1762,
+      "path": "tests/fixtures/p3-conditional-values/TernaryValues.java"
+    },
+    {
+      "blake3": "523bd796c07ca009c8c820cd11670449c0c97e4c49434b495a61bd8c651982ed",
+      "bytes": 950,
+      "path": "tests/fixtures/p3-conditional-values/v8/ConditionalBoundaryCases.class"
+    },
+    {
+      "blake3": "b7c6bef9dc9d064b59c58eb569340b829744e17d1a612fe01df2a1049aed2874",
+      "bytes": 545,
+      "path": "tests/fixtures/p3-conditional-values/v8/ConditionalBoundarySwitch.class"
+    },
+    {
+      "blake3": "812f0f01932583d29edb1d0735d50cf164eea0738befff055e623982e5ac9db2",
+      "bytes": 185,
+      "path": "tests/fixtures/p3-conditional-values/v8/LeftValue.class"
+    },
+    {
+      "blake3": "bdb207b956d760a695d0c71280bf31089ee4692492dfbc59aaa9f72ededf8b91",
+      "bytes": 85,
+      "path": "tests/fixtures/p3-conditional-values/v8/MarkerValue.class"
+    },
+    {
+      "blake3": "e1e72c7d886146ef79fddc6caa5ca8299218f0089252fd1843b8763052f5fbfb",
+      "bytes": 186,
+      "path": "tests/fixtures/p3-conditional-values/v8/RightValue.class"
+    },
+    {
+      "blake3": "0aeb0c44fe058c2959cea0f753bce2432d66b027fbe951e7df2844c20841244a",
+      "bytes": 424,
+      "path": "tests/fixtures/p3-conditional-values/v8/TernaryCore.class"
+    },
+    {
+      "blake3": "9cb77b1448968978f8685409920cd84325e4e25410784dbc7fb4a3a249f5daf3",
+      "bytes": 1414,
+      "path": "tests/fixtures/p3-conditional-values/v8/TernaryValues.class"
     },
     {
       "blake3": "5d86b8fb0e6aeab5b229db3d0416c5738fd10697940b679ec201590bfe42dc93",
@@ -1161,6 +2001,241 @@
       "path": "tests/fixtures/p3-declaration/v8/Shape.class"
     },
     {
+      "blake3": "df8af928b651426602e0fd7d376e4109f783b395d9952af34a66cab23469fa48",
+      "bytes": 779,
+      "path": "tests/fixtures/p3-declarations/Consts.java"
+    },
+    {
+      "blake3": "566eb67bd9159ef06231a4ab13e8e6d56f70395fb5e235a833dd2c1f34b4dbbd",
+      "bytes": 845,
+      "path": "tests/fixtures/p3-declarations/Ops2.java"
+    },
+    {
+      "blake3": "a69495efd01e496271e9f077aab5291a3fce34b82f883304379db401767c08b5",
+      "bytes": 351,
+      "path": "tests/fixtures/p3-declarations/v8/p/Consts.class"
+    },
+    {
+      "blake3": "3c0f9d990f3ddefa54ba02c603c3d8cae0f6974dc2eb75d662d63e67d4d406dc",
+      "bytes": 289,
+      "path": "tests/fixtures/p3-declarations/v8/p/Ops2.class"
+    },
+    {
+      "blake3": "be671d18d22e9d738714d3556a631e1c13022827cf49d475c2797d5f0fd59aff",
+      "bytes": 677,
+      "path": "tests/fixtures/p3-deferred-value-order/DeferredEffects.java"
+    },
+    {
+      "blake3": "18235578134fd1fc1628efe5b21f6779f44e0202a28d69ca9988b3bdd55c124d",
+      "bytes": 1378,
+      "path": "tests/fixtures/p3-deferred-value-order/DeferredValueOrder.java"
+    },
+    {
+      "blake3": "26a8072fa6d32c02e9f1dac2a78d4955ecb4628c37e32eb568c1d6dc65ddf03f",
+      "bytes": 3240,
+      "path": "tests/fixtures/p3-deferred-value-order/DeferredValueOrderRunner.java"
+    },
+    {
+      "blake3": "fbcf7ae43896110a4ca33bc056bbb2356dbc9652466514a6502b142cd981dba2",
+      "bytes": 176,
+      "path": "tests/fixtures/p3-deferred-value-order/OrderValue.java"
+    },
+    {
+      "blake3": "ce00e1ecc9d4ac833a081e77f3bb811a163c6846622d25ad9f70016e58412825",
+      "bytes": 1338,
+      "path": "tests/fixtures/p3-deferred-value-order/v8/DeferredValueOrder.class"
+    },
+    {
+      "blake3": "1e05fd5106d8fc5ad1a6ccbdd7de042e5ede25fc981c5030510f0e3af13e25b2",
+      "bytes": 2135,
+      "path": "tests/fixtures/p3-edge-settlement/Settled.java"
+    },
+    {
+      "blake3": "e03fcd603ea6545814999f6597578de0572efa0e8ac89fb3acd5c98becf19b56",
+      "bytes": 656,
+      "path": "tests/fixtures/p3-edge-settlement/v8/Settled.class"
+    },
+    {
+      "blake3": "a0c5a456ca52a66059a5e25441cbebe4325aa14b37ba4da983e80f3202f97965",
+      "bytes": 1596,
+      "path": "tests/fixtures/p3-enhanced-for-array/ArrayForeachRefusal.java"
+    },
+    {
+      "blake3": "0c712f9c7cf23aebb6bc5925b3980b30ceca476148e31e58374937358c67960c",
+      "bytes": 740,
+      "path": "tests/fixtures/p3-enhanced-for-array/ArrayForeachRefusalRunner.java"
+    },
+    {
+      "blake3": "a97c76f7b7d5d72ec723b82ba23afe485fee2f690502dc9363412dda71aac4ca",
+      "bytes": 757,
+      "path": "tests/fixtures/p3-enhanced-for-array/ArrayForeachTransfers.java"
+    },
+    {
+      "blake3": "4b1ab874d8553390a7a8828e80f039a956011f304294e8a3ad1d6bc2124ffec4",
+      "bytes": 628,
+      "path": "tests/fixtures/p3-enhanced-for-array/ArrayForeachTransfersRunner.java"
+    },
+    {
+      "blake3": "230e761ab9950c4247e6933ee3456250f62e544bc1c092779bb232db94fc743d",
+      "bytes": 776,
+      "path": "tests/fixtures/p3-enhanced-for-array/v8/ArrayForeachRefusal.class"
+    },
+    {
+      "blake3": "f5740aedcbeaedade41417a941845312af32677a010b62c555d46cdcb15a6529",
+      "bytes": 403,
+      "path": "tests/fixtures/p3-enhanced-for-array/v8/ArrayForeachTransfers.class"
+    },
+    {
+      "blake3": "3c8d421c242f86c6a2ceae73dc4e0b9611387e199df1ff97ae305b7473ce41ae",
+      "bytes": 912,
+      "path": "tests/fixtures/p3-exception-scope/ExceptionScope.java"
+    },
+    {
+      "blake3": "244417321507ccdcd264cff924a921602207f760f6a3eecd502f2178d9f4a05a",
+      "bytes": 588,
+      "path": "tests/fixtures/p3-exception-scope/v8/ExceptionScope.class"
+    },
+    {
+      "blake3": "fe8ec245b2d291ff7f9b9d5242e2b8a7d7375388a7ed5091620b2066ec5296d2",
+      "bytes": 487,
+      "path": "tests/fixtures/p3-field-increment/Bump.java"
+    },
+    {
+      "blake3": "b3f8a5783a8fb829f5dfa3cc341a1931189ccbab0a0cdded27a11e9bf712e9ac",
+      "bytes": 240,
+      "path": "tests/fixtures/p3-field-increment/v8/Bump.class"
+    },
+    {
+      "blake3": "a63847dc5d483ca5e3a96065dcf439bcdc68f7438251748800b388323bcfeb0d",
+      "bytes": 1621,
+      "path": "tests/fixtures/p3-final-static/FinalStaticProbe.java"
+    },
+    {
+      "blake3": "56094896951fd6f8258374c4d691cc8a2ac4e2846141ca173bc72292d669e65a",
+      "bytes": 674,
+      "path": "tests/fixtures/p3-final-static/FinalStaticRunner.java"
+    },
+    {
+      "blake3": "d5f3e9e87f91ef0398c224206b938e824606953a712297036b589dde713d8d02",
+      "bytes": 637,
+      "path": "tests/fixtures/p3-final-static/FinalStaticSupport.java"
+    },
+    {
+      "blake3": "be914513ac3cce9dd84da310ece7b19115778cdd0f96db2e89cfb578eb386cad",
+      "bytes": 1089,
+      "path": "tests/fixtures/p3-final-static/v8/FinalStaticProbe.class"
+    },
+    {
+      "blake3": "808f1021be8efb859cae9786f778aef631fc17d6ac089216041553248e997b81",
+      "bytes": 338,
+      "path": "tests/fixtures/p3-finally-proof/ExtraConsumer.class"
+    },
+    {
+      "blake3": "5d5c78b18d7a49f2ee02bef486d28bb60563f246718ed404dbc455ed0502b35f",
+      "bytes": 263,
+      "path": "tests/fixtures/p3-finally-proof/ExtraConsumer.java"
+    },
+    {
+      "blake3": "4bc7139c38a87fea6e8a916428f43998f92ef335f5008217118a3e166b710ac5",
+      "bytes": 334,
+      "path": "tests/fixtures/p3-finally-proof/RepeatedCopies.class"
+    },
+    {
+      "blake3": "f6a98ddae731023fdb71d830ab68581f36f950e56ca307e861eebbc1369e69a3",
+      "bytes": 247,
+      "path": "tests/fixtures/p3-finally-proof/RepeatedCopies.java"
+    },
+    {
+      "blake3": "cf816451c9edf36b620f17645609378334db1db98bc07dbbfcb870cb516c3264",
+      "bytes": 423,
+      "path": "tests/fixtures/p3-finally-proof/TargetCopies.class"
+    },
+    {
+      "blake3": "26bbf72d37e8e6f93605181a8692c16e422caf58ea1efcbac2518f62e633b8c3",
+      "bytes": 333,
+      "path": "tests/fixtures/p3-finally-proof/TargetCopies.java"
+    },
+    {
+      "blake3": "71dd9ab3418d5460ed1c55a5126a15854ee27ce7fe8dbd2c6d76d6fa0b2eb19c",
+      "bytes": 423,
+      "path": "tests/fixtures/p3-finally-proof/TargetCopiesDifferentTarget.class"
+    },
+    {
+      "blake3": "5b34a6e8e340418267b00c526f4886f1851df48051d0c8460b7a29e74e9f875b",
+      "bytes": 593,
+      "path": "tests/fixtures/p3-finally-straight/v8/FinallyNormal.class"
+    },
+    {
+      "blake3": "1cf226f39868d922a62e568b82129e9dba7733d32e70316dc67aba9180ed9180",
+      "bytes": 1793,
+      "path": "tests/fixtures/p3-floating-constants/FloatingConstants.java"
+    },
+    {
+      "blake3": "b13d96fdb795a8338d8252580fb1fd10fd8f0864befb485708fd3cb65e60037d",
+      "bytes": 3357,
+      "path": "tests/fixtures/p3-floating-constants/FloatingRunner.java"
+    },
+    {
+      "blake3": "730e5681cf763e9bd7c7535ef3831ed7f43e5c42e513e36a3151bf8e2be7fa90",
+      "bytes": 117,
+      "path": "tests/fixtures/p3-floating-constants/FloatingSupport.java"
+    },
+    {
+      "blake3": "c734b213f139a5b9a996749ffac84ea99a8b8430485f8bfe24671dbec764ae5c",
+      "bytes": 1722,
+      "path": "tests/fixtures/p3-floating-constants/v8/FloatingConstants.class"
+    },
+    {
+      "blake3": "50e30210b13cf7462be57071ec25cbd01f0bbd996b475a559e666f9a96e75309",
+      "bytes": 910,
+      "path": "tests/fixtures/p3-for-add-store/ForAddStoreBoundaries.java"
+    },
+    {
+      "blake3": "5e688c0ac062e04d91e91ca35b80c28c3791278094916caf417e0efa1ea13ef9",
+      "bytes": 494,
+      "path": "tests/fixtures/p3-for-add-store/v8/ForAddStoreBoundaries.class"
+    },
+    {
+      "blake3": "5297d732e371da31e8d5f0184cebe650fa5013d1f884661a3072b1cc28ebcf8d",
+      "bytes": 810,
+      "path": "tests/fixtures/p3-for-latch/ForBoundaries.java"
+    },
+    {
+      "blake3": "554bdfa057d64e6a6818153a7a402e39e94be01e895b7db0276d456e89690a28",
+      "bytes": 450,
+      "path": "tests/fixtures/p3-for-latch/ForBoundariesRunner.java"
+    },
+    {
+      "blake3": "b14328d8aab64367eca9ae194a71062e97b1aa503b173997de670c2728990159",
+      "bytes": 737,
+      "path": "tests/fixtures/p3-for-latch/v8/ForBoundaries.class"
+    },
+    {
+      "blake3": "6a3e9f6a3d046667c3254acf6a53e33041174ea5f7457810b5c7b641d64401c6",
+      "bytes": 954,
+      "path": "tests/fixtures/p3-for-latch/v8/ForBoundariesRunner.class"
+    },
+    {
+      "blake3": "bddbc03fbb52f29ee62a2135689f016559d8fbe3bc5bbc30e47d1b13822d0e2f",
+      "bytes": 1556,
+      "path": "tests/fixtures/p3-forward-join/Join.java"
+    },
+    {
+      "blake3": "6d582663761fcc1d61cc783f164ea284940de629c54cff3751f26a3d36ed2fd9",
+      "bytes": 318,
+      "path": "tests/fixtures/p3-forward-join/v8/Join.class"
+    },
+    {
+      "blake3": "6c9352b6c7269c2ac271d51393bc43316652cb741d8658f2d70d5ade8ba87d06",
+      "bytes": 391,
+      "path": "tests/fixtures/p3-handler-store/HandlerStore.java"
+    },
+    {
+      "blake3": "2ec48609bbdcf8eeb561072c43c423214991e537b56c0a3fb6f39909b4fa54ad",
+      "bytes": 331,
+      "path": "tests/fixtures/p3-handler-store/v8/HandlerStore.class"
+    },
+    {
       "blake3": "b226962ee3597e612ed88c8ebb7f526e8616e567fc8b7f9d118b3227a62918ff",
       "bytes": 4098,
       "path": "tests/fixtures/p3-handlers/Guarded.java"
@@ -1196,6 +2271,76 @@
       "path": "tests/fixtures/p3-hoisted-boolean/v8/HoistedBoolean.class"
     },
     {
+      "blake3": "1199c4ee7ed39fc028729eda3fd85ebf607682e7e27d45dbd3f55698b54e630a",
+      "bytes": 1495,
+      "path": "tests/fixtures/p3-immediate-functional-receivers/v8/bound-control/BoundFunctionalReceiver.class"
+    },
+    {
+      "blake3": "e3330be72418f9f24e0412d6a73d4293b78ce8c7e64f54a16122a38066868006",
+      "bytes": 316,
+      "path": "tests/fixtures/p3-immediate-functional-receivers/v8/bound-control/BoundFunctionalReceiver.java"
+    },
+    {
+      "blake3": "afa6573dab669e343406a2083c90648062704bf0cd0d61065bde4702052fd011",
+      "bytes": 324,
+      "path": "tests/fixtures/p3-immediate-functional-receivers/v8/bound-control/BoundFunctionalRunner.java"
+    },
+    {
+      "blake3": "431c7aec6aba2aea849309f91e6ec1fa4fbeef19712c5cbda2a967228fd011b9",
+      "bytes": 793,
+      "path": "tests/fixtures/p3-immediate-functional-receivers/v8/class-sha256.json"
+    },
+    {
+      "blake3": "8bfb1415211d1d65b521b390fc758a490f7d21a59ac123dd901925ab84161079",
+      "bytes": 1039,
+      "path": "tests/fixtures/p3-immediate-functional-receivers/v8/direct-array/DirectArrayCtorRef.class"
+    },
+    {
+      "blake3": "4ed5b69aa2b75361bc291c4a7ac28e1c8228475a8260912aa39fa12596268faa",
+      "bytes": 164,
+      "path": "tests/fixtures/p3-immediate-functional-receivers/v8/direct-array/DirectArrayCtorRef.java"
+    },
+    {
+      "blake3": "323b5f7f7d0d898e37b877983a5b6d4769fb96b4b844d6805894f8b3c8d2a734",
+      "bytes": 249,
+      "path": "tests/fixtures/p3-immediate-functional-receivers/v8/direct-array/DirectArrayCtorRunner.java"
+    },
+    {
+      "blake3": "698da178545f831086c4efa6b0df005ce1837dac38eb78a4aec6e4da944cca67",
+      "bytes": 943,
+      "path": "tests/fixtures/p3-immediate-functional-receivers/v8/direct-method/DirectMethodRef.class"
+    },
+    {
+      "blake3": "1e275f08699853ffda01ba369d4504402058b3d39fcf12e161910b2d460db8f5",
+      "bytes": 163,
+      "path": "tests/fixtures/p3-immediate-functional-receivers/v8/direct-method/DirectMethodRef.java"
+    },
+    {
+      "blake3": "f4d9c23af12ff569bf0f7e6e92b588862a6172c87ab2b50264047b012d8ca60a",
+      "bytes": 155,
+      "path": "tests/fixtures/p3-immediate-functional-receivers/v8/direct-method/DirectMethodRunner.java"
+    },
+    {
+      "blake3": "08db2eb7cc406312a058e173bb4e381a84b73a7a9a961fdf48a45fc101b63056",
+      "bytes": 1827,
+      "path": "tests/fixtures/p3-instanceof/InstanceOfProbe.java"
+    },
+    {
+      "blake3": "96faffe9fa253764244d5c8bc8960eae611889f4fe0885862ebd060baa85a817",
+      "bytes": 2536,
+      "path": "tests/fixtures/p3-instanceof/InstanceOfRunner.java"
+    },
+    {
+      "blake3": "e637fcd5eb55a247eb0bcb8980fa00598428fd9ffb8b58e0dfdf311cefc7d113",
+      "bytes": 388,
+      "path": "tests/fixtures/p3-instanceof/InstanceOfSupport.java"
+    },
+    {
+      "blake3": "3c66ea9bf25f51ddd521e4da1c6f6f5e5ad6ba0ec068d3711c602a601ceedbbc",
+      "bytes": 1548,
+      "path": "tests/fixtures/p3-instanceof/v8/InstanceOfProbe.class"
+    },
+    {
       "blake3": "4ae4615332bb605169ffbcc99efb5b5a852ca61c8483d15f6525b3e0f2eed216",
       "bytes": 2924,
       "path": "tests/fixtures/p3-int-comparisons/Baseline.java"
@@ -1211,6 +2356,331 @@
       "path": "tests/fixtures/p3-int-comparisons/v8/IntComparisons.class"
     },
     {
+      "blake3": "5cd3bf834a059318458d11fa38ceb8aa35a35bf87f1aed302dcb5449f51a29ba",
+      "bytes": 617,
+      "path": "tests/fixtures/p3-integer-boolean-returns/IntegerBooleanReturns.java"
+    },
+    {
+      "blake3": "5fc49345c0963f3c979363127bdf7e7a3c894cfb6a74e88be6c9455a72ca2b25",
+      "bytes": 1183,
+      "path": "tests/fixtures/p3-integer-boolean-returns/IntegerBooleanReturnsRunner.java"
+    },
+    {
+      "blake3": "92efa5e68661c5b5575b26f38674b836c441951775877fb61de08fdd4eea2d13",
+      "bytes": 218,
+      "path": "tests/fixtures/p3-integer-boolean-returns/actual-stack-join/ActualStackJoinRunner.java"
+    },
+    {
+      "blake3": "92ed7fe49f62349ef9f8aa489c2994e7171fcbea19dc37a22d8a628a177306a6",
+      "bytes": 713,
+      "path": "tests/fixtures/p3-integer-boolean-returns/v8/IntegerBooleanReturns.class"
+    },
+    {
+      "blake3": "792348171bf46d5accd08dfa1325f10d953c5728142e19f1e83be0b2dcc8e7a8",
+      "bytes": 1383,
+      "path": "tests/fixtures/p3-integer-boolean-returns/v8/IntegerBooleanReturns.jadx.java.txt"
+    },
+    {
+      "blake3": "b8e3596048116d2382bf07fcdf0e4082f71eb37409b80993c3f78a69921503f7",
+      "bytes": 878,
+      "path": "tests/fixtures/p3-integer-boolean-returns/v8/IntegerBooleanReturns.patch.json"
+    },
+    {
+      "blake3": "c441575195954a20906c80dfe9d174dcee74242edc582555ef06daba32e404ca",
+      "bytes": 386,
+      "path": "tests/fixtures/p3-integer-boolean-returns/v8/actual-stack-join/ActualStackJoin.class"
+    },
+    {
+      "blake3": "4b9c17074368f1ce609474c1c17e9cbabf9074adaf0c10a53eb06823a291db46",
+      "bytes": 444,
+      "path": "tests/fixtures/p3-integer-boolean-returns/v8/actual-stack-join/ActualStackJoin.patch.json"
+    },
+    {
+      "blake3": "b0e8d084aae26cb7662212e077e4e284e325c8f6cb08d749aee25ac19c2d60b3",
+      "bytes": 30,
+      "path": "tests/fixtures/p3-integer-boolean-returns/v8/actual-stack-join/expected.txt"
+    },
+    {
+      "blake3": "dd98679ab5163ff9c5460498805831a4e34d8650bc3ba982244622f407cff380",
+      "bytes": 908,
+      "path": "tests/fixtures/p3-integer-boolean-returns/v8/expected.txt"
+    },
+    {
+      "blake3": "d0593bf25e09787f0f69081ae3a3441fc1eb475bd041a67b67714521d0bda327",
+      "bytes": 349,
+      "path": "tests/fixtures/p3-interface-field-initializers/InitEffects.java"
+    },
+    {
+      "blake3": "df18e57185466c9d6e6166abc33a1169ac261b5359e51e43bad460962b02af50",
+      "bytes": 143,
+      "path": "tests/fixtures/p3-interface-field-initializers/InitRunner.java"
+    },
+    {
+      "blake3": "8d79a088a0bf215a49b3e4acd86f6069eda0365a6edfd82f17f8596a9977e812",
+      "bytes": 328,
+      "path": "tests/fixtures/p3-interface-field-initializers/InterfaceInitProbe.java"
+    },
+    {
+      "blake3": "44168c038a5fb2c58342159a188691208beaea9b49d6e3c3f4de4d84ca4db701",
+      "bytes": 301,
+      "path": "tests/fixtures/p3-interface-field-initializers/negative/extra-effect/BoundaryEffects.java"
+    },
+    {
+      "blake3": "63f03652d87a27c06efc762381332df733faef4fbc34d6ea1b66d5224de0d527",
+      "bytes": 310,
+      "path": "tests/fixtures/p3-interface-field-initializers/negative/extra-effect/BoundaryProbe.java"
+    },
+    {
+      "blake3": "99e96e2312bf3070d60ce8a12e85bc477decd857ac39a6ee423c024edaf553af",
+      "bytes": 142,
+      "path": "tests/fixtures/p3-interface-field-initializers/negative/extra-effect/BoundaryRunner.java"
+    },
+    {
+      "blake3": "072c85d914c497b57d62ee83d25103559b0beecc87c5e8b468fcc4809671f229",
+      "bytes": 9,
+      "path": "tests/fixtures/p3-interface-field-initializers/negative/extra-effect/runtime.stdout"
+    },
+    {
+      "blake3": "76574e28c87f207bab6bf74a73aa67ed7bc288f43c6a909989bcc7d01e29bec2",
+      "bytes": 175,
+      "path": "tests/fixtures/p3-interface-field-initializers/negative/forward-read/BoundaryEffects.java"
+    },
+    {
+      "blake3": "f6c48e1c969ec676857602c4a2d995bc4fb048348af5522fa74a53c8f8298be3",
+      "bytes": 141,
+      "path": "tests/fixtures/p3-interface-field-initializers/negative/forward-read/BoundaryRunner.java"
+    },
+    {
+      "blake3": "e07ba1d1681fa57a1893f57b4a6aa44325a1ec43ba38ccec85d3e3ba99b8de43",
+      "bytes": 211,
+      "path": "tests/fixtures/p3-interface-field-initializers/negative/forward-read/ForwardProbe.java"
+    },
+    {
+      "blake3": "e3a552d81c0a91206ad0d504dbbddf7e70f9a906306421f532ab19dbd0f7c832",
+      "bytes": 6,
+      "path": "tests/fixtures/p3-interface-field-initializers/negative/forward-read/runtime.stdout"
+    },
+    {
+      "blake3": "64f3e80691922d19c4d396633b53eb16a57437a395221bb42b9d01391ff889ab",
+      "bytes": 14,
+      "path": "tests/fixtures/p3-interface-field-initializers/runtime.stdout"
+    },
+    {
+      "blake3": "070362d2493b84e1d18d378ad0add199b4fc15f106977aa959dd72823d1100c9",
+      "bytes": 726,
+      "path": "tests/fixtures/p3-interface-field-initializers/v8/InitEffects.class"
+    },
+    {
+      "blake3": "bd0eb759fca62bb99961b3b5a98bd9aeac7bc12869336475eeeab78b73dd134e",
+      "bytes": 391,
+      "path": "tests/fixtures/p3-interface-field-initializers/v8/InitRunner.class"
+    },
+    {
+      "blake3": "89d73a0c0d91bd712a1abdcf371ad30b0d3d45ecda18fb0b7ec01797a0acc4d2",
+      "bytes": 771,
+      "path": "tests/fixtures/p3-interface-field-initializers/v8/InterfaceInitProbe.class"
+    },
+    {
+      "blake3": "709434a57c8e0c1261c0aea498d3ed9be6c10d3284277b9ec2d48fc32e1b674e",
+      "bytes": 606,
+      "path": "tests/fixtures/p3-interface-field-initializers/v8/negative/extra-effect/BoundaryEffects.class"
+    },
+    {
+      "blake3": "426cbd3b42f8ea48225b147b23a9ce0e7e9644d0db5125c94d40ca7c3ec8e7e7",
+      "bytes": 629,
+      "path": "tests/fixtures/p3-interface-field-initializers/v8/negative/extra-effect/BoundaryProbe.class"
+    },
+    {
+      "blake3": "3f98dc368d4d788e018af977f314fc59fffb5880184b6ac6f03294b2965132c4",
+      "bytes": 390,
+      "path": "tests/fixtures/p3-interface-field-initializers/v8/negative/extra-effect/BoundaryRunner.class"
+    },
+    {
+      "blake3": "324034000c4b5822bc7bd228075bec0c9762ca9806c781b05aa24c2e0ae189f3",
+      "bytes": 445,
+      "path": "tests/fixtures/p3-interface-field-initializers/v8/negative/forward-read/BoundaryEffects.class"
+    },
+    {
+      "blake3": "fe78162e51bfd6976825ee913df5a3643bf1c5536f5d20bbabd5e13131969ab1",
+      "bytes": 389,
+      "path": "tests/fixtures/p3-interface-field-initializers/v8/negative/forward-read/BoundaryRunner.class"
+    },
+    {
+      "blake3": "8c4fa31c9e8fe492a242c755343755ba482795685d5bf98cbfd767ff8db32ba7",
+      "bytes": 548,
+      "path": "tests/fixtures/p3-interface-field-initializers/v8/negative/forward-read/ForwardProbe.class"
+    },
+    {
+      "blake3": "caebc1cf7b84501face11b87ea839b71f366898c43edc4e8925a1bbdfeceb930",
+      "bytes": 1610,
+      "path": "tests/fixtures/p3-invocation-arguments/ArgumentTarget.java"
+    },
+    {
+      "blake3": "f3e9743a5c4602360f94383b90878c42f065070d1e4c269978a32d4836c2cc34",
+      "bytes": 131,
+      "path": "tests/fixtures/p3-invocation-arguments/GenericFactory.java"
+    },
+    {
+      "blake3": "5803a7d17af4e44005f3dcf1e4c77aa557da8dba93c16b52c202b8c0b237c810",
+      "bytes": 1465,
+      "path": "tests/fixtures/p3-invocation-arguments/InvocationArgumentsProbe.java"
+    },
+    {
+      "blake3": "b30d20864250fd38fade967ef7a6eb9b08db53d233a0ee56e8a0b28095566fd4",
+      "bytes": 1164,
+      "path": "tests/fixtures/p3-invocation-arguments/InvocationArgumentsRunner.java"
+    },
+    {
+      "blake3": "faf79bb9299ed58b4346f5d0803a299b5f5a2feb3944192e7a4b7136744d808c",
+      "bytes": 1794,
+      "path": "tests/fixtures/p3-invocation-arguments/v8/InvocationArgumentsProbe.class"
+    },
+    {
+      "blake3": "212404eb8738bf47c2717b5ea64973a803c77c30301beb9fadae42c01da4501b",
+      "bytes": 2140,
+      "path": "tests/fixtures/p3-iterable-foreach/IterableBoundary.java"
+    },
+    {
+      "blake3": "8bba17a08a9b74c8e6cce4a9d9b333dcb2430b4d65e4c238e646ca5d0e50b6a9",
+      "bytes": 2145,
+      "path": "tests/fixtures/p3-iterable-foreach/IterableBoundaryRunner.java"
+    },
+    {
+      "blake3": "4b48853338ae65c060b9645ae95c759e032624a488306e557d9d84c7742fbfa0",
+      "bytes": 83,
+      "path": "tests/fixtures/p3-iterable-foreach/IteratorSurface.java"
+    },
+    {
+      "blake3": "a25d9085e0aa2aae85ba20cc35b4c5963d22e576e1380e6130a7fdf0d1b20ff5",
+      "bytes": 1061,
+      "path": "tests/fixtures/p3-iterable-foreach/PlatformIterableHandlerBoundary.java"
+    },
+    {
+      "blake3": "5682084447dfce4a9bb3c53f6db77752145b482b3302ebd0429918eed11bedb7",
+      "bytes": 244,
+      "path": "tests/fixtures/p3-iterable-foreach/PlatformIterableHandlerBoundaryRunner.java"
+    },
+    {
+      "blake3": "10cb93064f46cd6e628914b77b0f378e6a0699ae848597cd23f20c35003476cd",
+      "bytes": 2365,
+      "path": "tests/fixtures/p3-iterable-foreach/PlatformIterableOwners.java"
+    },
+    {
+      "blake3": "2085d580a967f5d942c836620263126f3ca8c23aa3f2b73c7dba7c9d76275cc8",
+      "bytes": 2426,
+      "path": "tests/fixtures/p3-iterable-foreach/PlatformIterableOwnersRunner.java"
+    },
+    {
+      "blake3": "0bb9e1c8884d5d38239913a6c6619e47b71788bad5ae2efaa94bb13bef6ef8b4",
+      "bytes": 97,
+      "path": "tests/fixtures/p3-iterable-foreach/TextIterable.java"
+    },
+    {
+      "blake3": "7c7fe9cdb5d6c05350b42d58821c0b6c0454dd958701896256e02a8ccd081a76",
+      "bytes": 938,
+      "path": "tests/fixtures/p3-join-ownership/Join.java"
+    },
+    {
+      "blake3": "64b5765db0bdfc63710613ac00755d9a56f67b4377297bb63a4e9a391a499461",
+      "bytes": 726,
+      "path": "tests/fixtures/p3-join-ownership/v8/Join.class"
+    },
+    {
+      "blake3": "17f2117af28590b0f011ab7c45248967594dc9f267a0e2ea4294c69f1e20d4bf",
+      "bytes": 206,
+      "path": "tests/fixtures/p3-lambda-adaptation/BoundNullLambdaAdaptationProbe.java"
+    },
+    {
+      "blake3": "d634d8aca7c9a8c097464640d25df601cca0ad68987d55cdfac6d85548ff16b0",
+      "bytes": 297,
+      "path": "tests/fixtures/p3-lambda-adaptation/CapturedLambdaAdaptationProbe.java"
+    },
+    {
+      "blake3": "b848b4b030ab506b8690e475f8760e094457c3fd0e41de61d5760e6ad8e966c7",
+      "bytes": 643,
+      "path": "tests/fixtures/p3-lambda-adaptation/CapturedLambdaAdaptationRunner.java"
+    },
+    {
+      "blake3": "b4f37c7266b0f88e797f80e6948d0754db5dde3c6afc6fb49fab6cd31e827818",
+      "bytes": 197,
+      "path": "tests/fixtures/p3-lambda-adaptation/LambdaAdaptationBox.java"
+    },
+    {
+      "blake3": "4c28b44b1182ef10f4f0989406ad144ba364b5eee85b5c123e22ed3a4dab9ba4",
+      "bytes": 979,
+      "path": "tests/fixtures/p3-lambda-adaptation/LambdaAdaptationProbe.java"
+    },
+    {
+      "blake3": "55fdd4453a815fb4ce1094e2463e4244c8496b0e6e4afa4ac49623db80e2ff98",
+      "bytes": 3985,
+      "path": "tests/fixtures/p3-lambda-adaptation/LambdaAdaptationRunner.java"
+    },
+    {
+      "blake3": "311f1b99a876b371daa4aa37bede0a4a8149a1c83edc1d22423ad8937fe39d7c",
+      "bytes": 576,
+      "path": "tests/fixtures/p3-lambda-adaptation/LambdaAdaptationSupport.java"
+    },
+    {
+      "blake3": "9d6c433f7467d1ef4771744154087ce7cb47725d482e31b9db8265ae0bf298d3",
+      "bytes": 302,
+      "path": "tests/fixtures/p3-lambda-adaptation/LambdaCaptureAdaptationSupport.java"
+    },
+    {
+      "blake3": "7ee7f974ed1ad0b182fd105bf79fe965e0c3f9d2611129c3052598232429c81d",
+      "bytes": 1051,
+      "path": "tests/fixtures/p3-lambda-adaptation/v8/BoundNullLambdaAdaptationProbe.class"
+    },
+    {
+      "blake3": "bbe90041eb2d4561384f023f059058c7d944ef3dfc846ef7a8fad9663a7f2e97",
+      "bytes": 1073,
+      "path": "tests/fixtures/p3-lambda-adaptation/v8/CapturedLambdaAdaptationProbe.class"
+    },
+    {
+      "blake3": "9123445e2dbf3046c5f462e21ea021a0369d036e1aa722486d0fb75a08af6e80",
+      "bytes": 2205,
+      "path": "tests/fixtures/p3-lambda-adaptation/v8/LambdaAdaptationProbe.class"
+    },
+    {
+      "blake3": "8ce855de8ca1e70939ebfe96d10d5bf54f2bff45dad3f675eaff9ee5f5283b27",
+      "bytes": 137,
+      "path": "tests/fixtures/p3-local-postfix-array-elements/DifferentSlotArrayElement.java"
+    },
+    {
+      "blake3": "cf7729653a84b08702c07316fceb81a8d924952b878ca98c98ad0b22d3b074cd",
+      "bytes": 187,
+      "path": "tests/fixtures/p3-local-postfix-array-elements/DifferentSlotRunner.java"
+    },
+    {
+      "blake3": "880071db1b30ea61181a394fa59218cb50f7fa3509514f3a7f18ecacf694965c",
+      "bytes": 196,
+      "path": "tests/fixtures/p3-local-postfix-array-elements/v8/ArrayPostfixElement-plus2.class"
+    },
+    {
+      "blake3": "b0c82b710226015ad3d470cb3537c7383eec539df0f323e519253344f81ccaf5",
+      "bytes": 196,
+      "path": "tests/fixtures/p3-local-postfix-array-elements/v8/ArrayPostfixElement.class"
+    },
+    {
+      "blake3": "c1e2173a699a9024a7a0abfaa19c6141efb2448744423b4804da299db0080d69",
+      "bytes": 124,
+      "path": "tests/fixtures/p3-local-postfix-array-elements/v8/ArrayPostfixElement.java"
+    },
+    {
+      "blake3": "50a08a0e413e4bc5fac081ff083f81fd290c4681e3d31b790b5edee6a045d27f",
+      "bytes": 203,
+      "path": "tests/fixtures/p3-local-postfix-array-elements/v8/DifferentSlotArrayElement.class"
+    },
+    {
+      "blake3": "acff9b902c75e8c574d52edbad04c58316ccdcce9e9a9645457083f628b74655",
+      "bytes": 463,
+      "path": "tests/fixtures/p3-local-postfix-array-elements/v8/DifferentSlotRunner.class"
+    },
+    {
+      "blake3": "b2a1ccc568608be168ee4301245ca9a4a9d5ed1e2f4fe94fb46af9220235861c",
+      "bytes": 258,
+      "path": "tests/fixtures/p3-local-postfix-array-elements/v8/Runner.java"
+    },
+    {
       "blake3": "c3575914b083b65295da29bcef50f36ab0207ee70ff32d408b8fd29f0dcf73b3",
       "bytes": 2368,
       "path": "tests/fixtures/p3-local-rewrite/LocalRewrite.java"
@@ -1219,6 +2689,301 @@
       "blake3": "7aa56f8589c4c1c32e4ef1c5e4cdc804fb250b79e0b4ae7f0d3cf48dde0eacfe",
       "bytes": 650,
       "path": "tests/fixtures/p3-local-rewrite/v8/LocalRewrite.class"
+    },
+    {
+      "blake3": "db475c9f76f7098e43fed37651847af35fff770068741efe6ba9f3cc6a953259",
+      "bytes": 424,
+      "path": "tests/fixtures/p3-loop-test-values/LoopTestValues.java"
+    },
+    {
+      "blake3": "e678a66dfcaa8d30a07460bc63bb372517f6a5f63b554797bded010d34a4c92f",
+      "bytes": 388,
+      "path": "tests/fixtures/p3-loop-test-values/v8/LoopTestValues.class"
+    },
+    {
+      "blake3": "1bd29e46f4ad106d92b587ebf9d259e4a60b6f2d3f49d9c64623ddafaec4903c",
+      "bytes": 363,
+      "path": "tests/fixtures/p3-loop-transfers/OuterContinue.java"
+    },
+    {
+      "blake3": "5ce11ec6871b003f76fa80dc47d8251af4e13f3f57ba268ca86e6d644d660e2b",
+      "bytes": 211,
+      "path": "tests/fixtures/p3-loop-transfers/OuterContinueRunner.java"
+    },
+    {
+      "blake3": "659410a6b375160d5af8fd9b3ec067f81ec24775ef42bafe9de5913a88941489",
+      "bytes": 552,
+      "path": "tests/fixtures/p3-loop-transfers/SwitchLoopTransfer.java"
+    },
+    {
+      "blake3": "e991158a51761828a679c8419f56663ac945739ca1d7d0c554a842214903617f",
+      "bytes": 252,
+      "path": "tests/fixtures/p3-loop-transfers/v8/OuterContinue.class"
+    },
+    {
+      "blake3": "14974a0fe985b82e9680b8f5e5e4d7486d57c284d528553ef5947c50b1bdffda",
+      "bytes": 273,
+      "path": "tests/fixtures/p3-loop-transfers/v8/SwitchLoopTransfer.class"
+    },
+    {
+      "blake3": "64f8f09eddccf126ddb31cd98d5c99526fa69b118dd8ea26ff4e511e72f17850",
+      "bytes": 512,
+      "path": "tests/fixtures/p3-loop-try-handler-entry/LoopTryHandlerEntryArgs.jadx.java.txt"
+    },
+    {
+      "blake3": "64197f6c9b2496ad600677eb47fe1d0abc6614f2f25b54e7ef268fdccb96ac45",
+      "bytes": 533,
+      "path": "tests/fixtures/p3-loop-try-handler-entry/LoopTryHandlerEntryArgs.jadx.raw.java.txt"
+    },
+    {
+      "blake3": "5e4576f6a162652cfa902cee29da63133d8a0f663f48e9a3a8df4cdfc3bcab70",
+      "bytes": 498,
+      "path": "tests/fixtures/p3-loop-try-handler-entry/LoopTryHandlerEntryArgs.java"
+    },
+    {
+      "blake3": "b9dc754cf08eb9cb79e5f99c7a5e7587280fc34b356b3a00a274cfa5fabda0eb",
+      "bytes": 532,
+      "path": "tests/fixtures/p3-loop-try-handler-entry/LoopTrySharedHandler.java"
+    },
+    {
+      "blake3": "4ead400f57a6cd18dd547a736ca8a31d751cbf2e934e1ac37eba82aab419e9ce",
+      "bytes": 240,
+      "path": "tests/fixtures/p3-loop-try-handler-entry/Runner.java"
+    },
+    {
+      "blake3": "086e20abdc46b51413a608b8e194292d9b7911fefeec3708108bb424fd7fcd5b",
+      "bytes": 403,
+      "path": "tests/fixtures/p3-loop-try-handler-entry/v8/LoopTryHandlerEntryArgs.class"
+    },
+    {
+      "blake3": "f75b1bdc6a53077079c2e174b37a658c564debe5c1cb40100c67448d9de1ec2e",
+      "bytes": 453,
+      "path": "tests/fixtures/p3-loop-try-handler-entry/v8/LoopTrySharedHandler.class"
+    },
+    {
+      "blake3": "c995e9cde668e0e878852d457f0a9b6e10f8d903ee91e9e7b39e5e519d1d44e0",
+      "bytes": 641,
+      "path": "tests/fixtures/p3-loop-try-handler-entry/v8/Runner.class"
+    },
+    {
+      "blake3": "d6ade5d5f7e9ad2db80cabbb25f6dea651943a4f6b5ecc60935584a22b11003c",
+      "bytes": 1332,
+      "path": "tests/fixtures/p3-meeting/Meet.java"
+    },
+    {
+      "blake3": "6aaf9411db348c862e3c3f32c76ed9fc2bf1e0729d5aea5b246bfa79758f1716",
+      "bytes": 940,
+      "path": "tests/fixtures/p3-meeting/v8/Meet.class"
+    },
+    {
+      "blake3": "e97af2d00c87971cc33af95a0a485f5ce294d0729e4a733bde7cd606bb983841",
+      "bytes": 658,
+      "path": "tests/fixtures/p3-mutf8/Controls.java"
+    },
+    {
+      "blake3": "c9e9ca826414a6a8c6a94d9204f30b22443cd45b0c0042b76eb7989632952248",
+      "bytes": 196,
+      "path": "tests/fixtures/p3-mutf8/v8/Controls.class"
+    },
+    {
+      "blake3": "37ad272c51c92b31ef7b35e9bb3130b64369c3815128cd956fc8565bfefaa34a",
+      "bytes": 1488,
+      "path": "tests/fixtures/p3-narrow-array-store-order-e2e/NarrowArrayStoreOrder.java"
+    },
+    {
+      "blake3": "367d1a33230bbe48bf7fccbe31dc24a4abceed079eb286e818a7107e7a4e1c41",
+      "bytes": 2009,
+      "path": "tests/fixtures/p3-narrow-array-store-order-e2e/NarrowArrayStoreOrderEffects.java"
+    },
+    {
+      "blake3": "73d6ad094495ede7dca616515e5145fbd1c1cf00c525298181c484a4a98bda22",
+      "bytes": 4612,
+      "path": "tests/fixtures/p3-narrow-array-store-order-e2e/NarrowArrayStoreOrderRunner.java"
+    },
+    {
+      "blake3": "6da2750ebf1daec7096da08897e6770507ad5b2639c32b4fb96337b021832383",
+      "bytes": 309,
+      "path": "tests/fixtures/p3-narrow-array-stores/NarrowArrayStoreBooleanOperand.java"
+    },
+    {
+      "blake3": "0e8686783669840ba33b12d705e9916f2ebe8855e2e5cf66b884c4df6c7219a5",
+      "bytes": 1058,
+      "path": "tests/fixtures/p3-narrow-array-stores/NarrowArrayStoreBooleanOperandRunner.java"
+    },
+    {
+      "blake3": "b2363e559bb415e1dca41f14b11c39c6e8a13f2fde4470bd425302aade0b68cb",
+      "bytes": 1179,
+      "path": "tests/fixtures/p3-narrow-array-stores/NarrowArrayStoreBooleanRunner.java"
+    },
+    {
+      "blake3": "279c9f929c983c94f3604eb5b9227a92632fd2a70fa86ae90aee431ae4a93adb",
+      "bytes": 325,
+      "path": "tests/fixtures/p3-narrow-array-stores/NarrowArrayStoreEffects.java"
+    },
+    {
+      "blake3": "d2e052b305ff1d4732977dacebdb1f4609251872126404ff60a528e8762e5045",
+      "bytes": 1424,
+      "path": "tests/fixtures/p3-narrow-array-stores/NarrowArrayStoreOrder.java"
+    },
+    {
+      "blake3": "eb5208330e82b55f93476a4803ebc54478b7ecc46ccaf30d38d7ee063d3cd870",
+      "bytes": 2373,
+      "path": "tests/fixtures/p3-narrow-array-stores/NarrowArrayStoreOrderRunner.java"
+    },
+    {
+      "blake3": "41344307083ad18cef0b0696545a3c7a628e0979d4a85f0dfbeed69cdc238b29",
+      "bytes": 282,
+      "path": "tests/fixtures/p3-narrow-array-stores/NarrowArrayStoreUnknownElement.java"
+    },
+    {
+      "blake3": "1bc7d82d5f18d2205b1e3c5e68c4bc3320a251cefd4da42571cde251ae17ae8d",
+      "bytes": 522,
+      "path": "tests/fixtures/p3-narrow-array-stores/NarrowArrayStoreUnknownRunner.java"
+    },
+    {
+      "blake3": "cd03b3cc7615a6b22235f9eee1cd232e16fea72ba703aebb08733d29b303d34b",
+      "bytes": 1320,
+      "path": "tests/fixtures/p3-narrow-array-stores/NarrowArrayStores.java"
+    },
+    {
+      "blake3": "06364e437f0875db5a56f248545309d51bc77ca7713edced870011d502ae52b4",
+      "bytes": 7698,
+      "path": "tests/fixtures/p3-narrow-array-stores/NarrowArrayStoresRunner.java"
+    },
+    {
+      "blake3": "1dce63fd01ab5b2b9eee705b5d90fd5a780436f8da771fcf8b25a9538ce91bd4",
+      "bytes": 760,
+      "path": "tests/fixtures/p3-narrow-array-stores/v8/NarrowArrayStores.class"
+    },
+    {
+      "blake3": "9a1c74df16aaf7fe55204b976d7f937917270165b18c961608f991d7bab27da6",
+      "bytes": 325,
+      "path": "tests/fixtures/p3-narrow-field-stores/NarrowFieldStoreEffects.java"
+    },
+    {
+      "blake3": "e70dc845ba36a094a7f2f0acc09d86c3c011d64f859dfe1e6180cf36013d801f",
+      "bytes": 2532,
+      "path": "tests/fixtures/p3-narrow-field-stores/NarrowFieldStores.java"
+    },
+    {
+      "blake3": "6ed08e5bf4fafe956a9be58c2b4a0c44184e703ffeab0610c88f40574ee8fedb",
+      "bytes": 8673,
+      "path": "tests/fixtures/p3-narrow-field-stores/NarrowFieldStoresRunner.java"
+    },
+    {
+      "blake3": "ac25e977bc79cf0f57eb9e9d5986282669dd71e18d97a03d3d4e963b226fed20",
+      "bytes": 1526,
+      "path": "tests/fixtures/p3-narrow-field-stores/v8/NarrowFieldStores.class"
+    },
+    {
+      "blake3": "8a1d210ea3da602364e28cbe8957c6a2857dcf7fa44b0a20d3c9e8e1e43a6acc",
+      "bytes": 394,
+      "path": "tests/fixtures/p3-narrow-integer-returns/BooleanRawTwoCaller.java"
+    },
+    {
+      "blake3": "d576f075701f39664855cac65aef0fb2de8cd171648e93dc4da5b97c344db50c",
+      "bytes": 378,
+      "path": "tests/fixtures/p3-narrow-integer-returns/BooleanReturnBoundaries.java"
+    },
+    {
+      "blake3": "eea247cd1ea7ce4aef021f253142ecedda6e76ecabb63d2b287a0ddc1031f736",
+      "bytes": 1155,
+      "path": "tests/fixtures/p3-narrow-integer-returns/NarrowIntegerReturns.java"
+    },
+    {
+      "blake3": "c1b555c48f6bfb18001ceb93db29aa330c0a67cfc9225c0fcaed90d779e857cc",
+      "bytes": 1842,
+      "path": "tests/fixtures/p3-narrow-integer-returns/NarrowIntegerReturnsRunner.java"
+    },
+    {
+      "blake3": "7d259bd1d4f10edeae9b67b1a81d3937094fadb42685e284e92dcdaa3ca904e1",
+      "bytes": 1205,
+      "path": "tests/fixtures/p3-narrow-integer-returns/ReturnBoundaryRunner.java"
+    },
+    {
+      "blake3": "d6253ee7113f69cb852516e57f83882ab742c13ab6ab6a7ac85d4bc5b9f10acb",
+      "bytes": 881,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/ActualStackJoin.java"
+    },
+    {
+      "blake3": "08863a8c2c9b5b0f467c6cca31825a0949ddc2dadede756a903c272b5e744bdf",
+      "bytes": 503,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/ActualStackJoinRunner.java"
+    },
+    {
+      "blake3": "c9cd33591f7485844098a19078ee3f6418a5b950d52c68a0169f71ef0bd14008",
+      "bytes": 1343,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/stack-patch.json"
+    },
+    {
+      "blake3": "061eb22d80fea3934f021ac57545ff0b781095c55c128a4c4b70cf52498e2758",
+      "bytes": 379,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/v8/byte/ActualStackJoin.class"
+    },
+    {
+      "blake3": "9540617ca34ffc282eba52cc470e43eda14d4a1abfe34f7b783f4d5fcc532992",
+      "bytes": 651,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/v8/byte/descriptor-patch.json"
+    },
+    {
+      "blake3": "59f3d29d8b62cc15b40f1c7b5c6f42d795b0d53521e94ef480ede44580c37016",
+      "bytes": 198,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/v8/byte/expected.txt"
+    },
+    {
+      "blake3": "b65f77861df917b3fe72e4293d904b95c967d0fe8dc91ea4381fa4491d921f24",
+      "bytes": 379,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/v8/char/ActualStackJoin.class"
+    },
+    {
+      "blake3": "96277f7a507a82cb483da32ec6843af0b51f658069eae74b7da1280d96b50207",
+      "bytes": 651,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/v8/char/descriptor-patch.json"
+    },
+    {
+      "blake3": "e574718c4e5ef6c2d228647c82a539d60072141b7cb72845fc1800191857c2de",
+      "bytes": 209,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/v8/char/expected.txt"
+    },
+    {
+      "blake3": "191b21541f37e0252ee0ef2b4bc1a28b06c63ef954ff0bec625ad643b035fdcb",
+      "bytes": 379,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/v8/short/ActualStackJoin.class"
+    },
+    {
+      "blake3": "277f0eea5b3e00f5bdd2a06c16d74c1e961a02f3300896c0a13a07b7770e7258",
+      "bytes": 652,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/v8/short/descriptor-patch.json"
+    },
+    {
+      "blake3": "26859bf5e0c4ce63377b8433d4290ed163c6719a1b765dfb2b207fb2635d1257",
+      "bytes": 198,
+      "path": "tests/fixtures/p3-narrow-integer-returns/actual-stack-join/v8/short/expected.txt"
+    },
+    {
+      "blake3": "bd7de62032d2ae9565a81b4131ce7200f4496c71cbca99eabe6ece5e81d16780",
+      "bytes": 1288,
+      "path": "tests/fixtures/p3-narrow-integer-returns/v8/NarrowIntegerReturns.class"
+    },
+    {
+      "blake3": "22aa5929b787e8ed0de04f2a15642afdb458508cc1eb90831fe8264fed40a840",
+      "bytes": 399,
+      "path": "tests/fixtures/p3-narrow-integer-returns/v8/boolean-boundaries/BooleanRawTwoCaller.class"
+    },
+    {
+      "blake3": "b04029d6a5717f02ba908b9658e72ac5e5d08fd36ce7204663deda745a0cc2f2",
+      "bytes": 475,
+      "path": "tests/fixtures/p3-narrow-integer-returns/v8/boolean-boundaries/BooleanRawTwoCaller.patch.json"
+    },
+    {
+      "blake3": "477cef936cfdb1005e0fb99a06019bfe44c254e8b4fe49384aafe6d34f5e5b44",
+      "bytes": 360,
+      "path": "tests/fixtures/p3-narrow-integer-returns/v8/boolean-boundaries/BooleanReturnBoundaries.class"
+    },
+    {
+      "blake3": "7e47829ea7ffa2315999fe3cd48912ec3a2ebe9c5c21ffd135f5235f88ca2613",
+      "bytes": 674,
+      "path": "tests/fixtures/p3-narrow-integer-returns/v8/boolean-boundaries/BooleanReturnBoundaries.patch.json"
     },
     {
       "blake3": "ee36847132f64228405e4c2d55d43045900829f48b272c966963968e39630711",
@@ -1251,6 +3016,136 @@
       "path": "tests/fixtures/p3-nested-eval/v8/NestedEval.class"
     },
     {
+      "blake3": "e7387b7616fd2af41b98b7696ada01b21816d6156337142f655818e1d38c5ce2",
+      "bytes": 301,
+      "path": "tests/fixtures/p3-nested-try/Nest.java"
+    },
+    {
+      "blake3": "8aa4e98ffb566e488d5a9ae8660f1ddf877a460eb16bb3b5f81ae3cd84f6e8a1",
+      "bytes": 361,
+      "path": "tests/fixtures/p3-nested-try/v8/Nest.class"
+    },
+    {
+      "blake3": "0554d6c86b797a363d18b0bbff8a2cd3a0f8712deef9973d7e1dbc99c45663c7",
+      "bytes": 510,
+      "path": "tests/fixtures/p3-new-value/Built.java"
+    },
+    {
+      "blake3": "13208d67ba20800c2c63958c895543837479c47ad552b9523a0ea6724b210ec2",
+      "bytes": 606,
+      "path": "tests/fixtures/p3-new-value/v8/Built.class"
+    },
+    {
+      "blake3": "b3e9ef7f00050af4896d8fbe68d5ce2d67ac70a9947a93f04ba339cdc36ce83d",
+      "bytes": 648,
+      "path": "tests/fixtures/p3-null-resource/NullResourceCore.java"
+    },
+    {
+      "blake3": "c3a2445cb7830b5f0b7ebc61e2a11c267a8d9513b2c6c851601a5a1fc5ca0aae",
+      "bytes": 563,
+      "path": "tests/fixtures/p3-null-resource/NullResourceRunner.java"
+    },
+    {
+      "blake3": "c3a2445cb7830b5f0b7ebc61e2a11c267a8d9513b2c6c851601a5a1fc5ca0aae",
+      "bytes": 563,
+      "path": "tests/fixtures/p3-null-resource/broken-suppression/NullResourceRunner.java"
+    },
+    {
+      "blake3": "0caf64e4ed2657e98d3380a9af7e1cea1e7697d109ec22660db3cecc50cb1e2f",
+      "bytes": 670,
+      "path": "tests/fixtures/p3-null-resource/broken-suppression/v8/NullResourceCore.class"
+    },
+    {
+      "blake3": "a7ec4583cb01a5c4e57a6803a7ac17d78a4f0c81bd041b7be0717042464d00a2",
+      "bytes": 645,
+      "path": "tests/fixtures/p3-null-resource/exceptional/NullResourceExceptionalCore.java"
+    },
+    {
+      "blake3": "5a77cff5e592339bce4aa6af47cec06805d10eb06bcb1ecc8b93cbae425a8d97",
+      "bytes": 1114,
+      "path": "tests/fixtures/p3-null-resource/exceptional/NullResourceExceptionalRunner.java"
+    },
+    {
+      "blake3": "929a95f42c720ea63577cf87404f4e74a79bdf7cf200a27e84490de95cc841a9",
+      "bytes": 250,
+      "path": "tests/fixtures/p3-null-resource/exceptional/NullResourceThrower.java"
+    },
+    {
+      "blake3": "c141ecb4753a2484f4c0529027bc0c8eac64ec435c48bd627dd9b5cac8247e9d",
+      "bytes": 680,
+      "path": "tests/fixtures/p3-null-resource/exceptional/v8/NullResourceExceptionalCore.class"
+    },
+    {
+      "blake3": "2205634e1aa0cd4130934bab4adf6598c8949151a51abe4b8dc9b46c8e94cc65",
+      "bytes": 171,
+      "path": "tests/fixtures/p3-null-resource/inherited/NullResourceBase.java"
+    },
+    {
+      "blake3": "68bf896cfca838e8b0294ed77394952ff4257641bc70e4acd8a33ba05b143a3a",
+      "bytes": 437,
+      "path": "tests/fixtures/p3-null-resource/inherited/NullResourceInheritedOnly.java"
+    },
+    {
+      "blake3": "4422e7bc5d34c002bcc65d724cbf581be7c6db5441dacd0b3f330590cc46c0b2",
+      "bytes": 381,
+      "path": "tests/fixtures/p3-null-resource/inherited/NullResourceInheritedRunner.java"
+    },
+    {
+      "blake3": "922c0c2e9aafa6da1b71469a9e4909ee5436a9bc5f186617876c7da64654b14d",
+      "bytes": 197,
+      "path": "tests/fixtures/p3-null-resource/inherited/v8/NullResourceBase.class"
+    },
+    {
+      "blake3": "e743e2df799339d36b73ea1e15cec78910ac8ea708d9d4c8b046567972fa91af",
+      "bytes": 492,
+      "path": "tests/fixtures/p3-null-resource/inherited/v8/NullResourceInheritedOnly.class"
+    },
+    {
+      "blake3": "bc83c126cf8d2a391904d9bf9d55539822c7de8898af11a0e751a2a9189da67e",
+      "bytes": 1412,
+      "path": "tests/fixtures/p3-null-resource/same-type/NullResourceCore.java"
+    },
+    {
+      "blake3": "55ea50eba52695f27822f885b294697b2daa629a780ba8f2ea924ddc28931bf5",
+      "bytes": 855,
+      "path": "tests/fixtures/p3-null-resource/same-type/NullResourceShapesRunner.java"
+    },
+    {
+      "blake3": "283718408d0f807b69e72bbe7c8722531a50a359b8b7b080ec5079623bcfd488",
+      "bytes": 1003,
+      "path": "tests/fixtures/p3-null-resource/same-type/v8/NullResourceCore.class"
+    },
+    {
+      "blake3": "6b6026100b0bd3a83b9fedf4311c47f733ded09813e0d395981fe23a27e433f3",
+      "bytes": 670,
+      "path": "tests/fixtures/p3-null-resource/v8/NullResourceCore.class"
+    },
+    {
+      "blake3": "23b4c170e20751b04b55b7f1a28b5cc544d88237d60fc7884552641e3751da5c",
+      "bytes": 2629,
+      "path": "tests/fixtures/p3-numeric-comparison/CompareRunner.java"
+    },
+    {
+      "blake3": "f12fd369dc8baba0a4e9bb60d9f221dfcc701119129abc4a73e2f2d856c4c79f",
+      "bytes": 3633,
+      "path": "tests/fixtures/p3-numeric-comparison/NumericComparisons.java"
+    },
+    {
+      "blake3": "af3370398a0bfdeb81691a95d866514c80f6ee2dfcba65cd9780e27cb4b76619",
+      "bytes": 2319,
+      "path": "tests/fixtures/p3-numeric-comparison/v8/NumericComparisons.class"
+    },
+    {
+      "blake3": "fd31683e9ccc8c72dd0facf33867a7274f983dfb29bf4bcd252977c5e8a6d35c",
+      "bytes": 1136,
+      "path": "tests/fixtures/p3-one-armed-if/OneArmed.java"
+    },
+    {
+      "blake3": "b76a0c92aaf9676c1af1c7410cc845fd184c49c7da303f3bf4ebbe8ade61cd21",
+      "bytes": 331,
+      "path": "tests/fixtures/p3-one-armed-if/v8/OneArmed.class"
+    },
+    {
       "blake3": "ce74f4cdced429e39c2e20ce36b8987f1aa0057f1277249bab84c26f8ce882c8",
       "bytes": 1658,
       "path": "tests/fixtures/p3-parameter-slots/SlotTypes.java"
@@ -1259,6 +3154,96 @@
       "blake3": "c06e57e9e7730ea4bf496c82c04b9e569176b288c15754bfb341367b44ae21fa",
       "bytes": 605,
       "path": "tests/fixtures/p3-parameter-slots/v8/SlotTypes.class"
+    },
+    {
+      "blake3": "922220213b70d2fb98ef426b3beb2027763991d376c90ec084ee1b39f915c09e",
+      "bytes": 354,
+      "path": "tests/fixtures/p3-partial-array-allocation/PartialArrayEffects.java"
+    },
+    {
+      "blake3": "22a6d57e7524491582ef422fcb80e1d8bd64b5fe4c3c751eee0c3f08fabe0bd4",
+      "bytes": 732,
+      "path": "tests/fixtures/p3-partial-array-allocation/PartialArrays.java"
+    },
+    {
+      "blake3": "8c132e13cefda3c2ee1369f6dccc7401e6a04472cfa5d8b312be76311ccd17c3",
+      "bytes": 1386,
+      "path": "tests/fixtures/p3-partial-array-allocation/PartialArraysRunner.java"
+    },
+    {
+      "blake3": "aea6c2e7fb067ff82ba5547ad58d09c6145ad1dec9dcb7c8654ce757734b4ff4",
+      "bytes": 777,
+      "path": "tests/fixtures/p3-partial-array-allocation/v8/PartialArrays.class"
+    },
+    {
+      "blake3": "5f514f005f65485196d4a386f56c7746f4d248c76c2bd56a8b8d8cd2e31011f5",
+      "bytes": 840,
+      "path": "tests/fixtures/p3-popped-static-qualifier/StaticQualifierProbe.java"
+    },
+    {
+      "blake3": "f691138c07db3727369d75e5d04afa570c8634a7b35c726ce90ddc0ce0a743cb",
+      "bytes": 1103,
+      "path": "tests/fixtures/p3-popped-static-qualifier/StaticQualifierRunner.java"
+    },
+    {
+      "blake3": "ef767155a30e696bcc2a40228170057b6289430c8b0bbb4170228be82dde7182",
+      "bytes": 721,
+      "path": "tests/fixtures/p3-popped-static-qualifier/v8/StaticQualifierProbe.class"
+    },
+    {
+      "blake3": "cb811a9dbd9ad445c296abc955fb3d1de590ddfb3364667cf208e8918095b2b5",
+      "bytes": 849,
+      "path": "tests/fixtures/p3-postfix-handler-boundary/PostfixHandlerBoundary.java"
+    },
+    {
+      "blake3": "b03e4d70e1c1f73c25be399a162f31cb1aff4404b7578e43f58313e4da0e4bb4",
+      "bytes": 1219,
+      "path": "tests/fixtures/p3-postfix-handler-boundary/v8/PostfixHandlerBoundary.class"
+    },
+    {
+      "blake3": "fbcc78e7e07528094d0efc051eee234c593ac2c2693f1a7243ed5b3620a94c40",
+      "bytes": 993,
+      "path": "tests/fixtures/p3-postfix-lvalue-values/PostfixLvalueValues.java"
+    },
+    {
+      "blake3": "1b7b9e31436cdab84611d924722ad106c5ca1b44ed2fb678d20667a6801b29ed",
+      "bytes": 1051,
+      "path": "tests/fixtures/p3-postfix-lvalue-values/v8/PostfixLvalueValues.class"
+    },
+    {
+      "blake3": "3e2638ebeb526e2a1071c27148f2f032c098cdaff727a67f2f35481991517b46",
+      "bytes": 398,
+      "path": "tests/fixtures/p3-prefix-survival/Before.java"
+    },
+    {
+      "blake3": "23a28d2f8e8d332c50ada2e34e9fb7c602f2ebff82cb70033541be27b21b90d0",
+      "bytes": 336,
+      "path": "tests/fixtures/p3-prefix-survival/v8/Before.class"
+    },
+    {
+      "blake3": "b1dc14ddb09c8880aed3f9f86abe0eefae0649ca16414ac010c592dcfdaa41b4",
+      "bytes": 397,
+      "path": "tests/fixtures/p3-primitive-conversions/PrimitiveConversionEffects.java"
+    },
+    {
+      "blake3": "6228521461a3507dc4d577082220e42bbda05fd3f789f1099e76c4617820483f",
+      "bytes": 389,
+      "path": "tests/fixtures/p3-primitive-conversions/PrimitiveConversionSupport.java"
+    },
+    {
+      "blake3": "b82d230116f56d59749e6d1de1959e72b7a59c00cd76c0ceeda3d71c2eb61b0e",
+      "bytes": 2318,
+      "path": "tests/fixtures/p3-primitive-conversions/PrimitiveConversions.java"
+    },
+    {
+      "blake3": "f2bcc5ad03977fd613dc847fa2292e0c827b93d481762dc5242ef9246684cea8",
+      "bytes": 3325,
+      "path": "tests/fixtures/p3-primitive-conversions/PrimitiveConversionsRunner.java"
+    },
+    {
+      "blake3": "55a2f93a62fa98bf7b0285ca1f71cbd018238cac75a9d9c4f7d2fbdf8f41db4f",
+      "bytes": 1720,
+      "path": "tests/fixtures/p3-primitive-conversions/v8/PrimitiveConversions.class"
     },
     {
       "blake3": "106f605183cf2d2a10d6d53d65f6d4473825c583db63707b95aea21563df5c63",
@@ -1274,6 +3259,16 @@
       "blake3": "5e16d691d1ef6700ba20c66879d42ce401558efba3cf69c64bbcbdabc8e1c071",
       "bytes": 1038,
       "path": "tests/fixtures/p3-receiver-grouping/v8/ReceiverGrouping.class"
+    },
+    {
+      "blake3": "3d207f72c109778cefbe7dae97f64bf1bd4a3bbb9019368fbb2c065ed80ec06f",
+      "bytes": 1380,
+      "path": "tests/fixtures/p3-reference-cast/ReferenceCastProbe.java"
+    },
+    {
+      "blake3": "e1ed3f4802d2329cff002817b7afb3bc64164731d3871427b2d0610f8c6ce9c6",
+      "bytes": 1321,
+      "path": "tests/fixtures/p3-reference-cast/v8/ReferenceCastProbe.class"
     },
     {
       "blake3": "3aa46c10f360abf4fe543011fa76487dd6ce626aa577e38b2c92ef12a519e9fb",
@@ -1324,6 +3319,421 @@
       "blake3": "e00e168ec30b869922fcc2e6ebac602a8055e84a1cee230db14fb0b3a936725b",
       "bytes": 532,
       "path": "tests/fixtures/p3-scope/v8/Scope.class"
+    },
+    {
+      "blake3": "d48b167eeba689ae5ad177d19dbcaa1926b2904fe6a5f6f78942b714ce28bb89",
+      "bytes": 692,
+      "path": "tests/fixtures/p3-special-dispatch/BaseProbe.java"
+    },
+    {
+      "blake3": "16771ed1addc329ec602c34468d7eaa045ae25071965277c7c615def67052fa5",
+      "bytes": 85,
+      "path": "tests/fixtures/p3-special-dispatch/DefaultProbe.java"
+    },
+    {
+      "blake3": "5e70c07103b8fdf055a11d2020eb75b5c09852310824d7c667443f0417f7aeba",
+      "bytes": 1004,
+      "path": "tests/fixtures/p3-special-dispatch/SpecialProbe.java"
+    },
+    {
+      "blake3": "f5d49f1b3fe32b20974e8df2653453267f010a8c4a5d1808185a52121f7dabae",
+      "bytes": 1823,
+      "path": "tests/fixtures/p3-special-dispatch/SpecialRunner.java"
+    },
+    {
+      "blake3": "c9af0f87bf714ce475ae8be443e07c1ef951507059f8389c7629d9d3bea05be8",
+      "bytes": 833,
+      "path": "tests/fixtures/p3-special-dispatch/v8/BaseProbe.class"
+    },
+    {
+      "blake3": "fb4aaf5450812e15f10e76e52b5cc79e4d863dc9dcc4e2578a23cc427fe7d327",
+      "bytes": 114,
+      "path": "tests/fixtures/p3-special-dispatch/v8/DefaultProbe.class"
+    },
+    {
+      "blake3": "7e17c4abba60c81faa3a33d58d6052a86a016ed55fce18df0043f22bdd522532",
+      "bytes": 784,
+      "path": "tests/fixtures/p3-special-dispatch/v8/SpecialProbe.class"
+    },
+    {
+      "blake3": "7647c78eee905c2a652a33273cf964aa420cf902ccd3f00ac5133ce1926e86c0",
+      "bytes": 569,
+      "path": "tests/fixtures/p3-stated-rows/Stated.java"
+    },
+    {
+      "blake3": "9d7249d4a2070f130b4f88806726f014a9f2bb7850985888c5eea8552b4af758",
+      "bytes": 443,
+      "path": "tests/fixtures/p3-stated-rows/v8/Stated.class"
+    },
+    {
+      "blake3": "a1ef217a06ac2eb7f541f96d47142e1b07798d401ce1680cf413831610611fd6",
+      "bytes": 587,
+      "path": "tests/fixtures/p3-static-call/Calls.java"
+    },
+    {
+      "blake3": "7d3496527bb30813303e1336a15f605395576f85212f1916952719b81f89fd8e",
+      "bytes": 317,
+      "path": "tests/fixtures/p3-static-call/v8/Calls.class"
+    },
+    {
+      "blake3": "c8b37c73895416ffcb82af783c5c85f212e1bca317956981eb1ba845556f1658",
+      "bytes": 965,
+      "path": "tests/fixtures/p3-string-switch-variants/StringSwitchMiddleDefault.java"
+    },
+    {
+      "blake3": "602d44a53b22f4ef465383138ab6a2d084e52d8ea4f01a102846b31993cca1be",
+      "bytes": 1128,
+      "path": "tests/fixtures/p3-string-switch-variants/StringSwitchMiddleDefaultRunner.java"
+    },
+    {
+      "blake3": "b644621305375baa63b98364bc8d1154979f9c28cd31902dc74bfe6afd19c44a",
+      "bytes": 997,
+      "path": "tests/fixtures/p3-string-switch-variants/v8/StringSwitchMiddleDefault.class"
+    },
+    {
+      "blake3": "b8b51d30b9aea3a20f4ba2c6319ed6f1cb239f86a2f7c2724393068b914ad9b6",
+      "bytes": 1286,
+      "path": "tests/fixtures/p3-string-switch-variants/v8/StringSwitchMiddleDefaultRunner.class"
+    },
+    {
+      "blake3": "2da659cc3ea539a943554661b9d7c5ca30d32dd1e81a7a8e1f80d90b36ecf8d1",
+      "bytes": 578,
+      "path": "tests/fixtures/p3-string-switch/ExtraBucketEffect.java"
+    },
+    {
+      "blake3": "31086cfe4d96c83a5018b676d86ec60e124279ba335d3da158d1565b2aa6c9b6",
+      "bytes": 429,
+      "path": "tests/fixtures/p3-string-switch/v8/ExtraBucketEffect.class"
+    },
+    {
+      "blake3": "57e45c0badc175553898661c247c54db3593918a2814e64013ecae75ebeb5efe",
+      "bytes": 635,
+      "path": "tests/fixtures/p3-string-switch/v8/StringSwitchProbe.class"
+    },
+    {
+      "blake3": "9a185fc2a764c529f74fcc19d5244c945f56f1d84cddf92a3034f2823ee57ae8",
+      "bytes": 405,
+      "path": "tests/fixtures/p3-switch-fallthrough/DefaultMiddle.java"
+    },
+    {
+      "blake3": "66a877d9d2321bc5346916d274a9988994c63ceb7cadba4c261549b97a9cc4e5",
+      "bytes": 607,
+      "path": "tests/fixtures/p3-switch-fallthrough/SwitchFallthroughOrder.java"
+    },
+    {
+      "blake3": "953a8a0db672578ca9ea5c6137f981677fa3ce79fc311662a4ecafad5ad01a2e",
+      "bytes": 627,
+      "path": "tests/fixtures/p3-switch-fallthrough/TableswitchFallthrough.java"
+    },
+    {
+      "blake3": "c0e604d2f78199d5392f9818fa53b610c4ff9829b086bcff812978a8fd83225d",
+      "bytes": 255,
+      "path": "tests/fixtures/p3-switch-fallthrough/v8/DefaultMiddle.class"
+    },
+    {
+      "blake3": "4d6cc67d4718c86b4831fccfeeea7287d0442dcb1f5fef0691b9fddcdd9dd381",
+      "bytes": 394,
+      "path": "tests/fixtures/p3-switch-fallthrough/v8/SwitchFallthroughOrder.class"
+    },
+    {
+      "blake3": "f16bb1f7523f67e32ccdd457d7d48b8050b08648775289eadc399f51927226b1",
+      "bytes": 390,
+      "path": "tests/fixtures/p3-switch-fallthrough/v8/TableswitchFallthrough.class"
+    },
+    {
+      "blake3": "428f184ae02d333921297551cbfa2eb6051fbb13a3377e6c3cb09cd87fae1a20",
+      "bytes": 674,
+      "path": "tests/fixtures/p3-switch-loop-exits/SwitchLoopAdjacent.java"
+    },
+    {
+      "blake3": "85026f036df8dfb678b700cc9151a95ff0982597ab08144c95f57044aade087e",
+      "bytes": 293,
+      "path": "tests/fixtures/p3-switch-loop-exits/v8/SwitchLoopAdjacent.class"
+    },
+    {
+      "blake3": "a050c4457e0043a065aa5ca51943471adda341c3512810c9269e67acccc6c6dc",
+      "bytes": 914,
+      "path": "tests/fixtures/p3-switch-value/Joined.java"
+    },
+    {
+      "blake3": "5cc242a1752bd8756a2942e589b08c0ae107aac3ba3067038bc8331e9b3ed336",
+      "bytes": 306,
+      "path": "tests/fixtures/p3-switch-value/v21/Joined.class"
+    },
+    {
+      "blake3": "f56ce6adf00e2807502a798d412652fae8d54e6d87b1c370d74df2bfccd1844e",
+      "bytes": 123,
+      "path": "tests/fixtures/p3-sync-return/Locked.java"
+    },
+    {
+      "blake3": "cfcb18f053390371b7da207ed34a08056fe39fe788cb9c259de8e359dfc5ff11",
+      "bytes": 285,
+      "path": "tests/fixtures/p3-sync-return/v8/Locked.class"
+    },
+    {
+      "blake3": "2afc413acd6c18e3e2d45ffe30c800cc29550dc77dba35656835851562d1df32",
+      "bytes": 374,
+      "path": "tests/fixtures/p3-throw/ThrowEffects.java"
+    },
+    {
+      "blake3": "04201d1638f1d5c749024c3d43a1bafc631d1b277d35b77aecf097a243020146",
+      "bytes": 367,
+      "path": "tests/fixtures/p3-throw/ThrowGuardProbe.java"
+    },
+    {
+      "blake3": "954ccef475a554f72c6632b4cf7c25f523a48f8b983e0b008b102996eb360d4d",
+      "bytes": 958,
+      "path": "tests/fixtures/p3-throw/ThrowProbe.java"
+    },
+    {
+      "blake3": "26338d439216be1797af9c1019cdafc24dda5a0a902470ab3fafee8ae97af4a2",
+      "bytes": 1985,
+      "path": "tests/fixtures/p3-throw/ThrowProbeRunner.java"
+    },
+    {
+      "blake3": "894340df28aa959c87601db6a7528aa71d323b8af552fcd46f19bfe814c329f8",
+      "bytes": 245,
+      "path": "tests/fixtures/p3-throw/ThrowStack.java"
+    },
+    {
+      "blake3": "9c33cd640f8dfe2c55377bf3c1b15ac73d990c6943db99d26a4c6abbee543ad6",
+      "bytes": 946,
+      "path": "tests/fixtures/p3-throw/v8/ThrowProbe.class"
+    },
+    {
+      "blake3": "354abfa9d5bd8eba175cf9679a5c9d6f0a8919eb87c3a2450dd513f297af4668",
+      "bytes": 187,
+      "path": "tests/fixtures/p3-try-local/Held.java"
+    },
+    {
+      "blake3": "5de91ef2bc6080813fe6106bfe9564120c8c690a52d0300661189f4ce219d7e2",
+      "bytes": 480,
+      "path": "tests/fixtures/p3-try-local/v9/Held.class"
+    },
+    {
+      "blake3": "b22e36e608d32c4dd28d002cbcb75090fd4a81592e033eb70bf01fa58398b34e",
+      "bytes": 4014,
+      "path": "tests/fixtures/p3-two-exit-return/BoundaryProbe-javap.txt"
+    },
+    {
+      "blake3": "1452857050e143adcae34e10e2ac26bda4f0e18737e811590885ba75c1ca3a30",
+      "bytes": 491,
+      "path": "tests/fixtures/p3-two-exit-return/BoundaryProbe.class"
+    },
+    {
+      "blake3": "355522ffdcab19c95c433975e0660f607b53e4ff80587dc2298f30f216788dcb",
+      "bytes": 578,
+      "path": "tests/fixtures/p3-two-exit-return/BoundaryProbe.java"
+    },
+    {
+      "blake3": "90522415b7581c906bd0980ef66b92bb1d5df006abaa58699717c16ff58e7836",
+      "bytes": 502,
+      "path": "tests/fixtures/p3-two-exit-return/BoundaryRunner.class"
+    },
+    {
+      "blake3": "57761302ee00a31280cc52bf35496ee724a38c593f1574748d4648430391eaba",
+      "bytes": 503,
+      "path": "tests/fixtures/p3-two-exit-return/BoundaryRunner.java"
+    },
+    {
+      "blake3": "069c606f5c6aaf76d21327e6611181878044197b73638ae3c7e495643ac547cf",
+      "bytes": 842,
+      "path": "tests/fixtures/p3-two-exit-return/ControlRunner.java"
+    },
+    {
+      "blake3": "36e046d088dbdf69a8c239603cd328aa9986db8c52b83a8990d08808e301ef7e",
+      "bytes": 389,
+      "path": "tests/fixtures/p3-two-exit-return/CountedValue.class"
+    },
+    {
+      "blake3": "08a260b0ac5d490e56ba0f01a802b3a2dc9a956c3895d13dc03c5fb1478e576a",
+      "bytes": 328,
+      "path": "tests/fixtures/p3-two-exit-return/CountedValue.java"
+    },
+    {
+      "blake3": "b869e77e7fd18d8212fb7edad13e657f27042a570f6deb706604e9cb5c3f95e0",
+      "bytes": 4255,
+      "path": "tests/fixtures/p3-two-exit-return/CountingProbe-javap.txt"
+    },
+    {
+      "blake3": "62b21a642133ca13972b6731cb50bb95ef4dd3a55d308e4bba4919de323b99af",
+      "bytes": 448,
+      "path": "tests/fixtures/p3-two-exit-return/CountingProbe.class"
+    },
+    {
+      "blake3": "04bab3797b63f7159991f0cc7127bb5476f36efd969575b5d780e7da41125031",
+      "bytes": 455,
+      "path": "tests/fixtures/p3-two-exit-return/CountingProbe.java"
+    },
+    {
+      "blake3": "88bcf2fc73b5825ab4f0bb52958982fea0fac90d76d50e8d458771507c2166cd",
+      "bytes": 1135,
+      "path": "tests/fixtures/p3-two-exit-return/CountingRunner.class"
+    },
+    {
+      "blake3": "c14002e6e8d268228448db229c18a20e3312bfba3517dccda22c0d05175666b7",
+      "bytes": 818,
+      "path": "tests/fixtures/p3-two-exit-return/CountingRunner.java"
+    },
+    {
+      "blake3": "e48f14c78a9470c77262d2e97a384ec0862ed3eb88cf4ff03bde23b055f3270c",
+      "bytes": 4762,
+      "path": "tests/fixtures/p3-two-exit-return/EffectProbe-javap.txt"
+    },
+    {
+      "blake3": "445389280e167e62f66451716344e2ff1abf2c2b7c5a84ac9fb61d0e2d0591b8",
+      "bytes": 513,
+      "path": "tests/fixtures/p3-two-exit-return/EffectProbe.class"
+    },
+    {
+      "blake3": "b7eaceed0fc5d3385e0b66e1e42ec00e58be12c33d995df3c879565cc4704cbb",
+      "bytes": 476,
+      "path": "tests/fixtures/p3-two-exit-return/EffectProbe.java"
+    },
+    {
+      "blake3": "32108091da1f33460ae23cccac897af597d2411a4d2a3d7ea4c15e052cf9f2e2",
+      "bytes": 2316,
+      "path": "tests/fixtures/p3-two-exit-return/ExtraEntryProbe-javap.txt"
+    },
+    {
+      "blake3": "3c2460152347e2628b9029899e5d42a09bc3390131b9bc6c56e73113b98fab6a",
+      "bytes": 269,
+      "path": "tests/fixtures/p3-two-exit-return/ExtraEntryProbe.class"
+    },
+    {
+      "blake3": "ea9e037b7d876da2ab3a88ad24aeb6e4bdf69572654bf5d4b173c1c0b3aa1948",
+      "bytes": 227,
+      "path": "tests/fixtures/p3-two-exit-return/ExtraEntryProbe.java"
+    },
+    {
+      "blake3": "bda9f16ebd09560c982b66e0a8a42c4e990d25fea21a31cfc507b2b8504acb04",
+      "bytes": 848,
+      "path": "tests/fixtures/p3-two-exit-return/ExtraEntryRunner.class"
+    },
+    {
+      "blake3": "83816ef611f87f45858a62838cb5cb1c28070d699384c3aefe4782cb82b2b90e",
+      "bytes": 267,
+      "path": "tests/fixtures/p3-two-exit-return/ExtraEntryRunner.java"
+    },
+    {
+      "blake3": "60f9471b55c1c8cf395ca6e26da7164ef7a2693504be8d4498846330570a4fd3",
+      "bytes": 470,
+      "path": "tests/fixtures/p3-two-exit-return/TernaryInIfProbe-int.class"
+    },
+    {
+      "blake3": "60972299477e74364c49f9b39633c77f7a9764fbe55b1120a212bc0d648ead5b",
+      "bytes": 470,
+      "path": "tests/fixtures/p3-two-exit-return/TernaryInIfProbe-return2.class"
+    },
+    {
+      "blake3": "98d5040ddf7945febbc21fec145c5acac138c117d24795ebeda3845158364bfe",
+      "bytes": 38,
+      "path": "tests/fixtures/p3-two-exit-return/boundary-run.txt"
+    },
+    {
+      "blake3": "a47441c69bb17828c9fafe4d0bac91d75cfeaa8051dc8a43dcfd2c019ef48ac3",
+      "bytes": 62,
+      "path": "tests/fixtures/p3-two-exit-return/counting-run.txt"
+    },
+    {
+      "blake3": "78b808ff999df052c5210b88d0f775f8b81a2014bc43301f18a5ec1d5ae6063f",
+      "bytes": 46,
+      "path": "tests/fixtures/p3-two-exit-return/effect-run.txt"
+    },
+    {
+      "blake3": "73c7c7e4e92a03a13518ca9a1d5d2c7d8f83d664a473f1f62dd91868a497739d",
+      "bytes": 58,
+      "path": "tests/fixtures/p3-two-exit-return/extra-entry-run.txt"
+    },
+    {
+      "blake3": "2f6129b7ae1a966241c2e0eafcec7bc75510de9fbf46a0bfe1505beefbfae764",
+      "bytes": 4408,
+      "path": "tests/fixtures/p3-two-exit-return/int-javap.txt"
+    },
+    {
+      "blake3": "828f10a371adfc9de3ba248625aae6de16e202f5e69aaae2bda50f5a87bd9f40",
+      "bytes": 16,
+      "path": "tests/fixtures/p3-two-exit-return/int-run.txt"
+    },
+    {
+      "blake3": "ca8ca8ee9c49cf2e5202c4ba69c1eefe6b394fb85f20d2734759d1aebbfa61f6",
+      "bytes": 4416,
+      "path": "tests/fixtures/p3-two-exit-return/return2-javap.txt"
+    },
+    {
+      "blake3": "5db517687d3e3873698d6533af96f9d17496f25c08108f87b42be5f56f656400",
+      "bytes": 48,
+      "path": "tests/fixtures/p3-two-exit-return/return2-run.txt"
+    },
+    {
+      "blake3": "ababcb25640d561985d0814852b4c84f0cd5b475fb0e638d64b960219a705071",
+      "bytes": 338,
+      "path": "tests/fixtures/p3-twr-catch/Combo.java"
+    },
+    {
+      "blake3": "482bf5159dadfe49ac419ae7368f1b5245c9b41ba5e58d028362ed868b0ac8ce",
+      "bytes": 550,
+      "path": "tests/fixtures/p3-twr-catch/v8/Combo.class"
+    },
+    {
+      "blake3": "aaa35e9111cf8c841b45c61fd5cdb27d0a0ad736384df4bf457c71bed9e04028",
+      "bytes": 97,
+      "path": "tests/fixtures/p3-type-qualifier/ShadowOther.java"
+    },
+    {
+      "blake3": "33c861c97dc1de0093844b950338fbc22fa7d2538259d444988c08645b381ad7",
+      "bytes": 394,
+      "path": "tests/fixtures/p3-type-qualifier/TypeQualifierProbe.java"
+    },
+    {
+      "blake3": "3edc3300b3890251331f5d2b39846e906c934e00d149bfdaf4046a1a05bccc4f",
+      "bytes": 985,
+      "path": "tests/fixtures/p3-type-qualifier/TypeQualifierRunner.java"
+    },
+    {
+      "blake3": "c986e2d4b26a3fb3ab856bf21eae7ac892f59b17bf726f8d2aca4f0d2128ab7b",
+      "bytes": 101,
+      "path": "tests/fixtures/p3-type-qualifier/arg0.java"
+    },
+    {
+      "blake3": "ed1982598917289ca6db92f721f653b7ac06c0355bc919f112c6f71767854fdf",
+      "bytes": 103,
+      "path": "tests/fixtures/p3-type-qualifier/arg0_2.java"
+    },
+    {
+      "blake3": "5215d69464c8bee74bc7062fa53b8e99ece34fe590d6ed32183a40343ceede7f",
+      "bytes": 479,
+      "path": "tests/fixtures/p3-type-qualifier/v8/TypeQualifierProbe.class"
+    },
+    {
+      "blake3": "aba787ca815665c711f8e227d1c9e9660b5cbb79a643a8422e2d2053f0091911",
+      "bytes": 1366,
+      "path": "tests/fixtures/p3-typed-catch/TypedCatch.java"
+    },
+    {
+      "blake3": "b6ad5123b44032bb4a5a7e030899bd9dfbbe970968556247cc3a89ef386eb35d",
+      "bytes": 768,
+      "path": "tests/fixtures/p3-typed-catch/v8/TypedCatch.class"
+    },
+    {
+      "blake3": "1419257d752c6346df838a90c2625ca576e282dcd3e0a4ec33732fcaabed4522",
+      "bytes": 1671,
+      "path": "tests/fixtures/p3-unary-negation/UnaryNegation.java"
+    },
+    {
+      "blake3": "a825bfe6769ba4f8e1350c76e961252c9c35d9cbabd36c63ca6a54edf8a10f6d",
+      "bytes": 1194,
+      "path": "tests/fixtures/p3-unary-negation/v8/UnaryNegation.class"
+    },
+    {
+      "blake3": "08bc6e5797831291d62202734c3e02c58b40dd6bd95c3081c5fa99a327d411d3",
+      "bytes": 236,
+      "path": "tests/fixtures/p3-varargs/Var.java"
+    },
+    {
+      "blake3": "2ad9785dc5054ecb48a5875ef16eab2770950931eff7c8dbe5cd828197399143",
+      "bytes": 255,
+      "path": "tests/fixtures/p3-varargs/v8/Var.class"
     },
     {
       "blake3": "d49953d83c70f90419ac9b3ad797ae4a32600069498f68ad716e8fb0513de3c9",
@@ -1446,6 +3856,26 @@
       "path": "tests/fixtures/p4-modern/v8/ConcatJava8.class"
     },
     {
+      "blake3": "00eaf0cdba1ffce6f4d518bcafb07e0bf995255b7272f97ee0ad800479d52247",
+      "bytes": 989,
+      "path": "tests/fixtures/preserve-guarded-return-expression/GuardReturnEffects.java"
+    },
+    {
+      "blake3": "d119345c281f450fcc9b29452d4d792b77f7aa831e9d307c28882b4764099242",
+      "bytes": 1378,
+      "path": "tests/fixtures/preserve-guarded-return-expression/GuardReturnEffectsRunner.java"
+    },
+    {
+      "blake3": "b06efb8b3445c7a46caad69ba5df2975f6610cbe9a0bc2e1aa80d147d5490ca3",
+      "bytes": 898,
+      "path": "tests/fixtures/preserve-guarded-return-expression/v8/GuardReturnEffects.class"
+    },
+    {
+      "blake3": "c8d93579219b21d5f72cbbb817242d5ace73d9d5b2aa2404e0eb8c15f7138798",
+      "bytes": 1383,
+      "path": "tests/fixtures/preserve-guarded-return-expression/v8/GuardReturnEffectsRunner.class"
+    },
+    {
       "blake3": "fa7ad1d72c352a790a5807113f03ee0f1c7c2e9e1abf5c95eafd52cff2d39029",
       "bytes": 194,
       "path": "tests/fixtures/r2-annotation-positions/CodeOnly.java"
@@ -1464,6 +3894,71 @@
       "blake3": "1c401c66ec9220f4b5d9e8b5cc8c64021ec637cbacd104b9b896ac1ef9f3a746",
       "bytes": 285,
       "path": "tests/fixtures/r2-annotation-positions/v8/CodeOnly.class"
+    },
+    {
+      "blake3": "9dc79d6d4c2dbefd0f65c8b7cc1604dfa067c1490f4322c28f9eca76d06cec00",
+      "bytes": 123,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/negative/InterfaceMismatch.java"
+    },
+    {
+      "blake3": "b8e31d1318efec694a1b77aa41bf9242068f7ea8c67949247b11d4f82bf5b215",
+      "bytes": 132,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/negative/MethodShadowBoundary.java"
+    },
+    {
+      "blake3": "165b8452b6435cbde2ebf6a4463f9beb7c453755f7473cb134bea0c317638fda",
+      "bytes": 2459,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/negative/NegativeRunner.java"
+    },
+    {
+      "blake3": "3e72aafeb5bdb4986cae17b50e3f33ca6dffec337f60d5a7abe439ce3e294348",
+      "bytes": 175,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/negative/OuterScopeBoundary.java"
+    },
+    {
+      "blake3": "8ccb83dd604bade510a16041af3a838e08e9d8be998935200960809be1e4c7fa",
+      "bytes": 60,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/negative/ParentMismatch.java"
+    },
+    {
+      "blake3": "8748d737c1f24099e5b65d7be28da3558b569dda600831886755d8ca06e6ad44",
+      "bytes": 128,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/negative/UnboundClassVariable.java"
+    },
+    {
+      "blake3": "6efa49b244ac48bd2f952436e750a4bebdb1852327650ffd48ffbfb6d4d4edbd",
+      "bytes": 167,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/positive/BoundedClassVariableBoundary.java"
+    },
+    {
+      "blake3": "aa834b371f029bf3cb744514aa8746eef0427be22b1ee50e4d8dd36f70430393",
+      "bytes": 797,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/positive/BoundedClassVariableRunner.java"
+    },
+    {
+      "blake3": "13c04ef4b500934cf025ce8495c64cfb3b068bec327d48633d4480d8745f215e",
+      "bytes": 129,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/positive/ClassVariableBoundary.java"
+    },
+    {
+      "blake3": "a7d28e6bcabfc15da9e36bd5889516ac8e035c322b6394a9777d82d9adc8b33e",
+      "bytes": 112,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/positive/ClassVariableContract.java"
+    },
+    {
+      "blake3": "d9e30fed17f8fe2198d4ffe2c7ab465c7542dfb9d048e0065ad14e809bd48204",
+      "bytes": 723,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/positive/ClassVariableRunner.java"
+    },
+    {
+      "blake3": "2ccf508a829e1ab39c0b2eaba2a30e408e4a79649454081db9ac9eb789588412",
+      "bytes": 728,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/positive/InterfaceVariableRunner.java"
+    },
+    {
+      "blake3": "b7410fc9fa0716d4bb001f6caec55d7f7d5ca1478f22cd4c608c40dcbb514c8a",
+      "bytes": 184,
+      "path": "tests/fixtures/recover-class-type-variable-signatures/positive/StringContract.java"
     }
   ],
   "known_gaps": [

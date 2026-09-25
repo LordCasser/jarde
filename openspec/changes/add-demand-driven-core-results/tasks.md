@@ -1,4 +1,4 @@
-**3/32**（D0 的三项已实现并按 [verification](verification.md) 记录验证；D1–D5 的 29 项未开始）。实施顺序与所有权见 [design §13](design.md#13-可独立提交的实施边界)，D01–D12 为该文档的验收编号。不因文档或 strict 通过勾选实现；不修改其它 change 的完成状态。
+**32/32**（D0–D5 已实现，各阶段命令与结果见 [verification](verification.md)，收尾记录提交为 `ba2076a`）。实施顺序与所有权见 [design §13](design.md#13-可独立提交的实施边界)，D01–D12 为该文档的验收编号。完成状态限于本 change；其它正确性债务、尚未证明的时间收益及归档状态分别保留。
 
 ## 1. D0 基线、字段角色与反例
 
@@ -37,7 +37,7 @@
 
 ## 6. D4 增量结构查询与续扫
 
-**进度（2026-09-21）**：6.3/6.5/6.6 已由查询分页实现交付并登记证据；6.1/6.2/6.4/6.7 仍开放，已知边界是 `Resource` consumer 与 `SnapshotAll` scope 仍走枚举路径（`META-INF/services` 一类名字无法定向查出，分母必须是全部条目），单容器内非 class 条目暂无公开的增量枚举入口（`ScopeCursor` 只产出 class 候选），因此"同容器内资源条目的账单"仍是打开目录时一次付清；这些要在推进 6.1/6.4 时一并解决，不靠缩小验收回避。
+**D4 已完成**：6.3/6.5/6.6 先由查询分页实现交付，随后 6.1/6.2/6.4/6.7 通过 `EntryCursor`、资源消费者续扫与页面平面门禁收尾，见下列逐项证据及 verification 的 D4 收尾记录。必要的容器目录验证仍按实际工作计费，不能把增量产出解释为取消目录验证。
 
 - [x] 6.1 在现有物理遍历底座提供 query 可用的 entry 事件，覆盖 class 与 resource，复用 bulk 的 class 过滤而不并入其 scheduler；以多 nested、损坏子树和逐 entry 取消验证物理顺序与未知范围（D08/D11）。 证据：`crates/jarde-reader/src/entry_cursor.rs`（`ArtifactSnapshot::entry_cursor`、`EntryCursor::next_entry`、`ScopeEntry{entry,depth,kind}`，`kind` 区分 class/nested/other）；容器 depth-first、容器内按 ordinal；class 规则与 bulk 走查共用同一函数（`scope_cursor::is_class_candidate_name`），不并入其 scheduler；完整遍历与 `enumerate_artifact_tree`/`enumerate` 逐项（顺序/深度/分类）相等；损坏子树、逐 entry 取消/预算停止各有用例。
 - [x] 6.2 替换 query 的全范围 ProviderScan 收集，以需求拉取推进；密集首 entry 命中小页时不展开后续 nested，必要目录验证/解压/CRC 仍计费，完整遍历清单相等（D01/D08）。 证据：`UnitStream` 只剩 `Standalone/Entries/Walked`（`Enumerated`/`ProviderContainer`/`covered_end` 删除）；计数：小页 5 archive_entries / 433 B / 0 code / 0 nested vs 完整 67 / 3748 / 30 / 8；必要目录验证/CRC/解压照旧计费；反例 M1（resource 路径回退整树枚举）两用例变红。

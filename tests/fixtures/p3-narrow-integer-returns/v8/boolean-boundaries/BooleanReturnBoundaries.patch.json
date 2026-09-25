@@ -1,0 +1,24 @@
+{
+  "input_sha256": "3b0134a2b7d997713e866bf55f9fd61bf0e9ead4362b532a7aab55d7fc4b9b29",
+  "output_sha256": "336f8f291987fa9fdc583e62ffb99b522d37d19ffef8db6cfd64e5d77db973a4",
+  "code_sha256_before": "0dd4d14a537d60061121469bce88ad0f0e83d3b527037aa534acd94305dd3016",
+  "code_sha256_after": "0dd4d14a537d60061121469bce88ad0f0e83d3b527037aa534acd94305dd3016",
+  "patched_methods": {
+    "booleanAsByte": {
+      "from": "(Z)Z",
+      "to": "(Z)B"
+    },
+    "booleanAsChar": {
+      "from": "(Z)Z",
+      "to": "(Z)C"
+    },
+    "booleanAsShort": {
+      "from": "(Z)Z",
+      "to": "(Z)S"
+    },
+    "integerAsBoolean": {
+      "from": "(I)I",
+      "to": "(I)Z"
+    }
+  }
+}

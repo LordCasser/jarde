@@ -124,7 +124,13 @@ fn an_instance_members_receiver_is_written_as_this_where_the_body_reads_it() {
     let report = class_source_of(&shape, "Shape");
     let scaled = text_of(&report, "scaled");
     assert!(scaled.contains("return this.sides() * arg1;"), "{scaled}");
-    assert!(scaled.contains("public int scaled(int arg1)"), "{scaled}");
+    // P3 6.5 (landed on main): an interface member that is neither static nor abstract and has a
+    // Code attribute is spelled `default` — the class's own ACC_INTERFACE flag is what the gate
+    // reads, so this fixture's `scaled` gained the keyword the rule states.
+    assert!(
+        scaled.contains("public default int scaled(int arg1)"),
+        "{scaled}"
+    );
     // The abstract member the call names declares no body, and that is unchanged.
     let sides = text_of(&report, "sides");
     assert!(sides.contains("public abstract int sides();"), "{sides}");

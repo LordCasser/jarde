@@ -1,0 +1,22 @@
+{
+  "source_bytes": 372,
+  "patched_bytes": 379,
+  "source_sha256": "adaf8142090cc1c25f41e597350ca6ff31baf17081aeb8f0f89accc512f51e98",
+  "patched_sha256": "a5f141e48dc0ee777e02d9cd4c87c25a27ca3b9b40f86909f8f05e2153196dd3",
+  "code_attributes": 4,
+  "code_sha256_before": "992afa432deb03303c46dd1ddd3d62ea64f02dbacee82462c65c0d5ec658153b",
+  "code_sha256_after": "992afa432deb03303c46dd1ddd3d62ea64f02dbacee82462c65c0d5ec658153b",
+  "patches": [
+    {
+      "method": "runShort",
+      "from": "(I)I",
+      "to": "(I)S",
+      "descriptor_offset": 317,
+      "method_span": [
+        313,
+        370
+      ],
+      "descriptor_index": 18
+    }
+  ]
+}

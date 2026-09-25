@@ -1,0 +1,111 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-two-exit-return/EffectProbe.class
+  Last modified 2026年9月25日; size 513 bytes
+  SHA-256 checksum 1e4b5b980fedd2e851e8d46a5c8a17881e3adf63f74202f3b3c211a431d855f9
+public final class EffectProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // EffectProbe
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // EffectProbe.a:Ljava/lang/String;
+   #8 = Class              #10            // EffectProbe
+   #9 = NameAndType        #11:#12        // a:Ljava/lang/String;
+  #10 = Utf8               EffectProbe
+  #11 = Utf8               a
+  #12 = Utf8               Ljava/lang/String;
+  #13 = Fieldref           #8.#14         // EffectProbe.b:Ljava/lang/String;
+  #14 = NameAndType        #15:#12        // b:Ljava/lang/String;
+  #15 = Utf8               b
+  #16 = Methodref          #17.#18        // java/lang/String.equals:(Ljava/lang/Object;)Z
+  #17 = Class              #19            // java/lang/String
+  #18 = NameAndType        #20:#21        // equals:(Ljava/lang/Object;)Z
+  #19 = Utf8               java/lang/String
+  #20 = Utf8               equals
+  #21 = Utf8               (Ljava/lang/Object;)Z
+  #22 = Methodref          #23.#24        // java/lang/System.nanoTime:()J
+  #23 = Class              #25            // java/lang/System
+  #24 = NameAndType        #26:#27        // nanoTime:()J
+  #25 = Utf8               java/lang/System
+  #26 = Utf8               nanoTime
+  #27 = Utf8               ()J
+  #28 = Utf8               (Ljava/lang/String;Ljava/lang/String;)V
+  #29 = Utf8               Code
+  #30 = Utf8               bothMatch
+  #31 = Utf8               (LEffectProbe;)Z
+  #32 = Utf8               StackMapTable
+{
+  private final java.lang.String a;
+    descriptor: Ljava/lang/String;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private final java.lang.String b;
+    descriptor: Ljava/lang/String;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  public EffectProbe(java.lang.String, java.lang.String);
+    descriptor: (Ljava/lang/String;Ljava/lang/String;)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: aload_1
+         6: putfield      #7                  // Field a:Ljava/lang/String;
+         9: aload_0
+        10: aload_2
+        11: putfield      #13                 // Field b:Ljava/lang/String;
+        14: return
+
+  public boolean bothMatch(EffectProbe);
+    descriptor: (LEffectProbe;)Z
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: getfield      #7                  // Field a:Ljava/lang/String;
+         4: ifnonnull     17
+         7: aload_1
+         8: getfield      #7                  // Field a:Ljava/lang/String;
+        11: ifnonnull     68
+        14: goto          31
+        17: aload_0
+        18: getfield      #7                  // Field a:Ljava/lang/String;
+        21: aload_1
+        22: getfield      #7                  // Field a:Ljava/lang/String;
+        25: invokevirtual #16                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        28: ifeq          68
+        31: invokestatic  #22                 // Method java/lang/System.nanoTime:()J
+        34: pop2
+        35: aload_0
+        36: getfield      #13                 // Field b:Ljava/lang/String;
+        39: ifnonnull     52
+        42: aload_1
+        43: getfield      #13                 // Field b:Ljava/lang/String;
+        46: ifnonnull     68
+        49: goto          66
+        52: aload_0
+        53: getfield      #13                 // Field b:Ljava/lang/String;
+        56: aload_1
+        57: getfield      #13                 // Field b:Ljava/lang/String;
+        60: invokevirtual #16                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        63: ifeq          68
+        66: iconst_1
+        67: ireturn
+        68: iconst_0
+        69: ireturn
+      StackMapTable: number_of_entries = 5
+        frame_type = 17 /* same */
+        frame_type = 13 /* same */
+        frame_type = 20 /* same */
+        frame_type = 13 /* same */
+        frame_type = 1 /* same */
+}

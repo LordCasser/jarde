@@ -738,7 +738,15 @@ fn flow_facts(
         }
         for logical in &state.inputs {
             let kind = match logical.throw_site {
-                None => InputKind::Transfer,
+                // An input no throw site anchors: a plain transfer, whose state is the source's
+                // exit — or the input of a record whose protected range covers no throwing
+                // instruction of its source, which is that same exit plus the record's caught
+                // reference. The frame's own record of the edge is what tells the two apart, and
+                // it is the edge's ordinal rather than a site this build would have to invent.
+                None => match logical.exception {
+                    Some(handler_ordinal) => InputKind::Exception { handler_ordinal },
+                    None => InputKind::Transfer,
+                },
                 Some(bci) => {
                     let Some(site) = canonical
                         .throw_sites
@@ -1390,24 +1398,23 @@ impl Assigner {
             },
             InputKind::Transfer => {
                 let source = self.source_of(position, &from)?;
-                match &self.blocks[source].exit {
-                    None => Ok(Resolution::Pending(source)),
-                    Some(exit) => match exit.get(&slot) {
-                        Some(value) => Ok(Resolution::Ready(*value)),
-                        // The frame pass merges a local to `Top` as soon as one contributor has no
-                        // value for it, so a slot the destination states a class for has a value
-                        // on every contributing path.
-                        None => Ok(Resolution::NoValue),
-                    },
-                }
+                self.exit_slot(source, slot)
             }
             InputKind::Exception { handler_ordinal } => {
                 let source = self.source_of(position, &from)?;
                 let Some(bci) = throw_site else {
-                    return inconsistent(format!(
-                        "an exception input of block {:?} names no throw site",
-                        self.blocks[position].flow.id
-                    ));
+                    // The record's protected range covers no throwing instruction of its source,
+                    // so no site anchors this input: it is the state the block really derives —
+                    // its own exit — with the record's caught reference as the whole stack. The
+                    // reference is defined by the edge itself, and the one point of the source
+                    // its bytes name is the block's own start.
+                    if slot == Slot::Stack(0) {
+                        let bci = self.blocks[source].flow.id.bci();
+                        let value =
+                            self.caught(source, bci, handler_ordinal, canonical, method, budget)?;
+                        return Ok(Resolution::Ready(value));
+                    }
+                    return self.exit_slot(source, slot);
                 };
                 if slot == Slot::Stack(0) {
                     let value =
@@ -1427,6 +1434,22 @@ impl Assigner {
                     )),
                 }
             }
+        }
+    }
+
+    /// One slot of a source block's exit state: what a plain transfer hands its successor, and
+    /// what the exception edge of a record that covers no throwing instruction of that source
+    /// hands its handler beside the caught reference.
+    fn exit_slot(&self, source: usize, slot: Slot) -> Norm<Resolution> {
+        match &self.blocks[source].exit {
+            None => Ok(Resolution::Pending(source)),
+            Some(exit) => match exit.get(&slot) {
+                Some(value) => Ok(Resolution::Ready(*value)),
+                // The frame pass merges a local to `Top` as soon as one contributor has no
+                // value for it, so a slot the destination states a class for has a value
+                // on every contributing path.
+                None => Ok(Resolution::NoValue),
+            },
         }
     }
 

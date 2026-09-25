@@ -1,0 +1,103 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-two-exit-return/TernaryInIfProbe-int.class
+  Last modified 2026年9月25日; size 470 bytes
+  SHA-256 checksum 85501aaf06589a9732de94f502b66b2f8eb0d082d44706c2bdc59d86917e0473
+public final class TernaryInIfProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // TernaryInIfProbe
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // TernaryInIfProbe.a:Ljava/lang/String;
+   #8 = Class              #10            // TernaryInIfProbe
+   #9 = NameAndType        #11:#12        // a:Ljava/lang/String;
+  #10 = Utf8               TernaryInIfProbe
+  #11 = Utf8               a
+  #12 = Utf8               Ljava/lang/String;
+  #13 = Fieldref           #8.#14         // TernaryInIfProbe.b:Ljava/lang/String;
+  #14 = NameAndType        #15:#12        // b:Ljava/lang/String;
+  #15 = Utf8               b
+  #16 = Methodref          #17.#18        // java/lang/String.equals:(Ljava/lang/Object;)Z
+  #17 = Class              #19            // java/lang/String
+  #18 = NameAndType        #20:#21        // equals:(Ljava/lang/Object;)Z
+  #19 = Utf8               java/lang/String
+  #20 = Utf8               equals
+  #21 = Utf8               (Ljava/lang/Object;)Z
+  #22 = Utf8               (Ljava/lang/String;Ljava/lang/String;)V
+  #23 = Utf8               Code
+  #24 = Utf8               bothMatch
+  #25 = Utf8               (LTernaryInIfProbe;)I
+  #26 = Utf8               StackMapTable
+{
+  private final java.lang.String a;
+    descriptor: Ljava/lang/String;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private final java.lang.String b;
+    descriptor: Ljava/lang/String;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  public TernaryInIfProbe(java.lang.String, java.lang.String);
+    descriptor: (Ljava/lang/String;Ljava/lang/String;)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: aload_1
+         6: putfield      #7                  // Field a:Ljava/lang/String;
+         9: aload_0
+        10: aload_2
+        11: putfield      #13                 // Field b:Ljava/lang/String;
+        14: return
+
+  public int bothMatch(TernaryInIfProbe);
+    descriptor: (LTernaryInIfProbe;)I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: getfield      #7                  // Field a:Ljava/lang/String;
+         4: ifnonnull     17
+         7: aload_1
+         8: getfield      #7                  // Field a:Ljava/lang/String;
+        11: ifnonnull     64
+        14: goto          31
+        17: aload_0
+        18: getfield      #7                  // Field a:Ljava/lang/String;
+        21: aload_1
+        22: getfield      #7                  // Field a:Ljava/lang/String;
+        25: invokevirtual #16                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        28: ifeq          64
+        31: aload_0
+        32: getfield      #13                 // Field b:Ljava/lang/String;
+        35: ifnonnull     48
+        38: aload_1
+        39: getfield      #13                 // Field b:Ljava/lang/String;
+        42: ifnonnull     64
+        45: goto          62
+        48: aload_0
+        49: getfield      #13                 // Field b:Ljava/lang/String;
+        52: aload_1
+        53: getfield      #13                 // Field b:Ljava/lang/String;
+        56: invokevirtual #16                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        59: ifeq          64
+        62: iconst_1
+        63: ireturn
+        64: iconst_0
+        65: ireturn
+      StackMapTable: number_of_entries = 5
+        frame_type = 17 /* same */
+        frame_type = 13 /* same */
+        frame_type = 16 /* same */
+        frame_type = 13 /* same */
+        frame_type = 1 /* same */
+}

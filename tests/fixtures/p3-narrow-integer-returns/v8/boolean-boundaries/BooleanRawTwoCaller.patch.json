@@ -1,0 +1,21 @@
+{
+  "source_sha256": "56cfd48f5a13db1ab600b4737313987a06db8dd9c4cd9075f66826b38e63ac67",
+  "output_sha256": "e791af87e373254d2c107956813488042258894553f200fd5cfe0957805cbcc1",
+  "code_changes": {
+    "byteValue": {
+      "bci": 0,
+      "from": "iconst_0",
+      "to": "iconst_2"
+    },
+    "charValue": {
+      "bci": 0,
+      "from": "iconst_0",
+      "to": "iconst_2"
+    },
+    "shortValue": {
+      "bci": 0,
+      "from": "iconst_0",
+      "to": "iconst_2"
+    }
+  }
+}

@@ -32,4 +32,4 @@ jarde 的核心价值是以明确身份和可核对边界回答当前问题。�
 
 实现所有权分开：[add-parallel-bulk-recovery](../add-parallel-bulk-recovery/design.md) 继续负责 worker、背压、总账与活动容器任务交接；[optimize-demand-workloads](../optimize-demand-workloads/design.md) 负责工作负载、归因和优化准入；本 change 唯一负责普通 prepared 交接、可选证据产品及增量结构查询。已存在的共享 CP/Header 与 analysis report/MethodIr 分离直接复用，不重复立项。
 
-本次只交付规划，实施为 **0/32**。数组参数槽宽、append(int) 消费 char 的 T5 反例和其它既有正确性边界独立登记，不混入本 change 或标成已修复。详细阶段、源码依据、风险与 D01–D12 验收见 [design](design.md)，实施清单见 [tasks](tasks.md)。主 specs 待真实实现与验收完成后再同步。
+本 change 的实施任务已为 **32/32**，D0–D5 的实现与门禁随 `ba2076a` 收尾记录进入当前分支，详见 [tasks](tasks.md) 与 [verification](verification.md)。数组参数槽宽、append(int) 消费 char 的 T5 反例和其它独立正确性边界不因本 change 完成而被标成已修复。详细阶段、源码依据、风险与 D01–D12 验收见 [design](design.md)。本目录保留待同步/归档；本 change 完成不等于其它恢复能力或性能目标全部完成。

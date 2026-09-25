@@ -1,0 +1,5 @@
+-1:array=[false, true, true]:trace=abc
+0:exception=java.lang.ArithmeticException:message=/ by zero:trace=a
+1:exception=java.lang.ArithmeticException:message=/ by zero:trace=ab
+2:exception=java.lang.ArithmeticException:message=/ by zero:trace=abc
+3:array=[true, true, false]:trace=abc

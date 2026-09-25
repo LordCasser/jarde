@@ -1,0 +1,7 @@
+# 已支持分支中的求值位置
+
+此独立输入验证规划已经要求的分支内直线和测试前缀。`branch`在true分支的value调用后、return前插入mark；`prefix`在flag调用后、ifeq前插入mark。同时精确调整Code长度、branch目标和StackMapTable，冻结的patched class通过`java -Xverify:all`，SHA256为9642887887673b18174f2c315f6aa9b6a925eb1acf118afa5b3d4d29d88ed791。
+
+两种方法、三种失败模式及true/false输入共12项。原class与JADX实际完整类重编译执行逐行相同。当前jarde仍0处引用、完整javac成功，却有9项不同：true分支把value移到mark之后；prefix先mark再flag，既改变trace，也把原先的true条件改成false。false分支的三项不执行生产者或mark，作为路径控制。
+
+这12项是原57项直线矩阵之外的主代理独立作用域验收；不能用未插入mark的普通if控制代替它们。分支内声明须留在对应分支；条件值声明应位于if之前，并且按原执行位置读取一次。循环条件与异常范围仍需单独证明，不能把这一结果外推为允许任意跨区域提升。

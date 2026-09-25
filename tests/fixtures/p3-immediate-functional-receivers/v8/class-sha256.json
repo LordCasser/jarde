@@ -1,0 +1,26 @@
+[
+  {
+    "case": "direct-array",
+    "class": "DirectArrayCtorRef.class",
+    "sha256": "0c4544d1a9334c35d5a5191ba4ef2d17200a8ce9f0ca34b2bd6331538310ea98",
+    "bytes": 1039,
+    "original_output": "0\n3\njava.lang.NegativeArraySizeException\n",
+    "xverify_exit": 0
+  },
+  {
+    "case": "direct-method",
+    "class": "DirectMethodRef.class",
+    "sha256": "de0b0e15bdb199295ce055f36e46cb7dcd56854a1738832ccd8931f5a5053dc3",
+    "bytes": 943,
+    "original_output": "0\n3\n7\n",
+    "xverify_exit": 0
+  },
+  {
+    "case": "bound-control",
+    "class": "BoundFunctionalReceiver.class",
+    "sha256": "aa517756621a289f1a5cf9967a35b6c1e9f42e58e1d26bac74d06973073fd4b7",
+    "bytes": 1495,
+    "original_output": "0|0\n3|3\njava.lang.NegativeArraySizeException|1\n",
+    "xverify_exit": 0
+  }
+]

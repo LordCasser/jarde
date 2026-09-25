@@ -260,8 +260,9 @@ pub enum SlotEvidence {
     Unnamed,
     /// One variable for the whole slot, named by the one record that covers it.
     Whole(String),
-    /// Several variables, each named by the record the run assigned to it, in variable order.
-    Split(Vec<String>),
+    /// Several variables in one slot, with a debug name only where a record belongs to that
+    /// variable. An inferred lifetime can precede the only LVT record for its slot.
+    Split(Vec<Option<String>>),
 }
 
 impl SlotEvidence {
@@ -271,7 +272,7 @@ impl SlotEvidence {
         match self {
             Self::Unnamed => vec![None],
             Self::Whole(name) => vec![Some(name.clone())],
-            Self::Split(names) if names.len() > 1 => names.iter().cloned().map(Some).collect(),
+            Self::Split(names) if names.len() > 1 => names.clone(),
             // A "split" with fewer than two variables states no split at all: the slot keeps the one
             // unnamed variable rather than a name that covers only part of it.
             Self::Split(_) => vec![None],
@@ -339,6 +340,7 @@ impl RenderedName {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NameTable {
     names: BTreeMap<LocalVariable, RenderedName>,
+    reserved: BTreeSet<String>,
     aliased: usize,
     invented: usize,
 }
@@ -358,7 +360,7 @@ impl NameTable {
     /// or for a caller that stated no member flags. A body whose slot 0 holds the receiver takes
     /// [`Self::build_with_receiver`] instead.
     pub fn build(parameters: u16, slots: u16, evidence: &[SlotEvidence]) -> Self {
-        Self::decide(parameters, slots, evidence, false)
+        Self::decide(parameters, slots, evidence, false, &BTreeSet::new())
     }
 
     /// The same table for a body whose slot 0 holds the **receiver** (JVMS 4.10.1.9).
@@ -372,20 +374,49 @@ impl NameTable {
     ///
     /// Every other slot keeps the rules [`Self::build`] states for it.
     pub fn build_with_receiver(parameters: u16, slots: u16, evidence: &[SlotEvidence]) -> Self {
-        Self::decide(parameters, slots, evidence, true)
+        Self::decide(parameters, slots, evidence, true, &BTreeSet::new())
+    }
+
+    /// The same naming walk with names already claimed by proven simple field writes. Those names
+    /// are reserved before local evidence is considered, so a local cannot shadow a field that the
+    /// emitter will write without a qualifier.
+    pub(crate) fn build_with_reserved(
+        parameters: u16,
+        slots: u16,
+        evidence: &[SlotEvidence],
+        reserved: &BTreeSet<String>,
+    ) -> Self {
+        Self::decide(parameters, slots, evidence, false, reserved)
+    }
+
+    /// Receiver variant of [`Self::build_with_reserved`].
+    pub(crate) fn build_with_receiver_and_reserved(
+        parameters: u16,
+        slots: u16,
+        evidence: &[SlotEvidence],
+        reserved: &BTreeSet<String>,
+    ) -> Self {
+        Self::decide(parameters, slots, evidence, true, reserved)
     }
 
     /// The one naming walk both constructors above state their input to.
-    fn decide(parameters: u16, slots: u16, evidence: &[SlotEvidence], receiver: bool) -> Self {
+    fn decide(
+        parameters: u16,
+        slots: u16,
+        evidence: &[SlotEvidence],
+        receiver: bool,
+        reserved: &BTreeSet<String>,
+    ) -> Self {
         let mut table = Self {
             names: BTreeMap::new(),
+            reserved: reserved.clone(),
             aliased: 0,
             invented: 0,
         };
         let slots = slots
             .max(parameters)
             .max(u16::try_from(evidence.len()).unwrap_or(u16::MAX));
-        let mut taken: BTreeMap<String, LocalVariable> = BTreeMap::new();
+        let mut taken = reserved.clone();
         for slot in 0..slots {
             // The receiver is the whole of slot 0: every variable the evidence states for that slot
             // is a read of the same instance, so none of them is spelled as the evidence names it.
@@ -404,13 +435,13 @@ impl NameTable {
                     (false, Some(raw)) if is_java_identifier(raw) => (raw.clone(), None),
                     (false, Some(raw)) => (alias_for(raw), Some(AliasReason::Unspellable)),
                 };
-                let (text, aliased) = match taken.get(&text) {
-                    None => (text, aliased),
-                    Some(_) => {
+                let (text, aliased) = match taken.contains(&text) {
+                    false => (text, aliased),
+                    true => {
                         let mut suffix = 2u32;
                         loop {
                             let candidate = format!("{text}_{suffix}");
-                            if !taken.contains_key(&candidate) {
+                            if !taken.contains(&candidate) {
                                 break (candidate, Some(AliasReason::Collision));
                             }
                             suffix += 1;
@@ -420,7 +451,7 @@ impl NameTable {
                 if aliased.is_some() {
                     table.aliased += 1;
                 }
-                taken.insert(text.clone(), variable);
+                taken.insert(text.clone());
                 table.names.insert(
                     variable,
                     RenderedName {
@@ -459,12 +490,41 @@ impl NameTable {
     /// The base itself is checked like every other candidate, so a caller whose base is a keyword or
     /// an unspellable spelling gets the same treatment a debug name would.
     pub fn free_name(&self, base: &str) -> String {
-        let taken: BTreeSet<&str> = self.names.values().map(|name| name.text.as_str()).collect();
+        self.free_name_with(base, || Ok::<(), ()>(()))
+            .expect("the non-budgeted name walk cannot fail")
+    }
+
+    /// The same deterministic search with one callback at every bounded unit of work: each
+    /// reserved/local spelling copied into the temporary set, and each candidate checked before
+    /// it is accepted or extended. Recovery paths that own a [`Budget`](jarde_reader::budget::Budget)
+    /// use this hook so a large collision set is charged and cancellable inside the name walk,
+    /// rather than only once around the caller's suffix loop.
+    pub(crate) fn free_name_with<E>(
+        &self,
+        base: &str,
+        mut visit: impl FnMut() -> Result<(), E>,
+    ) -> Result<String, E> {
+        let taken: BTreeSet<&str> = self
+            .reserved
+            .iter()
+            .map(|name| {
+                visit()?;
+                Ok(name.as_str())
+            })
+            .collect::<Result<_, E>>()?;
+        let mut taken = taken;
+        for name in self.names.values() {
+            visit()?;
+            taken.insert(name.text.as_str());
+        }
         let mut candidate = base.to_string();
-        while taken.contains(candidate.as_str()) || !is_java_identifier(&candidate) {
+        loop {
+            visit()?;
+            if !taken.contains(candidate.as_str()) && is_java_identifier(&candidate) {
+                return Ok(candidate);
+            }
             candidate.push('_');
         }
-        candidate
     }
 
     /// The text of one variable's name, when the table states one.
@@ -669,13 +729,58 @@ mod tests {
     }
 
     #[test]
+    fn proven_field_names_are_reserved_for_locals_and_free_names() {
+        let reserved = ["local0", "local0_2"]
+            .into_iter()
+            .map(str::to_owned)
+            .collect();
+        let table = NameTable::build_with_reserved(0, 1, &[], &reserved);
+        assert_eq!(table.text(LocalVariable::whole(0)), Some("local0_3"));
+        assert_eq!(table.free_name("local0"), "local0_");
+        assert_eq!(table.free_name("local0_2"), "local0_2_");
+    }
+
+    #[test]
+    fn free_name_with_visits_every_reserved_local_and_candidate() {
+        let reserved = ["local0", "local0_2"]
+            .into_iter()
+            .map(str::to_owned)
+            .collect();
+        let table = NameTable::build_with_reserved(0, 1, &[], &reserved);
+        let mut visits = 0;
+        let name = table
+            .free_name_with("local0", || {
+                visits += 1;
+                Ok::<(), ()>(())
+            })
+            .expect("the test callback never stops");
+        assert_eq!(name, "local0_");
+        assert_eq!(visits, 5, "two reserved, one local, and two candidates");
+
+        let mut stopped_at = 0;
+        let result = table.free_name_with("local0", || {
+            stopped_at += 1;
+            if stopped_at == 3 {
+                Err("cancelled")
+            } else {
+                Ok(())
+            }
+        });
+        assert_eq!(result, Err("cancelled"));
+        assert_eq!(
+            stopped_at, 3,
+            "the callback stops the name walk before a candidate"
+        );
+    }
+
+    #[test]
     fn one_slot_can_hold_two_variables_and_each_takes_its_own_name() {
         // P3 3.4's `Slot reuse across ranges`: slot 1 carries `c` over one range and `d` over
         // another, so the table states two names for that one slot — and neither is a name for the
         // whole of it, which is what `whole` answers.
         let evidence = vec![
             SlotEvidence::Whole("arg0".to_string()),
-            SlotEvidence::Split(vec!["c".to_string(), "d".to_string()]),
+            SlotEvidence::Split(vec![Some("c".to_string()), Some("d".to_string())]),
         ];
         let table = NameTable::build(1, 2, &evidence);
         assert_eq!(table.text(LocalVariable::new(1, 0)), Some("c"));
@@ -698,7 +803,7 @@ mod tests {
             2,
             &[
                 SlotEvidence::Whole("c".to_string()),
-                SlotEvidence::Split(vec!["int".to_string(), "c".to_string()]),
+                SlotEvidence::Split(vec![Some("int".to_string()), Some("c".to_string())]),
             ],
         );
         assert_eq!(aliased.text(LocalVariable::new(1, 0)), Some("int_"));
@@ -719,7 +824,7 @@ mod tests {
         for evidence in [
             SlotEvidence::Unnamed,
             SlotEvidence::Split(Vec::new()),
-            SlotEvidence::Split(vec!["only".to_string()]),
+            SlotEvidence::Split(vec![Some("only".to_string())]),
         ] {
             let table = NameTable::build(1, 2, &[SlotEvidence::Whole("b".to_string()), evidence]);
             assert_eq!(table.text(LocalVariable::whole(1)), Some("local1"));

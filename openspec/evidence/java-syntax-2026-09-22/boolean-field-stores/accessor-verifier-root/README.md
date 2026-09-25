@@ -1,0 +1,5 @@
+# Root JVM verifier check for a `Z` accessor call
+
+`AccessorVerify.java` is a Java 8 source input. Compile it with `javac --release 8 -g:none`; patch the class-file UTF8 descriptor `write(Z)V` to `write(I)V` (the unique `(Z)V` byte sequence, same length) without changing any `Code` bytes. The callee remains `access$102(LAccessorVerify;Z)V`, with `putfield f:Z` at BCI 2; the caller still uses `iload_1; invokestatic` at BCI 1–2. Compile `AccessorVerifyRunner.java` against this patched class and run `java -Xverify:all -cp classes AccessorVerifyRunner`.
+
+The verifier accepts the patched class and produces the four lines in `runtime.stdout`: `-1:true`, `2:false`, `Integer.MIN_VALUE:false`, `Integer.MAX_VALUE:true`. `javap.txt` preserves the patched descriptors and BCIs. Patched `AccessorVerify.class` SHA-256: `2c97de3b4d12d927e1cb2e82a3cdd6b0f754723eb97f912a5c20c923323ff9d4`. The one-byte descriptor patch proves the call site's int-shaped value can legally meet a `Z` accessor parameter at the JVM boundary; `p3_patterns` tests the corresponding synthetic-accessor rule and dual physical origins.

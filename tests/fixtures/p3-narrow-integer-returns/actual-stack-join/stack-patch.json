@@ -1,0 +1,46 @@
+{
+  "source_bytes": 414,
+  "patched_bytes": 372,
+  "source_sha256": "3e2e2970faa2a1432867c403cdd34387cd7f1beac9b9d7d0fa04a03cc9ca5b4b",
+  "patched_sha256": "adaf8142090cc1c25f41e597350ca6ff31baf17081aeb8f0f89accc512f51e98",
+  "source_major": 52,
+  "patched_major": 49,
+  "methods": [
+    {
+      "source_case_value_bci": 20,
+      "source_default_value_bci": 27,
+      "patched_case_value_bci": 20,
+      "patched_default_value_bci": 26,
+      "patched_join_ireturn_bci": 32,
+      "switch_bci": 1,
+      "method": "runByte",
+      "source_code_length": 33,
+      "patched_code_length": 33,
+      "nested_attributes_removed": 1
+    },
+    {
+      "source_case_value_bci": 20,
+      "source_default_value_bci": 26,
+      "patched_case_value_bci": 20,
+      "patched_default_value_bci": 25,
+      "patched_join_ireturn_bci": 30,
+      "switch_bci": 1,
+      "method": "runChar",
+      "source_code_length": 31,
+      "patched_code_length": 31,
+      "nested_attributes_removed": 1
+    },
+    {
+      "source_case_value_bci": 20,
+      "source_default_value_bci": 26,
+      "patched_case_value_bci": 20,
+      "patched_default_value_bci": 25,
+      "patched_join_ireturn_bci": 30,
+      "switch_bci": 1,
+      "method": "runShort",
+      "source_code_length": 31,
+      "patched_code_length": 31,
+      "nested_attributes_removed": 1
+    }
+  ]
+}

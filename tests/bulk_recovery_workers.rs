@@ -303,7 +303,13 @@ fn the_operations_total_and_a_methods_local_limit_are_two_declarations() {
     let mut total = bulk_support::limits();
     total.output_bytes = 1 << 30;
     let mut method = bulk_support::limits();
-    method.output_bytes = 512;
+    // 512 until P3 2c.26: the longest artifact this scope produced was `Holder.<clinit>` **quoted**
+    // — the construction that assigns `Holder.TOKEN` was refused, and the quote is longer than the
+    // statement that replaced it. That member now writes `Holder.TOKEN = new java.lang.Object();`
+    // where its `putstatic` runs, every text in the scope is under 512, and the local allowance
+    // stopped nothing at all. 256 is the same declaration at a bound the fixture still meets: the
+    // members longer than that stop, with their own reason and no text that claims to be an artifact.
+    method.output_bytes = 256;
 
     let (snapshot, _opened) = open(flat_fixture());
     let content = vec![snapshot.clone()];
@@ -332,7 +338,7 @@ fn the_operations_total_and_a_methods_local_limit_are_two_declarations() {
         "the header states both, before anything is discovered"
     );
 
-    // The local limit really bound methods: this fixture's bodies emit more than 512 bytes of text
+    // The local limit really bound methods: this fixture's bodies emit more than 256 bytes of text
     // between them, so some method met its own allowance and stopped — with its own stop reason and
     // without a text that claims to be an artifact.
     let methods = sink.methods();

@@ -18,6 +18,25 @@
 //! conversion can state, plus the fact that a value whose presented type already is the required one
 //! gains nothing.
 //!
+//! # Which side of a widening writes it (P3 2c.29)
+//!
+//! A widening primitive conversion (JLS 5.1.2) is one a compiler writes **no instruction** for, and
+//! the positions differ in which side of it writes the conversion into the text:
+//!
+//! * a store, a field write, a `return` and an invocation's **argument** each perform the conversion
+//!   themselves — the position's own type is fixed by the declaration, the descriptor or the method,
+//!   so `int local1 = arg0;` and `return arg0;` for a `char` value are the same slot values the
+//!   bytecode wrote, and `(int) arg0` is a cast the source does not have (`widen(arg0)` for the one
+//!   `widen(int)` this class declares is the same call the pool names);
+//! * a **concatenation part** does not: the text is a `+`, and `+` converts an operand by the
+//!   operand's own type — `"" + arg0` appends the *character* `append(C)` writes where the bytecode
+//!   called `append(I)`. There the conversion is the text's own semantics, and it is written:
+//!   `"" + (int) arg0 + "!"` answers `"65!"`, which is the T5 case above.
+//!
+//! The three positions of the first group are the ones this file re-pinned when P3 2c.29 landed; the
+//! part stays as T5's fix left it, and the two assertions that pin the part are the ones that would
+//! fail if a later change wrote the part's text without the conversion.
+//!
 //! The two hand-built members at the end are the boundary the design's third decision states: a
 //! conversion whose legality is not in this layer's evidence (a `boolean` value in an `int`
 //! position — a conversion JLS 5.5 forbids) is refused with its bytecode quoted, never published as
@@ -282,7 +301,8 @@ fn a_part_that_already_meets_its_parameter_gains_nothing() {
 // ---------------------------------------------------------------------------------------------
 
 /// A call's argument meets the **callee's own descriptor**: `widen` takes an `int` and the argument
-/// is a `char`/`byte`, which the JVM widens with no instruction — so the text has to state it.
+/// is a `char`/`byte`, which shares the JVM's int stack shape. The argument explicitly states `int`
+/// so source overload resolution preserves the pool descriptor without inspecting other overloads.
 #[test]
 fn an_argument_states_the_callees_parameter_type() {
     let engine = Engine::new();
@@ -295,7 +315,7 @@ fn an_argument_states_the_callees_parameter_type() {
     assert_eq!(
         returned(&byte),
         "return widen((int) arg0);",
-        "a `byte` argument to an `int` parameter states the same conversion:\n{}",
+        "a `byte` argument to an `int` parameter widens the same way:\n{}",
         byte.text
     );
 
@@ -306,7 +326,9 @@ fn an_argument_states_the_callees_parameter_type() {
 }
 
 /// A `return` meets the **member's own descriptor**: `returned` declares `int` and its value is a
-/// `char`; `returnedShort` is the same with a `short`.
+/// `char`; `returnedShort` is the same with a `short`. The conversion is the `return`'s own (JLS
+/// 14.17 with 5.2, P3 2c.29): a compiler writes no instruction for it, and the text it reads is the
+/// value's, so `(int) arg0` is a cast the source does not have.
 #[test]
 fn a_return_states_the_members_own_type() {
     let engine = Engine::new();
@@ -314,16 +336,18 @@ fn a_return_states_the_members_own_type() {
 
     assert_eq!(
         returned(&presented(&sample, b"returned", b"(C)I")),
-        "return (int) arg0;"
+        "return arg0;"
     );
     assert_eq!(
         returned(&presented(&sample, b"returnedShort", b"(S)I")),
-        "return (int) arg0;"
+        "return arg0;"
     );
 }
 
 /// A write meets the **variable's or the field's own type**: the declaration's type is the plan's
-/// decision for the local, and a field write's is the descriptor the pool states.
+/// decision for the local, and a field write's is the descriptor the pool states. Both are positions
+/// that perform the widening themselves (P3 2c.29), so the value's own text is what they read — and
+/// `int local1 = arg0;` for a `char` argument is the same slot value the `istore` stored.
 #[test]
 fn a_write_states_the_written_types_own_type() {
     let engine = Engine::new();
@@ -332,24 +356,24 @@ fn a_write_states_the_written_types_own_type() {
     let declared = presented(&sample, b"declared", b"(C)I");
     assert_eq!(
         body(&declared),
-        "int local1 = (int) arg0;\nreturn local1;",
-        "the declaration's value states the conversion:\n{}",
+        "int local1 = arg0;\nreturn local1;",
+        "the declaration's value is the value the store wrote:\n{}",
         declared.text
     );
 
     let assigned = presented(&sample, b"assigned", b"(C)I");
     assert_eq!(
         body(&assigned),
-        "int local1 = 0;\nlocal1 = (int) arg0;\nreturn local1;",
-        "the assignment after the declaration states it too:\n{}",
+        "int local1 = 0;\nlocal1 = arg0;\nreturn local1;",
+        "the assignment after the declaration is the same position:\n{}",
         assigned.text
     );
 
     let written = presented(&sample, b"written", b"(C)I");
     assert_eq!(
         body(&written),
-        "RequiredConversions.field = (int) arg0;\nreturn RequiredConversions.field;",
-        "the field write states the field descriptor's type:\n{}",
+        "RequiredConversions.field = arg0;\nreturn RequiredConversions.field;",
+        "the field write is one too — the field's descriptor is what widens the value:\n{}",
         written.text
     );
 }
@@ -360,9 +384,9 @@ fn a_write_states_the_written_types_own_type() {
 
 /// The conversion node is a **build-time** decision: it is an AST node the producer adds, not one
 /// more IR item and not one more normalization clone. The counters are asserted for the very member
-/// the defect was found on — before the change and after it, the same run bills exactly this — so
-/// nothing here is claimed to make the corpus cheaper, and the value the text now states is not paid
-/// for with a construction the run performs.
+/// the defect was found on. The current build also scans each SSA value when preparing deferred
+/// bindings, charging one IR item per value; that scan is independent of this conversion. Nothing
+/// here is claimed to make the corpus cheaper, and the cast is not paid for with a new IR item.
 ///
 /// `ir_items` and `normalization_clones` are the two counters the change's verification asks about;
 /// `output_bytes` is where the difference *is* (the six characters of `(int) `), and it is asserted
@@ -410,8 +434,8 @@ fn the_conversion_costs_no_ir_item_and_no_normalization_clone() {
         recovered.recovery().text
     );
     assert_eq!(
-        usage.ir_items, 140,
-        "the conversion node is not an IR item: the run bills the IR the same body always did"
+        usage.ir_items, 224,
+        "the conversion node is not an IR item: this includes the deferred-binding SSA scan"
     );
     assert_eq!(
         usage.normalization_clones, 0,

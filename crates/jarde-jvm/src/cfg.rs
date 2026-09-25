@@ -626,7 +626,33 @@ fn push_edge(
 }
 
 /// The throw sites of every throwing instruction, the handler facts, and the block-level
-/// exception edges they imply, all in declaration order.
+/// exception edges the table itself states, all in declaration order.
+///
+/// Two statements of one exception table, each read once:
+///
+/// * a record a `may_throw` instruction of the body **covers** is stated by its sites, exactly as
+///   it always was: one edge per (`block`, ordinal) whose block holds a site the record covers,
+///   deduplicated as the site loop deduplicates several sites of one block;
+/// * a record **no** such instruction covers is stated by its protected range: one edge from every
+///   block the range intersects. `javac --release 8` lowers a `try` whose body cannot throw
+///   (`iload; iconst_2; imul; istore`) to exactly such a record, and a graph that only built edges
+///   at sites stated that nothing could enter its handler — the row was invisible, its handler
+///   block unreachable, and the `catch` the bytes declare was dropped from the presentation.
+///
+/// The range is read **only** for the records no site states. A record that already has its edges
+/// keeps them: an extra edge from a block the range merely reaches into — the prologue of a
+/// handler whose range another row still covers, say — states no transfer any instruction can take,
+/// and the graph's consumers pay for it in a weaker presentation ([`crate::canonical`]'s rows and
+/// the walk above it read these edges as what the block may enter). The runtime statement wins
+/// where it exists; the range is the graph's way of stating the record where nothing else does.
+///
+/// The site-level fact stays what it always was beside them: `throw_sites` lists **only**
+/// instructions that may throw, and a range with none invents no entry.
+///
+/// A record's range is read against the blocks' half-open BCI spans. The reader validated both
+/// endpoints as instruction boundaries ([`MethodCodeFacts::control_flow_targets`] runs
+/// `check_protected_range`), so a span's intersection is an intersection of instructions and
+/// never of the operand bytes inside them.
 fn throw_sites_and_handlers(
     facts: &MethodCodeFacts,
     blocks: &[RawBlock],
@@ -644,6 +670,7 @@ fn throw_sites_and_handlers(
 
     let mut throw_sites = Vec::new();
     let mut edges: Vec<RawEdge> = Vec::new();
+    let mut stated_by_a_site: Vec<u32> = Vec::new();
     for (block_index, (start, end)) in ranges.iter().copied().enumerate() {
         let block = blocks[block_index];
         let mut seen: Vec<u32> = Vec::new();
@@ -661,6 +688,11 @@ fn throw_sites_and_handlers(
                 })
                 .map(|handler| handler.ordinal)
                 .collect();
+            for ordinal in &feasible {
+                if !stated_by_a_site.contains(ordinal) {
+                    stated_by_a_site.push(*ordinal);
+                }
+            }
             budget.charge(CountedBudgetDimension::IrItems, 1)?;
             throw_sites.push(ThrowSite {
                 bci: instruction.bci,
@@ -692,7 +724,37 @@ fn throw_sites_and_handlers(
             }
         }
     }
+
+    // The records no site of the body states, by the range each one declares: one edge per block
+    // the range intersects, and no more. A record whose range intersects no block of this graph
+    // earns no edge either — its handler entry stays outside the graph instead of being handed an
+    // edge the table never stated for a block that exists.
+    for block in blocks {
+        for handler in &handlers {
+            if stated_by_a_site.contains(&handler.ordinal) {
+                continue;
+            }
+            if handler.start_bci < block.end_bci && block.bci < handler.end_bci {
+                push_edge(
+                    &mut edges,
+                    block.bci,
+                    handler.handler_bci,
+                    EdgeKind::Exception {
+                        handler_ordinal: handler.ordinal,
+                    },
+                    budget,
+                )?;
+            }
+        }
+    }
     Ok((handlers, throw_sites, edges))
+}
+
+fn missing_handler(ordinal: u32) -> Error {
+    Error::invalid_input(
+        IR_RAW_CFG_UNKNOWN_TARGET,
+        format!("exception-table record {ordinal} has no handler entry"),
+    )
 }
 
 /// One effect entry per decoded instruction, in BCI order.
@@ -1041,13 +1103,6 @@ fn missing_target(kind: &str, bci: u32) -> Error {
     Error::invalid_input(
         IR_RAW_CFG_UNKNOWN_TARGET,
         format!("the {kind} at BCI {bci} has no validated target"),
-    )
-}
-
-fn missing_handler(ordinal: u32) -> Error {
-    Error::invalid_input(
-        IR_RAW_CFG_UNKNOWN_TARGET,
-        format!("exception-table record {ordinal} has no handler entry"),
     )
 }
 
@@ -1631,9 +1686,14 @@ mod tests {
         // The same defect on the committed corpus: `finallyPath(I)I` of 45–48 calls its shared
         // subroutine from BCI 5, which sits inside block `[0, 8)` (the `istore_1` at BCI 4 before
         // it is no leader), so the block at BCI 8 — where `ret 1` returns — is live, and the
-        // truth table has to say so. The two blocks that stay listed are the handler path
-        // `[11, 15)` (entered through the exception table, which no raw edge of this body can
-        // reach) and `[15, 17)`, the continuation of the `jsr` inside that dead path.
+        // truth table has to say so.
+        //
+        // The handler path `[11, 15)` and `[15, 17)`, the continuation of the `jsr` inside it, used
+        // to stay listed: record 0's range `[0, 8)` holds no throwing instruction, so the old rule
+        // (an edge per `may_throw` site) built no edge of it, and the path was dead. 2.9 makes the
+        // table's own statement the graph's: the range intersects block `[0, 8)`, so the record's
+        // edge is built and the handler path is reachable — the truth table is now empty, and the
+        // sites the range holds (none) are unchanged.
         const V45: &[u8] =
             crate::test_fixtures::fixture!("historical/ecj-4.6.1/v45/HistoricalControlFlow.class");
         const V46: &[u8] =
@@ -1651,9 +1711,32 @@ mod tests {
                 "classfile major {major}"
             );
             assert_eq!(
+                outcome.cfg.throw_sites.len(),
+                1,
+                "classfile major {major}: the body's one throwing instruction is the `athrow` of \
+                 the finally's rethrow path"
+            );
+            assert_eq!(
+                outcome.cfg.throw_sites[0].handlers,
+                Vec::<u32>::new(),
+                "classfile major {major}: record 0's range [0, 8) does not cover the `athrow`, so \
+                 the site enters no handler of this method — and the record's edge is built from \
+                 the range, not from this site"
+            );
+            assert_eq!(
+                edge_tuples(&outcome.cfg)
+                    .iter()
+                    .filter(|(_, kind, _)| matches!(kind, EdgeKind::Exception { .. }))
+                    .count(),
+                1,
+                "classfile major {major}: the table's one row intersects block [0, 8) and builds \
+                 its edge even though the range holds no throwing instruction"
+            );
+            assert_eq!(
                 outcome.cfg.unreachable,
-                vec![11, 15],
-                "classfile major {major}: `ret` returns to BCI 8, so `[8, 11)` is not dead"
+                Vec::<u32>::new(),
+                "classfile major {major}: `ret` returns to BCI 8, and the handler path is entered \
+                 through the record's own edge, so nothing is dead"
             );
         }
     }

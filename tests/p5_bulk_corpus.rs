@@ -588,18 +588,30 @@ impl Billing {
 /// the reads, the decodes and the passes are unchanged, and the rows below move on `ir_items` alone
 /// (by the number of records and spans each shape really has). The per-case rows and the two arms
 /// were regenerated with `record_the_billing_table` and the arms' own reader, not hand-edited.
+///
+/// P3 2c.26 re-measured five of the six rows: `Holder`'s and `Guarded`'s static initializers build
+/// the instance they assign to a static field (`new; dup; invokespecial; putstatic`), and `new@1` now
+/// presents that construction where it used to quote it — the two statements that named the
+/// allocation and its copy give way to the assignment, so those rows are **2 `IrItems` and 436
+/// `output_bytes` lower** and every other dimension stands. `deep-expression` holds no such member
+/// and did not move. The deltas were measured by running the reader with and without the
+/// field-access reader `@new` counts (the only difference between the two runs), not by reading the
+/// old pins back.
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
+    ///
+    /// `Holder`'s `<clinit>` is the 2c.26 shape: its construction is written where the `putstatic`
+    /// runs, so this row is 2 `IrItems` and 436 `output_bytes` under the quoted one it had.
     const FLAT_MIXED: Self = Self {
         archive_entries: 8,
         entry_bytes: 1813,
         class_bytes: 1813,
         class_headers: 0,
         method_bodies: 17,
-        ir_items: 1991,
+        ir_items: 1989,
         analysis_steps: 783,
         result_items: 37,
-        output_bytes: 4112,
+        output_bytes: 3676,
     };
     /// `nested-mixed`: three containers, two of them nested, five classes.
     ///
@@ -608,16 +620,19 @@ impl Billing {
     /// re-reads (and so re-materializes) the containers that hold the classes it needs. The arms test
     /// below is the same shape with one store attached, and its two ledgers are where that difference
     /// is recorded — as counts of addressed reads, which is all either row states.
+    ///
+    /// 2c.26, over the `Holder` this case shares with `flat-mixed`: 2 `IrItems` and 436
+    /// `output_bytes` under the quoted row.
     const NESTED_MIXED: Self = Self {
         archive_entries: 25,
         entry_bytes: 8061,
         class_bytes: 2381,
         class_headers: 0,
         method_bodies: 26,
-        ir_items: 3445,
+        ir_items: 3443,
         analysis_steps: 1242,
         result_items: 64,
-        output_bytes: 6083,
+        output_bytes: 5647,
     };
     /// `two-origins-one-identity`: one class file behind two physical origins, and the only case with
     /// a nonzero `class_headers`. What that dimension counts here is the binding work a duplicated
@@ -625,16 +640,19 @@ impl Billing {
     /// class gets — and the case's shape test states which origin bound, which one was shadowed and
     /// why the run is `partial` for it. The row pins the cost of that shape; it does not claim a
     /// formula for it.
+    ///
+    /// 2c.26, over the `Holder` this case names twice: 2 `IrItems` and 436 `output_bytes` under the
+    /// quoted row.
     const TWO_ORIGINS: Self = Self {
         archive_entries: 43,
         entry_bytes: 7522,
         class_bytes: 2686,
         class_headers: 4,
         method_bodies: 12,
-        ir_items: 1664,
+        ir_items: 1662,
         analysis_steps: 642,
         result_items: 43,
-        output_bytes: 3093,
+        output_bytes: 2657,
     };
     /// `many-method-class`: 107 members behind three read classes, one of them generated wide.
     const MANY_METHOD_CLASS: Self = Self {
@@ -643,27 +661,48 @@ impl Billing {
         class_bytes: 7683,
         class_headers: 0,
         method_bodies: 107,
-        ir_items: 17715,
-        analysis_steps: 7055,
-        result_items: 122,
-        // 25716 and not 25710: this case is the one that holds `Guarded` and `BooleanContexts`, and
+        // 25688 and not 25710: this case is the one that holds `Guarded` and `BooleanContexts`, and
         // the two `Z` field writes of their static initializers (`Guarded.FLAG`,
         // `BooleanContexts.staticFlag`) are spelled `true` where they were the `int` `1` — three
         // bytes longer each, and `= 1;` is text `javac` refuses (`int cannot be converted to
         // boolean`). No member's classification moved; only those two spellings did.
-        output_bytes: 25716,
+        //
+        // The `try`/`catch` of `Guarded.syncThrowsCatching` and `Guarded.secondInitFailsCatching`
+        // moved the other three dimensions: a plain `catch` is presented as the `try` the exception
+        // table states where it used to be quoted whole (28 bytes fewer over the two — the clauses
+        // and the handler bodies are shorter than the two quotes and the uncovered-block line they
+        // replace), and presenting them costs 22 `IrItems` (the statements and anchored spans the
+        // text now writes) and 10 `AnalysisSteps` (the two shapes' own examination).
+        // Asking whether a store in front of a protected range is a resource then added 4
+        // `AnalysisSteps` (7065 to 7069) and changed no text.
+        // P3 2.7 wrote those two bodies' own calls: the block that carries `syncThrows()` /
+        // `secondInitFails()` is protected by a named row whose handler is the clause the text
+        // already writes around it, so the call is a statement of the `try` and no longer a quote.
+        // The two calls cost 233 `output_bytes` less (the `// @bytecode` anchor line and its
+        // sentence give way to the call) and bill 2 more `IrItems` and 2 more `AnalysisSteps`
+        // (7069 to 7071).
+        //
+        // 2c.26 then moved this row the same way it moved the `Holder` rows: `Guarded`'s
+        // `<clinit>` builds the instance it assigns to `LOCK`, and the construction is written
+        // instead of quoted — 2 `IrItems` fewer and 436 `output_bytes` fewer.
+        ir_items: 17737,
+        analysis_steps: 7071,
+        result_items: 122,
+        output_bytes: 25019,
     };
     /// `damaged-tail`: the readable classes only; the damaged entries cost their own attempts.
+    ///
+    /// 2c.26, over its own `Holder`: 2 `IrItems` and 436 `output_bytes` under the quoted row.
     const DAMAGED_TAIL: Self = Self {
         archive_entries: 17,
         entry_bytes: 1881,
         class_bytes: 1019,
         class_headers: 0,
         method_bodies: 12,
-        ir_items: 1664,
+        ir_items: 1662,
         analysis_steps: 642,
         result_items: 35,
-        output_bytes: 3093,
+        output_bytes: 2657,
     };
     /// `deep-expression`: the two generated chains and the nested-evaluation sample.
     const DEEP_EXPRESSION: Self = Self {
@@ -681,16 +720,28 @@ impl Billing {
     /// Arm A — the per-member path without a store — over the whole corpus: 187 requests, one fresh
     /// budget each. Pinned like the case table, and readable under the same rule: a count at this
     /// shape, never a time.
+    ///
+    /// `ir_items`/`analysis_steps`/`output_bytes` are re-measured by the `try`/`catch` slice: the
+    /// corpus holds `Guarded`, whose `syncThrowsCatching` and `secondInitFailsCatching` are now
+    /// presented as the `try` their exception tables state instead of being quoted whole — the same
+    /// move, and the same 22/10/28, the `many-method-class` row above states. P3 2.7's writing of
+    /// those two members' own calls moved the same three by the same 2/2/233 the case row records.
+    ///
+    /// P3 2c.26 moved this row too, by the same shape it moved the case rows that hold `Holder` and
+    /// `Guarded`: the same `new; dup; invokespecial; putstatic` construction is written where its
+    /// field write runs instead of being quoted, which is 10 `IrItems` (the quotes of the two
+    /// allocations and their copies over the five affected cases) and 2180 `output_bytes` over the
+    /// arm. `analysis_steps` stands.
     const DIRECT_ARM: Self = Self {
         archive_entries: 1915,
         entry_bytes: 365912,
         class_bytes: 327895,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 29002,
-        analysis_steps: 11235,
+        ir_items: 29016,
+        analysis_steps: 11251,
         result_items: 1378,
-        output_bytes: 43951,
+        output_bytes: 41510,
     };
 
     /// Arm B — the same requests, each carrying the one store that started empty. Pinned for the same
@@ -704,17 +755,19 @@ impl Billing {
     /// performs no entry read at all (`19 definition reads retained`, `definition_read_hits` 168 of
     /// them). The read dimensions are exactly where this row moves; `class_bytes`, `class_headers`,
     /// `method_bodies`, the IR counts, `result_items` and `output_bytes` are unmoved, which is what
-    /// this file's claim means: retention moves reads, never work.
+    /// this file's claim means: retention moves reads, never work. The three dimensions the `try`/
+    /// `catch` slice moved ([`Billing::DIRECT_ARM`]) moved here by the same amounts — the work is the
+    /// same work — and so did the `2/2/233` P3 2.7 moved on that row.
     const SHARED_ARM: Self = Self {
         archive_entries: 57,
         entry_bytes: 18680,
         class_bytes: 10817,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 29002,
-        analysis_steps: 11235,
+        ir_items: 29016,
+        analysis_steps: 11251,
         result_items: 26,
-        output_bytes: 43951,
+        output_bytes: 41510,
     };
 }
 // ---------------------------------------------------------------------------------------------
@@ -1003,9 +1056,11 @@ fn every_case_holds_the_shape_it_is_named_for() {
     assert_eq!(run.report.summary.methods_declared, 107);
     assert_eq!(run.report.summary.status(), "complete");
     assert_eq!(
-        run.report.summary.outcomes.explanation_only, 8,
-        "the committed boolean-context sample is where the case's explanation-shaped members are, \
-         and the generated members are all produced: {:?}",
+        run.report.summary.outcomes.explanation_only, 6,
+        "the committed `Guarded` sample is where the case's explanation-shaped members are — its \
+         `fin`/`catchFinally` copies, its guarded bodies that branch (`branching`, `withCatch`), the \
+         `throw new` of `boom` and the irreducible `suppressedCatching` — and the generated members \
+         are all produced: {:?}",
         run.report.summary.outcomes
     );
 

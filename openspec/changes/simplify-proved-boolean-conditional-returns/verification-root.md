@@ -1,0 +1,7 @@
+# 根代理独立验收：0/1 布尔条件返回
+
+根代理在实现代理退出后重建当前工作树 CLI，用 `--policy single-class --evidence all` 原样导出冻结的 `InstanceOfMerge` 与 `BooleanMergeControls` 完整类。`inverted` 和 `negative` 输出 `return !(value(arg0) instanceof java.lang.String);`，`positive` 输出测试本身，均无 `% 2`，且三个目标方法均为 `structured/java`、零 fallback；正反方法的 0、1、4、7、10、11、14、15 八个 BCI 全有 source map。原始、JADX（只移除虚构 package）及 Jarde 的两份完整类均以 `javac --release 8 -g:none -Xlint:-options` 编译，并以 `java -Xverify:all` 运行各自的冻结 Runner。每类三方八行逐字一致，调用次数始终为一；两份 Jarde 重编 class 的哈希均与 JADX 重编 class 相同。独立完整报告、输出文本、轨迹和哈希保留在[冻结证据目录](../../evidence/java-syntax-2026-09-25/instanceof-boolean-merge/)，不覆盖旧 CLI 基线。
+
+根代理还在 `BooleanMergeControls.positive` 的唯一规范指令序列中只把两条 `iconst_1/0` 改为 `iconst_2/3`，保存独立 [class](../../evidence/java-syntax-2026-09-25/instanceof-boolean-merge/BooleanMergeControls-non01.class)（SHA-256 `ecde1367f2d383bedb2baaaf773ec20e9dd0e949b1f90818633e7190d9359cdf`）和 `javap`。改码原类通过 `java -Xverify:all`；最新 Jarde 将该方法保持为 `return (value(arg0) instanceof java.lang.String ? 2 : 3) % 2 != 0;`，完整类重编后八行与改码原类逐字一致。它证明本次美化没有把一般整数 Phi 错当 Boolean。现有条件值 proof 仍先要求唯一 consumer 和封闭双臂；额外 Phi consumer、外部入口的**专用** verifier-valid 改码负例尚未补，故任务 1.2 不勾选。
+
+根代理复跑 `p3_proved_boolean_conditional_returns` 3/3、`p3_conditional_values` 2/2、`p3_integer_boolean_returns` 2/2、`p3_instanceof` 6/6（1 个既有 JDK 手动对照 ignored）；`cargo fmt --all -- --check`、`openspec validate simplify-proved-boolean-conditional-returns --strict`、`git diff --check` 通过。定向 Clippy 通过，仅仓库既存库级告警；新测试原有一处 `cloned_ref_to_slice_refs` 已由根代理修正并重跑 Clippy。实现代理清理了约 2.5 GiB 私有 target；根代理共用的验收 target 待后续数组任务前统一清理。

@@ -16,22 +16,94 @@
 //!   class report's execution plane is non-`Complete`, and a name that several definitions answer to
 //!   presents nothing at all.
 //!
-//! The two committed samples are read as they are (a real compiled class and the refusal sample),
-//! and the crafted probe is built here so a case can pin the exact member shapes it is about.
+//! The committed real compiled sample is read as it is, and crafted probes are built here so a
+//! case can pin the exact member shapes it is about.
 
 use jarde::*;
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
+use std::fs;
 use std::io::{Cursor, Write};
+use std::path::{Path, PathBuf};
+use std::process::Command;
 use std::slice;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 const STORE: u16 = 0;
 
 /// The real compiled sample: three members, one of them explanation-only.
 const HISTORICAL: &[u8] =
     include_bytes!("fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class");
-
-/// The committed refusal sample: three of its eight members produce explanation-only artifacts.
-const REFUSED_CAST: &[u8] = include_bytes!("fixtures/p3-refused-cast/v8/RefusedCast.class");
+const BRIDGE_API: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/positive/v8/BridgeApi.class");
+const BRIDGE_PROBE: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/positive/v8/BridgeProbe.class");
+const BRIDGE_API_SOURCE: &str = include_str!(
+    "../openspec/evidence/java-syntax-2026-09-23/bridge-source-projection/positive/BridgeApi.java"
+);
+const BRIDGE_RUNNER_SOURCE: &str =
+    include_str!("fixtures/p3-bridge-projection/positive/BridgeRunner.java");
+const FAKE_BRIDGE: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/negative/v8/FakeBridge.class");
+const ORPHAN_BRIDGE: &[u8] =
+    include_bytes!("fixtures/p3-bridge-projection/orphan/v8/OrphanBridge.class");
+const CLASS_RETENTION_TARGET: &[u8] =
+    include_bytes!("fixtures/class-annotation-uses/v8/HiddenTarget.class");
+const EMPTY_ANNOTATION_TARGET: &[u8] =
+    include_bytes!("fixtures/class-annotation-uses/v8/EmptyTarget.class");
+const RUNTIME_VISIBLE_TARGET: &[u8] =
+    include_bytes!("fixtures/class-annotation-uses/v8/VisibleTarget.class");
+const ANNOTATION_TYPE: &[u8] = include_bytes!("fixtures/class-annotation-uses/v8/HiddenTag.class");
+const NESTED_ARRAY_TARGET: &[u8] =
+    include_bytes!("fixtures/class-annotation-uses/v8/DuplicateTarget.class");
+const MIXED_RETENTION_TARGET: &[u8] =
+    include_bytes!("fixtures/class-annotation-uses/v8/MixedTarget.class");
+const MEMBER_PLACEMENT_TARGET: &[u8] =
+    include_bytes!("fixtures/class-annotation-uses/v8/MemberPlacementTarget.class");
+const MEMBER_ANNOTATION_TARGET: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/generated/original/MemberTagged.class"
+);
+const MEMBER_BOUNDARY_TARGET: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/legal/BoundaryTagged.class"
+);
+const MEMBER_BOUNDARY_DUPLICATE: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/patched/duplicate-same-position/BoundaryTagged.class"
+);
+const MEMBER_BOUNDARY_COUNT_MISMATCH: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-22/member-annotation-uses/boundaries/generated/patched/parameter-count-mismatch/BoundaryTagged.class"
+);
+const TYPE_USE_TARGET: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/generated/original/TypeUseSubject.class"
+);
+const PRIMITIVE_TYPE_USE_TARGET: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/primitive-boundaries/build/patched/ScalarCases.class"
+);
+const INVISIBLE_TYPE_USE_TARGET: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/generated/invisible/HiddenTypeUse.class"
+);
+const POSITIONED_TYPE_USE_TARGET: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/generated/positioned/PositionedTypeUse.class"
+);
+const DUAL_TARGET_TYPE_USE_TARGET: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/placement-boundaries/generated/classes/PlacementSubject.class"
+);
+const UNSUPPORTED_TYPE_USE_TARGET: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-22/type-use-annotations/generated/unsupported/UnsupportedTypeUse.class"
+);
+const ENUM_SWITCH_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/enum-switch.jar"
+);
+const ENUM_SWITCH_SWAPPED_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/enum-switch-swapped.jar"
+);
+const ENUM_SWITCH_ALIASED_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/aliased-enum/aliased-enum.jar"
+);
+const ENUM_SWITCH_FACTORY_NULL_ELEMENT_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/factory-null-element.jar"
+);
+const ENUM_SWITCH_VALUES_RETURNS_NULL_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/values-returns-null.jar"
+);
 
 // ---------------------------------------------------------------------------------------------
 // Fixtures: one class-file builder and one stored-only archive writer
@@ -67,6 +139,67 @@ impl Pool {
         let mut entry = vec![7];
         u16b(&mut entry, name);
         self.intern(entry)
+    }
+}
+
+#[test]
+fn enum_switch_projection_follows_proved_mapping_and_refuses_aliased_enum_fields() {
+    let normal = enum_switch_class_source(ENUM_SWITCH_JAR);
+    assert_eq!(normal.enum_switch_proofs.len(), 1);
+    assert!(
+        normal.enum_switch_proofs[0].projected,
+        "{:?}",
+        normal.enum_switch_proofs[0]
+    );
+    assert!(normal.text.contains("switch (arg0)"));
+    assert!(normal.text.contains("case RED:"));
+    assert!(normal.text.contains("case BLUE:"));
+
+    let swapped = enum_switch_class_source(ENUM_SWITCH_SWAPPED_JAR);
+    assert_eq!(swapped.enum_switch_proofs.len(), 1);
+    assert!(swapped.enum_switch_proofs[0].projected);
+    assert!(
+        swapped
+            .text
+            .contains("case BLUE:\n                return mark(1);")
+    );
+    assert!(
+        swapped
+            .text
+            .contains("case RED:\n                return mark(2);")
+    );
+
+    let aliased = enum_switch_class_source(ENUM_SWITCH_ALIASED_JAR);
+    assert_eq!(aliased.enum_switch_proofs.len(), 1);
+    assert!(!aliased.enum_switch_proofs[0].projected);
+    assert!(
+        aliased.enum_switch_proofs[0]
+            .refusal
+            .as_deref()
+            .is_some_and(|reason| reason.contains("enum <clinit> contains instructions outside")),
+        "{:?}",
+        aliased.enum_switch_proofs[0]
+    );
+    assert!(aliased.text.contains("$SwitchMap$Hue[arg0.ordinal()]"));
+}
+
+#[test]
+fn enum_switch_projection_refuses_irregular_factory_and_public_values() {
+    for (jar, expected) in [
+        (ENUM_SWITCH_FACTORY_NULL_ELEMENT_JAR, "factory"),
+        (ENUM_SWITCH_VALUES_RETURNS_NULL_JAR, "public values()"),
+    ] {
+        let report = enum_switch_class_source(jar);
+        assert_eq!(report.enum_switch_proofs.len(), 1);
+        assert!(!report.enum_switch_proofs[0].projected);
+        assert!(
+            report.enum_switch_proofs[0]
+                .refusal
+                .as_deref()
+                .is_some_and(|reason| reason.contains(expected)),
+            "{report:?}"
+        );
+        assert!(report.text.contains("$SwitchMap$Hue[arg0.ordinal()]"));
     }
 }
 
@@ -183,6 +316,27 @@ fn class_file(
 
 /// `iconst_1; pop; return`: a body whose recovery produces a statement.
 const PLAIN_BODY: &[u8] = &[0x04, 0x57, 0xb1];
+
+/// `iconst_1; dup; iadd; ireturn`: a valid value flow whose duplicate is not a verified chained
+/// assignment. It remains explanation-only while still allowing the class and method executions to
+/// complete.
+const DUPLICATE_RESULT_BODY: &[u8] = &[0x04, 0x59, 0x60, 0xac];
+
+fn duplicate_result_class() -> Vec<u8> {
+    class_file(
+        b"p/DuplicateResult",
+        b"java/lang/Object",
+        &[],
+        CLASS_FLAGS,
+        &[],
+        &[MethodSpec {
+            flags: PUBLIC_STATIC_METHOD,
+            name: b"duplicate",
+            descriptor: b"()I",
+            code: Some(DUPLICATE_RESULT_BODY),
+        }],
+    )
+}
 
 /// `new` with an incomplete index: a body whose own decode stops inside it, which is what makes the
 /// analysis of that member non-`Complete`.
@@ -388,6 +542,185 @@ fn zip_of(entries: &[(&[u8], &[u8])]) -> Vec<u8> {
     output.into_inner()
 }
 
+struct TestClassAttribute {
+    name: Vec<u8>,
+    length_offset: usize,
+    data_offset: usize,
+    length: usize,
+}
+
+struct TestMethodHeader {
+    name: Vec<u8>,
+    descriptor: Vec<u8>,
+    access_offset: usize,
+    attribute_count_offset: usize,
+    end: usize,
+    attributes: Vec<TestClassAttribute>,
+}
+
+fn test_u16(bytes: &[u8], offset: usize) -> usize {
+    usize::from(u16::from_be_bytes([bytes[offset], bytes[offset + 1]]))
+}
+
+fn test_u32(bytes: &[u8], offset: usize) -> usize {
+    usize::try_from(u32::from_be_bytes([
+        bytes[offset],
+        bytes[offset + 1],
+        bytes[offset + 2],
+        bytes[offset + 3],
+    ]))
+    .expect("the fixture attribute length fits usize")
+}
+
+fn test_put_u16(bytes: &mut [u8], offset: usize, value: usize) {
+    let value = u16::try_from(value).expect("the fixture count fits u16");
+    bytes[offset..offset + 2].copy_from_slice(&value.to_be_bytes());
+}
+
+fn test_put_u32(bytes: &mut [u8], offset: usize, value: usize) {
+    let value = u32::try_from(value).expect("the fixture attribute length fits u32");
+    bytes[offset..offset + 4].copy_from_slice(&value.to_be_bytes());
+}
+
+fn test_pool(bytes: &[u8]) -> (usize, Vec<Vec<u8>>) {
+    let count = test_u16(bytes, 8);
+    let mut entries = vec![Vec::new(); count];
+    let mut cursor = 10;
+    let mut index = 1;
+    while index < count {
+        let tag = bytes[cursor];
+        cursor += 1;
+        let width = match tag {
+            1 => {
+                let length = test_u16(bytes, cursor);
+                cursor += 2;
+                entries[index] = bytes[cursor..cursor + length].to_vec();
+                length
+            }
+            3 | 4 => 4,
+            5 | 6 => 8,
+            7 | 8 | 16 | 19 | 20 => 2,
+            9 | 10 | 11 | 12 | 17 | 18 => 4,
+            15 => 3,
+            other => panic!("unexpected constant-pool tag {other}"),
+        };
+        cursor += width;
+        index += if tag == 5 || tag == 6 { 2 } else { 1 };
+    }
+    (cursor, entries)
+}
+
+fn test_method_headers(bytes: &[u8]) -> Vec<TestMethodHeader> {
+    let (pool_end, pool) = test_pool(bytes);
+    let mut cursor = pool_end + 6;
+    let interface_count = test_u16(bytes, cursor);
+    cursor += 2 + interface_count * 2;
+    let field_count = test_u16(bytes, cursor);
+    cursor += 2;
+    for _ in 0..field_count {
+        let attribute_count = test_u16(bytes, cursor + 6);
+        cursor += 8;
+        for _ in 0..attribute_count {
+            let length = test_u32(bytes, cursor + 2);
+            cursor += 6 + length;
+        }
+    }
+    let method_count = test_u16(bytes, cursor);
+    cursor += 2;
+    let mut methods = Vec::with_capacity(method_count);
+    for _ in 0..method_count {
+        let start = cursor;
+        let name_index = test_u16(bytes, cursor + 2);
+        let descriptor_index = test_u16(bytes, cursor + 4);
+        let attribute_count_offset = cursor + 6;
+        let attribute_count = test_u16(bytes, attribute_count_offset);
+        cursor += 8;
+        let mut attributes = Vec::with_capacity(attribute_count);
+        for _ in 0..attribute_count {
+            let attribute_name = test_u16(bytes, cursor);
+            let length_offset = cursor + 2;
+            let length = test_u32(bytes, length_offset);
+            attributes.push(TestClassAttribute {
+                name: pool[attribute_name].clone(),
+                length_offset,
+                data_offset: cursor + 6,
+                length,
+            });
+            cursor += 6 + length;
+        }
+        methods.push(TestMethodHeader {
+            name: pool[name_index].clone(),
+            descriptor: pool[descriptor_index].clone(),
+            access_offset: start,
+            attribute_count_offset,
+            end: cursor,
+            attributes,
+        });
+    }
+    methods
+}
+
+fn patch_method_flags(bytes: &[u8], name: &[u8], descriptor: &[u8], flags: u16) -> Vec<u8> {
+    let mut patched = bytes.to_vec();
+    let method = test_method_headers(bytes)
+        .into_iter()
+        .find(|method| method.name.as_slice() == name && method.descriptor.as_slice() == descriptor)
+        .expect("the patch method exists");
+    patched[method.access_offset..method.access_offset + 2].copy_from_slice(&flags.to_be_bytes());
+    patched
+}
+
+fn add_deprecated_method_attribute(bytes: &[u8], name: &[u8], descriptor: &[u8]) -> Vec<u8> {
+    let (pool_end, _) = test_pool(bytes);
+    let old_pool_count = test_u16(bytes, 8);
+    let mut patched = bytes.to_vec();
+    test_put_u16(&mut patched, 8, old_pool_count + 1);
+    let mut utf8 = vec![1];
+    u16b(&mut utf8, 10);
+    utf8.extend_from_slice(b"Deprecated");
+    patched.splice(pool_end..pool_end, utf8);
+    let method = test_method_headers(&patched)
+        .into_iter()
+        .find(|method| method.name.as_slice() == name && method.descriptor.as_slice() == descriptor)
+        .expect("the patch method exists");
+    let count = test_u16(&patched, method.attribute_count_offset);
+    test_put_u16(&mut patched, method.attribute_count_offset, count + 1);
+    let mut attribute = Vec::new();
+    u16b(&mut attribute, u16::try_from(old_pool_count).unwrap());
+    u32b(&mut attribute, 0);
+    patched.splice(method.end..method.end, attribute);
+    patched
+}
+
+fn add_bridge_handler(bytes: &[u8]) -> Vec<u8> {
+    let mut patched = bytes.to_vec();
+    let method = test_method_headers(bytes)
+        .into_iter()
+        .find(|method| {
+            method.name.as_slice() == b"get"
+                && method.descriptor.as_slice() == b"()Ljava/lang/Object;"
+        })
+        .expect("the bridge method exists");
+    let code = method
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name.as_slice() == b"Code")
+        .expect("the bridge declares Code");
+    let code_length = test_u32(bytes, code.data_offset + 4);
+    let handler_count_offset = code.data_offset + 8 + code_length;
+    assert_eq!(test_u16(bytes, handler_count_offset), 0);
+    let nested_count_offset = handler_count_offset + 2;
+    let mut handler = Vec::new();
+    u16b(&mut handler, 0);
+    u16b(&mut handler, u16::try_from(code_length).unwrap());
+    u16b(&mut handler, 0);
+    u16b(&mut handler, 0);
+    patched.splice(nested_count_offset..nested_count_offset, handler);
+    test_put_u16(&mut patched, handler_count_offset, 1);
+    test_put_u32(&mut patched, code.length_offset, code.length + 8);
+    patched
+}
+
 // ---------------------------------------------------------------------------------------------
 // The library side of every case
 // ---------------------------------------------------------------------------------------------
@@ -529,6 +862,496 @@ fn class_source_of(
             )
             .expect("a legal class-source request is answered"),
     )
+}
+
+fn bridge_class_source(
+    snapshot: &ArtifactSnapshot,
+    name: &str,
+    policy: EnvironmentPolicy,
+    evidence: &RecoveryEvidenceRequest,
+) -> ClassSourceReport {
+    performed(
+        Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(snapshot),
+                &request(
+                    snapshot,
+                    ClassRef::Name {
+                        class: ClassNameQuery::internal(name),
+                    },
+                    policy,
+                ),
+                evidence,
+                &mut budget(),
+            )
+            .expect("the bridge class-source request is legal"),
+    )
+}
+
+fn enum_switch_class_source(bytes: &[u8]) -> ClassSourceReport {
+    let snapshot = open(bytes.to_vec());
+    class_source_of(&snapshot, "EnumSwitchSubject", EnvironmentPolicy::PlainJar)
+}
+
+struct BridgeProjectionScratch(PathBuf);
+
+impl BridgeProjectionScratch {
+    fn new() -> Self {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("the clock is after the epoch")
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!(
+            "jarde-bridge-source-projection-{}-{nonce}",
+            std::process::id()
+        ));
+        fs::create_dir_all(&path).expect("create the Java comparison directory");
+        Self(path)
+    }
+
+    fn child(&self, name: &str) -> PathBuf {
+        let path = self.0.join(name);
+        fs::create_dir_all(&path).expect("create a Java comparison case directory");
+        path
+    }
+}
+
+impl Drop for BridgeProjectionScratch {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.0);
+    }
+}
+
+fn compile_bridge_runner(directory: &Path, source_files: &[&str]) {
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-classpath"])
+        .arg(directory)
+        .arg("-d")
+        .arg(directory)
+        .args(source_files.iter().map(|name| directory.join(name)))
+        .output()
+        .expect("JDK javac is available for the bridge projection regression");
+    assert!(
+        compile.status.success(),
+        "javac rejected the complete Java 8 source:\n{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+}
+
+fn run_bridge_runner(directory: &Path) -> String {
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(directory)
+        .arg("BridgeRunner")
+        .output()
+        .expect("JDK java is available for the bridge projection regression");
+    assert!(
+        run.status.success(),
+        "the bridge runner failed JVM verification or execution:\n{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    String::from_utf8(run.stdout).expect("the bridge trace is UTF-8")
+}
+
+#[test]
+fn qualified_type_annotations_are_spelled_inside_their_member_types() {
+    let report = class_source_of(
+        &open(TYPE_USE_TARGET.to_vec()),
+        "TypeUseSubject",
+        EnvironmentPolicy::SingleClass,
+    );
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"field")
+        .unwrap();
+    assert!(
+        field
+            .declaration
+            .as_deref()
+            .unwrap()
+            .contains("java.lang.@TypeMark(value = \"field\") String field")
+    );
+    assert_eq!(
+        field.type_annotations.field_uses,
+        ["@TypeMark(value = \"field\")"]
+    );
+    let returned = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"value")
+        .unwrap();
+    assert!(
+        returned
+            .declaration
+            .as_deref()
+            .unwrap()
+            .contains("java.lang.@TypeMark(value = \"return\") String value()")
+    );
+    assert_eq!(
+        returned.type_annotations.return_uses,
+        ["@TypeMark(value = \"return\")"]
+    );
+    let parameter = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"echo")
+        .unwrap();
+    assert!(
+        parameter
+            .declaration
+            .as_deref()
+            .unwrap()
+            .contains("java.lang.@TypeMark(value = \"parameter\") String arg1")
+    );
+    assert_eq!(
+        parameter.type_annotations.parameter_uses,
+        [vec!["@TypeMark(value = \"parameter\")".to_owned()]]
+    );
+}
+
+#[test]
+fn primitive_type_annotations_keep_their_facts_and_are_refused() {
+    let report = class_source_of(
+        &open(PRIMITIVE_TYPE_USE_TARGET.to_vec()),
+        "ScalarCases",
+        EnvironmentPolicy::SingleClass,
+    );
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"field")
+        .unwrap();
+    assert!(field.type_annotations.field_uses.is_empty());
+    assert!(
+        field
+            .type_annotations
+            .refusals
+            .iter()
+            .any(|reason| reason.contains("primitive"))
+    );
+    let answer = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"answer")
+        .unwrap();
+    assert!(answer.type_annotations.return_uses.is_empty());
+    assert!(
+        answer
+            .type_annotations
+            .refusals
+            .iter()
+            .any(|reason| reason.contains("primitive"))
+    );
+    let echo = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"echo")
+        .unwrap();
+    assert!(echo.type_annotations.parameter_uses[0].is_empty());
+    assert!(
+        echo.type_annotations
+            .refusals
+            .iter()
+            .any(|reason| reason.contains("primitive"))
+    );
+}
+
+#[test]
+fn invisible_type_annotations_keep_their_shell_and_value() {
+    let report = class_source_of(
+        &open(INVISIBLE_TYPE_USE_TARGET.to_vec()),
+        "HiddenTypeUse",
+        EnvironmentPolicy::SingleClass,
+    );
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"field")
+        .unwrap();
+    assert!(
+        field
+            .declaration
+            .as_deref()
+            .unwrap()
+            .contains("java.lang.@HiddenMark(value = \"field\") String field")
+    );
+    assert_eq!(
+        field.type_annotations.attributes[0].attribute.name.raw().0,
+        b"RuntimeInvisibleTypeAnnotations"
+    );
+    assert_eq!(
+        field.type_annotations.field_uses,
+        ["@HiddenMark(value = \"field\")"]
+    );
+}
+
+#[test]
+fn same_type_annotations_on_method_and_return_keep_their_separate_facts() {
+    let report = class_source_of(
+        &open(DUAL_TARGET_TYPE_USE_TARGET.to_vec()),
+        "PlacementSubject",
+        EnvironmentPolicy::SingleClass,
+    );
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"scalarMethod")
+        .unwrap();
+    assert!(
+        method
+            .annotations
+            .uses
+            .iter()
+            .any(|annotation| annotation.starts_with("@PlaceMark"))
+    );
+    assert!(method.type_annotations.return_uses.is_empty());
+    assert!(
+        method
+            .type_annotations
+            .refusals
+            .iter()
+            .any(|reason| reason.contains("declaration and type target"))
+    );
+    assert_eq!(
+        method.type_annotations.attributes[0].annotations[0].target_type,
+        0x14
+    );
+    assert!(
+        method.parameter_annotations.uses_by_position[0]
+            .iter()
+            .any(|annotation| annotation.starts_with("@PlaceMark"))
+    );
+    assert!(method.type_annotations.parameter_uses[0].is_empty());
+    assert!(
+        method
+            .type_annotations
+            .refusals
+            .iter()
+            .any(|reason| reason.contains("target=0x16")
+                && reason.contains("declaration and type target"))
+    );
+    assert_eq!(
+        method.type_annotations.parameter_uses[1],
+        ["@PlaceMark(value = \"parameter-qualified\")"]
+    );
+}
+
+#[test]
+fn formal_parameter_target_uses_descriptor_position_after_a_wide_slot() {
+    let report = class_source_of(
+        &open(POSITIONED_TYPE_USE_TARGET.to_vec()),
+        "PositionedTypeUse",
+        EnvironmentPolicy::SingleClass,
+    );
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"accept")
+        .unwrap();
+    assert!(method.declaration.as_deref().unwrap().contains(
+        "java.lang.String arg2, java.lang.@TypeMark(value = \"position two\") String arg3"
+    ));
+    let target = &method.type_annotations.attributes[0].annotations[0];
+    assert_eq!(target.target_type, 0x16);
+    assert_eq!(target.target_info, [2]);
+    assert_eq!(
+        method.type_annotations.parameter_uses[0],
+        Vec::<String>::new()
+    );
+    assert_eq!(
+        method.type_annotations.parameter_uses[1],
+        Vec::<String>::new()
+    );
+    assert_eq!(
+        method.type_annotations.parameter_uses[2],
+        ["@TypeMark(value = \"position two\")"]
+    );
+}
+
+fn duplicate_field_type_annotation(class_bytes: &[u8]) -> Vec<u8> {
+    let mut budget = budget();
+    let class = class_facts(class_bytes, &mut budget).unwrap();
+    let shell = class.fields[0]
+        .attributes
+        .iter()
+        .find(|shell| shell.name.raw().0 == b"RuntimeVisibleTypeAnnotations")
+        .expect("field type annotation shell");
+    let start = usize::try_from(shell.content_span.start).unwrap();
+    let end = start + usize::try_from(shell.content_span.length).unwrap();
+    let content = &class_bytes[start..end];
+    assert_eq!(&content[..2], &[0, 1]);
+    let mut replacement = vec![0, 2];
+    replacement.extend_from_slice(&content[2..]);
+    replacement.extend_from_slice(&content[2..]);
+    let mut bytes = class_bytes.to_vec();
+    bytes.splice(start..end, replacement.iter().copied());
+    let length = u32::try_from(replacement.len()).unwrap();
+    let header = usize::try_from(shell.span.start).unwrap() + 2;
+    bytes[header..header + 4].copy_from_slice(&length.to_be_bytes());
+    bytes
+}
+
+fn out_of_range_parameter_target(class_bytes: &[u8]) -> Vec<u8> {
+    let mut budget = budget();
+    let class = class_facts(class_bytes, &mut budget).unwrap();
+    let method = class
+        .methods
+        .iter()
+        .find(|method| method.name.raw().0 == b"echo")
+        .unwrap();
+    let shell = method
+        .attributes
+        .iter()
+        .find(|shell| shell.name.raw().0 == b"RuntimeVisibleTypeAnnotations")
+        .expect("parameter type annotation shell");
+    let mut bytes = class_bytes.to_vec();
+    let target_index = usize::try_from(shell.content_span.start).unwrap() + 3;
+    bytes[target_index] = u8::MAX;
+    bytes
+}
+
+fn field_target_owned_by_method(class_bytes: &[u8]) -> Vec<u8> {
+    let mut budget = budget();
+    let class = class_facts(class_bytes, &mut budget).unwrap();
+    let shell = class.fields[0]
+        .attributes
+        .iter()
+        .find(|shell| shell.name.raw().0 == b"RuntimeVisibleTypeAnnotations")
+        .expect("field type annotation shell");
+    let mut bytes = class_bytes.to_vec();
+    let target_type = usize::try_from(shell.content_span.start).unwrap() + 2;
+    bytes[target_type] = 0x14;
+    bytes
+}
+
+#[test]
+fn duplicate_type_annotation_is_refused_atomically_and_other_targets_survive() {
+    let report = class_source_of(
+        &open(duplicate_field_type_annotation(TYPE_USE_TARGET)),
+        "TypeUseSubject",
+        EnvironmentPolicy::SingleClass,
+    );
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"field")
+        .unwrap();
+    assert_eq!(field.type_annotations.attributes[0].annotations.len(), 2);
+    assert!(field.type_annotations.field_uses.is_empty());
+    assert!(
+        field
+            .type_annotations
+            .refusals
+            .iter()
+            .filter(|reason| reason.contains("duplicate annotation type"))
+            .count()
+            == 2
+    );
+    let returned = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"value")
+        .unwrap();
+    assert_eq!(returned.type_annotations.return_uses.len(), 1);
+}
+
+#[test]
+fn formal_parameter_target_past_descriptor_count_is_refused_without_shift() {
+    let report = class_source_of(
+        &open(out_of_range_parameter_target(TYPE_USE_TARGET)),
+        "TypeUseSubject",
+        EnvironmentPolicy::SingleClass,
+    );
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"echo")
+        .unwrap();
+    assert!(method.type_annotations.parameter_uses[0].is_empty());
+    assert!(
+        method
+            .type_annotations
+            .refusals
+            .iter()
+            .any(|reason| reason.contains("outside the descriptor parameter count"))
+    );
+}
+
+#[test]
+fn field_type_attribute_cannot_claim_a_method_return_target() {
+    let report = class_source_of(
+        &open(field_target_owned_by_method(TYPE_USE_TARGET)),
+        "TypeUseSubject",
+        EnvironmentPolicy::SingleClass,
+    );
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"field")
+        .unwrap();
+    assert!(field.type_annotations.field_uses.is_empty());
+    assert!(
+        field
+            .type_annotations
+            .refusals
+            .iter()
+            .any(|reason| reason.contains("does not belong to a field"))
+    );
+    let returned = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"value")
+        .unwrap();
+    assert_eq!(returned.type_annotations.return_uses.len(), 1);
+}
+
+#[test]
+fn single_name_array_and_nested_path_type_uses_are_preserved_as_refusals() {
+    let report = class_source_of(
+        &open(UNSUPPORTED_TYPE_USE_TARGET.to_vec()),
+        "UnsupportedTypeUse",
+        EnvironmentPolicy::SingleClass,
+    );
+    let single = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"peer")
+        .unwrap();
+    assert!(single.type_annotations.field_uses.is_empty());
+    assert!(
+        single
+            .type_annotations
+            .refusals
+            .iter()
+            .any(|reason| reason.contains("single-segment"))
+    );
+    let array = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"array")
+        .unwrap();
+    assert!(array.type_annotations.field_uses.is_empty());
+    assert!(
+        array
+            .type_annotations
+            .refusals
+            .iter()
+            .any(|reason| reason.contains("primitive, array"))
+    );
+    let generic = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"values")
+        .unwrap();
+    assert!(generic.type_annotations.field_uses.is_empty());
+    assert!(
+        generic
+            .type_annotations
+            .refusals
+            .iter()
+            .any(|reason| reason.contains("non-empty type_path"))
+    );
 }
 
 fn text_of<'a>(report: &'a ClassSourceReport, name: &str) -> &'a str {
@@ -749,13 +1572,16 @@ fn a_member_without_a_body_is_a_declaration_and_never_an_empty_body() {
     let snapshot = open(probe_class());
     let report = class_source_of(&snapshot, "p/Probe", EnvironmentPolicy::SingleClass);
 
-    // The declaration of the whole class, with the interfaces the class file declares.
+    // The declaration of the whole class, with the interfaces the class file declares: the binary
+    // name `p/Probe` states the package `p`, so the text opens with that line and the declaration
+    // itself carries the simple name.
     let declaration = report.declaration.as_ref().expect("the class is declared");
     assert_eq!(
         declaration.declaration,
-        "public class p.Probe extends java.lang.Object implements p.Marker, java.io.Serializable"
+        "public class Probe extends java.lang.Object implements p.Marker, java.io.Serializable"
     );
-    assert_eq!(declaration.name, "p.Probe");
+    assert_eq!(declaration.name, "Probe");
+    assert!(report.text.contains("package p;\n\n"), "{}", report.text);
 
     // The field of the same read, spelled from its descriptor.
     assert_eq!(report.fields.len(), 1);
@@ -988,8 +1814,12 @@ fn a_method_table_that_stops_keeps_its_prefix_and_claims_no_more() {
 /// bytecode it quotes — stays in the text instead of being dropped.
 #[test]
 fn an_explanation_only_member_is_marked_and_its_text_is_kept() {
-    let snapshot = open(REFUSED_CAST.to_vec());
-    let report = class_source_of(&snapshot, "RefusedCast", EnvironmentPolicy::SingleClass);
+    let snapshot = open(duplicate_result_class());
+    let report = class_source_of(
+        &snapshot,
+        "p/DuplicateResult",
+        EnvironmentPolicy::SingleClass,
+    );
 
     let explanation_only: Vec<&ClassSourceMethod> = report
         .methods
@@ -1004,8 +1834,8 @@ fn an_explanation_only_member_is_marked_and_its_text_is_kept() {
         .collect();
     assert_eq!(
         explanation_only.len(),
-        3,
-        "the sample's three refused casts"
+        1,
+        "the unsupported duplicate shape remains explanation-only"
     );
     for method in explanation_only {
         let ClassSourceOutcome::Recovered { report: run, .. } = &method.outcome else {
@@ -1019,7 +1849,7 @@ fn an_explanation_only_member_is_marked_and_its_text_is_kept() {
         );
         assert!(
             method.text.contains("// @bytecode "),
-            "the refusals the artifact quotes are kept:\n{}",
+            "the refusal the artifact quotes is kept:\n{}",
             method.text
         );
     }
@@ -1098,7 +1928,7 @@ fn a_name_two_definitions_answer_to_presents_nothing() {
     assert!(
         report
             .text
-            .contains("public class p.Probe extends java.lang.Object")
+            .contains("public class Probe extends java.lang.Object")
     );
 }
 
@@ -1312,6 +2142,430 @@ fn a_request_that_stops_mid_class_states_the_shortfall() {
     );
 }
 
+#[test]
+fn bridge_admission_needs_the_same_run_shape_source_and_resolved_parent_contract() {
+    let jar = open(zip_of(&[
+        (b"BridgeApi.class", BRIDGE_API),
+        (b"BridgeProbe.class", BRIDGE_PROBE),
+    ]));
+    let essential = bridge_class_source(
+        &jar,
+        "BridgeProbe",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    let all = bridge_class_source(
+        &jar,
+        "BridgeProbe",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::all(),
+    );
+    assert_eq!(essential.bridge_proofs, all.bridge_proofs);
+    assert_eq!(essential.bridge_proofs.len(), 1);
+    let admitted = &essential.bridge_proofs[0];
+    assert!(admitted.admitted, "{:?}", admitted.refusal);
+    assert_eq!(admitted.member.name.0.as_slice(), b"get");
+    assert_eq!(
+        admitted.member.descriptor.0.as_slice(),
+        b"()Ljava/lang/Object;"
+    );
+    assert_eq!(
+        admitted.target.as_ref().unwrap().descriptor.0.as_slice(),
+        b"()Ljava/lang/String;"
+    );
+    assert_eq!(admitted.call_bci, Some(1));
+    assert!(admitted.projected);
+    assert!(
+        essential
+            .methods
+            .windows(2)
+            .all(|pair| { pair[0].item.index < pair[1].item.index })
+    );
+    let bridge_method = essential
+        .methods
+        .iter()
+        .find(|method| method.item.identity == admitted.member)
+        .expect("the physical bridge stays in the report");
+    let ClassSourceOutcome::Recovered {
+        report: original_bridge_body,
+        ..
+    } = &bridge_method.outcome
+    else {
+        panic!("the original bridge recovery report remains available")
+    };
+    assert!(original_bridge_body.text.contains("return this.get();"));
+    assert!(
+        bridge_method
+            .markers
+            .iter()
+            .any(|marker| { marker.contains("projected bridge") && marker.contains("BCI 1") })
+    );
+    assert!(
+        bridge_method
+            .markers
+            .iter()
+            .all(|marker| bridge_method.text.contains(marker))
+    );
+    assert!(essential.text.contains(&bridge_method.text));
+    assert!(!essential.text.contains("public java.lang.Object get()"));
+    assert_eq!(essential.text, all.text);
+    let serialized = serde_json::to_value(&essential).expect("class-source proof is JSON evidence");
+    assert_eq!(serialized["bridge_proofs"][0]["call_bci"], 1);
+    assert_eq!(serialized["bridge_proofs"][0]["projected"], true);
+    assert_eq!(
+        serialized["bridge_proofs"][0]["member"]["descriptor"],
+        serde_json::json!(b"()Ljava/lang/Object;".to_vec())
+    );
+    assert_eq!(
+        serialized["bridge_proofs"][0]["target"]["descriptor"],
+        serde_json::json!(b"()Ljava/lang/String;".to_vec())
+    );
+
+    let projection_bytes = u64::try_from(bridge_method.markers.last().unwrap().len())
+        .expect("the bridge projection marker fits the byte budget");
+    assert!(all.usage.output_bytes >= projection_bytes);
+    let mut limits = all.limits.clone();
+    limits.output_bytes = all.usage.output_bytes - 1;
+    let mut constrained_budget = Budget::new(limits);
+    let stopped = performed(
+        Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&jar),
+                &request(
+                    &jar,
+                    ClassRef::Name {
+                        class: ClassNameQuery::internal("BridgeProbe"),
+                    },
+                    EnvironmentPolicy::PlainJar,
+                ),
+                &RecoveryEvidenceRequest::all(),
+                &mut constrained_budget,
+            )
+            .expect("a budget stop still returns the class-source report"),
+    );
+    assert!(matches!(
+        stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::OutputBytes
+            },
+            ..
+        }
+    ));
+    assert!(stopped.bridge_proofs[0].admitted);
+    assert!(!stopped.bridge_proofs[0].projected);
+    let stopped_bridge = stopped
+        .methods
+        .iter()
+        .find(|method| method.item.identity == admitted.member)
+        .expect("the original bridge remains in the physical table");
+    assert!(stopped_bridge.text.contains("java.lang.Object get()"));
+    assert!(stopped.text.contains(&stopped_bridge.text));
+
+    let fake = open(zip_of(&[(b"FakeBridge.class", FAKE_BRIDGE)]));
+    let fake = bridge_class_source(
+        &fake,
+        "FakeBridge",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(fake.bridge_proofs.len(), 1);
+    assert!(!fake.bridge_proofs[0].admitted);
+    assert!(
+        fake.bridge_proofs[0]
+            .refusal
+            .as_deref()
+            .unwrap()
+            .contains("pure single forward")
+    );
+    assert!(!fake.bridge_proofs[0].projected);
+    assert!(fake.text.contains("java.lang.Object get()"));
+
+    let orphan = open(zip_of(&[(b"OrphanBridge.class", ORPHAN_BRIDGE)]));
+    let orphan = bridge_class_source(
+        &orphan,
+        "OrphanBridge",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(orphan.bridge_proofs.len(), 1);
+    assert!(!orphan.bridge_proofs[0].admitted);
+    assert!(
+        orphan.bridge_proofs[0]
+            .refusal
+            .as_deref()
+            .unwrap()
+            .contains("no resolved direct parent")
+    );
+    assert!(!orphan.bridge_proofs[0].projected);
+    assert!(orphan.text.contains("java.lang.Object get()"));
+
+    let single = open(BRIDGE_PROBE.to_vec());
+    let single = bridge_class_source(
+        &single,
+        "BridgeProbe",
+        EnvironmentPolicy::SingleClass,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(single.bridge_proofs.len(), 1);
+    assert!(!single.bridge_proofs[0].admitted);
+    assert_eq!(
+        single.usage.class_headers, 1,
+        "the prepared class header was not reread"
+    );
+    assert!(
+        single.bridge_proofs[0]
+            .refusal
+            .as_deref()
+            .unwrap()
+            .contains("unresolved"),
+        "actual refusal: {:?}",
+        single.bridge_proofs[0].refusal
+    );
+}
+
+#[test]
+fn an_admitted_bridge_is_rebuilt_from_the_complete_projected_source() {
+    let jar = open(zip_of(&[
+        (b"BridgeApi.class", BRIDGE_API),
+        (b"BridgeProbe.class", BRIDGE_PROBE),
+    ]));
+    let report = bridge_class_source(
+        &jar,
+        "BridgeProbe",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::all(),
+    );
+    let proof = report
+        .bridge_proofs
+        .iter()
+        .find(|proof| proof.admitted)
+        .expect("the ordinary Java 8 override proves its bridge");
+    assert_eq!(proof.call_bci, Some(1));
+    assert!(proof.projected);
+    assert!(report.text.contains("String get()"));
+    assert!(!report.text.contains("Object get()"));
+
+    let scratch = BridgeProjectionScratch::new();
+    let original = scratch.child("original");
+    fs::write(original.join("BridgeProbe.class"), BRIDGE_PROBE)
+        .expect("write the frozen implementation class");
+    fs::write(original.join("BridgeApi.class"), BRIDGE_API)
+        .expect("write the frozen interface class");
+    fs::write(original.join("BridgeRunner.java"), BRIDGE_RUNNER_SOURCE)
+        .expect("write the source-only runner");
+    compile_bridge_runner(&original, &["BridgeRunner.java"]);
+    let original_trace = run_bridge_runner(&original);
+
+    let recovered = scratch.child("recovered");
+    fs::write(recovered.join("BridgeProbe.java"), &report.text)
+        .expect("write the complete projected class source");
+    fs::write(recovered.join("BridgeApi.java"), BRIDGE_API_SOURCE)
+        .expect("write the source-level interface contract");
+    fs::write(recovered.join("BridgeRunner.java"), BRIDGE_RUNNER_SOURCE)
+        .expect("write the source-only runner");
+    compile_bridge_runner(
+        &recovered,
+        &["BridgeProbe.java", "BridgeApi.java", "BridgeRunner.java"],
+    );
+    let recovered_trace = run_bridge_runner(&recovered);
+    assert_eq!(original_trace, "value|value|value\n");
+    assert_eq!(recovered_trace, original_trace);
+
+    let javap = Command::new("javap")
+        .args(["-p", "-c", "-v", "-classpath"])
+        .arg(&recovered)
+        .arg("BridgeProbe")
+        .output()
+        .expect("JDK javap is available for bridge flag inspection");
+    assert!(
+        javap.status.success(),
+        "javap failed:\n{}",
+        String::from_utf8_lossy(&javap.stderr)
+    );
+    let javap = String::from_utf8(javap.stdout).expect("javap output is UTF-8");
+    let bridge = javap
+        .split_once("public java.lang.Object get();")
+        .map(|(_, tail)| tail)
+        .expect("javac regenerated the erased Object bridge");
+    let bridge = bridge
+        .split_once("\n  public ")
+        .map_or(bridge, |(method, _)| method);
+    assert!(
+        bridge.contains("descriptor: ()Ljava/lang/Object;"),
+        "{bridge}"
+    );
+    assert!(
+        bridge.contains("ACC_PUBLIC, ACC_BRIDGE, ACC_SYNTHETIC"),
+        "{bridge}"
+    );
+    assert!(
+        bridge.contains("// Method get:()Ljava/lang/String;"),
+        "the regenerated erased bridge must target the source override:\n{bridge}"
+    );
+}
+
+#[test]
+fn bridge_admission_rejects_handlers_metadata_unwritable_targets_and_ambiguous_parents() {
+    // These are explicitly labeled class-file patches: the exception table row is a reader
+    // boundary probe and is not claimed to pass JVM verification.
+    let handler_class = add_bridge_handler(BRIDGE_PROBE);
+    let handler_jar = open(zip_of(&[
+        (b"BridgeApi.class", BRIDGE_API),
+        (b"BridgeProbe.class", &handler_class),
+    ]));
+    let handler = bridge_class_source(
+        &handler_jar,
+        "BridgeProbe",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert!(handler.bridge_proofs.is_empty());
+    assert!(matches!(
+        handler.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::Error { ref code },
+            ..
+        } if code == "ir_frame_inconsistent"
+    ));
+
+    // Deprecated is a legal zero-length method attribute. It stands for observable metadata whose
+    // bridge-copying behavior this proof does not establish; debug tables nested under Code remain
+    // allowed because they are not method-level attributes.
+    let attributed_class =
+        add_deprecated_method_attribute(BRIDGE_PROBE, b"get", b"()Ljava/lang/String;");
+    let attributed_jar = open(zip_of(&[
+        (b"BridgeApi.class", BRIDGE_API),
+        (b"BridgeProbe.class", &attributed_class),
+    ]));
+    let attributed = bridge_class_source(
+        &attributed_jar,
+        "BridgeProbe",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(attributed.bridge_proofs.len(), 1);
+    assert!(!attributed.bridge_proofs[0].admitted);
+    assert!(
+        attributed.bridge_proofs[0]
+            .refusal
+            .as_deref()
+            .unwrap()
+            .contains("metadata")
+    );
+
+    // These target modifiers remain on the source-level declaration and javac 23.0.1 --release 8
+    // still rebuilds the same 0x1041 public bridge. Final on the target is allowed; final on the
+    // bridge itself is not reconstructed and is refused below.
+    for (label, flags) in [
+        ("final", 0x0011),
+        ("synchronized", 0x0021),
+        ("strictfp", 0x0801),
+    ] {
+        let target = patch_method_flags(BRIDGE_PROBE, b"get", b"()Ljava/lang/String;", flags);
+        let jar = open(zip_of(&[
+            (b"BridgeApi.class", BRIDGE_API),
+            (b"BridgeProbe.class", &target),
+        ]));
+        let report = bridge_class_source(
+            &jar,
+            "BridgeProbe",
+            EnvironmentPolicy::PlainJar,
+            &RecoveryEvidenceRequest::essential(),
+        );
+        assert_eq!(report.bridge_proofs.len(), 1, "{label}");
+        assert!(
+            report.bridge_proofs[0].admitted,
+            "{label}: {:?}",
+            report.bridge_proofs[0].refusal
+        );
+    }
+
+    let final_bridge = patch_method_flags(BRIDGE_PROBE, b"get", b"()Ljava/lang/Object;", 0x1051);
+    let final_bridge_jar = open(zip_of(&[
+        (b"BridgeApi.class", BRIDGE_API),
+        (b"BridgeProbe.class", &final_bridge),
+    ]));
+    let final_bridge_report = bridge_class_source(
+        &final_bridge_jar,
+        "BridgeProbe",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(final_bridge_report.bridge_proofs.len(), 1);
+    assert!(!final_bridge_report.bridge_proofs[0].admitted);
+    assert!(
+        final_bridge_report.bridge_proofs[0]
+            .refusal
+            .as_deref()
+            .unwrap()
+            .contains("modifiers")
+    );
+
+    // These flag patches probe target shapes that cannot be reconstructed as the invoked public
+    // instance declaration. They are class-file boundary probes, not verifier-valid replacements.
+    for (label, flags) in [
+        ("private", 0x0002),
+        ("static", 0x0009),
+        ("synthetic", 0x1001),
+    ] {
+        let target = patch_method_flags(BRIDGE_PROBE, b"get", b"()Ljava/lang/String;", flags);
+        let jar = open(zip_of(&[
+            (b"BridgeApi.class", BRIDGE_API),
+            (b"BridgeProbe.class", &target),
+        ]));
+        let report = bridge_class_source(
+            &jar,
+            "BridgeProbe",
+            EnvironmentPolicy::PlainJar,
+            &RecoveryEvidenceRequest::essential(),
+        );
+        assert_eq!(report.bridge_proofs.len(), 1, "{label}");
+        assert!(!report.bridge_proofs[0].admitted, "{label}");
+    }
+
+    // A direct interface owner that is absent from a complete artifact is still unresolved
+    // evidence. This case is separate from SingleClass: PlainJar may resolve inherited methods,
+    // but it may not infer one from a missing owner.
+    let missing_owner_jar = open(zip_of(&[(b"BridgeProbe.class", BRIDGE_PROBE)]));
+    let missing_owner = bridge_class_source(
+        &missing_owner_jar,
+        "BridgeProbe",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(missing_owner.bridge_proofs.len(), 1);
+    assert!(!missing_owner.bridge_proofs[0].admitted);
+    assert!(
+        missing_owner.bridge_proofs[0]
+            .refusal
+            .as_deref()
+            .unwrap()
+            .contains("unresolved")
+    );
+
+    let ambiguous_jar = open(zip_of(&[
+        (b"BridgeApi.class", BRIDGE_API),
+        (b"BridgeApi.class", BRIDGE_API),
+        (b"BridgeProbe.class", BRIDGE_PROBE),
+    ]));
+    let ambiguous = bridge_class_source(
+        &ambiguous_jar,
+        "BridgeProbe",
+        EnvironmentPolicy::PlainJar,
+        &RecoveryEvidenceRequest::essential(),
+    );
+    assert_eq!(ambiguous.bridge_proofs.len(), 1);
+    assert!(!ambiguous.bridge_proofs[0].admitted);
+    assert!(
+        ambiguous.bridge_proofs[0]
+            .refusal
+            .as_deref()
+            .unwrap()
+            .contains("unresolved")
+    );
+}
+
 /// A member whose raw descriptor is not a method descriptor is stated as such: no declaration, no
 /// run, and the marker that says both — while the members beside it are presented as usual.
 #[test]
@@ -1415,6 +2669,547 @@ fn the_report_serializes_with_the_text_it_publishes() {
                 .as_str()
         )
     );
+}
+
+#[test]
+fn class_retention_annotation_is_spelled_from_its_invisible_attribute() {
+    let report = class_source_of(
+        &open(CLASS_RETENTION_TARGET.to_vec()),
+        "HiddenTarget",
+        EnvironmentPolicy::SingleClass,
+    );
+    let declaration = report.declaration.as_ref().expect("class declaration");
+    assert_eq!(declaration.annotation_uses, ["@HiddenTag(value = 5)"]);
+    assert!(declaration.annotation_refusals.is_empty());
+    assert_eq!(declaration.annotation_attributes.len(), 1);
+    assert_eq!(
+        declaration.annotation_attributes[0].attribute.name.raw().0,
+        b"RuntimeInvisibleAnnotations"
+    );
+    assert_eq!(declaration.annotation_attributes[0].annotations.len(), 1);
+    assert!(
+        report.text.find("@HiddenTag(value = 5)").unwrap()
+            < report.text.find("class HiddenTarget").unwrap()
+    );
+    let json = serde_json::to_value(&report).expect("the annotation report serializes");
+    assert_eq!(
+        json["declaration"]["annotation_uses"][0],
+        "@HiddenTag(value = 5)"
+    );
+    assert_eq!(
+        json["declaration"]["annotation_attributes"][0]["annotations"][0]["Annotation"]["type_descriptor"],
+        serde_json::to_value(b"LHiddenTag;").unwrap()
+    );
+}
+
+#[test]
+fn class_without_annotation_attributes_gains_no_annotation_content() {
+    let report = class_source_of(
+        &open(EMPTY_ANNOTATION_TARGET.to_vec()),
+        "EmptyTarget",
+        EnvironmentPolicy::SingleClass,
+    );
+    let declaration = report.declaration.expect("class declaration");
+    assert!(declaration.annotation_attributes.is_empty());
+    assert!(declaration.annotation_uses.is_empty());
+    assert!(declaration.annotation_refusals.is_empty());
+}
+
+#[test]
+fn runtime_visible_class_annotation_uses_the_same_declaration_path() {
+    let report = class_source_of(
+        &open(RUNTIME_VISIBLE_TARGET.to_vec()),
+        "VisibleTarget",
+        EnvironmentPolicy::SingleClass,
+    );
+    let declaration = report.declaration.expect("class declaration");
+    assert_eq!(
+        declaration.annotation_uses,
+        ["@VisibleTag(value = \"visible\")"]
+    );
+    assert_eq!(
+        declaration.annotation_attributes[0].attribute.name.raw().0,
+        b"RuntimeVisibleAnnotations"
+    );
+}
+
+#[test]
+fn annotation_type_without_a_body_keeps_its_runtime_visible_class_annotation() {
+    let report = class_source_of(
+        &open(ANNOTATION_TYPE.to_vec()),
+        "HiddenTag",
+        EnvironmentPolicy::SingleClass,
+    );
+    let declaration = report.declaration.expect("annotation class declaration");
+    assert_eq!(
+        declaration.annotation_uses,
+        ["@java.lang.annotation.Retention(value = java.lang.annotation.RetentionPolicy.CLASS)"]
+    );
+    assert_eq!(report.methods.len(), 1);
+    assert_eq!(report.methods[0].no_body_kind, Some(NoBodyKind::Abstract));
+    assert!(report.text.contains("@interface HiddenTag"));
+}
+
+#[test]
+fn class_annotation_named_array_values_keep_nested_annotation_order() {
+    let report = class_source_of(
+        &open(NESTED_ARRAY_TARGET.to_vec()),
+        "DuplicateTarget",
+        EnvironmentPolicy::SingleClass,
+    );
+    let declaration = report.declaration.expect("class declaration");
+    assert_eq!(
+        declaration.annotation_uses,
+        ["@Tags(value = {@Tag(value = \"one\"), @Tag(value = \"two\")})"]
+    );
+}
+
+#[test]
+fn visible_and_invisible_annotations_follow_physical_attribute_order() {
+    let report = class_source_of(
+        &open(MIXED_RETENTION_TARGET.to_vec()),
+        "MixedTarget",
+        EnvironmentPolicy::SingleClass,
+    );
+    let declaration = report.declaration.expect("class declaration");
+    let attribute_names: Vec<&[u8]> = declaration
+        .annotation_attributes
+        .iter()
+        .map(|attribute| attribute.attribute.name.raw().0.as_slice())
+        .collect();
+    assert_eq!(
+        attribute_names,
+        [
+            b"RuntimeVisibleAnnotations".as_slice(),
+            b"RuntimeInvisibleAnnotations"
+        ]
+    );
+    assert_eq!(
+        declaration.annotation_uses,
+        ["@VisibleTag(value = \"visible\")", "@HiddenTag(value = 5)"]
+    );
+}
+
+#[test]
+fn member_declaration_annotations_do_not_consume_type_use_attributes() {
+    let report = class_source_of(
+        &open(MEMBER_PLACEMENT_TARGET.to_vec()),
+        "MemberPlacementTarget",
+        EnvironmentPolicy::SingleClass,
+    );
+    let declaration = report.declaration.expect("class declaration");
+    assert!(declaration.annotation_attributes.is_empty());
+    assert!(declaration.annotation_uses.is_empty());
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"field")
+        .expect("annotated field");
+    assert_eq!(field.annotations.uses, ["@MemberPlacement"]);
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"method")
+        .expect("annotated method");
+    assert_eq!(method.annotations.uses, ["@MemberPlacement"]);
+    assert_eq!(
+        method.parameter_annotations.uses_by_position,
+        [vec!["@MemberPlacement".to_owned()]]
+    );
+    assert_eq!(
+        report.text.matches("@MemberPlacement").count(),
+        3,
+        "only the three Runtime*Annotations uses are written; the independent type-use attributes stay unread"
+    );
+}
+
+#[test]
+fn member_annotations_keep_field_method_and_parameter_ownership_in_text_and_json() {
+    let report = class_source_of(
+        &open(MEMBER_ANNOTATION_TARGET.to_vec()),
+        "MemberTagged",
+        EnvironmentPolicy::SingleClass,
+    );
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"field")
+        .expect("annotated field");
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"value")
+        .expect("annotated method");
+    assert_eq!(field.annotations.uses, ["@java.lang.Deprecated"]);
+    assert_eq!(method.annotations.uses, ["@java.lang.Deprecated"]);
+    assert_eq!(
+        method.parameter_annotations.uses_by_position,
+        [vec!["@java.lang.Deprecated".to_owned()]]
+    );
+    assert_eq!(
+        method.parameter_annotations.attributes[0].parameter_count,
+        Some(1)
+    );
+    assert_eq!(
+        method.parameter_annotations.attributes[0].parameters.len(),
+        1
+    );
+    assert!(
+        method
+            .declaration
+            .as_deref()
+            .unwrap()
+            .contains("value(@java.lang.Deprecated int arg1)")
+    );
+    assert!(
+        report
+            .declaration
+            .as_ref()
+            .unwrap()
+            .annotation_attributes
+            .is_empty()
+    );
+    assert!(
+        report
+            .text
+            .find("@java.lang.Deprecated\n    public int field")
+            .is_some()
+    );
+    assert!(
+        report
+            .text
+            .find("@java.lang.Deprecated\n    public int value")
+            .is_some()
+    );
+
+    let constructor = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"<init>")
+        .expect("ordinary constructor");
+    assert!(constructor.annotations.attributes.is_empty());
+    assert!(constructor.parameter_annotations.attributes.is_empty());
+
+    let json = serde_json::to_value(&report).expect("member annotation report serializes");
+    assert_eq!(
+        json["fields"][0]["annotations"]["uses"][0],
+        "@java.lang.Deprecated"
+    );
+    assert_eq!(
+        json["methods"][1]["parameter_annotations"]["attributes"][0]["parameter_count"],
+        1
+    );
+    assert_eq!(
+        json["methods"][1]["parameter_annotations"]["uses_by_position"][0][0],
+        "@java.lang.Deprecated"
+    );
+}
+
+#[test]
+fn invisible_member_annotations_align_wide_and_varargs_by_descriptor_position() {
+    let report = class_source_of(
+        &open(MEMBER_BOUNDARY_TARGET.to_vec()),
+        "BoundaryTagged",
+        EnvironmentPolicy::SingleClass,
+    );
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"field")
+        .expect("invisible field annotation");
+    assert_eq!(field.annotations.uses, ["@BoundaryMark(value = 1)"]);
+    assert_eq!(
+        field.annotations.attributes[0].attribute.name.raw().0,
+        b"RuntimeInvisibleAnnotations"
+    );
+
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"wideAndVarargs")
+        .expect("wide varargs method");
+    assert_eq!(method.annotations.uses, ["@BoundaryMark(value = 2)"]);
+    assert_eq!(
+        method.parameter_annotations.uses_by_position,
+        [
+            vec!["@BoundaryMark(value = 3)".to_owned()],
+            vec!["@BoundaryMark(value = 4)".to_owned()],
+            vec!["@BoundaryMark(value = 5)".to_owned()],
+        ]
+    );
+    assert!(method.declaration.as_deref().unwrap().contains(
+        "wideAndVarargs(@BoundaryMark(value = 3) long arg1, @BoundaryMark(value = 4) double arg3, @BoundaryMark(value = 5) java.lang.String... arg5)"
+    ));
+
+    let same_type = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"sameTypeAtDistinctPositions")
+        .expect("same type at distinct positions");
+    assert_eq!(same_type.annotations.uses, ["@BoundaryMark(value = 6)"]);
+    assert_eq!(
+        same_type.parameter_annotations.uses_by_position,
+        [
+            vec!["@BoundaryMark(value = 7)".to_owned()],
+            vec!["@BoundaryMark(value = 8)".to_owned()],
+        ]
+    );
+    assert!(same_type.annotations.refusals.is_empty());
+    assert!(same_type.parameter_annotations.refusals.is_empty());
+}
+
+#[test]
+fn parameter_count_mismatch_refuses_groups_without_shifting_other_member_annotations() {
+    let report = class_source_of(
+        &open(MEMBER_BOUNDARY_COUNT_MISMATCH.to_vec()),
+        "BoundaryTagged",
+        EnvironmentPolicy::SingleClass,
+    );
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"wideAndVarargs")
+        .expect("patched wide varargs method");
+    assert_eq!(method.annotations.uses, ["@BoundaryMark(value = 2)"]);
+    assert_eq!(
+        method.parameter_annotations.attributes[0].parameter_count,
+        Some(2)
+    );
+    assert_eq!(
+        method.parameter_annotations.uses_by_position,
+        [Vec::<String>::new(), Vec::new(), Vec::new()]
+    );
+    assert!(method.parameter_annotations.refusals.iter().any(|refusal| {
+        refusal.contains("declares 2 position(s) for a descriptor with 3 parameter(s)")
+    }));
+    let declaration = method.declaration.as_deref().unwrap();
+    assert!(!declaration.contains("@BoundaryMark(value = 3)"));
+    assert!(!declaration.contains("@BoundaryMark(value = 4)"));
+    assert!(!declaration.contains("@BoundaryMark(value = 5)"));
+    assert!(
+        report
+            .text
+            .contains("// jarde: parameter annotation refused:")
+    );
+}
+
+#[test]
+fn repeated_member_annotation_type_is_refused_atomically_at_its_position() {
+    let report = class_source_of(
+        &open(MEMBER_BOUNDARY_DUPLICATE.to_vec()),
+        "BoundaryTagged",
+        EnvironmentPolicy::SingleClass,
+    );
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"field")
+        .expect("duplicated field annotation");
+    assert!(field.annotations.uses.is_empty());
+    assert_eq!(field.annotations.refusals.len(), 2);
+    assert_eq!(field.annotations.attributes[0].annotations.len(), 2);
+    assert!(
+        field
+            .markers
+            .iter()
+            .any(|marker| { marker.contains("duplicate annotation type `LBoundaryMark;`") })
+    );
+    assert!(!report.text.contains("@BoundaryMark(value = 1)"));
+
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"wideAndVarargs")
+        .expect("distinct method position");
+    assert_eq!(method.annotations.uses, ["@BoundaryMark(value = 2)"]);
+}
+
+#[test]
+fn unspellable_member_annotation_type_and_element_refuse_the_whole_use() {
+    let mut invalid_type = MEMBER_BOUNDARY_TARGET.to_vec();
+    let type_descriptor = b"LBoundaryMark;";
+    let type_at = invalid_type
+        .windows(type_descriptor.len())
+        .position(|window| window == type_descriptor)
+        .expect("annotation type descriptor in the constant pool");
+    invalid_type[type_at..type_at + type_descriptor.len()].copy_from_slice(b"LBoundary-XXX;");
+    let report = class_source_of(
+        &open(invalid_type),
+        "BoundaryTagged",
+        EnvironmentPolicy::SingleClass,
+    );
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"field")
+        .expect("annotation field");
+    assert!(field.annotations.uses.is_empty());
+    assert!(field.annotations.refusals[0].contains("not a Java source name"));
+    assert_eq!(field.annotations.attributes[0].annotations.len(), 1);
+
+    let mut invalid_element = MEMBER_BOUNDARY_TARGET.to_vec();
+    let element_name = b"value";
+    let name_at = invalid_element
+        .windows(element_name.len())
+        .position(|window| window == element_name)
+        .expect("annotation element name in the constant pool");
+    invalid_element[name_at..name_at + element_name.len()].copy_from_slice(b"bad-n");
+    let report = class_source_of(
+        &open(invalid_element),
+        "BoundaryTagged",
+        EnvironmentPolicy::SingleClass,
+    );
+    let field = report
+        .fields
+        .iter()
+        .find(|field| field.item.name.raw().0 == b"field")
+        .expect("annotation field");
+    assert!(field.annotations.uses.is_empty());
+    assert!(field.annotations.refusals[0].contains("faithful Java spelling"));
+    assert!(!report.text.contains("@BoundaryMark("));
+}
+
+#[test]
+fn damaged_member_annotation_keeps_its_shell_and_other_attribute_groups() {
+    let mut bytes = MEMBER_ANNOTATION_TARGET.to_vec();
+    let mut read_budget = budget();
+    let class = jarde_reader::classfile::class_facts(&bytes, &mut read_budget)
+        .expect("member class structure");
+    let annotation = class
+        .methods
+        .iter()
+        .find(|method| method.name.raw().0 == b"value")
+        .and_then(|method| {
+            method
+                .attributes
+                .iter()
+                .find(|attribute| attribute.name.raw().0 == b"RuntimeVisibleAnnotations")
+        })
+        .expect("method declaration annotation shell");
+    let type_index = usize::try_from(annotation.content_span.start).unwrap() + 2;
+    bytes[type_index..type_index + 2].copy_from_slice(&u16::MAX.to_be_bytes());
+
+    let report = class_source_of(&open(bytes), "MemberTagged", EnvironmentPolicy::SingleClass);
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"value")
+        .expect("method declaration");
+    assert_eq!(method.annotations.attributes.len(), 1);
+    assert_eq!(
+        method.annotations.attributes[0].attribute.name.raw().0,
+        b"RuntimeVisibleAnnotations"
+    );
+    assert!(method.annotations.attributes[0].annotations.is_empty());
+    assert!(method.annotations.refusals[0].contains("attribute read stopped"));
+    assert_eq!(
+        method.parameter_annotations.uses_by_position,
+        [vec!["@java.lang.Deprecated".to_owned()]]
+    );
+    assert!(report.text.contains("// jarde: member annotation refused:"));
+    assert!(report.text.contains("@java.lang.Deprecated int arg1"));
+    assert!(matches!(
+        report.execution,
+        ExecutionReport::Failed { .. } | ExecutionReport::Partial { .. }
+    ));
+}
+
+fn hidden_annotation_shell(bytes: &[u8]) -> AttributeShell {
+    let mut read_budget = budget();
+    let facts = class_facts(bytes, &mut read_budget).expect("class structure");
+    facts
+        .attributes
+        .into_iter()
+        .find(|attribute| attribute.name.raw().0 == b"RuntimeInvisibleAnnotations")
+        .expect("class-retention annotation shell")
+}
+
+#[test]
+fn unspellable_class_annotation_is_refused_as_a_whole() {
+    let mut bytes = CLASS_RETENTION_TARGET.to_vec();
+    let descriptor = b"LHiddenTag;";
+    let at = bytes
+        .windows(descriptor.len())
+        .position(|window| window == descriptor)
+        .expect("annotation descriptor in the pool");
+    bytes[at..at + descriptor.len()].copy_from_slice(b"LHidden-xx;");
+    let report = class_source_of(&open(bytes), "HiddenTarget", EnvironmentPolicy::SingleClass);
+    let declaration = report.declaration.expect("class declaration");
+    assert!(declaration.annotation_uses.is_empty());
+    assert_eq!(declaration.annotation_refusals.len(), 1);
+    assert!(declaration.annotation_refusals[0].contains("not a Java source name"));
+    assert!(report.text.contains("// jarde: class annotation refused:"));
+}
+
+#[test]
+fn unspellable_class_annotation_element_name_refuses_the_whole_annotation() {
+    let mut bytes = CLASS_RETENTION_TARGET.to_vec();
+    let name = b"value";
+    let at = bytes
+        .windows(name.len())
+        .position(|window| window == name)
+        .expect("annotation element name in the pool");
+    bytes[at..at + name.len()].copy_from_slice(b"bad-n");
+    let report = class_source_of(&open(bytes), "HiddenTarget", EnvironmentPolicy::SingleClass);
+    let declaration = report.declaration.expect("class declaration");
+    assert!(declaration.annotation_uses.is_empty());
+    assert_eq!(declaration.annotation_refusals.len(), 1);
+    assert!(report.text.contains("// jarde: class annotation refused:"));
+}
+
+#[test]
+fn duplicate_class_annotation_entries_are_refused_without_partial_source() {
+    let mut bytes = CLASS_RETENTION_TARGET.to_vec();
+    let shell = hidden_annotation_shell(&bytes);
+    let start = usize::try_from(shell.content_span.start).unwrap();
+    let length = usize::try_from(shell.content_span.length).unwrap();
+    assert_eq!(u16::from_be_bytes([bytes[start], bytes[start + 1]]), 1);
+    let entry = bytes[start + 2..start + length].to_vec();
+    bytes[start..start + 2].copy_from_slice(&2_u16.to_be_bytes());
+    let content_end = start + length;
+    bytes.splice(content_end..content_end, entry.iter().copied());
+    let shell_start = usize::try_from(shell.span.start).unwrap();
+    let old_attribute_length =
+        u32::from_be_bytes(bytes[shell_start + 2..shell_start + 6].try_into().unwrap());
+    bytes[shell_start + 2..shell_start + 6].copy_from_slice(
+        &(old_attribute_length + u32::try_from(entry.len()).unwrap()).to_be_bytes(),
+    );
+
+    let report = class_source_of(&open(bytes), "HiddenTarget", EnvironmentPolicy::SingleClass);
+    let declaration = report.declaration.expect("class declaration");
+    assert!(declaration.annotation_uses.is_empty());
+    assert_eq!(declaration.annotation_refusals.len(), 2);
+    assert!(
+        declaration
+            .annotation_refusals
+            .iter()
+            .all(|refusal| refusal.contains("duplicate annotation type"))
+    );
+    assert!(!report.text.contains("@HiddenTag("));
+}
+
+#[test]
+fn damaged_class_annotation_attribute_is_reported_as_a_stop() {
+    let mut bytes = CLASS_RETENTION_TARGET.to_vec();
+    let shell = hidden_annotation_shell(&bytes);
+    let value_tag = usize::try_from(shell.content_span.start).unwrap() + 8;
+    bytes[value_tag] = b'Q';
+    let report = class_source_of(&open(bytes), "HiddenTarget", EnvironmentPolicy::SingleClass);
+    let declaration = report.declaration.expect("class declaration remains known");
+    assert!(declaration.annotation_uses.is_empty());
+    assert_eq!(declaration.annotation_attributes.len(), 1);
+    assert!(declaration.annotation_attributes[0].annotations.is_empty());
+    assert!(declaration.annotation_refusals[0].contains("classfile_invalid_attribute_content"));
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| { diagnostic.code == "classfile_invalid_attribute_content" })
+    );
+    assert!(!matches!(
+        report.execution,
+        ExecutionReport::Complete { .. }
+    ));
 }
 
 /// The recovery artifact of one member, for the one case above that compares the two texts.
@@ -1560,7 +3355,7 @@ fn a_class_in_a_container_is_prepared_from_the_entry_it_lives_in() {
     assert!(
         nested
             .text
-            .contains("public class p.Nested extends java.lang.Object {\n")
+            .contains("public class Nested extends java.lang.Object {\n")
     );
     assert!(nested.text.contains("        return;\n"), "{}", nested.text);
     assert_eq!(
@@ -1590,7 +3385,7 @@ fn a_class_that_cannot_be_prepared_keeps_its_presentation() {
     assert!(
         report
             .text
-            .contains("public class p.Trailing extends java.lang.Object {\n")
+            .contains("public class Trailing extends java.lang.Object {\n")
     );
     assert!(report.text.contains("public abstract void declaredOnly();"));
     assert!(braces_balance(&report.text) == 0, "{}", report.text);

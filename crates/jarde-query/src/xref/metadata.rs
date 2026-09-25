@@ -91,12 +91,15 @@ use crate::query::{
 use jarde_reader::classfile::{
     AttributeFacts, AttributeShell, ClassFacts, CpEntryFacts, CpEntryKind, DescriptorKind,
     attribute_content, attribute_facts, attribute_slice, class_facts, code_nested_attributes,
-    cp_class_name, cp_entry, cp_utf8, descriptor_types, push_unique,
+    cp_class_name, cp_entry, cp_utf8, descriptor_types,
 };
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
     ArchiveNameBytes, ByteSpan, ClassBytesId, JvmBytes, Location, PhysicalDefinitionId, Provenance,
     SymbolRef,
+};
+use jarde_reader::signature::{
+    parse_class_signature, parse_field_signature, parse_method_signature,
 };
 
 const MODULE_INFO_CLASS: &[u8] = b"module-info";
@@ -691,8 +694,23 @@ fn emit_signature(
         Some(index) => scan.indexed(index)?,
         None => scan.resolved_utf8(signature, fallback),
     };
-    for name in signature_types(signature, kind)? {
-        scan.class(site, &name.0, index, span.clone());
+    let names = {
+        let budget = scan.ctx.budget();
+        let parsed = match kind {
+            SignatureKind::Class => parse_class_signature(signature, budget)
+                .and_then(|signature| signature.class_references(budget)),
+            SignatureKind::Field => parse_field_signature(signature, budget)
+                .and_then(|signature| signature.class_references(budget)),
+            SignatureKind::Method => parse_method_signature(signature, budget)
+                .and_then(|signature| signature.class_references(budget)),
+        };
+        parsed.map_err(|error| match error {
+            Error::InvalidInput { message, .. } => Error::invalid_input(SIGNATURE_CODE, message),
+            other => other,
+        })?
+    };
+    for name in names {
+        scan.class(site, &name, index, span.clone());
     }
     Ok(())
 }
@@ -703,193 +721,6 @@ enum SignatureKind {
     Class,
     Field,
     Method,
-}
-
-/// `Result`: a `JavaTypeSignature` or the void descriptor.
-///
-/// The descriptor production is deliberately *not* used here: a signature result may be any
-/// java type, so a type variable (`TT;`), a parameterized class
-/// (`Ljava/util/List<Ljava/lang/String;>;`) and an array of either are all legal, and reading
-/// them with the descriptor grammar rejected legal compiler output.
-fn method_result(reader: &mut Reader<'_>, types: &mut Vec<JvmBytes>) -> Result<()> {
-    if reader.peek() == Some(b'V') {
-        return reader.skip(1);
-    }
-    java_type(reader, types)
-}
-
-/// `{ThrowsSignature}`: zero or more `^ (ClassTypeSignature | TypeVariableSignature)`.
-///
-/// A class type here is a class reference of the signature, so it is recorded like any other
-/// class type the signature names. A type variable names no class: it is the variable the
-/// surrounding type parameters declare, so it contributes no item.
-fn throws_signatures(reader: &mut Reader<'_>, types: &mut Vec<JvmBytes>) -> Result<()> {
-    while reader.peek() == Some(b'^') {
-        reader.skip(1)?;
-        match reader.peek() {
-            Some(b'L') => class_type_signature(reader, types)?,
-            Some(b'T') => type_variable_signature(reader)?,
-            _ => {
-                return Err(reader
-                    .malformed("a throws signature must name a class type or a type variable"));
-            }
-        }
-    }
-    Ok(())
-}
-
-/// Class types a generic signature names, in first-appearance order.
-///
-/// The grammar is parsed, never substring-matched, and it is the **signature** grammar
-/// (JVMS 4.7.9.1) rather than the descriptor grammar: a method signature is
-/// `[TypeParameters] ( {JavaTypeSignature} ) Result {ThrowsSignature}`, so its result may be
-/// any java type and its `throws` list names types of its own. A type variable (`TT;`) and a
-/// base type are not class references, `ClassTypeSignatureSuffix` (`.Inner`) is joined into
-/// the `Outer$Inner` internal name, and type arguments, wildcard bounds, type-parameter
-/// bounds and throws types are followed recursively.
-fn signature_types(signature: &[u8], kind: SignatureKind) -> Result<Vec<JvmBytes>> {
-    let mut reader = Reader::new(signature, SIGNATURE_CODE);
-    let mut types = Vec::new();
-    match kind {
-        SignatureKind::Field => reference_type(&mut reader, &mut types)?,
-        SignatureKind::Class => {
-            // `ClassSignature: [TypeParameters] SuperclassSignature {SuperinterfaceSignature}`,
-            // and both of those are `ClassTypeSignature`s (JVMS 4.7.9.1): a type variable, a
-            // base type or an array is not a legal superclass, so the signature is read with
-            // the production the grammar names rather than with the general reference type.
-            type_parameters(&mut reader, &mut types)?;
-            class_type_signature(&mut reader, &mut types)?;
-            while !reader.is_empty() {
-                class_type_signature(&mut reader, &mut types)?;
-            }
-        }
-        SignatureKind::Method => {
-            type_parameters(&mut reader, &mut types)?;
-            reader.expect_byte(b'(')?;
-            while reader.peek() != Some(b')') {
-                java_type(&mut reader, &mut types)?;
-            }
-            reader.expect_byte(b')')?;
-            method_result(&mut reader, &mut types)?;
-            throws_signatures(&mut reader, &mut types)?;
-        }
-    }
-    reader.expect_end()?;
-    Ok(types)
-}
-
-/// `TypeParameters`: `< TypeParameter {TypeParameter} >`.
-fn type_parameters(reader: &mut Reader<'_>, types: &mut Vec<JvmBytes>) -> Result<()> {
-    if reader.peek() != Some(b'<') {
-        return Ok(());
-    }
-    reader.skip(1)?;
-    while reader.peek() != Some(b'>') {
-        // The type variable name itself is not a class reference.
-        reader.identifier()?;
-        reader.expect_byte(b':')?;
-        // `ClassBound: : [ReferenceTypeSignature]`.
-        if !matches!(reader.peek(), Some(b':') | Some(b'>')) {
-            reference_type(reader, types)?;
-        }
-        while reader.peek() == Some(b':') {
-            reader.skip(1)?;
-            reference_type(reader, types)?;
-        }
-    }
-    reader.expect_byte(b'>')
-}
-
-/// `ReferenceTypeSignature`: class type, type variable or array.
-fn reference_type(reader: &mut Reader<'_>, types: &mut Vec<JvmBytes>) -> Result<()> {
-    match reader.peek() {
-        Some(b'L') => class_type_signature(reader, types),
-        Some(b'T') => type_variable_signature(reader),
-        Some(b'[') => {
-            reader.skip(1)?;
-            java_type(reader, types)
-        }
-        _ => Err(reader.malformed("reference type signature expected")),
-    }
-}
-
-/// `TypeVariableSignature`: `T Identifier ;`.
-///
-/// A type variable records no class type: it is a name the surrounding `TypeParameters`
-/// declares, and this scan does not resolve which type that variable stands for.
-fn type_variable_signature(reader: &mut Reader<'_>) -> Result<()> {
-    reader.expect_byte(b'T')?;
-    reader.identifier()?;
-    reader.expect_byte(b';')
-}
-
-/// `JavaTypeSignature`: a base type or a reference type.
-fn java_type(reader: &mut Reader<'_>, types: &mut Vec<JvmBytes>) -> Result<()> {
-    match reader.peek() {
-        Some(b'B' | b'C' | b'D' | b'F' | b'I' | b'J' | b'S' | b'Z') => reader.skip(1),
-        Some(b'V') => Err(reader.malformed("void is not a java type signature")),
-        _ => reference_type(reader, types),
-    }
-}
-
-/// `ClassTypeSignature`: `L [PackageSpecifier] SimpleClassTypeSignature
-/// {ClassTypeSignatureSuffix} ;`.
-///
-/// The package and simple name are joined with `/`, and each suffix (a nested class
-/// written with `.`) is joined with `$`, so the recorded name is the internal name
-/// the constant pool would spell. A name is recorded before its type arguments are
-/// followed, which keeps the type order the order the signature writes them in.
-fn class_type_signature(reader: &mut Reader<'_>, types: &mut Vec<JvmBytes>) -> Result<()> {
-    reader.expect_byte(b'L')?;
-    let mut name = reader.identifier()?;
-    while reader.peek() == Some(b'/') {
-        reader.skip(1)?;
-        name.push(b'/');
-        name.extend_from_slice(&reader.identifier()?);
-    }
-    push_unique(types, name.clone());
-    type_arguments(reader, types)?;
-    loop {
-        match reader.peek() {
-            Some(b'.') => {
-                reader.skip(1)?;
-                name.push(b'$');
-                name.extend_from_slice(&reader.identifier()?);
-                push_unique(types, name.clone());
-                type_arguments(reader, types)?;
-            }
-            Some(b';') => {
-                reader.skip(1)?;
-                break;
-            }
-            _ => return Err(reader.malformed("class type signature is not terminated")),
-        }
-    }
-    Ok(())
-}
-
-/// `TypeArguments`: `< TypeArgument {TypeArgument} >`.
-fn type_arguments(reader: &mut Reader<'_>, types: &mut Vec<JvmBytes>) -> Result<()> {
-    if reader.peek() != Some(b'<') {
-        return Ok(());
-    }
-    reader.skip(1)?;
-    if reader.peek() == Some(b'>') {
-        return Err(reader.malformed("type argument list is empty"));
-    }
-    while reader.peek() != Some(b'>') {
-        match reader.peek() {
-            // `*` (unbounded wildcard) names no type; `+`/`-` are followed by the
-            // wildcard bound, and a plain reference type is the argument itself.
-            Some(b'*') => reader.skip(1)?,
-            Some(b'+' | b'-') => {
-                reader.skip(1)?;
-                reference_type(reader, types)?;
-            }
-            _ => reference_type(reader, types)?,
-        }
-    }
-    reader.expect_byte(b'>')
 }
 
 /// `Record` attribute: `record_component_info` entries (JVMS 4.7.30).
@@ -1737,10 +1568,6 @@ impl<'a> Reader<'a> {
         Ok(ByteSpan::new(start, length))
     }
 
-    fn peek(&self) -> Option<u8> {
-        self.bytes.get(self.at).copied()
-    }
-
     fn is_empty(&self) -> bool {
         self.at >= self.bytes.len()
     }
@@ -1774,19 +1601,6 @@ impl<'a> Reader<'a> {
     fn u32(&mut self) -> Result<u32> {
         let bytes = self.take(4)?;
         Ok(u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
-    }
-
-    fn expect_byte(&mut self, expected: u8) -> Result<()> {
-        let found = self.u8()?;
-        if found == expected {
-            Ok(())
-        } else {
-            Err(self.malformed(&format!(
-                "expected byte {:?} but found {:?}",
-                char::from(expected),
-                char::from(found)
-            )))
-        }
     }
 
     fn expect_end(&self) -> Result<()> {
@@ -1823,21 +1637,6 @@ impl<'a> Reader<'a> {
             .ok_or_else(|| self.malformed("attribute body is longer than its declared length"))?;
         self.skip(rest)?;
         Ok(parsed)
-    }
-
-    /// One signature identifier: any byte except `. ; [ / < > :` (JVMS 4.7.9.1).
-    fn identifier(&mut self) -> Result<Vec<u8>> {
-        let start = self.at;
-        while let Some(byte) = self.peek() {
-            if matches!(byte, b'.' | b';' | b'[' | b'/' | b'<' | b'>' | b':') {
-                break;
-            }
-            self.at += 1;
-        }
-        if start == self.at {
-            return Err(self.malformed("identifier expected"));
-        }
-        Ok(self.bytes[start..self.at].to_vec())
     }
 
     fn malformed(&self, message: &str) -> Error {

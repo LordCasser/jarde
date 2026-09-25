@@ -1,8 +1,8 @@
 ## Context
 
-动机与交付范围见 [proposal](proposal.md)，行为要求见 [demand-driven-results](specs/demand-driven-results/spec.md)。本文是待实现的核心架构设计；代码观察固定在 `9a2f4ce`，不把规划当作现状。现有分层、物理身份、预算、验证等级和保守恢复规则继续适用。
+动机与交付范围见 [proposal](proposal.md)，行为要求见 [demand-driven-results](specs/demand-driven-results/spec.md)。本文保留代码观察固定在 `9a2f4ce` 的设计基线；下文的“当前缺口”描述当时的输入，不代表今天仍未实现。D0–D5 已按 [tasks](tasks.md) 的 32 项交付，实际实现、验证与保留边界以 [verification](verification.md) 为准。现有分层、物理身份、预算、验证等级和保守恢复规则继续适用。
 
-### 当前可复用能力与实际缺口
+### 设计基线时可复用的能力与缺口
 
 | 层 | 已存在的能力 | 本轮需要补齐的边界 |
 | --- | --- | --- |
@@ -300,4 +300,3 @@ bulk 已有总账与拥有容量口径继续覆盖新可选 payload；完整证�
 **内部 CFG/SSA 本已与报告分离**：`MethodAnalysisReport` 与 `RecoveryReport` 都没有 CFG、帧、SSA 或块表字段，图与表只在 `jarde_jvm::method_ir::MethodIr`，由 `RecoveryRequest::ir` 借用。D1/D3 的证据选择因此只在同一载荷上选择**物化哪些对外记录**，不新建第二套 IR/AST 模型，也不把已有分离误报为待建能力（字段级核对见 verification §6.6）。
 
 计数门禁（1.3）：`src/d0_counts.rs` 是 test-support 端口（普通构建里是空钩子、无读数 API），只保存 5 个 `u64`，不进任何报告、停止记录或 fingerprint；D1–D4 的验收按 [verification](verification.md) §7 的冻结读数与变异口径执行。数组参数槽宽与 T5 反例只在本文件中保留为独立债务（§15），不因 D0 记录被标成已修复。
-

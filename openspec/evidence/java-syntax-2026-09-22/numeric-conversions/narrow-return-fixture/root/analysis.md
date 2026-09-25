@@ -1,0 +1,7 @@
+# root 独立复核
+
+固定CLI 948a，在全新临时目录重新javac、应用12个method descriptor补丁，并在runner编译前后断言输入class与冻结fixture逐字节相等。1288B/14Code，SHA `90219c1ac7c93b53bee50da43ac792cd7e628dba4bff7b0f697a8b64a9b5d14c`；全部Code前后hash `a7ef3394ae6f5a31888dbded6f0d3afc2bca973c80348be8b55b2a89edc13128`，15类显式conversion opcode计数均为0。输入副本和patcher保存在inputs及本目录，脚本可独立重放。
+
+原class通过-Xverify:all并实际输出49行。JADX完整源码因字段更新临时变量失败，jarde9处quote且字段窄返回也无法完整javac；两者均未执行，没有伪称运行一致。
+
+root随后编译Rust测试并确认directByte因Mixed而失败（另1项相同失败、1项JDK ignored），属于预期未实现回归。census/fingerprint已统一冻结，见corpus/new-four-fixtures。

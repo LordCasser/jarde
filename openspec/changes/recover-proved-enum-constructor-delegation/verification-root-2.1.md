@@ -1,0 +1,9 @@
+# Root 独立验收：2.1 构造器委托边
+
+本阶段只建立私有边证明，未发布双构造器的类级 `Proved` 或源级枚举常量。Root 审阅最终 `src/enum_constants.rs`：`prove_group` 已先核对完整成员表、两个常量字段和唯一 `$VALUES`，再把同轮候选交给 `prove_constructor_delegation_edge`；后者经物理表索引取得两条唯一构造器和 `<clinit>` Code，验证无源参数构造器入口 `this`/name/ordinal、字面量 `0`、唯一 `(String,int,int)` 目标及 `return`。两个常量的不同 Methodref 与整数实参通过**同一个**已参数化的 `prove_initializer_prefix` 检查。错误边、额外动作、分支、handler、缺失/重复候选、预算及取消均拒绝或停止；正例只返回私有边事实，类级报告仍为 `Refused`。终端构造器的用户调用、字段写入、异常表、`Signature` 与源码发射是 2.2–2.4 的独立门，不由本阶段通过推断。
+
+Root 用最终源码重建 CLI，SHA-256 `b64b04970740b397d23ed3b947b84f1a83ea63c0d2caef1df177cab0234971d9`。从冻结 `DelegatingEnum.java` 重编的 `-g`/`-g:none` 两份 class 再生成类源码，正文 SHA-256 分别为 `1aec24f5daef893e2ea09dcc48198ddc57a175088d1132838ed8334b9031b7e4`、`5f9320bca7b8fa9bf1b27b5bb25e7e34b66ac5eb8554074d34c885448237b195`，与 [实施前基线](verification-baseline-1.2.md) 逐字节相同；仍保留普通常量字段、两条物理构造器与 `<clinit>`，没有半组投影。基础 `Stage`、`Measure` 的类源码哈希也分别保持为 `edc4e0bf9d78654f3b16247a709d43be717261edeaaf4362c81f80c583a5d5d7`、`a639494bc370c73056aa70f5da4e210d88ab587f181a8cab7ea4ffb1b8bd42c9`。
+
+Root 在仓库外复制 [九组 verifier-valid 控制](../../evidence/java-syntax-2026-09-25/enum-constructor-delegation/negative-controls/analysis.md)，仅将脚本的冻结 CLI SHA 改为本轮二进制 SHA，从最终 CLI 重放；九例均完成原/JADX Java 8 编译与 verifier 对照，并保持 Jarde 源码编译拒绝，临时 class/JAR 自动清理。独立回归：`cargo test -p jarde --lib enum_constants::tests` 19/19、`cargo test -p jarde --test class_source` 47/47、`cargo fmt --all -- --check`、`git diff --check`、`openspec validate recover-proved-enum-constructor-delegation --strict` 均通过。`cargo clippy -p jarde --lib --no-deps` 退出 0，只有已有的 10 条警告；新证明函数的同轮输入已打包为私有 `DelegationEdgeInput`，无新增警告。
+
+此验收不替代 3.1：尚没有双构造器投影类可供 Jarde Java 8 重编与反射 `{2,3}` 检查，也尚未复验最终原/JADX/Jarde 三份完整源码的成功语义。此阶段单独验收精确边识别与原子拒绝。独立验证后执行 `cargo clean --target-dir /tmp/jarde-enum-delegate-edge-target`，Cargo 报告移除 9,794 个文件、约 3.3 GiB。

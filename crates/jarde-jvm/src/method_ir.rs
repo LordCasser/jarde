@@ -143,10 +143,10 @@ pub use crate::ssa::{
 
 use crate::ir::MethodAnalysisReport;
 use jarde_reader::classfile::{
-    BootstrapMethodFacts, ClassFacts, CpEntryFacts, DescriptorFacts, DescriptorKind,
+    BootstrapMethodFacts, ClassFacts, CpEntryFacts, DescriptorFacts, DescriptorKind, MemberHeader,
     MethodCodeFacts, descriptor_facts,
 };
-use jarde_reader::model::{JvmBytes, PhysicalMethodId};
+use jarde_reader::model::{JvmBytes, JvmString, PhysicalMethodId};
 use std::sync::Arc;
 
 /// The access-flag bit a member sets when it is `static` (JVMS 4.6).
@@ -442,6 +442,46 @@ impl MethodIr {
         }
     }
 
+    /// The direct superclass stated by the same class header that decoded this body.
+    ///
+    /// `None` means that no class header travelled with the payload, or that the header has no
+    /// applicable Java direct superclass (for example an interface's `Object` class-file entry or
+    /// the module-info shape). A returned `Object` remains a real class-super fact. This accessor
+    /// never consults a request owner or another class.
+    pub fn direct_super_class(&self) -> Option<&JvmBytes> {
+        let facts = self.facts.as_ref()?;
+        if facts.access_flags & 0x0200 != 0 {
+            return None;
+        }
+        facts.super_class.as_ref().map(|name| name.raw())
+    }
+
+    /// The direct interfaces stated by the same class header that decoded this body.
+    ///
+    /// An empty slice is also the class file's answer for a class with no direct interfaces; an
+    /// empty result alone therefore makes no claim that a header was present.
+    pub fn direct_interfaces(&self) -> &[JvmString] {
+        self.facts
+            .as_ref()
+            .map_or(&[], |facts| facts.interfaces.as_slice())
+    }
+
+    /// The member headers of the same class header, when that header travelled with this body.
+    ///
+    /// This is a declaration view only: it exposes flags, names and descriptors and does not read
+    /// or resolve another member body.
+    pub fn class_methods(&self) -> Option<&[MemberHeader]> {
+        self.facts.as_ref().map(|facts| facts.methods.as_slice())
+    }
+
+    /// The field headers of the same class header, when that header travelled with this body.
+    ///
+    /// This is the declaration view for field rules: it borrows the already-read headers beside
+    /// the method headers and never re-reads or resolves another class.
+    pub fn class_fields(&self) -> Option<&[MemberHeader]> {
+        self.facts.as_ref().map(|facts| facts.fields.as_slice())
+    }
+
     /// The class's `BootstrapMethods` table as the same header read decoded it; empty when the
     /// class declares no such attribute.
     ///
@@ -705,6 +745,24 @@ mod tests {
                 .len()
                 == 1,
             "the merge block is entered with its one local slot"
+        );
+    }
+
+    #[test]
+    fn absent_class_header_does_not_supply_special_dispatch_facts() {
+        let ir = MethodIr::new(None, None, None, None, None, Vec::new(), None);
+
+        assert!(
+            ir.direct_super_class().is_none(),
+            "a payload without the same class header cannot prove a superclass"
+        );
+        assert!(
+            ir.direct_interfaces().is_empty(),
+            "a payload without the same class header cannot prove an interface"
+        );
+        assert!(
+            ir.class_methods().is_none(),
+            "a payload without the same class header cannot prove private members"
         );
     }
 }

@@ -1894,10 +1894,10 @@ mod tests {
         // The ECJ 4.6 `finallyPath(I)I` of every jsr-era dialect: the return value is saved,
         // `jsr` enters one subroutine from BCI 5 (the return path) and from BCI 12 (the
         // handler path), and the single `ret` of that subroutine returns to both call sites.
-        // The handler path is entered by the exception table, not by a raw edge, so the second
-        // call site is *unreachable* for the raw graph — and it still gets its own context,
-        // because a context is a static fact of the call site and 3.5 needs both to clone the
-        // subroutine per context.
+        // The handler path is entered by the exception table's own row, whose range `[0, 8)` holds
+        // no throwing instruction — since 2.9 that row is an edge of the raw graph all the same, so
+        // both call sites are reachable for it; each still gets its own context, because a context
+        // is a static fact of the call site and 3.5 needs both to clone the subroutine per context.
         for (version, bytes) in [(45, V45), (46, V46), (47, V47), (48, V48)] {
             let (facts, major) = historical(bytes, b"finallyPath");
             assert_eq!(major, version);
@@ -1960,9 +1960,11 @@ mod tests {
             );
             assert_eq!(
                 contexts.unreachable_call_sites,
-                vec![12],
-                "3.3's truth table cannot enter the handler path \
-                 (classfile major {version})"
+                Vec::<u32>::new(),
+                "3.3's truth table enters the handler path: the record's own edge reaches it \
+                 although its range holds no throwing instruction (2.9), so the `jsr` at BCI 12 is \
+                 reachable for the raw graph too, and both call sites have a context the walk can \
+                 enter (classfile major {version})"
             );
         }
     }

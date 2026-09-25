@@ -1,0 +1,8 @@
+0 -> false / false
+1 -> true / true
+2 -> false / false
+3 -> true / true
+-1 -> true / true
+-2 -> false / false
+-2147483648 -> false / false
+2147483647 -> true / true
