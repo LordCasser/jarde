@@ -1,0 +1,123 @@
+// jarde: presentation of `Patrol3` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class Patrol3 extends java.lang.Object {
+    int base;
+
+    static Patrol3$Op makeOp(int factor) {
+        // @method makeOp(I)LPatrol3$Op;
+        // @declaration a static method of `Patrol3`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int offset = 10;
+        return new Patrol3$1Scaled(factor, offset);
+    }
+
+    static int sum(int... xs) {
+        // @method sum([I)I
+        // @declaration a static method of `Patrol3`, member flags 0x0088
+        // recovered from bytecode; presentation is not claimed to compile
+        int n;
+        int[] local2;
+        n = 0;
+        local2 = xs;
+        for (int x : local2) {
+            n = n + x;
+        }
+        return n;
+    }
+
+    static int pass(int first, int... rest) {
+        // @method pass(I[I)I
+        // @declaration a static method of `Patrol3`, member flags 0x0088
+        // recovered from bytecode; presentation is not claimed to compile
+        return first + sum(rest);
+    }
+
+    // jarde: generic Signature projection refused for `count([Ljava/lang/Object;Ljava/lang/Object;)I`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return
+    static int count(java.lang.Object[] items, java.lang.Object probe) {
+        // @method count([Ljava/lang/Object;Ljava/lang/Object;)I
+        // @declaration a static method of `Patrol3`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        int n;
+        java.lang.Object[] local3;
+        n = 0;
+        local3 = items;
+        for (java.lang.Object t : local3) {
+            if (t.equals(probe)) {
+                n = n + 1;
+            }
+        }
+        return n;
+    }
+
+    static int probe(java.lang.Object o) {
+        // @method probe(Ljava/lang/Object;)I
+        // @declaration a static method of `Patrol3`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (o instanceof int[]) {
+            int[] a = (int[]) o;
+            return a.length;
+        } else {
+            if (o instanceof java.lang.String[]) {
+                return ((java.lang.String[]) o).length * 2;
+            } else {
+                return -1;
+            }
+        }
+    }
+
+    Patrol3() {
+        // @method <init>()V
+        // @declaration a constructor of `Patrol3`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.base = 5;
+        this.base += 1;
+        return;
+    }
+
+    Patrol3(int x) {
+        // @method <init>(I)V
+        // @declaration a constructor of `Patrol3`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.base = 5;
+        this.base += x;
+        return;
+    }
+
+    int get() {
+        // @method get()I
+        // @declaration an instance method of `Patrol3`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.base;
+    }
+
+    static int grid(int[][] g, int i, int j) {
+        // @method grid([[III)I
+        // @declaration a static method of `Patrol3`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 2
+        // the array instruction at BCI 2 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 4
+        // the instruction at BCI 4 is not part of the provable subset
+        // @bytecode 2 5
+        // the dependency chain from BCI 5 to final consumer 9 is not bounded
+        // @bytecode 9 2 5
+        // the value at BCI 9 comes from an Other at BCI 4, which produces no expression this subset writes
+        return g[i][j];
+    }
+
+    static java.lang.Object[] alias() {
+        // @method alias()[Ljava/lang/Object;
+        // @declaration a static method of `Patrol3`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.lang.String[]{"a", "b"};
+    }
+
+    static java.lang.String read(java.lang.Object[] os, int i) {
+        // @method read([Ljava/lang/Object;I)Ljava/lang/String;
+        // @declaration a static method of `Patrol3`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return (java.lang.String) os[i];
+    }
+}

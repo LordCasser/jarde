@@ -1,0 +1,281 @@
+Compiled from "Patrol2.java"
+public class Patrol2 {
+  static int calls;
+
+  static final boolean $assertionsDisabled;
+
+  public Patrol2();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static int check(int);
+    Code:
+       0: getstatic     #7                  // Field $assertionsDisabled:Z
+       3: ifne          37
+       6: iload_0
+       7: ifgt          37
+      10: new           #13                 // class java/lang/AssertionError
+      13: dup
+      14: new           #15                 // class java/lang/StringBuilder
+      17: dup
+      18: invokespecial #17                 // Method java/lang/StringBuilder."<init>":()V
+      21: ldc           #18                 // String bad
+      23: invokevirtual #20                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      26: iload_0
+      27: invokevirtual #24                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      30: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      33: invokespecial #31                 // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+      36: athrow
+      37: iload_0
+      38: iconst_2
+      39: imul
+      40: ireturn
+
+  static synchronized int bump(int);
+    Code:
+       0: iload_0
+       1: iconst_1
+       2: iadd
+       3: ireturn
+
+  static int dow(int);
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iinc          1, 1
+       5: iload_1
+       6: iconst_2
+       7: irem
+       8: ifne          14
+      11: goto          17
+      14: iinc          1, 5
+      17: iload_1
+      18: iload_0
+      19: if_icmplt     2
+      22: iload_1
+      23: ireturn
+
+  static int strSwitch(java.lang.String);
+    Code:
+       0: aload_0
+       1: astore_1
+       2: iconst_m1
+       3: istore_2
+       4: aload_1
+       5: invokevirtual #34                 // Method java/lang/String.hashCode:()I
+       8: lookupswitch  { // 2
+                    97: 36
+                    98: 50
+               default: 61
+          }
+      36: aload_1
+      37: ldc           #40                 // String a
+      39: invokevirtual #42                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      42: ifeq          61
+      45: iconst_0
+      46: istore_2
+      47: goto          61
+      50: aload_1
+      51: ldc           #46                 // String b
+      53: invokevirtual #42                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      56: ifeq          61
+      59: iconst_1
+      60: istore_2
+      61: iload_2
+      62: lookupswitch  { // 2
+                     0: 88
+                     1: 90
+               default: 92
+          }
+      88: iconst_1
+      89: ireturn
+      90: iconst_2
+      91: ireturn
+      92: iconst_m1
+      93: ireturn
+
+  static int cond(int);
+    Code:
+       0: iload_0
+       1: ifle          11
+       4: iconst_1
+       5: invokestatic  #48                 // Method side:(I)I
+       8: goto          15
+      11: iconst_2
+      12: invokestatic  #48                 // Method side:(I)I
+      15: istore_1
+      16: iload_0
+      17: bipush        10
+      19: if_icmple     36
+      22: iload_0
+      23: bipush        100
+      25: if_icmple     32
+      28: iconst_3
+      29: goto          37
+      32: iconst_2
+      33: goto          37
+      36: iconst_1
+      37: istore_2
+      38: iload_1
+      39: iload_2
+      40: iadd
+      41: ireturn
+
+  static int side(int);
+    Code:
+       0: getstatic     #52                 // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #52                 // Field calls:I
+       8: iload_0
+       9: ireturn
+
+  static int bits(int, int, int);
+    Code:
+       0: iload_0
+       1: iload_1
+       2: iand
+       3: iload_2
+       4: sipush        255
+       7: ixor
+       8: ior
+       9: iload_0
+      10: iconst_3
+      11: iushr
+      12: ior
+      13: iload_0
+      14: iconst_1
+      15: ishl
+      16: ior
+      17: ireturn
+
+  static boolean fp(double, double);
+    Code:
+       0: dload_0
+       1: dload_2
+       2: dcmpl
+       3: ifgt          12
+       6: dload_0
+       7: dload_2
+       8: dcmpg
+       9: ifgt          16
+      12: iconst_1
+      13: goto          17
+      16: iconst_0
+      17: ireturn
+
+  static int lng(long);
+    Code:
+       0: lload_0
+       1: ldc2_w        #56                 // long 4294967296l
+       4: lmul
+       5: lstore_2
+       6: lload_2
+       7: ldc2_w        #58                 // long -1l
+      10: lcmp
+      11: ifne          16
+      14: iconst_1
+      15: ireturn
+      16: lload_2
+      17: ldc2_w        #62                 // long 4611686018427387903l
+      20: lcmp
+      21: ifle          26
+      24: iconst_2
+      25: ireturn
+      26: lload_2
+      27: bipush        32
+      29: lushr
+      30: l2i
+      31: ireturn
+
+  static int multiCatch(int);
+    Code:
+       0: iload_0
+       1: ifne          14
+       4: new           #64                 // class java/lang/NumberFormatException
+       7: dup
+       8: ldc           #66                 // String n
+      10: invokespecial #68                 // Method java/lang/NumberFormatException."<init>":(Ljava/lang/String;)V
+      13: athrow
+      14: iload_0
+      15: iconst_1
+      16: if_icmpne     29
+      19: new           #71                 // class java/nio/file/FileSystemException
+      22: dup
+      23: ldc           #73                 // String f
+      25: invokespecial #75                 // Method java/nio/file/FileSystemException."<init>":(Ljava/lang/String;)V
+      28: athrow
+      29: iconst_0
+      30: ireturn
+      31: astore_1
+      32: aload_1
+      33: invokevirtual #76                 // Method java/lang/Exception.getMessage:()Ljava/lang/String;
+      36: ifnonnull     43
+      39: iconst_1
+      40: goto          44
+      43: iconst_2
+      44: ireturn
+    Exception table:
+       from    to  target type
+           0    30    31   Class java/lang/NumberFormatException
+           0    30    31   Class java/nio/file/FileSystemException
+
+  static int foreach(int[], java.util.List<java.lang.String>);
+    Code:
+       0: iconst_0
+       1: istore_2
+       2: aload_0
+       3: astore_3
+       4: aload_3
+       5: arraylength
+       6: istore        4
+       8: iconst_0
+       9: istore        5
+      11: iload         5
+      13: iload         4
+      15: if_icmpge     43
+      18: aload_3
+      19: iload         5
+      21: iaload
+      22: istore        6
+      24: iload         6
+      26: ifge          32
+      29: goto          37
+      32: iload_2
+      33: iload         6
+      35: iadd
+      36: istore_2
+      37: iinc          5, 1
+      40: goto          11
+      43: aload_1
+      44: invokeinterface #81,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      49: astore_3
+      50: aload_3
+      51: invokeinterface #87,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      56: ifeq          87
+      59: aload_3
+      60: invokeinterface #93,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      65: checkcast     #35                 // class java/lang/String
+      68: astore        4
+      70: aload         4
+      72: invokevirtual #97                 // Method java/lang/String.isEmpty:()Z
+      75: ifeq          81
+      78: goto          87
+      81: iinc          2, 1
+      84: goto          50
+      87: iload_2
+      88: ireturn
+
+  static {};
+    Code:
+       0: ldc           #8                  // class Patrol2
+       2: invokevirtual #100                // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #7                  // Field $assertionsDisabled:Z
+      16: return
+}
