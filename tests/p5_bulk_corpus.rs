@@ -597,21 +597,40 @@ impl Billing {
 /// and did not move. The deltas were measured by running the reader with and without the
 /// field-access reader `@new` counts (the only difference between the two runs), not by reading the
 /// old pins back.
+///
+/// **Re-measured for the 2026-09-26 syntax-recovery expansion.** Every row moved, in the same
+/// direction and on the same three dimensions: `ir_items` and `analysis_steps` rise because every
+/// body's recovery now runs the expansion's differential-evidence work (the arms' ledger, over the
+/// same 181 bodies, rose by exactly +4,905 `IrItems` and +5,073 `AnalysisSteps` — about 27 and 28
+/// per body), and `output_bytes` falls where an artifact's quote or explanation gave way to the
+/// statement the expansion now writes — `Guarded.boom`'s `throw new` above them all, which moved
+/// from `ExplanationOnly` to `Produced` and took `many-method-class`'s explanation-only count from
+/// six to five. No read, decode or delivery dimension moved. The rows below were regenerated with
+/// `record_the_billing_table`, not hand-edited; the six cases' deltas sum to the arms' deltas.
+/// The live-path declaration correction then re-measured the table again. It excludes uses in
+/// truly dead uncovered quotes, keeps handlers reachable from actual throw sites, and bills the
+/// bounded entry/slot scan. Relative to the preceding expansion pins, `AnalysisSteps` moves by
+/// +18/+68/+5/+332/+5/+22 across the six rows (+450 in either arm). The `Guarded` row also drops
+/// 68 `IrItems` and 428 `output_bytes` as its declaration/quote text changes; all physical read
+/// dimensions remain fixed. These are the recorder's measured counts, not a formula for the pass.
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     ///
     /// `Holder`'s `<clinit>` is the 2c.26 shape: its construction is written where the `putstatic`
     /// runs, so this row is 2 `IrItems` and 436 `output_bytes` under the quoted one it had.
+    /// The 2026-09-26 expansion moved `ir_items` +382, `analysis_steps` +529 and `output_bytes`
+    /// −19: the per-body evidence work, and the quote of `Holder`'s construction the statement
+    /// replaced.
     const FLAT_MIXED: Self = Self {
         archive_entries: 8,
         entry_bytes: 1813,
         class_bytes: 1813,
         class_headers: 0,
         method_bodies: 17,
-        ir_items: 1989,
-        analysis_steps: 783,
+        ir_items: 2371,
+        analysis_steps: 1330,
         result_items: 37,
-        output_bytes: 3676,
+        output_bytes: 3657,
     };
     /// `nested-mixed`: three containers, two of them nested, five classes.
     ///
@@ -622,17 +641,19 @@ impl Billing {
     /// is recorded — as counts of addressed reads, which is all either row states.
     ///
     /// 2c.26, over the `Holder` this case shares with `flat-mixed`: 2 `IrItems` and 436
-    /// `output_bytes` under the quoted row.
+    /// `output_bytes` under the quoted row. The 2026-09-26 expansion moved `ir_items` +668,
+    /// `analysis_steps` +750 and `output_bytes` −19 (the same per-body evidence work, plus the
+    /// `Holder` and `ModLike` quotes that became statements).
     const NESTED_MIXED: Self = Self {
         archive_entries: 25,
         entry_bytes: 8061,
         class_bytes: 2381,
         class_headers: 0,
         method_bodies: 26,
-        ir_items: 3443,
-        analysis_steps: 1242,
+        ir_items: 4111,
+        analysis_steps: 2060,
         result_items: 64,
-        output_bytes: 5647,
+        output_bytes: 5628,
     };
     /// `two-origins-one-identity`: one class file behind two physical origins, and the only case with
     /// a nonzero `class_headers`. What that dimension counts here is the binding work a duplicated
@@ -642,17 +663,18 @@ impl Billing {
     /// formula for it.
     ///
     /// 2c.26, over the `Holder` this case names twice: 2 `IrItems` and 436 `output_bytes` under the
-    /// quoted row.
+    /// quoted row. The 2026-09-26 expansion moved `ir_items` +312, `analysis_steps` +446 and
+    /// `output_bytes` −19 (the same `Scope`/`Holder` shape as `flat-mixed`).
     const TWO_ORIGINS: Self = Self {
         archive_entries: 43,
         entry_bytes: 7522,
         class_bytes: 2686,
         class_headers: 4,
         method_bodies: 12,
-        ir_items: 1662,
-        analysis_steps: 642,
+        ir_items: 1974,
+        analysis_steps: 1093,
         result_items: 43,
-        output_bytes: 2657,
+        output_bytes: 2638,
     };
     /// `many-method-class`: 107 members behind three read classes, one of them generated wide.
     const MANY_METHOD_CLASS: Self = Self {
@@ -685,36 +707,48 @@ impl Billing {
         // 2c.26 then moved this row the same way it moved the `Holder` rows: `Guarded`'s
         // `<clinit>` builds the instance it assigns to `LOCK`, and the construction is written
         // instead of quoted — 2 `IrItems` fewer and 436 `output_bytes` fewer.
-        ir_items: 17737,
-        analysis_steps: 7071,
+        //
+        // The 2026-09-26 expansion moved `ir_items` +2739, `analysis_steps` +2623 and
+        // `output_bytes` −762: the per-body evidence work over this case's 107 bodies, the quotes
+        // that became statements, and — the one classification that moved — `boom`'s `throw new`,
+        // which the expansion presents as the construction statement it is, so the case's
+        // explanation-only count fell from six to five.
+        ir_items: 20408,
+        analysis_steps: 10026,
         result_items: 122,
-        output_bytes: 25019,
+        output_bytes: 23829,
     };
     /// `damaged-tail`: the readable classes only; the damaged entries cost their own attempts.
     ///
     /// 2c.26, over its own `Holder`: 2 `IrItems` and 436 `output_bytes` under the quoted row.
+    /// The 2026-09-26 expansion moved `ir_items` +312, `analysis_steps` +446 and `output_bytes`
+    /// −19, exactly the `two-origins` moves: the readable shape is the same `Scope`/`Holder` pair.
     const DAMAGED_TAIL: Self = Self {
         archive_entries: 17,
         entry_bytes: 1881,
         class_bytes: 1019,
         class_headers: 0,
         method_bodies: 12,
-        ir_items: 1662,
-        analysis_steps: 642,
+        ir_items: 1974,
+        analysis_steps: 1093,
         result_items: 35,
-        output_bytes: 2657,
+        output_bytes: 2638,
     };
     /// `deep-expression`: the two generated chains and the nested-evaluation sample.
+    ///
+    /// The 2026-09-26 expansion moved `ir_items` +492, `analysis_steps` +279 and `output_bytes`
+    /// −131: the per-body evidence work, and the committed sample's artifacts shortened where its
+    /// quoted refusals now sit beside the statements the expansion writes.
     const DEEP_EXPRESSION: Self = Self {
         archive_entries: 4,
         entry_bytes: 753,
         class_bytes: 753,
         class_headers: 0,
         method_bodies: 7,
-        ir_items: 2523,
-        analysis_steps: 871,
+        ir_items: 3015,
+        analysis_steps: 1172,
         result_items: 18,
-        output_bytes: 1854,
+        output_bytes: 1723,
     };
 
     /// Arm A — the per-member path without a store — over the whole corpus: 187 requests, one fresh
@@ -732,16 +766,22 @@ impl Billing {
     /// field write runs instead of being quoted, which is 10 `IrItems` (the quotes of the two
     /// allocations and their copies over the five affected cases) and 2180 `output_bytes` over the
     /// arm. `analysis_steps` stands.
+    ///
+    /// The 2026-09-26 syntax-recovery expansion moved `ir_items` +4,905, `analysis_steps` +5,073
+    /// and `output_bytes` −969 — exactly the sum of the six case rows' moves. The work is the
+    /// expansion's per-body differential evidence plus the quotes and explanations that became
+    /// statements (`Guarded.boom`'s `throw new` among them); the read, decode and delivery
+    /// dimensions stand.
     const DIRECT_ARM: Self = Self {
         archive_entries: 1915,
         entry_bytes: 365912,
         class_bytes: 327895,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 29016,
-        analysis_steps: 11251,
+        ir_items: 33853,
+        analysis_steps: 16774,
         result_items: 1378,
-        output_bytes: 41510,
+        output_bytes: 40113,
     };
 
     /// Arm B — the same requests, each carrying the one store that started empty. Pinned for the same
@@ -757,17 +797,19 @@ impl Billing {
     /// `method_bodies`, the IR counts, `result_items` and `output_bytes` are unmoved, which is what
     /// this file's claim means: retention moves reads, never work. The three dimensions the `try`/
     /// `catch` slice moved ([`Billing::DIRECT_ARM`]) moved here by the same amounts — the work is the
-    /// same work — and so did the `2/2/233` P3 2.7 moved on that row.
+    /// same work — and so did the `2/2/233` P3 2.7 moved on that row. The 2026-09-26 expansion
+    /// moved this row's three work dimensions by the same +4,905/+5,073/−969 the direct arm
+    /// records, for the same reason; retention still touches only the read dimensions.
     const SHARED_ARM: Self = Self {
         archive_entries: 57,
         entry_bytes: 18680,
         class_bytes: 10817,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 29016,
-        analysis_steps: 11251,
+        ir_items: 33853,
+        analysis_steps: 16774,
         result_items: 26,
-        output_bytes: 41510,
+        output_bytes: 40113,
     };
 }
 // ---------------------------------------------------------------------------------------------
@@ -1056,11 +1098,13 @@ fn every_case_holds_the_shape_it_is_named_for() {
     assert_eq!(run.report.summary.methods_declared, 107);
     assert_eq!(run.report.summary.status(), "complete");
     assert_eq!(
-        run.report.summary.outcomes.explanation_only, 6,
+        run.report.summary.outcomes.explanation_only, 5,
         "the committed `Guarded` sample is where the case's explanation-shaped members are — its \
-         `fin`/`catchFinally` copies, its guarded bodies that branch (`branching`, `withCatch`), the \
-         `throw new` of `boom` and the irreducible `suppressedCatching` — and the generated members \
-         are all produced: {:?}",
+         `fin`/`catchFinally` copies, its guarded bodies that branch (`branching`, `withCatch`) and \
+         the irreducible `suppressedCatching` — and the generated members are all produced. The \
+         sixth member the previous ledger counted here, `boom`'s `throw new`, is presented as the \
+         construction statement it is since the explicit-cast/construction presentation landed, so \
+         it is `Produced` now: {:?}",
         run.report.summary.outcomes
     );
 

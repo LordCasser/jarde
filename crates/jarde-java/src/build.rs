@@ -75,7 +75,9 @@ use crate::lambda::{
 use crate::names::{LocalVariable, NameTable, RenderedName, is_java_identifier};
 use crate::pass::{LAMBDA, Precondition, RecoveryProfile};
 use crate::refusal::Gap;
-use crate::region::{CatchClause, Continuation, ForHeader, LoopForm, Region, SwitchGroup};
+use crate::region::{
+    CatchClause, Continuation, FallbackReason, ForHeader, LoopForm, Region, SwitchGroup,
+};
 use crate::reuse;
 use crate::source_map::{Origin, OriginSet};
 use crate::stop::{StopReason, charge, poll};
@@ -597,7 +599,43 @@ fn declarations(
     // header is the declaration, no statement of the body writes one, and hoisting a second
     // declaration above the statement would declare the same name twice.
     let resources = resource_slots(regions);
+    // The lexical plan is a plan of the live flow. An uncovered quote is dead only when none of
+    // its entry edges can run: an exception edge fed by a real throw site is a live entry even
+    // though the normal-flow region walk did not visit its handler. Type decisions above still
+    // read every access, including those in a dead quote.
+    let mut dead = BTreeSet::new();
+    for (index, region) in regions.iter().enumerate() {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        if let Region::Fallback {
+            blocks,
+            reason: FallbackReason::UncoveredBlocks { .. },
+        } = region
+            && dead_uncovered_quote(blocks, canonical, budget)?
+        {
+            dead.insert(child(&[], u32::try_from(index).unwrap_or(u32::MAX)));
+        }
+    }
+    let mut live_uses = BTreeMap::new();
     for (variable, variable_uses) in &uses {
+        let at = variable_uses.first().map(|use_| use_.bci);
+        poll(budget, at)?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(variable_uses.len()).unwrap_or(u64::MAX),
+            at,
+        )?;
+        let filtered: Vec<SlotUse> = variable_uses
+            .iter()
+            .filter(|use_| use_.path.as_ref().is_none_or(|path| !dead.contains(path)))
+            .cloned()
+            .collect();
+        if !filtered.is_empty() {
+            live_uses.insert(*variable, filtered);
+        }
+    }
+    for (variable, variable_uses) in &live_uses {
         // A parameter's declaration is the signature, not the body, and a variable this layer has no
         // name for is one whose writes are already reported as a fallback of their own.
         if variable.slot() < parameters || names.text(*variable).is_none() {
@@ -773,7 +811,7 @@ fn declarations(
                 at: first.bci,
             });
     }
-    let invalid = validate_declaration_placements(&plan, &uses, budget)?;
+    let invalid = validate_declaration_placements(&plan, &live_uses, budget)?;
     for (variable, owner) in invalid {
         for declarations in plan.at_region.values_mut() {
             declarations.retain(|declaration| declaration.variable != variable);
@@ -1522,6 +1560,7 @@ fn guard_return_ownership(
 }
 
 /// One local access of one instruction, with the region the instruction's block stands in.
+#[derive(Clone)]
 struct SlotUse {
     /// The innermost region whose statements hold the instruction, or `None` when the region tree
     /// does not claim its block.
@@ -2054,6 +2093,67 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
     for block in own_blocks(region) {
         out.paths.entry(block).or_insert_with(|| path.clone());
     }
+}
+
+/// A top-level uncovered quote is outside every execution path only if the graph has no usable
+/// entry into it. The canonical graph also states range-only exception edges for handlers whose
+/// protected code cannot throw; those edges do not make the quoted handler live (P3 2.15).
+fn dead_uncovered_quote(
+    blocks: &[CanonicalBlockId],
+    canonical: &CanonicalCfg,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    let mut held = BTreeSet::new();
+    for block in blocks {
+        poll(budget, Some(block.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(block.bci()),
+        )?;
+        held.insert(block);
+    }
+    if held.is_empty()
+        || canonical
+            .blocks()
+            .first()
+            .is_some_and(|entry| held.contains(entry.id()))
+    {
+        return Ok(false);
+    }
+    for edge in canonical.edges() {
+        poll(budget, Some(edge.to().bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(edge.to().bci()),
+        )?;
+        if !held.contains(edge.to()) || held.contains(edge.from()) {
+            continue;
+        }
+        match edge.kind() {
+            CanonicalEdgeKind::Exception { handler_ordinal } => {
+                for site in canonical.throw_sites() {
+                    poll(budget, Some(site.bci()))?;
+                    charge(
+                        budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        1,
+                        Some(site.bci()),
+                    )?;
+                    if site.block() == edge.from() && site.handlers().contains(&handler_ordinal) {
+                        return Ok(false);
+                    }
+                }
+            }
+            CanonicalEdgeKind::Normal
+            | CanonicalEdgeKind::Call { .. }
+            | CanonicalEdgeKind::Return { .. } => return Ok(false),
+        }
+    }
+    Ok(true)
 }
 
 /// The blocks a region writes the statements of, as opposed to the ones its nested regions own.

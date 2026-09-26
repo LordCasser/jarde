@@ -1234,11 +1234,17 @@ pub(crate) fn recover(
             );
         }
     }
+    // A block a returned quote already names is accounted for: a refused shape's quote (`gap`)
+    // commits no ownership, so without this set the scan would name the refused header — and
+    // every block behind it — a second time, and two quotes owning one block would fail the
+    // ownership check below as a phantom overlap.
+    let quoted: BTreeSet<&CanonicalBlockId> = regions.iter().flat_map(Region::blocks).collect();
     let uncovered: Vec<CanonicalBlockId> = canonical
         .blocks()
         .iter()
         .map(|block| block.id().clone())
         .filter(|id| !canonical.unreachable().contains(id))
+        .filter(|id| !quoted.contains(id))
         .filter(|id| {
             !walker
                 .view

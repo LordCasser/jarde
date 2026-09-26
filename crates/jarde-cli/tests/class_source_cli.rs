@@ -510,9 +510,13 @@ fn the_text_mode_writes_the_librarys_own_source() {
     assert!(indentation_is_four_spaces(&text), "{text}");
     // The third member now keeps its recoverable normal-flow prefix. Its unreachable-handler
     // refusal stays in the body, while the class layer does not mislabel it explanation-only.
+    // Since the exception-table rule started stating a record no throwing instruction covers by
+    // its protected range, the handler block at BCI 9 is live in the raw graph through that edge,
+    // so the quote covers the whole handler block's instructions (9, 10, 13, 14 — the block list
+    // below stays [9]); the normal-flow prefix before it is presented as before.
     assert!(markers(&text).is_empty(), "{text}");
     assert!(text.contains("        return local3;\n"), "{text}");
-    assert!(text.contains("        // @bytecode 9\n"), "{text}");
+    assert!(text.contains("        // @bytecode 9 10 13 14\n"), "{text}");
 
     // Everything the document holds beside the text is on standard error, as `path = value` lines:
     // the planes as their own fields, and every other field of the report — a member's own text

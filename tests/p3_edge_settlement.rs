@@ -227,8 +227,9 @@ fn a_row_nothing_in_its_range_can_throw_does_not_quote_the_block() {
     let quoted = quoted_bcis(text);
     assert_eq!(
         quoted,
-        vec![11],
-        "the copy the table's row reaches is named by the quote, and no statement is:\n{text}"
+        vec![11, 12, 13, 14, 15, 16, 17],
+        "every instruction of the copy the row reaches is named by the quote, and no statement \
+         is:\n{text}"
     );
     let run = run_of(&report, "noThrowFinally");
     assert!(
