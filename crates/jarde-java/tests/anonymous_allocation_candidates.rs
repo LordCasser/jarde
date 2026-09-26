@@ -27,6 +27,9 @@ const OUTER: &[u8] = include_bytes!(
 const DOUBLE_SITE: &[u8] = include_bytes!(
     "../../../tests/fixtures/proved-java-structure/anonymous-double-site/AnonymousDoubleSite.class"
 );
+const ANONYMOUS_INTERFACE_BASIC: &[u8] = include_bytes!(
+    "../../../tests/fixtures/proved-java-structure/anonymous-interface-basic/AnonymousInterfaceBasic.class"
+);
 const CONCAT: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-concat-conversion/v8/ConcatConversion.class");
 
@@ -265,6 +268,43 @@ fn same_run_new_sidecar_preserves_order_and_ignores_rule_details_selection() {
         assert!(candidate.verified);
         assert_eq!(candidate.argument_bcis.len(), expected_arguments);
     }
+}
+
+#[test]
+fn frozen_anonymous_interface_return_bci_matches_its_allocation_scan() {
+    let recovered = recover(
+        ANONYMOUS_INTERFACE_BASIC,
+        b"make",
+        b"()LI;",
+        0,
+        RecoveryEvidenceRequest::essential(),
+    );
+    assert!(
+        recovered.report.produced(),
+        "{:?}",
+        recovered.report.outcome
+    );
+    let scan = recovered
+        .anonymous_allocations
+        .as_ref()
+        .expect("same-run anonymous allocation scan");
+    assert!(scan.complete);
+    let [allocation] = scan.allocations.as_slice() else {
+        panic!("expected one allocation BCI: {scan:?}");
+    };
+    let ast = recovered.ast.as_ref().expect("direct-return AST sidecar");
+    let (origin_bcis, target) = jarde_java::report::class_source_anonymous_return_site(ast)
+        .expect("one direct return New from the method AST");
+    assert_eq!(
+        origin_bcis.first(),
+        Some(&4),
+        "New primary is constructor BCI"
+    );
+    assert!(origin_bcis.contains(&allocation.head_bci));
+    assert_eq!(allocation.head_bci, 0, "allocation BCI stays distinct");
+    assert_eq!(allocation.constructor_bci, Some(4));
+    assert!(allocation.argument_bcis.is_empty());
+    assert_eq!(target.replace('.', "/"), allocation.class);
 }
 
 #[test]

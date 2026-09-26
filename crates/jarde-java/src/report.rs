@@ -416,6 +416,71 @@ pub struct ClassSourceRecovery {
     /// run stopped before retaining the scan or had no physical method identity; `complete=false`
     /// means raw `new` opcode facts did not all resolve through the existing decoder.
     pub anonymous_allocations: Option<AnonymousAllocationScan>,
+    /// The same-run AST retained only for bounded class-source projection.
+    pub ast: Option<ClassSourceMethodAst>,
+}
+
+/// Opaque same-run AST sidecar for class-source adapters; never serialized as report evidence.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceMethodAst {
+    pub(crate) projection: std::sync::Arc<ClassSourceMethodAstSource>,
+}
+
+/// The exact direct-return allocation retained from one class-source recovery run, when present.
+#[doc(hidden)]
+pub fn class_source_anonymous_return_site(
+    ast: &ClassSourceMethodAst,
+) -> Option<(Vec<u32>, String)> {
+    class_source_direct_return_new(&ast.projection.program).map(|(bcis, ty)| (bcis, ty.to_owned()))
+}
+
+/// Emits the retained statements of one selected physical class-source method. The supplied
+/// indentation is an adapter concern; the AST and physical method identity remain this run's.
+#[doc(hidden)]
+pub fn emit_class_source_method_ast(
+    ast: &ClassSourceMethodAst,
+    indentation: usize,
+    budget: &mut Budget,
+) -> Result<String, crate::stop::StopReason> {
+    crate::emit::emit_class_source_statements(
+        &ast.projection.program.stmts,
+        &ast.projection.member,
+        indentation,
+        budget,
+    )
+}
+
+/// Re-emits the proved root method while replacing only the exact direct-return allocation node
+/// with the staged anonymous class methods. The physical root AST owns the resulting return and
+/// allocation statement; the class-source writer never invents either expression.
+#[doc(hidden)]
+pub fn emit_class_source_anonymous_return(
+    ast: &ClassSourceMethodAst,
+    allocation_bci: u32,
+    allocation_type: &str,
+    interface_type: &str,
+    methods: &str,
+    budget: &mut Budget,
+) -> Result<Option<String>, crate::stop::StopReason> {
+    let (text, matched) = crate::emit::emit_class_source_anonymous_return(
+        &ast.projection.program.stmts,
+        &ast.projection.member,
+        2,
+        allocation_bci,
+        allocation_type,
+        interface_type,
+        methods,
+        "        ",
+        budget,
+    )?;
+    Ok(matched.then_some(text))
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ClassSourceMethodAstSource {
+    pub(crate) program: crate::build::Program,
+    pub(crate) member: jarde_reader::model::PhysicalMethodId,
 }
 
 #[doc(hidden)]
@@ -1142,7 +1207,7 @@ impl RecoveryReport {
 /// refusal leaves no work half done — see [`crate::stop`].
 pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryReport {
     recover_inner(
-        request, budget, None, None, None, None, None, None, None, None, None, true,
+        request, budget, None, None, None, None, None, None, None, None, None, None, false, true,
     )
 }
 
@@ -1637,6 +1702,27 @@ pub fn recover_for_class_source(
     prove_generic_return: bool,
     collect_enum_constructor_candidates: bool,
 ) -> ClassSourceRecovery {
+    recover_for_class_source_with_anonymous_ast(
+        request,
+        budget,
+        prove_generic_return,
+        collect_enum_constructor_candidates,
+        false,
+        false,
+    )
+}
+
+/// Same class-source recovery with private AST retention for a class already selected as the
+/// anonymous implementation, and an optional exact empty-constructor proof.
+#[doc(hidden)]
+pub fn recover_for_class_source_with_anonymous_ast(
+    request: &RecoveryRequest<'_>,
+    budget: &mut Budget,
+    prove_generic_return: bool,
+    collect_enum_constructor_candidates: bool,
+    retain_all_method_asts: bool,
+    prove_empty_constructor: bool,
+) -> ClassSourceRecovery {
     let is_clinit =
         request.facts.method().name() == "<clinit>" && request.facts.method().descriptor() == "()V";
     let is_ordinary_interface = request
@@ -1669,6 +1755,7 @@ pub fn recover_for_class_source(
     let mut generic_return = None;
     let mut generic_constructor = None;
     let mut anonymous_allocations = None;
+    let mut ast = None;
     let report = recover_inner(
         request,
         budget,
@@ -1679,8 +1766,10 @@ pub fn recover_for_class_source(
         Some(&mut array_constructors),
         Some(&mut enum_switch_field_uses),
         prove_generic_return.then_some(&mut generic_return),
-        prove_generic_return.then_some(&mut generic_constructor),
+        (prove_generic_return || prove_empty_constructor).then_some(&mut generic_constructor),
         Some(&mut anonymous_allocations),
+        Some(&mut ast),
+        retain_all_method_asts,
         false,
     );
     if !report.produced() || !matches!(&report.execution, ExecutionReport::Complete { .. }) {
@@ -1695,6 +1784,7 @@ pub fn recover_for_class_source(
         generic_return = None;
         generic_constructor = None;
         anonymous_allocations = None;
+        ast = None;
     }
     ClassSourceRecovery {
         report,
@@ -1707,6 +1797,7 @@ pub fn recover_for_class_source(
         generic_return,
         generic_constructor,
         anonymous_allocations,
+        ast,
     }
 }
 
@@ -1722,6 +1813,8 @@ fn recover_inner(
     generic_return: Option<&mut Option<GenericReturnCandidate>>,
     generic_constructor: Option<&mut Option<GenericConstructorCandidate>>,
     mut anonymous_allocations: Option<&mut Option<AnonymousAllocationScan>>,
+    mut class_source_ast: Option<&mut Option<ClassSourceMethodAst>>,
+    retain_all_method_asts: bool,
     allow_array_constructor_method_references: bool,
 ) -> RecoveryReport {
     let method = format!(
@@ -2098,6 +2191,36 @@ fn recover_inner(
         Ok(program) => program,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
+    if let Some(slot) = class_source_ast.as_deref_mut()
+        && (retain_all_method_asts || class_source_direct_return_new(&program).is_some())
+        && let Some(member) = request
+            .ir
+            .declaration()
+            .map(|member| member.identity().clone())
+    {
+        let weight = if retain_all_method_asts {
+            program_node_count(&program)
+        } else {
+            2
+        };
+        if let Err(stop) = crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            weight,
+            program
+                .stmts
+                .first()
+                .map(|statement| statement.origin.primary().bci()),
+        ) {
+            return stopped(method, profile.clone(), &selection, stop, budget);
+        }
+        *slot = Some(ClassSourceMethodAst {
+            projection: std::sync::Arc::new(ClassSourceMethodAstSource {
+                program: program.clone(),
+                member,
+            }),
+        });
+    }
     if let Some(slot) = generic_return {
         match generic_return_candidate(&program, &names, ssa, &operations, &sites, request, budget)
         {
@@ -2782,6 +2905,197 @@ fn recover_inner(
         "the evidence status list disagrees with the payload it describes"
     );
     report
+}
+
+/// The only caller AST shape this class-source slice retains: a sole direct `return new T()`.
+/// Counts retained statements, expressions, and class-source side tables before cloning a full
+/// selected child AST. The iterative walk bounds stack use independently of source nesting depth.
+fn program_node_count(program: &build::Program) -> u64 {
+    let mut count = u64::try_from(program.statements).unwrap_or(u64::MAX);
+    count = count
+        .saturating_add(u64::try_from(program.field_increments.len()).unwrap_or(u64::MAX))
+        .saturating_add(u64::try_from(program.lambdas.len()).unwrap_or(u64::MAX))
+        .saturating_add(u64::try_from(program.accessors.len()).unwrap_or(u64::MAX))
+        .saturating_add(u64::try_from(program.array_constructor_sites.len()).unwrap_or(u64::MAX))
+        .saturating_add(u64::try_from(program.lambda_refusals.len()).unwrap_or(u64::MAX))
+        .saturating_add(u64::try_from(program.accessor_refusals.len()).unwrap_or(u64::MAX));
+    let mut statements: Vec<_> = program.stmts.iter().collect();
+    let mut expressions = Vec::<&Expr>::new();
+    while let Some(statement) = statements.pop() {
+        use StmtKind as K;
+        match &statement.kind {
+            K::Declare { value, .. } => expressions.extend(value.iter()),
+            K::Assign { value, .. } | K::Expr(value) | K::Throw { value } => {
+                expressions.push(value)
+            }
+            K::FieldAssign {
+                receiver, value, ..
+            } => {
+                expressions.extend(receiver.iter());
+                expressions.push(value);
+            }
+            K::IndexAssign {
+                array,
+                index,
+                value,
+                ..
+            } => {
+                expressions.extend([array, index, value]);
+            }
+            K::ConstructorCall { args, .. } => expressions.extend(args),
+            K::Return { value } => expressions.extend(value.iter()),
+            K::If {
+                cond,
+                then_body,
+                else_body,
+            } => {
+                expressions.push(cond);
+                statements.extend(then_body);
+                statements.extend(else_body);
+            }
+            K::While { cond, body, .. } | K::DoWhile { cond, body, .. } => {
+                expressions.push(cond);
+                statements.extend(body);
+            }
+            K::For {
+                init,
+                cond,
+                update,
+                body,
+                ..
+            } => {
+                statements.extend([init.as_ref(), update.as_ref()]);
+                expressions.push(cond);
+                statements.extend(body);
+            }
+            K::ForEach { iterable, body, .. } => {
+                expressions.push(iterable);
+                statements.extend(body);
+            }
+            K::Switch { value, arms } => {
+                expressions.push(value);
+                for arm in arms {
+                    statements.extend(&arm.body);
+                }
+            }
+            K::Try {
+                resources,
+                catches,
+                body,
+                finally_body,
+            } => {
+                expressions.extend(resources.iter().map(|resource| &resource.value));
+                for catch in catches {
+                    statements.extend(&catch.body);
+                }
+                statements.extend(body);
+                statements.extend(finally_body.iter().flatten());
+            }
+            K::Synchronized { lock, body } => {
+                expressions.push(lock);
+                statements.extend(body);
+            }
+            K::Break { .. } | K::Continue { .. } | K::Fallback { .. } => {}
+        }
+    }
+    while let Some(expression) = expressions.pop() {
+        count = count.saturating_add(1);
+        use ExprKind as K;
+        match &expression.kind {
+            K::InstanceOf { value, .. }
+            | K::PostIncrement { target: value }
+            | K::ArrayLength { array: value }
+            | K::Cast { value, .. }
+            | K::Not { value }
+            | K::Neg { value } => expressions.push(value),
+            K::Call { receiver, args, .. } => {
+                expressions.extend(receiver.iter().map(Box::as_ref));
+                expressions.extend(args);
+            }
+            K::New {
+                qualifier, args, ..
+            } => {
+                expressions.extend(qualifier.iter().map(Box::as_ref));
+                expressions.extend(args);
+            }
+            K::Lambda { body, .. }
+            | K::MethodReference {
+                qualifier: body, ..
+            } => {
+                expressions.push(body);
+            }
+            K::Field { receiver, .. } => expressions.push(receiver),
+            K::Index { array, index } => expressions.extend([array.as_ref(), index.as_ref()]),
+            K::NewArray {
+                lengths,
+                initializers,
+                ..
+            } => {
+                expressions.extend(lengths);
+                expressions.extend(initializers.iter().flatten());
+            }
+            K::Binary { left, right, .. } => {
+                expressions.extend([left.as_ref(), right.as_ref()]);
+            }
+            K::Conditional {
+                test,
+                when_true,
+                when_false,
+            } => {
+                expressions.extend([test.as_ref(), when_true.as_ref(), when_false.as_ref()]);
+            }
+            K::Concat { parts } => expressions.extend(parts.iter().map(|part| &part.value)),
+            K::Local(_)
+            | K::Integer(_)
+            | K::Boolean(_)
+            | K::Long(_)
+            | K::Float(_)
+            | K::Double(_)
+            | K::Str(_)
+            | K::Null
+            | K::ClassLiteral { .. }
+            | K::Path(_)
+            | K::QualifiedThis { .. }
+            | K::Super { .. } => {}
+        }
+    }
+    count.max(1)
+}
+
+fn class_source_direct_return_new(program: &build::Program) -> Option<(Vec<u32>, &str)> {
+    if program.stmts.len() != 1 || program.statements != 1 || program.ragged {
+        return None;
+    }
+    let StmtKind::Return {
+        value: Some(expression),
+    } = &program.stmts[0].kind
+    else {
+        return None;
+    };
+    let ExprKind::New {
+        ty,
+        qualifier: None,
+        member_name: None,
+        args,
+        ..
+    } = &expression.kind
+    else {
+        return None;
+    };
+    if !args.is_empty() {
+        return None;
+    }
+    let primary = expression.origin.primary().bci();
+    let mut bcis = vec![primary];
+    bcis.extend(
+        expression
+            .origin
+            .derived()
+            .iter()
+            .map(|origin| origin.bci())
+            .filter(|bci| *bci != primary),
+    );
+    Some((bcis, ty.as_str()))
 }
 
 /// Captures the class initializer's already-built top-level statements and the field identities

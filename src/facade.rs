@@ -1362,19 +1362,21 @@ impl Engine {
                 return Ok(OperationOutcome::Incomplete(candidates));
             }
         };
-        let (mut report, family_scan) = self.prepare_physical_class_source(
-            content,
-            request,
-            evidence,
-            &environment,
-            snapshot,
-            view,
-            stages,
-            *bound,
-            execution,
-            diagnostics,
-            budget,
-        )?;
+        let (mut report, family_scan, _root_method_asts, _anonymous_return_sites, root_nesting) =
+            self.prepare_physical_class_source(
+                content,
+                request,
+                evidence,
+                &environment,
+                snapshot,
+                view,
+                stages,
+                *bound,
+                execution,
+                diagnostics,
+                false,
+                budget,
+            )?;
         report.member_family = match family_scan {
             crate::member_inner::FamilyRootScan::Absent => {
                 class_source::ClassSourceMemberFamily::Absent
@@ -1470,6 +1472,33 @@ impl Engine {
                             reason: format!("family source projection stopped: {error}"),
                         };
                     }
+                }
+            }
+        }
+        if matches!(
+            report.member_family,
+            class_source::ClassSourceMemberFamily::Absent
+        ) && _anonymous_return_sites.len() == 1
+        {
+            match self.project_class_source_anonymous_interface(
+                content,
+                request,
+                evidence,
+                &environment,
+                snapshot,
+                &mut report,
+                &_root_method_asts,
+                &_anonymous_return_sites,
+                &root_nesting,
+                budget,
+            ) {
+                Ok(()) => {}
+                Err(error) => {
+                    merge_execution(&mut report.execution, stop_execution(&error, budget));
+                    report.diagnostics.push(stop_diagnostic(
+                        &error,
+                        Some(definition_provenance(&report.class)),
+                    ));
                 }
             }
         }
@@ -1571,23 +1600,25 @@ impl Engine {
             },
             environment: request.environment.clone(),
         };
-        let (child, _) = self.prepare_physical_class_source(
-            content,
-            &child_request,
-            evidence,
-            environment,
-            snapshot,
-            root_report.view.clone(),
-            root_report.stages.clone(),
-            BoundClass {
-                read: child_read,
-                search_coverage: None,
-                class_item: child_class_item,
-            },
-            child_execution,
-            child_diagnostics,
-            budget,
-        )?;
+        let (child, _, _child_method_asts, _child_anonymous_sites, _child_nesting) = self
+            .prepare_physical_class_source(
+                content,
+                &child_request,
+                evidence,
+                environment,
+                snapshot,
+                root_report.view.clone(),
+                root_report.stages.clone(),
+                BoundClass {
+                    read: child_read,
+                    search_coverage: None,
+                    class_item: child_class_item,
+                },
+                child_execution,
+                child_diagnostics,
+                false,
+                budget,
+            )?;
         let child = Box::new(child);
         let physically_complete = matches!(root_report.execution, ExecutionReport::Complete { .. })
             && matches!(child.execution, ExecutionReport::Complete { .. });
@@ -1695,6 +1726,573 @@ impl Engine {
         Ok((family, execution))
     }
 
+    #[allow(clippy::too_many_arguments)]
+    fn project_class_source_anonymous_interface(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
+        environment: &ResolutionEnvironment,
+        snapshot: &ArtifactSnapshot,
+        root: &mut ClassSourceReport,
+        root_asts: &[(
+            PhysicalMethodId,
+            jarde_java::report::ClassSourceMethodAst,
+            Option<jarde_java::report::GenericConstructorCandidate>,
+            Option<jarde_java::report::AnonymousAllocationScan>,
+        )],
+        sites: &[(PhysicalMethodId, u32, u32, String)],
+        root_nesting: &class_source::ClassSourceAssemblyContext,
+        budget: &mut Budget,
+    ) -> Result<()> {
+        let [(root_method, root_bci, constructor_bci, allocation_type)] = sites else {
+            return Err(Error::unsupported(
+                "anonymous_interface_site_not_unique",
+                "anonymous interface projection needs exactly one direct-return allocation",
+            ));
+        };
+        let root_name = root
+            .declaration
+            .as_ref()
+            .ok_or_else(|| {
+                Error::unsupported("anonymous_root_unspelled", "root class is unspelled")
+            })?
+            .item
+            .declaration
+            .this_class
+            .raw()
+            .0
+            .clone();
+        let child_name = allocation_type.replace('.', "/");
+        let root_rows: Vec<_> = root_nesting
+            .resolved_inner_classes
+            .iter()
+            .filter(|row| row.class == child_name.as_bytes())
+            .collect();
+        if root_rows.len() != 1
+            || root_rows[0].outer_class.is_some()
+            || root_rows[0].inner_name.is_some()
+            || root_nesting
+                .major_version
+                .is_none_or(|version| version > 52)
+        {
+            return Err(Error::unsupported(
+                "anonymous_typed_nesting_unproved",
+                "the root class does not declare one matching anonymous InnerClasses row",
+            ));
+        }
+        let Some((_, root_ast, _, _)) = root_asts
+            .iter()
+            .find(|(member, _, _, _)| member == root_method)
+        else {
+            return Err(Error::unsupported(
+                "anonymous_root_ast_missing",
+                "the selected allocation has no retained root method AST",
+            ));
+        };
+        let mut child_execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        let Some((child_definition, child_read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            Some(root_method),
+            child_name.as_bytes(),
+            &mut child_execution,
+            budget,
+        )?
+        else {
+            return Err(Error::unsupported(
+                "anonymous_child_unresolved",
+                "the selected interface allocation does not resolve to one child definition",
+            ));
+        };
+        let child_facts = child_read.facts.clone();
+        if child_facts.stopped_at.is_some()
+            || child_read
+                .bytes
+                .get(6..8)
+                .is_none_or(|version| u16::from_be_bytes([version[0], version[1]]) > 52)
+            || child_facts.field_count != 0
+            || !child_facts.fields.is_empty()
+            || child_facts.methods.len() as u64 != child_facts.method_count
+            || child_facts.methods.is_empty()
+            || child_facts
+                .methods
+                .iter()
+                .any(|method| method.name.raw().0 == b"<clinit>")
+            || child_facts
+                .super_class
+                .as_ref()
+                .map(|name| name.raw().0.as_slice())
+                != Some(b"java/lang/Object")
+            || child_facts.interfaces.len() != 1
+            || child_facts.access_flags & 0x0200 != 0
+        {
+            return Err(Error::unsupported(
+                "anonymous_child_shape_unproved",
+                "the selected child is not a field-free Object subclass of exactly the interface",
+            ));
+        }
+        let interface_name = child_facts.interfaces[0].raw().0.clone();
+        let expected_return = [b"()L".as_slice(), interface_name.as_slice(), b";"].concat();
+        if root_method.descriptor.0 != expected_return
+            || !std::str::from_utf8(&interface_name).is_ok_and(|name| {
+                !name.contains('$') && name.split('/').all(jarde_java::names::is_java_identifier)
+            })
+        {
+            return Err(Error::unsupported(
+                "anonymous_interface_source_type_unproved",
+                "the allocated child does not implement the exact source-level return interface",
+            ));
+        }
+        let Some((_interface_definition, interface_read)) =
+            resolve_class_source_dependency_read_raw(
+                content,
+                environment,
+                Some(root_method),
+                &interface_name,
+                &mut child_execution,
+                budget,
+            )?
+        else {
+            return Err(Error::unsupported(
+                "anonymous_interface_unresolved",
+                "the exact return interface does not resolve in the selected environment",
+            ));
+        };
+        if interface_read.facts.access_flags & 0x0200 == 0
+            || interface_read.facts.access_flags & ACC_ANNOTATION != 0
+            || interface_read.facts.stopped_at.is_some()
+            || interface_read
+                .bytes
+                .get(6..8)
+                .is_none_or(|version| u16::from_be_bytes([version[0], version[1]]) > 52)
+            || (interface_read.facts.access_flags & 0x0001 == 0
+                && internal_package(&interface_name) != internal_package(&root_name))
+        {
+            return Err(Error::unsupported(
+                "anonymous_interface_declaration_unproved",
+                "the return type is not a source-accessible Java 8 interface declaration",
+            ));
+        }
+        // This slice can spell one direct interface contract. Inherited, default, and static
+        // interface methods need a separate hierarchy proof before the anonymous body is legal
+        // Java 8 source; a complete-looking child body alone does not establish that contract.
+        let interface_methods = &interface_read.facts.methods;
+        if !interface_read.facts.interfaces.is_empty()
+            || interface_methods.len() != 1
+            || interface_read.facts.method_count != 1
+            || interface_methods[0].access_flags != 0x0401
+            || !child_facts.methods.iter().any(|method| {
+                method.name.raw().0 == interface_methods[0].name.raw().0
+                    && method.descriptor.raw().0 == interface_methods[0].descriptor.raw().0
+                    && method.access_flags & 0x0001 != 0
+                    && method.access_flags & (0x0008 | 0x0040 | 0x1000) == 0
+            })
+        {
+            return Err(Error::unsupported(
+                "anonymous_interface_contract_unproved",
+                "the child does not provide the selected interface's single Java 8 abstract method",
+            ));
+        }
+        self.prove_anonymous_interface_owner_xrefs(
+            content,
+            environment,
+            &root.class,
+            &child_definition,
+            root_method,
+            *root_bci,
+            *constructor_bci,
+            child_name.as_bytes(),
+            &mut child_execution,
+            budget,
+        )?;
+        let pool = class_constant_pool(&child_read.bytes, budget)?;
+        let child_shells: Vec<_> = child_facts
+            .attributes
+            .iter()
+            .filter(|attribute| {
+                matches!(
+                    attribute.name.raw().0.as_slice(),
+                    b"InnerClasses" | b"EnclosingMethod"
+                )
+            })
+            .cloned()
+            .collect();
+        let child_nesting = class_source::read_class_source_assembly_context(
+            &child_read.bytes,
+            &child_shells,
+            &pool,
+            budget,
+        )?;
+        let child_self_rows: Vec<_> = child_nesting
+            .resolved_inner_classes
+            .iter()
+            .filter(|row| row.class == child_name.as_bytes())
+            .collect();
+        if child_self_rows.len() != 1
+            || child_self_rows[0].outer_class.is_some()
+            || child_self_rows[0].inner_name.is_some()
+            || child_self_rows[0].access_flags != root_rows[0].access_flags
+            || child_nesting
+                .major_version
+                .is_none_or(|version| version > 52)
+            || child_nesting
+                .resolved_enclosing_method
+                .as_ref()
+                .is_none_or(|enclosing| {
+                    enclosing.class != root_name
+                        || enclosing.method.as_ref()
+                            != Some(&(root_method.name.clone(), root_method.descriptor.clone()))
+                })
+        {
+            return Err(Error::unsupported(
+                "anonymous_child_enclosing_method_unproved",
+                "the child lacks the exact typed EnclosingMethod and anonymous self row",
+            ));
+        }
+        let constructors: Vec<_> = child_facts
+            .methods
+            .iter()
+            .filter(|method| method.name.raw().0 == b"<init>")
+            .collect();
+        if constructors.len() != 1 || constructors[0].descriptor.raw().0 != b"()V" {
+            return Err(Error::unsupported(
+                "anonymous_child_constructor_unproved",
+                "the child does not have one zero-argument physical constructor",
+            ));
+        }
+        let child_class_item = charge_item(budget).map(|()| child_read.class.clone())?;
+        let child_request = ClassSourceRequest {
+            class: ClassRef::Definition {
+                definition: child_definition.clone(),
+            },
+            environment: request.environment.clone(),
+        };
+        let (child, _, child_asts, _, _) = self.prepare_physical_class_source(
+            content,
+            &child_request,
+            evidence,
+            environment,
+            snapshot,
+            root.view.clone(),
+            root.stages.clone(),
+            BoundClass {
+                read: child_read,
+                search_coverage: None,
+                class_item: Some(child_class_item),
+            },
+            child_execution,
+            Vec::new(),
+            true,
+            budget,
+        )?;
+        if !matches!(child.execution, ExecutionReport::Complete { .. })
+            || child.methods.len() != child_facts.methods.len()
+            || child_asts.len() != child_facts.methods.len()
+            || child_asts.iter().any(|(_, _, _, scan)| {
+                scan.as_ref()
+                    .is_none_or(|scan| !scan.complete || !scan.allocations.is_empty())
+            })
+            || child.methods.iter().any(|method| {
+                !matches!(
+                    method.outcome,
+                    class_source::ClassSourceOutcome::Recovered { .. }
+                ) || !complete_anonymous_method(method)
+                    || method.declaration.is_none()
+            })
+        {
+            return Err(Error::unsupported(
+                "anonymous_child_methods_incomplete",
+                "every child method must have a complete structured body and source declaration",
+            ));
+        }
+        let constructor_identity = PhysicalMethodId {
+            owner: child_definition.clone(),
+            name: JvmBytes(b"<init>".to_vec()),
+            descriptor: JvmBytes(b"()V".to_vec()),
+        };
+        let Some((_, _, Some(constructor_proof), _)) = child_asts
+            .iter()
+            .find(|(member, _, _, _)| member == &constructor_identity)
+        else {
+            return Err(Error::unsupported(
+                "anonymous_child_constructor_ast_missing",
+                "the empty child constructor lacks its same-run generic-constructor proof",
+            ));
+        };
+        if !constructor_proof.parameters.is_empty() {
+            return Err(Error::unsupported(
+                "anonymous_child_constructor_not_empty",
+                "the child constructor proof has source parameters",
+            ));
+        }
+        let mut child_method_texts = Vec::new();
+        for method in &child.methods {
+            if method.item.identity == constructor_identity {
+                continue;
+            }
+            let Some((_, ast, _, _)) = child_asts
+                .iter()
+                .find(|(member, _, _, _)| member == &method.item.identity)
+            else {
+                return Err(Error::unsupported(
+                    "anonymous_child_method_ast_missing",
+                    "a presented child method has no same-run AST",
+                ));
+            };
+            let body = jarde_java::report::emit_class_source_method_ast(ast, 4, budget).map_err(
+                |stop| {
+                    enum_projection_stop_error(
+                        stop,
+                        "anonymous interface projection",
+                        "anonymous_interface_ir_missing",
+                    )
+                },
+            )?;
+            let Some(text) = method.anonymous_projection_text(&body) else {
+                return Err(Error::unsupported(
+                    "anonymous_child_method_unspellable",
+                    "a child method could not be projected from its physical declaration",
+                ));
+            };
+            child_method_texts.push(text);
+        }
+        let methods = child_method_texts.concat();
+        let Some(body) = jarde_java::report::emit_class_source_anonymous_return(
+            root_ast,
+            *root_bci,
+            allocation_type,
+            &std::str::from_utf8(&interface_name)
+                .expect("source type name was validated as UTF-8")
+                .replace('/', "."),
+            &methods,
+            budget,
+        )
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "anonymous interface projection",
+                "anonymous_interface_ir_missing",
+            )
+        })?
+        else {
+            return Err(Error::unsupported(
+                "anonymous_return_emission_unmatched",
+                "the root emitter could not match the exact allocation node",
+            ));
+        };
+        let Some(method_index) = root
+            .methods
+            .iter()
+            .position(|method| method.item.identity == *root_method)
+        else {
+            return Err(Error::unsupported(
+                "anonymous_root_method_missing",
+                "the selected physical root method is absent from its class report",
+            ));
+        };
+        let Some(projected_method) =
+            root.methods[method_index].anonymous_return_projection_text(&body)
+        else {
+            return Err(Error::unsupported(
+                "anonymous_root_method_unspellable",
+                "the root method declaration cannot wrap the emitted anonymous expression",
+            ));
+        };
+        let original_method = &root.methods[method_index].text;
+        if root.text.match_indices(original_method).count() != 1 {
+            return Err(Error::unsupported(
+                "anonymous_root_text_ambiguous",
+                "the root method text does not have one exact source-unit placement",
+            ));
+        }
+        root.text = root.text.replacen(original_method, &projected_method, 1);
+        root.methods[method_index].text = projected_method;
+        root.usage = budget.usage();
+        Ok(())
+    }
+
+    fn prove_anonymous_interface_owner_xrefs(
+        &self,
+        content: &[ArtifactSnapshot],
+        environment: &ResolutionEnvironment,
+        root: &PhysicalDefinitionId,
+        child: &PhysicalDefinitionId,
+        caller: &PhysicalMethodId,
+        allocation_bci: u32,
+        constructor_bci: u32,
+        child_name: &[u8],
+        execution: &mut ExecutionReport,
+        budget: &mut Budget,
+    ) -> Result<()> {
+        use jarde_query::query::{XrefCertainty, XrefOperation, XrefTarget};
+        use jarde_query::xref::{CandidateFilter, scan_candidates};
+        use jarde_reader::model::SymbolRef;
+
+        let consumers = ConsumerSchema::new(
+            1,
+            [
+                ConsumerKind::Invocation,
+                ConsumerKind::Field,
+                ConsumerKind::Type,
+                ConsumerKind::Constant,
+                ConsumerKind::Exception,
+                ConsumerKind::Signature,
+                ConsumerKind::Annotation,
+                ConsumerKind::InnerNest,
+                ConsumerKind::Module,
+                ConsumerKind::Bootstrap,
+                ConsumerKind::Resource,
+            ],
+        );
+        let mut ranges = Vec::<(SnapshotId, PhysicalScope)>::new();
+        let mut unscannable_root = false;
+        for load_root in &environment.runtime.load_domain.roots {
+            let range = match load_root {
+                LoadRoot::StandaloneClass { snapshot } => {
+                    Some((snapshot.clone(), PhysicalScope::SnapshotAll))
+                }
+                LoadRoot::Container { origin, prefix } => {
+                    if !prefix.0.is_empty() || !origin.steps.is_empty() {
+                        unscannable_root = true;
+                    }
+                    Some((
+                        origin.snapshot.clone(),
+                        PhysicalScope::ArtifactTree {
+                            root_container: origin.root_container.clone(),
+                        },
+                    ))
+                }
+                LoadRoot::External { .. } => None,
+            };
+            if let Some(range) = range {
+                if !ranges.contains(&range) {
+                    ranges.push(range);
+                }
+            } else {
+                unscannable_root = true;
+            }
+        }
+        if unscannable_root || ranges.is_empty() {
+            return Err(Error::unsupported(
+                "anonymous_interface_xref_scope_incomplete",
+                "the selected input contains an owner range the XRef scanner cannot close",
+            ));
+        }
+        let mut allocation_uses = 0;
+        let mut constructor_uses = 0;
+        let mut nesting_uses = 0;
+        for (snapshot_id, scope) in ranges {
+            budget.poll()?;
+            let Some(snapshot) = content
+                .iter()
+                .find(|candidate| candidate.id() == &snapshot_id)
+            else {
+                return Err(Error::unsupported(
+                    "anonymous_interface_xref_snapshot_missing",
+                    "a selected input snapshot was not provided to the owner scan",
+                ));
+            };
+            let scan = scan_candidates(
+                snapshot,
+                &scope,
+                &consumers,
+                CandidateFilter::Owner {
+                    owner: JvmBytes(child_name.to_vec()),
+                },
+                0,
+                budget,
+            )?;
+            merge_execution(execution, scan.execution.clone());
+            if scan.has_more
+                || !matches!(scan.execution, ExecutionReport::Complete { .. })
+                || scan.coverage.dimensions.artifact_structural.state
+                    != CoverageState::CompleteWithinSchema
+                || scan.coverage.unknown_candidates != 0
+                || !scan.coverage.unsupported_categories.is_empty()
+            {
+                return Err(Error::unsupported(
+                    "anonymous_interface_xref_incomplete",
+                    "the selected input owner scan is incomplete or contains unknown candidates",
+                ));
+            }
+            for item in &scan.items {
+                let allowed_code = match (&item.source.location, &item.target) {
+                    (
+                        Location::Code { method, bci },
+                        XrefTarget::Symbol {
+                            value: SymbolRef::Class { owner },
+                        },
+                    ) if method == caller
+                        && *bci == allocation_bci
+                        && owner.0 == child_name
+                        && item.operation == XrefOperation::New
+                        && item.consumer == Some(ConsumerKind::Type)
+                        && item.evidence.bci == Some(*bci)
+                        && item.evidence.opcode == Some(0xbb) =>
+                    {
+                        allocation_uses += 1;
+                        true
+                    }
+                    (
+                        Location::Code { method, bci },
+                        XrefTarget::Symbol {
+                            value:
+                                SymbolRef::Method {
+                                    owner,
+                                    name,
+                                    descriptor,
+                                },
+                        },
+                    ) if method == caller
+                        && *bci == constructor_bci
+                        && owner.0 == child_name
+                        && name.0 == b"<init>"
+                        && descriptor.0 == b"()V"
+                        && item.operation == XrefOperation::InvokeSpecial
+                        && item.consumer == Some(ConsumerKind::Invocation)
+                        && item.evidence.bci == Some(*bci)
+                        && item.evidence.opcode == Some(0xb7) =>
+                    {
+                        constructor_uses += 1;
+                        true
+                    }
+                    _ => false,
+                };
+                let allowed_nesting = matches!(
+                    (&item.source.location, &item.target),
+                    (
+                        Location::ClassOffset { definition, .. },
+                        XrefTarget::Symbol {
+                            value: SymbolRef::Class { owner },
+                        },
+                    ) if (definition == root || definition == child)
+                        && owner.0 == child_name
+                        && item.operation == XrefOperation::InnerClass
+                        && item.consumer == Some(ConsumerKind::InnerNest)
+                );
+                if allowed_nesting {
+                    nesting_uses += 1;
+                }
+                if item.certainty != XrefCertainty::Exact || !(allowed_code || allowed_nesting) {
+                    return Err(Error::unsupported(
+                        "anonymous_interface_child_additional_use",
+                        "the anonymous class has an unapproved selected-input owner use",
+                    ));
+                }
+            }
+        }
+        if allocation_uses != 1 || constructor_uses != 1 || nesting_uses != 2 {
+            return Err(Error::unsupported(
+                "anonymous_interface_xref_not_unique",
+                "the selected input does not contain exactly one construction and two typed self rows",
+            ));
+        }
+        Ok(())
+    }
+
     /// Prepare one already bound physical definition. Family assembly calls this sequentially for
     /// each selected definition with the same request budget; no public operation is re-entered.
     #[allow(clippy::too_many_arguments)]
@@ -1710,8 +2308,20 @@ impl Engine {
         bound: BoundClass,
         mut execution: ExecutionReport,
         mut diagnostics: Vec<Diagnostic>,
+        capture_anonymous_child_asts: bool,
         budget: &mut Budget,
-    ) -> Result<(ClassSourceReport, crate::member_inner::FamilyRootScan)> {
+    ) -> Result<(
+        ClassSourceReport,
+        crate::member_inner::FamilyRootScan,
+        Vec<(
+            PhysicalMethodId,
+            jarde_java::report::ClassSourceMethodAst,
+            Option<jarde_java::report::GenericConstructorCandidate>,
+            Option<jarde_java::report::AnonymousAllocationScan>,
+        )>,
+        Vec<(PhysicalMethodId, u32, u32, String)>,
+        class_source::ClassSourceAssemblyContext,
+    )> {
         let BoundClass {
             read,
             search_coverage,
@@ -1774,6 +2384,9 @@ impl Engine {
                     diagnostics,
                 },
                 crate::member_inner::FamilyRootScan::Absent,
+                Vec::new(),
+                Vec::new(),
+                class_source::ClassSourceAssemblyContext::default(),
             ));
         }
         let class_provenance = Some(definition_provenance(&definition));
@@ -1905,6 +2518,7 @@ impl Engine {
             PhysicalMethodId,
             Option<jarde_java::report::AnonymousAllocationScan>,
         )> = Vec::new();
+        let mut method_asts = Vec::new();
         // Bridge decisions are also kept from the same member runs, independently of whether
         // RuleDetails were requested. They remain associated with physical member identity and
         // are not derived again from the serialized recovery report.
@@ -2329,6 +2943,7 @@ impl Engine {
                                     array_helper_census_needed,
                                     capture_array_helper_use_table: array_helper_use_runs
                                         .is_empty(),
+                                    capture_anonymous_child_asts,
                                 },
                                 budget,
                             ) {
@@ -2344,6 +2959,7 @@ impl Engine {
                                     generic_return,
                                     generic_constructor,
                                     anonymous_allocations,
+                                    ast,
                                     enum_code: enum_code_candidate,
                                 }) => {
                                     if let Some(candidates) = candidates_for_member {
@@ -2371,8 +2987,20 @@ impl Engine {
                                         enum_switch_scanned_members.push(item.identity.clone());
                                         enum_switch_field_use_runs.extend(uses);
                                     }
-                                    anonymous_allocation_scans
-                                        .push((item.identity.clone(), anonymous_allocations));
+                                    anonymous_allocation_scans.push((
+                                        item.identity.clone(),
+                                        anonymous_allocations.clone(),
+                                    ));
+                                    if ast.is_some() || generic_constructor.is_some() {
+                                        if let Some(ast) = ast {
+                                            method_asts.push((
+                                                item.identity.clone(),
+                                                ast,
+                                                generic_constructor.clone(),
+                                                anonymous_allocations,
+                                            ));
+                                        }
+                                    }
                                     let analysis = ClassSourceRunFacts {
                                         execution: recovered.analysis().execution.clone(),
                                         diagnostics: to_u64(
@@ -3558,6 +4186,49 @@ impl Engine {
             declared_bodies,
             attempted == declared_bodies,
         );
+        let expected_scan_methods: Vec<PhysicalMethodId> = methods
+            .iter()
+            .filter(|method| {
+                usize::try_from(method.item.index)
+                    .ok()
+                    .and_then(|index| read.facts.methods.get(index))
+                    .is_some_and(|member| code_shell(member).is_some())
+            })
+            .map(|method| method.item.identity.clone())
+            .collect();
+        let mut anonymous_return_sites = Vec::new();
+        for (member, ast, _, _) in method_asts.iter().filter(|_| {
+            structure_complete && to_u64(methods.len()).ok() == Some(read.facts.method_count)
+        }) {
+            let Some((origin_bcis, target)) =
+                jarde_java::report::class_source_anonymous_return_site(ast)
+            else {
+                continue;
+            };
+            let target_internal = target.replace('.', "/");
+            let Some(site) = unique_anonymous_allocation(
+                &anonymous_allocation_scans,
+                &expected_scan_methods,
+                &target_internal,
+            ) else {
+                continue;
+            };
+            if &site.member == member
+                && origin_bcis.contains(&site.head_bci)
+                && site
+                    .constructor_bci
+                    .is_some_and(|bci| origin_bcis.contains(&bci))
+                && site.argument_bcis.is_empty()
+            {
+                anonymous_return_sites.push((
+                    member.clone(),
+                    site.head_bci,
+                    site.constructor_bci
+                        .expect("verified allocation has constructor BCI"),
+                    target,
+                ));
+            }
+        }
         Ok((
             ClassSourceReport {
                 view,
@@ -3580,6 +4251,9 @@ impl Engine {
                 diagnostics,
             },
             family_scan,
+            method_asts,
+            anonymous_return_sites,
+            assembly_context,
         ))
     }
 }
@@ -4692,6 +5366,75 @@ fn array_helper_has_direct_use(helper: &RawMethodReference, scans: &[ArrayHelper
     })
 }
 
+/// Select one allocation by physical `new` BCI only after every supplied caller scan completed.
+/// The caller supplies scans for every method with Code; a missing or partial scan is a refusal.
+fn unique_anonymous_allocation<'a>(
+    scans: &'a [(
+        PhysicalMethodId,
+        Option<jarde_java::report::AnonymousAllocationScan>,
+    )],
+    expected_methods: &[PhysicalMethodId],
+    target: &str,
+) -> Option<&'a jarde_java::report::AnonymousAllocationCandidate> {
+    if scans.is_empty()
+        || scans.len() != expected_methods.len()
+        || scans
+            .iter()
+            .map(|(method, _)| method)
+            .collect::<std::collections::HashSet<_>>()
+            .len()
+            != scans.len()
+        || scans
+            .iter()
+            .map(|(method, _)| method)
+            .collect::<std::collections::HashSet<_>>()
+            != expected_methods
+                .iter()
+                .collect::<std::collections::HashSet<_>>()
+        || expected_methods
+            .iter()
+            .collect::<std::collections::HashSet<_>>()
+            .len()
+            != expected_methods.len()
+        || scans
+            .iter()
+            .any(|(_, scan)| scan.as_ref().is_none_or(|scan| !scan.complete))
+    {
+        return None;
+    }
+    let mut matches = scans.iter().flat_map(|(_, scan)| {
+        scan.as_ref()
+            .into_iter()
+            .flat_map(|scan| scan.allocations.iter())
+            .filter(|allocation| allocation.class == target)
+    });
+    let selected = matches.next()?;
+    if matches.next().is_some() || !selected.verified {
+        return None;
+    }
+    Some(selected)
+}
+
+fn complete_anonymous_method(method: &ClassSourceMethod) -> bool {
+    matches!(
+        &method.outcome,
+        class_source::ClassSourceOutcome::Recovered { report, analysis }
+            if report.produced()
+                && report.quality == Quality::Structured
+                && report.representation == crate::ir::Representation::Java
+                && report.syntax_status != crate::ir::SyntaxStatus::NotJava
+                && report.fallbacks.is_empty()
+                && matches!(report.execution, ExecutionReport::Complete { .. })
+                && matches!(analysis.execution, ExecutionReport::Complete { .. })
+    )
+}
+
+fn internal_package(name: &[u8]) -> &[u8] {
+    name.iter()
+        .rposition(|byte| *byte == b'/')
+        .map_or(&[], |slash| &name[..slash])
+}
+
 #[cfg(test)]
 mod array_helper_census_tests {
     use super::*;
@@ -4726,6 +5469,101 @@ mod array_helper_census_tests {
             &helper,
             std::slice::from_ref(&scan)
         ));
+    }
+}
+
+#[cfg(test)]
+mod anonymous_allocation_uniqueness_tests {
+    use super::*;
+
+    fn physical_method() -> PhysicalMethodId {
+        PhysicalMethodId {
+            owner: jarde_reader::model::PhysicalDefinitionId {
+                location: jarde_reader::model::PhysicalClassLocation::StandaloneRoot {
+                    snapshot: jarde_reader::model::SnapshotId("fixture".to_owned()),
+                },
+                class_bytes: jarde_reader::model::ClassBytesId {
+                    digest: jarde_reader::model::Digest("00".repeat(32)),
+                    length: 1,
+                },
+                variant: jarde_reader::model::PhysicalVariant::Base,
+            },
+            name: jarde_reader::model::JvmBytes(b"make".to_vec()),
+            descriptor: jarde_reader::model::JvmBytes(b"()LI;".to_vec()),
+        }
+    }
+
+    fn allocation(bci: u32) -> jarde_java::report::AnonymousAllocationCandidate {
+        jarde_java::report::AnonymousAllocationCandidate {
+            member: physical_method(),
+            head_bci: bci,
+            class: "Subject$1".to_owned(),
+            verified: true,
+            constructor_bci: Some(bci + 3),
+            argument_bcis: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn two_sites_in_the_same_method_are_not_one_unique_allocation() {
+        let method = physical_method();
+        let scans = [(
+            method.clone(),
+            Some(jarde_java::report::AnonymousAllocationScan {
+                complete: true,
+                allocations: vec![allocation(0), allocation(8)],
+            }),
+        )];
+        assert!(
+            unique_anonymous_allocation(&scans, std::slice::from_ref(&method), "Subject$1")
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn one_site_requires_a_complete_scan_and_verified_candidate() {
+        let method = physical_method();
+        let expected = std::slice::from_ref(&method);
+        let complete = [(
+            method.clone(),
+            Some(jarde_java::report::AnonymousAllocationScan {
+                complete: true,
+                allocations: vec![allocation(0)],
+            }),
+        )];
+        assert_eq!(
+            unique_anonymous_allocation(&complete, expected, "Subject$1").map(|site| site.head_bci),
+            Some(0)
+        );
+
+        let incomplete = [(
+            method.clone(),
+            Some(jarde_java::report::AnonymousAllocationScan {
+                complete: false,
+                allocations: vec![allocation(0)],
+            }),
+        )];
+        assert!(unique_anonymous_allocation(&incomplete, expected, "Subject$1").is_none());
+
+        let mut refused = allocation(0);
+        refused.verified = false;
+        let unverified = [(
+            method.clone(),
+            Some(jarde_java::report::AnonymousAllocationScan {
+                complete: true,
+                allocations: vec![refused],
+            }),
+        )];
+        assert!(unique_anonymous_allocation(&unverified, expected, "Subject$1").is_none());
+
+        let missing_method = PhysicalMethodId {
+            name: jarde_reader::model::JvmBytes(b"other".to_vec()),
+            ..method.clone()
+        };
+        assert!(
+            unique_anonymous_allocation(&complete, &[method.clone(), missing_method], "Subject$1")
+                .is_none()
+        );
     }
 }
 
@@ -5065,6 +5903,7 @@ struct PreparedMemberRecovery {
     generic_return: Option<jarde_java::report::GenericReturnCandidate>,
     generic_constructor: Option<jarde_java::report::GenericConstructorCandidate>,
     anonymous_allocations: Option<jarde_java::report::AnonymousAllocationScan>,
+    ast: Option<jarde_java::report::ClassSourceMethodAst>,
     enum_code: Option<crate::enum_constants::EnumMethodCodeCandidate>,
 }
 
@@ -5111,6 +5950,7 @@ struct PreparedMemberOptions {
     capture_enum_constructor_ast: bool,
     array_helper_census_needed: bool,
     capture_array_helper_use_table: bool,
+    capture_anonymous_child_asts: bool,
 }
 
 fn recover_prepared_member(
@@ -5159,6 +5999,7 @@ fn recover_prepared_member(
         generic_return,
         generic_constructor,
         anonymous_allocations,
+        ast,
     ) = recovery_presented_for_class_source(
         content,
         request,
@@ -5168,6 +6009,7 @@ fn recover_prepared_member(
         evidence,
         options.prove_generic_return,
         options.capture_enum_constructor_ast,
+        options.capture_anonymous_child_asts,
         budget,
     )?;
     // The constructor AST is an evidence handoff from this exact run. Keep it only when both the
@@ -5196,6 +6038,7 @@ fn recover_prepared_member(
         generic_return,
         generic_constructor,
         anonymous_allocations,
+        ast,
         enum_code: enum_code_candidate,
     })
 }
@@ -11364,7 +12207,7 @@ mod member_inner_target_tests {
             };
             let evidence = jarde_java::RecoveryEvidenceRequest::essential()
                 .with_kind(jarde_java::RecoveryEvidenceKind::RuleDetails);
-            let (detailed, _, _, _, _, _, _, generic_return, _, _) =
+            let (detailed, _, _, _, _, _, _, generic_return, _, _, _) =
                 recovery_from_with_class_candidates(
                     std::slice::from_ref(&snapshot),
                     &request,
@@ -11375,6 +12218,7 @@ mod member_inner_target_tests {
                     &mut test_budget(),
                     true,
                     true,
+                    false,
                     false,
                 )
                 .unwrap();
@@ -15911,6 +16755,7 @@ fn recovery_presented_for_class_source(
     evidence: &RecoveryEvidenceRequest,
     prove_generic_return: bool,
     capture_enum_constructor_ast: bool,
+    capture_anonymous_child_asts: bool,
     budget: &mut Budget,
 ) -> Result<(
     RecoveredMethod,
@@ -15923,6 +16768,7 @@ fn recovery_presented_for_class_source(
     Option<jarde_java::report::GenericReturnCandidate>,
     Option<jarde_java::report::GenericConstructorCandidate>,
     Option<jarde_java::report::AnonymousAllocationScan>,
+    Option<jarde_java::report::ClassSourceMethodAst>,
 )> {
     recovery_from_with_class_candidates(
         content,
@@ -15935,6 +16781,7 @@ fn recovery_presented_for_class_source(
         true,
         prove_generic_return,
         capture_enum_constructor_ast,
+        capture_anonymous_child_asts,
     )
 }
 
@@ -16014,8 +16861,9 @@ fn recovery_from(
         false,
         false,
         false,
+        false,
     )
-    .map(|(recovered, _, _, _, _, _, _, _, _, _)| recovered)
+    .map(|(recovered, _, _, _, _, _, _, _, _, _, _)| recovered)
 }
 
 fn recovery_from_with_class_candidates(
@@ -16029,6 +16877,7 @@ fn recovery_from_with_class_candidates(
     include_class_source_candidates: bool,
     prove_generic_return: bool,
     capture_enum_constructor_ast: bool,
+    retain_all_method_asts: bool,
 ) -> Result<(
     RecoveredMethod,
     Option<jarde_java::report::ClassInitializerCandidates>,
@@ -16040,6 +16889,7 @@ fn recovery_from_with_class_candidates(
     Option<jarde_java::report::GenericReturnCandidate>,
     Option<jarde_java::report::GenericConstructorCandidate>,
     Option<jarde_java::report::AnonymousAllocationScan>,
+    Option<jarde_java::report::ClassSourceMethodAst>,
 )> {
     let facts = crate::facade::recovery_facts(
         analyzed.ir().declaration(),
@@ -16107,6 +16957,9 @@ fn recovery_from_with_class_candidates(
         .with_subject(subject)
         .with_member_inner_targets(&member_inner_targets)
         .with_interface_super_calls(&interface_super_calls);
+    let prove_empty_anonymous_constructor = retain_all_method_asts
+        && request.facts.method().name() == "<init>"
+        && request.facts.method().descriptor() == "()V";
     let (
         mut recovery,
         initializer_candidates,
@@ -16118,13 +16971,16 @@ fn recovery_from_with_class_candidates(
         generic_return,
         generic_constructor,
         anonymous_allocations,
+        ast,
     ) = match &members {
         Some(members) if include_class_source_candidates => {
-            let result = jarde_java::report::recover_for_class_source(
+            let result = jarde_java::report::recover_for_class_source_with_anonymous_ast(
                 &request.with_members(members),
                 budget,
                 prove_generic_return || !member_inner_targets.is_empty(),
                 capture_enum_constructor_ast,
+                retain_all_method_asts,
+                prove_empty_anonymous_constructor,
             );
             (
                 result.report,
@@ -16137,14 +16993,17 @@ fn recovery_from_with_class_candidates(
                 result.generic_return,
                 result.generic_constructor,
                 result.anonymous_allocations,
+                result.ast,
             )
         }
         None if include_class_source_candidates => {
-            let result = jarde_java::report::recover_for_class_source(
+            let result = jarde_java::report::recover_for_class_source_with_anonymous_ast(
                 &request,
                 budget,
                 prove_generic_return || !member_inner_targets.is_empty(),
                 capture_enum_constructor_ast,
+                retain_all_method_asts,
+                prove_empty_anonymous_constructor,
             );
             (
                 result.report,
@@ -16157,6 +17016,7 @@ fn recovery_from_with_class_candidates(
                 result.generic_return,
                 result.generic_constructor,
                 result.anonymous_allocations,
+                result.ast,
             )
         }
         Some(members) => (
@@ -16170,9 +17030,11 @@ fn recovery_from_with_class_candidates(
             None,
             None,
             None,
+            None,
         ),
         None => (
             jarde_java::recover(&request, budget),
+            None,
             None,
             None,
             None,
@@ -16241,6 +17103,7 @@ fn recovery_from_with_class_candidates(
         generic_return,
         generic_constructor,
         anonymous_allocations,
+        ast,
     ))
 }
 
