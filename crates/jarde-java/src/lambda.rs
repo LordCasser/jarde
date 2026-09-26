@@ -93,11 +93,12 @@ use serde::Serialize;
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{
     Base, BaseType, BootstrapMethodFacts, CpEntryFacts, CpEntryKind, DescriptorComponent,
-    DescriptorCursor, DescriptorKind, cp_entry, descriptor_facts,
+    DescriptorCursor, DescriptorKind, MethodCodeFacts, cp_entry, descriptor_facts,
 };
+use jarde_reader::model::ExecutionReport;
 
 use crate::ast::Type;
-use crate::facts::DynamicSite;
+use crate::facts::{ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC, ClassMembers, DynamicSite};
 use crate::pass::{IrTable, LAMBDA, Precondition, RecoveryProfile, RuleVersion};
 use crate::stop::{StopReason, charge, poll};
 
@@ -233,6 +234,19 @@ pub(crate) struct Plan {
     pub(crate) reach: Reach,
     /// How many of the site's operands are the handle's leading arguments.
     pub(crate) captures: usize,
+    /// Exact same-class proof for a synthetic one-dimensional array constructor helper, when the
+    /// class member table states the helper's complete body.
+    #[allow(
+        dead_code,
+        reason = "task 2.3 consumes the proved target during emission"
+    )]
+    pub(crate) array_constructor: Option<ArrayConstructorProof>,
+}
+
+/// The exact array result proved from a selected synthetic helper's complete `Code` attribute.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ArrayConstructorProof {
+    pub(crate) array_type: Type,
 }
 
 /// The bounded conversions proved from one site's bootstrap descriptors.
@@ -400,10 +414,15 @@ impl LambdaRefusal {
 /// the run states one) and the type the frames state for it — `None` when this run states no type.
 /// Capture types must agree exactly with the site and implementation descriptors. A site whose
 /// captures are not *readable from this run's facts* is refused as well.
+#[allow(
+    clippy::too_many_arguments,
+    reason = "the one-site decision consumes its class, bootstrap, member, value-flow, profile and budget facts"
+)]
 pub(crate) fn plan(
     site: &DynamicSite,
     table: &[BootstrapMethodFacts],
     pool: &[CpEntryFacts],
+    members: Option<&ClassMembers>,
     captures: &[(Option<u32>, Option<Type>)],
     profile: &RecoveryProfile,
     budget: &mut Budget,
@@ -735,6 +754,7 @@ pub(crate) fn plan(
             });
         }
     };
+    let array_constructor = prove_array_constructor(&implementation, pool, members, budget, at)?;
     // A method reference has no expression slot where an erased SAM argument can receive its
     // conversions. Keep it only when both stages are identity. A bound receiver also carries a
     // creation-time null check; converting that reference to a lambda would defer the check until
@@ -771,8 +791,184 @@ pub(crate) fn plan(
             reach: implementation.reach(),
             implementation,
             captures: captures.len(),
+            array_constructor,
         }),
     })
+}
+
+/// Proves the narrow compiler helper used to implement an array-constructor method reference.
+///
+/// The name and flags only select a candidate. The proof comes from the exact member's descriptor
+/// and complete, handler-free instruction sequence in this class's own member table.
+fn prove_array_constructor(
+    implementation: &Member,
+    pool: &[CpEntryFacts],
+    members: Option<&ClassMembers>,
+    budget: &mut Budget,
+    at: u32,
+) -> Result<Option<ArrayConstructorProof>, StopReason> {
+    if implementation.kind != REF_INVOKE_STATIC || !implementation.is_generated_body() {
+        return Ok(None);
+    }
+    let Some(members) = members else {
+        return Ok(None);
+    };
+    if members.owner() != implementation.owner {
+        return Ok(None);
+    }
+
+    let mut selected = None;
+    for member in members.members() {
+        poll(budget, Some(at))?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+        if member.owner() == members.owner()
+            && member.name() == implementation.name
+            && member.descriptor() == implementation.descriptor
+        {
+            if selected.is_some() {
+                return Ok(None);
+            }
+            selected = Some(member);
+        }
+    }
+    let Some(member) = selected else {
+        return Ok(None);
+    };
+    let flags = member.access_flags();
+    if flags & (ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC)
+        != (ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC)
+    {
+        return Ok(None);
+    }
+    let Some(code) = member.code() else {
+        return Ok(None);
+    };
+    prove_array_constructor_code(&implementation.descriptor, code, pool, budget, at)
+}
+
+fn prove_array_constructor_code(
+    descriptor: &str,
+    code: &MethodCodeFacts,
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+    at: u32,
+) -> Result<Option<ArrayConstructorProof>, StopReason> {
+    poll(budget, Some(at))?;
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(descriptor.len()).unwrap_or(u64::MAX),
+        Some(at),
+    )?;
+    let Ok(method) = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Method) else {
+        return Ok(None);
+    };
+    let [length] = method.parameters() else {
+        return Ok(None);
+    };
+    if length.dimensions() != 0 || !matches!(length.base(), Base::Primitive(BaseType::Int)) {
+        return Ok(None);
+    }
+    let Some(result) = method.result() else {
+        return Ok(None);
+    };
+    if result.dimensions() != 1 {
+        return Ok(None);
+    }
+    let Some(array_type) = type_of_component(result) else {
+        return Ok(None);
+    };
+    if !matches!(&code.execution, ExecutionReport::Complete { .. })
+        || code.stopped_at.is_some()
+        || !code.exception_handlers.is_empty()
+        || code.exception_handler_count != 0
+        || code.max_locals < 1
+        || code.max_stack < 1
+        || code.instructions.len() != 3
+        || code.operands().len() != 3
+    {
+        return Ok(None);
+    }
+
+    let mut cursor = 0u64;
+    for fact in &code.instructions {
+        poll(budget, Some(at))?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+        if u64::from(fact.bci) != cursor {
+            return Ok(None);
+        }
+        cursor = cursor.saturating_add(u64::from(fact.width));
+    }
+    if cursor != code.code_span.length {
+        return Ok(None);
+    }
+
+    let [_, _, ret] = code.instructions.as_slice() else {
+        return Ok(None);
+    };
+    let [load_operands, allocation_operands, return_operands] = code.operands() else {
+        return Ok(None);
+    };
+    if load_operands.effective_opcode != 0x15
+        || load_operands.local.map(|local| local.index) != Some(0)
+        || allocation_operands.effective_opcode != 0xbc
+            && allocation_operands.effective_opcode != 0xbd
+        || ret.opcode != 0xb0
+    {
+        return Ok(None);
+    }
+    // No other typed operand may smuggle in an effect or a second value source.
+    if load_operands.constant_pool_index.is_some()
+        || load_operands.immediate.is_some()
+        || allocation_operands.local.is_some()
+        || allocation_operands.immediate.is_some()
+        || return_operands.local.is_some()
+        || return_operands.constant_pool_index.is_some()
+        || return_operands.immediate.is_some()
+        || return_operands.effective_opcode != 0xb0
+    {
+        return Ok(None);
+    }
+    if !array_allocation_matches(result, allocation_operands, pool) {
+        return Ok(None);
+    }
+    Ok(Some(ArrayConstructorProof { array_type }))
+}
+
+fn array_allocation_matches(
+    result: &DescriptorComponent,
+    allocation: &jarde_reader::classfile::InstructionOperands,
+    pool: &[CpEntryFacts],
+) -> bool {
+    match (result.base(), allocation.effective_opcode) {
+        (Base::Primitive(base), 0xbc) => {
+            let expected = match base {
+                BaseType::Boolean => 4,
+                BaseType::Char => 5,
+                BaseType::Float => 6,
+                BaseType::Double => 7,
+                BaseType::Byte => 8,
+                BaseType::Short => 9,
+                BaseType::Int => 10,
+                BaseType::Long => 11,
+            };
+            result.dimensions() == 1
+                && allocation.atype == Some(expected)
+                && allocation.constant_pool_index.is_none()
+        }
+        (Base::Object(object), 0xbd) => {
+            let Some(index) = allocation.constant_pool_index else {
+                return false;
+            };
+            let Ok(CpEntryKind::Class { name, .. }) =
+                cp_entry(pool, index).map(|entry| &entry.kind)
+            else {
+                return false;
+            };
+            result.dimensions() == 1 && name == object && allocation.atype.is_none()
+        }
+        _ => false,
+    }
 }
 
 type ParsedMethodDescriptor = (Vec<Type>, Option<Type>);
@@ -1165,9 +1361,16 @@ pub(crate) fn parse_type(bytes: &[u8], at: usize) -> Option<(Type, usize)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::facts::{ClassMembers, MemberBody};
     use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
-    use jarde_reader::classfile::{CpEntryFacts, CpEntryKind};
-    use jarde_reader::model::{ByteSpan, JvmBytes};
+    use jarde_reader::classfile::{
+        CpEntryFacts, CpEntryKind, InstructionFact, InstructionOperands, LocalOperand,
+        MethodCodeFacts,
+    };
+    use jarde_reader::model::{
+        ByteSpan, ClassBytesId, Digest, ExecutionReport, JvmBytes, PhysicalClassLocation,
+        PhysicalDefinitionId, PhysicalMethodId, PhysicalVariant, SnapshotId,
+    };
 
     fn adaptation_plan_for_test(
         sam_parameters: &[Type],
@@ -1197,6 +1400,285 @@ mod tests {
         }
     }
 
+    fn unlimited_budget() -> Budget {
+        Budget::new(Limits {
+            analysis_steps: u64::MAX,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        })
+    }
+
+    fn array_helper_code(atype: u8) -> MethodCodeFacts {
+        let load = InstructionOperands {
+            effective_opcode: 0x15,
+            local: Some(LocalOperand {
+                index: 0,
+                wide: false,
+            }),
+            ..InstructionOperands::default()
+        };
+        let allocation = InstructionOperands {
+            effective_opcode: 0xbc,
+            atype: Some(atype),
+            ..InstructionOperands::default()
+        };
+        let ret = InstructionOperands {
+            effective_opcode: 0xb0,
+            ..InstructionOperands::default()
+        };
+        let fact = |bci, opcode, width| InstructionFact {
+            bci,
+            opcode,
+            width,
+            span: ByteSpan::new(u64::from(bci), u64::from(width)),
+            operands_span: ByteSpan::new(u64::from(bci), u64::from(width)),
+            constant_pool_index: None,
+        };
+        MethodCodeFacts::from_parts(
+            1,
+            1,
+            ByteSpan::new(0, 4),
+            vec![
+                (fact(0, 0x1a, 1), load),
+                (fact(1, 0xbc, 2), allocation),
+                (fact(3, 0xb0, 1), ret),
+            ],
+            vec![],
+            0,
+            ExecutionReport::Complete {
+                usage: Default::default(),
+            },
+            None,
+            jarde_reader::classfile::LocalDebugTable::Absent,
+        )
+    }
+
+    fn class_members_for_helper(code: Option<MethodCodeFacts>, flags: u16) -> ClassMembers {
+        class_members_for("lambda$arrayCtor$0", "(I)[I", code, flags)
+    }
+
+    fn class_members_for(
+        name: &str,
+        descriptor: &str,
+        code: Option<MethodCodeFacts>,
+        flags: u16,
+    ) -> ClassMembers {
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: SnapshotId("test-snapshot".to_string()),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest("test-digest".to_string()),
+                length: 0,
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let identity = PhysicalMethodId {
+            owner: definition,
+            name: JvmBytes(name.as_bytes().to_vec()),
+            descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+        };
+        let member = match code {
+            Some(code) => MemberBody::new("test/Target", identity, flags, code),
+            None => MemberBody::without_body("test/Target", identity, flags),
+        };
+        ClassMembers::new("test/Target", vec![member])
+    }
+
+    #[test]
+    fn array_constructor_proof_requires_exact_member_and_complete_effect_free_code() {
+        let implementation = Member {
+            kind: REF_INVOKE_STATIC,
+            owner: "test/Target".to_string(),
+            name: "lambda$arrayCtor$0".to_string(),
+            descriptor: "(I)[I".to_string(),
+        };
+        let flags = ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC;
+        let pool = [];
+        let mut budget = unlimited_budget();
+        let members = class_members_for_helper(Some(array_helper_code(10)), flags);
+        let proof =
+            prove_array_constructor(&implementation, &pool, Some(&members), &mut budget, 19)
+                .expect("exact member facts stay within budget")
+                .expect("the helper has the exact int-array allocation sequence");
+        assert_eq!(proof.array_type, Type::Reference("int[]".to_string()));
+
+        let mut bounded = Budget::new(Limits {
+            analysis_steps: 0,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            prove_array_constructor(&implementation, &pool, Some(&members), &mut bounded, 19),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                written: 0,
+                limit: 0,
+                at: Some(19),
+            })
+        ));
+        assert_eq!(bounded.usage().analysis_steps, 0);
+
+        let planned = plan_for_named_test(
+            "()Ljava/util/function/Function;",
+            "(Ljava/lang/Object;)Ljava/lang/Object;",
+            REF_INVOKE_STATIC,
+            "(I)[I",
+            "(Ljava/lang/Integer;)[I",
+            &[],
+            "lambda$arrayCtor$0",
+            Some(&members),
+        );
+        let plan = planned.outcome.expect("the SAM adaptation remains proved");
+        assert_eq!(plan.array_constructor, Some(proof.clone()));
+
+        // Method-only requests retain the generic lambda plan but cannot claim an array target.
+        let method_only = plan_for_named_test(
+            "()Ljava/util/function/Function;",
+            "(Ljava/lang/Object;)Ljava/lang/Object;",
+            REF_INVOKE_STATIC,
+            "(I)[I",
+            "(Ljava/lang/Integer;)[I",
+            &[],
+            "lambda$arrayCtor$0",
+            None,
+        );
+        let method_only = method_only
+            .outcome
+            .expect("descriptor adaptation is independent");
+        assert!(method_only.array_constructor.is_none());
+
+        let mut budget = unlimited_budget();
+        assert!(
+            prove_array_constructor(&implementation, &pool, None, &mut budget, 19,)
+                .expect("missing members is a conservative non-proof")
+                .is_none()
+        );
+
+        let mut budget = unlimited_budget();
+        let name_only = class_members_for_helper(None, flags);
+        assert!(
+            prove_array_constructor(&implementation, &pool, Some(&name_only), &mut budget, 19,)
+                .expect("a missing body is not a parse failure")
+                .is_none()
+        );
+
+        let mut budget = unlimited_budget();
+        let wrong_flags =
+            class_members_for_helper(Some(array_helper_code(10)), ACC_PRIVATE | ACC_STATIC);
+        assert!(
+            prove_array_constructor(&implementation, &pool, Some(&wrong_flags), &mut budget, 19,)
+                .expect("a non-synthetic member cannot be claimed as the helper")
+                .is_none()
+        );
+
+        let mut budget = unlimited_budget();
+        let wrong_type = class_members_for_helper(Some(array_helper_code(8)), flags);
+        assert!(
+            prove_array_constructor(&implementation, &pool, Some(&wrong_type), &mut budget, 19,)
+                .expect("mismatched primitive atype is a failed proof")
+                .is_none()
+        );
+
+        let mut extra_effect = array_helper_code(10);
+        let mut instructions = extra_effect
+            .instructions
+            .iter()
+            .cloned()
+            .zip(extra_effect.operands().iter().cloned())
+            .collect::<Vec<_>>();
+        instructions.push((
+            InstructionFact {
+                bci: 4,
+                opcode: 0x00,
+                width: 1,
+                span: ByteSpan::new(4, 1),
+                operands_span: ByteSpan::new(4, 1),
+                constant_pool_index: None,
+            },
+            InstructionOperands {
+                effective_opcode: 0x00,
+                ..InstructionOperands::default()
+            },
+        ));
+        extra_effect = MethodCodeFacts::from_parts(
+            1,
+            1,
+            ByteSpan::new(0, 5),
+            instructions,
+            vec![],
+            0,
+            ExecutionReport::Complete {
+                usage: Default::default(),
+            },
+            None,
+            jarde_reader::classfile::LocalDebugTable::Absent,
+        );
+        let mut budget = unlimited_budget();
+        let extra_effect = class_members_for_helper(Some(extra_effect), flags);
+        assert!(
+            prove_array_constructor(&implementation, &pool, Some(&extra_effect), &mut budget, 19,)
+                .expect("an extra opcode is a failed proof")
+                .is_none()
+        );
+
+        let mut budget = unlimited_budget();
+        let wrong_parameter = class_members_for(
+            "lambda$arrayCtor$0",
+            "(J)[I",
+            Some(array_helper_code(10)),
+            flags,
+        );
+        assert!(
+            prove_array_constructor(
+                &implementation,
+                &pool,
+                Some(&wrong_parameter),
+                &mut budget,
+                19
+            )
+            .expect("wrong helper parameter is a non-proof")
+            .is_none()
+        );
+
+        let mut budget = unlimited_budget();
+        let mut handler_code = array_helper_code(10);
+        handler_code = MethodCodeFacts::from_parts(
+            handler_code.max_stack,
+            handler_code.max_locals,
+            handler_code.code_span.clone(),
+            handler_code
+                .instructions
+                .iter()
+                .cloned()
+                .zip(handler_code.operands().iter().cloned())
+                .collect(),
+            vec![jarde_reader::classfile::ExceptionHandlerFact {
+                ordinal: 0,
+                start_bci: 0,
+                end_bci: 1,
+                handler_bci: 3,
+                catch_type_index: None,
+            }],
+            1,
+            handler_code.execution.clone(),
+            None,
+            jarde_reader::classfile::LocalDebugTable::Absent,
+        );
+        let handler_members = class_members_for_helper(Some(handler_code), flags);
+        assert!(
+            prove_array_constructor(
+                &implementation,
+                &pool,
+                Some(&handler_members),
+                &mut budget,
+                19
+            )
+            .expect("handlers are a non-proof, never inferred over")
+            .is_none()
+        );
+    }
+
     fn method_ref(owner: &str, name: &str, descriptor: &str) -> CpEntryKind {
         CpEntryKind::MethodRef {
             class_index: 0,
@@ -1214,6 +1696,29 @@ mod tests {
         implementation_descriptor: &str,
         instantiated_descriptor: &str,
         captures: &[(Option<u32>, Option<Type>)],
+    ) -> Verdict {
+        plan_for_named_test(
+            site_descriptor,
+            sam_descriptor,
+            implementation_kind,
+            implementation_descriptor,
+            instantiated_descriptor,
+            captures,
+            "apply",
+            None,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn plan_for_named_test(
+        site_descriptor: &str,
+        sam_descriptor: &str,
+        implementation_kind: u8,
+        implementation_descriptor: &str,
+        instantiated_descriptor: &str,
+        captures: &[(Option<u32>, Option<Type>)],
+        implementation_name: &str,
+        members: Option<&ClassMembers>,
     ) -> Verdict {
         let pool = vec![
             cp(
@@ -1240,7 +1745,11 @@ mod tests {
             ),
             cp(
                 5,
-                method_ref("test/Target", "apply", implementation_descriptor),
+                method_ref(
+                    "test/Target",
+                    implementation_name,
+                    implementation_descriptor,
+                ),
             ),
             cp(
                 6,
@@ -1264,6 +1773,7 @@ mod tests {
             &site,
             &bootstraps,
             &pool,
+            members,
             captures,
             &crate::pass::JAVA_8,
             &mut budget,
@@ -1446,6 +1956,7 @@ mod tests {
             &site,
             &bootstraps,
             &pool,
+            None,
             &captures,
             &crate::pass::JAVA_8,
             &mut budget,
@@ -1475,6 +1986,7 @@ mod tests {
             &site,
             &bootstraps,
             &pool,
+            None,
             &captures,
             &crate::pass::JAVA_8,
             &mut cancelled,
