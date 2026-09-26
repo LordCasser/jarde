@@ -1,0 +1,9 @@
+precise-normal=return:23:trace=
+precise-parse=throw:java.text.ParseException:parse:trace=java.text.ParseException/parse|
+precise-io=throw:java.io.IOException:io:trace=java.io.IOException/io|
+finally-normal=return:17:trace=finally|
+finally-throw=throw:java.lang.IllegalStateException:finally-body:trace=finally|
+multi-parse=throw:java.text.ParseException:multi-parse:trace=java.text.ParseException/multi-parse|
+multi-io=throw:java.io.IOException:multi-io:trace=java.io.IOException/multi-io|
+changed-normal=return:31:trace=
+changed-replacement=throw:java.lang.IllegalStateException:replacement:trace=java.io.IOException/input|

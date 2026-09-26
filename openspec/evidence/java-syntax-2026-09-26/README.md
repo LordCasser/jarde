@@ -46,3 +46,4 @@
 - `jadx-Patrol.java`：jadx 1.5.6 输出（偏离如上表）。
 - `javap.txt`：全类反汇编。
 - `multi-resource-twr/README.md`: self-contained two-resource fixture, Java 8/current-JDK exception-row layouts, verifier-valid wrong-end negative control, deterministic runtime cases, and available JADX/Jarde comparisons.
+- `precise-rethrow/analysis.md`：具名 catch 精确重抛与 finally 候选的三方对照、来源锚点、Java 8 重编运行结果及保守边界。

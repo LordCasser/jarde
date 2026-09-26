@@ -1,0 +1,329 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-precise-rethrow/v8/PreciseRethrowBoundaryProbe.class
+  Last modified 2026年9月26日; size 1813 bytes
+  SHA-256 checksum 2daac6f9eaa5c115d4cefb2246cc031e9b8985b88cd95d7d5f3fd75cb268603b
+  Compiled from "PreciseRethrowBoundaryProbe.java"
+public final class PreciseRethrowBoundaryProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #11                         // PreciseRethrowBoundaryProbe
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 7, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // java/lang/StringBuilder
+   #8 = Utf8               java/lang/StringBuilder
+   #9 = Methodref          #7.#3          // java/lang/StringBuilder."<init>":()V
+  #10 = Fieldref           #11.#12        // PreciseRethrowBoundaryProbe.trace:Ljava/lang/String;
+  #11 = Class              #13            // PreciseRethrowBoundaryProbe
+  #12 = NameAndType        #14:#15        // trace:Ljava/lang/String;
+  #13 = Utf8               PreciseRethrowBoundaryProbe
+  #14 = Utf8               trace
+  #15 = Utf8               Ljava/lang/String;
+  #16 = Methodref          #7.#17         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #17 = NameAndType        #18:#19        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #18 = Utf8               append
+  #19 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #20 = Methodref          #2.#21         // java/lang/Object.getClass:()Ljava/lang/Class;
+  #21 = NameAndType        #22:#23        // getClass:()Ljava/lang/Class;
+  #22 = Utf8               getClass
+  #23 = Utf8               ()Ljava/lang/Class;
+  #24 = Methodref          #25.#26        // java/lang/Class.getName:()Ljava/lang/String;
+  #25 = Class              #27            // java/lang/Class
+  #26 = NameAndType        #28:#29        // getName:()Ljava/lang/String;
+  #27 = Utf8               java/lang/Class
+  #28 = Utf8               getName
+  #29 = Utf8               ()Ljava/lang/String;
+  #30 = String             #31            // /
+  #31 = Utf8               /
+  #32 = Methodref          #33.#34        // java/lang/Exception.getMessage:()Ljava/lang/String;
+  #33 = Class              #35            // java/lang/Exception
+  #34 = NameAndType        #36:#29        // getMessage:()Ljava/lang/String;
+  #35 = Utf8               java/lang/Exception
+  #36 = Utf8               getMessage
+  #37 = String             #38            // |
+  #38 = Utf8               |
+  #39 = Methodref          #7.#40         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #40 = NameAndType        #41:#29        // toString:()Ljava/lang/String;
+  #41 = Utf8               toString
+  #42 = Class              #43            // java/lang/IllegalStateException
+  #43 = Utf8               java/lang/IllegalStateException
+  #44 = String             #45            // finally-body
+  #45 = Utf8               finally-body
+  #46 = Methodref          #42.#47        // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #47 = NameAndType        #5:#48         // "<init>":(Ljava/lang/String;)V
+  #48 = Utf8               (Ljava/lang/String;)V
+  #49 = String             #50            // finally
+  #50 = Utf8               finally
+  #51 = Methodref          #11.#52        // PreciseRethrowBoundaryProbe.log:(Ljava/lang/String;)V
+  #52 = NameAndType        #53:#48        // log:(Ljava/lang/String;)V
+  #53 = Utf8               log
+  #54 = Class              #55            // java/text/ParseException
+  #55 = Utf8               java/text/ParseException
+  #56 = String             #57            // multi-parse
+  #57 = Utf8               multi-parse
+  #58 = Methodref          #54.#59        // java/text/ParseException."<init>":(Ljava/lang/String;I)V
+  #59 = NameAndType        #5:#60         // "<init>":(Ljava/lang/String;I)V
+  #60 = Utf8               (Ljava/lang/String;I)V
+  #61 = Class              #62            // java/io/IOException
+  #62 = Utf8               java/io/IOException
+  #63 = String             #64            // multi-io
+  #64 = Utf8               multi-io
+  #65 = Methodref          #61.#47        // java/io/IOException."<init>":(Ljava/lang/String;)V
+  #66 = Methodref          #11.#67        // PreciseRethrowBoundaryProbe.log:(Ljava/lang/Exception;)V
+  #67 = NameAndType        #53:#68        // log:(Ljava/lang/Exception;)V
+  #68 = Utf8               (Ljava/lang/Exception;)V
+  #69 = String             #70            // input
+  #70 = Utf8               input
+  #71 = String             #72            // replacement
+  #72 = Utf8               replacement
+  #73 = String             #74            //
+  #74 = Utf8
+  #75 = Utf8               Code
+  #76 = Utf8               LineNumberTable
+  #77 = Utf8               LocalVariableTable
+  #78 = Utf8               this
+  #79 = Utf8               LPreciseRethrowBoundaryProbe;
+  #80 = Utf8               exception
+  #81 = Utf8               Ljava/lang/Exception;
+  #82 = Utf8               text
+  #83 = Utf8               anyFinally
+  #84 = Utf8               (I)I
+  #85 = Utf8               mode
+  #86 = Utf8               I
+  #87 = Utf8               StackMapTable
+  #88 = Class              #89            // java/lang/Throwable
+  #89 = Utf8               java/lang/Throwable
+  #90 = Utf8               multiCatch
+  #91 = Utf8               e
+  #92 = Utf8               Exceptions
+  #93 = Utf8               changedValue
+  #94 = Utf8               <clinit>
+  #95 = Utf8               SourceFile
+  #96 = Utf8               PreciseRethrowBoundaryProbe.java
+{
+  static java.lang.String trace;
+    descriptor: Ljava/lang/String;
+    flags: (0x0008) ACC_STATIC
+
+  public PreciseRethrowBoundaryProbe();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 4: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LPreciseRethrowBoundaryProbe;
+
+  static void log(java.lang.Exception);
+    descriptor: (Ljava/lang/Exception;)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #7                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #10                 // Field trace:Ljava/lang/String;
+        10: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        13: aload_0
+        14: invokevirtual #20                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        17: invokevirtual #24                 // Method java/lang/Class.getName:()Ljava/lang/String;
+        20: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        23: ldc           #30                 // String /
+        25: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        28: aload_0
+        29: invokevirtual #32                 // Method java/lang/Exception.getMessage:()Ljava/lang/String;
+        32: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        35: ldc           #37                 // String |
+        37: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        40: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        43: putstatic     #10                 // Field trace:Ljava/lang/String;
+        46: return
+      LineNumberTable:
+        line 8: 0
+        line 9: 46
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      47     0 exception   Ljava/lang/Exception;
+
+  static void log(java.lang.String);
+    descriptor: (Ljava/lang/String;)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #7                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #10                 // Field trace:Ljava/lang/String;
+        10: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        13: aload_0
+        14: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        17: ldc           #37                 // String |
+        19: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        22: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        25: putstatic     #10                 // Field trace:Ljava/lang/String;
+        28: return
+      LineNumberTable:
+        line 12: 0
+        line 13: 28
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      29     0  text   Ljava/lang/String;
+
+  static int anyFinally(int);
+    descriptor: (I)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=1
+         0: iload_0
+         1: ifeq          14
+         4: new           #42                 // class java/lang/IllegalStateException
+         7: dup
+         8: ldc           #44                 // String finally-body
+        10: invokespecial #46                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        13: athrow
+        14: bipush        17
+        16: istore_1
+        17: ldc           #49                 // String finally
+        19: invokestatic  #51                 // Method log:(Ljava/lang/String;)V
+        22: iload_1
+        23: ireturn
+        24: astore_2
+        25: ldc           #49                 // String finally
+        27: invokestatic  #51                 // Method log:(Ljava/lang/String;)V
+        30: aload_2
+        31: athrow
+      Exception table:
+         from    to  target type
+             0    17    24   any
+      LineNumberTable:
+        line 17: 0
+        line 18: 14
+        line 20: 17
+        line 18: 22
+        line 20: 24
+        line 21: 30
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      32     0  mode   I
+      StackMapTable: number_of_entries = 2
+        frame_type = 14 /* same */
+        frame_type = 73 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+
+  static int multiCatch(int) throws java.text.ParseException, java.io.IOException;
+    descriptor: (I)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=4, locals=2, args_size=1
+         0: iload_0
+         1: iconst_1
+         2: if_icmpne     16
+         5: new           #54                 // class java/text/ParseException
+         8: dup
+         9: ldc           #56                 // String multi-parse
+        11: iconst_5
+        12: invokespecial #58                 // Method java/text/ParseException."<init>":(Ljava/lang/String;I)V
+        15: athrow
+        16: iload_0
+        17: iconst_2
+        18: if_icmpne     31
+        21: new           #61                 // class java/io/IOException
+        24: dup
+        25: ldc           #63                 // String multi-io
+        27: invokespecial #65                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+        30: athrow
+        31: bipush        29
+        33: ireturn
+        34: astore_1
+        35: aload_1
+        36: invokestatic  #66                 // Method log:(Ljava/lang/Exception;)V
+        39: aload_1
+        40: athrow
+      Exception table:
+         from    to  target type
+             0    33    34   Class java/text/ParseException
+             0    33    34   Class java/io/IOException
+      LineNumberTable:
+        line 26: 0
+        line 27: 16
+        line 28: 31
+        line 29: 34
+        line 30: 35
+        line 31: 39
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           35       6     1     e   Ljava/lang/Exception;
+            0      41     0  mode   I
+      StackMapTable: number_of_entries = 3
+        frame_type = 16 /* same */
+        frame_type = 14 /* same */
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Exception ]
+    Exceptions:
+      throws java.text.ParseException, java.io.IOException
+
+  static int changedValue(int) throws java.lang.Exception;
+    descriptor: (I)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: iload_0
+         1: ifeq          14
+         4: new           #61                 // class java/io/IOException
+         7: dup
+         8: ldc           #69                 // String input
+        10: invokespecial #65                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+        13: athrow
+        14: bipush        31
+        16: ireturn
+        17: astore_1
+        18: aload_1
+        19: invokestatic  #66                 // Method log:(Ljava/lang/Exception;)V
+        22: new           #42                 // class java/lang/IllegalStateException
+        25: dup
+        26: ldc           #71                 // String replacement
+        28: invokespecial #46                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        31: athrow
+      Exception table:
+         from    to  target type
+             0    16    17   Class java/lang/Exception
+      LineNumberTable:
+        line 37: 0
+        line 38: 14
+        line 39: 17
+        line 40: 18
+        line 41: 22
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           18      14     1     e   Ljava/lang/Exception;
+            0      32     0  mode   I
+      StackMapTable: number_of_entries = 2
+        frame_type = 14 /* same */
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Exception ]
+    Exceptions:
+      throws java.lang.Exception
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #73                 // String
+         2: putstatic     #10                 // Field trace:Ljava/lang/String;
+         5: return
+      LineNumberTable:
+        line 5: 0
+}
+SourceFile: "PreciseRethrowBoundaryProbe.java"

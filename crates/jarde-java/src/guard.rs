@@ -1282,6 +1282,12 @@ fn monitor_handler(
 /// Whether the row's handler is the `finally` copy: store the exception, run code, rethrow it — and
 /// nothing anywhere in the handler that closes, suppresses or leaves a monitor.
 fn finally_copy(facts: &Facts<'_>, row: &ExceptionHandlerFact) -> Option<u32> {
+    // javac emits the exceptional copy of a `finally` only for an any row. A named handler can
+    // have the same store/body/load/throw shape while being an ordinary catch (including precise
+    // rethrow), so its type must be checked before classifying the handler's bytecode shape.
+    if row.catch_type_index.is_some() {
+        return None;
+    }
     let entry = facts.row_handler(row)?;
     // The copy runs straight: one block, or a chain of blocks, ending in the `athrow`.
     let mut blocks = vec![entry.clone()];
