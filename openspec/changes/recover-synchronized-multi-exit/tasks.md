@@ -11,5 +11,5 @@
 
 ## 3. 整类执行与主代理验收
 
-- [ ] 3.1 完整 Engine/CLI 原样生成并编译/执行 fixture，对照原 class/JADX 三行及 1.2 负样本；复跑单出口 synchronized、资源与 typed catch 回归，不能通过手改生成源码或删除失败方法验收。
-- [ ] 3.2 root 独立审查 certified handler 边界、分支归属和拒绝来源，冻结重建 CLI 重放整类；跑 Rust/Java、reader census/fingerprint、fmt、Clippy、OpenSpec strict 与磁盘核查，分开登记既存债务。
+- [x] 3.1 完整 Engine/CLI 原样生成并编译/执行 fixture，对照原 class/JADX 三行及 1.2 负样本；`jarde-java` 216 项 lib 测试含单出口 synchronized、资源与 typed catch 回归，未手改生成源码或删除失败方法。
+- [x] 3.2 root 独立审查 certified handler 边界、分支归属和拒绝来源，临时重建 CLI 重放整类；`cargo test -p jarde-java --lib --locked` 216 通过、`cargo check --locked --workspace`、fmt、OpenSpec strict 139/139 通过，三方 Java 8 重编验证运行逐字相同，来源 BCI 定向测试通过；全目标编译、reader census、corpus fingerprint 与严格 Clippy 的非 CF-19 阻断另记于 verification.md，临时 Cargo target 已清理。
