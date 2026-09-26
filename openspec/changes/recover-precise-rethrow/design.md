@@ -8,13 +8,13 @@
 
 **Goals:** 具名行的参数重抛子句按普通用户 catch 呈现；finally 候选加上 `catch_type == 0` 前置；三方对照与受控执行证据。
 
-**Non-Goals:** 多捕获并集类型；`catch_type == 0` 行的任何改写；一般 handler 体 `throw` 新形状；`Exceptions` 属性拼写规则改动。
+**Non-Goals:** 新增多捕获并集类型的证明器；`catch_type == 0` 行的任何改写；一般 handler 体 `throw` 新形状；`Exceptions` 属性拼写规则改动。
 
 ## Decisions
 
 1. **catch_type 前置条件。** `finally_copy` 入口先判 `catch_type == 0`；具名行直接返回 `None`。这是最小且语义正确的判别：合成拷贝的到达边只有 any 行（老编译器的 `jsr` 路径不在本层支持范围）。备选「比较重抛值与 try 体抛出类型集合」需要跨方法数据流，拒绝。
 2. **重抛子句的呈现。** handler 末条 `athrow` 的操作数与入口存储同一槽位时，子句体末写 `throw <参数名>;`——`recover-throw-statements` 的 throw 语句路径复用，值是 catch 子句已声明的参数局部，无新声明、无新转换。参数名沿用 `names` 的既定拼写（无 LVT 时按序数）。
-3. **单一行前提。** handler 入口唯一行才适用；多行到达（多捕获）保持今天的行为，留给独立 change。
+3. **单一行正例。** 本变更的精确重抛正例只有一条具名行。多行到达（多捕获）不会再被具名行的假 finally 候选拦截，而是进入现有 catch 路径；其已证明的并集子句与 `throw` 语句可以呈现，未证明的转换仍按既有规则引用。不得添加只为保留旧误判的多行阻断，也不新增多捕获机制。
 4. **不改动 TWR/monitor。** `close_of_level`、monitor 行的拥有权规则原样；本 change 只让具名行不再进 finally 候选。
 
 ## Risks / Trade-offs
