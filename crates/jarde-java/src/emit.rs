@@ -186,6 +186,7 @@ pub(crate) fn emit_class_source_anonymous_return(
     allocation_type: &str,
     source_type: &str,
     methods: &str,
+    hidden_outer_argument_bci: Option<u32>,
     closing_indent: &str,
     budget: &mut Budget,
 ) -> Result<(String, bool), StopReason> {
@@ -195,6 +196,7 @@ pub(crate) fn emit_class_source_anonymous_return(
         allocation_type,
         source_type,
         methods,
+        hidden_outer_argument_bci,
         closing_indent,
     });
     match emitter.stmts(statements, indentation) {
@@ -355,6 +357,7 @@ struct AnonymousOverride<'a> {
     allocation_type: &'a str,
     source_type: &'a str,
     methods: &'a str,
+    hidden_outer_argument_bci: Option<u32>,
     closing_indent: &'a str,
 }
 
@@ -1007,11 +1010,15 @@ impl<'a> Emitter<'a> {
                     emitter.put("new ", at)?;
                     emitter.put(override_.source_type, at)?;
                     emitter.put("(", at)?;
-                    for (index, arg) in args.iter().enumerate() {
-                        if index > 0 {
+                    let mut first = true;
+                    for arg in args.iter().filter(|arg| {
+                        Some(arg.origin.primary().bci()) != override_.hidden_outer_argument_bci
+                    }) {
+                        if !first {
                             emitter.put(", ", at)?;
                         }
                         emitter.expr(arg)?;
+                        first = false;
                     }
                     emitter.put(") {\n", at)?;
                     emitter.put(override_.methods, at)?;

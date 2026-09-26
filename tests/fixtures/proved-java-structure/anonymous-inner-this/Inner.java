@@ -15,7 +15,7 @@ public class Inner {
     public static void main(String[] args) {
         Inner inner = new Inner();
         inner.make().run();
-        System.out.println(observed == inner);
+        System.out.println(observed.equals(inner));
         System.out.println(inner.f);
     }
 }
