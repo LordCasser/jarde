@@ -6,7 +6,9 @@
 
 - [x] 2.1 将提前的栈形状门限于精确捕获，`lambda.rs` 逐槽证明 SAM→instantiated→impl 的参数与反向返回转换（含装箱/拆箱）；arity/错误类型对/静态性负例保持拒绝，现有 Object 与捕获路径不退化。[Root 验收与既存预算测试债务](verification-2.1.md)
 - [x] 2.2 从现有同类 `ClassMembers` 精确选定合成 impl，证明完整无 handler 的参数 load→目标数组分配→return、数组类型与长度参数；名称/flag-only、额外效果、错误类型、缺成员事实控制拒绝。[Root 验收](verification-2.2.md)
-- [ ] 2.3 Builder 对已证数组 impl 发 `T[]::new`；其它装箱 SAM 使用点恢复含箭头调用的语句，来源 BCI 锚点与合成方法物理报告保留；重编译检查同名合成方法无冲突。
+- [ ] 2.3a 从同次 IR 的 LambdaMetafactory BSM 精确提取同类合成 impl MethodHandle 候选，追加到既有按需 callee 读取并复用已准备的类、预算和物理身份；实际 class-source/method-only 站点能把 helper Code 交给 2.2 证明，名称/flag-only 与缺失事实仍不能触发数组投影。
+- [ ] 2.3b Builder 仅对已证数组 impl 发 `T[]::new`；其它装箱 SAM 使用点恢复含箭头调用的语句，来源 BCI 锚点与合成方法物理报告保留。真实 fixture 的方法级文本与类级暂存文本均验证，不以单元构造的 ClassMembers 代替集成证明。
+- [ ] 2.3c 对同名 helper 做类级原子投影：选定范围的用途证据完整且每一使用均已投影时才从**类源码**省略物理声明，JSON/方法级报告不变；其它使用、缺覆盖、预算/取消时保留合成调用与声明，无 javac 符号冲突或半投影。用真正同名的 `arrayCtor`/`lambda$arrayCtor$0` Java 8 重编验证。
 
 ## 3. 对照与门禁
 

@@ -11,8 +11,9 @@ jadx 1.5.6 同场景完整呈现箭头（`dispatch(this::supply, Patrol::staticR
 
 ## What Changes
 
-- lambda/方法引用站点的适配证明新增两类已证明形状：(a) 擦除 SAM → instantiated → impl 的同 arity 逐槽配对，包含「基本类型 ↔ 其唯一包装类」的装箱/拆箱（int/Integer、long/Long、float/Float、double/Double、byte/Byte、short/Short、char/Character、boolean/Boolean）；(b) 读取同一物理类的合成 impl Code，完整证明其只是从参数建立目标数组后返回，才准把使用点写成数组构造器引用。
+- lambda/方法引用站点的适配证明新增两类已证明形状：(a) 擦除 SAM → instantiated → impl 的同 arity 逐槽配对，包含「基本类型 ↔ 其唯一包装类」的装箱/拆箱（int/Integer、long/Long、float/Float、double/Double、byte/Byte、short/Short、char/Character、boolean/Boolean）；(b) 从同次 BSM 的精确 MethodHandle 追加按需成员候选，读取同一物理类的合成 impl Code，完整证明其只是从参数建立目标数组后返回，才准把使用点写成数组构造器引用。
 - 箭头文本不变（`this::supply`、`int[]::new` 等）：适配在源码中不可见，改变的只是证明接受的形状集。
+- 类级源码在证明合成数组 helper 没有其它未投影使用后才省略它的物理声明，避免 javac 重新生成同名 helper 时发生符号冲突；方法/JSON 报告继续保留物理成员。
 - arity 不一致、非互转类型对（如 `String`↔`int`）、静态性不匹配、impl 读取不到时保持既有拒绝。
 - 自写 fixture 三方对照与重编译执行（通过 SAM 调用观察装箱适配的值与异常）。
 
@@ -28,6 +29,6 @@ jadx 1.5.6 同场景完整呈现箭头（`dispatch(this::supply, Patrol::staticR
 
 ## Impact
 
-实现集中在 `crates/jarde-java/src/lambda.rs`（两段适配配对判定）及现有同类成员 Code 事实接缝；数组构造器的已证 Code 交给 `build.rs` 的原箭头发射器。捕获适配、创建时求值路径不变；不新增公开 pass、crate 或生产依赖。
+实现集中在 `crates/jarde-java/src/lambda.rs`（两段适配配对判定）、`src/facade.rs` 的既有按需 callee 候选/类装配接缝及 `build.rs` 的原箭头发射器。捕获适配、创建时求值路径不变；不新增公开 pass、crate 或生产依赖。
 
 非目标：泛型签名投影（`generic_call_binding_unproved` 门）、捕获值的新适配、原始类型特化（`ToIntFunction` 等非 metafactory 路径）、bridge/菱形适配。
