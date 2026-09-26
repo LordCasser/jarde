@@ -1576,6 +1576,26 @@
       "path": "tests/fixtures/p3-boolean-field-stores/v8/ZFieldStores.class"
     },
     {
+      "blake3": "c27bd280b95410b3b8ddbc84cc26aaa52f5224203ee68697c8cbf659bbd24beb",
+      "bytes": 882,
+      "path": "tests/fixtures/p3-boolean-short-circuit-return/BoolValue.java"
+    },
+    {
+      "blake3": "ee9622ddeba8d9103cfbc68683d02843258fa6aab77d16b8a94f7446b080cb71",
+      "bytes": 688,
+      "path": "tests/fixtures/p3-boolean-short-circuit-return/Runner.java"
+    },
+    {
+      "blake3": "084a0e6b0d0bc945db82f872ef5a8f5938033939b002a990137b36a31b093007",
+      "bytes": 124,
+      "path": "tests/fixtures/p3-boolean-short-circuit-return/expected.txt"
+    },
+    {
+      "blake3": "79a4d0073265ca9b9e599a9298b146db0b3d7e24f436d0a169680e99382949f8",
+      "bytes": 1134,
+      "path": "tests/fixtures/p3-boolean-short-circuit-return/v8/BoolValue.class"
+    },
+    {
       "blake3": "c95477c5aadfca1c4442aaa56d8ed2e3c736eafea866bfe801e3c4f91902aee5",
       "bytes": 254,
       "path": "tests/fixtures/p3-bridge-projection/negative/FakeBridge.java"
@@ -3071,6 +3091,16 @@
       "path": "tests/fixtures/p3-local-rewrite/v8/LocalRewrite.class"
     },
     {
+      "blake3": "a6765d28d14c92f6900961351b1d1566bbd8e275ec07de393b65813b1fde0c16",
+      "bytes": 601,
+      "path": "tests/fixtures/p3-loop-boolean-exit/LoopBool.java"
+    },
+    {
+      "blake3": "c2077dc2b9d8a6f8a7bd339a418606257b6120fdbf978c2b350ace9cbb5e4b0c",
+      "bytes": 379,
+      "path": "tests/fixtures/p3-loop-boolean-exit/v8/LoopBool.class"
+    },
+    {
       "blake3": "db475c9f76f7098e43fed37651847af35fff770068741efe6ba9f3cc6a953259",
       "bytes": 424,
       "path": "tests/fixtures/p3-loop-test-values/LoopTestValues.java"
@@ -3154,6 +3184,16 @@
       "blake3": "6aaf9411db348c862e3c3f32c76ed9fc2bf1e0729d5aea5b246bfa79758f1716",
       "bytes": 940,
       "path": "tests/fixtures/p3-meeting/v8/Meet.class"
+    },
+    {
+      "blake3": "fff53bda93920cf985993812dcd947e3076fe2f674bd6367fb8e5d259825cf4c",
+      "bytes": 901,
+      "path": "tests/fixtures/p3-multi-resource-twr/TwrReturnTail.class"
+    },
+    {
+      "blake3": "9c07ac49184d8f32fcff47128b610277a1cf0c391db2bbc603892142733cd9a3",
+      "bytes": 663,
+      "path": "tests/fixtures/p3-multi-resource-twr/TwrReturnTail.java"
     },
     {
       "blake3": "e97af2d00c87971cc33af95a0a485f5ce294d0729e4a733bde7cd606bb983841",
@@ -4614,6 +4654,26 @@
       "blake3": "11b9188b72b87bf2334401bb62f6280afc6f7fb5286c0294e7411bcfe417b62b",
       "bytes": 456,
       "path": "tests/fixtures/proved-java-structure/lambda-body-inline/run.sh"
+    },
+    {
+      "blake3": "511d32ba47801a81b043d6c8d00ec17a52ca57b990b751239660356b02128e92",
+      "bytes": 283,
+      "path": "tests/fixtures/proved-java-structure/loop-boolean-do/DoLoopBool.class"
+    },
+    {
+      "blake3": "ca757400f77e83dbd05fd666bb1f9105ebb77ebf6c75e07085fe39907b9b83d3",
+      "bytes": 404,
+      "path": "tests/fixtures/proved-java-structure/loop-boolean-do/DoLoopBool.java"
+    },
+    {
+      "blake3": "b7b731f5f63ba55de13cc3387d7a5c6c0a48b5d12337192a79553866f4af5401",
+      "bytes": 368,
+      "path": "tests/fixtures/proved-java-structure/loop-boolean-do/Runner.java"
+    },
+    {
+      "blake3": "7ac8797b94c436d2970ef968329093b99ff93f2a34b6bb4777c3e6b1f63eb42b",
+      "bytes": 451,
+      "path": "tests/fixtures/proved-java-structure/loop-boolean-do/run.sh"
     },
     {
       "blake3": "6bf5068d1fbe22d604ccb3b284eb1a9ca7ed6edddbc33c95545e5c98dd9ddc78",

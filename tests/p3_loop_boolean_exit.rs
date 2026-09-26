@@ -1,4 +1,4 @@
-//! P3 3.3a: an exit edge from a branch inside a header-tested loop must stay executable.
+//! P3 3.3: homogeneous header-test chains become ordered short-circuit loop conditions.
 
 use jarde::*;
 use std::fs;
@@ -10,15 +10,18 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 const LOOP_BOOL: &[u8] = include_bytes!("fixtures/p3-loop-boolean-exit/v8/LoopBool.class");
 const LOOP_BOOL_SOURCE: &str = include_str!("fixtures/p3-loop-boolean-exit/LoopBool.java");
-const INPUTS: &[(i32, i32, i32)] = &[(1, 0, 0), (1, 1, 1), (-1, 1, 0)];
 
 fn report() -> ClassSourceReport {
+    report_bytes(LOOP_BOOL, "LoopBool")
+}
+
+fn report_bytes(class_bytes: &[u8], class_name: &str) -> ClassSourceReport {
     let snapshot = Engine::new()
-        .open(ArtifactInput::bytes(LOOP_BOOL.to_vec()), &mut budget())
-        .expect("the frozen LoopBool class opens");
+        .open(ArtifactInput::bytes(class_bytes.to_vec()), &mut budget())
+        .expect("the Java class fixture opens");
     let request = ClassSourceRequest {
         class: ClassRef::Name {
-            class: ClassNameQuery::internal("LoopBool"),
+            class: ClassNameQuery::internal(class_name),
         },
         environment: EnvironmentRequest {
             snapshot: snapshot.id().clone(),
@@ -66,30 +69,56 @@ fn recovery(method: &ClassSourceMethod) -> &RecoveryReport {
 }
 
 #[test]
-fn an_inner_branch_to_the_loop_exit_is_a_break_and_refused_compound_loops_stay_refused() {
+fn proved_header_test_chains_become_short_circuit_loop_conditions() {
     let report = report();
 
     let and_while = method(&report, "andWhile");
     let and_text = &and_while.text;
     assert!(
-        and_text.contains("if (arg1 > 0) {")
-            && and_text.contains("} else {\n                break;"),
-        "the inner false edge reaches the loop's exact exit and must be an explicit break:\n{and_text}"
+        and_text.contains("while (arg0 > 0 && arg1 > 0)"),
+        "the two proved false edges reach the same loop exit:\n{and_text}"
     );
     assert_eq!(
         recovery(and_while).quality,
         jarde_jvm::ir::Quality::Structured
     );
-    assert!(
-        recovery(and_while)
-            .source_map
-            .text_of_bci(&recovery(and_while).text, 7)
-            .iter()
-            .any(|segment| segment.contains("break;")),
-        "the source-map entry for the inner exit branch must name its emitted transfer"
-    );
+    for bci in [3, 7] {
+        assert!(
+            recovery(and_while)
+                .source_map
+                .text_of_bci(&recovery(and_while).text, bci)
+                .iter()
+                .any(|segment| {
+                    segment.contains(if bci == 3 { "arg0 > 0" } else { "arg1 > 0" })
+                }),
+            "BCI {bci} maps to the emitted compound loop condition"
+        );
+    }
 
-    for name in ["orWhile", "mixedWhile"] {
+    let or_while = method(&report, "orWhile");
+    assert!(
+        or_while.text.contains("while (arg0 > 0 || arg1 > 0)"),
+        "the two proved true edges share the loop body entry:\n{}",
+        or_while.text
+    );
+    assert_eq!(
+        recovery(or_while).quality,
+        jarde_jvm::ir::Quality::Structured
+    );
+    for bci in [3, 7] {
+        assert!(
+            recovery(or_while)
+                .source_map
+                .text_of_bci(&recovery(or_while).text, bci)
+                .iter()
+                .any(|segment| {
+                    segment.contains(if bci == 3 { "arg0 > 0" } else { "arg1 > 0" })
+                }),
+            "BCI {bci} maps to the emitted compound loop condition"
+        );
+    }
+
+    for name in ["mixedWhile"] {
         let refused = method(&report, name);
         let text = &refused.text;
         assert!(text.contains("@bytecode"), "`{name}` stays quoted:\n{text}");
@@ -102,15 +131,69 @@ fn an_inner_branch_to_the_loop_exit_is_a_break_and_refused_compound_loops_stay_r
 }
 
 #[test]
+fn an_independent_effect_between_header_tests_is_never_folded_into_the_condition() {
+    let scratch = Scratch::new();
+    fs::create_dir_all(scratch.path()).expect("create effectful-loop fixture directory");
+    fs::write(
+        scratch.path().join("EffectLoop.java"),
+        r#"public final class EffectLoop {
+    static int effects;
+    static int run(int a, int b) {
+        int result = 0;
+        while (a > 0 && (effects++ >= 0) && b > 0) {
+            result++;
+            a--;
+            b--;
+        }
+        return result;
+    }
+}
+"#,
+    )
+    .expect("write the Java 8 effectful-loop case");
+    let output = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(scratch.path())
+        .arg("EffectLoop.java")
+        .current_dir(scratch.path())
+        .output()
+        .expect("start javac for the effectful-loop case");
+    assert!(
+        output.status.success(),
+        "javac refused the effectful-loop case: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let bytes = fs::read(scratch.path().join("EffectLoop.class"))
+        .expect("read the compiled effectful-loop case");
+    let effect_report = report_bytes(&bytes, "EffectLoop");
+    let effect = method(&effect_report, "run");
+    assert!(
+        !effect.text.contains("while (arg0 > 0 &&"),
+        "an increment between tests is not part of one pure short-circuit header:\n{}",
+        effect.text
+    );
+    assert!(
+        effect.text.contains("effects") || effect.text.contains("@bytecode"),
+        "the increment remains visible as source or a local quote:\n{}",
+        effect.text
+    );
+}
+
+#[test]
 fn recovered_loop_exit_matches_the_java8_class_for_terminating_and_continuing_inputs() {
     let report = report();
     let and_while = method(&report, "andWhile");
-    let recovered_source = format!("public final class LoopBool {{\n{}\n}}\n", and_while.text);
+    let or_while = method(&report, "orWhile");
+    let recovered_source = format!(
+        "public final class LoopBool {{\n{}\n{}\n}}\n",
+        and_while.text, or_while.text
+    );
     // The public class-source text contains the recovered declaration and methods. The test runner
     // is compiled beside it so both executions call the same three input pairs.
     assert!(
-        recovered_source.contains("break;"),
-        "the recovered source keeps the loop exit explicit:\n{recovered_source}"
+        recovered_source.contains("while (arg0 > 0 && arg1 > 0)")
+            && recovered_source.contains("while (arg0 > 0 || arg1 > 0)"),
+        "both recovered loops keep their proved short-circuit conditions:\n{recovered_source}"
     );
 
     let scratch = Scratch::new();
@@ -136,11 +219,7 @@ fn recovered_loop_exit_matches_the_java8_class_for_terminating_and_continuing_in
 
     let original_output = run_java(&original, "original");
     let recovered_output = run_java(&recovered, "recovered");
-    let expected = INPUTS
-        .iter()
-        .map(|(a, b, result)| format!("{a},{b}={result}"))
-        .collect::<Vec<_>>()
-        .join("\n");
+    let expected = "1,0=0\n1,1=1\n-1,1=0\n1,0-or=1\n1,1-or=1\n-1,1-or=1";
     assert_eq!(
         original_output.trim(),
         expected,
@@ -158,6 +237,9 @@ const RUNNER_SOURCE: &str = r#"public final class LoopRunner {
         System.out.println("1,0=" + LoopBool.andWhile(1, 0));
         System.out.println("1,1=" + LoopBool.andWhile(1, 1));
         System.out.println("-1,1=" + LoopBool.andWhile(-1, 1));
+        System.out.println("1,0-or=" + LoopBool.orWhile(1, 0));
+        System.out.println("1,1-or=" + LoopBool.orWhile(1, 1));
+        System.out.println("-1,1-or=" + LoopBool.orWhile(-1, 1));
     }
 }
 "#;

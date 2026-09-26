@@ -476,20 +476,20 @@ pub enum Region {
         groups: Vec<SwitchGroup>,
         join: Option<CanonicalBlockId>,
     },
-    /// A loop the graph proves is natural — one header, one entry, one latch — and whose test is
-    /// one branch.
+    /// A natural loop with an ordered, proved set of test branches.
     ///
-    /// `test` is the block whose branch decides whether another iteration runs and `test_bci` that
-    /// branch: the header for [`LoopForm::While`], the latch for [`LoopForm::DoWhile`]. Keeping the
-    /// test *inside* the region is the point: the values it reads and the calls it makes are
-    /// written in the loop's condition, so each iteration reads and calls exactly what one
-    /// iteration of the bytecode did.
+    /// A header-tested loop owns its header test and any additional homogeneous short-circuit
+    /// tests in execution order. A latch-tested loop currently owns its one proved latch test.
+    /// Keeping every test *inside* the region is the point: the values it reads and calls it makes
+    /// are written in the loop condition, so each iteration evaluates exactly what the bytecode did.
     Loop {
         header: CanonicalBlockId,
-        test: CanonicalBlockId,
-        test_bci: u32,
+        /// Ordered tests owned by this loop. Each continuation is the branch sense whose
+        /// condition is true for this test's role in the proved loop condition.
+        tests: Vec<(CanonicalBlockId, u32, Continuation)>,
+        /// The short-circuit operator proved by a multi-block header test chain.
+        test_operator: Option<crate::ast::BinaryOp>,
         form: LoopForm,
-        continuation: Continuation,
         for_header: Option<ForHeader>,
         /// The regions of one iteration, in normal-flow order. A nested loop, `try`, or `switch`
         /// can end before its enclosing loop does; the following regions are still part of this
@@ -720,7 +720,7 @@ impl Region {
             }
             Self::Loop {
                 header,
-                test,
+                tests,
                 form,
                 body,
                 ..
@@ -730,16 +730,22 @@ impl Region {
                 // testing the branch in the same block. The header/test fields name the shape,
                 // while the body is its one physical owner. Keep duplicates *inside* the body
                 // visible to the method-level ownership check.
-                if *form != LoopForm::DoWhile || header != test {
+                if *form != LoopForm::DoWhile || !tests.iter().any(|(test, _, _)| test == header) {
                     blocks.push(header);
-                    if test != header {
-                        blocks.push(test);
-                    }
                 }
+                blocks.extend(
+                    tests
+                        .iter()
+                        .map(|(test, _, _)| test)
+                        .filter(|test| *test != header),
+                );
                 for region in body {
                     blocks.extend(region.blocks());
                 }
-                if *form == LoopForm::DoWhile && header == test && !blocks.contains(&header) {
+                if *form == LoopForm::DoWhile
+                    && tests.iter().any(|(test, _, _)| test == header)
+                    && !blocks.contains(&header)
+                {
                     blocks.insert(0, header);
                 }
                 blocks
@@ -1695,6 +1701,15 @@ struct LoopTarget {
     break_target: Option<usize>,
     continue_target: usize,
 }
+
+struct HeaderTestChain {
+    tests: Vec<(CanonicalBlockId, u32, Continuation)>,
+    operator: crate::ast::BinaryOp,
+    body: CanonicalBlockId,
+    exit: CanonicalBlockId,
+}
+
+type HeaderTestFacts = (u32, u32, Vec<CanonicalBlockId>);
 
 impl Frame {
     /// The frame of one loop body: the blocks that iterate, ending where the loop tests.
@@ -4118,6 +4133,74 @@ impl Walker<'_> {
         blocks: &BTreeSet<usize>,
         frame: &Frame,
     ) -> Result<Option<Run>, StopReason> {
+        match self.header_test_chain(header, header_node, blocks)? {
+            Ok(Some(chain)) => {
+                let test_nodes: BTreeSet<_> = chain
+                    .tests
+                    .iter()
+                    .filter_map(|(test, _, _)| self.view.index_of(test))
+                    .collect();
+                let exit_node = self.view.index_of(&chain.exit);
+                let exits = self.loop_exit_nodes(blocks);
+                let mut all_exits: BTreeSet<usize> = frame
+                    .loop_targets
+                    .iter()
+                    .flat_map(|target| target.exits.iter().copied())
+                    .collect();
+                all_exits.extend(
+                    frame
+                        .loop_targets
+                        .iter()
+                        .map(|target| target.continue_target),
+                );
+                all_exits.extend(exits.iter().copied());
+                let transfer_sources = self.loop_transfer_sources(&all_exits);
+                let body_frame = frame.loop_body(
+                    blocks,
+                    header_node,
+                    header_node,
+                    header_node,
+                    exit_node,
+                    exits,
+                    &transfer_sources,
+                );
+                let (body, _) = self.loop_body_sequence(&chain.body, &body_frame, blocks)?;
+                self.visited.extend(test_nodes.iter().copied());
+                let mut expected = blocks.clone();
+                for node in test_nodes {
+                    expected.remove(&node);
+                }
+                if !self.covers(&expected) {
+                    return Ok(Some(Self::loop_fallback(
+                        header,
+                        FallbackReason::LoopShape {
+                            block_bci: header.bci(),
+                        },
+                        body,
+                    )));
+                }
+                return Ok(Some((
+                    vec![Region::Loop {
+                        header: header.clone(),
+                        tests: chain.tests,
+                        test_operator: Some(chain.operator),
+                        form: LoopForm::While,
+                        for_header: None,
+                        body,
+                        exit: Some(chain.exit.clone()),
+                    }],
+                    Some(chain.exit),
+                )));
+            }
+            Ok(None) => {}
+            Err(reason) => {
+                let owned = blocks
+                    .iter()
+                    .filter_map(|node| self.view.id_of(*node).cloned())
+                    .collect();
+                return Ok(Some(gap(Vec::new(), owned, reason, None)));
+            }
+        }
         let successors = self.view.successor_ids(header);
         if successors.len() != 2 {
             return Ok(None);
@@ -4214,15 +4297,359 @@ impl Walker<'_> {
         }
         let run = vec![Region::Loop {
             header: header.clone(),
-            test: header.clone(),
-            test_bci,
+            tests: vec![(header.clone(), test_bci, continuation)],
+            test_operator: None,
             form: LoopForm::While,
-            continuation,
             for_header,
             body,
             exit: Some(outside.clone()),
         }];
         Ok(Some((run, Some(outside))))
+    }
+
+    /// Proves a homogeneous short-circuit chain of header tests. A candidate chain that fails any
+    /// condition, effect or edge check is returned as a local loop refusal so the legacy
+    /// single-test path cannot publish a loop that loses one of its exits.
+    fn header_test_chain(
+        &mut self,
+        header: &CanonicalBlockId,
+        header_node: usize,
+        blocks: &BTreeSet<usize>,
+    ) -> Result<Result<Option<HeaderTestChain>, FallbackReason>, StopReason> {
+        let Some(first_bci) = self.terminal_bci(header) else {
+            return Ok(Ok(None));
+        };
+        if !self
+            .operations
+            .get(first_bci)
+            .is_some_and(|operation| operation.comparison().is_some())
+        {
+            return Ok(Ok(None));
+        }
+        let first_successors = self.view.successor_ids(header);
+        if first_successors.len() != 2 {
+            return Ok(Ok(None));
+        }
+        let external: Vec<_> = first_successors
+            .iter()
+            .filter(|successor| {
+                self.view
+                    .index_of(successor)
+                    .is_some_and(|node| !blocks.contains(&node))
+            })
+            .cloned()
+            .collect();
+        if external.len() > 1 {
+            return Ok(Err(FallbackReason::LoopShape {
+                block_bci: header.bci(),
+            }));
+        }
+
+        // Do not apply the header-test purity gate to a loop whose apparent "continuation" is
+        // simply its body (including a one-block do-while whose header is also its latch). A
+        // composite header proof exists only once the first continuing edge reaches a distinct,
+        // predecessor-owned comparison that also has the same exact failure destination.
+        if let Some(exit) = external.first() {
+            let Some(next) = first_successors.iter().find(|successor| *successor != exit) else {
+                return Ok(Err(FallbackReason::LoopShape {
+                    block_bci: header.bci(),
+                }));
+            };
+            let Some(next_node) = self.view.index_of(next) else {
+                return Ok(Err(FallbackReason::LoopShape {
+                    block_bci: header.bci(),
+                }));
+            };
+            let Some(exit_node) = self.view.index_of(exit) else {
+                return Ok(Err(FallbackReason::LoopShape {
+                    block_bci: header.bci(),
+                }));
+            };
+            if !self.header_test_candidate(header_node, next_node, blocks)
+                || !self.view.successors(next_node).contains(&exit_node)
+            {
+                return Ok(Ok(None));
+            }
+        }
+
+        let (operator, tests, body, exit) = if let Some(exit) = external.first() {
+            let mut tests = Vec::new();
+            let mut current = header.clone();
+            let mut current_node = header_node;
+            let mut seen = BTreeSet::new();
+            let body = loop {
+                if !seen.insert(current_node) {
+                    return Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }));
+                }
+                let (test_bci, target, successors) =
+                    match self.proved_header_test(header, &current, current_node)? {
+                        Ok(facts) => facts,
+                        Err(reason) => return Ok(Err(reason)),
+                    };
+                if successors.len() != 2 || !successors.contains(exit) {
+                    return Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }));
+                }
+                let Some(next) = successors
+                    .iter()
+                    .find(|successor| *successor != exit)
+                    .cloned()
+                else {
+                    return Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }));
+                };
+                let Some(target_node) = successors
+                    .iter()
+                    .find(|successor| successor.bci() == target)
+                else {
+                    return Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }));
+                };
+                tests.push((
+                    current.clone(),
+                    test_bci,
+                    if target_node == &next {
+                        Continuation::Taken
+                    } else {
+                        Continuation::FallThrough
+                    },
+                ));
+                let Some(next_node) = self.view.index_of(&next) else {
+                    return Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }));
+                };
+                if self.header_test_candidate(current_node, next_node, blocks)
+                    && self.view.successors(next_node).contains(
+                        &self
+                            .view
+                            .index_of(exit)
+                            .expect("the exact loop exit is a node"),
+                    )
+                {
+                    current = next;
+                    current_node = next_node;
+                } else {
+                    break next;
+                }
+            };
+            let body_node = self
+                .view
+                .index_of(&body)
+                .expect("loop body is a normal-flow node");
+            let expected: BTreeSet<_> = tests
+                .iter()
+                .filter_map(|(test, _, _)| self.view.index_of(test))
+                .filter(|node| self.view.successors(*node).contains(&body_node))
+                .collect();
+            if expected != self.view.predecessors(body_node).into_iter().collect() {
+                return Ok(Err(FallbackReason::LoopShape {
+                    block_bci: header.bci(),
+                }));
+            }
+            (crate::ast::BinaryOp::LogicalAnd, tests, body, exit.clone())
+        } else {
+            let candidates: Vec<_> = first_successors
+                .iter()
+                .filter_map(|successor| self.view.index_of(successor))
+                .filter(|node| self.header_test_candidate(header_node, *node, blocks))
+                .collect();
+            let [first_next] = candidates.as_slice() else {
+                return if candidates.is_empty() {
+                    Ok(Ok(None))
+                } else {
+                    Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }))
+                };
+            };
+            let (_, first_target, _) = match self.proved_header_test(header, header, header_node)? {
+                Ok(facts) => facts,
+                Err(reason) => return Ok(Err(reason)),
+            };
+            let first_next = *first_next;
+            let first_next_id = self.view.id_of(first_next).expect("candidate id exists");
+            let Some(body) = first_successors
+                .iter()
+                .find(|successor| self.view.index_of(successor) != Some(first_next))
+                .cloned()
+            else {
+                return Ok(Err(FallbackReason::LoopShape {
+                    block_bci: header.bci(),
+                }));
+            };
+            let mut tests = vec![(header.clone(), first_bci, {
+                if first_successors
+                    .iter()
+                    .find(|successor| successor.bci() == first_target)
+                    == Some(&body)
+                {
+                    Continuation::Taken
+                } else {
+                    Continuation::FallThrough
+                }
+            })];
+            let mut current = first_next_id.clone();
+            let mut current_node = first_next;
+            let mut seen = BTreeSet::from([header_node]);
+            let exit = loop {
+                if !seen.insert(current_node) {
+                    return Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }));
+                }
+                let (test_bci, target, successors) =
+                    match self.proved_header_test(header, &current, current_node)? {
+                        Ok(facts) => facts,
+                        Err(reason) => return Ok(Err(reason)),
+                    };
+                if successors.len() != 2 || !successors.contains(&body) {
+                    return Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }));
+                }
+                let Some(route) = successors
+                    .iter()
+                    .find(|successor| *successor != &body)
+                    .cloned()
+                else {
+                    return Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }));
+                };
+                let Some(target_node) = successors
+                    .iter()
+                    .find(|successor| successor.bci() == target)
+                else {
+                    return Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }));
+                };
+                tests.push((
+                    current.clone(),
+                    test_bci,
+                    if target_node == &body {
+                        Continuation::Taken
+                    } else {
+                        Continuation::FallThrough
+                    },
+                ));
+                let Some(route_node) = self.view.index_of(&route) else {
+                    return Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }));
+                };
+                if !blocks.contains(&route_node) {
+                    break route;
+                }
+                if !self.header_test_candidate(current_node, route_node, blocks) {
+                    return Ok(Err(FallbackReason::LoopShape {
+                        block_bci: header.bci(),
+                    }));
+                }
+                current = route;
+                current_node = route_node;
+            };
+            let body_node = self
+                .view
+                .index_of(&body)
+                .expect("loop body is a normal-flow node");
+            let expected: BTreeSet<_> = tests
+                .iter()
+                .filter_map(|(test, _, _)| self.view.index_of(test))
+                .filter(|node| self.view.successors(*node).contains(&body_node))
+                .collect();
+            if expected != self.view.predecessors(body_node).into_iter().collect() {
+                return Ok(Err(FallbackReason::LoopShape {
+                    block_bci: header.bci(),
+                }));
+            }
+            (crate::ast::BinaryOp::LogicalOr, tests, body, exit)
+        };
+        if tests.len() < 2 {
+            return Ok(Ok(None));
+        }
+        Ok(Ok(Some(HeaderTestChain {
+            tests,
+            operator,
+            body,
+            exit,
+        })))
+    }
+
+    fn header_test_candidate(
+        &self,
+        predecessor: usize,
+        candidate: usize,
+        blocks: &BTreeSet<usize>,
+    ) -> bool {
+        if candidate == predecessor || !blocks.contains(&candidate) {
+            return false;
+        }
+        let Some(id) = self.view.id_of(candidate) else {
+            return false;
+        };
+        self.view.predecessors(candidate) == [predecessor]
+            && self
+                .terminal_bci(id)
+                .and_then(|bci| self.operations.get(bci))
+                .is_some_and(|operation| operation.comparison().is_some())
+    }
+
+    /// Shared evidence gate for one branch that the candidate chain claims as a loop test.
+    /// `NormalFlowView` supplies only normal successors; takeable exception edges are rejected
+    /// here before those successors can prove the test's loop-condition role.
+    fn proved_header_test(
+        &mut self,
+        loop_header: &CanonicalBlockId,
+        block: &CanonicalBlockId,
+        node: usize,
+    ) -> Result<Result<HeaderTestFacts, FallbackReason>, StopReason> {
+        let Some(test_bci) = self.terminal_bci(block) else {
+            return Ok(Err(FallbackReason::LoopShape {
+                block_bci: loop_header.bci(),
+            }));
+        };
+        poll(self.budget, Some(test_bci))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(test_bci),
+        )?;
+        let Some((op, target)) = self
+            .operations
+            .get(test_bci)
+            .and_then(Operation::comparison)
+        else {
+            return Ok(Err(FallbackReason::LoopShape {
+                block_bci: loop_header.bci(),
+            }));
+        };
+        if let Err(reason) = self.branch_arity_proved(block, test_bci, op) {
+            return Ok(Err(reason));
+        }
+        if let Some(reason) = self.leaving_edge(block)
+            && !self.leaves_only_through_dead_edges(block)
+        {
+            return Ok(Err(reason));
+        }
+        if let Err(reason) = self.test_is_pure(block, test_bci) {
+            return Ok(Err(reason));
+        }
+        let successors = self.view.successor_ids(block);
+        if successors.len() != 2 || !successors.iter().any(|successor| successor.bci() == target) {
+            return Ok(Err(FallbackReason::LoopShape {
+                block_bci: loop_header.bci(),
+            }));
+        }
+        debug_assert_eq!(self.view.index_of(block), Some(node));
+        Ok(Ok((test_bci, target, successors)))
     }
 
     /// Proves the narrow indexed-loop spelling before walking nested bodies. The update block is
@@ -4615,14 +5042,17 @@ impl Walker<'_> {
             return Ok(Some(one(
                 Region::Loop {
                     header: header.clone(),
-                    test: header.clone(),
-                    test_bci,
+                    tests: vec![(
+                        header.clone(),
+                        test_bci,
+                        if target == header.bci() {
+                            Continuation::Taken
+                        } else {
+                            Continuation::FallThrough
+                        },
+                    )],
+                    test_operator: None,
                     form: LoopForm::DoWhile,
-                    continuation: if target == header.bci() {
-                        Continuation::Taken
-                    } else {
-                        Continuation::FallThrough
-                    },
                     for_header: None,
                     body: vec![Region::Straight {
                         blocks: vec![header.clone()],
@@ -4683,10 +5113,9 @@ impl Walker<'_> {
         }
         let run = vec![Region::Loop {
             header: header.clone(),
-            test: latch,
-            test_bci,
+            tests: vec![(latch, test_bci, continuation)],
+            test_operator: None,
             form: LoopForm::DoWhile,
-            continuation,
             for_header: None,
             body,
             exit: Some(exit.clone()),
