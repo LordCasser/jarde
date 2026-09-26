@@ -184,7 +184,7 @@ pub(crate) fn emit_class_source_anonymous_return(
     indentation: usize,
     allocation_bci: u32,
     allocation_type: &str,
-    interface_type: &str,
+    source_type: &str,
     methods: &str,
     closing_indent: &str,
     budget: &mut Budget,
@@ -193,7 +193,7 @@ pub(crate) fn emit_class_source_anonymous_return(
     emitter.anonymous_override = Some(AnonymousOverride {
         allocation_bci,
         allocation_type,
-        interface_type,
+        source_type,
         methods,
         closing_indent,
     });
@@ -353,7 +353,7 @@ struct Emitter<'a> {
 struct AnonymousOverride<'a> {
     allocation_bci: u32,
     allocation_type: &'a str,
-    interface_type: &'a str,
+    source_type: &'a str,
     methods: &'a str,
     closing_indent: &'a str,
 }
@@ -997,7 +997,6 @@ impl<'a> Emitter<'a> {
                     && qualifier.is_none()
                     && member_name.is_none()
                     && !*diamond
-                    && args.is_empty()
                     && (expr.origin.primary().bci() == override_.allocation_bci
                         || expr
                             .origin
@@ -1006,8 +1005,15 @@ impl<'a> Emitter<'a> {
                             .any(|origin| origin.bci() == override_.allocation_bci))
                 {
                     emitter.put("new ", at)?;
-                    emitter.put(override_.interface_type, at)?;
-                    emitter.put("() {\n", at)?;
+                    emitter.put(override_.source_type, at)?;
+                    emitter.put("(", at)?;
+                    for (index, arg) in args.iter().enumerate() {
+                        if index > 0 {
+                            emitter.put(", ", at)?;
+                        }
+                        emitter.expr(arg)?;
+                    }
+                    emitter.put(") {\n", at)?;
                     emitter.put(override_.methods, at)?;
                     emitter.put(override_.closing_indent, at)?;
                     emitter.anonymous_override_matched = true;

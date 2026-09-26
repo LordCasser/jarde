@@ -446,8 +446,14 @@ pub struct ClassSourceMethodAst {
 #[doc(hidden)]
 pub fn class_source_anonymous_return_site(
     ast: &ClassSourceMethodAst,
-) -> Option<(Vec<u32>, String)> {
-    class_source_direct_return_new(&ast.projection.program).map(|(bcis, ty)| (bcis, ty.to_owned()))
+) -> Option<(Vec<u32>, String, Vec<u32>)> {
+    class_source_direct_return_new(&ast.projection.program).map(|(bcis, ty, args)| {
+        (
+            bcis,
+            ty.to_owned(),
+            args.iter().map(|arg| arg.origin.primary().bci()).collect(),
+        )
+    })
 }
 
 /// Emits the retained statements of one selected physical class-source method. The supplied
@@ -474,7 +480,7 @@ pub fn emit_class_source_anonymous_return(
     ast: &ClassSourceMethodAst,
     allocation_bci: u32,
     allocation_type: &str,
-    interface_type: &str,
+    source_type: &str,
     methods: &str,
     budget: &mut Budget,
 ) -> Result<Option<String>, crate::stop::StopReason> {
@@ -484,7 +490,7 @@ pub fn emit_class_source_anonymous_return(
         2,
         allocation_bci,
         allocation_type,
-        interface_type,
+        source_type,
         methods,
         "        ",
         budget,
@@ -569,6 +575,10 @@ pub struct GenericReturnCandidate {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GenericConstructorCandidate {
     pub parameters: Vec<(u16, String)>,
+    /// Parameter slots forwarded unchanged, in the selected superclass constructor's argument
+    /// order. This is populated only for the exact single-block `aload_0; load*; invokespecial;
+    /// return` prologue proved below.
+    pub forwarded_parameter_slots: Vec<u16>,
     /// The `init@1` record derived from the same run's prologue decision.
     pub init: InitRecord,
 }
@@ -1650,9 +1660,10 @@ fn collect_expression_anchors(expr: &Expr, anchors: &mut std::collections::BTree
     }
 }
 
-/// Capture only the constructor body whose complete AST and SSA state no work beyond `Object()`.
-/// The prologue is the decision from which the selected `InitRecord` is materialized; carrying its
-/// BCI here makes this sidecar independent of the caller's evidence selection.
+/// Capture only a constructor body whose complete AST and SSA state show direct, ordered parameter
+/// forwarding to its selected superclass constructor. The prologue is the decision from which the
+/// selected `InitRecord` is materialized; carrying its BCI here makes this sidecar independent of
+/// the caller's evidence selection.
 fn generic_constructor_candidate(
     program: &build::Program,
     names: &NameTable,
@@ -1661,8 +1672,12 @@ fn generic_constructor_candidate(
     code: &jarde_reader::classfile::MethodCodeFacts,
     prologues: &init::Prologues,
     parameter_types: &std::collections::BTreeMap<u16, Type>,
+    constructor_descriptor: &str,
     budget: &mut Budget,
 ) -> Result<Option<GenericConstructorCandidate>, StopReason> {
+    macro_rules! no_candidate {
+        ($stage:expr) => {{ return Ok(None) }};
+    }
     crate::stop::poll(budget, None)?;
     crate::stop::charge(
         budget,
@@ -1678,11 +1693,11 @@ fn generic_constructor_candidate(
         || code.stopped_at.is_some()
         || code.exception_handler_count != 0
         || !code.exception_handlers.is_empty()
-        || code.instructions.len() != 3
+        || code.instructions.len() != parameter_types.len() + 3
         || ssa.blocks().len() != 1
         || !ssa.phis().is_empty()
     {
-        return Ok(None);
+        no_candidate!("shape");
     }
     crate::stop::charge(
         budget,
@@ -1690,86 +1705,152 @@ fn generic_constructor_candidate(
         9,
         None,
     )?;
-    if !matches!(
-        program.stmts[0].kind,
-        StmtKind::ConstructorCall {
-            target: ConstructorTarget::Super,
-            ref args,
-        } if args.is_empty()
-    ) || !matches!(program.stmts[1].kind, StmtKind::Return { value: None })
+    let parameter_slots: Vec<u16> = parameter_types.keys().copied().collect();
+    let StmtKind::ConstructorCall {
+        target: ConstructorTarget::Super,
+        args,
+    } = &program.stmts[0].kind
+    else {
+        no_candidate!("ast");
+    };
+    if args.len() != parameter_slots.len()
+        || !matches!(program.stmts[1].kind, StmtKind::Return { value: None })
     {
-        return Ok(None);
+        no_candidate!("init");
     }
 
     let init = prologues.record();
     let Some(init_bci) = init.bci else {
-        return Ok(None);
+        no_candidate!("target");
     };
     if !init.presented
         || init.target != Some(ConstructorTarget::Super)
-        || init.class.as_deref() != Some("java/lang/Object")
+        || init.class.is_none()
         || init.declared.is_none()
         || init_bci != program.stmts[0].origin.primary().bci()
     {
-        return Ok(None);
+        no_candidate!("instructions");
     }
     let Some(Operation::Invoke(target)) = operations.get(init_bci) else {
-        return Ok(None);
+        no_candidate!("effects");
     };
     if target.kind() != crate::facts::InvokeKind::Special
-        || target.owner() != "java/lang/Object"
+        || Some(target.owner()) != init.class.as_deref()
         || target.name() != "<init>"
-        || target.descriptor() != "()V"
+        || target.descriptor() != constructor_descriptor
+        || !constructor_descriptor.ends_with(")V")
         || target.is_interface_reference()
     {
-        return Ok(None);
+        no_candidate!("ssa-receiver");
     }
 
-    let expected_opcodes = [0x2a, 0xb7, 0xb1];
+    let mut expected_opcodes = Vec::with_capacity(parameter_slots.len() + 3);
+    expected_opcodes.push(0x2a);
+    expected_opcodes.extend(parameter_slots.iter().map(|slot| {
+        let Some(ty) = parameter_types.get(slot) else {
+            return 0;
+        };
+        let (compact, generic) = match ty {
+            Type::Long => (0x1e, 0x16),
+            Type::Float => (0x22, 0x17),
+            Type::Double => (0x26, 0x18),
+            Type::Reference(_) => (0x2a, 0x19),
+            Type::Int | Type::Boolean | Type::Byte | Type::Char | Type::Short => (0x1a, 0x15),
+        };
+        if *slot <= 3 {
+            compact + u8::try_from(*slot).unwrap_or(0)
+        } else {
+            generic
+        }
+    }));
+    expected_opcodes.extend([0xb7, 0xb1]);
     let block = &ssa.blocks()[0];
     if block.instructions().len() != expected_opcodes.len()
         || block
             .instructions()
             .iter()
-            .zip(expected_opcodes)
+            .zip(expected_opcodes.iter().copied())
             .any(|(instruction, expected)| instruction.opcode() != expected)
         || code
             .instructions
             .iter()
-            .zip(expected_opcodes)
+            .zip(expected_opcodes.iter().copied())
             .any(|(instruction, expected)| instruction.opcode != expected)
         || operations.iter().count() != expected_opcodes.len()
     {
-        return Ok(None);
+        no_candidate!("opcode-shape");
     }
     let effects = ssa.effects().instructions();
     if effects.len() != expected_opcodes.len()
         || effects
             .iter()
-            .zip(expected_opcodes.into_iter().zip([false, true, false]))
+            .zip(
+                expected_opcodes
+                    .iter()
+                    .copied()
+                    .map(|opcode| (opcode, opcode == 0xb7)),
+            )
             .any(|(effect, (expected, may_throw))| {
                 effect.opcode() != expected
                     || !effect.handlers().is_empty()
                     || effect.may_throw() != may_throw
             })
     {
-        return Ok(None);
+        no_candidate!("effects");
     }
     let instructions = block.instructions();
     let [(Slot::Stack(0), receiver)] = instructions[0].writes() else {
         return Ok(None);
     };
     if !matches!(instructions[0].reads(), [(Slot::Local(0), _)])
-        || !matches!(instructions[1].reads(), [(Slot::Stack(0), value)] if value == receiver)
-        || !matches!(instructions[1].writes(), [(Slot::Local(0), _)])
-        || !instructions[2].reads().is_empty()
-        || !instructions[2].writes().is_empty()
+        || !instructions.last().is_some_and(|instruction| {
+            instruction.reads().is_empty() && instruction.writes().is_empty()
+        })
     {
-        return Ok(None);
+        no_candidate!("receiver");
+    }
+
+    let mut forwarded_values = Vec::with_capacity(parameter_slots.len());
+    for (index, slot) in parameter_slots.iter().enumerate() {
+        let Some(instruction) = instructions.get(index + 1) else {
+            no_candidate!("forwarding");
+        };
+        if !matches!(operations.get(code.instructions[index + 1].bci), Some(Operation::Load { slot: loaded }) if loaded == slot)
+            || !matches!(instruction.reads(), [(Slot::Local(local), _)] if local == slot)
+            || !matches!(args.get(index).map(|arg| &arg.kind), Some(crate::ast::ExprKind::Local(name)) if names.whole(*slot).is_some_and(|expected| expected.text() == name))
+        {
+            no_candidate!("forwarding");
+        }
+        let [(Slot::Stack(_), value)] = instruction.writes() else {
+            no_candidate!("forwarding-output");
+        };
+        forwarded_values.push(*value);
+    }
+    let invoke_index = parameter_slots.len() + 1;
+    let Some(invoke_instruction) = code.instructions.get(invoke_index) else {
+        no_candidate!("invoke-ssa");
+    };
+    let invoke_reads = instructions[invoke_index].reads();
+    let expected_invocation_values = forwarded_values
+        .iter()
+        .rev()
+        .copied()
+        .chain(std::iter::once(*receiver));
+    if !matches!(operations.get(invoke_instruction.bci), Some(Operation::Invoke(actual)) if actual == target)
+        || invoke_reads.len() != forwarded_values.len() + 1
+        || invoke_reads
+            .iter()
+            .map(|(_, value)| *value)
+            .ne(expected_invocation_values)
+        || !matches!(invoke_reads.last(), Some((Slot::Stack(0), value)) if *value == *receiver)
+        || instructions[invoke_index].writes().len() != 1
+        || !matches!(instructions[invoke_index].writes()[0].0, Slot::Local(0))
+    {
+        no_candidate!("invoke");
     }
 
     let mut parameters = Vec::with_capacity(parameter_types.len());
-    for slot in parameter_types.keys() {
+    for slot in &parameter_slots {
         crate::stop::charge(
             budget,
             jarde_reader::budget::CountedBudgetDimension::IrItems,
@@ -1777,11 +1858,15 @@ fn generic_constructor_candidate(
             None,
         )?;
         let Some(name) = names.whole(*slot) else {
-            return Ok(None);
+            no_candidate!("parameter-name");
         };
         parameters.push((*slot, name.text().to_owned()));
     }
-    Ok(Some(GenericConstructorCandidate { parameters, init }))
+    Ok(Some(GenericConstructorCandidate {
+        parameters,
+        forwarded_parameter_slots: parameter_slots,
+        init,
+    }))
 }
 
 /// The same recovery for the class-source assembler, with same-run class-source sidecars.
@@ -2331,6 +2416,7 @@ fn recover_inner(
                 code,
                 &prologues,
                 &parameter_types,
+                request.facts.method().descriptor(),
                 budget,
             ) {
                 Ok(candidate) => *slot = candidate,
@@ -3155,7 +3241,7 @@ fn program_node_count(program: &build::Program) -> u64 {
     count.max(1)
 }
 
-fn class_source_direct_return_new(program: &build::Program) -> Option<(Vec<u32>, &str)> {
+fn class_source_direct_return_new(program: &build::Program) -> Option<(Vec<u32>, &str, &[Expr])> {
     if program.stmts.len() != 1 || program.statements != 1 || program.ragged {
         return None;
     }
@@ -3175,9 +3261,6 @@ fn class_source_direct_return_new(program: &build::Program) -> Option<(Vec<u32>,
     else {
         return None;
     };
-    if !args.is_empty() {
-        return None;
-    }
     let primary = expression.origin.primary().bci();
     let mut bcis = vec![primary];
     bcis.extend(
@@ -3188,7 +3271,7 @@ fn class_source_direct_return_new(program: &build::Program) -> Option<(Vec<u32>,
             .map(|origin| origin.bci())
             .filter(|bci| *bci != primary),
     );
-    Some((bcis, ty.as_str()))
+    Some((bcis, ty.as_str(), args))
 }
 
 /// Captures the class initializer's already-built top-level statements and the field identities

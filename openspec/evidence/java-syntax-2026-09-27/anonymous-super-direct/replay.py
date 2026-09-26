@@ -2,7 +2,6 @@ from pathlib import Path
 import hashlib
 import os
 import shlex
-import shutil
 import subprocess
 import tempfile
 
@@ -27,7 +26,13 @@ def normalized(result, work):
 
 
 def save(name, result, work):
-    (EVD / name).write_text(normalized(result, work))
+    if name.startswith("jarde-fixed-"):
+        target_name = name
+    elif name.startswith("jarde-"):
+        target_name = "jarde-fixed-" + name.removeprefix("jarde-")
+    else:
+        target_name = name.removesuffix(".log") + "-fixed.log"
+    (EVD / target_name).write_text(normalized(result, work))
 
 
 def sha(path):
@@ -65,7 +70,7 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt06a-anonymous-super-direct-") a
         raise SystemExit("original class did not match expected output")
 
     javap = run(["javap", "-classpath", str(FIX), "-p", "-c", "-s", *CLASSES])
-    (EVD / "original-javap.txt").write_text(normalized(javap, work))
+    (EVD / "original-javap-fixed.txt").write_text(normalized(javap, work))
     if javap.returncode:
         raise SystemExit(javap.returncode)
 
@@ -83,16 +88,9 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt06a-anonymous-super-direct-") a
     if jadx.returncode:
         raise SystemExit(jadx.returncode)
     jadx_files = sorted(jadx_dir.rglob("*.java"))
-    snapshot = EVD / "jadx-source"
-    if snapshot.exists():
-        shutil.rmtree(snapshot)
-    snapshot.mkdir()
-    for source in jadx_files:
-        rel = source.relative_to(jadx_dir)
-        target = snapshot / rel
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source, target)
-    (EVD / "jadx-files.txt").write_text("".join(f"{path.relative_to(jadx_dir)}\n" for path in jadx_files))
+    (EVD / "jadx-fixed-files.txt").write_text(
+        "".join(f"{path.relative_to(jadx_dir)}\n" for path in jadx_files)
+    )
     jadx_classes = work / "jadx-classes"
     jadx_classes.mkdir()
     compiled = run(["javac", "--release", "8", "-g:none", "-d", str(jadx_classes), *map(str, jadx_files)])
@@ -110,34 +108,50 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt06a-anonymous-super-direct-") a
     if build.returncode:
         raise SystemExit(build.returncode)
     cli = work / "cargo-target/debug/jarde-cli"
-    jarde_snapshot = EVD / "jarde-source"
-    if jarde_snapshot.exists():
-        shutil.rmtree(jarde_snapshot)
-    jarde_snapshot.mkdir()
-    jarde_sources = []
-    cli_results = []
-    for class_name in CLASSES:
-        result = run([str(cli), "class-source", "--input", str(jar), "--class", class_name, "--policy", "plain-jar", "--release", "8", "--format", "text"])
-        save(f"jarde-{class_name}-cli.log", result, work)
-        cli_results.append(f"{class_name}: exit={result.returncode}\n")
-        if result.returncode:
-            continue
-        source_path = jarde_snapshot / f"{class_name}.java"
-        source_path.write_text(result.stdout)
-        jarde_sources.append(source_path)
-    (EVD / "jarde-cli-status.txt").write_text("".join(cli_results))
+    jarde_snapshot = EVD / "jarde-fixed-source"
+    jarde_snapshot.mkdir(exist_ok=True)
+    root_args = [str(cli), "class-source", "--input", str(jar), "--class", "AnonymousSuperDirect", "--policy", "plain-jar", "--release", "8", "--format", "text"]
+    root_all = run([*root_args, "--evidence", "all"])
+    save("jarde-fixed-all-cli.log", root_all, work)
+    root_essential = run([*root_args, "--evidence", "essential"])
+    save("jarde-fixed-essential-cli.log", root_essential, work)
+    if root_all.returncode or root_essential.returncode or root_all.stdout != root_essential.stdout:
+        raise SystemExit("anonymous superclass projection depended on optional evidence selection")
+    if "new Base(next(), next()) {" not in root_all.stdout:
+        raise SystemExit("Jarde did not project the proved ordered superclass arguments")
+    root_source = jarde_snapshot / "AnonymousSuperDirect.java"
+    root_source.write_text(root_all.stdout)
+
+    # The fixed source unit compiles the projected root with the real Base only. The physical child
+    # is queried separately because javac emits an anonymous `$1` for the fixed root itself.
+    base = run([str(cli), "class-source", "--input", str(jar), "--class", "Base", "--policy", "plain-jar", "--release", "8", "--format", "text", "--evidence", "all"])
+    save("jarde-Base-cli.log", base, work)
+    if base.returncode:
+        raise SystemExit("Jarde could not recover the physical Base declaration")
+    base_source = jarde_snapshot / "Base.java"
+    base_source.write_text(base.stdout)
+
+    child_name = "AnonymousSuperDirect$1"
+    child = run([str(cli), "class-source", "--input", str(jar), "--class", child_name, "--policy", "plain-jar", "--release", "8", "--format", "text", "--evidence", "all"])
+    save(f"jarde-{child_name}-cli.log", child, work)
+    if child.returncode or "class AnonymousSuperDirect$1" not in child.stdout:
+        raise SystemExit("the independent physical anonymous child query disappeared")
+    child_snapshot = EVD / "jarde-fixed-physical-child"
+    child_snapshot.mkdir(exist_ok=True)
+    (child_snapshot / f"{child_name}.java").write_text(child.stdout)
+    (EVD / "jarde-fixed-cli-status.txt").write_text(
+        f"AnonymousSuperDirect(all/essential): exit={root_all.returncode}/{root_essential.returncode}\n"
+        f"Base: exit={base.returncode}\n{child_name}: exit={child.returncode}\n"
+    )
 
     jarde_classes = work / "jarde-classes"
     jarde_classes.mkdir()
-    if len(jarde_sources) == len(CLASSES):
-        compiled = run(["javac", "--release", "8", "-g:none", "-d", str(jarde_classes), *map(str, jarde_sources)])
-    else:
-        compiled = subprocess.CompletedProcess([], 99, "", "one or more class-source requests failed\n")
-    save("jarde-javac.log", compiled, work)
+    compiled = run(["javac", "--release", "8", "-g:none", "-d", str(jarde_classes), str(root_source), str(base_source)])
+    save("jarde-fixed-javac.log", compiled, work)
     if compiled.returncode:
         raise SystemExit(compiled.returncode)
     launched = run(["java", "-Xverify:all", "-cp", str(jarde_classes), "AnonymousSuperDirect"])
-    save("jarde-run.log", launched, work)
+    save("jarde-fixed-run.log", launched, work)
     if launched.returncode or launched.stdout != EXPECTED:
         raise SystemExit("Jarde source output differed from original")
 
@@ -147,4 +161,4 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt06a-anonymous-super-direct-") a
         versions.append(f"$ {' '.join(command)}\n{result.stdout}{result.stderr}exit={result.returncode}\n")
     jadx_head = run(["git", "rev-parse", "HEAD"], cwd=JADX_ROOT)
     versions.append(f"JADX source HEAD: {jadx_head.stdout.strip()}\n")
-    (EVD / "toolchain.log").write_text("".join(versions))
+    (EVD / "toolchain-fixed.log").write_text("".join(versions))
