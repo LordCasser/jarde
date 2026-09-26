@@ -4113,6 +4113,9 @@ impl Walker<'_> {
             let reason = FallbackReason::Irreducible { blocks: bcis };
             return Ok(gap(Vec::new(), vec![header.clone()], reason, None));
         }
+        if let Some(region) = self.latch_test_chain(header, header_node, &blocks)? {
+            return Ok(region);
+        }
         if let Some(region) = self.header_tested_loop(header, header_node, &blocks, frame)? {
             return Ok(region);
         }
@@ -4974,6 +4977,344 @@ impl Walker<'_> {
                 .filter(|region| matches!(region, Region::Fallback { .. })),
         );
         (run, None)
+    }
+
+    /// Proves the narrow bottom-tested short-circuit shape where the first test shares the body
+    /// entry block. That block is written once as the body; only its value-producing suffix belongs
+    /// to the test, and later tests are ordinary pure latch blocks.
+    fn latch_test_chain(
+        &mut self,
+        header: &CanonicalBlockId,
+        header_node: usize,
+        blocks: &BTreeSet<usize>,
+    ) -> Result<Option<Run>, StopReason> {
+        let Some((first_bci, _, _)) = self.first_latch_test_suffix(header) else {
+            return Ok(None);
+        };
+        if self
+            .operations
+            .get(first_bci)
+            .and_then(Operation::comparison)
+            .is_none()
+        {
+            return Ok(None);
+        }
+        let first_successors = self.view.successor_ids(header);
+        if first_successors.len() != 2 {
+            return Ok(None);
+        }
+
+        // A branch straight back to the body entry makes this an OR chain. Otherwise the first
+        // false edge must already name the one exit shared by every test, making it an AND chain.
+        let operator = if first_successors
+            .iter()
+            .any(|successor| self.view.index_of(successor) == Some(header_node))
+        {
+            crate::ast::BinaryOp::LogicalOr
+        } else {
+            let outside: Vec<_> = first_successors
+                .iter()
+                .filter(|successor| {
+                    self.view
+                        .index_of(successor)
+                        .is_some_and(|node| !blocks.contains(&node))
+                })
+                .cloned()
+                .collect();
+            let [_exit] = outside.as_slice() else {
+                return Ok(None);
+            };
+            crate::ast::BinaryOp::LogicalAnd
+        };
+
+        let mut tests = Vec::new();
+        let mut seen = BTreeSet::new();
+        let mut current = header.clone();
+        let mut current_node = header_node;
+        let mut exit: Option<CanonicalBlockId> = None;
+        loop {
+            if !seen.insert(current_node) {
+                return Ok(None);
+            }
+            let facts = if current_node == header_node {
+                let Some(test_bci) = self.terminal_bci(&current) else {
+                    return Ok(None);
+                };
+                poll(self.budget, Some(test_bci))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(test_bci),
+                )?;
+                let Some((op, target)) = self
+                    .operations
+                    .get(test_bci)
+                    .and_then(Operation::comparison)
+                else {
+                    return Ok(None);
+                };
+                if self.branch_arity_proved(&current, test_bci, op).is_err()
+                    || (self.leaving_edge(&current).is_some()
+                        && !self.leaves_only_through_dead_edges(&current))
+                    || !self.latch_test_suffix_is_effect_free(&current, test_bci)
+                {
+                    return Ok(None);
+                }
+                (test_bci, target, self.view.successor_ids(&current))
+            } else {
+                match self.proved_header_test(header, &current, current_node)? {
+                    Ok(facts) => facts,
+                    Err(_) => return Ok(None),
+                }
+            };
+            let (test_bci, target, successors) = facts;
+            if successors.len() != 2 {
+                return Ok(None);
+            }
+            let target_node = successors
+                .iter()
+                .find(|successor| successor.bci() == target);
+            let Some(target_node) = target_node else {
+                return Ok(None);
+            };
+
+            let branch_to_header = successors
+                .iter()
+                .find(|successor| self.view.index_of(successor) == Some(header_node));
+            let (condition_route, next_route) = match operator {
+                crate::ast::BinaryOp::LogicalAnd => {
+                    // The condition's true edge advances through the chain; false exits.
+                    let Some(exit_edge) = successors.iter().find(|successor| {
+                        self.view
+                            .index_of(successor)
+                            .is_some_and(|node| !blocks.contains(&node))
+                    }) else {
+                        return Ok(None);
+                    };
+                    if exit.as_ref().is_some_and(|known| known != exit_edge) {
+                        return Ok(None);
+                    }
+                    exit.get_or_insert_with(|| exit_edge.clone());
+                    let Some(condition_route) = successors
+                        .iter()
+                        .find(|successor| *successor != exit_edge)
+                        .cloned()
+                    else {
+                        return Ok(None);
+                    };
+                    let route_node = self.view.index_of(&condition_route);
+                    if route_node.is_none_or(|node| !blocks.contains(&node)) {
+                        return Ok(None);
+                    }
+                    (
+                        condition_route.clone(),
+                        (route_node != Some(header_node)).then_some(condition_route),
+                    )
+                }
+                crate::ast::BinaryOp::LogicalOr => {
+                    let Some(body_edge) = branch_to_header.cloned() else {
+                        return Ok(None);
+                    };
+                    let Some(route_edge) = successors
+                        .iter()
+                        .find(|successor| *successor != &body_edge)
+                        .cloned()
+                    else {
+                        return Ok(None);
+                    };
+                    if self
+                        .view
+                        .index_of(&route_edge)
+                        .is_none_or(|node| !blocks.contains(&node))
+                    {
+                        if exit.as_ref().is_some_and(|known| known != &route_edge) {
+                            return Ok(None);
+                        }
+                        exit = Some(route_edge.clone());
+                    }
+                    (
+                        body_edge,
+                        self.view
+                            .index_of(&route_edge)
+                            .filter(|node| blocks.contains(node))
+                            .map(|_| route_edge),
+                    )
+                }
+                _ => return Ok(None),
+            };
+            let continuation = if target_node == &condition_route {
+                Continuation::Taken
+            } else {
+                Continuation::FallThrough
+            };
+            tests.push((current.clone(), test_bci, continuation));
+
+            let Some(next_route) = next_route else {
+                break;
+            };
+            let Some(next_node) = self.view.index_of(&next_route) else {
+                return Ok(None);
+            };
+            if !blocks.contains(&next_node)
+                || self.view.predecessors(next_node) != [current_node]
+                || self
+                    .terminal_bci(&next_route)
+                    .and_then(|bci| self.operations.get(bci))
+                    .and_then(Operation::comparison)
+                    .is_none()
+            {
+                return Ok(None);
+            }
+            current = next_route;
+            current_node = next_node;
+        }
+        if tests.len() < 2 {
+            return Ok(None);
+        }
+        let Some(exit) = exit else {
+            return Ok(None);
+        };
+        let test_nodes: BTreeSet<_> = tests
+            .iter()
+            .filter_map(|(test, _, _)| self.view.index_of(test))
+            .collect();
+        if test_nodes != *blocks
+            || self
+                .view
+                .predecessors(header_node)
+                .into_iter()
+                .any(|source| blocks.contains(&source) && !test_nodes.contains(&source))
+            || self
+                .view
+                .predecessors(header_node)
+                .into_iter()
+                .filter(|source| !blocks.contains(source))
+                .count()
+                != 1
+            || self
+                .view
+                .loop_entered_at(header_node)
+                .is_none_or(|loop_fact| {
+                    loop_fact
+                        .latches()
+                        .iter()
+                        .any(|latch| !test_nodes.contains(latch))
+                        || loop_fact.latches().is_empty()
+                })
+        {
+            return Ok(None);
+        }
+        // The initial edge into a do-while body is its one legal non-test predecessor. Every later
+        // test block was already checked above for exactly one predecessor: the previous test.
+        let internal_header_predecessors: BTreeSet<_> = self
+            .view
+            .predecessors(header_node)
+            .into_iter()
+            .filter(|source| blocks.contains(source))
+            .collect();
+        let expected_header_predecessors: BTreeSet<_> = tests
+            .iter()
+            .filter_map(|(test, _, _)| self.view.index_of(test))
+            .filter(|node| self.view.successors(*node).contains(&header_node))
+            .collect();
+        if internal_header_predecessors != expected_header_predecessors {
+            return Ok(None);
+        }
+
+        self.visited.extend(test_nodes.iter().copied());
+        let run = vec![Region::Loop {
+            header: header.clone(),
+            tests,
+            test_operator: Some(operator),
+            form: LoopForm::DoWhile,
+            for_header: None,
+            body: vec![Region::Straight {
+                blocks: vec![header.clone()],
+            }],
+            exit: Some(exit.clone()),
+        }];
+        Ok(Some((run, Some(exit))))
+    }
+
+    fn first_latch_test_suffix(
+        &self,
+        block: &CanonicalBlockId,
+    ) -> Option<(u32, usize, BTreeSet<u32>)> {
+        let test_bci = self.terminal_bci(block)?;
+        self.operations.get(test_bci)?.comparison()?;
+        let names = self.ssa.block(block)?;
+        let condition_bcis: BTreeSet<_> = self
+            .condition_value_bcis(block, test_bci, names)
+            .into_iter()
+            .filter(|bci| {
+                matches!(
+                    self.operations.get(*bci),
+                    Some(
+                        Operation::Push(_)
+                            | Operation::Load { .. }
+                            | Operation::Arithmetic { .. }
+                            | Operation::Negate
+                            | Operation::NumericComparison { .. }
+                            | Operation::Invoke(_)
+                            | Operation::Field {
+                                access: crate::facts::FieldAccess::Read,
+                                ..
+                            }
+                    )
+                )
+            })
+            .collect();
+        let first_condition = names
+            .instructions()
+            .iter()
+            .position(|instruction| condition_bcis.contains(&instruction.bci()))?;
+        Some((test_bci, first_condition, condition_bcis))
+    }
+
+    fn latch_test_suffix_is_effect_free(&self, block: &CanonicalBlockId, test_bci: u32) -> bool {
+        let Some((_, first_condition, condition_bcis)) = self.first_latch_test_suffix(block) else {
+            return false;
+        };
+        let Some(names) = self.ssa.block(block) else {
+            return false;
+        };
+        if names.instructions()[first_condition..]
+            .iter()
+            .any(|instruction| {
+                instruction.bci() != test_bci && !condition_bcis.contains(&instruction.bci())
+            })
+        {
+            return false;
+        }
+        names.instructions()[first_condition..]
+            .iter()
+            .filter(|instruction| instruction.bci() != test_bci)
+            .all(|instruction| {
+                matches!(
+                    self.operations.get(instruction.bci()),
+                    Some(
+                        Operation::Push(_)
+                            | Operation::Load { .. }
+                            | Operation::Arithmetic { .. }
+                            | Operation::Negate
+                            | Operation::NumericComparison { .. }
+                            | Operation::Invoke(_)
+                            | Operation::Field {
+                                access: crate::facts::FieldAccess::Read,
+                                ..
+                            }
+                    )
+                )
+            })
+            && names.instructions()[..first_condition]
+                .iter()
+                .all(|instruction| {
+                    matches!(
+                        self.operations.get(instruction.bci()),
+                        Some(Operation::Increment { .. })
+                    )
+                })
     }
 
     /// The `do … while` shape: one latch, whose own branch tests and jumps back to the header.
