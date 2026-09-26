@@ -7012,6 +7012,17 @@ impl Builder<'_> {
                 "the short-circuit Phi at BCI {at} has no Java integer conditional type"
             )));
         }
+        let expression = if matches!(proof.consumer, ShortCircuitConsumer::Return)
+            && self.return_type == Some(Type::Boolean)
+            && self.ssa.value(proof.true_producer).replaced_by().is_none()
+            && self.ssa.value(proof.false_producer).replaced_by().is_none()
+            && integer_constant(self.ssa, self.operations, proof.true_producer) == Some(1)
+            && integer_constant(self.ssa, self.operations, proof.false_producer) == Some(0)
+        {
+            short_circuit_boolean_expression(expression.clone(), 0).unwrap_or(expression)
+        } else {
+            expression
+        };
         let (value, kind) = match &proof.consumer {
             ShortCircuitConsumer::Field(owner, name, descriptor) => {
                 let Some((evidence, shape)) = self.fields.claim(at) else {
@@ -11427,6 +11438,9 @@ impl Builder<'_> {
             return Ok(rendered);
         };
         if matches!(required, Type::Boolean) {
+            if rendered.presented == Some(Type::Boolean) {
+                return Ok(rendered);
+            }
             if self
                 .instructions
                 .get(&return_bci)
@@ -15860,6 +15874,161 @@ impl Builder<'_> {
     }
 }
 
+/// Project the exact `1`/`0` leaves of a proved short-circuit value tree to a Java boolean tree.
+/// Where a branch pairs one truth leaf with a continuing subtree, translating the branch to `&&`
+/// or `||` preserves which successor runs first and evaluates the other subtree only on the same
+/// edge as the original bytecode. Two equal truth leaves remain a conditional so a test's effects
+/// are still evaluated.
+fn short_circuit_boolean_expression(expression: Expr, depth: usize) -> Option<Expr> {
+    if depth > MAX_VALUE_DEPTH {
+        return None;
+    }
+    match expression.kind.clone() {
+        ExprKind::Integer(1) => Some(Expr::new(ExprKind::Boolean(true), expression.origin)),
+        ExprKind::Integer(0) => Some(Expr::new(ExprKind::Boolean(false), expression.origin)),
+        ExprKind::Conditional {
+            test,
+            when_true,
+            when_false,
+        } => {
+            if test.presented != Some(Type::Boolean) {
+                return None;
+            }
+            let when_true = short_circuit_boolean_expression(*when_true, depth + 1)?;
+            let when_false = short_circuit_boolean_expression(*when_false, depth + 1)?;
+            let true_constant = match &when_true.kind {
+                ExprKind::Boolean(value) => Some(*value),
+                _ => None,
+            };
+            let false_constant = match &when_false.kind {
+                ExprKind::Boolean(value) => Some(*value),
+                _ => None,
+            };
+            let mut origin = expression.origin.clone();
+            for operand in [&*test, &when_true, &when_false] {
+                origin = origin.plus_derived(operand.origin.primary().clone());
+                for derived in operand.origin.derived() {
+                    origin = origin.plus_derived(derived.clone());
+                }
+            }
+            let test = *test;
+            let result = match (true_constant, false_constant) {
+                (Some(left), Some(right)) if left == right => Expr::new(
+                    ExprKind::Conditional {
+                        test: Box::new(test.clone()),
+                        when_true: Box::new(when_true),
+                        when_false: Box::new(when_false),
+                    },
+                    origin.clone(),
+                ),
+                (Some(true), Some(false)) => test.clone(),
+                (Some(false), Some(true)) => short_circuit_not(test.clone(), origin.clone()),
+                (Some(true), _) => logical_expression(
+                    BinaryOp::LogicalOr,
+                    test.clone(),
+                    when_false,
+                    origin.clone(),
+                ),
+                (Some(false), _) => logical_expression(
+                    BinaryOp::LogicalAnd,
+                    short_circuit_not(test.clone(), test.origin.clone()),
+                    when_false,
+                    origin.clone(),
+                ),
+                (_, Some(true)) => logical_expression(
+                    BinaryOp::LogicalOr,
+                    short_circuit_not(test.clone(), test.origin.clone()),
+                    when_true,
+                    origin.clone(),
+                ),
+                (_, Some(false)) => logical_expression(
+                    BinaryOp::LogicalAnd,
+                    test.clone(),
+                    when_true,
+                    origin.clone(),
+                ),
+                _ => return None,
+            };
+            Some(Expr { origin, ..result })
+        }
+        _ => None,
+    }
+}
+
+/// Negate a test for the opposite short-circuit edge. Integral comparisons can state the exact
+/// complementary relation without changing NaN behavior; floating comparisons remain an explicit
+/// `!` because their complements are not generally equivalent in the presence of NaN.
+fn short_circuit_not(value: Expr, origin: crate::source_map::OriginSet) -> Expr {
+    if let ExprKind::Not { value: inner } = &value.kind {
+        return Expr {
+            origin,
+            ..(**inner).clone()
+        };
+    }
+    let ExprKind::Binary { op, left, right } = &value.kind else {
+        return Expr::new(
+            ExprKind::Not {
+                value: Box::new(value),
+            },
+            origin,
+        );
+    };
+    let integral = |ty: &Option<Type>| {
+        matches!(
+            ty,
+            Some(Type::Byte | Type::Short | Type::Char | Type::Int | Type::Long)
+        )
+    };
+    if !integral(&left.presented) || !integral(&right.presented) {
+        return Expr::new(
+            ExprKind::Not {
+                value: Box::new(value),
+            },
+            origin,
+        );
+    }
+    let complement = match op {
+        BinaryOp::Equal => BinaryOp::NotEqual,
+        BinaryOp::NotEqual => BinaryOp::Equal,
+        BinaryOp::Less => BinaryOp::GreaterOrEqual,
+        BinaryOp::LessOrEqual => BinaryOp::Greater,
+        BinaryOp::Greater => BinaryOp::LessOrEqual,
+        BinaryOp::GreaterOrEqual => BinaryOp::Less,
+        _ => {
+            return Expr::new(
+                ExprKind::Not {
+                    value: Box::new(value),
+                },
+                origin,
+            );
+        }
+    };
+    Expr::new(
+        ExprKind::Binary {
+            op: complement,
+            left: left.clone(),
+            right: right.clone(),
+        },
+        origin,
+    )
+}
+
+fn logical_expression(
+    op: BinaryOp,
+    left: Expr,
+    right: Expr,
+    origin: crate::source_map::OriginSet,
+) -> Expr {
+    Expr::new(
+        ExprKind::Binary {
+            op,
+            left: Box::new(left),
+            right: Box::new(right),
+        },
+        origin,
+    )
+}
+
 /// Whether this erased SAM can type-check the proved array constructor without a generic
 /// signature projection. In particular, an `Object -> Integer` check-cast is not a method
 /// reference-compatible input and must keep the helper call.
@@ -18903,6 +19072,9 @@ mod tests {
     const SHORT_CIRCUIT_LOCAL_FIXTURE: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-conditional-values/short-circuit-local/LocalShortCircuit.class"
     );
+    const SHORT_CIRCUIT_RETURN_FIXTURE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-boolean-short-circuit-return/v8/BoolValue.class"
+    );
     const LOOP_TRANSFERS_FIXTURE: &[u8] =
         include_bytes!("../../../tests/fixtures/p3-loop-transfers/v8/OuterContinue.class");
     /// Runs the real JVM IR and region producers, then asks only this proof about their output.
@@ -19048,8 +19220,13 @@ mod tests {
         let candidate = candidate.clone();
         let attempt = prove_conditional_value(&candidate, canonical, ssa, &operations, &mut budget)
             .expect("the bounded conditional proof completes");
+        let short_candidate = recovered
+            .regions
+            .iter()
+            .find(|region| matches!(region, Region::ShortCircuitValue { .. }))
+            .unwrap_or(&candidate);
         let short_attempt = prove_short_circuit_value(
-            short_region.unwrap_or(&candidate),
+            short_region.unwrap_or(short_candidate),
             canonical,
             ssa,
             &operations,
@@ -19074,6 +19251,8 @@ mod tests {
                 3
             } else if descriptor == "(ZZ)V" {
                 2
+            } else if descriptor == "(II)Z" {
+                2
             } else {
                 u16::from(!descriptor.starts_with("()"))
             },
@@ -19095,6 +19274,26 @@ mod tests {
             report,
             short_attempt,
         )
+    }
+
+    #[test]
+    fn the_frozen_boolean_short_circuit_return_has_a_closed_value_proof() {
+        let (region, _, _, _, report, short_attempt) =
+            fixture_value_attempts(SHORT_CIRCUIT_RETURN_FIXTURE, "and", "(II)Z", None);
+        assert!(
+            matches!(region, Region::ShortCircuitValue { .. }),
+            "candidate was not a short-circuit value region: {region:?}"
+        );
+        assert!(
+            matches!(short_attempt, ShortCircuitValueAttempt::Proved(_)),
+            "the return chain should already have a closed CFG/SSA proof: {short_attempt:?}"
+        );
+        assert!(
+            report.text.contains("&&"),
+            "the proved return was not projected: {}\n{:?}",
+            report.text,
+            report.fallbacks
+        );
     }
 
     #[test]

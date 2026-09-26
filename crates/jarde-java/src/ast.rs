@@ -86,6 +86,10 @@ pub enum BinaryOp {
     BitwiseXor,
     /// `|` as an integral or eager boolean operation.
     BitwiseOr,
+    /// `&&` — a proved, short-circuiting boolean conjunction.
+    LogicalAnd,
+    /// `||` — a proved, short-circuiting boolean disjunction.
+    LogicalOr,
     /// `==` as it appears in a condition.
     Equal,
     /// `!=` as it appears in a condition.
@@ -115,6 +119,8 @@ impl BinaryOp {
             Self::BitwiseAnd => "&",
             Self::BitwiseXor => "^",
             Self::BitwiseOr => "|",
+            Self::LogicalAnd => "&&",
+            Self::LogicalOr => "||",
             Self::Equal => "==",
             Self::NotEqual => "!=",
             Self::Less => "<",
@@ -574,6 +580,13 @@ fn presented_of(kind: &ExprKind) -> Option<Type> {
 /// accept either two booleans or two integral values; they never turn an int-shaped mixed pair into
 /// a Java expression. The layer states **no** type for a shape it cannot write.
 fn binary_type(op: BinaryOp, left: &Expr, right: &Expr) -> Option<Type> {
+    if matches!(op, BinaryOp::LogicalAnd | BinaryOp::LogicalOr) {
+        return matches!(
+            (left.presented.as_ref()?, right.presented.as_ref()?),
+            (Type::Boolean, Type::Boolean)
+        )
+        .then_some(Type::Boolean);
+    }
     if matches!(
         op,
         BinaryOp::LeftShift | BinaryOp::RightShift | BinaryOp::UnsignedRightShift
@@ -932,6 +945,8 @@ mod tests {
         assert_eq!(BinaryOp::BitwiseAnd.spell(), "&");
         assert_eq!(BinaryOp::BitwiseXor.spell(), "^");
         assert_eq!(BinaryOp::BitwiseOr.spell(), "|");
+        assert_eq!(BinaryOp::LogicalAnd.spell(), "&&");
+        assert_eq!(BinaryOp::LogicalOr.spell(), "||");
         assert_eq!(
             Type::Reference("java.lang.String".into()).spell(),
             "java.lang.String"
@@ -968,6 +983,22 @@ mod tests {
             None,
             "floating values are not integer bitwise operands"
         );
+    }
+
+    #[test]
+    fn logical_operators_require_boolean_operands() {
+        let boolean = Expr::direct(ExprKind::Boolean(true), 1);
+        let integer = Expr::direct(ExprKind::Integer(1), 2);
+        assert_eq!(
+            binary_type(BinaryOp::LogicalAnd, &boolean, &boolean),
+            Some(Type::Boolean)
+        );
+        assert_eq!(
+            binary_type(BinaryOp::LogicalOr, &boolean, &boolean),
+            Some(Type::Boolean)
+        );
+        assert_eq!(binary_type(BinaryOp::LogicalAnd, &boolean, &integer), None);
+        assert_eq!(binary_type(BinaryOp::LogicalOr, &integer, &integer), None);
     }
 
     #[test]
