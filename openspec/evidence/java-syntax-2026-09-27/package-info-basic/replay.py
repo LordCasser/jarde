@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -32,6 +33,17 @@ def save(name, value, work):
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def write_negative_jar(path, package_info):
+    with zipfile.ZipFile(path, "w") as archive:
+        for name, contents in (
+            ("p/Check.class", (FIX / "v8/p/Check.class").read_bytes()),
+            ("p/package-info.class", package_info),
+        ):
+            entry = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            entry.compress_type = zipfile.ZIP_STORED
+            archive.writestr(entry, contents)
 
 
 with tempfile.TemporaryDirectory(prefix="jarde-em04-package-info-") as temp:
@@ -167,10 +179,7 @@ with tempfile.TemporaryDirectory(prefix="jarde-em04-package-info-") as temp:
         raise SystemExit("frozen package-info flags differ before negative mutation")
     malformed[offset:offset + 2] = (0x0600).to_bytes(2, "big")
     negative_jar = work / "nonstandard.jar"
-    import zipfile
-    with zipfile.ZipFile(negative_jar, "w") as archive:
-        archive.write(jarde_classes / "p/Check.class", "p/Check.class")
-        archive.writestr("p/package-info.class", malformed)
+    write_negative_jar(negative_jar, malformed)
     verified = run(["java", "-Xverify:all", "-cp", str(negative_jar), "p.Check"])
     save("nonstandard-run.log", verified, work)
     if verified.returncode or verified.stdout != EXPECTED:
@@ -224,9 +233,7 @@ with tempfile.TemporaryDirectory(prefix="jarde-em04-package-info-") as temp:
     if not replaced:
         raise SystemExit("frozen package annotation descriptor was not found")
     wrong_target_jar = work / "wrong-target.jar"
-    with zipfile.ZipFile(wrong_target_jar, "w") as archive:
-        archive.write(jarde_classes / "p/Check.class", "p/Check.class")
-        archive.writestr("p/package-info.class", wrong_target)
+    write_negative_jar(wrong_target_jar, wrong_target)
     verified = run(["java", "-Xverify:all", "-cp", str(wrong_target_jar), "p.Check"])
     save("wrong-target-run.log", verified, work)
     if verified.returncode:
