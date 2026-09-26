@@ -25,7 +25,7 @@
 
    用途普查取本次 `PreparedClass` 的方法表、每个已分析方法的同次 IR/常量池/BSM 事实，并要求全部声明的 Code 方法已完整分析；逐个查同物理 helper 的直接 invoke、动态站点 BSM 实现句柄、LDC MethodHandle 及其它可达句柄消费。只有每个用途都精确属于已证可投影的站点、且至少有一个站点，才省略 helper。`jarde-query::xref::scan_candidates` 有完整覆盖与 exact item 的可借鉴验收规则，但它会从 snapshot/scope 再枚举并读取 class，当前没有 `PreparedClass` overload，不用它做本次同类 census。不能以 `lambda$` 名称、合成标志或候选个数当作用途完整证明。
 
-   第一轮类级 Java 8 源目标门限于无需尚未投影泛型 Signature 的直接返回/赋值：零捕获、单参数，擦除 SAM 参数与 instantiated 参数之间无 `CheckCast`，允许 `int` 恒等或 `Integer` 经已证 unbox 到长度 `int`，数组返回恒等或 Object 上溯，并核对实际已拼写的函数式声明。raw `Function` 的 Object→Integer 检查必须拒绝；非泛型 `ArrayMaker.make(Integer)` 可作同名 helper 正例。多站点或其它消费者只有在全部被同一批次完整证明时才投影。
+   首轮类级 Java 8 源目标门限于无需尚未投影泛型 Signature、且方法体是直接 `return` 唯一 Lambda 的单站点：零捕获、单参数，擦除 SAM 参数与 instantiated 参数之间无 `CheckCast`，允许 `int` 恒等或 `Integer` 经已证 unbox 到长度 `int`，数组返回恒等或 Object 上溯，并核对实际已拼写的函数式声明。raw `Function` 的 Object→Integer 检查必须拒绝；非泛型 `ArrayMaker.make(Integer)` 可作同名 helper 正例。直接赋值、嵌套表达式及多站点另列 2.3d，仍须证明全部用途后才原子投影。
 5. **负例与执行对照。** arity 错位、`String`↔`int`、错误包装类、合成方法附加效果/handler/错误数组类型、null 拆箱、负数组长度及边界 Integer 值经 SAM 往返；捕获边界原拒绝不放宽。
 
 ## Risks / Trade-offs
