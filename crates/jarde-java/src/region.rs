@@ -4018,9 +4018,18 @@ impl Walker<'_> {
         if frame.boundary == Some(join) {
             return true;
         }
+        self.forward_join_predecessors(branch, join)
+    }
+
+    /// Whether every incoming edge to `join` comes from this branch's forward region, with at
+    /// least one predecessor beyond the branch itself. Switches use this same ownership test after
+    /// their N-way arm paths identify a candidate; unlike the binary-branch wrapper above, that
+    /// candidate must also pass this check when it is an enclosing boundary.
+    fn forward_join_predecessors(&self, branch: usize, join: usize) -> bool {
+        if self.view.is_loop_header(join) {
+            return false;
+        }
         let predecessors = self.view.predecessors(join);
-        // A successor whose only way in is this branch is where this branch continues, not a block
-        // two arms meet at.
         if predecessors
             .iter()
             .all(|predecessor| *predecessor == branch)
@@ -4852,6 +4861,11 @@ impl Walker<'_> {
                 .iter()
                 .any(|target| target.break_target == Some(join))
         });
+        let forward_join = if !post_is_loop_exit && post_join.is_none() {
+            self.switch_forward_join(node, successors, frame, branch.bci())?
+        } else {
+            None
+        };
         let join_node = if post_is_loop_exit {
             let Some(local_join) = self.switch_loop_join(node, successors, frame, branch_bci)?
             else {
@@ -4866,7 +4880,7 @@ impl Walker<'_> {
             };
             Some(local_join)
         } else {
-            post_join
+            post_join.or(forward_join)
         };
         let join = join_node.and_then(|join| self.view.id_of(join).cloned());
         let join_bci = join.as_ref().map(CanonicalBlockId::bci);
@@ -4988,18 +5002,26 @@ impl Walker<'_> {
                     },
                 ));
             };
-            let case_frame = if fall_throughs
+            let proven_fallthrough = fall_throughs
                 .as_ref()
-                .is_some_and(|fall_throughs| !fall_throughs.is_empty())
-                || join_node != post_join
-            {
+                .is_some_and(|fall_throughs| !fall_throughs.is_empty());
+            let local_loop_join = post_is_loop_exit && join_node != post_join;
+            let case_frame = if proven_fallthrough || local_loop_join {
                 let current = self.view.index_of(&start);
                 let mut other_entries = case_entries.clone();
                 if let Some(current) = current {
                     other_entries.remove(&current);
                 }
                 frame.switch_arm(join_node, &other_entries, branch_bci)
+            } else if join_node.is_some() {
+                // The switch's shared join belongs to the continuation after the switch. The
+                // ordinary branch boundary is checked only after `visited` is changed, so two arms
+                // reaching it would be mistaken for a loop re-entry. Keep other case entries
+                // unbounded unless fallthrough was proved: otherwise a cross-case route could be
+                // silently emitted as an independent arm with an inserted `break`.
+                frame.switch_arm(join_node, &BTreeSet::new(), branch_bci)
             } else {
+                // With no proven join, preserve the ordinary frame's transfer and ownership rules.
                 frame.arm(join_node, Some(branch_bci))
             };
             let (arm_run, _) = self.region_at(&start, &case_frame)?;
@@ -5047,6 +5069,165 @@ impl Walker<'_> {
         }];
         run.extend(tails);
         Ok((run, join))
+    }
+
+    /// Find the narrow shared forward join needed when a switch's direct return/throw arm
+    /// prevents an immediate post-dominator from existing. Every nonterminal target must be a
+    /// straight, acyclic path to the same candidate; other targets must be direct return/throw
+    /// blocks. This deliberately leaves nested exits and cross-case paths to the overlap refusal.
+    fn switch_forward_join(
+        &mut self,
+        branch: usize,
+        successors: &[CanonicalBlockId],
+        frame: &Frame,
+        at: u32,
+    ) -> Result<Option<usize>, StopReason> {
+        let targets: BTreeSet<usize> = successors
+            .iter()
+            .filter_map(|successor| self.view.index_of(successor))
+            .collect();
+        if targets.len() < 3 {
+            return Ok(None);
+        }
+
+        let mut routes = Vec::new();
+        let mut terminal_targets = 0usize;
+        for start in targets.iter().copied() {
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+            if self.switch_target_is_terminal(start) {
+                terminal_targets += 1;
+                continue;
+            }
+
+            let mut route = Vec::new();
+            let mut seen = BTreeSet::new();
+            let mut current = start;
+            loop {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                if !seen.insert(current)
+                    || (current != start && targets.contains(&current))
+                    || frame
+                        .case_entries
+                        .as_ref()
+                        .is_some_and(|entries| entries.contains(&current))
+                    || frame
+                        .scope
+                        .as_ref()
+                        .is_some_and(|scope| !scope.contains(&current))
+                {
+                    return Ok(None);
+                }
+                route.push(current);
+                if frame.boundary == Some(current) {
+                    break;
+                }
+                let next = self.view.successors(current);
+                match next.as_slice() {
+                    [next] => {
+                        poll(self.budget, Some(at))?;
+                        charge(
+                            self.budget,
+                            CountedBudgetDimension::AnalysisSteps,
+                            1,
+                            Some(at),
+                        )?;
+                        if self.view.dominates(*next, current)
+                            || (targets.contains(next) && *next != start)
+                            || (frame
+                                .scope
+                                .as_ref()
+                                .is_some_and(|scope| !scope.contains(next))
+                                && frame.boundary != Some(*next))
+                        {
+                            return Ok(None);
+                        }
+                        current = *next;
+                    }
+                    [] if self.switch_target_is_terminal(current) => break,
+                    _ => return Ok(None),
+                }
+            }
+            routes.push(route);
+        }
+        if routes.len() < 2 || terminal_targets == 0 {
+            return Ok(None);
+        }
+
+        // Linear routes can merge only once and then share their suffix. Build position maps once,
+        // charging each stored node, then select the first node in the first route shared by every
+        // route. No address or path-length score stands in for the graph's unique merge order.
+        let mut positions = Vec::with_capacity(routes.len());
+        for route in &routes {
+            let mut route_positions = BTreeMap::new();
+            for (position, node) in route.iter().copied().enumerate() {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                route_positions.insert(node, position);
+            }
+            positions.push(route_positions);
+        }
+        let Some(first) = routes.first() else {
+            return Ok(None);
+        };
+        // Charge candidate-to-route membership checks before the bounded nested scan.
+        poll(self.budget, Some(at))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(first.len().saturating_mul(positions.len())).unwrap_or(u64::MAX),
+            Some(at),
+        )?;
+        let Some(candidate) = first.iter().copied().find(|candidate| {
+            !targets.contains(candidate)
+                && positions.iter().all(|route| route.contains_key(candidate))
+        }) else {
+            return Ok(None);
+        };
+
+        let predecessors = self.view.predecessors(candidate);
+        for _ in &predecessors {
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+        }
+        // Reuse the binary forward-join ownership rule: no outside predecessor and no backedge
+        // into the candidate. Do not skip an earlier common node if it fails this ownership test.
+        Ok(self
+            .forward_join_predecessors(branch, candidate)
+            .then_some(candidate))
+    }
+
+    /// Whether a case target is a terminal block with an explicit return or throw.
+    fn switch_target_is_terminal(&self, target: usize) -> bool {
+        if !self.view.successors(target).is_empty() {
+            return false;
+        }
+        self.view
+            .id_of(target)
+            .and_then(|block| self.terminal_bci(block))
+            .and_then(|bci| self.operations.get(bci))
+            .is_some_and(|operation| matches!(operation, Operation::Return | Operation::Throw))
     }
 
     /// Prove the ordinary fallthrough edges that can be represented by ordering case labels.
