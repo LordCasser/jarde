@@ -1,7 +1,14 @@
 //! The release-8 two-resource TWR proof, including exact construction-site ownership.
 
 use jarde::*;
+use std::fs;
+use std::io::Read;
+use std::path::{Path, PathBuf};
+use std::process::{Command, Output, Stdio};
 use std::slice;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::thread;
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 const SAMPLE: &[u8] = include_bytes!(
     "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr.class"
@@ -9,6 +16,289 @@ const SAMPLE: &[u8] = include_bytes!(
 const WRONG_MAIN_END: &[u8] = include_bytes!(
     "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/patched-negative/MultiResourceTwr.class"
 );
+const ORIGINAL_PROBE: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr$Probe.class"
+);
+const ORIGINAL_BODY_FAILURE: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr$BodyFailure.class"
+);
+const ORIGINAL_CLOSE_FAILURE: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr$CloseFailure.class"
+);
+const ORIGINAL_RUNTIME: &str = include_str!(
+    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/runtime.txt"
+);
+
+static NEXT_SCRATCH: AtomicU64 = AtomicU64::new(0);
+
+struct Scratch(PathBuf);
+
+impl Scratch {
+    fn new() -> Self {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("system time is after the epoch")
+            .as_nanos();
+        let sequence = NEXT_SCRATCH.fetch_add(1, Ordering::Relaxed);
+        let path = std::env::temp_dir().join(format!(
+            "jarde-multi-resource-twr-{}-{nonce}-{sequence}",
+            std::process::id()
+        ));
+        fs::create_dir(&path).expect("create the TWR integration scratch directory");
+        Self(path)
+    }
+
+    fn subdir(&self, name: &str) -> PathBuf {
+        let path = self.0.join(name);
+        fs::create_dir(&path).expect("create an isolated class directory");
+        path
+    }
+
+    fn path(&self) -> &Path {
+        &self.0
+    }
+}
+
+impl Drop for Scratch {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.0);
+    }
+}
+
+fn run_bounded(command: &mut Command, timeout: Duration) -> Output {
+    let mut child = command
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("JDK command is available");
+    let started = Instant::now();
+    let status = loop {
+        match child.try_wait().expect("poll JDK process") {
+            Some(status) => break status,
+            None if started.elapsed() < timeout => thread::sleep(Duration::from_millis(10)),
+            None => {
+                let _ = child.kill();
+                let _ = child.wait();
+                panic!("JDK command exceeded {timeout:?}: {command:?}");
+            }
+        }
+    };
+    let stdout = read_pipe(child.stdout.take().expect("stdout is captured"));
+    let stderr = read_pipe(child.stderr.take().expect("stderr is captured"));
+    Output {
+        status,
+        stdout,
+        stderr,
+    }
+}
+
+fn read_pipe(mut pipe: impl Read) -> Vec<u8> {
+    let mut contents = Vec::new();
+    pipe.read_to_end(&mut contents).expect("read child output");
+    contents
+}
+
+fn install_original_family(directory: &Path) {
+    for (name, bytes) in [
+        ("MultiResourceTwr.class", SAMPLE),
+        ("MultiResourceTwr$Probe.class", ORIGINAL_PROBE),
+        ("MultiResourceTwr$BodyFailure.class", ORIGINAL_BODY_FAILURE),
+        (
+            "MultiResourceTwr$CloseFailure.class",
+            ORIGINAL_CLOSE_FAILURE,
+        ),
+    ] {
+        fs::write(directory.join(name), bytes).expect("write the frozen Java 8 class family");
+    }
+}
+
+fn recovered_run_method(text: &str) -> &str {
+    let signature = "private static int run() throws java.lang.Exception {";
+    let start = text
+        .find(signature)
+        .expect("the current Engine report contains the run() declaration");
+    let open = text[start..]
+        .find('{')
+        .map(|offset| start + offset)
+        .expect("run() opens a method body");
+    let mut depth = 0usize;
+    let end = text[open..]
+        .char_indices()
+        .find_map(|(offset, ch)| match ch {
+            '{' => {
+                depth += 1;
+                None
+            }
+            '}' => {
+                depth -= 1;
+                (depth == 0).then_some(open + offset + ch.len_utf8())
+            }
+            _ => None,
+        })
+        .expect("run() has a matching method brace");
+    let method = &text[start..end];
+    assert!(
+        !method.contains("@bytecode"),
+        "run() is completely recovered: {method}"
+    );
+    method
+}
+
+fn recovered_harness(method: &str) -> String {
+    let prefix = r#"public final class RecoveredRunHarness {
+    private static final StringBuilder EVENTS = new StringBuilder();
+    static boolean bodyFails;
+    static boolean innerCloseFails;
+    static boolean outerCloseFails;
+
+    static void event(String value) {
+        if (EVENTS.length() != 0) EVENTS.append(',');
+        EVENTS.append(value);
+    }
+
+    private static void maybeFailBody() throws Exception {
+        if (bodyFails) throw new BodyFailure();
+    }
+
+"#;
+    let suffix = r#"
+    public static void main(String[] args) {
+        String mode = args.length == 0 ? "normal" : args[0];
+        EVENTS.setLength(0);
+        try {
+            bodyFails = mode.equals("body") || mode.equals("suppressed");
+            innerCloseFails = mode.equals("inner-close") || mode.equals("suppressed");
+            outerCloseFails = mode.equals("outer-close") || mode.equals("suppressed");
+            int result = run();
+            System.out.println("result=" + result + ";events=" + EVENTS);
+        } catch (Throwable failure) {
+            StringBuilder suppressed = new StringBuilder();
+            for (Throwable item : failure.getSuppressed()) {
+                if (suppressed.length() != 0) suppressed.append(',');
+                suppressed.append(item.getClass().getSimpleName()).append(':').append(item.getMessage());
+            }
+            System.out.println("throw=" + failure.getClass().getSimpleName() + ':' + failure.getMessage()
+                    + ";suppressed=" + suppressed + ";events=" + EVENTS);
+        }
+    }
+}
+
+final class MultiResourceTwr$Probe implements AutoCloseable {
+    private final String name;
+    MultiResourceTwr$Probe(String name) {
+        this.name = name;
+        RecoveredRunHarness.event("open-" + name);
+    }
+    int read() {
+        RecoveredRunHarness.event("read");
+        return 42;
+    }
+    public void close() throws Exception {
+        RecoveredRunHarness.event("close-" + name);
+        if ((name.equals("inner") && RecoveredRunHarness.innerCloseFails)
+                || (name.equals("outer") && RecoveredRunHarness.outerCloseFails)) {
+            throw new CloseFailure(name);
+        }
+    }
+}
+
+final class BodyFailure extends Exception {
+    BodyFailure() { super("body"); }
+}
+
+final class CloseFailure extends Exception {
+    CloseFailure(String name) { super("close-" + name); }
+}
+"#;
+    let mut source = String::with_capacity(prefix.len() + method.len() + suffix.len());
+    source.push_str(prefix);
+    source.push_str(method);
+    source.push_str(suffix);
+    source
+}
+
+fn five_mode_trace(class_dir: &Path, class_name: &str) -> String {
+    ["normal", "body", "inner-close", "outer-close", "suppressed"]
+        .into_iter()
+        .map(|mode| {
+            let output = run_bounded(
+                Command::new("java")
+                    .arg("-Xverify:all")
+                    .arg("-cp")
+                    .arg(class_dir)
+                    .arg(class_name)
+                    .arg(mode),
+                Duration::from_secs(10),
+            );
+            assert!(
+                output.status.success(),
+                "{class_name} {mode} failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            format!(
+                "{mode} {}",
+                String::from_utf8(output.stdout)
+                    .expect("Java output is UTF-8")
+                    .trim_end()
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+#[test]
+#[ignore = "needs a JDK on PATH to compile the exact recovered run() text and execute both sides"]
+fn recovered_run_compiles_as_java_8_and_matches_original_five_mode_trace() {
+    let report = class_source(SAMPLE);
+    let (method_text, recovered) = run_report(&report);
+    assert!(
+        !recovered
+            .fallbacks
+            .iter()
+            .any(|code| code.starts_with("jre_")),
+        "the method compiled below must be the current Engine report: {:?}; {:?}",
+        recovered.fallbacks,
+        recovered.diagnostics
+    );
+    let method = recovered_run_method(method_text);
+    let scratch = Scratch::new();
+    let original_dir = scratch.subdir("original");
+    install_original_family(&original_dir);
+
+    // This test isolates the exact recovered member: the rest of class-source's full-class output
+    // contains unrelated method fallbacks, so a controlled harness supplies only run()'s support
+    // methods and resource implementation. The original side executes the complete frozen class
+    // family unchanged, and both traces are pinned to the original release-8 runtime evidence.
+    let expected = ORIGINAL_RUNTIME.trim_end();
+    assert_eq!(five_mode_trace(&original_dir, "MultiResourceTwr"), expected);
+
+    let recovered_dir = scratch.subdir("recovered");
+    fs::write(
+        scratch.path().join("RecoveredRunHarness.java"),
+        recovered_harness(method),
+    )
+    .expect("write wrapper with the exact run() text from Engine");
+    let compile = run_bounded(
+        Command::new("javac")
+            .arg("--release")
+            .arg("8")
+            .arg("-g:none")
+            .arg("-d")
+            .arg(&recovered_dir)
+            .arg(scratch.path().join("RecoveredRunHarness.java")),
+        Duration::from_secs(30),
+    );
+    assert!(
+        compile.status.success(),
+        "javac --release 8 rejected the exact recovered run(): {}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    assert_eq!(
+        five_mode_trace(&recovered_dir, "RecoveredRunHarness"),
+        expected,
+        "the recovered resource header preserves return, exception, and suppressed-close order"
+    );
+}
 
 fn budget() -> Budget {
     task_budget(&[]).expect("the task defaults are bounded")
