@@ -608,9 +608,11 @@ pub struct MemberFamilyDerivedProjection {
 pub enum MemberFamilyDerivedKind {
     MemberConstruction,
     CapturedOuterRead,
+    OuterSuperCall,
     HiddenCaptureField,
     HiddenConstructorParameter,
     HiddenCaptureWrite,
+    HiddenOuterSuperBridge,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -627,6 +629,13 @@ pub enum MemberFamilyPhysicalAnchor {
     ConstructorParameter {
         method: PhysicalMethodId,
         index: u32,
+    },
+    /// The bridge's raw MethodRef and the exact selected target declaration are retained together.
+    OuterSuperTarget {
+        method: PhysicalMethodId,
+        owner: JvmBytes,
+        name: JvmBytes,
+        descriptor: JvmBytes,
     },
 }
 
@@ -6109,6 +6118,7 @@ pub(crate) struct MemberFamilyTextProjection<'a> {
     pub(crate) capture: &'a MemberCaptureProof,
     pub(crate) root_methods: &'a [MemberFamilyMethodText],
     pub(crate) child_methods: &'a [MemberFamilyMethodText],
+    pub(crate) outer_super_bridges: &'a [OuterSuperBridgeClosureProof],
 }
 
 pub(crate) struct MemberFamilyMethodText {
@@ -6323,6 +6333,24 @@ pub(crate) fn member_family_source_text(
         || member.child.fields.iter().any(|field| {
             field.item.index != member.capture.field_index && field.declaration.is_none()
         })
+        || member.outer_super_bridges.iter().any(|closed| {
+            closed.calls.is_empty()
+                || root
+                    .methods
+                    .iter()
+                    .filter(|method| method.item.identity == closed.bridge.bridge)
+                    .count()
+                    != 1
+                || closed
+                    .calls
+                    .iter()
+                    .any(|call| call.caller.owner != member.child.class || call.bridge != closed.bridge)
+        })
+        || member.outer_super_bridges.iter().enumerate().any(|(index, closed)| {
+            member.outer_super_bridges[index + 1..]
+                .iter()
+                .any(|other| other.bridge.bridge == closed.bridge.bridge)
+        })
     {
         return None;
     }
@@ -6351,6 +6379,7 @@ pub(crate) fn member_family_source_text(
         &mut derived,
     )?;
     let expected = 1
+        + member.outer_super_bridges.len()
         + member
             .root_methods
             .iter()
@@ -6430,8 +6459,30 @@ fn source_text_with_member(
         out.push_str(&comment_text(refusal));
         out.push('\n');
     }
+    let header_start = out.len();
     out.push_str(&declaration.declaration);
     out.push_str(" {\n");
+    if let Some(member) = member_family {
+        for closed in member.outer_super_bridges {
+            derived.push(MemberFamilyDerivedProjection {
+                kind: MemberFamilyDerivedKind::HiddenOuterSuperBridge,
+                start: header_start,
+                end: out.len() - 1,
+                anchors: vec![
+                    MemberFamilyPhysicalAnchor::MethodPoint {
+                        method: closed.bridge.bridge.clone(),
+                        bci: closed.bridge.invoke_bci,
+                    },
+                    MemberFamilyPhysicalAnchor::OuterSuperTarget {
+                        method: closed.bridge.target_method.clone(),
+                        owner: closed.bridge.target_owner.clone(),
+                        name: closed.bridge.target_name.clone(),
+                        descriptor: closed.bridge.target_descriptor.clone(),
+                    },
+                ],
+            });
+        }
+    }
     if let Some(markers) = array_helper_markers {
         for marker in markers {
             out.push_str(&indent(&format!("{marker}\n"), 1));
@@ -6483,6 +6534,14 @@ fn source_text_with_member(
         out.push_str(initializer_text);
     }
     for method in methods {
+        if member_family.is_some_and(|member| {
+            member
+                .outer_super_bridges
+                .iter()
+                .any(|closed| closed.bridge.bridge == method.item.identity)
+        }) {
+            continue;
+        }
         if array_helper_indices.is_some_and(|indices| indices.contains(&method.item.index)) {
             continue;
         }
