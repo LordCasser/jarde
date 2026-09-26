@@ -1,0 +1,3 @@
+a64d16e431ba265d73bb268e657ddc7ac2774342a12287e854265ea41849f908  Named$Top.class
+dd3d3c60076fc2abbaddbc0ff86a5c3892ee3582611d137402c2fbc2a4bd7805  StaticMemberBasic$Leaf.class
+9af6da1ba55f6462fbd6a8927729ac3a2bfa37a07d60d350e37e2fa0d83ce442  StaticMemberBasic.class
