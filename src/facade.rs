@@ -4550,6 +4550,18 @@ pub(crate) struct PendingEnumConstantBodyGroupShape {
     pub(crate) implicit_members: Vec<PendingEnumConstantBodyMember>,
     pub(crate) abstract_methods: Vec<PendingEnumConstantBodyMember>,
     pub(crate) constructors: Vec<PendingEnumConstantBodyMember>,
+    /// Exact same-run `<clinit>` prefix evidence; a refusal leaves the physical relations intact.
+    pub(crate) initializer_prefix:
+        std::result::Result<PendingEnumConstantBodyInitializerPrefix, String>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct PendingEnumConstantBodyInitializerPrefix {
+    pub(crate) constant_field_write_bcis: Vec<u32>,
+    pub(crate) values_factory_element_bcis: Vec<u32>,
+    pub(crate) values_factory_call_bci: u32,
+    pub(crate) values_field_write_bci: u32,
+    pub(crate) prefix_end_bci: u32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -4574,6 +4586,189 @@ pub(crate) struct PendingEnumConstantBodyMember {
     pub(crate) has_code: bool,
     /// The raw object type in a javac enum access-constructor descriptor, when this is that record.
     pub(crate) access_marker_owner: Option<Vec<u8>>,
+}
+
+fn prove_enum_body_values_factory(
+    code: &crate::enum_constants::EnumMethodCodeCandidate,
+    owner: &[u8],
+    constants: &[PendingEnumConstantBodyConstant],
+) -> std::result::Result<Vec<u32>, String> {
+    use crate::enum_constants::EnumCodeReference;
+
+    let refused = || "$values() does not return the two constructed constants in order".to_owned();
+    let instructions = &code.instructions;
+    if !code.complete || code.exception_handler_count != 0 || instructions.len() != 11 {
+        return Err(refused());
+    }
+    let mut next_bci = 0;
+    for instruction in instructions {
+        if instruction.bci != next_bci || instruction.width == 0 {
+            return Err(refused());
+        }
+        next_bci = instruction
+            .bci
+            .checked_add(instruction.width)
+            .ok_or_else(refused)?;
+    }
+    if instructions[0].opcode != 0x05
+        || !matches!(&instructions[1].reference,
+            Some(EnumCodeReference::Class(actual))
+                if instructions[1].opcode == 0xbd && actual == owner)
+        || instructions[10].opcode != 0xb0
+    {
+        return Err(refused());
+    }
+    let mut field_read_bcis = Vec::with_capacity(2);
+    for (ordinal, constant) in constants.iter().enumerate() {
+        let start = 2 + ordinal * 4;
+        if instructions[start].opcode != 0x59
+            || instructions[start + 1].opcode != 0x03 + ordinal as u8
+            || !matches!(&instructions[start + 2].reference,
+                Some(EnumCodeReference::Field { owner: field_owner, name, descriptor })
+                    if instructions[start + 2].opcode == 0xb2
+                        && field_owner == owner
+                        && name == &constant.field_name
+                        && descriptor == &[b"L".as_slice(), owner, b";"].concat())
+            || instructions[start + 3].opcode != 0x53
+        {
+            return Err(refused());
+        }
+        field_read_bcis.push(instructions[start + 2].bci);
+    }
+    Ok(field_read_bcis)
+}
+
+/// The fixed Java 8 constant prefix leaves exactly one allocation reference after each
+/// constructor call. The adjacent `putstatic` consumes it; no other opcode can copy or store it.
+fn prove_enum_body_initializer_prefix(
+    code: &crate::enum_constants::EnumMethodCodeCandidate,
+    factory: Option<&crate::enum_constants::EnumMethodCodeCandidate>,
+    owner: &[u8],
+    constants: &[PendingEnumConstantBodyConstant],
+    values_field: &PendingEnumConstantBodyMember,
+) -> std::result::Result<PendingEnumConstantBodyInitializerPrefix, String> {
+    use crate::enum_constants::{EnumCodeInstruction, EnumCodeReference};
+
+    let refused = || "the same-run <clinit> constant prefix is not exact".to_owned();
+    if !code.complete || code.exception_handler_count != 0 || constants.len() != 2 {
+        return Err(refused());
+    }
+    let instructions = &code.instructions;
+    let mut next_bci = 0;
+    for instruction in instructions {
+        if instruction.bci != next_bci || instruction.width == 0 {
+            return Err("the <clinit> Code has a gap or overlapping instruction".to_owned());
+        }
+        next_bci = instruction
+            .bci
+            .checked_add(instruction.width)
+            .ok_or_else(refused)?;
+    }
+    let plain = |instruction: Option<&EnumCodeInstruction>, opcode| {
+        instruction.is_some_and(|instruction| {
+            instruction.opcode == opcode
+                && instruction.reference.is_none()
+                && instruction.immediate.is_none()
+                && instruction.local.is_none()
+        })
+    };
+    let field = |instruction: Option<&EnumCodeInstruction>, name: &[u8], descriptor: &[u8]| {
+        instruction.is_some_and(|instruction| {
+            instruction.opcode == 0xb3
+                && matches!(&instruction.reference,
+                    Some(EnumCodeReference::Field { owner: actual_owner, name: actual_name, descriptor: actual_descriptor })
+                        if actual_owner == owner && actual_name == name && actual_descriptor == descriptor)
+        })
+    };
+    let ordinal = |instruction: Option<&EnumCodeInstruction>, expected: u32| {
+        let Some(instruction) = instruction else {
+            return false;
+        };
+        let actual = match instruction.opcode {
+            0x02..=0x08 => Some(i32::from(instruction.opcode) - 3),
+            0x10 | 0x11 => match instruction.immediate {
+                Some(jarde_reader::classfile::ImmediateValue::Int(value)) => Some(value),
+                _ => None,
+            },
+            0x12 | 0x13 => match instruction.reference {
+                Some(EnumCodeReference::Integer(value)) => Some(value),
+                _ => None,
+            },
+            _ => None,
+        };
+        actual == i32::try_from(expected).ok()
+    };
+    let mut cursor = 0;
+    let mut field_write_bcis = Vec::with_capacity(2);
+    let enum_descriptor = [b"L".as_slice(), owner, b";"].concat();
+    for constant in constants {
+        let part = instructions.get(cursor..cursor + 6).ok_or_else(refused)?;
+        if part[0].bci != constant.allocation_bci
+            || !matches!(&part[0].reference, Some(EnumCodeReference::Class(actual))
+                if part[0].opcode == 0xbb && actual == &constant.allocation_owner)
+            || !plain(Some(&part[1]), 0x59)
+            || !matches!(&part[2].reference, Some(EnumCodeReference::String(actual))
+                if matches!(part[2].opcode, 0x12 | 0x13) && actual == &constant.field_name)
+            || !ordinal(Some(&part[3]), constant.expected_ordinal)
+            || part[4].bci != constant.constructor_bci
+            || !matches!(&part[4].reference,
+                Some(EnumCodeReference::Method { owner: actual_owner, name, descriptor, interface: false })
+                    if part[4].opcode == 0xb7
+                        && actual_owner == &constant.constructor_owner
+                        && name == b"<init>"
+                        && descriptor == &constant.constructor_descriptor)
+            || !field(Some(&part[5]), &constant.field_name, &enum_descriptor)
+        {
+            return Err(refused());
+        }
+        field_write_bcis.push(part[5].bci);
+        cursor += 6;
+    }
+    let factory_call = instructions.get(cursor).ok_or_else(refused)?;
+    let values_descriptor = [b"()[L".as_slice(), owner, b";"].concat();
+    if !matches!(&factory_call.reference,
+        Some(EnumCodeReference::Method { owner: actual_owner, name, descriptor, interface: false })
+            if factory_call.opcode == 0xb8 && actual_owner == owner && name == b"$values"
+                && descriptor == &values_descriptor)
+        || !field(
+            instructions.get(cursor + 1),
+            &values_field.name,
+            &values_field.descriptor,
+        )
+    {
+        return Err(refused());
+    }
+    let store = &instructions[cursor + 1];
+    let prefix_end_bci = store.bci.checked_add(store.width).ok_or_else(refused)?;
+    let factory = factory.ok_or_else(|| "the same-run $values() Code is absent".to_owned())?;
+    let values_factory_element_bcis = prove_enum_body_values_factory(factory, owner, constants)?;
+    let suffix = instructions.get(cursor + 2..).ok_or_else(refused)?;
+    if !matches!(suffix.last(), Some(last) if plain(Some(last), 0xb1))
+        || suffix.iter().any(|instruction| {
+            // A transfer back into the prefix (or an early exit) would invalidate its
+            // single-execution, empty-stack boundary. Re-reading a constant or `$VALUES`
+            // could create another alias or store it elsewhere. Other suffix effects remain
+            // available for the later whole-initializer proof.
+            matches!(
+                instruction.opcode,
+                0x99..=0xa9 | 0xaa | 0xab | 0xbf | 0xc6 | 0xc7 | 0xc8 | 0xc9
+            ) || (instruction.opcode == 0xb1 && instruction.bci != suffix.last().unwrap().bci)
+                || matches!(&instruction.reference,
+                    Some(EnumCodeReference::Field { owner: field_owner, name, .. })
+                        if field_owner == owner
+                            && (name == &values_field.name
+                                || constants.iter().any(|constant| name == &constant.field_name)))
+        })
+    {
+        return Err("the <clinit> suffix does not close after the $VALUES prefix".to_owned());
+    }
+    Ok(PendingEnumConstantBodyInitializerPrefix {
+        constant_field_write_bcis: field_write_bcis,
+        values_factory_element_bcis,
+        values_factory_call_bci: factory_call.bci,
+        values_field_write_bci: store.bci,
+        prefix_end_bci,
+    })
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -4945,12 +5140,48 @@ fn resolve_enum_constant_body_relations(
     {
         return Ok(Vec::new());
     }
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(code_candidates.len()).unwrap_or(u64::MAX),
+    )?;
+    budget.poll()?;
+    let factory_codes: Vec<_> = code_candidates
+        .iter()
+        .filter(|candidate| {
+            candidate.table_index == implicit_members[4].table_index
+                && candidate.member.as_ref().is_some_and(|member| {
+                    member.owner == clinit_identity.owner
+                        && member.name.0 == b"$values"
+                        && member.descriptor.0 == implicit_members[4].descriptor
+                })
+        })
+        .collect();
+    let factory_code = match factory_codes.as_slice() {
+        [factory] => Some(*factory),
+        _ => None,
+    };
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            code.instructions.len() + factory_code.map_or(0, |factory| factory.instructions.len()),
+        )
+        .unwrap_or(u64::MAX),
+    )?;
+    budget.poll()?;
+    let initializer_prefix = prove_enum_body_initializer_prefix(
+        code,
+        factory_code,
+        enum_owner,
+        &constant_shape,
+        &implicit_members[0],
+    );
     let group_shape = PendingEnumConstantBodyGroupShape {
         enum_access_flags,
         constants: constant_shape,
         implicit_members,
         abstract_methods,
         constructors,
+        initializer_prefix,
     };
 
     let mut relations = Vec::new();
@@ -7172,8 +7403,11 @@ mod enum_constant_body_relation_tests {
         fs,
         io::{Cursor, Write},
         process::Command,
+        sync::atomic::{AtomicU64, Ordering},
         time::{SystemTime, UNIX_EPOCH},
     };
+
+    static NEXT_FIXTURE_ID: AtomicU64 = AtomicU64::new(0);
 
     const OP: &str = include_str!(
         "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Op.java"
@@ -7210,16 +7444,23 @@ mod enum_constant_body_relation_tests {
     }
 
     fn compiled_entries(debug: bool) -> Vec<(Vec<u8>, Vec<u8>)> {
+        compiled_entries_with_op(debug, OP)
+    }
+
+    fn compiled_entries_with_op(debug: bool, op_source: &str) -> Vec<(Vec<u8>, Vec<u8>)> {
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        let dir =
-            std::env::temp_dir().join(format!("jarde-enum-body-{}-{nonce}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!(
+            "jarde-enum-body-{}-{nonce}-{}",
+            std::process::id(),
+            NEXT_FIXTURE_ID.fetch_add(1, Ordering::Relaxed)
+        ));
         fs::create_dir_all(dir.join("source")).unwrap();
         fs::create_dir_all(dir.join("classes")).unwrap();
         for (name, source) in [
-            ("Op.java", OP),
+            ("Op.java", op_source),
             ("Mixed.java", MIXED),
             ("Plain.java", PLAIN),
             ("Other.java", UNRELATED),
@@ -7512,6 +7753,67 @@ mod enum_constant_body_relation_tests {
         changed
     }
 
+    fn mutate_initializer_byte(bytes: &[u8], bci: u32, byte: u8) -> Vec<u8> {
+        let mut read_budget = budget();
+        let facts = class_member_facts(bytes, &mut read_budget).unwrap();
+        let code = facts
+            .methods
+            .iter()
+            .find(|method| method.name.raw().0 == b"<clinit>")
+            .unwrap()
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0 == b"Code")
+            .unwrap();
+        let mut changed = bytes.to_vec();
+        changed[usize::try_from(code.content_span.start).unwrap() + 8 + bci as usize] = byte;
+        changed
+    }
+
+    fn mutate_initializer_name_argument(bytes: &[u8], argument_bci: u32, name: &[u8]) -> Vec<u8> {
+        let read_budget = budget();
+        let pool = class_constant_pool(bytes, &read_budget).unwrap();
+        let string_index = pool
+            .iter()
+            .find(|entry| {
+                matches!(&entry.kind,
+                    jarde_reader::classfile::CpEntryKind::String { value, .. }
+                        if value.0 == name)
+            })
+            .unwrap()
+            .index;
+        assert!(string_index <= u16::from(u8::MAX));
+        mutate_initializer_byte(bytes, argument_bci + 1, string_index as u8)
+    }
+
+    fn mutate_values_factory_field(bytes: &[u8], field_bci: u32, field_name: &[u8]) -> Vec<u8> {
+        let mut read_budget = budget();
+        let facts = class_member_facts(bytes, &mut read_budget).unwrap();
+        let pool = class_constant_pool(bytes, &read_budget).unwrap();
+        let field_index = pool
+            .iter()
+            .find(|entry| {
+                matches!(&entry.kind,
+                    jarde_reader::classfile::CpEntryKind::FieldRef { owner, name, .. }
+                        if owner.0 == b"demo/Op" && name.0 == field_name)
+            })
+            .unwrap()
+            .index;
+        let code = facts
+            .methods
+            .iter()
+            .find(|method| method.name.raw().0 == b"$values")
+            .unwrap()
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0 == b"Code")
+            .unwrap();
+        let offset = usize::try_from(code.content_span.start).unwrap() + 8 + field_bci as usize + 1;
+        let mut changed = bytes.to_vec();
+        changed[offset..offset + 2].copy_from_slice(&field_index.to_be_bytes());
+        changed
+    }
+
     fn mutate_child_super_call_owner(bytes: &[u8], new_owner: &[u8]) -> Vec<u8> {
         let read_budget = budget();
         let pool = class_constant_pool(bytes, &read_budget).unwrap();
@@ -7593,6 +7895,17 @@ mod enum_constant_body_relation_tests {
                 assert_eq!(constructors[0].item.access_flags & 0x1000, 0);
             } else {
                 let first_shape = &source_report.enum_constant_body_relations[0].group_shape;
+                assert_eq!(
+                    first_shape.initializer_prefix,
+                    Ok(PendingEnumConstantBodyInitializerPrefix {
+                        constant_field_write_bcis: vec![10, 23],
+                        values_factory_element_bcis: vec![6, 12],
+                        values_factory_call_bci: 26,
+                        values_field_write_bci: 29,
+                        prefix_end_bci: 32,
+                    }),
+                    "exact <clinit> prefix for {class}, debug={debug}"
+                );
                 assert_eq!(
                     first_shape.enum_access_flags & 0x0400 != 0,
                     class == "demo/Op"
@@ -7872,6 +8185,306 @@ mod enum_constant_body_relation_tests {
                 && matches!(&item.source.location, Location::ClassOffset { definition, .. }
                     if definition != &first.subclass && definition != &changed_report.class)
         }));
+    }
+
+    #[test]
+    fn enum_body_prefix_reads_actual_name_and_ordinal_and_allows_closed_user_suffix() {
+        for debug in [true, false] {
+            let entries = compiled_entries(debug);
+            for (bci, byte, expected) in [(4, None, "name"), (6, Some(0x04), "ordinal")] {
+                let mut changed = entries.clone();
+                let op = &mut changed
+                    .iter_mut()
+                    .find(|(name, _)| name == b"demo/Op.class")
+                    .unwrap()
+                    .1;
+                *op = if let Some(opcode) = byte {
+                    mutate_initializer_byte(op, bci, opcode)
+                } else {
+                    mutate_initializer_name_argument(op, bci, b"MULTIPLY")
+                };
+                let changed_report = report(&changed, "demo/Op");
+                assert_eq!(changed_report.enum_constant_body_relations.len(), 2);
+                assert!(
+                    changed_report
+                        .enum_constant_body_relations
+                        .iter()
+                        .all(|relation| relation.group_shape.initializer_prefix.is_err()),
+                    "equal-width {expected} edit, debug={debug}"
+                );
+                assert!(!matches!(
+                    changed_report.enum_constant_proof,
+                    crate::enum_constants::ClassSourceEnumConstantProof::Proved(_)
+                ));
+            }
+
+            let mut changed_factory = entries.clone();
+            let op = &mut changed_factory
+                .iter_mut()
+                .find(|(name, _)| name == b"demo/Op.class")
+                .unwrap()
+                .1;
+            *op = mutate_values_factory_field(op, 6, b"MULTIPLY");
+            let changed_report = report(&changed_factory, "demo/Op");
+            assert_eq!(changed_report.enum_constant_body_relations.len(), 2);
+            assert!(
+                changed_report
+                    .enum_constant_body_relations
+                    .iter()
+                    .all(|relation| relation.group_shape.initializer_prefix.is_err()),
+                "equal-width $values() element edit, debug={debug}"
+            );
+
+            let source = OP.replace(
+                "    public abstract int apply",
+                "    static int initialized; static { initialized = 5; }\n    public abstract int apply",
+            );
+            let with_suffix = compiled_entries_with_op(debug, &source);
+            let suffix_report = report(&with_suffix, "demo/Op");
+            assert_eq!(suffix_report.enum_constant_body_relations.len(), 2);
+            assert!(
+                suffix_report
+                    .enum_constant_body_relations
+                    .iter()
+                    .all(|relation| relation.group_shape.initializer_prefix.is_ok()),
+                "closed user static suffix, debug={debug}"
+            );
+        }
+    }
+
+    #[test]
+    fn enum_body_prefix_rejects_extra_alias_store_and_unclosed_suffix() {
+        use crate::enum_constants::{
+            EnumCodeInstruction, EnumCodeReference, EnumMethodCodeCandidate,
+        };
+
+        let entries = compiled_entries(true);
+        let shape = report(&entries, "demo/Op").enum_constant_body_relations[0]
+            .group_shape
+            .clone();
+        let owner = b"demo/Op";
+        let descriptor = b"Ldemo/Op;".to_vec();
+        let instruction = |bci, width, opcode, reference| EnumCodeInstruction {
+            bci,
+            width,
+            opcode,
+            immediate: None,
+            local: None,
+            reference,
+        };
+        let mut instructions = Vec::new();
+        for constant in &shape.constants {
+            let bci = constant.allocation_bci;
+            instructions.extend([
+                instruction(
+                    bci,
+                    3,
+                    0xbb,
+                    Some(EnumCodeReference::Class(constant.allocation_owner.clone())),
+                ),
+                instruction(bci + 3, 1, 0x59, None),
+                instruction(
+                    bci + 4,
+                    2,
+                    0x12,
+                    Some(EnumCodeReference::String(constant.field_name.clone())),
+                ),
+                instruction(bci + 6, 1, 0x03 + constant.expected_ordinal as u8, None),
+                instruction(
+                    bci + 7,
+                    3,
+                    0xb7,
+                    Some(EnumCodeReference::Method {
+                        owner: constant.constructor_owner.clone(),
+                        name: b"<init>".to_vec(),
+                        descriptor: constant.constructor_descriptor.clone(),
+                        interface: false,
+                    }),
+                ),
+                instruction(
+                    bci + 10,
+                    3,
+                    0xb3,
+                    Some(EnumCodeReference::Field {
+                        owner: owner.to_vec(),
+                        name: constant.field_name.clone(),
+                        descriptor: descriptor.clone(),
+                    }),
+                ),
+            ]);
+        }
+        instructions.extend([
+            instruction(
+                26,
+                3,
+                0xb8,
+                Some(EnumCodeReference::Method {
+                    owner: owner.to_vec(),
+                    name: b"$values".to_vec(),
+                    descriptor: b"()[Ldemo/Op;".to_vec(),
+                    interface: false,
+                }),
+            ),
+            instruction(
+                29,
+                3,
+                0xb3,
+                Some(EnumCodeReference::Field {
+                    owner: owner.to_vec(),
+                    name: b"$VALUES".to_vec(),
+                    descriptor: b"[Ldemo/Op;".to_vec(),
+                }),
+            ),
+            instruction(32, 1, 0xb1, None),
+        ]);
+        let code = EnumMethodCodeCandidate {
+            table_index: 0,
+            member: None,
+            complete: true,
+            exception_handler_count: 0,
+            instructions,
+            member_uses: Vec::new(),
+        };
+        let mut factory_instructions = vec![
+            instruction(0, 1, 0x05, None),
+            instruction(1, 3, 0xbd, Some(EnumCodeReference::Class(owner.to_vec()))),
+        ];
+        for (ordinal, constant) in shape.constants.iter().enumerate() {
+            let start = 4 + ordinal as u32 * 6;
+            factory_instructions.extend([
+                instruction(start, 1, 0x59, None),
+                instruction(start + 1, 1, 0x03 + ordinal as u8, None),
+                instruction(
+                    start + 2,
+                    3,
+                    0xb2,
+                    Some(EnumCodeReference::Field {
+                        owner: owner.to_vec(),
+                        name: constant.field_name.clone(),
+                        descriptor: descriptor.clone(),
+                    }),
+                ),
+                instruction(start + 5, 1, 0x53, None),
+            ]);
+        }
+        factory_instructions.push(instruction(16, 1, 0xb0, None));
+        let factory = EnumMethodCodeCandidate {
+            table_index: shape.implicit_members[4].table_index,
+            member: None,
+            complete: true,
+            exception_handler_count: 0,
+            instructions: factory_instructions,
+            member_uses: Vec::new(),
+        };
+        let prove = |code: &EnumMethodCodeCandidate| {
+            prove_enum_body_initializer_prefix(
+                code,
+                Some(&factory),
+                owner,
+                &shape.constants,
+                &shape.implicit_members[0],
+            )
+        };
+        assert!(prove(&code).is_ok());
+        assert!(
+            prove_enum_body_initializer_prefix(
+                &code,
+                None,
+                owner,
+                &shape.constants,
+                &shape.implicit_members[0],
+            )
+            .is_err()
+        );
+        let mut incomplete = code.clone();
+        incomplete.complete = false;
+        assert!(prove(&incomplete).is_err());
+
+        let mut aliased = code.clone();
+        aliased
+            .instructions
+            .insert(5, instruction(10, 1, 0x59, None));
+        aliased
+            .instructions
+            .insert(6, instruction(11, 1, 0x4b, None));
+        for later in &mut aliased.instructions[7..] {
+            later.bci += 2;
+        }
+        assert!(
+            prove(&aliased).is_err(),
+            "dup/astore must not retain the object"
+        );
+
+        let mut extra_store = code.clone();
+        extra_store
+            .instructions
+            .insert(5, instruction(10, 1, 0x59, None));
+        extra_store.instructions.insert(
+            6,
+            instruction(
+                11,
+                3,
+                0xb3,
+                Some(EnumCodeReference::Field {
+                    owner: owner.to_vec(),
+                    name: b"extra".to_vec(),
+                    descriptor: descriptor.clone(),
+                }),
+            ),
+        );
+        for later in &mut extra_store.instructions[7..] {
+            later.bci += 4;
+        }
+        assert!(
+            prove(&extra_store).is_err(),
+            "dup/putstatic must not add a store"
+        );
+
+        let mut unfinished = code.clone();
+        unfinished.instructions.pop();
+        assert!(prove(&unfinished).is_err());
+
+        let mut suffix_alias = code.clone();
+        suffix_alias.instructions.pop();
+        suffix_alias.instructions.extend([
+            instruction(
+                32,
+                3,
+                0xb2,
+                Some(EnumCodeReference::Field {
+                    owner: owner.to_vec(),
+                    name: b"ADD".to_vec(),
+                    descriptor: descriptor.clone(),
+                }),
+            ),
+            instruction(
+                35,
+                3,
+                0xb3,
+                Some(EnumCodeReference::Field {
+                    owner: owner.to_vec(),
+                    name: b"alias".to_vec(),
+                    descriptor: descriptor,
+                }),
+            ),
+            instruction(38, 1, 0xb1, None),
+        ]);
+        assert!(
+            prove(&suffix_alias).is_err(),
+            "the suffix must not re-store a constant"
+        );
+
+        let mut user_suffix = code;
+        user_suffix.instructions.pop();
+        user_suffix.instructions.extend([
+            instruction(32, 1, 0x08, None),
+            instruction(33, 1, 0x57, None),
+            instruction(34, 1, 0xb1, None),
+        ]);
+        assert!(
+            prove(&user_suffix).is_ok(),
+            "a closed suffix may contain user effects"
+        );
     }
 }
 
