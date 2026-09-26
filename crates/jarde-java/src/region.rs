@@ -1681,9 +1681,12 @@ struct Frame {
     /// run exactly like the boundary does — it is the code after the loop.
     scope: Option<BTreeSet<usize>>,
     /// The header of the loop this frame is the body of. A body walk that arrives back at its own
-    /// header is inside the structure it is building, which is a state it has already entered — not
-    /// a nested loop — and the walk must not read it as one (see [`Walker::region_at`]).
+    /// header is inside the structure it is building, not a nested loop. Only a separately proved
+    /// first entry may walk that block as body code (see [`Walker::region_at`]).
     own_loop: Option<usize>,
+    /// Only a proved body branch may enter its own do-while header for the first body walk.
+    /// Other shapes retain the re-entry stop until their body ownership is proved separately.
+    allow_own_loop_entry: bool,
     /// The block of the `try` this frame is the protected range of. The range begins at that block,
     /// so the walk that recovers it starts at it, and reading it as the start of *another* `try`
     /// would be reading the statement it is already building (see [`Walker::try_region`]).
@@ -1745,6 +1748,7 @@ impl Frame {
             boundary: Some(boundary),
             scope: Some(scope),
             own_loop: Some(header),
+            allow_own_loop_entry: false,
             own_try: None,
             own_finally: None,
             case_entries: self.case_entries.clone(),
@@ -1776,6 +1780,7 @@ impl Frame {
             boundary: join.or(self.boundary),
             scope: self.scope.clone(),
             own_loop: None,
+            allow_own_loop_entry: false,
             // An `if` inside a protected range is still inside that range in either arm. Keep
             // its owner so a throwing arm's exception edges can be matched to this try's catches.
             own_try: self.own_try,
@@ -1796,6 +1801,7 @@ impl Frame {
             boundary: join.or(self.boundary),
             scope: self.scope.clone(),
             own_loop: None,
+            allow_own_loop_entry: false,
             own_try: self.own_try,
             own_finally: self.own_finally,
             case_entries: Some(case_entries),
@@ -1817,6 +1823,7 @@ impl Frame {
             boundary: join,
             scope: self.scope.clone(),
             own_loop: None,
+            allow_own_loop_entry: false,
             own_try: Some(start),
             own_finally: None,
             case_entries: self.case_entries.clone(),
@@ -2021,15 +2028,13 @@ impl Walker<'_> {
     ///
     /// * how **deep** the walk may go, one level per entry ([`MAX_REGION_DEPTH`]);
     /// * that it may not **re-enter** the structure it is already inside. A frame whose `own_loop`
-    ///   is the block this entry starts at is the body of that loop, and the walk is back at its
-    ///   header: the state it is building, already entered. `loop_region` would take the same shape
-    ///   decisions for it — none of them reads the frame — and arrive back here, which is the cycle
-    ///   that drove the reported abort.
+    ///   is the block this entry starts at is the body of that loop. The proved body-branch path
+    ///   permits exactly its first entry; every other such entry stops before descending.
     fn region_at(&mut self, start: &CanonicalBlockId, frame: &Frame) -> Result<Run, StopReason> {
-        let reentered = self
-            .view
-            .index_of(start)
-            .is_some_and(|node| frame.own_loop == Some(node) && self.visited.contains(&node));
+        let reentered = self.view.index_of(start).is_some_and(|node| {
+            frame.own_loop == Some(node)
+                && (!frame.allow_own_loop_entry || self.visited.contains(&node))
+        });
         if self.depth >= MAX_REGION_DEPTH || reentered {
             // Which of the two refused the entry is part of the diagnosis: "the input nests too
             // deeply" and "the walk is back inside a structure it is already building" are
@@ -4560,7 +4565,9 @@ impl Walker<'_> {
                     })
             });
         if body_branch {
-            if let Some(region) = self.latch_tested_loop(header, header_node, &blocks, frame)? {
+            if let Some(region) =
+                self.latch_tested_loop(header, header_node, &blocks, frame, true)?
+            {
                 return Ok(region);
             }
         }
@@ -4568,7 +4575,8 @@ impl Walker<'_> {
             return Ok(region);
         }
         if !body_branch
-            && let Some(region) = self.latch_tested_loop(header, header_node, &blocks, frame)?
+            && let Some(region) =
+                self.latch_tested_loop(header, header_node, &blocks, frame, false)?
         {
             return Ok(region);
         }
@@ -5774,6 +5782,7 @@ impl Walker<'_> {
         header_node: usize,
         blocks: &BTreeSet<usize>,
         frame: &Frame,
+        allow_header_entry: bool,
     ) -> Result<Option<Run>, StopReason> {
         let latches = self
             .view
@@ -5945,7 +5954,7 @@ impl Walker<'_> {
         );
         all_exits.extend(exits.iter().copied());
         let transfer_sources = self.loop_transfer_sources(&all_exits);
-        let body_frame = frame.loop_body(
+        let mut body_frame = frame.loop_body(
             blocks,
             latch_node,
             header_node,
@@ -5954,6 +5963,7 @@ impl Walker<'_> {
             exits.clone(),
             &transfer_sources,
         );
+        body_frame.allow_own_loop_entry = allow_header_entry;
         let (mut body, _) = self.loop_body_sequence(header, &body_frame, blocks)?;
         if latch_body_prefix {
             body.push(Region::Straight {

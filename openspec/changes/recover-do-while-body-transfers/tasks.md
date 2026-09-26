@@ -13,4 +13,4 @@
 
 - [x] 3.1 原样重编译执行永久核心、完整混合类和健康正面类，对照原 class/JADX/jarde 全部7/9/4项输出与异常；已证实方法零相关引用、整类 `javac --release 8` 和 `-Xverify:all` 成功。见 [Root 独立验收](verification-root.md)。
 - [x] 3.2 root 独立审读头测/闩锁判定与转移桥所有权，重放三个完整类及未证明边界；复跑循环、if、switch、guard、来源和停止的相邻回归，记录多层/`switch` 转移债务。见 [Root 独立验收](verification-root.md)。
-- [ ] 3.3 root 统一 reader census/fingerprint、fmt、适当 Cargo 回归和 OpenSpec strict；只有证据完成后才勾选。
+- [x] 3.3 root 统一 reader census/fingerprint、fmt、适当 Cargo 回归和 OpenSpec strict；只有证据完成后才勾选。**验收**：[最终门禁与相邻回归](verification-root.md#33-最终门禁与相邻回归)；全仓旧失败另见 [基线审计](../../evidence/java-syntax-2026-09-26/test-baseline/analysis.md)。
