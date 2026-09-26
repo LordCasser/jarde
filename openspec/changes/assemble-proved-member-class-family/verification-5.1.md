@@ -1,0 +1,9 @@
+# 命名成员家族整体验收
+
+Root 用本轮源码重建 `jarde-cli`（SHA-256 `ff93531755e1d4a11594c41256e7b2109d80ced04b26a7bef165cbefb3b29da4`），独立对[冻结阶段一 JAR](../../evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar)执行默认与 `--evidence all` 的 `class-source --policy plain-jar --class NamedMemberFamilyStage1 --format json`。两次根文本的 SHA-256 都是 `2892b9720cf60c238ba6207dfe84577dc9ef4e08efdd90ff36ccf10aa9f5f4a8`，根/child 方法数保持 3/2，双方 execution 均为 complete，派生映射均有 5 条；物理报告和 child 独立 source map 没有被根家族源码替换。
+
+Root 将原 Java、冻结 JADX Java、当前 CLI 原样写出的 Jarde Java 分别用 `javac --release 8 -g:none` 重编，并以 `java -Xverify:all` 运行，三者均输出 `2011\n20\n`。直接 CLI 重放 `OuterReceiverCases` 的桥变体，得到 `synthetic Outer.super method bridge is outside the proved family projection`，保留 5/2 个根/child 物理方法；移除早期 null-check 的 verifier-valid 变体得到 `one or more family call sites are unproved`，保留 3/2 个方法。两种拒绝的 JSON 均无 `derived`。4.3 的独立外部 Fieldref、构造器 Methodref 与扫描预算停止也保留物理文本；两份替换组合均由 `java -Xverify:all` 验证。调用参数副作用和空接收者路径仍由 `FamilyEffects` 三方执行测试约束。
+
+Root 在独立 Cargo target 上复跑 `cargo test --locked -p jarde --test member_family_identity --test class_source --test member_family_external_use`（14+47+4）、`cargo test --locked -p jarde --lib class_source`（22）和 `cargo test --locked -p jarde-cli --test class_source_cli`（17），全部通过；`cargo fmt --all -- --check`、`git diff --check`、`openspec validate assemble-proved-member-class-family --strict` 也通过。严格全量 Clippy 仍被 `jarde-java` 中已有的 26 项告警挡住；对仓库原有告警类别加 `-A` 豁免后，`cargo clippy --locked -p jarde --lib -- -D warnings` 的目标检查通过，没有本变更新增的告警。此基线债务见[既有测试/门禁记录](../../evidence/java-syntax-2026-09-26/test-baseline/analysis.md)，不混入本变更。
+
+验收后 `cargo clean --target-dir /tmp/jarde-root-map-accept-target` 和仓库 `cargo clean` 分别移除隔离与共享编译残留。`df -h` 的可用空间从约 76 GiB 回到 80 GiB。构造器 `this()` 链、多个成员、多版本或多加载根、泛型词法作用域、`Outer.super` 桥和匿名类内联仍分别受现有拒绝门与独立规划约束；当前完成的是单根、单直接非静态命名成员、单普通 JAR 的闭合 Java 8 子集，不宣称开放世界源码链接兼容。
