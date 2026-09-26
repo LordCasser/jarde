@@ -4692,7 +4692,51 @@ impl Engine {
             array_method_texts: Some(&array_projection_method_texts),
             array_helper_markers: Some(&array_projection_markers),
         };
-        let text = class_source::source_text(&declaration, &fields, &methods, &text_context);
+        let mut text = class_source::source_text(&declaration, &fields, &methods, &text_context);
+        if read.facts.this_class.raw().0.ends_with(b"/package-info") {
+            let projected = class_source::proved_package_info_source(
+                &declaration,
+                &read.facts,
+                read.bytes
+                    .get(4..8)
+                    .map(|version| {
+                        (
+                            u16::from_be_bytes([version[2], version[3]]),
+                            u16::from_be_bytes([version[0], version[1]]),
+                        )
+                    })
+                    .unwrap_or_default(),
+                structure_complete,
+                &execution,
+            );
+            match projected {
+                Ok(package_text) => {
+                    let output_len = u64::try_from(package_text.len()).unwrap_or(u64::MAX);
+                    match budget.poll().and_then(|()| {
+                        budget.charge(CountedBudgetDimension::OutputBytes, output_len)
+                    }) {
+                        Ok(()) => text = package_text,
+                        Err(error) => {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        }
+                    }
+                }
+                Err(reason) => {
+                    let marker = format!("// jarde: package-info projection refused: {reason}\n");
+                    let marker_len = u64::try_from(marker.len()).unwrap_or(u64::MAX);
+                    match budget.poll().and_then(|()| {
+                        budget.charge(CountedBudgetDimension::OutputBytes, marker_len)
+                    }) {
+                        Ok(()) => text.insert_str(0, &marker),
+                        Err(error) => {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        }
+                    }
+                }
+            }
+        }
         let coverage = class_source_coverage(
             class_view_coverage(search_coverage.as_ref(), &read.facts, structure_complete),
             attempted,
@@ -11508,6 +11552,206 @@ fn direct_member_bridge_invocation(
             .iter()
             .any(|member| member.item.identity == *method))
     .then(|| (method.clone(), *bci))
+}
+
+#[cfg(test)]
+mod package_info_source_tests {
+    use super::*;
+    use jarde_reader::budget::Limits;
+    use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
+    use std::io::{Cursor, Write};
+
+    const PACKAGE_INFO: &[u8] = include_bytes!(
+        "../tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class"
+    );
+    const CHECK: &[u8] = include_bytes!(
+        "../tests/fixtures/proved-java-structure/package-info-basic/v8/p/Check.class"
+    );
+
+    fn limits() -> Limits {
+        Limits {
+            input_bytes: u64::MAX,
+            archive_entries: u64::MAX,
+            entry_bytes: u64::MAX,
+            read_bytes: u64::MAX,
+            class_bytes: u64::MAX,
+            attribute_bytes: u64::MAX,
+            code_bytes: u64::MAX,
+            result_items: u64::MAX,
+            output_bytes: u64::MAX,
+            class_headers: u64::MAX,
+            method_bodies: u64::MAX,
+            ir_items: u64::MAX,
+            ir_edges: u64::MAX,
+            analysis_steps: u64::MAX,
+            normalization_clones: u64::MAX,
+            nested_depth: u64::MAX,
+            dependency_depth: u64::MAX,
+            elapsed_millis: u64::MAX,
+        }
+    }
+
+    fn jar() -> Vec<u8> {
+        let mut output = Cursor::new(Vec::new());
+        let mut zip = ZipArchiveWriter::new(&mut output);
+        for (name, bytes) in [
+            (b"p/package-info.class".as_slice(), PACKAGE_INFO),
+            (b"p/Check.class".as_slice(), CHECK),
+        ] {
+            let (mut entry, config) = zip
+                .new_file(EntryPath::verbatim(name.to_vec()))
+                .compression_method(CompressionMethod::new(0))
+                .start()
+                .unwrap();
+            let mut writer = config.wrap(&mut entry);
+            writer.write_all(bytes).unwrap();
+            let (_, descriptor) = writer.finish().unwrap();
+            entry.finish(descriptor).unwrap();
+        }
+        zip.finish().unwrap();
+        output.into_inner()
+    }
+
+    fn class_source(
+        engine: &Engine,
+        snapshot: &ArtifactSnapshot,
+        budget: &mut Budget,
+    ) -> Result<OperationOutcome<ClassSourceReport>> {
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        engine.class_source(
+            std::slice::from_ref(snapshot),
+            &ClassSourceRequest {
+                class: ClassRef::Name {
+                    class: ClassNameQuery::internal("p/package-info"),
+                },
+                environment,
+            },
+            budget,
+        )
+    }
+
+    fn prepared(engine: &Engine, budget: &mut Budget) -> ArtifactSnapshot {
+        engine.open(ArtifactInput::bytes(jar()), budget).unwrap()
+    }
+
+    #[test]
+    fn proved_package_info_is_only_annotation_then_package_statement() {
+        let engine = Engine::new();
+        let mut budget = Budget::new(limits());
+        let snapshot = prepared(&engine, &mut budget);
+        let OperationOutcome::Performed(report) =
+            class_source(&engine, &snapshot, &mut budget).unwrap()
+        else {
+            panic!("package-info class-source request should complete")
+        };
+        assert_eq!(report.text, "@java.lang.Deprecated\npackage p;\n");
+        assert_eq!(report.class.class_bytes.length, PACKAGE_INFO.len() as u64);
+        let declaration = report.declaration.as_ref().unwrap();
+        assert_eq!(declaration.item.definition, report.class);
+        let [annotation] = declaration.annotation_attributes.as_slice() else {
+            panic!("the physical annotation source must stay beside the projection")
+        };
+        assert_eq!(
+            annotation.attribute.name.raw().0,
+            b"RuntimeVisibleAnnotations"
+        );
+        assert!(annotation.attribute.span.length > 0);
+        assert_eq!(
+            declaration.annotation_uses,
+            vec!["@java.lang.Deprecated".to_owned()]
+        );
+        assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+    }
+
+    #[test]
+    fn output_budget_stop_keeps_the_physical_package_info_presentation() {
+        let engine = Engine::new();
+        let mut open_budget = Budget::new(limits());
+        let snapshot = prepared(&engine, &mut open_budget);
+        let mut limited = limits();
+        limited.output_bytes = 0;
+        let mut budget = Budget::new(limited);
+        let OperationOutcome::Performed(report) =
+            class_source(&engine, &snapshot, &mut budget).unwrap()
+        else {
+            panic!("package-info class-source report should retain the physical result")
+        };
+        assert!(report.text.contains("interface package-info {"));
+        assert!(!report.text.starts_with("@java.lang.Deprecated\npackage p;"));
+        assert!(
+            report.text.contains("package-info projection refused")
+                || matches!(report.execution, ExecutionReport::Partial { .. })
+        );
+        assert!(!matches!(
+            report.execution,
+            ExecutionReport::Complete { .. }
+        ));
+    }
+
+    #[test]
+    fn non_package_target_annotation_cannot_enter_the_projection() {
+        let engine = Engine::new();
+        let mut budget = Budget::new(limits());
+        let snapshot = prepared(&engine, &mut budget);
+        let OperationOutcome::Performed(report) =
+            class_source(&engine, &snapshot, &mut budget).unwrap()
+        else {
+            panic!("standard class-source request should complete")
+        };
+        let mut declaration = report.declaration.unwrap();
+        let annotation = &mut declaration.annotation_attributes[0].annotations[0];
+        let jarde_reader::classfile::ElementValueFacts::Annotation {
+            type_descriptor, ..
+        } = annotation
+        else {
+            panic!("fixture annotation must be complete")
+        };
+        type_descriptor.0 = b"Ljava/lang/Override;".to_vec();
+        declaration.annotation_uses[0] = "@java.lang.Override".to_owned();
+        let facts = jarde_reader::classfile::class_member_facts(PACKAGE_INFO, &mut budget).unwrap();
+        let execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        assert_eq!(
+            class_source::proved_package_info_source(
+                &declaration,
+                &facts,
+                (52, 0),
+                true,
+                &execution,
+            ),
+            Err("the only supported package annotation is empty java.lang.Deprecated")
+        );
+    }
+
+    #[test]
+    fn pre_cancelled_request_cannot_publish_a_package_projection() {
+        let engine = Engine::new();
+        let mut open_budget = Budget::new(limits());
+        let snapshot = prepared(&engine, &mut open_budget);
+        let cancellation = jarde_reader::budget::CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled = Budget::with_cancellation_token(limits(), cancellation);
+        let outcome = class_source(&engine, &snapshot, &mut cancelled).unwrap();
+        let OperationOutcome::Incomplete(candidates) = outcome else {
+            panic!("pre-cancelled request must not perform a source projection")
+        };
+        assert!(matches!(
+            candidates.execution,
+            ExecutionReport::Cancelled { .. }
+        ));
+        assert!(candidates.candidates.is_empty());
+    }
 }
 
 #[cfg(test)]
