@@ -90,7 +90,7 @@
 //! the statement's own start and its join has to belong to one of the shape's pieces, so a block
 //! claimed and not written cannot drop a statement.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use jarde_jvm::method_ir::{
     CanonicalBlockId, CanonicalCfg, Definition, Slot, SsaInstruction, SsaTable, ValueId,
@@ -155,6 +155,9 @@ pub enum Shape {
         resources: Vec<Resource>,
         /// A post-close load/return pair whose saved value was proved to originate in the body.
         returns: Option<u32>,
+        /// Exact instruction starts of normal and exceptional cleanup that a source TWR header
+        /// implicitly reconstructs. These instructions are proof evidence, not source locals.
+        cleanup: Vec<u32>,
     },
     /// `synchronized (lock) { body }`, with the BCI of the `monitorenter` the header reads its lock
     /// from.
@@ -583,6 +586,78 @@ impl<'a> Facts<'a> {
             }
         }
         blocks
+    }
+
+    /// Adds only the handler blocks the proof can account for instruction by instruction.
+    fn cleanup_blocks(
+        &mut self,
+        base: &[CanonicalBlockId],
+        cleanup: &BTreeSet<u32>,
+        rows: &[u32],
+    ) -> Result<Vec<CanonicalBlockId>, TwrFailure> {
+        let base = base.iter().cloned().collect::<BTreeSet<_>>();
+        let mut candidates = cleanup
+            .iter()
+            .filter_map(|bci| self.step(*bci).map(|step| step.block.clone()))
+            .collect::<BTreeSet<_>>();
+        candidates.retain(|block| !base.contains(block));
+        if candidates.is_empty() {
+            let mut owned = base.into_iter().collect::<Vec<_>>();
+            owned.sort_by_key(CanonicalBlockId::bci);
+            return Ok(owned);
+        }
+        let mut owned = base.clone();
+        owned.extend(candidates.iter().cloned());
+        for block in &candidates {
+            self.charge(block.bci())?;
+            let instructions = self.in_block(block);
+            if instructions.is_empty()
+                || instructions
+                    .iter()
+                    .any(|instruction| !cleanup.contains(&instruction.bci()))
+            {
+                return Err((Unproven::Span, block.bci()).into());
+            }
+            let mut entered = false;
+            for edge in self.canonical.edges() {
+                self.charge(block.bci())?;
+                if edge.to() != block {
+                    continue;
+                }
+                match edge.kind() {
+                    jarde_jvm::method_ir::CanonicalEdgeKind::Exception { handler_ordinal }
+                        if rows.contains(&handler_ordinal) =>
+                    {
+                        entered = true
+                    }
+                    jarde_jvm::method_ir::CanonicalEdgeKind::Normal
+                        if candidates.contains(edge.from()) =>
+                    {
+                        entered = true
+                    }
+                    _ => return Err((Unproven::Handler, block.bci()).into()),
+                }
+            }
+            if !entered {
+                return Err((Unproven::Handler, block.bci()).into());
+            }
+            for edge in self.canonical.edges() {
+                self.charge(block.bci())?;
+                if edge.from() != block {
+                    continue;
+                }
+                match edge.kind() {
+                    jarde_jvm::method_ir::CanonicalEdgeKind::Normal
+                        if candidates.contains(edge.to()) => {}
+                    jarde_jvm::method_ir::CanonicalEdgeKind::Exception { handler_ordinal }
+                        if rows.contains(&handler_ordinal) => {}
+                    _ => return Err((Unproven::Handler, block.bci()).into()),
+                }
+            }
+        }
+        let mut owned = owned.into_iter().collect::<Vec<_>>();
+        owned.sort_by_key(CanonicalBlockId::bci);
+        Ok(owned)
     }
 
     /// The block one bytecode index's instruction belongs to.
@@ -2020,13 +2095,19 @@ mod finally_copy_tests {
         let class =
             include_bytes!("../../../tests/fixtures/p3-multi-resource-twr/TwrReturnTail.class");
         let plan = resource_plan(class, "runSaved").expect("the TWR structure is recognized");
-        assert!(matches!(
-            plan.shape(),
-            Shape::Resources {
-                returns: Some(20),
-                ..
-            }
-        ));
+        let Shape::Resources {
+            returns: Some(20),
+            cleanup,
+            ..
+        } = plan.shape()
+        else {
+            panic!("the body store/load/return tail is proved")
+        };
+        assert!(cleanup.contains(&21), "the proved primary handler is owned");
+        assert!(
+            !cleanup.contains(&19) && !cleanup.contains(&20),
+            "the source return tail remains live"
+        );
     }
 
     #[test]
@@ -3021,6 +3102,7 @@ fn twr(
     for (index, resource) in resources.iter_mut().enumerate() {
         resource.close_bci = closes[index];
     }
+    let normal_cleanup = pieces.clone();
     let return_tail = twr_return_tail(facts, body, at)?;
     let claimed_end = return_tail
         .as_ref()
@@ -3119,12 +3201,30 @@ fn twr(
         pieces.push((*load_bci, claimed_end));
     }
     explained(facts, start, claimed_end, &pieces)?;
-    // Every block the statement owns holds an instruction of its own span, and `explained` has just
-    // checked that no instruction of that span belongs to anything else: a handler the layout put
-    // *outside* the span is deliberately not claimed here — the walk quotes it, and the run says so
-    // in its fallbacks, rather than the statement claiming a block it does not write.
-    let mut owned: Vec<CanonicalBlockId> = facts.blocks_in((start, claimed_end));
-    owned.sort_by_key(|block| block.bci());
+    // The normal closes live in the statement's main span. Exceptional cleanup can live after the
+    // return and is owned only when every instruction in each added canonical block is one of the
+    // exact handler/guard instructions proved above, and every incoming/outgoing edge is explained
+    // by those same exception-table rows or by another such cleanup block.
+    let mut cleanup_bcis = BTreeSet::new();
+    let mut cleanup_spans = normal_cleanup;
+    for handler in &handlers {
+        cleanup_spans.push(handler.span);
+        cleanup_spans.push((handler.guard.start_bci, handler.guard.end_bci));
+    }
+    for span in cleanup_spans {
+        for bci in facts.bcis(span) {
+            facts.charge(bci)?;
+            cleanup_bcis.insert(bci);
+        }
+    }
+    for companion in &companions {
+        for bci in facts.bcis((companion.start_bci, companion.end_bci)) {
+            facts.charge(bci)?;
+            cleanup_bcis.insert(bci);
+        }
+    }
+    let owned =
+        facts.cleanup_blocks(&facts.blocks_in((start, claimed_end)), &cleanup_bcis, &rows)?;
     let lead = (start, resources.first().map(|r| r.init.0).unwrap_or(start));
     let mut facts_read: Vec<u32> = Vec::new();
     if let Some((load_bci, return_bci, store_bci)) = return_tail.as_ref() {
@@ -3147,6 +3247,7 @@ fn twr(
             facts_read.push(last);
         }
     }
+    facts_read.extend(cleanup_bcis.iter().copied());
     facts_read.sort_unstable();
     facts_read.dedup();
     let _ = innermost_handler;
@@ -3154,6 +3255,7 @@ fn twr(
         shape: Shape::Resources {
             resources,
             returns: return_tail.as_ref().map(|(_, return_bci, _)| *return_bci),
+            cleanup: cleanup_bcis.into_iter().collect(),
         },
         lead,
         body,
