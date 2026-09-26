@@ -60,10 +60,11 @@ def main() -> None:
     if not jadx:
         raise SystemExit("set JADX to the executable from the frozen local JADX checkout")
 
-    evidence_jadx = EVD / "jadx-source"
-    evidence_jarde_root = EVD if args.expect_jarde == "baseline" else EVD / "fixed"
+    output_root = EVD if args.expect_jarde == "baseline" else EVD / "fixed"
+    output_root.mkdir(parents=True, exist_ok=True)
+    evidence_jadx = output_root / "jadx-source"
+    evidence_jarde_root = output_root
     evidence_jarde = evidence_jarde_root / "jarde-source"
-    evidence_jarde_root.mkdir(parents=True, exist_ok=True)
     remove_saved_sources(evidence_jadx)
     remove_saved_sources(evidence_jarde)
 
@@ -85,7 +86,7 @@ def main() -> None:
                 *map(str, sources),
             ]
         )
-        save_log(EVD / "original-javac.log", source_compile, work)
+        save_log(output_root / "original-javac.log", source_compile, work)
         if source_compile.returncode != 0:
             raise SystemExit("original Java 8 fixture did not compile")
 
@@ -102,10 +103,15 @@ def main() -> None:
             if sha256(path) != sha256(checked):
                 raise SystemExit(f"frozen class SHA-256 mismatch: {checked.relative_to(FIX)}")
         lines = [f"{sha256(path)}  {path.relative_to(FIX).as_posix()}" for path in frozen_files]
-        (FIX / "SHA256SUMS").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        if args.expect_jarde == "baseline":
+            (FIX / "SHA256SUMS").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        else:
+            (output_root / "SHA256SUMS.checked").write_text(
+                "\n".join(lines) + "\n", encoding="utf-8"
+            )
 
         original_run = run([java, "-Xverify:all", "-cp", str(original_classes), "probe.EnumArityRunner"])
-        save_log(EVD / "original-run.log", original_run, work)
+        save_log(output_root / "original-run.log", original_run, work)
         if original_run.returncode != 0 or original_run.stdout != EXPECTED:
             raise SystemExit("original fixture did not produce the expected Java 8 runtime output")
 
@@ -118,11 +124,11 @@ def main() -> None:
         for label, command in (("java", java), ("javac", javac), ("jadx", jadx)):
             result = run([command, "-version"] if label != "jadx" else [command, "--version"])
             tool_versions.append(f"{label}: {result.stdout.strip() or result.stderr.strip()}")
-        (EVD / "tool-versions.txt").write_text("\n".join(tool_versions) + "\n", encoding="utf-8")
+        (output_root / "tool-versions.txt").write_text("\n".join(tool_versions) + "\n", encoding="utf-8")
 
         jadx_dir = work / "jadx"
         jadx_result = run([jadx, "-d", str(jadx_dir), str(jar)])
-        save_log(EVD / "jadx.log", jadx_result, work)
+        save_log(output_root / "jadx.log", jadx_result, work)
         if jadx_result.returncode != 0:
             raise SystemExit("JADX failed to decompile the frozen fixture")
         jadx_sources = sorted(jadx_dir.rglob("*.java"))
@@ -147,11 +153,11 @@ def main() -> None:
                 *map(str, jadx_sources),
             ]
         )
-        save_log(EVD / "jadx-javac.log", jadx_compile, work)
+        save_log(output_root / "jadx-javac.log", jadx_compile, work)
         if jadx_compile.returncode != 0:
             raise SystemExit("JADX complete source set did not compile for Java 8")
         jadx_run = run([java, "-Xverify:all", "-cp", str(jadx_classes), "probe.EnumArityRunner"])
-        save_log(EVD / "jadx-run.log", jadx_run, work)
+        save_log(output_root / "jadx-run.log", jadx_run, work)
         if jadx_run.returncode != 0 or jadx_run.stdout != EXPECTED:
             raise SystemExit("JADX output did not preserve the runtime result")
 
@@ -159,7 +165,7 @@ def main() -> None:
         cargo_env = os.environ.copy()
         cargo_env["CARGO_TARGET_DIR"] = str(cargo_target)
         build = run(["cargo", "build", "-p", "jarde-cli", "--locked"], cwd=ROOT, env=cargo_env)
-        save_log(EVD / "jarde-build.log", build, work)
+        save_log(output_root / "jarde-build.log", build, work)
         if build.returncode != 0:
             raise SystemExit("Jarde CLI build failed; see jarde-build.log")
         cli = cargo_target / "debug/jarde-cli"
@@ -226,7 +232,7 @@ def main() -> None:
             raise SystemExit("Jarde failed for a reason other than the expected missing enum constants")
 
         javap = run(["javap", "-p", "-c", "-classpath", str(original_classes), "probe.Empty"])
-        save_log(EVD / "empty-javap.log", javap, work)
+        save_log(output_root / "empty-javap.log", javap, work)
         if javap.returncode != 0:
             raise SystemExit("javap failed for the frozen empty enum")
 

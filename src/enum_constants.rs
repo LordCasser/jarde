@@ -90,6 +90,7 @@ pub(crate) struct EnumMethodCodeCandidate {
 pub(crate) struct ProvedEnumConstant {
     pub(crate) field_index: u64,
     pub(crate) name: String,
+    pub(crate) ordinal: i32,
     pub(crate) source_argument: Option<i32>,
     pub(crate) constructor_bci: u32,
     pub(crate) field_write_bci: u32,
@@ -103,7 +104,7 @@ pub(crate) struct ProvedOrdinaryEnumConstantGroup {
     pub(crate) constructor_method_index: u64,
     pub(crate) delegating_constructor_method_index: Option<u64>,
     pub(crate) constructor_body: Option<Box<ProvedEnumConstructorBody>>,
-    pub(crate) constructor_field_index: u64,
+    pub(crate) constructor_field_index: Option<u64>,
     pub(crate) constructor_signature_present: bool,
     pub(crate) initializer_method_index: u64,
     pub(crate) values_method_index: u64,
@@ -176,12 +177,7 @@ pub(crate) fn may_capture_group_code(class: &ClassFacts, member_table_complete: 
         return false;
     }
 
-    class
-        .fields
-        .iter()
-        .filter(|field| field.access_flags & ACC_ENUM != 0)
-        .count()
-        == 2
+    true
 }
 
 pub(crate) fn has_only_terminal_initializer_return(
@@ -190,7 +186,7 @@ pub(crate) fn has_only_terminal_initializer_return(
     initializer_candidates: &[jarde_java::report::ClassInitializerCandidates],
     methods: &[ClassSourceMethod],
 ) -> bool {
-    if group.initializer_prefix_statement_count != 3 {
+    if group.initializer_prefix_statement_count != group.constants.len().saturating_add(1) {
         return false;
     }
     let Ok(constructor_index) = usize::try_from(group.constructor_method_index) else {
@@ -199,7 +195,10 @@ pub(crate) fn has_only_terminal_initializer_return(
     let Some(constructor) = methods.get(constructor_index) else {
         return false;
     };
-    if group.constructor_signature_present && !constructor.enum_constructor_source_signature {
+    if group.constructor_signature_present
+        && !constructor.enum_constructor_source_signature
+        && !constructor.enum_constructor_no_arg_source_signature
+    {
         return false;
     }
     let Ok(initializer_index) = usize::try_from(group.initializer_method_index) else {
@@ -242,20 +241,20 @@ pub(crate) fn has_only_terminal_initializer_return(
         return false;
     };
     use jarde_java::report::{ClassInitializerStatementKind, ClassInitializerStep};
-    let steps_are_only_prefix_and_return = matches!(
-        initializer.steps.as_slice(),
-        [
-            ClassInitializerStep::FieldWrite(first),
-            ClassInitializerStep::FieldWrite(second),
-            ClassInitializerStep::FieldWrite(third),
-            ClassInitializerStep::Other {
-                order: 3,
+    let prefix_count = group.initializer_prefix_statement_count;
+    let steps_are_only_prefix_and_return = initializer.steps.len() == prefix_count.saturating_add(1)
+        && initializer.steps[..prefix_count]
+            .iter()
+            .enumerate()
+            .all(|(order, step)| matches!(step, ClassInitializerStep::FieldWrite(write) if write.order == order))
+        && matches!(
+            initializer.steps.last(),
+            Some(ClassInitializerStep::Other {
+                order,
                 bci,
                 kind: ClassInitializerStatementKind::Return,
-            },
-        ] if first.order == 0 && second.order == 1 && third.order == 2
-            && *bci == group.initializer_prefix_end_bci
-    );
+            }) if *order == prefix_count && *bci == group.initializer_prefix_end_bci
+        );
     !initializer.has_exception_handlers && steps_are_only_prefix_and_return
 }
 
@@ -953,15 +952,15 @@ pub(crate) fn prove_group(
         .enumerate()
         .filter(|(_, field)| field.access_flags & ACC_ENUM != 0)
         .collect();
-    let [first_enum, second_enum] = enum_fields.as_slice() else {
-        return Ok(refuse(
-            "the complete field table does not contain exactly two ACC_ENUM fields",
-        ));
-    };
     let enum_descriptor = object_descriptor(owner);
-    let mut constants = Vec::with_capacity(2);
+    let mut constants = Vec::with_capacity(enum_fields.len());
     let mut constant_names = std::collections::BTreeSet::new();
-    for (ordinal, (index, header)) in [first_enum, second_enum].into_iter().enumerate() {
+    for (ordinal_index, (index, header)) in enum_fields.iter().copied().enumerate() {
+        let Ok(ordinal) = i32::try_from(ordinal_index) else {
+            return Ok(refuse(
+                "the enum constant ordinal exceeds the supported integer range",
+            ));
+        };
         let expected_flags = ACC_PUBLIC | ACC_STATIC | ACC_FINAL | ACC_ENUM;
         if header.access_flags != expected_flags
             || header.descriptor.raw().0 != enum_descriptor
@@ -979,12 +978,12 @@ pub(crate) fn prove_group(
                 "enum constant field names are not unique Java identifiers",
             ));
         }
-        if source_fields[*index].declaration.is_none() {
+        if source_fields[index].declaration.is_none() {
             return Ok(refuse(
                 "an enum constant field has no faithful physical declaration",
             ));
         }
-        constants.push((*index, name, i32::try_from(ordinal).unwrap_or(i32::MAX)));
+        constants.push((index, name, ordinal));
     }
 
     let values_field_candidates: Vec<_> = field_headers
@@ -1015,11 +1014,18 @@ pub(crate) fn prove_group(
     let (constructor_index, delegating_constructor_index, delegation_edge, constructor_body) =
         match constructor_count {
             1 => {
-                let constructor_index =
-                    match unique_method(method_headers, b"<init>", CTOR_DESCRIPTOR) {
-                        Ok(index) => index,
-                        Err(reason) => return Ok(refuse(&reason)),
-                    };
+                let descriptor = method_headers
+                    .iter()
+                    .find(|method| method.name.raw().0 == b"<init>")
+                    .map(|method| method.descriptor.raw().0.as_slice())
+                    .unwrap_or(&[]);
+                if descriptor != CTOR_DESCRIPTOR && descriptor != DELEGATING_CTOR_DESCRIPTOR {
+                    return Ok(refuse("the enum has an unsupported constructor descriptor"));
+                }
+                let constructor_index = match unique_method(method_headers, b"<init>", descriptor) {
+                    Ok(index) => index,
+                    Err(reason) => return Ok(refuse(&reason)),
+                };
                 (constructor_index, None, None, None)
             }
             2 => {
@@ -1197,6 +1203,8 @@ pub(crate) fn prove_group(
             DELEGATING_CTOR_DESCRIPTOR.to_vec(),
             CTOR_DESCRIPTOR.to_vec(),
         ]
+    } else if method_headers[constructor_index].descriptor.raw().0 == DELEGATING_CTOR_DESCRIPTOR {
+        vec![DELEGATING_CTOR_DESCRIPTOR.to_vec()]
     } else {
         vec![CTOR_DESCRIPTOR.to_vec()]
     };
@@ -1237,14 +1245,27 @@ pub(crate) fn prove_group(
     }
 
     let expected_ctor_field = if let Some(body) = &constructor_body {
-        body.field_index
+        Some(body.field_index)
+    } else if method_headers[constructor_index].descriptor.raw().0 == DELEGATING_CTOR_DESCRIPTOR {
+        if !prove_implicit_enum_constructor(
+            constructor,
+            &method_headers[constructor_index],
+            &source_methods[constructor_index],
+            constructor_candidates,
+            budget,
+        )? {
+            return Ok(refuse(
+                "the implicit enum constructor has extra effects or an incomplete same-run proof",
+            ));
+        }
+        None
     } else {
         match prove_constructor(constructor, owner, field_headers) {
-            Ok((field_index, _)) => field_index,
+            Ok((field_index, _)) => Some(field_index),
             Err(reason) => return Ok(refuse(&reason)),
         }
     };
-    if source_fields[expected_ctor_field].declaration.is_none() {
+    if expected_ctor_field.is_some_and(|index| source_fields[index].declaration.is_none()) {
         return Ok(refuse(
             "the constructor's source integer field is not faithfully declared",
         ));
@@ -1261,7 +1282,7 @@ pub(crate) fn prove_group(
     }
     if !prove_values_factory(factory, owner, &constants, field_headers) {
         return Ok(refuse(
-            "$values() does not build the two constants in field-table order",
+            "$values() does not build the proved constants in field-table order",
         ));
     }
 
@@ -1279,6 +1300,14 @@ pub(crate) fn prove_group(
                 descriptor: CTOR_DESCRIPTOR.to_vec(),
                 source_argument: EnumSourceArgument::Exact(1),
             },
+        ]
+    } else if method_headers[constructor_index].descriptor.raw().0 == DELEGATING_CTOR_DESCRIPTOR {
+        vec![
+            InitializerConstructorCall {
+                descriptor: DELEGATING_CTOR_DESCRIPTOR.to_vec(),
+                source_argument: EnumSourceArgument::None,
+            };
+            constants.len()
         ]
     } else {
         vec![
@@ -1427,10 +1456,14 @@ pub(crate) fn prove_group(
         .zip(prefix.constructor_bcis)
         .zip(prefix.constant_bcis)
         .map(
-            |((((field_index, name, _), source_argument), constructor_bci), field_write_bci)| {
+            |(
+                (((field_index, name, ordinal), source_argument), constructor_bci),
+                field_write_bci,
+            )| {
                 ProvedEnumConstant {
                     field_index: u64::try_from(field_index).unwrap_or(u64::MAX),
                     name,
+                    ordinal,
                     source_argument,
                     constructor_bci,
                     field_write_bci,
@@ -1446,7 +1479,8 @@ pub(crate) fn prove_group(
             delegating_constructor_method_index: delegating_constructor_index
                 .map(|index| u64::try_from(index).unwrap_or(u64::MAX)),
             constructor_body,
-            constructor_field_index: u64::try_from(expected_ctor_field).unwrap_or(u64::MAX),
+            constructor_field_index: expected_ctor_field
+                .map(|index| u64::try_from(index).unwrap_or(u64::MAX)),
             constructor_signature_present: method_headers[constructor_index]
                 .attributes
                 .iter()
@@ -1722,6 +1756,86 @@ fn prove_constructor(
         return Err("the enum constructor's int field target is absent or ambiguous".to_owned());
     };
     Ok((*field_index, instructions[3].bci))
+}
+
+fn prove_implicit_enum_constructor(
+    code: &EnumMethodCodeCandidate,
+    header: &MemberHeader,
+    source: &ClassSourceMethod,
+    candidates: &[jarde_java::report::ClassEnumConstructorCandidates],
+    budget: &mut Budget,
+) -> Result<bool> {
+    use jarde_java::report::ClassEnumConstructorStepKind as Step;
+    if header.name.raw().0 != b"<init>"
+        || header.descriptor.raw().0 != DELEGATING_CTOR_DESCRIPTOR
+        || !exact_method_flags(header, ACC_PRIVATE)
+        || !single_code_attribute(header)
+        || !allowed_method_attributes(header, &[b"Code", b"MethodParameters", b"Signature"])
+        || !code.complete
+        || code.exception_handler_count != 0
+        || code.instructions.len() != 5
+        || !instructions_are_contiguous(&code.instructions, budget)?
+        || !local_load(&code.instructions[0], b'a', 0)
+        || !local_load(&code.instructions[1], b'a', 1)
+        || !local_load(&code.instructions[2], b'i', 2)
+        || !method_reference(
+            &code.instructions[3],
+            0xb7,
+            ENUM_SUPER,
+            b"<init>",
+            ENUM_CTOR_DESCRIPTOR,
+            false,
+        )
+        || code.instructions[4].opcode != 0xb1
+        || code.member_uses.len() != 1
+        || !matches!(
+            &code.member_uses[0].reference,
+            EnumCodeReference::Method { owner, name, descriptor, interface: false }
+                if owner == ENUM_SUPER && name == b"<init>" && descriptor == DELEGATING_CTOR_DESCRIPTOR
+        )
+    {
+        return Ok(false);
+    }
+    let matching: Vec<_> = candidates
+        .iter()
+        .filter(|candidate| candidate.member.as_ref() == Some(&source.item.identity))
+        .collect();
+    let [candidate] = matching.as_slice() else {
+        return Ok(false);
+    };
+    if !candidate.complete
+        || candidate.has_exception_handlers
+        || !matches!(candidate.steps.len(), 1 | 2)
+    {
+        return Ok(false);
+    }
+    let step = &candidate.steps[0];
+    if step.order != 0 || step.bci != code.instructions[3].bci {
+        return Ok(false);
+    }
+    if candidate.steps.len() == 2
+        && !matches!(&candidate.steps[1].kind, Step::Return { value: None })
+    {
+        return Ok(false);
+    }
+    if candidate.steps.len() == 2
+        && (candidate.steps[1].order != 1 || candidate.steps[1].bci != code.instructions[4].bci)
+    {
+        return Ok(false);
+    }
+    let Step::ConstructorCall {
+        target: jarde_java::ast::ConstructorTarget::Super,
+        args,
+    } = &step.kind
+    else {
+        return Ok(false);
+    };
+    let valid = args.len() == 2
+        && matches!(args[0].kind, jarde_java::ast::ExprKind::Local(_))
+        && matches!(args[1].kind, jarde_java::ast::ExprKind::Local(_))
+        && args[0].origin.primary().bci() == code.instructions[1].bci
+        && args[1].origin.primary().bci() == code.instructions[2].bci;
+    Ok(valid)
 }
 
 /// The constructor edge proved from the exact class-source member candidates. This is deliberately
@@ -2445,19 +2559,29 @@ fn prove_values_factory(
     fields: &[MemberHeader],
 ) -> bool {
     let instructions = &code.instructions;
-    if constants.len() != 2 || instructions.len() != 11 {
+    let expected_len = 3usize.saturating_add(constants.len().saturating_mul(4));
+    if instructions.len() != expected_len {
         return false;
     }
-    if !int_constant(&instructions[0], 2) || !class_reference(&instructions[1], 0xbd, owner) {
+    if !int_constant(
+        &instructions[0],
+        i32::try_from(constants.len()).unwrap_or(i32::MAX),
+    ) || !class_reference(&instructions[1], 0xbd, owner)
+    {
         return false;
     }
     for (ordinal, (field_index, _, _)) in constants.iter().enumerate() {
-        let start = 2 + ordinal * 4;
+        let Ok(ordinal_i32) = i32::try_from(ordinal) else {
+            return false;
+        };
+        let Some(start) = ordinal
+            .checked_mul(4)
+            .and_then(|offset| offset.checked_add(2))
+        else {
+            return false;
+        };
         if instructions[start].opcode != 0x59
-            || !int_constant(
-                &instructions[start + 1],
-                i32::try_from(ordinal).unwrap_or(i32::MAX),
-            )
+            || !int_constant(&instructions[start + 1], ordinal_i32)
             || !field_reference(
                 &instructions[start + 2],
                 0xb2,
@@ -2470,7 +2594,7 @@ fn prove_values_factory(
             return false;
         }
     }
-    instructions[10].opcode == 0xb0
+    instructions[expected_len - 1].opcode == 0xb0
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -2520,17 +2644,17 @@ fn prove_initializer_prefix(
         methods,
         backing_name,
     } = input;
-    if constants.len() != 2 || constructor_calls.len() != constants.len() {
-        return Err("the proof does not contain exactly two ordered constants".to_owned());
+    if constructor_calls.len() != constants.len() {
+        return Err("the constructor proof does not match the ordered constant vector".to_owned());
     }
     for call in constructor_calls {
         unique_method(methods, b"<init>", &call.descriptor)?;
     }
     let instructions = &code.instructions;
     let mut cursor = 0_usize;
-    let mut constant_bcis = Vec::with_capacity(2);
-    let mut constructor_bcis = Vec::with_capacity(2);
-    let mut source_arguments = Vec::with_capacity(2);
+    let mut constant_bcis = Vec::with_capacity(constants.len());
+    let mut constructor_bcis = Vec::with_capacity(constants.len());
+    let mut source_arguments = Vec::with_capacity(constants.len());
     for (ordinal, (name, expected_ordinal)) in constants.iter().enumerate() {
         let constructor_call_spec = &constructor_calls[ordinal];
         let Some(allocation) = instructions.get(cursor) else {
@@ -2816,6 +2940,12 @@ mod tests {
     const STAGE: &[u8] = include_bytes!(
         "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/classes-original/Stage.class"
     );
+    const FROZEN_EMPTY_ENUM: &[u8] =
+        include_bytes!("../tests/fixtures/proved-java-structure/enum-arity/v8/probe/Empty.class");
+    const FROZEN_ONE_ENUM: &[u8] =
+        include_bytes!("../tests/fixtures/proved-java-structure/enum-arity/v8/probe/One.class");
+    const FROZEN_FOUR_ENUM: &[u8] =
+        include_bytes!("../tests/fixtures/proved-java-structure/enum-arity/v8/probe/Four.class");
     const MEASURE: &[u8] = include_bytes!(
         "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/helper-constructor-prefix-boundaries/generated/input/source-baseline/Measure.class"
     );
@@ -2933,10 +3063,18 @@ final class ConstructorEffects {
                         )
                         .expect("the candidate class-source pass completes"),
                 );
-                assert!(matches!(
-                    report.enum_constant_proof,
-                    ClassSourceEnumConstantProof::Refused { .. }
-                ));
+                if name == "Plain" {
+                    assert!(matches!(
+                        report.enum_constant_proof,
+                        ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(_))
+                    ));
+                    assert!(report.text.contains("READY,\n    WAITING;"));
+                } else {
+                    assert!(matches!(
+                        report.enum_constant_proof,
+                        ClassSourceEnumConstantProof::Refused { .. }
+                    ));
+                }
                 if name == "Op" {
                     let abstract_apply = report
                         .methods
@@ -3026,6 +3164,237 @@ final class ConstructorEffects {
                 }
             }
         }
+    }
+
+    #[test]
+    fn frozen_plain_enum_arities_project_as_one_ordered_physical_group() {
+        for (bytes, name, expected) in [
+            (FROZEN_EMPTY_ENUM, "Empty", Vec::<&str>::new()),
+            (FROZEN_ONE_ENUM, "One", vec!["ONLY"]),
+            (
+                FROZEN_FOUR_ENUM,
+                "Four",
+                vec!["NORTH", "SOUTH", "EAST", "WEST"],
+            ),
+        ] {
+            let report = enum_report(bytes, &format!("probe/{name}"), &mut test_budget());
+            let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(group)) =
+                &report.enum_constant_proof
+            else {
+                panic!(
+                    "{name} should have a complete ordinary enum proof: {:?}",
+                    report.enum_constant_proof
+                );
+            };
+            assert_eq!(
+                group
+                    .constants
+                    .iter()
+                    .map(|constant| constant.name.as_str())
+                    .collect::<Vec<_>>(),
+                expected
+            );
+            assert_eq!(
+                group
+                    .constants
+                    .iter()
+                    .map(|constant| constant.ordinal)
+                    .collect::<Vec<_>>(),
+                (0..expected.len())
+                    .map(|ordinal| i32::try_from(ordinal).unwrap())
+                    .collect::<Vec<_>>()
+            );
+            assert!(report.text.contains(&format!("enum {name} {{")));
+            for constant in &expected {
+                assert!(
+                    report.text.contains(constant),
+                    "{name} source omits {constant}"
+                );
+            }
+            assert!(
+                report
+                    .fields
+                    .iter()
+                    .any(|field| field.item.name.raw().0 == b"$VALUES")
+            );
+            assert!(
+                report
+                    .methods
+                    .iter()
+                    .any(|method| method.item.name.raw().0 == b"<init>")
+            );
+            assert!(
+                !report
+                    .text
+                    .contains(&format!("private {name}(java.lang.String")),
+                "{name} source retained its implicit constructor: {}",
+                report.text
+            );
+        }
+    }
+
+    #[test]
+    fn frozen_four_constant_factory_rejects_wrong_length_and_duplicate_entries() {
+        let snapshot = crate::Engine::new()
+            .open(
+                crate::ArtifactInput::bytes(FROZEN_FOUR_ENUM.to_vec()),
+                &mut test_budget(),
+            )
+            .expect("the four-constant enum opens");
+        let mut budget = test_budget();
+        let read = snapshot
+            .prepared_root_class(&mut budget)
+            .expect("the same class read prepares");
+        let prepared = jarde_reader::prepared::PreparedClass::prepare(&read, &mut budget)
+            .expect("the complete physical table prepares");
+        let facts = prepared.class_facts();
+        let factory_index = facts
+            .methods
+            .iter()
+            .position(|method| method.name.raw().0 == b"$values")
+            .expect("the enum factory is present");
+        let factory_code = prepared
+            .method_code(
+                jarde_reader::prepared::MethodOrdinal(
+                    u32::try_from(factory_index).expect("factory index fits"),
+                ),
+                &mut budget,
+            )
+            .expect("the factory Code decodes");
+        let mut candidate = EnumMethodCodeCandidate {
+            table_index: u64::try_from(factory_index).expect("factory index fits u64"),
+            member: None,
+            complete: factory_code.stopped_at.is_none()
+                && matches!(factory_code.execution, ExecutionReport::Complete { .. })
+                && factory_code.exception_handler_count as usize
+                    == factory_code.exception_handlers.len(),
+            exception_handler_count: factory_code.exception_handler_count,
+            instructions: factory_code
+                .instructions
+                .iter()
+                .enumerate()
+                .map(|(index, instruction)| {
+                    enum_instruction(
+                        instruction,
+                        factory_code.operands().get(index),
+                        &facts.constant_pool,
+                    )
+                })
+                .collect(),
+            member_uses: Vec::new(),
+        };
+        let owner = facts.this_class.raw().0.as_slice();
+        let constants: Vec<_> = facts
+            .fields
+            .iter()
+            .enumerate()
+            .filter(|(_, field)| field.access_flags & ACC_ENUM != 0)
+            .enumerate()
+            .map(|(ordinal, (index, field))| {
+                (
+                    index,
+                    String::from_utf16(field.name.utf16()).expect("enum name is Java text"),
+                    i32::try_from(ordinal).expect("fixture ordinal fits i32"),
+                )
+            })
+            .collect();
+        assert!(prove_values_factory(
+            &candidate,
+            owner,
+            &constants,
+            &facts.fields
+        ));
+
+        candidate.instructions[0].opcode = 0x06;
+        assert!(!prove_values_factory(
+            &candidate,
+            owner,
+            &constants,
+            &facts.fields
+        ));
+        candidate.instructions[0].opcode = 0x07;
+        candidate.instructions[8].reference = candidate.instructions[4].reference.clone();
+        assert!(!prove_values_factory(
+            &candidate,
+            owner,
+            &constants,
+            &facts.fields
+        ));
+    }
+
+    #[test]
+    fn implicit_enum_constructor_with_an_extra_effect_refuses_the_whole_group() {
+        let bytes = compile_java_class(
+            "EffectEnum",
+            "public enum EffectEnum { ONLY; private EffectEnum() { Effect.touch(); } } final class Effect { static void touch() {} }",
+            false,
+        );
+        let report = enum_report(&bytes, "EffectEnum", &mut test_budget());
+        assert!(matches!(
+            report.enum_constant_proof,
+            ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        let constructor = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"<init>")
+            .expect("the refused constructor remains physical");
+        assert!(constructor.text.contains("touch"));
+    }
+
+    #[test]
+    fn implicit_enum_constructor_with_wrong_ordinal_forwarding_refuses_the_group() {
+        let mut bytes = FROZEN_ONE_ENUM.to_vec();
+        let pattern = [0x2a, 0x2b, 0x1c, 0xb7];
+        let matches: Vec<_> = bytes
+            .windows(pattern.len())
+            .enumerate()
+            .filter_map(|(index, window)| (window == pattern).then_some(index))
+            .collect();
+        let [constructor_code] = matches.as_slice() else {
+            panic!("the frozen constructor forwarding sequence is unique: {matches:?}");
+        };
+        bytes[constructor_code + 2] = 0x03; // iconst_0 keeps verifier shape, but stops forwarding ordinal.
+        let report = enum_report(&bytes, "probe/One", &mut test_budget());
+        assert!(matches!(
+            report.enum_constant_proof,
+            ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(report.methods.iter().any(|method| {
+            method.item.name.raw().0 == b"<init>"
+                && method.item.descriptor.raw().0 == DELEGATING_CTOR_DESCRIPTOR
+        }));
+    }
+
+    #[test]
+    fn empty_enum_with_a_user_method_emits_its_required_separator() {
+        let bytes = compile_java_class(
+            "EmptyMethod",
+            "public enum EmptyMethod { ; public int marker() { return 9; } }",
+            false,
+        );
+        let report = enum_report(&bytes, "EmptyMethod", &mut test_budget());
+        assert!(matches!(
+            report.enum_constant_proof,
+            ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(_))
+        ));
+        assert!(report.text.contains("enum EmptyMethod {\n    ;\n"));
+        assert!(report.text.contains("int marker()"));
+        assert!(!report.text.contains("private EmptyMethod(java.lang.String"));
+    }
+
+    #[test]
+    fn incomplete_enum_code_budget_does_not_project_any_member() {
+        let mut limits = test_budget().limits().clone();
+        limits.code_bytes = 1;
+        let report = enum_report(FROZEN_EMPTY_ENUM, "probe/Empty", &mut Budget::new(limits));
+        assert!(matches!(
+            report.enum_constant_proof,
+            ClassSourceEnumConstantProof::Stopped { .. }
+                | ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(report.text.contains("$VALUES"));
+        assert!(!report.text.contains("ONLY"));
     }
 
     #[test]

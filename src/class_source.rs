@@ -5841,22 +5841,25 @@ pub(crate) fn prepare_enum_constant_source_projection(
     let Ok(constructor_index) = usize::try_from(group.constructor_method_index) else {
         return Ok(None);
     };
-    let Ok(source_field_index) = usize::try_from(group.constructor_field_index) else {
+    let source_field = group
+        .constructor_field_index
+        .and_then(|index| usize::try_from(index).ok())
+        .and_then(|index| fields.get(index));
+    let Some(constructor) = methods.get(constructor_index) else {
         return Ok(None);
     };
-    let (Some(constructor), Some(source_field)) = (
-        methods.get(constructor_index),
-        fields.get(source_field_index),
-    ) else {
-        return Ok(None);
-    };
+    let no_source_constructor = group.constructor_field_index.is_none();
     let has_only_enum_signature_marker =
         constructor.enum_constructor_signature_erasure_refused && constructor.markers.len() == 1;
     if constructor.item.index != group.constructor_method_index
-        || source_field.item.index != group.constructor_field_index
-        || constructor.declaration.is_none()
-        || source_field.declaration.is_none()
-        || (group.constructor_signature_present && !constructor.enum_constructor_source_signature)
+        || (!no_source_constructor && source_field.is_none())
+        || source_field.is_some_and(|field| {
+            Some(field.item.index) != group.constructor_field_index || field.declaration.is_none()
+        })
+        || (!no_source_constructor && constructor.declaration.is_none())
+        || (!no_source_constructor
+            && group.constructor_signature_present
+            && !constructor.enum_constructor_source_signature)
         || (!constructor.markers.is_empty() && !has_only_enum_signature_marker)
         || !constructor.annotations.refusals.is_empty()
         || !constructor.parameter_annotations.refusals.is_empty()
@@ -5877,12 +5880,38 @@ pub(crate) fn prepare_enum_constant_source_projection(
         return Ok(None);
     }
 
-    let (field_name, aliased) = written_name(&source_field.item.name.raw().0);
-    if aliased {
+    let implicit_signature_shape = if group.constructor_signature_present {
+        constructor.enum_constructor_no_arg_source_signature
+            && constructor.enum_constructor_signature_erasure_refused
+            && constructor.markers.len() == 1
+    } else {
+        !constructor.enum_constructor_no_arg_source_signature
+            && !constructor.enum_constructor_signature_erasure_refused
+            && constructor.markers.is_empty()
+    };
+    if no_source_constructor
+        && (group.delegating_constructor_method_index.is_some()
+            || constructor.item.descriptor.raw().0 != b"(Ljava/lang/String;I)V"
+            || constructor.enum_constructor_source_signature
+            || !implicit_signature_shape)
+    {
         return Ok(None);
     }
+
+    let field_name = if let Some(source_field) = source_field {
+        let (name, aliased) = written_name(&source_field.item.name.raw().0);
+        if aliased {
+            return Ok(None);
+        }
+        Some(name)
+    } else {
+        None
+    };
     let mut constructor_texts = Vec::new();
     if let Some(delegating_index) = group.delegating_constructor_method_index {
+        if field_name.is_none() {
+            return Ok(None);
+        }
         let Ok(delegating_index_usize) = usize::try_from(delegating_index) else {
             return Ok(None);
         };
@@ -5978,49 +6007,54 @@ pub(crate) fn prepare_enum_constant_source_projection(
         if terminal_constructor_body.is_some() {
             return Ok(None);
         }
-        let source_parameter_type_uses = constructor
-            .type_annotations
-            .parameter_uses
-            .get(2)
-            .map(Vec::as_slice)
-            .unwrap_or(&[]);
-        let Some(parameter_type) = (if source_parameter_type_uses.is_empty() {
-            Some("int".to_owned())
-        } else {
-            decorate_qualified_type("int", source_parameter_type_uses)
-        }) else {
-            return Ok(None);
-        };
-        let source_parameter_annotations = constructor
-            .parameter_annotations
-            .uses_by_position
-            .get(2)
-            .map(Vec::as_slice)
-            .unwrap_or(&[]);
-        let parameter_annotations = source_parameter_annotations
-            .iter()
-            .map(|annotation| format!("{annotation} "))
-            .collect::<String>();
-        let mut constructor_declaration = String::new();
-        if let Some(modifier) = visibility(constructor.item.access_flags) {
-            constructor_declaration.push_str(modifier);
-            constructor_declaration.push(' ');
+        if !no_source_constructor {
+            let Some(field_name) = field_name.as_deref() else {
+                return Ok(None);
+            };
+            let source_parameter_type_uses = constructor
+                .type_annotations
+                .parameter_uses
+                .get(2)
+                .map(Vec::as_slice)
+                .unwrap_or(&[]);
+            let Some(parameter_type) = (if source_parameter_type_uses.is_empty() {
+                Some("int".to_owned())
+            } else {
+                decorate_qualified_type("int", source_parameter_type_uses)
+            }) else {
+                return Ok(None);
+            };
+            let source_parameter_annotations = constructor
+                .parameter_annotations
+                .uses_by_position
+                .get(2)
+                .map(Vec::as_slice)
+                .unwrap_or(&[]);
+            let parameter_annotations = source_parameter_annotations
+                .iter()
+                .map(|annotation| format!("{annotation} "))
+                .collect::<String>();
+            let mut constructor_declaration = String::new();
+            if let Some(modifier) = visibility(constructor.item.access_flags) {
+                constructor_declaration.push_str(modifier);
+                constructor_declaration.push(' ');
+            }
+            constructor_declaration.push_str(&declaration.name);
+            constructor_declaration.push('(');
+            constructor_declaration.push_str(&parameter_annotations);
+            constructor_declaration.push_str(&parameter_type);
+            constructor_declaration.push_str(" arg0)");
+            let constructor_body = format!(
+                "    {constructor_declaration} {{\n        this.{field_name} = arg0;\n    }}\n"
+            );
+            // The one known marker comes from the JVM-only name/ordinal parameters making the physical
+            // descriptor longer than the already parsed source Signature. The enum proof checks that
+            // source tail independently; no other constructor marker is absorbed by this projection.
+            constructor_texts.push((
+                group.constructor_method_index,
+                prefix_method_annotations(constructor_body, &constructor.annotations),
+            ));
         }
-        constructor_declaration.push_str(&declaration.name);
-        constructor_declaration.push('(');
-        constructor_declaration.push_str(&parameter_annotations);
-        constructor_declaration.push_str(&parameter_type);
-        constructor_declaration.push_str(" arg0)");
-        let constructor_body = format!(
-            "    {constructor_declaration} {{\n        this.{field_name} = arg0;\n    }}\n"
-        );
-        // The one known marker comes from the JVM-only name/ordinal parameters making the physical
-        // descriptor longer than the already parsed source Signature. The enum proof checks that
-        // source tail independently; no other constructor marker is absorbed by this projection.
-        constructor_texts.push((
-            group.constructor_method_index,
-            prefix_method_annotations(constructor_body, &constructor.annotations),
-        ));
     }
 
     if initializer.is_some() {
@@ -6070,6 +6104,39 @@ pub(crate) fn prepare_enum_constant_source_projection(
             constants_text.push_str(",\n");
         }
     }
+    let mut implicit_method_indices: Vec<u64> = [
+        group.initializer_method_index,
+        group.values_method_index,
+        group.value_of_method_index,
+        group.values_factory_method_index,
+    ]
+    .into();
+    if no_source_constructor {
+        implicit_method_indices.push(group.constructor_method_index);
+    }
+    if group.constants.is_empty() {
+        let hidden: std::collections::BTreeSet<u64> =
+            implicit_method_indices.iter().copied().collect();
+        let hidden_fields: std::collections::BTreeSet<u64> = group
+            .constants
+            .iter()
+            .map(|constant| constant.field_index)
+            .chain(std::iter::once(group.backing_field_index))
+            .collect();
+        let has_user_member =
+            fields.iter().any(|field| {
+                !hidden_fields.contains(&field.item.index) && field.declaration.is_some()
+            }) || methods.iter().any(|method| {
+                !hidden.contains(&method.item.index)
+                    && !constructor_texts
+                        .iter()
+                        .any(|(index, _)| *index == method.item.index)
+                    && method.item.name.raw().0 != b"<clinit>"
+            }) || initializer_text.is_some();
+        if has_user_member {
+            constants_text.push_str("    ;\n");
+        }
+    }
     let output_bytes = u64::try_from(constants_text.len())
         .unwrap_or(u64::MAX)
         .saturating_add(constructor_texts.iter().fold(0u64, |total, (_, text)| {
@@ -6089,13 +6156,7 @@ pub(crate) fn prepare_enum_constant_source_projection(
             .map(|constant| constant.field_index)
             .collect(),
         backing_field_index: group.backing_field_index,
-        implicit_method_indices: [
-            group.initializer_method_index,
-            group.values_method_index,
-            group.value_of_method_index,
-            group.values_factory_method_index,
-        ]
-        .into(),
+        implicit_method_indices,
         constants_text,
         constructor_texts,
         initializer_text,
