@@ -1278,9 +1278,10 @@ fn a_body_the_graph_accounts_for_names_the_copy_nothing_reaches() {
     );
     assert_eq!(
         quoted_bcis(&report),
-        vec![9],
-        "the quotes name the handler block the normal flow never reaches, and the block that holds \
-         the statements is not quoted:\n{}",
+        vec![9, 10, 13, 14],
+        "the quote names every instruction start of the dead copy run the normal flow never \
+         reaches (the same rule `tests/p3_edge_settlement.rs` pins for `noThrowFinally`), and the \
+         block that holds the statements is not quoted:\n{}",
         report.text
     );
     for bci in quoted_bcis(&report) {

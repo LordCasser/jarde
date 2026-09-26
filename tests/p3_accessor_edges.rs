@@ -19,8 +19,9 @@
 //!    only thing that tells two same-numbered indexes apart: the call site in this body and the
 //!    field access inside the callee's, or two callees that each put their field access at BCI 1
 //!    (`the_anchors_name_the_member_each_field_access_is_in_and_only_named_bodies_are_read`);
-//! 5. a cloned bytecode index is one coordinate in one member, named once per entrance to the
-//!    subroutine and anchored once, because a clone is the same place reached twice
+//! 5. a cloned bytecode index is one coordinate in one member: the fallback quote names it once —
+//!    a clone is the same place reached twice, not a second place — and every quote names an
+//!    anchor of that member
 //!    (`a_bytecode_index_a_clone_repeats_still_names_the_member_it_is_in`).
 //!
 //! The fixtures are assembled here rather than committed, because no historical corpus in this
@@ -1020,15 +1021,18 @@ fn a_bytecode_index_a_clone_repeats_still_names_the_member_it_is_in() {
         report.text
     );
 
-    // And the mapping is by **coordinate**, not by mention: the subroutine's own bytecode is quoted
-    // once per entrance — the artifact names BCI 14 twice, which is what the clone is — while the
-    // node's anchors state it once, because it is one place in one member body. Every bytecode the
-    // quotes name is anchored, and no anchor names a bytecode no quote accounts for.
+    // And the mapping is by **coordinate**, not by mention: the fallback quote names the body's
+    // instruction starts once each — a quote is the set of coordinates this text was produced
+    // from, and a clone is the same coordinate reached twice, not a second place — while the run
+    // still holds the clones (`normalization_clones` above). Every bytecode the quotes name is
+    // anchored, one anchor per quoted coordinate, and no anchor names a bytecode no quote
+    // accounts for.
     let quoted = quoted_bcis(&report.text);
     let anchors: Vec<u32> = coordinates.iter().map(|(bci, _)| *bci).collect();
-    assert!(
-        quoted.len() > distinct_quoted(&quoted).len(),
-        "the cloned bytecode is named once per entrance to the subroutine: {quoted:?}"
+    assert_eq!(
+        quoted,
+        distinct_quoted(&quoted),
+        "the fallback quote names each coordinate once, whatever the clones: {quoted:?}"
     );
     assert_eq!(
         distinct_quoted(&anchors),
@@ -1037,10 +1041,10 @@ fn a_bytecode_index_a_clone_repeats_still_names_the_member_it_is_in() {
          {quoted:?}\n{}",
         report.text
     );
-    assert!(
-        coordinates.len() < quoted.len(),
-        "one node holds one anchor per coordinate, while the quote names the cloned one twice: \
-         {} anchors, {} quoted mentions",
+    assert_eq!(
+        coordinates.len(),
+        quoted.len(),
+        "one anchor per quoted coordinate: {} anchors, {} quoted mentions",
         coordinates.len(),
         quoted.len()
     );
