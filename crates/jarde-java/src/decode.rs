@@ -120,17 +120,22 @@ fn operation_of(
     // classification below reads the opcode the instruction *is*, never the prefix byte.
     let opcode = operands.map_or(instruction.opcode, |operands| operands.effective_opcode);
     match opcode {
-        // Constants the opcode itself encodes, and the two immediate forms.
+        // Constants the opcode itself encodes, and the two immediate forms. The float and double
+        // constants keep the raw bits their opcode (or pool entry) states — no host `f32`/`f64`
+        // round-trip touches them on the way to the presentation.
         0x01 => Operation::Push(ConstantValue::Null),
         0x02..=0x08 => Operation::Push(ConstantValue::Int(i64::from(opcode) - 0x03)),
         0x09 => Operation::Push(ConstantValue::Long(0)),
         0x0a => Operation::Push(ConstantValue::Long(1)),
+        0x0b => Operation::Push(ConstantValue::Float(0)),
+        0x0c => Operation::Push(ConstantValue::Float(0x3f80_0000)),
+        0x0d => Operation::Push(ConstantValue::Float(0x4000_0000)),
+        0x0e => Operation::Push(ConstantValue::Double(0)),
+        0x0f => Operation::Push(ConstantValue::Double(0x3ff0_0000_0000_0000)),
         0x10 | 0x11 => match operands.and_then(|operands| operands.immediate) {
             Some(ImmediateValue::Int(value)) => {
                 Operation::Push(ConstantValue::Int(i64::from(value)))
             }
-            // `fconst`/`dconst` decode as the same `ImmediateValue`s but have no literal this
-            // subset writes (a `float`/`double` literal needs a spelling decision of its own).
             _ => Operation::Other,
         },
         0x12..=0x14 => constant(instruction, operands, pool),
@@ -264,6 +269,15 @@ fn constant(
             Operation::Push(ConstantValue::Int(i64::from(*value)))
         }
         Ok(CpEntryKind::Long { value }) => Operation::Push(ConstantValue::Long(*value)),
+        // `ldc`/`ldc_w` load one category-one value, so a `CONSTANT_Float` is theirs; `ldc2_w` is
+        // reserved for the two category-two values, so a `CONSTANT_Double` is its only floating
+        // form (JVMS 6.5). Both keep the entry's raw bits.
+        Ok(CpEntryKind::Float { bits }) if matches!(opcode, 0x12 | 0x13) => {
+            Operation::Push(ConstantValue::Float(*bits))
+        }
+        Ok(CpEntryKind::Double { bits }) if opcode == 0x14 => {
+            Operation::Push(ConstantValue::Double(*bits))
+        }
         Ok(CpEntryKind::String { value, .. }) => {
             Operation::Push(ConstantValue::String(lossy(value)))
         }
@@ -276,9 +290,10 @@ fn constant(
                 None => Operation::Other,
             }
         }
-        // A `float`/`double`/`MethodType`/`MethodHandle` constant has no literal this subset writes,
-        // and an index that resolves to nothing is not a constant this run can name. `ldc2_w` is
-        // reserved for category-two values, so a Class item there is not admitted either.
+        // A `MethodType`/`MethodHandle` constant, a floating entry behind the wrong opcode (a
+        // `Double` on `ldc`, a `Float` on `ldc2_w`), and an index that resolves to nothing are not
+        // constants this run can name. `ldc2_w` is reserved for category-two values, so a Class
+        // item there is not admitted either.
         _ => Operation::Other,
     }
 }
@@ -1029,6 +1044,80 @@ mod tests {
 
         let ldc2_w = decoded(&[0x14, 0, 11, 0x57, 0xb1]);
         assert_eq!(at(&ldc2_w, 0), Operation::Other);
+    }
+
+    #[test]
+    fn the_float_and_double_constant_opcodes_state_their_exact_bits() {
+        // fconst_0; fconst_1; fconst_2; dconst_0; dconst_1; return — the value is the opcode's own,
+        // kept as the raw bits the JVM pushes, and never read through a host float.
+        let operations = decoded(&[0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0xb1]);
+        assert_eq!(at(&operations, 0), Operation::Push(ConstantValue::Float(0)));
+        assert_eq!(
+            at(&operations, 1),
+            Operation::Push(ConstantValue::Float(0x3f80_0000))
+        );
+        assert_eq!(
+            at(&operations, 2),
+            Operation::Push(ConstantValue::Float(0x4000_0000))
+        );
+        assert_eq!(
+            at(&operations, 3),
+            Operation::Push(ConstantValue::Double(0))
+        );
+        assert_eq!(
+            at(&operations, 4),
+            Operation::Push(ConstantValue::Double(0x3ff0_0000_0000_0000))
+        );
+        assert_eq!(at(&operations, 5), Operation::Return);
+    }
+
+    #[test]
+    fn pool_float_and_double_entries_reach_ldc_with_their_raw_bits() {
+        // The pool entry the reader decodes for one `ldc` of a float, signed zero included, is the
+        // value the push states: the same entry, the same bits, the instruction's own BCI.
+        let float_ldc = decoded_with_pool(&[0x12, 11, 0xbf, 0xb1], |pool| {
+            pool[10].kind = CpEntryKind::Float {
+                bits: 0x3fc0_0000, // 1.5f
+            };
+        });
+        assert_eq!(
+            at(&float_ldc, 0),
+            Operation::Push(ConstantValue::Float(0x3fc0_0000))
+        );
+
+        let negative_zero = decoded_with_pool(&[0x12, 11, 0xbf, 0xb1], |pool| {
+            pool[10].kind = CpEntryKind::Float {
+                bits: 0x8000_0000, // -0.0f
+            };
+        });
+        assert_eq!(
+            at(&negative_zero, 0),
+            Operation::Push(ConstantValue::Float(0x8000_0000))
+        );
+
+        // `ldc2_w` is the one opcode of `CONSTANT_Double`, by its own category-two rule.
+        let double_ldc2_w = decoded_with_pool(&[0x14, 0, 11, 0x57, 0xb1], |pool| {
+            pool[10].kind = CpEntryKind::Double {
+                bits: 0x4008_0000_0000_0000, // 3.0d
+            };
+        });
+        assert_eq!(
+            at(&double_ldc2_w, 0),
+            Operation::Push(ConstantValue::Double(0x4008_0000_0000_0000))
+        );
+
+        // The wrong opcode for the entry's category states no constant: a `Double` on `ldc` and a
+        // `Float` on `ldc2_w` are neither of them a value this decode states.
+        let double_on_ldc = decoded_with_pool(&[0x12, 11, 0x57, 0xb1], |pool| {
+            pool[10].kind = CpEntryKind::Double {
+                bits: 0x4008_0000_0000_0000,
+            };
+        });
+        assert_eq!(at(&double_on_ldc, 0), Operation::Other);
+        let float_on_ldc2_w = decoded_with_pool(&[0x14, 0, 11, 0x57, 0xb1], |pool| {
+            pool[10].kind = CpEntryKind::Float { bits: 0x3fc0_0000 };
+        });
+        assert_eq!(at(&float_on_ldc2_w, 0), Operation::Other);
     }
 
     #[test]

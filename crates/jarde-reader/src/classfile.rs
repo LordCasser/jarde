@@ -7989,6 +7989,95 @@ pub mod test_class {
         bytes.extend_from_slice(value);
     }
 
+    /// The same class with one wide floating pool constant at index 20 and one fresh descriptor
+    /// UTF-8 entry at index 21 that the method header names, so a body can `ldc`/`ldc2_w` a
+    /// floating constant this pool states without disturbing what the entries above name.
+    ///
+    /// `tag` is the pool tag of the constant (4 float, 6 double) and `payload` its big-endian
+    /// bits; `descriptor` spells the method's own descriptor.
+    pub fn single_method_floating(
+        major: u16,
+        max_stack: u16,
+        max_locals: u16,
+        tag: u8,
+        payload: &[u8],
+        descriptor: &[u8],
+        code: &[u8],
+    ) -> Vec<u8> {
+        // A wide constant (a `long` or a `double`) takes **two** pool slots (JVMS 4.4.5), so the
+        // descriptor entry and the declared pool count move up one for it.
+        let wide = tag == 5 || tag == 6;
+        let descriptor_index: u16 = if wide { 22 } else { 21 };
+        let pool_count: u16 = if wide { 23 } else { 22 };
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(&0xcafebabe_u32.to_be_bytes());
+        u16_be(&mut bytes, 0);
+        u16_be(&mut bytes, major);
+        u16_be(&mut bytes, pool_count);
+        utf8(&mut bytes, b"Test"); // 1
+        class(&mut bytes, 1); // 2
+        utf8(&mut bytes, b"java/lang/Object"); // 3
+        class(&mut bytes, 3); // 4
+        utf8(&mut bytes, b"method"); // 5
+        utf8(&mut bytes, b"()V"); // 6
+        utf8(&mut bytes, b"Code"); // 7
+        utf8(&mut bytes, b"[[I"); // 8
+        class(&mut bytes, 8); // 9
+        utf8(&mut bytes, b"java/lang/Runnable"); // 10
+        class(&mut bytes, 10); // 11
+        utf8(&mut bytes, b"run"); // 12
+        utf8(&mut bytes, b"(J)V"); // 13
+        bytes.push(12); // 14: NameAndType run:(J)V
+        u16_be(&mut bytes, 12);
+        u16_be(&mut bytes, 13);
+        bytes.push(11); // 15: InterfaceMethodRef java/lang/Runnable.run:(J)V
+        u16_be(&mut bytes, 11);
+        u16_be(&mut bytes, 14);
+        utf8(&mut bytes, b"<init>"); // 16
+        bytes.push(12); // 17: NameAndType <init>:()V
+        u16_be(&mut bytes, 16);
+        u16_be(&mut bytes, 6);
+        bytes.push(10); // 18: MethodRef Test.<init>:()V
+        u16_be(&mut bytes, 2);
+        u16_be(&mut bytes, 17);
+        bytes.push(10); // 19: MethodRef java/lang/Object.<init>:()V
+        u16_be(&mut bytes, 4);
+        u16_be(&mut bytes, 17);
+        bytes.push(tag); // 20: the floating constant
+        bytes.extend_from_slice(payload);
+        utf8(&mut bytes, descriptor); // 21 (22 for a wide constant): the method's own descriptor
+        u16_be(&mut bytes, 0x0021);
+        u16_be(&mut bytes, 2);
+        u16_be(&mut bytes, 4);
+        u16_be(&mut bytes, 0); // interfaces
+        u16_be(&mut bytes, 0); // fields
+        u16_be(&mut bytes, 1); // methods
+        u16_be(&mut bytes, 0x0009);
+        u16_be(&mut bytes, 5);
+        u16_be(&mut bytes, descriptor_index); // descriptor: the fresh entry this builder appended
+        u16_be(&mut bytes, 1); // attributes
+        let mut content = Vec::new();
+        u16_be(&mut content, max_stack);
+        u16_be(&mut content, max_locals);
+        content.extend_from_slice(
+            &u32::try_from(code.len())
+                .expect("fixture code fits u32")
+                .to_be_bytes(),
+        );
+        content.extend_from_slice(code);
+        u16_be(&mut content, 0); // exception table
+        u16_be(&mut content, 0); // Code attributes
+        u16_be(&mut bytes, 7);
+        bytes.extend_from_slice(
+            &u32::try_from(content.len())
+                .expect("fixture attribute fits u32")
+                .to_be_bytes(),
+        );
+        bytes.extend_from_slice(&content);
+        u16_be(&mut bytes, 0); // class attributes
+        bytes
+    }
+
     fn class(bytes: &mut Vec<u8>, name: u16) {
         bytes.push(7);
         u16_be(bytes, name);

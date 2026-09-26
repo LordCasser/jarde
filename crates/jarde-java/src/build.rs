@@ -63,7 +63,7 @@ use crate::evidence::Publication;
 use crate::facts::ACC_PRIVATE;
 use crate::facts::{
     ArithmeticOp, BitwiseOp, CallTarget, ClassMembers, CompareOp, ConstantValue, DynamicSite,
-    FieldAccess, InvokeKind, NumericComparisonOp, Operation, ShiftOp,
+    FieldAccess, InvokeKind, NumericComparisonOp, Operation, ShiftOp, SpecialValuePresentation,
 };
 use crate::field;
 use crate::guard;
@@ -10064,8 +10064,19 @@ impl Builder<'_> {
                 continue;
             }
             let owned_exit = self.guarded_return_exit(producer, last, reader);
+            // A floating constant that feeds a fold-vulnerable operation is a candidate for the
+            // fold boundary, not for ordering: the interval between it and its consumer holding
+            // no independent statement is exactly the closed-constant shape the save exists for.
+            let folding = matches!(
+                self.operations.get(producer),
+                Some(
+                    Operation::Push(ConstantValue::Float(_))
+                        | Operation::Push(ConstantValue::Double(_))
+                )
+            );
             match self.has_independent_boundary(value, last, reader, owned_exit)? {
                 Some(true) => candidates.push((value, producer, anchor)),
+                Some(false) if folding => candidates.push((value, producer, anchor)),
                 Some(false) => {}
                 None => rejections.push(BindingRejection {
                     value,
@@ -10082,10 +10093,26 @@ impl Builder<'_> {
         // outer declaration only when the interval between them contains no independent effect.
         // Keeping both across such an effect is necessary: each value must be materialized at its
         // own execution point. A rejected outer producer is absent from this set, so its inner
-        // candidate remains available for the conservative fallback.
+        // candidate remains available for the conservative fallback. A folding candidate is never
+        // covered that way: the outer declaration's initializer would be a closed constant
+        // expression again, which is the fold the save exists to prevent — each real operation in
+        // the tree keeps its own saved operand.
         let candidate_producers: BTreeSet<u32> = candidates
             .iter()
             .map(|(_, producer, _)| *producer)
+            .collect();
+        let folding_producers: BTreeSet<u32> = candidates
+            .iter()
+            .map(|(_, producer, _)| *producer)
+            .filter(|producer| {
+                matches!(
+                    self.operations.get(*producer),
+                    Some(
+                        Operation::Push(ConstantValue::Float(_))
+                            | Operation::Push(ConstantValue::Double(_))
+                    )
+                )
+            })
             .collect();
         let mut retained = Vec::with_capacity(candidates.len());
         for candidate @ (value, producer, _) in candidates {
@@ -10099,6 +10126,10 @@ impl Builder<'_> {
                 retained.push(candidate);
                 continue;
             };
+            if folding_producers.contains(&producer) {
+                retained.push(candidate);
+                continue;
+            }
             if candidate_producers.contains(&reader)
                 && !matches!(
                     self.has_independent_boundary(value, producer, reader, None)?,
@@ -10199,9 +10230,105 @@ impl Builder<'_> {
             Some(Operation::PrimitiveConversion { .. }) => true,
             Some(Operation::InstanceOf { .. }) => true,
             Some(Operation::CheckCast { .. }) => !self.bridge_owns(producer),
+            // A special floating constant is a supported producer for one reason only: the real
+            // JVM operation that consumes it would otherwise be recovered as a closed Java constant
+            // expression, and the compiler's fold of that expression is not provably the operation
+            // the class file ran (`fneg` of the canonical NaN is the recorded case). Saving the
+            // operand into the existing non-final named value keeps the operation at run time.
+            Some(Operation::Push(constant)) => self.folding_candidate(value_facts, constant),
             _ => false,
         };
         supported.then_some((producer, producer, producer))
+    }
+
+    /// Whether one floating constant's value has to become a saved non-final local for the real
+    /// JVM operation that consumes it to stay a runtime operation.
+    ///
+    /// Three facts have to meet, and all three are read, never guessed. The constant must be one
+    /// of the admitted special values: a finite literal round-trips its hex spelling exactly and
+    /// IEEE arithmetic over finite constants folds to the bits the JVM computed, so finite leaves
+    /// never gain a local. The value's one consumer must be a floating negation or arithmetic —
+    /// the constructions whose recovered text closes over the constant tree. And that tree must
+    /// close over floating constants and floating operations alone: a tree with any other leaf (a
+    /// local, a call, a merge, a conversion) is not a compile-time constant at all, and the
+    /// operation it feeds is already runtime text that gains nothing from a local.
+    fn folding_candidate(&self, value_facts: &SsaValue, constant: &ConstantValue) -> bool {
+        let special = match constant {
+            ConstantValue::Float(bits) => !ConstantValue::float_is_finite(*bits),
+            ConstantValue::Double(bits) => !ConstantValue::double_is_finite(*bits),
+            _ => return false,
+        };
+        if !special {
+            return false;
+        }
+        let uses = value_facts.uses();
+        let [use_] = uses else {
+            return false;
+        };
+        let Some(use_bci) = use_.bci() else {
+            return false;
+        };
+        if !matches!(
+            self.operations.get(use_bci),
+            Some(Operation::Negate) | Some(Operation::Arithmetic { .. })
+        ) {
+            return false;
+        }
+        let Some(use_instruction) = self.instructions.get(&use_bci) else {
+            return false;
+        };
+        let operands = stack_operands(use_instruction);
+        if operands.is_empty() {
+            return false;
+        }
+        let mut seen = BTreeSet::new();
+        operands
+            .iter()
+            .all(|(_, operand)| self.closed_floating_constant_tree(*operand, &mut seen, 0))
+    }
+
+    /// Whether the value tree closing over one operation's operands is made of floating constants
+    /// and floating `Negate`/`Arithmetic` operations alone, within [`MAX_VALUE_DEPTH`].
+    ///
+    /// This is the bounded constant-tree judgment the fold boundary is taken with: the walk reads
+    /// only what each value's own definition states, refuses at anything it cannot prove constant
+    /// (an entry, a merge, a caught value, a local, a call, a conversion, another width), and so
+    /// states "this recovered text would be one compile-time constant" or nothing.
+    fn closed_floating_constant_tree(
+        &self,
+        value: ValueId,
+        seen: &mut BTreeSet<ValueId>,
+        depth: usize,
+    ) -> bool {
+        if depth > MAX_VALUE_DEPTH {
+            return false;
+        }
+        // A value visited once already has its subtree's answer pending; a shared subtree is
+        // re-entered only after its first walk completed, so a repeat is the closed shape it was
+        // first found to be.
+        if !seen.insert(value) {
+            return true;
+        }
+        let Definition::Instruction { bci, .. } = self.ssa.value(value).def() else {
+            return false;
+        };
+        match self.operations.get(*bci) {
+            Some(
+                Operation::Push(ConstantValue::Float(_))
+                | Operation::Push(ConstantValue::Double(_)),
+            ) => true,
+            Some(Operation::Negate | Operation::Arithmetic { .. }) => {
+                let Some(instruction) = self.instructions.get(bci) else {
+                    return false;
+                };
+                let operands = stack_operands(instruction);
+                !operands.is_empty()
+                    && operands.iter().all(|(_, operand)| {
+                        self.closed_floating_constant_tree(*operand, seen, depth + 1)
+                    })
+            }
+            _ => false,
+        }
     }
 
     /// Whether a value's same-block interval contains an instruction outside the expression that
@@ -12226,7 +12353,39 @@ impl Builder<'_> {
                             }
                             _ => OriginSet::new(Origin::direct(bci)),
                         };
-                        Ok(Expr::new(literal(constant), origin))
+                        // A floating constant's own bits decide what it is presented as: a finite
+                        // value is its exact literal leaf, the three admitted special values are
+                        // the proved constant divisions of those leaves, and any other NaN pattern
+                        // names no expression this run may publish — the refusal is the value's
+                        // own answer, stated at the constant's BCI so the consumer quoting it
+                        // cannot be mistaken for a recovery.
+                        match match constant {
+                            ConstantValue::Float(bits) => Some((
+                                ConstantValue::float_presentation(*bits),
+                                SpecialValueWidth::Float,
+                            )),
+                            ConstantValue::Double(bits) => Some((
+                                ConstantValue::double_presentation(*bits),
+                                SpecialValueWidth::Double,
+                            )),
+                            _ => None,
+                        } {
+                            None => Ok(Expr::new(literal(constant), origin)),
+                            Some((SpecialValuePresentation::Finite, _)) => {
+                                Ok(Expr::new(literal(constant), origin))
+                            }
+                            Some((presentation @ (SpecialValuePresentation::PositiveInfinity
+                            | SpecialValuePresentation::NegativeInfinity
+                            | SpecialValuePresentation::CanonicalNan), width)) => {
+                                Ok(special_value(bci, presentation, width))
+                            }
+                            Some((SpecialValuePresentation::UnpresentableNan, _)) => {
+                                Err(format!(
+                                    "the floating constant at BCI {bci} has a NaN sign, payload or signaling pattern this run cannot present exactly, and no constant expression of this layer normalizes it"
+                                )
+                                .into())
+                            }
+                        }
                     }
                     Operation::NumericComparison { .. } => Err(format!(
                         "the numeric comparison at BCI {bci} is not consumed by its proven zero branch"
@@ -14474,6 +14633,13 @@ impl Builder<'_> {
                     // example, because the type path is shadowed), the quote must keep the `ldc`
                     // producer beside the consumer it fed.
                     Some(Operation::Push(ConstantValue::Class { .. })) => true,
+                    // Every floating constant is in that same class — its text lands where its
+                    // value is consumed, so a refused consumer must name the constant beside
+                    // itself, whatever its own presentation would have done with the bits.
+                    Some(
+                        Operation::Push(ConstantValue::Float(_))
+                        | Operation::Push(ConstantValue::Double(_)),
+                    ) => true,
                     Some(Operation::NumericComparison { .. }) => true,
                     Some(Operation::Bitwise { .. }) => true,
                     Some(Operation::PrimitiveConversion { .. }) => true,
@@ -16691,6 +16857,8 @@ fn stated_by_expression(expr: &Expr, names: &mut Vec<String>, bcis: &mut Vec<u32
         ExprKind::Integer(_)
         | ExprKind::Boolean(_)
         | ExprKind::Long(_)
+        | ExprKind::Float(_)
+        | ExprKind::Double(_)
         | ExprKind::Str(_)
         | ExprKind::Null
         | ExprKind::ClassLiteral { .. }
@@ -16762,10 +16930,93 @@ fn literal(constant: &ConstantValue) -> ExprKind {
     match constant {
         ConstantValue::Int(value) => ExprKind::Integer(*value),
         ConstantValue::Long(value) => ExprKind::Long(*value),
+        // The leaf keeps the bits the class file stated; the emitter spells them exactly.
+        ConstantValue::Float(bits) => ExprKind::Float(*bits),
+        ConstantValue::Double(bits) => ExprKind::Double(*bits),
         ConstantValue::String(value) => ExprKind::Str(value.clone()),
         ConstantValue::Null => ExprKind::Null,
         ConstantValue::Class { ty, .. } => ExprKind::ClassLiteral { ty: ty.clone() },
     }
+}
+
+/// The finite leaves the proved special-value divisions are built from.
+const FLOAT_ONE_BITS: u32 = 0x3f80_0000;
+const FLOAT_MINUS_ONE_BITS: u32 = 0xbf80_0000;
+const FLOAT_ZERO_BITS: u32 = 0;
+const DOUBLE_ONE_BITS: u64 = 0x3ff0_0000_0000_0000;
+const DOUBLE_MINUS_ONE_BITS: u64 = 0xbff0_0000_0000_0000;
+const DOUBLE_ZERO_BITS: u64 = 0;
+
+/// The expression one special floating constant is presented as: the proved constant division of
+/// two finite leaves (`1/0`, `-1/0`, `0/0`), every node of it derived from the constant's own BCI.
+///
+/// This is the constant's *presentation*, not an invented instruction: no BCI of the bytecode is
+/// claimed as a division, the division node and both of its leaves derive from the one `ldc` (or
+/// `fconst`/`dconst`) the class file states, and the division keeps the constant's own type. The
+/// leaves are finite by construction, so the text recompiles to a constant expression whose bits
+/// the compiler computes exactly as the JVM does — `1/0` is positive infinity, `-1/0` negative
+/// infinity, and `0/0` the standard positive quiet NaN.
+fn special_value(
+    bci: u32,
+    presentation: SpecialValuePresentation,
+    width: SpecialValueWidth,
+) -> Expr {
+    let origin = || OriginSet::new(Origin::derived(bci));
+    let leaf = |bits: LeafBits| match width {
+        SpecialValueWidth::Float => Expr::new(ExprKind::Float(bits.float_bits()), origin()),
+        SpecialValueWidth::Double => Expr::new(ExprKind::Double(bits.double_bits()), origin()),
+    };
+    let (numerator, denominator) = match presentation {
+        SpecialValuePresentation::PositiveInfinity => (LeafBits::One, LeafBits::Zero),
+        SpecialValuePresentation::NegativeInfinity => (LeafBits::MinusOne, LeafBits::Zero),
+        SpecialValuePresentation::CanonicalNan => (LeafBits::Zero, LeafBits::Zero),
+        // Finite and unpresentable patterns never reach this presentation: the caller matches on
+        // the same classification this function's arms name.
+        _ => unreachable!("a finite or unpresentable pattern has no division presentation"),
+    };
+    Expr::new(
+        ExprKind::Binary {
+            op: BinaryOp::Divide,
+            left: Box::new(leaf(numerator)),
+            right: Box::new(leaf(denominator)),
+        },
+        origin(),
+    )
+}
+
+/// One finite floating leaf of a proved division, by its value: `1`, `-1` or the signed `0`.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum LeafBits {
+    One,
+    MinusOne,
+    Zero,
+}
+
+impl LeafBits {
+    /// The leaf's `float` bits.
+    fn float_bits(self) -> u32 {
+        match self {
+            Self::One => FLOAT_ONE_BITS,
+            Self::MinusOne => FLOAT_MINUS_ONE_BITS,
+            Self::Zero => FLOAT_ZERO_BITS,
+        }
+    }
+
+    /// The leaf's `double` bits.
+    fn double_bits(self) -> u64 {
+        match self {
+            Self::One => DOUBLE_ONE_BITS,
+            Self::MinusOne => DOUBLE_MINUS_ONE_BITS,
+            Self::Zero => DOUBLE_ZERO_BITS,
+        }
+    }
+}
+
+/// The width one floating constant presentation keeps: the constant's own, never widened.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum SpecialValueWidth {
+    Float,
+    Double,
 }
 
 /// Whether this class's own simple name occupies one component of a qualified Class literal path.
@@ -17386,6 +17637,287 @@ mod tests {
                 "BCI {bci} has no source-map span"
             );
         }
+    }
+
+    /// One assembled `Test.method` body, run through the same analysis and recovery a real class
+    /// gets, so the floating-constant shapes are judged against a real run's tables and not
+    /// against a hand-built fixture of this test's own choosing.
+    fn recovered_synthetic(
+        class_bytes: &[u8],
+        descriptor: &[u8],
+        parameters: u16,
+    ) -> crate::report::RecoveryReport {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        let mut budget = Budget::new(jarde_reader::budget::Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 100,
+            method_bodies: 100,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 32,
+            dependency_depth: 32,
+            elapsed_millis: u64::MAX,
+        });
+        let snapshot =
+            ArtifactSnapshot::open(ArtifactInput::bytes(class_bytes.to_vec()), &mut budget)
+                .expect("the assembled class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(class_bytes).to_hex().to_string()),
+                length: u64::try_from(class_bytes.len()).expect("fixture length fits u64"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_string()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let environment = ResolutionEnvironment {
+            runtime: RuntimeView {
+                physical: PhysicalView {
+                    snapshot: snapshot.id().clone(),
+                    scope: PhysicalScope::SnapshotAll,
+                },
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                load_domain: domain.clone(),
+            },
+            domains: vec![domain],
+            providers: Vec::new(),
+        };
+        let analysis = analyze_method_ir(
+            &[snapshot],
+            &MethodAnalysisRequest {
+                environment,
+                method: PhysicalMethodId {
+                    owner: definition,
+                    name: JvmBytes(b"method".to_vec()),
+                    descriptor: JvmBytes(descriptor.to_vec()),
+                },
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut budget,
+        )
+        .expect("the assembled method completes JVM IR analysis");
+        let method = crate::facts::MethodFacts::new(
+            "method",
+            String::from_utf8_lossy(descriptor).into_owned(),
+            parameters,
+        )
+        .with_access_flags(0x0009)
+        .with_declaring_class(crate::facts::DeclaringClass::new("Test", 0x0021));
+        let facts = crate::facts::RecoveryFacts::new(method);
+        let request =
+            crate::report::RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
+                .with_evidence(crate::evidence::RecoveryEvidenceRequest::all());
+        crate::report::recover(&request, &mut budget)
+    }
+
+    /// A real `fneg` of the canonical NaN must not become `-(0.0f / 0.0f)`: javac folds that back
+    /// to the *positive* NaN, while the JVM's `fneg` flipped the sign. The operand therefore goes
+    /// through the accepted named-value save, and the negation stays a runtime operation on a
+    /// non-final local.
+    #[test]
+    fn a_closed_nan_negation_saves_its_operand_so_the_real_operation_stays_runtime() {
+        // ldc 20 (float 0x7fc00000); fneg; freturn
+        let class_bytes = jarde_reader::classfile::test_class::single_method_floating(
+            52,
+            1,
+            0,
+            4,
+            &0x7fc0_0000u32.to_be_bytes(),
+            b"()F",
+            &[0x12, 20, 0x76, 0xae],
+        );
+        let report = recovered_synthetic(&class_bytes, b"()F", 0);
+        assert!(
+            report.produced(),
+            "stop={:?} text={}",
+            report.stop(),
+            report.text
+        );
+        assert_eq!(report.representation, jarde_jvm::ir::Representation::Java);
+        assert!(
+            report
+                .text
+                .contains("float saved0 = 0x0.000000p-126f / 0x0.000000p-126f;"),
+            "the admitted NaN is the saved operand:\n{}",
+            report.text
+        );
+        assert!(
+            report.text.contains("return -saved0;"),
+            "the negation reads the non-final local, so no compiler fold can touch it:\n{}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("return -0x"),
+            "the negation must not be spelled over the constant tree:\n{}",
+            report.text
+        );
+
+        // The same shape on a double: ldc2_w 20 (double 0x7ff8000000000000); dneg; dreturn.
+        let class_bytes = jarde_reader::classfile::test_class::single_method_floating(
+            52,
+            1,
+            0,
+            6,
+            &0x7ff8_0000_0000_0000u64.to_be_bytes(),
+            b"()D",
+            &[0x14, 0, 20, 0x77, 0xaf],
+        );
+        let report = recovered_synthetic(&class_bytes, b"()D", 0);
+        assert!(
+            report.produced(),
+            "stop={:?} text={}",
+            report.stop(),
+            report.text
+        );
+        assert!(
+            report
+                .text
+                .contains("double saved0 = 0x0.0000000000000p-1022d / 0x0.0000000000000p-1022d;"),
+            "the admitted double NaN is the saved operand:\n{}",
+            report.text
+        );
+        assert!(
+            report.text.contains("return -saved0;"),
+            "the double negation stays a runtime operation:\n{}",
+            report.text
+        );
+    }
+
+    /// The same closed shape over finite values gains no local: a finite literal round-trips its
+    /// hex spelling exactly and the fold computes the bits the JVM computed, and a tree a
+    /// parameter participates in is not a compile-time constant at all.
+    #[test]
+    fn finite_and_open_negations_render_inline_without_a_saved_local() {
+        // fconst_1; fneg; freturn
+        let finite = jarde_reader::classfile::test_class::single_method_floating(
+            52,
+            1,
+            0,
+            4,
+            &0u32.to_be_bytes(),
+            b"()F",
+            &[0x0c, 0x76, 0xae],
+        );
+        let report = recovered_synthetic(&finite, b"()F", 0);
+        assert!(
+            report.produced(),
+            "stop={:?} text={}",
+            report.stop(),
+            report.text
+        );
+        assert!(
+            report.text.contains("return -0x1.000000p0f;"),
+            "a finite negation is its own text:\n{}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("saved"),
+            "finite constants never gain a saved local:\n{}",
+            report.text
+        );
+
+        // fload_0; fconst_0; fadd; fneg; freturn — the parameter keeps the tree open.
+        let open = jarde_reader::classfile::test_class::single_method_floating(
+            52,
+            2,
+            1,
+            4,
+            &0u32.to_be_bytes(),
+            b"(F)F",
+            &[0x22, 0x0b, 0x62, 0x76, 0xae],
+        );
+        let report = recovered_synthetic(&open, b"(F)F", 1);
+        assert!(
+            report.produced(),
+            "stop={:?} text={}",
+            report.stop(),
+            report.text
+        );
+        assert!(
+            report.text.contains("return -(arg0 + 0x0.000000p-126f);"),
+            "the open tree renders inline:\n{}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("saved"),
+            "a non-constant tree never gains a saved local:\n{}",
+            report.text
+        );
+    }
+
+    /// A NaN bit pattern this change cannot present — here one payload bit — names no expression.
+    /// The body stays a quote, the constant's own BCI is in it, and nothing is normalized to the
+    /// default NaN.
+    #[test]
+    fn an_unpresentable_nan_bit_pattern_is_refused_at_its_own_bci() {
+        // ldc 20 (float 0x7fc00001, one payload bit); freturn
+        let class_bytes = jarde_reader::classfile::test_class::single_method_floating(
+            52,
+            1,
+            0,
+            4,
+            &0x7fc0_0001u32.to_be_bytes(),
+            b"()F",
+            &[0x12, 20, 0xae],
+        );
+        let report = recovered_synthetic(&class_bytes, b"()F", 0);
+        // The quote names the failed consumer (BCI 2, the `freturn` whose statement the quote
+        // replaces) and the constant beside it (BCI 0).
+        assert!(
+            report.text.contains("@bytecode 2 0"),
+            "the constant's own BCI stays visible beside its consumer:\n{}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("0x0.000000p-126f"),
+            "nothing is normalized into a presentable pattern:\n{}",
+            report.text
+        );
+        assert_ne!(
+            report.representation,
+            jarde_jvm::ir::Representation::Java,
+            "the refusal is a stated boundary, not a recovery:\n{}",
+            report.text
+        );
     }
 
     #[test]

@@ -144,6 +144,17 @@ pub enum ExprKind {
     Boolean(bool),
     /// A `long` literal, written with its `L` suffix.
     Long(i64),
+    /// A `float` literal, written from the **raw bits** the class file stated.
+    ///
+    /// The `u32` is the exact bit pattern of the constant (JLS 3.10.2's hexadecimal spelling
+    /// round-trips it bit for bit), so no host `f32` normalization ever stands between the class
+    /// file's value and the text. The leaf carries **finite** bits only: infinities and the one
+    /// admitted NaN are presented where the constant is read, as the proved constant divisions of
+    /// these leaves, and a NaN pattern the change cannot present exactly is a refusal rather than
+    /// a leaf.
+    Float(u32),
+    /// A `double` literal, by the same raw-bits rule as [`ExprKind::Float`].
+    Double(u64),
     /// A string literal; the raw value is held here and escaped by the emitter, so no expression
     /// carries an escape decision that the writer could then disagree with.
     Str(String),
@@ -483,6 +494,10 @@ fn presented_of(kind: &ExprKind) -> Option<Type> {
     match kind {
         ExprKind::Integer(_) => Some(Type::Int),
         ExprKind::Long(_) => Some(Type::Long),
+        // The leaf's own bits state its type: a float literal is a float, a double literal a
+        // double, and the presentation never widens one into the other.
+        ExprKind::Float(_) => Some(Type::Float),
+        ExprKind::Double(_) => Some(Type::Double),
         ExprKind::Boolean(_) => Some(Type::Boolean),
         ExprKind::Str(_) => Some(Type::Reference("java.lang.String".to_string())),
         ExprKind::ClassLiteral { .. } => Some(Type::Reference("java.lang.Class".to_string())),
@@ -898,6 +913,16 @@ mod tests {
             literal.presented,
             Some(Type::Reference("java.lang.Class".to_owned()))
         );
+    }
+
+    #[test]
+    fn floating_leaves_present_their_own_type_from_their_own_bits() {
+        // The type is the leaf's own, stated by its shape: a float literal never widens into a
+        // double, and the bits it carries decide nothing about the type.
+        let float_leaf = Expr::direct(ExprKind::Float(0x3f80_0000), 0);
+        let double_leaf = Expr::direct(ExprKind::Double(0x4000_0000_0000_0000), 0);
+        assert_eq!(float_leaf.presented, Some(Type::Float));
+        assert_eq!(double_leaf.presented, Some(Type::Double));
     }
 
     #[test]
