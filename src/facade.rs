@@ -1362,21 +1362,27 @@ impl Engine {
                 return Ok(OperationOutcome::Incomplete(candidates));
             }
         };
-        let (mut report, family_scan, _root_method_asts, _anonymous_return_sites, root_nesting) =
-            self.prepare_physical_class_source(
-                content,
-                request,
-                evidence,
-                &environment,
-                snapshot,
-                view,
-                stages,
-                *bound,
-                execution,
-                diagnostics,
-                false,
-                budget,
-            )?;
+        let (
+            mut report,
+            family_scan,
+            _root_method_asts,
+            _anonymous_return_sites,
+            root_nesting,
+            static_target,
+        ) = self.prepare_physical_class_source(
+            content,
+            request,
+            evidence,
+            &environment,
+            snapshot,
+            view,
+            stages,
+            *bound,
+            execution,
+            diagnostics,
+            false,
+            budget,
+        )?;
         report.member_family = match family_scan {
             crate::member_inner::FamilyRootScan::Absent => {
                 class_source::ClassSourceMemberFamily::Absent
@@ -1407,6 +1413,7 @@ impl Engine {
                     &report,
                     &root_name,
                     &candidate,
+                    static_target.as_ref(),
                     budget,
                 ) {
                     Ok((family, family_execution)) => {
@@ -1518,6 +1525,7 @@ impl Engine {
         root_report: &ClassSourceReport,
         root_name: &[u8],
         candidate: &crate::member_inner::FamilyRootCandidate,
+        static_target: Option<&jarde_java::report::ProvedStaticMemberTarget>,
         budget: &mut Budget,
     ) -> Result<(class_source::ClassSourceMemberFamily, ExecutionReport)> {
         use class_source::ClassSourceMemberFamily as Family;
@@ -1600,7 +1608,7 @@ impl Engine {
             },
             environment: request.environment.clone(),
         };
-        let (child, _, _child_method_asts, _child_anonymous_sites, _child_nesting) = self
+        let (child, _, _child_method_asts, _child_anonymous_sites, _child_nesting, _) = self
             .prepare_physical_class_source(
                 content,
                 &child_request,
@@ -1625,7 +1633,20 @@ impl Engine {
         let mut capture_execution = ExecutionReport::Complete {
             usage: budget.usage(),
         };
-        let capture = if matches!(relation, Ok(true)) && physically_complete {
+        let capture = if matches!(relation, Ok(true))
+            && physically_complete
+            && candidate.access_flags & 0x0008 != 0
+        {
+            match static_target.filter(|target| target.definition == child_definition) {
+                Some(target) => class_source::ClassSourceMemberCapture::StaticNoCapture {
+                    target: Box::new(target.clone()),
+                },
+                None => class_source::ClassSourceMemberCapture::Refused {
+                    reason: "static no-capture target was not proved from the class-level relation"
+                        .to_owned(),
+                },
+            }
+        } else if matches!(relation, Ok(true)) && physically_complete {
             match prove_class_source_member_capture(
                 content,
                 environment,
@@ -1649,6 +1670,26 @@ impl Engine {
             }
         };
         let calls = match (&relation, &capture) {
+            (Ok(true), class_source::ClassSourceMemberCapture::StaticNoCapture { target })
+                if physically_complete =>
+            {
+                match prove_class_source_static_calls(
+                    &root_report.methods,
+                    &child.methods,
+                    target,
+                    budget,
+                ) {
+                    Ok(calls) => calls,
+                    Err(error) => {
+                        merge_execution(&mut capture_execution, stop_execution(&error, budget));
+                        class_source::ClassSourceMemberCalls::Refused {
+                            reason: "static member call proof stopped".to_owned(),
+                            sites: Vec::new(),
+                            refusals: Vec::new(),
+                        }
+                    }
+                }
+            }
             (Ok(true), class_source::ClassSourceMemberCapture::Proved { proof })
                 if physically_complete =>
             {
@@ -1970,7 +2011,7 @@ impl Engine {
             },
             environment: request.environment.clone(),
         };
-        let (child, _, child_asts, _, _) = self.prepare_physical_class_source(
+        let (child, _, child_asts, _, _, _) = self.prepare_physical_class_source(
             content,
             &child_request,
             evidence,
@@ -2321,6 +2362,7 @@ impl Engine {
         )>,
         Vec<(PhysicalMethodId, u32, u32, String)>,
         class_source::ClassSourceAssemblyContext,
+        Option<jarde_java::report::ProvedStaticMemberTarget>,
     )> {
         let BoundClass {
             read,
@@ -2387,6 +2429,7 @@ impl Engine {
                 Vec::new(),
                 Vec::new(),
                 class_source::ClassSourceAssemblyContext::default(),
+                None,
             ));
         }
         let class_provenance = Some(definition_provenance(&definition));
@@ -2592,6 +2635,7 @@ impl Engine {
             .collect();
         let mut assembly_context = class_source::ClassSourceAssemblyContext::default();
         let mut family_scan = crate::member_inner::FamilyRootScan::Absent;
+        let mut static_target = None;
         if !nesting_shells.is_empty() {
             match class_source::read_class_source_assembly_context(
                 &read.bytes,
@@ -2622,6 +2666,28 @@ impl Engine {
                     diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
                     family_scan = crate::member_inner::FamilyRootScan::Refused(
                         "typed nesting attributes could not be read".to_owned(),
+                    );
+                }
+            }
+        }
+        if let crate::member_inner::FamilyRootScan::Candidate(candidate) = &family_scan
+            && candidate.access_flags & 0x0008 != 0
+        {
+            match prove_static_family_target(
+                content,
+                environment,
+                &definition,
+                &read.facts.this_class.raw().0,
+                &read.facts,
+                candidate,
+                budget,
+            ) {
+                Ok(target) => static_target = target,
+                Err(error) => {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    family_scan = crate::member_inner::FamilyRootScan::Refused(
+                        "static member target proof stopped".to_owned(),
                     );
                 }
             }
@@ -2875,230 +2941,230 @@ impl Engine {
                 &annotation_read.facts,
                 &pool,
             );
-            let (record, stops, ends) =
-                if !class_source::spellable_descriptor(&item.descriptor.raw().0) {
-                    // A member this presentation cannot spell: no run is performed for it, because the
-                    // artifact of such a run would have no declaration to be written under.
-                    (
-                        ClassSourceMethod::unspelled(item, spelled),
-                        Vec::new(),
-                        false,
-                    )
-                } else if !class_source_runs_body(member) {
-                    let mut record = ClassSourceMethod::no_body(
-                        item,
-                        no_body_kind(member.access_flags),
-                        spelled,
-                    );
-                    let mut stops = Vec::new();
-                    if let Err(error) = class_source::project_method_signature(
-                        &mut record,
-                        member,
-                        &attributes,
-                        None,
-                        None,
-                        &read.bytes,
-                        &pool,
-                        &read.facts.this_class.raw().0,
-                        read.facts.access_flags,
-                        read.facts
-                            .super_class
-                            .as_ref()
-                            .map(|name| name.raw().0.as_slice()),
-                        &physical_interfaces_raw,
-                        class_scope
-                            .as_ref()
-                            .map(|proof| proof.type_parameters.as_slice())
-                            .unwrap_or(&[]),
-                        class_signature_present,
-                        budget,
-                    ) {
-                        stops.push(stop_execution(&error, budget));
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                    }
-                    let ends = stops.iter().any(ends_the_request);
-                    (record, stops, ends)
-                } else {
-                    let request = crate::ir::MethodAnalysisRequest {
-                        environment: environment.clone(),
-                        method: item.identity.clone(),
-                        stages: stages.clone(),
-                    };
-                    match &bodies {
-                        ClassBodies::Prepared(prepared) => {
-                            // One run entered: this is the coordinate this presentation's body plane
-                            // counts, so a member whose run was never entered — because the class could
-                            // not be prepared — stays in that plane's skipped range.
-                            attempted = attempted.saturating_add(1);
-                            match recover_prepared_member(
-                                content,
-                                &request,
-                                prepared,
-                                &assembly_context,
-                                item.index,
-                                evidence,
-                                PreparedMemberOptions {
-                                    prove_generic_return: member
-                                        .attributes
-                                        .iter()
-                                        .any(|attribute| attribute.name.raw().0 == b"Signature"),
-                                    capture_enum_group_code,
-                                    capture_enum_constructor_ast,
-                                    array_helper_census_needed,
-                                    capture_array_helper_use_table: array_helper_use_runs
-                                        .is_empty(),
-                                    capture_anonymous_child_asts,
-                                },
-                                budget,
-                            ) {
-                                Ok(PreparedMemberRecovery {
-                                    recovered,
-                                    initializer: candidates_for_member,
-                                    enum_constructor: enum_constructor_candidates,
-                                    bridge: bridge_candidate,
-                                    enum_switches: enum_switch_candidates,
-                                    array_constructors: array_constructor_candidates,
-                                    array_helper_uses,
-                                    enum_switch_field_uses,
-                                    generic_return,
-                                    generic_constructor,
-                                    anonymous_allocations,
-                                    ast,
-                                    enum_code: enum_code_candidate,
-                                }) => {
-                                    if let Some(candidates) = candidates_for_member {
-                                        initializer_candidate_runs.push(candidates);
-                                    }
-                                    if let Some(candidate) = enum_constructor_candidates {
-                                        enum_constructor_candidate_runs.push(candidate);
-                                    }
-                                    if let Some(candidate) = enum_code_candidate {
-                                        enum_code_candidates.push(candidate);
-                                    }
-                                    if let Some(candidate) = bridge_candidate {
-                                        _bridge_candidate_runs.push(candidate);
-                                    }
-                                    if let Some(candidates) = enum_switch_candidates {
-                                        enum_switch_candidate_runs.extend(candidates);
-                                    }
-                                    if let Some(candidates) = array_constructor_candidates {
-                                        array_constructor_candidate_runs.extend(candidates);
-                                    }
-                                    if let Some(scan) = array_helper_uses {
-                                        array_helper_use_runs.push(scan);
-                                    }
-                                    if let Some(uses) = enum_switch_field_uses {
-                                        enum_switch_scanned_members.push(item.identity.clone());
-                                        enum_switch_field_use_runs.extend(uses);
-                                    }
-                                    anonymous_allocation_scans.push((
-                                        item.identity.clone(),
-                                        anonymous_allocations.clone(),
-                                    ));
-                                    if ast.is_some() || generic_constructor.is_some() {
-                                        if let Some(ast) = ast {
-                                            method_asts.push((
-                                                item.identity.clone(),
-                                                ast,
-                                                generic_constructor.clone(),
-                                                anonymous_allocations,
-                                            ));
-                                        }
-                                    }
-                                    let analysis = ClassSourceRunFacts {
-                                        execution: recovered.analysis().execution.clone(),
-                                        diagnostics: to_u64(
-                                            recovered.analysis().diagnostics.len(),
-                                        )?,
-                                    };
-                                    // The declaration is spelled again with the run's own facts (the
-                                    // parameter names the body's statements use); the declared
-                                    // attributes are the ones already resolved for this member, so
-                                    // the two spellings cannot state two different clauses.
-                                    let spelled = class_source::spell_method(
-                                        &item,
-                                        Some(recovered.facts()),
-                                        &declaration.name,
-                                        read.facts.access_flags,
-                                        Some(&attributes),
-                                        &annotation_read.facts,
-                                        &pool,
-                                    );
-                                    let (_, report, _) = recovered.into_parts();
-                                    let mut stops =
-                                        vec![analysis.execution.clone(), report.execution.clone()];
-                                    let mut record = ClassSourceMethod::recovered(
-                                        item,
-                                        spelled,
-                                        Box::new(report),
-                                        analysis,
-                                    );
-                                    if let Err(error) = class_source::project_method_signature(
-                                        &mut record,
-                                        member,
-                                        &attributes,
-                                        generic_return.as_ref(),
-                                        generic_constructor.as_ref(),
-                                        &read.bytes,
-                                        &pool,
-                                        &read.facts.this_class.raw().0,
-                                        read.facts.access_flags,
-                                        read.facts
-                                            .super_class
-                                            .as_ref()
-                                            .map(|name| name.raw().0.as_slice()),
-                                        &physical_interfaces_raw,
-                                        class_scope
-                                            .as_ref()
-                                            .map(|proof| proof.type_parameters.as_slice())
-                                            .unwrap_or(&[]),
-                                        class_signature_present,
-                                        budget,
-                                    ) {
-                                        stops.push(stop_execution(&error, budget));
-                                        diagnostics.push(stop_diagnostic(
-                                            &error,
-                                            class_provenance.clone(),
+            let (record, stops, ends) = if !class_source::spellable_descriptor(
+                &item.descriptor.raw().0,
+            ) {
+                // A member this presentation cannot spell: no run is performed for it, because the
+                // artifact of such a run would have no declaration to be written under.
+                (
+                    ClassSourceMethod::unspelled(item, spelled),
+                    Vec::new(),
+                    false,
+                )
+            } else if !class_source_runs_body(member) {
+                let mut record =
+                    ClassSourceMethod::no_body(item, no_body_kind(member.access_flags), spelled);
+                let mut stops = Vec::new();
+                if let Err(error) = class_source::project_method_signature(
+                    &mut record,
+                    member,
+                    &attributes,
+                    None,
+                    None,
+                    &read.bytes,
+                    &pool,
+                    &read.facts.this_class.raw().0,
+                    read.facts.access_flags,
+                    read.facts
+                        .super_class
+                        .as_ref()
+                        .map(|name| name.raw().0.as_slice()),
+                    &physical_interfaces_raw,
+                    class_scope
+                        .as_ref()
+                        .map(|proof| proof.type_parameters.as_slice())
+                        .unwrap_or(&[]),
+                    class_signature_present,
+                    budget,
+                ) {
+                    stops.push(stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                }
+                let ends = stops.iter().any(ends_the_request);
+                (record, stops, ends)
+            } else {
+                let request = crate::ir::MethodAnalysisRequest {
+                    environment: environment.clone(),
+                    method: item.identity.clone(),
+                    stages: stages.clone(),
+                };
+                match &bodies {
+                    ClassBodies::Prepared(prepared) => {
+                        // One run entered: this is the coordinate this presentation's body plane
+                        // counts, so a member whose run was never entered — because the class could
+                        // not be prepared — stays in that plane's skipped range.
+                        attempted = attempted.saturating_add(1);
+                        match recover_prepared_member(
+                            content,
+                            &request,
+                            prepared,
+                            &assembly_context,
+                            item.index,
+                            evidence,
+                            PreparedMemberOptions {
+                                prove_generic_return: member
+                                    .attributes
+                                    .iter()
+                                    .any(|attribute| attribute.name.raw().0 == b"Signature"),
+                                capture_enum_group_code,
+                                capture_enum_constructor_ast,
+                                array_helper_census_needed,
+                                capture_array_helper_use_table: array_helper_use_runs.is_empty(),
+                                capture_anonymous_child_asts,
+                                static_member_target: static_target.as_ref(),
+                            },
+                            budget,
+                        ) {
+                            Ok(PreparedMemberRecovery {
+                                recovered,
+                                initializer: candidates_for_member,
+                                enum_constructor: enum_constructor_candidates,
+                                bridge: bridge_candidate,
+                                enum_switches: enum_switch_candidates,
+                                array_constructors: array_constructor_candidates,
+                                array_helper_uses,
+                                enum_switch_field_uses,
+                                generic_return,
+                                generic_constructor,
+                                anonymous_allocations,
+                                ast,
+                                enum_code: enum_code_candidate,
+                            }) => {
+                                if let Some(candidates) = candidates_for_member {
+                                    initializer_candidate_runs.push(candidates);
+                                }
+                                if let Some(candidate) = enum_constructor_candidates {
+                                    enum_constructor_candidate_runs.push(candidate);
+                                }
+                                if let Some(candidate) = enum_code_candidate {
+                                    enum_code_candidates.push(candidate);
+                                }
+                                if let Some(candidate) = bridge_candidate {
+                                    _bridge_candidate_runs.push(candidate);
+                                }
+                                if let Some(candidates) = enum_switch_candidates {
+                                    enum_switch_candidate_runs.extend(candidates);
+                                }
+                                if let Some(candidates) = array_constructor_candidates {
+                                    array_constructor_candidate_runs.extend(candidates);
+                                }
+                                if let Some(scan) = array_helper_uses {
+                                    array_helper_use_runs.push(scan);
+                                }
+                                if let Some(uses) = enum_switch_field_uses {
+                                    enum_switch_scanned_members.push(item.identity.clone());
+                                    enum_switch_field_use_runs.extend(uses);
+                                }
+                                anonymous_allocation_scans
+                                    .push((item.identity.clone(), anonymous_allocations.clone()));
+                                if ast.is_some() || generic_constructor.is_some() {
+                                    if let Some(ast) = ast {
+                                        method_asts.push((
+                                            item.identity.clone(),
+                                            ast,
+                                            generic_constructor.clone(),
+                                            anonymous_allocations,
                                         ));
                                     }
-                                    let ends = stops.iter().any(ends_the_request);
-                                    (record, stops, ends)
                                 }
-                                Err(error) => {
-                                    anonymous_allocation_scans.push((item.identity.clone(), None));
-                                    let stop = stop_execution(&error, budget);
-                                    let ends = ends_the_request(&stop);
-                                    let record = ClassSourceMethod::refused(
-                                        item,
-                                        spelled,
-                                        stop.clone(),
-                                        vec![stop_diagnostic(&error, class_provenance.clone())],
-                                    );
-                                    (record, vec![stop], ends)
+                                let analysis = ClassSourceRunFacts {
+                                    execution: recovered.analysis().execution.clone(),
+                                    diagnostics: to_u64(recovered.analysis().diagnostics.len())?,
+                                };
+                                // The declaration is spelled again with the run's own facts (the
+                                // parameter names the body's statements use); the declared
+                                // attributes are the ones already resolved for this member, so
+                                // the two spellings cannot state two different clauses.
+                                let spelled = class_source::spell_method(
+                                    &item,
+                                    Some(recovered.facts()),
+                                    &declaration.name,
+                                    read.facts.access_flags,
+                                    Some(&attributes),
+                                    &annotation_read.facts,
+                                    &pool,
+                                );
+                                let (_, report, _) = recovered.into_parts();
+                                let mut stops =
+                                    vec![analysis.execution.clone(), report.execution.clone()];
+                                let mut record = ClassSourceMethod::recovered(
+                                    item,
+                                    spelled,
+                                    Box::new(report),
+                                    analysis,
+                                    generic_return.clone(),
+                                );
+                                let signature_candidate =
+                                        generic_return.as_ref().filter(|candidate| {
+                                            !matches!(
+                                                &candidate.value,
+                                                jarde_java::report::GenericReturnValue::StaticMemberCreation { .. }
+                                            )
+                                        });
+                                if let Err(error) = class_source::project_method_signature(
+                                    &mut record,
+                                    member,
+                                    &attributes,
+                                    signature_candidate,
+                                    generic_constructor.as_ref(),
+                                    &read.bytes,
+                                    &pool,
+                                    &read.facts.this_class.raw().0,
+                                    read.facts.access_flags,
+                                    read.facts
+                                        .super_class
+                                        .as_ref()
+                                        .map(|name| name.raw().0.as_slice()),
+                                    &physical_interfaces_raw,
+                                    class_scope
+                                        .as_ref()
+                                        .map(|proof| proof.type_parameters.as_slice())
+                                        .unwrap_or(&[]),
+                                    class_signature_present,
+                                    budget,
+                                ) {
+                                    stops.push(stop_execution(&error, budget));
+                                    diagnostics
+                                        .push(stop_diagnostic(&error, class_provenance.clone()));
                                 }
+                                let ends = stops.iter().any(ends_the_request);
+                                (record, stops, ends)
+                            }
+                            Err(error) => {
+                                anonymous_allocation_scans.push((item.identity.clone(), None));
+                                let stop = stop_execution(&error, budget);
+                                let ends = ends_the_request(&stop);
+                                let record = ClassSourceMethod::refused(
+                                    item,
+                                    spelled,
+                                    stop.clone(),
+                                    vec![stop_diagnostic(&error, class_provenance.clone())],
+                                );
+                                (record, vec![stop], ends)
                             }
                         }
-                        // No body of this class can be decoded, and the one attempt to prepare it is why:
-                        // the member keeps that failure as its own refusal, and the members beside it are
-                        // presented exactly as usual.
-                        ClassBodies::Refused(refusal) => (
-                            ClassSourceMethod::refused(
-                                item,
-                                spelled,
-                                refusal.stop.clone(),
-                                vec![refusal.diagnostic.clone()],
-                            ),
-                            vec![refusal.stop.clone()],
-                            refusal.ends,
-                        ),
-                        // Unreachable by construction: `class_source_runs_body` is the one predicate that
-                        // counts the bodies a class has and the one that sends a member here, so a member
-                        // in this arm is a member of a class the preparation above was made for.
-                        ClassBodies::NotNeeded => unreachable!(
-                            "a member that runs a body belongs to a class the preparation counted"
-                        ),
                     }
-                };
+                    // No body of this class can be decoded, and the one attempt to prepare it is why:
+                    // the member keeps that failure as its own refusal, and the members beside it are
+                    // presented exactly as usual.
+                    ClassBodies::Refused(refusal) => (
+                        ClassSourceMethod::refused(
+                            item,
+                            spelled,
+                            refusal.stop.clone(),
+                            vec![refusal.diagnostic.clone()],
+                        ),
+                        vec![refusal.stop.clone()],
+                        refusal.ends,
+                    ),
+                    // Unreachable by construction: `class_source_runs_body` is the one predicate that
+                    // counts the bodies a class has and the one that sends a member here, so a member
+                    // in this arm is a member of a class the preparation above was made for.
+                    ClassBodies::NotNeeded => unreachable!(
+                        "a member that runs a body belongs to a class the preparation counted"
+                    ),
+                }
+            };
             for stop in stops {
                 merge_execution(&mut execution, stop);
             }
@@ -4258,6 +4324,7 @@ impl Engine {
             method_asts,
             anonymous_return_sites,
             assembly_context,
+            static_target,
         ))
     }
 }
@@ -5948,13 +6015,14 @@ enum ArrayBootstrapArgument {
     Other,
 }
 
-struct PreparedMemberOptions {
+struct PreparedMemberOptions<'a> {
     prove_generic_return: bool,
     capture_enum_group_code: bool,
     capture_enum_constructor_ast: bool,
     array_helper_census_needed: bool,
     capture_array_helper_use_table: bool,
     capture_anonymous_child_asts: bool,
+    static_member_target: Option<&'a jarde_java::report::ProvedStaticMemberTarget>,
 }
 
 fn recover_prepared_member(
@@ -5964,7 +6032,7 @@ fn recover_prepared_member(
     assembly_context: &class_source::ClassSourceAssemblyContext,
     method_index: u64,
     evidence: &RecoveryEvidenceRequest,
-    options: PreparedMemberOptions,
+    options: PreparedMemberOptions<'_>,
     budget: &mut Budget,
 ) -> Result<PreparedMemberRecovery> {
     let analyzed = jarde_jvm::analyze_prepared_method_ir(content, prepared, request, budget)?;
@@ -6010,6 +6078,7 @@ fn recover_prepared_member(
         analyzed,
         prepared,
         assembly_context,
+        options.static_member_target,
         evidence,
         options.prove_generic_return,
         options.capture_enum_constructor_ast,
@@ -9258,6 +9327,330 @@ fn prove_class_source_member_capture(
     }
 }
 
+fn prove_class_source_static_calls(
+    root_methods: &[class_source::ClassSourceMethod],
+    child_methods: &[class_source::ClassSourceMethod],
+    target: &jarde_java::report::ProvedStaticMemberTarget,
+    budget: &mut Budget,
+) -> Result<class_source::ClassSourceMemberCalls> {
+    use class_source::{ClassSourceMemberCalls as Calls, StaticMemberCallProof};
+    let mut sites = Vec::new();
+    for method in root_methods.iter().chain(child_methods) {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        match &method.outcome {
+            class_source::ClassSourceOutcome::Recovered { report, analysis }
+                if matches!(analysis.execution, ExecutionReport::Complete { .. })
+                    && matches!(report.execution, ExecutionReport::Complete { .. })
+                    && report.produced() => {}
+            class_source::ClassSourceOutcome::NoBody => continue,
+            _ => {
+                return Ok(Calls::Refused {
+                    reason: "static family method recovery is incomplete".to_owned(),
+                    sites: Vec::new(),
+                    refusals: Vec::new(),
+                });
+            }
+        }
+        if let Some(candidate) = &method.same_run_generic_return {
+            if let jarde_java::report::GenericReturnValue::StaticMemberCreation {
+                target: selected,
+                allocation_bci,
+                copy_bci,
+                constructor_bci,
+            } = &candidate.value
+            {
+                if **selected != *target
+                    || target
+                        .source_type_path
+                        .first()
+                        .is_none_or(|root| method.item.identity.owner != root.definition)
+                {
+                    return Ok(Calls::Refused {
+                        reason: "same-run static construction does not match the selected physical family".to_owned(),
+                        sites: Vec::new(),
+                        refusals: Vec::new(),
+                    });
+                }
+                sites.push(StaticMemberCallProof {
+                    caller: method.item.identity.clone(),
+                    allocation_bci: *allocation_bci,
+                    copy_bci: *copy_bci,
+                    constructor_bci: *constructor_bci,
+                    constructor: target.constructor.clone(),
+                });
+            }
+        }
+    }
+    if sites.is_empty() {
+        return Ok(Calls::Refused {
+            reason: "root has no same-run direct return of the selected static member".to_owned(),
+            sites: Vec::new(),
+            refusals: Vec::new(),
+        });
+    }
+    Ok(Calls::StaticProved { sites })
+}
+
+fn project_class_source_static_member_family(
+    root: &ClassSourceReport,
+    relation: &class_source::ClassSourceMemberRelation,
+    child: &class_source::ClassSourceReport,
+    target: &jarde_java::report::ProvedStaticMemberTarget,
+    sites: &[class_source::StaticMemberCallProof],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<(String, Vec<class_source::MemberFamilyDerivedProjection>), String>>
+{
+    if root.class != relation.root
+        || child.class != relation.child
+        || target.definition != child.class
+        || child.declaration.as_ref().is_none_or(|declaration| {
+            std::str::from_utf8(&declaration.item.declaration.this_class.raw().0)
+                .map_or(true, |owner| owner != target.owner)
+        })
+        || root.declaration.as_ref().is_none_or(|declaration| {
+            std::str::from_utf8(&declaration.item.declaration.this_class.raw().0)
+                .map_or(true, |owner| owner != target.outer)
+        })
+    {
+        // The final physical-definition equality is the gate for the early, class-level target.
+        return Ok(Err(
+            "static member target differs from the final selected child definition".to_owned(),
+        ));
+    }
+    if !matches!(root.execution, ExecutionReport::Complete { .. })
+        || !matches!(child.execution, ExecutionReport::Complete { .. })
+        || root.declaration.is_none()
+        || child.declaration.is_none()
+        || child.fields.len() != 0
+        || sites.is_empty()
+    {
+        return Ok(Err("static family physical proof is incomplete".to_owned()));
+    }
+    let mut root_methods = Vec::new();
+    let mut child_methods = Vec::new();
+    for physical in [root, child] {
+        for method in &physical.methods {
+            budget.poll()?;
+            let class_source::ClassSourceOutcome::Recovered { report, analysis } = &method.outcome
+            else {
+                return Ok(Err(
+                    "static family has a method without a complete body proof".to_owned(),
+                ));
+            };
+            if !matches!(analysis.execution, ExecutionReport::Complete { .. })
+                || !matches!(report.execution, ExecutionReport::Complete { .. })
+                || !report.produced()
+                || report.quality != Quality::Structured
+                || !report.fallbacks.is_empty()
+                || method.declaration.is_none()
+                || method
+                    .markers
+                    .iter()
+                    .any(|marker| !marker.starts_with("// jarde: descriptor type path for `"))
+            {
+                return Ok(Err(format!(
+                    "static family method {} is incomplete or retains fallback",
+                    method.item.index
+                )));
+            }
+            let mut derived = Vec::new();
+            let mut projected_text = method.text.clone();
+            let physical_type_name = target.owner.replace('/', ".");
+            for site in sites
+                .iter()
+                .filter(|site| site.caller == method.item.identity)
+            {
+                let Some(candidate) = &method.same_run_generic_return else {
+                    return Ok(Err(
+                        "static creation has no retained same-run AST candidate".to_owned(),
+                    ));
+                };
+                if !matches!(&candidate.value, jarde_java::report::GenericReturnValue::StaticMemberCreation { target: selected, allocation_bci, copy_bci, constructor_bci } if **selected == *target && *allocation_bci == site.allocation_bci && *copy_bci == site.copy_bci && *constructor_bci == site.constructor_bci && site.constructor == target.constructor)
+                {
+                    return Ok(Err("same-run static AST candidate differs from its physical construction proof".to_owned()));
+                }
+                // Keep physical spelling in each method until the final family gate. The retained
+                // candidate proves this direct returned `New` node and its allocation/dup/ctor
+                // BCIs; this unique-span check only hands the proved node to the family writer.
+                let needle = format!("new {physical_type_name}()");
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    projected_text.len() as u64,
+                )?;
+                let mut spans = projected_text.match_indices(&needle);
+                let Some((start, _)) = spans.next() else {
+                    return Ok(Err(
+                        "static member construction has no exact same-run source span".to_owned(),
+                    ));
+                };
+                if spans.next().is_some() {
+                    return Ok(Err(
+                        "static member construction source span is ambiguous".to_owned()
+                    ));
+                }
+                let end = start + needle.len();
+                projected_text.replace_range(start..end, &format!("new {}()", target.simple_name));
+                derived.push(class_source::MemberFamilyDerivedProjection {
+                    kind: class_source::MemberFamilyDerivedKind::MemberConstruction,
+                    start,
+                    end,
+                    anchors: vec![
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: site.caller.clone(),
+                            bci: site.allocation_bci,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: site.caller.clone(),
+                            bci: site.copy_bci,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: site.caller.clone(),
+                            bci: site.constructor_bci,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: target.constructor.clone(),
+                            bci: 0,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                            definition: target.definition.clone(),
+                        },
+                    ],
+                });
+            }
+            if physical.class == root.class
+                && let Some(candidate) = &method.same_run_generic_return
+                && matches!(
+                    candidate.value,
+                    jarde_java::report::GenericReturnValue::StaticMemberCreation { .. }
+                )
+            {
+                let declaration = method.declaration.as_ref().unwrap();
+                let Ok(descriptor) = std::str::from_utf8(&method.item.descriptor.raw().0) else {
+                    return Ok(Err(
+                        "static member method descriptor is not UTF-8".to_owned()
+                    ));
+                };
+                let expected_return = format!(")L{};", target.owner);
+                if !descriptor.ends_with(&expected_return) {
+                    return Ok(Err(
+                        "static return descriptor does not name the selected physical child"
+                            .to_owned(),
+                    ));
+                }
+                let mut type_spans = declaration.match_indices(&physical_type_name);
+                let Some((type_start, _)) = type_spans.next() else {
+                    return Ok(Err(
+                        "static return descriptor has no exact source type spelling".to_owned(),
+                    ));
+                };
+                if type_spans.next().is_some() {
+                    return Ok(Err(
+                        "static return descriptor source type spelling is ambiguous".to_owned(),
+                    ));
+                }
+                let Some(base) = projected_text.find(declaration) else {
+                    return Ok(Err(
+                        "static return descriptor is absent from the method text".to_owned(),
+                    ));
+                };
+                let start = base + type_start;
+                let end = start + physical_type_name.len();
+                if projected_text.get(start..end) != Some(physical_type_name.as_str()) {
+                    return Ok(Err(
+                        "static return descriptor source span differs from its declaration"
+                            .to_owned(),
+                    ));
+                }
+                projected_text.replace_range(start..end, &target.simple_name);
+                let removed = physical_type_name.len();
+                let inserted = target.simple_name.len();
+                for projection in &mut derived {
+                    if projection.start >= end {
+                        projection.start = projection.start.saturating_sub(removed) + inserted;
+                        projection.end = projection.end.saturating_sub(removed) + inserted;
+                    }
+                }
+                let Some(return_site) = sites
+                    .iter()
+                    .find(|site| site.caller == method.item.identity)
+                else {
+                    return Ok(Err(
+                        "static return descriptor has no construction proof anchor".to_owned(),
+                    ));
+                };
+                derived.push(class_source::MemberFamilyDerivedProjection {
+                    kind: class_source::MemberFamilyDerivedKind::MemberReturnType,
+                    start,
+                    end: start + target.simple_name.len(),
+                    anchors: vec![
+                        class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                            definition: target.definition.clone(),
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: method.item.identity.clone(),
+                            bci: return_site.constructor_bci,
+                        },
+                    ],
+                });
+            }
+            let projected = class_source::MemberFamilyMethodText {
+                index: method.item.index,
+                text: projected_text,
+                derived,
+            };
+            if physical.class == root.class {
+                root_methods.push(projected)
+            } else {
+                child_methods.push(projected)
+            }
+        }
+    }
+    let member = class_source::MemberFamilyTextProjection {
+        relation,
+        child,
+        capture: None,
+        static_target: Some(target),
+        root_methods: &root_methods,
+        child_methods: &child_methods,
+        outer_super_bridges: &[],
+    };
+    let Some((text, derived)) = class_source::member_family_source_text(root, &member) else {
+        return Ok(Err(
+            "static family writer could not re-emit the complete source unit".to_owned(),
+        ));
+    };
+    // The narrow certificate rewrites only direct returned creations. Another declaration,
+    // cast, or expression may still spell the child's physical name. Comments retain physical
+    // descriptors by design; an unhandled Java source line must refuse the entire projection.
+    let physical_type_token = target.owner.rsplit('/').next().unwrap_or(&target.owner);
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(text.len()).unwrap_or(u64::MAX),
+    )?;
+    let is_ident = |byte: u8| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'$');
+    if text
+        .lines()
+        .filter(|line| !line.trim_start().starts_with("//"))
+        .any(|line| {
+            line.match_indices(physical_type_token).any(|(start, _)| {
+                let end = start + physical_type_token.len();
+                let bytes = line.as_bytes();
+                (start == 0 || !is_ident(bytes[start - 1]))
+                    && (end == bytes.len() || !is_ident(bytes[end]))
+            })
+        })
+    {
+        return Ok(Err(
+            "static family has another source use of the physical member type".to_owned(),
+        ));
+    }
+    budget.charge(CountedBudgetDimension::OutputBytes, text.len() as u64)?;
+    let _ = execution;
+    Ok(Ok((text, derived)))
+}
+
 #[allow(clippy::too_many_arguments)]
 fn project_class_source_member_family(
     content: &[ArtifactSnapshot],
@@ -9278,6 +9671,15 @@ fn project_class_source_member_family(
     else {
         return Ok(Err("family relation is not prepared".to_owned()));
     };
+    if let (
+        ClassSourceMemberCapture::StaticNoCapture { target },
+        ClassSourceMemberCalls::StaticProved { sites },
+    ) = (capture, calls)
+    {
+        return project_class_source_static_member_family(
+            root, relation, child, target, sites, execution, budget,
+        );
+    }
     let ClassSourceMemberCapture::Proved { proof } = capture else {
         return Ok(Err("capture proof is incomplete".to_owned()));
     };
@@ -9919,7 +10321,8 @@ fn project_class_source_member_family(
     let member = class_source::MemberFamilyTextProjection {
         relation,
         child,
-        capture: proof,
+        capture: Some(proof),
+        static_target: None,
         root_methods: &root_methods,
         child_methods: &child_methods,
         outer_super_bridges: &outer_super_bridges,
@@ -11647,6 +12050,182 @@ fn read_class_source_member_inner_targets(
     Ok(targets)
 }
 
+fn prove_static_family_target(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    root_definition: &PhysicalDefinitionId,
+    root_name: &[u8],
+    root: &jarde_reader::classfile::ClassMemberFacts,
+    candidate: &crate::member_inner::FamilyRootCandidate,
+    budget: &mut Budget,
+) -> Result<Option<jarde_java::report::ProvedStaticMemberTarget>> {
+    use jarde_reader::classfile::{CpEntryKind, cp_entry};
+    if candidate.access_flags & 0x0008 == 0
+        || root
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Signature")
+    {
+        return Ok(None);
+    }
+    let mut execution = ExecutionReport::Complete {
+        usage: budget.usage(),
+    };
+    let Some((definition, read)) = resolve_class_source_dependency_read_raw(
+        content,
+        environment,
+        None,
+        &candidate.child_name,
+        &mut execution,
+        budget,
+    )?
+    else {
+        return Ok(None);
+    };
+    let pool = class_constant_pool(&read.bytes, budget)?;
+    let shells: Vec<_> = read
+        .facts
+        .attributes
+        .iter()
+        .filter(|attribute| {
+            matches!(
+                attribute.name.raw().0.as_slice(),
+                b"InnerClasses" | b"EnclosingMethod"
+            )
+        })
+        .cloned()
+        .collect();
+    let nesting =
+        class_source::read_class_source_assembly_context(&read.bytes, &shells, &pool, budget)?;
+    if !crate::member_inner::child_relation_agrees(
+        root_name,
+        candidate,
+        &read.facts,
+        &nesting,
+        &pool,
+        budget,
+    )? || !read.facts.fields.is_empty()
+        || read
+            .facts
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Signature")
+        || read.facts.methods.len() as u64 != read.facts.method_count
+    {
+        return Ok(None);
+    }
+    let constructors: Vec<_> = read
+        .facts
+        .methods
+        .iter()
+        .filter(|method| method.name.raw().0 == b"<init>")
+        .collect();
+    let [constructor] = constructors.as_slice() else {
+        return Ok(None);
+    };
+    if constructor.descriptor.raw().0 != b"()V" {
+        return Ok(None);
+    }
+    let method = PhysicalMethodId {
+        owner: definition.clone(),
+        name: constructor.name.raw().clone(),
+        descriptor: constructor.descriptor.raw().clone(),
+    };
+    let analyzed = jarde_jvm::analyze_method_ir(
+        content,
+        &crate::ir::MethodAnalysisRequest {
+            environment: environment.clone(),
+            method: method.clone(),
+            stages: MethodOperation::Analysis.stages().to_vec(),
+        },
+        budget,
+    )?;
+    let Some(code) = analyzed.ir().code() else {
+        return Ok(None);
+    };
+    if analyzed.report().method != method
+        || !matches!(
+            analyzed.report().execution,
+            ExecutionReport::Complete { .. }
+        )
+        || code.exception_handler_count != 0
+        || !code.exception_handlers.is_empty()
+        || code.instructions.len() != 3
+        || code.instructions[0].opcode != 0x2a
+        || code.instructions[1].opcode != 0xb7
+        || code.instructions[2].opcode != 0xb1
+    {
+        return Ok(None);
+    }
+    let Some(index) = code.instructions[1].constant_pool_index else {
+        return Ok(None);
+    };
+    let Ok(entry) = cp_entry(analyzed.ir().constant_pool(), index) else {
+        return Ok(None);
+    };
+    if !matches!(entry.kind, CpEntryKind::MethodRef { ref owner, ref name, ref descriptor, .. } if owner.0 == b"java/lang/Object" && name.0 == b"<init>" && descriptor.0 == b"()V")
+    {
+        return Ok(None);
+    }
+    let facts = recovery_facts(analyzed.ir().declaration(), Some(code), &method);
+    let request = jarde_java::RecoveryRequest::new(
+        analyzed.ir(),
+        &facts,
+        environment.runtime.profile.clone(),
+    );
+    let constructor_recovery =
+        jarde_java::report::recover_for_class_source(&request, budget, true, false);
+    if !constructor_recovery.report.produced()
+        || constructor_recovery.report.quality != Quality::Structured
+        || !constructor_recovery.report.fallbacks.is_empty()
+        || !matches!(
+            constructor_recovery.report.execution,
+            ExecutionReport::Complete { .. }
+        )
+        || constructor_recovery.generic_constructor.is_none()
+    {
+        return Ok(None);
+    }
+    let root_internal = std::str::from_utf8(root_name).ok();
+    let child_internal = std::str::from_utf8(&candidate.child_name).ok();
+    let (Some(root_internal), Some(child_internal)) = (root_internal, child_internal) else {
+        return Ok(None);
+    };
+    if !root_internal
+        .split('/')
+        .all(jarde_java::names::is_java_identifier)
+    {
+        return Ok(None);
+    }
+    let root_source = root_internal.replace('/', ".");
+    Ok(Some(jarde_java::report::ProvedStaticMemberTarget {
+        definition: definition.clone(),
+        constructor: method,
+        owner: child_internal.to_owned(),
+        outer: root_internal.to_owned(),
+        simple_name: candidate.simple_name.clone(),
+        constructor_descriptor: "()V".to_owned(),
+        source_type_path: vec![
+            source_type_path_segment(
+                root_definition,
+                root_internal,
+                root_source.clone(),
+                0,
+                None,
+                true,
+            ),
+            source_type_path_segment(
+                &definition,
+                child_internal,
+                format!("{root_source}.{}", candidate.simple_name),
+                0,
+                Some(root_internal.to_owned()),
+                true,
+            ),
+        ],
+    }))
+}
+
 #[cfg(test)]
 mod member_inner_target_tests {
     use super::*;
@@ -12219,6 +12798,7 @@ mod member_inner_target_tests {
                     analyzed,
                     CalleeClass::None,
                     Some(&context),
+                    None,
                     &evidence,
                     &mut test_budget(),
                     true,
@@ -16757,6 +17337,7 @@ fn recovery_presented_for_class_source(
     analyzed: jarde_jvm::method_ir::MethodIrAnalysis,
     prepared: &jarde_reader::prepared::PreparedClass<'_>,
     assembly_context: &class_source::ClassSourceAssemblyContext,
+    static_member_target: Option<&jarde_java::report::ProvedStaticMemberTarget>,
     evidence: &RecoveryEvidenceRequest,
     prove_generic_return: bool,
     capture_enum_constructor_ast: bool,
@@ -16781,6 +17362,7 @@ fn recovery_presented_for_class_source(
         analyzed,
         CalleeClass::Prepared(prepared),
         Some(assembly_context),
+        static_member_target,
         evidence,
         budget,
         true,
@@ -16861,6 +17443,7 @@ fn recovery_from(
         analyzed,
         callee_class,
         None,
+        None,
         evidence,
         budget,
         false,
@@ -16877,6 +17460,7 @@ fn recovery_from_with_class_candidates(
     analyzed: jarde_jvm::method_ir::MethodIrAnalysis,
     callee_class: CalleeClass<'_>,
     assembly_context: Option<&class_source::ClassSourceAssemblyContext>,
+    static_member_target: Option<&jarde_java::report::ProvedStaticMemberTarget>,
     evidence: &RecoveryEvidenceRequest,
     budget: &mut Budget,
     include_class_source_candidates: bool,
@@ -16962,6 +17546,11 @@ fn recovery_from_with_class_candidates(
         .with_subject(subject)
         .with_member_inner_targets(&member_inner_targets)
         .with_interface_super_calls(&interface_super_calls);
+    let request = if let Some(target) = static_member_target {
+        request.with_static_member_target(target)
+    } else {
+        request
+    };
     let prove_empty_anonymous_constructor = retain_all_method_asts
         && request.facts.method().name() == "<init>"
         && request.facts.method().descriptor() == "()V";
@@ -16982,7 +17571,9 @@ fn recovery_from_with_class_candidates(
             let result = jarde_java::report::recover_for_class_source_with_anonymous_ast(
                 &request.with_members(members),
                 budget,
-                prove_generic_return || !member_inner_targets.is_empty(),
+                prove_generic_return
+                    || !member_inner_targets.is_empty()
+                    || static_member_target.is_some(),
                 capture_enum_constructor_ast,
                 retain_all_method_asts,
                 prove_empty_anonymous_constructor,
@@ -17005,7 +17596,9 @@ fn recovery_from_with_class_candidates(
             let result = jarde_java::report::recover_for_class_source_with_anonymous_ast(
                 &request,
                 budget,
-                prove_generic_return || !member_inner_targets.is_empty(),
+                prove_generic_return
+                    || !member_inner_targets.is_empty()
+                    || static_member_target.is_some(),
                 capture_enum_constructor_ast,
                 retain_all_method_asts,
                 prove_empty_anonymous_constructor,

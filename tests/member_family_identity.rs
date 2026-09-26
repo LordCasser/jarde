@@ -335,6 +335,105 @@ fn jar_of(entries: &[(&[u8], &[u8])]) -> Vec<u8> {
     output.into_inner()
 }
 
+fn read_u16(bytes: &[u8], offset: usize) -> u16 {
+    u16::from_be_bytes(bytes[offset..offset + 2].try_into().unwrap())
+}
+
+fn read_u32(bytes: &[u8], offset: usize) -> usize {
+    u32::from_be_bytes(bytes[offset..offset + 4].try_into().unwrap()) as usize
+}
+
+fn skip_attributes(bytes: &[u8], offset: &mut usize) {
+    let count = read_u16(bytes, *offset) as usize;
+    *offset += 2;
+    for _ in 0..count {
+        let length = read_u32(bytes, *offset + 2);
+        *offset += 6 + length;
+    }
+}
+
+fn skip_members(bytes: &[u8], offset: &mut usize) {
+    let count = read_u16(bytes, *offset) as usize;
+    *offset += 2;
+    for _ in 0..count {
+        *offset += 6;
+        skip_attributes(bytes, offset);
+    }
+}
+
+fn change_child_inner_class_outer(bytes: &[u8], child: &[u8], wrong_outer: &[u8]) -> Vec<u8> {
+    let mut patched = bytes.to_vec();
+    let cp_count = read_u16(&patched, 8) as usize;
+    let mut utf8 = vec![None; cp_count];
+    let mut classes = vec![None; cp_count];
+    let mut cursor = 10;
+    let mut index = 1;
+    while index < cp_count {
+        match patched[cursor] {
+            1 => {
+                let length = read_u16(&patched, cursor + 1) as usize;
+                utf8[index] = Some(patched[cursor + 3..cursor + 3 + length].to_vec());
+                cursor += 3 + length;
+            }
+            3 | 4 => cursor += 5,
+            5 | 6 => {
+                cursor += 9;
+                index += 1;
+            }
+            7 => {
+                classes[index] = Some(read_u16(&patched, cursor + 1));
+                cursor += 3;
+            }
+            8 | 16 | 19 | 20 => cursor += 3,
+            9 | 10 | 11 | 12 | 17 | 18 => cursor += 5,
+            15 => cursor += 4,
+            tag => panic!("unexpected constant-pool tag {tag}"),
+        }
+        index += 1;
+    }
+    let class_index = |name: &[u8]| {
+        classes
+            .iter()
+            .enumerate()
+            .find_map(|(index, name_index)| {
+                name_index
+                    .and_then(|name_index| utf8[name_index as usize].as_deref())
+                    .filter(|candidate| *candidate == name)
+                    .map(|_| index as u16)
+            })
+            .expect("fixture constant pool contains requested class")
+    };
+    let child_index = class_index(child);
+    let wrong_outer_index = class_index(wrong_outer);
+
+    let mut offset = cursor + 6;
+    let interfaces = read_u16(&patched, offset) as usize;
+    offset += 2 + interfaces * 2;
+    skip_members(&patched, &mut offset);
+    skip_members(&patched, &mut offset);
+    let attributes = read_u16(&patched, offset) as usize;
+    offset += 2;
+    let mut found = false;
+    for _ in 0..attributes {
+        let name_index = read_u16(&patched, offset) as usize;
+        let length = read_u32(&patched, offset + 2);
+        let info = offset + 6;
+        if utf8[name_index].as_deref() == Some(b"InnerClasses") {
+            let count = read_u16(&patched, info) as usize;
+            for row in 0..count {
+                let entry = info + 2 + row * 8;
+                if read_u16(&patched, entry) == child_index {
+                    patched[entry + 2..entry + 4].copy_from_slice(&wrong_outer_index.to_be_bytes());
+                    found = true;
+                }
+            }
+        }
+        offset = info + length;
+    }
+    assert!(found, "child has one self InnerClasses row");
+    patched
+}
+
 #[test]
 fn selected_family_keeps_two_physical_reports_under_one_budget() {
     let report = report_with(task_limits(&[]).unwrap());
@@ -495,6 +594,325 @@ fn projected_stage1_compiles_and_matches_original_and_jadx_java8_behavior() {
         String::from_utf8_lossy(&run.stderr)
     );
     assert_eq!(String::from_utf8(run.stdout).unwrap(), "2011\n20\n");
+}
+
+#[test]
+fn static_member_projects_as_nested_and_keeps_dollar_top_level_independent() {
+    const ROOT: &[u8] = include_bytes!(
+        "../tests/fixtures/proved-java-structure/static-member-basic/StaticMemberBasic.class"
+    );
+    const CHILD: &[u8] = include_bytes!(
+        "../tests/fixtures/proved-java-structure/static-member-basic/StaticMemberBasic$Leaf.class"
+    );
+    const TOP: &[u8] = include_bytes!(
+        "../tests/fixtures/proved-java-structure/static-member-basic/Named$Top.class"
+    );
+    let jar = jar_of(&[
+        (b"StaticMemberBasic.class", ROOT),
+        (b"StaticMemberBasic$Leaf.class", CHILD),
+        (b"Named$Top.class", TOP),
+    ]);
+    let root = report_from_named(jar.clone(), "StaticMemberBasic", task_limits(&[]).unwrap());
+    let ClassSourceMemberFamily::Prepared {
+        child,
+        capture: ClassSourceMemberCapture::StaticNoCapture { .. },
+        calls: ClassSourceMemberCalls::StaticProved { sites },
+        projection: ClassSourceMemberProjection::Projected { derived },
+        ..
+    } = &root.member_family
+    else {
+        panic!(
+            "static member family should be fully proved: {:?}",
+            root.member_family
+        );
+    };
+    assert_eq!(sites.len(), 1);
+    assert!(root.text.contains("static Leaf make()"));
+    assert!(root.text.contains("return new Leaf();"));
+    assert!(root.text.contains("static class Leaf extends"));
+    assert!(root.text.contains("Leaf() {"));
+    assert!(!root.text.contains("StaticMemberBasic$Leaf()"));
+    assert!(child.text.contains("class StaticMemberBasic$Leaf"));
+    assert!(child.text.contains("StaticMemberBasic$Leaf()"));
+    assert_eq!(derived.len(), 4);
+
+    let top = report_from_named(jar, "Named$Top", task_limits(&[]).unwrap());
+    assert!(top.text.contains("class Named$Top"));
+    assert!(!top.text.contains("static class"));
+
+    let temp = TestDirectory::new();
+    std::fs::write(temp.path().join("StaticMemberBasic.java"), &root.text).unwrap();
+    std::fs::write(
+        temp.path().join("Named$Top.java"),
+        include_str!("../tests/fixtures/proved-java-structure/static-member-basic/Named$Top.java"),
+    )
+    .unwrap();
+    let compile = Command::new("javac")
+        .args([
+            "--release",
+            "8",
+            "-g:none",
+            "StaticMemberBasic.java",
+            "Named$Top.java",
+        ])
+        .current_dir(temp.path())
+        .output()
+        .unwrap();
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-cp", ".", "StaticMemberBasic"])
+        .current_dir(temp.path())
+        .output()
+        .unwrap();
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(String::from_utf8(run.stdout).unwrap(), "9:4\n");
+
+    let mut constrained = task_limits(&[]).unwrap();
+    constrained.output_bytes = root.usage.output_bytes.saturating_sub(1);
+    let stopped = report_from_named(
+        jar_of(&[
+            (b"StaticMemberBasic.class", ROOT),
+            (b"StaticMemberBasic$Leaf.class", CHILD),
+            (b"Named$Top.class", TOP),
+        ]),
+        "StaticMemberBasic",
+        constrained,
+    );
+    assert!(!stopped.text.contains("static class Leaf"));
+    assert!(
+        stopped.text.contains("new StaticMemberBasic$Leaf()"),
+        "a refused family must retain the physical construction: {}",
+        stopped.text
+    );
+    assert!(
+        stopped.text.contains("StaticMemberBasic$Leaf make()"),
+        "a refused family must retain the physical return type: {}",
+        stopped.text
+    );
+    assert!(!stopped.text.contains("\n    Leaf make()"));
+    assert!(matches!(
+        stopped.member_family,
+        ClassSourceMemberFamily::Prepared {
+            projection: ClassSourceMemberProjection::Refused { .. },
+            ..
+        }
+    ));
+
+    let cancelled_jar = jar_of(&[
+        (b"StaticMemberBasic.class", ROOT),
+        (b"StaticMemberBasic$Leaf.class", CHILD),
+        (b"Named$Top.class", TOP),
+    ]);
+    let engine = Engine::new();
+    let limits = task_limits(&[]).unwrap();
+    let snapshot = engine
+        .open(
+            ArtifactInput::bytes(cancelled_jar),
+            &mut Budget::new(limits.clone()),
+        )
+        .expect("the frozen archive opens before the request is cancelled");
+    let request = ClassSourceRequest {
+        class: ClassRef::Name {
+            class: ClassNameQuery::internal("StaticMemberBasic"),
+        },
+        environment: EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        },
+    };
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut cancelled = Budget::with_cancellation_token(limits, token);
+    let outcome = engine
+        .class_source_with_evidence(
+            std::slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::essential(),
+            &mut cancelled,
+        )
+        .expect("cancelled source selection is reported");
+    assert!(matches!(outcome, OperationOutcome::Incomplete(_)));
+}
+
+#[test]
+fn static_member_incomplete_targets_never_publish_partial_nested_source() {
+    let compile = |name: &str, source: &str, children: &[&str], top_level: &[&str]| {
+        let temp = TestDirectory::new();
+        std::fs::write(temp.path().join(format!("{name}.java")), source).unwrap();
+        let source_name = format!("{name}.java");
+        let output = Command::new("javac")
+            .args(["--release", "8", "-g:none", &source_name])
+            .current_dir(temp.path())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let mut owned = vec![(
+            format!("{name}.class").into_bytes(),
+            std::fs::read(temp.path().join(format!("{name}.class"))).unwrap(),
+        )];
+        for child in children {
+            let filename = format!("{name}${child}.class");
+            owned.push((
+                filename.as_bytes().to_vec(),
+                std::fs::read(temp.path().join(filename)).unwrap(),
+            ));
+        }
+        for class in top_level {
+            let filename = format!("{class}.class");
+            owned.push((
+                filename.as_bytes().to_vec(),
+                std::fs::read(temp.path().join(filename)).unwrap(),
+            ));
+        }
+        let entries = owned
+            .iter()
+            .map(|(name, bytes)| (name.as_slice(), bytes.as_slice()))
+            .collect::<Vec<_>>();
+        (jar_of(&entries), owned)
+    };
+
+    for (name, source) in [
+        (
+            "StaticFieldNegative",
+            "class StaticFieldNegative { static class Leaf { int state; Leaf() {} } static Leaf make() { return new Leaf(); } }",
+        ),
+        (
+            "StaticCtorNegative",
+            "class StaticCtorNegative { static class Leaf { Leaf() { System.nanoTime(); } } static Leaf make() { return new Leaf(); } }",
+        ),
+    ] {
+        let (jar, compiled) = compile(name, source, &["Leaf"], &[]);
+        let report = report_from_named(jar.clone(), name, task_limits(&[]).unwrap());
+        assert!(
+            !report.text.contains("static class Leaf"),
+            "{}",
+            report.text
+        );
+        assert!(matches!(
+            report.member_family,
+            ClassSourceMemberFamily::Prepared {
+                capture: ClassSourceMemberCapture::Refused { .. },
+                projection: ClassSourceMemberProjection::Refused { .. },
+                ..
+            }
+        ));
+
+        let missing = report_from_named(
+            jar_of(&[(format!("{name}.class").as_bytes(), &compiled[0].1)]),
+            name,
+            task_limits(&[]).unwrap(),
+        );
+        assert!(!missing.text.contains("static class Leaf"));
+        assert!(matches!(
+            missing.member_family,
+            ClassSourceMemberFamily::Refused { .. }
+        ));
+    }
+
+    let (extra_type_use, _) = compile(
+        "StaticEchoNegative",
+        "class StaticEchoNegative { static class Leaf { int value() { return 9; } } static Leaf make() { return new Leaf(); } static Leaf echo(Leaf value) { return value; } static int run() { return echo(make()).value(); } }",
+        &["Leaf"],
+        &[],
+    );
+    let report = report_from_named(
+        extra_type_use,
+        "StaticEchoNegative",
+        task_limits(&[]).unwrap(),
+    );
+    assert!(
+        !report.text.contains("static class Leaf"),
+        "a second, unproved source use must prevent the whole nested projection: {}",
+        report.text
+    );
+    assert!(report.text.contains("StaticEchoNegative$Leaf echo("));
+    assert!(matches!(
+        report.member_family,
+        ClassSourceMemberFamily::Prepared {
+            projection: ClassSourceMemberProjection::Refused { .. },
+            ..
+        }
+    ));
+
+    let (multiple, _) = compile(
+        "StaticPairNegative",
+        "class StaticPairNegative { static class Leaf {} static class Other {} }",
+        &["Leaf", "Other"],
+        &[],
+    );
+    let report = report_from_named(multiple, "StaticPairNegative", task_limits(&[]).unwrap());
+    assert!(!report.text.contains("static class Leaf"));
+    assert!(matches!(
+        report.member_family,
+        ClassSourceMemberFamily::Refused { .. }
+    ));
+
+    const ROOT: &[u8] = include_bytes!(
+        "../tests/fixtures/proved-java-structure/static-member-basic/StaticMemberBasic.class"
+    );
+    const CHILD: &[u8] = include_bytes!(
+        "../tests/fixtures/proved-java-structure/static-member-basic/StaticMemberBasic$Leaf.class"
+    );
+    let duplicate_child = jar_of(&[
+        (b"StaticMemberBasic.class", ROOT),
+        (b"StaticMemberBasic$Leaf.class", CHILD),
+        (b"StaticMemberBasic$Leaf.class", CHILD),
+    ]);
+    let report = report_from_named(
+        duplicate_child,
+        "StaticMemberBasic",
+        task_limits(&[]).unwrap(),
+    );
+    assert!(!report.text.contains("static class Leaf"));
+    assert!(matches!(
+        report.member_family,
+        ClassSourceMemberFamily::Refused { .. }
+    ));
+
+    let (_, compiled) = compile(
+        "StaticMismatch",
+        "class StaticMismatch { static class Leaf { Leaf() {} static Class<?> other() { return OtherRoot.class; } } } class OtherRoot {}",
+        &["Leaf"],
+        &["OtherRoot"],
+    );
+    let wrong_child =
+        change_child_inner_class_outer(&compiled[1].1, b"StaticMismatch$Leaf", b"OtherRoot");
+    let mismatch = jar_of(&[
+        (b"StaticMismatch.class", &compiled[0].1),
+        (b"StaticMismatch$Leaf.class", &wrong_child),
+        (b"OtherRoot.class", &compiled[2].1),
+    ]);
+    let report = report_from_named(mismatch, "StaticMismatch", task_limits(&[]).unwrap());
+    assert!(!report.text.contains("static class Leaf"));
+    let ClassSourceMemberFamily::Refused { reason, .. } = &report.member_family else {
+        panic!(
+            "conflicting typed member rows must refuse the family: {:?}",
+            report.member_family
+        );
+    };
+    assert!(
+        reason.contains("unique matching InnerClasses self row"),
+        "{reason}"
+    );
 }
 
 #[test]

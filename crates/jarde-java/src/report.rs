@@ -113,6 +113,8 @@ pub struct RecoveryRequest<'a> {
     /// Method-only recovery has none. `new@1` verifies each call site separately; this fact alone
     /// carries no conclusion about any particular allocation.
     pub member_inner_targets: &'a [ProvedMemberInnerTarget],
+    /// Exact static member targets selected by class-source relation proof.
+    pub static_member_target: Option<&'a ProvedStaticMemberTarget>,
     /// Exact interface-special targets whose Java source qualifier and default binding were proved
     /// by the facade's selected-definition reads. Direct recovery has no such environment and
     /// therefore leaves interface-qualified `super` calls refused.
@@ -155,6 +157,19 @@ pub struct ProvedMemberInnerTarget {
     pub generic_diamond: bool,
     /// The selected, bidirectionally proved source type path from its top-level enclosing class to
     /// this member. The binary names stay attached so a consumer never splits `$` on its own.
+    pub source_type_path: Vec<ProvedMemberInnerSourceSegment>,
+}
+
+/// Source-path proof for a static member class. It intentionally has no capture-field identity.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProvedStaticMemberTarget {
+    pub definition: PhysicalDefinitionId,
+    pub constructor: PhysicalMethodId,
+    pub owner: String,
+    pub outer: String,
+    pub simple_name: String,
+    pub constructor_descriptor: String,
     pub source_type_path: Vec<ProvedMemberInnerSourceSegment>,
 }
 
@@ -575,6 +590,13 @@ pub enum GenericReturnValue {
         target: Box<ProvedMemberInnerTarget>,
         qualifier_slot: u16,
     },
+    /// Same-run direct creation of the selected static member type.
+    StaticMemberCreation {
+        target: Box<ProvedStaticMemberTarget>,
+        allocation_bci: u32,
+        copy_bci: u32,
+        constructor_bci: u32,
+    },
 }
 
 #[doc(hidden)]
@@ -929,6 +951,7 @@ impl<'a> RecoveryRequest<'a> {
             profile,
             members: None,
             member_inner_targets: &[],
+            static_member_target: None,
             interface_super_calls: &[],
             captured_outer_reads: &[],
             outer_super_calls: &[],
@@ -947,6 +970,12 @@ impl<'a> RecoveryRequest<'a> {
     /// Supply only definitions whose target-side relation and constructor prologue were proved.
     pub fn with_member_inner_targets(mut self, targets: &'a [ProvedMemberInnerTarget]) -> Self {
         self.member_inner_targets = targets;
+        self
+    }
+
+    #[doc(hidden)]
+    pub fn with_static_member_target(mut self, target: &'a ProvedStaticMemberTarget) -> Self {
+        self.static_member_target = Some(target);
         self
     }
 
@@ -1431,6 +1460,62 @@ fn generic_return_candidate(
         })?;
         Some((selected.clone(), qualifier_slot))
     };
+    let static_member_creation =
+        || -> Option<(ProvedStaticMemberTarget, &crate::init::Site)> {
+            if !branch_bcis.is_empty()
+                || !code.exception_handlers.is_empty()
+                || code.exception_handler_count != 0
+                || ssa.blocks().len() != 1
+                || !ssa.phis().is_empty()
+                || code.stopped_at.is_some()
+                || program.statements != 1
+                || code.instructions.last().is_none_or(|instruction| {
+                    instruction.opcode != 0xb0
+                        || instruction.bci != program.stmts[0].origin.primary().bci()
+                })
+            {
+                return None;
+            }
+            let ExprKind::New {
+                ty,
+                qualifier: None,
+                member_name: None,
+                args,
+                ..
+            } = &value.kind
+            else {
+                return None;
+            };
+            if !args.is_empty() {
+                return None;
+            }
+            let mut anchors = std::collections::BTreeSet::new();
+            anchors.extend(program.stmts[0].origin.bcis());
+            collect_expression_anchors(value, &mut anchors);
+            if code.instructions.iter().any(|instruction| {
+                instruction.opcode != 0x00 && !anchors.contains(&instruction.bci)
+            }) {
+                return None;
+            }
+            let site = value
+                .origin
+                .derived()
+                .iter()
+                .filter_map(|origin| sites.site_at_head(origin.bci()))
+                .find(|site| {
+                    site.constructor == value.origin.primary().bci() && site.arguments.is_empty()
+                })?;
+            let target = request.static_member_target.filter(|target| {
+                target.owner == site.class
+                    && target.constructor_descriptor == "()V"
+                    && target.source_type_path.last().is_some_and(|segment| {
+                        segment.binary_name == site.class
+                            && (segment.binary_name.replace('/', ".") == *ty
+                                || segment.source_name == *ty)
+                    })
+            })?;
+            Some((target.clone(), site))
+        };
     let value = match &value.kind {
         ExprKind::Local(_) => GenericReturnValue::Parameter(match local(value, false) {
             Some(slot) => slot,
@@ -1462,7 +1547,15 @@ fn generic_return_candidate(
                 target: Box::new(target),
                 qualifier_slot,
             },
-            None => return Ok(None),
+            None => match static_member_creation() {
+                Some((target, site)) => GenericReturnValue::StaticMemberCreation {
+                    target: Box::new(target),
+                    allocation_bci: site.head,
+                    copy_bci: site.dup,
+                    constructor_bci: site.constructor,
+                },
+                None => return Ok(None),
+            },
         },
         _ => return Ok(None),
     };

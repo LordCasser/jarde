@@ -434,6 +434,9 @@ pub struct ClassSourceMethod {
     /// What the member's own body produced: one recovery run's report, a declaration without a body,
     /// an unspellable member, or the member-level refusal of its run.
     pub outcome: ClassSourceOutcome,
+    /// Same-run source candidate retained for the final family writer only.
+    #[serde(skip)]
+    pub(crate) same_run_generic_return: Option<GenericReturnCandidate>,
     /// Whether the parsed constructor Signature states exactly the source-level int parameter.
     #[serde(skip)]
     pub(crate) enum_constructor_source_signature: bool,
@@ -674,6 +677,9 @@ pub struct MemberFamilyDerivedProjection {
 #[serde(rename_all = "snake_case")]
 pub enum MemberFamilyDerivedKind {
     MemberConstruction,
+    MemberReturnType,
+    MemberConstructorName,
+    MemberClassDeclaration,
     CapturedOuterRead,
     OuterSuperCall,
     HiddenCaptureField,
@@ -685,6 +691,9 @@ pub enum MemberFamilyDerivedKind {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum MemberFamilyPhysicalAnchor {
+    ClassDefinition {
+        definition: PhysicalDefinitionId,
+    },
     Field {
         field: jarde_reader::model::PhysicalMemberId,
         index: u64,
@@ -712,11 +721,24 @@ pub enum ClassSourceMemberCalls {
     Proved {
         sites: Vec<MemberCallProof>,
     },
+    StaticProved {
+        sites: Vec<StaticMemberCallProof>,
+    },
     Refused {
         reason: String,
         sites: Vec<MemberCallProof>,
         refusals: Vec<MemberCallRefusal>,
     },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct StaticMemberCallProof {
+    pub caller: PhysicalMethodId,
+    pub allocation_bci: u32,
+    pub copy_bci: u32,
+    pub constructor_bci: u32,
+    pub constructor: PhysicalMethodId,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -744,8 +766,16 @@ pub struct MemberCallRefusal {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case")]
 pub enum ClassSourceMemberCapture {
-    Proved { proof: MemberCaptureProof },
-    Refused { reason: String },
+    Proved {
+        proof: MemberCaptureProof,
+    },
+    StaticNoCapture {
+        #[serde(skip)]
+        target: Box<jarde_java::report::ProvedStaticMemberTarget>,
+    },
+    Refused {
+        reason: String,
+    },
 }
 
 /// Physical evidence for capture only. A writer must separately prove every changed expression.
@@ -2068,12 +2098,22 @@ fn project_member_inner_descriptor_path(
     candidate: Option<&GenericReturnCandidate>,
     budget: &mut Budget,
 ) -> Result<()> {
-    let Some(GenericReturnValue::MemberCreation {
-        target,
-        qualifier_slot,
-    }) = candidate.map(|candidate| &candidate.value)
-    else {
+    let Some(candidate) = candidate else {
         return Ok(());
+    };
+    let (source_type_path, target_owner, qualifier_slot) = match &candidate.value {
+        GenericReturnValue::MemberCreation {
+            target,
+            qualifier_slot,
+        } => (
+            &target.source_type_path,
+            target.owner.as_str(),
+            Some(*qualifier_slot),
+        ),
+        GenericReturnValue::StaticMemberCreation { target, .. } => {
+            (&target.source_type_path, target.owner.as_str(), None)
+        }
+        _ => return Ok(()),
     };
     let refused = |why| Error::unsupported("member_inner_source_path_unproved", why);
     if record.declaration.is_none()
@@ -2090,57 +2130,55 @@ fn project_member_inner_descriptor_path(
         record.item.access_flags & ACC_VARARGS != 0,
     )
     .ok_or_else(|| refused("physical descriptor cannot be spelled"))?;
-    if candidate.is_some_and(|candidate| candidate.parameters.len() != signature.parameters.len()) {
+    if candidate.parameters.len() != signature.parameters.len() {
         return Err(refused(
             "same-run parameter positions differ from the descriptor",
         ));
     }
-    let Some((qualifier_type, _)) = signature
-        .parameters
-        .iter()
-        .find(|(_, slot)| slot == qualifier_slot)
-    else {
-        return Err(refused("member qualifier is not a method parameter slot"));
-    };
-    let Some(outer) = target
-        .source_type_path
-        .iter()
-        .find(|segment| segment.binary_name == target.outer)
-    else {
-        return Err(refused("selected source path has no enclosing member type"));
-    };
-    let Some(member) = target
-        .source_type_path
-        .iter()
-        .find(|segment| segment.binary_name == target.owner)
-    else {
-        return Err(refused("selected source path has no target member type"));
-    };
-    if qualifier_type != &target.outer.replace('/', ".")
-        || member.enclosing_binary_name.as_deref() != Some(target.outer.as_str())
-        || member.is_static
-        || !outer.is_static
-        || target
-            .source_type_path
-            .last()
-            .is_none_or(|last| last != member)
-    {
-        return Err(refused(
-            "selected qualifier, enclosing type, and member path do not agree",
-        ));
+    if let Some(qualifier_slot) = qualifier_slot {
+        let Some((qualifier_type, _)) = signature
+            .parameters
+            .iter()
+            .find(|(_, slot)| *slot == qualifier_slot)
+        else {
+            return Err(refused("member qualifier is not a method parameter slot"));
+        };
+        let Some(outer) = source_type_path.iter().find(|segment| {
+            segment.binary_name
+                == source_type_path
+                    .last()
+                    .and_then(|segment| segment.enclosing_binary_name.as_deref())
+                    .unwrap_or("")
+        }) else {
+            return Err(refused("selected source path has no enclosing member type"));
+        };
+        let Some(member) = source_type_path
+            .iter()
+            .find(|segment| segment.binary_name == target_owner)
+        else {
+            return Err(refused("selected source path has no target member type"));
+        };
+        if qualifier_type != &outer.binary_name.replace('/', ".")
+            || member.enclosing_binary_name.as_deref() != Some(outer.binary_name.as_str())
+            || member.is_static
+            || !outer.is_static
+            || source_type_path.last().is_none_or(|last| last != member)
+        {
+            return Err(refused(
+                "selected qualifier, enclosing type, and member path do not agree",
+            ));
+        }
     }
     if let Some(result) = &signature.returns
         && result != "java.lang.Object"
-        && result != &target.owner.replace('/', ".")
+        && result != &target_owner.replace('/', ".")
     {
         return Err(refused(
             "physical result is neither Object nor the selected member type",
         ));
     }
-    for ((_, descriptor_slot), (candidate_slot, name)) in signature
-        .parameters
-        .iter()
-        .zip(&candidate.expect("candidate matched").parameters)
+    for ((_, descriptor_slot), (candidate_slot, name)) in
+        signature.parameters.iter().zip(&candidate.parameters)
     {
         if descriptor_slot != candidate_slot || !is_java_identifier(name) {
             return Err(refused("same-run parameter names or slots are incomplete"));
@@ -2148,7 +2186,7 @@ fn project_member_inner_descriptor_path(
     }
 
     let mut declaration = record.declaration.clone().expect("checked above");
-    let mut mapped_segments = target.source_type_path.iter().collect::<Vec<_>>();
+    let mut mapped_segments = source_type_path.iter().collect::<Vec<_>>();
     mapped_segments.sort_by_key(|segment| std::cmp::Reverse(segment.binary_name.len()));
     let mut changed = false;
     for segment in mapped_segments {
@@ -2167,8 +2205,15 @@ fn project_member_inner_descriptor_path(
         if expected_count == 0 {
             continue;
         }
-        let (rewritten, count) =
-            replace_java_type_token(&declaration, &physical_name, &segment.source_name);
+        let source_name = match &candidate.value {
+            GenericReturnValue::StaticMemberCreation { target, .. }
+                if segment.binary_name == target.owner =>
+            {
+                target.simple_name.as_str()
+            }
+            _ => segment.source_name.as_str(),
+        };
+        let (rewritten, count) = replace_java_type_token(&declaration, &physical_name, source_name);
         if count != expected_count {
             return Err(refused(
                 "declaration type positions do not match the physical member descriptor",
@@ -2186,7 +2231,7 @@ fn project_member_inner_descriptor_path(
     // spelling changed. The block itself is reused verbatim from the same run.
     let marker = format!(
         "// jarde: descriptor type path for `{}` follows the same-run proved member creation",
-        target.owner
+        target_owner
     );
     let mut markers = record.markers.clone();
     markers.push(marker);
@@ -2838,6 +2883,9 @@ fn ordinary_parameterized_declaration(
         Some(GenericReturnValue::MemberCreation { target, .. }) => {
             Some(target.source_type_path.as_slice())
         }
+        Some(GenericReturnValue::StaticMemberCreation { target, .. }) => {
+            Some(target.source_type_path.as_slice())
+        }
         _ => None,
     };
     let mut parameter_types = Vec::with_capacity(parsed.parameters.len());
@@ -3015,14 +3063,29 @@ fn ordinary_parameterized_declaration(
                     })
                     .then_some(Vec::new())
             }
+            GenericReturnValue::StaticMemberCreation { target, .. } => parsed
+                .result
+                .as_ref()
+                .is_some_and(|ty| {
+                    member_signature_class_matches(
+                        ty,
+                        &target.owner,
+                        &target.source_type_path,
+                        false,
+                    )
+                })
+                .then_some(Vec::new()),
         };
         let returned = returned.ok_or_else(|| {
             refused("return source is not a proven parameter value or selected member creation")
         })?;
-        if !matches!(candidate.value, GenericReturnValue::MemberCreation { .. })
-            && returned
-                .iter()
-                .any(|position| parsed.result.as_ref() != Some(&parsed.parameters[*position]))
+        if !matches!(
+            candidate.value,
+            GenericReturnValue::MemberCreation { .. }
+                | GenericReturnValue::StaticMemberCreation { .. }
+        ) && returned
+            .iter()
+            .any(|position| parsed.result.as_ref() != Some(&parsed.parameters[*position]))
         {
             return Err(refused(
                 "returned parameter has a different generic source type",
@@ -3542,6 +3605,7 @@ fn generic_method_declaration(
                 && result_slots.contains(&when_false)
         }
         GenericReturnValue::MemberCreation { .. } => false,
+        GenericReturnValue::StaticMemberCreation { .. } => false,
     };
     if !return_proved {
         return Err(refused(
@@ -5665,6 +5729,7 @@ impl ClassSourceMethod {
             text,
             markers,
             outcome: ClassSourceOutcome::NoBody,
+            same_run_generic_return: None,
             enum_constructor_source_signature: false,
             enum_constructor_no_arg_source_signature: false,
             enum_constructor_signature_erasure_refused: false,
@@ -5685,6 +5750,7 @@ impl ClassSourceMethod {
             type_annotations: spelled.type_annotations,
             markers,
             outcome: ClassSourceOutcome::Unspelled,
+            same_run_generic_return: None,
             enum_constructor_source_signature: false,
             enum_constructor_no_arg_source_signature: false,
             enum_constructor_signature_erasure_refused: false,
@@ -5722,6 +5788,7 @@ impl ClassSourceMethod {
                 execution,
                 diagnostics,
             },
+            same_run_generic_return: None,
             enum_constructor_source_signature: false,
             enum_constructor_no_arg_source_signature: false,
             enum_constructor_signature_erasure_refused: false,
@@ -5734,6 +5801,7 @@ impl ClassSourceMethod {
         spelled: Spelled,
         report: Box<RecoveryReport>,
         analysis: ClassSourceRunFacts,
+        same_run_generic_return: Option<GenericReturnCandidate>,
     ) -> Self {
         let mut markers = recovered_markers(&item, &spelled, &report, &analysis);
         let placed = if report.text.is_empty() {
@@ -5762,6 +5830,7 @@ impl ClassSourceMethod {
             text,
             markers,
             outcome: ClassSourceOutcome::Recovered { report, analysis },
+            same_run_generic_return,
             enum_constructor_source_signature: false,
             enum_constructor_no_arg_source_signature: false,
             enum_constructor_signature_erasure_refused: false,
@@ -6315,12 +6384,14 @@ pub(crate) fn source_text(
 pub(crate) struct MemberFamilyTextProjection<'a> {
     pub(crate) relation: &'a ClassSourceMemberRelation,
     pub(crate) child: &'a ClassSourceReport,
-    pub(crate) capture: &'a MemberCaptureProof,
+    pub(crate) capture: Option<&'a MemberCaptureProof>,
+    pub(crate) static_target: Option<&'a jarde_java::report::ProvedStaticMemberTarget>,
     pub(crate) root_methods: &'a [MemberFamilyMethodText],
     pub(crate) child_methods: &'a [MemberFamilyMethodText],
     pub(crate) outer_super_bridges: &'a [OuterSuperBridgeClosureProof],
 }
 
+#[derive(Clone)]
 pub(crate) struct MemberFamilyMethodText {
     pub(crate) index: u64,
     pub(crate) text: String,
@@ -6510,28 +6581,34 @@ pub(crate) fn member_family_source_text(
 ) -> Option<(String, Vec<MemberFamilyDerivedProjection>)> {
     let declaration = root.declaration.as_ref()?;
     let child_declaration = member.child.declaration.as_ref()?;
-    let capture_field = member
-        .child
-        .fields
-        .iter()
-        .find(|field| field.item.index == member.capture.field_index)?;
+    let capture_field = member.capture.and_then(|capture| {
+        member
+            .child
+            .fields
+            .iter()
+            .find(|field| field.item.index == capture.field_index)
+    });
     if root.class != member.relation.root
         || member.child.class != member.relation.child
-        || member.capture.constructor.owner != member.child.class
+        || (member.capture.is_some() && capture_field.is_none())
+        || member.capture.is_some_and(|capture| capture.constructor.owner != member.child.class)
         // A regenerated capture field cannot preserve extra physical modifiers.
-        || capture_field.item.access_flags != (ACC_FINAL | 0x1000)
-        || !capture_field.annotations.attributes.is_empty()
-        || !capture_field.type_annotations.attributes.is_empty()
+        || capture_field.is_some_and(|field| field.item.access_flags != (ACC_FINAL | 0x1000)
+            || !field.annotations.attributes.is_empty()
+            || !field.type_annotations.attributes.is_empty())
         || !is_java_identifier(&member.relation.simple_name)
         || child_declaration.generic_signature.is_some()
         || child_declaration.generic_refusal.is_some()
         || !child_declaration.annotation_refusals.is_empty()
-        || member.relation.access_flags & ACC_STATIC != 0
+        || (member.capture.is_some() && member.relation.access_flags & ACC_STATIC != 0)
+        || (member.capture.is_none() && (member.relation.access_flags & ACC_STATIC == 0
+            || member.static_target.is_none_or(|target| target.definition != member.child.class)
+            || !member.child.fields.is_empty()))
         || child_declaration.item.declaration.access_flags
             & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION)
             != 0
         || member.child.fields.iter().any(|field| {
-            field.item.index != member.capture.field_index && field.declaration.is_none()
+            Some(field.item.index) != member.capture.map(|capture| capture.field_index) && field.declaration.is_none()
         })
         || member.outer_super_bridges.iter().any(|closed| {
             closed.calls.is_empty()
@@ -6578,7 +6655,8 @@ pub(crate) fn member_family_source_text(
         Some(member),
         &mut derived,
     )?;
-    let expected = 1
+    let expected = usize::from(member.capture.is_some() || member.static_target.is_some())
+        + usize::from(member.static_target.is_some())
         + member.outer_super_bridges.len()
         + member
             .root_methods
@@ -6855,32 +6933,49 @@ fn render_member_class(
     for annotation in &declaration.annotation_uses {
         out.push_str(&indent(&format!("{annotation}\n"), 1));
     }
-    let class_header = indent(
-        &format!(
-            "{} {{\n",
-            class_declaration(&member.relation.simple_name, &facts)
-        ),
-        1,
-    );
+    let mut class_header_declaration = class_declaration(&member.relation.simple_name, &facts);
+    if member.relation.access_flags & ACC_STATIC != 0 {
+        class_header_declaration = class_header_declaration.replacen("class ", "static class ", 1);
+    }
+    let class_header = indent(&format!("{class_header_declaration} {{\n"), 1);
     let header_start = out.len();
     out.push_str(&class_header);
-    let capture_field = child
-        .fields
-        .iter()
-        .find(|field| field.item.index == member.capture.field_index)
-        .expect("validated capture field");
-    derived.push(MemberFamilyDerivedProjection {
-        kind: MemberFamilyDerivedKind::HiddenCaptureField,
-        start: header_start,
-        end: out.len() - 1,
-        anchors: vec![MemberFamilyPhysicalAnchor::Field {
-            field: capture_field.item.identity.clone(),
-            index: capture_field.item.index,
-        }],
-    });
+    if let Some(capture) = member.capture {
+        let capture_field = child
+            .fields
+            .iter()
+            .find(|field| field.item.index == capture.field_index)
+            .expect("validated capture field");
+        derived.push(MemberFamilyDerivedProjection {
+            kind: MemberFamilyDerivedKind::HiddenCaptureField,
+            start: header_start,
+            end: out.len() - 1,
+            anchors: vec![MemberFamilyPhysicalAnchor::Field {
+                field: capture_field.item.identity.clone(),
+                index: capture_field.item.index,
+            }],
+        });
+    } else if let Some(target) = member.static_target {
+        derived.push(MemberFamilyDerivedProjection {
+            kind: MemberFamilyDerivedKind::MemberClassDeclaration,
+            start: header_start,
+            end: out.len() - 1,
+            anchors: vec![
+                MemberFamilyPhysicalAnchor::ClassDefinition {
+                    definition: target.definition.clone(),
+                },
+                MemberFamilyPhysicalAnchor::ClassDefinition {
+                    definition: member.relation.root.clone(),
+                },
+            ],
+        });
+    }
     let mut first = true;
     for field in &child.fields {
-        if field.item.index == member.capture.field_index {
+        if member
+            .capture
+            .is_some_and(|capture| field.item.index == capture.field_index)
+        {
             continue;
         }
         if !first {
@@ -6906,7 +7001,35 @@ fn render_member_class(
             .iter()
             .find(|projected| projected.index == method.item.index)
         {
-            append_family_method(&mut out, projected, true, &mut derived)?;
+            let mut projected = projected.clone();
+            if method.item.identity.name.0 == b"<init>"
+                && let Some(target) = member.static_target
+            {
+                let old_name = &declaration.name;
+                let old_token = format!("{old_name}(");
+                let Some(local_start) = projected.text.find(&old_token) else {
+                    return None;
+                };
+                let local_end = local_start + old_name.len();
+                projected
+                    .text
+                    .replace_range(local_start..local_end, &member.relation.simple_name);
+                projected.derived.push(MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::MemberConstructorName,
+                    start: local_start,
+                    end: local_start + member.relation.simple_name.len(),
+                    anchors: vec![
+                        MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: method.item.identity.clone(),
+                            bci: 0,
+                        },
+                        MemberFamilyPhysicalAnchor::ClassDefinition {
+                            definition: target.definition.clone(),
+                        },
+                    ],
+                });
+            }
+            append_family_method(&mut out, &projected, true, &mut derived)?;
         } else {
             out.push_str(&indent(&method.text, 1));
         }

@@ -866,10 +866,10 @@ pub(crate) enum FamilyRootScan {
     Candidate(FamilyRootCandidate),
 }
 
-const FAMILY_FORBIDDEN_FLAGS: u16 = 0x0008 | 0x0200 | 0x2000 | 0x4000;
+const FAMILY_FORBIDDEN_FLAGS: u16 = 0x0200 | 0x2000 | 0x4000;
 const FAMILY_VISIBILITY_FLAGS: u16 = 0x0001 | 0x0002 | 0x0004;
 
-/// Discover at most one direct named non-static child from the root's typed InnerClasses rows.
+/// Discover at most one direct named child from the root's typed InnerClasses rows.
 /// No binary-name search is used: the class index in the row supplies the exact symbolic target.
 pub(crate) fn scan_family_root(
     root: &[u8],
@@ -883,6 +883,7 @@ pub(crate) fn scan_family_root(
         ));
     }
     let mut candidate = None;
+    let mut static_candidate = None;
     let mut static_names = Vec::new();
     for row in &nesting.inner_classes {
         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
@@ -906,17 +907,6 @@ pub(crate) fn scan_family_root(
         if outer.0 != root {
             continue;
         }
-        // Static nested declarations do not join this captured-member subset. Retain their
-        // identities so a contradictory static row for the selected child still rejects it.
-        if row.access_flags & 0x0008 != 0 {
-            let Ok(name) = cp_class_name(pool, row.class_index) else {
-                return Ok(FamilyRootScan::Refused(
-                    "static nested class index is invalid".to_owned(),
-                ));
-            };
-            static_names.push(name.0);
-            continue;
-        }
         let Ok(child) = cp_class_name(pool, row.class_index) else {
             return Ok(FamilyRootScan::Refused(
                 "direct member class index is invalid".to_owned(),
@@ -938,7 +928,7 @@ pub(crate) fn scan_family_root(
             || row.access_flags & (0x0010 | 0x0400) == (0x0010 | 0x0400)
         {
             return Ok(FamilyRootScan::Refused(
-                "direct member is not a source-spellable named non-static class".to_owned(),
+                "direct member is not a source-spellable named class".to_owned(),
             ));
         }
         let next = FamilyRootCandidate {
@@ -946,6 +936,16 @@ pub(crate) fn scan_family_root(
             simple_name: simple.to_owned(),
             access_flags: row.access_flags,
         };
+        if row.access_flags & 0x0008 != 0 {
+            static_names.push(next.child_name.clone());
+            if static_candidate.replace(next).is_some() {
+                return Ok(FamilyRootScan::Refused(
+                    "multiple direct static member rows are outside the one-child family subset"
+                        .to_owned(),
+                ));
+            }
+            continue;
+        }
         if candidate.replace(next).is_some() {
             return Ok(FamilyRootScan::Refused(
                 "multiple direct member rows are outside the one-child family subset".to_owned(),
@@ -954,13 +954,15 @@ pub(crate) fn scan_family_root(
     }
     if candidate
         .as_ref()
-        .is_some_and(|selected: &FamilyRootCandidate| static_names.contains(&selected.child_name))
+        .is_some_and(|selected| static_names.contains(&selected.child_name))
     {
         return Ok(FamilyRootScan::Refused(
             "selected member also has a conflicting static InnerClasses row".to_owned(),
         ));
     }
-    Ok(candidate.map_or(FamilyRootScan::Absent, FamilyRootScan::Candidate))
+    Ok(candidate
+        .or(static_candidate)
+        .map_or(FamilyRootScan::Absent, FamilyRootScan::Candidate))
 }
 
 /// The selected child must independently state the identical unique self relation.
@@ -2378,7 +2380,7 @@ mod tests {
         ));
         let mut static_only = root_nesting.clone();
         static_only.inner_classes[0].access_flags |= 0x0008;
-        assert_eq!(
+        assert!(matches!(
             scan_family_root(
                 b"NamedMemberFamilyStage1",
                 &static_only,
@@ -2386,8 +2388,8 @@ mod tests {
                 &mut budget,
             )
             .unwrap(),
-            FamilyRootScan::Absent
-        );
+            FamilyRootScan::Candidate(candidate) if candidate.access_flags & 0x0008 != 0
+        ));
         let mut static_sibling = root_nesting.clone();
         let mut static_row = root_nesting.inner_classes[0].clone();
         static_row.access_flags |= 0x0008;
@@ -2416,6 +2418,14 @@ mod tests {
         let sibling_index = sibling_class.index;
         sibling_pool.push(sibling_class);
         static_sibling.inner_classes.last_mut().unwrap().class_index = sibling_index;
+        static_sibling
+            .inner_classes
+            .last_mut()
+            .unwrap()
+            .inner_name
+            .as_mut()
+            .unwrap()
+            .0 = b"Static".to_vec();
         assert!(matches!(
             scan_family_root(
                 b"NamedMemberFamilyStage1",
