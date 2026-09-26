@@ -1,0 +1,15 @@
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+<REPO>/openspec/evidence/java-syntax-2026-09-27/enum-arity/jarde-source/Empty.java:6: error: enum constant expected here
+    private static final probe.Empty[] $VALUES;
+    ^
+<REPO>/openspec/evidence/java-syntax-2026-09-27/enum-arity/jarde-source/One.java:6: error: enum constant expected here
+    public static final probe.One ONLY;
+    ^
+<REPO>/openspec/evidence/java-syntax-2026-09-27/enum-arity/jarde-source/Four.java:6: error: enum constant expected here
+    public static final probe.Four NORTH;
+    ^
+3 errors
+3 warnings
+exit=1

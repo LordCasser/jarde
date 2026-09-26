@@ -13,7 +13,7 @@
 | DT-07 | 匿名类内再声明匿名类 | `inner/TestNestedAnonymousClass.java`, `inner/TestAnonymousClass12.java` | `dex/visitors/ProcessAnonymous.java`, `dex/visitors/AnonymousClassVisitor.java` | 内联图有依赖顺序；不可仅靠类名识别。 |
 | DT-08 | 匿名类捕获局部变量或封闭实例 | `inner/TestAnonymousClass7.java`, `inner/TestAnonymousClass8.java` | `dex/visitors/AnonymousClassVisitor.java`, `dex/visitors/ClassModifier.java` | `TestAnonymousClass7` 断言 `final double d` 和体内 `d`；构造签名匹配另验。 |
 | DT-09 | 匿名类实例初始化块 | `inner/TestAnonymousClass4.java` | `dex/visitors/AnonymousClassVisitor.java`, `codegen/ClassGen.java` | 断言匿名体 `{ f = 1; }` 与重写方法顺序。 |
-| DT-10 | 空枚举、普通枚举常量 | `enums/TestEnums.java`, `enums/TestEnums7.java` | `dex/visitors/EnumVisitor.java`, `codegen/ClassGen.java` | 不将编译器 `$VALUES` 当源码字段。 |
+| DT-10 | 空枚举、普通枚举常量 | `enums/TestEnums.java`, `enums/TestEnums7.java` | `dex/visitors/EnumVisitor.java`, `codegen/ClassGen.java` | [已实测 0/1/4 常量差距](../java-syntax-2026-09-27/enum-arity/report.md)：不将编译器 `$VALUES` 当源码字段；两常量既有证明不代表本单元完成。 |
 | DT-11 | 带构造参数、字段及构造器的枚举 | `enums/TestEnums3.java`, `enums/TestEnums4.java` | `dex/visitors/EnumVisitor.java`, `codegen/ClassGen.java` | 可变参数构造器见 `TestEnums4`。 |
 | DT-12 | 含匿名常量体的枚举 | `enums/TestEnums2a.java`, `enums/TestEnums6.java` | `dex/visitors/EnumVisitor.java`, `dex/visitors/ProcessAnonymous.java` | 常量体与普通枚举类方法分开判定。 |
 | DT-13 | 嵌套枚举及 `enum implements I` | `enums/TestInnerEnums.java`, `enums/TestEnumsInterface.java` | `dex/visitors/EnumVisitor.java`, `codegen/ClassGen.java` | 两个可分别验收的组合形态，汇总时可拆分。 |

@@ -1,0 +1,4 @@
+empty=0
+one=ONLY:0/1
+four=[NORTH, SOUTH, EAST, WEST]
+exit=0

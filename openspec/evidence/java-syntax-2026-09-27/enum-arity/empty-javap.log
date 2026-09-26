@@ -1,0 +1,39 @@
+public final class probe.Empty extends java.lang.Enum<probe.Empty> {
+  private static final probe.Empty[] $VALUES;
+
+  public static probe.Empty[] values();
+    Code:
+       0: getstatic     #3                  // Field $VALUES:[Lprobe/Empty;
+       3: invokevirtual #7                  // Method "[Lprobe/Empty;".clone:()Ljava/lang/Object;
+       6: checkcast     #8                  // class "[Lprobe/Empty;"
+       9: areturn
+
+  public static probe.Empty valueOf(java.lang.String);
+    Code:
+       0: ldc           #1                  // class probe/Empty
+       2: aload_0
+       3: invokestatic  #12                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+       6: checkcast     #1                  // class probe/Empty
+       9: areturn
+
+  private probe.Empty();
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: invokespecial #18                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+       6: return
+
+  private static probe.Empty[] $values();
+    Code:
+       0: iconst_0
+       1: anewarray     #1                  // class probe/Empty
+       4: areturn
+
+  static {};
+    Code:
+       0: invokestatic  #22                 // Method $values:()[Lprobe/Empty;
+       3: putstatic     #3                  // Field $VALUES:[Lprobe/Empty;
+       6: return
+}
+exit=0
