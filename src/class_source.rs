@@ -457,6 +457,8 @@ pub enum ClassSourceOutcome {
 /// the complete effective configuration, `usage` what that configuration was charged, `coverage`
 /// the class and member tables this request read beside the members it attempted a body for, and
 /// `execution` the merge of every stop of the request.
+/// A proved direct member identity is retained in `member_family` with a separate child physical
+/// report; this stage leaves both classes' source text in their original physical form.
 ///
 /// One member's stop does not end the class: a member whose recovery stopped keeps its own result
 /// and the members beside it are still presented, exactly as a class view keeps the bodies beside a
@@ -483,6 +485,10 @@ pub struct ClassSourceReport {
     /// The methods of the class read, in the order its method table declares them, each with the
     /// result of its own run.
     pub methods: Vec<ClassSourceMethod>,
+    /// Direct member evidence for this request. A prepared child keeps its own physical class,
+    /// member table, coverage, execution and source maps. Its `usage` is the cumulative snapshot
+    /// of the *same* request budget at the end of that child's preparation.
+    pub member_family: ClassSourceMemberFamily,
     /// Same-run class-level bridge admission results. These are adapter evidence for the
     /// subsequent source projection and remain visible beside the physical method records.
     #[doc(hidden)]
@@ -508,13 +514,10 @@ pub struct ClassSourceReport {
     pub limits: Limits,
     /// What those limits were charged, in the engine's own dimensions.
     ///
-    /// The class-read shape does not depend on how many members the class has: one `class_headers`
-    /// attempt and one read of the class bytes for the binding, one of each for the one preparation
-    /// every member body is decoded against, and then one `method_bodies` attempt per member that
-    /// declares a body. A member's own run charges no class header and no class bytes — it consumes
-    /// the preparation — so `class_bytes` is twice the class's own length for any class with at least
-    /// one body, and a member that declares none, or one whose class could not be prepared, adds no
-    /// body attempt at all.
+    /// The snapshot is cumulative for this request. Binding and preparing each physical class
+    /// charge their own reads and bodies; when `member_family` contains a child, this root snapshot
+    /// also includes the child's work. The child's `usage` is an earlier cumulative snapshot of the
+    /// same budget, not a separately reset counter.
     pub usage: UsageSnapshot,
     /// Which class and member records this request read, and how many members it attempted a body
     /// for (`class_source_bodies`, in the method table's own coordinates).
@@ -535,7 +538,8 @@ pub struct ClassSourceReport {
     /// presentation left undone.
     pub coverage: Coverage,
     /// The merge of every plane this request published: the name search, the class read, the member
-    /// table's own stop and every member's run.
+    /// table's own stop, every member's run and any selected child preparation. Each child report
+    /// separately preserves its physical execution state.
     pub execution: ExecutionReport,
     /// The class-level diagnostics this presentation re-publishes: the class read's own (a path that
     /// disagrees with the declared name, a member table that stopped) and one for each stop this
@@ -546,6 +550,33 @@ pub struct ClassSourceReport {
     /// as a class view keeps a refused body's — one finding has one home, and the class's own list
     /// stays the list of things that happened to the class.
     pub diagnostics: Vec<Diagnostic>,
+}
+
+/// Identity preparation only; this status never authorizes hiding capture artifacts or writing a
+/// nested Java declaration. A later projection must prove those uses independently.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case")]
+pub enum ClassSourceMemberFamily {
+    Absent,
+    Refused {
+        reason: String,
+        /// A resolved child is retained even when the two physical rows disagree.
+        child: Option<Box<ClassSourceReport>>,
+    },
+    Prepared {
+        relation: ClassSourceMemberRelation,
+        child: Box<ClassSourceReport>,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassSourceMemberRelation {
+    pub root: PhysicalDefinitionId,
+    pub child: PhysicalDefinitionId,
+    pub simple_name: String,
+    /// Source modifiers come from the matching InnerClasses rows, not child class access flags.
+    pub access_flags: u16,
 }
 
 /// The map entries this class-source request proved from a selected helper's physical `<clinit>`.
