@@ -1,0 +1,130 @@
+public final class BoolValue {
+  static int calls;
+
+  public BoolValue();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static boolean positive(int);
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: iload_0
+       9: ifle          16
+      12: iconst_1
+      13: goto          17
+      16: iconst_0
+      17: ireturn
+
+  public static boolean and(int, int);
+    Code:
+       0: iload_0
+       1: ifle          12
+       4: iload_1
+       5: ifle          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: ireturn
+
+  public static boolean or(int, int);
+    Code:
+       0: iload_0
+       1: ifgt          8
+       4: iload_1
+       5: ifle          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: ireturn
+
+  public static boolean effectfulAnd(int, int);
+    Code:
+       0: iload_0
+       1: invokestatic  #13                 // Method positive:(I)Z
+       4: ifeq          18
+       7: iload_1
+       8: invokestatic  #13                 // Method positive:(I)Z
+      11: ifeq          18
+      14: iconst_1
+      15: goto          19
+      18: iconst_0
+      19: ireturn
+
+  public static boolean effectfulOr(int, int);
+    Code:
+       0: iload_0
+       1: invokestatic  #13                 // Method positive:(I)Z
+       4: ifne          14
+       7: iload_1
+       8: invokestatic  #13                 // Method positive:(I)Z
+      11: ifeq          18
+      14: iconst_1
+      15: goto          19
+      18: iconst_0
+      19: ireturn
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: iconst_m1
+       1: istore_1
+       2: iload_1
+       3: iconst_1
+       4: if_icmpgt     122
+       7: iconst_m1
+       8: istore_2
+       9: iload_2
+      10: iconst_1
+      11: if_icmpgt     116
+      14: iconst_0
+      15: putstatic     #7                  // Field calls:I
+      18: getstatic     #17                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      21: new           #23                 // class java/lang/StringBuilder
+      24: dup
+      25: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+      28: iload_1
+      29: invokevirtual #26                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      32: ldc           #30                 // String ,
+      34: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: iload_2
+      38: invokevirtual #26                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      41: ldc           #35                 // String :
+      43: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: iload_1
+      47: iload_2
+      48: invokestatic  #37                 // Method and:(II)Z
+      51: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+      54: ldc           #30                 // String ,
+      56: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      59: iload_1
+      60: iload_2
+      61: invokestatic  #44                 // Method or:(II)Z
+      64: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+      67: ldc           #30                 // String ,
+      69: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      72: iload_1
+      73: iload_2
+      74: invokestatic  #47                 // Method effectfulAnd:(II)Z
+      77: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+      80: ldc           #30                 // String ,
+      82: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      85: iload_1
+      86: iload_2
+      87: invokestatic  #50                 // Method effectfulOr:(II)Z
+      90: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+      93: ldc           #30                 // String ,
+      95: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      98: getstatic     #7                  // Field calls:I
+     101: invokevirtual #26                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     104: invokevirtual #53                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     107: invokevirtual #57                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     110: iinc          2, 2
+     113: goto          9
+     116: iinc          1, 2
+     119: goto          2
+     122: return
+}

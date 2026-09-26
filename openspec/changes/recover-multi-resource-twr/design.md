@@ -28,6 +28,7 @@
 
    2.3a 的同次 CFG/SSA 证明与 Builder 接缝已实现。高层真实 fixture 的清理 handler 在正常 return 之后，曾因 `Plan.owned` 仅含 `start..return` 连续块而落入 Region fallback；`slot_uses` 又把 handler 的 caught Throwable 与体内保存的 int 按同一物理 slot 合并，导致词法声明拒绝。2.3b 已将逐指令可解释、入出边仅属于已证清理链的非连续 handler 块纳入 Guard ownership，并仅按这些已证 cleanup 指令 BCI 从源局部声明规划排除编译器读写；竞争异常表行仍拒绝，没有全方法跳过该 slot 或隐藏用户 handler。其它跨异常区局部身份仍属于独立 `preserve-local-scope-across-exception-regions` 任务。多资源冻结样例另有每个头的 `new; dup` 生产者未归属（BCI 0/10），由 2.4 在现有资源初始化证据内精确闭合，不新建全局 Region 机制。
 4. **呈现为一条头。** 源代码是一条 `try (a; b)`，恢复文本同形；每层的 close 证据仍逐层验证（`close_of_level`/`close_handler`/`Suppressed` 原样），正常路径逆序 close 的既有证明复用。资源名沿用 `names` 拼写。
+   当前冻结 release-8 类在 2.3b 后仍于 BCI 0 报 `jre_guard_span`；`new@1` 却已经接受两个 `new` 构造站点。原因不是少一个构造规则：`report.rs` 先运行 `region::recover`（其中 `guard::examine` 决定 Resource.init），之后才运行 `field::plan`、`concat::plan` 与 `init::sites`。`guard::initialisation` 的单语句回溯对构造器的栈效果并不等价于 `new@1` 的已证站点，因此头部 BCI 0/10 未纳入资源初始化范围。将这三个相互依赖但不依赖 Region/局部命名的规划前移，再把只读 `Sites` 传入 Region/Guard；Guard 仅在初始化 Store 所读的 SSA 值与一个站点的构造结果一致、站点所拥有 BCI 全在对应 `Resource.init` 并且没有额外效果时扩展该资源范围。每个资源分别证明，整条头原子领取；站点缺失、身份不合或范围不完整继续拒绝。这只调整既有事实的传递顺序与归属，不增加机制，也不在 Guard 复制 `new@1` 的验证器。
 5. **与 catch 组合沿用 enclosing_clauses。** TWR+catch 的行几何（真 TWR 行 + 被包围用户行）在本几何上重验；冲突时拒绝，不放宽。
 6. **证据。** 正例（2 资源 + 返回值 + 内层抛异常 + 外层 close 抛异常 + 正常关闭）、负例（行范围或同目标保护行被等宽 patch 错一级、返回尾部加效果 → 拒绝保持）、旧 `Guarded.two/three` 单行形状、三方对照（jadx 的展开输出记为其偏离）、重编译执行对照。
 

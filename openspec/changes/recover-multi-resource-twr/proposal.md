@@ -25,6 +25,6 @@ jadx 1.5.6 不还原 TWR 语法（展开为手写嵌套 try + close + `addSuppre
 
 ## Impact
 
-实现集中在 `crates/jarde-java/src/guard.rs`（同次层级几何、同目标保护行与返回尾部的局部证明）与必要的 `build.rs` 语句装配。复用既有 close/addSuppressed 与 return 表达式构建，不新增公开 pass、crate 或生产依赖；monitor 与 any 行 finally 规则不变。
+实现集中在 `crates/jarde-java/src/guard.rs`（同次层级几何、同目标保护行、返回尾部与资源头归属的局部证明）及必要的 `build.rs` 语句装配。双资源构造头还需在 `report.rs` 前移独立的 field/concat/new 站点规划，并经 `region.rs` 把既有站点证据交给 Guard；不另造构造识别机制。复用既有 close/addSuppressed 与 return 表达式构建，不新增公开 pass、crate 或生产依赖；monitor 与 any 行 finally 规则不变。
 
 非目标：单资源形状改动；`ifnull` 资源头的新证明（沿用 null-headers）；TWR+多捕获；资源 close 顺序的新放宽。

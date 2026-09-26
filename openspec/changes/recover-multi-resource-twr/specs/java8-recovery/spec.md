@@ -4,10 +4,17 @@
 
 两个及以上资源的 try-with-resources，在每层行的几何与每层的 close/`addSuppressed` 链都可证明时，SHALL 呈现为一条带多个资源的 `try` 头语句，资源顺序 = 初始化顺序。层级几何 MUST 从字节码证明：每层主异常表行从其资源初始化之后的受保护指令开始，止于该层正常 close 组的精确起点；内层 handler 的异常清理 MUST 由外层主行完整覆盖，或由范围恰好等于该清理段、且 catch 类型与目标 handler 均和外层主行相同的另一行覆盖。该证明 MUST NOT 单凭外层行是否止于内层 handler 的 span 末判定成功，也 MUST NOT 忽略任何额外保护行。任一层几何、close 顺序或抑制链不可证明时 MUST 保持整方法引用，不得部分呈现。
 
+资源头中的 `new`、`dup`、构造器及实参效果 MUST 由对应的已证 `new@1` 站点和资源 Store 的 SSA 值流共同归属给该资源初始化，按资源逐一验证。任一站点缺失、构造结果不是该 Store 所读值、站点指令不在完整头部范围，或范围中夹有其它效果时 MUST 保持引用；不得无条件略过这些指令。成功呈现的头部及其来源映射 MUST 保留每项资源的 allocation、dup、constructor、Store 和 close/suppression 锚点。
+
 #### Scenario: Two resources present as one header
 
 - **WHEN** 方法以两个资源打开、读取后返回，javac --release 8 编译（无 ifnull 资源头）
 - **THEN** 恢复文本 SHALL 呈现 `try (<T> r1 = …; <T> r2 = …)` 一条语句；体内原先在 close 前求值、close 后纯读取并返回的值 SHALL 在该语句体内返回，重编译的 Java 8 源码 SHALL 不因局部作用域或返回位置而失败
+
+#### Scenario: A missing construction site cannot be hidden in the header
+
+- **WHEN** 两资源头的一个 `new@1` 站点无法验证，或其已证 allocation/dup/constructor 不再完整对应到该资源 Store
+- **THEN** 方法 MUST 保持引用，MUST NOT 写出省略该生产者的资源头；既有单行布局的两、三资源正例仍可呈现
 
 #### Scenario: Both protection layouts remain provable
 
