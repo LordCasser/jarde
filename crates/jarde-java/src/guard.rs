@@ -2255,6 +2255,7 @@ mod finally_copy_tests {
         let ssa = ir.ssa().unwrap();
         let code = ir.code().unwrap();
         let ops = Operations::of(code, ir.constant_pool());
+        let chains = crate::concat::plan(ssa, &ops);
         let view = NormalFlowView::build(canonical, &mut budget).unwrap();
         let rows = code.exception_handlers.clone();
 
@@ -2264,7 +2265,7 @@ mod finally_copy_tests {
             (BTreeSet::from([10]), [Some(((0, 10), 0)), None]),
         ] {
             let fields = crate::field::Plan::empty();
-            let sites = crate::init::sites(ssa, &ops, &reserved, &fields, &[], code);
+            let sites = crate::init::sites(ssa, &ops, &chains, &reserved, &fields, &[], code);
             for (index, (store, floor, end)) in [(9, 0, 10), (19, 10, 20)].into_iter().enumerate() {
                 let mut case_budget = Budget::new(limits());
                 let facts =
@@ -2303,6 +2304,7 @@ mod finally_copy_tests {
         let sites = crate::init::sites(
             ssa,
             &ops,
+            &chains,
             &BTreeSet::new(),
             &crate::field::Plan::empty(),
             &[],
