@@ -2777,8 +2777,15 @@ fn repeated_operations_over_one_snapshot_are_identical() {
 // 3.4 / A13 / A14: the recovery presentation leads with delivered content
 // ---------------------------------------------------------------------------------------------
 
-/// The committed refusal sample: `fieldCast` is an artifact of quoted refusals alone.
+/// The committed refusal sample: `fieldCast` states the read and the check the explicit-cast rule
+/// proves at the `return` that consumes them.
 const REFUSED_CAST: &[u8] = include_bytes!("fixtures/p3-refused-cast/v8/RefusedCast.class");
+
+/// The committed guard boundary: `update` is the body whose whole prefix stays quoted because its
+/// producer block is refused by the handler that starts inside the candidate chain — an artifact of
+/// quotes alone, from a committed sample whose refusal the cast rule does not touch.
+const POSTFIX_HANDLER_BOUNDARY: &[u8] =
+    include_bytes!("fixtures/p3-postfix-handler-boundary/v8/PostfixHandlerBoundary.class");
 
 /// One task recovery of one member of a committed sample.
 fn recover_fixture(
@@ -2854,15 +2861,20 @@ fn a_statement_bearing_result_leads_with_content() {
 
 /// An explanation-only artifact presents `explanation_only` first; a stopped run presents
 /// `not_produced` first and keeps the stop contract (empty text and source map, a stated stop).
+///
+/// The explanation-only case is `PostfixHandlerBoundary.update`: since the explicit-cast rule
+/// landed, `RefusedCast.fieldCast` states the read and the check it proves at the `return` that
+/// consumes them, so the artifact of quotes alone this case needs moved to the committed guard
+/// boundary the cast rule does not touch (the reconciliation `tests/p3_content.rs` records).
 #[test]
 fn an_explanation_only_result_and_a_stop_are_presented_in_order() {
     let engine = Engine::new();
-    let snapshot = open(REFUSED_CAST.to_vec());
+    let snapshot = open(POSTFIX_HANDLER_BOUNDARY.to_vec());
     let report = recover_fixture(
         &engine,
         &snapshot,
-        "RefusedCast",
-        b"fieldCast",
+        "PostfixHandlerBoundary",
+        b"update",
         &mut budget(),
     );
     let presentation = &report.presentation;
@@ -2889,7 +2901,13 @@ fn an_explanation_only_result_and_a_stop_are_presented_in_order() {
     let tight = task_limits(&[BudgetOverride::new("output_bytes", 8).expect("named")])
         .expect("a legal override");
     let mut budget = Budget::new(tight);
-    let report = recover_fixture(&engine, &snapshot, "RefusedCast", b"fieldCast", &mut budget);
+    let report = recover_fixture(
+        &engine,
+        &snapshot,
+        "PostfixHandlerBoundary",
+        b"update",
+        &mut budget,
+    );
     let presentation = &report.presentation;
     assert_eq!(presentation.content, RecoveryContent::NotProduced);
     assert_eq!(
@@ -2916,12 +2934,14 @@ fn an_explanation_only_result_and_a_stop_are_presented_in_order() {
 #[test]
 fn the_presentation_does_not_re_read_the_text() {
     let engine = Engine::new();
-    let snapshot = open(REFUSED_CAST.to_vec());
+    // The same reconciliation the test above records: the committed artifact of quotes alone is
+    // `PostfixHandlerBoundary.update` now that the cast sample's members state statements.
+    let snapshot = open(POSTFIX_HANDLER_BOUNDARY.to_vec());
     let report = recover_fixture(
         &engine,
         &snapshot,
-        "RefusedCast",
-        b"fieldCast",
+        "PostfixHandlerBoundary",
+        b"update",
         &mut budget(),
     );
     let recovery = report.recovered.recovery();
@@ -2936,8 +2956,8 @@ fn the_presentation_does_not_re_read_the_text() {
     // classification source, so content, quality, the stop and the ordered parts are unchanged.
     let mut spelled = recovery.clone();
     spelled.text = spelled.text.replace(
-        "the instruction at BCI 3",
-        "the return instruction at BCI 3",
+        "the resource's own initialisation",
+        "the return instruction's initialisation",
     );
     assert!(spelled.text.contains("return"));
     let after = RecoveryPresentation::of(&spelled);
@@ -2949,11 +2969,12 @@ fn the_presentation_does_not_re_read_the_text() {
         "the presentation order does not depend on the text either"
     );
 
-    // The other direction from the same sample: a delivered statement makes the content bearer,
-    // and its own text spelling `return` changes nothing about that either.
+    // The other direction, from the committed cast sample: a delivered statement makes the content
+    // bearer, and its own text spelling `return` changes nothing about that either.
+    let cast_sample = open(REFUSED_CAST.to_vec());
     let statements = recover_fixture(
         &engine,
-        &snapshot,
+        &cast_sample,
         "RefusedCast",
         b"leftRead",
         &mut budget(),

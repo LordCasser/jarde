@@ -1636,71 +1636,78 @@ fn the_refused_cast_sample_crosses_the_wire_field_by_field() {
     // The sample's own counter, covered by the same comparison.
     one_recovery_through_both_entry_paths(&class_path, b"tick", b"()I");
 
-    // `fieldCast` is `getstatic External.value; checkcast; areturn`. The cast is refused, and the
-    // `getstatic` writes no statement of its own, so before the fix the quote named BCI 3 and 6
-    // alone: reading the field can run `External`'s static initializer, and a quote that does not
-    // name it has dropped an effect of the very bytecode it stands for.
+    // `fieldCast` is `getstatic External.value; checkcast; areturn`. The explicit-cast rule proved
+    // the read and the check at the `return` that consumes them, so the statement is written whole —
+    // the read spelled where it happens, the cast spelled where the return evaluates it — and no
+    // quote stands beside it. (Before that rule landed this member was the sample's refusal case,
+    // an artifact of quotes alone; `tests/p3_content.rs` records the reconciliation, and the
+    // explanation-only presentation case lives on `PostfixHandlerBoundary.update` now.)
     let report = &field["result"]["report"];
     let text = report["text"]
         .as_str()
         .expect("the report carries its text");
-    assert_eq!(
-        quoted_bci_set(text),
-        vec![0, 3, 6],
-        "the quotes name the `getstatic` at BCI 0, the `checkcast` at BCI 3 and the `areturn` at \
-         BCI 6, and no other instruction:\n{text}"
+    assert!(
+        text.contains("    return (java.lang.String) External.value;\n"),
+        "the proved read and check are stated at the `return` that consumes them:\n{text}"
     );
-    assert_eq!(
-        report["representation"], "mixed",
-        "the artifact of this refusal is the quotes themselves: {report}"
+    assert!(
+        quoted_bci_set(text).is_empty(),
+        "nothing in this body is quoted any more:\n{text}"
     );
-    assert_eq!(report["quality"], "fallback", "{report}");
+    assert_eq!(report["representation"], "java", "{report}");
+    assert_eq!(report["quality"], "structured", "{report}");
     assert_eq!(
-        report["content"], "explanation_only",
-        "`fieldCast` delivers non-empty text — two reasons and their quoted bytecode — and no \
-         statement at all, which is the case a text-shaped classification gets wrong: {report}"
+        report["content"], "contains_statements",
+        "the artifact holds one statement, so the classification reads the structure it was \
+         written from: {report}"
     );
     let read = wire_field_record(report, 0);
     assert_eq!(read["access"], "read", "{read}");
     assert_eq!(
         read["presented"],
         json!(true),
-        "`field@1` presented the static read at BCI 0: {read}"
+        "`field@1` presents the static read at BCI 0 inside the statement: {read}"
     );
     assert!(
         !wire_text_of_bci(report, 0).is_empty(),
-        "the read at BCI 0 is an anchor of the quote that accounts for it:\n{text}"
+        "the read at BCI 0 anchors the statement that spells it:\n{text}"
     );
 
-    // `instanceCast` is `aload_0; getfield External.instance; checkcast; areturn`: the read at BCI 1
-    // dereferences the argument, so the quote names it to keep the failure it can throw.
+    // `instanceCast` is `aload_0; getfield External.instance; checkcast; areturn`: the explicit-cast
+    // rule proved the read at BCI 1 and the check at the `return` that consumes them, so the read is
+    // spelled where it dereferences the argument, and nothing is quoted.
     let report = &instance["result"]["report"];
     let text = report["text"]
         .as_str()
         .expect("the report carries its text");
-    assert_eq!(
-        quoted_bci_set(text),
-        vec![1, 4, 7],
-        "the quotes name the `getfield` at BCI 1 and the consumer at BCI 4/7, and no other \
-         instruction:\n{text}"
+    assert!(
+        text.contains("    return (java.lang.String) arg0.instance;\n"),
+        "the proved read and check are stated at the `return` that consumes them:\n{text}"
     );
-    assert_eq!(report["representation"], "mixed", "{report}");
-    assert_eq!(report["quality"], "fallback", "{report}");
+    assert!(
+        quoted_bci_set(text).is_empty(),
+        "nothing in this body is quoted any more:\n{text}"
+    );
+    assert_eq!(report["representation"], "java", "{report}");
+    assert_eq!(report["quality"], "structured", "{report}");
 
-    // `chainCast` is `getstatic External.holder; getfield Holder.value; checkcast; areturn`: naming
-    // the read the refusal consumed means naming the read behind it as well.
+    // `chainCast` is `getstatic External.holder; getfield Holder.value; checkcast; areturn`: the
+    // explicit-cast rule proved both reads and the check at the `return` that consumes them, so the
+    // chain is spelled where the return evaluates it — both reads presented, nothing quoted.
     let report = &chain["result"]["report"];
     let text = report["text"]
         .as_str()
         .expect("the report carries its text");
-    assert_eq!(
-        quoted_bci_set(text),
-        vec![0, 3, 6, 9],
-        "the quotes name both reads (BCI 0 and BCI 3), the refused cast (BCI 6) and the `areturn` \
-         (BCI 9), and no other instruction:\n{text}"
+    assert!(
+        text.contains("    return (java.lang.String) External.holder.value;\n"),
+        "the proved reads and check are stated at the `return` that consumes them:\n{text}"
     );
-    assert_eq!(report["representation"], "mixed", "{report}");
-    assert_eq!(report["quality"], "fallback", "{report}");
+    assert!(
+        quoted_bci_set(text).is_empty(),
+        "nothing in this body is quoted any more:\n{text}"
+    );
+    assert_eq!(report["representation"], "java", "{report}");
+    assert_eq!(report["quality"], "structured", "{report}");
 
     // `leftRead`/`rightRead` are the controls: a claimed static read composed with a deferred call,
     // in both operand orders. Both stay written whole, with the call written exactly once, because

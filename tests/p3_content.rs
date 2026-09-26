@@ -12,12 +12,14 @@
 //! ([`Engine::recover_method`]):
 //!
 //! * the **committed** javac 23.0.1 samples whose bodies are the cases the acceptance names:
-//!   `RefusedCast.fieldCast` (no statement at all — its artifact is comment lines and two braces),
-//!   `NestedEval.nestedPlain` (a whole body written as Java), `NestedEval.nestedLocal` (a statement
-//!   *and* a quote in one artifact) and `RefusedCast.leftRead`;
-//! * a **hand-built** class (`fixture_class` below) for the two shapes no committed sample has: a
-//!   body whose only statement is `return;`, and a branch whose `then` arm is empty
-//!   (`if (arg0) { } else { … }`, whose condition is still evaluated). The in-memory generator is
+//!   `RefusedCast.fieldCast` (the read and the check the explicit-cast rule proves, written at the
+//!   `return` that consumes them), `NestedEval.nestedPlain` (a whole body written as Java),
+//!   `NestedEval.nestedLocal` (a statement *and* a quote in one artifact) and `RefusedCast.leftRead`;
+//! * a **hand-built** class (`fixture_class` below) for the shapes no committed sample has: a body
+//!   whose only statement is `return;`, a branch whose `then` arm is empty
+//!   (`if (arg0) { } else { … }`, whose condition is still evaluated), and a check whose result no
+//!   reader consumes — the artifact of quotes alone the design's no-reader boundary keeps. The
+//!   in-memory generator is
 //!   the repository's own second fixture kind (`tests/fixtures/README.md`): a compiled sample cannot
 //!   be added here without moving the reader's pinned fixture population
 //!   (`crates/jarde-reader/src/classfile.rs`, `(45, 177, 44, 86, 8)`), and this class's bytes are
@@ -32,9 +34,15 @@
 use jarde::*;
 use std::slice;
 
-/// The committed P3-R9 sample: `fieldCast` is a refusal whose artifact is quotes alone, and `leftRead`
-/// is a body written whole.
+/// The committed P3-R9 sample, whole since the explicit-cast rule landed: every member's read and
+/// check is written at the `return` that consumes them.
 const REFUSED_CAST: &[u8] = include_bytes!("fixtures/p3-refused-cast/v8/RefusedCast.class");
+
+/// The committed guard boundary: `update` is the body whose whole prefix stays quoted because its
+/// producer block is refused by the handler that starts inside the candidate chain — an artifact of
+/// quotes alone, from a committed sample whose refusal the cast rule does not touch.
+const POSTFIX_HANDLER_BOUNDARY: &[u8] =
+    include_bytes!("fixtures/p3-postfix-handler-boundary/v8/PostfixHandlerBoundary.class");
 
 /// The committed P3-R8 sample: `nestedPlain` is written whole, `nestedLocal` keeps the write it can
 /// prove beside the quote it owes.
@@ -272,14 +280,17 @@ const LITERAL_B: &[u8] = b"a/*b*/";
 /// castA()Ljava/lang/String;      0: aconst_null; 1: checkcast java/lang/String; 4: areturn
 /// castB()Ljava/lang/String;      0: nop; 1: aconst_null; 2: checkcast java/lang/String; 5: areturn
 /// nestedReturn(Z)I               0: iload_0; 1: ifeq 6; 4: iconst_1; 5: ireturn; 6: iconst_0; 7: ireturn
+/// castNoReader()V                0: aconst_null; 1: checkcast java/lang/String; 5: pop; 6: return
 /// ```
 ///
 /// `emptyArm` is the shape a compiler writes for an `if` whose `then` arm is empty: the branch
 /// transfers to the join past the empty arm, the condition is still evaluated, and the artifact is
 /// `if (arg0) { } else { local2 = arg1 + 1; }` over a hoisted declaration. `castA`/`castB` are two
-/// bodies whose cast no rule proves: their artifacts hold reasons and quoted bytecode and no
-/// statement at all, and the two bodies differ by a `nop` so that the *comment wording and the quoted
-/// indexes* are not the same either — the classification has to be the same anyway.
+/// bodies whose check the explicit-cast rule proves at the `return` that consumes it, and the two
+/// differ by a `nop`: one artifact is the statement alone, the other keeps the quote the `nop` owes
+/// beside it — the classification has to be the same anyway, because both hold the statement. The
+/// third body is the no-reader boundary: the check is popped, so its artifact is reasons and quoted
+/// bytecode and no statement at all.
 ///
 /// `nestedReturn` is the same `return` statement one indentation level deeper than `nothing`'s, so
 /// the two artifacts differ in whitespace while the classification does not.
@@ -336,6 +347,15 @@ const HAND_MEMBERS: &[HandMember] = &[
         max_stack: 1,
         max_locals: 1,
     },
+    // The design's no-reader boundary: the check's result is popped, so no statement consumes it
+    // and the quotes stay beside the `return;` the body still provably holds.
+    HandMember {
+        name: "castNoReader",
+        descriptor: "()V",
+        code: &[0x01, 0xc0, 0x00, 0x14, 0x57, 0xb1],
+        max_stack: 1,
+        max_locals: 0,
+    },
 ];
 
 /// The hand-built class `Content`: one `Code` attribute per member of [`HAND_MEMBERS`], and a
@@ -345,7 +365,7 @@ fn fixture_class() -> Vec<u8> {
     let mut output = 0xcafebabe_u32.to_be_bytes().to_vec();
     u16b(&mut output, 0); // minor_version
     u16b(&mut output, 52); // major_version: Java 8, the profile every request declares
-    u16b(&mut output, 23); // constant_pool_count = 22 entries + 1
+    u16b(&mut output, 24); // constant_pool_count = 23 entries + 1
     utf8(&mut output, b"Content"); // 1
     output.push(7);
     u16b(&mut output, 1); // 2: Class Content
@@ -373,6 +393,7 @@ fn fixture_class() -> Vec<u8> {
     u16b(&mut output, 19); // 20: Class java/lang/String
     utf8(&mut output, b"nestedReturn"); // 21
     utf8(&mut output, b"(Z)I"); // 22
+    utf8(&mut output, b"castNoReader"); // 23
 
     u16b(&mut output, 0x21); // access_flags: public super
     u16b(&mut output, 2); // this_class
@@ -392,6 +413,7 @@ fn fixture_class() -> Vec<u8> {
             "castA" => 17,
             "castB" => 18,
             "nestedReturn" => 21,
+            "castNoReader" => 23,
             other => panic!("no pool entry for `{other}`"),
         };
         let descriptor_index = match member.descriptor {
@@ -461,19 +483,17 @@ fn explanation_only_means_no_emitted_statement() {
     // The discriminating case the design's Risk section names: an artifact whose text is *not* empty
     // — comment lines and two braces — and which holds no statement at all. A classifier that read
     // the text (stripping comments to count what is left, or looking for `//`), or one that exposed
-    // the existing `program.statements` counter (which counts the two fallback nodes of this body),
-    // would call this `contains_statements`. The body is `getstatic External.value; checkcast;
-    // areturn`, both the read and the cast are refused, and the whole body is quoted.
+    // the existing `program.statements` counter (which counts the fallback nodes of this body),
+    // would call this `contains_statements`. The body is `PostfixHandlerBoundary.update`: its whole
+    // prefix stays quoted because its producer block is refused by the handler that starts inside
+    // the candidate chain, and no statement survives.
     let engine = Engine::new();
-    let fixture = fixture(&engine, REFUSED_CAST);
-    let descriptor = descriptor_of(&fixture, b"fieldCast");
-    let report = recover(&engine, &fixture, b"fieldCast", &descriptor);
+    let boundary = fixture(&engine, POSTFIX_HANDLER_BOUNDARY);
+    let descriptor = descriptor_of(&boundary, b"update");
+    let report = recover(&engine, &boundary, b"update", &descriptor);
 
-    assert_case(
-        &report,
-        RecoveryContent::ExplanationOnly,
-        "// @bytecode 3 0",
-    );
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert_eq!(report.content, RecoveryContent::ExplanationOnly);
     assert_eq!(report.representation, Representation::Mixed);
     assert_eq!(report.quality, Quality::Fallback);
     // What the artifact is made of, stated over the artifact itself: every line is a comment, a brace
@@ -494,12 +514,17 @@ fn explanation_only_means_no_emitted_statement() {
         report.text
     );
 
-    // The same rule for the sample's other two refusals: an artifact of quotes alone, whatever the
-    // instructions behind it are.
-    for name in [b"instanceCast".as_slice(), b"chainCast"] {
-        let descriptor = descriptor_of(&fixture, name);
-        let report = recover(&engine, &fixture, name, &descriptor);
-        assert_case(&report, RecoveryContent::ExplanationOnly, "// @bytecode");
+    // The committed cast sample that used to hold this file's refusal cases is whole now: the
+    // explicit-cast rule proved each member's read and check at the `return` that consumes them, so
+    // all three state statements — and the classification says so from the structure, not from the
+    // comments the quotes still carry.
+    let committed = fixture(&engine, REFUSED_CAST);
+    for name in [b"fieldCast".as_slice(), b"instanceCast", b"chainCast"] {
+        let descriptor = descriptor_of(&committed, name);
+        let report = recover(&engine, &committed, name, &descriptor);
+        assert_case(&report, RecoveryContent::ContainsStatements, "return");
+        assert_eq!(report.representation, Representation::Java, "{:?}", name);
+        assert_eq!(report.quality, Quality::Structured, "{:?}", name);
     }
 }
 
@@ -625,32 +650,63 @@ fn the_hand_built_shapes_classify_from_their_structure() {
     );
     assert_ne!(a.text, b.text, "the two artifacts are not the same text");
 
-    // The two refusals: no statement in either artifact, and the comment lines behind them are not
-    // the same words either (different quoted indexes, a different number of reasons) — the
-    // classification follows the structure, not the comment.
+    // The two checks the explicit-cast rule proves at the `return` that consumes them: both
+    // artifacts hold the statement, and the `nop` of the second adds a quote without moving the
+    // classification — the classification follows the structure, not the comment.
     let cast_a = recover(
         &engine,
         &fixture,
         b"castA",
         &descriptor_of(&fixture, b"castA"),
     );
-    assert_case(&cast_a, RecoveryContent::ExplanationOnly, "// @bytecode 1");
+    assert_case(
+        &cast_a,
+        RecoveryContent::ContainsStatements,
+        "    return (java.lang.String) null;\n",
+    );
+    assert_eq!(cast_a.representation, Representation::Java);
+    assert_eq!(cast_a.quality, Quality::Structured);
     let cast_b = recover(
         &engine,
         &fixture,
         b"castB",
         &descriptor_of(&fixture, b"castB"),
     );
-    assert_case(&cast_b, RecoveryContent::ExplanationOnly, "// @bytecode 0");
+    assert_case(
+        &cast_b,
+        RecoveryContent::ContainsStatements,
+        "    return (java.lang.String) null;\n",
+    );
+    assert_eq!(cast_b.representation, Representation::Mixed);
+    assert_eq!(cast_b.quality, Quality::Fallback);
     assert!(
-        cast_a.text.contains("// @bytecode 1") && cast_b.text.contains("// @bytecode 2"),
-        "the two refusals name different bytecode and write different reasons:\n{}\n---\n{}",
-        cast_a.text,
+        cast_b.text.contains("// @bytecode 0"),
+        "the quote the `nop` owes stays beside the statement it precedes:\n{}",
         cast_b.text
     );
     assert_ne!(cast_a.text, cast_b.text);
-    assert_eq!(cast_a.quality, Quality::Fallback);
-    assert_eq!(cast_b.quality, Quality::Fallback);
+
+    // And the no-reader boundary: a check nothing consumes is quoted, not written — the `return;`
+    // the body still provably holds keeps the artifact's classification, and the quote keeps the
+    // check named beside it.
+    let no_reader = recover(
+        &engine,
+        &fixture,
+        b"castNoReader",
+        &descriptor_of(&fixture, b"castNoReader"),
+    );
+    assert_case(
+        &no_reader,
+        RecoveryContent::ContainsStatements,
+        "    return;\n",
+    );
+    assert_eq!(no_reader.representation, Representation::Mixed);
+    assert_eq!(no_reader.quality, Quality::Fallback);
+    assert!(
+        no_reader.text.contains("// @bytecode 1"),
+        "the popped check stays named:\n{}",
+        no_reader.text
+    );
 
     // The same `return` one level deeper: different whitespace, same classification.
     let nested = recover(
