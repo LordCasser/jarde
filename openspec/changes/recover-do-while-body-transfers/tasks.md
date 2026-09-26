@@ -1,7 +1,7 @@
 ## 1. 冻结循环体分支与边界
 
 - [x] 1.1 保存 Java 8 源码、498 B/7项核心、702 B/9项混合及532 B正面对照的原 class、JADX、冻结 jarde 整类编译/执行日志和 SHA；root 复跑 `do-while/run_audit.py`，确认两处失败仅在体内转移。
-- [ ] 1.2 从核心建立永久 class/runner 与 RED 测试，钉住 `withContinue`、`withBreak` 的 javap Code、源码映射和原 class 的 trace/返回值；补一个非本层出口或嵌套 `switch` 边界，确认它不被写成错误的无标记 `break`。
+- [x] 1.2 从核心建立永久 class/runner 与 RED 测试，钉住 `withContinue`、`withBreak` 的 javap Code、源码映射和原 class 的 trace/返回值；补一个非本层出口或嵌套 `switch` 边界，确认它不被写成错误的无标记 `break`。**验收**：[verification-1.2.md](verification-1.2.md) 记录永久 class/runner、核心 class SHA、BCI 转移、原 class 九行输出、RED gate 的来源缺口及嵌套 switch 保守拒绝。原正例源码复编生成的 `DoWhileCore.class` 与冻结 class 字节一致；定向套件 5 passed、1 ignored，switch 负例通过；显式运行 ignored RED gate 在已固定 fixture/Code/执行后按预期于来源覆盖断言失败。
 
 ## 2. 只证明本层 do-while 的体内转移
 
