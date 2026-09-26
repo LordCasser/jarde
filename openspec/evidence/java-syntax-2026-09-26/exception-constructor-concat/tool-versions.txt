@@ -1,0 +1,10 @@
+Date: 2026-09-26
+JDK: OpenJDK 23.0.1 (javac 23.0.1)
+JADX executable: 1.5.6
+JADX source checkout: /Users/lordcasser/workspace/testzone/jadx @ 2fb1b16386941660fda07e9017285aec40fcb37f (working tree clean at inspection)
+Rust toolchain: rustc 1.98.1 (48a229cea 2026-09-01), cargo 1.98.1 (797e8a9bc 2026-08-05)
+Jarde source checkout used for build: 19b3d6deed635a41ea76d8df643a72980c6e047c (the shared checkout HEAD advanced after this build)
+Jarde build: cargo build --locked -p jarde-cli, CARGO_TARGET_DIR=/tmp/jarde-exception-concat-target-20260926
+Jarde class-source: --evidence all --policy plain-jar --class Probe
+Java target: javac --release 8
+Execution: java -Xverify:all
