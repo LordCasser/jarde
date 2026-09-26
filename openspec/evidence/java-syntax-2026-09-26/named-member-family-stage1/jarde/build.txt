@@ -1,0 +1,5 @@
+source revision: 9406e758
+source checkout: git archive 9406e758
+command: CARGO_TARGET_DIR=/tmp/jarde-family-pinned-target cargo build --locked -p jarde-cli
+binary sha256: 832b156fd43d41824406bd5ab2463baf595390247bb21ece1415e58ea632f334
+request: jarde-cli class-source --input fixture.jar --class NamedMemberFamilyStage1 --policy plain-jar --format json --evidence source_map

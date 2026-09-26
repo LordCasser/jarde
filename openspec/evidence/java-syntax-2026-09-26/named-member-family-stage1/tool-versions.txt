@@ -2,4 +2,4 @@ input compiler: javac 23.0.1 --release 8 -g
 runtime: OpenJDK 23.0.1, java -Xverify:all
 JADX: 1.5.6
 original and JADX hash inputs frozen before removal of temporary class outputs; see sha256-original.txt
-Jarde comparison is recorded separately after the source revision and binary are pinned.
+Jarde CLI source revision: 9406e758, built from git archive; binary hash and command in jarde/build.txt.

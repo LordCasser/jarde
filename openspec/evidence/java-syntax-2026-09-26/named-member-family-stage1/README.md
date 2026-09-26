@@ -8,6 +8,6 @@ JADX 1.5.6 对同一 JAR 生成 [完整类源码](jadx/sources/defpackage/NamedM
 
 static nested 与 local class 是独立边界，不属于本正例。静态嵌套沿用相邻目录的 [`OuterReceiverCases.java`](../named-member-outer-receiver/variants/OuterReceiverCases.java)、[`jarde-StaticNested.java`](../named-member-outer-receiver/variants/jarde-StaticNested.java) 及既有非法 `Outer.this` / `Outer.super` 对照 [`StaticNestedIllegal.java`](../named-member-outer-receiver/variants/StaticNestedIllegal.java)。local class 对照沿用 [`OuterLocalBoundary.java`](../named-member-outer-receiver/variants/OuterLocalBoundary.java)、[`javap-Local.txt`](../named-member-outer-receiver/variants/javap-Local.txt)、[`local-original-run.txt`](../named-member-outer-receiver/variants/local-original-run.txt) 与 [`jarde-Local.java`](../named-member-outer-receiver/variants/jarde-Local.java)；其 `EnclosingMethod`、`val$other` 和 `this$0` 显示它与命名成员声明的身份边界不同。
 
-本目录先固定原 class 与原样 JADX 的可执行比较。Jarde 在成员家族身份实现提交后的独立构建和输出将另行记录；实施中的临时编译诊断不作为语法恢复结论。
+Jarde 对照从 `git archive 9406e758` 的固定源码另建 CLI，二进制 SHA-256、构建与请求参数见 [`jarde/build.txt`](jarde/build.txt)。完整 JSON 和根/成员两份原样文本位于 [`jarde/`](jarde/)。报告的 `member_family` 为 `prepared`，根有 3 个物理方法、成员有 2 个；两份文本仍分别声明物理类，不代表已完成源码家族投影。单独编译根文本成功，但 `java -Xverify:all` 只输出 `20`，缺失成员构造与调用的 `2011`；将根和成员文本一起交给 `javac --release 8` 则因成员构造器把 `this.this$0 = this$0` 写在 `super()` 前而失败。完整编译诊断和退出码也保存在 [`jarde/`](jarde/)。这两个结果精确描述身份阶段之后仍待 3.x/4.x 证明和投影的缺口。
 
 工具与运行状态见 [tool-versions.txt](tool-versions.txt) 和 [status.txt](status.txt)；本目录文件哈希见 [sha256-evidence.txt](sha256-evidence.txt)。

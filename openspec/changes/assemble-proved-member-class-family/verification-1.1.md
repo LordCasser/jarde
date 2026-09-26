@@ -1,0 +1,7 @@
+# 1.1 命名成员家族冻结与 Root 复核
+
+固定输入是 [`NamedMemberFamilyStage1.java`](../../evidence/java-syntax-2026-09-26/named-member-family-stage1/NamedMemberFamilyStage1.java)，`javac 23.0.1 --release 8 -g` 产生的 JAR SHA-256 为 `6f9b0cbc9a18ae2a6b429a7aa6720d80bc08e31dd228580967ce255b406776f5`。Root 从 JAR 独立提取并重编原源码，根 class SHA-256 `fbf76f6a840dee21ddae4dcea68c04efcc66761da51fe16266dfeaf9edc7afac`、成员 class `4aca5ee46a09d5421d68235ad15aaec8113aa9a43ba5b2eaaf0aa653e87e5c52` 均与固定字节一致；`shasum -a 256 -c` 完整证据清单通过。原 class 和未编辑 `package defpackage;` 的 JADX 1.5.6 源码均可用 Java 8 重编，并在 `-Xverify:all` 下输出 `2011`、`20`。JADX 版本、完整 `javap` 和编译/运行状态均保存在[证据目录](../../evidence/java-syntax-2026-09-26/named-member-family-stage1/README.md)。
+
+为避免共享工作区的并行编辑污染 Jarde 基线，Root 从固定提交 `9406e758` 的 `git archive` 单独构建 `jarde-cli`，二进制 SHA-256 为 `832b156fd43d41824406bd5ab2463baf595390247bb21ece1415e58ea632f334`。同一 JAR 的 `class-source --evidence source_map` 报告完整保存为 [`jarde/class-source.json`](../../evidence/java-syntax-2026-09-26/named-member-family-stage1/jarde/class-source.json)。根与 child 的方法分别为 3/2，物理 owner 和文本分立、execution 均 complete，家族关系只到 `prepared`。根文本单独编译执行只输出 `20`；根与成员两份物理源码一起编译失败，成员构造器的捕获字段写入排在 `super()` 前。这是当前身份阶段的真实缺口，未把它记作捕获、构造或源码投影完成。
+
+此输入的显式 `other.state` 与词法捕获的私有 `secret` 分别产生 `20` 和 `11`，避免把相同 Outer 类型误当同一接收者。`javap` 确认一个 `<init>(Outer)`、一个 `this$0` 字段和一个 `access$000` getter；无 `Outer.super`/`access$101`。字段、构造与 bridge 的投影仍由后续 3.x/4.x 证明。验收后独立 Cargo target 及临时源码目录须清理，固定证据不依赖它们存活。

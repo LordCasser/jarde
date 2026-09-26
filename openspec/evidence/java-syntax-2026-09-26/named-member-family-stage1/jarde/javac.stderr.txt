@@ -1,0 +1,5 @@
+openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/jarde/NamedMemberFamilyStage1$Member.java:10: 错误: 灵活构造器 是预览功能，默认情况下禁用。
+        this.this$0 = this$0;
+        ^
+  （请使用 --enable-preview 以启用 灵活构造器）
+1 个错误

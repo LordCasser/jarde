@@ -4,4 +4,6 @@ JADX raw package source javac --release 8: 0
 JADX raw package source runtime -Xverify:all: 0; output 2011, 20
 JADX source with defpackage line removed javac --release 8: 0
 JADX stripped source runtime -Xverify:all: 0; output 2011, 20
-Jarde comparison: pending independently pinned build
+Jarde CLI from git archive 9406e758: built; family status prepared, physical root/child retained
+Jarde root-only javac --release 8: 0; java -Xverify:all: 0; output 20
+Jarde root+child physical source javac --release 8: 1; member constructor super ordering diagnostic
