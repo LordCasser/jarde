@@ -1,0 +1,56 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling find-msvc-tools v0.1.12
+   Compiling shlex v2.0.1
+   Compiling serde_core v1.0.229
+   Compiling cfg-if v1.0.4
+   Compiling equivalent v1.0.2
+   Compiling hashbrown v0.17.1
+   Compiling crc32fast v1.5.2
+   Compiling simd-adler32 v0.3.10
+   Compiling adler2 v2.0.1
+   Compiling serde v1.0.229
+   Compiling thiserror v2.0.20
+   Compiling bitflags v2.13.2
+   Compiling arrayvec v0.7.8
+   Compiling cc v1.4.6
+   Compiling miniz_oxide v0.9.1
+   Compiling constant_time_eq v0.4.2
+   Compiling foldhash v0.1.5
+   Compiling rawzip v0.5.1
+   Compiling fixedbitset v0.5.7
+   Compiling utf8parse v0.2.2
+   Compiling hashbrown v0.15.5
+   Compiling indexmap v2.14.2
+   Compiling anstyle-parse v1.0.0
+   Compiling anstyle-query v1.1.5
+   Compiling colorchoice v1.0.5
+   Compiling flate2 v1.1.10
+   Compiling zmij v1.0.23
+   Compiling anstyle v1.0.14
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling clap_lex v1.1.1
+   Compiling serde_json v1.0.151
+   Compiling anstream v1.0.0
+   Compiling strsim v0.11.1
+   Compiling heck v0.5.0
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling noak v0.7.0
+   Compiling syn v3.0.5
+   Compiling petgraph v0.8.3
+   Compiling clap_builder v4.6.7
+   Compiling blake3 v1.8.7
+   Compiling thiserror-impl v2.0.20
+   Compiling serde_derive v1.0.229
+   Compiling clap_derive v4.6.7
+   Compiling clap v4.6.7
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+   Compiling jarde-cli v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 14.07s
+exit=0
