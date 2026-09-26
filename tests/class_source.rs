@@ -112,6 +112,10 @@ const ANONYMOUS_INTERFACE_CHILD: &[u8] = include_bytes!(
 );
 const ANONYMOUS_INTERFACE_API: &[u8] =
     include_bytes!("fixtures/proved-java-structure/anonymous-interface-basic/I.class");
+const ANONYMOUS_INNER_THIS_ROOT: &[u8] =
+    include_bytes!("fixtures/proved-java-structure/anonymous-inner-this/Inner.class");
+const ANONYMOUS_INNER_THIS_CHILD: &[u8] =
+    include_bytes!("fixtures/proved-java-structure/anonymous-inner-this/Inner$1.class");
 const ANONYMOUS_SUPER_DIRECT_ROOT: &[u8] = include_bytes!(
     "fixtures/proved-java-structure/anonymous-super-direct/AnonymousSuperDirect.class"
 );
@@ -684,6 +688,102 @@ fn test_method_headers(bytes: &[u8]) -> Vec<TestMethodHeader> {
     methods
 }
 
+fn test_class_attributes(bytes: &[u8]) -> Vec<TestClassAttribute> {
+    let methods = test_method_headers(bytes);
+    let mut cursor = methods
+        .last()
+        .map_or_else(|| test_pool(bytes).0 + 6, |method| method.end);
+    let count = test_u16(bytes, cursor);
+    cursor += 2;
+    let (_, pool) = test_pool(bytes);
+    let mut attributes = Vec::with_capacity(count);
+    for _ in 0..count {
+        let name_index = test_u16(bytes, cursor);
+        let length_offset = cursor + 2;
+        let length = test_u32(bytes, length_offset);
+        attributes.push(TestClassAttribute {
+            name: pool[name_index].clone(),
+            length_offset,
+            data_offset: cursor + 6,
+            length,
+        });
+        cursor += 6 + length;
+    }
+    attributes
+}
+
+fn test_name_and_type_index(bytes: &[u8], name: &[u8], descriptor: &[u8]) -> u16 {
+    let count = test_u16(bytes, 8);
+    let mut cursor = 10;
+    let mut utf8 = vec![Vec::new(); count];
+    let mut candidates = Vec::new();
+    let mut index = 1;
+    while index < count {
+        let tag = bytes[cursor];
+        match tag {
+            1 => {
+                let length = test_u16(bytes, cursor + 1);
+                utf8[index] = bytes[cursor + 3..cursor + 3 + length].to_vec();
+                cursor += 3 + length;
+                index += 1;
+            }
+            12 => {
+                candidates.push((
+                    index,
+                    test_u16(bytes, cursor + 1),
+                    test_u16(bytes, cursor + 3),
+                ));
+                cursor += 5;
+                index += 1;
+            }
+            3 | 4 | 9 | 10 | 11 | 17 | 18 => {
+                cursor += 5;
+                index += 1;
+            }
+            5 | 6 => {
+                cursor += 9;
+                index += 2;
+            }
+            7 | 8 | 16 | 19 | 20 => {
+                cursor += 3;
+                index += 1;
+            }
+            15 => {
+                cursor += 4;
+                index += 1;
+            }
+            other => panic!("unexpected constant-pool tag {other}"),
+        }
+    }
+    u16::try_from(
+        candidates
+            .into_iter()
+            .find_map(|(candidate, name_index, descriptor_index)| {
+                (utf8[usize::from(name_index)] == name
+                    && utf8[usize::from(descriptor_index)] == descriptor)
+                    .then_some(candidate)
+            })
+            .expect("the name-and-type entry exists in the pool"),
+    )
+    .expect("the name-and-type index fits u16")
+}
+
+fn patch_enclosing_method(bytes: &[u8], name: &[u8], descriptor: &[u8]) -> Vec<u8> {
+    let attribute = test_class_attributes(bytes)
+        .into_iter()
+        .find(|attribute| attribute.name == b"EnclosingMethod")
+        .expect("the anonymous child has EnclosingMethod");
+    assert_eq!(attribute.length, 4);
+    let name_and_type = test_name_and_type_index(bytes, name, descriptor);
+    let mut patched = bytes.to_vec();
+    test_put_u16(
+        &mut patched,
+        attribute.data_offset + 2,
+        usize::from(name_and_type),
+    );
+    patched
+}
+
 fn test_method_reference(bytes: &[u8], owner: &[u8], name: &[u8], descriptor: &[u8]) -> u16 {
     let count = test_u16(bytes, 8);
     let mut cursor = 10;
@@ -957,6 +1057,176 @@ fn proved_anonymous_interface_projects_from_both_physical_method_asts() {
                 segment.origin().primary().method() == Some(&value.item.identity)
             })
     ));
+}
+
+#[test]
+fn anonymous_inner_this_refuses_an_additional_local_capture_and_keeps_physical_child() {
+    let scratch = BridgeProjectionScratch::new();
+    let directory = scratch.child("inner-this-extra-local");
+    fs::write(
+        directory.join("Inner.java"),
+        "public class Inner { static Object observed; int value = 37;\n\
+         Runnable make(int captured) { return new Runnable() {\n\
+         public void run() { observed = Inner.this; Inner.this.value += captured; }\
+         }; } }\n",
+    )
+    .expect("write the enclosing-instance plus local-capture class");
+    compile_java_8(&directory, "Inner.java", &directory);
+    let root_bytes = fs::read(directory.join("Inner.class")).expect("read the root class");
+    let child_bytes = fs::read(directory.join("Inner$1.class")).expect("read the child class");
+    let snapshot = open(zip_of(&[
+        (b"Inner.class", &root_bytes),
+        (b"Inner$1.class", &child_bytes),
+    ]));
+    let root = class_source_of(&snapshot, "Inner", EnvironmentPolicy::PlainJar);
+    assert!(root.text.contains("new Inner$1("), "{}", root.text);
+    assert!(
+        !root.text.contains("new java.lang.Runnable() {"),
+        "{}",
+        root.text
+    );
+
+    let mut child_budget = budget();
+    let child = performed(
+        Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request(
+                    &snapshot,
+                    ClassRef::Name {
+                        class: ClassNameQuery::internal("Inner$1"),
+                    },
+                    EnvironmentPolicy::PlainJar,
+                ),
+                &RecoveryEvidenceRequest::all(),
+                &mut child_budget,
+            )
+            .expect("the physical child report with source maps is available"),
+    );
+    assert!(child.text.contains("this$0"), "{}", child.text);
+    assert!(child.text.contains("captured"), "{}", child.text);
+}
+
+#[test]
+fn anonymous_inner_this_refuses_a_mismatched_enclosing_method_identity() {
+    let scratch = BridgeProjectionScratch::new();
+    let directory = scratch.child("inner-this-enclosing-mismatch");
+    fs::write(
+        directory.join("Inner.java"),
+        "public class Inner { static Object observed;\n\
+         static void helper() {}\n\
+         Runnable make() { return new Runnable() { public void run() {\n\
+         observed = Inner.this; Inner.helper(); Inner.this.hashCode();\
+         } }; } }\n",
+    )
+    .expect("write an anonymous class whose pool names another enclosing method");
+    compile_java_8(&directory, "Inner.java", &directory);
+    let root_bytes = fs::read(directory.join("Inner.class")).expect("read the root class");
+    let original_child =
+        fs::read(directory.join("Inner$1.class")).expect("read the anonymous child");
+    let child_bytes = patch_enclosing_method(&original_child, b"helper", b"()V");
+    let snapshot = open(zip_of(&[
+        (b"Inner.class", &root_bytes),
+        (b"Inner$1.class", &child_bytes),
+    ]));
+    let root = class_source_of(&snapshot, "Inner", EnvironmentPolicy::PlainJar);
+    assert!(root.text.contains("new Inner$1("), "{}", root.text);
+    assert!(
+        !root.text.contains("new java.lang.Runnable() {"),
+        "{}",
+        root.text
+    );
+    let child = class_source_of(&snapshot, "Inner$1", EnvironmentPolicy::PlainJar);
+    assert!(child.text.contains("this$0"), "{}", child.text);
+}
+
+#[test]
+fn anonymous_inner_this_budget_and_cancellation_never_publish_partial_projection() {
+    let snapshot = open(zip_of(&[
+        (b"Inner.class", ANONYMOUS_INNER_THIS_ROOT),
+        (b"Inner$1.class", ANONYMOUS_INNER_THIS_CHILD),
+    ]));
+    let engine = Engine::new();
+    let request = request(
+        &snapshot,
+        ClassRef::Name {
+            class: ClassNameQuery::internal("Inner"),
+        },
+        EnvironmentPolicy::PlainJar,
+    );
+    let complete = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .expect("the captured anonymous source is available"),
+    );
+    assert!(complete.text.contains("new java.lang.Runnable() {"));
+    assert!(complete.text.contains("Inner.this"));
+
+    let cap = complete.usage.output_bytes.saturating_sub(1);
+    let mut constrained =
+        task_budget(&[BudgetOverride::new("output_bytes", cap).expect("valid output cap")])
+            .expect("the constrained budget is valid");
+    let stopped = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut constrained,
+            )
+            .expect("a projection budget stop retains a physical root report"),
+    );
+    assert!(matches!(
+        stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::OutputBytes
+            },
+            ..
+        }
+    ));
+    assert!(stopped.text.contains("new Inner$1("), "{}", stopped.text);
+    assert!(!stopped.text.contains("new java.lang.Runnable() {"));
+    let physical_child = class_source_of(&snapshot, "Inner$1", EnvironmentPolicy::PlainJar);
+    assert!(physical_child.text.contains("this$0"));
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut cancelled = Budget::with_cancellation_token(budget().limits().clone(), token);
+    let outcome = engine
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut cancelled,
+        )
+        .expect("a cancelled source request has a terminal outcome");
+    match outcome {
+        OperationOutcome::Incomplete(selection) => {
+            assert!(matches!(
+                selection.execution,
+                ExecutionReport::Cancelled { .. }
+            ));
+        }
+        OperationOutcome::Performed(report) => {
+            assert!(matches!(
+                report.execution,
+                ExecutionReport::Cancelled { .. }
+            ));
+            assert!(!report.text.contains("new java.lang.Runnable() {"));
+        }
+        OperationOutcome::Ambiguous(_) => panic!("the frozen Inner class is unique"),
+    }
+    assert!(
+        class_source_of(&snapshot, "Inner$1", EnvironmentPolicy::PlainJar)
+            .text
+            .contains("this$0")
+    );
 }
 
 #[test]

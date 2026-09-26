@@ -12,5 +12,5 @@
 ## 3. 端到端拒绝边界与回归
 
 - [ ] 3.1 覆盖第二分配、方法/类身份冲突、local capture、多个 synthetic 字段、匿名方法 fallback、跨范围引用、预算停止/取消；每个负例断言不发布部分源码投影且物理报告可查。
-- [ ] 3.2 将 replay 增加独立 fixed 验证输出，检查匿名源码没有物理 `$1`/`this$0`，与冻结 class 分开重编并在 `-Xverify:all` 下得到 `true\n38\n`；确认 Jarde 不复用 DT-06a 父类实参规则。
+- [x] 3.2 将 replay 增加独立 fixed 验证输出，检查匿名源码没有物理 `$1`/`this$0`，与冻结 class 分开重编并在 `-Xverify:all` 下得到 `true\n38\n`；确认 Jarde 不复用 DT-06a 父类实参规则。
 - [ ] 3.3 执行匿名接口、具名成员捕获、DT-06a 无捕获父类实参及 Java 8 source-map 回归，确认投影身份和拒绝路径互不改变；运行 `cargo fmt --all -- --check` 与 `openspec validate recover-proved-anonymous-inner-this --strict`。

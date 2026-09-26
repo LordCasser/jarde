@@ -1875,107 +1875,6 @@ impl Engine {
                 budget,
             );
         }
-        if child_facts.stopped_at.is_some()
-            || child_read
-                .bytes
-                .get(6..8)
-                .is_none_or(|version| u16::from_be_bytes([version[0], version[1]]) > 52)
-            || child_facts.field_count != 0
-            || !child_facts.fields.is_empty()
-            || child_facts.methods.len() as u64 != child_facts.method_count
-            || child_facts.methods.is_empty()
-            || child_facts
-                .methods
-                .iter()
-                .any(|method| method.name.raw().0 == b"<clinit>")
-            || child_facts
-                .super_class
-                .as_ref()
-                .map(|name| name.raw().0.as_slice())
-                != Some(b"java/lang/Object")
-            || child_facts.interfaces.len() != 1
-            || child_facts.access_flags & 0x0200 != 0
-        {
-            return Err(Error::unsupported(
-                "anonymous_child_shape_unproved",
-                "the selected child is not a field-free Object subclass of exactly the interface",
-            ));
-        }
-        let interface_name = child_facts.interfaces[0].raw().0.clone();
-        let expected_return = [b"()L".as_slice(), interface_name.as_slice(), b";"].concat();
-        if root_method.descriptor.0 != expected_return
-            || !std::str::from_utf8(&interface_name).is_ok_and(|name| {
-                !name.contains('$') && name.split('/').all(jarde_java::names::is_java_identifier)
-            })
-        {
-            return Err(Error::unsupported(
-                "anonymous_interface_source_type_unproved",
-                "the allocated child does not implement the exact source-level return interface",
-            ));
-        }
-        let Some((_interface_definition, interface_read)) =
-            resolve_class_source_dependency_read_raw(
-                content,
-                environment,
-                Some(root_method),
-                &interface_name,
-                &mut child_execution,
-                budget,
-            )?
-        else {
-            return Err(Error::unsupported(
-                "anonymous_interface_unresolved",
-                "the exact return interface does not resolve in the selected environment",
-            ));
-        };
-        if interface_read.facts.access_flags & 0x0200 == 0
-            || interface_read.facts.access_flags & ACC_ANNOTATION != 0
-            || interface_read.facts.stopped_at.is_some()
-            || interface_read
-                .bytes
-                .get(6..8)
-                .is_none_or(|version| u16::from_be_bytes([version[0], version[1]]) > 52)
-            || (interface_read.facts.access_flags & 0x0001 == 0
-                && internal_package(&interface_name) != internal_package(&root_name))
-        {
-            return Err(Error::unsupported(
-                "anonymous_interface_declaration_unproved",
-                "the return type is not a source-accessible Java 8 interface declaration",
-            ));
-        }
-        // This slice can spell one direct interface contract. Inherited, default, and static
-        // interface methods need a separate hierarchy proof before the anonymous body is legal
-        // Java 8 source; a complete-looking child body alone does not establish that contract.
-        let interface_methods = &interface_read.facts.methods;
-        if !interface_read.facts.interfaces.is_empty()
-            || interface_methods.len() != 1
-            || interface_read.facts.method_count != 1
-            || interface_methods[0].access_flags != 0x0401
-            || !child_facts.methods.iter().any(|method| {
-                method.name.raw().0 == interface_methods[0].name.raw().0
-                    && method.descriptor.raw().0 == interface_methods[0].descriptor.raw().0
-                    && method.access_flags & 0x0001 != 0
-                    && method.access_flags & (0x0008 | 0x0040 | 0x1000) == 0
-            })
-        {
-            return Err(Error::unsupported(
-                "anonymous_interface_contract_unproved",
-                "the child does not provide the selected interface's single Java 8 abstract method",
-            ));
-        }
-        self.prove_anonymous_owner_xrefs(
-            content,
-            environment,
-            &root.class,
-            &child_definition,
-            root_method,
-            *root_bci,
-            *constructor_bci,
-            child_name.as_bytes(),
-            b"()V",
-            &mut child_execution,
-            budget,
-        )?;
         let pool = class_constant_pool(&child_read.bytes, budget)?;
         let child_shells: Vec<_> = child_facts
             .attributes
@@ -2020,12 +1919,144 @@ impl Engine {
                 "the child lacks the exact typed EnclosingMethod and anonymous self row",
             ));
         }
+        // The physical table is closed and has exactly one field before any handoff is minted.
+        // `prove_family_capture` then binds that slot's exact owner/name/Outer descriptor and
+        // synthetic-final flags to the constructor write and all SSA reads; Expr::Field itself
+        // intentionally carries only the member name, so this identity check must stay here.
+        let capture_proof = if child_facts.field_count == 1 && child_facts.fields.len() == 1 {
+            prove_anonymous_capture(
+                content,
+                environment,
+                &child_definition,
+                &root_name,
+                &child_facts,
+                &mut child_execution,
+                budget,
+            )?
+        } else {
+            None
+        };
+        if child_facts.stopped_at.is_some()
+            || child_read
+                .bytes
+                .get(6..8)
+                .is_none_or(|version| u16::from_be_bytes([version[0], version[1]]) > 52)
+            || (child_facts.field_count != 0 && capture_proof.is_none())
+            || child_facts.fields.len() as u64 != child_facts.field_count
+            || child_facts.methods.len() as u64 != child_facts.method_count
+            || child_facts.methods.is_empty()
+            || child_facts
+                .methods
+                .iter()
+                .any(|method| method.name.raw().0 == b"<clinit>")
+            || child_facts
+                .super_class
+                .as_ref()
+                .map(|name| name.raw().0.as_slice())
+                != Some(b"java/lang/Object")
+            || child_facts.interfaces.len() != 1
+            || child_facts.access_flags & 0x0200 != 0
+        {
+            return Err(Error::unsupported(
+                "anonymous_child_shape_unproved",
+                "the selected child is not an Object subclass of exactly one source-spellable interface",
+            ));
+        }
+        let interface_name = child_facts.interfaces[0].raw().0.clone();
+        let expected_return = [b"()L".as_slice(), interface_name.as_slice(), b";"].concat();
+        if root_method.descriptor.0 != expected_return
+            || !std::str::from_utf8(&interface_name).is_ok_and(|name| {
+                !name.contains('$') && name.split('/').all(jarde_java::names::is_java_identifier)
+            })
+        {
+            return Err(Error::unsupported(
+                "anonymous_interface_source_type_unproved",
+                "the allocated child does not implement the exact source-level return interface",
+            ));
+        }
+        // java.lang.Runnable is a Java platform contract and is not part of a user-supplied
+        // archive. Its single Java 8 abstract method is the one platform fact this focused
+        // lexical-capture slice needs; every application interface continues through a selected
+        // physical declaration read below.
+        let interface_contract_proved = if interface_name == b"java/lang/Runnable" {
+            child_facts.methods.iter().any(|method| {
+                method.name.raw().0 == b"run"
+                    && method.descriptor.raw().0 == b"()V"
+                    && method.access_flags & 0x0001 != 0
+                    && method.access_flags & (0x0008 | 0x0040 | 0x1000) == 0
+            })
+        } else {
+            let Some((_interface_definition, interface_read)) =
+                resolve_class_source_dependency_read_raw(
+                    content,
+                    environment,
+                    Some(root_method),
+                    &interface_name,
+                    &mut child_execution,
+                    budget,
+                )?
+            else {
+                return Err(Error::unsupported(
+                    "anonymous_interface_unresolved",
+                    "the exact return interface does not resolve in the selected environment",
+                ));
+            };
+            let source_accessible = interface_read.facts.access_flags & 0x0200 != 0
+                && interface_read.facts.access_flags & ACC_ANNOTATION == 0
+                && interface_read.facts.stopped_at.is_none()
+                && interface_read
+                    .bytes
+                    .get(6..8)
+                    .is_some_and(|version| u16::from_be_bytes([version[0], version[1]]) <= 52)
+                && (interface_read.facts.access_flags & 0x0001 != 0
+                    || internal_package(&interface_name) == internal_package(&root_name));
+            source_accessible
+                && interface_read.facts.interfaces.is_empty()
+                && interface_read.facts.methods.len() == 1
+                && interface_read.facts.method_count == 1
+                && interface_read.facts.methods[0].access_flags == 0x0401
+                && child_facts.methods.iter().any(|method| {
+                    method.name.raw().0 == interface_read.facts.methods[0].name.raw().0
+                        && method.descriptor.raw().0
+                            == interface_read.facts.methods[0].descriptor.raw().0
+                        && method.access_flags & 0x0001 != 0
+                        && method.access_flags & (0x0008 | 0x0040 | 0x1000) == 0
+                })
+        };
+        if !interface_contract_proved {
+            return Err(Error::unsupported(
+                "anonymous_interface_contract_unproved",
+                "the child does not provide the selected interface's single Java 8 abstract method",
+            ));
+        }
+        self.prove_anonymous_owner_xrefs(
+            content,
+            environment,
+            &root.class,
+            &child_definition,
+            root_method,
+            *root_bci,
+            *constructor_bci,
+            child_name.as_bytes(),
+            &root_name,
+            capture_proof.as_ref().map_or(b"()V".as_slice(), |proof| {
+                proof.constructor.descriptor.0.as_slice()
+            }),
+            capture_proof.as_ref(),
+            &mut child_execution,
+            budget,
+        )?;
         let constructors: Vec<_> = child_facts
             .methods
             .iter()
             .filter(|method| method.name.raw().0 == b"<init>")
             .collect();
-        if constructors.len() != 1 || constructors[0].descriptor.raw().0 != b"()V" {
+        if constructors.len() != 1
+            || (capture_proof.is_none() && constructors[0].descriptor.raw().0 != b"()V")
+            || capture_proof.as_ref().is_some_and(|proof| {
+                proof.constructor.descriptor.0 != constructors[0].descriptor.raw().0
+            })
+        {
             return Err(Error::unsupported(
                 "anonymous_child_constructor_unproved",
                 "the child does not have one zero-argument physical constructor",
@@ -2079,18 +2110,24 @@ impl Engine {
         let constructor_identity = PhysicalMethodId {
             owner: child_definition.clone(),
             name: JvmBytes(b"<init>".to_vec()),
-            descriptor: JvmBytes(b"()V".to_vec()),
+            descriptor: capture_proof.as_ref().map_or_else(
+                || JvmBytes(b"()V".to_vec()),
+                |proof| proof.constructor.descriptor.clone(),
+            ),
         };
-        let Some((_, _, Some(constructor_proof), _)) = child_asts
+        let constructor_ast = child_asts
             .iter()
             .find(|(member, _, _, _)| member == &constructor_identity)
-        else {
+            .and_then(|(_, _, proof, _)| proof.as_ref());
+        if capture_proof.is_none() && constructor_ast.is_none() {
             return Err(Error::unsupported(
                 "anonymous_child_constructor_ast_missing",
                 "the empty child constructor lacks its same-run generic-constructor proof",
             ));
-        };
-        if !constructor_proof.parameters.is_empty() {
+        }
+        if constructor_ast.is_some_and(|proof| !proof.parameters.is_empty())
+            && capture_proof.is_none()
+        {
             return Err(Error::unsupported(
                 "anonymous_child_constructor_not_empty",
                 "the child constructor proof has source parameters",
@@ -2101,24 +2138,72 @@ impl Engine {
             if method.item.identity == constructor_identity {
                 continue;
             }
-            let Some((_, ast, _, _)) = child_asts
+            let captured: Vec<_> = capture_proof
+                .as_ref()
+                .into_iter()
+                .flat_map(|proof| proof.reads.iter())
+                .filter(|read| read.method == method.item.identity)
+                .map(|read| jarde_java::report::ProvedCapturedOuterRead {
+                    method: method.item.identity.clone(),
+                    read_bci: read.bci,
+                    field_owner: child_name.clone(),
+                    field_name: capture_proof
+                        .as_ref()
+                        .expect("a captured read has a capture proof")
+                        .field_name
+                        .clone(),
+                    field_descriptor: format!("L{};", String::from_utf8_lossy(&root_name)),
+                    outer_internal_name: String::from_utf8_lossy(&root_name).into_owned(),
+                    outer_source_name: String::from_utf8_lossy(&root_name).replace('/', "."),
+                    constructor: capture_proof
+                        .as_ref()
+                        .expect("a captured read has a capture proof")
+                        .constructor
+                        .clone(),
+                    constructor_write_bci: capture_proof
+                        .as_ref()
+                        .expect("a captured read has a capture proof")
+                        .write_bci,
+                })
+                .collect();
+            let ast = child_asts
                 .iter()
                 .find(|(member, _, _, _)| member == &method.item.identity)
-            else {
+                .map(|(_, ast, _, _)| ast);
+            let Some(ast) = ast else {
                 return Err(Error::unsupported(
                     "anonymous_child_method_ast_missing",
                     "a presented child method has no same-run AST",
                 ));
             };
-            let body = jarde_java::report::emit_class_source_method_ast(ast, 4, budget).map_err(
-                |stop| {
+            let projected_ast = if captured.is_empty() {
+                ast.clone()
+            } else {
+                jarde_java::report::project_class_source_captured_outer_reads(
+                    ast,
+                    &captured,
+                    budget,
+                )
+                .map_err(|stop| {
+                    enum_projection_stop_error(
+                        stop,
+                        "anonymous interface capture projection",
+                        "anonymous_interface_ir_missing",
+                    )
+                })?
+                .ok_or_else(|| Error::unsupported(
+                    "anonymous_child_capture_ast_mismatch",
+                    "each proved capture read must map to exactly one matching field expression in the same-run AST",
+                ))?
+            };
+            let body = jarde_java::report::emit_class_source_method_ast(&projected_ast, 4, budget)
+                .map_err(|stop| {
                     enum_projection_stop_error(
                         stop,
                         "anonymous interface projection",
                         "anonymous_interface_ir_missing",
                     )
-                },
-            )?;
+                })?;
             let Some(text) = method.anonymous_projection_text(&body) else {
                 return Err(Error::unsupported(
                     "anonymous_child_method_unspellable",
@@ -2128,6 +2213,17 @@ impl Engine {
             child_method_texts.push(text);
         }
         let methods = child_method_texts.concat();
+        let hidden_outer_argument_bci = if capture_proof.is_some() {
+            Some(
+                jarde_java::report::class_source_anonymous_outer_argument_bci(root_ast)
+                    .ok_or_else(|| Error::unsupported(
+                        "anonymous_outer_argument_unproved",
+                        "the captured anonymous allocation does not pass exactly its receiver as the sole source argument",
+                    ))?,
+            )
+        } else {
+            None
+        };
         let Some(body) = jarde_java::report::emit_class_source_anonymous_return(
             root_ast,
             *root_bci,
@@ -2136,6 +2232,7 @@ impl Engine {
                 .expect("source type name was validated as UTF-8")
                 .replace('/', "."),
             &methods,
+            hidden_outer_argument_bci,
             budget,
         )
         .map_err(|stop| {
@@ -2315,12 +2412,14 @@ impl Engine {
             allocation_bci,
             constructor_bci,
             child_name.as_bytes(),
+            &root_name,
             child_facts
                 .methods
                 .iter()
                 .find(|m| m.name.raw().0 == b"<init>")
                 .map(|m| m.descriptor.raw().0.as_slice())
                 .unwrap_or_default(),
+            None,
             &mut child_execution,
             budget,
         )?;
@@ -2508,6 +2607,7 @@ impl Engine {
             allocation_type,
             &source_type,
             &method_texts.concat(),
+            None,
             budget,
         )
         .map_err(|stop| {
@@ -2562,13 +2662,17 @@ impl Engine {
         allocation_bci: u32,
         constructor_bci: u32,
         child_name: &[u8],
+        outer_name: &[u8],
         constructor_descriptor: &[u8],
+        capture: Option<&class_source::MemberCaptureProof>,
         execution: &mut ExecutionReport,
         budget: &mut Budget,
     ) -> Result<()> {
         use jarde_query::query::{XrefCertainty, XrefOperation, XrefTarget};
         use jarde_query::xref::{CandidateFilter, scan_candidates};
         use jarde_reader::model::SymbolRef;
+
+        let capture_descriptor = [b"L".as_slice(), outer_name, b";"].concat();
 
         let consumers = ConsumerSchema::new(
             1,
@@ -2698,6 +2802,34 @@ impl Engine {
                         constructor_uses += 1;
                         true
                     }
+                    (
+                        Location::Code { method, bci },
+                        XrefTarget::Symbol {
+                            value:
+                                SymbolRef::Field {
+                                    owner,
+                                    name,
+                                    descriptor,
+                                },
+                        },
+                    ) if capture.is_some_and(|proof| {
+                        owner.0 == child_name
+                            && name.0 == proof.field_name.as_bytes()
+                            && descriptor.0 == capture_descriptor
+                            && ((method == &proof.constructor
+                                && *bci == proof.write_bci
+                                && item.operation == XrefOperation::PutField
+                                && item.evidence.opcode == Some(0xb5))
+                                || proof.reads.iter().any(|read| {
+                                    read.method == *method
+                                        && read.bci == *bci
+                                        && item.operation == XrefOperation::GetField
+                                        && item.evidence.opcode == Some(0xb4)
+                                }))
+                    }) =>
+                    {
+                        true
+                    }
                     _ => false,
                 };
                 let allowed_nesting = matches!(
@@ -2716,9 +2848,22 @@ impl Engine {
                     nesting_uses += 1;
                 }
                 if item.certainty != XrefCertainty::Exact || !(allowed_code || allowed_nesting) {
+                    let location = match &item.source.location {
+                        Location::Code { method, bci } => {
+                            format!(
+                                "{}{}@{bci}",
+                                String::from_utf8_lossy(&method.name.0),
+                                String::from_utf8_lossy(&method.descriptor.0)
+                            )
+                        }
+                        other => format!("{other:?}"),
+                    };
                     return Err(Error::unsupported(
                         "anonymous_interface_child_additional_use",
-                        "the anonymous class has an unapproved selected-input owner use",
+                        format!(
+                            "the anonymous class has an unapproved selected-input owner use at {location}: {:?} {:?}",
+                            item.operation, item.target
+                        ),
                     ));
                 }
             }
@@ -10037,6 +10182,70 @@ fn prove_class_source_member_capture(
     match crate::member_inner::prove_family_capture(root_name, child, &irs, budget)? {
         Ok(proof) => Ok(Capture::Proved { proof }),
         Err(reason) => Ok(Capture::Refused { reason }),
+    }
+}
+
+/// Reuse the physical member-capture certificate for the one anonymous enclosing-instance field.
+/// The caller has already proved the anonymous owner and exact EnclosingMethod identity; this
+/// function proves only the field/constructor/SSA chain and never authorizes source projection by
+/// itself.
+fn prove_anonymous_capture(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    child_definition: &PhysicalDefinitionId,
+    outer_name: &[u8],
+    child: &jarde_reader::classfile::ClassMemberFacts,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<Option<class_source::MemberCaptureProof>> {
+    if child.stopped_at.is_some()
+        || child.fields.len() as u64 != child.field_count
+        || child.methods.len() as u64 != child.method_count
+        || child.fields.len() != 1
+        || child.methods.iter().any(|method| {
+            !method
+                .attributes
+                .iter()
+                .any(|attribute| attribute.name.raw().0 == b"Code")
+        })
+    {
+        return Ok(None);
+    }
+    let mut analyses = Vec::with_capacity(child.methods.len());
+    for method in &child.methods {
+        budget.poll()?;
+        let id = PhysicalMethodId {
+            owner: child_definition.clone(),
+            name: method.name.raw().clone(),
+            descriptor: method.descriptor.raw().clone(),
+        };
+        let analyzed = jarde_jvm::analyze_method_ir(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: id.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            budget,
+        )?;
+        merge_execution(execution, analyzed.report().execution.clone());
+        if analyzed.report().method != id
+            || !matches!(
+                analyzed.report().execution,
+                ExecutionReport::Complete { .. }
+            )
+        {
+            return Ok(None);
+        }
+        analyses.push((id, analyzed));
+    }
+    let irs: Vec<_> = analyses
+        .iter()
+        .map(|(id, analyzed)| (id.clone(), analyzed.ir()))
+        .collect();
+    match crate::member_inner::prove_family_capture(outer_name, child, &irs, budget)? {
+        Ok(proof) => Ok(Some(proof)),
+        Err(_) => Ok(None),
     }
 }
 

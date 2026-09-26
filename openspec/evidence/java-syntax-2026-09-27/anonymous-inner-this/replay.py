@@ -1,4 +1,5 @@
 from pathlib import Path
+import argparse
 import hashlib
 import os
 import shutil
@@ -9,6 +10,14 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[4]
 FIX = ROOT / "tests/fixtures/proved-java-structure/anonymous-inner-this"
 EVD = Path(__file__).resolve().parent
+parser = argparse.ArgumentParser()
+parser.add_argument("--expect-jarde", choices=("baseline", "fixed"), default="baseline")
+MODE = parser.parse_args().expect_jarde
+BASE_EVD = EVD
+EVD = BASE_EVD / "fixed" if MODE == "fixed" else BASE_EVD
+if MODE == "fixed" and EVD.exists():
+    shutil.rmtree(EVD)
+EVD.mkdir(parents=True, exist_ok=True)
 JADX_ROOT = Path(os.environ.get("JADX_ROOT", "/Users/lordcasser/workspace/testzone/jadx"))
 JADX = Path(os.environ.get("JADX", str(JADX_ROOT / "jadx-cli/build/install/jadx/bin/jadx")))
 EXPECTED = "true\n38\n"
@@ -101,7 +110,10 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt04-anonymous-inner-this-") as t
 
     # Build Jarde with an automatically removed, isolated Cargo target.
     build = run(["cargo", "build", "-p", "jarde-cli", "--locked"], cwd=ROOT, env=env)
-    save("jarde-build.log", result_text(build, work))
+    if build.returncode:
+        save("jarde-build.log", result_text(build, work))
+    else:
+        save("jarde-build.log", "$ cargo build -p jarde-cli --locked\nexit=0\n")
     if build.returncode:
         raise SystemExit(build.returncode)
     cli = work / "cargo-target/debug/jarde-cli"
@@ -129,24 +141,44 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt04-anonymous-inner-this-") as t
         compiled = subprocess.CompletedProcess([], 99, "", "one or more class-source requests failed\n")
     else:
         anonymous_source = (jarde_snapshot / "Inner$1.java").read_text()
-        if "this.this$0 = arg1;" not in anonymous_source or "Inner.this" in anonymous_source:
-            raise SystemExit("baseline changed: anonymous capture source shape differs")
-        family_facts = (EVD / "jarde-family-facts.txt").read_text()
-        if 'Inner$1: member_family.reason = "selected root has EnclosingMethod identity"' not in family_facts:
-            raise SystemExit("baseline changed: anonymous EnclosingMethod refusal is absent")
         jarde_classes = work / "jarde-classes"
         jarde_classes.mkdir()
-        compiled = run([*JAVAC, "--release", "8", "-g:none", "-d", str(jarde_classes), *map(str, jarde_sources)])
+        if MODE == "baseline":
+            if "this.this$0 = arg1;" not in anonymous_source or "Inner.this" in anonymous_source:
+                raise SystemExit("baseline changed: anonymous capture source shape differs")
+            family_facts = (EVD / "jarde-family-facts.txt").read_text()
+            if 'Inner$1: member_family.reason = "selected root has EnclosingMethod identity"' not in family_facts:
+                raise SystemExit("baseline changed: anonymous EnclosingMethod refusal is absent")
+            compiled = run([*JAVAC, "--release", "8", "-g:none", "-d", str(jarde_classes), *map(str, jarde_sources)])
+        else:
+            root_source = (jarde_snapshot / "Inner.java").read_text()
+            if "Inner.this" not in root_source or "this$0" in root_source or "Inner$1" in root_source:
+                raise SystemExit("fixed root source does not contain the complete lexical-this projection")
+            physical_child = anonymous_source
+            if "this$0" not in physical_child:
+                raise SystemExit("fixed mode unexpectedly changed the independent physical child report")
+            # The root is the complete source unit: javac itself recreates its anonymous class.
+            # The separate physical $1 report is inspected above but is not a second source unit.
+            compiled = run([*JAVAC, "--release", "8", "-g:none", "-d", str(jarde_classes), str(jarde_snapshot / "Inner.java")])
     save("jarde-javac.log", result_text(compiled, work))
     if compiled.returncode == 0:
         launched = run(["java", "-Xverify:all", "-cp", str(jarde_classes), "Inner"])
         save("jarde-run.log", result_text(launched, work))
         if launched.returncode or launched.stdout != EXPECTED:
             raise SystemExit("Jarde source ran but differed from expected output")
+        if MODE == "baseline":
+            raise SystemExit("baseline changed: Jarde unexpectedly compiled")
+    elif MODE == "fixed":
+        raise SystemExit("fixed Jarde root source did not compile under Java 8")
+    if MODE == "fixed":
+        if compiled.returncode != 0:
+            raise SystemExit("fixed Jarde root source failed Java 8 compilation")
+    elif compiled.returncode == 0:
         raise SystemExit("baseline changed: Jarde unexpectedly compiled")
-    if compiled.returncode != 1 or "this.this$0 = arg1;" not in compiled.stderr or "flexible constructors is a preview feature" not in compiled.stderr:
-        raise SystemExit("Jarde source failed for an unexpected Java 8 diagnostic")
-    save("jarde-run.log", "not run: complete Jarde source set failed javac --release 8 -g:none\n")
+    if MODE == "baseline":
+        if compiled.returncode != 1 or "this.this$0 = arg1;" not in compiled.stderr or "flexible constructors is a preview feature" not in compiled.stderr:
+            raise SystemExit("Jarde source failed for an unexpected Java 8 diagnostic")
+        save("jarde-run.log", "not run: complete Jarde source set failed javac --release 8 -g:none\n")
 
     versions = []
     for command in (("java", "-version"), ("javac", "-version"), ("rustc", "--version"), ("cargo", "--version")):

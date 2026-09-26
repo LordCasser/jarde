@@ -456,6 +456,17 @@ pub fn class_source_anonymous_return_site(
     })
 }
 
+/// The exact first argument BCI only when the direct-return allocation passes its own receiver as
+/// the sole argument. Used to erase an anonymous class's proved synthetic enclosing-instance ctor
+/// argument from the source-level interface creation.
+#[doc(hidden)]
+pub fn class_source_anonymous_outer_argument_bci(ast: &ClassSourceMethodAst) -> Option<u32> {
+    let (_, _, args) = class_source_direct_return_new(&ast.projection.program)?;
+    let [argument] = args else { return None };
+    matches!(argument.kind, crate::ast::ExprKind::Local(ref name) if name == "this")
+        .then(|| argument.origin.primary().bci())
+}
+
 /// Emits the retained statements of one selected physical class-source method. The supplied
 /// indentation is an adapter concern; the AST and physical method identity remain this run's.
 #[doc(hidden)]
@@ -472,6 +483,296 @@ pub fn emit_class_source_method_ast(
     )
 }
 
+/// Projects only the exact field-read expressions certified by a class-source capture proof.
+/// The AST is the same-run sidecar: this pass does not reanalyze or recover the method again.
+#[doc(hidden)]
+pub fn project_class_source_captured_outer_reads(
+    ast: &ClassSourceMethodAst,
+    reads: &[ProvedCapturedOuterRead],
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
+    if reads.is_empty() {
+        return Ok(None);
+    }
+    let method = &ast.projection.member;
+    let mut expected = std::collections::BTreeMap::new();
+    for read in reads {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(read.read_bci),
+        )?;
+        crate::stop::poll(budget, Some(read.read_bci))?;
+        if &read.method != method || expected.insert(read.read_bci, read).is_some() {
+            return Ok(None);
+        }
+    }
+    // Account for the complete AST before allocating its clone. The visitor below also
+    // charges each node as it examines it, so both peak memory and traversal work stay bounded.
+    let node_count = program_node_count(&ast.projection.program);
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        node_count,
+        ast.projection
+            .program
+            .stmts
+            .first()
+            .map(|stmt| stmt.origin.primary().bci()),
+    )?;
+    crate::stop::poll(
+        budget,
+        ast.projection
+            .program
+            .stmts
+            .first()
+            .map(|stmt| stmt.origin.primary().bci()),
+    )?;
+    let mut projection = (*ast.projection).clone();
+    let mut matched = std::collections::BTreeMap::<u32, usize>::new();
+    for statement in &mut projection.program.stmts {
+        project_captured_stmt(statement, &expected, &mut matched, budget)?;
+    }
+    if expected.keys().any(|bci| matched.get(bci) != Some(&1))
+        || matched
+            .iter()
+            .any(|(bci, count)| !expected.contains_key(bci) || *count != 1)
+    {
+        return Ok(None);
+    }
+    Ok(Some(ClassSourceMethodAst {
+        projection: std::sync::Arc::new(projection),
+    }))
+}
+
+fn project_captured_stmt(
+    stmt: &mut crate::ast::Stmt,
+    expected: &std::collections::BTreeMap<u32, &ProvedCapturedOuterRead>,
+    matched: &mut std::collections::BTreeMap<u32, usize>,
+    budget: &mut Budget,
+) -> Result<(), crate::stop::StopReason> {
+    use crate::ast::StmtKind;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        1,
+        Some(stmt.origin.primary().bci()),
+    )?;
+    crate::stop::poll(budget, Some(stmt.origin.primary().bci()))?;
+    match &mut stmt.kind {
+        StmtKind::Declare { value, .. } => value
+            .iter_mut()
+            .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?,
+        StmtKind::Assign { value, .. } | StmtKind::Expr(value) | StmtKind::Throw { value } => {
+            project_captured_expr(value, expected, matched, budget)?
+        }
+        StmtKind::FieldAssign {
+            receiver, value, ..
+        } => {
+            receiver
+                .iter_mut()
+                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+            project_captured_expr(value, expected, matched, budget)?;
+        }
+        StmtKind::IndexAssign {
+            array,
+            index,
+            value,
+            ..
+        } => {
+            project_captured_expr(array, expected, matched, budget)?;
+            project_captured_expr(index, expected, matched, budget)?;
+            project_captured_expr(value, expected, matched, budget)?;
+        }
+        StmtKind::ConstructorCall { args, .. } => args
+            .iter_mut()
+            .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?,
+        StmtKind::Return { value } => value
+            .iter_mut()
+            .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?,
+        StmtKind::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            project_captured_expr(cond, expected, matched, budget)?;
+            project_captured_stmts(then_body, expected, matched, budget)?;
+            project_captured_stmts(else_body, expected, matched, budget)?;
+        }
+        StmtKind::While { cond, body, .. } | StmtKind::DoWhile { cond, body, .. } => {
+            project_captured_expr(cond, expected, matched, budget)?;
+            project_captured_stmts(body, expected, matched, budget)?;
+        }
+        StmtKind::For {
+            init,
+            cond,
+            update,
+            body,
+            ..
+        } => {
+            project_captured_stmt(init, expected, matched, budget)?;
+            project_captured_expr(cond, expected, matched, budget)?;
+            project_captured_stmt(update, expected, matched, budget)?;
+            project_captured_stmts(body, expected, matched, budget)?;
+        }
+        StmtKind::ForEach { iterable, body, .. } => {
+            project_captured_expr(iterable, expected, matched, budget)?;
+            project_captured_stmts(body, expected, matched, budget)?;
+        }
+        StmtKind::Switch { value, arms } => {
+            project_captured_expr(value, expected, matched, budget)?;
+            for arm in arms {
+                project_captured_stmts(&mut arm.body, expected, matched, budget)?;
+            }
+        }
+        StmtKind::Try {
+            resources,
+            catches,
+            body,
+            finally_body,
+        } => {
+            for resource in resources {
+                project_captured_expr(&mut resource.value, expected, matched, budget)?;
+            }
+            project_captured_stmts(body, expected, matched, budget)?;
+            for catch in catches {
+                project_captured_stmts(&mut catch.body, expected, matched, budget)?;
+            }
+            if let Some(body) = finally_body {
+                project_captured_stmts(body, expected, matched, budget)?;
+            }
+        }
+        StmtKind::Synchronized { lock, body } => {
+            project_captured_expr(lock, expected, matched, budget)?;
+            project_captured_stmts(body, expected, matched, budget)?;
+        }
+        StmtKind::Break { .. } | StmtKind::Continue { .. } | StmtKind::Fallback { .. } => {}
+    }
+    Ok(())
+}
+
+fn project_captured_stmts(
+    stmts: &mut [crate::ast::Stmt],
+    expected: &std::collections::BTreeMap<u32, &ProvedCapturedOuterRead>,
+    matched: &mut std::collections::BTreeMap<u32, usize>,
+    budget: &mut Budget,
+) -> Result<(), crate::stop::StopReason> {
+    for stmt in stmts {
+        project_captured_stmt(stmt, expected, matched, budget)?;
+    }
+    Ok(())
+}
+
+fn project_captured_expr(
+    expr: &mut Expr,
+    expected: &std::collections::BTreeMap<u32, &ProvedCapturedOuterRead>,
+    matched: &mut std::collections::BTreeMap<u32, usize>,
+    budget: &mut Budget,
+) -> Result<(), crate::stop::StopReason> {
+    use crate::ast::ExprKind;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        1,
+        Some(expr.origin.primary().bci()),
+    )?;
+    crate::stop::poll(budget, Some(expr.origin.primary().bci()))?;
+    if let Some(read) = expected.get(&expr.origin.primary().bci()) {
+        if let ExprKind::Field { receiver, name } = &expr.kind
+            && matches!(receiver.kind, ExprKind::Local(ref local) if local == "this")
+            && name == &read.field_name
+        {
+            *matched.entry(read.read_bci).or_default() += 1;
+            expr.kind = ExprKind::QualifiedThis {
+                qualifier: read.outer_source_name.clone(),
+            };
+            expr.presented = Some(Type::Reference(read.outer_source_name.clone()));
+            return Ok(());
+        }
+        *matched.entry(read.read_bci).or_default() += 2;
+        return Ok(());
+    }
+    match &mut expr.kind {
+        ExprKind::InstanceOf { value, .. }
+        | ExprKind::PostIncrement { target: value }
+        | ExprKind::ArrayLength { array: value }
+        | ExprKind::Cast { value, .. }
+        | ExprKind::Not { value }
+        | ExprKind::Neg { value } => project_captured_expr(value, expected, matched, budget)?,
+        ExprKind::Call { receiver, args, .. } => {
+            receiver
+                .iter_mut()
+                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+            args.iter_mut()
+                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+        }
+        ExprKind::New {
+            qualifier, args, ..
+        } => {
+            qualifier
+                .iter_mut()
+                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+            args.iter_mut()
+                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+        }
+        ExprKind::Lambda { body, .. }
+        | ExprKind::MethodReference {
+            qualifier: body, ..
+        } => project_captured_expr(body, expected, matched, budget)?,
+        ExprKind::Field { receiver, .. } => {
+            project_captured_expr(receiver, expected, matched, budget)?
+        }
+        ExprKind::Index { array, index } => {
+            project_captured_expr(array, expected, matched, budget)?;
+            project_captured_expr(index, expected, matched, budget)?;
+        }
+        ExprKind::NewArray {
+            lengths,
+            initializers,
+            ..
+        } => {
+            lengths
+                .iter_mut()
+                .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+            if let Some(values) = initializers {
+                values
+                    .iter_mut()
+                    .try_for_each(|e| project_captured_expr(e, expected, matched, budget))?;
+            }
+        }
+        ExprKind::Binary { left, right, .. } => {
+            project_captured_expr(left, expected, matched, budget)?;
+            project_captured_expr(right, expected, matched, budget)?;
+        }
+        ExprKind::Conditional {
+            test,
+            when_true,
+            when_false,
+        } => {
+            project_captured_expr(test, expected, matched, budget)?;
+            project_captured_expr(when_true, expected, matched, budget)?;
+            project_captured_expr(when_false, expected, matched, budget)?;
+        }
+        ExprKind::Concat { parts } => parts.iter_mut().try_for_each(|part| {
+            project_captured_expr(&mut part.value, expected, matched, budget)
+        })?,
+        ExprKind::Local(_)
+        | ExprKind::Integer(_)
+        | ExprKind::Boolean(_)
+        | ExprKind::Long(_)
+        | ExprKind::Float(_)
+        | ExprKind::Double(_)
+        | ExprKind::Str(_)
+        | ExprKind::Null
+        | ExprKind::ClassLiteral { .. }
+        | ExprKind::Path(_)
+        | ExprKind::QualifiedThis { .. }
+        | ExprKind::Super { .. } => {}
+    }
+    Ok(())
+}
+
 /// Re-emits the proved root method while replacing only the exact direct-return allocation node
 /// with the staged anonymous class methods. The physical root AST owns the resulting return and
 /// allocation statement; the class-source writer never invents either expression.
@@ -482,6 +783,7 @@ pub fn emit_class_source_anonymous_return(
     allocation_type: &str,
     source_type: &str,
     methods: &str,
+    hidden_outer_argument_bci: Option<u32>,
     budget: &mut Budget,
 ) -> Result<Option<String>, crate::stop::StopReason> {
     let (text, matched) = crate::emit::emit_class_source_anonymous_return(
@@ -492,6 +794,7 @@ pub fn emit_class_source_anonymous_return(
         allocation_type,
         source_type,
         methods,
+        hidden_outer_argument_bci,
         "        ",
         budget,
     )?;
@@ -4171,5 +4474,173 @@ mod class_initializer_candidate_tests {
                 at: Some(7),
             }
         );
+    }
+}
+
+#[cfg(test)]
+mod anonymous_capture_projection_tests {
+    use super::*;
+    use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
+    use jarde_reader::{
+        budget::{Budget, CancellationToken, Limits},
+        model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant, SnapshotId,
+        },
+    };
+    use std::collections::BTreeMap;
+
+    fn ast(expression_bci: u32, field_name: &str, copies: usize) -> ClassSourceMethodAst {
+        let owner = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: SnapshotId("capture-test".to_owned()),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest("capture-test".to_owned()),
+                length: 1,
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let member = PhysicalMethodId {
+            owner,
+            name: JvmBytes(b"run".to_vec()),
+            descriptor: JvmBytes(b"()V".to_vec()),
+        };
+        let expression = || {
+            Expr::direct(
+                ExprKind::Field {
+                    receiver: Box::new(Expr::direct(ExprKind::Local("this".to_owned()), 2)),
+                    name: field_name.to_owned(),
+                },
+                expression_bci,
+            )
+        };
+        let stmts = (0..copies)
+            .map(|_| {
+                Stmt::new(
+                    StmtKind::Expr(expression()),
+                    OriginSet::new(crate::source_map::Origin::direct(expression_bci)),
+                )
+            })
+            .collect();
+        let program = build::Program {
+            stmts,
+            field_increments: BTreeMap::new(),
+            statements: copies,
+            ragged: false,
+            lambdas: Vec::new(),
+            accessors: Vec::new(),
+            array_constructor_sites: Vec::new(),
+            lambda_refusals: Vec::new(),
+            accessor_refusals: Vec::new(),
+            lambdas_presented: 0,
+            accessors_presented: 0,
+        };
+        ClassSourceMethodAst {
+            projection: std::sync::Arc::new(ClassSourceMethodAstSource { program, member }),
+        }
+    }
+
+    fn read(ast: &ClassSourceMethodAst, bci: u32, field_name: &str) -> ProvedCapturedOuterRead {
+        ProvedCapturedOuterRead {
+            method: ast.projection.member.clone(),
+            read_bci: bci,
+            field_owner: "Inner$1".to_owned(),
+            field_name: field_name.to_owned(),
+            field_descriptor: "LInner;".to_owned(),
+            outer_internal_name: "Inner".to_owned(),
+            outer_source_name: "Inner".to_owned(),
+            constructor: PhysicalMethodId {
+                owner: ast.projection.member.owner.clone(),
+                name: JvmBytes(b"<init>".to_vec()),
+                descriptor: JvmBytes(b"(LInner;)V".to_vec()),
+            },
+            constructor_write_bci: 2,
+        }
+    }
+
+    fn test_budget() -> Budget {
+        Budget::new(Limits {
+            ir_items: 100,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        })
+    }
+
+    #[test]
+    fn exact_same_run_capture_read_projects_and_preserves_its_bci() {
+        let ast = ast(12, "this$0", 1);
+        let proof = read(&ast, 12, "this$0");
+        let mut budget = test_budget();
+        let projected = project_class_source_captured_outer_reads(&ast, &[proof], &mut budget)
+            .unwrap()
+            .expect("one exact field expression projects");
+        assert!(matches!(
+            projected.projection.program.stmts[0].kind,
+            StmtKind::Expr(Expr { kind: ExprKind::QualifiedThis { ref qualifier }, .. }) if qualifier == "Inner"
+        ));
+        assert_eq!(
+            projected.projection.program.stmts[0].origin.primary().bci(),
+            12
+        );
+    }
+
+    #[test]
+    fn duplicate_or_wrong_capture_ast_matches_refuse_the_whole_projection() {
+        let duplicate = ast(12, "this$0", 2);
+        let proof = read(&duplicate, 12, "this$0");
+        let mut budget = test_budget();
+        assert!(
+            project_class_source_captured_outer_reads(&duplicate, &[proof], &mut budget)
+                .unwrap()
+                .is_none()
+        );
+
+        let mismatch = ast(12, "other", 1);
+        let proof = read(&mismatch, 12, "this$0");
+        let mut budget = test_budget();
+        assert!(
+            project_class_source_captured_outer_reads(&mismatch, &[proof], &mut budget)
+                .unwrap()
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn ast_walk_budget_and_cancellation_stop_before_returning_a_projection() {
+        let ast = ast(12, "this$0", 1);
+        let proof = read(&ast, 12, "this$0");
+        let mut limits = test_budget().limits().clone();
+        limits.ir_items = 1; // the handoff fits, but charging the whole AST before clone does not
+        let mut bounded = Budget::new(limits);
+        assert!(matches!(
+            project_class_source_captured_outer_reads(&ast, &[proof.clone()], &mut bounded),
+            Err(crate::stop::StopReason::Budget {
+                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                ..
+            })
+        ));
+        assert!(matches!(
+            ast.projection.program.stmts[0].kind,
+            StmtKind::Expr(Expr {
+                kind: ExprKind::Field { .. },
+                ..
+            })
+        ));
+
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut cancelled = Budget::with_cancellation_token(test_budget().limits().clone(), token);
+        assert!(matches!(
+            project_class_source_captured_outer_reads(&ast, &[proof], &mut cancelled),
+            Err(crate::stop::StopReason::Cancelled { .. })
+        ));
+        assert!(matches!(
+            ast.projection.program.stmts[0].kind,
+            StmtKind::Expr(Expr {
+                kind: ExprKind::Field { .. },
+                ..
+            })
+        ));
     }
 }
