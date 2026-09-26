@@ -34,11 +34,12 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 | 冻结差距已修复，单元待扩验 | DT-04 | [匿名类词法外围 `Inner.this` 对照](../java-syntax-2026-09-27/anonymous-inner-this/report.md)及[独立验收](../java-syntax-2026-09-27/anonymous-inner-this/acceptance-2026-09-27.md)：准确外围捕获、唯一分配点与同次 AST 读取获证后，根类原子输出匿名体中的 `Inner.this`；原/JADX/修后 Jarde 完整 Java 8 重编验证运行同为 `true`、`38`。第二分配、跨类引用、额外捕获和方法 fallback 拒绝，物理 child 仍可查询。其他词法接收者形态待扩验。 |
 | 已证差距，int 首切片已修复 | DT-11 | [枚举构造实参对照](../java-syntax-2026-09-27/enum-constructor-arguments/README.md)与[root 验收](../java-syntax-2026-09-27/enum-constructor-arguments/acceptance-2026-09-27.md)：literal、静态 int 字段及字段加 literal 已按同次 Code 和选定环境证明，原/JADX/Jarde 完整 Java 8 重编运行通过；String varargs 仍拒绝并独立留在该单元。JADX `TestEnums3` 的相关断言部分被注释，不能据此宣称测试覆盖所有形态。 |
 | JADX 未完成 | CF-17 | `TestTryWithResources` 的唯一目标标为 `@NotYetImplemented` |
-| 未测 | CF-01～16、CF-18、CF-20 | 18 个正向测试候选，见控制流账本；CF-01 的[布尔 eager 反例](../java-syntax-2026-09-27/cf01-eager-boolean/report.md)已单独三方重放：JADX 短路化改变运行结果，Jarde 保留原求值次数，整个单元仍待扩验 |
+| 部分已测、仍待扩验 | CF-01 | [真实短路 CFG 与否定组合](../java-syntax-2026-09-27/cf01-short-circuit/report.md)已证明固定小形态原/JADX/Jarde 完整 Java 8 源码重编及 `-Xverify:all` 运行一致；账本其余形态仍待测。[eager 反例](../java-syntax-2026-09-27/cf01-eager-boolean/report.md)单独记录 JADX 将布尔 `&` / `|` 错写成 `&&` / `||` 的副作用差异，Jarde 保留 eager 次数 |
+| 未测 | CF-02～16、CF-18、CF-20 | 17 个正向测试候选，见控制流账本 |
 | 未测 | DT-07～09、DT-12～29、DT-31 | 22 个候选，见声明/类型账本 |
 | 未测 | EM-01～03、EM-05～07、EM-10～12、EM-17～25、EM-27 | 19 个候选，见表达式/杂项账本 |
 
-当前有 **10 个冻结差距已修复但待扩验的单元、1 个已证差距（DT-11 的 int 首切片已修复、String varargs 尚待实现）、59 个未测的正向候选、1 个 JADX 未完成单元**。CF-19、DT-02、DT-04、DT-05、DT-06、DT-10 与 EM-04 的窄切片，以及先前 DT-01/03、EM-13 均已通过 root 独立验收；这不自动把各单元全部变体标为“已追平”。DT-11 的剩余 String varargs 已写独立 OpenSpec；任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
+当前有 **10 个冻结差距已修复但待扩验的单元、1 个已证差距（DT-11 的 int 首切片已修复、String varargs 尚待实现）、58 个未测的正向候选、1 个部分已测但仍待扩验单元（CF-01）、1 个 JADX 未完成单元**。CF-19、DT-02、DT-04、DT-05、DT-06、DT-10 与 EM-04 的窄切片，以及先前 DT-01/03、EM-13 均已通过 root 独立验收；这不自动把各单元全部变体标为“已追平”。DT-11 的剩余 String varargs 已写独立 OpenSpec；任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
 
 独立回归债务：[具名成员类 `Outer.super` 桥测试与基线投影不一致](outer-super-bridge-baseline-debt.md)，在未修改的 `36b57495` 已可复现；归入 EM-12/DT-03 后续核验，不混入 DT-02 静态成员类实现。
 

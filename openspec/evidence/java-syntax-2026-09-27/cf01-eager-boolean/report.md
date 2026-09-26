@@ -10,4 +10,4 @@
 
 JADX `IfCondition.simplifyCmpOp` 在 `jadx-core/src/main/java/jadx/core/dex/regions/conditions/IfCondition.java` 的 `ARITH` 分支只检查布尔类型和 `AND/OR` 操作符，就将两次求值的位运算改成 `IfCondition.Mode.AND/OR`。此处没有检查右操作数的调用副作用，也没有证明 CFG 本来短路。这个测试直接证明该改写在一条完整 Java 8 程序上改变行为。Jarde 的 `BinaryOp::BitwiseAnd/BitwiseOr` 与 `LogicalAnd/LogicalOr` 分离，当前输出保留执行次数；此子形态不需要新增恢复机制。
 
-CF-01 余下的真正短路 CFG、否定组合和多分支条件还需依固定账本逐项重放。后续实现不得以匹配 JADX 文本为目标把 eager `&`/`|` 改成短路运算；只有物理控制流确实跳过右侧求值时，才可输出 `&&`/`||`。此审计不修改 Jarde 代码。
+真实短路分支与否定组合的窄形态已在[独立对照](../cf01-short-circuit/report.md)三方重放：Jarde 与原始 class 的副作用次数和次序一致。该结果不为 eager `&`/`|` 提供短路改写依据，也不代表 CF-01 其余账本形态均已测；只有物理控制流证实右侧会被跳过时，才可输出 `&&`/`||`。

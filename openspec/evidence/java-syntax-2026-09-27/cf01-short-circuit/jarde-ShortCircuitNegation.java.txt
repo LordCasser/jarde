@@ -1,0 +1,105 @@
+// jarde: presentation of `probe/ShortCircuitNegation` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package probe;
+
+public final class ShortCircuitNegation extends java.lang.Object {
+    private static int calls;
+
+    private static java.lang.String trace;
+
+    public ShortCircuitNegation() {
+        // @method <init>()V
+        // @declaration a constructor of `probe.ShortCircuitNegation`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    private static boolean probe(char arg0, boolean arg1) {
+        // @method probe(CZ)Z
+        // @declaration a static method of `probe.ShortCircuitNegation`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        probe.ShortCircuitNegation.calls = probe.ShortCircuitNegation.calls + 1;
+        probe.ShortCircuitNegation.trace = new java.lang.StringBuilder().append(probe.ShortCircuitNegation.trace).append(arg0).toString();
+        return arg1;
+    }
+
+    public static boolean logicalAnd(boolean arg0, boolean arg1) {
+        // @method logicalAnd(ZZ)Z
+        // @declaration a static method of `probe.ShortCircuitNegation`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return probe('a', arg0) && probe('b', arg1);
+    }
+
+    public static boolean logicalOr(boolean arg0, boolean arg1) {
+        // @method logicalOr(ZZ)Z
+        // @declaration a static method of `probe.ShortCircuitNegation`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return probe('a', arg0) || probe('b', arg1);
+    }
+
+    public static boolean negatedAnd(boolean arg0, boolean arg1) {
+        // @method negatedAnd(ZZ)Z
+        // @declaration a static method of `probe.ShortCircuitNegation`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return !probe('a', arg0) || !probe('b', arg1);
+    }
+
+    public static boolean negatedOr(boolean arg0, boolean arg1) {
+        // @method negatedOr(ZZ)Z
+        // @declaration a static method of `probe.ShortCircuitNegation`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return !probe('a', arg0) && !probe('b', arg1);
+    }
+
+    public static boolean conditions(boolean arg0, boolean arg1, boolean arg2) {
+        // @method conditions(ZZZ)Z
+        // @declaration a static method of `probe.ShortCircuitNegation`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return probe('a', arg0) && probe('b', arg1) || probe('c', arg2);
+    }
+
+    public static boolean negatedConditions(boolean arg0, boolean arg1, boolean arg2) {
+        // @method negatedConditions(ZZZ)Z
+        // @declaration a static method of `probe.ShortCircuitNegation`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (!probe('a', arg0) || !probe('b', arg1)) && !probe('c', arg2);
+    }
+
+    public static boolean nested(boolean arg0, boolean arg1, boolean arg2) {
+        // @method nested(ZZZ)Z
+        // @declaration a static method of `probe.ShortCircuitNegation`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return probe('a', arg0) && (!probe('b', arg1) || probe('c', arg2));
+    }
+
+    public static boolean negated(boolean arg0, boolean arg1, boolean arg2) {
+        // @method negated(ZZZ)Z
+        // @declaration a static method of `probe.ShortCircuitNegation`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return !probe('a', arg0) || !probe('b', arg1) && probe('c', arg2);
+    }
+
+    public static void reset() {
+        // @method reset()V
+        // @declaration a static method of `probe.ShortCircuitNegation`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        probe.ShortCircuitNegation.calls = 0;
+        probe.ShortCircuitNegation.trace = "";
+        return;
+    }
+
+    public static java.lang.String observation() {
+        // @method observation()Ljava/lang/String;
+        // @declaration a static method of `probe.ShortCircuitNegation`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.lang.StringBuilder().append(probe.ShortCircuitNegation.calls).append(";").append(probe.ShortCircuitNegation.trace).toString();
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `probe.ShortCircuitNegation`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        probe.ShortCircuitNegation.trace = "";
+    }
+}

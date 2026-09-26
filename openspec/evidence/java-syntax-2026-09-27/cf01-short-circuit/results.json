@@ -1,0 +1,28 @@
+{
+  "class_sha256": "4f06a93060be2038694a26dea22f255da37b31dcdeb23af1f5a58bdbb117f4f4",
+  "javac": "javac 23.0.1",
+  "java_version": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)",
+  "jadx_commit": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "source_sha256": "7a23d0e71bac8c8244e44bbf8632edb0f19d67206cb769e20d6b19ad2ef88cdd",
+  "runner_sha256": "ea806ef6c20e701ef5306eb46c232d09486efc20ec7f51320b1f7de5b81f4aa7",
+  "javap_sha256": "3227b63bd6b0efbacc0b22db528a025960421fc0b7241f325f982a59982d0c85",
+  "original": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stdout_sha256": "1ceed97f4fdd8b0d0cf909f23976583e1e93e0a78c41b5fa642cd878964509bb",
+    "run_stdout_bytes": 2400
+  },
+  "jadx": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stdout_sha256": "1ceed97f4fdd8b0d0cf909f23976583e1e93e0a78c41b5fa642cd878964509bb",
+    "run_stdout_bytes": 2400
+  },
+  "jarde": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stdout_sha256": "1ceed97f4fdd8b0d0cf909f23976583e1e93e0a78c41b5fa642cd878964509bb",
+    "run_stdout_bytes": 2400
+  },
+  "all_stdout_equal": true
+}
