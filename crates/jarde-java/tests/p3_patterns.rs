@@ -4509,6 +4509,78 @@ fn class_source_enum_candidate_keeps_same_run_table_switch_and_receiver_identity
 }
 
 #[test]
+fn structured_finally_keeps_the_saved_return_inside_its_branch() {
+    let class = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
+    );
+    let mut essential_budget = Budget::new(limits());
+    let essential = recover_class_source_exact(
+        class,
+        b"run",
+        b"()I",
+        0,
+        jarde_java::RecoveryEvidenceRequest::essential(),
+        &mut essential_budget,
+    );
+    let mut all_budget = Budget::new(limits());
+    let all = recover_class_source_exact(
+        class,
+        b"run",
+        b"()I",
+        0,
+        jarde_java::RecoveryEvidenceRequest::all(),
+        &mut all_budget,
+    );
+    let text = &essential.report.text;
+    assert!(essential.report.produced(), "{text}");
+    assert_eq!(text, &all.report.text);
+    assert!(text.contains("try {"), "{text}");
+    assert!(text.contains("mark(1);"), "{text}");
+    assert!(
+        text.contains("throw ImplicitCleanup.TRY_FAILURE;"),
+        "{text}"
+    );
+    assert!(text.contains("= mark(2);"), "{text}");
+    assert!(text.contains("return self;"), "{text}");
+    assert_eq!(text.matches("cleanup();").count(), 1, "{text}");
+    for bci in [
+        0, 3, 6, 7, 10, 11, 14, 15, 16, 19, 20, 23, 24, 25, 26, 29, 30,
+    ] {
+        assert!(
+            !all.report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci} has no source in {text}"
+        );
+    }
+
+    let widened = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class"
+    );
+    let refused = present_exact(widened, b"run", b"()I", 0, Vec::new());
+    assert!(!refused.text.contains("finally {"), "{}", refused.text);
+    assert!(refused.text.contains("@bytecode"), "{}", refused.text);
+}
+
+#[test]
+fn straight_finally_reuses_its_guard_verdict_with_a_tight_budget() {
+    let class = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-24/finally-straight-cleanup-throws/FinallyStraightThrow.class"
+    );
+    let payload = analyze(class, b"run", b"()I");
+    let facts = facts_of_exact(class, b"run", b"()I", 0, Vec::new());
+    let members = members_of(class);
+    let mut full_budget = Budget::new(limits());
+    let full = recover_body(&payload, &facts, Some(&members), &mut full_budget);
+    assert!(full.produced(), "{}", full.text);
+    let steps = full_budget.usage().analysis_steps;
+    assert_eq!(steps, 52, "a second guard proof would consume this budget");
+    let mut tight_limits = limits();
+    tight_limits.analysis_steps = steps;
+    let mut tight_budget = Budget::new(tight_limits);
+    let tight = recover_body(&payload, &facts, Some(&members), &mut tight_budget);
+    assert_eq!(tight.text, full.text);
+}
+
+#[test]
 fn a_table_read_indexed_by_a_local_is_refused_and_the_subscript_is_written() {
     let (class, _code, statements) = enum_switch_class(false);
     let report = present_in(&class, b"method", b"(I)I", 1, Vec::new());
