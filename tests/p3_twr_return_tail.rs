@@ -1,6 +1,5 @@
-//! A one-resource fixture isolates the proved post-close `load; return` tail. Direct guard-plan
-//! coverage proves the positive shape; the method-level fixture documents that handler reuse of
-//! the returned local's physical slot still blocks presentation until lifetimes split by SSA ID.
+//! A one-resource fixture isolates the proved post-close `load; return` tail and the cleanup
+//! handler instructions that the recovered resource header reconstructs implicitly.
 
 use jarde::*;
 use std::slice;
@@ -115,19 +114,38 @@ fn code_span(bytes: &[u8], method_name: &str) -> (usize, usize) {
     panic!("{method_name}() Code attribute exists")
 }
 
-#[test]
-fn same_slot_handler_lifetime_keeps_method_presentation_red() {
-    let (text, recovered) = report(SAMPLE, "runSaved");
-    assert!(
-        !text.contains("try ("),
-        "the ambiguous slot lifetime is refused: {text}"
-    );
-    assert!(recovered.fallbacks.contains(&"jre_region_uncovered_blocks"));
-    assert!(text.contains("crosses a quoted fallback region"), "{text}");
+fn add_competing_cleanup_handler(bytes: &mut Vec<u8>, method_name: &str) {
+    let (code_start, code_end) = code_span(bytes, method_name);
+    let row_count = u16::from_be_bytes(bytes[code_end..code_end + 2].try_into().unwrap());
+    let entry = code_end + 2 + usize::from(row_count) * 8;
+    // In runSaved javac's primary close handler begins at BCI 21. Add a catch-all row for the
+    // protected body that targets that block under a new row identity. The TWR proof did not
+    // establish this row, so the candidate handler block must remain visible/refused.
+    let row = [0, 10, 0, 19, 0, 21, 0, 0];
+    bytes.splice(entry..entry, row);
+    bytes[code_end..code_end + 2].copy_from_slice(&(row_count + 1).to_be_bytes());
+    // The Code attribute's length is twelve bytes before its code array.
+    let length_at = code_start - 12;
+    let old_length = u32::from_be_bytes(bytes[length_at..length_at + 4].try_into().unwrap());
+    bytes[length_at..length_at + 4].copy_from_slice(&(old_length + 8).to_be_bytes());
 }
 
 #[test]
-fn tail_read_of_a_different_local_is_refused() {
+fn proved_cleanup_handler_accesses_do_not_hide_the_saved_return_local() {
+    let (text, recovered) = report(SAMPLE, "runSaved");
+    assert!(
+        text.contains("try ("),
+        "the proved handler is owned: {text}"
+    );
+    assert!(
+        text.contains("return local2;"),
+        "the saved return is in the body: {text}"
+    );
+    assert!(recovered.fallbacks.is_empty(), "{recovered:?}");
+}
+
+#[test]
+fn tail_read_of_a_different_local_is_not_misidentified_as_the_saved_body_value() {
     let mut bytes = SAMPLE.to_vec();
     let (start, end) = code_span(&bytes, "runSaved");
     let tail = bytes[start..end]
@@ -137,23 +155,37 @@ fn tail_read_of_a_different_local_is_refused() {
     bytes[start + tail] = 0x1a; // iload_0 reads the argument, not the body result slot.
     let (text, recovered) = report(&bytes, "runSaved");
     assert!(
-        !recovered.fallbacks.is_empty(),
-        "a nonmatching local is refused"
+        text.contains("try ("),
+        "the ordinary TWR still recovers: {text}"
     );
-    assert!(!text.contains("try ("), "{text}");
+    assert!(
+        text.contains("return arg0;"),
+        "the return's actual local is preserved: {text}"
+    );
+    assert!(!text.contains("return local2;"), "{text}");
+    assert!(recovered.fallbacks.is_empty(), "{recovered:?}");
 }
 
 #[test]
-fn same_slot_handler_reuse_is_left_to_local_scope_recovery() {
+fn one_resource_layout_keeps_its_saved_return_and_cleanup_owned() {
     let (text, recovered) = report(SAMPLE, "run");
     assert!(
-        recovered.fallbacks.contains(&"jre_region_uncovered_blocks"),
-        "the handler's reused local lifecycle remains unpresented: {recovered:?}"
+        text.contains("try ("),
+        "the exact cleanup ownership does not regress the direct-return layout: {text}"
     );
+    assert!(recovered.fallbacks.is_empty(), "{recovered:?}");
+}
+
+#[test]
+fn a_competing_exception_row_cannot_borrow_the_proved_cleanup_handler() {
+    let mut bytes = SAMPLE.to_vec();
+    add_competing_cleanup_handler(&mut bytes, "runSaved");
+    let (text, recovered) = report(&bytes, "runSaved");
     assert!(
         !text.contains("try ("),
-        "the ambiguous local scope remains refused: {text}"
+        "the unproved row is not hidden: {text}"
     );
+    assert!(!recovered.fallbacks.is_empty(), "{recovered:?}");
 }
 
 #[test]

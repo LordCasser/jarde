@@ -593,6 +593,50 @@ impl CatchClause {
 }
 
 impl Region {
+    /// The exact instruction starts of cleanup already proved and owned by resource guards.
+    pub(crate) fn twr_cleanup_bcis(&self, out: &mut Vec<u32>) {
+        match self {
+            Self::Sequence { regions } => {
+                for region in regions {
+                    region.twr_cleanup_bcis(out);
+                }
+            }
+            Self::If {
+                then_arm, else_arm, ..
+            } => {
+                then_arm.twr_cleanup_bcis(out);
+                else_arm.twr_cleanup_bcis(out);
+            }
+            Self::Switch { groups, .. } | Self::StringSwitch { groups, .. } => {
+                for group in groups {
+                    group.arm.twr_cleanup_bcis(out);
+                }
+            }
+            Self::Loop { body, .. } => {
+                for region in body {
+                    region.twr_cleanup_bcis(out);
+                }
+            }
+            Self::Guard { plan, .. } => {
+                if let crate::guard::Shape::Resources { cleanup, .. } = plan.shape() {
+                    out.extend(cleanup.iter().copied());
+                }
+            }
+            Self::Try { body, catches, .. } => {
+                body.twr_cleanup_bcis(out);
+                for clause in catches {
+                    clause.body.twr_cleanup_bcis(out);
+                }
+            }
+            Self::Straight { .. }
+            | Self::ShortCircuitValue { .. }
+            | Self::TwoExitReturn { .. }
+            | Self::LoopBreak { .. }
+            | Self::LoopContinue { .. }
+            | Self::Fallback { .. } => {}
+        }
+    }
+
     /// Every block this region claims, in the order the method runs them.
     pub fn blocks(&self) -> Vec<&CanonicalBlockId> {
         match self {

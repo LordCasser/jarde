@@ -568,7 +568,12 @@ fn declarations(
     budget: &mut Budget,
 ) -> Result<Declarations, StopReason> {
     let paths = region_paths(regions);
-    let uses = slot_uses(ssa, operations, reuse, &paths);
+    let mut twr_cleanup_bcis = Vec::new();
+    for region in regions {
+        region.twr_cleanup_bcis(&mut twr_cleanup_bcis);
+    }
+    let twr_cleanup = twr_cleanup_bcis.into_iter().collect::<BTreeSet<_>>();
+    let uses = slot_uses(ssa, operations, reuse, &paths, &twr_cleanup);
     let short_circuit_booleans = short_circuit_local_booleans(
         regions,
         canonical,
@@ -922,11 +927,15 @@ fn slot_uses(
     operations: &Operations,
     reuse: &reuse::Plan,
     paths: &RegionPaths,
+    twr_cleanup: &BTreeSet<u32>,
 ) -> BTreeMap<LocalVariable, Vec<SlotUse>> {
     let mut uses: BTreeMap<LocalVariable, Vec<SlotUse>> = BTreeMap::new();
     for block in ssa.blocks() {
         let path = paths.paths.get(block.block());
         for instruction in block.instructions() {
+            if twr_cleanup.contains(&instruction.bci()) {
+                continue;
+            }
             for (slot, value) in instruction.reads() {
                 if let Slot::Local(slot) = slot
                     && let Some(variable) = reuse.variable_at(*slot, instruction.bci())
