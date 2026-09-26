@@ -2324,6 +2324,19 @@ pub(crate) struct ConditionalValueProof {
     pub(crate) consumer_bci: u32,
 }
 
+/// A complete conditional tree whose leaves all feed the same stack Phi.
+///
+/// The map is keyed by the terminal canonical block of each straight leaf, so Phi input order
+/// never becomes branch order. This proof remains private to the recovery layer.
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct ConditionalTreeProof {
+    branch_bci: u32,
+    join: CanonicalBlockId,
+    phi: ValueId,
+    leaves: BTreeMap<CanonicalBlockId, ValueId>,
+    consumer_bci: u32,
+}
+
 /// Why one `Region::If` did not prove a two-arm stack value.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum ConditionalValueRefusal {
@@ -2903,6 +2916,484 @@ fn prove_conditional_value_with_forward(
         stack_depth,
         when_true,
         when_false,
+        consumer_bci,
+    }))
+}
+
+/// Proves a bounded `If` tree whose leaves all flow directly to one shared join.
+///
+/// This is intentionally separate from the established two-arm proof: that path keeps its
+/// existing shape and refusal behavior. Here every internal node must join at the root's join,
+/// every terminal leaf must be non-empty straight-line code, and all leaves must own exactly one
+/// predecessor edge and one distinct input of the same stack Phi.
+fn prove_conditional_tree_value(
+    region: &Region,
+    canonical: &CanonicalCfg,
+    ssa: &SsaTable,
+    operations: &Operations,
+    budget: &mut Budget,
+) -> Result<Option<ConditionalTreeProof>, StopReason> {
+    #[derive(Default)]
+    struct Shape {
+        branches: Vec<(
+            CanonicalBlockId,
+            u32,
+            Vec<CanonicalBlockId>,
+            Vec<CanonicalBlockId>,
+        )>,
+        leaves: Vec<Vec<CanonicalBlockId>>,
+        leaf_exits: BTreeSet<CanonicalBlockId>,
+        blocks: BTreeSet<CanonicalBlockId>,
+        entry_parent: BTreeMap<CanonicalBlockId, CanonicalBlockId>,
+    }
+
+    fn collect(
+        region: &Region,
+        join: &CanonicalBlockId,
+        parent: Option<&CanonicalBlockId>,
+        root: bool,
+        depth: usize,
+        shape: &mut Shape,
+        budget: &mut Budget,
+    ) -> Result<bool, StopReason> {
+        if depth > MAX_VALUE_DEPTH {
+            return Ok(false);
+        }
+        match region {
+            Region::Straight { blocks } if !blocks.is_empty() => {
+                charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    u64::try_from(blocks.len()).unwrap_or(u64::MAX),
+                    blocks.first().map(CanonicalBlockId::bci),
+                )?;
+                for (index, block) in blocks.iter().enumerate() {
+                    poll(budget, Some(block.bci()))?;
+                    charge(
+                        budget,
+                        CountedBudgetDimension::IrItems,
+                        1,
+                        Some(block.bci()),
+                    )?;
+                    if !shape.blocks.insert(block.clone()) {
+                        return Ok(false);
+                    }
+                    let expected = if index == 0 {
+                        parent
+                    } else {
+                        Some(&blocks[index - 1])
+                    };
+                    if let Some(expected) = expected {
+                        if shape
+                            .entry_parent
+                            .insert(block.clone(), expected.clone())
+                            .is_some()
+                        {
+                            return Ok(false);
+                        }
+                    }
+                }
+                shape
+                    .leaf_exits
+                    .insert(blocks.last().expect("nonempty leaf").clone());
+                shape.leaves.push(blocks.clone());
+                Ok(true)
+            }
+            Region::If {
+                prefix,
+                branch,
+                branch_bci,
+                then_arm,
+                else_arm,
+                join: Some(node_join),
+            } if node_join == join && (root || prefix.is_empty()) => {
+                poll(budget, Some(*branch_bci))?;
+                charge(
+                    budget,
+                    CountedBudgetDimension::IrItems,
+                    1,
+                    Some(*branch_bci),
+                )?;
+                if !shape.blocks.insert(branch.clone()) {
+                    return Ok(false);
+                }
+                if let Some(parent) = parent {
+                    if shape
+                        .entry_parent
+                        .insert(branch.clone(), parent.clone())
+                        .is_some()
+                    {
+                        return Ok(false);
+                    }
+                }
+                let Some(then_entry) = region_entry(then_arm) else {
+                    return Ok(false);
+                };
+                let Some(else_entry) = region_entry(else_arm) else {
+                    return Ok(false);
+                };
+                if then_entry == branch || else_entry == branch {
+                    return Ok(false);
+                }
+                shape.branches.push((
+                    branch.clone(),
+                    *branch_bci,
+                    vec![then_entry.clone(), else_entry.clone()],
+                    prefix.clone(),
+                ));
+                Ok(collect(
+                    then_arm,
+                    join,
+                    Some(branch),
+                    false,
+                    depth + 1,
+                    shape,
+                    budget,
+                )? && collect(
+                    else_arm,
+                    join,
+                    Some(branch),
+                    false,
+                    depth + 1,
+                    shape,
+                    budget,
+                )?)
+            }
+            _ => Ok(false),
+        }
+    }
+
+    fn region_entry(region: &Region) -> Option<&CanonicalBlockId> {
+        match region {
+            Region::Straight { blocks } => blocks.first(),
+            Region::If { branch, .. } => Some(branch),
+            _ => None,
+        }
+    }
+
+    let Region::If {
+        branch_bci,
+        join: Some(join),
+        then_arm,
+        else_arm,
+        ..
+    } = region
+    else {
+        return Ok(None);
+    };
+    if !matches!(then_arm.as_ref(), Region::If { .. })
+        && !matches!(else_arm.as_ref(), Region::If { .. })
+    {
+        return Ok(None);
+    }
+    let mut shape = Shape::default();
+    if !collect(region, join, None, true, 0, &mut shape, budget)?
+        || shape.leaves.len() < 3
+        || shape.branches.len() + shape.leaves.iter().map(Vec::len).sum::<usize>()
+            != shape.blocks.len()
+    {
+        return Ok(None);
+    }
+
+    // One charged graph walk builds both adjacency indexes and validates the complete subtree
+    // closure. Later checks use these indexes rather than rescanning all E edges for every node.
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(canonical.edges().len()).unwrap_or(u64::MAX),
+        Some(*branch_bci),
+    )?;
+    let mut outgoing: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
+        BTreeMap::new();
+    let mut incoming: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
+        BTreeMap::new();
+    let root_branch = match region {
+        Region::If { branch, .. } => branch,
+        _ => unreachable!("the candidate root is an if"),
+    };
+    let mut expected_join_predecessors = BTreeSet::new();
+    for edge in canonical.edges() {
+        poll(budget, Some(edge.from().bci()))?;
+        let from_owned = shape.blocks.contains(edge.from());
+        let to_owned = shape.blocks.contains(edge.to());
+        if from_owned {
+            outgoing
+                .entry(edge.from().clone())
+                .or_default()
+                .push((edge.kind(), edge.to().clone()));
+        }
+        if to_owned || edge.to() == join {
+            incoming
+                .entry(edge.to().clone())
+                .or_default()
+                .push((edge.kind(), edge.from().clone()));
+        }
+        if (from_owned || to_owned) && edge.kind() != CanonicalEdgeKind::Normal {
+            return Ok(None);
+        }
+        if to_owned && edge.to() != root_branch {
+            if shape.entry_parent.get(edge.to()) != Some(edge.from()) {
+                return Ok(None);
+            }
+        }
+        if from_owned {
+            if edge.kind() != CanonicalEdgeKind::Normal {
+                return Ok(None);
+            }
+            if shape.leaf_exits.contains(edge.from()) && edge.to() == join {
+                expected_join_predecessors.insert(edge.from().clone());
+            } else if edge.to() == join {
+                return Ok(None);
+            }
+        }
+        if edge.to() == join {
+            if edge.kind() != CanonicalEdgeKind::Normal || !from_owned {
+                return Ok(None);
+            }
+        }
+        if edge.to() == root_branch && edge.kind() != CanonicalEdgeKind::Normal {
+            return Ok(None);
+        }
+    }
+    if expected_join_predecessors.len() != shape.leaves.len() {
+        return Ok(None);
+    }
+
+    // The branch target is the false arm; its fall-through is the true arm. Check every branch
+    // against its actual decoded target so tree traversal order cannot silently swap a condition.
+    for (branch, bci, entries, _prefix) in &shape.branches {
+        poll(budget, Some(*bci))?;
+        let Some((_, taken_target)) = operations.get(*bci).and_then(Operation::comparison) else {
+            return Ok(None);
+        };
+        let Some(branch_successors) = outgoing.get(branch) else {
+            return Ok(None);
+        };
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(branch_successors.len()).unwrap_or(u64::MAX),
+            Some(*bci),
+        )?;
+        if branch_successors.len() != 2
+            || branch_successors
+                .iter()
+                .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
+            || !branch_successors.iter().any(|(_, to)| to == &entries[0])
+            || !branch_successors.iter().any(|(_, to)| to == &entries[1])
+            || entries[0] == entries[1]
+            || entries[1].bci() != taken_target
+            || entries[1].path() != branch.path()
+        {
+            return Ok(None);
+        }
+        for prefix in _prefix {
+            if prefix == branch || shape.blocks.contains(prefix) {
+                return Ok(None);
+            }
+        }
+    }
+
+    for leaf in &shape.leaves {
+        for (index, block) in leaf.iter().enumerate() {
+            let expected = leaf.get(index + 1).unwrap_or(join);
+            let Some(outgoing) = outgoing.get(block) else {
+                return Ok(None);
+            };
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                u64::try_from(outgoing.len()).unwrap_or(u64::MAX),
+                Some(block.bci()),
+            )?;
+            if outgoing.len() != 1
+                || outgoing[0].0 != CanonicalEdgeKind::Normal
+                || &outgoing[0].1 != expected
+            {
+                return Ok(None);
+            }
+        }
+    }
+    let actual_join_predecessors: BTreeSet<_> = incoming
+        .get(join)
+        .into_iter()
+        .flatten()
+        .filter(|(kind, _)| *kind == CanonicalEdgeKind::Normal)
+        .map(|(_, from)| from.clone())
+        .collect();
+    if actual_join_predecessors != expected_join_predecessors {
+        return Ok(None);
+    }
+
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(ssa.phis().len()).unwrap_or(u64::MAX),
+        Some(*branch_bci),
+    )?;
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            ssa.phis()
+                .iter()
+                .map(|phi| phi.inputs().len())
+                .sum::<usize>(),
+        )
+        .unwrap_or(u64::MAX)
+        .saturating_mul(3),
+        Some(*branch_bci),
+    )?;
+    let stack_phis: Vec<_> = ssa
+        .phis()
+        .iter()
+        .filter(|phi| phi.block() == join && matches!(phi.slot(), Slot::Stack(_)))
+        .collect();
+    let varying: Vec<_> = stack_phis
+        .iter()
+        .copied()
+        .filter(|phi| {
+            phi.inputs()
+                .first()
+                .is_none_or(|first| phi.inputs().iter().any(|input| input != first))
+        })
+        .collect();
+    let [phi] = varying.as_slice() else {
+        return Ok(None);
+    };
+    if phi.inputs().len() != shape.leaves.len()
+        || stack_phis.iter().any(|other| {
+            other.value() != phi.value()
+                && other
+                    .inputs()
+                    .iter()
+                    .any(|input| Some(input) != other.inputs().first())
+        })
+    {
+        return Ok(None);
+    }
+    let Slot::Stack(_) = phi.slot() else {
+        return Ok(None);
+    };
+    let phi_value = ssa.value(phi.value());
+    if phi_value.replaced_by().is_some()
+        || !matches!(phi_value.def(), Definition::Phi { block, slot } if block == join && *slot == phi.slot())
+    {
+        return Ok(None);
+    }
+    let mut leaves = BTreeMap::new();
+    let mut input_values = BTreeSet::new();
+    let mut terminal_values: BTreeMap<ValueId, Vec<CanonicalBlockId>> = BTreeMap::new();
+    let membership_size = shape.leaves.iter().map(Vec::len).sum::<usize>();
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(membership_size).unwrap_or(u64::MAX),
+        Some(*branch_bci),
+    )?;
+    let terminal_membership: BTreeMap<_, BTreeSet<_>> = shape
+        .leaves
+        .iter()
+        .map(|leaf| {
+            (
+                leaf.last().expect("nonempty leaf").clone(),
+                leaf.iter().cloned().collect(),
+            )
+        })
+        .collect();
+    for leaf in &shape.leaves {
+        let terminal = leaf.last().expect("nonempty leaf");
+        let Some(block) = ssa.block(terminal) else {
+            return Ok(None);
+        };
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(block.exit().len()).unwrap_or(u64::MAX),
+            Some(terminal.bci()),
+        )?;
+        for (slot, value) in block.exit() {
+            if *slot == phi.slot() {
+                terminal_values
+                    .entry(*value)
+                    .or_default()
+                    .push(terminal.clone());
+            }
+        }
+    }
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(phi.inputs().len()).unwrap_or(u64::MAX),
+        Some(*branch_bci),
+    )?;
+    for input in phi.inputs() {
+        let PhiInput::Value(value) = input else {
+            return Ok(None);
+        };
+        if !input_values.insert(*value) {
+            return Ok(None);
+        }
+        let Some([terminal]) = terminal_values.get(value).map(Vec::as_slice) else {
+            return Ok(None);
+        };
+        let Definition::Instruction { block, .. } = ssa.value(*value).def() else {
+            return Ok(None);
+        };
+        if !terminal_membership.contains_key(terminal) {
+            return Ok(None);
+        }
+        if !terminal_membership
+            .get(terminal)
+            .is_some_and(|members| members.contains(block))
+            || ssa.value(*value).uses().len() != 1
+            || ssa.value(*value).uses()[0].block() != join
+            || ssa.value(*value).uses()[0].bci().is_some()
+        {
+            return Ok(None);
+        }
+        leaves.insert(terminal.clone(), *value);
+    }
+    if leaves.len() != shape.leaves.len() || input_values.len() != shape.leaves.len() {
+        return Ok(None);
+    }
+    let [phi_use] = phi_value.uses() else {
+        return Ok(None);
+    };
+    let Some(consumer_bci) = phi_use.bci() else {
+        return Ok(None);
+    };
+    let Some(join_block) = ssa.block(join) else {
+        return Ok(None);
+    };
+    let consumer_scan = join_block
+        .instructions()
+        .iter()
+        .map(|instruction| instruction.reads().len().saturating_add(1))
+        .sum::<usize>();
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(consumer_scan).unwrap_or(u64::MAX),
+        Some(consumer_bci),
+    )?;
+    if phi_use.block() != join
+        || join_block
+            .instructions()
+            .iter()
+            .filter(|instruction| instruction.bci() == consumer_bci)
+            .flat_map(|instruction| instruction.reads().iter())
+            .filter(|(_, value)| *value == phi.value())
+            .count()
+            != 1
+    {
+        return Ok(None);
+    }
+    Ok(Some(ConditionalTreeProof {
+        branch_bci: *branch_bci,
+        join: join.clone(),
+        phi: phi.value(),
+        leaves,
         consumer_bci,
     }))
 }
@@ -6809,6 +7300,29 @@ impl Builder<'_> {
                 branch_bci,
                 ..
             } => {
+                if let Some(proof) = prove_conditional_tree_value(
+                    region,
+                    self.canonical,
+                    self.ssa,
+                    self.operations,
+                    self.budget,
+                )? {
+                    match self.build_conditional_tree_value(&proof, region) {
+                        Ok(expression) => {
+                            self.conditional_values.insert(proof.phi, expression);
+                            self.conditional_branches
+                                .insert(proof.branch_bci, ConditionalBranchPlan::Folded(proof.phi));
+                        }
+                        Err(ConditionalValueBuildError::Refused(reason)) => {
+                            self.conditional_branches.insert(
+                                proof.branch_bci,
+                                ConditionalBranchPlan::Refused(reason, None),
+                            );
+                        }
+                        Err(ConditionalValueBuildError::Stop(stop)) => return Err(stop),
+                    }
+                    return Ok(());
+                }
                 match prove_conditional_value(
                     region,
                     self.canonical,
@@ -7449,6 +7963,179 @@ impl Builder<'_> {
                                 origin = origin.plus_derived(Origin::derived(instruction.bci()));
                             }
                         }
+                    }
+                }
+            }
+        }
+        Ok(Expr::new(expression.kind, origin).presenting(ty))
+    }
+
+    /// Builds every condition and leaf into one expression before anything is published.
+    fn build_conditional_tree_value(
+        &mut self,
+        proof: &ConditionalTreeProof,
+        root: &Region,
+    ) -> Result<Expr, ConditionalValueBuildError> {
+        fn build(
+            builder: &mut Builder<'_>,
+            proof: &ConditionalTreeProof,
+            region: &Region,
+            all_sources: &mut BTreeSet<u32>,
+            depth: usize,
+        ) -> Result<Expr, ConditionalValueBuildError> {
+            if depth > MAX_VALUE_DEPTH {
+                return Err(ConditionalValueBuildError::Refused(
+                    "the conditional tree exceeds the expression depth bound".into(),
+                ));
+            }
+            match region {
+                Region::Straight { blocks } => {
+                    let terminal = blocks.last().ok_or_else(|| {
+                        ConditionalValueBuildError::Refused(
+                            "a conditional tree contains an empty value leaf".into(),
+                        )
+                    })?;
+                    let value = *proof.leaves.get(terminal).ok_or_else(|| {
+                        ConditionalValueBuildError::Refused(
+                            "a conditional tree leaf has no proved Phi input".into(),
+                        )
+                    })?;
+                    let mut dependencies = BTreeSet::new();
+                    builder.conditional_dependencies(
+                        value,
+                        &mut dependencies,
+                        &mut BTreeSet::new(),
+                        0,
+                    )?;
+                    builder.conditional_arm_is_expression(
+                        region,
+                        &dependencies,
+                        proof.branch_bci,
+                    )?;
+                    all_sources.extend(dependencies);
+                    builder
+                        .render_value(value, proof.consumer_bci, 0)
+                        .map_err(ConditionalValueBuildError::from)
+                }
+                Region::If {
+                    prefix,
+                    branch_bci,
+                    then_arm,
+                    else_arm,
+                    join: Some(join),
+                    ..
+                } if join == &proof.join
+                    && (prefix.is_empty() || *branch_bci == proof.branch_bci) =>
+                {
+                    poll(builder.budget, Some(*branch_bci))
+                        .map_err(ConditionalValueBuildError::Stop)?;
+                    charge(
+                        builder.budget,
+                        CountedBudgetDimension::IrItems,
+                        1,
+                        Some(*branch_bci),
+                    )
+                    .map_err(ConditionalValueBuildError::Stop)?;
+                    if *branch_bci != proof.branch_bci {
+                        let instruction = builder
+                            .instructions
+                            .get(branch_bci)
+                            .copied()
+                            .ok_or_else(|| {
+                                ConditionalValueBuildError::Refused(format!(
+                                    "the nested test at BCI {branch_bci} has no SSA instruction"
+                                ))
+                            })?;
+                        let mut test_dependencies = BTreeSet::new();
+                        for (_, operand) in stack_operands(instruction) {
+                            builder.conditional_dependencies(
+                                operand,
+                                &mut test_dependencies,
+                                &mut BTreeSet::new(),
+                                0,
+                            )?;
+                        }
+                        let test_block_id = builder.block_of.get(branch_bci).ok_or_else(|| {
+                            ConditionalValueBuildError::Refused(format!(
+                                "the nested test at BCI {branch_bci} has no canonical block"
+                            ))
+                        })?;
+                        let test_block = builder.ssa.block(test_block_id).ok_or_else(|| {
+                            ConditionalValueBuildError::Refused(format!(
+                                "the nested test at BCI {branch_bci} has no SSA block"
+                            ))
+                        })?;
+                        for test_instruction in test_block.instructions() {
+                            let bci = test_instruction.bci();
+                            poll(builder.budget, Some(bci))
+                                .map_err(ConditionalValueBuildError::Stop)?;
+                            charge(
+                                builder.budget,
+                                CountedBudgetDimension::IrItems,
+                                1,
+                                Some(bci),
+                            )
+                            .map_err(ConditionalValueBuildError::Stop)?;
+                            if bci != *branch_bci
+                                && !test_dependencies.contains(&bci)
+                                && !matches!(builder.operations.get(bci), Some(Operation::Transfer))
+                            {
+                                return Err(ConditionalValueBuildError::Refused(format!(
+                                    "the nested test contains an independent instruction at BCI {bci}"
+                                )));
+                            }
+                        }
+                        all_sources.extend(test_dependencies);
+                    }
+                    let when_true = build(builder, proof, then_arm, all_sources, depth + 1)?;
+                    let when_false = build(builder, proof, else_arm, all_sources, depth + 1)?;
+                    let test = builder
+                        .test_expr(*branch_bci, false)?
+                        .derived_from(*branch_bci);
+                    all_sources.extend(test.origin.bcis());
+                    let expression = Expr::direct(
+                        ExprKind::Conditional {
+                            test: Box::new(test),
+                            when_true: Box::new(when_true),
+                            when_false: Box::new(when_false),
+                        },
+                        proof.consumer_bci,
+                    );
+                    if expression.presented.is_none() {
+                        return Err(ConditionalValueBuildError::Refused(format!(
+                            "the conditional tree at BCI {} does not have a Java conditional type this run can prove",
+                            proof.consumer_bci
+                        )));
+                    }
+                    Ok(expression)
+                }
+                _ => Err(ConditionalValueBuildError::Refused(
+                    "the conditional tree changed shape after its proof".into(),
+                )),
+            }
+        }
+
+        let mut sources = BTreeSet::new();
+        let expression = build(self, proof, root, &mut sources, 0)?;
+        let Some(ty) = expression.presented.clone() else {
+            return Err(ConditionalValueBuildError::Refused(format!(
+                "the conditional tree at BCI {} has no proven Java type",
+                proof.consumer_bci
+            )));
+        };
+        let mut origin = expression.origin;
+        for bci in sources {
+            origin = origin.plus_derived(Origin::derived(bci));
+        }
+        // Keep structural transfer BCIs as evidence even though they do not become expressions.
+        for region_block in root.blocks() {
+            if let Some(block) = self.ssa.block(region_block) {
+                for instruction in block.instructions() {
+                    if matches!(
+                        self.operations.get(instruction.bci()),
+                        Some(Operation::Transfer)
+                    ) {
+                        origin = origin.plus_derived(Origin::derived(instruction.bci()));
                     }
                 }
             }
@@ -19219,6 +19906,21 @@ mod tests {
 
     const TERNARY_CORE_FIXTURE: &[u8] =
         include_bytes!("../../../tests/fixtures/p3-conditional-values/v8/TernaryCore.class");
+    const NESTED_CONDITIONAL_FIXTURE: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/NestedConditional.class"
+    );
+    const NESTED_TREE_FIXTURE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-conditional-values/nested-tree/NestedTree.class"
+    );
+    const NESTED_UNKNOWN_TYPE_FIXTURE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-conditional-values/nested-type/NestedType.class"
+    );
+    const NESTED_INDEPENDENT_EFFECT_FIXTURE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-conditional-values/nested-independent-effect/NestedIndependentEffect.class"
+    );
+    const NESTED_REPEATED_USE_FIXTURE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-conditional-values/nested-repeated-use/NestedRepeatedUse.class"
+    );
     const TERNARY_VALUES_FIXTURE: &[u8] =
         include_bytes!("../../../tests/fixtures/p3-conditional-values/v8/TernaryValues.class");
     const CONDITIONAL_SWITCH_FIXTURE: &[u8] = include_bytes!(
@@ -19303,6 +20005,40 @@ mod tests {
         crate::region::Recovered,
         crate::report::RecoveryReport,
         ShortCircuitValueAttempt,
+    ) {
+        let (region, ordinary, producer_bcis, recovered, report, short, _) =
+            fixture_value_attempts_with_tree(class, name, descriptor, short_region);
+        (region, ordinary, producer_bcis, recovered, report, short)
+    }
+
+    fn fixture_conditional_tree_attempt(
+        class: &[u8],
+        name: &str,
+        descriptor: &str,
+    ) -> (
+        Region,
+        ConditionalValueAttempt,
+        crate::report::RecoveryReport,
+        Option<ConditionalTreeProof>,
+    ) {
+        let (region, ordinary, _, _, report, _, tree) =
+            fixture_value_attempts_with_tree(class, name, descriptor, None);
+        (region, ordinary, report, tree)
+    }
+
+    fn fixture_value_attempts_with_tree(
+        class: &[u8],
+        name: &str,
+        descriptor: &str,
+        short_region: Option<&Region>,
+    ) -> (
+        Region,
+        ConditionalValueAttempt,
+        Option<(u32, u32)>,
+        crate::region::Recovered,
+        crate::report::RecoveryReport,
+        ShortCircuitValueAttempt,
+        Option<ConditionalTreeProof>,
     ) {
         use jarde_jvm::engine::analyze_method_ir;
         use jarde_jvm::environment::ResolutionEnvironment;
@@ -19418,6 +20154,37 @@ mod tests {
         let candidate = candidate.clone();
         let attempt = prove_conditional_value(&candidate, canonical, ssa, &operations, &mut budget)
             .expect("the bounded conditional proof completes");
+        let tree_attempt =
+            prove_conditional_tree_value(&candidate, canonical, ssa, &operations, &mut budget)
+                .expect("the bounded conditional tree proof completes");
+        if name == "run" {
+            if let Region::If {
+                join: Some(join), ..
+            } = &candidate
+            {
+                let stack_phis: Vec<_> = ssa
+                    .phis()
+                    .iter()
+                    .filter(|phi| {
+                        phi.block() == join
+                            && matches!(phi.slot(), Slot::Stack(_))
+                            && phi.inputs().len() == 3
+                    })
+                    .collect::<Vec<_>>();
+                let [phi] = stack_phis.as_slice() else {
+                    panic!("the repeated-use fixture has one three-input stack Phi at {join:?}");
+                };
+                assert_eq!(join.bci(), 21);
+                let uses = ssa.value(phi.value()).uses();
+                assert_eq!(uses.len(), 3);
+                assert_eq!(
+                    uses.iter().map(|usage| usage.bci()).collect::<Vec<_>>(),
+                    vec![None, None, Some(30)],
+                    "the joined value has two carried-phi uses and one final consumer"
+                );
+                assert!(tree_attempt.is_none());
+            }
+        }
         let short_candidate = recovered
             .regions
             .iter()
@@ -19451,6 +20218,10 @@ mod tests {
                 2
             } else if descriptor == "(II)Z" {
                 2
+            } else if descriptor == "(ILjava/lang/StringBuilder;)I" {
+                2
+            } else if descriptor == "(ILNestedType$Left;LNestedType$Right;)Ljava/lang/Object;" {
+                3
             } else {
                 u16::from(!descriptor.starts_with("()"))
             },
@@ -19471,6 +20242,7 @@ mod tests {
             recovered,
             report,
             short_attempt,
+            tree_attempt,
         )
     }
 
@@ -19530,6 +20302,142 @@ mod tests {
                 "{name}: {attempt:?}"
             );
         }
+    }
+
+    #[test]
+    fn a_three_leaf_nested_conditional_is_published_as_one_value() {
+        let (_, attempt, report, tree_proof) =
+            fixture_conditional_tree_attempt(NESTED_CONDITIONAL_FIXTURE, "nested", "(I)I");
+        assert!(
+            matches!(attempt, ConditionalValueAttempt::Refused(_)),
+            "the old two-arm proof must remain narrow: {attempt:?}"
+        );
+        assert!(
+            report.text.contains("?"),
+            "the three-leaf value was not rendered as a conditional: {}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("stack depth 0 is the entry state"),
+            "the unresolved entry fallback leaked through: {}",
+            report.text
+        );
+        assert!(
+            tree_proof.is_some(),
+            "the common-join tree proof is missing"
+        );
+    }
+
+    #[test]
+    fn nested_conditionals_in_the_false_arm_and_four_leaf_trees_are_supported() {
+        let (_, attempt, report, tree_proof) =
+            fixture_conditional_tree_attempt(NESTED_TREE_FIXTURE, "falseNested", "(I)I");
+        assert!(
+            matches!(attempt, ConditionalValueAttempt::Refused(_)),
+            "the established two-arm proof must remain unchanged: {attempt:?}"
+        );
+        assert!(report.text.contains("?"), "{}", report.text);
+        assert!(
+            !report.text.contains("stack depth 0 is the entry state"),
+            "the four-leaf stack Phi was not rendered: {}",
+            report.text
+        );
+        assert!(
+            tree_proof.is_some(),
+            "the deeper shared-join proof is missing"
+        );
+    }
+
+    #[test]
+    fn an_unproven_common_reference_type_refuses_the_complete_tree() {
+        let (_, _, report, tree_proof) = fixture_conditional_tree_attempt(
+            NESTED_UNKNOWN_TYPE_FIXTURE,
+            "unknown",
+            "(ILNestedType$Left;LNestedType$Right;)Ljava/lang/Object;",
+        );
+        assert!(
+            tree_proof.is_some(),
+            "the CFG and SSA tree should be complete"
+        );
+        assert_eq!(report.quality, jarde_jvm::ir::Quality::Fallback);
+        assert!(report.text.contains("@bytecode"), "{}", report.text);
+        assert!(
+            !report.text.contains("?"),
+            "a conditional with an unknown reference join type was published: {}",
+            report.text
+        );
+    }
+
+    #[test]
+    fn an_independent_effect_before_a_nested_if_prevents_tree_folding() {
+        let (_, _, report, tree_proof) =
+            fixture_conditional_tree_attempt(NESTED_INDEPENDENT_EFFECT_FIXTURE, "choose", "(ZZ)I");
+        assert!(
+            tree_proof.is_none(),
+            "the sequence with an independent call is not a tree leaf"
+        );
+        assert_eq!(report.quality, jarde_jvm::ir::Quality::Fallback);
+        assert!(
+            report.text.contains("@bytecode 4"),
+            "the independent effect at BCI 4 was lost: {}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("?"),
+            "the branch was partially projected after proof refusal: {}",
+            report.text
+        );
+    }
+
+    #[test]
+    fn a_nested_value_carried_into_a_later_argument_is_not_published_as_a_tree() {
+        let (_, _, report, tree_proof) =
+            fixture_conditional_tree_attempt(NESTED_REPEATED_USE_FIXTURE, "run", "(I)V");
+        assert!(
+            tree_proof.is_none(),
+            "a stack value carried across a second argument test is outside the one-consumer proof"
+        );
+        assert!(report.text.contains("@bytecode"), "{}", report.text);
+    }
+
+    #[test]
+    fn nested_effect_values_are_presented_once_at_their_consumer() {
+        let (_, _, _, _, report) = fixture_conditional_attempt(
+            NESTED_CONDITIONAL_FIXTURE,
+            "nestedEffects",
+            "(ILjava/lang/StringBuilder;)I",
+        );
+        assert!(report.text.contains("?"), "{}", report.text);
+        assert!(
+            !report.text.contains("stack depth 0 is the entry state"),
+            "the effectful nested value was not recovered: {}",
+            report.text
+        );
+    }
+
+    #[test]
+    fn an_external_edge_into_a_nested_test_keeps_the_region_quoted() {
+        // Make the outer true arm enter the nested false-arm test as a second predecessor. The
+        // nop preserves the empty stack expected at that test; the resulting class remains
+        // analyzable but no longer has a closed conditional tree.
+        let changed = replace_one_bytecode_sequence(
+            NESTED_TREE_FIXTURE,
+            &[0x04, 0xa7, 0x00, 0x16],
+            &[0x00, 0xa7, 0x00, 0x03],
+        );
+        let (region, _, report, tree_proof) =
+            fixture_conditional_tree_attempt(&changed, "falseNested", "(I)I");
+        assert_eq!(report.quality, jarde_jvm::ir::Quality::Fallback);
+        assert!(report.text.contains("@bytecode"), "{}", report.text);
+        assert!(
+            tree_proof.is_none(),
+            "the closed tree proof admitted an external entry"
+        );
+        assert!(
+            report.text.contains("?"),
+            "the independently structured child after the join should remain visible; only the external-entry candidate is refused: {region:?}\n{}",
+            report.text
+        );
     }
 
     #[test]
