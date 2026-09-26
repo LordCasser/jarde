@@ -658,6 +658,10 @@
       "carriers": [
         {
           "kind": "file",
+          "path": "tests/fixtures/proved-varargs-calls/v8/VarargsCalls.class"
+        },
+        {
+          "kind": "file",
           "path": "tests/fixtures/p3-local-rewrite/v8/LocalRewrite.class"
         },
         {
@@ -763,6 +767,18 @@
         {
           "kind": "file",
           "path": "tests/fixtures/p3-assert-core/AssertCore-non01-arms.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/proved-varargs-calls/VarargsCalls.java"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/proved-varargs-calls/VarargsCallsRunner.java"
+        },
+        {
+          "kind": "record",
+          "path": "tests/fixtures/proved-varargs-calls/README.md"
         },
         {
           "kind": "file",
@@ -4779,6 +4795,46 @@
       "blake3": "ee6ee1cd869a45c9c07b09681ae2d6331d565aae3c79146cef9354f98691ab14",
       "bytes": 477,
       "path": "tests/fixtures/proved-java-structure/short-circuit-left-false/ShortCircuitFalse.java"
+    },
+    {
+      "blake3": "35268788b3efa08b08db573efba5931cdecfe83ea8375af9710282e9f1286339",
+      "bytes": 1746,
+      "path": "tests/fixtures/proved-varargs-calls/VarargsCalls.java"
+    },
+    {
+      "blake3": "827d26b792f79f7da2977c0b369eda81047955c790630117233a1be26a6b9bf2",
+      "bytes": 1685,
+      "path": "tests/fixtures/proved-varargs-calls/VarargsCallsRunner.java"
+    },
+    {
+      "blake3": "e4ad386954db14f03e76b2773faddfb571ddd6dab76c1563fcb47182c0cf8f0b",
+      "bytes": 1763,
+      "path": "tests/fixtures/proved-varargs-calls/baseline-jadx-compile.java"
+    },
+    {
+      "blake3": "614d32375cfecb54cbd19d47a728306363d0367397c56821442a0bbe6004667b",
+      "bytes": 1783,
+      "path": "tests/fixtures/proved-varargs-calls/baseline-jadx.java"
+    },
+    {
+      "blake3": "db079053a708291eee61c1d307c05dc52fbf1c1c5af14215613cbecb4bd7f0e7",
+      "bytes": 6286,
+      "path": "tests/fixtures/proved-varargs-calls/baseline-jarde.java"
+    },
+    {
+      "blake3": "ec071a3544447be9339ed0642860fc0ca87cc6f7efd006aa627850bddc4ede1a",
+      "bytes": 154,
+      "path": "tests/fixtures/proved-varargs-calls/baseline-original.txt"
+    },
+    {
+      "blake3": "f4931bff067fa1117a56647a75a6c77a75f76ce07e24166282114d20d22879b8",
+      "bytes": 8257,
+      "path": "tests/fixtures/proved-varargs-calls/javap.txt"
+    },
+    {
+      "blake3": "f2d309e88920807173e7437f14bed2ccdc9d90cce89e513367ce25097e02976a",
+      "bytes": 1845,
+      "path": "tests/fixtures/proved-varargs-calls/v8/VarargsCalls.class"
     },
     {
       "blake3": "fa7ad1d72c352a790a5807113f03ee0f1c7c2e9e1abf5c95eafd52cff2d39029",

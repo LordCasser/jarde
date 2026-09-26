@@ -95,6 +95,9 @@ fn loop_label(header_bci: u32) -> String {
 /// cannot afford.
 pub(crate) const MAX_VALUE_DEPTH: usize = 24;
 
+/// The method flag that makes a final array parameter a variable-arity declaration (JVMS 4.6).
+const ACC_VARARGS: u16 = 0x0080;
+
 /// The statements of one method, in method order.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Program {
@@ -561,6 +564,89 @@ enum Declaration {
     /// states why is already recorded, and the assignment this write would otherwise become may not
     /// be written.
     Refused,
+}
+
+/// Returns a Java source spelling for a local type only when the current class-source request
+/// supplied one unique, complete, non-generic member path for the exact binary type.
+///
+/// The local's `Type` remains the semantic identity. This helper only projects the declaration
+/// token and deliberately refuses ambiguous definitions, top-level `$` names, partial paths, and
+/// any generic path whose source arguments this recovery layer does not model.
+fn local_declaration_source_type_name(
+    ty: &Type,
+    targets: &[crate::report::ProvedMemberInnerTarget],
+) -> Option<String> {
+    let Type::Reference(name) = ty else {
+        return None;
+    };
+    let binary_name = name.replace('.', "/");
+    let mut selected: Option<(jarde_reader::model::PhysicalDefinitionId, String)> = None;
+    for target in targets {
+        let path = &target.source_type_path;
+        if !path.iter().any(|segment| {
+            segment.binary_name == binary_name && segment.enclosing_binary_name.is_some()
+        }) {
+            continue;
+        }
+        let Some(last) = path.last() else {
+            return None;
+        };
+        if path.len() < 2
+            || last.binary_name != target.owner
+            || last.definition != target.definition
+            || path[path.len() - 2].binary_name != target.outer
+            || target.owner != format!("{}${}", target.outer, target.simple_name)
+            || path.iter().any(|segment| segment.type_parameter_count != 0)
+        {
+            return None;
+        }
+        let root = &path[0];
+        if root.enclosing_binary_name.is_some()
+            || root.binary_name.contains('$')
+            || root.source_name != root.binary_name.replace('/', ".")
+        {
+            return None;
+        }
+        for pair in path.windows(2) {
+            let [outer, member] = pair else {
+                unreachable!("a two-element window has two elements")
+            };
+            let Some(suffix) = member
+                .source_name
+                .strip_prefix(&outer.source_name)
+                .and_then(|rest| rest.strip_prefix('.'))
+            else {
+                return None;
+            };
+            if member.enclosing_binary_name.as_deref() != Some(outer.binary_name.as_str())
+                || !is_java_identifier(suffix)
+            {
+                return None;
+            }
+        }
+        if path[path.len() - 1]
+            .source_name
+            .strip_prefix(&path[path.len() - 2].source_name)
+            .and_then(|rest| rest.strip_prefix('.'))
+            != Some(target.simple_name.as_str())
+        {
+            return None;
+        }
+        let Some(segment) = path.iter().find(|segment| {
+            segment.binary_name == binary_name && segment.enclosing_binary_name.is_some()
+        }) else {
+            continue;
+        };
+        let candidate = (segment.definition.clone(), segment.source_name.clone());
+        if selected
+            .as_ref()
+            .is_some_and(|previous| previous != &candidate)
+        {
+            return None;
+        }
+        selected = Some(candidate);
+    }
+    selected.map(|(_, source_name)| source_name)
 }
 
 /// Plans where each local variable's declaration is written, and what type every variable's uses
@@ -8702,6 +8788,7 @@ impl Builder<'_> {
                 let kind = match self.declarations.placements.get(&variable) {
                     Some(DeclarationPlacement::Local { .. }) => StmtKind::Declare {
                         ty: Type::Boolean,
+                        source_type_name: None,
                         name: name.to_string(),
                         value: Some(value.clone()),
                     },
@@ -10868,7 +10955,7 @@ impl Builder<'_> {
                 return None;
             };
             let declaration_index = self.stmts[..init_index].iter().rposition(|stmt| {
-                matches!(&stmt.kind, StmtKind::Declare { ty: Type::Reference(ty), name, value: None }
+                matches!(&stmt.kind, StmtKind::Declare { ty: Type::Reference(ty), name, value: None, .. }
                     if name == iterator_name && (ty == "java.util.Iterator" || ty == "Iterator"))
             })?;
             if self.stmts[init_index + 1..]
@@ -12084,9 +12171,12 @@ impl Builder<'_> {
                 continue;
             };
             self.declared.insert(declaration.variable);
+            let source_type_name =
+                local_declaration_source_type_name(&declaration.ty, self.member_inner_targets);
             self.push(Stmt::new(
                 StmtKind::Declare {
                     ty: declaration.ty,
+                    source_type_name,
                     name,
                     value: None,
                 },
@@ -12791,6 +12881,10 @@ impl Builder<'_> {
         self.push(Stmt::new(
             StmtKind::Declare {
                 ty: ty.clone(),
+                source_type_name: local_declaration_source_type_name(
+                    &ty,
+                    self.member_inner_targets,
+                ),
                 name: plan.name.clone(),
                 value: Some(expression),
             },
@@ -14147,9 +14241,12 @@ impl Builder<'_> {
                 } else {
                     value
                 };
+                let source_type_name =
+                    local_declaration_source_type_name(&ty, self.member_inner_targets);
                 self.push(Stmt::new(
                     StmtKind::Declare {
                         ty,
+                        source_type_name,
                         name,
                         value: Some(value),
                     },
@@ -15314,14 +15411,58 @@ impl Builder<'_> {
         for (_, value) in args {
             arguments.push(self.render_value(*value, at, depth + 1)?);
         }
-        let arguments = self.arguments(target.descriptor(), arguments, bci)?;
-        let call = Expr::direct(
+        let mut arguments = self.arguments(target.descriptor(), arguments, bci)?;
+        let mut origin = OriginSet::new(Origin::direct(bci));
+        if let Some(varargs_parameter) = declared_varargs_parameter_descriptor(
+            target,
+            self.declaring_class,
+            self.direct_super_class.map(|parent| parent.0.as_slice()),
+            self.direct_interfaces.is_empty(),
+            self.class_methods.map(|methods| {
+                methods.iter().map(|method| {
+                    (
+                        method.name.raw().0.as_slice(),
+                        method.descriptor.raw().0.as_slice(),
+                        method.access_flags,
+                    )
+                })
+            }),
+        ) && let Some(array) = arguments.last()
+            && let Some(array_type) = descriptor_type(&varargs_parameter)
+            && array.presented.as_ref() == Some(&array_type)
+            && let ExprKind::NewArray {
+                initializers: Some(elements),
+                ..
+            } = &array.kind
+            && let Some(initializer) = self
+                .array_initializers
+                .at_allocation(array.origin.primary().bci())
+            && initializer.consumer == bci
+            && elements.len() == initializer.elements.len()
+            && !(elements.len() == 1
+                && single_varargs_element_may_be_fixed_array(&elements[0], &array_type))
+        {
+            let array = arguments.pop().expect("the checked last argument exists");
+            let ExprKind::NewArray {
+                initializers: Some(elements),
+                ..
+            } = array.kind
+            else {
+                unreachable!("the checked last argument remains an initialized array")
+            };
+            origin = origin.plus_derived(Origin::derived(array.origin.primary().bci()));
+            for derived in array.origin.derived() {
+                origin = origin.plus_derived(Origin::derived(derived.bci()));
+            }
+            arguments.extend(elements);
+        }
+        let call = Expr::new(
             ExprKind::Call {
                 receiver,
                 name: target.name().to_string(),
                 args: arguments,
             },
-            bci,
+            origin,
         );
         Ok(match return_type(target.descriptor()) {
             Some(ty) => call.presenting(ty),
@@ -18110,6 +18251,72 @@ pub(crate) fn typed_arguments(descriptor: &str, arguments: Vec<Expr>) -> Vec<Exp
     typed_arguments_with_offset(descriptor, arguments, 0)
 }
 
+/// The array parameter of the unique, same-class varargs target whose binding this class header
+/// proves, or `None` when a class/member fact is absent or a competing declaration exists.
+///
+/// The caller supplies the same-read method table as raw name/descriptor/flag triples so this
+/// check does not resolve external owners or infer a declaration from a call's symbol.
+fn declared_varargs_parameter_descriptor<'a>(
+    target: &CallTarget,
+    declaring_class: Option<&str>,
+    direct_super_class: Option<&[u8]>,
+    has_no_interfaces: bool,
+    methods: Option<impl Iterator<Item = (&'a [u8], &'a [u8], u16)>>,
+) -> Option<String> {
+    if declaring_class != Some(target.owner())
+        || direct_super_class != Some(b"java/lang/Object".as_slice())
+        || !has_no_interfaces
+    {
+        return None;
+    }
+    let mut named = methods?.filter(|(name, _, _)| *name == target.name().as_bytes());
+    let (_, descriptor, flags) = named.next()?;
+    if named.next().is_some()
+        || descriptor != target.descriptor().as_bytes()
+        || flags & ACC_VARARGS == 0
+    {
+        return None;
+    }
+    let parameter = parameter_descriptors(target.descriptor())?
+        .last()?
+        .to_string();
+    parameter.starts_with('[').then_some(parameter)
+}
+
+/// Whether one element passed to a one-element varargs expansion could instead bind as the whole
+/// array parameter. A null is conservatively held even through a cast; an array-typed element is
+/// held when the closed array widening rule says Java could accept it as this target's array.
+fn single_varargs_element_may_be_fixed_array(element: &Expr, parameter_array: &Type) -> bool {
+    fn is_null(expression: &Expr) -> bool {
+        match &expression.kind {
+            ExprKind::Null => true,
+            ExprKind::Cast { value, .. } => is_null(value),
+            _ => false,
+        }
+    }
+
+    if is_null(element) {
+        return true;
+    }
+    let ty = match &element.kind {
+        ExprKind::Cast { ty, .. } => Some(ty),
+        _ => element.presented.as_ref(),
+    };
+    match ty {
+        Some(Type::Reference(name)) => array_reference_widens(name, parameter_array.spell()),
+        Some(_) => false,
+        None => !matches!(
+            element.kind,
+            ExprKind::Integer(_)
+                | ExprKind::Boolean(_)
+                | ExprKind::Long(_)
+                | ExprKind::Float(_)
+                | ExprKind::Double(_)
+                | ExprKind::Str(_)
+        ),
+    }
+}
+
 fn typed_arguments_with_offset(
     descriptor: &str,
     arguments: Vec<Expr>,
@@ -20092,6 +20299,106 @@ pub(crate) fn spell_reference(descriptor: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn test_definition(name: &str) -> jarde_reader::model::PhysicalDefinitionId {
+        use jarde_reader::model::{
+            ClassBytesId, Digest, PhysicalClassLocation, PhysicalVariant, SnapshotId,
+        };
+        jarde_reader::model::PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: SnapshotId("local-type-spelling-test".to_owned()),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(name.to_owned()),
+                length: 0,
+            },
+            variant: PhysicalVariant::Base,
+        }
+    }
+
+    fn test_member_target(
+        member_definition: jarde_reader::model::PhysicalDefinitionId,
+        member_type_parameters: usize,
+    ) -> crate::report::ProvedMemberInnerTarget {
+        use crate::report::ProvedMemberInnerSourceSegment as Segment;
+        let outer_definition = test_definition("pkg/Outer");
+        crate::report::ProvedMemberInnerTarget {
+            definition: member_definition.clone(),
+            owner: "pkg/Outer$Member".to_owned(),
+            outer: "pkg/Outer".to_owned(),
+            simple_name: "Member".to_owned(),
+            constructor_descriptor: "(Lpkg/Outer;)V".to_owned(),
+            capture_field: "this$0".to_owned(),
+            generic_diamond: false,
+            source_type_path: vec![
+                Segment {
+                    definition: outer_definition,
+                    binary_name: "pkg/Outer".to_owned(),
+                    source_name: "pkg.Outer".to_owned(),
+                    type_parameter_count: 0,
+                    enclosing_binary_name: None,
+                    is_static: true,
+                },
+                Segment {
+                    definition: member_definition,
+                    binary_name: "pkg/Outer$Member".to_owned(),
+                    source_name: "pkg.Outer.Member".to_owned(),
+                    type_parameter_count: member_type_parameters,
+                    enclosing_binary_name: Some("pkg/Outer".to_owned()),
+                    is_static: false,
+                },
+            ],
+        }
+    }
+
+    #[test]
+    fn local_declaration_source_name_requires_one_complete_nongeneric_member_path() {
+        let member_definition = test_definition("pkg/Outer$Member");
+        let target = test_member_target(member_definition.clone(), 0);
+        let ty = Type::Reference("pkg.Outer$Member".to_owned());
+        assert_eq!(
+            local_declaration_source_type_name(&ty, std::slice::from_ref(&target)),
+            Some("pkg.Outer.Member".to_owned())
+        );
+
+        // A legal top-level name containing `$` has no InnerClasses source-path proof, so it is
+        // emitted exactly as the semantic type already spells it.
+        assert_eq!(
+            local_declaration_source_type_name(
+                &Type::Reference("pkg.Outer$TopLevel".to_owned()),
+                std::slice::from_ref(&target),
+            ),
+            None
+        );
+        let mut missing_path = target.clone();
+        missing_path.source_type_path.clear();
+        assert_eq!(
+            local_declaration_source_type_name(&ty, &[missing_path]),
+            None
+        );
+
+        // Same binary name from two physical definitions is not a source-name choice.
+        let duplicate = test_member_target(test_definition("other-definition"), 0);
+        assert_eq!(
+            local_declaration_source_type_name(&ty, &[target.clone(), duplicate]),
+            None
+        );
+
+        // A generic source path cannot be projected onto the raw semantic reference.
+        let generic = test_member_target(member_definition, 1);
+        assert_eq!(
+            local_declaration_source_type_name(&ty, std::slice::from_ref(&generic)),
+            None
+        );
+
+        // A conflicting final source segment is rejected even if the binary spelling matches.
+        let mut conflicting = target;
+        conflicting.source_type_path[1].source_name = "pkg.Outer.Other".to_owned();
+        assert_eq!(
+            local_declaration_source_type_name(&ty, &[conflicting]),
+            None
+        );
+    }
 
     #[test]
     fn outer_super_handoff_projects_exact_bridge_and_refuses_a_stale_argument() {
@@ -23014,5 +23321,142 @@ mod tests {
                 "BCI {bci} is absent from the source map"
             );
         }
+    }
+
+    fn varargs_call_target(descriptor: &str) -> CallTarget {
+        CallTarget::new(InvokeKind::Static, "Probe", "call", descriptor, false)
+    }
+
+    fn varargs_method_header(
+        target: &CallTarget,
+        methods: impl Iterator<Item = (&'static [u8], &'static [u8], u16)>,
+    ) -> Option<String> {
+        declared_varargs_parameter_descriptor(
+            target,
+            Some("Probe"),
+            Some(b"java/lang/Object"),
+            true,
+            Some(methods),
+        )
+    }
+
+    #[test]
+    fn varargs_call_binding_requires_the_unique_exact_local_declaration() {
+        let target = varargs_call_target("([I)I");
+        let declaration = varargs_method_header(
+            &target,
+            std::iter::once((b"call".as_slice(), b"([I)I".as_slice(), ACC_VARARGS)),
+        );
+        assert_eq!(declaration.as_deref(), Some("[I"));
+
+        assert_eq!(
+            varargs_method_header(
+                &target,
+                std::iter::once((b"call".as_slice(), b"([I)I".as_slice(), 0)),
+            ),
+            None,
+            "an ordinary array parameter is not a varargs declaration"
+        );
+        assert_eq!(
+            varargs_method_header(
+                &target,
+                [
+                    (b"call".as_slice(), b"([I)I".as_slice(), ACC_VARARGS),
+                    (b"call".as_slice(), b"(I)I".as_slice(), 0),
+                ]
+                .into_iter(),
+            ),
+            None,
+            "a same-name overload can capture the expanded source call"
+        );
+        assert_eq!(
+            varargs_method_header(&target, std::iter::empty()),
+            None,
+            "a missing or incomplete method table cannot prove the target"
+        );
+
+        let different_owner = CallTarget::new(InvokeKind::Static, "Other", "call", "([I)I", false);
+        assert_eq!(
+            declared_varargs_parameter_descriptor(
+                &different_owner,
+                Some("Probe"),
+                Some(b"java/lang/Object"),
+                true,
+                Some(std::iter::once((
+                    b"call".as_slice(),
+                    b"([I)I".as_slice(),
+                    ACC_VARARGS,
+                ))),
+            ),
+            None,
+            "a name match from another owner is not a same-class target"
+        );
+
+        assert_eq!(
+            declared_varargs_parameter_descriptor(
+                &target,
+                Some("Probe"),
+                Some(b"java/lang/Number"),
+                true,
+                Some(std::iter::once((
+                    b"call".as_slice(),
+                    b"([I)I".as_slice(),
+                    ACC_VARARGS,
+                ))),
+            ),
+            None,
+            "an unknown inheritance surface is not closed"
+        );
+        assert_eq!(
+            declared_varargs_parameter_descriptor(
+                &target,
+                Some("Probe"),
+                Some(b"java/lang/Object"),
+                false,
+                Some(std::iter::once((
+                    b"call".as_slice(),
+                    b"([I)I".as_slice(),
+                    ACC_VARARGS,
+                ))),
+            ),
+            None,
+            "an implemented interface can contribute an overload"
+        );
+    }
+
+    #[test]
+    fn one_varargs_element_is_held_when_it_can_be_the_entire_array_argument() {
+        let object_array = Type::Reference("java.lang.Object[]".to_owned());
+        let null = Expr::direct(ExprKind::Null, 1);
+        let cast_null = Expr::new(
+            ExprKind::Cast {
+                ty: Type::Reference("java.lang.Object".to_owned()),
+                value: Box::new(null.clone()),
+            },
+            OriginSet::new(Origin::direct(2)),
+        );
+        let string_array = Expr::direct(ExprKind::Local("values".to_owned()), 3)
+            .presenting(Type::Reference("java.lang.String[]".to_owned()));
+
+        assert!(single_varargs_element_may_be_fixed_array(
+            &null,
+            &object_array
+        ));
+        assert!(single_varargs_element_may_be_fixed_array(
+            &cast_null,
+            &object_array
+        ));
+        assert!(single_varargs_element_may_be_fixed_array(
+            &string_array,
+            &object_array
+        ));
+        assert!(!single_varargs_element_may_be_fixed_array(
+            &Expr::direct(ExprKind::Str("one".to_owned()), 4),
+            &object_array
+        ));
+        assert!(!single_varargs_element_may_be_fixed_array(
+            &Expr::direct(ExprKind::Integer(1), 5),
+            &Type::Reference("int[]".to_owned())
+        ));
     }
 }

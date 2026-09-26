@@ -488,10 +488,14 @@ impl<'a> Emitter<'a> {
         match &stmt.kind {
             StmtKind::Declare {
                 ty,
+                source_type_name,
                 name,
                 value: Some(value),
             } => {
-                self.put(ty.spell(), at)?;
+                self.put(
+                    source_type_name.as_deref().unwrap_or_else(|| ty.spell()),
+                    at,
+                )?;
                 self.put(" ", at)?;
                 self.put(name, at)?;
                 self.put(" = ", at)?;
@@ -519,9 +523,17 @@ impl<'a> Emitter<'a> {
             self.statements += 1;
         }
         match &stmt.kind {
-            StmtKind::Declare { ty, name, value } => {
+            StmtKind::Declare {
+                ty,
+                source_type_name,
+                name,
+                value,
+            } => {
                 self.put(&pad, at)?;
-                self.put(ty.spell(), at)?;
+                self.put(
+                    source_type_name.as_deref().unwrap_or_else(|| ty.spell()),
+                    at,
+                )?;
                 self.put(" ", at)?;
                 self.put(name, at)?;
                 if let Some(value) = value {
@@ -2919,6 +2931,7 @@ mod tests {
         let (declared, _map) = emitted_stmt(
             StmtKind::Declare {
                 ty: crate::ast::Type::Int,
+                source_type_name: None,
                 name: "local0".to_string(),
                 value: Some(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
             },
@@ -2928,6 +2941,64 @@ mod tests {
             declared.text.contains("int local0 = arg0 + arg1;"),
             "an initialiser is the whole expression to the `;`:\n{}",
             declared.text
+        );
+
+        let source_typed = StmtKind::Declare {
+            ty: crate::ast::Type::Reference("pkg.Outer$Member".to_owned()),
+            source_type_name: Some("pkg.Outer.Member".to_owned()),
+            name: "member".to_owned(),
+            value: Some(Expr::direct(ExprKind::Local("arg0".to_owned()), 2)),
+        };
+        let (declared, map) = emitted_stmt(source_typed, &[4]);
+        assert!(
+            declared.text.contains("pkg.Outer.Member member = arg0;"),
+            "a proved source type is used only in the declaration token:\n{}",
+            declared.text
+        );
+        assert!(
+            map.text_of_bci(&declared.text, 4)
+                .iter()
+                .any(|span| span.contains("pkg.Outer.Member member =")),
+            "the declaration source name remains anchored to the same statement BCI"
+        );
+
+        let (for_loop, for_map) = emitted_stmt(
+            StmtKind::For {
+                label: None,
+                init: Box::new(Stmt::new(
+                    StmtKind::Declare {
+                        ty: crate::ast::Type::Reference("pkg.Outer$Member".to_owned()),
+                        source_type_name: Some("pkg.Outer.Member".to_owned()),
+                        name: "member".to_owned(),
+                        value: Some(Expr::direct(ExprKind::Local("arg0".to_owned()), 2)),
+                    },
+                    OriginSet::new(Origin::direct(4)),
+                )),
+                cond: Expr::direct(ExprKind::Boolean(true), 5),
+                update: Box::new(Stmt::new(
+                    StmtKind::Assign {
+                        name: "member".to_owned(),
+                        value: Expr::direct(ExprKind::Local("arg0".to_owned()), 6),
+                    },
+                    OriginSet::new(Origin::direct(6)),
+                )),
+                body: Vec::new(),
+            },
+            &[1],
+        );
+        assert!(
+            for_loop
+                .text
+                .contains("for (pkg.Outer.Member member = arg0; true; member = arg0) {"),
+            "a for-header declaration uses the same source type spelling:\n{}",
+            for_loop.text
+        );
+        assert!(
+            for_map
+                .text_of_bci(&for_loop.text, 4)
+                .iter()
+                .any(|span| span.contains("pkg.Outer.Member member =")),
+            "for-header replay keeps its initializer's physical anchor"
         );
 
         let (conditional, _map) = emitted_stmt(
