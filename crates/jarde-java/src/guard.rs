@@ -3093,15 +3093,9 @@ fn twr(
         // The close chain runs into the rest of the statement's own block, and no block begins
         // where it continues: the instructions after the statement are those of a block this shape
         // has already claimed, and the walk can present neither them nor a place to continue at.
-        // This is the `try (…) { return …; }` javac writes without any branch — the value is kept
-        // in a local, the resources are closed, and the `return` reads the local back — and it is
-        // refused rather than presented with the statements that follow the statement dropped.
-        //
-        // Writing that tail is the one increment left of this shape, and it is P3 2.6's mechanism
-        // applied to the resource header: a `returns` on the shape, proved the way the monitor's is
-        // (the value the `return` reads is written **inside** the body's own range), appended by
-        // `build.rs` to the text **inside** the statement's braces, with the closes it replaced
-        // excluded from the range the body's statements are written from.
+        // A terminal `try (…) { return …; }` is admitted only after `twr_return_tail` proves the
+        // saved body value and its effect-free load/return pair. Reaching this branch means that
+        // proof did not apply; treating the tail as an ordinary continuation would drop it.
         return Err((Unproven::Continuation, at).into());
     }
     // Every row that protects part of the statement's span has to be one of its own rows — or one of
