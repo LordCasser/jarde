@@ -2400,7 +2400,26 @@ impl Walker<'_> {
                         let (arm_run, _) =
                             self.region_at(walk, &frame.arm(Some(join_node), Some(branch_bci)))?;
                         let arm = sequence_region(arm_run);
-                        let empty = Box::new(Region::Straight { blocks: Vec::new() });
+                        // A one-armed `if` normally has an empty arm because that edge is the
+                        // branch's join. Inside a loop, the join can instead be the exact exit of
+                        // an enclosing loop. In that case an empty arm drops a real exit edge and
+                        // can turn a terminating loop into an infinite one; retain the transfer as
+                        // the existing `LoopBreak` leaf.
+                        let join_arm = frame
+                            .loop_targets
+                            .iter()
+                            .rev()
+                            .find(|target| target.break_target == Some(join_node))
+                            .and_then(|target| {
+                                self.view.id_of(target.header).cloned().map(|loop_header| {
+                                    Region::LoopBreak {
+                                        source_bci: branch_bci,
+                                        loop_header,
+                                    }
+                                })
+                            })
+                            .unwrap_or(Region::Straight { blocks: Vec::new() });
+                        let empty = Box::new(join_arm);
                         let (then_arm, else_arm) = if then_node == Some(join_node) {
                             (empty, Box::new(arm))
                         } else {
