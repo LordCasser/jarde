@@ -1441,12 +1441,13 @@ impl Engine {
             );
             merge_execution(&mut report.execution, projection_execution);
             match projected {
-                Ok(Ok(text)) => {
+                Ok(Ok((text, derived))) => {
                     report.text = text;
                     if let class_source::ClassSourceMemberFamily::Prepared { projection, .. } =
                         &mut report.member_family
                     {
-                        *projection = class_source::ClassSourceMemberProjection::Projected;
+                        *projection =
+                            class_source::ClassSourceMemberProjection::Projected { derived };
                     }
                 }
                 Ok(Err(reason)) => {
@@ -8416,7 +8417,8 @@ fn project_class_source_member_family(
     root: &ClassSourceReport,
     execution: &mut ExecutionReport,
     budget: &mut Budget,
-) -> Result<std::result::Result<String, String>> {
+) -> Result<std::result::Result<(String, Vec<class_source::MemberFamilyDerivedProjection>), String>>
+{
     use class_source::{ClassSourceMemberCalls, ClassSourceMemberCapture, ClassSourceMemberFamily};
     let ClassSourceMemberFamily::Prepared {
         relation,
@@ -8650,7 +8652,44 @@ fn project_class_source_member_family(
                             .to_owned(),
                     ));
                 };
-                child_methods.push((method.item.index, text));
+                let Some(header_end) = text.rfind(" {\n") else {
+                    return Ok(Err(
+                        "capture constructor header cannot be located".to_owned()
+                    ));
+                };
+                let header_start = text[..header_end].rfind('\n').map_or(0, |at| at + 1);
+                if !text[header_start..header_end].contains(&relation.simple_name) {
+                    return Ok(Err(
+                        "capture constructor header does not match member".to_owned()
+                    ));
+                }
+                let header_end = header_end + 2;
+                child_methods.push(class_source::MemberFamilyMethodText {
+                    index: method.item.index,
+                    text,
+                    derived: vec![
+                        class_source::MemberFamilyDerivedProjection {
+                            kind: class_source::MemberFamilyDerivedKind::HiddenConstructorParameter,
+                            start: header_start,
+                            end: header_end,
+                            anchors: vec![
+                                class_source::MemberFamilyPhysicalAnchor::ConstructorParameter {
+                                    method: proof.constructor.clone(),
+                                    index: 0,
+                                },
+                            ],
+                        },
+                        class_source::MemberFamilyDerivedProjection {
+                            kind: class_source::MemberFamilyDerivedKind::HiddenCaptureWrite,
+                            start: header_start,
+                            end: header_end,
+                            anchors: vec![class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                                method: proof.constructor.clone(),
+                                bci: proof.write_bci,
+                            }],
+                        },
+                    ],
+                });
                 continue;
             }
             if call_sites.is_empty() && capture_reads.is_empty() {
@@ -8706,7 +8745,8 @@ fn project_class_source_member_family(
                 .with_captured_outer_reads(&captured)
                 .with_evidence(
                     RecoveryEvidenceRequest::essential()
-                        .with_kind(RecoveryEvidenceKind::RuleDetails),
+                        .with_kind(RecoveryEvidenceKind::RuleDetails)
+                        .with_kind(RecoveryEvidenceKind::SourceMap),
                 ),
                 budget,
             );
@@ -8734,10 +8774,88 @@ fn project_class_source_member_family(
                     "projected family method artifact cannot be placed".to_owned()
                 ));
             };
+            let mut derived = Vec::new();
+            for site in call_sites {
+                let needle = format!("new {}", relation.simple_name);
+                let Some((start, end)) = family_recovery_token_span(
+                    method,
+                    &recovery,
+                    site.allocation_bci,
+                    site.constructor_bci,
+                    &needle,
+                    budget,
+                )?
+                else {
+                    return Ok(Err(format!(
+                        "family new@1 source span is absent for method {} BCI {}",
+                        method.item.index, site.allocation_bci
+                    )));
+                };
+                derived.push(class_source::MemberFamilyDerivedProjection {
+                    kind: class_source::MemberFamilyDerivedKind::MemberConstruction,
+                    start,
+                    end,
+                    anchors: vec![
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: site.caller.clone(),
+                            bci: site.allocation_bci,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: site.caller.clone(),
+                            bci: site.constructor_bci,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::ConstructorParameter {
+                            method: site.constructor.clone(),
+                            index: 0,
+                        },
+                    ],
+                });
+            }
+            for read in capture_reads {
+                let needle = format!("{root_source_name}.this");
+                let Some((start, end)) = family_recovery_token_span(
+                    method, &recovery, read.bci, read.bci, &needle, budget,
+                )?
+                else {
+                    return Ok(Err(format!(
+                        "captured outer source span is absent for method {} BCI {}",
+                        method.item.index, read.bci
+                    )));
+                };
+                let capture_field = child
+                    .fields
+                    .iter()
+                    .find(|field| field.item.index == proof.field_index)
+                    .expect("validated capture field");
+                derived.push(class_source::MemberFamilyDerivedProjection {
+                    kind: class_source::MemberFamilyDerivedKind::CapturedOuterRead,
+                    start,
+                    end,
+                    anchors: vec![
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: read.method.clone(),
+                            bci: read.bci,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::Field {
+                            field: capture_field.item.identity.clone(),
+                            index: capture_field.item.index,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: proof.constructor.clone(),
+                            bci: proof.write_bci,
+                        },
+                    ],
+                });
+            }
+            let projected = class_source::MemberFamilyMethodText {
+                index: method.item.index,
+                text,
+                derived,
+            };
             if physical.class == root.class {
-                root_methods.push((method.item.index, text));
+                root_methods.push(projected);
             } else {
-                child_methods.push((method.item.index, text));
+                child_methods.push(projected);
             }
         }
     }
@@ -8748,14 +8866,69 @@ fn project_class_source_member_family(
         root_methods: &root_methods,
         child_methods: &child_methods,
     };
-    let Some(text) = class_source::member_family_source_text(root, &member) else {
+    let Some((text, derived)) = class_source::member_family_source_text(root, &member) else {
         return Ok(Err(
             "physical class writer cannot re-emit the family without losing prior projections"
                 .to_owned(),
         ));
     };
     budget.charge(CountedBudgetDimension::OutputBytes, text.len() as u64)?;
-    Ok(Ok(text))
+    Ok(Ok((text, derived)))
+}
+
+/// A candidate is bounded by an emitter segment already tied to this exact physical method and
+/// BCI. Only a unique token inside the smallest such segment is admitted; the class writer then
+/// verifies the byte-for-byte translated span before publishing it.
+fn family_recovery_token_span(
+    method: &ClassSourceMethod,
+    recovery: &RecoveryReport,
+    bci: u32,
+    primary_bci: u32,
+    needle: &str,
+    budget: &mut Budget,
+) -> Result<Option<(usize, usize)>> {
+    let mut candidates = Vec::new();
+    for segment in recovery.source_map.of_bci(bci) {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if segment.origin().primary().method() != Some(&method.item.identity)
+            || segment.origin().primary().bci() != primary_bci
+            || segment.mentions(bci)
+                != Some(if bci == primary_bci {
+                    jarde_java::Provenance::Direct
+                } else {
+                    jarde_java::Provenance::Derived
+                })
+        {
+            continue;
+        }
+        let source = segment.text(&recovery.text);
+        let mut matches = source.match_indices(needle);
+        let Some((at, _)) = matches.next() else {
+            continue;
+        };
+        if matches.next().is_some() {
+            continue;
+        }
+        candidates.push((
+            segment.len(),
+            segment.start() + at,
+            segment.start() + at + needle.len(),
+        ));
+    }
+    candidates.sort_unstable();
+    let Some((shortest, start, end)) = candidates.first().copied() else {
+        return Ok(None);
+    };
+    if candidates
+        .iter()
+        .take_while(|candidate| candidate.0 == shortest)
+        .any(|candidate| (candidate.1, candidate.2) != (start, end))
+    {
+        return Ok(None);
+    }
+    Ok(class_source::member_family_recovered_span(
+        method, recovery, start, end,
+    ))
 }
 
 fn prove_class_source_member_calls(
