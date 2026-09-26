@@ -47,3 +47,4 @@
 - `javap.txt`：全类反汇编。
 - `multi-resource-twr/README.md`: self-contained two-resource fixture, Java 8/current-JDK exception-row layouts, verifier-valid wrong-end negative control, deterministic runtime cases, and available JADX/Jarde comparisons.
 - `precise-rethrow/analysis.md`：具名 catch 精确重抛与 finally 候选的三方对照、来源锚点、Java 8 重编运行结果及保守边界。
+- `boxed-sam-adaptations/README.md`：装箱 SAM 适配与 `int[]::new` 的 bootstrap 三段类型、合成数组分配方法、JADX lambda 展开和 Jarde 修前拒绝证据。
