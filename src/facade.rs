@@ -7464,7 +7464,9 @@ fn certify_enum_int_static_fields(
 
     let mut refs = std::collections::BTreeMap::new();
     for constant in constants {
-        if let Some(argument) = &constant.source_argument {
+        if let Some(crate::enum_constants::ProvedEnumSourceArgument::Int(argument)) =
+            &constant.source_argument
+        {
             collect(argument, &mut refs, budget)?;
         }
     }
@@ -15103,7 +15105,10 @@ public class Probe {
                     constructors[0].item.descriptor.raw().0,
                     b"(Ljava/lang/String;I)V"
                 );
-                assert!(constructors[0].enum_constructor_no_arg_source_signature);
+                assert!(
+                    constructors[0].enum_constructor_source_tail
+                        == crate::class_source::EnumConstructorSourceTail::NoArg
+                );
                 assert_eq!(constructors[0].item.access_flags & 0x1000, 0);
             } else {
                 let first_shape = &source_report.enum_constant_body_relations[0].group_shape;
