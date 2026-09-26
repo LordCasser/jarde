@@ -8091,6 +8091,32 @@ impl Builder<'_> {
                         &mut handler,
                         &child(path, u32::try_from(index + 1).unwrap_or(u32::MAX)),
                     )?;
+                    // P3 2.2's third negative: a clause whose body walk wrote **no** statement
+                    // while the body's own region still holds instructions the header and the
+                    // control flow do not account for is not an empty catch. The handler body is
+                    // what this build could not present, so the clause keeps its header and the
+                    // body becomes the BCI reference any refused region writes — empty braces
+                    // would state a handler that runs nothing, and the dropped statements would
+                    // be named nowhere.
+                    if handler.is_empty()
+                        && let Some((reason, bcis)) =
+                            self.unpresented_clause_body(clause.body(), clause.handler().bci())?
+                    {
+                        let at = bcis
+                            .first()
+                            .copied()
+                            .unwrap_or_else(|| clause.handler().bci());
+                        let origin = bcis
+                            .iter()
+                            .filter(|bci| **bci != at)
+                            .fold(OriginSet::new(Origin::direct(at)), |origin, bci| {
+                                origin.plus_derived(Origin::derived(*bci))
+                            });
+                        self.push_into(
+                            &mut handler,
+                            Stmt::new(StmtKind::Fallback { reason, bcis }, origin),
+                        )?;
+                    }
                     // A catch parameter is visible through its own clause body only. The builder's
                     // `declared` set is a construction aid, so restore the enclosing lexical scope
                     // before the next handler or the code following this try is built.
@@ -14695,6 +14721,131 @@ impl Builder<'_> {
             }
         }
         bcis
+    }
+
+    /// Whether one clause's body walk left the body's own instructions unpresented, and the
+    /// quote — its message and every instruction start of the body's own range — that states it
+    /// when it did.
+    ///
+    /// The clause's parameter store is the header's own declaration, a `goto` is control the
+    /// structure itself states, and the builder's other skip rules own what they proved — those
+    /// are the instructions an empty clause body may legitimately hide. Anything else the body's
+    /// region holds had to become a statement of the clause; when the walk wrote none, the text
+    /// would present a handler that runs nothing, so the body is rewritten as the quote of the
+    /// bytecode its own range holds (P3 2.2: the header stays, the body is a BCI reference, and
+    /// no statement is dropped without a reference). A body whose walk wrote any statement is
+    /// not an empty body and is left as it was walked.
+    fn unpresented_clause_body(
+        &mut self,
+        body: &Region,
+        handler_bci: u32,
+    ) -> Result<Option<(String, Vec<u32>)>, StopReason> {
+        // This is a second read of ownership, independent of the arm walk: it classifies each
+        // instruction against the proofs that may legitimately hide it. Bill that inspection here
+        // just as [`Self::fallback_instruction_bcis`] bills its own ownership read.
+        let mut held: Vec<u32> = Vec::new();
+        let mut held_set = BTreeSet::new();
+        for block in body.blocks() {
+            let at = block.bci();
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+            if let Some(ssa) = self.ssa.block(block) {
+                for instruction in ssa.instructions() {
+                    self.append_clause_bci(instruction.bci(), &mut held, &mut held_set)?;
+                }
+            } else {
+                let mut canonical = None;
+                for candidate in self.canonical.blocks() {
+                    let candidate_at = candidate.id().bci();
+                    poll(self.budget, Some(candidate_at))?;
+                    charge(
+                        self.budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        1,
+                        Some(candidate_at),
+                    )?;
+                    if candidate.id() == block {
+                        canonical = Some(candidate);
+                        break;
+                    }
+                }
+                match canonical {
+                    Some(canonical) if let [start] = canonical.blocks() => {
+                        let begin = self
+                            .code
+                            .instructions
+                            .partition_point(|instruction| instruction.bci < *start);
+                        for instruction in self.code.instructions[begin..]
+                            .iter()
+                            .take_while(|instruction| instruction.bci < canonical.end_bci())
+                        {
+                            self.append_clause_bci(instruction.bci, &mut held, &mut held_set)?;
+                        }
+                    }
+                    Some(canonical) => {
+                        for &bci in canonical.blocks() {
+                            self.append_clause_bci(bci, &mut held, &mut held_set)?;
+                        }
+                    }
+                    None => {}
+                }
+            }
+        }
+        if held.is_empty() {
+            return Ok(None);
+        }
+        let mut unpresented = false;
+        for bci in &held {
+            poll(self.budget, Some(*bci))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(*bci),
+            )?;
+            let owned = self.array_initializers.owns(*bci)
+                || self.chains.owns(*bci)
+                || self.sites.owns(*bci)
+                || self.settled.contains(bci)
+                || self.compounds.owns_copy(*bci);
+            if !(owned
+                || (*bci == handler_bci && self.clause_parameters.contains(&handler_bci))
+                || matches!(self.operations.get(*bci), Some(Operation::Transfer)))
+            {
+                unpresented = true;
+                break;
+            }
+        }
+        Ok(unpresented.then(|| {
+            (
+                "the handler body proved no statement beside its header, so the clause quotes the bytecode its own range holds".to_string(),
+                held,
+            )
+        }))
+    }
+
+    fn append_clause_bci(
+        &mut self,
+        bci: u32,
+        held: &mut Vec<u32>,
+        held_set: &mut BTreeSet<u32>,
+    ) -> Result<(), StopReason> {
+        poll(self.budget, Some(bci))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(bci),
+        )?;
+        if held_set.insert(bci) {
+            held.push(bci);
+        }
+        Ok(())
     }
 
     /// The quote for one region whose test this build could not read: every BCI the region covers,
