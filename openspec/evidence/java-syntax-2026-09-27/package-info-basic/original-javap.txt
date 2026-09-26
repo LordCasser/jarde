@@ -1,0 +1,22 @@
+Classfile <REPO>/tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class
+  SHA-256 checksum a43c23ab884e4caedd53afccf36272255e8a06f42d2642befa1bfe0f7162e240
+interface p.package-info
+  minor version: 0
+  major version: 52
+  flags: (0x1600) ACC_INTERFACE, ACC_ABSTRACT, ACC_SYNTHETIC
+  this_class: #1                          // p/package-info
+  super_class: #3                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 0, attributes: 1
+Constant pool:
+  #1 = Class              #2              // "p/package-info"
+  #2 = Utf8               p/package-info
+  #3 = Class              #4              // java/lang/Object
+  #4 = Utf8               java/lang/Object
+  #5 = Utf8               RuntimeVisibleAnnotations
+  #6 = Utf8               Ljava/lang/Deprecated;
+{
+}
+RuntimeVisibleAnnotations:
+  0: #6()
+    java.lang.Deprecated
+exit=0
