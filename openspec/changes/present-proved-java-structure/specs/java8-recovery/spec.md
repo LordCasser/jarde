@@ -42,6 +42,20 @@ MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代
 - **WHEN** 一臂到达汇合点，另一臂既不是汇合点，也没有被证明为每条路径都 `return` 或 `athrow`
 - **THEN** 产物 MUST NOT 含把该臂写成 `else` 的 `if`，分支前已证明的语句 MUST 仍在（P02）
 
+### Requirement: A proved Boolean value chain preserves short-circuit evaluation
+
+一个值位的分支链已经由 `ShortCircuitValue` 及 CFG/SSA Phi 证明、两个唯一生产叶严格为 `iconst_1` 和 `iconst_0`、返回消费者的 Java 类型已证明是 `boolean` 时，恢复 MUST 按原分支极性及求值顺序写出布尔值。可等价化简的返回链 MUST 使用 `&&`、`||` 或原条件本身，MUST NOT 继续把这类精确 0/1 值写成整数三元式后附 `% 2 != 0`。普通语句位 `if` 的共享前向汇合不受此要求影响，MUST 保持原语句结构；不得仅凭字节码声称找回作者原来的源码拼写。生产叶不是严格 0/1、返回类型不是已证明的 `boolean`，或链与 Phi 证明不闭合时，MUST NOT 按布尔常量简化；任意整数进入 `Z` 消费位时 MUST 保持 JVM 低位语义。字段、数组、调用参数与局部消费者留待各自任务验证。
+
+#### Scenario: Pure and effectful Boolean returns
+
+- **WHEN** Java 8 编译的 `BoolValue` 有 `a > 0 && b > 0`、`a > 0 || b > 0` 以及两项依次调用 `positive` 的对偶返回表达式，且每个消费者是 `ireturn Z`
+- **THEN** 四个返回值分别含 `&&` 或 `||`、无整数三元和 `% 2 != 0`；`positive` 的调用顺序和次数与原 class 相同，测试、生产叶、汇合和返回 BCI 仍可由 source map 查询，整类 Java 8 重编和执行对照一致（P02/P11）
+
+#### Scenario: An unproved Boolean leaf is not simplified
+
+- **WHEN** 同形状分支链的一个生产叶改成 `2`，或消费者是 `int`，或 Phi/边的唯一性证明失败
+- **THEN** 文本 MUST NOT 使用该链的布尔 `&&`/`||` 规范化；若能继续呈现原始整数值进入 `Z` 消费位，MUST 保留 `% 2 != 0`，否则按原拒绝路径引用 BCI（P11）
+
 ### Requirement: An ordinary array access is an index expression
 
 `iaload`、`iastore`、`arraylength` 与 `newarray` MUST 按该指令自己的操作数呈现，MUST NOT 只在枚举 `switch` 的分派表被证明时才允许出现。读取 MUST 写成 `array[index]`，写入 MUST 写成 `array[index] = value`，`arraylength` MUST 写成 `array.length`，`newarray` MUST 写成 `new T[length]`，元素类型取该指令的 `atype`。`enumswitch@1` 已经认领的 `iaload` MUST 保持今天的分派表拼写，普通读取不得抢这条证明。
