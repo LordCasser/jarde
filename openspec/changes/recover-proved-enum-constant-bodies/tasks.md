@@ -12,7 +12,7 @@
 - [x] 2.2a 为现有 P1 `scan_candidates` 增加精确原始 owner 候选过滤：同一物理遍历可找出 `Class`、`Method`、`Field` 的 child-owner 使用及坐标，完整性/预算/取消语义不变。测试精确类符号查询会漏掉的子类方法/字段 owner 与方法句柄，证明该过滤的必要性；不新增索引或扫描器。[Root 验收](verification-2.2a.md)
 - [x] 2.2b 对所选输入范围逐份运行现有 P1 完整 owner 候选扫描，结合同次主类 Code 只认可本常量 `new`/`invokespecial` 的精确物理方法与 BCI；仅当主类 MethodDescriptor 绑到 2.1c 唯一访问桥 marker，或同组选定 sibling 的 typed `InnerClasses` 行满足匿名形状时，允许这些不会产生第二实例的结构引用。另一个常量、普通方法、字段/构造器句柄或其它类的额外使用一律保守拒绝。`has_more`、未知候选、unsupported consumer、非完整覆盖、选定定义歧义或预算/取消停止不能当作零使用。保存候选使用坐标与覆盖率，不发布 `Proved`；测试单点、多点、缺类及停止。[Root 验收](verification-2.2b.md)
 - [x] 2.2c 复用同次主类 Code 的完整 `<clinit>` 常量前缀检查每个已构造对象只经对应的 `putstatic` 消费、之后无栈别名或额外存储效果；核对 name/ordinal 实参、两常量顺序和 `$VALUES` 前缀的 BCI，不凭 2.1c 的预期字段值推断。以等宽改写、多余 `dup`/存储和未闭合后缀控制拒绝，预算/取消保持原报告。[Root 验收](verification-2.2c.md)
-- [ ] 2.3a 逐边证明子类构造器将 name/ordinal 与纯 `null` 哨兵交给唯一 synthetic 访问桥、访问桥原样转发到主类私有构造器且不读取哨兵；普通常量和 `Plain` 的直接路径按自己的物理构造器核验。以桥改写 ordinal、读取哨兵、额外效果和错误调用目标控制拒绝，不把 verifier 通过当语义证明。
+- [x] 2.3a 逐边证明子类构造器将 name/ordinal 与纯 `null` 哨兵交给唯一 synthetic 访问桥、访问桥原样转发到主类私有构造器且不读取哨兵；普通常量和 `Plain` 的直接路径按自己的物理构造器核验。以桥改写 ordinal、读取哨兵、额外效果和错误调用目标控制拒绝，不把 verifier 通过当语义证明。[Root 验收](verification-2.3a.md)
 - [ ] 2.3b 证明每个选定子类仅有无额外效果的编译器构造器与可拼写覆写方法，无捕获字段、类初始化或未解释成员；每个有 Code 的方法只恢复一次，要求完整结构、来源、声明及预算/取消一致。以额外字段/副作用、正文 fallback、声明不合法和异常体控制拒绝。
 - [ ] 2.3c 合证两有序零参数常量、隐式数组/辅助方法、2.2 独占使用与 2.3a/b 的构造和正文；`Op` 的每个无 Code 抽象方法均由各常量体完整实现。仅整组闭合才发布 `Proved`，缺少抽象实现或任一前置证明时保留 `Refused` 与物理事实。
 
