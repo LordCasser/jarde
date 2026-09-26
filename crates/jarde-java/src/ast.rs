@@ -173,6 +173,8 @@ pub enum ExprKind {
     InstanceOf { value: Box<Expr>, ty: String },
     /// A type name used as an expression, as a static call's receiver: `java.lang.Math`.
     Path(String),
+    /// `Outer.this`, only for an exact captured-outer read proved by class-source assembly.
+    QualifiedThis { qualifier: String },
     /// `super` or `Type.super`, used only as the receiver of a proven `invokespecial` call.
     Super { qualifier: Option<String> },
     /// A call: an optional receiver expression, a member name, and the argument expressions.

@@ -336,6 +336,8 @@ pub(crate) struct Inputs<'a> {
     pub(crate) member_inner_targets: &'a [crate::report::ProvedMemberInnerTarget],
     /// The exact interface-special targets whose Java source binding the facade proved.
     pub(crate) interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
+    pub(crate) captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
+    pub(crate) physical_method: Option<&'a jarde_reader::model::PhysicalMethodId>,
     /// The class that declares this member, in the class file's own internal form
     /// (`java/lang/Integer`), as the run's own member declaration states it.
     ///
@@ -4999,6 +5001,14 @@ pub(crate) fn build(
     }
     let compounds = CompoundAssignments::prove(ssa, operations, inputs.fields, budget)?;
     let array_initializers = ArrayInitializers::prove(ssa, operations, inputs.fields, budget)?;
+    validate_captured_outer_reads(
+        inputs.captured_outer_reads,
+        inputs.physical_method,
+        inputs.declaring_class,
+        inputs.has_receiver,
+        inputs.fields,
+        budget,
+    )?;
     let declarations = declarations(
         regions,
         canonical,
@@ -5030,6 +5040,7 @@ pub(crate) fn build(
         members: inputs.members,
         member_inner_targets: inputs.member_inner_targets,
         interface_super_calls: inputs.interface_super_calls,
+        captured_outer_reads: inputs.captured_outer_reads,
         declaring_class: inputs.declaring_class,
         direct_super_class: inputs.direct_super_class,
         direct_interfaces: inputs.direct_interfaces,
@@ -5175,6 +5186,63 @@ pub(crate) fn build(
     })
 }
 
+/// A supplied family fact must identify a claimed instance read in this exact physical body.
+/// Refuse the whole request if it does not: silently ignoring a stale fact could let the caller
+/// publish a family projection while this body still contains a physical capture field.
+fn validate_captured_outer_reads(
+    reads: &[crate::report::ProvedCapturedOuterRead],
+    method: Option<&jarde_reader::model::PhysicalMethodId>,
+    declaring_class: Option<&str>,
+    has_receiver: bool,
+    fields: &field::Plan,
+    budget: &mut Budget,
+) -> Result<(), StopReason> {
+    if reads.is_empty() {
+        return Ok(());
+    }
+    let mut seen = BTreeSet::new();
+    for read in reads {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(read.read_bci),
+        )?;
+        poll(budget, Some(read.read_bci))?;
+        let valid_name = !read.outer_source_name.is_empty()
+            && read.outer_source_name.split('.').all(is_java_identifier);
+        let valid = method == Some(&read.method)
+            && declaring_class == Some(read.field_owner.as_str())
+            && has_receiver
+            && read.constructor.owner == read.method.owner
+            && read.constructor.name.0 == b"<init>"
+            && read
+                .constructor
+                .descriptor
+                .0
+                .starts_with(format!("(L{};", read.outer_internal_name).as_bytes())
+            && read.field_descriptor == format!("L{};", read.outer_internal_name)
+            && valid_name
+            && seen.insert(read.read_bci)
+            && matches!(fields.claim(read.read_bci), Some((evidence, shape))
+                if evidence.access == FieldAccess::Read
+                    && !evidence.is_static
+                    && !shape.writes()
+                    && shape.receiver.is_some()
+                    && evidence.owner == read.field_owner
+                    && evidence.name == read.field_name
+                    && evidence.descriptor == read.field_descriptor);
+        if !valid {
+            return Err(StopReason::EvidenceRefused {
+                code: "jre_captured_outer_read_refused",
+                at: Some(read.read_bci),
+                message: "the supplied captured-outer read does not match this physical method and its proved instance Fieldref".to_owned(),
+            });
+        }
+    }
+    Ok(())
+}
+
 /// Adds stable local reads reached while quoting a call's operands. The ordinary producer walk
 /// omits these when their declared local still denotes the same value; a quoted call has no
 /// argument text where that declaration could stand in for the actual load. The ordered set makes
@@ -5230,6 +5298,7 @@ struct Builder<'a> {
     members: Option<&'a ClassMembers>,
     member_inner_targets: &'a [crate::report::ProvedMemberInnerTarget],
     interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
+    captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
     /// The class this body belongs to, in internal form, when the run's own member declaration
     /// states it: the fact a static call's pool owner is compared against (P3 4.4).
     declaring_class: Option<&'a str>,
@@ -14704,6 +14773,30 @@ impl Builder<'_> {
                                 Expr::direct(ExprKind::Path(owner), bci)
                             }
                         };
+                        if let Some(capture) = self
+                            .captured_outer_reads
+                            .iter()
+                            .find(|read| read.read_bci == bci)
+                        {
+                            // The family certificate named a read through the child's own entry
+                            // receiver. Keep the load and read origins in this child method, while
+                            // the constructor's distinct method origin stays in the handoff fact.
+                            if !shape.receiver.is_some_and(|value| self.receiver_is_entry_this(value))
+                                || !matches!(&receiver.kind, ExprKind::Local(name) if name == "this")
+                            {
+                                return Err(format!(
+                                    "the captured-outer field read at BCI {bci} is not through this child's entry receiver"
+                                ).into());
+                            }
+                            return Ok(Expr::new(
+                                ExprKind::QualifiedThis {
+                                    qualifier: capture.outer_source_name.clone(),
+                                },
+                                OriginSet::new(Origin::direct(bci))
+                                    .plus_derived(Origin::derived(receiver.origin.primary().bci())),
+                            )
+                            .presenting(Type::Reference(capture.outer_source_name.clone())));
+                        }
                         let field = Expr::new(
                             ExprKind::Field {
                                 receiver: Box::new(receiver),
@@ -19223,6 +19316,7 @@ fn stated_by_expression(expr: &Expr, names: &mut Vec<String>, bcis: &mut Vec<u32
         | ExprKind::Null
         | ExprKind::ClassLiteral { .. }
         | ExprKind::Path(_)
+        | ExprKind::QualifiedThis { .. }
         | ExprKind::Super { .. } => {}
     }
 }
