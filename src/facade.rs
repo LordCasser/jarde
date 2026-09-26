@@ -2566,6 +2566,7 @@ impl Engine {
                 &assembly_context,
                 &pool,
                 &read.facts.this_class.raw().0,
+                read.facts.access_flags,
                 &read.facts.fields,
                 &read.facts.methods,
                 &enum_code_candidates,
@@ -4467,6 +4468,42 @@ pub(crate) struct PendingEnumConstantBodyRelation {
     pub(crate) constructor_descriptor: Vec<u8>,
     pub(crate) subclass_owner: Vec<u8>,
     pub(crate) subclass: PhysicalDefinitionId,
+    /// Same-run physical facts that establish the narrow zero-source-argument, ordered
+    /// two-constant enum shape. This remains private pending evidence and grants no projection.
+    pub(crate) group_shape: PendingEnumConstantBodyGroupShape,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct PendingEnumConstantBodyGroupShape {
+    pub(crate) enum_access_flags: u16,
+    pub(crate) constants: Vec<PendingEnumConstantBodyConstant>,
+    pub(crate) implicit_members: Vec<PendingEnumConstantBodyMember>,
+    pub(crate) abstract_methods: Vec<PendingEnumConstantBodyMember>,
+    pub(crate) constructors: Vec<PendingEnumConstantBodyMember>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct PendingEnumConstantBodyConstant {
+    pub(crate) field_index: u64,
+    pub(crate) field_name: Vec<u8>,
+    pub(crate) expected_ordinal: u32,
+    pub(crate) allocation_bci: u32,
+    pub(crate) constructor_bci: u32,
+    pub(crate) allocation_owner: Vec<u8>,
+    pub(crate) constructor_owner: Vec<u8>,
+    pub(crate) constructor_descriptor: Vec<u8>,
+    pub(crate) descriptor_source_argument_count: u8,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct PendingEnumConstantBodyMember {
+    pub(crate) table_index: u64,
+    pub(crate) name: Vec<u8>,
+    pub(crate) descriptor: Vec<u8>,
+    pub(crate) access_flags: u16,
+    pub(crate) has_code: bool,
+    /// The raw object type in a javac enum access-constructor descriptor, when this is that record.
+    pub(crate) access_marker_owner: Option<Vec<u8>>,
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -4476,6 +4513,7 @@ fn resolve_enum_constant_body_relations(
     enum_nesting: &class_source::ClassSourceAssemblyContext,
     enum_pool: &[jarde_reader::classfile::CpEntryFacts],
     enum_owner: &[u8],
+    enum_access_flags: u16,
     fields: &[jarde_reader::classfile::MemberHeader],
     methods: &[jarde_reader::classfile::MemberHeader],
     code_candidates: &[crate::enum_constants::EnumMethodCodeCandidate],
@@ -4487,6 +4525,14 @@ fn resolve_enum_constant_body_relations(
     budget: &mut Budget,
 ) -> Result<Vec<PendingEnumConstantBodyRelation>> {
     use crate::enum_constants::EnumCodeReference;
+
+    const ACC_PRIVATE: u16 = 0x0002;
+    const ACC_STATIC: u16 = 0x0008;
+    const ACC_FINAL: u16 = 0x0010;
+    const ACC_SYNTHETIC: u16 = 0x1000;
+    const ACC_ABSTRACT: u16 = 0x0400;
+    const ACC_ENUM: u16 = 0x4000;
+    const BASE_CTOR: &[u8] = b"(Ljava/lang/String;I)V";
 
     budget.charge(
         CountedBudgetDimension::AnalysisSteps,
@@ -4551,7 +4597,17 @@ fn resolve_enum_constant_body_relations(
                 && field.descriptor.raw().0 == format!("L{owner_text};").as_bytes()
         })
         .collect();
-    if constants.len() != 2 {
+    if constants.len() != 2
+        || fields
+            .iter()
+            .filter(|field| field.access_flags & ACC_ENUM != 0)
+            .count()
+            != 2
+        || constants.iter().any(|(_, field)| {
+            field.access_flags != (0x0001 | ACC_STATIC | ACC_FINAL | ACC_ENUM)
+                || !field.attributes.is_empty()
+        })
+    {
         return Ok(Vec::new());
     }
 
@@ -4594,9 +4650,12 @@ fn resolve_enum_constant_body_relations(
         else {
             return Ok(Vec::new());
         };
-        if constructor_owner.as_slice() != allocation.class.as_bytes()
-            || name.as_slice() != b"<init>"
-        {
+        if !enum_constant_constructor_matches(
+            constructor_owner,
+            name,
+            descriptor,
+            allocation.class.as_bytes(),
+        ) {
             return Ok(Vec::new());
         }
         // `invokespecial` must be followed by the one physical enum-field write. This makes
@@ -4631,6 +4690,198 @@ fn resolve_enum_constant_body_relations(
     {
         return Ok(Vec::new());
     }
+
+    // Preserve the entire ordered initializer shape and the physical implicit-member records
+    // before resolving child definitions. These facts are intentionally only pending evidence:
+    // the ordinary enum proof above still refuses zero-source-argument anonymous-owner groups.
+    let mut constant_shape = Vec::with_capacity(constants.len());
+    for (
+        ordinal,
+        ((field_index, field), (constructed_field_index, allocation, constructor_bci, descriptor)),
+    ) in constants.iter().zip(&constructions).enumerate()
+    {
+        if *field_index != *constructed_field_index || descriptor.as_slice() != BASE_CTOR {
+            return Ok(Vec::new());
+        }
+        let Some(constructor_owner) = code
+            .instructions
+            .iter()
+            .find(|instruction| instruction.bci == *constructor_bci)
+            .and_then(|instruction| instruction.reference.as_ref())
+            .and_then(|reference| match reference {
+                EnumCodeReference::Method { owner, .. } => Some(owner.clone()),
+                _ => None,
+            })
+        else {
+            return Ok(Vec::new());
+        };
+        if constructor_owner != allocation.class.as_bytes() {
+            return Ok(Vec::new());
+        }
+        constant_shape.push(PendingEnumConstantBodyConstant {
+            field_index: u64::try_from(*field_index).unwrap_or(u64::MAX),
+            field_name: field.name.raw().0.clone(),
+            expected_ordinal: u32::try_from(ordinal).unwrap_or(u32::MAX),
+            allocation_bci: allocation.head_bci,
+            constructor_bci: *constructor_bci,
+            allocation_owner: allocation.class.as_bytes().to_vec(),
+            constructor_owner,
+            constructor_descriptor: descriptor.clone(),
+            // This count describes only the constructor descriptor after the VM-injected
+            // name/ordinal pair; it does not prove the values passed at this call site.
+            descriptor_source_argument_count: 0,
+        });
+    }
+
+    let physical_member = |index: usize, header: &jarde_reader::classfile::MemberHeader| {
+        PendingEnumConstantBodyMember {
+            table_index: u64::try_from(index).unwrap_or(u64::MAX),
+            name: header.name.raw().0.clone(),
+            descriptor: header.descriptor.raw().0.clone(),
+            access_flags: header.access_flags,
+            has_code: header
+                .attributes
+                .iter()
+                .any(|attribute| attribute.name.raw().0 == b"Code"),
+            access_marker_owner: None,
+        }
+    };
+    let unique_method_record = |name: &[u8], descriptor: &[u8]| {
+        let matches: Vec<_> = methods
+            .iter()
+            .enumerate()
+            .filter(|(_, method)| {
+                method.name.raw().0 == name && method.descriptor.raw().0 == descriptor
+            })
+            .collect();
+        match matches.as_slice() {
+            [(index, method)] => Some(physical_member(*index, method)),
+            _ => None,
+        }
+    };
+    let array_descriptor = format!("()[L{};", owner_text).into_bytes();
+    let value_of_descriptor = format!("(Ljava/lang/String;)L{};", owner_text).into_bytes();
+    let values_field: Vec<_> = fields
+        .iter()
+        .enumerate()
+        .filter(|(_, field)| field.name.raw().0 == b"$VALUES")
+        .collect();
+    let [(values_field_index, values_field)] = values_field.as_slice() else {
+        return Ok(Vec::new());
+    };
+    if values_field.descriptor.raw().0 != format!("[L{};", owner_text).as_bytes()
+        || values_field.access_flags != (ACC_PRIVATE | ACC_STATIC | ACC_FINAL | ACC_SYNTHETIC)
+        || !values_field.attributes.is_empty()
+    {
+        return Ok(Vec::new());
+    }
+    let mut implicit_members = vec![PendingEnumConstantBodyMember {
+        table_index: u64::try_from(*values_field_index).unwrap_or(u64::MAX),
+        name: values_field.name.raw().0.clone(),
+        descriptor: values_field.descriptor.raw().0.clone(),
+        access_flags: values_field.access_flags,
+        has_code: false,
+        access_marker_owner: None,
+    }];
+    for (name, descriptor, flags) in [
+        (b"<clinit>".as_slice(), b"()V".as_slice(), ACC_STATIC),
+        (
+            b"values".as_slice(),
+            array_descriptor.as_slice(),
+            0x0001 | ACC_STATIC,
+        ),
+        (
+            b"valueOf".as_slice(),
+            value_of_descriptor.as_slice(),
+            0x0001 | ACC_STATIC,
+        ),
+        (
+            b"$values".as_slice(),
+            array_descriptor.as_slice(),
+            ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC,
+        ),
+        (b"<init>".as_slice(), BASE_CTOR, ACC_PRIVATE),
+    ] {
+        let Some(member) = unique_method_record(name, descriptor) else {
+            return Ok(Vec::new());
+        };
+        if member.access_flags != flags || !member.has_code {
+            return Ok(Vec::new());
+        }
+        implicit_members.push(member);
+    }
+    let mut constructors: Vec<_> = methods
+        .iter()
+        .enumerate()
+        .filter(|(_, method)| method.name.raw().0 == b"<init>")
+        .map(|(index, method)| physical_member(index, method))
+        .collect();
+    let bridge_indexes: Vec<_> = constructors
+        .iter()
+        .filter_map(|method| {
+            if method.access_flags == ACC_SYNTHETIC {
+                enum_access_constructor_marker_owner(&method.descriptor)
+                    .map(|owner| (method.table_index, owner))
+            } else {
+                None
+            }
+        })
+        .collect();
+    let needs_bridge = constant_shape
+        .iter()
+        .any(|constant| constant.allocation_owner != enum_owner);
+    if constructors
+        .iter()
+        .filter(|method| method.descriptor == BASE_CTOR)
+        .count()
+        != 1
+        || bridge_indexes.len() != usize::from(needs_bridge)
+        || bridge_indexes.iter().any(|(table_index, owner)| {
+            !constructors
+                .iter()
+                .any(|constructor| constructor.table_index == *table_index && constructor.has_code)
+                || !constant_shape.iter().any(|constant| {
+                    constant.allocation_owner == *owner && constant.allocation_owner != enum_owner
+                })
+        })
+        || constructors.iter().any(|constructor| {
+            constructor.descriptor != BASE_CTOR
+                && !bridge_indexes
+                    .iter()
+                    .any(|(table_index, _)| *table_index == constructor.table_index)
+        })
+    {
+        return Ok(Vec::new());
+    }
+    for (table_index, owner) in bridge_indexes {
+        if let Some(constructor) = constructors
+            .iter_mut()
+            .find(|constructor| constructor.table_index == table_index)
+        {
+            constructor.access_marker_owner = Some(owner);
+        }
+    }
+    let abstract_methods: Vec<_> = methods
+        .iter()
+        .enumerate()
+        .filter(|(_, method)| method.access_flags & ACC_ABSTRACT != 0)
+        .map(|(index, method)| physical_member(index, method))
+        .collect();
+    if (enum_access_flags & ACC_ABSTRACT != 0) != !abstract_methods.is_empty()
+        || abstract_methods.iter().any(|method| method.has_code)
+        || methods.iter().enumerate().any(|(index, method)| {
+            !physical_member(index, method).has_code && method.access_flags & ACC_ABSTRACT == 0
+        })
+    {
+        return Ok(Vec::new());
+    }
+    let group_shape = PendingEnumConstantBodyGroupShape {
+        enum_access_flags,
+        constants: constant_shape,
+        implicit_members,
+        abstract_methods,
+        constructors,
+    };
 
     let mut relations = Vec::new();
     for (field_index, allocation, constructor_bci, descriptor) in constructions {
@@ -4754,9 +5005,35 @@ fn resolve_enum_constant_body_relations(
             constructor_descriptor: descriptor.clone(),
             subclass_owner: allocation.class.as_bytes().to_vec(),
             subclass: definition,
+            group_shape: group_shape.clone(),
         });
     }
     Ok(relations)
+}
+
+fn enum_access_constructor_marker_owner(descriptor: &[u8]) -> Option<Vec<u8>> {
+    let Some(parameter) = descriptor
+        .strip_prefix(b"(Ljava/lang/String;I")
+        .and_then(|tail| tail.strip_suffix(b";)V"))
+    else {
+        return None;
+    };
+    let owner = parameter.strip_prefix(b"L")?;
+    if owner.is_empty() || owner.contains(&b';') || owner.contains(&b'[') {
+        return None;
+    }
+    Some(owner.to_vec())
+}
+
+fn enum_constant_constructor_matches(
+    constructor_owner: &[u8],
+    constructor_name: &[u8],
+    constructor_descriptor: &[u8],
+    allocation_owner: &[u8],
+) -> bool {
+    constructor_owner == allocation_owner
+        && constructor_name == b"<init>"
+        && constructor_descriptor == b"(Ljava/lang/String;I)V"
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -6758,6 +7035,115 @@ mod enum_constant_body_relation_tests {
         changed
     }
 
+    fn mutate_method_flags(
+        bytes: &[u8],
+        target_name: &[u8],
+        target_descriptor: &[u8],
+        clear: u16,
+    ) -> Vec<u8> {
+        let mut changed = bytes.to_vec();
+        let cp_count = u16::from_be_bytes([changed[8], changed[9]]) as usize;
+        let mut offset = 10usize;
+        let mut utf8 = vec![None; cp_count];
+        let mut index = 1usize;
+        while index < cp_count {
+            let tag = changed[offset];
+            offset += 1;
+            match tag {
+                1 => {
+                    let length =
+                        u16::from_be_bytes([changed[offset], changed[offset + 1]]) as usize;
+                    offset += 2;
+                    utf8[index] = Some(changed[offset..offset + length].to_vec());
+                    offset += length;
+                }
+                3 | 4 => offset += 4,
+                5 | 6 => {
+                    offset += 8;
+                    index += 1;
+                }
+                7 | 8 | 16 | 19 | 20 => offset += 2,
+                9 | 10 | 11 | 12 | 17 | 18 => offset += 4,
+                15 => offset += 3,
+                _ => panic!("unknown constant-pool tag {tag}"),
+            }
+            index += 1;
+        }
+        offset += 6;
+        let interfaces = u16::from_be_bytes([changed[offset], changed[offset + 1]]) as usize;
+        offset += 2 + interfaces * 2;
+        let fields = u16::from_be_bytes([changed[offset], changed[offset + 1]]) as usize;
+        offset += 2;
+        for _ in 0..fields {
+            offset = skip_member(&changed, offset);
+        }
+        let methods = u16::from_be_bytes([changed[offset], changed[offset + 1]]) as usize;
+        offset += 2;
+        for _ in 0..methods {
+            let flags_offset = offset;
+            let flags = u16::from_be_bytes([changed[offset], changed[offset + 1]]);
+            let name_index =
+                u16::from_be_bytes([changed[offset + 2], changed[offset + 3]]) as usize;
+            let descriptor_index =
+                u16::from_be_bytes([changed[offset + 4], changed[offset + 5]]) as usize;
+            let member_name = utf8[name_index].as_deref().unwrap();
+            let member_descriptor = utf8[descriptor_index].as_deref().unwrap();
+            if member_name == target_name && member_descriptor == target_descriptor {
+                changed[flags_offset..flags_offset + 2]
+                    .copy_from_slice(&(flags & !clear).to_be_bytes());
+                return changed;
+            }
+            offset = skip_member(&changed, offset);
+        }
+        panic!("target method was absent from the class file");
+    }
+
+    fn skip_member(bytes: &[u8], mut offset: usize) -> usize {
+        offset += 6;
+        let attributes = u16::from_be_bytes([bytes[offset], bytes[offset + 1]]) as usize;
+        offset += 2;
+        for _ in 0..attributes {
+            let length =
+                u32::from_be_bytes(bytes[offset + 2..offset + 6].try_into().unwrap()) as usize;
+            offset += 6 + length;
+        }
+        offset
+    }
+
+    fn mutate_initializer_constructor_owner(
+        bytes: &[u8],
+        constructor_bci: u32,
+        new_owner: &[u8],
+    ) -> Vec<u8> {
+        let mut read_budget = budget();
+        let facts = class_member_facts(bytes, &mut read_budget).unwrap();
+        let pool = class_constant_pool(bytes, &read_budget).unwrap();
+        let method_ref = pool
+            .iter()
+            .find(|entry| {
+                matches!(&entry.kind,
+                    jarde_reader::classfile::CpEntryKind::MethodRef { owner, name, descriptor, .. }
+                        if owner.0 == new_owner && name.0 == b"<init>" && descriptor.0 == b"(Ljava/lang/String;I)V")
+            })
+            .expect("the enum private constructor reference exists")
+            .index;
+        let clinit = facts
+            .methods
+            .iter()
+            .find(|method| method.name.raw().0 == b"<clinit>")
+            .unwrap();
+        let code = clinit
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0 == b"Code")
+            .unwrap();
+        let code_offset = usize::try_from(code.content_span.start).unwrap() + 8;
+        let operand_offset = code_offset + constructor_bci as usize + 1;
+        let mut changed = bytes.to_vec();
+        changed[operand_offset..operand_offset + 2].copy_from_slice(&method_ref.to_be_bytes());
+        changed
+    }
+
     fn assert_positive(entries: &[(Vec<u8>, Vec<u8>)], debug: bool) {
         for (class, expected) in [("demo/Op", 2), ("demo/Mixed", 1), ("demo/Plain", 0)] {
             let source_report = report(entries, class);
@@ -6773,6 +7159,96 @@ mod enum_constant_body_relation_tests {
             assert!(
                 !source_report.text.contains("ADD {") && !source_report.text.contains("SPECIAL {")
             );
+            if expected == 0 {
+                let constructors: Vec<_> = source_report
+                    .methods
+                    .iter()
+                    .filter(|method| method.item.name.raw().0 == b"<init>")
+                    .collect();
+                assert_eq!(constructors.len(), 1, "{class}, debug={debug}");
+                assert_eq!(
+                    constructors[0].item.descriptor.raw().0,
+                    b"(Ljava/lang/String;I)V"
+                );
+                assert!(constructors[0].enum_constructor_no_arg_source_signature);
+                assert_eq!(constructors[0].item.access_flags & 0x1000, 0);
+            } else {
+                let first_shape = &source_report.enum_constant_body_relations[0].group_shape;
+                assert_eq!(
+                    first_shape.enum_access_flags & 0x0400 != 0,
+                    class == "demo/Op"
+                );
+                assert_eq!(first_shape.constants.len(), 2);
+                assert_eq!(
+                    first_shape
+                        .constants
+                        .iter()
+                        .map(|constant| constant.field_name.as_slice())
+                        .collect::<Vec<_>>(),
+                    if class == "demo/Op" {
+                        vec![b"ADD".as_slice(), b"MULTIPLY".as_slice()]
+                    } else {
+                        vec![b"SPECIAL".as_slice(), b"PLAIN".as_slice()]
+                    }
+                );
+                assert_eq!(
+                    first_shape
+                        .constants
+                        .iter()
+                        .map(|constant| (constant.field_index, constant.expected_ordinal))
+                        .collect::<Vec<_>>(),
+                    vec![(0, 0), (1, 1)]
+                );
+                assert!(first_shape.constants.iter().all(|constant| {
+                    constant.descriptor_source_argument_count == 0
+                        && constant.constructor_descriptor == b"(Ljava/lang/String;I)V"
+                        && constant.constructor_owner == constant.allocation_owner
+                }));
+                assert_eq!(first_shape.constructors.len(), 2);
+                let access_constructors: Vec<_> = first_shape
+                    .constructors
+                    .iter()
+                    .filter(|constructor| constructor.access_flags == 0x1000)
+                    .collect();
+                assert_eq!(access_constructors.len(), 1);
+                assert!(access_constructors[0].has_code);
+                let marker_owner =
+                    enum_access_constructor_marker_owner(&access_constructors[0].descriptor)
+                        .expect("the access constructor descriptor has one object marker");
+                assert_eq!(
+                    access_constructors[0].access_marker_owner.as_deref(),
+                    Some(marker_owner.as_slice())
+                );
+                assert!(
+                    source_report
+                        .enum_constant_body_relations
+                        .iter()
+                        .any(|relation| relation.subclass_owner == marker_owner)
+                );
+                assert_eq!(first_shape.abstract_methods.is_empty(), class != "demo/Op");
+                if class == "demo/Op" {
+                    assert_eq!(first_shape.abstract_methods.len(), 1);
+                    assert_eq!(first_shape.abstract_methods[0].name, b"apply");
+                    assert!(!first_shape.abstract_methods[0].has_code);
+                }
+                assert!(first_shape.implicit_members.iter().any(|member| {
+                    member.name == b"$VALUES" && member.access_flags == 0x101a && !member.has_code
+                }));
+                for member_name in [b"values".as_slice(), b"valueOf", b"$values", b"<clinit>"] {
+                    assert!(
+                        first_shape
+                            .implicit_members
+                            .iter()
+                            .any(|member| { member.name == member_name && member.has_code })
+                    );
+                }
+                assert!(
+                    source_report
+                        .enum_constant_body_relations
+                        .iter()
+                        .all(|relation| relation.group_shape == *first_shape)
+                );
+            }
             assert!(
                 serde_json::to_value(&source_report)
                     .unwrap()
@@ -6873,6 +7349,43 @@ mod enum_constant_body_relation_tests {
         let changed_report = report(&changed, "demo/Op");
         assert_eq!(changed_report.enum_constant_body_relations.len(), 1);
         assert!(!changed_report.text.contains("ADD {"));
+
+        let mut incomplete_member = entries.clone();
+        let op = incomplete_member
+            .iter_mut()
+            .find(|(name, _)| name == b"demo/Op.class")
+            .unwrap();
+        op.1 = mutate_method_flags(&op.1, b"$values", b"()[Ldemo/Op;", 0x1000);
+        let incomplete_report = report(&incomplete_member, "demo/Op");
+        assert!(incomplete_report.enum_constant_body_relations.is_empty());
+        assert!(matches!(
+            incomplete_report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+
+        let mut wrong_owner = entries.clone();
+        let op = wrong_owner
+            .iter_mut()
+            .find(|(name, _)| name == b"demo/Op.class")
+            .unwrap();
+        op.1 = mutate_initializer_constructor_owner(&op.1, 7, b"demo/Op");
+        let wrong_owner_report = report(&wrong_owner, "demo/Op");
+        assert!(wrong_owner_report.enum_constant_body_relations.is_empty());
+        assert!(matches!(
+            wrong_owner_report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Stopped { .. }
+        ));
+
+        let complete = report(&entries, "demo/Op");
+        let mut limits = budget().limits().clone();
+        limits.analysis_steps = complete.usage.analysis_steps.saturating_sub(1);
+        let bounded = report_with_budget(&entries, "demo/Op", Budget::new(limits));
+        assert!(bounded.enum_constant_body_relations.is_empty());
+        assert!(matches!(
+            bounded.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Stopped { .. }
+        ));
+
         assert_positive(&compiled_entries(false), false);
     }
 }
