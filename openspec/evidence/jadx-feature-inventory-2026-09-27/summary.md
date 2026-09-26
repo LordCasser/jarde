@@ -25,12 +25,15 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 | --- | --- | --- |
 | 冻结差距已修复，单元待扩验 | DT-01、DT-03 | 成员局部类型已由准确成员路径写为 `Outer.Member`，`OuterSuperEffects` 全家族 Java 8 重编运行通过；其他成员形态仍按各自单元扩验 |
 | 冻结差距已修复，单元待扩验 | EM-13 | 唯一同类 `ACC_VARARGS` 目标的完整调用数组可安全展开，冻结正反例重编运行通过；继承、跨类和其他 lowering 未纳入此闭环 |
+| 已证差距，窄切片待实现 | DT-02 | [静态成员冻结对照](../java-syntax-2026-09-27/static-member-basic/README.md)：Jarde 保留独立 `$Leaf`，JADX 写 `static class Leaf`；三方 Java 8 重编运行同为 `9:4`。已写 [OpenSpec](../../changes/present-proved-static-member-class/)，顶级 `Named$Top` 是拒绝控制 |
+| 已证差距，窄切片实现中 | DT-05 | [匿名接口冻结对照](../java-syntax-2026-09-27/anonymous-interface-basic/README.md)：Jarde 使用点保留 `$1` 构造，JADX 写 `new I() { ... }`；三方 Java 8 重编运行同为 `7`。已写 [OpenSpec](../../changes/inline-proved-anonymous-interface/)，双 BCI/跨类身份是必要负例 |
+| 已证差距，待设计实现 | DT-06 | [匿名父类参数对照](../java-syntax-2026-09-27/anonymous-super-args/report.md)：原/JADX Java 8 重编运行同值同效果，Jarde 独立匿名子类的捕获字段写入位于 `super(...)` 前，完整源码无法 Java 8 重编；另有独立的 `event()` BCI fallback，不混入该语法问题 |
 | JADX 未完成 | CF-17 | `TestTryWithResources` 的唯一目标标为 `@NotYetImplemented` |
 | 未测 | CF-01～16、CF-18～20 | 19 个正向测试候选，见控制流账本 |
-| 未测 | DT-02、DT-04～29、DT-31 | 28 个候选，见声明/类型账本 |
+| 未测 | DT-04、DT-07～29、DT-31 | 25 个候选，见声明/类型账本 |
 | 未测 | EM-01～07、EM-10～12、EM-17～25、EM-27 | 20 个候选，见表达式/杂项账本 |
 
-当前有 **3 个冻结差距已修复但待扩验的单元、67 个未测的正向候选、1 个 JADX 未完成单元**。上述两项 OpenSpec 和 root 独立验收已闭合；这不自动把 DT-01/03 或 EM-13 的全部变体标为“已追平”。若发现测试本身无有效正向断言，先修正其证据级别和分母。
+当前有 **3 个冻结差距已修复但待扩验的单元、3 个已证差距、64 个未测的正向候选、1 个 JADX 未完成单元**。已修复的两项 OpenSpec 和 root 独立验收已闭合；这不自动把 DT-01/03 或 EM-13 的全部变体标为“已追平”。DT-02/05 的窄切片正在实现，DT-06 待按独立证据设计；任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
 
 ## 顺序与验收门槛
 
