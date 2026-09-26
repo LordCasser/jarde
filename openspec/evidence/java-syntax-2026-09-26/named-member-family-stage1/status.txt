@@ -1,0 +1,7 @@
+original javac --release 8: 0
+original java -Xverify:all: 0; output 2011, 20
+JADX raw package source javac --release 8: 0
+JADX raw package source runtime -Xverify:all: 0; output 2011, 20
+JADX source with defpackage line removed javac --release 8: 0
+JADX stripped source runtime -Xverify:all: 0; output 2011, 20
+Jarde comparison: pending independently pinned build

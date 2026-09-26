@@ -1,0 +1,1 @@
+openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/jadx/sources/defpackage/NamedMemberFamilyStage1.java
