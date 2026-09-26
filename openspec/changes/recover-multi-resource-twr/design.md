@@ -26,7 +26,7 @@
 2. **内层异常清理的外层保护闭合。** 对相邻两层，内层 handler 的完整 span 必须由外层主行覆盖；若它不在主行内，只准接受另一条范围**恰好**等于该 span、同 catch 类型且同目标 handler 的异常表行。此行连同原层行、close 自身 guard 行一起进入已解释行集合；记录表序与实际覆盖优先级，不得吞并用户 catch、部分重叠行或第三条未解释行。该检查不需要公开异常模型或第二套扫描器。
 3. **返回仍写在资源体内。** 对冻结的 `Patrol` 返回形状，体内先产生并保存返回值，close 之后只有同一值的纯 load 和类型相符的 return；证明后让现有资源 `Plan` 携带该 return BCI，Builder 复用既有 `return_expr` 将 `return` 写在 `try` 体内并给原 load/return 留来源锚点。若尾部还有调用、写入或返回了别的值，拒绝而非把体内局部在体外读取。无返回或在 `try` 后另有语句的旧形状保持原路径。
 
-   2.3a 的同次 CFG/SSA 证明与 Builder 接缝已实现。高层真实 fixture 的 handler 与正常路径复用物理局部槽，现有词法声明计划仍将其合并而拒绝；不能因返回尾部已证明就削弱该拒绝。后续 2.3b 复用独立的 `preserve-local-scope-across-exception-regions` 作用域任务，按定义—使用与 clause 路径分清身份。多资源冻结样例另有每个头的 `new; dup` 生产者未归属（BCI 0/10），由 2.4 在现有资源初始化证据内精确闭合，不新建全局 Region 机制。
+   2.3a 的同次 CFG/SSA 证明与 Builder 接缝已实现。高层真实 fixture 的清理 handler 在正常 return 之后，虽已由 TWR 规则证明为隐式 close/suppression，`Plan.owned` 仅含 `start..return` 的连续块，Region 仍把这些非连续 handler 列为 fallback。`slot_uses` 再把 handler 的 caught Throwable 与体内保存的 int 按同一物理 slot 合并为一个局部，导致词法声明拒绝。2.3b 应先精确认领已证清理块，再仅按其 BCI 从源码局部声明规划排除编译器清理读写；不能全方法跳过该 slot，也不能把用户 handler 一并隐藏。其它跨异常区局部身份仍属于独立 `preserve-local-scope-across-exception-regions` 任务。多资源冻结样例另有每个头的 `new; dup` 生产者未归属（BCI 0/10），由 2.4 在现有资源初始化证据内精确闭合，不新建全局 Region 机制。
 4. **呈现为一条头。** 源代码是一条 `try (a; b)`，恢复文本同形；每层的 close 证据仍逐层验证（`close_of_level`/`close_handler`/`Suppressed` 原样），正常路径逆序 close 的既有证明复用。资源名沿用 `names` 拼写。
 5. **与 catch 组合沿用 enclosing_clauses。** TWR+catch 的行几何（真 TWR 行 + 被包围用户行）在本几何上重验；冲突时拒绝，不放宽。
 6. **证据。** 正例（2 资源 + 返回值 + 内层抛异常 + 外层 close 抛异常 + 正常关闭）、负例（行范围或同目标保护行被等宽 patch 错一级、返回尾部加效果 → 拒绝保持）、旧 `Guarded.two/three` 单行形状、三方对照（jadx 的展开输出记为其偏离）、重编译执行对照。

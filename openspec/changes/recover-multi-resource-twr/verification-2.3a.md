@@ -6,4 +6,4 @@
 
 Root 在隔离工作树从源码重建并复跑：`jarde-java` 的计划正例 1/1；`p3_twr_return_tail` 4/4、`p3_multi_resource_twr_geometry` 4/4、`p3_guard` 13/13。`cargo fmt --all -- --check`、`git diff --check` 通过。私有构建目标已清理。
 
-本项仅证明返回尾部的 Region/AST 归属，不声称完整方法恢复。`runSaved` 因 handler 复用 slot 的跨 fallback 局部作用域仍拒绝；冻结双资源 `run` 因 BCI 0/10 的 `new; dup` 头部生产者未归属仍报 `jre_guard_span`。分别留给 2.3b 与 2.4，三方重编执行验收仍是 3.1，不能把上述局部测试算作该任务通过。
+本项仅证明返回尾部的 Region/AST 归属，不声称完整方法恢复。`runSaved` 的已证清理 handler 在 return 后，尚未进入 Guard `owned`，被 Region 引用为 fallback；同一 slot 的 synthetic Throwable 访问又与体内 int 混入声明规划，仍拒绝。冻结双资源 `run` 因 BCI 0/10 的 `new; dup` 头部生产者未归属仍报 `jre_guard_span`。分别留给 2.3b 与 2.4，三方重编执行验收仍是 3.1，不能把上述局部测试算作该任务通过。
