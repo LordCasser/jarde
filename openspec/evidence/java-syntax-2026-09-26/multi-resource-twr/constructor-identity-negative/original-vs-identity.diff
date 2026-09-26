@@ -1,0 +1,13 @@
+--- original/runtime.txt
++++ constructor-identity-negative/runtime.txt
+@@ -1,5 +1,5 @@
+-normal result=42;events=open-outer,open-inner,body,read,close-inner,close-outer
+-body throw=BodyFailure:body;suppressed=;events=open-outer,open-inner,body,close-inner,close-outer
+-inner-close throw=CloseFailure:close-inner;suppressed=;events=open-outer,open-inner,body,read,close-inner,close-outer
+-outer-close throw=CloseFailure:close-outer;suppressed=;events=open-outer,open-inner,body,read,close-inner,close-outer
+-suppressed throw=BodyFailure:body;suppressed=CloseFailure:close-inner,CloseFailure:close-outer;events=open-outer,open-inner,body,close-inner,close-outer
++normal throw=NullPointerException:Cannot invoke "MultiResourceTwr$Probe.close()" because "<local0>" is null;suppressed=;events=open-outer,close-outer,open-inner,body,read,close-inner
++body throw=BodyFailure:body;suppressed=NullPointerException:Cannot invoke "MultiResourceTwr$Probe.close()" because "<local0>" is null;events=open-outer,close-outer,open-inner,body,close-inner
++inner-close throw=CloseFailure:close-inner;suppressed=NullPointerException:Cannot invoke "MultiResourceTwr$Probe.close()" because "<local0>" is null;events=open-outer,close-outer,open-inner,body,read,close-inner
++outer-close throw=CloseFailure:close-outer;suppressed=;events=open-outer,close-outer
++suppressed throw=CloseFailure:close-outer;suppressed=;events=open-outer,close-outer

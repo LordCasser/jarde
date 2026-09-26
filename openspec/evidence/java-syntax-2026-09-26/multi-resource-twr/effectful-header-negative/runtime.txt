@@ -1,0 +1,5 @@
+normal result=42;events=open-outer,open-inner,body,read,close-inner,close-outer
+body throw=BodyFailure:body;suppressed=;events=open-outer
+inner-close throw=CloseFailure:close-inner;suppressed=;events=open-outer,open-inner,body,read,close-inner,close-outer
+outer-close throw=CloseFailure:close-outer;suppressed=;events=open-outer,open-inner,body,read,close-inner,close-outer
+suppressed throw=BodyFailure:body;suppressed=;events=open-outer

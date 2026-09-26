@@ -1,0 +1,5 @@
+normal throw=NullPointerException:Cannot invoke "MultiResourceTwr$Probe.close()" because "<local0>" is null;suppressed=;events=open-outer,close-outer,open-inner,body,read,close-inner
+body throw=BodyFailure:body;suppressed=NullPointerException:Cannot invoke "MultiResourceTwr$Probe.close()" because "<local0>" is null;events=open-outer,close-outer,open-inner,body,close-inner
+inner-close throw=CloseFailure:close-inner;suppressed=NullPointerException:Cannot invoke "MultiResourceTwr$Probe.close()" because "<local0>" is null;events=open-outer,close-outer,open-inner,body,read,close-inner
+outer-close throw=CloseFailure:close-outer;suppressed=;events=open-outer,close-outer
+suppressed throw=CloseFailure:close-outer;suppressed=;events=open-outer,close-outer
