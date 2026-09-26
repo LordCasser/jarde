@@ -2781,7 +2781,7 @@ impl Engine {
                 }
             }
         }
-        let enum_projection = match projection_tail {
+        let mut enum_projection = match projection_tail {
             Some((group, initializer)) => {
                 let mut terminal_constructor_body = None;
                 let mut terminal_emission_error = None;
@@ -2839,6 +2839,48 @@ impl Engine {
             }
             None => None,
         };
+        if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+        ) = &enum_constant_proof
+        {
+            match enum_constant_body_relations
+                .first()
+                .map(|relation| &relation.group_shape)
+            {
+                Some(shape) => match class_source::prepare_enum_constant_body_source_projection(
+                    &declaration,
+                    &fields,
+                    &methods,
+                    group,
+                    shape,
+                    budget,
+                ) {
+                    Ok(Some(projection)) => enum_projection = Some(projection),
+                    Ok(None) => {
+                        enum_constant_proof =
+                            crate::enum_constants::ClassSourceEnumConstantProof::Refused {
+                                reason: "a proved enum child body could not be emitted as source"
+                                    .to_owned(),
+                            };
+                    }
+                    Err(error) => {
+                        let stop = stop_execution(&error, budget);
+                        merge_execution(&mut execution, stop);
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        enum_constant_proof =
+                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                reason: format!("enum child body emission stopped: {error}"),
+                            };
+                    }
+                },
+                None => {
+                    enum_constant_proof =
+                        crate::enum_constants::ClassSourceEnumConstantProof::Refused {
+                            reason: "a proved enum body group has no selected relation".to_owned(),
+                        };
+                }
+            }
+        }
         let text_context = class_source::ClassSourceTextContext {
             initializer_field_order: initializer_field_order.as_deref(),
             declared_methods: read.facts.method_count,
@@ -8543,6 +8585,157 @@ mod enum_constant_body_relation_tests {
         report_with_budget(entries, class, budget())
     }
 
+    fn run_enum_source(
+        directory: &std::path::Path,
+        label: &str,
+        enum_name: &str,
+        enum_source: Option<&str>,
+        probe_source: &str,
+        entries: &[(Vec<u8>, Vec<u8>)],
+        debug: bool,
+    ) -> String {
+        let root = directory.join(label);
+        let source_dir = root.join("source/demo");
+        let classes = root.join("classes");
+        fs::create_dir_all(&source_dir).unwrap();
+        fs::create_dir_all(classes.join("demo")).unwrap();
+        let probe_file = source_dir.join("Probe.java");
+        fs::write(&probe_file, probe_source).unwrap();
+        if enum_source.is_none() {
+            for (name, bytes) in entries {
+                if name.starts_with(format!("demo/{enum_name}").as_bytes()) {
+                    fs::write(classes.join(String::from_utf8_lossy(name).as_ref()), bytes).unwrap();
+                }
+            }
+        }
+        let mut javac = Command::new("javac");
+        javac
+            .arg("--release")
+            .arg("8")
+            .arg(if debug { "-g" } else { "-g:none" })
+            .arg("-d")
+            .arg(&classes);
+        if let Some(source) = enum_source {
+            let enum_file = source_dir.join(format!("{enum_name}.java"));
+            fs::write(&enum_file, source).unwrap();
+            javac.arg(enum_file);
+        } else {
+            javac.arg("-cp").arg(&classes);
+        }
+        let compile = javac.arg(&probe_file).output().unwrap();
+        assert!(
+            compile.status.success(),
+            "{label} {enum_name} javac: {}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        let run = Command::new("java")
+            .arg("-Xverify:all")
+            .arg("-cp")
+            .arg(&classes)
+            .arg("demo.Probe")
+            .output()
+            .unwrap();
+        assert!(
+            run.status.success(),
+            "{label} {enum_name} java: {}",
+            String::from_utf8_lossy(&run.stderr)
+        );
+        String::from_utf8(run.stdout).unwrap()
+    }
+
+    #[test]
+    fn proved_enum_bodies_recompile_and_match_original_and_jadx_behavior() {
+        const OP_PROBE: &str = r#"package demo;
+public class Probe {
+    public static void main(String[] args) {
+        Op[] first = Op.values(); Op[] second = Op.values();
+        System.out.println("arraysDistinct=" + (first != second));
+        System.out.println("instancesStable=" + (first[0] == second[0]));
+        for (Op value : first) System.out.println(value.name() + ":" + value.ordinal()
+            + ":" + value.tag() + ":" + value.apply(7, 3)
+            + ":" + (value.getClass() == Op.class)
+            + ":" + value.getDeclaringClass().getSimpleName());
+        try { Op.valueOf("MISSING"); System.out.println("missing=accepted"); }
+        catch (IllegalArgumentException expected) { System.out.println("missing=IllegalArgumentException"); }
+    }
+}"#;
+        const MIXED_PROBE: &str = r#"package demo;
+public class Probe {
+    public static void main(String[] args) {
+        Mixed[] first = Mixed.values(); Mixed[] second = Mixed.values();
+        System.out.println("arraysDistinct=" + (first != second));
+        System.out.println("instancesStable=" + (first[0] == second[0]));
+        for (Mixed value : first) System.out.println(value.name() + ":" + value.ordinal()
+            + ":" + value.value() + ":" + (value.getClass() == Mixed.class)
+            + ":" + value.getDeclaringClass().getSimpleName());
+        try { Mixed.valueOf("MISSING"); System.out.println("missing=accepted"); }
+        catch (IllegalArgumentException expected) { System.out.println("missing=IllegalArgumentException"); }
+    }
+}"#;
+        for debug in [true, false] {
+            let entries = compiled_entries(debug);
+            let nonce = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos();
+            let directory = std::env::temp_dir().join(format!(
+                "jarde-enum-body-projection-{}-{nonce}-{}",
+                std::process::id(),
+                NEXT_FIXTURE_ID.fetch_add(1, Ordering::Relaxed)
+            ));
+            let mode = if debug { "g" } else { "g-none" };
+            for (name, probe, expected) in [
+                (
+                    "Op",
+                    OP_PROBE,
+                    "arraysDistinct=true\ninstancesStable=true\nADD:0:ADD:0:10:false:Op\nMULTIPLY:1:MULTIPLY:1:21:false:Op\nmissing=IllegalArgumentException\n",
+                ),
+                (
+                    "Mixed",
+                    MIXED_PROBE,
+                    "arraysDistinct=true\ninstancesStable=true\nSPECIAL:0:7:false:Mixed\nPLAIN:1:0:true:Mixed\nmissing=IllegalArgumentException\n",
+                ),
+            ] {
+                let original = run_enum_source(
+                    &directory,
+                    &format!("{name}-original"),
+                    name,
+                    None,
+                    probe,
+                    &entries,
+                    debug,
+                );
+                assert_eq!(original, expected);
+                let jadx_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(format!(
+                    "openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/outputs/{mode}/jadx-source/demo/{name}.java"
+                ));
+                let jadx_source = fs::read_to_string(jadx_path).unwrap();
+                let jadx = run_enum_source(
+                    &directory,
+                    &format!("{name}-jadx"),
+                    name,
+                    Some(&jadx_source),
+                    probe,
+                    &entries,
+                    debug,
+                );
+                let jarde_source = report(&entries, &format!("demo/{name}")).text;
+                let jarde = run_enum_source(
+                    &directory,
+                    &format!("{name}-jarde"),
+                    name,
+                    Some(&jarde_source),
+                    probe,
+                    &entries,
+                    debug,
+                );
+                assert_eq!(jadx, original, "{name}, debug={debug}");
+                assert_eq!(jarde, original, "{name}, debug={debug}");
+            }
+            fs::remove_dir_all(directory).unwrap();
+        }
+    }
+
     fn mutate_anonymous_outer_index(bytes: &[u8], child: &[u8], outer: &[u8]) -> Vec<u8> {
         let mut read_budget = budget();
         let facts = class_member_facts(bytes, &mut read_budget).unwrap();
@@ -8979,9 +9172,21 @@ mod enum_constant_body_relation_tests {
                     vec![7, 20]
                 );
             }
-            assert!(
-                !source_report.text.contains("ADD {") && !source_report.text.contains("SPECIAL {")
-            );
+            match class {
+                "demo/Op" => {
+                    assert!(
+                        source_report.text.contains("ADD {")
+                            && source_report.text.contains("MULTIPLY {")
+                    );
+                }
+                "demo/Mixed" => {
+                    assert!(
+                        source_report.text.contains("SPECIAL {")
+                            && source_report.text.contains("    PLAIN;")
+                    );
+                }
+                _ => assert!(!source_report.text.contains("READY {")),
+            }
             if expected == 0 {
                 let constructors: Vec<_> = source_report
                     .methods
