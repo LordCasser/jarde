@@ -4268,6 +4268,51 @@ impl Engine {
                 }
             }
         };
+        if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Ordinary(group),
+        ) = &enum_constant_proof
+        {
+            let clinit_index = usize::try_from(group.initializer_method_index).ok();
+            let clinit = clinit_index.and_then(|index| methods.get(index));
+            let certification = match clinit {
+                Some(clinit) => certify_enum_int_static_fields(
+                    content,
+                    &environment,
+                    &read.facts.this_class.raw().0,
+                    &read.bytes,
+                    &read.facts.attributes,
+                    &pool,
+                    &group.constants,
+                    &clinit.item.identity,
+                    &mut execution,
+                    budget,
+                ),
+                None => Ok(Some(
+                    "the proved enum initializer has no same-run physical method identity"
+                        .to_owned(),
+                )),
+            };
+            match certification {
+                Ok(None) => {}
+                Ok(Some(reason)) => {
+                    enum_constant_proof = if matches!(&execution, ExecutionReport::Complete { .. })
+                    {
+                        crate::enum_constants::ClassSourceEnumConstantProof::Refused { reason }
+                    } else {
+                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped { reason }
+                    };
+                }
+                Err(error) => {
+                    let stop = stop_execution(&error, budget);
+                    merge_execution(&mut execution, stop.clone());
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    enum_constant_proof =
+                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                            reason: format!("enum int field certification stopped: {error}"),
+                        };
+                }
+            }
+        }
         let mut enum_constant_body_relations = if capture_enum_group_code
             && matches!(
                 &enum_constant_proof,
@@ -7150,10 +7195,25 @@ fn resolve_class_source_dependency_read_raw(
         return Ok(None);
     };
     if !matches!(&resolved.member, jarde_reader::model::SymbolRef::Class { owner: name } if name.0 == owner)
-        || resolution.reads.len() != 1
-        || resolution.reads[0].definition != resolved.definition
-        || resolution.reads[0].reason != jarde_jvm::resolver::ReadReason::RequestedDefinition
     {
+        return Ok(None);
+    }
+    let mut target_reads = 0_u8;
+    let mut enclosing_reads = 0_u8;
+    for read in &resolution.reads {
+        if read.definition == resolved.definition
+            && read.reason == jarde_jvm::resolver::ReadReason::RequestedDefinition
+        {
+            target_reads = target_reads.saturating_add(1);
+        } else if enclosing.is_some_and(|method| read.definition == method.owner)
+            && read.reason == jarde_jvm::resolver::ReadReason::RequestedDefinition
+        {
+            enclosing_reads = enclosing_reads.saturating_add(1);
+        } else {
+            return Ok(None);
+        }
+    }
+    if target_reads != 1 || enclosing_reads > 1 {
         return Ok(None);
     }
     let Some(snapshot) = content
@@ -7167,6 +7227,217 @@ fn resolve_class_source_dependency_read_raw(
         return Ok(None);
     }
     Ok(Some((resolved.definition, read)))
+}
+
+/// Certify every field leaf in the narrow enum int-expression grammar before source emission.
+/// The enum Code proof retains the original symbolic owner/name/descriptor; this boundary only
+/// establishes that emitting that access as Java source is legal and does not turn a constant
+/// variable read into compile-time inlining.
+fn certify_enum_int_static_fields(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    enum_owner: &[u8],
+    enum_bytes: &[u8],
+    enum_attributes: &[AttributeShell],
+    enum_pool: &[CpEntryFacts],
+    constants: &[crate::enum_constants::ProvedEnumConstant],
+    enclosing: &PhysicalMethodId,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<Option<String>> {
+    fn collect(
+        argument: &crate::enum_constants::ProvedEnumIntArgument,
+        refs: &mut std::collections::BTreeMap<(Vec<u8>, Vec<u8>, Vec<u8>), String>,
+        budget: &mut Budget,
+    ) -> Result<()> {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        use crate::enum_constants::ProvedEnumIntArgument as Argument;
+        match argument {
+            Argument::Literal { .. } => {}
+            Argument::StaticField {
+                owner,
+                name,
+                descriptor,
+                source_owner,
+                ..
+            } => {
+                refs.entry((owner.clone(), name.clone(), descriptor.clone()))
+                    .or_insert_with(|| source_owner.clone());
+            }
+            Argument::Add { left, right, .. } => {
+                collect(left, refs, budget)?;
+                collect(right, refs, budget)?;
+            }
+        }
+        Ok(())
+    }
+
+    let mut refs = std::collections::BTreeMap::new();
+    for constant in constants {
+        if let Some(argument) = &constant.source_argument {
+            collect(argument, &mut refs, budget)?;
+        }
+    }
+    for ((owner, name, descriptor), source_owner) in refs {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if let Some(reason) = enum_int_static_field_owner_refusal(enum_owner, &owner, &descriptor) {
+            return Ok(Some(reason));
+        }
+        if source_owner.contains('.') || !jarde_java::is_java_identifier(&source_owner) {
+            return Ok(Some(format!(
+                "enum constructor argument owner {} is not a same-package source short name",
+                source_owner
+            )));
+        }
+        if enum_owner_has_type_name_shadow(
+            enum_owner,
+            &owner,
+            &attribute_facts(enum_bytes, enum_attributes, enum_pool, budget)?.inner_classes,
+        ) {
+            return Ok(Some(format!(
+                "enum member type shadows the same-package source name {}",
+                source_owner
+            )));
+        }
+        let Some((_definition, read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            Some(enclosing),
+            &owner,
+            execution,
+            budget,
+        )?
+        else {
+            return Ok(Some(format!(
+                "enum constructor argument field owner {} did not resolve uniquely in the selected environment",
+                source_owner
+            )));
+        };
+        let class_version = read.bytes.get(4..8).map(|version| {
+            (
+                u16::from_be_bytes([version[0], version[1]]),
+                u16::from_be_bytes([version[2], version[3]]),
+            )
+        });
+        if read.facts.stopped_at.is_some()
+            || read.facts.field_count != u64::try_from(read.facts.fields.len()).unwrap_or(u64::MAX)
+            || read.facts.this_class.raw().0.as_slice() != owner
+            || class_version != Some((0, 52))
+            || read.facts.access_flags & (0x0002 | 0x0004 | 0x0200 | 0x2000 | 0x8000) != 0
+        {
+            return Ok(Some(format!(
+                "enum constructor argument field owner {} is not a complete Java 8 top-level accessible class",
+                source_owner
+            )));
+        }
+        let owner_pool = class_constant_pool(&read.bytes, budget)?;
+        let owner_attributes =
+            attribute_facts(&read.bytes, &read.facts.attributes, &owner_pool, budget)?;
+        if owner_attributes.enclosing_method.is_some()
+            || owner_attributes.inner_classes.iter().any(|row| {
+                jarde_reader::classfile::cp_class_name(&owner_pool, row.class_index)
+                    .is_ok_and(|name| name.0 == owner)
+            })
+        {
+            return Ok(Some(format!(
+                "enum constructor argument field owner {} is not a top-level source type",
+                source_owner
+            )));
+        }
+        let mut selected_field = None;
+        for field in &read.facts.fields {
+            budget.poll()?;
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if field.name.raw().0.as_slice() == name
+                && field.descriptor.raw().0.as_slice() == descriptor
+            {
+                if selected_field.is_some() {
+                    return Ok(Some(format!(
+                        "enum constructor argument field {}.{} is ambiguous",
+                        source_owner,
+                        String::from_utf8_lossy(&name)
+                    )));
+                }
+                selected_field = Some(field);
+            }
+        }
+        let Some(field) = selected_field else {
+            return Ok(Some(format!(
+                "enum constructor argument field {}.{} is absent",
+                source_owner,
+                String::from_utf8_lossy(&name)
+            )));
+        };
+        const ACC_PRIVATE_FIELD: u16 = 0x0002;
+        const ACC_STATIC_FIELD: u16 = 0x0008;
+        const ACC_FINAL_FIELD: u16 = 0x0010;
+        const ACC_SYNTHETIC_FIELD: u16 = 0x1000;
+        if field.access_flags & ACC_STATIC_FIELD == 0
+            || field.access_flags & (ACC_PRIVATE_FIELD | ACC_FINAL_FIELD | ACC_SYNTHETIC_FIELD) != 0
+        {
+            return Ok(Some(format!(
+                "enum constructor argument field {}.{} is not a same-package accessible static non-final int",
+                source_owner,
+                String::from_utf8_lossy(&name)
+            )));
+        }
+    }
+    Ok(None)
+}
+
+fn enum_int_static_field_owner_refusal(
+    enum_owner: &[u8],
+    owner: &[u8],
+    descriptor: &[u8],
+) -> Option<String> {
+    fn package(name: &[u8]) -> &[u8] {
+        name.iter()
+            .rposition(|byte| *byte == b'/')
+            .map_or(&name[..0], |slash| &name[..slash])
+    }
+    if owner == enum_owner {
+        return Some(
+            "an enum constructor argument reads a static field from its own enum before initialization".to_owned(),
+        );
+    }
+    if owner.contains(&b'$') {
+        return Some(
+            "an enum constructor argument field owner needs an unproved member-class source name"
+                .to_owned(),
+        );
+    }
+    if package(enum_owner) != package(owner) || descriptor != b"I" {
+        return Some(
+            "an enum constructor argument field is outside the proved same-package int subset"
+                .to_owned(),
+        );
+    }
+    None
+}
+
+fn enum_owner_has_type_name_shadow(
+    enum_owner: &[u8],
+    field_owner: &[u8],
+    inner_classes: &[jarde_reader::classfile::InnerClassFacts],
+) -> bool {
+    fn package(owner: &[u8]) -> &[u8] {
+        owner
+            .iter()
+            .rposition(|byte| *byte == b'/')
+            .map(|slash| &owner[..slash])
+            .unwrap_or(&owner[..0])
+    }
+    fn simple_name(owner: &[u8]) -> &[u8] {
+        owner.rsplit(|byte| *byte == b'/').next().unwrap_or(owner)
+    }
+    package(enum_owner) == package(field_owner)
+        && inner_classes.iter().any(|row| {
+            row.inner_name
+                .as_ref()
+                .is_some_and(|name| name.0 == simple_name(field_owner))
+        })
 }
 
 /// Resolve only the subclass named by a verified allocation retained from this class-source
@@ -14299,10 +14570,16 @@ public class Probe {
                 assert!(relation.use_census.exclusive, "{class}, debug={debug}");
             }
             if expected == 0 {
-                assert!(matches!(
-                    source_report.enum_constant_proof,
-                    crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
-                ));
+                assert!(
+                    matches!(
+                        source_report.enum_constant_proof,
+                        crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                            crate::enum_constants::ProvedEnumConstantGroup::Ordinary(_)
+                        ) | crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+                    ),
+                    "plain constants may prove only as an ordinary group or refuse body recovery: {class}: {:?}",
+                    source_report.enum_constant_proof
+                );
             } else {
                 let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
                     crate::enum_constants::ProvedEnumConstantGroup::Body(group),
@@ -15791,6 +16068,52 @@ public class Probe {
             prove(&user_suffix).is_ok(),
             "a closed suffix may contain user effects"
         );
+    }
+}
+
+#[cfg(test)]
+mod enum_int_static_owner_gate_tests {
+    use super::{enum_int_static_field_owner_refusal, enum_owner_has_type_name_shadow};
+
+    #[test]
+    fn static_field_owner_gate_rejects_self_cross_package_and_binary_member_names() {
+        assert!(enum_int_static_field_owner_refusal(b"demo/Enum", b"demo/Enum", b"I").is_some());
+        assert!(enum_int_static_field_owner_refusal(b"demo/Enum", b"other/Ints", b"I").is_some());
+        assert!(
+            enum_int_static_field_owner_refusal(b"demo/Enum", b"demo/Outer$Ints", b"I").is_some()
+        );
+        assert!(enum_int_static_field_owner_refusal(b"demo/Enum", b"demo/Ints", b"B").is_some());
+        assert_eq!(
+            enum_int_static_field_owner_refusal(b"demo/Enum", b"demo/Ints", b"I"),
+            None
+        );
+    }
+
+    #[test]
+    fn same_enum_owner_is_rejected_before_any_dependency_read() {
+        assert!(enum_int_static_field_owner_refusal(b"demo/Enum", b"demo/Enum", b"I").is_some());
+    }
+
+    #[test]
+    fn same_package_owner_name_is_rejected_when_an_enum_member_shadows_it() {
+        let rows = [jarde_reader::classfile::InnerClassFacts {
+            class_index: 1,
+            outer_class_index: 2,
+            inner_name: Some(jarde_reader::model::JvmBytes(b"Ints".to_vec())),
+            access_flags: 0x0009,
+        }];
+        assert!(enum_owner_has_type_name_shadow(b"E", b"Ints", &rows));
+        assert!(enum_owner_has_type_name_shadow(
+            b"demo/E",
+            b"demo/Ints",
+            &rows
+        ));
+        assert!(!enum_owner_has_type_name_shadow(
+            b"demo/E",
+            b"other/Ints",
+            &rows
+        ));
+        assert!(!enum_owner_has_type_name_shadow(b"E", b"demo/Ints", &rows));
     }
 }
 

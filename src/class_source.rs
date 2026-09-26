@@ -6162,9 +6162,9 @@ pub(crate) fn prepare_enum_constant_source_projection(
     for (index, constant) in group.constants.iter().enumerate() {
         constants_text.push_str("    ");
         constants_text.push_str(&constant.name);
-        if let Some(argument) = constant.source_argument {
+        if let Some(argument) = &constant.source_argument {
             constants_text.push('(');
-            constants_text.push_str(&argument.to_string());
+            constants_text.push_str(&argument.source_text());
             constants_text.push(')');
         }
         if index + 1 == group.constants.len() {
