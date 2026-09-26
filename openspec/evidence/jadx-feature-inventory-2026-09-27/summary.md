@@ -24,17 +24,17 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 | 状态 | ID | 当前证据 |
 | --- | --- | --- |
 | 冻结差距已修复，单元待扩验 | DT-01、DT-03 | 成员局部类型已由准确成员路径写为 `Outer.Member`，`OuterSuperEffects` 全家族 Java 8 重编运行通过；其他成员形态仍按各自单元扩验 |
+| 冻结差距已修复，单元待扩验 | DT-02 | [静态成员冻结对照](../java-syntax-2026-09-27/static-member-basic/README.md) 与[修后验收](../java-syntax-2026-09-27/static-member-basic-fixed/README.md)：准确双方 `InnerClasses` 关系和单次 AST 证明后，根类原子写 `static class Leaf`、`Leaf make()`、`new Leaf()`；原/JADX/修后 Jarde Java 8 重编验证运行均输出 `9:4`。顶级 `Named$Top` 不被改名，低预算和额外未证类型使用拒绝；多子类及跨类使用点仍待扩验 |
 | 冻结差距已修复，单元待扩验 | DT-05 | [无捕获匿名接口单分配点](../java-syntax-2026-09-27/anonymous-interface-basic/README.md) 已按同次 AST、准确 BCI 与闭合 owner 普查投影为 `new I() { ... }`；原/JADX/修后 Jarde Java 8 重编验证运行均输出 `7`，第二分配、跨类引用、初始化效果和不完整正文拒绝。捕获、父类构造参数及其他位置仍待独立验收 |
 | 冻结差距已修复，单元待扩验 | DT-10 | [普通枚举 0/1/4 常量](../java-syntax-2026-09-27/enum-arity/report.md) 已按完整字段表、构造器及 `$values()` 有序证明投影；原/JADX/修后 Jarde 完整源码 Java 8 重编验证运行均输出 `empty=0`、`one=ONLY:0/1`、`four=[NORTH, SOUTH, EAST, WEST]`。匿名常量体和其他枚举形态独立验收 |
 | 冻结差距已修复，单元待扩验 | EM-13 | 唯一同类 `ACC_VARARGS` 目标的完整调用数组可安全展开，冻结正反例重编运行通过；继承、跨类和其他 lowering 未纳入此闭环 |
-| 已证差距，窄切片待实现 | DT-02 | [静态成员冻结对照](../java-syntax-2026-09-27/static-member-basic/README.md)：Jarde 保留独立 `$Leaf`，JADX 写 `static class Leaf`；三方 Java 8 重编运行同为 `9:4`。已写 [OpenSpec](../../changes/present-proved-static-member-class/)，顶级 `Named$Top` 是拒绝控制 |
 | 已证差距，已写独立 OpenSpec | DT-06 | [无捕获父类参数对照](../java-syntax-2026-09-27/anonymous-super-direct/report.md)：原/JADX/Jarde 完整源码 Java 8 重编运行同为 `13:2`，但 Jarde 保留物理 `$1`；[窄切片 OpenSpec](../../changes/inline-proved-anonymous-super-arguments/) 只处理准确转发的父类实参。另有[含捕获证据](../java-syntax-2026-09-27/anonymous-super-args/report.md)，其中 Jarde 子类捕获字段写入位于 `super(...)` 前，完整源码无法重编，且 `event()` 有独立 fallback；不把这些混进无捕获切片 |
 | JADX 未完成 | CF-17 | `TestTryWithResources` 的唯一目标标为 `@NotYetImplemented` |
 | 未测 | CF-01～16、CF-18～20 | 19 个正向测试候选，见控制流账本 |
 | 未测 | DT-04、DT-07～09、DT-11～29、DT-31 | 24 个候选，见声明/类型账本 |
 | 未测 | EM-01～07、EM-10～12、EM-17～25、EM-27 | 20 个候选，见表达式/杂项账本 |
 
-当前有 **5 个冻结差距已修复但待扩验的单元、2 个已证差距、63 个未测的正向候选、1 个 JADX 未完成单元**。DT-05 和 DT-10 的窄切片与先前 DT-01/03、EM-13 均已通过 root 独立验收；这不自动把各单元全部变体标为“已追平”。DT-02 的原子拒绝仍在修复，DT-06 的无捕获父类实参已单独冻结并写 OpenSpec；任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
+当前有 **6 个冻结差距已修复但待扩验的单元、1 个已证差距、63 个未测的正向候选、1 个 JADX 未完成单元**。DT-02、DT-05 和 DT-10 的窄切片与先前 DT-01/03、EM-13 均已通过 root 独立验收；这不自动把各单元全部变体标为“已追平”。DT-06 的无捕获父类实参已单独冻结并写 OpenSpec；任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
 
 独立回归债务：[具名成员类 `Outer.super` 桥测试与基线投影不一致](outer-super-bridge-baseline-debt.md)，在未修改的 `36b57495` 已可复现；归入 EM-12/DT-03 后续核验，不混入 DT-02 静态成员类实现。
 

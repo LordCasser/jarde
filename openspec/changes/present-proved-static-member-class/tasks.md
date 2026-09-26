@@ -15,4 +15,4 @@
 
 ## 4. 架构师独立验收
 
-- [ ] 4.1 Root 独立复跑冻结三方对照、定向和非静态家族回归，核查静态身份/预算/来源，执行 `cargo fmt --all -- --check`、`openspec validate present-proved-static-member-class --strict`；通过后更新 DT-02 状态并提交推送。
+- [x] 4.1 Root 独立复跑冻结三方对照、定向和非静态家族回归，核查静态身份/预算/来源，执行 `cargo fmt --all -- --check`、`openspec validate present-proved-static-member-class --strict`；通过后更新 DT-02 状态并提交推送。
