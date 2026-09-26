@@ -1023,6 +1023,9 @@ fn constructed_initialisation(
         return Ok(None);
     };
     let Some(site) = facts.sites.site_producing(facts.ssa, value) else {
+        if construction_result(facts, value) {
+            return Err(store);
+        }
         return Ok(None);
     };
     let site_start = site.head;
@@ -1039,6 +1042,43 @@ fn constructed_initialisation(
         return Err(store);
     }
     Ok(Some(((site_start, end), *slot)))
+}
+
+/// Whether this value is the instance a direct `new; dup; <init>` expression produces.
+///
+/// Follow only duplicate stack values: a local load is an ordinary resource copy, while a
+/// constructor result or allocation that reaches the Store without a verified Site is not a
+/// resource initializer we can safely move into a header.
+fn construction_result(facts: &Facts<'_>, value: ValueId) -> bool {
+    let mut current = value;
+    for _ in 0..=facts.order.len() {
+        let Definition::Instruction { bci, .. } = facts.ssa.value(current).def() else {
+            return false;
+        };
+        match facts.op(*bci) {
+            Some(Operation::Allocate { .. }) => return true,
+            Some(Operation::Invoke(target))
+                if target.kind() == crate::facts::InvokeKind::Special
+                    && target.name() == "<init>" =>
+            {
+                return true;
+            }
+            Some(Operation::Duplicate) => {
+                let Some(step) = facts.step(*bci) else {
+                    return true;
+                };
+                let reads = step.instruction.reads();
+                let Some((_, source)) = (reads.len() == 1).then(|| reads[0]) else {
+                    return true;
+                };
+                current = source;
+            }
+            _ => return false,
+        }
+    }
+    // A valid SSA duplicate chain is shorter than the body's instruction list. If malformed input
+    // violates that bound, refuse the initializer rather than letting it reach the generic proof.
+    true
 }
 
 /// Whether the store before a row's protected range is a resource's own initialisation.
@@ -2149,6 +2189,125 @@ mod finally_copy_tests {
             .first()
             .ok_or_else(|| "resource row missing".to_string())?;
         twr(&mut facts, &crate::pass::JAVA_8, current, row).map_err(|_| "TWR refused".to_string())
+    }
+
+    #[test]
+    fn constructor_resource_requires_its_verified_site() {
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr.class"
+        );
+        let mut budget = Budget::new(limits());
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
+            .expect("the frozen fixture opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(class).to_hex().to_string()),
+                length: class.len() as u64,
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let method = PhysicalMethodId {
+            owner: definition,
+            name: JvmBytes(b"run".to_vec()),
+            descriptor: JvmBytes(b"()I".to_vec()),
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_string()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let request = MethodAnalysisRequest {
+            environment: ResolutionEnvironment {
+                runtime: RuntimeView {
+                    physical: PhysicalView {
+                        snapshot: snapshot.id().clone(),
+                        scope: PhysicalScope::SnapshotAll,
+                    },
+                    profile: RuntimeProfile {
+                        java_release: 8,
+                        multi_release: MultiReleasePolicy::Disabled,
+                        layout: LayoutMode::Generic,
+                    },
+                    load_domain: domain.clone(),
+                },
+                domains: vec![domain],
+                providers: Vec::new(),
+            },
+            method,
+            stages: AnalysisStage::ALL.to_vec(),
+        };
+        let analyzed = analyze_method_ir(&[snapshot], &request, &mut budget)
+            .expect("the frozen run method analyzes");
+        let ir = analyzed.ir();
+        let canonical = ir.canonical().unwrap();
+        let ssa = ir.ssa().unwrap();
+        let code = ir.code().unwrap();
+        let ops = Operations::of(code, ir.constant_pool());
+        let view = NormalFlowView::build(canonical, &mut budget).unwrap();
+        let rows = code.exception_handlers.clone();
+
+        for (reserved, expected) in [
+            (BTreeSet::new(), [Some(((0, 10), 0)), Some(((10, 20), 1))]),
+            (BTreeSet::from([0]), [None, Some(((10, 20), 1))]),
+            (BTreeSet::from([10]), [Some(((0, 10), 0)), None]),
+        ] {
+            let fields = crate::field::Plan::empty();
+            let sites = crate::init::sites(ssa, &ops, &reserved, &fields, &[], code);
+            for (index, (store, floor, end)) in [(9, 0, 10), (19, 10, 20)].into_iter().enumerate() {
+                let mut case_budget = Budget::new(limits());
+                let facts =
+                    Facts::new(canonical, &view, ssa, &ops, &rows, &sites, &mut case_budget);
+                let expected = expected[index]
+                    .map(Ok)
+                    .unwrap_or(Err((Unproven::ResourceInit, store)));
+                assert_eq!(
+                    initialisation(&facts, end, floor),
+                    expected,
+                    "store at BCI {store}, reserved allocations {reserved:?}"
+                );
+            }
+        }
+
+        let empty_sites = crate::init::Sites::empty();
+        let mut case_budget = Budget::new(limits());
+        let facts = Facts::new(
+            canonical,
+            &view,
+            ssa,
+            &ops,
+            &rows,
+            &empty_sites,
+            &mut case_budget,
+        );
+        assert_eq!(
+            initialisation(&facts, 10, 0),
+            Err((Unproven::ResourceInit, 9))
+        );
+        assert_eq!(
+            initialisation(&facts, 20, 10),
+            Err((Unproven::ResourceInit, 19))
+        );
+
+        let sites = crate::init::sites(
+            ssa,
+            &ops,
+            &BTreeSet::new(),
+            &crate::field::Plan::empty(),
+            &[],
+            code,
+        );
+        let mut case_budget = Budget::new(limits());
+        let facts = Facts::new(canonical, &view, ssa, &ops, &rows, &sites, &mut case_budget);
+        assert_eq!(constructed_initialisation(&facts, 19, 10, 19), Err(19));
     }
 
     #[test]
