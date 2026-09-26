@@ -12,37 +12,14 @@
 //!     20    36      36   Class java/io/IOException     <- ... because the code between cannot raise
 //! ```
 //!
-//! **What refused the member.** Two things, and the first one is not the row union:
-//!
-//! * `crates/jarde-java/src/guard.rs`'s `close_handler` read one handler shape only —
-//!   `astore p; aload r; ifnull L` with the close in the other successor — because `javac` guards
-//!   the close with a null test whenever the resource's own initialisation **could** be null. This
-//!   resource cannot: `new ByteArrayInputStream(data)` is non-null by construction, so the compiler
-//!   writes the test nowhere and the handler is `astore p; aload r; invokevirtual close; goto L`.
-//!   The proof stopped there (`jre_guard_handler`, BCI 20) before any row question was asked.
-//! * `catches()` then asked for the statement's rows to begin at **one** instruction, and the
-//!   block holds the union of two — the compiler's row begins at BCI 9, the user's at BCI 0 — so
-//!   neither the guarded rule nor the typed `catch` read the shape, and the member was quoted whole.
-//!
-//! **What this change reads.** The unchecked close on both paths (`close_of_level` and
-//! `normal_close`); the row partition — once the guarded rule **claimed** the block, the rows that
-//! reach a handler it proved are the compiler's own and are no clause, so the block's clauses are
-//! the rows that reach *other* handlers; and `twr`'s reading of the enclosing rows as the clauses of
-//! a `try` the statement sits inside, which is the same accommodation `region.rs`'s `try_level`
-//! makes at the region level.
-//!
-//! **What still stands, and why.** `javac` writes no branch at all for this statement: with no null
-//! test there is no target, so the whole method body is **one** canonical block
-//! `[0, 3, 4, 5, 8, 9, 10, 13, 14, 15, 18, 19]` — the header, the body, the close **and** the
-//! `iload_2; ireturn` the `return in.read()` became once the value was kept in a local. A walk
-//! continues at a *block*, and after the close the run is inside the statement's own block, so the
-//! `return local2;` has nowhere to be written from and claiming the block would leave it out — the
-//! silence P3-R7 exists to undo. The statement is therefore refused with that as its reason
-//! (`jre_guard_continuation`), never presented with its tail dropped and never degraded into a
-//! `catch` that would drop the resource. Writing the tail needs one more mechanism, the one P3 2.6
-//! already has for `synchronized` (a `returns` on the shape, written **inside** the braces by
-//! `build.rs`); the acceptance for that state is the second test below, marked `#[ignore]` until it
-//! lands.
+//! The active run proves the resource initializer and refuses the close handler at BCI 20 with
+//! `jre_guard_handler`. The bytecode handler is `astore p; aload r; invokevirtual close; goto L`,
+//! but Guard does not establish that shape here, so it never reaches the enclosing user-catch rows
+//! or normal return tail. Site preplanning advances the refusal from initializer analysis to this
+//! handler; it does not change the handler bytecode. The old `jre_guard_continuation` expectation was
+//! stale because that later proof stage is not reached. The active test requires no partial TWR, no
+//! disguised catch, and an explanation retaining physical block-entry BCIs. The ignored test below
+//! remains a future acceptance state and makes no claim about current recovery.
 //!
 //! The sample is `tests/fixtures/p3-twr-catch/v8/Combo.class` (see its `README.md` for the command,
 //! the 550 bytes and the SHA-256).
@@ -127,29 +104,22 @@ fn at(text: &str, needle: &str) -> usize {
 }
 
 #[test]
-fn the_unchecked_close_is_proved_and_the_statement_keeps_its_refusal_over_its_tail() {
-    // The member's own report states what the proof concluded. What it must **not** say any more is
-    // `jre_guard_handler`: this sample's handler is the `astore p; aload r; invokevirtual close;
-    // goto L` shape the compiler writes for a resource its own initialisation proves non-null, and
-    // reading it is the half of P3 2.11 the samples with a nullable resource never exercised.
+fn the_unchecked_close_handler_is_refused_without_partial_twr() {
+    // The member's own report states where the proof stops: initializer accepted, handler refused.
     //
     // What stands is the tail. `javac` writes no branch for this statement, so the header, the body,
     // the close and the `iload_2; ireturn` of the source's `return in.read()` are **one** block: a
     // walk continues at a block, and after the close the run is inside the statement's own one.
     // Claiming the block would leave the `return` out of the artifact with nothing naming it, so the
-    // rule refuses — and the reason it states is the tail, not the handler.
+    // rule refuses. The handler refusal prevents Guard from reaching the continuation question.
     let sample = open(SAMPLE);
     let report = class_source_of(&sample, "Combo");
     let run = run_of(&report, "read");
     assert!(
-        run.fallbacks.contains(&"jre_guard_continuation"),
-        "the refusal states the tail the walk cannot reach: {:?}",
-        run.fallbacks
-    );
-    assert!(
-        !run.fallbacks.contains(&"jre_guard_handler"),
-        "the handler javac writes for a `new`-initialised resource is the one this rule proves: {:?}",
-        run.fallbacks
+        run.fallbacks.contains(&"jre_guard_handler"),
+        "the unchecked close handler remains explicitly refused: {:?}; {:?}",
+        run.fallbacks,
+        run.diagnostics
     );
     let text = text_of(&report, "read");
     // The compiler's cleanup is the header's own: the synthetic `Throwable` handler is **never** a
@@ -167,10 +137,19 @@ fn the_unchecked_close_is_proved_and_the_statement_keeps_its_refusal_over_its_ta
         !text.contains("try ("),
         "a `try`-with-resources this build cannot present is never spelled as a bare `try`:\n{text}"
     );
+    assert!(
+        !text.contains("catch (java.io.IOException")
+            && !text.contains("catch (java.lang.Throwable"),
+        "neither the user's clause nor compiler cleanup is disguised as a recovered catch:\n{text}"
+    );
     assert_eq!(
         run.content,
         RecoveryContent::ExplanationOnly,
         "the refusal is stated, and no statement of the member is presented under it:\n{text}"
+    );
+    assert!(
+        text.contains("@bytecode 0 20 28 34 36"),
+        "the explanation retains physical block-entry BCIs:\n{text}"
     );
 }
 
