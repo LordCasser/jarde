@@ -10,7 +10,7 @@ JADX=/path/to/jadx python3 openspec/evidence/java-syntax-2026-09-27/enum-arity/r
 
 脚本在临时目录用 `javac --release 8 -g:none` 编译原始源，核对冻结 class 的 SHA-256，并将同一 jar 分别交给 JADX 与 Jarde 的完整 class-source 路径。Jarde CLI 使用临时 `CARGO_TARGET_DIR`；退出时连同所有编译和中间文件一起清理。证据日志会把临时目录路径替换为 `<TMP>`。
 
-`--expect-jarde fixed` 是后续修复的验收入口：它要求 Jarde 完整源码通过 Java 8 编译、`-Xverify:all` 执行并输出相同结果，修后源码和日志单独写入 `fixed/`，不会覆盖下方记录的失败基线。
+`--expect-jarde fixed` 是后续修复的验收入口：它要求 Jarde 完整源码通过 Java 8 编译、`-Xverify:all` 执行并输出相同结果。修后生成的原始/JADX/Jarde 源码、SHA 核对清单、工具版本和全部日志都写入 `fixed/`；该模式只读取根目录冻结 class，不覆盖失败基线或冻结清单。
 
 原始源码和 JADX 的完整源码均通过 Java 8 重编及 `java -Xverify:all`，runner 输出相同：
 

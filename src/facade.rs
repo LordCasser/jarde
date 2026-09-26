@@ -2486,11 +2486,15 @@ impl Engine {
             }
         }
         let capture_enum_constructor_ast = capture_enum_group_code
-            && constructor_count == 2
-            && has_no_arg_enum_constructor
-            && has_int_enum_constructor;
+            && ((constructor_count == 2
+                && has_no_arg_enum_constructor
+                && has_int_enum_constructor)
+                || (constructor_count == 1 && has_no_arg_enum_constructor));
         if capture_enum_constructor_ast {
-            budget.charge(CountedBudgetDimension::IrItems, 2)?;
+            budget.charge(
+                CountedBudgetDimension::IrItems,
+                u64::try_from(constructor_count).unwrap_or(u64::MAX),
+            )?;
         }
         let mut attempted = 0_u64;
         let mut methods = Vec::new();
@@ -6012,15 +6016,16 @@ fn recover_prepared_member(
         options.capture_anonymous_child_asts,
         budget,
     )?;
-    // The constructor AST is an evidence handoff from this exact run. Keep it only when both the
-    // analysis and the class-source presentation completed and the latter committed its report;
-    // otherwise a budget stop could leave an apparently usable partial candidate beside a refused
-    // member result.
-    let enum_constructor = enum_constructor.filter(|_| {
-        matches!(
-            &recovered.analysis().execution,
-            ExecutionReport::Complete { .. }
-        ) && recovered.recovery().produced()
+    // The constructor AST is an evidence handoff from this exact run. The ordinary method report
+    // may intentionally have no source body for javac's injected constructor, so candidate
+    // completeness and identity plus both execution reports—not source-text production—gate it.
+    let enum_constructor = enum_constructor.filter(|candidate| {
+        candidate.complete
+            && candidate.member.as_ref() == Some(&request.method)
+            && matches!(
+                &recovered.analysis().execution,
+                ExecutionReport::Complete { .. }
+            )
             && matches!(
                 &recovered.recovery().execution,
                 ExecutionReport::Complete { .. }
