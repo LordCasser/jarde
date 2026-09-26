@@ -80,9 +80,9 @@ use jarde_java::{
 use jarde_jvm::method_ir::parameter_positions;
 use jarde_reader::budget::CountedBudgetDimension;
 use jarde_reader::classfile::{
-    Base, CpEntryKind, DescriptorComponent, DescriptorKind, ElementConstantTag, ElementValueFacts,
-    EnclosingMethodFacts, InnerClassFacts, TypeAnnotationFacts, TypePathEntry, cp_entry,
-    descriptor_facts,
+    Base, ClassMemberFacts, CpEntryKind, DescriptorComponent, DescriptorKind, ElementConstantTag,
+    ElementValueFacts, EnclosingMethodFacts, InnerClassFacts, TypeAnnotationFacts, TypePathEntry,
+    cp_entry, descriptor_facts,
 };
 use jarde_reader::signature::{
     ClassSignatureErasureProof, SignatureType, TypeArgument, TypeParameterErasure,
@@ -5016,6 +5016,89 @@ impl ClassSourceDeclaration {
         self.annotation_attributes = attributes;
         self
     }
+}
+
+/// The narrow Java 8 package-info certificate consumed by the class-source writer. This is a
+/// source projection over the selected read's facts; it does not parse or infer classfile data.
+pub(crate) fn proved_package_info_source(
+    declaration: &ClassSourceDeclaration,
+    facts: &ClassMemberFacts,
+    class_version: (u16, u16),
+    structure_complete: bool,
+    execution: &ExecutionReport,
+) -> std::result::Result<String, &'static str> {
+    let raw_name = &facts.this_class.raw().0;
+    let Some(package_bytes) = raw_name.strip_suffix(b"/package-info") else {
+        return Err("internal name is not a package path ending in package-info");
+    };
+    if !legal_package_name(package_bytes) {
+        return Err("package path is not a legal non-empty Java package name");
+    }
+    if class_version != (52, 0) || facts.access_flags != 0x1600 {
+        return Err(
+            "classfile version or access flags are not the standard Java 8 package-info shape",
+        );
+    }
+    if facts
+        .super_class
+        .as_ref()
+        .map(|name| name.raw().0.as_slice())
+        != Some(b"java/lang/Object".as_slice())
+        || !facts.interfaces.is_empty()
+        || facts.field_count != 0
+        || facts.method_count != 0
+        || facts.stopped_at.is_some()
+        || !structure_complete
+    {
+        return Err("class head or empty member tables are not completely proved");
+    }
+    if !matches!(execution, ExecutionReport::Complete { .. }) {
+        return Err("class-source execution did not complete");
+    }
+    if facts.attributes.len() != 1
+        || facts.attributes[0].name.raw().0 != b"RuntimeVisibleAnnotations"
+        || declaration.annotation_attributes.len() != 1
+        || declaration.annotation_attributes[0].attribute.name.raw().0
+            != b"RuntimeVisibleAnnotations"
+        || !declaration.annotation_refusals.is_empty()
+    {
+        return Err("only one complete RuntimeVisibleAnnotations attribute is supported");
+    }
+    let annotation_count = declaration
+        .annotation_attributes
+        .iter()
+        .map(|attribute| attribute.annotations.len())
+        .sum::<usize>();
+    if annotation_count != 1 || annotation_count != declaration.annotation_uses.len() {
+        return Err("exactly one complete writable package annotation is required");
+    }
+    if !matches!(
+        &declaration.annotation_attributes[0].annotations[0],
+        ElementValueFacts::Annotation { type_descriptor, elements }
+            if type_descriptor.0 == b"Ljava/lang/Deprecated;" && elements.is_empty()
+    ) {
+        return Err("the only supported package annotation is empty java.lang.Deprecated");
+    }
+    let package = String::from_utf8(package_bytes.to_vec())
+        .map_err(|_| "package path is not valid UTF-8")?
+        .replace('/', ".");
+    let mut text = String::new();
+    for annotation in &declaration.annotation_uses {
+        text.push_str(annotation);
+        text.push('\n');
+    }
+    text.push_str(&format!("package {package};\n"));
+    Ok(text)
+}
+
+fn legal_package_name(raw: &[u8]) -> bool {
+    let Ok(package) = std::str::from_utf8(raw) else {
+        return false;
+    };
+    !package.is_empty()
+        && package
+            .split('/')
+            .all(|segment| !segment.is_empty() && is_java_identifier(segment))
 }
 
 fn spell_class_annotation(

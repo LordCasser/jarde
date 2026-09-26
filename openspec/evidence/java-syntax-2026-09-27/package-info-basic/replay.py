@@ -124,15 +124,120 @@ with tempfile.TemporaryDirectory(prefix="jarde-em04-package-info-") as temp:
         target.write_text(output.stdout)
         sources.append(target)
     physical_package = (jarde_snapshot / "p/package-info.java").read_text()
-    if "interface package-info {" not in physical_package or "@java.lang.Deprecated" not in physical_package:
-        raise SystemExit("Jarde baseline package-info shape changed")
+    if physical_package != "@java.lang.Deprecated\npackage p;\n":
+        raise SystemExit("Jarde package-info projection differs")
     jarde_classes = work / "jarde-classes"
     jarde_classes.mkdir()
     compiled = run([*JAVAC, "--release", "8", "-g:none", "-d", str(jarde_classes), *map(str, sources)])
     save("jarde-javac.log", compiled, work)
-    if compiled.returncode == 0:
-        raise SystemExit("Jarde baseline unexpectedly compiled")
-    save("jarde-run.log", "not run: complete Jarde source set failed javac --release 8\n", work)
+    if compiled.returncode:
+        raise SystemExit("Jarde complete source failed Java 8 compilation")
+    launched = run(["java", "-Xverify:all", "-cp", str(jarde_classes), "p.Check"])
+    save("jarde-run.log", launched, work)
+    if launched.returncode or launched.stdout != EXPECTED:
+        raise SystemExit("Jarde runtime differs")
+
+    # A real, JVM-loadable but non-standard class: javac's frozen package-info with only
+    # ACC_SYNTHETIC cleared. The simple name and empty member tables still match JADX's lax test.
+    malformed = bytearray((FIX / "v8/p/package-info.class").read_bytes())
+    cp_count = int.from_bytes(malformed[8:10], "big")
+    offset = 10
+    index = 1
+    while index < cp_count:
+        tag = malformed[offset]
+        offset += 1
+        if tag == 1:
+            length = int.from_bytes(malformed[offset:offset + 2], "big")
+            offset += 2 + length
+        elif tag in (3, 4):
+            offset += 4
+        elif tag in (5, 6):
+            offset += 8
+            index += 1
+        elif tag in (7, 8, 16, 19, 20):
+            offset += 2
+        elif tag in (9, 10, 11, 12, 17, 18):
+            offset += 4
+        elif tag == 15:
+            offset += 3
+        else:
+            raise SystemExit(f"unknown constant-pool tag {tag}")
+        index += 1
+    if int.from_bytes(malformed[offset:offset + 2], "big") != 0x1600:
+        raise SystemExit("frozen package-info flags differ before negative mutation")
+    malformed[offset:offset + 2] = (0x0600).to_bytes(2, "big")
+    negative_jar = work / "nonstandard.jar"
+    import zipfile
+    with zipfile.ZipFile(negative_jar, "w") as archive:
+        archive.write(jarde_classes / "p/Check.class", "p/Check.class")
+        archive.writestr("p/package-info.class", malformed)
+    verified = run(["java", "-Xverify:all", "-cp", str(negative_jar), "p.Check"])
+    save("nonstandard-run.log", verified, work)
+    if verified.returncode or verified.stdout != EXPECTED:
+        raise SystemExit("non-standard negative class is not JVM-loadable")
+    refused = run([
+        str(cli), "class-source", "--input", str(negative_jar), "--class", "p/package-info",
+        "--policy", "plain-jar", "--release", "8", "--format", "text",
+    ])
+    save("nonstandard-refusal.log", refused, work)
+    if refused.returncode or "package-info projection refused" not in refused.stdout or "interface package-info {" not in refused.stdout:
+        raise SystemExit("non-standard class was not explicitly refused with physical facts")
+
+    # Retarget the one runtime annotation to java.lang.Override. The class stays well-formed and
+    # JVM-loadable, but that annotation is not a package annotation and must not be source-projected.
+    wrong_target = bytearray((FIX / "v8/p/package-info.class").read_bytes())
+    cp_count = int.from_bytes(wrong_target[8:10], "big")
+    offset = 10
+    index = 1
+    old_descriptor = b"Ljava/lang/Deprecated;"
+    new_descriptor = b"Ljava/lang/Override;"
+    replaced = False
+    while index < cp_count:
+        tag = wrong_target[offset]
+        offset += 1
+        if tag == 1:
+            length_start = offset
+            length = int.from_bytes(wrong_target[offset:offset + 2], "big")
+            value_start = offset + 2
+            value_end = value_start + length
+            if wrong_target[value_start:value_end] == old_descriptor:
+                wrong_target[offset:offset + 2] = len(new_descriptor).to_bytes(2, "big")
+                wrong_target[value_start:value_end] = new_descriptor
+                offset += 2 + len(new_descriptor)
+                replaced = True
+            else:
+                offset = value_end
+        elif tag in (3, 4):
+            offset += 4
+        elif tag in (5, 6):
+            offset += 8
+            index += 1
+        elif tag in (7, 8, 16, 19, 20):
+            offset += 2
+        elif tag in (9, 10, 11, 12, 17, 18):
+            offset += 4
+        elif tag == 15:
+            offset += 3
+        else:
+            raise SystemExit(f"unknown constant-pool tag {tag}")
+        index += 1
+    if not replaced:
+        raise SystemExit("frozen package annotation descriptor was not found")
+    wrong_target_jar = work / "wrong-target.jar"
+    with zipfile.ZipFile(wrong_target_jar, "w") as archive:
+        archive.write(jarde_classes / "p/Check.class", "p/Check.class")
+        archive.writestr("p/package-info.class", wrong_target)
+    verified = run(["java", "-Xverify:all", "-cp", str(wrong_target_jar), "p.Check"])
+    save("wrong-target-run.log", verified, work)
+    if verified.returncode:
+        raise SystemExit("wrong-target negative class is not JVM-loadable")
+    refused = run([
+        str(cli), "class-source", "--input", str(wrong_target_jar), "--class", "p/package-info",
+        "--policy", "plain-jar", "--release", "8", "--format", "text",
+    ])
+    save("wrong-target-refusal.log", refused, work)
+    if refused.returncode or "only supported package annotation" not in refused.stdout or "interface package-info {" not in refused.stdout:
+        raise SystemExit("non-package annotation target was not refused with physical facts")
 
     versions = []
     for command in (("java", "-version"), ("javac", "-version"), ("rustc", "--version"), ("cargo", "--version")):

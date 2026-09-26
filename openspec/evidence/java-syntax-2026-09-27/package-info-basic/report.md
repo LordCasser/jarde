@@ -6,10 +6,12 @@
 | --- | --- | --- | --- |
 | 原始 | `@Deprecated` + `package p;` | 通过 | `true` |
 | JADX | `@Deprecated` + `package p;` | 通过 | `true` |
-| Jarde | `package p;` + `@java.lang.Deprecated` + `interface package-info {}` | 失败：`<identifier> expected` | 无法运行 |
+| Jarde | `@java.lang.Deprecated` + `package p;` | 通过 | `true` |
 
 冻结字节的 [javap](original-javap.txt) 表明这不是普通源码接口：`p/package-info`、版本 52、flags `0x1600`，无接口、字段和方法，只有一个运行时可见包注解。Jarde 既已读出并拼写注解，缺口在类级源码装配：把特殊物理类当成普通接口写出，并把 `package` 放在注解之前。
 
 JADX 的 `TestPackageInfoSupport` 是 Smali 测试且禁用源码编译；其 `ClassNode.processSpecialClasses` 仅以简单名 `package-info` 和空成员判断特殊类，`ClassGen.makePackageInfo` 则在注解后写 `package` 行。这里借用后一个输出次序，但不能照搬宽松判定，否则非标准或证据不完整的空接口可能被误投影。首切片只接受完整证明的 Java 8 标准形状，复用 Jarde 现有 class-source 注解拼写与物理事实；不需要增加解析机制。实现合同见 [OpenSpec](../../../changes/recover-proved-package-info-source/)。
 
-当前日志和两方源码快照记录于本目录；Jarde 的失败是预期基线，不能算一次运行通过。其余 EM-04 变体仍待扩验。
+修后 Jarde 的完整源码与编译/运行日志记录于本目录；`baseline-jarde-source.java` 和 `baseline-jarde-javac.log` 保留修复前的失败基线。受控负例清除冻结类的 `ACC_SYNTHETIC`，保持包名与空成员不变；另一个负例把注解 descriptor 改为非包目标 `java.lang.Override`。两者均通过 `java -Xverify:all`，而 Jarde 明确拒绝投影并保留物理 `interface package-info` 事实，分别见 `nonstandard-*` 和 `wrong-target-*` 日志。这个证据说明判定依赖标准标志与受证明的注解范围，而非 JADX 的简单名+空成员捷径。首切片的注解/属性边界与 OpenSpec 一致；其余 EM-04 变体仍待扩验。
+
+定向 package-info 单测（成功投影、非包注解目标、输出预算不足、预取消）均通过；`cargo fmt --all -- --check`、`cargo check --locked --workspace` 和 OpenSpec strict validation 均通过。当前与 `72d50e80` 基线各自运行全库 lib 测试时，同一个既有 enum 用例 `enum_constant_body_relations_follow_each_verified_construction_and_reject_missing_or_changed_rows` 均在“应拒绝”断言处失败；这是独立的 enum 测试漂移，本切片未修改其代码。

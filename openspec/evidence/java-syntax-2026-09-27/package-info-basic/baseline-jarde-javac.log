@@ -1,5 +1,9 @@
 warning: [options] source value 8 is obsolete and will be removed in a future release
 warning: [options] target value 8 is obsolete and will be removed in a future release
 warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+<REPO>/openspec/evidence/java-syntax-2026-09-27/package-info-basic/jarde-source/p/package-info.java:7: error: <identifier> expected
+interface package-info {
+         ^
+1 error
 3 warnings
-exit=0
+exit=1
