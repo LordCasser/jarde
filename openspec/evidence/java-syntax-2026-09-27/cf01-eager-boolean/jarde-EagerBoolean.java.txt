@@ -1,0 +1,52 @@
+// jarde: presentation of `EagerBoolean` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class EagerBoolean extends java.lang.Object {
+    static int calls;
+
+    public EagerBoolean() {
+        // @method <init>()V
+        // @declaration a constructor of `EagerBoolean`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static boolean rhs() {
+        // @method rhs()Z
+        // @declaration a static method of `EagerBoolean`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        EagerBoolean.calls = EagerBoolean.calls + 1;
+        return true;
+    }
+
+    static void and(boolean arg0) {
+        // @method and(Z)V
+        // @declaration a static method of `EagerBoolean`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 & rhs()) {
+            EagerBoolean.calls = EagerBoolean.calls + 10;
+        }
+        return;
+    }
+
+    static void or(boolean arg0) {
+        // @method or(Z)V
+        // @declaration a static method of `EagerBoolean`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 | rhs()) {
+            EagerBoolean.calls = EagerBoolean.calls + 100;
+        }
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `EagerBoolean`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        and(false);
+        java.lang.System.out.println(EagerBoolean.calls);
+        or(true);
+        java.lang.System.out.println(EagerBoolean.calls);
+        return;
+    }
+}

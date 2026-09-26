@@ -1,0 +1,30 @@
+package defpackage;
+
+/* JADX INFO: loaded from: EagerBoolean.class */
+public class EagerBoolean {
+    static int calls;
+
+    static boolean rhs() {
+        calls++;
+        return true;
+    }
+
+    static void and(boolean z) {
+        if (z && rhs()) {
+            calls += 10;
+        }
+    }
+
+    static void or(boolean z) {
+        if (z || rhs()) {
+            calls += 100;
+        }
+    }
+
+    public static void main(String[] strArr) {
+        and(false);
+        System.out.println(calls);
+        or(true);
+        System.out.println(calls);
+    }
+}
