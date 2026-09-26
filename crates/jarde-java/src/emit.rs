@@ -879,6 +879,10 @@ impl<'a> Emitter<'a> {
                 emitter.put(".class", at)
             }
             ExprKind::Path(path) => emitter.put(path, at),
+            ExprKind::QualifiedThis { qualifier } => {
+                emitter.put(qualifier, at)?;
+                emitter.put(".this", at)
+            }
             ExprKind::Super { qualifier } => {
                 if let Some(qualifier) = qualifier {
                     emitter.put(qualifier, at)?;

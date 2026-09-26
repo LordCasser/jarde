@@ -401,6 +401,15 @@ pub(crate) fn committed_presentations(
                 StmtKind::Break { .. } | StmtKind::Continue { .. } | StmtKind::Fallback { .. } => {}
             },
             Node::Expr(expr) => match &expr.kind {
+                ExprKind::QualifiedThis { .. } => {
+                    if expr.origin.primary().method().is_none()
+                        && let Some((evidence, shape)) = plan.claim(at)
+                        && evidence.access == FieldAccess::Read
+                        && !shape.writes()
+                    {
+                        record(at, FieldAccess::Read, &evidence.name);
+                    }
+                }
                 ExprKind::Field { receiver, name } => {
                     if expr.origin.primary().method().is_none() {
                         record(at, FieldAccess::Read, name);

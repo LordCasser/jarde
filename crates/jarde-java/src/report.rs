@@ -117,6 +117,9 @@ pub struct RecoveryRequest<'a> {
     /// by the facade's selected-definition reads. Direct recovery has no such environment and
     /// therefore leaves interface-qualified `super` calls refused.
     pub interface_super_calls: &'a [ProvedInterfaceSuperCall],
+    /// Exact captured-outer reads proved by the selected class-source family assembly.
+    /// A direct method request has no lexical family and supplies none.
+    pub captured_outer_reads: &'a [ProvedCapturedOuterRead],
     /// Which **optional evidence** this request wants delivered (change
     /// `add-demand-driven-core-results`, D1): the categories of detail records, and the driver BCI
     /// range they are restricted to. [`RecoveryEvidenceRequest::essential`] — the default
@@ -151,6 +154,23 @@ pub struct ProvedMemberInnerTarget {
     /// The selected, bidirectionally proved source type path from its top-level enclosing class to
     /// this member. The binary names stay attached so a consumer never splits `$` on its own.
     pub source_type_path: Vec<ProvedMemberInnerSourceSegment>,
+}
+
+/// Trusted, non-serialized handoff for one captured field read in one physical child method.
+/// The constructor origin is retained for the family projection; it is never inserted into this
+/// method's source map, whose BCIs belong to `method` alone.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProvedCapturedOuterRead {
+    pub method: PhysicalMethodId,
+    pub read_bci: u32,
+    pub field_owner: String,
+    pub field_name: String,
+    pub field_descriptor: String,
+    pub outer_internal_name: String,
+    pub outer_source_name: String,
+    pub constructor: PhysicalMethodId,
+    pub constructor_write_bci: u32,
 }
 
 /// One exact `invokespecial InterfaceMethodref` target proved writable as `I.super.m(...)`.
@@ -826,6 +846,7 @@ impl<'a> RecoveryRequest<'a> {
             members: None,
             member_inner_targets: &[],
             interface_super_calls: &[],
+            captured_outer_reads: &[],
             evidence: RecoveryEvidenceRequest::essential(),
             subject: None,
         }
@@ -847,6 +868,12 @@ impl<'a> RecoveryRequest<'a> {
     /// Supply only interface-special targets proved against this request's selected environment.
     pub fn with_interface_super_calls(mut self, calls: &'a [ProvedInterfaceSuperCall]) -> Self {
         self.interface_super_calls = calls;
+        self
+    }
+
+    /// Supply only the exact child reads closed by the selected family's capture certificate.
+    pub fn with_captured_outer_reads(mut self, reads: &'a [ProvedCapturedOuterRead]) -> Self {
+        self.captured_outer_reads = reads;
         self
     }
 
@@ -1434,6 +1461,7 @@ fn collect_expression_anchors(expr: &Expr, anchors: &mut std::collections::BTree
         | ExprKind::Null
         | ExprKind::ClassLiteral { .. }
         | ExprKind::Path(_)
+        | ExprKind::QualifiedThis { .. }
         | ExprKind::Super { .. } => {}
     }
 }
@@ -2016,6 +2044,8 @@ fn recover_inner(
             members: request.members,
             member_inner_targets: request.member_inner_targets,
             interface_super_calls: request.interface_super_calls,
+            captured_outer_reads: request.captured_outer_reads,
+            physical_method: request.ir.declaration().map(|member| member.identity()),
             // The class this body belongs to, as the run's own member declaration states it: the
             // fact a static call's pool owner is compared against, so that a call to this class is
             // written unqualified and a call to another class names it (P3 4.4). A run that read no
@@ -3054,6 +3084,7 @@ fn visit_class_initializer_field_reads(
         | ExprKind::Null
         | ExprKind::ClassLiteral { .. }
         | ExprKind::Path(_)
+        | ExprKind::QualifiedThis { .. }
         | ExprKind::Super { .. } => {}
     }
     Ok(())
@@ -3184,6 +3215,7 @@ fn charge_expression_tree_at_depth(
         | ExprKind::Null
         | ExprKind::ClassLiteral { .. }
         | ExprKind::Path(_)
+        | ExprKind::QualifiedThis { .. }
         | ExprKind::Super { .. } => {}
     }
     Ok(())

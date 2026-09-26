@@ -106,7 +106,8 @@ pub use init::{InitRecord, InitRefusal, NewRecord, NewRefusal};
 pub use lambda::{LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, type_of_component};
 pub use pass::{IrTable, Pass, Precondition, RecoveryProfile, RuleVersion};
 pub use report::{
-    RecoveryContent, RecoveryOutcome, RecoveryReport, RecoveryRequest, RegionRecord, recover,
+    ProvedCapturedOuterRead, RecoveryContent, RecoveryOutcome, RecoveryReport, RecoveryRequest,
+    RegionRecord, recover,
 };
 
 pub use ast::{AssignOp, BinaryOp, ConstructorTarget, Expr, ExprKind, Stmt, StmtKind, Type};
