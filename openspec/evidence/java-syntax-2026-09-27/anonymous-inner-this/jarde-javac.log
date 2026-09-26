@@ -1,0 +1,10 @@
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+<REPO>/openspec/evidence/java-syntax-2026-09-27/anonymous-inner-this/jarde-source/Inner$1.java:10: error: flexible constructors is a preview feature and is disabled by default.
+        this.this$0 = arg1;
+        ^
+  (use --enable-preview to enable flexible constructors)
+1 error
+3 warnings
+exit=1

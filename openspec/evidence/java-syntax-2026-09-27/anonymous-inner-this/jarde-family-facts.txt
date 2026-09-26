@@ -1,0 +1,4 @@
+Inner$1: member_family.child = null
+Inner$1: member_family.reason = "selected root has EnclosingMethod identity"
+Inner$1: member_family.state = "refused"
+Inner: member_family.state = "absent"
