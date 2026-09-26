@@ -30,6 +30,32 @@ fn budget() -> Budget {
 }
 
 fn report_bytes(bytes: &[u8], class_name: &str) -> ClassSourceReport {
+    report_bytes_with(
+        bytes,
+        class_name,
+        &RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+        budget(),
+    )
+}
+
+fn report_bytes_with(
+    bytes: &[u8],
+    class_name: &str,
+    evidence: &RecoveryEvidenceRequest,
+    request_budget: Budget,
+) -> ClassSourceReport {
+    match class_source_outcome(bytes, class_name, evidence, request_budget) {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("one class has one source result, got {other:?}"),
+    }
+}
+
+fn class_source_outcome(
+    bytes: &[u8],
+    class_name: &str,
+    evidence: &RecoveryEvidenceRequest,
+    mut request_budget: Budget,
+) -> OperationOutcome<ClassSourceReport> {
     let snapshot = Engine::new()
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget())
         .expect("the Java class fixture opens");
@@ -49,18 +75,14 @@ fn report_bytes(bytes: &[u8], class_name: &str) -> ClassSourceReport {
             loader: LoaderId("app".to_owned()),
         },
     };
-    match Engine::new()
+    Engine::new()
         .class_source_with_evidence(
             slice::from_ref(&snapshot),
             &request,
-            &RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
-            &mut budget(),
+            evidence,
+            &mut request_budget,
         )
         .expect("the class-source request succeeds")
-    {
-        OperationOutcome::Performed(report) => report,
-        other => panic!("one class has one source result, got {other:?}"),
-    }
 }
 
 fn method<'a>(report: &'a ClassSourceReport, name: &str) -> &'a ClassSourceMethod {
@@ -187,7 +209,6 @@ fn compound_do_while_tests_keep_the_shared_body_prefix_and_have_execution_parity
 }
 
 #[test]
-#[ignore = "RED gate for recover-do-while-body-transfers tasks 2.1/2.2"]
 fn body_continue_and_break_edges_recover_with_original_trace_and_sources() {
     assert_eq!(
         blake3::hash(DO_WHILE_CORE).to_hex().as_str(),
@@ -267,15 +288,37 @@ fn body_continue_and_break_edges_recover_with_original_trace_and_sources() {
     );
 
     let core_report = report_bytes(DO_WHILE_CORE, "DoWhileCore");
+    let default_report = report_bytes_with(
+        DO_WHILE_CORE,
+        "DoWhileCore",
+        &RecoveryEvidenceRequest::essential(),
+        budget(),
+    );
+    let all_report = report_bytes_with(
+        DO_WHILE_CORE,
+        "DoWhileCore",
+        &RecoveryEvidenceRequest::all(),
+        budget(),
+    );
+    assert_eq!(
+        default_report.text, all_report.text,
+        "default and all evidence present identical class source"
+    );
+    assert_eq!(core_report.text, all_report.text);
     let mut missing_sources = Vec::new();
     for (name, bcis) in [
         ("withContinue", [7, 10, 13, 21, 24, 29, 32]),
         ("withBreak", [7, 10, 13, 21, 24, 29, 32]),
     ] {
         let recovered = method(&core_report, name);
+        let all_recovered = method(&all_report, name);
+        assert_eq!(recovered.text, all_recovered.text);
         missing_sources.extend(
             bcis.into_iter()
-                .filter(|bci| recovery(recovered).source_map.of_bci(*bci).is_empty())
+                .filter(|bci| {
+                    recovery(recovered).source_map.of_bci(*bci).is_empty()
+                        || recovery(all_recovered).source_map.of_bci(*bci).is_empty()
+                })
                 .map(|bci| (name, bci)),
         );
     }
@@ -286,6 +329,22 @@ fn body_continue_and_break_edges_recover_with_original_trace_and_sources() {
 
     let continue_method = method(&core_report, "withContinue");
     let break_method = method(&core_report, "withBreak");
+    assert!(
+        recovery(continue_method)
+            .source_map
+            .text_of_bci(&recovery(continue_method).text, 10)
+            .iter()
+            .any(|text| text.contains("if (")),
+        "the effect-free continue bridge is anchored to its owning branch"
+    );
+    assert!(
+        recovery(break_method)
+            .source_map
+            .text_of_bci(&recovery(break_method).text, 10)
+            .iter()
+            .any(|text| text.contains("break;")),
+        "the exit bridge anchors the emitted break"
+    );
     for recovered in [continue_method, break_method] {
         assert_eq!(
             recovery(recovered).quality,
@@ -300,7 +359,156 @@ fn body_continue_and_break_edges_recover_with_original_trace_and_sources() {
         );
     }
     assert_eq!(break_method.text.matches("break;").count(), 1);
-    assert_eq!(break_method.text.matches("return trace;").count(), 1);
+    assert_eq!(
+        break_method
+            .text
+            .lines()
+            .filter(|line| line.trim().starts_with("return ") && line.contains("trace;"))
+            .count(),
+        1
+    );
+
+    let recovered = scratch.path().join("recovered");
+    fs::create_dir_all(&recovered).expect("create recovered comparison directory");
+    fs::write(recovered.join("DoWhileCore.java"), &core_report.text).expect("write recovered core");
+    fs::write(
+        recovered.join("DoWhileSwitchBoundary.java"),
+        DO_WHILE_SWITCH_SOURCE,
+    )
+    .expect("write original switch boundary");
+    fs::write(
+        recovered.join("DoWhileCoreRunner.java"),
+        DO_WHILE_TRANSFER_RUNNER,
+    )
+    .expect("write runner for recovered core");
+    let compiled = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&recovered)
+        .args([
+            "DoWhileCore.java",
+            "DoWhileSwitchBoundary.java",
+            "DoWhileCoreRunner.java",
+        ])
+        .current_dir(&recovered)
+        .output()
+        .expect("compile recovered core");
+    assert!(
+        compiled.status.success(),
+        "recovered core does not compile: {}\n{}",
+        String::from_utf8_lossy(&compiled.stderr),
+        core_report.text
+    );
+    assert_eq!(
+        run_java_named(&recovered, "DoWhileCoreRunner", "recovered"),
+        "basic:0=1:trace=1\nbasic:1=1:trace=1\nbasic:4=1234:trace=1234\ncontinue:1=1:trace=1\ncontinue:4=134:trace=134\nbreak:1=1:trace=1\nbreak:5=12:trace=12\nswitch:2=199:trace=0\nswitch:3=19939:trace=0\n"
+    );
+}
+
+#[test]
+fn do_while_transfer_recovery_obeys_budget_and_cancellation() {
+    fn assert_stopped(outcome: OperationOutcome<ClassSourceReport>) {
+        match outcome {
+            OperationOutcome::Incomplete(_) => {}
+            OperationOutcome::Performed(report) => {
+                assert!(
+                    !matches!(report.execution, ExecutionReport::Complete { .. }),
+                    "a stopped transfer request must not claim complete execution"
+                );
+                assert!(
+                    !report.text.contains("do {"),
+                    "a stopped request must not publish an unverified loop"
+                );
+            }
+            other => panic!("expected a stopped single-class request, got {other:?}"),
+        }
+    }
+
+    assert_stopped(class_source_outcome(
+        DO_WHILE_CORE,
+        "DoWhileCore",
+        &RecoveryEvidenceRequest::all(),
+        task_budget(&[BudgetOverride::AnalysisSteps { limit: 1 }])
+            .expect("a low analysis-step limit is valid"),
+    ));
+    let token = CancellationToken::new();
+    token.cancel();
+    assert_stopped(class_source_outcome(
+        DO_WHILE_CORE,
+        "DoWhileCore",
+        &RecoveryEvidenceRequest::all(),
+        Budget::with_cancellation_token(task_limits(&[]).expect("bounded defaults exist"), token),
+    ));
+}
+
+#[test]
+fn a_proved_break_skips_the_side_effecting_latch_call() {
+    let scratch = Scratch::new();
+    let original = scratch.path().join("original");
+    let recovered = scratch.path().join("recovered");
+    fs::create_dir_all(&original).expect("create original call-latch directory");
+    fs::create_dir_all(&recovered).expect("create recovered call-latch directory");
+    let source = r#"public final class BreakCallDo {
+    static int trace;
+    static int checks;
+    static boolean tick(int i, int limit) { checks++; return i < limit; }
+    static int run(int limit) {
+        int i = 0;
+        do {
+            i++;
+            if (i == 3) break;
+            trace = trace * 10 + i;
+        } while (tick(i, limit));
+        return trace;
+    }
+}
+"#;
+    let runner = r#"public final class BreakCallRunner {
+    public static void main(String[] args) {
+        System.out.println(BreakCallDo.run(5) + ":" + BreakCallDo.checks);
+    }
+}
+"#;
+    fs::write(original.join("BreakCallDo.java"), source).expect("write call-latch source");
+    fs::write(original.join("BreakCallRunner.java"), runner).expect("write call-latch runner");
+    let compile = |dir: &Path| {
+        let output = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-d"])
+            .arg(dir)
+            .args(["BreakCallDo.java", "BreakCallRunner.java"])
+            .current_dir(dir)
+            .output()
+            .expect("compile call-latch case");
+        assert!(
+            output.status.success(),
+            "call-latch source did not compile: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    };
+    compile(&original);
+    let bytes = fs::read(original.join("BreakCallDo.class")).expect("read call-latch class");
+    let report = report_bytes(&bytes, "BreakCallDo");
+    let run = method(&report, "run");
+    assert_eq!(
+        recovery(run).quality,
+        jarde_jvm::ir::Quality::Structured,
+        "{}",
+        run.text
+    );
+    assert_eq!(run.text.matches("break;").count(), 1);
+    assert_eq!(run.text.matches("tick(").count(), 1);
+    fs::write(recovered.join("BreakCallDo.java"), &report.text)
+        .expect("write recovered call-latch source");
+    fs::write(recovered.join("BreakCallRunner.java"), runner)
+        .expect("write recovered call-latch runner");
+    compile(&recovered);
+    assert_eq!(
+        run_java_named(&original, "BreakCallRunner", "original"),
+        "12:2\n"
+    );
+    assert_eq!(
+        run_java_named(&recovered, "BreakCallRunner", "recovered"),
+        "12:2\n"
+    );
 }
 
 #[test]
