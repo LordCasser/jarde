@@ -1040,6 +1040,9 @@ pub(crate) fn recover(
     operations: &Operations,
     code: &MethodCodeFacts,
     method_synchronized: Option<bool>,
+    // Whether the method's descriptor states a `boolean` result — the fact the
+    // two-terminal-return claim needs before it may commit ownership.
+    return_is_boolean: bool,
     profile: &crate::pass::RecoveryProfile,
     budget: &mut Budget,
 ) -> Result<Recovered, StopReason> {
@@ -1162,6 +1165,7 @@ pub(crate) fn recover(
         code,
         method_synchronized,
         has_reachable_explicit_monitor,
+        return_is_boolean,
         handlers: &code.exception_handlers,
         profile,
         budget,
@@ -1778,6 +1782,10 @@ struct Walker<'a> {
     /// Whether a reachable instruction anywhere in this method enters or leaves an explicit
     /// monitor. Computed once, only when a range-end return candidate could use the exception.
     has_reachable_explicit_monitor: bool,
+    /// Whether the method's own descriptor states a `boolean` result. The two-terminal-return
+    /// claim is sound only there: its builder re-checks the descriptor first, so a claim made
+    /// anywhere else is ownership committed for a proof that cannot run.
+    return_is_boolean: bool,
     /// The exception table the same decode stated: the guarded rules of P3 2.4 read the ranges and
     /// the catch types from it, and the walk reads it for the crossing-range refusal.
     handlers: &'a [ExceptionHandlerFact],
@@ -3070,6 +3078,14 @@ impl Walker<'_> {
     /// Claims a complete forward test DAG with two terminal returns before ordinary `If`
     /// recursion can claim either shared leaf twice. This is ownership only; the builder proves
     /// the return values and every test expression before publishing a statement.
+    ///
+    /// The claim is made only when the method's own descriptor says the returns are `boolean`:
+    /// that is the first fact the builder re-checks, and a claim it can never prove is not
+    /// harmless — it commits the whole closure's ownership up front, so the ordinary one-armed
+    /// `if` walk (whose join is exactly such a shared leaf, P3 1.4) never runs and an
+    /// `int`-returning `if (a > 0) { if (b > 0) { return 1; } } return 0;` loses its statement
+    /// to a quote. Leaving the shape to the `If` walk when the fold cannot succeed is the
+    /// rejection the shared-terminal-returns change itself calls atomic.
     fn two_exit_return(
         &mut self,
         prefix: &[CanonicalBlockId],
@@ -3077,7 +3093,8 @@ impl Walker<'_> {
         outer_bci: u32,
         frame: &Frame,
     ) -> Result<Option<Region>, StopReason> {
-        if frame.scope.is_some()
+        if !self.return_is_boolean
+            || frame.scope.is_some()
             || frame.case_entries.is_some()
             || frame.own_loop.is_some()
             || frame.own_try.is_some()
