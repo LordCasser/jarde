@@ -1516,6 +1516,7 @@ impl Engine {
                 Some(definition_provenance(&child_definition)),
             ));
         }
+        let child_facts = child_read.facts.clone();
         let child_request = ClassSourceRequest {
             class: ClassRef::Definition {
                 definition: child_definition.clone(),
@@ -1542,6 +1543,32 @@ impl Engine {
         let child = Box::new(child);
         let physically_complete = matches!(root_report.execution, ExecutionReport::Complete { .. })
             && matches!(child.execution, ExecutionReport::Complete { .. });
+        let mut capture_execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        let capture = if matches!(relation, Ok(true)) && physically_complete {
+            match prove_class_source_member_capture(
+                content,
+                environment,
+                &child_definition,
+                root_name,
+                &child_facts,
+                &mut capture_execution,
+                budget,
+            ) {
+                Ok(capture) => capture,
+                Err(error) => {
+                    merge_execution(&mut capture_execution, stop_execution(&error, budget));
+                    class_source::ClassSourceMemberCapture::Refused {
+                        reason: "capture proof stopped".to_owned(),
+                    }
+                }
+            }
+        } else {
+            class_source::ClassSourceMemberCapture::Refused {
+                reason: "physical family relation or preparation is incomplete".to_owned(),
+            }
+        };
         let family = match relation {
             Ok(true) if physically_complete => Family::Prepared {
                 relation: class_source::ClassSourceMemberRelation {
@@ -1551,6 +1578,7 @@ impl Engine {
                     access_flags: candidate.access_flags,
                 },
                 child,
+                capture,
             },
             Ok(true) => Family::Refused {
                 reason: "root or child physical preparation did not complete".to_owned(),
@@ -1578,6 +1606,8 @@ impl Engine {
             } => child.execution.clone(),
             _ => unreachable!("resolved child remains in family result"),
         };
+        let mut execution = execution;
+        merge_execution(&mut execution, capture_execution);
         Ok((family, execution))
     }
 
@@ -8236,6 +8266,63 @@ fn unique_source_default(
 /// Discover exact constructor references that share a decoded allocation owner. The `$` test is
 /// only a cheap demand filter: the target-side InnerClasses row, not this name, proves membership.
 /// A target this first slice can spell as `Outer.Inner` necessarily has that binary separator.
+fn prove_class_source_member_capture(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    child_definition: &PhysicalDefinitionId,
+    root_name: &[u8],
+    child: &jarde_reader::classfile::ClassMemberFacts,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<class_source::ClassSourceMemberCapture> {
+    use class_source::ClassSourceMemberCapture as Capture;
+    let mut analyses = Vec::new();
+    for method in &child.methods {
+        budget.poll()?;
+        if !method
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Code")
+        {
+            continue;
+        }
+        let id = PhysicalMethodId {
+            owner: child_definition.clone(),
+            name: method.name.raw().clone(),
+            descriptor: method.descriptor.raw().clone(),
+        };
+        let analyzed = jarde_jvm::analyze_method_ir(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: id.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            budget,
+        )?;
+        merge_execution(execution, analyzed.report().execution.clone());
+        if analyzed.report().method != id
+            || !matches!(
+                analyzed.report().execution,
+                ExecutionReport::Complete { .. }
+            )
+        {
+            return Ok(Capture::Refused {
+                reason: "member method SSA analysis did not complete".to_owned(),
+            });
+        }
+        analyses.push((id, analyzed));
+    }
+    let irs: Vec<_> = analyses
+        .iter()
+        .map(|(id, analyzed)| (id.clone(), analyzed.ir()))
+        .collect();
+    match crate::member_inner::prove_family_capture(root_name, child, &irs, budget)? {
+        Ok(proof) => Ok(Capture::Proved { proof }),
+        Err(reason) => Ok(Capture::Refused { reason }),
+    }
+}
+
 fn class_source_member_inner_candidates(
     ir: &jarde_jvm::method_ir::MethodIr,
     budget: &mut Budget,

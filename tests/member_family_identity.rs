@@ -80,10 +80,29 @@ fn jar_of(entries: &[(&[u8], &[u8])]) -> Vec<u8> {
 #[test]
 fn selected_family_keeps_two_physical_reports_under_one_budget() {
     let report = report_with(task_limits(&[]).unwrap());
-    let ClassSourceMemberFamily::Prepared { relation, child } = &report.member_family else {
+    let ClassSourceMemberFamily::Prepared {
+        relation,
+        child,
+        capture,
+    } = &report.member_family
+    else {
         panic!("expected proved relation, got {:?}", report.member_family);
     };
     assert_eq!(relation.root, report.class);
+    assert!(
+        matches!(capture, ClassSourceMemberCapture::Proved { .. }),
+        "{capture:?}"
+    );
+    let ClassSourceMemberCapture::Proved { proof } = capture else {
+        unreachable!()
+    };
+    assert_eq!(proof.field_name, "this$0");
+    assert_eq!(proof.field_index, 0);
+    assert_eq!(proof.constructor.owner, child.class);
+    assert_eq!(proof.write_bci, 2);
+    assert_eq!(proof.reads.len(), 1);
+    assert_eq!(proof.reads[0].method.owner, child.class);
+    assert_eq!(proof.reads[0].bci, 8); // other.state at BCI 1 is not a capture read
     assert_eq!(relation.child, child.class);
     assert_eq!(relation.simple_name, "Member");
     assert_eq!(relation.access_flags & 0x0007, 0); // package-private InnerClasses row
@@ -145,6 +164,33 @@ fn child_body_stop_keeps_root_and_child_physical_coverage() {
     assert!(matches!(child.execution, ExecutionReport::Partial { .. }));
     assert_eq!(stopped.usage.method_bodies, limits.method_bodies);
     assert_eq!(child.usage.method_bodies, limits.method_bodies);
+}
+
+#[test]
+fn capture_analysis_stop_keeps_completed_physical_child() {
+    let full = report_with(task_limits(&[]).unwrap());
+    let ClassSourceMemberFamily::Prepared {
+        child: full_child, ..
+    } = &full.member_family
+    else {
+        panic!("frozen physical family prepares")
+    };
+    assert!(full.usage.method_bodies > full_child.usage.method_bodies);
+    let mut limits = task_limits(&[]).unwrap();
+    limits.method_bodies = full_child.usage.method_bodies;
+    let stopped = report_with(limits);
+    let ClassSourceMemberFamily::Prepared { child, capture, .. } = &stopped.member_family else {
+        panic!(
+            "physical family survives capture stop: {:?}",
+            stopped.member_family
+        )
+    };
+    assert!(matches!(capture, ClassSourceMemberCapture::Refused { .. }));
+    assert!(matches!(child.execution, ExecutionReport::Complete { .. }));
+    assert!(matches!(stopped.execution, ExecutionReport::Partial { .. }));
+    assert_eq!(child.class, full_child.class);
+    assert_eq!(child.methods.len(), full_child.methods.len());
+    assert!(stopped.text.contains("class NamedMemberFamilyStage1"));
 }
 
 #[test]

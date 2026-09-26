@@ -69,8 +69,8 @@ use crate::facade::{
 use crate::{
     AnalysisStage, AttributeShell, Budget, Coverage, CpEntryFacts, Diagnostic, Error,
     ExecutionReport, JvmBytes, JvmString, Limits, MemberHeader, MemberTableStop, NoBodyKind,
-    PhysicalDefinitionId, PhysicalView, Result, TerminationReason, UsageSnapshot, attribute_facts,
-    budget_dimension_code,
+    PhysicalDefinitionId, PhysicalMethodId, PhysicalView, Result, TerminationReason, UsageSnapshot,
+    attribute_facts, budget_dimension_code,
 };
 use jarde_java::report::{GenericConstructorCandidate, GenericReturnCandidate, GenericReturnValue};
 use jarde_java::{
@@ -552,8 +552,9 @@ pub struct ClassSourceReport {
     pub diagnostics: Vec<Diagnostic>,
 }
 
-/// Identity preparation only; this status never authorizes hiding capture artifacts or writing a
-/// nested Java declaration. A later projection must prove those uses independently.
+/// Prepared family identity with a separate, narrow capture verdict. Neither status authorizes
+/// hiding physical artifacts or writing a nested Java declaration: source changes still require
+/// call-site, expression, effect, and output proofs.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case")]
 pub enum ClassSourceMemberFamily {
@@ -566,7 +567,36 @@ pub enum ClassSourceMemberFamily {
     Prepared {
         relation: ClassSourceMemberRelation,
         child: Box<ClassSourceReport>,
+        /// Capture evidence only; a refused capture keeps both physical reports intact.
+        capture: ClassSourceMemberCapture,
     },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case")]
+pub enum ClassSourceMemberCapture {
+    Proved { proof: MemberCaptureProof },
+    Refused { reason: String },
+}
+
+/// Physical evidence for capture only. A writer must separately prove every changed expression.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MemberCaptureProof {
+    pub field_index: u64,
+    pub field_name: String,
+    pub constructor: PhysicalMethodId,
+    pub write_bci: u32,
+    pub reads: Vec<MemberCaptureRead>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MemberCaptureRead {
+    pub method: PhysicalMethodId,
+    pub bci: u32,
+    /// SSA consumers of the value loaded from the capture field, in this physical method.
+    pub consumer_bcis: Vec<u32>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
