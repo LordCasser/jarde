@@ -2677,9 +2677,41 @@ impl Engine {
                 }
             }
         }
+        if matches!(
+            &enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ) && !enum_constant_body_relations.is_empty()
+            && matches!(&execution, ExecutionReport::Complete { .. })
+        {
+            enum_constant_proof = match prove_enum_constant_body_group(
+                &declaration,
+                &fields,
+                &methods,
+                &enum_code_candidates,
+                &initializer_candidate_runs,
+                &enum_constant_body_relations,
+                budget,
+            ) {
+                Ok(Ok(group)) => crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                    crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+                ),
+                Ok(Err(reason)) => {
+                    crate::enum_constants::ClassSourceEnumConstantProof::Refused { reason }
+                }
+                Err(error) => {
+                    let stop = stop_execution(&error, budget);
+                    merge_execution(&mut execution, stop);
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                        reason: format!("enum constant body group proof stopped: {error}"),
+                    }
+                }
+            };
+        }
         let mut projection_tail = None;
-        if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(group) =
-            &enum_constant_proof
+        if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Ordinary(group),
+        ) = &enum_constant_proof
         {
             if crate::enum_constants::has_only_terminal_initializer_return(
                 group,
@@ -5938,6 +5970,338 @@ fn complete_enum_child_override(method: &ClassSourceMethod) -> bool {
         && method.markers.is_empty()
 }
 
+/// Join the already-frozen main-class shape with the selected child proofs. This stage checks
+/// the generated API and terminal initializer, which the pending relation did not prove.
+fn prove_enum_constant_body_group(
+    declaration: &class_source::ClassSourceDeclaration,
+    source_fields: &[ClassSourceField],
+    source_methods: &[ClassSourceMethod],
+    codes: &[crate::enum_constants::EnumMethodCodeCandidate],
+    initializers: &[jarde_java::report::ClassInitializerCandidates],
+    relations: &[PendingEnumConstantBodyRelation],
+    budget: &mut Budget,
+) -> Result<std::result::Result<crate::enum_constants::ProvedEnumConstantBodyGroup, String>> {
+    use crate::enum_constants::{
+        EnumCodeReference, ProvedEnumBodyConstant, ProvedEnumConstantBodyGroup,
+    };
+    let refuse = |reason: &str| Err(reason.to_owned());
+    let Some(shape) = relations.first().map(|relation| &relation.group_shape) else {
+        return Ok(refuse("the body group has no selected child"));
+    };
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(source_methods.len() + relations.len()).unwrap_or(u64::MAX),
+    )?;
+    let owner = declaration.item.declaration.this_class.raw().0.as_slice();
+    let (Ok(prefix), Ok(chain), Ok(direct_bcis)) = (
+        &shape.initializer_prefix,
+        &shape.constructor_chain,
+        &shape.direct_constant_bcis,
+    ) else {
+        return Ok(refuse(
+            "the pending initializer or constructor chain refused",
+        ));
+    };
+    if shape.constants.len() != 2
+        || shape.implicit_members.len() != 6
+        || chain.is_empty()
+        || prefix.constant_field_write_bcis.len() != 2
+        || relations
+            .iter()
+            .any(|relation| relation.group_shape != *shape)
+    {
+        return Ok(refuse("the pending two-constant group is incomplete"));
+    }
+
+    let code_at = |index: u64| -> Option<&crate::enum_constants::EnumMethodCodeCandidate> {
+        let matching: Vec<_> = codes
+            .iter()
+            .filter(|code| code.table_index == index)
+            .collect();
+        let [code] = matching.as_slice() else {
+            return None;
+        };
+        let source = source_methods.get(usize::try_from(index).ok()?)?;
+        (code.complete && code.member.as_ref() == Some(&source.item.identity)).then_some(*code)
+    };
+    for method in source_methods {
+        budget.poll()?;
+        if matches!(
+            method.item.body,
+            crate::MemberBodyEvidence::CodeAttribute { .. }
+        ) && code_at(method.item.index).is_none()
+        {
+            return Ok(refuse(
+                "a main enum Code member has no complete same-run candidate",
+            ));
+        }
+    }
+    let [
+        backing,
+        initializer,
+        values,
+        value_of,
+        factory,
+        private_constructor,
+    ] = shape.implicit_members.as_slice()
+    else {
+        return Ok(refuse("the implicit member set is incomplete"));
+    };
+    if backing.name != b"$VALUES"
+        || initializer.name != b"<clinit>"
+        || values.name != b"values"
+        || value_of.name != b"valueOf"
+        || factory.name != b"$values"
+        || private_constructor.name != b"<init>"
+    {
+        return Ok(refuse("the pending implicit members changed"));
+    }
+    let Some(values_code) = code_at(values.table_index) else {
+        return Ok(refuse("values Code is absent"));
+    };
+    let Some(value_of_code) = code_at(value_of.table_index) else {
+        return Ok(refuse("valueOf Code is absent"));
+    };
+    if values_code.exception_handler_count != 0
+        || value_of_code.exception_handler_count != 0
+        || !crate::enum_constants::prove_values(values_code, owner, b"$VALUES")
+        || !crate::enum_constants::prove_value_of(value_of_code, owner)
+    {
+        return Ok(refuse(
+            "the generated enum API does not preserve its standard behavior",
+        ));
+    }
+    let Some(clinit) = code_at(initializer.table_index) else {
+        return Ok(refuse("initializer Code is absent"));
+    };
+    let suffix: Vec<_> = clinit
+        .instructions
+        .iter()
+        .filter(|instruction| instruction.bci >= prefix.prefix_end_bci)
+        .collect();
+    if clinit.exception_handler_count != 0
+        || !matches!(suffix.as_slice(), [end]
+            if end.bci == prefix.prefix_end_bci && end.width == 1 && end.opcode == 0xb1
+                && end.reference.is_none() && end.immediate.is_none() && end.local.is_none())
+    {
+        return Ok(refuse(
+            "the initializer has effects after the proved constant prefix",
+        ));
+    }
+    let Some(clinit_source) = usize::try_from(initializer.table_index)
+        .ok()
+        .and_then(|index| source_methods.get(index))
+    else {
+        return Ok(refuse("the initializer has no physical method record"));
+    };
+    if !matches!(&clinit_source.outcome,
+        class_source::ClassSourceOutcome::Recovered { report, analysis }
+            if report.produced() && report.quality == Quality::Structured
+                && report.fallbacks.is_empty()
+                && matches!(report.execution, ExecutionReport::Complete { .. })
+                && matches!(analysis.execution, ExecutionReport::Complete { .. }))
+    {
+        return Ok(refuse(
+            "the initializer has no complete structured recovery",
+        ));
+    }
+    let matching: Vec<_> = initializers
+        .iter()
+        .filter(|candidate| candidate.member.as_ref() == Some(&clinit_source.item.identity))
+        .collect();
+    let [sidecar] = matching.as_slice() else {
+        return Ok(refuse("the initializer has no unique structured sidecar"));
+    };
+    if sidecar.has_exception_handlers
+        || sidecar.steps.len() != 4
+        || !matches!(&sidecar.steps[3],
+            jarde_java::report::ClassInitializerStep::Other {
+                order: 3, bci,
+                kind: jarde_java::report::ClassInitializerStatementKind::Return,
+            } if *bci == prefix.prefix_end_bci)
+    {
+        return Ok(refuse(
+            "the initializer sidecar does not close after three writes",
+        ));
+    }
+    for (order, bci) in prefix
+        .constant_field_write_bcis
+        .iter()
+        .copied()
+        .chain(std::iter::once(prefix.values_field_write_bci))
+        .enumerate()
+    {
+        let jarde_java::report::ClassInitializerStep::FieldWrite(write) = &sidecar.steps[order]
+        else {
+            return Ok(refuse("the initializer sidecar omits a field write"));
+        };
+        let name = if order < 2 {
+            &shape.constants[order].field_name
+        } else {
+            &backing.name
+        };
+        let descriptor = if order < 2 {
+            [b"L".as_slice(), owner, b";"].concat()
+        } else {
+            [b"[L".as_slice(), owner, b";"].concat()
+        };
+        if write.order != order
+            || write.bci != bci
+            || !write.is_static
+            || write.owner.as_bytes() != owner
+            || write.name.as_bytes() != name
+            || write.descriptor.as_bytes() != descriptor
+            || write.op != jarde_java::ast::AssignOp::Assign
+            || write
+                .field_reads
+                .as_ref()
+                .is_none_or(|reads| !reads.is_empty())
+        {
+            return Ok(refuse(
+                "an initializer write has unproved structured effects",
+            ));
+        }
+    }
+    for abstract_member in &shape.abstract_methods {
+        let Some(source) = usize::try_from(abstract_member.table_index)
+            .ok()
+            .and_then(|index| source_methods.get(index))
+        else {
+            return Ok(refuse("an abstract enum declaration is absent"));
+        };
+        if source.item.name.raw().0 != abstract_member.name
+            || source.item.descriptor.raw().0 != abstract_member.descriptor
+            || abstract_member.access_flags & (0x0002 | 0x0008 | 0x0010 | 0x0040 | 0x0100 | 0x1000)
+                != 0
+            || abstract_member.has_code
+            || !matches!(source.no_body_kind, Some(NoBodyKind::Abstract))
+            || !matches!(source.outcome, class_source::ClassSourceOutcome::NoBody)
+            || source.declaration.is_none()
+        {
+            return Ok(refuse("an abstract enum declaration is not complete"));
+        }
+    }
+    for code in codes {
+        if shape
+            .implicit_members
+            .iter()
+            .any(|member| member.table_index == code.table_index)
+        {
+            continue;
+        }
+        if code
+            .member_uses
+            .iter()
+            .any(|use_site| match &use_site.reference {
+                EnumCodeReference::Field {
+                    owner: use_owner,
+                    name,
+                    ..
+                } => use_owner == owner && name == b"$VALUES",
+                EnumCodeReference::Method {
+                    owner: use_owner,
+                    name,
+                    ..
+                } => use_owner == owner && name == b"$values",
+                _ => false,
+            })
+        {
+            return Ok(refuse("a user method uses an implicit enum member"));
+        }
+    }
+
+    let mut proved = Vec::with_capacity(2);
+    let mut selected_children = std::collections::HashSet::new();
+    for (ordinal, constant) in shape.constants.iter().enumerate() {
+        budget.poll()?;
+        let Some(field) = usize::try_from(constant.field_index)
+            .ok()
+            .and_then(|index| source_fields.get(index))
+        else {
+            return Ok(refuse("an enum constant field is absent"));
+        };
+        let Some(name) = String::from_utf16(field.item.name.utf16()).ok() else {
+            return Ok(refuse("an enum constant name is not Java text"));
+        };
+        if field.item.identity.owner != declaration.item.definition
+            || field.item.name.raw().0 != constant.field_name
+            || field.declaration.is_none()
+            || !field.markers.is_empty()
+            || !jarde_java::is_java_identifier(&name)
+            || constant.expected_ordinal != ordinal as u32
+            || constant.descriptor_source_argument_count != 0
+            || constant.constructor_descriptor != b"(Ljava/lang/String;I)V"
+            || constant.constructor_owner != constant.allocation_owner
+        {
+            return Ok(refuse(
+                "an ordered zero-argument constant is not presentable",
+            ));
+        }
+        let matching: Vec<_> = relations
+            .iter()
+            .filter(|relation| relation.field_index == constant.field_index)
+            .collect();
+        let subclass = if constant.allocation_owner == owner {
+            if !matching.is_empty() || !direct_bcis.contains(&constant.constructor_bci) {
+                return Ok(refuse("a direct constant has an unexpected child relation"));
+            }
+            None
+        } else {
+            let [relation] = matching.as_slice() else {
+                return Ok(refuse("an anonymous constant has no unique selected child"));
+            };
+            if relation.allocation_bci != constant.allocation_bci
+                || relation.constructor_bci != constant.constructor_bci
+                || relation.constructor_descriptor != constant.constructor_descriptor
+                || relation.subclass_owner != constant.allocation_owner
+                || !relation.use_census.exclusive
+                || relation.use_census.refusal.is_some()
+                || relation.constructor_bridge.is_err()
+            {
+                return Ok(refuse(
+                    "the selected child use or constructor proof is incomplete",
+                ));
+            }
+            let Some(Ok(methods)) = relation.body_proof.as_ref() else {
+                return Ok(refuse("a selected child lacks complete override bodies"));
+            };
+            if shape.abstract_methods.iter().any(|abstract_member| {
+                methods
+                    .iter()
+                    .filter(|method| {
+                        method.item.name.raw().0 == abstract_member.name
+                            && method.item.descriptor.raw().0 == abstract_member.descriptor
+                            && complete_enum_child_override(method)
+                    })
+                    .count()
+                    != 1
+            }) {
+                return Ok(refuse(
+                    "a constant body does not implement every abstract enum method",
+                ));
+            }
+            if !selected_children.insert(&relation.subclass) {
+                return Ok(refuse("one selected child is assigned to two constants"));
+            }
+            Some(relation.subclass.clone())
+        };
+        if subclass.is_none() && !shape.abstract_methods.is_empty() {
+            return Ok(refuse("an abstract enum has a constant without a body"));
+        }
+        proved.push(ProvedEnumBodyConstant {
+            field_index: constant.field_index,
+            constructor_bci: constant.constructor_bci,
+            subclass,
+        });
+    }
+    if relations.len() != selected_children.len() {
+        return Ok(refuse(
+            "the child relations do not cover exactly the anonymous constants",
+        ));
+    }
+    Ok(Ok(ProvedEnumConstantBodyGroup { constants: proved }))
+}
+
 /// Census each selected input through P1's physical scanner. A relation is exclusive only when
 /// every selected range was fully read and its entire owner-reference set has an explanation.
 /// This says nothing about the constructed object's stack value or constructor arguments.
@@ -8396,6 +8760,21 @@ mod enum_constant_body_relation_tests {
         changed
     }
 
+    fn rename_single_utf8(bytes: &[u8], old: &[u8], new: &[u8]) -> Vec<u8> {
+        assert_eq!(old.len(), new.len());
+        let mut encoded = u16::try_from(old.len()).unwrap().to_be_bytes().to_vec();
+        encoded.extend_from_slice(old);
+        let mut changed = bytes.to_vec();
+        let positions: Vec<_> = changed
+            .windows(encoded.len())
+            .enumerate()
+            .filter_map(|(index, bytes)| (bytes == encoded).then_some(index))
+            .collect();
+        assert_eq!(positions.len(), 1);
+        changed[positions[0] + 2..positions[0] + 2 + old.len()].copy_from_slice(new);
+        changed
+    }
+
     fn mutate_constructor_call_target(
         bytes: &[u8],
         descriptor: &[u8],
@@ -8556,10 +8935,47 @@ mod enum_constant_body_relation_tests {
                 // anonymous InnerClasses row are compiler structure, not a second allocation.
                 assert!(relation.use_census.exclusive, "{class}, debug={debug}");
             }
-            assert!(!matches!(
-                source_report.enum_constant_proof,
-                crate::enum_constants::ClassSourceEnumConstantProof::Proved(_)
-            ));
+            if expected == 0 {
+                assert!(matches!(
+                    source_report.enum_constant_proof,
+                    crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+                ));
+            } else {
+                let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                    crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+                ) = &source_report.enum_constant_proof
+                else {
+                    panic!(
+                        "the complete body group must prove: {class}: {:?}",
+                        source_report.enum_constant_proof
+                    );
+                };
+                assert_eq!(group.constants.len(), 2);
+                assert_eq!(
+                    group
+                        .constants
+                        .iter()
+                        .filter(|constant| constant.subclass.is_some())
+                        .count(),
+                    expected
+                );
+                assert_eq!(
+                    group
+                        .constants
+                        .iter()
+                        .map(|constant| constant.field_index)
+                        .collect::<Vec<_>>(),
+                    vec![0, 1]
+                );
+                assert_eq!(
+                    group
+                        .constants
+                        .iter()
+                        .map(|constant| constant.constructor_bci)
+                        .collect::<Vec<_>>(),
+                    vec![7, 20]
+                );
+            }
             assert!(
                 !source_report.text.contains("ADD {") && !source_report.text.contains("SPECIAL {")
             );
@@ -8832,6 +9248,71 @@ mod enum_constant_body_relation_tests {
         ));
 
         assert_positive(&compiled_entries(false), false);
+    }
+
+    #[test]
+    fn enum_body_group_requires_each_abstract_implementation_and_keeps_physical_child() {
+        for debug in [true, false] {
+            let mut entries = compiled_entries(debug);
+            let child = entries
+                .iter_mut()
+                .find(|(name, _)| name == b"demo/Op$2.class")
+                .unwrap();
+            child.1 = rename_single_utf8(&child.1, b"apply", b"aplly");
+            let parent = report(&entries, "demo/Op");
+            assert!(matches!(
+                parent.enum_constant_proof,
+                crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+            ));
+            assert_eq!(parent.enum_constant_body_relations.len(), 2);
+            assert!(matches!(&parent.enum_constant_body_relations[1].body_proof,
+                Some(Err(reason)) if reason.contains("base declaration")));
+            assert!(
+                parent
+                    .methods
+                    .iter()
+                    .any(|method| method.item.name.raw().0 == b"apply"
+                        && matches!(method.outcome, class_source::ClassSourceOutcome::NoBody))
+            );
+            let child = report(&entries, "demo/Op$2");
+            assert!(
+                child
+                    .methods
+                    .iter()
+                    .any(|method| method.item.name.raw().0 == b"aplly"
+                        && matches!(
+                            method.outcome,
+                            class_source::ClassSourceOutcome::Recovered { .. }
+                        ))
+            );
+        }
+    }
+
+    #[test]
+    fn enum_body_group_rejects_a_changed_generated_values_helper() {
+        for debug in [true, false] {
+            let mut entries = compiled_entries(debug);
+            let main = entries
+                .iter_mut()
+                .find(|(name, _)| name == b"demo/Op.class")
+                .unwrap();
+            main.1 = rename_single_utf8(&main.1, b"clone", b"cloen");
+            let parent = report(&entries, "demo/Op");
+            assert!(matches!(&parent.enum_constant_proof,
+                crate::enum_constants::ClassSourceEnumConstantProof::Refused { reason }
+                    if reason.contains("generated enum API")));
+            assert_eq!(parent.enum_constant_body_relations.len(), 2);
+            assert!(parent.enum_constant_body_relations.iter().all(|relation| {
+                relation.use_census.exclusive
+                    && matches!(&relation.body_proof, Some(Ok(methods)) if methods.len() == 1)
+            }));
+            assert!(
+                parent
+                    .methods
+                    .iter()
+                    .any(|method| method.item.name.raw().0 == b"values")
+            );
+        }
     }
 
     #[test]

@@ -97,7 +97,7 @@ pub(crate) struct ProvedEnumConstant {
 
 /// A private handoff from task 2.1 to the class-source projection stages.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProvedEnumConstantGroup {
+pub(crate) struct ProvedOrdinaryEnumConstantGroup {
     pub(crate) constants: Vec<ProvedEnumConstant>,
     pub(crate) backing_field_index: u64,
     pub(crate) constructor_method_index: u64,
@@ -113,6 +113,24 @@ pub(crate) struct ProvedEnumConstantGroup {
     pub(crate) initializer_prefix_end_bci: u32,
     /// Number of same-run structured initializer statements in the prefix.
     pub(crate) initializer_prefix_statement_count: usize,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum ProvedEnumConstantGroup {
+    Ordinary(ProvedOrdinaryEnumConstantGroup),
+    Body(ProvedEnumConstantBodyGroup),
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ProvedEnumConstantBodyGroup {
+    pub(crate) constants: Vec<ProvedEnumBodyConstant>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ProvedEnumBodyConstant {
+    pub(crate) field_index: u64,
+    pub(crate) constructor_bci: u32,
+    pub(crate) subclass: Option<jarde_reader::model::PhysicalDefinitionId>,
 }
 
 /// No public JSON conclusion is made from this proof. The state stays in the class-source
@@ -162,7 +180,7 @@ pub(crate) fn may_capture_group_code(class: &ClassFacts, member_table_complete: 
 }
 
 pub(crate) fn has_only_terminal_initializer_return(
-    group: &ProvedEnumConstantGroup,
+    group: &ProvedOrdinaryEnumConstantGroup,
     code_candidates: &[EnumMethodCodeCandidate],
     initializer_candidates: &[jarde_java::report::ClassInitializerCandidates],
     methods: &[ClassSourceMethod],
@@ -250,7 +268,7 @@ pub(crate) struct ProvedEnumStaticAssignment {
 }
 
 pub(crate) struct EnumStaticAssignmentInput<'a> {
-    pub(crate) group: &'a ProvedEnumConstantGroup,
+    pub(crate) group: &'a ProvedOrdinaryEnumConstantGroup,
     pub(crate) owner: &'a [u8],
     pub(crate) field_headers: &'a [MemberHeader],
     pub(crate) source_fields: &'a [ClassSourceField],
@@ -1416,7 +1434,7 @@ pub(crate) fn prove_group(
         )
         .collect();
     Ok(ClassSourceEnumConstantProof::Proved(
-        ProvedEnumConstantGroup {
+        ProvedEnumConstantGroup::Ordinary(ProvedOrdinaryEnumConstantGroup {
             constants: proved_constants,
             backing_field_index: u64::try_from(*backing_field_index).unwrap_or(u64::MAX),
             constructor_method_index: u64::try_from(constructor_index).unwrap_or(u64::MAX),
@@ -1434,7 +1452,7 @@ pub(crate) fn prove_group(
             values_factory_method_index: u64::try_from(factory_index).unwrap_or(u64::MAX),
             initializer_prefix_end_bci: prefix.prefix_end_bci,
             initializer_prefix_statement_count: expected_write_bcis.len(),
-        },
+        }),
     ))
 }
 
@@ -2377,7 +2395,11 @@ fn is_branch_opcode(opcode: u8) -> bool {
     matches!(opcode, 0x99..=0xa9 | 0xaa..=0xab | 0xc6..=0xc9)
 }
 
-fn prove_values(code: &EnumMethodCodeCandidate, owner: &[u8], backing_name: &[u8]) -> bool {
+pub(crate) fn prove_values(
+    code: &EnumMethodCodeCandidate,
+    owner: &[u8],
+    backing_name: &[u8],
+) -> bool {
     let array = array_descriptor(owner);
     let instructions = &code.instructions;
     instructions.len() == 4
@@ -2394,7 +2416,7 @@ fn prove_values(code: &EnumMethodCodeCandidate, owner: &[u8], backing_name: &[u8
         && instructions[3].opcode == 0xb0
 }
 
-fn prove_value_of(code: &EnumMethodCodeCandidate, owner: &[u8]) -> bool {
+pub(crate) fn prove_value_of(code: &EnumMethodCodeCandidate, owner: &[u8]) -> bool {
     let instructions = &code.instructions;
     instructions.len() == 5
         && class_constant(&instructions[0], owner)
@@ -3059,7 +3081,9 @@ final class ConstructorEffects {
                 .class_source(std::slice::from_ref(&snapshot), &request, &mut budget)
                 .expect("the class-source request succeeds"),
         );
-        let ClassSourceEnumConstantProof::Proved(proof) = &report.enum_constant_proof else {
+        let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(proof)) =
+            &report.enum_constant_proof
+        else {
             panic!(
                 "the exact javac enum pattern proves: {:?}",
                 report.enum_constant_proof
@@ -3133,7 +3157,9 @@ final class ConstructorEffects {
     #[test]
     fn measure_constants_used_by_user_methods_remain_provable() {
         let report = enum_report(MEASURE, "Measure", &mut test_budget());
-        let ClassSourceEnumConstantProof::Proved(proof) = &report.enum_constant_proof else {
+        let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(proof)) =
+            &report.enum_constant_proof
+        else {
             panic!(
                 "Measure's source-visible LOW/HIGH uses are allowed: {:?}",
                 report.enum_constant_proof
@@ -3656,7 +3682,9 @@ final class ConstructorEffects {
     fn two_constructor_edge_and_terminal_body_project_as_one_source_group() {
         let bytes = compile_java_class("DelegatingEnum", DELEGATING_ENUM_SOURCE, true);
         let report = enum_report(&bytes, "DelegatingEnum", &mut test_budget());
-        let ClassSourceEnumConstantProof::Proved(group) = &report.enum_constant_proof else {
+        let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(group)) =
+            &report.enum_constant_proof
+        else {
             panic!(
                 "both constructors, terminal body, and common enum group gates prove: {:?}",
                 report.enum_constant_proof
@@ -4906,7 +4934,9 @@ final class ConstructorEffects {
         );
         let source_methods = report.methods.clone();
         let source_fields = report.fields.clone();
-        let ClassSourceEnumConstantProof::Proved(group) = &report.enum_constant_proof else {
+        let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(group)) =
+            &report.enum_constant_proof
+        else {
             panic!(
                 "the class-source run proves a terminal constructor body: {:?}",
                 report.enum_constant_proof
