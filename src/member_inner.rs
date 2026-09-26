@@ -5,12 +5,318 @@
 //! inferred from `$` or a constructor's first parameter alone.
 
 use crate::class_source::ClassSourceAssemblyContext;
+use crate::class_source::{MemberCaptureProof, MemberCaptureRead};
+use jarde_jvm::method_ir::{Definition, MethodIr, Slot, SsaTable, ValueId};
 use jarde_reader::budget::Budget;
 use jarde_reader::budget::CountedBudgetDimension;
 use jarde_reader::classfile::{
-    ClassMemberFacts, CpEntryFacts, CpEntryKind, DescriptorKind, attribute_facts,
+    ClassMemberFacts, CpEntryFacts, CpEntryKind, DescriptorKind, MethodCodeFacts, attribute_facts,
     class_constant_pool, cp_class_name, cp_entry, descriptor_facts, method_code_facts,
 };
+use jarde_reader::model::PhysicalMethodId;
+
+/// This proof is deliberately narrower than the existing public `prove_target`: it uses the
+/// already selected member relation and accepts a package-private physical constructor.
+pub(crate) fn prove_family_capture(
+    root: &[u8],
+    child: &ClassMemberFacts,
+    methods: &[(PhysicalMethodId, &MethodIr)],
+    budget: &mut Budget,
+) -> Result<std::result::Result<MemberCaptureProof, String>> {
+    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    if child.stopped_at.is_some()
+        || child.fields.len() as u64 != child.field_count
+        || child.methods.len() as u64 != child.method_count
+    {
+        return refuse("member physical tables are incomplete");
+    }
+    if child.methods.iter().any(|method| {
+        !method
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Code")
+    }) {
+        return refuse("member method without bytecode has unknown capture uses");
+    }
+    let outer_descriptor = [b"L".as_slice(), root, b";"].concat();
+    let candidates: Vec<_> = child
+        .fields
+        .iter()
+        .enumerate()
+        .filter(|(_, field)| {
+            field.descriptor.raw().0 == outer_descriptor
+                && field.access_flags & (0x1000 | 0x0010 | 0x0008) == 0x1010
+        })
+        .collect();
+    let [(field_index, field)] = candidates.as_slice() else {
+        return refuse("capture requires one synthetic final instance Outer field");
+    };
+    if child
+        .fields
+        .iter()
+        .filter(|field| field.descriptor.raw().0 == outer_descriptor)
+        .count()
+        != 1
+    {
+        return refuse("another Outer-typed field prevents unique capture identity");
+    }
+    let constructors: Vec<_> = child
+        .methods
+        .iter()
+        .filter(|method| method.name.raw().0 == b"<init>")
+        .collect();
+    let [constructor] = constructors.as_slice() else {
+        return refuse(
+            "capture requires one physical constructor; this() chains are outside this proof",
+        );
+    };
+    let descriptor = &constructor.descriptor.raw().0;
+    let Ok(parsed) = descriptor_facts(descriptor, DescriptorKind::Method) else {
+        return refuse("constructor descriptor could not be parsed");
+    };
+    if parsed
+        .parameters()
+        .first()
+        .and_then(|part| part.bytes(descriptor))
+        != Some(outer_descriptor.as_slice())
+    {
+        return refuse("constructor first physical parameter is not Outer");
+    }
+    let Some((constructor_id, constructor_ir)) = methods
+        .iter()
+        .find(|(id, _)| id.name.0 == b"<init>" && id.descriptor.0 == *descriptor)
+    else {
+        return refuse("constructor SSA is unavailable");
+    };
+    let (Some(code), Some(ssa)) = (constructor_ir.code(), constructor_ir.ssa()) else {
+        return refuse("constructor code or SSA is unavailable");
+    };
+    let instructions = &code.instructions;
+    if !capture_constructor_shape(code) {
+        return refuse(
+            "constructor capture prologue or exception range is outside the proved shape",
+        );
+    }
+    let pool = constructor_ir.constant_pool();
+    for entry in pool {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if let CpEntryKind::MethodHandle {
+            reference_index, ..
+        } = entry.kind
+        {
+            if field_reference_matches(
+                pool,
+                Some(reference_index),
+                &child.this_class.raw().0,
+                &field.name.raw().0,
+                &outer_descriptor,
+            ) {
+                return refuse("capture field has a method-handle use outside direct SSA reads");
+            }
+        }
+    }
+    if !field_reference_matches(
+        pool,
+        instructions[2].constant_pool_index,
+        &child.this_class.raw().0,
+        &field.name.raw().0,
+        &outer_descriptor,
+    ) {
+        return refuse("constructor prologue writes a different field");
+    }
+    if !matches!(cp_entry(pool, instructions[4].constant_pool_index.unwrap_or(0)).ok().map(|entry| &entry.kind),
+        Some(CpEntryKind::MethodRef { owner, name, descriptor, .. })
+            if child.super_class.as_ref().is_some_and(|superclass| owner.0 == superclass.raw().0)
+                && name.0 == b"<init>" && descriptor.0 == b"()V")
+    {
+        return refuse("constructor must invoke the direct zero-argument superclass constructor");
+    }
+    let Some(write) = ssa_instruction(ssa, 2) else {
+        return refuse("capture write has no SSA instruction");
+    };
+    if write.reads().len() != 2
+        || !write
+            .reads()
+            .iter()
+            .any(|(_, value)| value_from_entry_load(ssa, *value, Slot::Local(0), 0))
+        || !write
+            .reads()
+            .iter()
+            .any(|(_, value)| value_from_entry_load(ssa, *value, Slot::Local(1), 1))
+    {
+        return refuse("capture write does not consume this and the first physical parameter");
+    }
+    let mut reads = Vec::new();
+    for (method_id, ir) in methods {
+        budget.poll()?;
+        let (Some(code), Some(ssa)) = (ir.code(), ir.ssa()) else {
+            return refuse("member method code or SSA is unavailable");
+        };
+        match scan_capture_method_uses(
+            method_id,
+            ir,
+            code,
+            ssa,
+            constructor_id,
+            &child.this_class.raw().0,
+            &field.name.raw().0,
+            &outer_descriptor,
+            budget,
+        )? {
+            Ok(method_reads) => reads.extend(method_reads),
+            Err(reason) => return Ok(Err(reason)),
+        }
+    }
+    let Some(field_name) = std::str::from_utf8(&field.name.raw().0).ok() else {
+        return refuse("capture field name is not UTF-8");
+    };
+    Ok(Ok(MemberCaptureProof {
+        field_index: *field_index as u64,
+        field_name: field_name.to_owned(),
+        constructor: constructor_id.clone(),
+        write_bci: 2,
+        reads,
+    }))
+}
+
+#[allow(clippy::too_many_arguments)]
+fn scan_capture_method_uses(
+    method: &PhysicalMethodId,
+    ir: &MethodIr,
+    code: &MethodCodeFacts,
+    ssa: &SsaTable,
+    constructor: &PhysicalMethodId,
+    owner: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    budget: &mut Budget,
+) -> Result<std::result::Result<Vec<MemberCaptureRead>, String>> {
+    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    if code.stopped_at.is_some() {
+        return refuse("member method code is incomplete");
+    }
+    let mut reads = Vec::new();
+    for instruction in &code.instructions {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if !field_reference_matches(
+            ir.constant_pool(),
+            instruction.constant_pool_index,
+            owner,
+            name,
+            descriptor,
+        ) {
+            continue;
+        }
+        if !matches!(instruction.opcode, 0xb4 | 0xb5) {
+            return refuse("capture field has a non-instance or unknown bytecode use");
+        }
+        if instruction.opcode == 0xb5 {
+            if !capture_write_is_unique_site(method, instruction.bci, constructor) {
+                return refuse("capture field has an extra write");
+            }
+            continue;
+        }
+        let Some(access) = ssa_instruction(ssa, instruction.bci) else {
+            return refuse("capture read has no SSA instruction");
+        };
+        if access.reads().len() != 1 || !value_from_this_load(ssa, access.reads()[0].1) {
+            return refuse("capture read receiver is not the member this");
+        }
+        let [(_, result)] = access.writes() else {
+            return refuse("capture read result has no unique SSA value");
+        };
+        if !matches!(ssa.value(*result).def(), Definition::Instruction { bci, .. } if *bci == instruction.bci)
+        {
+            return refuse("capture read result has another SSA definition");
+        }
+        let mut consumer_bcis = Vec::new();
+        for use_ in ssa.value(*result).uses() {
+            let Some(bci) = use_.bci() else {
+                return refuse("capture read flows through an unproved phi");
+            };
+            if !ssa_instruction(ssa, bci)
+                .is_some_and(|consumer| consumer.reads().iter().any(|(_, value)| value == result))
+            {
+                return refuse("capture read has an unknown SSA consumer");
+            }
+            consumer_bcis.push(bci);
+        }
+        reads.push(MemberCaptureRead {
+            method: method.clone(),
+            bci: instruction.bci,
+            consumer_bcis,
+        });
+    }
+    Ok(Ok(reads))
+}
+
+fn capture_write_is_unique_site(
+    method: &PhysicalMethodId,
+    bci: u32,
+    constructor: &PhysicalMethodId,
+) -> bool {
+    method == constructor && bci == 2
+}
+
+fn capture_constructor_shape(code: &MethodCodeFacts) -> bool {
+    let instructions = &code.instructions;
+    code.stopped_at.is_none()
+        && instructions.len() == 6
+        && instructions[0].bci == 0
+        && instructions[0].opcode == 0x2a
+        && instructions[1].bci == 1
+        && instructions[1].opcode == 0x2b
+        && instructions[2].bci == 2
+        && instructions[2].opcode == 0xb5
+        && instructions[3].bci == 5
+        && instructions[3].opcode == 0x2a
+        && instructions[4].bci == 6
+        && instructions[4].opcode == 0xb7
+        && instructions[5].bci == 9
+        && instructions[5].opcode == 0xb1
+        && code.exception_handlers.is_empty()
+}
+
+fn field_reference_matches(
+    pool: &[CpEntryFacts],
+    index: Option<u16>,
+    owner: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+) -> bool {
+    matches!(index.and_then(|index| cp_entry(pool, index).ok()).map(|entry| &entry.kind),
+        Some(CpEntryKind::FieldRef { owner: actual_owner, name: actual_name, descriptor: actual_descriptor, .. })
+            if actual_owner.0 == owner && actual_name.0 == name && actual_descriptor.0 == descriptor)
+}
+
+fn ssa_instruction(ssa: &SsaTable, bci: u32) -> Option<&jarde_jvm::method_ir::SsaInstruction> {
+    ssa.blocks()
+        .iter()
+        .flat_map(|block| block.instructions())
+        .find(|instruction| instruction.bci() == bci)
+}
+
+fn value_from_entry_load(ssa: &SsaTable, value: ValueId, slot: Slot, load_bci: u32) -> bool {
+    let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
+        return false;
+    };
+    if *bci != load_bci {
+        return false;
+    }
+    let Some(load) = ssa_instruction(ssa, *bci) else {
+        return false;
+    };
+    load.reads().iter().any(|(read_slot, source)| *read_slot == slot
+        && matches!(ssa.value(*source).def(), Definition::Entry { slot: entry_slot, .. } if *entry_slot == slot))
+}
+
+fn value_from_this_load(ssa: &SsaTable, value: ValueId) -> bool {
+    let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
+        return false;
+    };
+    value_from_entry_load(ssa, value, Slot::Local(0), *bci)
+        && ssa_instruction(ssa, *bci).is_some_and(|load| load.opcode() == 0x2a)
+}
 
 /// A class's own typed row is only a candidate until the selected child's row agrees.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -821,6 +1127,7 @@ pub(crate) fn enclosing_relation_agrees(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::*;
     use jarde_reader::budget::{CancellationToken, Limits};
     use jarde_reader::classfile::{CpEntryKind, class_constant_pool, class_member_facts};
     use std::io::Read;
@@ -880,6 +1187,191 @@ mod tests {
             crate::class_source::read_class_source_assembly_context(bytes, &shells, &pool, budget)
                 .unwrap();
         (facts, pool, nesting)
+    }
+
+    #[test]
+    fn family_capture_distinguishes_other_and_refuses_unclosed_shapes() {
+        let engine = Engine::new();
+        let mut budget = budget();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(FAMILY_JAR.to_vec()), &mut budget)
+            .unwrap();
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let report = match engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("NamedMemberFamilyStage1"),
+                    },
+                    environment: environment.clone(),
+                },
+                &mut budget,
+            )
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("unique frozen family: {other:?}"),
+        };
+        let ClassSourceMemberFamily::Prepared { child, .. } = &report.member_family else {
+            panic!("frozen family relation must prepare")
+        };
+        let child_bytes = family_bytes(b"NamedMemberFamilyStage1$Member.class");
+        let (facts, _, _) = family_facts(&child_bytes, &mut budget);
+        let selected = environment.build(std::slice::from_ref(&snapshot)).unwrap();
+        let analyses: Vec<_> = facts
+            .methods
+            .iter()
+            .filter(|method| {
+                method
+                    .attributes
+                    .iter()
+                    .any(|attribute| attribute.name.raw().0 == b"Code")
+            })
+            .map(|method| {
+                let id = PhysicalMethodId {
+                    owner: child.class.clone(),
+                    name: method.name.raw().clone(),
+                    descriptor: method.descriptor.raw().clone(),
+                };
+                let analysis = jarde_jvm::analyze_method_ir(
+                    std::slice::from_ref(&snapshot),
+                    &crate::ir::MethodAnalysisRequest {
+                        environment: selected.clone(),
+                        method: id.clone(),
+                        stages: MethodOperation::Analysis.stages().to_vec(),
+                    },
+                    &mut budget,
+                )
+                .unwrap();
+                (id, analysis)
+            })
+            .collect();
+        let irs: Vec<_> = analyses
+            .iter()
+            .map(|(id, analysis)| (id.clone(), analysis.ir()))
+            .collect();
+        let proved = prove_family_capture(b"NamedMemberFamilyStage1", &facts, &irs, &mut budget)
+            .unwrap()
+            .unwrap();
+        assert_eq!(proved.reads.len(), 1);
+        assert_eq!(proved.reads[0].bci, 8);
+        let (read_id, read_ir) = irs.iter().find(|(id, _)| id.name.0 == b"read").unwrap();
+        let ssa = read_ir.ssa().unwrap();
+        let other_receiver = ssa_instruction(ssa, 1).unwrap().reads()[0].1;
+        let capture_receiver = ssa_instruction(ssa, 8).unwrap().reads()[0].1;
+        assert!(!value_from_this_load(ssa, other_receiver));
+        assert!(value_from_this_load(ssa, capture_receiver));
+        assert!(!capture_write_is_unique_site(
+            read_id,
+            8,
+            &proved.constructor
+        ));
+        assert_eq!(proved.reads[0].consumer_bcis, vec![11]);
+
+        // Proof-unit mutations keep the real SSA table and change only the access being checked.
+        // The first simulates a capture read on explicit `other`; the second an extra field write.
+        let mut extra_read = read_ir.code().unwrap().clone();
+        extra_read.instructions[1].constant_pool_index = Some(1);
+        let refusal = scan_capture_method_uses(
+            read_id,
+            read_ir,
+            &extra_read,
+            ssa,
+            &proved.constructor,
+            b"NamedMemberFamilyStage1$Member",
+            b"this$0",
+            b"LNamedMemberFamilyStage1;",
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap_err();
+        assert!(refusal.contains("receiver"), "{refusal}");
+        let mut extra_write = read_ir.code().unwrap().clone();
+        extra_write.instructions[5].opcode = 0xb5; // BCI 8 in the frozen read method
+        let refusal = scan_capture_method_uses(
+            read_id,
+            read_ir,
+            &extra_write,
+            ssa,
+            &proved.constructor,
+            b"NamedMemberFamilyStage1$Member",
+            b"this$0",
+            b"LNamedMemberFamilyStage1;",
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap_err();
+        assert!(refusal.contains("extra write"), "{refusal}");
+
+        let mut duplicate_field = facts.clone();
+        duplicate_field
+            .fields
+            .push(duplicate_field.fields[0].clone());
+        duplicate_field.field_count += 1;
+        assert!(
+            prove_family_capture(
+                b"NamedMemberFamilyStage1",
+                &duplicate_field,
+                &irs,
+                &mut budget
+            )
+            .unwrap()
+            .is_err()
+        );
+        let mut nonfinal_field = facts.clone();
+        nonfinal_field.fields[0].access_flags &= !0x0010;
+        assert!(
+            prove_family_capture(
+                b"NamedMemberFamilyStage1",
+                &nonfinal_field,
+                &irs,
+                &mut budget
+            )
+            .unwrap()
+            .is_err()
+        );
+        let mut duplicate_constructor = facts.clone();
+        duplicate_constructor
+            .methods
+            .push(duplicate_constructor.methods[0].clone());
+        duplicate_constructor.method_count += 1;
+        assert!(
+            prove_family_capture(
+                b"NamedMemberFamilyStage1",
+                &duplicate_constructor,
+                &irs,
+                &mut budget
+            )
+            .unwrap()
+            .is_err()
+        );
+
+        let constructor_ir = irs.iter().find(|(id, _)| id.name.0 == b"<init>").unwrap().1;
+        let mut code = constructor_ir.code().unwrap().clone();
+        assert!(capture_constructor_shape(&code));
+        code.instructions[2].opcode = 0xb7; // proof-unit: a this() delegation in place of the capture write
+        assert!(!capture_constructor_shape(&code));
+        code.instructions[2].opcode = 0xb5;
+        code.exception_handlers
+            .push(jarde_reader::classfile::ExceptionHandlerFact {
+                ordinal: 0,
+                start_bci: 0,
+                end_bci: 5,
+                handler_bci: 9,
+                catch_type_index: None,
+            });
+        assert!(!capture_constructor_shape(&code));
     }
 
     #[test]
