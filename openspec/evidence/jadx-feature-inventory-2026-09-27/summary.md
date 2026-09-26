@@ -34,7 +34,7 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 | 已证差距，已写独立 OpenSpec | DT-11 | [枚举构造实参三方对照](../java-syntax-2026-09-27/enum-constructor-arguments/README.md)：原/JADX 的整数静态字段/加法实参和字符串 varargs 均可 Java 8 重编运行；Jarde 的 int literal 对照通过，其余两种整组证明失败，降级源码不能重编。[第一窄切片 OpenSpec](../../changes/prove-enum-int-arguments/) 仅处理有界 int 表达式，String varargs 单列后续任务；JADX `TestEnums3` 的相关断言部分被注释，不能据此宣称测试已覆盖全部形态。 |
 | 已证差距，已写独立 OpenSpec | EM-04 | [包信息源文件冻结对照](../java-syntax-2026-09-27/package-info-basic/report.md)：原/JADX 完整 Java 8 源码重编并验证运行输出 `true`；Jarde 将包注解类写成非法的 `interface package-info`，完整源码编译失败。[窄切片 OpenSpec](../../changes/recover-proved-package-info-source/) 仅覆盖完整证明的 Java 8 标准包信息类，不能照搬 JADX 的简单名/空成员判定。 |
 | JADX 未完成 | CF-17 | `TestTryWithResources` 的唯一目标标为 `@NotYetImplemented` |
-| 未测 | CF-01～16、CF-18、CF-20 | 18 个正向测试候选，见控制流账本 |
+| 未测 | CF-01～16、CF-18、CF-20 | 18 个正向测试候选，见控制流账本；CF-01 的[布尔 eager 反例](../java-syntax-2026-09-27/cf01-eager-boolean/report.md)已单独三方重放：JADX 短路化改变运行结果，Jarde 保留原求值次数，整个单元仍待扩验 |
 | 未测 | DT-07～09、DT-12～29、DT-31 | 22 个候选，见声明/类型账本 |
 | 未测 | EM-01～03、EM-05～07、EM-10～12、EM-17～25、EM-27 | 19 个候选，见表达式/杂项账本 |
 
