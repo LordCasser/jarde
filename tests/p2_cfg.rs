@@ -325,8 +325,10 @@ fn a_complete_body_completes_the_two_implemented_phases() {
 
     // The counted dimensions of this slice, and nothing else: one header read attempt, one body
     // attempt, the decoded instruction bytes, and the raw pass's own items and steps. The body
-    // is straight-line code with one handler no instruction of its protected range can enter,
-    // so the graph really holds no edge — the next test shows a body that has transfers.
+    // is straight-line code and no instruction of the record's protected range `[0, 4)` can
+    // throw, so the record is stated by its range, not by a site: one edge from the block the
+    // range intersects to the handler at 9 — the handler the bytes declare stays reachable. The
+    // next test shows a body whose transfers are stated by its sites.
     let usage = budget.usage();
     assert_eq!(usage.class_headers, 1);
     assert_eq!(usage.method_bodies, 1);
@@ -337,7 +339,7 @@ fn a_complete_body_completes_the_two_implemented_phases() {
         usage.ir_items
     );
     assert!(usage.analysis_steps >= 11);
-    assert_eq!(usage.ir_edges, 0);
+    assert_eq!(usage.ir_edges, 1);
     assert_eq!(
         usage.normalization_clones, 0,
         "cloning is 3.5's dimension, not this pass's"

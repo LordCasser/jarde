@@ -33,6 +33,8 @@
 //! The delay changes nothing but *when* a class task reads: no dispatch, window, delivery or
 //! cancellation semantics depend on it, and the counts asserted here hold whatever the interleaving.
 
+#![cfg(feature = "test-support")]
+
 mod bulk_support;
 
 use bulk_support::{

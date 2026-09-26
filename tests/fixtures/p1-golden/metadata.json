@@ -287,7 +287,7 @@
         "execution": {
           "status": "complete",
           "usage": {
-            "analysis_steps": 0,
+            "analysis_steps": 8,
             "archive_entries": 0,
             "attribute_bytes": 80,
             "class_bytes": 696,
@@ -511,7 +511,7 @@
         "execution": {
           "status": "complete",
           "usage": {
-            "analysis_steps": 0,
+            "analysis_steps": 8,
             "archive_entries": 0,
             "attribute_bytes": 28,
             "class_bytes": 232,
@@ -911,7 +911,7 @@
         "execution": {
           "status": "complete",
           "usage": {
-            "analysis_steps": 0,
+            "analysis_steps": 8,
             "archive_entries": 0,
             "attribute_bytes": 40,
             "class_bytes": 232,

@@ -24,6 +24,12 @@ const STORE: u16 = 0;
 const DEFLATE: u16 = 8;
 
 /// Query limits generous enough that no golden replay can stop for a budget reason.
+///
+/// Every dimension is stated: a `..Limits::default()` tail would quietly grant zero to the
+/// derived-work dimensions (`class_headers`, `method_bodies`, `ir_items`, `ir_edges`,
+/// `analysis_steps`, `normalization_clones`, `dependency_depth`), and a structural replay
+/// that legitimately consumes one of them — a `Signature` grammar parse charges
+/// `analysis_steps` per node — would then stop partial instead of replaying complete.
 fn limits() -> Limits {
     Limits {
         input_bytes: 1 << 24,
@@ -35,9 +41,15 @@ fn limits() -> Limits {
         code_bytes: 1 << 24,
         result_items: 10_000,
         output_bytes: 1 << 24,
+        class_headers: 10_000,
+        method_bodies: 10_000,
+        ir_items: 1 << 20,
+        ir_edges: 1 << 20,
+        analysis_steps: 1 << 20,
+        normalization_clones: 1 << 20,
         nested_depth: 8,
+        dependency_depth: 8,
         elapsed_millis: u64::MAX,
-        ..Limits::default()
     }
 }
 
