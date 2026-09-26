@@ -1,0 +1,13 @@
+# 命名成员类家族第一阶段证据
+
+Primary fixture 只包含顶层 `NamedMemberFamilyStage1` 与其命名非静态成员类 `Member`，不含 static nested 或 local class。`javac --release 8 -g` 编译成 `fixture.jar` 后，原版由 `java -Xverify:all` 执行，输出 `2011` 和 `20`。成员方法将显式参数 `other.state`（20）与捕获的词法外层私有字段 `NamedMemberFamilyStage1.this.secret`（11）编码进结果 `2011`；main 另外直接读 `other.state` 输出 20。
+
+[完整 javap 记录](javap-all.txt) 显示 `Member` 只有一个物理构造器 `<init>(NamedMemberFamilyStage1)`，一个 `this$0` 捕获字段；它分别从 `other` 直接读 `state`，并通过唯一的 `access$000(this$0)` getter bridge 读外层 `secret`。本 fixture 没有 `Outer.super`、`access$101` 或静态嵌套声明。原始输入、class 与 JADX 文本的 SHA-256 见 [sha256-original.txt](sha256-original.txt)；`.class` 哈希在删除重复编译输出前生成，原字节保留在唯一的 `fixture.jar` 中。
+
+JADX 1.5.6 对同一 JAR 生成 [完整类源码](jadx/sources/defpackage/NamedMemberFamilyStage1.java)。原样 `package defpackage;` 没有被编辑：直接将该文件传给 `javac --release 8` 成功，并用包限定名 `defpackage.NamedMemberFamilyStage1` 在 `-Xverify:all` 下运行，输出同为 `2011`、`20`。命令状态与结果在 `jadx-raw-javac.*`、`jadx-raw-run.*`。另保留去掉 JADX 添加的包声明后的编译对照，结果在 `recompiled-jadx/`、`jadx-javac.*` 与 `jadx-run.*`。两次重编的 class 文件运行验证后都从证据目录移除，避免重复保存 JAR 字节。
+
+static nested 与 local class 是独立边界，不属于本正例。静态嵌套沿用相邻目录的 [`OuterReceiverCases.java`](../named-member-outer-receiver/variants/OuterReceiverCases.java)、[`jarde-StaticNested.java`](../named-member-outer-receiver/variants/jarde-StaticNested.java) 及既有非法 `Outer.this` / `Outer.super` 对照 [`StaticNestedIllegal.java`](../named-member-outer-receiver/variants/StaticNestedIllegal.java)。local class 对照沿用 [`OuterLocalBoundary.java`](../named-member-outer-receiver/variants/OuterLocalBoundary.java)、[`javap-Local.txt`](../named-member-outer-receiver/variants/javap-Local.txt)、[`local-original-run.txt`](../named-member-outer-receiver/variants/local-original-run.txt) 与 [`jarde-Local.java`](../named-member-outer-receiver/variants/jarde-Local.java)；其 `EnclosingMethod`、`val$other` 和 `this$0` 显示它与命名成员声明的身份边界不同。
+
+本目录先固定原 class 与原样 JADX 的可执行比较。Jarde 在成员家族身份实现提交后的独立构建和输出将另行记录；实施中的临时编译诊断不作为语法恢复结论。
+
+工具与运行状态见 [tool-versions.txt](tool-versions.txt) 和 [status.txt](status.txt)；本目录文件哈希见 [sha256-evidence.txt](sha256-evidence.txt)。
