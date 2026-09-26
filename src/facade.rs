@@ -1849,6 +1849,32 @@ impl Engine {
             ));
         };
         let child_facts = child_read.facts.clone();
+        if child_facts
+            .super_class
+            .as_ref()
+            .map(|name| name.raw().0.as_slice())
+            != Some(b"java/lang/Object")
+            && child_facts.interfaces.is_empty()
+        {
+            return self.project_class_source_anonymous_super(
+                content,
+                request,
+                evidence,
+                environment,
+                snapshot,
+                root,
+                root_method,
+                *root_bci,
+                *constructor_bci,
+                allocation_type,
+                root_ast,
+                root_nesting,
+                child_definition,
+                child_read,
+                child_execution,
+                budget,
+            );
+        }
         if child_facts.stopped_at.is_some()
             || child_read
                 .bytes
@@ -1937,7 +1963,7 @@ impl Engine {
                 "the child does not provide the selected interface's single Java 8 abstract method",
             ));
         }
-        self.prove_anonymous_interface_owner_xrefs(
+        self.prove_anonymous_owner_xrefs(
             content,
             environment,
             &root.class,
@@ -1946,6 +1972,7 @@ impl Engine {
             *root_bci,
             *constructor_bci,
             child_name.as_bytes(),
+            b"()V",
             &mut child_execution,
             budget,
         )?;
@@ -2155,7 +2182,377 @@ impl Engine {
         Ok(())
     }
 
-    fn prove_anonymous_interface_owner_xrefs(
+    #[allow(clippy::too_many_arguments)]
+    fn project_class_source_anonymous_super(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
+        environment: &ResolutionEnvironment,
+        snapshot: &ArtifactSnapshot,
+        root: &mut ClassSourceReport,
+        root_method: &PhysicalMethodId,
+        allocation_bci: u32,
+        constructor_bci: u32,
+        allocation_type: &str,
+        root_ast: &jarde_java::report::ClassSourceMethodAst,
+        root_nesting: &class_source::ClassSourceAssemblyContext,
+        child_definition: PhysicalDefinitionId,
+        child_read: ConfirmedRead,
+        mut child_execution: ExecutionReport,
+        budget: &mut Budget,
+    ) -> Result<()> {
+        let root_name = root
+            .declaration
+            .as_ref()
+            .ok_or_else(|| {
+                Error::unsupported("anonymous_root_unspelled", "root class is unspelled")
+            })?
+            .item
+            .declaration
+            .this_class
+            .raw()
+            .0
+            .clone();
+        let child_name = allocation_type.replace('.', "/");
+        let child_facts = child_read.facts.clone();
+        let root_rows: Vec<_> = root_nesting
+            .resolved_inner_classes
+            .iter()
+            .filter(|row| row.class == child_name.as_bytes())
+            .collect();
+        if child_facts.stopped_at.is_some()
+            || child_read
+                .bytes
+                .get(6..8)
+                .is_none_or(|v| u16::from_be_bytes([v[0], v[1]]) > 52)
+            || child_facts.field_count != 0
+            || !child_facts.fields.is_empty()
+            || child_facts.methods.len() as u64 != child_facts.method_count
+            || child_facts.methods.is_empty()
+            || child_facts
+                .methods
+                .iter()
+                .any(|method| method.name.raw().0 == b"<clinit>")
+            || !child_facts.interfaces.is_empty()
+            || child_facts.access_flags & 0x0200 != 0
+            || child_facts.access_flags & (0x0010 | 0x0400) != 0
+            || root_rows.len() != 1
+            || root_rows[0].outer_class.is_some()
+            || root_rows[0].inner_name.is_some()
+            || root_nesting
+                .major_version
+                .is_none_or(|version| version > 52)
+        {
+            return Err(Error::unsupported(
+                "anonymous_super_child_shape_unproved",
+                "the child is not a complete, field-free Java 8 direct superclass subclass",
+            ));
+        }
+        let Some(parent_name) = child_facts
+            .super_class
+            .as_ref()
+            .map(|name| name.raw().0.to_vec())
+        else {
+            return Err(Error::unsupported(
+                "anonymous_super_missing",
+                "the child has no superclass",
+            ));
+        };
+        if parent_name.as_slice() == b"java/lang/Object"
+            || internal_package(&parent_name) != internal_package(&root_name)
+            || !std::str::from_utf8(&parent_name).is_ok_and(|name| {
+                name.split('/')
+                    .all(|part| !part.contains('$') && jarde_java::names::is_java_identifier(part))
+            })
+        {
+            return Err(Error::unsupported(
+                "anonymous_super_source_type_unproved",
+                "the superclass is not a same-package, directly spellable source type",
+            ));
+        }
+        let expected_return = [b"()L".as_slice(), parent_name.as_slice(), b";".as_slice()].concat();
+        if root_method.descriptor.0 != expected_return {
+            return Err(Error::unsupported(
+                "anonymous_super_return_type_unproved",
+                "the root method return descriptor is not the exact superclass type",
+            ));
+        }
+        let Some((_parent_definition, parent_read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            Some(root_method),
+            &parent_name,
+            &mut child_execution,
+            budget,
+        )?
+        else {
+            return Err(Error::unsupported(
+                "anonymous_super_unresolved",
+                "the exact direct superclass does not resolve in the selected environment",
+            ));
+        };
+        if parent_read.facts.stopped_at.is_some()
+            || parent_read
+                .bytes
+                .get(6..8)
+                .is_none_or(|v| u16::from_be_bytes([v[0], v[1]]) > 52)
+            || parent_read.facts.access_flags & (0x0200 | 0x0010) != 0
+            || (parent_read.facts.access_flags & 0x0001 == 0
+                && internal_package(&parent_name) != internal_package(&root_name))
+        {
+            return Err(Error::unsupported(
+                "anonymous_super_declaration_unproved",
+                "the direct superclass is not a source-accessible Java 8 non-final class",
+            ));
+        }
+        self.prove_anonymous_owner_xrefs(
+            content,
+            environment,
+            &root.class,
+            &child_definition,
+            root_method,
+            allocation_bci,
+            constructor_bci,
+            child_name.as_bytes(),
+            child_facts
+                .methods
+                .iter()
+                .find(|m| m.name.raw().0 == b"<init>")
+                .map(|m| m.descriptor.raw().0.as_slice())
+                .unwrap_or_default(),
+            &mut child_execution,
+            budget,
+        )?;
+        let pool = class_constant_pool(&child_read.bytes, budget)?;
+        let child_shells: Vec<_> = child_facts
+            .attributes
+            .iter()
+            .filter(|attribute| {
+                matches!(
+                    attribute.name.raw().0.as_slice(),
+                    b"InnerClasses" | b"EnclosingMethod"
+                )
+            })
+            .cloned()
+            .collect();
+        let child_nesting = class_source::read_class_source_assembly_context(
+            &child_read.bytes,
+            &child_shells,
+            &pool,
+            budget,
+        )?;
+        let child_self_rows: Vec<_> = child_nesting
+            .resolved_inner_classes
+            .iter()
+            .filter(|row| row.class == child_name.as_bytes())
+            .collect();
+        if child_self_rows.len() != 1
+            || child_self_rows[0].outer_class.is_some()
+            || child_self_rows[0].inner_name.is_some()
+            || child_self_rows[0].access_flags != root_rows[0].access_flags
+            || child_nesting
+                .major_version
+                .is_none_or(|version| version > 52)
+            || child_nesting
+                .resolved_enclosing_method
+                .as_ref()
+                .is_none_or(|enclosing| {
+                    enclosing.class != root_name
+                        || enclosing.method.as_ref()
+                            != Some(&(root_method.name.clone(), root_method.descriptor.clone()))
+                })
+        {
+            return Err(Error::unsupported(
+                "anonymous_child_enclosing_method_unproved",
+                "the child lacks the exact typed EnclosingMethod and anonymous self row",
+            ));
+        }
+        let constructors: Vec<_> = child_facts
+            .methods
+            .iter()
+            .filter(|m| m.name.raw().0 == b"<init>")
+            .collect();
+        if constructors.len() != 1 {
+            return Err(Error::unsupported(
+                "anonymous_child_constructor_unproved",
+                "the child does not have exactly one physical constructor",
+            ));
+        }
+        let constructor_descriptor = constructors[0].descriptor.raw().0.clone();
+        let matching_super_constructors: Vec<_> = parent_read
+            .facts
+            .methods
+            .iter()
+            .filter(|m| {
+                m.name.raw().0 == b"<init>" && m.descriptor.raw().0 == constructor_descriptor
+            })
+            .collect();
+        if matching_super_constructors.len() != 1
+            || matching_super_constructors[0].access_flags & 0x0002 != 0
+            || (matching_super_constructors[0].access_flags & (0x0001 | 0x0004) == 0
+                && internal_package(&parent_name) != internal_package(&root_name))
+        {
+            return Err(Error::unsupported(
+                "anonymous_super_constructor_unproved",
+                "the exact superclass constructor is absent or inaccessible from this package",
+            ));
+        }
+        let child_class_item = charge_item(budget).map(|()| child_read.class.clone())?;
+        let child_request = ClassSourceRequest {
+            class: ClassRef::Definition {
+                definition: child_definition.clone(),
+            },
+            environment: request.environment.clone(),
+        };
+        let (child, _, child_asts, _, _) = self.prepare_physical_class_source(
+            content,
+            &child_request,
+            evidence,
+            environment,
+            snapshot,
+            root.view.clone(),
+            root.stages.clone(),
+            BoundClass {
+                read: child_read,
+                search_coverage: None,
+                class_item: Some(child_class_item),
+            },
+            child_execution,
+            Vec::new(),
+            true,
+            budget,
+        )?;
+        if !matches!(child.execution, ExecutionReport::Complete { .. })
+            || child.methods.len() != child_facts.methods.len()
+            || child_asts.len() != child_facts.methods.len()
+            || child_asts.iter().any(|(_, _, _, scan)| {
+                scan.as_ref()
+                    .is_none_or(|scan| !scan.complete || !scan.allocations.is_empty())
+            })
+            || child.methods.iter().any(|method| {
+                !matches!(
+                    method.outcome,
+                    class_source::ClassSourceOutcome::Recovered { .. }
+                ) || !complete_anonymous_method(method)
+                    || method.declaration.is_none()
+            })
+        {
+            return Err(Error::unsupported(
+                "anonymous_child_methods_incomplete",
+                "every child method must have a complete structured Java body and source declaration",
+            ));
+        }
+        let constructor_identity = PhysicalMethodId {
+            owner: child_definition.clone(),
+            name: JvmBytes(b"<init>".to_vec()),
+            descriptor: JvmBytes(constructor_descriptor.clone()),
+        };
+        let Some((_, _, Some(proof), _)) = child_asts
+            .iter()
+            .find(|(member, _, _, _)| member == &constructor_identity)
+        else {
+            return Err(Error::unsupported(
+                "anonymous_child_constructor_ast_missing",
+                "the constructor lacks its same-run forwarding proof",
+            ));
+        };
+        let forwarded: Vec<u16> = proof.parameters.iter().map(|(slot, _)| *slot).collect();
+        if proof.forwarded_parameter_slots != forwarded
+            || proof.init.class.as_deref() != std::str::from_utf8(&parent_name).ok()
+            || proof.init.target != Some(jarde_java::ast::ConstructorTarget::Super)
+            || !proof.init.presented
+        {
+            return Err(Error::unsupported(
+                "anonymous_super_forwarding_unproved",
+                "the same-run constructor AST, SSA and Code do not prove exact ordered slot forwarding",
+            ));
+        }
+        let mut method_texts = Vec::new();
+        for method in &child.methods {
+            if method.item.identity == constructor_identity {
+                continue;
+            }
+            let Some((_, ast, _, _)) = child_asts
+                .iter()
+                .find(|(member, _, _, _)| member == &method.item.identity)
+            else {
+                return Err(Error::unsupported(
+                    "anonymous_child_method_ast_missing",
+                    "a child method has no same-run AST",
+                ));
+            };
+            let body = jarde_java::report::emit_class_source_method_ast(ast, 4, budget).map_err(
+                |stop| {
+                    enum_projection_stop_error(
+                        stop,
+                        "anonymous superclass projection",
+                        "anonymous_super_ir_missing",
+                    )
+                },
+            )?;
+            let Some(text) = method.anonymous_projection_text(&body) else {
+                return Err(Error::unsupported(
+                    "anonymous_child_method_unspellable",
+                    "a child method cannot be projected from its physical declaration",
+                ));
+            };
+            method_texts.push(text);
+        }
+        let source_type = std::str::from_utf8(&parent_name)
+            .expect("validated source type")
+            .replace('/', ".");
+        let Some(body) = jarde_java::report::emit_class_source_anonymous_return(
+            root_ast,
+            allocation_bci,
+            allocation_type,
+            &source_type,
+            &method_texts.concat(),
+            budget,
+        )
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "anonymous superclass projection",
+                "anonymous_super_ir_missing",
+            )
+        })?
+        else {
+            return Err(Error::unsupported(
+                "anonymous_return_emission_unmatched",
+                "the root emitter could not match the exact allocation node",
+            ));
+        };
+        let Some(index) = root
+            .methods
+            .iter()
+            .position(|method| method.item.identity == *root_method)
+        else {
+            return Err(Error::unsupported(
+                "anonymous_root_method_missing",
+                "the selected root method is absent",
+            ));
+        };
+        let Some(projected) = root.methods[index].anonymous_return_projection_text(&body) else {
+            return Err(Error::unsupported(
+                "anonymous_root_method_unspellable",
+                "the root method cannot wrap the anonymous expression",
+            ));
+        };
+        let original = &root.methods[index].text;
+        if root.text.match_indices(original).count() != 1 {
+            return Err(Error::unsupported(
+                "anonymous_root_text_ambiguous",
+                "the root method has no unique source-unit placement",
+            ));
+        }
+        root.text = root.text.replacen(original, &projected, 1);
+        root.methods[index].text = projected;
+        root.usage = budget.usage();
+        Ok(())
+    }
+
+    fn prove_anonymous_owner_xrefs(
         &self,
         content: &[ArtifactSnapshot],
         environment: &ResolutionEnvironment,
@@ -2165,6 +2562,7 @@ impl Engine {
         allocation_bci: u32,
         constructor_bci: u32,
         child_name: &[u8],
+        constructor_descriptor: &[u8],
         execution: &mut ExecutionReport,
         budget: &mut Budget,
     ) -> Result<()> {
@@ -2291,7 +2689,7 @@ impl Engine {
                         && *bci == constructor_bci
                         && owner.0 == child_name
                         && name.0 == b"<init>"
-                        && descriptor.0 == b"()V"
+                        && descriptor.0 == constructor_descriptor
                         && item.operation == XrefOperation::InvokeSpecial
                         && item.consumer == Some(ConsumerKind::Invocation)
                         && item.evidence.bci == Some(*bci)
@@ -4270,7 +4668,7 @@ impl Engine {
         for (member, ast, _, _) in method_asts.iter().filter(|_| {
             structure_complete && to_u64(methods.len()).ok() == Some(read.facts.method_count)
         }) {
-            let Some((origin_bcis, target)) =
+            let Some((origin_bcis, target, argument_bcis)) =
                 jarde_java::report::class_source_anonymous_return_site(ast)
             else {
                 continue;
@@ -4288,7 +4686,7 @@ impl Engine {
                 && site
                     .constructor_bci
                     .is_some_and(|bci| origin_bcis.contains(&bci))
-                && site.argument_bcis.is_empty()
+                && site.argument_bcis == argument_bcis
             {
                 anonymous_return_sites.push((
                     member.clone(),
@@ -17551,9 +17949,8 @@ fn recovery_from_with_class_candidates(
     } else {
         request
     };
-    let prove_empty_anonymous_constructor = retain_all_method_asts
-        && request.facts.method().name() == "<init>"
-        && request.facts.method().descriptor() == "()V";
+    let prove_anonymous_constructor =
+        retain_all_method_asts && request.facts.method().name() == "<init>";
     let (
         mut recovery,
         initializer_candidates,
@@ -17576,7 +17973,7 @@ fn recovery_from_with_class_candidates(
                     || static_member_target.is_some(),
                 capture_enum_constructor_ast,
                 retain_all_method_asts,
-                prove_empty_anonymous_constructor,
+                prove_anonymous_constructor,
             );
             (
                 result.report,
@@ -17601,7 +17998,7 @@ fn recovery_from_with_class_candidates(
                     || static_member_target.is_some(),
                 capture_enum_constructor_ast,
                 retain_all_method_asts,
-                prove_empty_anonymous_constructor,
+                prove_anonymous_constructor,
             );
             (
                 result.report,

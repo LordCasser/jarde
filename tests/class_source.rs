@@ -112,6 +112,22 @@ const ANONYMOUS_INTERFACE_CHILD: &[u8] = include_bytes!(
 );
 const ANONYMOUS_INTERFACE_API: &[u8] =
     include_bytes!("fixtures/proved-java-structure/anonymous-interface-basic/I.class");
+const ANONYMOUS_SUPER_DIRECT_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-super-direct/AnonymousSuperDirect.class"
+);
+const ANONYMOUS_SUPER_DIRECT_CHILD: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-super-direct/AnonymousSuperDirect$1.class"
+);
+const ANONYMOUS_SUPER_DIRECT_BASE: &[u8] =
+    include_bytes!("fixtures/proved-java-structure/anonymous-super-direct/Base.class");
+const ANONYMOUS_SUPER_CROSS_OWNER: &[u8] =
+    include_bytes!("fixtures/proved-java-structure/anonymous-cross-class-use/Owner.class");
+const ANONYMOUS_SUPER_CROSS_CHILD: &[u8] =
+    include_bytes!("fixtures/proved-java-structure/anonymous-cross-class-use/Owner$1.class");
+const ANONYMOUS_SUPER_CROSS_BASE: &[u8] =
+    include_bytes!("fixtures/proved-java-structure/anonymous-cross-class-use/Base.class");
+const ANONYMOUS_SUPER_CROSS_OTHER: &[u8] =
+    include_bytes!("fixtures/proved-java-structure/anonymous-cross-class-use/Other.class");
 
 // ---------------------------------------------------------------------------------------------
 // Fixtures: one class-file builder and one stored-only archive writer
@@ -940,6 +956,556 @@ fn proved_anonymous_interface_projects_from_both_physical_method_asts() {
             if report.source_map.segments().iter().any(|segment| {
                 segment.origin().primary().method() == Some(&value.item.identity)
             })
+    ));
+}
+
+#[test]
+fn proved_anonymous_superclass_forwards_the_original_ordered_arguments() {
+    let snapshot = open(zip_of(&[
+        (b"AnonymousSuperDirect.class", ANONYMOUS_SUPER_DIRECT_ROOT),
+        (
+            b"AnonymousSuperDirect$1.class",
+            ANONYMOUS_SUPER_DIRECT_CHILD,
+        ),
+        (b"Base.class", ANONYMOUS_SUPER_DIRECT_BASE),
+    ]));
+    let root = class_source_of(
+        &snapshot,
+        "AnonymousSuperDirect",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(
+        root.text.contains("new Base(next(), next()) {"),
+        "text={} diagnostics={:#?}",
+        root.text,
+        root.diagnostics
+    );
+    assert_eq!(
+        root.text.matches("new Base(next(), next()) {").count(),
+        1,
+        "{}",
+        root.text
+    );
+    assert!(
+        root.text.contains("return super.sum() + 1;"),
+        "{}",
+        root.text
+    );
+    assert!(
+        !root.text.contains("new AnonymousSuperDirect$1("),
+        "{}",
+        root.text
+    );
+
+    let essential = performed(
+        Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request(
+                    &snapshot,
+                    ClassRef::Name {
+                        class: ClassNameQuery::internal("AnonymousSuperDirect"),
+                    },
+                    EnvironmentPolicy::PlainJar,
+                ),
+                &RecoveryEvidenceRequest::essential(),
+                &mut budget(),
+            )
+            .expect("essential-evidence class source is available"),
+    );
+    assert_eq!(essential.text, root.text);
+
+    let child = class_source_of(
+        &snapshot,
+        "AnonymousSuperDirect$1",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(
+        child
+            .text
+            .contains("class AnonymousSuperDirect$1 extends Base")
+    );
+    let base = class_source_of(&snapshot, "Base", EnvironmentPolicy::PlainJar);
+    assert!(base.text.contains("Base(int ") && base.text.contains("long "));
+}
+
+#[test]
+fn anonymous_superclass_refuses_reordered_or_reused_constructor_slots() {
+    let original = [0x2a, 0x1b, 0x1c, 0xb7];
+    let variants = [
+        ("reused-slot", [0x2a, 0x1b, 0x1b, 0xb7]),
+        ("reordered-slots", [0x2a, 0x1c, 0x1b, 0xb7]),
+    ];
+    for (label, replacement) in variants {
+        let mut child = ANONYMOUS_SUPER_DIRECT_CHILD.to_vec();
+        let start = child
+            .windows(original.len())
+            .position(|window| window == original)
+            .expect("the anonymous constructor's direct forwarding bytecode");
+        child[start..start + replacement.len()].copy_from_slice(&replacement);
+        let snapshot = open(zip_of(&[
+            (b"AnonymousSuperDirect.class", ANONYMOUS_SUPER_DIRECT_ROOT),
+            (b"AnonymousSuperDirect$1.class", &child),
+            (b"Base.class", ANONYMOUS_SUPER_DIRECT_BASE),
+        ]));
+        let report = class_source_of(
+            &snapshot,
+            "AnonymousSuperDirect",
+            EnvironmentPolicy::PlainJar,
+        );
+        assert!(
+            report
+                .text
+                .contains("new AnonymousSuperDirect$1(next(), next())"),
+            "{label}: {}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("new Base(next(), next()) {"),
+            "{label}"
+        );
+        let child_report = class_source_of(
+            &snapshot,
+            "AnonymousSuperDirect$1",
+            EnvironmentPolicy::PlainJar,
+        );
+        assert!(
+            child_report
+                .text
+                .contains("class AnonymousSuperDirect$1 extends Base")
+        );
+    }
+}
+
+#[test]
+fn anonymous_superclass_refuses_a_different_parent_constructor_overload() {
+    let mut child = ANONYMOUS_SUPER_DIRECT_CHILD.to_vec();
+    let pool_count = test_u16(&child, 8);
+    let mut cursor = 10;
+    let mut index = 1;
+    let mut utf8 = vec![Vec::new(); pool_count];
+    let mut class_names = vec![None; pool_count];
+    let mut init_name = None;
+    while index < pool_count {
+        let tag = child[cursor];
+        let entry_start = cursor;
+        cursor += 1;
+        match tag {
+            1 => {
+                let length = test_u16(&child, cursor);
+                cursor += 2;
+                utf8[index] = child[cursor..cursor + length].to_vec();
+                cursor += length;
+            }
+            7 => {
+                class_names[index] = Some(test_u16(&child, cursor));
+                cursor += 2;
+            }
+            3 | 4 | 9 | 10 | 11 | 12 | 17 | 18 => {
+                cursor += if matches!(tag, 3 | 4) { 4 } else { 4 }
+            }
+            5 | 6 => {
+                cursor += 8;
+                index += 1;
+            }
+            8 | 16 | 19 | 20 => cursor += 2,
+            15 => cursor += 3,
+            other => panic!("unexpected constant-pool tag {other}"),
+        }
+        if tag == 1 && utf8[index] == b"<init>" {
+            init_name = Some(index);
+        }
+        assert!(cursor > entry_start);
+        index += 1;
+    }
+    let pool_end = cursor;
+    let base_class = class_names
+        .iter()
+        .enumerate()
+        .find_map(|(index, name)| name.filter(|name| utf8[*name] == b"Base").map(|_| index));
+    let descriptor_index = pool_count;
+    let name_and_type_index = pool_count + 1;
+    let method_reference_index = pool_count + 2;
+    let mut additions = Vec::new();
+    additions.push(1);
+    u16b(&mut additions, 5);
+    additions.extend_from_slice(b"(IJ)V");
+    additions.push(12);
+    u16b(
+        &mut additions,
+        u16::try_from(init_name.expect("the constructor name constant exists"))
+            .expect("the name index fits u16"),
+    );
+    u16b(
+        &mut additions,
+        u16::try_from(descriptor_index).expect("the descriptor index fits u16"),
+    );
+    additions.push(10);
+    u16b(
+        &mut additions,
+        u16::try_from(base_class.expect("the Base class constant exists"))
+            .expect("the class index fits u16"),
+    );
+    u16b(
+        &mut additions,
+        u16::try_from(name_and_type_index).expect("the name and type index fits u16"),
+    );
+    child.splice(pool_end..pool_end, additions);
+    test_put_u16(&mut child, 8, pool_count + 3);
+
+    let constructor = test_method_headers(&child)
+        .into_iter()
+        .find(|method| method.name == b"<init>")
+        .expect("the physical constructor exists");
+    let code = constructor
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("the constructor has Code");
+    let code_start = code.data_offset + 8;
+    assert_eq!(child[code_start + 3], 0xb7);
+    child[code_start + 4..code_start + 6].copy_from_slice(
+        &u16::try_from(method_reference_index)
+            .expect("the overload reference index fits u16")
+            .to_be_bytes(),
+    );
+
+    let snapshot = open(zip_of(&[
+        (b"AnonymousSuperDirect.class", ANONYMOUS_SUPER_DIRECT_ROOT),
+        (b"AnonymousSuperDirect$1.class", &child),
+        (b"Base.class", ANONYMOUS_SUPER_DIRECT_BASE),
+    ]));
+    let report = class_source_of(
+        &snapshot,
+        "AnonymousSuperDirect",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(
+        report
+            .text
+            .contains("new AnonymousSuperDirect$1(next(), next())")
+    );
+    assert!(!report.text.contains("new Base(next(), next()) {"));
+}
+
+#[test]
+fn anonymous_superclass_refuses_a_second_allocation_bci_for_the_same_child() {
+    let original = ANONYMOUS_SUPER_DIRECT_ROOT;
+    let methods = test_method_headers(original);
+    let make = methods
+        .iter()
+        .find(|method| method.name == b"make")
+        .expect("the direct-return factory exists");
+    let make_code = make
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("the direct-return factory has Code");
+    let make_start = make_code.data_offset + 8;
+    let child_class = test_u16(original, make_start + 1);
+    let constructor = test_u16(original, make_start + 11);
+
+    let mut root = original.to_vec();
+    let main = test_method_headers(original)
+        .into_iter()
+        .find(|method| method.name == b"main")
+        .expect("the main method exists");
+    let main_code = main
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("main has Code");
+    let main_start = main_code.data_offset + 8;
+    let old_code_length = test_u32(original, main_code.data_offset + 4);
+    assert_eq!(original[main_start + old_code_length - 1], 0xb1);
+
+    // Add a second allocation of the same physical child after the print. This is a distinct BCI
+    // in the same owner, so owner-wide allocation identity must refuse the projection.
+    let mut second_site = vec![0xbb];
+    u16b(
+        &mut second_site,
+        u16::try_from(child_class).expect("the class reference fits u16"),
+    );
+    second_site.extend([0x59, 0x06, 0x07, 0xb7]); // dup; iconst_3; iconst_4; invokespecial
+    u16b(
+        &mut second_site,
+        u16::try_from(constructor).expect("the constructor reference fits u16"),
+    );
+    second_site.push(0x57); // pop
+    let old_attribute_length = main_code.length;
+    let insertion = main_start + old_code_length - 1;
+    root.splice(insertion..insertion, second_site.clone());
+    test_put_u16(&mut root, main_code.data_offset, 4);
+    test_put_u32(
+        &mut root,
+        main_code.data_offset + 4,
+        old_code_length + second_site.len(),
+    );
+    test_put_u32(
+        &mut root,
+        main_code.length_offset,
+        old_attribute_length + second_site.len(),
+    );
+
+    let snapshot = open(zip_of(&[
+        (b"AnonymousSuperDirect.class", &root),
+        (
+            b"AnonymousSuperDirect$1.class",
+            ANONYMOUS_SUPER_DIRECT_CHILD,
+        ),
+        (b"Base.class", ANONYMOUS_SUPER_DIRECT_BASE),
+    ]));
+    let report = class_source_of(
+        &snapshot,
+        "AnonymousSuperDirect",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(
+        report
+            .text
+            .contains("new AnonymousSuperDirect$1(next(), next())"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("new Base(next(), next()) {"));
+}
+
+#[test]
+fn anonymous_superclass_refuses_captures_fields_and_constructor_effects() {
+    let scratch = BridgeProjectionScratch::new();
+    let variants = [
+        (
+            "capture-field",
+            "public class AnonymousSuperDirect { static Base make(int captured) { return new Base(1) { int state = captured; int sum() { return super.sum() + state; } }; } }\nclass Base { Base(int x) {} int sum() { return 1; } }\n",
+        ),
+        (
+            "instance-field",
+            "public class AnonymousSuperDirect { static Base make() { return new Base(1) { int state = 3; int sum() { return super.sum() + state; } }; } }\nclass Base { Base(int x) {} int sum() { return 1; } }\n",
+        ),
+        (
+            "constructor-effect",
+            "public class AnonymousSuperDirect { static void touch() {} static Base make() { return new Base(1) { { touch(); } int sum() { return super.sum(); } }; } }\nclass Base { Base(int x) {} int sum() { return 1; } }\n",
+        ),
+    ];
+    for (label, source) in variants {
+        let directory = scratch.child(label);
+        fs::write(directory.join("AnonymousSuperDirect.java"), source)
+            .expect("write anonymous superclass variant");
+        compile_java_8(&directory, "AnonymousSuperDirect.java", &directory);
+        let root =
+            fs::read(directory.join("AnonymousSuperDirect.class")).expect("read compiled root");
+        let child = fs::read(directory.join("AnonymousSuperDirect$1.class"))
+            .expect("read compiled anonymous child");
+        let base = fs::read(directory.join("Base.class")).expect("read compiled Base");
+        let snapshot = open(zip_of(&[
+            (b"AnonymousSuperDirect.class", &root),
+            (b"AnonymousSuperDirect$1.class", &child),
+            (b"Base.class", &base),
+        ]));
+        let report = class_source_of(
+            &snapshot,
+            "AnonymousSuperDirect",
+            EnvironmentPolicy::PlainJar,
+        );
+        assert!(
+            report.text.contains("new AnonymousSuperDirect$1("),
+            "{label}: {}",
+            report.text
+        );
+        assert!(!report.text.contains("new Base(1) {"), "{label}");
+    }
+}
+
+#[test]
+fn anonymous_superclass_refuses_nested_parent_source_names_without_a_type_certificate() {
+    let scratch = BridgeProjectionScratch::new();
+    let directory = scratch.child("nested-parent-name");
+    fs::write(
+        directory.join("AnonymousSuperDirect.java"),
+        "public class AnonymousSuperDirect { static Outer.Base make() { return new Outer.Base(1) { int sum() { return super.sum() + 1; } }; } }\nclass Outer { static class Base { Base(int value) {} int sum() { return 1; } } }\n",
+    )
+    .expect("write nested superclass source");
+    compile_java_8(&directory, "AnonymousSuperDirect.java", &directory);
+    let root = fs::read(directory.join("AnonymousSuperDirect.class")).expect("read root");
+    let child = fs::read(directory.join("AnonymousSuperDirect$1.class")).expect("read child");
+    let outer = fs::read(directory.join("Outer.class")).expect("read Outer");
+    let parent = fs::read(directory.join("Outer$Base.class")).expect("read nested Base");
+    let snapshot = open(zip_of(&[
+        (b"AnonymousSuperDirect.class", &root),
+        (b"AnonymousSuperDirect$1.class", &child),
+        (b"Outer.class", &outer),
+        (b"Outer$Base.class", &parent),
+    ]));
+    let report = class_source_of(
+        &snapshot,
+        "AnonymousSuperDirect",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(report.text.contains("new AnonymousSuperDirect$1("));
+    assert!(!report.text.contains("new Outer$Base(1) {"));
+}
+
+#[test]
+fn anonymous_superclass_refuses_cross_class_identity_use() {
+    let snapshot = open(zip_of(&[
+        (b"Owner.class", ANONYMOUS_SUPER_CROSS_OWNER),
+        (b"Owner$1.class", ANONYMOUS_SUPER_CROSS_CHILD),
+        (b"Base.class", ANONYMOUS_SUPER_CROSS_BASE),
+        (b"Other.class", ANONYMOUS_SUPER_CROSS_OTHER),
+    ]));
+    let report = class_source_of(&snapshot, "Owner", EnvironmentPolicy::PlainJar);
+    assert!(report.text.contains("new Owner$1()"), "{}", report.text);
+    assert!(!report.text.contains("new Base() {"), "{}", report.text);
+}
+
+#[test]
+fn anonymous_superclass_budget_and_cancellation_never_publish_partial_source() {
+    let snapshot = open(zip_of(&[
+        (
+            "AnonymousSuperDirect.class".as_bytes(),
+            ANONYMOUS_SUPER_DIRECT_ROOT,
+        ),
+        (
+            "AnonymousSuperDirect$1.class".as_bytes(),
+            ANONYMOUS_SUPER_DIRECT_CHILD,
+        ),
+        (b"Base.class", ANONYMOUS_SUPER_DIRECT_BASE),
+    ]));
+    let request = request(
+        &snapshot,
+        ClassRef::Name {
+            class: ClassNameQuery::internal("AnonymousSuperDirect"),
+        },
+        EnvironmentPolicy::PlainJar,
+    );
+    let complete = performed(
+        Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .expect("complete source is available"),
+    );
+    assert!(complete.text.contains("new Base(next(), next()) {"));
+
+    let mut constrained = task_budget(&[BudgetOverride::new(
+        "output_bytes",
+        complete.usage.output_bytes.saturating_sub(1),
+    )
+    .expect("the output budget override is valid")])
+    .expect("the constrained budget is valid");
+    let stopped = performed(
+        Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut constrained,
+            )
+            .expect("a budget stop preserves the class report"),
+    );
+    assert!(matches!(
+        stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::OutputBytes
+            },
+            ..
+        }
+    ));
+    assert!(stopped.text.contains("new AnonymousSuperDirect$1("));
+    assert!(!stopped.text.contains("new Base(next(), next()) {"));
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let limits = task_budget(&[])
+        .expect("default task limits are valid")
+        .limits()
+        .clone();
+    let mut cancelled = Budget::with_cancellation_token(limits, token);
+    match Engine::new()
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut cancelled,
+        )
+        .expect("cancellation is a normal operation result")
+    {
+        OperationOutcome::Incomplete(selection) => assert!(matches!(
+            selection.execution,
+            ExecutionReport::Cancelled { .. }
+        )),
+        OperationOutcome::Performed(report) => {
+            assert!(matches!(
+                report.execution,
+                ExecutionReport::Cancelled { .. }
+            ));
+            assert!(!report.text.contains("new Base(next(), next()) {"));
+        }
+        OperationOutcome::Ambiguous(_) => panic!("fixed class identity cannot be ambiguous"),
+    }
+}
+
+#[test]
+fn anonymous_superclass_refuses_missing_parent_or_incomplete_child_body() {
+    let missing_parent = open(zip_of(&[
+        (
+            "AnonymousSuperDirect.class".as_bytes(),
+            ANONYMOUS_SUPER_DIRECT_ROOT,
+        ),
+        (
+            "AnonymousSuperDirect$1.class".as_bytes(),
+            ANONYMOUS_SUPER_DIRECT_CHILD,
+        ),
+    ]));
+    let missing = class_source_of(
+        &missing_parent,
+        "AnonymousSuperDirect",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(missing.text.contains("new AnonymousSuperDirect$1("));
+    assert!(!missing.text.contains("new Base(next(), next()) {"));
+
+    let mut incomplete_child = ANONYMOUS_SUPER_DIRECT_CHILD.to_vec();
+    let sum_tail = [0x04, 0x60, 0xac];
+    let at = incomplete_child
+        .windows(sum_tail.len())
+        .position(|window| window == sum_tail)
+        .expect("the child implementation's final arithmetic sequence");
+    incomplete_child[at] = 0xfe;
+    let snapshot = open(zip_of(&[
+        (
+            "AnonymousSuperDirect.class".as_bytes(),
+            ANONYMOUS_SUPER_DIRECT_ROOT,
+        ),
+        ("AnonymousSuperDirect$1.class".as_bytes(), &incomplete_child),
+        (b"Base.class", ANONYMOUS_SUPER_DIRECT_BASE),
+    ]));
+    let report = class_source_of(
+        &snapshot,
+        "AnonymousSuperDirect",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(report.text.contains("new AnonymousSuperDirect$1("));
+    assert!(!report.text.contains("new Base(next(), next()) {"));
+
+    let child = class_source_of(
+        &snapshot,
+        "AnonymousSuperDirect$1",
+        EnvironmentPolicy::PlainJar,
+    );
+    let sum = child
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"sum")
+        .expect("the malformed child method remains physically reported");
+    assert!(matches!(
+        &sum.outcome,
+        ClassSourceOutcome::Recovered { report, .. }
+            if report.representation == jarde::ir::Representation::Mixed
     ));
 }
 
