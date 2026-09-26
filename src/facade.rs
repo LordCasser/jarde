@@ -1425,6 +1425,53 @@ impl Engine {
                 }
             }
         };
+        if matches!(
+            report.member_family,
+            class_source::ClassSourceMemberFamily::Prepared { .. }
+        ) {
+            let mut projection_execution = ExecutionReport::Complete {
+                usage: budget.usage(),
+            };
+            let projected = project_class_source_member_family(
+                content,
+                &environment,
+                &report,
+                &mut projection_execution,
+                budget,
+            );
+            merge_execution(&mut report.execution, projection_execution);
+            match projected {
+                Ok(Ok(text)) => {
+                    report.text = text;
+                    if let class_source::ClassSourceMemberFamily::Prepared { projection, .. } =
+                        &mut report.member_family
+                    {
+                        *projection = class_source::ClassSourceMemberProjection::Projected;
+                    }
+                }
+                Ok(Err(reason)) => {
+                    if let class_source::ClassSourceMemberFamily::Prepared { projection, .. } =
+                        &mut report.member_family
+                    {
+                        *projection = class_source::ClassSourceMemberProjection::Refused { reason };
+                    }
+                }
+                Err(error) => {
+                    merge_execution(&mut report.execution, stop_execution(&error, budget));
+                    report.diagnostics.push(stop_diagnostic(
+                        &error,
+                        Some(definition_provenance(&report.class)),
+                    ));
+                    if let class_source::ClassSourceMemberFamily::Prepared { projection, .. } =
+                        &mut report.member_family
+                    {
+                        *projection = class_source::ClassSourceMemberProjection::Refused {
+                            reason: format!("family source projection stopped: {error}"),
+                        };
+                    }
+                }
+            }
+        }
         report.usage = budget.usage();
         report.execution = with_usage(report.execution, budget.usage());
         Ok(OperationOutcome::Performed(report))
@@ -1612,6 +1659,9 @@ impl Engine {
                 child,
                 capture,
                 calls,
+                projection: class_source::ClassSourceMemberProjection::Refused {
+                    reason: "family source projection has not completed".to_owned(),
+                },
             },
             Ok(true) => Family::Refused {
                 reason: "root or child physical preparation did not complete".to_owned(),
@@ -4402,6 +4452,9 @@ fn validate_initializer_expression(
             }
             ExprKind::Local(name) => {
                 return Ok(Some(format!("RHS refers to unscoped local `{name}`")));
+            }
+            ExprKind::QualifiedThis { .. } => {
+                return Ok(Some("RHS refers to a lexical outer instance".to_owned()));
             }
             ExprKind::Null | ExprKind::ClassLiteral { .. } => {
                 state.has_nonconstant_shape = true;
@@ -8357,6 +8410,354 @@ fn prove_class_source_member_capture(
 }
 
 #[allow(clippy::too_many_arguments)]
+fn project_class_source_member_family(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    root: &ClassSourceReport,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<String, String>> {
+    use class_source::{ClassSourceMemberCalls, ClassSourceMemberCapture, ClassSourceMemberFamily};
+    let ClassSourceMemberFamily::Prepared {
+        relation,
+        child,
+        capture,
+        calls,
+        ..
+    } = &root.member_family
+    else {
+        return Ok(Err("family relation is not prepared".to_owned()));
+    };
+    let ClassSourceMemberCapture::Proved { proof } = capture else {
+        return Ok(Err("capture proof is incomplete".to_owned()));
+    };
+    let ClassSourceMemberCalls::Proved { sites } = calls else {
+        return Ok(Err("one or more family call sites are unproved".to_owned()));
+    };
+    if !matches!(root.execution, ExecutionReport::Complete { .. })
+        || !matches!(child.execution, ExecutionReport::Complete { .. })
+        || root.declaration.is_none()
+        || child.declaration.is_none()
+    {
+        return Ok(Err("physical family recovery is incomplete".to_owned()));
+    }
+    let root_binary = &root
+        .declaration
+        .as_ref()
+        .unwrap()
+        .item
+        .declaration
+        .this_class
+        .raw()
+        .0;
+    let child_binary = &child
+        .declaration
+        .as_ref()
+        .unwrap()
+        .item
+        .declaration
+        .this_class
+        .raw()
+        .0;
+    let (Some(root_name), Some(child_name), Some(descriptor)) = (
+        std::str::from_utf8(root_binary).ok(),
+        std::str::from_utf8(child_binary).ok(),
+        std::str::from_utf8(&proof.constructor.descriptor.0).ok(),
+    ) else {
+        return Ok(Err(
+            "family identities have no exact Java source spelling".to_owned()
+        ));
+    };
+    let root_source_name = root_name.replace('/', ".");
+    if let Some(super_class) = root
+        .declaration
+        .as_ref()
+        .unwrap()
+        .item
+        .declaration
+        .super_class
+        .as_ref()
+    {
+        for method in root
+            .methods
+            .iter()
+            .filter(|method| method.item.access_flags & 0x1000 != 0)
+        {
+            let analyzed = jarde_jvm::analyze_method_ir(
+                content,
+                &crate::ir::MethodAnalysisRequest {
+                    environment: environment.clone(),
+                    method: method.item.identity.clone(),
+                    stages: MethodOperation::Analysis.stages().to_vec(),
+                },
+                budget,
+            )?;
+            merge_execution(execution, analyzed.report().execution.clone());
+            if analyzed.report().method != method.item.identity
+                || !matches!(
+                    analyzed.report().execution,
+                    ExecutionReport::Complete { .. }
+                )
+            {
+                return Ok(Err(
+                    "synthetic root method analysis is incomplete for bridge screening".to_owned(),
+                ));
+            }
+            let Some(code) = analyzed.ir().code() else {
+                return Ok(Err(
+                    "synthetic root method has no complete body for bridge screening".to_owned(),
+                ));
+            };
+            for instruction in &code.instructions {
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                if instruction.opcode != 0xb7 {
+                    continue;
+                }
+                let Some(index) = instruction.constant_pool_index else {
+                    return Ok(Err(
+                        "synthetic invokespecial has no proved MethodRef".to_owned()
+                    ));
+                };
+                let Ok(entry) =
+                    jarde_reader::classfile::cp_entry(analyzed.ir().constant_pool(), index)
+                else {
+                    return Ok(Err(
+                        "synthetic invokespecial MethodRef is unreadable".to_owned()
+                    ));
+                };
+                let jarde_reader::classfile::CpEntryKind::MethodRef { owner, name, .. } =
+                    &entry.kind
+                else {
+                    return Ok(Err(
+                        "synthetic invokespecial target is not a MethodRef".to_owned()
+                    ));
+                };
+                if owner.0 == super_class.raw().0 && name.0 != b"<init>" {
+                    return Ok(Err("synthetic Outer.super method bridge is outside the proved family projection".to_owned()));
+                }
+            }
+        }
+    }
+    if [root, child.as_ref()].iter().any(|physical| {
+        physical
+            .declaration
+            .as_ref()
+            .is_some_and(|declaration| !declaration.annotation_refusals.is_empty())
+            || physical.fields.iter().any(|field| {
+                field.declaration.is_none()
+                    || !field.markers.is_empty()
+                    || !field.annotations.refusals.is_empty()
+                    || !field.type_annotations.refusals.is_empty()
+            })
+            || physical.methods.iter().any(|method| {
+                method.declaration.is_none()
+                    || (!method.markers.is_empty()
+                        && !(method.has_only_explanation_marker()
+                            && (sites.iter().any(|site| site.caller == method.item.identity)
+                                || proof
+                                    .reads
+                                    .iter()
+                                    .any(|read| read.method == method.item.identity))))
+                    || !method.annotations.refusals.is_empty()
+                    || !method.parameter_annotations.refusals.is_empty()
+                    || !method.type_annotations.refusals.is_empty()
+            })
+    }) {
+        return Ok(Err(
+            "family has an unspelled member or unsupported declaration annotation".to_owned(),
+        ));
+    }
+    if child
+        .fields
+        .iter()
+        .any(|field| field.item.access_flags & 0x0008 != 0)
+        || child
+            .methods
+            .iter()
+            .any(|method| method.item.access_flags & 0x0008 != 0)
+    {
+        return Ok(Err(
+            "Java 8 member declaration contains an unsupported static member".to_owned(),
+        ));
+    }
+    let target = jarde_java::report::ProvedMemberInnerTarget {
+        definition: child.class.clone(),
+        owner: child_name.to_owned(),
+        outer: root_name.to_owned(),
+        simple_name: relation.simple_name.clone(),
+        constructor_descriptor: descriptor.to_owned(),
+        capture_field: proof.field_name.clone(),
+        generic_diamond: false,
+        source_type_path: vec![
+            source_type_path_segment(
+                &root.class,
+                root_name,
+                root_source_name.clone(),
+                0,
+                None,
+                true,
+            ),
+            source_type_path_segment(
+                &child.class,
+                child_name,
+                format!("{root_source_name}.{}", relation.simple_name),
+                0,
+                Some(root_name.to_owned()),
+                false,
+            ),
+        ],
+    };
+    let mut root_methods = Vec::new();
+    let mut child_methods = Vec::new();
+    for physical in [root, child.as_ref()] {
+        for method in &physical.methods {
+            budget.poll()?;
+            let class_source::ClassSourceOutcome::Recovered { report, analysis } = &method.outcome
+            else {
+                return Ok(Err(format!(
+                    "family member {} has no complete physical body",
+                    method.item.index
+                )));
+            };
+            let call_sites: Vec<_> = sites
+                .iter()
+                .filter(|site| site.caller == method.item.identity)
+                .collect();
+            let capture_reads: Vec<_> = proof
+                .reads
+                .iter()
+                .filter(|read| read.method == method.item.identity)
+                .collect();
+            if !matches!(analysis.execution, ExecutionReport::Complete { .. })
+                || !matches!(report.execution, ExecutionReport::Complete { .. })
+                || !report.produced()
+                || ((call_sites.is_empty() && capture_reads.is_empty())
+                    && (report.content != RecoveryContent::ContainsStatements
+                        || report.regions.iter().any(|region| !region.structured)
+                        || !report.fallbacks.is_empty()))
+            {
+                return Ok(Err(format!(
+                    "family member {} retains fallback or incomplete recovery",
+                    method.item.index
+                )));
+            }
+            if method.item.identity == proof.constructor {
+                let Some(text) =
+                    class_source::member_family_constructor_text(method, &relation.simple_name)
+                else {
+                    return Ok(Err(
+                        "capture constructor has unsupported source signature or annotations"
+                            .to_owned(),
+                    ));
+                };
+                child_methods.push((method.item.index, text));
+                continue;
+            }
+            if call_sites.is_empty() && capture_reads.is_empty() {
+                continue;
+            }
+            let analyzed = jarde_jvm::analyze_method_ir(
+                content,
+                &crate::ir::MethodAnalysisRequest {
+                    environment: environment.clone(),
+                    method: method.item.identity.clone(),
+                    stages: MethodOperation::Analysis.stages().to_vec(),
+                },
+                budget,
+            )?;
+            merge_execution(execution, analyzed.report().execution.clone());
+            if analyzed.report().method != method.item.identity
+                || !matches!(
+                    analyzed.report().execution,
+                    ExecutionReport::Complete { .. }
+                )
+                || analyzed.ir().code().is_none()
+            {
+                return Ok(Err(
+                    "projected family method analysis is incomplete".to_owned()
+                ));
+            }
+            let facts = recovery_facts(
+                analyzed.ir().declaration(),
+                analyzed.ir().code(),
+                &method.item.identity,
+            );
+            let captured: Vec<_> = capture_reads
+                .iter()
+                .map(|read| jarde_java::report::ProvedCapturedOuterRead {
+                    method: method.item.identity.clone(),
+                    read_bci: read.bci,
+                    field_owner: child_name.to_owned(),
+                    field_name: proof.field_name.clone(),
+                    field_descriptor: format!("L{root_name};"),
+                    outer_internal_name: root_name.to_owned(),
+                    outer_source_name: root_source_name.clone(),
+                    constructor: proof.constructor.clone(),
+                    constructor_write_bci: proof.write_bci,
+                })
+                .collect();
+            let recovery = jarde_java::recover(
+                &jarde_java::RecoveryRequest::new(
+                    analyzed.ir(),
+                    &facts,
+                    environment.runtime.profile.clone(),
+                )
+                .with_member_inner_targets(std::slice::from_ref(&target))
+                .with_captured_outer_reads(&captured)
+                .with_evidence(
+                    RecoveryEvidenceRequest::essential()
+                        .with_kind(RecoveryEvidenceKind::RuleDetails),
+                ),
+                budget,
+            );
+            merge_execution(execution, recovery.execution.clone());
+            if !matches!(recovery.execution, ExecutionReport::Complete { .. })
+                || !recovery.produced()
+                || recovery.content != RecoveryContent::ContainsStatements
+                || recovery.regions.iter().any(|region| !region.structured)
+                || !recovery.fallbacks.is_empty()
+                || call_sites.iter().any(|site| {
+                    !recovery
+                        .news
+                        .iter()
+                        .any(|record| record.head == site.allocation_bci && record.presented)
+                })
+            {
+                return Ok(Err(format!(
+                    "projected family method {} retains fallback or unproved new@1",
+                    method.item.index
+                )));
+            }
+            let Some(text) = class_source::member_family_recovered_method_text(method, &recovery)
+            else {
+                return Ok(Err(
+                    "projected family method artifact cannot be placed".to_owned()
+                ));
+            };
+            if physical.class == root.class {
+                root_methods.push((method.item.index, text));
+            } else {
+                child_methods.push((method.item.index, text));
+            }
+        }
+    }
+    let member = class_source::MemberFamilyTextProjection {
+        relation,
+        child,
+        capture: proof,
+        root_methods: &root_methods,
+        child_methods: &child_methods,
+    };
+    let Some(text) = class_source::member_family_source_text(root, &member) else {
+        return Ok(Err(
+            "physical class writer cannot re-emit the family without losing prior projections"
+                .to_owned(),
+        ));
+    };
+    budget.charge(CountedBudgetDimension::OutputBytes, text.len() as u64)?;
+    Ok(Ok(text))
+}
+
 fn prove_class_source_member_calls(
     content: &[ArtifactSnapshot],
     environment: &ResolutionEnvironment,

@@ -1,6 +1,39 @@
 use jarde::*;
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
 use std::io::{Cursor, Read, Write};
+use std::path::PathBuf;
+use std::process::Command;
+use std::sync::atomic::{AtomicU64, Ordering};
+
+static NEXT_TEMP_DIR: AtomicU64 = AtomicU64::new(0);
+
+struct TestDirectory(PathBuf);
+
+impl TestDirectory {
+    fn new() -> Self {
+        let path = std::env::temp_dir().join(format!(
+            "jarde-member-family-{}-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos(),
+            NEXT_TEMP_DIR.fetch_add(1, Ordering::Relaxed)
+        ));
+        std::fs::create_dir(&path).unwrap();
+        Self(path)
+    }
+
+    fn path(&self) -> &std::path::Path {
+        &self.0
+    }
+}
+
+impl Drop for TestDirectory {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.0);
+    }
+}
 
 const FAMILY_JAR: &[u8] = include_bytes!(
     "../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar"
@@ -89,6 +122,7 @@ fn selected_family_keeps_two_physical_reports_under_one_budget() {
         child,
         capture,
         calls,
+        ..
     } = &report.member_family
     else {
         panic!("expected proved relation, got {:?}", report.member_family);
@@ -154,7 +188,187 @@ fn selected_family_keeps_two_physical_reports_under_one_budget() {
     };
     assert_eq!(&report.usage, execution_usage);
     assert!(report.text.contains("class NamedMemberFamilyStage1"));
+    assert!(
+        matches!(
+            report.member_family,
+            ClassSourceMemberFamily::Prepared {
+                projection: ClassSourceMemberProjection::Projected,
+                ..
+            }
+        ),
+        "{:?}",
+        match &report.member_family {
+            ClassSourceMemberFamily::Prepared { projection, .. } => Some(projection),
+            _ => None,
+        }
+    );
+    assert!(report.text.contains("outer.new Member()"));
+    assert!(report.text.contains("NamedMemberFamilyStage1.this"));
+    assert!(report.text.contains("other.state"));
+    assert!(!report.text.contains("this.this$0"));
+    assert_eq!(report.text.matches("class Member extends").count(), 1);
+    assert_eq!(report.text.matches("Member() {").count(), 1);
+    assert_eq!(report.text.matches("int read(").count(), 1);
+    assert_eq!(report.text.matches("static int access$000(").count(), 1);
+    assert!(!report.text.contains("NamedMemberFamilyStage1$Member("));
     assert!(child.text.contains("class NamedMemberFamilyStage1$Member"));
+}
+
+fn compile_and_verify(source: &str) -> String {
+    let temp = TestDirectory::new();
+    std::fs::write(temp.path().join("NamedMemberFamilyStage1.java"), source).unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "NamedMemberFamilyStage1.java"])
+        .current_dir(temp.path())
+        .output()
+        .unwrap();
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-cp", ".", "NamedMemberFamilyStage1"])
+        .current_dir(temp.path())
+        .output()
+        .unwrap();
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    String::from_utf8(run.stdout).unwrap()
+}
+
+#[test]
+fn projected_stage1_compiles_and_matches_original_and_jadx_java8_behavior() {
+    let report = report_with(task_limits(&[]).unwrap());
+    assert!(matches!(
+        report.member_family,
+        ClassSourceMemberFamily::Prepared {
+            projection: ClassSourceMemberProjection::Projected,
+            ..
+        }
+    ));
+    let original = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/NamedMemberFamilyStage1.java"
+    );
+    let jadx = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/recompiled-jadx/NamedMemberFamilyStage1.java"
+    );
+    for source in [original, jadx, &report.text] {
+        assert_eq!(compile_and_verify(source), "2011\n20\n");
+    }
+    let temp = TestDirectory::new();
+    let jar = temp.path().join("fixture.jar");
+    std::fs::write(&jar, FAMILY_JAR).unwrap();
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-cp"])
+        .arg(&jar)
+        .arg("NamedMemberFamilyStage1")
+        .output()
+        .unwrap();
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(String::from_utf8(run.stdout).unwrap(), "2011\n20\n");
+}
+
+#[test]
+fn family_call_rerender_restores_effect_and_null_exception_order() {
+    const SOURCE: &str = r#"public class FamilyEffects {
+    static int effects;
+    static int tick(){ effects=effects+1; return effects; }
+    class Member { Member(int unused){} int value(){ return effects; } }
+    static int run(FamilyEffects outer){ return outer.new Member(tick()).value(); }
+}
+"#;
+    const RUNNER: &str = r#"public class FamilyEffectsRunner {
+    public static void main(String[] args) {
+        FamilyEffects.effects = 0;
+        System.out.println(FamilyEffects.run(new FamilyEffects()) + ":" + FamilyEffects.effects);
+        try { FamilyEffects.run(null); System.out.println("missing NPE"); }
+        catch (NullPointerException expected) { System.out.println("NPE:" + FamilyEffects.effects); }
+    }
+}
+"#;
+    fn compile(dir: &TestDirectory) {
+        let output = Command::new("javac")
+            .args([
+                "--release",
+                "8",
+                "-g",
+                "FamilyEffects.java",
+                "FamilyEffectsRunner.java",
+            ])
+            .current_dir(dir.path())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    fn run(dir: &TestDirectory) -> String {
+        let output = Command::new("java")
+            .args(["-Xverify:all", "-cp", ".", "FamilyEffectsRunner"])
+            .current_dir(dir.path())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8(output.stdout).unwrap()
+    }
+    let original = TestDirectory::new();
+    std::fs::write(original.path().join("FamilyEffects.java"), SOURCE).unwrap();
+    std::fs::write(original.path().join("FamilyEffectsRunner.java"), RUNNER).unwrap();
+    compile(&original);
+    let root = std::fs::read(original.path().join("FamilyEffects.class")).unwrap();
+    let child = std::fs::read(original.path().join("FamilyEffects$Member.class")).unwrap();
+    let report = report_from_named(
+        jar_of(&[
+            (b"FamilyEffects.class", &root),
+            (b"FamilyEffects$Member.class", &child),
+        ]),
+        "FamilyEffects",
+        task_limits(&[]).unwrap(),
+    );
+    let ClassSourceMemberFamily::Prepared {
+        child, projection, ..
+    } = &report.member_family
+    else {
+        panic!("effect family relation is not prepared");
+    };
+    assert!(
+        matches!(projection, ClassSourceMemberProjection::Projected),
+        "{projection:?}"
+    );
+    let run_method = report
+        .methods
+        .iter()
+        .find(|method| method.item.identity.name.0 == b"run")
+        .unwrap();
+    assert_eq!(run_method.markers.len(), 1);
+    assert!(run_method.markers[0].contains("produced no statement"));
+    assert!(
+        !report
+            .text
+            .contains("not recovered: the recovery run for `run")
+    );
+    assert!(report.text.contains("outer.new Member(tick())"));
+    assert!(child.text.contains("this$0"));
+    let projected = TestDirectory::new();
+    std::fs::write(projected.path().join("FamilyEffects.java"), &report.text).unwrap();
+    std::fs::write(projected.path().join("FamilyEffectsRunner.java"), RUNNER).unwrap();
+    compile(&projected);
+    assert_eq!(run(&original), "1:1\nNPE:1\n");
+    assert_eq!(run(&projected), run(&original));
 }
 
 #[test]
@@ -303,6 +517,15 @@ fn qualified_member_call_preserves_internal_and_preceding_effect_positions() {
         .unwrap();
     assert_eq!((before.allocation_bci, before.null_check_bci), (7, 13));
     assert_eq!(before.ordinary_argument_bcis, [17]);
+    let projection = match &report.member_family {
+        ClassSourceMemberFamily::Prepared { projection, .. } => projection,
+        _ => unreachable!(),
+    };
+    assert!(
+        matches!(projection, ClassSourceMemberProjection::Refused { .. }),
+        "{projection:?}"
+    );
+    assert!(!report.text.contains("class Member"));
     assert!(report.text.contains("class NamedMemberFamilyCalls"));
     assert!(child.text.contains("class NamedMemberFamilyCalls$Member"));
 }
@@ -344,7 +567,7 @@ fn disagreeing_child_relation_cannot_authorize_package_private_call() {
 }
 
 #[test]
-fn call_proof_budget_stop_keeps_capture_and_both_physical_reports() {
+fn projection_budget_stop_keeps_capture_calls_and_both_physical_reports() {
     let complete = report_with(task_limits(&[]).unwrap());
     let mut limits = task_limits(&[]).unwrap();
     limits.method_bodies = complete.usage.method_bodies - 1;
@@ -352,14 +575,68 @@ fn call_proof_budget_stop_keeps_capture_and_both_physical_reports() {
     let ClassSourceMemberFamily::Prepared {
         child,
         capture: ClassSourceMemberCapture::Proved { .. },
-        calls: ClassSourceMemberCalls::Refused { .. },
+        calls: ClassSourceMemberCalls::Proved { .. },
+        projection: ClassSourceMemberProjection::Refused { reason },
         ..
     } = &stopped.member_family
     else {
-        panic!("only call proof must stop: {:?}", stopped.member_family);
+        panic!("projection must stop after local proofs");
     };
-    assert!(matches!(stopped.execution, ExecutionReport::Partial { .. }));
+    assert!(reason.contains("projection stopped") || reason.contains("incomplete"));
+    assert!(
+        matches!(stopped.execution, ExecutionReport::Partial { .. }),
+        "complete bodies={} stopped bodies={} execution={:?}",
+        complete.usage.method_bodies,
+        stopped.usage.method_bodies,
+        stopped.execution
+    );
     assert!(matches!(child.execution, ExecutionReport::Complete { .. }));
     assert_eq!(stopped.methods.len(), complete.methods.len());
-    assert_eq!(stopped.text, complete.text);
+    assert!(!stopped.text.contains("class Member"));
+    assert!(child.text.contains("this$0"));
+}
+
+#[test]
+fn family_output_budget_refusal_keeps_both_physical_texts() {
+    let complete = report_with(task_limits(&[]).unwrap());
+    let mut limits = task_limits(&[]).unwrap();
+    limits.output_bytes = complete.usage.output_bytes - 1;
+    let stopped = report_with(limits);
+    let ClassSourceMemberFamily::Prepared {
+        child, projection, ..
+    } = &stopped.member_family
+    else {
+        panic!("physical family should remain prepared");
+    };
+    assert!(
+        matches!(projection, ClassSourceMemberProjection::Refused { .. }),
+        "{projection:?}"
+    );
+    assert!(matches!(stopped.execution, ExecutionReport::Partial { .. }));
+    assert!(!stopped.text.contains("class Member"));
+    assert!(child.text.contains("this$0"));
+    assert_eq!(stopped.methods.len(), complete.methods.len());
+}
+
+#[test]
+fn outer_super_method_bridge_is_not_projected() {
+    let report = report_from_named(
+        include_bytes!("../openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar").to_vec(),
+        "OuterReceiverCases",
+        task_limits(&[]).unwrap(),
+    );
+    let ClassSourceMemberFamily::Prepared {
+        child, projection, ..
+    } = &report.member_family
+    else {
+        panic!("physical super-bridge family should remain prepared");
+    };
+    assert!(
+        matches!(projection, ClassSourceMemberProjection::Refused { reason } if reason.contains("Outer.super method bridge")),
+        "{projection:?}"
+    );
+    assert!(report.text.contains("access$"));
+    assert!(child.text.contains("OuterReceiverCases$Member"));
+    assert!(!report.text.contains("class Member"));
+    assert!(!report.text.contains("OuterReceiverCases.super.value()"));
 }

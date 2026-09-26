@@ -34,9 +34,9 @@
 //! writes is the package the class's **own** internal name states — `a/b/C` declares `a.b`, and a
 //! name with no `/` is the default package and declares none — which is a statement about that name
 //! and not about the directory the class was found in. No `import` is resolved or elided, no
-//! resource is parsed, no annotation type is resolved outside this class file, and no nesting
-//! relation is inferred — `p.Outer$Inner` is spelled as the one name the
-//! class file states, its `$` kept.
+//! resource is parsed and no annotation type is resolved outside this class file. An isolated
+//! physical member remains named `p.Outer$Inner`; only a separately proved root/child relation,
+//! capture, call census and complete bodies can publish a nested root source unit.
 //!
 //! What the text writes about a declaration is what the class file's own attributes say about it,
 //! and never an inference from anything else:
@@ -458,7 +458,8 @@ pub enum ClassSourceOutcome {
 /// the class and member tables this request read beside the members it attempted a body for, and
 /// `execution` the merge of every stop of the request.
 /// A proved direct member identity is retained in `member_family` with a separate child physical
-/// report; this stage leaves both classes' source text in their original physical form.
+/// report. A closed source projection replaces only this root report's text; child text, physical
+/// methods, outcomes and their method-local source maps remain unchanged.
 ///
 /// One member's stop does not end the class: a member whose recovery stopped keeps its own result
 /// and the members beside it are still presented, exactly as a class view keeps the bodies beside a
@@ -508,7 +509,9 @@ pub struct ClassSourceReport {
     /// This private handoff has no projection authority and is deliberately absent from JSON.
     #[serde(skip)]
     pub(crate) enum_constant_body_relations: Vec<crate::facade::PendingEnumConstantBodyRelation>,
-    /// The assembled Java source. Empty exactly when [`Self::declaration`] is `None`.
+    /// The assembled Java source. Empty exactly when [`Self::declaration`] is `None`. A proved
+    /// member projection contains one root source unit with a nested child declaration; refusal
+    /// retains this root's physical text. This string has no whole-unit source map yet.
     pub text: String,
     /// The complete effective limits this request ran under.
     pub limits: Limits,
@@ -552,9 +555,9 @@ pub struct ClassSourceReport {
     pub diagnostics: Vec<Diagnostic>,
 }
 
-/// Prepared family identity with a separate, narrow capture verdict. Neither status authorizes
-/// hiding physical artifacts or writing a nested Java declaration: source changes still require
-/// call-site, expression, effect, and output proofs.
+/// Prepared family identity, capture and calls are independent of the final source projection.
+/// Only `projection: Projected` states that the root text contains a nested declaration. The
+/// separate child report always retains its physical text and method-local source maps.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case")]
 pub enum ClassSourceMemberFamily {
@@ -571,7 +574,16 @@ pub enum ClassSourceMemberFamily {
         capture: ClassSourceMemberCapture,
         /// Family-local construction verdicts; original method bodies remain physical.
         calls: ClassSourceMemberCalls,
+        /// Source-unit projection is separate from the physical relation and local certificates.
+        projection: ClassSourceMemberProjection,
     },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case")]
+pub enum ClassSourceMemberProjection {
+    Refused { reason: String },
+    Projected,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -5268,6 +5280,20 @@ impl ClassSourceField {
 }
 
 impl ClassSourceMethod {
+    /// The one physical-recovery marker that may be replaced by a later complete family re-run.
+    /// It remains on this physical record; only the separately assembled source text omits it.
+    pub(crate) fn has_only_explanation_marker(&self) -> bool {
+        let ClassSourceOutcome::Recovered { report, .. } = &self.outcome else {
+            return false;
+        };
+        report.content == RecoveryContent::ExplanationOnly
+            && self.markers
+                == [format!(
+                    "// jarde: not recovered: the recovery run for `{}` produced no statement (explanation only); the artifact's own comment lines are below",
+                    label(&self.item)
+                )]
+    }
+
     /// Stage the entire declaration, body placement and source note before publishing them.
     pub(crate) fn project_generic(
         &mut self,
@@ -5994,6 +6020,182 @@ pub(crate) fn source_text(
     methods: &[ClassSourceMethod],
     context: &ClassSourceTextContext<'_>,
 ) -> String {
+    source_text_with_member(declaration, fields, methods, context, None)
+}
+
+/// A family source unit is assembled from physical member records, with only certified body
+/// replacements and the one certified capture field omitted. No physical report is mutated.
+pub(crate) struct MemberFamilyTextProjection<'a> {
+    pub(crate) relation: &'a ClassSourceMemberRelation,
+    pub(crate) child: &'a ClassSourceReport,
+    pub(crate) capture: &'a MemberCaptureProof,
+    pub(crate) root_methods: &'a [(u64, String)],
+    pub(crate) child_methods: &'a [(u64, String)],
+}
+
+pub(crate) fn member_family_recovered_method_text(
+    method: &ClassSourceMethod,
+    recovery: &RecoveryReport,
+) -> Option<String> {
+    let declaration = method.declaration.as_ref()?;
+    let body = artifact(&recovery.text)?;
+    let markers = if method.has_only_explanation_marker() {
+        &[][..]
+    } else {
+        method.markers.as_slice()
+    };
+    Some(prefix_method_annotations(
+        block_member(declaration, Placed::Block(body), markers),
+        &method.annotations,
+    ))
+}
+
+/// The capture certificate's exact six-instruction template has no source-level constructor
+/// work beyond the direct zero-argument super call. Its implicit first parameter and field write
+/// are omitted together; ordinary parameters and their annotations retain descriptor positions.
+pub(crate) fn member_family_constructor_text(
+    method: &ClassSourceMethod,
+    simple_name: &str,
+) -> Option<String> {
+    if method.item.identity.name.0 != b"<init>"
+        || method.declaration.is_none()
+        || !method.declaration.as_ref()?.ends_with(')')
+        || !method.markers.is_empty()
+        || !method.annotations.refusals.is_empty()
+        || !method.parameter_annotations.refusals.is_empty()
+        || !method.type_annotations.refusals.is_empty()
+        || !method.type_annotations.field_uses.is_empty()
+        || !method.type_annotations.return_uses.is_empty()
+        || method.item.access_flags & !(ACC_PUBLIC | ACC_PRIVATE | ACC_PROTECTED) != 0
+    {
+        return None;
+    }
+    let signature = method_descriptor(&method.item.identity.descriptor.0, false, false)?;
+    if signature.returns.is_some() || signature.parameters.is_empty() {
+        return None;
+    }
+    if method.parameter_annotations.uses_by_position.len() != signature.parameters.len()
+        || method.type_annotations.parameter_uses.len() != signature.parameters.len()
+    {
+        return None;
+    }
+    if method
+        .parameter_annotations
+        .uses_by_position
+        .first()
+        .is_some_and(|uses| !uses.is_empty())
+        || method
+            .type_annotations
+            .parameter_uses
+            .first()
+            .is_some_and(|uses| !uses.is_empty())
+    {
+        return None;
+    }
+    let mut declaration = String::new();
+    if let Some(word) = visibility(method.item.access_flags) {
+        declaration.push_str(word);
+        declaration.push(' ');
+    }
+    declaration.push_str(simple_name);
+    declaration.push('(');
+    for (ordinary_index, (ty, _)) in signature.parameters.iter().skip(1).enumerate() {
+        if ordinary_index != 0 {
+            declaration.push_str(", ");
+        }
+        let position = ordinary_index + 1;
+        for annotation in method
+            .parameter_annotations
+            .uses_by_position
+            .get(position)
+            .into_iter()
+            .flatten()
+        {
+            declaration.push_str(annotation);
+            declaration.push(' ');
+        }
+        let type_uses = method
+            .type_annotations
+            .parameter_uses
+            .get(position)
+            .map(Vec::as_slice)
+            .unwrap_or(&[]);
+        let ty = if type_uses.is_empty() {
+            ty.clone()
+        } else {
+            decorate_qualified_type(ty, type_uses)?
+        };
+        declaration.push_str(&ty);
+        declaration.push_str(&format!(" arg{ordinary_index}"));
+    }
+    declaration.push(')');
+    let text = format!("    {declaration} {{\n        super();\n        return;\n    }}\n");
+    Some(prefix_method_annotations(text, &method.annotations))
+}
+
+pub(crate) fn member_family_source_text(
+    root: &ClassSourceReport,
+    member: &MemberFamilyTextProjection<'_>,
+) -> Option<String> {
+    let declaration = root.declaration.as_ref()?;
+    let child_declaration = member.child.declaration.as_ref()?;
+    let capture_field = member
+        .child
+        .fields
+        .iter()
+        .find(|field| field.item.index == member.capture.field_index)?;
+    if root.class != member.relation.root
+        || member.child.class != member.relation.child
+        || member.capture.constructor.owner != member.child.class
+        // A regenerated capture field cannot preserve extra physical modifiers.
+        || capture_field.item.access_flags != (ACC_FINAL | 0x1000)
+        || !capture_field.annotations.attributes.is_empty()
+        || !capture_field.type_annotations.attributes.is_empty()
+        || !is_java_identifier(&member.relation.simple_name)
+        || child_declaration.generic_signature.is_some()
+        || child_declaration.generic_refusal.is_some()
+        || !child_declaration.annotation_refusals.is_empty()
+        || member.relation.access_flags & ACC_STATIC != 0
+        || child_declaration.item.declaration.access_flags
+            & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION)
+            != 0
+        || member.child.fields.iter().any(|field| {
+            field.item.index != member.capture.field_index && field.declaration.is_none()
+        })
+    {
+        return None;
+    }
+    let context = ClassSourceTextContext {
+        initializer_field_order: None,
+        declared_methods: root.methods.len() as u64,
+        member_table: None,
+        execution: &root.execution,
+        enum_projection: None,
+        array_helper_indices: None,
+        array_method_texts: None,
+        array_helper_markers: None,
+    };
+    // Other class-level projections have their own writer inputs. This equality proves that the
+    // narrow family writer can reproduce the physical root before adding the nested declaration.
+    if source_text(declaration, &root.fields, &root.methods, &context) != root.text {
+        return None;
+    }
+    Some(source_text_with_member(
+        declaration,
+        &root.fields,
+        &root.methods,
+        &context,
+        Some(member),
+    ))
+}
+
+fn source_text_with_member(
+    declaration: &ClassSourceDeclaration,
+    fields: &[ClassSourceField],
+    methods: &[ClassSourceMethod],
+    context: &ClassSourceTextContext<'_>,
+    member_family: Option<&MemberFamilyTextProjection<'_>>,
+) -> String {
     let initializer_field_order = context.initializer_field_order;
     let declared_methods = context.declared_methods;
     let member_table = context.member_table;
@@ -6129,7 +6331,14 @@ pub(crate) fn source_text(
             out.push('\n');
         }
         first = false;
-        if let Some((_, projected)) = array_method_texts
+        if let Some((_, projected)) = member_family.and_then(|member| {
+            member
+                .root_methods
+                .iter()
+                .find(|(index, _)| *index == method.item.index)
+        }) {
+            out.push_str(projected);
+        } else if let Some((_, projected)) = array_method_texts
             .and_then(|texts| texts.iter().find(|(index, _)| *index == method.item.index))
         {
             out.push_str(projected);
@@ -6162,7 +6371,74 @@ pub(crate) fn source_text(
             out.push_str(&indent(&format!("{marker}\n"), 1));
         }
     }
+    if let Some(member) = member_family {
+        if !first {
+            out.push('\n');
+        }
+        out.push_str(&render_member_class(member));
+    }
     out.push_str("}\n");
+    out
+}
+
+fn render_member_class(member: &MemberFamilyTextProjection<'_>) -> String {
+    let child = member.child;
+    let declaration = child
+        .declaration
+        .as_ref()
+        .expect("validated child declaration");
+    let mut facts = declaration.item.declaration.clone();
+    const SOURCE_CLASS_FLAGS: u16 = ACC_PUBLIC
+        | ACC_PRIVATE
+        | ACC_PROTECTED
+        | ACC_ABSTRACT
+        | ACC_FINAL
+        | ACC_STRICT
+        | ACC_STATIC;
+    facts.access_flags = (facts.access_flags & !SOURCE_CLASS_FLAGS)
+        | (member.relation.access_flags & SOURCE_CLASS_FLAGS);
+    let mut out = String::new();
+    for annotation in &declaration.annotation_uses {
+        out.push_str(&indent(&format!("{annotation}\n"), 1));
+    }
+    out.push_str(&indent(
+        &format!(
+            "{} {{\n",
+            class_declaration(&member.relation.simple_name, &facts)
+        ),
+        1,
+    ));
+    let mut first = true;
+    for field in &child.fields {
+        if field.item.index == member.capture.field_index {
+            continue;
+        }
+        if !first {
+            out.push('\n');
+        }
+        first = false;
+        for annotation in &field.annotations.uses {
+            out.push_str(&indent(&format!("{annotation}\n"), 2));
+        }
+        let text = match &field.declaration {
+            Some(declaration) => declaration_member(declaration, &field.markers),
+            None => comment_member(&field.markers),
+        };
+        out.push_str(&indent(&text, 1));
+    }
+    for method in &child.methods {
+        if !first {
+            out.push('\n');
+        }
+        first = false;
+        let text = member
+            .child_methods
+            .iter()
+            .find(|(index, _)| *index == method.item.index)
+            .map_or(method.text.as_str(), |(_, text)| text.as_str());
+        out.push_str(&indent(text, 1));
+    }
+    out.push_str("    }\n");
     out
 }
 
