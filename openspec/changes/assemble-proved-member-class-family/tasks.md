@@ -1,7 +1,7 @@
 ## 1. 冻结家族正例与拒绝边界
 
 - [x] 1.1 固定无 `Outer.super` 方法桥的 Java 8 命名成员家族，含同类型 `other`/捕获 Outer、非 public 成员构造器及字段 getter；记录源码、class/JAR 哈希、`javap`、原/JADX/Jarde 完整类编译与 `-Xverify:all` 结果，并用校验和复核证据。**验收**：[阶段一证据](../../evidence/java-syntax-2026-09-26/named-member-family-stage1/README.md)与 [Root 复核](verification-1.1.md)固定原/JADX 的 `2011/20`、身份阶段 Jarde 根独编的 `20` 和根/成员合编失败；不将 `prepared` 冒充可编译家族。
-- [ ] 1.2 准备双向 `InnerClasses` 错配、同名多物理定义、非捕获同类型接收者、额外字段使用/写入、异常边界与预算/取消的 verifier-valid 或 proof-unit 负例；逐项记录证据等级、期望拒绝位置和保留的物理来源。
+- [x] 1.2 准备双向 `InnerClasses` 错配、同名多物理定义、非捕获同类型接收者、额外字段使用/写入、异常边界与预算/取消的 verifier-valid 或 proof-unit 负例；逐项记录证据等级、期望拒绝位置和保留的物理来源。**验收**：[1.2 负例与边界记录](verification-1.2.md)列明各样本、拒绝点、保留来源、验证命令和局限。
 
 ## 2. 精确家族身份与同请求准备
 
