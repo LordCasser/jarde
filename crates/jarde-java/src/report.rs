@@ -1815,6 +1815,7 @@ fn recover_inner(
     let sites = init::sites(
         ssa,
         &operations,
+        &chains,
         chains.owned(),
         &fields,
         request.member_inner_targets,

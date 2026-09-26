@@ -35,7 +35,7 @@
 
 use std::collections::BTreeSet;
 
-use jarde_jvm::method_ir::{Definition, RefType, SsaInstruction, SsaTable, Value, ValueId};
+use jarde_jvm::method_ir::{Definition, RefType, Slot, SsaInstruction, SsaTable, Value, ValueId};
 use jarde_reader::classfile::MethodCodeFacts;
 use serde::Serialize;
 
@@ -110,6 +110,7 @@ struct MemberProof {
 struct ConstructionFacts<'a> {
     ssa: &'a SsaTable,
     operations: &'a Operations,
+    chains: &'a crate::concat::Plan,
     fields: &'a field::Plan,
     member_targets: &'a [ProvedMemberInnerTarget],
     code: &'a MethodCodeFacts,
@@ -276,9 +277,9 @@ impl Sites {
 
 /// Reads every construction site of one body.
 ///
-/// `reserved` is every BCI another rule of this run already owns — in practice the concatenation
-/// chains, whose own allocation and constructor call are written inside a `+` expression and must not
-/// be written a second time as a `new`. One instruction is never two shapes.
+/// `chains` is the complete read-only answer of `concat@1`. Its owned instructions are not a
+/// second `new`; a chain can be nested only when its tail is the actual value of a constructor
+/// argument and this verifier closes the chain's ownership and range.
 ///
 /// `fields` is the `field@1` plan of the same body, which this rule **reads** and never re-derives: a
 /// claimed field access is one of the places a construction's instance is written into (P3 2c.26), and
@@ -288,6 +289,7 @@ impl Sites {
 pub(crate) fn sites(
     ssa: &SsaTable,
     operations: &Operations,
+    chains: &crate::concat::Plan,
     reserved: &BTreeSet<u32>,
     fields: &field::Plan,
     member_targets: &[ProvedMemberInnerTarget],
@@ -296,6 +298,7 @@ pub(crate) fn sites(
     let facts = ConstructionFacts {
         ssa,
         operations,
+        chains,
         fields,
         member_targets,
         code,
@@ -318,7 +321,7 @@ pub(crate) fn sites(
                 class: ty.clone(),
                 verified: false,
             });
-            if reserved.contains(&head) {
+            if reserved.contains(&head) || chains.owns(head) {
                 // Another rule of this run writes this allocation's text: it is not a second shape.
                 continue;
             }
@@ -371,6 +374,7 @@ fn verify(
     let ConstructionFacts {
         ssa,
         operations,
+        chains,
         fields,
         member_targets,
         ..
@@ -424,6 +428,7 @@ fn verify(
         })
         .map(|target| verify_member(index, block, constructor, &operands, facts, target))
         .transpose()?;
+    let mut embedded_concat = false;
     let arguments = if let Some(member) = &member {
         member.arguments.clone()
     } else {
@@ -451,6 +456,17 @@ fn verify(
         // reached at all.
         let argument_dependencies =
             value_dependency_bcis(ssa, block, operands.iter().skip(1).map(|(_, value)| *value));
+        let nested_concat = verify_concat_arguments(
+            head,
+            dup.bci(),
+            at,
+            block,
+            ssa,
+            chains,
+            operands.iter().skip(1).map(|(_, value)| *value),
+            &argument_dependencies,
+        )?;
+        embedded_concat = !nested_concat.is_empty();
         // Nothing inside the span may be an effect this rule would have to move: every invocation
         // between the copy and the call must be in an argument's own value dependency chain.
         for instruction in block.iter().skip(index + 2) {
@@ -458,6 +474,7 @@ fn verify(
                 break;
             }
             match operations.get(instruction.bci()) {
+                Some(_) if nested_concat.contains(&instruction.bci()) => {}
                 Some(
                     Operation::Push(_)
                     | Operation::Load { .. }
@@ -550,6 +567,34 @@ fn verify(
         .iter()
         .position(|instruction| instruction.bci() == at)
         .expect("the selected constructor belongs to this block");
+    if embedded_concat {
+        // A Java expression runs under one exception region. Moving a proved inner chain into the
+        // outer construction is sound only when every instruction in the construction and its
+        // sole consumer has the same handler coverage as the outer allocation.
+        let coverage = |bci: u32| -> Vec<u32> {
+            facts
+                .code
+                .exception_handlers
+                .iter()
+                .filter(|handler| handler.start_bci <= bci && bci < handler.end_bci)
+                .map(|handler| handler.ordinal)
+                .collect()
+        };
+        let expected = coverage(head);
+        let consumer = written[0];
+        if block[index..=constructor_index]
+            .iter()
+            .any(|instruction| coverage(instruction.bci()) != expected)
+            || coverage(consumer) != expected
+        {
+            return Err(Refusal::shape(
+                "jre_new_concat_exception_boundary",
+                format!(
+                    "the concatenation argument of the construction at BCI {head} crosses an exception-handler boundary before its constructor or sole consumer at BCI {consumer}"
+                ),
+            ));
+        }
+    }
     let expression = block[index..=constructor_index]
         .iter()
         .map(SsaInstruction::bci)
@@ -740,6 +785,111 @@ fn verify_member(
 fn single_use_at(ssa: &SsaTable, value: ValueId, at: u32) -> bool {
     let uses = ssa.value(value).uses();
     uses.len() == 1 && uses[0].bci() == Some(at)
+}
+
+/// The complete concat chains whose values are direct, unique constructor arguments.
+///
+/// `reserved` membership alone cannot establish any of these facts: this reads the specific
+/// `concat@1` chain at each argument's producer and then checks its identity, ownership, position,
+/// and physical completeness before the outer verifier may step over an allocation.
+#[allow(clippy::too_many_arguments)]
+fn verify_concat_arguments(
+    head: u32,
+    dup: u32,
+    constructor: u32,
+    block: &[SsaInstruction],
+    ssa: &SsaTable,
+    chains: &crate::concat::Plan,
+    arguments: impl IntoIterator<Item = ValueId>,
+    dependencies: &BTreeSet<u32>,
+) -> Result<BTreeSet<u32>, Refusal> {
+    let reject = |detail: String| {
+        Refusal::shape(
+            "jre_new_concat_argument",
+            format!("the construction at BCI {head} {detail}"),
+        )
+    };
+    let mut nested = BTreeSet::new();
+    let mut selected = BTreeSet::new();
+    for value in arguments {
+        let Some(tail) = produced_at(ssa, value) else {
+            continue;
+        };
+        let Some(chain) = chains.value_at(tail) else {
+            continue;
+        };
+        if !selected.insert(chain.tail) {
+            return Err(reject(format!(
+                "uses the concatenation ending at BCI {} more than once as constructor arguments",
+                chain.tail
+            )));
+        }
+        let Some(result) = stack_value_written_at(ssa, chain.tail) else {
+            return Err(reject(format!(
+                "cannot identify the string value written by the concatenation ending at BCI {}",
+                chain.tail
+            )));
+        };
+        if value != result || !single_use_at(ssa, result, constructor) {
+            return Err(reject(format!(
+                "uses the concatenation result at BCI {} outside its one constructor argument at BCI {constructor}",
+                chain.tail
+            )));
+        }
+        if chain.head <= dup || chain.tail >= constructor {
+            return Err(reject(format!(
+                "has a concatenation from BCI {} through {} outside the physical argument interval after dup BCI {dup} and before constructor BCI {constructor}",
+                chain.head, chain.tail
+            )));
+        }
+        let Some(first) = block
+            .iter()
+            .position(|instruction| instruction.bci() == chain.head)
+        else {
+            return Err(reject(format!(
+                "has a concatenation beginning at BCI {} outside the construction block",
+                chain.head
+            )));
+        };
+        let Some(last) = block
+            .iter()
+            .position(|instruction| instruction.bci() == chain.tail)
+        else {
+            return Err(reject(format!(
+                "has a concatenation ending at BCI {} outside the construction block",
+                chain.tail
+            )));
+        };
+        let members: BTreeSet<u32> = block[first..=last]
+            .iter()
+            .map(SsaInstruction::bci)
+            .collect();
+        if first >= last
+            || chain.owned != members
+            || !members.is_subset(chains.owned())
+            || !members.is_subset(dependencies)
+        {
+            return Err(reject(format!(
+                "does not depend on the complete, uniquely owned concatenation interval at BCIs {} through {}",
+                chain.head, chain.tail
+            )));
+        }
+        nested.extend(members);
+    }
+    Ok(nested)
+}
+
+fn stack_value_written_at(ssa: &SsaTable, bci: u32) -> Option<ValueId> {
+    ssa.blocks()
+        .iter()
+        .flat_map(|block| block.instructions())
+        .find(|instruction| instruction.bci() == bci)
+        .and_then(|instruction| {
+            instruction
+                .writes()
+                .iter()
+                .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+        })
 }
 
 /// Every instruction outside a site that reads one of the values the site produced.
@@ -1314,6 +1464,9 @@ mod tests {
     const NESTED_EFFECTS: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/negative-controls/NegativeUse.class"
     );
+    const CONCAT_CONSTRUCTOR: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-26/exception-constructor-concat/original-classes/Probe.class"
+    );
 
     fn proof_budget() -> Budget {
         Budget::new(Limits {
@@ -1466,6 +1619,7 @@ mod tests {
         let facts = ConstructionFacts {
             ssa,
             operations: &operations,
+            chains: &crate::concat::Plan::empty(),
             fields: &fields,
             member_targets: &targets,
             code: &code,
@@ -1568,6 +1722,161 @@ mod tests {
             .err()
             .expect("a changed handler region is not folded");
             assert_eq!(crossing.code(), "jre_new_member_order");
+        }
+    }
+
+    #[test]
+    fn a_verified_concat_is_composed_only_as_the_unique_constructor_argument() {
+        for (name, descriptor) in [
+            ("thrown", "(Ljava/lang/String;)Ljava/lang/String;"),
+            (
+                "constructed",
+                "(Ljava/lang/String;)Ljava/lang/ArithmeticException;",
+            ),
+        ] {
+            let (analysis, _) = analyzed_caller(CONCAT_CONSTRUCTOR, name, descriptor);
+            let ir = analysis.ir();
+            let ssa = ir.ssa().expect("ssa");
+            let code = ir.code().expect("code");
+            let operations = Operations::of(code, ir.constant_pool());
+            let chains = crate::concat::plan(ssa, &operations);
+            let fields = field::Plan::empty();
+            let no_chain_proof = crate::concat::Plan::empty();
+            let reserved_only = sites(
+                ssa,
+                &operations,
+                &no_chain_proof,
+                chains.owned(),
+                &fields,
+                &[],
+                code,
+            );
+            let reserved_refusal = reserved_only
+                .refusals()
+                .next()
+                .expect("reserved ownership cannot prove a nested argument");
+            assert_eq!(reserved_refusal.code(), "jre_new_interleaved_effect");
+            let sites = sites(
+                ssa,
+                &operations,
+                &chains,
+                chains.owned(),
+                &fields,
+                &[],
+                code,
+            );
+            let chain = chains
+                .value_at(20)
+                .expect("the Java 8 concat is proved at its toString tail");
+            let site = sites.site_at_head(0).unwrap_or_else(|| {
+                panic!(
+                    "the outer exception construction is proved: {:?}",
+                    sites.refusals().collect::<Vec<_>>()
+                )
+            });
+            assert!(site.arguments.contains(&chain.tail));
+            assert!(site.owned.is_disjoint(chains.owned()));
+            assert!(site.expression.contains(&chain.head));
+            assert!(site.expression.contains(&chain.tail));
+
+            let block = ssa
+                .blocks()
+                .iter()
+                .find(|block| {
+                    block
+                        .instructions()
+                        .iter()
+                        .any(|instruction| instruction.bci() == 0)
+                })
+                .expect("outer allocation block");
+            let block = block.instructions();
+            let index = block
+                .iter()
+                .position(|instruction| instruction.bci() == 0)
+                .expect("outer allocation index");
+            let ctor = block
+                .iter()
+                .find(|instruction| instruction.bci() == site.constructor)
+                .expect("outer constructor instruction");
+            let wrong_value = chain
+                .owned
+                .iter()
+                .filter(|bci| **bci != chain.tail)
+                .find(|bci| matches!(operations.get(**bci), Some(Operation::Load { .. })))
+                .and_then(|bci| stack_value_written_at(ssa, *bci))
+                .expect("the concat reads a source String before appending it");
+            let wrong_dependencies = value_dependency_bcis(ssa, block, [wrong_value]);
+            let wrong = verify_concat_arguments(
+                site.head,
+                site.dup,
+                site.constructor,
+                block,
+                ssa,
+                &chains,
+                [wrong_value],
+                &wrong_dependencies,
+            )
+            .expect("an unrelated string value does not claim the proved concat");
+            assert!(wrong.is_empty());
+
+            let concat_tail = stack_value_written_at(ssa, chain.tail).expect("tail string value");
+            let tail_dependencies = value_dependency_bcis(ssa, block, [concat_tail]);
+            let repeated = match verify_concat_arguments(
+                site.head,
+                site.dup,
+                site.constructor,
+                block,
+                ssa,
+                &chains,
+                [concat_tail, concat_tail],
+                &tail_dependencies,
+            ) {
+                Ok(_) => panic!("one proved chain cannot fill two constructor arguments"),
+                Err(reason) => reason,
+            };
+            assert_eq!(repeated.code(), "jre_new_concat_argument");
+            let crossed = match verify_concat_arguments(
+                site.head,
+                chain.head,
+                site.constructor,
+                block,
+                ssa,
+                &chains,
+                [concat_tail],
+                &tail_dependencies,
+            ) {
+                Ok(_) => panic!("the complete chain cannot begin at the outer dup boundary"),
+                Err(reason) => reason,
+            };
+            assert_eq!(crossed.code(), "jre_new_concat_argument");
+            assert_eq!(ctor.bci(), site.constructor);
+
+            let mut boundary_code = code.clone();
+            boundary_code
+                .exception_handlers
+                .push(jarde_reader::classfile::ExceptionHandlerFact {
+                    ordinal: u32::try_from(boundary_code.exception_handlers.len()).unwrap(),
+                    start_bci: chain.head,
+                    end_bci: chain.tail + 1,
+                    handler_bci: 0,
+                    catch_type_index: None,
+                });
+            let boundary_facts = ConstructionFacts {
+                ssa,
+                operations: &operations,
+                chains: &chains,
+                fields: &fields,
+                member_targets: &[],
+                code: &boundary_code,
+            };
+            let boundary =
+                match verify(site.head, index, block, site.class.clone(), &boundary_facts) {
+                    Ok(_) => {
+                        panic!("a handler boundary cannot be crossed by the nested expression")
+                    }
+                    Err(reason) => reason,
+                };
+            assert_eq!(boundary.code(), "jre_new_concat_exception_boundary");
         }
     }
 
