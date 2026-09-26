@@ -1,0 +1,12 @@
+Root replay, 2026-09-26
+Jarde source commit: ff5847e0e5665477ee0af2db404a28e6c00d8488
+Rebuilt CLI SHA-256: 36208a34b7a78c088c71a0d5c152af4bcb8869a6762a030e1b2411369406368d
+Input: frozen-input.jar; class: ConditionalIntermediateJoin; evidence: all
+Command: JRE_JOIN_PROBE=1 JRE_PREFIX_PROBE=1 jarde-cli class-source --input frozen-input.jar --class ConditionalIntermediateJoin --evidence all
+
+Focused debug output for choose(I)I:
+P3JOIN branch=0 ipdom=Some(26) then=Some(4) else=Some(23) ft=false fe=false frame_boundary=None
+P3JOIN branch=4 ipdom=Some(18) then=Some(9) else=Some(15) ft=false fe=false frame_boundary=Some(26)
+P3VISITED blocks=[0, 4, 23, 9, 15, 26, 18] visited=[0, 4, 23, 9, 15, 26]
+
+The normal-flow view identifies both joins. BCI 18 is an existing normal-flow block but is not visited. In region_at_inner, the inner If returns next=18; the enclosing arm does not continue that next block before ending at its own join 26.
