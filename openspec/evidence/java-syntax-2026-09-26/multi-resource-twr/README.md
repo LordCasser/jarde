@@ -54,6 +54,16 @@ JADX emits nested `try`/`catch(Throwable)` cleanup with explicit `close()` and `
 
 The version command was `jadx --version`, which printed `1.5.6`. The requested local JADX source checkout is `/Users/lordcasser/workspace/testzone/jadx` at revision `2fb1b16386941660fda07e9017285aec40fcb37f`. `./gradlew --offline :jadx-cli:run --args='--version'` could not configure because Gradle could not resolve `org.gradle.toolchains.foojay-resolver-convention:1.0.0`; therefore the actual decompilation used the installed 1.5.6 executable. No repository build outputs from JADX are included here.
 
+## Construction-site ownership negatives
+
+`patch_effectful_header.py` deterministically emits two additional verifier-valid variants from the frozen release-8 class. It also writes each variant's `javap` excerpt, SHA-256, and runtime trace; all five modes are launched with `java -Xverify:all` during generation.
+
+`effectful-header-negative/MultiResourceTwr.class` inserts the existing `invokestatic maybeFailBody:()V` at BCI 9, after the outer constructor at BCI 6 and before its Store, which moves to BCI 12. The two original constructions remain verified `new@1` Sites at BCI 0 and 13. The normal path matches the original trace, while the `body` and `suppressed` modes now throw before the Store and leave the opened outer object unclosed. The class SHA-256 is `5ff72e86a8459f8d946ce5fce3bb5637bf5dd1ba591dce82943d43a332463e24`. The focused regression requires `jre_guard_resource_init` at Store BCI 12 and keeps the complete method quoted.
+
+`constructor-identity-negative/MultiResourceTwr.class` keeps the full `new; dup; <init>` Site at BCI 1, passes its constructed Probe as the receiver of the existing `Probe.close()V` call at BCI 10, then stores a typed null at BCI 13. The following Site at BCI 14 remains independently proved. This is verifier-valid, but it changes runtime behavior because the resource Store does not consume the proved constructor result. Its SHA-256 is `e98342b8401de3eee76901ed83312f820fd880f5749f12d78e680095dc188301`. The regression requires `jre_guard_resource_init` at Store BCI 13 and keeps the whole method quoted.
+
+The Rust regressions are `an_effect_between_a_verified_construction_and_its_store_refuses_the_header` and `a_store_cannot_claim_a_different_value_than_the_proved_constructor_result` in `tests/p3_multi_resource_twr_geometry.rs`. Both pass on the stable tree, alongside the original positive geometry and the Java 8 five-mode execution comparison.
+
 ## Root acceptance
 
 On 2026-09-26 root independently reran `replay.sh` and `patch_negative.py`, compared the release-8 and current-JDK five-path runtime files byte for byte, and checked the frozen main-class SHA-256 values and the patched outer row. The replay passed. The wrong-end class remains verifier-valid but changes the `inner-close` effect trace; this is a negative semantic control, not an alternate valid TWR projection. `openspec validate recover-multi-resource-twr --strict` passed. Production recovery and Java output remain tasks 2.x–3.x.

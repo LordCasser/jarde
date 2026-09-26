@@ -16,6 +16,12 @@ const SAMPLE: &[u8] = include_bytes!(
 const WRONG_MAIN_END: &[u8] = include_bytes!(
     "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/patched-negative/MultiResourceTwr.class"
 );
+const EFFECTFUL_HEADER: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/effectful-header-negative/MultiResourceTwr.class"
+);
+const CONSTRUCTOR_IDENTITY_MISMATCH: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/constructor-identity-negative/MultiResourceTwr.class"
+);
 const ORIGINAL_PROBE: &[u8] = include_bytes!(
     "../openspec/evidence/java-syntax-2026-09-26/multi-resource-twr/release8/MultiResourceTwr$Probe.class"
 );
@@ -517,6 +523,72 @@ fn a_main_row_that_ends_at_the_inner_close_is_refused() {
         recovered.fallbacks
     );
     assert!(!text.contains("try ("), "{text}");
+}
+
+#[test]
+fn an_effect_between_a_verified_construction_and_its_store_refuses_the_header() {
+    let report = class_source(EFFECTFUL_HEADER);
+    let (text, recovered) = run_report(&report);
+    let outer = recovered.news.iter().find(|site| site.head == 0).unwrap();
+    let inner = recovered.news.iter().find(|site| site.head == 13).unwrap();
+    assert!(
+        outer.presented && inner.presented,
+        "both new@1 sites remain proved: {:?}",
+        recovered.news
+    );
+    assert_eq!(outer.dup, Some(3));
+    assert_eq!(outer.constructor, Some(6));
+    assert!(
+        recovered.fallbacks.contains(&"jre_guard_resource_init"),
+        "the unmatched initializer effect must be refused by resource coverage: {:?}; {:?}",
+        recovered.fallbacks,
+        recovered.diagnostics
+    );
+    assert!(
+        recovered.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "jre_guard_resource_init"
+                && diagnostic.message.starts_with("BCI 12:")
+        }),
+        "the resource-init refusal retains Store BCI 12: {:?}",
+        recovered.diagnostics
+    );
+    assert!(
+        !text.contains("try (") && text.contains("@bytecode"),
+        "the whole method stays quoted: {text}"
+    );
+}
+
+#[test]
+fn a_store_cannot_claim_a_different_value_than_the_proved_constructor_result() {
+    let report = class_source(CONSTRUCTOR_IDENTITY_MISMATCH);
+    let (text, recovered) = run_report(&report);
+    let constructor = recovered.news.iter().find(|site| site.head == 1).unwrap();
+    let next_resource = recovered.news.iter().find(|site| site.head == 14).unwrap();
+    assert!(
+        constructor.presented && next_resource.presented,
+        "both independent construction Sites remain proved: {:?}",
+        recovered.news
+    );
+    assert_eq!(constructor.dup, Some(4));
+    assert_eq!(constructor.constructor, Some(7));
+    assert!(
+        recovered.fallbacks.contains(&"jre_guard_resource_init"),
+        "the resource Store's null SSA value cannot claim the proved constructor result: {:?}; {:?}",
+        recovered.fallbacks,
+        recovered.diagnostics
+    );
+    assert!(
+        recovered.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "jre_guard_resource_init"
+                && diagnostic.message.starts_with("BCI 13:")
+        }),
+        "the identity refusal retains Store BCI 13: {:?}",
+        recovered.diagnostics
+    );
+    assert!(
+        !text.contains("try (") && text.contains("@bytecode"),
+        "the whole method stays quoted: {text}"
+    );
 }
 
 #[test]
