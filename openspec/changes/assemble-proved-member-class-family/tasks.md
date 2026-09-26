@@ -21,4 +21,4 @@
 
 ## 5. 独立验收
 
-- [ ] 5.1 Root 用重建 CLI 独立重放正例和负例，运行相关 Rust/Java 回归、`cargo fmt --all -- --check`、`git diff --check`、`openspec validate assemble-proved-member-class-family --strict`，核对公开报告的身份、预算和来源并清理隔离 Cargo target；未验收的相邻架构债务另案记录。
+- [x] 5.1 Root 用重建 CLI 独立重放正例和负例，运行相关 Rust/Java 回归、`cargo fmt --all -- --check`、`git diff --check`、`openspec validate assemble-proved-member-class-family --strict`，核对公开报告的身份、预算和来源并清理隔离 Cargo target；未验收的相邻架构债务另案记录。**验收**：[整体验收](verification-5.1.md)。
