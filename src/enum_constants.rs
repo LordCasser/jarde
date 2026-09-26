@@ -129,8 +129,13 @@ pub(crate) struct ProvedEnumConstantBodyGroup {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct ProvedEnumBodyConstant {
     pub(crate) field_index: u64,
+    pub(crate) allocation_bci: u32,
     pub(crate) constructor_bci: u32,
+    pub(crate) field_write_bci: u32,
     pub(crate) subclass: Option<jarde_reader::model::PhysicalDefinitionId>,
+    /// The selected child's already-recovered source-visible members. A direct constant has no
+    /// child and no member sidecar; sharing this slice does not run recovery or copy reports.
+    pub(crate) methods: Option<std::sync::Arc<[ClassSourceMethod]>>,
 }
 
 /// No public JSON conclusion is made from this proof. The state stays in the class-source
