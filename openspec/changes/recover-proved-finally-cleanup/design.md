@@ -24,6 +24,8 @@ The local JADX 1.5.6 source is an algorithm reference, not a semantic oracle. `M
 
 后续结构化正文的优先接缝是现有 `Region::Try` 已使用的有界 `Frame::protected`/`region_at` 递归，而不是另写 finally 专用的 `if` 发射器。当前 `Region::Guard` 在拿到 `Plan` 后立即将全部 `plan.owned` 标成 visited，`Builder` 只拿平坦的 `plan.body`，所以不能直接复用递归：应先证明 cleanup 和完成语义，再让受保护正文在限定的物理范围内作为子 Region 认领，并使递归中的 catch-all 异常边只由这份已证 guard 负责，避免再次进入同一 guard 或把边当作普通 catch。子 Region 的块/BCI 集合必须与证书的正文所有权和 `explained` 范围精确相等，正常 cleanup、handler 副本及保存返回仍由外层计划负责；缺任何一项就保持现有整段拒绝。这是 2.3 的架构候选，需先用 `ImplicitCleanup` 的分支/抛错路径验证，不因已有直线型正例而直接开放。
 
+现有控制流顺序还限定了这一接缝：`region_at_inner` 在 `visited.insert(node)` **之前**尝试具名 `try_region`，使其能从同一入口递归；`guard::examine` 则在入口已标记 visited 后才运行，且一旦 `Claimed` 就先认领全部 `plan.owned`。因此不能在当前 `Region::Guard` 发射时直接调用 `region_at(start, Frame::protected)`，它会把入口判作重入。实现时应让已证 guard 的受保护正文拥有与具名 try 类似的受控递归入口，再在子 Region 与外层 cleanup/handler 的所有权集合核对通过后提交 visited；不得通过跳过重入检查或重复发射平坦正文规避此门。
+
 2.3 的下一步无需新 IR。`FinallyLeadSnapshot.run` 的物理异常表只保护 `[5,9)`，而同一融合块的 `[0,5)` 先写 `value = 41`；[三方基线](../../evidence/java-syntax-2026-09-24/finally-lead-snapshot/analysis.md)显示原/JADX 为 `41:99`，当前 Jarde 引用。`Plan.lead` 和 builder 在 guard 前的 `range(plan.lead())` 已是准确接缝。仅在 lead 完整、无分支且不属于异常表，和既有副本/保存值证书一起可由 `explained` 覆盖时，允许 `proof.protected.0` 落在当前块内部；仍以 `[5,9)` 作为 try 正文。不应为此把异常表的保护范围扩到 lead，也不改结构化分支的拒绝门槛。
 
 ## Risks / Trade-offs
