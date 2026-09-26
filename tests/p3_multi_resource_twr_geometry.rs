@@ -1,8 +1,4 @@
-//! The row geometry of the release-8 two-resource TWR proof.
-//!
-//! The frozen two-resource fixture exercises the split companion-row geometry. Its current resource
-//! initializer slices leave header producers for task 2.4 to own, so this suite also pins the
-//! precise integration boundary after close and return-tail proofs have succeeded.
+//! The release-8 two-resource TWR proof, including exact construction-site ownership.
 
 use jarde::*;
 use std::slice;
@@ -39,7 +35,12 @@ fn class_source(bytes: &[u8]) -> ClassSourceReport {
         },
     };
     match Engine::new()
-        .class_source(slice::from_ref(&snapshot), &request, &mut budget())
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut budget(),
+        )
         .expect("one frozen class answers the class-source request")
     {
         OperationOutcome::Performed(report) => report,
@@ -169,32 +170,51 @@ fn patch_companion(mut bytes: Vec<u8>, patch: impl FnOnce(&mut [u8; 8])) -> Vec<
 }
 
 #[test]
-fn main_rows_end_at_their_proved_normal_close_and_exact_companion_is_owned() {
+fn two_resource_header_owns_each_construction_and_preserves_close_evidence() {
     let report = class_source(SAMPLE);
     let (text, recovered) = run_report(&report);
     assert!(
-        recovered.fallbacks.contains(&"jre_guard_span"),
-        "close geometry and the pure return tail are proved; the existing multi-resource header slices still leave producer bytes unowned for task 2.4: {:?}; {:?}",
+        !recovered
+            .fallbacks
+            .iter()
+            .any(|code| code.starts_with("jre_")),
+        "the frozen method should recover as Java: {:?}; {:?}",
         recovered.fallbacks,
         recovered.diagnostics
     );
     assert!(
-        recovered
-            .diagnostics
-            .iter()
-            .any(|diagnostic| diagnostic.message.contains("BCI 0")),
-        "the remaining header gap is anchored at BCI 0: {:?}",
-        recovered.diagnostics
+        text.contains("try (MultiResourceTwr$Probe local0 = new MultiResourceTwr$Probe(\"outer\"); MultiResourceTwr$Probe local1 = new MultiResourceTwr$Probe(\"inner\")) {"),
+        "both declarations belong to one header: {text}"
     );
     assert!(
-        !recovered.fallbacks.contains(&"jre_guard_handler_range"),
-        "the exact companion row closes the handler-coverage proof: {:?}",
-        recovered.fallbacks
+        text.contains("return local2;"),
+        "the saved return stays inside the resource body: {text}"
     );
-    assert!(
-        !text.contains("try ("),
-        "task 2.4 is not part of this change"
-    );
+    assert!(!text.contains("@bytecode"), "{text}");
+    let header_bcis = [0, 3, 4, 6, 9, 10, 13, 14, 16, 19];
+    let cleanup_bcis = [
+        33, 34, 37, 38, 41, 42, 43, 44, 45, 48, 51, 52, 53, 54, 57, 58, 59, 60, 61, 64, 67, 68, 69,
+        70, 73, 74,
+    ];
+    for bci in header_bcis {
+        assert!(
+            recovered
+                .source_map
+                .text_of_bci(&text, bci)
+                .iter()
+                .any(|mapped| {
+                    mapped.contains("try (MultiResourceTwr$Probe local0 =")
+                        && mapped.contains("local1 = new MultiResourceTwr$Probe(\"inner\")")
+                }),
+            "resource initializer BCI {bci} must map to the complete multi-resource header"
+        );
+    }
+    for bci in header_bcis.into_iter().chain(cleanup_bcis) {
+        assert!(
+            !recovered.source_map.of_bci(bci).is_empty(),
+            "the header, close or suppression instruction at BCI {bci} needs an anchor"
+        );
+    }
 }
 
 #[test]
@@ -237,14 +257,31 @@ fn malformed_companion_ranges_types_and_targets_remain_unexplained() {
         let bytes = patch_companion(SAMPLE.to_vec(), |row| patch(row));
         let report = class_source(&bytes);
         let (text, recovered) = run_report(&report);
+        if name == "wrong target" {
+            // This verifier-valid target mutation redirects the companion into the inner handler
+            // itself, so Guard cannot identify that handler as a unique close level. Region keeps
+            // the method quoted because exceptional blocks remain uncovered; requiring Guard to
+            // claim a row whose handler identity is ambiguous would widen the proof unsafely.
+            assert!(
+                recovered.fallbacks.contains(&"jre_region_uncovered_blocks"),
+                "{name}: the redirected exceptional path remains refused: {:?}; {:?}\n{text}",
+                recovered.fallbacks,
+                recovered.diagnostics
+            );
+        } else {
+            assert!(
+                recovered.fallbacks.contains(&"jre_guard_unexplained_row")
+                    || recovered.fallbacks.contains(&"jre_guard_handler_range")
+                    || recovered.fallbacks.contains(&"jre_guard_continuation"),
+                "{name}: Guard owns the refusal for malformed companion geometry: {:?}; {:?}\n{text}",
+                recovered.fallbacks,
+                recovered.diagnostics
+            );
+        }
         assert!(
-            recovered.fallbacks.contains(&"jre_guard_unexplained_row")
-                || recovered.fallbacks.contains(&"jre_guard_handler_range"),
-            "{name}: unrelated exception-table geometry is refused: {:?}; {:?}\n{text}",
-            recovered.fallbacks,
-            recovered.diagnostics
+            !text.contains("try (") && text.contains("@bytecode"),
+            "{name}: the malformed companion keeps the whole method quoted: {text}"
         );
-        assert!(!text.contains("try ("), "{name}: {text}");
     }
 }
 
