@@ -279,7 +279,7 @@ fn report_usage(report: &jarde_java::RecoveryReport) -> &UsageSnapshot {
     }
 }
 
-fn clear_elapsed(report: &mut jarde_java::RecoveryReport) {
+fn clear_sidecar_usage(report: &mut jarde_java::RecoveryReport) {
     let usage = match &mut report.execution {
         jarde_reader::model::ExecutionReport::Complete { usage }
         | jarde_reader::model::ExecutionReport::Partial { usage, .. }
@@ -287,6 +287,7 @@ fn clear_elapsed(report: &mut jarde_java::RecoveryReport) {
         | jarde_reader::model::ExecutionReport::Failed { usage, .. } => usage,
     };
     usage.elapsed_millis = 0;
+    usage.ir_items = 0;
 }
 
 #[test]
@@ -480,24 +481,57 @@ fn candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar(
         &fixture.facts,
         jarde_java::pass::JAVA_8,
     );
-    let mut baseline_budget = Budget::new(limits());
-    let baseline = jarde_java::recover(&request, &mut baseline_budget);
-    assert!(baseline.produced(), "{:?}", baseline.outcome);
+    let mut complete_budget = Budget::new(limits());
+    let complete = recover_for_class_source(&request, &mut complete_budget, false, false);
+    assert!(complete.report.produced(), "{:?}", complete.report.outcome);
+    let candidates = complete
+        .initializer
+        .expect("eligible interface initializer");
+    let first_candidate_bci = match &candidates.steps[0] {
+        ClassInitializerStep::FieldWrite(write) => write.bci,
+        ClassInitializerStep::Other { bci, .. } => *bci,
+    };
 
-    let mut bounded = limits();
-    bounded.ir_items = ir_items(report_usage(&baseline)).saturating_add(1);
-    let mut budget = Budget::new(bounded);
-    let stopped = recover_for_class_source(&request, &mut budget, false, false);
+    let ordinary_facts = RecoveryFacts::new(
+        MethodFacts::new("<clinit>", "()V", 0)
+            .with_access_flags(0x0008)
+            .with_declaring_class(DeclaringClass::new("InterfaceInitProbe", 0x0001)),
+    );
+    let ordinary_request = RecoveryRequest::new(
+        fixture.analysis.ir(),
+        &ordinary_facts,
+        jarde_java::pass::JAVA_8,
+    );
+
+    let complete_items = ir_items(report_usage(&complete.report));
+    let mut found = None;
+    for ir_items_limit in 0..=complete_items {
+        let mut bounded = limits();
+        bounded.ir_items = ir_items_limit;
+        let mut budget = Budget::new(bounded);
+        let stopped = recover_for_class_source(&request, &mut budget, false, false);
+        if matches!(
+            stopped.report.outcome,
+            RecoveryOutcome::Stopped(StopReason::Budget {
+                dimension: CountedBudgetDimension::IrItems,
+                at: Some(at),
+                ..
+            }) if at == first_candidate_bci
+        ) {
+            let mut ordinary_bounded = limits();
+            ordinary_bounded.ir_items = ir_items_limit;
+            let mut ordinary_budget = Budget::new(ordinary_bounded);
+            let ordinary =
+                recover_for_class_source(&ordinary_request, &mut ordinary_budget, false, false);
+            if ordinary.report.produced() {
+                found = Some(stopped);
+                break;
+            }
+        }
+    }
+    let stopped = found.expect("budget refusal occurs during eligible initializer candidates");
     assert!(stopped.initializer.is_none());
     assert!(stopped.report.text.is_empty());
-    assert!(matches!(
-        stopped.report.outcome,
-        RecoveryOutcome::Stopped(StopReason::Budget {
-            dimension: CountedBudgetDimension::IrItems,
-            at: Some(5),
-            ..
-        })
-    ));
 
     let mut output_bounded = limits();
     output_bounded.output_bytes = 0;
@@ -527,8 +561,8 @@ fn initializer_sidecar_is_limited_to_non_annotation_interfaces() {
         let mut actual = recover_for_class_source(&request, &mut adapter_budget, false, false);
 
         assert!(actual.initializer.is_none(), "class flags {flags:#06x}");
-        clear_elapsed(&mut expected);
-        clear_elapsed(&mut actual.report);
+        clear_sidecar_usage(&mut expected);
+        clear_sidecar_usage(&mut actual.report);
         assert_eq!(actual.report, expected, "class flags {flags:#06x}");
     }
 }

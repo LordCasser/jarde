@@ -321,6 +321,9 @@ fn array_helper_candidate_reads_the_exact_bsm_member_and_proves_its_code() {
         candidates,
         vec![jarde_java::lambda::ArrayHelperCandidate {
             call_site: 0,
+            site_cp: 25,
+            bootstrap_index: 3,
+            implementation_index: 167,
             owner: bytes(b"BoxedSamProbe"),
             name: bytes(b"lambda$arrayCtor$0"),
             descriptor: bytes(b"(I)[I"),
