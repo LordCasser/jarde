@@ -120,8 +120,25 @@ pub struct ClassSourceRequest {
 /// report. Later assembly proofs may consume them without decoding the class attributes again.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub(crate) struct ClassSourceAssemblyContext {
+    pub(crate) major_version: Option<u16>,
     pub(crate) inner_classes: Vec<InnerClassFacts>,
     pub(crate) enclosing_method: Option<EnclosingMethodFacts>,
+    pub(crate) resolved_inner_classes: Vec<ResolvedInnerClass>,
+    pub(crate) resolved_enclosing_method: Option<ResolvedEnclosingMethod>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ResolvedInnerClass {
+    pub(crate) class: Vec<u8>,
+    pub(crate) outer_class: Option<Vec<u8>>,
+    pub(crate) inner_name: Option<JvmBytes>,
+    pub(crate) access_flags: u16,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ResolvedEnclosingMethod {
+    pub(crate) class: Vec<u8>,
+    pub(crate) method: Option<(JvmBytes, JvmBytes)>,
 }
 
 /// Read the nesting facts the selected class contributes to assembly through the reader's typed
@@ -133,9 +150,59 @@ pub(crate) fn read_class_source_assembly_context(
     budget: &mut Budget,
 ) -> Result<ClassSourceAssemblyContext> {
     let facts = attribute_facts(bytes, shells, pool, budget)?;
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(facts.inner_classes.len())
+            .unwrap_or(u64::MAX)
+            .saturating_add(u64::from(facts.enclosing_method.is_some())),
+    )?;
+    let mut resolved_inner_classes = Vec::with_capacity(facts.inner_classes.len());
+    for row in &facts.inner_classes {
+        budget.poll()?;
+        resolved_inner_classes.push(ResolvedInnerClass {
+            class: jarde_reader::classfile::cp_class_name(pool, row.class_index)?.0,
+            outer_class: (row.outer_class_index != 0)
+                .then(|| jarde_reader::classfile::cp_class_name(pool, row.outer_class_index))
+                .transpose()?
+                .map(|name| name.0),
+            inner_name: row.inner_name.clone(),
+            access_flags: row.access_flags,
+        });
+    }
+    let resolved_enclosing_method = facts
+        .enclosing_method
+        .as_ref()
+        .map(|method| {
+            let class = jarde_reader::classfile::cp_class_name(pool, method.class_index)?.0;
+            let member = if method.method_index == 0 {
+                None
+            } else {
+                match &jarde_reader::classfile::cp_entry(pool, method.method_index)?.kind {
+                    jarde_reader::classfile::CpEntryKind::NameAndType {
+                        name, descriptor, ..
+                    } => Some((name.clone(), descriptor.clone())),
+                    _ => {
+                        return Err(Error::invalid_input(
+                            "classfile_constant_pool_tag_mismatch",
+                            "EnclosingMethod method_index does not refer to a NameAndType constant",
+                        ));
+                    }
+                }
+            };
+            Ok(ResolvedEnclosingMethod {
+                class,
+                method: member,
+            })
+        })
+        .transpose()?;
     Ok(ClassSourceAssemblyContext {
+        major_version: bytes
+            .get(6..8)
+            .map(|version| u16::from_be_bytes([version[0], version[1]])),
         inner_classes: facts.inner_classes,
         enclosing_method: facts.enclosing_method,
+        resolved_inner_classes,
+        resolved_enclosing_method,
     })
 }
 
@@ -5486,6 +5553,78 @@ impl ClassSourceMethod {
             block_member(declaration, Placed::Block(artifact), &markers),
             &self.annotations,
         ))
+    }
+
+    /// Spells one fully recovered method inside a class-source anonymous expression. The method
+    /// declaration and annotations come from its own selected physical class; `body` is emitted
+    /// from that method's same-run AST at the corresponding nested indentation.
+    pub(crate) fn anonymous_projection_text(&self, body: &str) -> Option<String> {
+        let declaration = self.declaration.as_ref()?;
+        // Java 8 anonymous bodies cannot declare static methods; bridge and synthetic methods
+        // are physical implementation artifacts rather than source declarations.
+        if self.item.access_flags & (ACC_STATIC | 0x0040 | 0x1000) != 0
+            || !self.markers.is_empty()
+            || !self.parameter_annotations.refusals.is_empty()
+            || self
+                .parameter_annotations
+                .uses_by_position
+                .iter()
+                .any(|uses| !uses.is_empty())
+            || !self.type_annotations.refusals.is_empty()
+            || !self.type_annotations.field_uses.is_empty()
+            || !self.type_annotations.return_uses.is_empty()
+            || self
+                .type_annotations
+                .parameter_uses
+                .iter()
+                .any(|uses| !uses.is_empty())
+            || !matches!(self.outcome, ClassSourceOutcome::Recovered { .. })
+        {
+            return None;
+        }
+        let mut text = String::new();
+        for annotation in &self.annotations.uses {
+            text.push_str("            ");
+            text.push_str(annotation);
+            text.push('\n');
+        }
+        text.push_str(&format!("            {declaration} {{\n"));
+        text.push_str(body);
+        text.push_str("            }\n");
+        Some(text)
+    }
+
+    pub(crate) fn anonymous_return_projection_text(&self, body: &str) -> Option<String> {
+        let declaration = self.declaration.as_ref()?;
+        if !self.markers.is_empty()
+            || !self.parameter_annotations.refusals.is_empty()
+            || self
+                .parameter_annotations
+                .uses_by_position
+                .iter()
+                .any(|uses| !uses.is_empty())
+            || !self.type_annotations.refusals.is_empty()
+            || !self.type_annotations.field_uses.is_empty()
+            || !self.type_annotations.return_uses.is_empty()
+            || self
+                .type_annotations
+                .parameter_uses
+                .iter()
+                .any(|uses| !uses.is_empty())
+            || !matches!(self.outcome, ClassSourceOutcome::Recovered { .. })
+        {
+            return None;
+        }
+        let mut text = String::new();
+        for annotation in &self.annotations.uses {
+            text.push_str("    ");
+            text.push_str(annotation);
+            text.push('\n');
+        }
+        text.push_str(&format!("    {declaration} {{\n"));
+        text.push_str(body);
+        text.push_str("    }\n");
+        Some(text)
     }
 
     /// One member whose declaration carries no `Code` attribute: the declaration Java spells for it

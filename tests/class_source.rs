@@ -104,6 +104,14 @@ const ENUM_SWITCH_FACTORY_NULL_ELEMENT_JAR: &[u8] = include_bytes!(
 const ENUM_SWITCH_VALUES_RETURNS_NULL_JAR: &[u8] = include_bytes!(
     "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/values-returns-null.jar"
 );
+const ANONYMOUS_INTERFACE_ROOT: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-interface-basic/AnonymousInterfaceBasic.class"
+);
+const ANONYMOUS_INTERFACE_CHILD: &[u8] = include_bytes!(
+    "fixtures/proved-java-structure/anonymous-interface-basic/AnonymousInterfaceBasic$1.class"
+);
+const ANONYMOUS_INTERFACE_API: &[u8] =
+    include_bytes!("fixtures/proved-java-structure/anonymous-interface-basic/I.class");
 
 // ---------------------------------------------------------------------------------------------
 // Fixtures: one class-file builder and one stored-only archive writer
@@ -660,6 +668,76 @@ fn test_method_headers(bytes: &[u8]) -> Vec<TestMethodHeader> {
     methods
 }
 
+fn test_method_reference(bytes: &[u8], owner: &[u8], name: &[u8], descriptor: &[u8]) -> u16 {
+    let count = test_u16(bytes, 8);
+    let mut cursor = 10;
+    let mut utf8 = vec![Vec::new(); count];
+    let mut classes = vec![None; count];
+    let mut name_and_types = vec![None; count];
+    let mut references = vec![None; count];
+    let mut index = 1;
+    while index < count {
+        let tag = bytes[cursor];
+        match tag {
+            1 => {
+                let length = test_u16(bytes, cursor + 1);
+                utf8[index] = bytes[cursor + 3..cursor + 3 + length].to_vec();
+                cursor += 3 + length;
+                index += 1;
+            }
+            7 => {
+                classes[index] = Some(test_u16(bytes, cursor + 1) as u16);
+                cursor += 3;
+                index += 1;
+            }
+            10 | 11 => {
+                references[index] = Some((
+                    test_u16(bytes, cursor + 1) as u16,
+                    test_u16(bytes, cursor + 3) as u16,
+                ));
+                cursor += 5;
+                index += 1;
+            }
+            12 => {
+                name_and_types[index] = Some((
+                    test_u16(bytes, cursor + 1) as u16,
+                    test_u16(bytes, cursor + 3) as u16,
+                ));
+                cursor += 5;
+                index += 1;
+            }
+            3 | 4 | 9 | 17 | 18 => {
+                cursor += if matches!(tag, 3 | 4) { 5 } else { 5 };
+                index += 1;
+            }
+            5 | 6 => {
+                cursor += 9;
+                index += 2;
+            }
+            8 | 16 | 19 | 20 => {
+                cursor += 3;
+                index += 1;
+            }
+            15 => {
+                cursor += 4;
+                index += 1;
+            }
+            other => panic!("unexpected constant-pool tag {other}"),
+        }
+    }
+    (1..count)
+        .find_map(|candidate| {
+            let (class_index, name_and_type_index) = references[candidate]?;
+            let class_name_index = classes[usize::from(class_index)]?;
+            let (name_index, descriptor_index) = name_and_types[usize::from(name_and_type_index)]?;
+            (utf8[usize::from(class_name_index)] == owner
+                && utf8[usize::from(name_index)] == name
+                && utf8[usize::from(descriptor_index)] == descriptor)
+                .then_some(u16::try_from(candidate).expect("the constant-pool index fits u16"))
+        })
+        .expect("the requested method reference exists in the constant pool")
+}
+
 fn patch_method_flags(bytes: &[u8], name: &[u8], descriptor: &[u8], flags: u16) -> Vec<u8> {
     let mut patched = bytes.to_vec();
     let method = test_method_headers(bytes)
@@ -754,6 +832,538 @@ fn performed<T>(outcome: OperationOutcome<T>) -> T {
             "expected one bound class, got an unfinished selection with {} candidate(s)",
             candidates.candidates.len()
         ),
+    }
+}
+
+#[test]
+fn proved_anonymous_interface_projects_from_both_physical_method_asts() {
+    let bytes = zip_of(&[
+        (b"AnonymousInterfaceBasic.class", ANONYMOUS_INTERFACE_ROOT),
+        (
+            b"AnonymousInterfaceBasic$1.class",
+            ANONYMOUS_INTERFACE_CHILD,
+        ),
+        (b"I.class", ANONYMOUS_INTERFACE_API),
+    ]);
+    let snapshot = open(bytes);
+    let engine = Engine::new();
+    let root = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request(
+                    &snapshot,
+                    ClassRef::Name {
+                        class: ClassNameQuery::internal("AnonymousInterfaceBasic"),
+                    },
+                    EnvironmentPolicy::PlainJar,
+                ),
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .expect("the root class source is available"),
+    );
+    assert!(
+        root.text.contains("new I() {"),
+        "text={} family={:#?} diagnostics={:#?}",
+        root.text,
+        root.member_family,
+        root.diagnostics
+    );
+    assert!(root.text.contains("public int value()"), "{}", root.text);
+    assert!(root.text.contains("return 7;"), "{}", root.text);
+    assert!(
+        root.text.contains("\n            public int value()"),
+        "the anonymous member is indented inside the allocation: {}",
+        root.text
+    );
+    assert!(
+        root.text.contains("\n                return 7;"),
+        "the child statement is indented inside its method: {}",
+        root.text
+    );
+    assert!(!root.text.contains("new AnonymousInterfaceBasic$1()"));
+    let essential_root = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request(
+                    &snapshot,
+                    ClassRef::Name {
+                        class: ClassNameQuery::internal("AnonymousInterfaceBasic"),
+                    },
+                    EnvironmentPolicy::PlainJar,
+                ),
+                &RecoveryEvidenceRequest::essential(),
+                &mut budget(),
+            )
+            .expect("the essential-evidence root class source is available"),
+    );
+    assert_eq!(essential_root.text, root.text);
+    let root_method = root
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"make")
+        .expect("the direct-return method remains physically reported");
+    assert!(matches!(
+        &root_method.outcome,
+        ClassSourceOutcome::Recovered { report, .. }
+            if report.source_map.segments().iter().any(|segment| {
+                segment.origin().primary().method() == Some(&root_method.item.identity)
+            })
+    ));
+
+    let child = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request(
+                    &snapshot,
+                    ClassRef::Name {
+                        class: ClassNameQuery::internal("AnonymousInterfaceBasic$1"),
+                    },
+                    EnvironmentPolicy::PlainJar,
+                ),
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .expect("the child physical class source is available independently"),
+    );
+    let value = child
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"value")
+        .expect("the child method remains physically reported");
+    assert!(matches!(
+        &value.outcome,
+        ClassSourceOutcome::Recovered { report, .. }
+            if report.source_map.segments().iter().any(|segment| {
+                segment.origin().primary().method() == Some(&value.item.identity)
+            })
+    ));
+}
+
+#[test]
+fn anonymous_interface_projection_refuses_a_second_non_direct_same_class_allocation() {
+    let scratch = BridgeProjectionScratch::new();
+    let directory = scratch.child("same-class-second-site");
+    fs::write(directory.join("I.class"), ANONYMOUS_INTERFACE_API)
+        .expect("write the frozen interface dependency");
+    fs::write(
+        directory.join("AnonymousInterfaceBasic.class"),
+        ANONYMOUS_INTERFACE_ROOT,
+    )
+    .expect("write the enclosing root required by javac's InnerClasses validation");
+    fs::write(
+        directory.join("AnonymousInterfaceBasic$1.class"),
+        ANONYMOUS_INTERFACE_CHILD,
+    )
+    .expect("write the frozen anonymous child");
+    fs::write(
+        directory.join("AnonymousInterfaceBasic.java"),
+        "public class AnonymousInterfaceBasic {\n\
+         static I make() { return new I() { public int value() { return 7; } }; }\n\
+         static I extra() { I local = new AnonymousInterfaceBasic$1(); return local; }\n\
+         }\n",
+    )
+    .expect("write a direct-return candidate plus a non-direct use of the same child");
+    compile_java_8(&directory, "AnonymousInterfaceBasic.java", &directory);
+    let root_bytes = fs::read(directory.join("AnonymousInterfaceBasic.class"))
+        .expect("read the compiled root class");
+    let child_bytes = fs::read(directory.join("AnonymousInterfaceBasic$1.class"))
+        .expect("read the compiled anonymous child");
+    assert_eq!(
+        child_bytes, ANONYMOUS_INTERFACE_CHILD,
+        "the compiled direct-return body must retain the frozen child's physical identity"
+    );
+
+    let snapshot = open(zip_of(&[
+        (b"AnonymousInterfaceBasic.class", &root_bytes),
+        (b"AnonymousInterfaceBasic$1.class", &child_bytes),
+        (b"I.class", ANONYMOUS_INTERFACE_API),
+    ]));
+    let report = class_source_of(
+        &snapshot,
+        "AnonymousInterfaceBasic",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(
+        report.text.contains("new AnonymousInterfaceBasic$1()"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("new I() {"), "{}", report.text);
+}
+
+#[test]
+fn anonymous_interface_projection_refuses_a_cross_class_use_of_the_same_child() {
+    let scratch = BridgeProjectionScratch::new();
+    let directory = scratch.child("cross-class-use");
+    fs::write(directory.join("I.class"), ANONYMOUS_INTERFACE_API)
+        .expect("write the frozen interface dependency");
+    fs::write(
+        directory.join("AnonymousInterfaceBasic.class"),
+        ANONYMOUS_INTERFACE_ROOT,
+    )
+    .expect("write the enclosing root required by javac's InnerClasses validation");
+    fs::write(
+        directory.join("AnonymousInterfaceBasic$1.class"),
+        ANONYMOUS_INTERFACE_CHILD,
+    )
+    .expect("write the frozen anonymous child");
+    fs::write(
+        directory.join("Other.java"),
+        "final class Other { static I extra() { return new AnonymousInterfaceBasic$1(); } }\n",
+    )
+    .expect("write a separate class that constructs the same child");
+    compile_java_8(&directory, "Other.java", &directory);
+    let other_bytes =
+        fs::read(directory.join("Other.class")).expect("read the compiled cross-class user");
+    let snapshot = open(zip_of(&[
+        (b"AnonymousInterfaceBasic.class", ANONYMOUS_INTERFACE_ROOT),
+        (
+            b"AnonymousInterfaceBasic$1.class",
+            ANONYMOUS_INTERFACE_CHILD,
+        ),
+        (b"I.class", ANONYMOUS_INTERFACE_API),
+        (b"Other.class", &other_bytes),
+    ]));
+    let report = class_source_of(
+        &snapshot,
+        "AnonymousInterfaceBasic",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(
+        report.text.contains("new AnonymousInterfaceBasic$1()"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("new I() {"), "{}", report.text);
+}
+
+#[test]
+fn anonymous_interface_projection_refuses_fields_and_constructor_effects() {
+    let scratch = BridgeProjectionScratch::new();
+    let variants = [
+        (
+            "capture",
+            "public class AnonymousInterfaceBasic { static I make(int captured) { return new I() { public int value() { return captured; } }; } }\n",
+        ),
+        (
+            "field",
+            "public class AnonymousInterfaceBasic { static I make() { return new I() { int state = 3; public int value() { return state; } }; } }\n",
+        ),
+        (
+            "initializer-effect",
+            "public class AnonymousInterfaceBasic { static I make() { return new I() { { System.nanoTime(); } public int value() { return 7; } }; } }\n",
+        ),
+    ];
+    for (name, source) in variants {
+        let directory = scratch.child(name);
+        fs::write(directory.join("I.class"), ANONYMOUS_INTERFACE_API)
+            .expect("write the frozen interface dependency");
+        fs::write(directory.join("AnonymousInterfaceBasic.java"), source)
+            .expect("write the anonymous implementation variant");
+        compile_java_8(&directory, "AnonymousInterfaceBasic.java", &directory);
+        let root_bytes = fs::read(directory.join("AnonymousInterfaceBasic.class"))
+            .expect("read the compiled root class");
+        let child_bytes = fs::read(directory.join("AnonymousInterfaceBasic$1.class"))
+            .expect("read the compiled anonymous child");
+        let snapshot = open(zip_of(&[
+            (b"AnonymousInterfaceBasic.class", &root_bytes),
+            (b"AnonymousInterfaceBasic$1.class", &child_bytes),
+            (b"I.class", ANONYMOUS_INTERFACE_API),
+        ]));
+        let report = class_source_of(
+            &snapshot,
+            "AnonymousInterfaceBasic",
+            EnvironmentPolicy::PlainJar,
+        );
+        assert!(
+            report.text.contains("new AnonymousInterfaceBasic$1("),
+            "{name}: {}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("new I() {"),
+            "{name}: {}",
+            report.text
+        );
+    }
+}
+
+#[test]
+fn anonymous_interface_projection_refuses_an_incomplete_child_method() {
+    let mut child_bytes = ANONYMOUS_INTERFACE_CHILD.to_vec();
+    let value = test_method_headers(ANONYMOUS_INTERFACE_CHILD)
+        .into_iter()
+        .find(|method| method.name == b"value" && method.descriptor == b"()I")
+        .expect("the frozen anonymous child has value()");
+    let code = value
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("value() has Code");
+    let code_start = code.data_offset + 8;
+    child_bytes[code_start] = 0xcb; // reserved opcode: the physical Code can no longer be fully recovered
+    let snapshot = open(zip_of(&[
+        (b"AnonymousInterfaceBasic.class", ANONYMOUS_INTERFACE_ROOT),
+        (b"AnonymousInterfaceBasic$1.class", &child_bytes),
+        (b"I.class", ANONYMOUS_INTERFACE_API),
+    ]));
+    let report = class_source_of(
+        &snapshot,
+        "AnonymousInterfaceBasic",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(
+        report.text.contains("new AnonymousInterfaceBasic$1()"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("new I() {"), "{}", report.text);
+}
+
+#[test]
+fn anonymous_interface_projection_refuses_non_source_child_method_flags() {
+    let method = test_method_headers(ANONYMOUS_INTERFACE_CHILD)
+        .into_iter()
+        .find(|method| method.name == b"value" && method.descriptor == b"()I")
+        .expect("the frozen child implements I.value()");
+    for flags in [0x0009, 0x0041, 0x1001] {
+        let mut child_bytes = ANONYMOUS_INTERFACE_CHILD.to_vec();
+        test_put_u16(&mut child_bytes, method.access_offset, flags);
+        let snapshot = open(zip_of(&[
+            (b"AnonymousInterfaceBasic.class", ANONYMOUS_INTERFACE_ROOT),
+            (b"AnonymousInterfaceBasic$1.class", &child_bytes),
+            (b"I.class", ANONYMOUS_INTERFACE_API),
+        ]));
+        let root = class_source_of(
+            &snapshot,
+            "AnonymousInterfaceBasic",
+            EnvironmentPolicy::PlainJar,
+        );
+        assert!(
+            root.text.contains("new AnonymousInterfaceBasic$1()"),
+            "flags={flags:#x}: {}",
+            root.text
+        );
+        assert!(
+            !root.text.contains("new I() {"),
+            "flags={flags:#x}: {}",
+            root.text
+        );
+    }
+}
+
+#[test]
+fn anonymous_interface_projection_refuses_a_mixed_quality_child_method() {
+    let scratch = BridgeProjectionScratch::new();
+    let directory = scratch.child("mixed-quality-child");
+    fs::write(
+        directory.join("AnonymousInterfaceBasic.java"),
+        "interface I { Target value(); }\n\
+         class Target { Target(int value) {} }\n\
+         class Side { static void effect() {} }\n\
+         public class AnonymousInterfaceBasic { static I make() { return new I() {\n\
+         public Target value() { return new Target(1); }\n\
+         public void touch() { Side.effect(); }\
+         }; } }\n",
+    )
+    .expect("write the mixed-quality anonymous source fixture");
+    compile_java_8(&directory, "AnonymousInterfaceBasic.java", &directory);
+    let root_bytes = fs::read(directory.join("AnonymousInterfaceBasic.class"))
+        .expect("read the compiled root class");
+    let mut child_bytes = fs::read(directory.join("AnonymousInterfaceBasic$1.class"))
+        .expect("read the compiled anonymous child");
+    let value = test_method_headers(&child_bytes)
+        .into_iter()
+        .find(|method| method.name == b"value" && method.descriptor == b"()LTarget;")
+        .expect("the compiled child has value()");
+    let code = value
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("value() has Code");
+    let new_class = test_u16(&child_bytes, code.data_offset + 8 + 1);
+    let effect = test_method_reference(&child_bytes, b"Side", b"effect", b"()V");
+    let constructor = test_method_reference(&child_bytes, b"Target", b"<init>", b"(I)V");
+    let code_start = code.data_offset + 8;
+    let old_code_length = test_u32(&child_bytes, code.data_offset + 4);
+    assert_eq!(old_code_length, 9, "javac's value() shape is stable");
+    let mut code_body = vec![0xbb];
+    u16b(
+        &mut code_body,
+        u16::try_from(new_class).expect("the class constant-pool index fits u16"),
+    );
+    code_body.push(0x59); // dup
+    code_body.push(0xb8); // invokestatic Side.effect()V while the new value is unconsumed
+    u16b(&mut code_body, effect);
+    code_body.push(0x04); // iconst_1
+    code_body.push(0xb7); // invokespecial Target.<init>(I)V
+    u16b(&mut code_body, constructor);
+    code_body.push(0xb0); // areturn
+    assert_eq!(code_body.len(), 12);
+    test_put_u16(&mut child_bytes, code.data_offset, 3);
+    test_put_u32(&mut child_bytes, code.data_offset + 4, code_body.len());
+    test_put_u32(
+        &mut child_bytes,
+        code.length_offset,
+        code.length + code_body.len() - old_code_length,
+    );
+    child_bytes.splice(code_start..code_start + old_code_length, code_body);
+
+    let interface_bytes = fs::read(directory.join("I.class")).expect("read I.class");
+    let target_bytes = fs::read(directory.join("Target.class")).expect("read Target.class");
+    let side_bytes = fs::read(directory.join("Side.class")).expect("read Side.class");
+    let snapshot = open(zip_of(&[
+        (b"AnonymousInterfaceBasic.class", &root_bytes),
+        (b"AnonymousInterfaceBasic$1.class", &child_bytes),
+        (b"I.class", &interface_bytes),
+        (b"Target.class", &target_bytes),
+        (b"Side.class", &side_bytes),
+    ]));
+    let child = class_source_of(
+        &snapshot,
+        "AnonymousInterfaceBasic$1",
+        EnvironmentPolicy::PlainJar,
+    );
+    let value = child
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"value")
+        .expect("the physical child method remains reportable");
+    assert!(
+        matches!(
+            &value.outcome,
+            ClassSourceOutcome::Recovered { report, .. }
+                if report.produced()
+                    && report.representation == jarde::ir::Representation::Mixed
+                    && report.quality != jarde::ir::Quality::Structured
+        ),
+        "value outcome: {:?}",
+        value.outcome
+    );
+    let root = class_source_of(
+        &snapshot,
+        "AnonymousInterfaceBasic",
+        EnvironmentPolicy::PlainJar,
+    );
+    assert!(
+        root.text.contains("new AnonymousInterfaceBasic$1()"),
+        "{}",
+        root.text
+    );
+    assert!(!root.text.contains("new I() {"), "{}", root.text);
+}
+
+#[test]
+fn anonymous_interface_projection_budget_stop_keeps_the_original_root_text() {
+    let snapshot = open(zip_of(&[
+        (b"AnonymousInterfaceBasic.class", ANONYMOUS_INTERFACE_ROOT),
+        (
+            b"AnonymousInterfaceBasic$1.class",
+            ANONYMOUS_INTERFACE_CHILD,
+        ),
+        (b"I.class", ANONYMOUS_INTERFACE_API),
+    ]));
+    let engine = Engine::new();
+    let request = request(
+        &snapshot,
+        ClassRef::Name {
+            class: ClassNameQuery::internal("AnonymousInterfaceBasic"),
+        },
+        EnvironmentPolicy::PlainJar,
+    );
+    let complete = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .expect("the unconstrained projection request is legal"),
+    );
+    assert!(complete.text.contains("new I() {"));
+
+    let cap = complete.usage.output_bytes.saturating_sub(1);
+    let mut constrained = task_budget(&[
+        BudgetOverride::new("output_bytes", cap).expect("the output budget override is valid")
+    ])
+    .expect("the constrained budget is valid");
+    let stopped = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut constrained,
+            )
+            .expect("a projection budget stop leaves the class report available"),
+    );
+    assert!(matches!(
+        stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::OutputBytes
+            },
+            ..
+        }
+    ));
+    assert!(
+        stopped.text.contains("new AnonymousInterfaceBasic$1()"),
+        "{}",
+        stopped.text
+    );
+    assert!(!stopped.text.contains("new I() {"), "{}", stopped.text);
+}
+
+#[test]
+fn anonymous_interface_projection_cancellation_never_publishes_partial_source() {
+    let snapshot = open(zip_of(&[
+        (b"AnonymousInterfaceBasic.class", ANONYMOUS_INTERFACE_ROOT),
+        (
+            b"AnonymousInterfaceBasic$1.class",
+            ANONYMOUS_INTERFACE_CHILD,
+        ),
+        (b"I.class", ANONYMOUS_INTERFACE_API),
+    ]));
+    let request = request(
+        &snapshot,
+        ClassRef::Name {
+            class: ClassNameQuery::internal("AnonymousInterfaceBasic"),
+        },
+        EnvironmentPolicy::PlainJar,
+    );
+    let token = CancellationToken::new();
+    token.cancel();
+    let limits = task_budget(&[])
+        .expect("default task limits are valid")
+        .limits()
+        .clone();
+    let mut cancelled = Budget::with_cancellation_token(limits, token);
+    let outcome = Engine::new()
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut cancelled,
+        )
+        .expect("cancellation is reported as a partial operation outcome");
+    match outcome {
+        OperationOutcome::Incomplete(selection) => assert!(matches!(
+            selection.execution,
+            ExecutionReport::Cancelled { .. }
+        )),
+        OperationOutcome::Performed(report) => {
+            assert!(matches!(
+                report.execution,
+                ExecutionReport::Cancelled { .. }
+            ));
+            assert!(!report.text.contains("new I() {"), "{}", report.text);
+        }
+        OperationOutcome::Ambiguous(_) => panic!("one frozen class binds uniquely"),
     }
 }
 
@@ -934,6 +1544,22 @@ fn compile_bridge_runner(directory: &Path, source_files: &[&str]) {
     assert!(
         compile.status.success(),
         "javac rejected the complete Java 8 source:\n{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+}
+
+fn compile_java_8(directory: &Path, source_name: &str, classpath: &Path) {
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-classpath"])
+        .arg(classpath)
+        .arg("-d")
+        .arg(directory)
+        .arg(directory.join(source_name))
+        .output()
+        .expect("JDK javac is available for Java 8 class-source negatives");
+    assert!(
+        compile.status.success(),
+        "javac rejected the negative fixture:\n{}",
         String::from_utf8_lossy(&compile.stderr)
     );
 }

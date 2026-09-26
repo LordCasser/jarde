@@ -161,6 +161,53 @@ pub(crate) fn emit_class_enum_constructor_statements(
     }
 }
 
+/// Emits a proved physical class-source method body without an envelope or synthetic signature.
+/// The owning adapter supplies the declaration read from the same selected class member.
+pub(crate) fn emit_class_source_statements(
+    statements: &[Stmt],
+    member: &PhysicalMethodId,
+    indentation: usize,
+    budget: &mut Budget,
+) -> Result<String, StopReason> {
+    let mut emitter = Emitter::commit(budget, Some(member));
+    match emitter.stmts(statements, indentation) {
+        Ok(()) => Ok(emitter.finish().text),
+        Err(Halt::Stop(stop)) => Err(stop),
+        Err(Halt::PhaseStopped) => unreachable!("class-source emission has no phase"),
+        Err(Halt::Gate(_)) => unreachable!("class-source emission does not replay"),
+    }
+}
+
+pub(crate) fn emit_class_source_anonymous_return(
+    statements: &[Stmt],
+    member: &PhysicalMethodId,
+    indentation: usize,
+    allocation_bci: u32,
+    allocation_type: &str,
+    interface_type: &str,
+    methods: &str,
+    closing_indent: &str,
+    budget: &mut Budget,
+) -> Result<(String, bool), StopReason> {
+    let mut emitter = Emitter::commit(budget, Some(member));
+    emitter.anonymous_override = Some(AnonymousOverride {
+        allocation_bci,
+        allocation_type,
+        interface_type,
+        methods,
+        closing_indent,
+    });
+    match emitter.stmts(statements, indentation) {
+        Ok(()) => {
+            let matched = emitter.anonymous_override_matched;
+            Ok((emitter.finish().text, matched))
+        }
+        Err(Halt::Stop(stop)) => Err(stop),
+        Err(Halt::PhaseStopped) => unreachable!("anonymous class-source emission has no phase"),
+        Err(Halt::Gate(_)) => unreachable!("anonymous class-source emission does not replay"),
+    }
+}
+
 /// The evidence phase's own pass over the decided AST: the *same formatter*, writing no text.
 ///
 /// The source map is the one product that cannot be written while the text is: a run that delivered
@@ -298,6 +345,17 @@ struct Emitter<'a> {
     /// How many statements of the body have been written as Java so far: the fact
     /// [`Emitted::statements`] publishes once every write succeeded.
     statements: usize,
+    anonymous_override: Option<AnonymousOverride<'a>>,
+    anonymous_override_matched: bool,
+}
+
+#[derive(Clone, Copy)]
+struct AnonymousOverride<'a> {
+    allocation_bci: u32,
+    allocation_type: &'a str,
+    interface_type: &'a str,
+    methods: &'a str,
+    closing_indent: &'a str,
 }
 
 /// What a source-map replay holds: the artifact it verifies against, the spans it records, and the
@@ -326,6 +384,8 @@ impl<'a> Emitter<'a> {
             limit,
             member,
             statements: 0,
+            anonymous_override: None,
+            anonymous_override_matched: false,
         }
     }
 
@@ -352,6 +412,8 @@ impl<'a> Emitter<'a> {
             limit,
             member,
             statements: 0,
+            anonymous_override: None,
+            anonymous_override_matched: false,
         }
     }
 
@@ -930,6 +992,27 @@ impl<'a> Emitter<'a> {
                 diamond,
                 args,
             } => {
+                if let Some(override_) = emitter.anonymous_override
+                    && ty == override_.allocation_type
+                    && qualifier.is_none()
+                    && member_name.is_none()
+                    && !*diamond
+                    && args.is_empty()
+                    && (expr.origin.primary().bci() == override_.allocation_bci
+                        || expr
+                            .origin
+                            .derived()
+                            .iter()
+                            .any(|origin| origin.bci() == override_.allocation_bci))
+                {
+                    emitter.put("new ", at)?;
+                    emitter.put(override_.interface_type, at)?;
+                    emitter.put("() {\n", at)?;
+                    emitter.put(override_.methods, at)?;
+                    emitter.put(override_.closing_indent, at)?;
+                    emitter.anonymous_override_matched = true;
+                    return emitter.put("}", at);
+                }
                 if let (Some(qualifier), Some(member_name)) = (qualifier, member_name) {
                     emitter.operand(qualifier, PRIMARY)?;
                     emitter.put(".new ", at)?;
