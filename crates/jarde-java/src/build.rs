@@ -9195,13 +9195,35 @@ impl Builder<'_> {
                 self.arm(then_arm, &mut then_body, &child(path, 0))?;
                 let mut else_body = Vec::new();
                 self.arm(else_arm, &mut else_body, &child(path, 1))?;
+                let mut origin = OriginSet::new(Origin::direct(*branch_bci));
+                // An empty arm may be a real, owned goto to this if's join. It emits no Java
+                // statement, so the if that presents that edge carries the goto's BCI.
+                for (arm, statements) in [(then_arm, &then_body), (else_arm, &else_body)] {
+                    if !statements.is_empty() {
+                        continue;
+                    }
+                    if let Region::Straight { blocks } = arm.as_ref() {
+                        for block in blocks {
+                            if let Some(instructions) =
+                                self.ssa.block(block).map(|block| block.instructions())
+                                && let [instruction] = instructions
+                                && matches!(
+                                    self.operations.get(instruction.bci()),
+                                    Some(Operation::Transfer)
+                                )
+                            {
+                                origin = origin.plus_derived(Origin::derived(instruction.bci()));
+                            }
+                        }
+                    }
+                }
                 self.push(Stmt::new(
                     StmtKind::If {
                         cond,
                         then_body,
                         else_body,
                     },
-                    OriginSet::new(Origin::direct(*branch_bci)),
+                    origin,
                 ))
             }
             Region::StringSwitch {

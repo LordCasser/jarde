@@ -729,27 +729,27 @@ impl Region {
                 ..
             } => {
                 let mut blocks = Vec::new();
-                // A one-block `do … while` writes that block's statements in its body before
-                // testing the branch in the same block. The header/test fields name the shape,
-                // while the body is its one physical owner. Keep duplicates *inside* the body
-                // visible to the method-level ownership check.
-                if *form != LoopForm::DoWhile || !tests.iter().any(|(test, _, _)| test == header) {
+                // A do-while body can own its entry or the effectful prefix of its latch.
+                // Those fields then name the shape, while the body is their physical owner.
+                // Keep duplicates inside the body visible to the method-level ownership check.
+                let body_owns = |block: &CanonicalBlockId| {
+                    *form == LoopForm::DoWhile
+                        && body
+                            .iter()
+                            .flat_map(Region::blocks)
+                            .any(|owned| owned == block)
+                };
+                if !body_owns(header) {
                     blocks.push(header);
                 }
                 blocks.extend(
                     tests
                         .iter()
                         .map(|(test, _, _)| test)
-                        .filter(|test| *test != header),
+                        .filter(|test| *test != header && !body_owns(test)),
                 );
                 for region in body {
                     blocks.extend(region.blocks());
-                }
-                if *form == LoopForm::DoWhile
-                    && tests.iter().any(|(test, _, _)| test == header)
-                    && !blocks.contains(&header)
-                {
-                    blocks.insert(0, header);
                 }
                 blocks
             }
@@ -2029,7 +2029,7 @@ impl Walker<'_> {
         let reentered = self
             .view
             .index_of(start)
-            .is_some_and(|node| frame.own_loop == Some(node));
+            .is_some_and(|node| frame.own_loop == Some(node) && self.visited.contains(&node));
         if self.depth >= MAX_REGION_DEPTH || reentered {
             // Which of the two refused the entry is part of the diagnosis: "the input nests too
             // deeply" and "the walk is back inside a structure it is already building" are
@@ -2133,7 +2133,7 @@ impl Walker<'_> {
             // statement that presents it. Re-entering a block that is not a loop header this subset
             // can prove (an arm that jumps back, an irreducible cycle) stays the stated fallback
             // below.
-            if self.view.is_loop_header(node) {
+            if self.view.is_loop_header(node) && frame.own_loop != Some(node) {
                 if prefix.is_empty() {
                     return self.loop_region(&current, node, frame);
                 }
@@ -2416,7 +2416,34 @@ impl Walker<'_> {
                     // A branch inside a switch arm can finish either at the switch's local
                     // join or at the enclosing loop's exit. The method-wide post-dominator is
                     // then the loop exit, but it is not the join of this Java `if`.
-                    let join_node = if post_join.is_some_and(|join| {
+                    let then_node = self.view.index_of(&fall_through);
+                    let else_node = self.view.index_of(&taken);
+                    if !frame.loop_targets.is_empty() {
+                        charge(
+                            self.budget,
+                            CountedBudgetDimension::AnalysisSteps,
+                            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+                            Some(branch_bci),
+                        )?;
+                    }
+                    let loop_bridge_join = frame.loop_targets.last().and_then(|target| {
+                        let boundary = frame.boundary?;
+                        let exit = self.view.id_of(target.break_target?)?;
+                        let blocks = self.view.loop_entered_at(target.header)?.blocks();
+                        let through_bridge = [then_node, else_node]
+                            .into_iter()
+                            .flatten()
+                            .any(|arm| self.loop_exit_bridge(node, arm, exit, blocks));
+                        let through_latch = [then_node, else_node]
+                            .into_iter()
+                            .flatten()
+                            .any(|arm| blocks.contains(&arm) && self.view.reaches(arm, boundary));
+                        (frame.switch_join.is_none() && through_bridge && through_latch)
+                            .then_some(boundary)
+                    });
+                    let join_node = if let Some(boundary) = loop_bridge_join {
+                        Some(boundary)
+                    } else if post_join.is_some_and(|join| {
                         frame
                             .loop_targets
                             .iter()
@@ -2426,8 +2453,6 @@ impl Walker<'_> {
                     } else {
                         post_join
                     };
-                    let then_node = self.view.index_of(&fall_through);
-                    let else_node = self.view.index_of(&taken);
                     // A successor that *is* the join is the whole arm: the branch arrives at the
                     // place its structure ends at directly, so that arm holds no block of its own —
                     // the block starting there belongs to whatever follows the `if` — and the other
@@ -2604,6 +2629,11 @@ impl Walker<'_> {
                         let local_switch_join = frame.switch_join == Some(join_node);
                         if !(then_meets && else_meets)
                             && !both_end
+                            && !(frame.loop_targets.last().is_some_and(|target| {
+                                frame.boundary == Some(join_node)
+                                    && target.continue_target == join_node
+                                    && ((then_meets && else_breaks) || (else_meets && then_breaks))
+                            }))
                             && !(local_switch_join
                                 && ((then_meets && else_breaks) || (else_meets && then_breaks)))
                         {
@@ -4502,10 +4532,44 @@ impl Walker<'_> {
         if let Some(region) = self.latch_test_chain(header, header_node, &blocks)? {
             return Ok(region);
         }
+        let header_successors = self.view.successors(header_node);
+        let latch_exit = loop_of.latches().iter().find_map(|latch| {
+            self.view
+                .successors(*latch)
+                .into_iter()
+                .find(|successor| !blocks.contains(successor))
+                .and_then(|node| self.view.id_of(node).cloned())
+        });
+        if header_successors.len() == 2 {
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+                Some(header.bci()),
+            )?;
+        }
+        let body_branch = header_successors.len() == 2
+            && self
+                .terminal_bci(header)
+                .and_then(|bci| self.operations.get(bci))
+                .is_some_and(|operation| operation.comparison().is_some())
+            && header_successors.iter().all(|successor| {
+                blocks.contains(successor)
+                    || latch_exit.as_ref().is_some_and(|exit| {
+                        self.loop_exit_bridge(header_node, *successor, exit, &blocks)
+                    })
+            });
+        if body_branch {
+            if let Some(region) = self.latch_tested_loop(header, header_node, &blocks, frame)? {
+                return Ok(region);
+            }
+        }
         if let Some(region) = self.header_tested_loop(header, header_node, &blocks, frame)? {
             return Ok(region);
         }
-        if let Some(region) = self.latch_tested_loop(header, header_node, &blocks, frame)? {
+        if !body_branch
+            && let Some(region) = self.latch_tested_loop(header, header_node, &blocks, frame)?
+        {
             return Ok(region);
         }
         let reason = FallbackReason::LoopShape {
@@ -5723,17 +5787,6 @@ impl Walker<'_> {
         let Some(latch) = self.view.id_of(latch_node).cloned() else {
             return Ok(None);
         };
-        // Two tests in one loop (the header's and the latch's) is not a shape this subset proves.
-        // A block that tests *itself* is not that case: there the header and the latch are one block
-        // and its single branch is the loop's whole test.
-        if latch_node != header_node
-            && let Some(test_bci) = self.terminal_bci(header)
-            && self.operations.get(test_bci).is_some_and(|operation| {
-                operation.comparison().is_some() || operation.switch().is_some()
-            })
-        {
-            return Ok(None);
-        }
         let successors = self.view.successor_ids(&latch);
         if successors.len() != 2 {
             return Ok(None);
@@ -5749,6 +5802,38 @@ impl Walker<'_> {
         let Some(exit) = exit else {
             return Ok(None);
         };
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len().saturating_mul(blocks.len()))
+                .unwrap_or(u64::MAX),
+            Some(header.bci()),
+        )?;
+        // A comparison in the header is a body `if` when its paths remain in this iteration
+        // or one path uses an owned, effect-free bridge to this latch's exact exit. Its position
+        // alone does not make it a second loop test.
+        if latch_node != header_node
+            && let Some(header_bci) = self.terminal_bci(header)
+            && self
+                .operations
+                .get(header_bci)
+                .is_some_and(|operation| operation.switch().is_some())
+        {
+            return Ok(None);
+        }
+        if latch_node != header_node
+            && let Some(header_bci) = self.terminal_bci(header)
+            && self
+                .operations
+                .get(header_bci)
+                .is_some_and(|operation| operation.comparison().is_some())
+            && self.view.successors(header_node).iter().any(|successor| {
+                !blocks.contains(successor)
+                    && !self.loop_exit_bridge(header_node, *successor, &exit, blocks)
+            })
+        {
+            return Ok(None);
+        }
         let Some(test_bci) = self.terminal_bci(&latch) else {
             return Ok(None);
         };
@@ -5796,9 +5881,28 @@ impl Walker<'_> {
                 return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
             }
         }
-        if let Err(reason) = self.test_is_pure(&latch, test_bci) {
-            return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
-        }
+        let latch_body_prefix = if let Err(reason) = self.test_is_pure(&latch, test_bci) {
+            let Some((_, first_condition, condition_bcis)) = self.first_latch_test_suffix(&latch)
+            else {
+                return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
+            };
+            let Some(names) = self.ssa.block(&latch) else {
+                return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
+            };
+            if first_condition == 0
+                || names.instructions()[first_condition..]
+                    .iter()
+                    .any(|instruction| {
+                        instruction.bci() != test_bci
+                            && !condition_bcis.contains(&instruction.bci())
+                    })
+            {
+                return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
+            }
+            true
+        } else {
+            false
+        };
         let continuation = if target == header.bci() {
             Continuation::Taken
         } else {
@@ -5806,6 +5910,28 @@ impl Walker<'_> {
         };
         let exit_node = self.view.index_of(&exit);
         let exits = self.loop_exit_nodes(blocks);
+        if blocks.iter().any(|source| {
+            self.view.successors(*source).iter().any(|successor| {
+                !blocks.contains(successor)
+                    && !(*source == latch_node && Some(*successor) == exit_node)
+                    && !self.loop_exit_bridge(*source, *successor, &exit, blocks)
+            })
+        }) {
+            return Ok(None);
+        }
+        if exits.iter().any(|candidate| Some(*candidate) != exit_node)
+            && blocks.iter().any(|node| {
+                self.view
+                    .id_of(*node)
+                    .and_then(|block| self.terminal_bci(block))
+                    .and_then(|bci| self.operations.get(bci))
+                    .is_some_and(|operation| operation.switch().is_some())
+            })
+        {
+            // A switch arm can intercept an unlabelled break. This one-loop proof does not
+            // establish the enclosing switch's transfer ownership.
+            return Ok(None);
+        }
         let mut all_exits: BTreeSet<usize> = frame
             .loop_targets
             .iter()
@@ -5825,13 +5951,24 @@ impl Walker<'_> {
             header_node,
             latch_node,
             exit_node,
-            exits,
+            exits.clone(),
             &transfer_sources,
         );
-        let (body, _) = self.loop_body_sequence(header, &body_frame, blocks)?;
+        let (mut body, _) = self.loop_body_sequence(header, &body_frame, blocks)?;
+        if latch_body_prefix {
+            body.push(Region::Straight {
+                blocks: vec![latch.clone()],
+            });
+        }
         self.visited.insert(latch_node);
         let mut expected = blocks.clone();
         expected.remove(&latch_node);
+        expected.extend(
+            exits
+                .iter()
+                .copied()
+                .filter(|candidate| Some(*candidate) != exit_node),
+        );
         if !self.covers(&expected) {
             let reason = FallbackReason::LoopShape {
                 block_bci: header.bci(),
@@ -5886,6 +6023,60 @@ impl Walker<'_> {
             .flat_map(|node| self.view.successors(*node))
             .filter(|successor| !blocks.contains(successor))
             .collect()
+    }
+
+    /// A body branch exclusively owns a one-instruction normal transfer to this loop's exit.
+    /// The bridge is outside the natural loop because it never takes the back edge.
+    fn loop_exit_bridge(
+        &self,
+        source: usize,
+        bridge: usize,
+        exit: &CanonicalBlockId,
+        blocks: &BTreeSet<usize>,
+    ) -> bool {
+        if !blocks.contains(&source)
+            || blocks.contains(&bridge)
+            || self.view.successors(bridge)
+                != self.view.index_of(exit).into_iter().collect::<Vec<_>>()
+            || !self.view.successors(source).contains(&bridge)
+            || self.view.successors(source).len() != 2
+        {
+            return false;
+        }
+        let (Some(id), Some(source_id)) = (self.view.id_of(bridge), self.view.id_of(source)) else {
+            return false;
+        };
+        if !self
+            .terminal_bci(source_id)
+            .and_then(|bci| self.operations.get(bci))
+            .is_some_and(|operation| operation.comparison().is_some())
+        {
+            return false;
+        }
+        let incoming: Vec<_> = self
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.to() == id)
+            .map(|edge| (edge.kind(), edge.from().clone()))
+            .collect();
+        let outgoing: Vec<_> = self
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == id)
+            .map(|edge| (edge.kind(), edge.to().clone()))
+            .collect();
+        if !exact_normal_predecessors(&incoming, &[source_id.clone()])
+            || outgoing != [(CanonicalEdgeKind::Normal, exit.clone())]
+        {
+            return false;
+        }
+        self.leaving_edge(id).is_none()
+            && self.ssa.block(id).is_some_and(|block| {
+                matches!(block.instructions(), [instruction]
+                    if matches!(self.operations.get(instruction.bci()), Some(Operation::Transfer)))
+            })
     }
 
     /// Exact normal-flow predecessors that consist of a single edge to an enclosing loop target.
