@@ -75,9 +75,7 @@ if JADX_ROOT.exists():
 else:
     raise SystemExit("Set JADX_CHECKOUT to the fixed JADX source checkout")
 versions.append(f"JARDE source revision: {subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,text=True,stdout=subprocess.PIPE,check=True).stdout.strip()}")
-working_tree=subprocess.run(["git","status","--porcelain"],cwd=ROOT,text=True,stdout=subprocess.PIPE,check=True).stdout
-versions.append(f"JARDE working tree: {'modified' if working_tree.strip() else 'clean'} (the replay compiles the checkout contents)")
-versions.append(f"JARDE CLI source: {'external binary '+JARDE_CLI if JARDE_CLI else 'cargo run -p jarde-cli from repository root'}")
+versions.append(f"JARDE CLI source: {'provided binary' if JARDE_CLI else 'cargo run -p jarde-cli from repository checkout'}")
 
 with tempfile.TemporaryDirectory(prefix="dt11-audit-") as scratch:
     scratch=Path(scratch)
@@ -158,10 +156,6 @@ with tempfile.TemporaryDirectory(prefix="dt11-audit-") as scratch:
                     raise SystemExit(f"unexpected Jarde javac failure: {enum}")
                 (GENERATED/f"{tool}-run-{enum}.log").write_text("NOT ATTEMPTED: javac failed; no runnable class set exists.\n")
                 statuses[tool][enum+"_run"]=125
-    if not JARDE_CLI:
-        binary=Path(env["CARGO_TARGET_DIR"])/"debug/jarde-cli"
-        if binary.exists(): versions.append(f"temporary JARDE CLI SHA-256: {sha(binary)}")
-    elif Path(JARDE_CLI).is_file(): versions.append(f"JARDE CLI SHA-256: {sha(Path(JARDE_CLI))}")
     versions.append(f"JADX launcher SHA-256: {sha(JADX)}")
     for rel in ["jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar","jadx-cli/build/install/jadx/lib/jadx-core-dev.jar"]:
         p=JADX_ROOT/rel
@@ -178,9 +172,6 @@ with tempfile.TemporaryDirectory(prefix="dt11-audit-") as scratch:
         hashes.append(f"{sha(p)}  Java-8-class/{p.name}")
     for p in sorted(JADX_ROOT.glob("jadx-cli/build/install/jadx/lib/jadx-*-dev.jar")):
         hashes.append(f"{sha(p)}  tool/{p.name}")
-    if not JARDE_CLI and (Path(env["CARGO_TARGET_DIR"])/"debug/jarde-cli").exists():
-        binary=Path(env["CARGO_TARGET_DIR"])/"debug/jarde-cli"
-        hashes.append(f"{sha(binary)}  temporary-tool/jarde-cli")
     (GENERATED/"sha256.txt").write_text("\n".join(hashes)+"\n")
     expected={"LiteralOnly_javac":0,"LiteralOnly_run":0,"IntArgs_javac":0,"IntArgs_run":0,"StringVarargs_javac":0,"StringVarargs_run":0}
     if statuses["original"] != {"javac":0,"LiteralOnly_run":0,"IntArgs_run":0,"StringVarargs_run":0}:

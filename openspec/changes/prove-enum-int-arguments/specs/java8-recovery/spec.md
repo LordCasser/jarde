@@ -4,7 +4,7 @@
 
 完整 Java 8 enum 类源码投影 SHALL 保留每个 enum 常量的已证明 int 构造实参，包括整数 literal、一次 `int` 静态字段读取，以及该读取与一个整数 literal 的直接加法表达式。静态字段的属主、字段名、类型、实参顺序及求值位置 SHALL 与同次类源码运行读取的物理引用和指令证据一致；系统 MUST NOT 把静态字段读折叠成常量或改变其求值次数。该实参 grammar MUST 拒绝方法调用、存储、分支、额外或重复字段读取及未声明支持的算术。
 
-静态字段叶 SHALL 仅在选定环境中唯一解析到完整 Java 8 顶层、同包可访问的 class facts，并在唯一匹配的字段表项上证明 descriptor 为 `I`、`static`、非 `final` 且非 synthetic 时进入投影。系统 MUST 拒绝同枚举 owner、跨包 owner、含 `$` 的二进制 owner、private/protected 或 interface/annotation owner、带 `EnclosingMethod` 或声明自身为 member 的 owner class attributes、字段缺失或歧义，以及依赖读取不完整的情况。source spelling SHALL 使用同包短类型名；若 enum 的完整 `InnerClasses` facts 存在遮蔽该短名的 member type，则 MUST 拒绝。预算或取消停止必须保持为 stopped，不得转为正常 refusal 或部分投影。
+静态字段叶 SHALL 仅在选定环境中唯一解析到完整 Java 8 顶层、同包可访问的 class facts，并在唯一匹配的字段表项上证明 descriptor 为 `I`、`static`、非 `final` 且非 synthetic 时进入投影。系统 MUST 拒绝同枚举 owner、跨包 owner、含 `$` 的二进制 owner、private/protected、synthetic 或 interface/annotation owner、带 `EnclosingMethod` 或声明自身为 member 的 owner class attributes、字段缺失或歧义，以及依赖读取不完整的情况。source spelling SHALL 使用同包短类型名；若 enum 的完整 `InnerClasses` facts 存在遮蔽该短名的 member type，则 MUST 拒绝。预算或取消停止必须保持为 stopped，不得转为正常 refusal 或部分投影。
 
 #### Scenario: One integer static field and field-plus-literal arguments
 - **WHEN** 一个 Java 8 enum 的完整常量初始化前缀在 constructor call 处依次传递 `Ints.THREE` 与 `Ints.THREE + 1`，且所有表达式都由该次 class-source 读取中的精确字段引用、int literal 和加法指令证明

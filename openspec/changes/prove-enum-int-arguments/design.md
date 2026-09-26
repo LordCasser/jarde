@@ -14,7 +14,7 @@
 
 继续由既有 class-source 同次 run 的 `EnumMethodCodeCandidate`、物理表索引、constructor 信息和 initializer facts 证明 ordinary group。用闭合的 int argument proof value 表示 literal、字段读、字段读加 literal；每个字段叶都携带原始 owner/name/`I` descriptor、source spelling 与 initializer BCI，并绑定相应 constructor call。不要保存或解析 decompiler 文本。
 
-对 `getstatic` 的跨类事实，在 facade 的类级装配边界复用 selected-environment dependency read：owner 必须唯一解析，完整字段表中必须唯一匹配 `name:I`，字段必须同包可访问、`static` 且非 `final`。外部 owner 必须是 Java 8 可写的顶级类型；拒绝同 enum owner、跨包 owner、含 `$` 的二进制 owner、私有/受保护或 interface/annotation class flags、带 `EnclosingMethod` 或声明自身为 member 的 class attributes、解析歧义或不完整读取。静态字段用同包短类型名发射，因此还要读取 enum 的完整 `InnerClasses` facts，并拒绝遮蔽该短名的同包 member type。保留原符号引用并发射访问表达式，不读取字段值。限制为同包顶级非 final 字段，避免 Java 编译器将 constant variable 内联并改变类初始化时机。
+对 `getstatic` 的跨类事实，在 facade 的类级装配边界复用 selected-environment dependency read：owner 必须唯一解析，完整字段表中必须唯一匹配 `name:I`，字段必须同包可访问、`static` 且非 `final`。外部 owner 必须是 Java 8 可写的顶级类型；拒绝同 enum owner、跨包 owner、含 `$` 的二进制 owner、私有/受保护、synthetic 或 interface/annotation class flags、带 `EnclosingMethod` 或声明自身为 member 的 class attributes、解析歧义或不完整读取。静态字段用同包短类型名发射，因此还要读取 enum 的完整 `InnerClasses` facts，并拒绝遮蔽该短名的同包 member type。保留原符号引用并发射访问表达式，不读取字段值。限制为同包顶级非 final 字段，避免 Java 编译器将 constant variable 内联并改变类初始化时机。
 
 先支持 fixture 直接命中的 `getstatic I` 与 `getstatic I; iconst/bipush/sipush/ldc-int; iadd`。如果实现同时覆盖 literal 左操作数，必须按真实操作数顺序保留节点；不为交换律重排表达式。除此之外的方法调用、两次字段读取、其他 arithmetic opcode、分支、异常路径和额外栈消费者继续拒绝。
 
