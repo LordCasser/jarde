@@ -1,0 +1,248 @@
+Classfile <TEMP>/original-classes/StringVarargs.class
+  SHA-256 checksum a6cb2a1be5580c16429560fa88b9eb3d32a8caa5927d1975d9fee28f730bbac7
+  Compiled from "StringVarargs.java"
+public final class StringVarargs extends java.lang.Enum<StringVarargs>
+  minor version: 0
+  major version: 52
+  flags: (0x4031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_ENUM
+  this_class: #1                          // StringVarargs
+  super_class: #23                        // java/lang/Enum
+  interfaces: 0, fields: 5, methods: 6, attributes: 2
+Constant pool:
+   #1 = Class              #2             // StringVarargs
+   #2 = Utf8               StringVarargs
+   #3 = Fieldref           #1.#4          // StringVarargs.PAIR:LStringVarargs;
+   #4 = NameAndType        #5:#6          // PAIR:LStringVarargs;
+   #5 = Utf8               PAIR
+   #6 = Utf8               LStringVarargs;
+   #7 = Fieldref           #1.#8          // StringVarargs.SINGLE:LStringVarargs;
+   #8 = NameAndType        #9:#6          // SINGLE:LStringVarargs;
+   #9 = Utf8               SINGLE
+  #10 = Fieldref           #1.#11         // StringVarargs.EMPTY:LStringVarargs;
+  #11 = NameAndType        #12:#6         // EMPTY:LStringVarargs;
+  #12 = Utf8               EMPTY
+  #13 = Fieldref           #1.#14         // StringVarargs.$VALUES:[LStringVarargs;
+  #14 = NameAndType        #15:#16        // $VALUES:[LStringVarargs;
+  #15 = Utf8               $VALUES
+  #16 = Utf8               [LStringVarargs;
+  #17 = Methodref          #18.#19        // "[LStringVarargs;".clone:()Ljava/lang/Object;
+  #18 = Class              #16            // "[LStringVarargs;"
+  #19 = NameAndType        #20:#21        // clone:()Ljava/lang/Object;
+  #20 = Utf8               clone
+  #21 = Utf8               ()Ljava/lang/Object;
+  #22 = Methodref          #23.#24        // java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #23 = Class              #25            // java/lang/Enum
+  #24 = NameAndType        #26:#27        // valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #25 = Utf8               java/lang/Enum
+  #26 = Utf8               valueOf
+  #27 = Utf8               (Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #28 = Methodref          #23.#29        // java/lang/Enum."<init>":(Ljava/lang/String;I)V
+  #29 = NameAndType        #30:#31        // "<init>":(Ljava/lang/String;I)V
+  #30 = Utf8               <init>
+  #31 = Utf8               (Ljava/lang/String;I)V
+  #32 = Fieldref           #1.#33         // StringVarargs.exts:[Ljava/lang/String;
+  #33 = NameAndType        #34:#35        // exts:[Ljava/lang/String;
+  #34 = Utf8               exts
+  #35 = Utf8               [Ljava/lang/String;
+  #36 = String             #5             // PAIR
+  #37 = Class              #38            // java/lang/String
+  #38 = Utf8               java/lang/String
+  #39 = String             #40            // .dex
+  #40 = Utf8               .dex
+  #41 = String             #42            // .class
+  #42 = Utf8               .class
+  #43 = Methodref          #1.#44         // StringVarargs."<init>":(Ljava/lang/String;I[Ljava/lang/String;)V
+  #44 = NameAndType        #30:#45        // "<init>":(Ljava/lang/String;I[Ljava/lang/String;)V
+  #45 = Utf8               (Ljava/lang/String;I[Ljava/lang/String;)V
+  #46 = String             #9             // SINGLE
+  #47 = String             #48            // .xml
+  #48 = Utf8               .xml
+  #49 = String             #12            // EMPTY
+  #50 = Methodref          #1.#51         // StringVarargs.$values:()[LStringVarargs;
+  #51 = NameAndType        #52:#53        // $values:()[LStringVarargs;
+  #52 = Utf8               $values
+  #53 = Utf8               ()[LStringVarargs;
+  #54 = Utf8               values
+  #55 = Utf8               Code
+  #56 = Utf8               LineNumberTable
+  #57 = Utf8               (Ljava/lang/String;)LStringVarargs;
+  #58 = Utf8               LocalVariableTable
+  #59 = Utf8               name
+  #60 = Utf8               Ljava/lang/String;
+  #61 = Utf8               MethodParameters
+  #62 = Utf8               this
+  #63 = Utf8               extensions
+  #64 = Utf8               Signature
+  #65 = Utf8               ([Ljava/lang/String;)V
+  #66 = Utf8               valuesCopy
+  #67 = Utf8               ()[Ljava/lang/String;
+  #68 = Utf8               <clinit>
+  #69 = Utf8               ()V
+  #70 = Utf8               Ljava/lang/Enum<LStringVarargs;>;
+  #71 = Utf8               SourceFile
+  #72 = Utf8               StringVarargs.java
+{
+  public static final StringVarargs PAIR;
+    descriptor: LStringVarargs;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final StringVarargs SINGLE;
+    descriptor: LStringVarargs;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final StringVarargs EMPTY;
+    descriptor: LStringVarargs;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  private final java.lang.String[] exts;
+    descriptor: [Ljava/lang/String;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private static final StringVarargs[] $VALUES;
+    descriptor: [LStringVarargs;
+    flags: (0x101a) ACC_PRIVATE, ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public static StringVarargs[] values();
+    descriptor: ()[LStringVarargs;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #13                 // Field $VALUES:[LStringVarargs;
+         3: invokevirtual #17                 // Method "[LStringVarargs;".clone:()Ljava/lang/Object;
+         6: checkcast     #18                 // class "[LStringVarargs;"
+         9: areturn
+      LineNumberTable:
+        line 1: 0
+
+  public static StringVarargs valueOf(java.lang.String);
+    descriptor: (Ljava/lang/String;)LStringVarargs;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: ldc           #1                  // class StringVarargs
+         2: aload_0
+         3: invokestatic  #22                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+         6: checkcast     #1                  // class StringVarargs
+         9: areturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      10     0  name   Ljava/lang/String;
+    MethodParameters:
+      Name                           Flags
+      <no name>                      mandated
+
+  private StringVarargs(java.lang.String...);
+    descriptor: (Ljava/lang/String;I[Ljava/lang/String;)V
+    flags: (0x0082) ACC_PRIVATE, ACC_VARARGS
+    Code:
+      stack=3, locals=4, args_size=4
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: invokespecial #28                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+         6: aload_0
+         7: aload_3
+         8: putfield      #32                 // Field exts:[Ljava/lang/String;
+        11: return
+      LineNumberTable:
+        line 4: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      12     0  this   LStringVarargs;
+            0      12     3 extensions   [Ljava/lang/String;
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+      <no name>
+    Signature: #65                          // ([Ljava/lang/String;)V
+
+  public java.lang.String[] valuesCopy();
+    descriptor: ()[Ljava/lang/String;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #32                 // Field exts:[Ljava/lang/String;
+         4: areturn
+      LineNumberTable:
+        line 5: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LStringVarargs;
+
+  private static StringVarargs[] $values();
+    descriptor: ()[LStringVarargs;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_3
+         1: anewarray     #1                  // class StringVarargs
+         4: dup
+         5: iconst_0
+         6: getstatic     #3                  // Field PAIR:LStringVarargs;
+         9: aastore
+        10: dup
+        11: iconst_1
+        12: getstatic     #7                  // Field SINGLE:LStringVarargs;
+        15: aastore
+        16: dup
+        17: iconst_2
+        18: getstatic     #10                 // Field EMPTY:LStringVarargs;
+        21: aastore
+        22: areturn
+      LineNumberTable:
+        line 1: 0
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=8, locals=0, args_size=0
+         0: new           #1                  // class StringVarargs
+         3: dup
+         4: ldc           #36                 // String PAIR
+         6: iconst_0
+         7: iconst_2
+         8: anewarray     #37                 // class java/lang/String
+        11: dup
+        12: iconst_0
+        13: ldc           #39                 // String .dex
+        15: aastore
+        16: dup
+        17: iconst_1
+        18: ldc           #41                 // String .class
+        20: aastore
+        21: invokespecial #43                 // Method "<init>":(Ljava/lang/String;I[Ljava/lang/String;)V
+        24: putstatic     #3                  // Field PAIR:LStringVarargs;
+        27: new           #1                  // class StringVarargs
+        30: dup
+        31: ldc           #46                 // String SINGLE
+        33: iconst_1
+        34: iconst_1
+        35: anewarray     #37                 // class java/lang/String
+        38: dup
+        39: iconst_0
+        40: ldc           #47                 // String .xml
+        42: aastore
+        43: invokespecial #43                 // Method "<init>":(Ljava/lang/String;I[Ljava/lang/String;)V
+        46: putstatic     #7                  // Field SINGLE:LStringVarargs;
+        49: new           #1                  // class StringVarargs
+        52: dup
+        53: ldc           #49                 // String EMPTY
+        55: iconst_2
+        56: iconst_0
+        57: anewarray     #37                 // class java/lang/String
+        60: invokespecial #43                 // Method "<init>":(Ljava/lang/String;I[Ljava/lang/String;)V
+        63: putstatic     #10                 // Field EMPTY:LStringVarargs;
+        66: invokestatic  #50                 // Method $values:()[LStringVarargs;
+        69: putstatic     #13                 // Field $VALUES:[LStringVarargs;
+        72: return
+      LineNumberTable:
+        line 2: 0
+        line 1: 66
+}
+Signature: #70                          // Ljava/lang/Enum<LStringVarargs;>;
+SourceFile: "StringVarargs.java"

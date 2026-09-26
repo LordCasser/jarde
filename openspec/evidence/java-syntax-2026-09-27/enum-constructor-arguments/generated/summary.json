@@ -1,0 +1,35 @@
+{
+  "status": {
+    "original": {
+      "javac": 0,
+      "LiteralOnly_run": 0,
+      "IntArgs_run": 0,
+      "StringVarargs_run": 0
+    },
+    "jadx": {
+      "LiteralOnly_javac": 0,
+      "LiteralOnly_run": 0,
+      "IntArgs_javac": 0,
+      "IntArgs_run": 0,
+      "StringVarargs_javac": 0,
+      "StringVarargs_run": 0
+    },
+    "jarde": {
+      "LiteralOnly_javac": 0,
+      "LiteralOnly_run": 0,
+      "IntArgs_javac": 1,
+      "IntArgs_run": 125,
+      "StringVarargs_javac": 1,
+      "StringVarargs_run": 125
+    }
+  },
+  "expected": {
+    "original": "all pass",
+    "jadx": "all compile and run",
+    "jarde": {
+      "LiteralOnly": "compile and run",
+      "IntArgs": "javac failure; run not attempted",
+      "StringVarargs": "javac failure; run not attempted"
+    }
+  }
+}
