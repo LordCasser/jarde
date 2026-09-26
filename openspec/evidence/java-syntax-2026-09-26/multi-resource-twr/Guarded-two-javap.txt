@@ -1,0 +1,74 @@
+  static void two();
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=0
+         0: ldc           #51                 // String r
+         2: invokestatic  #53                 // Method open:(Ljava/lang/String;)LRes;
+         5: astore_0
+         6: ldc           #70                 // String s
+         8: invokestatic  #53                 // Method open:(Ljava/lang/String;)LRes;
+        11: astore_1
+        12: invokestatic  #59                 // Method body:()V
+        15: aload_1
+        16: ifnull        46
+        19: aload_1
+        20: invokevirtual #61                 // Method Res.close:()V
+        23: goto          46
+        26: astore_2
+        27: aload_1
+        28: ifnull        44
+        31: aload_1
+        32: invokevirtual #61                 // Method Res.close:()V
+        35: goto          44
+        38: astore_3
+        39: aload_2
+        40: aload_3
+        41: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+        44: aload_2
+        45: athrow
+        46: aload_0
+        47: ifnull        77
+        50: aload_0
+        51: invokevirtual #61                 // Method Res.close:()V
+        54: goto          77
+        57: astore_1
+        58: aload_0
+        59: ifnull        75
+        62: aload_0
+        63: invokevirtual #61                 // Method Res.close:()V
+        66: goto          75
+        69: astore_2
+        70: aload_1
+        71: aload_2
+        72: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+        75: aload_1
+        76: athrow
+        77: return
+      Exception table:
+         from    to  target type
+            12    15    26   Class java/lang/Throwable
+            31    35    38   Class java/lang/Throwable
+             6    46    57   Class java/lang/Throwable
+            62    66    69   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 8
+        frame_type = 255 /* full_frame */
+          offset_delta = 26
+          locals = [ class Res, class Res ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 11
+          locals = [ class Res, class Res, class java/lang/Throwable ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 5 /* same */
+        frame_type = 249 /* chop */
+          offset_delta = 1
+        frame_type = 74 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 11
+          locals = [ class Res, class java/lang/Throwable ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 5 /* same */
+        frame_type = 249 /* chop */
+          offset_delta = 1

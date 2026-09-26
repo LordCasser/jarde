@@ -1,0 +1,4 @@
+Command: cd /Users/lordcasser/workspace/testzone/jadx && ./gradlew --offline :jadx-cli:run --args='--version'
+Result: Gradle 9.7.1 downloaded and started, then settings.gradle.kts could not resolve org.gradle.toolchains.foojay-resolver-convention:1.0.0 from the Gradle Plugin Portal or MavenRepo in offline mode.
+Fallback used: /opt/homebrew/bin/jadx, version 1.5.6.
+Source checkout revision: 2fb1b16386941660fda07e9017285aec40fcb37f.

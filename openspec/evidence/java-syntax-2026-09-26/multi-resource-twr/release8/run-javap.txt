@@ -1,0 +1,75 @@
+  private static int run() throws java.lang.Exception;
+    descriptor: ()I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=4, args_size=0
+         0: new           #43                 // class MultiResourceTwr$Probe
+         3: dup
+         4: ldc           #45                 // String outer
+         6: invokespecial #47                 // Method MultiResourceTwr$Probe."<init>":(Ljava/lang/String;)V
+         9: astore_0
+        10: new           #43                 // class MultiResourceTwr$Probe
+        13: dup
+        14: ldc           #49                 // String inner
+        16: invokespecial #47                 // Method MultiResourceTwr$Probe."<init>":(Ljava/lang/String;)V
+        19: astore_1
+        20: ldc           #51                 // String body
+        22: invokestatic  #10                 // Method event:(Ljava/lang/String;)V
+        25: invokestatic  #53                 // Method maybeFailBody:()V
+        28: aload_1
+        29: invokevirtual #56                 // Method MultiResourceTwr$Probe.read:()I
+        32: istore_2
+        33: aload_1
+        34: invokevirtual #59                 // Method MultiResourceTwr$Probe.close:()V
+        37: aload_0
+        38: invokevirtual #59                 // Method MultiResourceTwr$Probe.close:()V
+        41: iload_2
+        42: ireturn
+        43: astore_2
+        44: aload_1
+        45: invokevirtual #59                 // Method MultiResourceTwr$Probe.close:()V
+        48: goto          57
+        51: astore_3
+        52: aload_2
+        53: aload_3
+        54: invokevirtual #64                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+        57: aload_2
+        58: athrow
+        59: astore_1
+        60: aload_0
+        61: invokevirtual #59                 // Method MultiResourceTwr$Probe.close:()V
+        64: goto          73
+        67: astore_2
+        68: aload_1
+        69: aload_2
+        70: invokevirtual #64                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+        73: aload_1
+        74: athrow
+      Exception table:
+         from    to  target type
+            20    33    43   Class java/lang/Throwable
+            44    48    51   Class java/lang/Throwable
+            10    37    59   Class java/lang/Throwable
+            43    59    59   Class java/lang/Throwable
+            60    64    67   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 6
+        frame_type = 255 /* full_frame */
+          offset_delta = 43
+          locals = [ class MultiResourceTwr$Probe, class MultiResourceTwr$Probe ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 7
+          locals = [ class MultiResourceTwr$Probe, class MultiResourceTwr$Probe, class java/lang/Throwable ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 5 /* same */
+        frame_type = 255 /* full_frame */
+          offset_delta = 1
+          locals = [ class MultiResourceTwr$Probe ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 7
+          locals = [ class MultiResourceTwr$Probe, class java/lang/Throwable ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 5 /* same */
+    Exceptions:
+      throws java.lang.Exception

@@ -1,0 +1,7 @@
+      Exception table:
+         from    to  target type
+            20    33    43   Class java/lang/Throwable
+            44    48    51   Class java/lang/Throwable
+            10    37    59   Class java/lang/Throwable
+            43    59    59   Class java/lang/Throwable
+            60    64    67   Class java/lang/Throwable

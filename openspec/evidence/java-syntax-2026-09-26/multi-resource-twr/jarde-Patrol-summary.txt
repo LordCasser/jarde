@@ -1,0 +1,9 @@
+methods.13.outcome.report.diagnostics.0.code = "jre_guard_handler_range"
+methods.13.outcome.report.diagnostics.0.message = "BCI 33: the protecting row does not end where this shape requires: the range a handler covers is not the one the guarded statement would run"
+methods.13.outcome.report.diagnostics.1.code = "jre_region_uncovered_blocks"
+methods.13.outcome.report.diagnostics.1.message = "12 live block(s) are reachable only through edges the normal-flow view leaves out: [28, 33, 44, 71, 37, 41, 51, 68, 77, 93, 59, 84]"
+methods.13.outcome.report.diagnostics.2.code = "jre_recovery_produced"
+methods.13.outcome.report.diagnostics.2.message = "2 region(s), 1 statement(s), 1 segment(s), 405 byte(s) written from 13 canonical block(s)"
+methods.13.outcome.report.diagnostics.3.code = "jre_declaration"
+methods.13.outcome.report.diagnostics.3.message = "the artifact's envelope states the member's declaration under declaration@1: an instance method"
+methods.13.outcome.report.fallbacks = ["jre_guard_handler_range","jre_region_uncovered_blocks"]

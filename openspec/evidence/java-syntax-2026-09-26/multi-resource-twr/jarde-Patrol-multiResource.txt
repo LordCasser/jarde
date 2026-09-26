@@ -1,0 +1,8 @@
+    int multiResource(java.nio.file.Path a, java.nio.file.Path b) throws java.io.IOException {
+        // jarde: not recovered: the recovery run for `multiResource(Ljava/nio/file/Path;Ljava/nio/file/Path;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method multiResource(Ljava/nio/file/Path;Ljava/nio/file/Path;)I
+        // @declaration an instance method of `Patrol`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 28 33 37 41 44 51 59 68 71 77 84 93
+        // local 3 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }

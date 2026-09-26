@@ -1,0 +1,8 @@
+    private static int run() throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `run()I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method run()I
+        // @declaration a static method of `MultiResourceTwr`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 43 51 57 59 67 73
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
