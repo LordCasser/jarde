@@ -7325,7 +7325,7 @@ fn certify_enum_int_static_fields(
             || read.facts.field_count != u64::try_from(read.facts.fields.len()).unwrap_or(u64::MAX)
             || read.facts.this_class.raw().0.as_slice() != owner
             || class_version != Some((0, 52))
-            || read.facts.access_flags & (0x0002 | 0x0004 | 0x0200 | 0x2000 | 0x8000) != 0
+            || read.facts.access_flags & (0x0002 | 0x0004 | 0x0200 | 0x1000 | 0x2000 | 0x8000) != 0
         {
             return Ok(Some(format!(
                 "enum constructor argument field owner {} is not a complete Java 8 top-level accessible class",
