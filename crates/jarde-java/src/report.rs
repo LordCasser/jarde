@@ -965,7 +965,7 @@ impl RecoveryReport {
 /// refusal leaves no work half done — see [`crate::stop`].
 pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryReport {
     recover_inner(
-        request, budget, None, None, None, None, None, None, None, None,
+        request, budget, None, None, None, None, None, None, None, None, true,
     )
 }
 
@@ -1501,6 +1501,7 @@ pub fn recover_for_class_source(
         prove_generic_return.then_some(&mut generic_return),
         prove_generic_return.then_some(&mut generic_constructor),
         Some(&mut anonymous_allocations),
+        false,
     );
     if !report.produced() || !matches!(&report.execution, ExecutionReport::Complete { .. }) {
         if !is_enum {
@@ -1538,6 +1539,7 @@ fn recover_inner(
     generic_return: Option<&mut Option<GenericReturnCandidate>>,
     generic_constructor: Option<&mut Option<GenericConstructorCandidate>>,
     mut anonymous_allocations: Option<&mut Option<AnonymousAllocationScan>>,
+    allow_array_constructor_method_references: bool,
 ) -> RecoveryReport {
     let method = format!(
         "{}{}",
@@ -1898,6 +1900,7 @@ fn recover_inner(
             prologues: &prologues,
             fields: &fields,
             enums: &enums,
+            allow_array_constructor_method_references,
         },
         &recovered.regions,
         budget,

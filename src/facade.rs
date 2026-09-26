@@ -3871,8 +3871,10 @@ struct ClassBodyRefusal {
 /// class's declaration, pool and member table were read once for the whole presentation, so this run
 /// charges its body attempt and its decode and no class read at all — and where its on-demand callee
 /// evidence comes from: [`jarde_jvm::callee::read_prepared_callees`], which reads no class either.
-/// A member recovered here and the same member recovered through [`Engine::recover_method`] cannot
-/// drift, because the two share everything but that read.
+/// A member recovered here and the same member recovered through [`Engine::recover_method`] share
+/// the selected facts and decoder. Class-source retains a proved array helper's ordinary lambda
+/// call until class-level source projection can also omit its declaration; method-only recovery may
+/// write `T[]::new` from the same proof.
 struct PreparedMemberRecovery {
     recovered: RecoveredMethod,
     initializer: Option<jarde_java::report::ClassInitializerCandidates>,
@@ -12373,23 +12375,41 @@ fn named_callee_candidates(
     PhysicalDefinitionId,
     Vec<jarde_jvm::callee::CalleeCandidate>,
 )> {
-    let candidates = jarde_java::accessor::candidates(ir);
+    let mut candidates: Vec<jarde_jvm::callee::CalleeCandidate> =
+        jarde_java::accessor::candidates(ir)
+            .into_iter()
+            .map(|candidate| {
+                jarde_jvm::callee::CalleeCandidate::new(
+                    candidate.call_site,
+                    candidate.owner.as_bytes(),
+                    candidate.name.as_bytes(),
+                    candidate.descriptor.as_bytes(),
+                )
+            })
+            .collect();
+    candidates.extend(
+        jarde_java::lambda::array_helper_candidates(ir)
+            .into_iter()
+            .map(|candidate| {
+                jarde_jvm::callee::CalleeCandidate::new(
+                    candidate.call_site,
+                    candidate.owner.0,
+                    candidate.name.0,
+                    candidate.descriptor.0,
+                )
+            }),
+    );
     if candidates.is_empty() {
         return None;
     }
     let declaration = ir.declaration()?;
-    let candidates = candidates
-        .iter()
-        .map(|candidate| {
-            jarde_jvm::callee::CalleeCandidate::new(
-                candidate.call_site,
-                candidate.owner.as_bytes(),
-                candidate.name.as_bytes(),
-                candidate.descriptor.as_bytes(),
-            )
-        })
-        .collect();
-    Some((declaration.identity().owner.clone(), candidates))
+    let mut unique = Vec::with_capacity(candidates.len());
+    for candidate in candidates {
+        if !unique.contains(&candidate) {
+            unique.push(candidate);
+        }
+    }
+    Some((declaration.identity().owner.clone(), unique))
 }
 
 /// The class's own members the presented body's call sites named, read on demand (P3 3.2).

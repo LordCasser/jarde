@@ -2909,6 +2909,41 @@ fn a_verified_site_is_recorded_with_its_bootstrap_use_site_and_captures() {
 }
 
 #[test]
+fn array_helper_candidate_rejects_non_metafactory_and_foreign_implementation_handles() {
+    let make = |factory_class: &str, owner: &str| {
+        assemble(
+            &Site {
+                name: "apply",
+                descriptor: "()Ljava/util/function/Function;",
+                factory_class,
+                factory_name: "metafactory",
+                sam: "(Ljava/lang/Object;)Ljava/lang/Object;",
+                implementation: (owner, "lambda$arrayCtor$0", "(I)[I", 6),
+                instantiated: "(Ljava/lang/Integer;)[I",
+                flags: None,
+            },
+            vec![
+                0xba, 0x00, 0x00, 0x00, 0x00, // 0: invokedynamic
+                0x4b, // 5: astore_0
+                0xb1, // 6: return
+            ],
+            0,
+            1,
+            1,
+        )
+    };
+
+    for (factory, implementation_owner) in [("Test", "Test"), (METAFACTORY, "Other")] {
+        let class = make(factory, implementation_owner);
+        let payload = analyze(&class, b"method", b"()V");
+        assert!(
+            jarde_java::lambda::array_helper_candidates(payload.analysis.ir()).is_empty(),
+            "candidate selection requires the exact same-class LambdaMetafactory chain"
+        );
+    }
+}
+
+#[test]
 fn a_bound_receiver_without_capture_proof_is_refused_and_a_static_reference_is_adapted() {
     // The handcrafted bound case loads `null` through an Object-typed local for a Runnable
     // capture. The frame, site descriptor and implementation do not prove a source-level

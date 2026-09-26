@@ -346,6 +346,9 @@ pub(crate) struct Inputs<'a> {
     pub(crate) fields: &'a field::Plan,
     /// The dispatch-table reads this body performs (P3 2.3, `enumswitch@1`).
     pub(crate) enums: &'a enumswitch::Plan,
+    /// Whether this presentation may omit a proved array helper and write `T[]::new`. The
+    /// class-source assembler leaves this off until it can prove the helper is unused class-wide.
+    pub(crate) allow_array_constructor_method_references: bool,
 }
 
 /// The path of a region in the method's region tree (P3 3.1).
@@ -4019,6 +4022,7 @@ pub(crate) fn build(
         prologues: inputs.prologues,
         fields: inputs.fields,
         enums: inputs.enums,
+        allow_array_constructor_method_references: inputs.allow_array_constructor_method_references,
         compounds,
         postfix: PostfixUpdates::default(),
         array_initializers,
@@ -4224,6 +4228,8 @@ struct Builder<'a> {
     fields: &'a field::Plan,
     /// The dispatch-table reads this body performs (P3 2.3).
     enums: &'a enumswitch::Plan,
+    /// Whether this body may replace a physical array-helper call with `T[]::new`.
+    allow_array_constructor_method_references: bool,
     /// The bounded `int` field and array updates proved from this body's final stores.
     compounds: CompoundAssignments,
     /// Complete postfix old-value returns, owned only after the SSA and evaluation-order proof.
@@ -15187,7 +15193,7 @@ impl Builder<'_> {
                 .map(|(at, _)| LambdaCapture { bci: *at })
                 .collect()
         };
-        let plan = match verdict.outcome {
+        let mut plan = match verdict.outcome {
             Ok(plan) => plan,
             Err(refusal) => {
                 self.publish_lambda(
@@ -15201,6 +15207,12 @@ impl Builder<'_> {
                 return Err(refusal.message().to_string().into());
             }
         };
+        if plan.array_constructor.is_some() && !self.allow_array_constructor_method_references {
+            // Class-source retains the physical helper until it can prove class-wide omission is
+            // safe. The lambda planner independently requires a capture-free, unary SAM before it
+            // grants this array-constructor proof.
+            plan.form = LambdaForm::Lambda;
+        }
         if !consumed {
             // The shape is verified, but the instance it creates reaches no statement: creating it
             // is still an invocation the bytecode makes, so the site is quoted rather than written
@@ -15361,16 +15373,27 @@ impl Builder<'_> {
                 // site is a reference to the member itself: a type for a static or constructor one,
                 // the bound receiver — the one capture — for an instance one. There are no arguments
                 // to write: a `::` reference takes none.
-                let qualifier = match (plan.reach, captures_rendered.first()) {
-                    (Reach::Receiver, Some(receiver)) => receiver.clone(),
-                    _ => Expr::new(
-                        ExprKind::Path(implementation_owner(&plan, bci)?),
+                let qualifier = if let Some(array_constructor) = &plan.array_constructor {
+                    Expr::new(
+                        ExprKind::Path(array_constructor.array_type.spell().to_string()),
                         site_origin.clone(),
-                    ),
+                    )
+                } else {
+                    match (plan.reach, captures_rendered.first()) {
+                        (Reach::Receiver, Some(receiver)) => receiver.clone(),
+                        _ => Expr::new(
+                            ExprKind::Path(implementation_owner(&plan, bci)?),
+                            site_origin.clone(),
+                        ),
+                    }
                 };
-                let name = match plan.reach {
-                    Reach::Constructor => "new".to_string(),
-                    _ => plan.implementation.name().to_string(),
+                let name = if plan.array_constructor.is_some() {
+                    "new".to_string()
+                } else {
+                    match plan.reach {
+                        Reach::Constructor => "new".to_string(),
+                        _ => plan.implementation.name().to_string(),
+                    }
                 };
                 Expr::new(
                     ExprKind::MethodReference {
