@@ -117,6 +117,8 @@ pub(crate) struct Program {
     /// its callee and what this build did with it (P3 2.2, A12). As for a lambda, a refusal is part
     /// of the answer: a call that kept the call it had says which link of the verification failed.
     pub(crate) accessors: Vec<AccessorSite>,
+    /// Same-run array-constructor helper sites retained for atomic class-source projection.
+    pub(crate) array_constructor_sites: Vec<ArrayConstructorSite>,
     /// Every dynamic site this build did not present, with the refusal that says which link failed.
     /// A gap is not the optional evidence: it is what every selection reports about this rule.
     pub(crate) lambda_refusals: Vec<Gap>,
@@ -128,6 +130,18 @@ pub(crate) struct Program {
     /// selected — which is what makes the summary lines of two selections say the same thing.
     pub(crate) lambdas_presented: u64,
     pub(crate) accessors_presented: u64,
+}
+
+/// A proved, class-source-only array constructor site before class-wide use census.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ArrayConstructorSite {
+    pub(crate) use_site: u32,
+    pub(crate) site_cp: u16,
+    pub(crate) helper_owner: String,
+    pub(crate) helper_name: String,
+    pub(crate) helper_descriptor: String,
+    pub(crate) array_type: String,
+    pub(crate) target_type: String,
 }
 
 /// The two real field instructions behind a legacy `Local("field++")` return.
@@ -4045,6 +4059,7 @@ pub(crate) fn build(
         statements: 0,
         ragged: false,
         lambdas: Vec::new(),
+        array_constructor_sites: Vec::new(),
         lambda_params: BTreeSet::new(),
         accessors: Vec::new(),
         deferred: Vec::new(),
@@ -4155,6 +4170,7 @@ pub(crate) fn build(
         ragged: builder.ragged,
         stmts: builder.stmts,
         lambdas: builder.lambdas,
+        array_constructor_sites: builder.array_constructor_sites,
         accessors: builder.accessors,
         lambda_refusals: builder.lambda_refusals,
         accessor_refusals: builder.accessor_refusals,
@@ -4280,6 +4296,7 @@ struct Builder<'a> {
     /// Every dynamic site this build read, in the order it reached them: the decisions `lambda@1`'s
     /// records are materialized from, not the records themselves.
     lambdas: Vec<LambdaSite>,
+    array_constructor_sites: Vec<ArrayConstructorSite>,
     /// The parameter names the lambda shapes of this body have already taken, so that no two of
     /// them spell the same identifier.
     lambda_params: BTreeSet<String>,
@@ -15228,6 +15245,20 @@ impl Builder<'_> {
                 return Err(refusal.message().to_string().into());
             }
         };
+        if let Some(array_constructor) = &plan.array_constructor
+            && !self.allow_array_constructor_method_references
+            && class_source_array_target_is_sufficient(&plan)
+        {
+            self.array_constructor_sites.push(ArrayConstructorSite {
+                use_site: bci,
+                site_cp: site.cp(),
+                helper_owner: plan.implementation.owner().to_owned(),
+                helper_name: plan.implementation.name().to_owned(),
+                helper_descriptor: plan.implementation.descriptor().to_owned(),
+                array_type: array_constructor.array_type.spell().to_owned(),
+                target_type: plan.target_type.spell().to_owned(),
+            });
+        }
         if plan.array_constructor.is_some() && !self.allow_array_constructor_method_references {
             // Class-source retains the physical helper until it can prove class-wide omission is
             // safe. The lambda planner independently requires a capture-free, unary SAM before it
@@ -15827,6 +15858,42 @@ impl Builder<'_> {
         }
         Ok(bcis)
     }
+}
+
+/// Whether this erased SAM can type-check the proved array constructor without a generic
+/// signature projection. In particular, an `Object -> Integer` check-cast is not a method
+/// reference-compatible input and must keep the helper call.
+fn class_source_array_target_is_sufficient(plan: &lambda::Plan) -> bool {
+    use lambda::TypeConversion::{Identity, UnboxPrimitive, WidenToObject};
+
+    let Some(parameter) = plan.adaptation.parameters.as_slice().first() else {
+        return false;
+    };
+    if plan.adaptation.parameters.len() != 1
+        || parameter.sam_to_dynamic != Identity
+        || !matches!(
+            parameter.dynamic_to_implementation,
+            Identity | UnboxPrimitive
+        )
+        || parameter.implementation != Type::Int
+        || !(parameter.sam == Type::Int
+            || parameter.sam == Type::Reference("java.lang.Integer".to_owned()))
+    {
+        return false;
+    }
+    let Some(array_constructor) = &plan.array_constructor else {
+        return false;
+    };
+    let Some(return_type) = &plan.adaptation.returns.sam else {
+        return false;
+    };
+    plan.adaptation.returns.implementation.as_ref() == Some(&array_constructor.array_type)
+        && plan.adaptation.returns.dynamic.as_ref() == Some(&array_constructor.array_type)
+        && matches!(plan.adaptation.returns.implementation_to_dynamic, Identity)
+        && (return_type == &array_constructor.array_type
+            && plan.adaptation.returns.dynamic_to_sam == Identity
+            || matches!(return_type, Type::Reference(name) if name == "java.lang.Object")
+                && plan.adaptation.returns.dynamic_to_sam == WidenToObject)
 }
 
 /// The arguments of one call, typed by the **callee's own descriptor** (P3-R5's argument side).

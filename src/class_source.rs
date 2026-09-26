@@ -5263,6 +5263,21 @@ impl ClassSourceMethod {
         true
     }
 
+    pub(crate) fn array_projection_text(
+        &self,
+        recovery_text: &str,
+        marker: String,
+    ) -> Option<String> {
+        let declaration = self.declaration.as_ref()?;
+        let artifact = artifact(recovery_text)?;
+        let mut markers = self.markers.clone();
+        markers.push(marker);
+        Some(prefix_method_annotations(
+            block_member(declaration, Placed::Block(artifact), &markers),
+            &self.annotations,
+        ))
+    }
+
     /// One member whose declaration carries no `Code` attribute: the declaration Java spells for it
     /// (`public abstract void run();`) and the markers that say why it has no body here. `kind` is
     /// what the member's own flags declare, which decides the form: an `abstract` or `native` member
@@ -5460,6 +5475,9 @@ pub(crate) struct ClassSourceTextContext<'a> {
     pub(crate) member_table: Option<&'a MemberTableStop>,
     pub(crate) execution: &'a ExecutionReport,
     pub(crate) enum_projection: Option<&'a EnumConstantSourceProjection>,
+    pub(crate) array_helper_indices: Option<&'a [u64]>,
+    pub(crate) array_method_texts: Option<&'a [(u64, String)]>,
+    pub(crate) array_helper_markers: Option<&'a [String]>,
 }
 
 pub(crate) fn prepare_enum_constant_source_projection(
@@ -5883,6 +5901,9 @@ pub(crate) fn source_text(
     let member_table = context.member_table;
     let execution = context.execution;
     let enum_projection = context.enum_projection;
+    let array_helper_indices = context.array_helper_indices;
+    let array_method_texts = context.array_method_texts;
+    let array_helper_markers = context.array_helper_markers;
     let mut out = String::new();
     out.push_str(&format!(
         "// jarde: presentation of `{}` from the class file's own declaration and one recovery run per member.\n",
@@ -5926,6 +5947,11 @@ pub(crate) fn source_text(
     }
     out.push_str(&declaration.declaration);
     out.push_str(" {\n");
+    if let Some(markers) = array_helper_markers {
+        for marker in markers {
+            out.push_str(&indent(&format!("{marker}\n"), 1));
+        }
+    }
     let mut first = true;
     if let Some(projection) = enum_projection {
         out.push_str(&projection.constants_text);
@@ -5972,6 +5998,9 @@ pub(crate) fn source_text(
         out.push_str(initializer_text);
     }
     for method in methods {
+        if array_helper_indices.is_some_and(|indices| indices.contains(&method.item.index)) {
+            continue;
+        }
         if let Some(projection) = enum_projection {
             if let Some((_, constructor_text)) = projection
                 .constructor_texts
@@ -6002,7 +6031,13 @@ pub(crate) fn source_text(
             out.push('\n');
         }
         first = false;
-        out.push_str(&method.text);
+        if let Some((_, projected)) = array_method_texts
+            .and_then(|texts| texts.iter().find(|(index, _)| *index == method.item.index))
+        {
+            out.push_str(projected);
+        } else {
+            out.push_str(&method.text);
+        }
     }
     let presented = u64::try_from(methods.len()).unwrap_or(u64::MAX);
     let mut trailing = Vec::new();

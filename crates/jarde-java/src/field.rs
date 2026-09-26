@@ -940,6 +940,7 @@ mod tests {
             ragged: false,
             lambdas: Vec::new(),
             accessors: Vec::new(),
+            array_constructor_sites: Vec::new(),
             lambda_refusals: Vec::new(),
             accessor_refusals: Vec::new(),
             lambdas_presented: 0,

@@ -392,6 +392,220 @@ fn all_three_frozen_classes_keep_typed_immediate_receivers_and_compile_whole() {
 }
 
 #[test]
+fn class_source_projects_array_constructor_atomically_with_same_named_helper() {
+    let scratch = Scratch::new();
+    let original = scratch.child("array-maker-original");
+    fs::write(
+        original.join("ArrayCtorSubject.java"),
+        "public class ArrayCtorSubject {\n\
+             static ArrayMaker arrayCtor() { return int[]::new; }\n\
+             static int run() { return arrayCtor().make(7).length; }\n\
+         }\n",
+    )
+    .expect("write the Java 8 array-maker fixture");
+    fs::write(
+        original.join("ArrayMaker.java"),
+        "interface ArrayMaker { int[] make(Integer n); }\n",
+    )
+    .expect("write the Java 8 functional interface");
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("ArrayMaker.java"))
+        .arg(original.join("ArrayCtorSubject.java"))
+        .output()
+        .expect("JDK javac is available for the array-maker fixture");
+    assert!(
+        compile.status.success(),
+        "javac rejected the original fixture:\n{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let bytes = fs::read(original.join("ArrayCtorSubject.class"))
+        .expect("javac writes the array-maker class");
+    let snapshot = open(&bytes);
+    let recovered = class_source(
+        &snapshot,
+        "ArrayCtorSubject",
+        &RecoveryEvidenceRequest::all(),
+    );
+    let array_ctor = body(&recovered, "arrayCtor");
+    assert!(
+        recovered.text.contains("int[]::new"),
+        "the assembled source projects the typed non-generic SAM:\n{}",
+        recovered.text
+    );
+    assert!(array_ctor.text.contains("lambda$arrayCtor$0"));
+    assert!(!array_ctor.text.contains("int[]::new"));
+    assert!(
+        recovered.methods.iter().any(|method| {
+            method.item.name.raw().0 == b"lambda$arrayCtor$0"
+                && method.text.contains("lambda$arrayCtor$0")
+        }),
+        "the physical synthetic helper remains in the method report"
+    );
+
+    let emitted = scratch.child("array-maker-emitted");
+    fs::write(emitted.join("ArrayCtorSubject.java"), &recovered.text)
+        .expect("write the reconstructed array-maker class");
+    fs::write(
+        emitted.join("ArrayMaker.java"),
+        "interface ArrayMaker { int[] make(Integer n); }\n",
+    )
+    .expect("write the SAM declaration");
+    fs::write(
+        emitted.join("ArrayCtorRunner.java"),
+        "public class ArrayCtorRunner { public static void main(String[] args) { System.out.println(ArrayCtorSubject.run()); } }\n",
+    )
+    .expect("write the execution runner");
+    let recompile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&emitted)
+        .arg(emitted.join("ArrayMaker.java"))
+        .arg(emitted.join("ArrayCtorSubject.java"))
+        .arg(emitted.join("ArrayCtorRunner.java"))
+        .output()
+        .expect("JDK javac is available for reconstructed-source validation");
+    assert!(
+        recompile.status.success(),
+        "javac rejected the reconstructed whole source:\n{}\n{}",
+        recovered.text,
+        String::from_utf8_lossy(&recompile.stderr)
+    );
+    let original_runner = scratch.child("array-maker-original-run");
+    fs::copy(
+        original.join("ArrayCtorSubject.class"),
+        original_runner.join("ArrayCtorSubject.class"),
+    )
+    .expect("copy the original physical subject class");
+    fs::copy(
+        original.join("ArrayMaker.class"),
+        original_runner.join("ArrayMaker.class"),
+    )
+    .expect("copy the original SAM class");
+    fs::write(
+        original_runner.join("ArrayCtorRunner.java"),
+        "public class ArrayCtorRunner { public static void main(String[] args) { System.out.println(ArrayCtorSubject.run()); } }\n",
+    )
+    .expect("write the execution runner beside the original class");
+    let original_runner_compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-classpath"])
+        .arg(&original_runner)
+        .arg("-d")
+        .arg(&original_runner)
+        .arg(original_runner.join("ArrayCtorRunner.java"))
+        .output()
+        .expect("JDK javac is available for the original execution runner");
+    assert!(
+        original_runner_compile.status.success(),
+        "javac rejected the original execution runner:\n{}",
+        String::from_utf8_lossy(&original_runner_compile.stderr)
+    );
+    let original_execution = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(&original_runner)
+        .arg("ArrayCtorRunner")
+        .output()
+        .expect("JDK java is available for original execution");
+    assert!(original_execution.status.success());
+    assert_eq!(String::from_utf8_lossy(&original_execution.stdout), "7\n");
+    let execution = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(&emitted)
+        .arg("ArrayCtorRunner")
+        .output()
+        .expect("JDK java is available for the reconstructed-source execution");
+    assert!(
+        execution.status.success(),
+        "the reconstructed program failed verification or execution:\n{}",
+        String::from_utf8_lossy(&execution.stderr)
+    );
+    assert_eq!(execution.stdout, original_execution.stdout);
+}
+
+#[test]
+fn raw_function_array_constructor_keeps_its_physical_helper_and_lambda_site() {
+    let snapshot = open(include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class"
+    ));
+    let recovered = class_source(&snapshot, "BoxedSamProbe", &RecoveryEvidenceRequest::all());
+    let method = recovered
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"arrayCtor")
+        .expect("the frozen probe has its boxed array-constructor method");
+    let declaration = method.declaration.as_deref().unwrap_or_default();
+    assert!(
+        declaration.contains("java.util.function.Function"),
+        "{declaration}"
+    );
+    assert!(
+        !declaration.contains('<'),
+        "the frozen target remains raw: {declaration}"
+    );
+    assert!(
+        !recovered.text.contains("int[]::new"),
+        "raw Function's Object SAM input is not sufficient evidence for array projection:\n{}",
+        recovered.text
+    );
+    assert!(recovered.text.contains("lambda$arrayCtor$0"));
+    assert!(recovered.methods.iter().any(|method| {
+        method.item.name.raw().0 == b"lambda$arrayCtor$0"
+            && method.text.contains("lambda$arrayCtor$0")
+    }));
+    let body = body(&recovered, "arrayCtor");
+    assert!(body.text.contains("lambda$arrayCtor$0"), "{}", body.text);
+}
+
+#[test]
+fn array_constructor_projection_budget_stop_keeps_method_and_helper_together() {
+    let scratch = Scratch::new();
+    let source = scratch.child("array-maker-budget-original");
+    fs::write(
+        source.join("ArrayCtorSubject.java"),
+        "public class ArrayCtorSubject { static ArrayMaker arrayCtor() { return int[]::new; } }\n",
+    )
+    .expect("write the array-maker subject");
+    fs::write(
+        source.join("ArrayMaker.java"),
+        "interface ArrayMaker { int[] make(Integer n); }\n",
+    )
+    .expect("write the SAM declaration");
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&source)
+        .arg(source.join("ArrayMaker.java"))
+        .arg(source.join("ArrayCtorSubject.java"))
+        .output()
+        .expect("JDK javac is available for the budget fixture");
+    assert!(compile.status.success());
+    let bytes = fs::read(source.join("ArrayCtorSubject.class")).expect("read javac fixture");
+    let snapshot = open(&bytes);
+    let complete = class_source(
+        &snapshot,
+        "ArrayCtorSubject",
+        &RecoveryEvidenceRequest::all(),
+    );
+    let mut limits = complete.limits.clone();
+    limits.ir_items = complete.usage.ir_items.saturating_sub(1);
+    let mut constrained = Budget::new(limits);
+    let outcome = Engine::new()
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request(&snapshot, "ArrayCtorSubject"),
+            &RecoveryEvidenceRequest::all(),
+            &mut constrained,
+        )
+        .expect("a class-source budget stop returns its partial report");
+    let OperationOutcome::Performed(report) = outcome else {
+        panic!("the stopped class-source request keeps its report: {outcome:?}");
+    };
+    assert!(!report.text.contains("int[]::new"));
+    assert!(report.text.contains("lambda$arrayCtor$0"));
+    let array_ctor = body(&report, "arrayCtor");
+    assert!(array_ctor.text.contains("lambda$arrayCtor$0"));
+}
+
+#[test]
 fn captured_array_length_stays_a_lambda_call_and_keeps_its_physical_helper() {
     let scratch = Scratch::new();
     let original = scratch.child("captured-array-original");
