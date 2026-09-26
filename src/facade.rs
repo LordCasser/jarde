@@ -8443,6 +8443,18 @@ fn project_class_source_member_family(
     {
         return Ok(Err("physical family recovery is incomplete".to_owned()));
     }
+    if let Err(reason) = prove_member_family_external_use_closure(
+        content,
+        environment,
+        root,
+        child,
+        proof,
+        sites,
+        execution,
+        budget,
+    )? {
+        return Ok(Err(reason));
+    }
     let root_binary = &root
         .declaration
         .as_ref()
@@ -8874,6 +8886,209 @@ fn project_class_source_member_family(
     };
     budget.charge(CountedBudgetDimension::OutputBytes, text.len() as u64)?;
     Ok(Ok((text, derived)))
+}
+
+/// Hiding a capture field and constructor argument changes the source unit's public surface.
+/// Only the exact bytecode points already certified by the capture and call proofs may consume
+/// those declarations. The declaration-reference scanner supplies the bounded physical census;
+/// its undecided and partial states are never evidence of absence.
+#[allow(clippy::too_many_arguments)]
+fn prove_member_family_external_use_closure(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    root: &ClassSourceReport,
+    child: &ClassSourceReport,
+    capture: &class_source::MemberCaptureProof,
+    calls: &[class_source::MemberCallProof],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<(), String>> {
+    use crate::resolver::DeclarationRefQuery;
+    use jarde_query::query::XrefOperation;
+    use jarde_reader::model::SymbolRef;
+
+    // A declaration scan covers one selected scope. An explicit classpath or additional
+    // snapshot can make another physical consumer visible without being in that scan.
+    if content.len() != 1
+        || environment.domains.len() != 1
+        || !environment.providers.is_empty()
+        || environment.runtime.load_domain.roots.len() != 1
+        || environment.runtime.load_domain.roots[0]
+            != (LoadRoot::Container {
+                origin: ContainerOrigin {
+                    snapshot: environment.runtime.physical.snapshot.clone(),
+                    root_container: ContainerId(ROOT_CONTAINER.to_owned()),
+                    steps: Vec::new(),
+                },
+                prefix: ArchiveNameBytes(Vec::new()),
+            })
+        || !matches!(
+            environment.runtime.profile.multi_release,
+            crate::MultiReleasePolicy::Disabled
+        )
+        || root.class.snapshot() != &environment.runtime.physical.snapshot
+        || child.class.snapshot() != &environment.runtime.physical.snapshot
+    {
+        return Ok(Err(
+            "external-use closure cannot prove every visible classpath, snapshot or multi-release scope"
+                .to_owned(),
+        ));
+    }
+    let Some(field) = child
+        .fields
+        .iter()
+        .find(|field| field.item.index == capture.field_index)
+    else {
+        return Ok(Err("capture field has no physical declaration".to_owned()));
+    };
+    let Some(root_binary) = root
+        .declaration
+        .as_ref()
+        .map(|declaration| &declaration.item.declaration.this_class.raw().0)
+    else {
+        return Ok(Err("root has no physical declaration".to_owned()));
+    };
+    let Some(child_binary) = child
+        .declaration
+        .as_ref()
+        .map(|declaration| &declaration.item.declaration.this_class.raw().0)
+    else {
+        return Ok(Err("member has no physical declaration".to_owned()));
+    };
+    let MemberKey::Field { name, descriptor } = &field.item.identity.member else {
+        return Ok(Err(
+            "capture field has no physical field identity".to_owned()
+        ));
+    };
+    if name.0 != capture.field_name.as_bytes()
+        || descriptor.0 != [b"L".as_slice(), root_binary, b";"].concat()
+        || field.item.identity.owner != child.class
+    {
+        return Ok(Err(
+            "capture field identity does not match the proved family".to_owned(),
+        ));
+    }
+    let field_query = DeclarationRefQuery {
+        environment: environment.clone(),
+        declaration: ResolvedMemberRef {
+            loader: environment.runtime.load_domain.loader.clone(),
+            definition: child.class.clone(),
+            member: SymbolRef::Field {
+                owner: JvmBytes(child_binary.clone()),
+                name: name.clone(),
+                descriptor: descriptor.clone(),
+            },
+        },
+        scope: environment.runtime.physical.scope.clone(),
+        consumers: ConsumerSchema::new(
+            1,
+            [
+                ConsumerKind::Field,
+                ConsumerKind::Constant,
+                ConsumerKind::Bootstrap,
+            ],
+        ),
+        max_items: 0,
+    };
+    let constructor_query = DeclarationRefQuery {
+        environment: environment.clone(),
+        declaration: ResolvedMemberRef {
+            loader: environment.runtime.load_domain.loader.clone(),
+            definition: child.class.clone(),
+            member: SymbolRef::Method {
+                owner: JvmBytes(child_binary.clone()),
+                name: JvmBytes(b"<init>".to_vec()),
+                descriptor: capture.constructor.descriptor.clone(),
+            },
+        },
+        scope: environment.runtime.physical.scope.clone(),
+        consumers: ConsumerSchema::new(
+            1,
+            [
+                ConsumerKind::Invocation,
+                ConsumerKind::Constant,
+                ConsumerKind::Bootstrap,
+            ],
+        ),
+        max_items: 0,
+    };
+    for (kind, query) in [
+        ("capture field", field_query),
+        ("member constructor", constructor_query),
+    ] {
+        budget.poll()?;
+        let scanned = jarde_jvm::declaration_references(content, &query, budget)?;
+        merge_execution(execution, scanned.execution.clone());
+        if scanned.analysis != ResolutionAnalysis::Performed
+            || !scanned.environment_problems.is_empty()
+            || !scanned.unsupported_categories.is_empty()
+            || scanned.unresolved_candidates != 0
+            || scanned.has_more
+            || !matches!(scanned.execution, ExecutionReport::Complete { .. })
+            || scanned.coverage.artifact_structural.state != CoverageState::CompleteWithinSchema
+            || scanned.coverage.runtime_resolution.state != CoverageState::CompleteWithinSchema
+        {
+            return Ok(Err(format!(
+                "{kind} external-use closure is incomplete in selected physical scope"
+            )));
+        }
+        for item in &scanned.items {
+            let allowed = match (
+                kind,
+                item.consumer,
+                item.operation,
+                item.origin.members.as_slice(),
+            ) {
+                (
+                    "capture field",
+                    ConsumerKind::Field,
+                    XrefOperation::PutField,
+                    [OriginMember::MethodPoint { method, bci }],
+                ) => method == &capture.constructor && *bci == capture.write_bci,
+                (
+                    "capture field",
+                    ConsumerKind::Field,
+                    XrefOperation::GetField,
+                    [OriginMember::MethodPoint { method, bci }],
+                ) => capture
+                    .reads
+                    .iter()
+                    .any(|read| &read.method == method && read.bci == *bci),
+                (
+                    "member constructor",
+                    ConsumerKind::Invocation,
+                    XrefOperation::InvokeSpecial,
+                    [OriginMember::MethodPoint { method, bci }],
+                ) => calls.iter().any(|call| {
+                    &call.caller == method
+                        && call.constructor_bci == *bci
+                        && call.constructor == capture.constructor
+                }),
+                _ => false,
+            };
+            if !allowed {
+                let origin = item.origin.members.first().map_or_else(
+                    || "unknown physical origin".to_owned(),
+                    |member| {
+                        let definition = match member {
+                            OriginMember::MethodPoint { method, .. } => &method.owner,
+                            OriginMember::ClassRange { definition, .. }
+                            | OriginMember::ClassFile { definition } => definition,
+                        };
+                        let entry = definition.entry().map_or_else(
+                            || "standalone class".to_owned(),
+                            |entry| String::from_utf8_lossy(&entry.raw_name.0).into_owned(),
+                        );
+                        format!("{entry} {member:?}")
+                    },
+                );
+                return Ok(Err(format!(
+                    "{kind} has an unproved physical consumer at {origin}"
+                )));
+            }
+        }
+    }
+    Ok(Ok(()))
 }
 
 /// A candidate is bounded by an emitter segment already tied to this exact physical method and

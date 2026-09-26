@@ -17,7 +17,7 @@
 
 - [x] 4.1 让 writer 在一个 package/根头之下写经证明的成员声明、构造器简名和完整方法体，仅按证明结果隐藏捕获字段/隐式首参/写入；以 Java 8 完整类重编、`-Xverify:all` 比对原/JADX 的值、效果、异常，检查无重复声明或被吞掉的方法。**验收**：[4.1 家族文本与三方执行复核](verification-4.1.md)。
 - [x] 4.2 在根报告保留 child 物理报告及独立 coverage/source map，并为隐藏构件和改写的 `Outer.this` 记录 caller/child/字段/构造器的派生投影；以两个 owner 都有 BCI 0、默认/all 输出及拒绝样本核对映射与 JSON 身份。**验收**：[4.2 派生来源与物理身份复核](verification-4.2.md)。
-- [ ] 4.3 对本阶段不能证明的 `access$` super 桥、外部使用、部分成员恢复和预算停止保留物理文本及显式未闭合状态；以冻结 `20:10:1:3` 变体确认未将普通 `Outer.value()` 冒充 `Outer.super.value()`。
+- [x] 4.3 对本阶段不能证明的 `access$` super 桥、外部使用、部分成员恢复和预算停止保留物理文本及显式未闭合状态；以冻结 `20:10:1:3` 变体确认未将普通 `Outer.value()` 冒充 `Outer.super.value()`。**验收**：[4.3 外部消费者与拒绝边界](verification-4.3.md)。
 
 ## 5. 独立验收
 
