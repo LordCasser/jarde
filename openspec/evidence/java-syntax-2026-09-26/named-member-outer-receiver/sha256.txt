@@ -1,0 +1,7 @@
+54111f5510fc91525b235d874b095626b1bec70edbaccb64e4660a6f204a518a  openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/Base.java
+b97c73ffaba70a6ed262d13adf6e715fafaedbd836a88a6993d8b326981dbcfc  openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/MemberBase.java
+07377fc037dbc162113fa74881b0561e238b9936df2a5246b414c68440fca28f  openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/Outer.java
+fab4863bce07c6d6860cecbab5023a45faac52d021b4330df1bcdb1496a51799  openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/classes/Base.class
+5624aae3bf27bfc893114ccb790370f48c23e6b21c9dbfef7dd4d4fbb7c0a0b3  openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/classes/MemberBase.class
+182f9e6d7144c54e30ece0d10499c04c497d1352a7609ba18c1675a6d935595e  openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/classes/Outer$Member.class
+c50aaa27105bf17c0e9babc1058a33740757247c173fdd4ad22ac9c07e61eed7  openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/classes/Outer.class

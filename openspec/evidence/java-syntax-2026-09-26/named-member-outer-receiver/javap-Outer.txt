@@ -1,0 +1,254 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/classes/Outer.class
+  Last modified 2026年9月26日; size 1574 bytes
+  SHA-256 checksum c50aaa27105bf17c0e9babc1058a33740757247c173fdd4ad22ac9c07e61eed7
+  Compiled from "Outer.java"
+public class Outer extends Base
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // Outer
+  super_class: #2                         // Base
+  interfaces: 0, fields: 1, methods: 7, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // Base.value:()Ljava/lang/String;
+   #2 = Class              #4             // Base
+   #3 = NameAndType        #5:#6          // value:()Ljava/lang/String;
+   #4 = Utf8               Base
+   #5 = Utf8               value
+   #6 = Utf8               ()Ljava/lang/String;
+   #7 = Methodref          #8.#9          // Outer.label:()Ljava/lang/String;
+   #8 = Class              #10            // Outer
+   #9 = NameAndType        #11:#6         // label:()Ljava/lang/String;
+  #10 = Utf8               Outer
+  #11 = Utf8               label
+  #12 = Fieldref           #8.#13         // Outer.value:I
+  #13 = NameAndType        #5:#14         // value:I
+  #14 = Utf8               I
+  #15 = Methodref          #2.#16         // Base."<init>":()V
+  #16 = NameAndType        #17:#18        // "<init>":()V
+  #17 = Utf8               <init>
+  #18 = Utf8               ()V
+  #19 = String             #20            // outer
+  #20 = Utf8               outer
+  #21 = String             #22            // outer-override
+  #22 = Utf8               outer-override
+  #23 = Methodref          #8.#16         // Outer."<init>":()V
+  #24 = Class              #25            // Outer$Member
+  #25 = Utf8               Outer$Member
+  #26 = Methodref          #27.#28        // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #27 = Class              #29            // java/util/Objects
+  #28 = NameAndType        #30:#31        // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #29 = Utf8               java/util/Objects
+  #30 = Utf8               requireNonNull
+  #31 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #32 = Methodref          #24.#33        // Outer$Member."<init>":(LOuter;)V
+  #33 = NameAndType        #17:#34        // "<init>":(LOuter;)V
+  #34 = Utf8               (LOuter;)V
+  #35 = Fieldref           #36.#37        // java/lang/System.out:Ljava/io/PrintStream;
+  #36 = Class              #38            // java/lang/System
+  #37 = NameAndType        #39:#40        // out:Ljava/io/PrintStream;
+  #38 = Utf8               java/lang/System
+  #39 = Utf8               out
+  #40 = Utf8               Ljava/io/PrintStream;
+  #41 = Class              #42            // java/lang/StringBuilder
+  #42 = Utf8               java/lang/StringBuilder
+  #43 = Methodref          #41.#16        // java/lang/StringBuilder."<init>":()V
+  #44 = Methodref          #24.#45        // Outer$Member.outerField:()I
+  #45 = NameAndType        #46:#47        // outerField:()I
+  #46 = Utf8               outerField
+  #47 = Utf8               ()I
+  #48 = Methodref          #41.#49        // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #49 = NameAndType        #50:#51        // append:(I)Ljava/lang/StringBuilder;
+  #50 = Utf8               append
+  #51 = Utf8               (I)Ljava/lang/StringBuilder;
+  #52 = String             #53            // :
+  #53 = Utf8               :
+  #54 = Methodref          #41.#55        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #55 = NameAndType        #50:#56        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #56 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #57 = Methodref          #24.#58        // Outer$Member.outerMethod:()Ljava/lang/String;
+  #58 = NameAndType        #59:#6         // outerMethod:()Ljava/lang/String;
+  #59 = Utf8               outerMethod
+  #60 = Methodref          #24.#61        // Outer$Member.outerSuper:()Ljava/lang/String;
+  #61 = NameAndType        #62:#6         // outerSuper:()Ljava/lang/String;
+  #62 = Utf8               outerSuper
+  #63 = Methodref          #24.#64        // Outer$Member.ordinaryThis:()Ljava/lang/String;
+  #64 = NameAndType        #65:#6         // ordinaryThis:()Ljava/lang/String;
+  #65 = Utf8               ordinaryThis
+  #66 = Methodref          #41.#67        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #67 = NameAndType        #68:#6         // toString:()Ljava/lang/String;
+  #68 = Utf8               toString
+  #69 = Methodref          #70.#71        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #70 = Class              #72            // java/io/PrintStream
+  #71 = NameAndType        #73:#74        // println:(Ljava/lang/String;)V
+  #72 = Utf8               java/io/PrintStream
+  #73 = Utf8               println
+  #74 = Utf8               (Ljava/lang/String;)V
+  #75 = Utf8               Code
+  #76 = Utf8               LineNumberTable
+  #77 = Utf8               LocalVariableTable
+  #78 = Utf8               this
+  #79 = Utf8               LOuter;
+  #80 = Utf8               main
+  #81 = Utf8               ([Ljava/lang/String;)V
+  #82 = Utf8               args
+  #83 = Utf8               [Ljava/lang/String;
+  #84 = Utf8               member
+  #85 = Utf8               LOuter$Member;
+  #86 = Utf8               access$000
+  #87 = Utf8               (LOuter;)I
+  #88 = Utf8               x0
+  #89 = Utf8               access$100
+  #90 = Utf8               (LOuter;)Ljava/lang/String;
+  #91 = Utf8               access$201
+  #92 = Utf8               SourceFile
+  #93 = Utf8               Outer.java
+  #94 = Utf8               InnerClasses
+  #95 = Utf8               Member
+{
+  private int value;
+    descriptor: I
+    flags: (0x0002) ACC_PRIVATE
+
+  public Outer();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #15                 // Method Base."<init>":()V
+         4: aload_0
+         5: bipush        7
+         7: putfield      #12                 // Field value:I
+        10: return
+      LineNumberTable:
+        line 1: 0
+        line 2: 4
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      11     0  this   LOuter;
+
+  private java.lang.String label();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: ldc           #19                 // String outer
+         2: areturn
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       3     0  this   LOuter;
+
+  public java.lang.String value();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: ldc           #21                 // String outer-override
+         2: areturn
+      LineNumberTable:
+        line 12: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       3     0  this   LOuter;
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=3, args_size=1
+         0: new           #8                  // class Outer
+         3: dup
+         4: invokespecial #23                 // Method "<init>":()V
+         7: astore_1
+         8: new           #24                 // class Outer$Member
+        11: dup
+        12: aload_1
+        13: dup
+        14: invokestatic  #26                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+        17: pop
+        18: invokespecial #32                 // Method Outer$Member."<init>":(LOuter;)V
+        21: astore_2
+        22: getstatic     #35                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        25: new           #41                 // class java/lang/StringBuilder
+        28: dup
+        29: invokespecial #43                 // Method java/lang/StringBuilder."<init>":()V
+        32: aload_2
+        33: invokevirtual #44                 // Method Outer$Member.outerField:()I
+        36: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        39: ldc           #52                 // String :
+        41: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        44: aload_2
+        45: invokevirtual #57                 // Method Outer$Member.outerMethod:()Ljava/lang/String;
+        48: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        51: ldc           #52                 // String :
+        53: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        56: aload_2
+        57: invokevirtual #60                 // Method Outer$Member.outerSuper:()Ljava/lang/String;
+        60: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        63: ldc           #52                 // String :
+        65: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        68: aload_2
+        69: invokevirtual #63                 // Method Outer$Member.ordinaryThis:()Ljava/lang/String;
+        72: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        75: invokevirtual #66                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        78: invokevirtual #69                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        81: return
+      LineNumberTable:
+        line 14: 0
+        line 15: 8
+        line 16: 22
+        line 17: 81
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      82     0  args   [Ljava/lang/String;
+            8      74     1 outer   LOuter;
+           22      60     2 member   LOuter$Member;
+
+  static int access$000(Outer);
+    descriptor: (LOuter;)I
+    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #12                 // Field value:I
+         4: ireturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0    x0   LOuter;
+
+  static java.lang.String access$100(Outer);
+    descriptor: (LOuter;)Ljava/lang/String;
+    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #7                  // Method label:()Ljava/lang/String;
+         4: areturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0    x0   LOuter;
+
+  static java.lang.String access$201(Outer);
+    descriptor: (LOuter;)Ljava/lang/String;
+    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method Base.value:()Ljava/lang/String;
+         4: areturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0    x0   LOuter;
+}
+SourceFile: "Outer.java"
+InnerClasses:
+  public #95= #24 of #8;                  // Member=class Outer$Member of class Outer

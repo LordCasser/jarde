@@ -1,0 +1,45 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/jarde-Outer-Member.java:3: 错误: 类 Outer$Member 是公共的, 应在名为 Outer$Member.java 的文件中声明
+public class Outer$Member extends MemberBase {
+       ^
+openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/jarde-Outer-Member.java:3: 错误: 找不到符号
+public class Outer$Member extends MemberBase {
+                                  ^
+  符号: 类 MemberBase
+openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/jarde-Outer-Member.java:4: 错误: 找不到符号
+    final Outer this$0;
+          ^
+  符号:   类 Outer
+  位置: 类 Outer$Member
+openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/jarde-Outer-Member.java:6: 错误: 找不到符号
+    public Outer$Member(Outer this$0) {
+                        ^
+  符号:   类 Outer
+  位置: 类 Outer$Member
+openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/jarde-Outer-Member.java:10: 错误: 灵活构造器 是预览功能，默认情况下禁用。
+        this.this$0 = this$0;
+        ^
+  （请使用 --enable-preview 以启用 灵活构造器）
+openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/jarde-Outer-Member.java:19: 错误: 找不到符号
+        return Outer.access$000(this.this$0);
+               ^
+  符号:   变量 Outer
+  位置: 类 Outer$Member
+openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/jarde-Outer-Member.java:26: 错误: 找不到符号
+        return Outer.access$100(this.this$0);
+               ^
+  符号:   变量 Outer
+  位置: 类 Outer$Member
+openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/jarde-Outer-Member.java:33: 错误: 找不到符号
+        return Outer.access$201(this.this$0);
+               ^
+  符号:   变量 Outer
+  位置: 类 Outer$Member
+openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/jarde-Outer-Member.java:40: 错误: 找不到符号
+        return this.value();
+                   ^
+  符号: 方法 value()
+9 个错误
+3 个警告

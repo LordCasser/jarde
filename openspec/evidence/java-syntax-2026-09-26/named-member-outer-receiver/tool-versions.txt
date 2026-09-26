@@ -1,0 +1,4 @@
+openjdk version "23.0.1" 2024-10-15
+javac 23.0.1
+1.5.6
+Jarde HEAD: e9bb60bb41aeeab241fc78bef348f7564b74fcd3

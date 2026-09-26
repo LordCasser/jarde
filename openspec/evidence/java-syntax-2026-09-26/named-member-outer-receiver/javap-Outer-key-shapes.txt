@@ -1,0 +1,71 @@
+96-  #84 = Utf8               member
+97-  #85 = Utf8               LOuter$Member;
+98:  #86 = Utf8               access$000
+99-  #87 = Utf8               (LOuter;)I
+100-  #88 = Utf8               x0
+101:  #89 = Utf8               access$100
+102-  #90 = Utf8               (LOuter;)Ljava/lang/String;
+103:  #91 = Utf8               access$201
+104-  #92 = Utf8               SourceFile
+105-  #93 = Utf8               Outer.java
+106:  #94 = Utf8               InnerClasses
+107-  #95 = Utf8               Member
+108-{
+--
+117-      stack=2, locals=1, args_size=1
+118-         0: aload_0
+119:         1: invokespecial #15                 // Method Base."<init>":()V
+120-         4: aload_0
+121-         5: bipush        7
+--
+162-         0: new           #8                  // class Outer
+163-         3: dup
+164:         4: invokespecial #23                 // Method "<init>":()V
+165-         7: astore_1
+166-         8: new           #24                 // class Outer$Member
+--
+170-        14: invokestatic  #26                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+171-        17: pop
+172:        18: invokespecial #32                 // Method Outer$Member."<init>":(LOuter;)V
+173-        21: astore_2
+174-        22: getstatic     #35                 // Field java/lang/System.out:Ljava/io/PrintStream;
+175-        25: new           #41                 // class java/lang/StringBuilder
+176-        28: dup
+177:        29: invokespecial #43                 // Method java/lang/StringBuilder."<init>":()V
+178-        32: aload_2
+179-        33: invokevirtual #44                 // Method Outer$Member.outerField:()I
+--
+208-           22      60     2 member   LOuter$Member;
+209-
+210:  static int access$000(Outer);
+211-    descriptor: (LOuter;)I
+212-    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+--
+222-            0       5     0    x0   LOuter;
+223-
+224:  static java.lang.String access$100(Outer);
+225-    descriptor: (LOuter;)Ljava/lang/String;
+226-    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+--
+228-      stack=1, locals=1, args_size=1
+229-         0: aload_0
+230:         1: invokespecial #7                  // Method label:()Ljava/lang/String;
+231-         4: areturn
+232-      LineNumberTable:
+--
+236-            0       5     0    x0   LOuter;
+237-
+238:  static java.lang.String access$201(Outer);
+239-    descriptor: (LOuter;)Ljava/lang/String;
+240-    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+--
+242-      stack=1, locals=1, args_size=1
+243-         0: aload_0
+244:         1: invokespecial #1                  // Method Base.value:()Ljava/lang/String;
+245-         4: areturn
+246-      LineNumberTable:
+--
+251-}
+252-SourceFile: "Outer.java"
+253:InnerClasses:
+254-  public #95= #24 of #8;                  // Member=class Outer$Member of class Outer

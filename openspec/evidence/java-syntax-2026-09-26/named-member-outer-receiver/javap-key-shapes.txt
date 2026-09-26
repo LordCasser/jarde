@@ -1,0 +1,106 @@
+11-  interfaces: 0, fields: 1, methods: 5, attributes: 2
+12-Constant pool:
+13:   #1 = Fieldref           #2.#3          // Outer$Member.this$0:LOuter;
+14-   #2 = Class              #4             // Outer$Member
+15:   #3 = NameAndType        #5:#6          // this$0:LOuter;
+16-   #4 = Utf8               Outer$Member
+17:   #5 = Utf8               this$0
+18-   #6 = Utf8               LOuter;
+19-   #7 = Methodref          #8.#9          // MemberBase."<init>":()V
+--
+23-  #11 = Utf8               <init>
+24-  #12 = Utf8               ()V
+25:  #13 = Methodref          #14.#15        // Outer.access$000:(LOuter;)I
+26-  #14 = Class              #16            // Outer
+27:  #15 = NameAndType        #17:#18        // access$000:(LOuter;)I
+28-  #16 = Utf8               Outer
+29:  #17 = Utf8               access$000
+30-  #18 = Utf8               (LOuter;)I
+31:  #19 = Methodref          #14.#20        // Outer.access$100:(LOuter;)Ljava/lang/String;
+32:  #20 = NameAndType        #21:#22        // access$100:(LOuter;)Ljava/lang/String;
+33:  #21 = Utf8               access$100
+34-  #22 = Utf8               (LOuter;)Ljava/lang/String;
+35:  #23 = Methodref          #14.#24        // Outer.access$201:(LOuter;)Ljava/lang/String;
+36:  #24 = NameAndType        #25:#22        // access$201:(LOuter;)Ljava/lang/String;
+37:  #25 = Utf8               access$201
+38-  #26 = Methodref          #2.#27         // Outer$Member.value:()Ljava/lang/String;
+39-  #27 = NameAndType        #28:#29        // value:()Ljava/lang/String;
+--
+47-  #35 = Utf8               LOuter$Member;
+48-  #36 = Utf8               MethodParameters
+49:  #37 = Utf8               outerField
+50-  #38 = Utf8               ()I
+51-  #39 = Utf8               outerMethod
+52:  #40 = Utf8               outerSuper
+53:  #41 = Utf8               ordinaryThis
+54-  #42 = Utf8               SourceFile
+55-  #43 = Utf8               Outer.java
+56:  #44 = Utf8               InnerClasses
+57-  #45 = Utf8               Member
+58-{
+59:  final Outer this$0;
+60-    descriptor: LOuter;
+61-    flags: (0x1010) ACC_FINAL, ACC_SYNTHETIC
+--
+68-         0: aload_0
+69-         1: aload_1
+70:         2: putfield      #1                  // Field this$0:LOuter;
+71-         5: aload_0
+72:         6: invokespecial #7                  // Method MemberBase."<init>":()V
+73-         9: return
+74-      LineNumberTable:
+--
+77-        Start  Length  Slot  Name   Signature
+78-            0      10     0  this   LOuter$Member;
+79:            0      10     1 this$0   LOuter;
+80-    MethodParameters:
+81-      Name                           Flags
+82-      <no name>                      final mandated
+83-
+84:  public int outerField();
+85-    descriptor: ()I
+86-    flags: (0x0001) ACC_PUBLIC
+--
+88-      stack=1, locals=1, args_size=1
+89-         0: aload_0
+90:         1: getfield      #1                  // Field this$0:LOuter;
+91:         4: invokestatic  #13                 // Method Outer.access$000:(LOuter;)I
+92-         7: ireturn
+93-      LineNumberTable:
+--
+103-      stack=1, locals=1, args_size=1
+104-         0: aload_0
+105:         1: getfield      #1                  // Field this$0:LOuter;
+106:         4: invokestatic  #19                 // Method Outer.access$100:(LOuter;)Ljava/lang/String;
+107-         7: areturn
+108-      LineNumberTable:
+--
+112-            0       8     0  this   LOuter$Member;
+113-
+114:  public java.lang.String outerSuper();
+115-    descriptor: ()Ljava/lang/String;
+116-    flags: (0x0001) ACC_PUBLIC
+--
+118-      stack=1, locals=1, args_size=1
+119-         0: aload_0
+120:         1: getfield      #1                  // Field this$0:LOuter;
+121:         4: invokestatic  #23                 // Method Outer.access$201:(LOuter;)Ljava/lang/String;
+122-         7: areturn
+123-      LineNumberTable:
+--
+127-            0       8     0  this   LOuter$Member;
+128-
+129:  public java.lang.String ordinaryThis();
+130-    descriptor: ()Ljava/lang/String;
+131-    flags: (0x0001) ACC_PUBLIC
+--
+133-      stack=1, locals=1, args_size=1
+134-         0: aload_0
+135:         1: invokevirtual #26                 // Method value:()Ljava/lang/String;
+136-         4: areturn
+137-      LineNumberTable:
+--
+142-}
+143-SourceFile: "Outer.java"
+144:InnerClasses:
+145-  public #45= #2 of #14;                  // Member=class Outer$Member of class Outer
