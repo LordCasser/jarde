@@ -114,6 +114,9 @@ fn one_instance_write_owns_the_closed_graph_and_all_origins() {
     assert_eq!(report.quality, jarde_jvm::ir::Quality::Structured);
     assert!(report.fallbacks.is_empty(), "{}", report.text);
     assert_eq!(report.text.matches("target(arg1).result =").count(), 1);
+    assert!(report.text.contains("&&"), "{}", report.text);
+    assert!(report.text.contains("||"), "{}", report.text);
+    assert!(!report.text.contains("% 2 != 0"), "{}", report.text);
     assert_eq!(report.text.matches("target(arg1)").count(), 1);
     assert!(!report.text.contains("@bytecode"), "{}", report.text);
     for bci in [0, 1, 4, 5, 8, 11, 14, 17, 20, 21, 24, 25, 28] {

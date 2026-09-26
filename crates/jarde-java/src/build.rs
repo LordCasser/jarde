@@ -6889,6 +6889,139 @@ impl Builder<'_> {
         Ok(())
     }
 
+    /// Collapses javac's shared-tail three-test diamond only when the region's canonical edges
+    /// prove that both branches enter the same physical tail. This handles the duplicated tree
+    /// shape used by `(a && b()) || c()` and its dual without inferring identity from text.
+    fn shared_tail_short_circuit_expression(
+        &mut self,
+        region: &Region,
+        original: &Expr,
+    ) -> Result<Option<Expr>, ConditionalValueBuildError> {
+        let Region::ShortCircuitValue {
+            tests,
+            test_edges,
+            gateways,
+            true_producer,
+            false_producer,
+            ..
+        } = region
+        else {
+            return Ok(None);
+        };
+        let [(_, root_bci), (second, second_bci), (tail, tail_bci)] = tests.as_slice() else {
+            return Ok(None);
+        };
+        poll(self.budget, Some(*root_bci)).map_err(ConditionalValueBuildError::Stop)?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(
+                gateways
+                    .len()
+                    .saturating_add(test_edges.len().saturating_mul(2)),
+            )
+            .unwrap_or(u64::MAX),
+            Some(*root_bci),
+        )
+        .map_err(ConditionalValueBuildError::Stop)?;
+        let [root_edges, second_edges, tail_edges] = test_edges.as_slice() else {
+            return Ok(None);
+        };
+        let resolve = |start: &CanonicalBlockId| -> Option<CanonicalBlockId> {
+            let mut current = start.clone();
+            let mut visited = BTreeSet::new();
+            while let Some((_, next)) = gateways.iter().find(|(gateway, _)| gateway == &current) {
+                if !visited.insert(current.clone()) {
+                    return None;
+                }
+                current = next.clone();
+            }
+            Some(current)
+        };
+        let resolved = |edges: &(CanonicalBlockId, CanonicalBlockId)| {
+            Some((resolve(&edges.0)?, resolve(&edges.1)?))
+        };
+        let (
+            Some((root_fall, root_taken)),
+            Some((second_fall, second_taken)),
+            Some((tail_fall, tail_taken)),
+        ) = (
+            resolved(root_edges),
+            resolved(second_edges),
+            resolved(tail_edges),
+        )
+        else {
+            return Ok(None);
+        };
+        let (root_to_second_taken, root_to_tail_taken) =
+            if root_fall == *second && root_taken == *tail {
+                (false, true)
+            } else if root_taken == *second && root_fall == *tail {
+                (true, false)
+            } else {
+                return Ok(None);
+            };
+        let (second_to_tail_taken, second_leaf) = if second_fall == *tail
+            && (second_taken == *true_producer || second_taken == *false_producer)
+        {
+            (false, second_taken)
+        } else if second_taken == *tail
+            && (second_fall == *true_producer || second_fall == *false_producer)
+        {
+            (true, second_fall)
+        } else {
+            return Ok(None);
+        };
+        let (tail_true_taken, tail_has_both_leaves) =
+            if tail_fall == *true_producer && tail_taken == *false_producer {
+                (false, true)
+            } else if tail_taken == *true_producer && tail_fall == *false_producer {
+                (true, true)
+            } else {
+                (false, false)
+            };
+        if !tail_has_both_leaves {
+            return Ok(None);
+        }
+
+        let root_test = self.test_expr(*root_bci, root_to_second_taken)?;
+        let tail_test = self.test_expr(*tail_bci, tail_true_taken)?;
+        let result = if second_leaf == *true_producer {
+            let second_test = self.test_expr(*second_bci, !second_to_tail_taken)?;
+            logical_expression(
+                BinaryOp::LogicalOr,
+                logical_expression(
+                    BinaryOp::LogicalAnd,
+                    root_test,
+                    second_test,
+                    original.origin.clone(),
+                ),
+                tail_test,
+                original.origin.clone(),
+            )
+        } else if second_leaf == *false_producer {
+            let root_tail_test = self.test_expr(*root_bci, root_to_tail_taken)?;
+            let second_tail_test = self.test_expr(*second_bci, second_to_tail_taken)?;
+            logical_expression(
+                BinaryOp::LogicalAnd,
+                logical_expression(
+                    BinaryOp::LogicalOr,
+                    root_tail_test,
+                    second_tail_test,
+                    original.origin.clone(),
+                ),
+                tail_test,
+                original.origin.clone(),
+            )
+        } else {
+            return Ok(None);
+        };
+        // The owning statement records every test, leaf, transfer and consumer BCI from the
+        // proved region; the expression keeps the outer test as its primary origin.
+        let origin = original.origin.clone();
+        Ok(Some(Expr { origin, ..result }))
+    }
+
     /// Prepares the complete consumer before suppressing either test or producer. The Phi
     /// expression and statement are published together only after Java typing succeeds.
     fn build_short_circuit_statement(
@@ -7012,16 +7145,16 @@ impl Builder<'_> {
                 "the short-circuit Phi at BCI {at} has no Java integer conditional type"
             )));
         }
-        let expression = if matches!(proof.consumer, ShortCircuitConsumer::Return)
-            && self.return_type == Some(Type::Boolean)
-            && self.ssa.value(proof.true_producer).replaced_by().is_none()
-            && self.ssa.value(proof.false_producer).replaced_by().is_none()
-            && integer_constant(self.ssa, self.operations, proof.true_producer) == Some(1)
-            && integer_constant(self.ssa, self.operations, proof.false_producer) == Some(0)
+        // `prove_short_circuit_value` has already established the exact 1/0 leaves and that
+        // this Phi has one typed Boolean consumer. Reuse the same evaluation-order-preserving
+        // projection at every proved Boolean sink; callers with other integer values never
+        // reach this point with a successful proof.
+        let expression = if let Some(projected) =
+            self.shared_tail_short_circuit_expression(region, &expression)?
         {
-            short_circuit_boolean_expression(expression.clone(), 0).unwrap_or(expression)
+            projected
         } else {
-            expression
+            short_circuit_boolean_expression(expression.clone(), 0).unwrap_or(expression)
         };
         let (value, kind) = match &proof.consumer {
             ShortCircuitConsumer::Field(owner, name, descriptor) => {
@@ -7126,7 +7259,11 @@ impl Builder<'_> {
                         "the short-circuit array and index at BCI {at} have no Java operand types"
                     )));
                 }
-                let value = integer_low_bit_boolean(expression.clone(), at);
+                let value = if expression.presented == Some(Type::Boolean) {
+                    expression.clone()
+                } else {
+                    integer_low_bit_boolean(expression.clone(), at)
+                };
                 let kind = StmtKind::IndexAssign {
                     array,
                     index,
@@ -7155,7 +7292,11 @@ impl Builder<'_> {
                         "the short-circuit invocation at BCI {at} has no SSA instruction"
                     )));
                 };
-                let value = integer_low_bit_boolean(expression.clone(), at);
+                let value = if expression.presented == Some(Type::Boolean) {
+                    expression.clone()
+                } else {
+                    integer_low_bit_boolean(expression.clone(), at)
+                };
                 self.conditional_values.insert(proof.phi, value.clone());
                 let rendered = self.call_expr(at, instruction, target, at, 0);
                 self.conditional_values.remove(&proof.phi);
@@ -7179,7 +7320,11 @@ impl Builder<'_> {
                         "the short-circuit local at BCI {at} has no closed Boolean declaration decision"
                     )));
                 }
-                let value = integer_low_bit_boolean(expression.clone(), at);
+                let value = if expression.presented == Some(Type::Boolean) {
+                    expression.clone()
+                } else {
+                    integer_low_bit_boolean(expression.clone(), at)
+                };
                 let kind = match self.declarations.placements.get(&variable) {
                     Some(DeclarationPlacement::Local { .. }) => StmtKind::Declare {
                         ty: Type::Boolean,
@@ -14451,6 +14596,9 @@ impl Builder<'_> {
             return Ok(value);
         };
         if ty == Type::Boolean {
+            if value.presented == Some(Type::Boolean) {
+                return Ok(value);
+            }
             if self.boolean_literal(stored) || self.boolean_proven(stored, at) {
                 return Ok(boolean_spelling(value));
             }
@@ -20262,6 +20410,8 @@ mod tests {
             ShortCircuitValueAttempt::Refused(ShortCircuitValueRefusal::Producer),
             "fresh recovery must isolate the non-1 producer refusal: {region:?}"
         );
+        assert!(!report.text.contains("&&"), "{}", report.text);
+        assert!(!report.text.contains("||"), "{}", report.text);
         assert_shared_false_refusal_is_quoted(
             &report,
             &[1, 4, 7, 10, 11, 14, 15, 18],

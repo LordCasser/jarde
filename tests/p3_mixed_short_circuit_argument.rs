@@ -98,6 +98,9 @@ fn mixed_argument_has_one_structured_sink_call_and_complete_sources() {
     assert_eq!(report.representation, Representation::Java);
     assert!(report.fallbacks.is_empty(), "{}", report.text);
     assert_eq!(report.text.matches("sink(").count(), 1, "{}", report.text);
+    assert!(report.text.contains("&&"), "{}", report.text);
+    assert!(report.text.contains("||"), "{}", report.text);
+    assert!(!report.text.contains("% 2 != 0"), "{}", report.text);
     assert!(!report.text.contains("@bytecode"), "{}", report.text);
     for bci in [0, 1, 4, 7, 10, 13, 16, 17, 20, 21, 24] {
         assert!(
