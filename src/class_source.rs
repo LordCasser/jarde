@@ -498,6 +498,10 @@ pub struct ClassSourceReport {
     /// private assembly state and is deliberately absent from the serialized report.
     #[serde(skip)]
     pub(crate) enum_constant_proof: crate::enum_constants::ClassSourceEnumConstantProof,
+    /// Same-run selected enum subclass relations, awaiting exclusivity, constructor and body proof.
+    /// This private handoff has no projection authority and is deliberately absent from JSON.
+    #[serde(skip)]
+    pub(crate) enum_constant_body_relations: Vec<crate::facade::PendingEnumConstantBodyRelation>,
     /// The assembled Java source. Empty exactly when [`Self::declaration`] is `None`.
     pub text: String,
     /// The complete effective limits this request ran under.

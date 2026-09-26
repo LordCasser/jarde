@@ -1408,6 +1408,7 @@ impl Engine {
                 },
                 enum_constant_proof:
                     crate::enum_constants::ClassSourceEnumConstantProof::NotApplicable,
+                enum_constant_body_relations: Vec::new(),
                 text: String::new(),
                 limits: budget.limits().clone(),
                 usage: budget.usage(),
@@ -2082,7 +2083,6 @@ impl Engine {
         let mut enum_switch_proofs = Vec::new();
         // Keep the same-run census local until its class-level proof is implemented. Methods whose
         // preparation or body run never happened are absent; they are not empty scans.
-        let _anonymous_allocation_scans = anonymous_allocation_scans;
         let enum_projection_complete = structure_complete
             && !ended
             && methods.len() == read.facts.methods.len()
@@ -2552,6 +2552,42 @@ impl Engine {
                 }
             }
         };
+        let enum_constant_body_relations = if capture_enum_group_code
+            && matches!(
+                &enum_constant_proof,
+                crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+            )
+            && structure_complete
+            && matches!(&execution, ExecutionReport::Complete { .. })
+        {
+            match resolve_enum_constant_body_relations(
+                content,
+                &environment,
+                &assembly_context,
+                &pool,
+                &read.facts.this_class.raw().0,
+                &read.facts.fields,
+                &read.facts.methods,
+                &enum_code_candidates,
+                &anonymous_allocation_scans,
+                &mut execution,
+                budget,
+            ) {
+                Ok(relations) => relations,
+                Err(error) => {
+                    let stop = stop_execution(&error, budget);
+                    merge_execution(&mut execution, stop.clone());
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    enum_constant_proof =
+                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                            reason: format!("enum constant subclass relation stopped: {error}"),
+                        };
+                    Vec::new()
+                }
+            }
+        } else {
+            Vec::new()
+        };
         let mut projection_tail = None;
         if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(group) =
             &enum_constant_proof
@@ -2707,6 +2743,7 @@ impl Engine {
             enum_switch_proofs,
             initializer_proof,
             enum_constant_proof,
+            enum_constant_body_relations,
             text,
             limits: budget.limits().clone(),
             usage: budget.usage(),
@@ -4417,6 +4454,309 @@ fn resolve_class_source_dependency_read_raw(
         return Ok(None);
     }
     Ok(Some((resolved.definition, read)))
+}
+
+/// Resolve only the subclass named by a verified allocation retained from this class-source
+/// run. These are private candidates for the later exclusivity/body proof; they never authorize a
+/// source projection by themselves.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct PendingEnumConstantBodyRelation {
+    pub(crate) field_index: u64,
+    pub(crate) allocation_bci: u32,
+    pub(crate) constructor_bci: u32,
+    pub(crate) constructor_descriptor: Vec<u8>,
+    pub(crate) subclass_owner: Vec<u8>,
+    pub(crate) subclass: PhysicalDefinitionId,
+}
+
+#[allow(clippy::too_many_arguments)]
+fn resolve_enum_constant_body_relations(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    enum_nesting: &class_source::ClassSourceAssemblyContext,
+    enum_pool: &[jarde_reader::classfile::CpEntryFacts],
+    enum_owner: &[u8],
+    fields: &[jarde_reader::classfile::MemberHeader],
+    methods: &[jarde_reader::classfile::MemberHeader],
+    code_candidates: &[crate::enum_constants::EnumMethodCodeCandidate],
+    allocation_scans: &[(
+        PhysicalMethodId,
+        Option<jarde_java::report::AnonymousAllocationScan>,
+    )],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<Vec<PendingEnumConstantBodyRelation>> {
+    use crate::enum_constants::EnumCodeReference;
+
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(methods.len()).unwrap_or(u64::MAX),
+    )?;
+    let clinit_headers: Vec<_> = methods
+        .iter()
+        .enumerate()
+        .filter(|(_, method)| {
+            method.name.raw().0 == b"<clinit>" && method.descriptor.raw().0 == b"()V"
+        })
+        .collect();
+    let [(clinit_index, _clinit_header)] = clinit_headers.as_slice() else {
+        return Ok(Vec::new());
+    };
+    let matching_code: Vec<_> = code_candidates
+        .iter()
+        .filter(|candidate| candidate.table_index == *clinit_index as u64)
+        .collect();
+    let [code] = matching_code.as_slice() else {
+        return Ok(Vec::new());
+    };
+    let Some((clinit_identity, Some(scan))) = allocation_scans
+        .iter()
+        .find(|(identity, _)| identity.name.0 == b"<clinit>" && identity.descriptor.0 == b"()V")
+    else {
+        return Ok(Vec::new());
+    };
+    if code.member.as_ref() != Some(clinit_identity) || !code.complete || !scan.complete {
+        return Ok(Vec::new());
+    }
+
+    let allocations: Vec<_> = scan
+        .allocations
+        .iter()
+        .filter(|allocation| allocation.member == *clinit_identity && allocation.verified)
+        .collect();
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(allocations.len()).unwrap_or(u64::MAX),
+    )?;
+    if allocations.len() != 2
+        || !allocations
+            .iter()
+            .any(|allocation| allocation.class.as_bytes() != enum_owner)
+    {
+        return Ok(Vec::new());
+    }
+    let owner_text = std::str::from_utf8(enum_owner).ok();
+    let Some(owner_text) = owner_text else {
+        return Ok(Vec::new());
+    };
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(fields.len()).unwrap_or(u64::MAX),
+    )?;
+    let constants: Vec<_> = fields
+        .iter()
+        .enumerate()
+        .filter(|(_, field)| {
+            field.access_flags & 0x4000 != 0
+                && field.descriptor.raw().0 == format!("L{owner_text};").as_bytes()
+        })
+        .collect();
+    if constants.len() != 2 {
+        return Ok(Vec::new());
+    }
+
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(code.instructions.len()).unwrap_or(u64::MAX),
+    )?;
+    if allocations.len() != constants.len() {
+        return Ok(Vec::new());
+    }
+    let mut constructions = Vec::with_capacity(constants.len());
+    for allocation in allocations {
+        budget.poll()?;
+        let Some(constructor_bci) = allocation.constructor_bci else {
+            return Ok(Vec::new());
+        };
+        if !code.instructions.iter().any(|instruction| {
+            instruction.bci == allocation.head_bci
+                && instruction.opcode == 0xbb
+                && instruction.reference
+                    == Some(EnumCodeReference::Class(
+                        allocation.class.as_bytes().to_vec(),
+                    ))
+        }) {
+            return Ok(Vec::new());
+        }
+        let Some(constructor_position) = code
+            .instructions
+            .iter()
+            .position(|instruction| instruction.bci == constructor_bci)
+        else {
+            return Ok(Vec::new());
+        };
+        let Some(EnumCodeReference::Method {
+            owner: constructor_owner,
+            name,
+            descriptor,
+            interface: false,
+        }) = code.instructions[constructor_position].reference.as_ref()
+        else {
+            return Ok(Vec::new());
+        };
+        if constructor_owner.as_slice() != allocation.class.as_bytes()
+            || name.as_slice() != b"<init>"
+        {
+            return Ok(Vec::new());
+        }
+        // `invokespecial` must be followed by the one physical enum-field write. This makes
+        // constructor BCI and field BCI a one-to-one pair before any child definition is read.
+        let Some(field_write) = code.instructions.get(constructor_position + 1) else {
+            return Ok(Vec::new());
+        };
+        let Some((field_index, _)) = constants.iter().find(|(_, field)| {
+            matches!(&field_write.reference,
+                Some(EnumCodeReference::Field { owner, name, descriptor })
+                    if owner.as_slice() == enum_owner
+                        && name.as_slice() == field.name.raw().0.as_slice()
+                        && descriptor.as_slice() == field.descriptor.raw().0.as_slice())
+        }) else {
+            return Ok(Vec::new());
+        };
+        if field_write.opcode != 0xb3 {
+            return Ok(Vec::new());
+        }
+        constructions.push((
+            *field_index,
+            allocation,
+            constructor_bci,
+            descriptor.clone(),
+        ));
+    }
+    constructions.sort_by_key(|(_, allocation, _, _)| allocation.head_bci);
+    if constructions
+        .iter()
+        .map(|(field_index, _, _, _)| *field_index)
+        .ne(constants.iter().map(|(field_index, _)| *field_index))
+    {
+        return Ok(Vec::new());
+    }
+
+    let mut relations = Vec::new();
+    for (field_index, allocation, constructor_bci, descriptor) in constructions {
+        if allocation.class.as_bytes() == enum_owner {
+            continue;
+        }
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let Some((definition, child_read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            Some(clinit_identity),
+            allocation.class.as_bytes(),
+            execution,
+            budget,
+        )?
+        else {
+            continue;
+        };
+        if child_read.facts.stopped_at.is_some()
+            || child_read.facts.this_class.raw().0.as_slice() != allocation.class.as_bytes()
+            || child_read
+                .facts
+                .super_class
+                .as_ref()
+                .map(|name| name.raw().0.as_slice())
+                != Some(enum_owner)
+        {
+            continue;
+        }
+        let nesting_shells: Vec<_> = child_read
+            .facts
+            .attributes
+            .iter()
+            .filter(|attribute| {
+                matches!(
+                    attribute.name.raw().0.as_slice(),
+                    b"InnerClasses" | b"EnclosingMethod"
+                )
+            })
+            .cloned()
+            .collect();
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(nesting_shells.len()).unwrap_or(u64::MAX),
+        )?;
+        let child_pool = match class_constant_pool(&child_read.bytes, budget) {
+            Ok(pool) => pool,
+            Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                return Err(error);
+            }
+            Err(_) => continue,
+        };
+        let nesting = match class_source::read_class_source_assembly_context(
+            &child_read.bytes,
+            &nesting_shells,
+            &child_pool,
+            budget,
+        ) {
+            Ok(nesting) => nesting,
+            Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                return Err(error);
+            }
+            Err(_) => continue,
+        };
+        let inner_matches: Vec<_> = nesting
+            .inner_classes
+            .iter()
+            .filter(|inner| {
+                jarde_reader::classfile::cp_class_name(&child_pool, inner.class_index)
+                    .is_ok_and(|name| name.0 == allocation.class.as_bytes())
+            })
+            .collect();
+        let [inner] = inner_matches.as_slice() else {
+            continue;
+        };
+        let enum_inner_rows: Vec<_> = enum_nesting
+            .inner_classes
+            .iter()
+            .filter(|inner| {
+                jarde_reader::classfile::cp_class_name(enum_pool, inner.class_index)
+                    .is_ok_and(|name| name.0 == allocation.class.as_bytes())
+            })
+            .collect();
+        let [enum_inner] = enum_inner_rows.as_slice() else {
+            continue;
+        };
+        let Some(enclosing) = nesting.enclosing_method.as_ref() else {
+            continue;
+        };
+        if inner.outer_class_index != 0
+            || inner.inner_name.is_some()
+            || enum_inner.outer_class_index != 0
+            || enum_inner.inner_name.is_some()
+            || jarde_reader::classfile::cp_class_name(&child_pool, enclosing.class_index)
+                .map_or(true, |name| name.0 != enum_owner)
+            || enclosing.method_index != 0
+        {
+            continue;
+        }
+        let child_constructors: Vec<_> = child_read
+            .facts
+            .methods
+            .iter()
+            .filter(|method| method.name.raw().0 == b"<init>")
+            .collect();
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(child_read.facts.methods.len()).unwrap_or(u64::MAX),
+        )?;
+        let matching_constructors: Vec<_> = child_constructors
+            .iter()
+            .filter(|method| method.descriptor.raw().0 == descriptor.as_slice())
+            .collect();
+        if child_constructors.len() != 1 || matching_constructors.len() != 1 {
+            continue;
+        }
+        relations.push(PendingEnumConstantBodyRelation {
+            field_index: u64::try_from(field_index).unwrap_or(u64::MAX),
+            allocation_bci: allocation.head_bci,
+            constructor_bci,
+            constructor_descriptor: descriptor.clone(),
+            subclass_owner: allocation.class.as_bytes().to_vec(),
+            subclass: definition,
+        });
+    }
+    Ok(relations)
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -6206,6 +6546,334 @@ mod interface_super_proof_tests {
             )
             .unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod enum_constant_body_relation_tests {
+    use super::*;
+    use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
+    use std::{
+        fs,
+        io::{Cursor, Write},
+        process::Command,
+        time::{SystemTime, UNIX_EPOCH},
+    };
+
+    const OP: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Op.java"
+    );
+    const MIXED: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Mixed.java"
+    );
+    const PLAIN: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Plain.java"
+    );
+    const STAGE: &str =
+        include_str!("../openspec/evidence/java-syntax-2026-09-22/enum-declaration/Stage.java");
+    const MEASURE: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/Measure.java"
+    );
+    const UNRELATED: &str = "package demo; public class Other { public static Object make() { return new Object() {}; } }";
+
+    fn budget() -> Budget {
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.input_bytes = u64::MAX;
+        limits.archive_entries = u64::MAX;
+        limits.entry_bytes = u64::MAX;
+        limits.read_bytes = u64::MAX;
+        limits.class_bytes = u64::MAX;
+        limits.attribute_bytes = u64::MAX;
+        limits.code_bytes = u64::MAX;
+        limits.class_headers = u64::MAX;
+        limits.method_bodies = u64::MAX;
+        limits.ir_items = u64::MAX;
+        limits.ir_edges = u64::MAX;
+        limits.analysis_steps = u64::MAX;
+        limits.output_bytes = u64::MAX;
+        Budget::new(limits)
+    }
+
+    fn compiled_entries(debug: bool) -> Vec<(Vec<u8>, Vec<u8>)> {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir =
+            std::env::temp_dir().join(format!("jarde-enum-body-{}-{nonce}", std::process::id()));
+        fs::create_dir_all(dir.join("source")).unwrap();
+        fs::create_dir_all(dir.join("classes")).unwrap();
+        for (name, source) in [
+            ("Op.java", OP),
+            ("Mixed.java", MIXED),
+            ("Plain.java", PLAIN),
+            ("Other.java", UNRELATED),
+            ("Stage.java", STAGE),
+            ("Measure.java", MEASURE),
+        ] {
+            fs::write(dir.join("source").join(name), source).unwrap();
+        }
+        let compile = Command::new("javac")
+            .args(["--release", "8"])
+            .arg(if debug { "-g" } else { "-g:none" })
+            .arg("-d")
+            .arg(dir.join("classes"))
+            .args(["-sourcepath"])
+            .arg(dir.join("source"))
+            .args(["-d"])
+            .arg(dir.join("classes"))
+            .arg(dir.join("source/Op.java"))
+            .arg(dir.join("source/Mixed.java"))
+            .arg(dir.join("source/Plain.java"))
+            .arg(dir.join("source/Other.java"))
+            .arg(dir.join("source/Stage.java"))
+            .arg(dir.join("source/Measure.java"))
+            .output()
+            .expect("javac is available for the frozen enum evidence");
+        assert!(
+            compile.status.success(),
+            "javac failed: {}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        let mut entries = Vec::new();
+        for entry in fs::read_dir(dir.join("classes/demo")).unwrap() {
+            let path = entry.unwrap().path();
+            entries.push((
+                format!("demo/{}", path.file_name().unwrap().to_string_lossy()).into_bytes(),
+                fs::read(path).unwrap(),
+            ));
+        }
+        for name in ["Stage.class", "Measure.class"] {
+            entries.push((
+                name.as_bytes().to_vec(),
+                fs::read(dir.join("classes").join(name)).unwrap(),
+            ));
+        }
+        fs::remove_dir_all(dir).unwrap();
+        entries
+    }
+
+    fn jar(entries: &[(Vec<u8>, Vec<u8>)]) -> Vec<u8> {
+        let mut output = Cursor::new(Vec::new());
+        let mut zip = ZipArchiveWriter::new(&mut output);
+        for (name, bytes) in entries {
+            let (mut entry, config) = zip
+                .new_file(EntryPath::verbatim(name.clone()))
+                .compression_method(CompressionMethod::new(0))
+                .start()
+                .unwrap();
+            let mut writer = config.wrap(&mut entry);
+            writer.write_all(bytes).unwrap();
+            let (_, descriptor) = writer.finish().unwrap();
+            entry.finish(descriptor).unwrap();
+        }
+        zip.finish().unwrap();
+        output.into_inner()
+    }
+
+    fn report_with_budget(
+        entries: &[(Vec<u8>, Vec<u8>)],
+        class: &str,
+        mut budget: Budget,
+    ) -> ClassSourceReport {
+        let engine = Engine::new();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(jar(entries)), &mut budget)
+            .unwrap();
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: jarde_reader::view::LoaderId("app".to_owned()),
+        };
+        match engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal(class),
+                    },
+                    environment,
+                },
+                &mut budget,
+            )
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("class source did not select one enum definition: {other:?}"),
+        }
+    }
+
+    fn report(entries: &[(Vec<u8>, Vec<u8>)], class: &str) -> ClassSourceReport {
+        report_with_budget(entries, class, budget())
+    }
+
+    fn mutate_anonymous_outer_index(bytes: &[u8], child: &[u8], outer: &[u8]) -> Vec<u8> {
+        let mut read_budget = budget();
+        let facts = class_member_facts(bytes, &mut read_budget).unwrap();
+        let pool = class_constant_pool(bytes, &read_budget).unwrap();
+        let shells: Vec<_> = facts
+            .attributes
+            .iter()
+            .filter(|attribute| attribute.name.raw().0 == b"InnerClasses")
+            .cloned()
+            .collect();
+        let context = class_source::read_class_source_assembly_context(
+            bytes,
+            &shells,
+            &pool,
+            &mut read_budget,
+        )
+        .unwrap();
+        let row = context
+            .inner_classes
+            .iter()
+            .position(|inner| {
+                jarde_reader::classfile::cp_class_name(&pool, inner.class_index)
+                    .is_ok_and(|name| name.0 == child)
+            })
+            .unwrap();
+        assert_eq!(context.inner_classes[row].outer_class_index, 0);
+        let outer_index = (1..pool.len())
+            .find_map(|index| {
+                let index = u16::try_from(index).ok()?;
+                jarde_reader::classfile::cp_class_name(&pool, index)
+                    .ok()
+                    .filter(|name| name.0 == outer)
+                    .map(|_| index)
+            })
+            .unwrap();
+        let attribute = shells
+            .iter()
+            .find(|attribute| attribute.name.raw().0 == b"InnerClasses")
+            .unwrap();
+        let outer_offset = usize::try_from(attribute.content_span.start).unwrap() + 2 + row * 8 + 2;
+        let mut changed = bytes.to_vec();
+        changed[outer_offset..outer_offset + 2].copy_from_slice(&outer_index.to_be_bytes());
+        changed
+    }
+
+    fn assert_positive(entries: &[(Vec<u8>, Vec<u8>)], debug: bool) {
+        for (class, expected) in [("demo/Op", 2), ("demo/Mixed", 1), ("demo/Plain", 0)] {
+            let source_report = report(entries, class);
+            assert_eq!(
+                source_report.enum_constant_body_relations.len(),
+                expected,
+                "{class}, debug={debug}"
+            );
+            assert!(!matches!(
+                source_report.enum_constant_proof,
+                crate::enum_constants::ClassSourceEnumConstantProof::Proved(_)
+            ));
+            assert!(
+                !source_report.text.contains("ADD {") && !source_report.text.contains("SPECIAL {")
+            );
+            assert!(
+                serde_json::to_value(&source_report)
+                    .unwrap()
+                    .get("enum_constant_body_relations")
+                    .is_none()
+            );
+            let mut relation_tuples: Vec<_> = source_report
+                .enum_constant_body_relations
+                .iter()
+                .map(|relation| {
+                    (
+                        relation.field_index,
+                        relation.allocation_bci,
+                        relation.constructor_bci,
+                        relation.subclass_owner.as_slice(),
+                    )
+                })
+                .collect();
+            relation_tuples.sort_unstable();
+            let expected_tuples: Vec<(u64, u32, u32, &[u8])> = match class {
+                "demo/Op" => vec![(0, 0, 7, b"demo/Op$1"), (1, 13, 20, b"demo/Op$2")],
+                "demo/Mixed" => vec![(0, 0, 7, b"demo/Mixed$1")],
+                _ => Vec::new(),
+            };
+            assert_eq!(
+                relation_tuples, expected_tuples,
+                "relation mapping for {class}"
+            );
+            assert!(
+                source_report
+                    .enum_constant_body_relations
+                    .iter()
+                    .all(|relation| {
+                        relation.constructor_descriptor == b"(Ljava/lang/String;I)V"
+                    })
+            );
+            let definitions: std::collections::HashSet<_> = source_report
+                .enum_constant_body_relations
+                .iter()
+                .map(|relation| &relation.subclass)
+                .collect();
+            assert_eq!(
+                definitions.len(),
+                expected,
+                "selected definitions for {class}"
+            );
+        }
+        for class in ["Stage", "Measure"] {
+            let complete = report(entries, class);
+            assert!(matches!(
+                complete.enum_constant_proof,
+                crate::enum_constants::ClassSourceEnumConstantProof::Proved(_)
+            ));
+            assert!(complete.enum_constant_body_relations.is_empty());
+            let mut limits = budget().limits().clone();
+            limits.analysis_steps = complete.usage.analysis_steps;
+            let bounded = report_with_budget(entries, class, Budget::new(limits));
+            assert!(matches!(
+                bounded.execution,
+                ExecutionReport::Complete { .. }
+            ));
+            let mut bounded_usage = bounded.usage;
+            bounded_usage.elapsed_millis = complete.usage.elapsed_millis;
+            assert_eq!(bounded_usage, complete.usage, "budget usage for {class}");
+            assert!(bounded.enum_constant_body_relations.is_empty());
+        }
+    }
+
+    #[test]
+    fn enum_constant_body_relations_follow_each_verified_construction_and_reject_missing_or_changed_rows()
+     {
+        let entries = compiled_entries(true);
+        assert_positive(&entries, true);
+        let op_first = b"demo/Op$1.class".to_vec();
+        let mut missing = entries.clone();
+        missing.retain(|(name, _)| name != &op_first);
+        let missing_report = report(&missing, "demo/Op");
+        assert_eq!(missing_report.enum_constant_body_relations.len(), 1);
+        assert!(!missing_report.text.contains("ADD {"));
+
+        let mut ambiguous = entries.clone();
+        let duplicate = ambiguous
+            .iter()
+            .find(|(name, _)| name == &op_first)
+            .unwrap()
+            .clone();
+        ambiguous.push(duplicate);
+        let ambiguous_report = report(&ambiguous, "demo/Op");
+        assert_eq!(ambiguous_report.enum_constant_body_relations.len(), 1);
+        assert!(!ambiguous_report.text.contains("ADD {"));
+
+        let mut changed = entries.clone();
+        let child = changed
+            .iter_mut()
+            .find(|(name, _)| name == &op_first)
+            .unwrap();
+        child.1 = mutate_anonymous_outer_index(&child.1, b"demo/Op$1", b"demo/Op");
+        let changed_report = report(&changed, "demo/Op");
+        assert_eq!(changed_report.enum_constant_body_relations.len(), 1);
+        assert!(!changed_report.text.contains("ADD {"));
+        assert_positive(&compiled_entries(false), false);
     }
 }
 
