@@ -111,6 +111,9 @@ fn mixed_local_stores_once_and_reads_the_same_boolean_name_twice() {
     assert_eq!(report.quality, jarde_jvm::ir::Quality::Structured);
     assert_eq!(report.representation, Representation::Java);
     assert!(report.fallbacks.is_empty(), "{}", report.text);
+    assert!(report.text.contains("&&"), "{}", report.text);
+    assert!(report.text.contains("||"), "{}", report.text);
+    assert!(!report.text.contains("% 2 != 0"), "{}", report.text);
     assert_eq!(
         report.text.matches("boolean local1 =").count(),
         1,

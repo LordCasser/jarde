@@ -111,6 +111,9 @@ fn boolean_array_store_owns_all_three_operands_and_sources() {
         "{}",
         report.text
     );
+    assert!(report.text.contains("&&"), "{}", report.text);
+    assert!(report.text.contains("||"), "{}", report.text);
+    assert!(!report.text.contains("% 2 != 0"), "{}", report.text);
     assert!(report.fallbacks.is_empty(), "{}", report.text);
     for bci in [0, 1, 4, 5, 8, 9, 12, 15, 18, 21, 24, 25, 28, 29, 30] {
         assert!(
