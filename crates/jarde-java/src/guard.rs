@@ -175,6 +175,16 @@ pub enum Shape {
         /// braces, and the statement continues nowhere.
         returns: Option<u32>,
     },
+    /// One conditional whose two straight arms each leave this monitor and return their own value.
+    /// This deliberately records a closed, two-arm mapping rather than a nested general region.
+    MonitorBranches {
+        enter_bci: u32,
+        branch_bci: u32,
+        then_exit_bci: u32,
+        then_return_bci: u32,
+        else_exit_bci: u32,
+        else_return_bci: u32,
+    },
     /// A straight protected body whose saved return and two cleanup copies were proved.
     Finally {
         normal_cleanup: (u32, u32),
@@ -244,7 +254,7 @@ impl Plan {
     pub fn pass(&self) -> &'static Pass {
         match self.shape {
             Shape::Resources { .. } => &TWR,
-            Shape::Monitor { .. } => &MONITOR,
+            Shape::Monitor { .. } | Shape::MonitorBranches { .. } => &MONITOR,
             Shape::Finally { .. } => &FINALLY,
         }
     }
@@ -805,6 +815,43 @@ impl<'a> Facts<'a> {
             }
         }
         stores <= 1
+    }
+
+    /// The bounded counterpart used by multi-exit guard proofs. Every value/read comparison is
+    /// charged, so a long arm cannot turn certificate checking into unaccounted quadratic work.
+    fn one_expression_bounded(&mut self, span: (u32, u32), end: u32) -> Result<bool, StopReason> {
+        let mut stores = 0usize;
+        let readers = self.bcis((span.0, self.span_end(end)));
+        for bci in self.bcis(span) {
+            self.charge(bci)?;
+            let Some(step) = self.step(bci) else {
+                return Ok(false);
+            };
+            if matches!(self.op(bci), Some(Operation::Store { .. })) {
+                stores += 1;
+                continue;
+            }
+            for (_, written) in step.instruction.writes() {
+                let mut consumed = false;
+                for reader in &readers {
+                    self.charge(*reader)?;
+                    if self.step(*reader).is_some_and(|reader| {
+                        reader
+                            .instruction
+                            .reads()
+                            .iter()
+                            .any(|(_, read)| self.same(*read, *written))
+                    }) {
+                        consumed = true;
+                        break;
+                    }
+                }
+                if !consumed {
+                    return Ok(false);
+                }
+            }
+        }
+        Ok(stores <= 1)
     }
 
     /// The value one name stands for, following the trivial-phi replacements.
@@ -2428,6 +2475,164 @@ mod finally_copy_tests {
     }
 }
 
+#[cfg(test)]
+mod monitor_branch_tests {
+    use super::*;
+    use jarde_jvm::engine::analyze_method_ir;
+    use jarde_jvm::environment::ResolutionEnvironment;
+    use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+    use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+    use jarde_reader::budget::Limits;
+    use jarde_reader::model::{
+        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+        PhysicalMethodId, PhysicalVariant,
+    };
+    use jarde_reader::view::{
+        DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+        MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+        RuntimeView,
+    };
+
+    fn plans(class: &[u8], name: &str, descriptor: &str) -> Vec<Verdict> {
+        let mut budget = Budget::new(Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 1_000,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 10,
+            method_bodies: 10,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 8,
+            dependency_depth: 4,
+            elapsed_millis: u64::MAX,
+        });
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
+            .expect("the frozen class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(class).to_hex().to_string()),
+                length: class.len() as u64,
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".into()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let analyzed = analyze_method_ir(
+            &[snapshot.clone()],
+            &MethodAnalysisRequest {
+                environment: ResolutionEnvironment {
+                    runtime: RuntimeView {
+                        physical: PhysicalView {
+                            snapshot: snapshot.id().clone(),
+                            scope: PhysicalScope::SnapshotAll,
+                        },
+                        profile: RuntimeProfile {
+                            java_release: 8,
+                            multi_release: MultiReleasePolicy::Disabled,
+                            layout: LayoutMode::Generic,
+                        },
+                        load_domain: domain.clone(),
+                    },
+                    domains: vec![domain],
+                    providers: Vec::new(),
+                },
+                method: PhysicalMethodId {
+                    owner: definition,
+                    name: JvmBytes(name.as_bytes().to_vec()),
+                    descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+                },
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut budget,
+        )
+        .expect("the frozen method analyzes");
+        let ir = analyzed.ir();
+        let canonical = ir.canonical().expect("canonical CFG");
+        let ssa = ir.ssa().expect("SSA");
+        let code = ir.code().expect("Code attribute");
+        let operations = Operations::of(code, ir.constant_pool());
+        let view = NormalFlowView::build(canonical, &mut budget).expect("normal-flow view");
+        let sites = crate::init::Sites::empty();
+        let mut verdicts = Vec::new();
+        for block in canonical.blocks() {
+            verdicts.push(
+                examine(
+                    canonical,
+                    &view,
+                    ssa,
+                    &operations,
+                    &code.exception_handlers,
+                    &sites,
+                    &crate::pass::JAVA_8,
+                    block.id(),
+                    &mut budget,
+                )
+                .expect("guard examination is bounded"),
+            );
+        }
+        verdicts
+    }
+
+    #[test]
+    fn frozen_two_arm_fixture_is_one_monitor_plan_and_three_arm_control_is_refused() {
+        let accepted = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-22/synchronized-multi-exit/SynchronizedMultiExit.class"
+        );
+        let refused = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-22/synchronized-multi-exit/negative-three-arm/SynchronizedThreeWay.class"
+        );
+        let accepted = plans(accepted, "choose", "(Ljava/lang/Object;Z)I");
+        assert!(accepted.iter().any(|verdict| matches!(
+            verdict,
+            Verdict::Claimed(plan) if matches!(plan.shape(), Shape::MonitorBranches {
+                branch_bci: 5,
+                then_exit_bci: 13,
+                then_return_bci: 14,
+                else_exit_bci: 20,
+                else_return_bci: 21,
+                ..
+            })
+        )));
+        let refused = plans(refused, "choose", "(Ljava/lang/Object;I)I");
+        assert!(!refused.iter().any(|verdict| matches!(
+            verdict,
+            Verdict::Claimed(plan) if matches!(plan.shape(), Shape::MonitorBranches { .. })
+        )));
+    }
+
+    #[test]
+    fn existing_single_exit_monitor_plan_is_unchanged() {
+        let class = include_bytes!("../../../tests/fixtures/p3-sync-return/v8/Locked.class");
+        let verdicts = plans(class, "locked", "()I");
+        assert!(verdicts.iter().any(|verdict| matches!(
+            verdict,
+            Verdict::Claimed(plan) if matches!(plan.shape(), Shape::Monitor {
+                returns: Some(_), ..
+            })
+        )));
+    }
+}
+
 /// Examines one block the walk cannot leave through the normal flow.
 ///
 /// The canonical graph fuses straight-line code, so the statement is **not** a block: the resource's
@@ -2867,6 +3072,20 @@ fn monitor(
     if !filled || !duplicated {
         return Ok(Some(refuse(Unproven::Monitor, enter)));
     }
+    let monitor_exits: Vec<u32> = facts
+        .order
+        .iter()
+        .copied()
+        .filter(|bci| matches!(facts.op(*bci), Some(Operation::Monitor { enter: false })))
+        .collect();
+    if monitor_exits.len() == 3 {
+        return Ok(Some(
+            match monitor_branches(facts, start, enter, lock, &monitor_exits)? {
+                Ok(plan) => Verdict::Claimed(plan),
+                Err((unproven, at)) => refuse(unproven, at),
+            },
+        ));
+    }
     // The row: its range begins right after the enter.
     let Some(after) = facts.next_bci(enter) else {
         return Ok(Some(refuse(Unproven::Monitor, enter)));
@@ -3029,6 +3248,299 @@ fn monitor(
         join,
         facts: facts_read,
     })))
+}
+
+/// Proves the one bounded two-return monitor shape carried by `Shape::MonitorBranches`.
+/// Each arm is a straight expression ending in `monitorexit; return`; the two exceptional rows
+/// cover the condition/first arm and second arm respectively and name the same exact cleanup.
+fn monitor_branches(
+    facts: &mut Facts<'_>,
+    start: u32,
+    enter: u32,
+    lock: u16,
+    exits: &[u32],
+) -> Result<Result<Plan, Cause>, StopReason> {
+    let refuse = |cause| Err(cause);
+    let [then_exit, else_exit, handler_exit] = exits else {
+        return Ok(refuse((Unproven::Monitor, enter)));
+    };
+    let mut branch_bci = None;
+    for bci in facts.bcis((facts.next_bci(enter).unwrap_or(enter), *then_exit)) {
+        facts.charge(bci)?;
+        if matches!(facts.op(bci), Some(Operation::Comparison { .. })) {
+            branch_bci = Some(bci);
+            break;
+        }
+    }
+    let Some(branch_bci) = branch_bci else {
+        return Ok(refuse((Unproven::Monitor, enter)));
+    };
+    let Some(Operation::Comparison { target, .. }) = facts.op(branch_bci) else {
+        unreachable!("the selected operation is a comparison")
+    };
+    let Some(then_start) = facts.next_bci(branch_bci) else {
+        return Ok(refuse((Unproven::Monitor, branch_bci)));
+    };
+    let else_start = *target;
+    if then_start >= *then_exit
+        || else_start != facts.block_at(else_start).map_or(u32::MAX, |b| b.bci())
+        || else_start <= then_start
+        || else_start >= *else_exit
+    {
+        return Ok(refuse((Unproven::Monitor, branch_bci)));
+    }
+    let Some(then_exit_load) = facts.previous_bci(*then_exit) else {
+        return Ok(refuse((Unproven::Monitor, *then_exit)));
+    };
+    let Some(else_exit_load) = facts.previous_bci(*else_exit) else {
+        return Ok(refuse((Unproven::Monitor, *else_exit)));
+    };
+    if facts.op(then_exit_load) != Some(&Operation::Load { slot: lock })
+        || facts.op(else_exit_load) != Some(&Operation::Load { slot: lock })
+    {
+        return Ok(refuse((Unproven::Monitor, then_exit_load)));
+    }
+    let Some(then_return) = facts.next_bci(*then_exit) else {
+        return Ok(refuse((Unproven::Monitor, *then_exit)));
+    };
+    let Some(else_return) = facts.next_bci(*else_exit) else {
+        return Ok(refuse((Unproven::Monitor, *else_exit)));
+    };
+    if !matches!(facts.op(then_return), Some(Operation::Return))
+        || !matches!(facts.op(else_return), Some(Operation::Return))
+    {
+        return Ok(refuse((Unproven::Monitor, then_return)));
+    }
+    for (arm_start, exit_load, return_bci) in [
+        (then_start, then_exit_load, then_return),
+        (else_start, else_exit_load, else_return),
+    ] {
+        let Some(instruction) = facts.step(return_bci).map(|step| step.instruction) else {
+            return Ok(refuse((Unproven::Monitor, return_bci)));
+        };
+        let operands = stack_operands(instruction);
+        let [(_, value)] = operands.as_slice() else {
+            return Ok(refuse((Unproven::Monitor, return_bci)));
+        };
+        let Definition::Instruction { bci: produced, .. } =
+            facts.ssa.value(facts.resolve(*value)).def()
+        else {
+            return Ok(refuse((Unproven::Monitor, return_bci)));
+        };
+        let arm_span = (arm_start, exit_load);
+        let mut checked_span = true;
+        for bci in facts.bcis(arm_span) {
+            facts.charge(bci)?;
+            checked_span &= facts.op(bci).is_some();
+        }
+        if *produced < arm_start
+            || *produced >= exit_load
+            || !checked_span
+            || !facts.statement_free(arm_span)
+            || !facts.one_expression_bounded(arm_span, return_bci)?
+        {
+            return Ok(refuse((Unproven::Body, arm_start)));
+        }
+        // The compact arm emitter places the sole returned expression at `ireturn`. It may not
+        // silently discard an independent invocation, local write, field write, or array write.
+        // For this bounded shape, admit at most the direct value-producing invocation.
+        for bci in facts.bcis((arm_start, exit_load)) {
+            facts.charge(bci)?;
+            match facts.op(bci) {
+                Some(Operation::Invoke(_)) if bci == *produced => {}
+                Some(
+                    Operation::Invoke(_)
+                    | Operation::Store { .. }
+                    | Operation::Increment { .. }
+                    | Operation::ArrayStore { .. },
+                ) => {
+                    return Ok(refuse((Unproven::Body, bci)));
+                }
+                Some(Operation::Field {
+                    access: crate::facts::FieldAccess::Write,
+                    ..
+                }) => {
+                    return Ok(refuse((Unproven::Body, bci)));
+                }
+                _ => {}
+            }
+        }
+    }
+    let Some(branch_block) = facts.block_of(branch_bci).cloned() else {
+        return Ok(refuse((Unproven::Monitor, branch_bci)));
+    };
+    if facts
+        .in_block(&branch_block)
+        .last()
+        .map(SsaInstruction::bci)
+        != Some(branch_bci)
+    {
+        return Ok(refuse((Unproven::Monitor, branch_bci)));
+    }
+    if facts.in_block(&branch_block).iter().any(|instruction| {
+        let bci = instruction.bci();
+        bci > enter
+            && bci < branch_bci
+            && !matches!(
+                facts.op(bci),
+                Some(Operation::Load { .. } | Operation::Push(_))
+            )
+    }) {
+        return Ok(refuse((Unproven::Body, branch_bci)));
+    }
+    let successors = facts.view.successor_ids(&branch_block);
+    let Some(then_block) = facts.block_at(then_start) else {
+        return Ok(refuse((Unproven::Monitor, then_start)));
+    };
+    let Some(else_block) = facts.block_at(else_start) else {
+        return Ok(refuse((Unproven::Monitor, else_start)));
+    };
+    if successors.len() != 2
+        || !successors.contains(&then_block)
+        || !successors.contains(&else_block)
+    {
+        return Ok(refuse((Unproven::Monitor, branch_bci)));
+    }
+    // Do not accept hidden jumps, nested tests, or extra reachable arms in either body.
+    for (arm_start, exit, ret) in [
+        (then_start, *then_exit, then_return),
+        (else_start, *else_exit, else_return),
+    ] {
+        let blocks = facts.blocks_in((arm_start, facts.span_end(ret)));
+        if blocks.is_empty() {
+            return Ok(refuse((Unproven::Span, arm_start)));
+        }
+        for (index, block) in blocks.iter().enumerate() {
+            facts.charge(block.bci())?;
+            let successors = facts.view.successor_ids(block);
+            if index + 1 == blocks.len() {
+                if !successors.is_empty() {
+                    return Ok(refuse((Unproven::Monitor, block.bci())));
+                }
+            } else if successors.len() != 1 || successors[0] != blocks[index + 1] {
+                return Ok(refuse((Unproven::Monitor, block.bci())));
+            }
+        }
+        if !matches!(facts.op(exit), Some(Operation::Monitor { enter: false })) {
+            return Ok(refuse((Unproven::Monitor, exit)));
+        }
+    }
+    let Some(first_end) = facts.next_bci(*then_exit) else {
+        return Ok(refuse((Unproven::Monitor, *then_exit)));
+    };
+    let Some(second_end) = facts.next_bci(*else_exit) else {
+        return Ok(refuse((Unproven::Monitor, *else_exit)));
+    };
+    let mut rows = Vec::new();
+    for row in facts.handlers {
+        facts.charge(row.start_bci)?;
+        if (row.start_bci, row.end_bci) == (facts.next_bci(enter).unwrap_or(enter), first_end)
+            || (row.start_bci, row.end_bci) == (else_start, second_end)
+        {
+            rows.push(row.clone());
+        }
+    }
+    let [then_row, else_row] = rows.as_slice() else {
+        return Ok(refuse((Unproven::Handler, enter)));
+    };
+    if then_row.catch_type_index.is_some()
+        || else_row.catch_type_index.is_some()
+        || facts.row_handler(then_row) != facts.row_handler(else_row)
+        || facts
+            .covering(branch_bci)
+            .iter()
+            .any(|row| row.ordinal != then_row.ordinal)
+    {
+        return Ok(refuse((Unproven::Handler, branch_bci)));
+    }
+    for (span, expected) in [
+        ((then_start, first_end), then_row.ordinal),
+        ((else_start, second_end), else_row.ordinal),
+    ] {
+        for bci in facts.bcis(span) {
+            facts.charge(bci)?;
+            if facts
+                .covering(bci)
+                .iter()
+                .any(|row| row.ordinal != expected)
+            {
+                return Ok(refuse((Unproven::Handler, bci)));
+            }
+        }
+    }
+    let handler = match monitor_handler(facts, then_row, lock) {
+        Ok(handler) => handler,
+        Err(cause) => return Ok(Err(cause)),
+    };
+    if handler.exit_bci != *handler_exit
+        || facts.row_handler(else_row) != Some(handler.entry.clone())
+    {
+        return Ok(refuse((Unproven::Monitor, *handler_exit)));
+    }
+    let mut handler_rows = Vec::new();
+    for row in facts.handlers {
+        facts.charge(row.start_bci)?;
+        if facts.row_handler(row).as_ref() == Some(&handler.entry) {
+            handler_rows.push(row);
+        }
+    }
+    let self_rows = handler_rows
+        .iter()
+        .filter(|row| {
+            (row.start_bci, row.end_bci) == (handler.entry.bci(), facts.span_end(handler.exit_bci))
+                && row.catch_type_index.is_none()
+        })
+        .count();
+    if self_rows != 1
+        || handler_rows.len() != 3
+        || handler_rows
+            .iter()
+            .any(|row| row.catch_type_index.is_some())
+    {
+        return Ok(refuse((Unproven::Handler, handler.exit_bci)));
+    }
+    let end = facts.span_end(else_return);
+    if handler.entry.bci() != end {
+        return Ok(refuse((Unproven::Span, end)));
+    }
+    let mut owned = facts.blocks_in((start, end));
+    if !owned.contains(&handler.entry) {
+        owned.push(handler.entry.clone());
+    }
+    owned.sort_by_key(CanonicalBlockId::bci);
+    let mut facts_read = vec![
+        enter,
+        branch_bci,
+        *then_exit,
+        then_exit_load,
+        then_return,
+        *else_exit,
+        else_exit_load,
+        else_return,
+        handler.entry.bci(),
+        handler.exit_bci,
+    ];
+    // The `synchronized` statement replaces every instruction in its certified cleanup, including
+    // loading and rethrowing the original exception object; retain the complete handler slice as
+    // provenance rather than anchoring only its entry and monitor exit.
+    facts_read.extend(facts.bcis(handler.span));
+    facts_read.sort_unstable();
+    facts_read.dedup();
+    Ok(Ok(Plan {
+        shape: Shape::MonitorBranches {
+            enter_bci: enter,
+            branch_bci,
+            then_exit_bci: *then_exit,
+            then_return_bci: then_return,
+            else_exit_bci: *else_exit,
+            else_return_bci: else_return,
+        },
+        lead: (start, start),
+        body: (then_start, else_exit_load),
+        owned,
+        join: None,
+        facts: facts_read,
+    }))
 }
 
 /// The `try`-with-resources shape.
