@@ -1966,6 +1966,26 @@
       "path": "tests/fixtures/p3-conditional-values/TernaryValues.java"
     },
     {
+      "blake3": "e036136d83d622db6a940a20b1d6874611f93436dccecd96a4d055478e712a8f",
+      "bytes": 1380,
+      "path": "tests/fixtures/p3-conditional-values/field-writes/ConditionalFieldWrites.class"
+    },
+    {
+      "blake3": "fe725ad146ba7a614979198cabe73bdab5e4c6262a2ecea9ce387ae286ee7faa",
+      "bytes": 811,
+      "path": "tests/fixtures/p3-conditional-values/field-writes/ConditionalFieldWrites.java"
+    },
+    {
+      "blake3": "d1ca727cfb07ba55046fa5686ce6eebd5649e57fc1ded773d4fa47fd1ea6f9ed",
+      "bytes": 1380,
+      "path": "tests/fixtures/p3-conditional-values/field-writes/ConditionalFieldWritesNon01.class"
+    },
+    {
+      "blake3": "6094fe683c8ea73c100098f6f24ef98523b2fc0e6763300a44ff1bb12f71d046",
+      "bytes": 410,
+      "path": "tests/fixtures/p3-conditional-values/field-writes/Runner.java"
+    },
+    {
       "blake3": "7c13113f297d5a58734bcc66348e0270ec0400b6aadbf2eed0b26bf5272a7435",
       "bytes": 684,
       "path": "tests/fixtures/p3-conditional-values/mixed-short-circuit-argument-controls/MixedArgumentControls.class"
@@ -3619,6 +3639,46 @@
       "blake3": "1b7b9e31436cdab84611d924722ad106c5ca1b44ed2fb678d20667a6801b29ed",
       "bytes": 1051,
       "path": "tests/fixtures/p3-postfix-lvalue-values/v8/PostfixLvalueValues.class"
+    },
+    {
+      "blake3": "e4aa8b14d4784375dc9e83cbb7deb80d0b8f90b01e9510c95c898d984e74c3b0",
+      "bytes": 1200,
+      "path": "tests/fixtures/p3-precise-rethrow/PreciseRethrowBoundaryProbe.java"
+    },
+    {
+      "blake3": "c56b1c0be277658802e0b24fa38c71fb0b7dd7d95d57b45e45948164e1daf405",
+      "bytes": 1957,
+      "path": "tests/fixtures/p3-precise-rethrow/PreciseRethrowBoundaryRunner.java"
+    },
+    {
+      "blake3": "afde18ff12b171cde183890d4d49ee3b55befc1222857a67e35ad160818e2d9b",
+      "bytes": 589,
+      "path": "tests/fixtures/p3-precise-rethrow/PreciseRethrowProbe.java"
+    },
+    {
+      "blake3": "e7bee7c779331f033faefd2634c24550e654052d3f8f420bb6042504d1e29fe2",
+      "bytes": 701,
+      "path": "tests/fixtures/p3-precise-rethrow/PreciseRethrowRunner.java"
+    },
+    {
+      "blake3": "3bafdb84a3768d0f8cf3e58306c27db790158f1c61df90af0b3badd948dc8ff0",
+      "bytes": 1813,
+      "path": "tests/fixtures/p3-precise-rethrow/v8/PreciseRethrowBoundaryProbe.class"
+    },
+    {
+      "blake3": "ceff353cd31fc9c669cad40e47daa37f1966d8718825f95145f2089e49eb1474",
+      "bytes": 2142,
+      "path": "tests/fixtures/p3-precise-rethrow/v8/PreciseRethrowBoundaryRunner.class"
+    },
+    {
+      "blake3": "e5afdae2362e52d2371f0d036e3dd32cebc53a52e42d856410f23ab8874286bc",
+      "bytes": 1232,
+      "path": "tests/fixtures/p3-precise-rethrow/v8/PreciseRethrowProbe.class"
+    },
+    {
+      "blake3": "d17b73175161fecba6652f5326593cb2f7725e2437c92d7cc1a8fe2bfa985ec7",
+      "bytes": 1445,
+      "path": "tests/fixtures/p3-precise-rethrow/v8/PreciseRethrowRunner.class"
     },
     {
       "blake3": "3e2638ebeb526e2a1071c27148f2f032c098cdaff727a67f2f35481991517b46",
