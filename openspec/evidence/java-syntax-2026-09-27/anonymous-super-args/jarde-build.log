@@ -1,0 +1,65 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.47
+   Compiling syn v3.0.5
+   Compiling shlex v2.0.1
+   Compiling serde_core v1.0.229
+   Compiling find-msvc-tools v0.1.12
+   Compiling cc v1.4.6
+   Compiling crc32fast v1.5.2
+   Compiling equivalent v1.0.2
+   Compiling cfg-if v1.0.4
+   Compiling hashbrown v0.17.1
+   Compiling indexmap v2.14.2
+   Compiling blake3 v1.8.7
+   Compiling serde v1.0.229
+   Compiling simd-adler32 v0.3.10
+   Compiling adler2 v2.0.1
+   Compiling thiserror v2.0.20
+   Compiling miniz_oxide v0.9.1
+   Compiling thiserror-impl v2.0.20
+   Compiling serde_derive v1.0.229
+   Compiling constant_time_eq v0.4.2
+   Compiling arrayvec v0.7.8
+   Compiling bitflags v2.13.2
+   Compiling noak v0.7.0
+   Compiling flate2 v1.1.10
+   Compiling rawzip v0.5.1
+   Compiling foldhash v0.1.5
+   Compiling hashbrown v0.15.5
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling fixedbitset v0.5.7
+   Compiling utf8parse v0.2.2
+   Compiling anstyle-parse v1.0.0
+   Compiling petgraph v0.8.3
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling zmij v1.0.23
+   Compiling anstyle v1.0.14
+   Compiling colorchoice v1.0.5
+   Compiling anstyle-query v1.1.5
+   Compiling anstream v1.0.0
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling clap_lex v1.1.1
+   Compiling heck v0.5.0
+   Compiling strsim v0.11.1
+   Compiling serde_json v1.0.151
+   Compiling clap_builder v4.6.7
+   Compiling clap_derive v4.6.7
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+warning: function `unique_anonymous_allocation` is never used
+    --> src/facade.rs:4708:4
+     |
+4708 | fn unique_anonymous_allocation<'a>(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `jarde` (lib) generated 1 warning
+   Compiling clap v4.6.7
+   Compiling jarde-cli v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 43.27s
+exit=0

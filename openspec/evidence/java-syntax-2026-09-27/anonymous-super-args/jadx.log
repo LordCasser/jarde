@@ -1,0 +1,118 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:generateEntrypointForLibs UP-TO-DATE
+> Task :buildSrc:generateEntrypointForLibsInPluginsBlock UP-TO-DATE
+> Task :buildSrc:generateExternalPluginSpecBuilders UP-TO-DATE
+> Task :buildSrc:generateLibrariesForLibs UP-TO-DATE
+> Task :buildSrc:extractPrecompiledScriptPluginPlugins UP-TO-DATE
+> Task :buildSrc:compilePluginsBlocks UP-TO-DATE
+> Task :buildSrc:generatePrecompiledScriptPluginAccessors UP-TO-DATE
+> Task :buildSrc:generateScriptPluginAdapters UP-TO-DATE
+> Task :buildSrc:verifyEarlyEvaluatedBuild UP-TO-DATE
+> Task :buildSrc:verifyTopLevelBuild UP-TO-DATE
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava UP-TO-DATE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources UP-TO-DATE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :
+Loaded env vars (0):
+
+
+jadx version: dev
+
+> Task :jadx-plugins:jadx-apks-input:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :jadx-plugins:jadx-apkm-input:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :jadx-plugins-tools:processResources NO-SOURCE
+> Task :jadx-commons:jadx-analysis:processResources NO-SOURCE
+> Task :jadx-plugins:jadx-dex-input:processResources UP-TO-DATE
+> Task :jadx-plugins:jadx-apkm-input:processResources UP-TO-DATE
+> Task :jadx-plugins:jadx-apks-input:processResources UP-TO-DATE
+> Task :jadx-cli:processResources UP-TO-DATE
+> Task :jadx-plugins:jadx-java-convert:processResources UP-TO-DATE
+> Task :jadx-plugins:jadx-kotlin-source-debug-extension:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :jadx-plugins:jadx-kotlin-metadata:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :jadx-plugins:jadx-java-input:processResources UP-TO-DATE
+> Task :jadx-plugins:jadx-smali-input:processResources UP-TO-DATE
+> Task :jadx-plugins:jadx-kotlin-source-debug-extension:processResources UP-TO-DATE
+> Task :jadx-plugins:jadx-xapk-input:processResources UP-TO-DATE
+> Task :jadx-plugins:jadx-aab-input:processResources UP-TO-DATE
+> Task :jadx-plugins:jadx-rename-mappings:processResources UP-TO-DATE
+> Task :jadx-core:processResources UP-TO-DATE
+> Task :jadx-plugins:jadx-kotlin-metadata:processResources UP-TO-DATE
+> Task :jadx-commons:jadx-zip:compileJava UP-TO-DATE
+> Task :jadx-commons:jadx-app-commons:compileJava UP-TO-DATE
+> Task :jadx-commons:jadx-zip:processResources NO-SOURCE
+> Task :jadx-commons:jadx-app-commons:processResources NO-SOURCE
+> Task :jadx-commons:jadx-zip:classes UP-TO-DATE
+> Task :jadx-commons:jadx-app-commons:classes UP-TO-DATE
+> Task :jadx-commons:jadx-app-commons:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-input-api:compileJava UP-TO-DATE
+> Task :jadx-commons:jadx-zip:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-input-api:processResources NO-SOURCE
+> Task :jadx-plugins:jadx-input-api:classes UP-TO-DATE
+> Task :jadx-plugins:jadx-input-api:jar UP-TO-DATE
+> Task :jadx-core:compileJava UP-TO-DATE
+> Task :jadx-core:classes UP-TO-DATE
+> Task :jadx-core:jar UP-TO-DATE
+> Task :jadx-commons:jadx-analysis:compileJava UP-TO-DATE
+> Task :jadx-commons:jadx-analysis:classes UP-TO-DATE
+> Task :jadx-plugins-tools:compileJava UP-TO-DATE
+> Task :jadx-commons:jadx-analysis:jar UP-TO-DATE
+> Task :jadx-plugins-tools:classes UP-TO-DATE
+> Task :jadx-plugins:jadx-rename-mappings:compileJava UP-TO-DATE
+> Task :jadx-plugins:jadx-rename-mappings:classes UP-TO-DATE
+> Task :jadx-plugins-tools:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-rename-mappings:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-aab-input:compileJava UP-TO-DATE
+> Task :jadx-plugins:jadx-aab-input:classes UP-TO-DATE
+> Task :jadx-plugins:jadx-aab-input:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-java-input:compileJava UP-TO-DATE
+> Task :jadx-plugins:jadx-java-input:classes UP-TO-DATE
+> Task :jadx-cli:compileJava UP-TO-DATE
+> Task :jadx-plugins:jadx-dex-input:compileJava UP-TO-DATE
+> Task :jadx-plugins:jadx-dex-input:classes UP-TO-DATE
+> Task :jadx-cli:classes UP-TO-DATE
+> Task :jadx-plugins:jadx-java-input:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-dex-input:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-xapk-input:compileJava UP-TO-DATE
+> Task :jadx-plugins:jadx-xapk-input:classes UP-TO-DATE
+> Task :jadx-plugins:jadx-java-convert:compileJava UP-TO-DATE
+> Task :jadx-plugins:jadx-java-convert:classes UP-TO-DATE
+> Task :jadx-plugins:jadx-xapk-input:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-smali-input:compileJava UP-TO-DATE
+> Task :jadx-plugins:jadx-smali-input:classes UP-TO-DATE
+> Task :jadx-plugins:jadx-java-convert:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-smali-input:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-kotlin-source-debug-extension:compileKotlin UP-TO-DATE
+> Task :jadx-plugins:jadx-kotlin-metadata:compileKotlin UP-TO-DATE
+> Task :jadx-plugins:jadx-apkm-input:compileKotlin UP-TO-DATE
+> Task :jadx-plugins:jadx-apks-input:compileKotlin UP-TO-DATE
+> Task :jadx-plugins:jadx-kotlin-source-debug-extension:compileJava NO-SOURCE
+> Task :jadx-plugins:jadx-apks-input:compileJava NO-SOURCE
+> Task :jadx-plugins:jadx-kotlin-metadata:compileJava NO-SOURCE
+> Task :jadx-plugins:jadx-apkm-input:compileJava NO-SOURCE
+> Task :jadx-plugins:jadx-kotlin-source-debug-extension:classes UP-TO-DATE
+> Task :jadx-plugins:jadx-kotlin-metadata:classes UP-TO-DATE
+> Task :jadx-plugins:jadx-apks-input:classes UP-TO-DATE
+> Task :jadx-plugins:jadx-apkm-input:classes UP-TO-DATE
+> Task :jadx-plugins:jadx-apks-input:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-kotlin-metadata:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-apkm-input:jar UP-TO-DATE
+> Task :jadx-plugins:jadx-kotlin-source-debug-extension:jar UP-TO-DATE
+
+> Task :jadx-cli:run
+INFO  - loading ...
+INFO  - processing ...
+INFO  - progress: 0 of 5 (0%)
+
+INFO  - done
+
+BUILD SUCCESSFUL in 6s
+64 actionable tasks: 1 executed, 63 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.1/userguide/configuration_cache_enabling.html
+exit=0

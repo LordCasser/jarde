@@ -1,0 +1,187 @@
+public class AnonymousSuperArgs {
+  private static final java.lang.StringBuilder EVENTS;
+    descriptor: Ljava/lang/StringBuilder;
+
+  public AnonymousSuperArgs();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static void event(java.lang.String);
+    descriptor: (Ljava/lang/String;)V
+    Code:
+       0: getstatic     #7                  // Field EVENTS:Ljava/lang/StringBuilder;
+       3: invokevirtual #13                 // Method java/lang/StringBuilder.length:()I
+       6: ifeq          18
+       9: getstatic     #7                  // Field EVENTS:Ljava/lang/StringBuilder;
+      12: bipush        124
+      14: invokevirtual #19                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+      17: pop
+      18: getstatic     #7                  // Field EVENTS:Ljava/lang/StringBuilder;
+      21: aload_0
+      22: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      25: pop
+      26: return
+
+  private static java.lang.String text(java.lang.String, java.lang.String);
+    descriptor: (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    Code:
+       0: new           #14                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #27                 // String arg:
+       9: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_0
+      13: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      16: invokevirtual #29                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      19: invokestatic  #33                 // Method event:(Ljava/lang/String;)V
+      22: aload_1
+      23: areturn
+
+  private static int number(java.lang.String, int);
+    descriptor: (Ljava/lang/String;I)I
+    Code:
+       0: new           #14                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #27                 // String arg:
+       9: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_0
+      13: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      16: invokevirtual #29                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      19: invokestatic  #33                 // Method event:(Ljava/lang/String;)V
+      22: iload_1
+      23: ireturn
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    Code:
+       0: ldc           #37                 // String capture
+       2: ldc           #39                 // String captured
+       4: invokestatic  #41                 // Method text:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+       7: astore_1
+       8: new           #45                 // class AnonymousSuperArgs$1
+      11: dup
+      12: ldc           #47                 // String super-label
+      14: ldc           #49                 // String explicit
+      16: invokestatic  #41                 // Method text:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      19: ldc           #51                 // String super-value
+      21: bipush        17
+      23: invokestatic  #53                 // Method number:(Ljava/lang/String;I)I
+      26: aload_1
+      27: invokespecial #57                 // Method AnonymousSuperArgs$1."<init>":(Ljava/lang/String;ILjava/lang/String;)V
+      30: astore_2
+      31: getstatic     #60                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      34: getstatic     #7                  // Field EVENTS:Ljava/lang/StringBuilder;
+      37: invokevirtual #66                 // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+      40: getstatic     #60                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      43: aload_2
+      44: invokevirtual #72                 // Method Base.render:()Ljava/lang/String;
+      47: invokevirtual #77                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      50: return
+
+  static {};
+    descriptor: ()V
+    Code:
+       0: new           #14                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+       7: putstatic     #7                  // Field EVENTS:Ljava/lang/StringBuilder;
+      10: return
+}
+class Base {
+  private final java.lang.String label;
+    descriptor: Ljava/lang/String;
+
+  private final int value;
+    descriptor: I
+
+  Base(java.lang.String, int);
+    descriptor: (Ljava/lang/String;I)V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #7                  // Field label:Ljava/lang/String;
+       9: aload_0
+      10: iload_2
+      11: putfield      #13                 // Field value:I
+      14: new           #17                 // class java/lang/StringBuilder
+      17: dup
+      18: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+      21: ldc           #20                 // String base:
+      23: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      26: aload_1
+      27: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      30: ldc           #26                 // String :
+      32: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      35: iload_2
+      36: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      39: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      42: invokestatic  #35                 // Method AnonymousSuperArgs.event:(Ljava/lang/String;)V
+      45: return
+
+  java.lang.String render();
+    descriptor: ()Ljava/lang/String;
+    Code:
+       0: new           #17                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+       7: aload_0
+       8: getfield      #7                  // Field label:Ljava/lang/String;
+      11: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      14: ldc           #26                 // String :
+      16: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: aload_0
+      20: getfield      #13                 // Field value:I
+      23: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      26: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      29: areturn
+}
+class AnonymousSuperArgs$1 extends Base {
+  final java.lang.String val$captured;
+    descriptor: Ljava/lang/String;
+
+  AnonymousSuperArgs$1(java.lang.String, int, java.lang.String);
+    descriptor: (Ljava/lang/String;ILjava/lang/String;)V
+    Code:
+       0: aload_0
+       1: aload_3
+       2: putfield      #1                  // Field val$captured:Ljava/lang/String;
+       5: aload_0
+       6: aload_1
+       7: iload_2
+       8: invokespecial #7                  // Method Base."<init>":(Ljava/lang/String;I)V
+      11: return
+
+  java.lang.String render();
+    descriptor: ()Ljava/lang/String;
+    Code:
+       0: new           #13                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #18                 // String body:
+       9: invokevirtual #20                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_0
+      13: getfield      #1                  // Field val$captured:Ljava/lang/String;
+      16: invokevirtual #20                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      22: invokestatic  #28                 // Method AnonymousSuperArgs.event:(Ljava/lang/String;)V
+      25: new           #13                 // class java/lang/StringBuilder
+      28: dup
+      29: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+      32: aload_0
+      33: invokespecial #34                 // Method Base.render:()Ljava/lang/String;
+      36: invokevirtual #20                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: ldc           #37                 // String :
+      41: invokevirtual #20                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      44: aload_0
+      45: getfield      #1                  // Field val$captured:Ljava/lang/String;
+      48: invokevirtual #20                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      51: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      54: areturn
+}
+exit=0
