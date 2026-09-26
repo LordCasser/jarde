@@ -16113,7 +16113,8 @@ impl Builder<'_> {
             );
         Ok(Expr::new(
             ExprKind::New {
-                ty: spell_reference(&site.class).ok_or_else(|| {
+                ty: self.source_type_path_name(&site.class)
+                    .or_else(|| spell_reference(&site.class)).ok_or_else(|| {
                     format!(
                         "the construction at BCI {} names the class `{}`, which this layer cannot spell as a Java type",
                         site.constructor, site.class

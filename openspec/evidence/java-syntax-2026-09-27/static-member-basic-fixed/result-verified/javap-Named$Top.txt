@@ -1,0 +1,14 @@
+class Named$Top {
+  Named$Top();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static int value();
+    descriptor: ()I
+    Code:
+       0: iconst_4
+       1: ireturn
+}

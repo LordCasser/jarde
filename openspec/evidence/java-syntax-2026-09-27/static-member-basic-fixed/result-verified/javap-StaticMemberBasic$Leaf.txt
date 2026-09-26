@@ -1,0 +1,14 @@
+class StaticMemberBasic$Leaf {
+  StaticMemberBasic$Leaf();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  int value();
+    descriptor: ()I
+    Code:
+       0: bipush        9
+       2: ireturn
+}
