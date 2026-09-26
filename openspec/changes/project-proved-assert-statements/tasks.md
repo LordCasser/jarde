@@ -3,7 +3,8 @@
 - [x] 1.1 在 `recover-conditional-values` 的 `<clinit>` 显式赋值验收后，用当前 CLI 原样重放 `assert-core/replay.py`：记录 subject/runner/CLI/JADX 哈希、`javap` 和原/JADX/Jarde 的完整源码、javac 与 `-Xverify:all` `-ea`/`-da`/选择性启停输出；证明当前差异只是源级形态，历史 BCI 13 RED 不冒充现状。
   验收：[2026-09-26 当前三方重放](../../evidence/java-syntax-2026-09-24/assert-core/replay-2026-09-26.md)保存输入/工具哈希、完整源码、javap、javac 与三种启停模式；原/JADX/Jarde 正例和错误 owner 控制均能重编或通过验证器，执行相同。旧 BCI 13 RED 已标为历史结果，现仅剩 `assert` 语法与合成标志的类级投影。
 
-- [ ] 1.2 冻结无消息、两条以上断言及类静态初始化有其他效果的 Java 8 正例，和 wrong-owner、非 0/1、额外读取/写入、改变异常处理器或构造器的 JVM 可验证反例；逐例保存物理 class SHA、关键 BCI/descriptor/flags、原/JADX/Jarde 重编与运行状态。无效 classfile 不计作拒绝证据。
+- [x] 1.2 冻结无消息、两条以上断言及类静态初始化有其他效果的 Java 8 正例，和 wrong-owner、非 0/1、额外读取/写入、改变异常处理器或构造器的 JVM 可验证反例；逐例保存物理 class SHA、关键 BCI/descriptor/flags、原/JADX/Jarde 重编与运行状态。无效 classfile 不计作拒绝证据。
+  验收：[当前 CLI 三方边界重放](../../evidence/java-syntax-2026-09-24/assert-core/extensions/replay-current-2026-09-26.md)包含完整源码、哈希、BCI/descriptor/flags、Java 8 编译及 `-Xverify:all` 运行结果。异常处理器类合法验证；Jarde 对 `check(Z)V` 明确输出 explanation-only 拒绝标记与 BCI/原因，其类文本碰巧可编译但不作为该方法的行为等价输出。同字段第二次 `putstatic` 使用仅 flags 补丁的 verifier-valid class，Jarde 保留两次赋值，Java 8 编译器因 final 字段重复赋值而拒绝。非 0/1 类复用 SHA `b52d39dd…` 的既有 fixture，未重复造例。
 
 ## 2. 证明类级开关和每条断言
 
