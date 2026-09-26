@@ -16,4 +16,4 @@
 
 ## 4. 架构师独立验收
 
-- [ ] 4.1 Root 独立复跑冻结脚本、定向与受影响回归，审查使用普查/预算/来源/原子发布边界，执行 `cargo fmt --all -- --check`、`openspec validate recover-proved-plain-enum-arities --strict`；通过后更新 DT-10 盘点状态并提交推送。
+- [x] 4.1 Root 独立复跑冻结脚本、定向与受影响回归，审查使用普查/预算/来源/原子发布边界，执行 `cargo fmt --all -- --check`、`openspec validate recover-proved-plain-enum-arities --strict`；通过后更新 DT-10 盘点状态并提交推送。

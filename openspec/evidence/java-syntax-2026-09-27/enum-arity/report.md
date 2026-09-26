@@ -23,3 +23,7 @@ four=[NORTH, SOUTH, EAST, WEST]
 Jarde 对四个 class 的 class-source 请求均成功，但三个 enum 文本都把物理字段作为普通成员写出，没有恢复源级枚举常量。完整源码集的 Java 8 重编失败；`javac` 分别在 `Empty.java` 的 `$VALUES`、`One.java` 的 `ONLY` 和 `Four.java` 的 `NORTH` 声明处报告 `enum constant expected here`。因此三种枚举都各自提供了确定的源码语法失败证据；Jarde 的完整源码集未能编译，故没有运行它的 runner，也不声称三种枚举的运行行为已验证。此结果只覆盖 DT-10，不外推到带匿名常量体的 DT-12。
 
 测试工具版本及原始/两份反编译源码、编译日志、运行日志、Jarde CLI 状态和空枚举 `javap` 输出均保存在本目录。冻结输入由 JDK 23.0.1 的 `javac --release 8 -g:none` 生成。
+
+## 修后验收
+
+修后重放产物独立保存在 [fixed](fixed/)；原始 SHA 核对和失败基线没有被覆盖。Jarde 的 `Empty`、`One`、`Four` 分别输出合法的零、一、四常量声明，完整四类源码通过 `javac --release 8 -g:none`，`java -Xverify:all` 输出与原/JADX 同为 `empty=0`、`one=ONLY:0/1`、`four=[NORTH, SOUTH, EAST, WEST]`。Root 在合并 DT-05 后再次执行 34 个枚举模块测试、匿名接口拒绝回归、workspace check 和 fixed 重放，均通过；此结论只关闭这组三种普通顶级枚举的冻结差距，不外推到匿名常量体。
