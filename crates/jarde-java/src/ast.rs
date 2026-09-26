@@ -691,7 +691,13 @@ pub enum StmtKind {
     /// The initialiser is optional because a slot's first write may not carry a value this layer can
     /// render; the declaration is still written, and the assignment that follows states the value.
     Declare {
+        /// The JVM/semantic type the local analysis decided for this variable. Source projection
+        /// may spell the declaration through a proved member path without changing this identity.
         ty: Type,
+        /// A Java source spelling proved from this run's selected member-type path, when one is
+        /// available. This is declaration-only presentation; reads, assignments and type checks
+        /// continue to use `ty`.
+        source_type_name: Option<String>,
         name: String,
         value: Option<Expr>,
     },

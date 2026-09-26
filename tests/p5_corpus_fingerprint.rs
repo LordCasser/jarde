@@ -194,6 +194,7 @@ What the oracle *prints* is generated at run time from a JDK the repository does
         label: "恢复",
         state: "pinned",
         carriers: &[
+            file("tests/fixtures/proved-varargs-calls/v8/VarargsCalls.class"),
             file("tests/fixtures/p3-local-rewrite/v8/LocalRewrite.class"),
             file("tests/fixtures/p3-scope/v8/Scope.class"),
             file("tests/fixtures/p3-scope/v8-debug/Scope.class"),
@@ -221,6 +222,9 @@ What the oracle *prints* is generated at run time from a JDK the repository does
             file("tests/fixtures/p3-assert-core/v8/AssertCore.class"),
             file("tests/fixtures/p3-assert-core/AssertCore-wrong-owner.class"),
             file("tests/fixtures/p3-assert-core/AssertCore-non01-arms.class"),
+            file("tests/fixtures/proved-varargs-calls/VarargsCalls.java"),
+            file("tests/fixtures/proved-varargs-calls/VarargsCallsRunner.java"),
+            record("tests/fixtures/proved-varargs-calls/README.md"),
             file("tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"),
             file("fuzz/corpus/method_analysis/jsr-ret.class"),
             file("fuzz/corpus/method_analysis/legacy-clone.class"),

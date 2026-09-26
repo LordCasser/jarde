@@ -1,0 +1,10 @@
+ordered=3/3/123
+one=1
+objects=2
+explicit=2/2/45
+plain=2/2/67
+held=2
+overload=1
+null-exception=java.lang.NullPointerException
+array=[Ljava.lang.Object;/1
+exception=stop/2/19
