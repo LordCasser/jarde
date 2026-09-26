@@ -2339,6 +2339,38 @@ pub(crate) struct ConditionalValueProof {
     pub(crate) consumer_bci: u32,
 }
 
+/// One physical instruction of the straight value bridge, in execution order.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct IntermediateBridgeStep {
+    pub(crate) bci: u32,
+    pub(crate) reads: Vec<(Slot, ValueId)>,
+    pub(crate) writes: Vec<(Slot, ValueId)>,
+    pub(crate) operation: Operation,
+}
+
+/// Two distinct stack joins connected by one proved, pure integer addition.
+/// The child proof owns its two call leaves; the bridge and outer Phi are checked independently.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct IntermediateJoinProof {
+    pub(crate) branch_bci: u32,
+    pub(crate) child: ConditionalValueProof,
+    pub(crate) child_on_true: bool,
+    pub(crate) join: CanonicalBlockId,
+    pub(crate) phi: ValueId,
+    pub(crate) when_true: ValueId,
+    pub(crate) when_false: ValueId,
+    pub(crate) bridge_terminal: CanonicalBlockId,
+    pub(crate) bridge_steps: Vec<IntermediateBridgeStep>,
+    pub(crate) consumer_bci: u32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum IntermediateJoinAttempt {
+    NotCandidate,
+    Proved(IntermediateJoinProof),
+    Refused(&'static str),
+}
+
 /// A complete conditional tree whose leaves all feed the same stack Phi.
 ///
 /// The map is keyed by the terminal canonical block of each straight leaf, so Phi input order
@@ -2933,6 +2965,443 @@ fn prove_conditional_value_with_forward(
         when_false,
         consumer_bci,
     }))
+}
+
+/// Proves the narrow two-join shape before any child value is made visible to the builder.
+/// Both joins, the ordered bridge instructions and their SSA uses are independent facts; a
+/// syntactic `Sequence(If, Straight)` alone never licenses moving a call into an expression.
+pub(crate) fn prove_intermediate_join_value(
+    region: &Region,
+    canonical: &CanonicalCfg,
+    ssa: &SsaTable,
+    operations: &Operations,
+    budget: &mut Budget,
+) -> Result<IntermediateJoinAttempt, StopReason> {
+    let Region::If {
+        prefix,
+        then_arm,
+        else_arm,
+        ..
+    } = region
+    else {
+        return Ok(IntermediateJoinAttempt::NotCandidate);
+    };
+    let has_bridge = |arm: &Region| {
+        matches!(arm,
+        Region::Sequence { regions } if matches!(regions.as_slice(),
+            [Region::If { prefix, .. }, Region::Straight { .. }] if prefix.is_empty()))
+    };
+    // A prefix is emitted before the branch plan is consulted. Keep this first slice to a
+    // branch-only root, so a refused whole-arm quote cannot claim an already emitted prefix.
+    if !prefix.is_empty() || (!has_bridge(then_arm) && !has_bridge(else_arm)) {
+        return Ok(IntermediateJoinAttempt::NotCandidate);
+    }
+    Ok(
+        match prove_intermediate_join_candidate(region, canonical, ssa, operations, budget)? {
+            Some(proof) => IntermediateJoinAttempt::Proved(proof),
+            None => IntermediateJoinAttempt::Refused(
+                "the intermediate join, bridge and outer conditional do not form a closed value",
+            ),
+        },
+    )
+}
+
+fn prove_intermediate_join_candidate(
+    region: &Region,
+    canonical: &CanonicalCfg,
+    ssa: &SsaTable,
+    operations: &Operations,
+    budget: &mut Budget,
+) -> Result<Option<IntermediateJoinProof>, StopReason> {
+    let Region::If {
+        branch,
+        branch_bci,
+        then_arm,
+        else_arm,
+        join: Some(join),
+        ..
+    } = region
+    else {
+        return Ok(None);
+    };
+    let (child, bridge_blocks, sibling, child_on_true) =
+        match (then_arm.as_ref(), else_arm.as_ref()) {
+            (Region::Sequence { regions }, Region::Straight { blocks: sibling })
+                if matches!(
+                    regions.as_slice(),
+                    [Region::If { .. }, Region::Straight { .. }]
+                ) =>
+            {
+                let [child, Region::Straight { blocks: bridge }] = regions.as_slice() else {
+                    unreachable!()
+                };
+                (child, bridge.as_slice(), sibling.as_slice(), true)
+            }
+            (Region::Straight { blocks: sibling }, Region::Sequence { regions })
+                if matches!(
+                    regions.as_slice(),
+                    [Region::If { .. }, Region::Straight { .. }]
+                ) =>
+            {
+                let [child, Region::Straight { blocks: bridge }] = regions.as_slice() else {
+                    unreachable!()
+                };
+                (child, bridge.as_slice(), sibling.as_slice(), false)
+            }
+            _ => return Ok(None),
+        };
+    let Region::If {
+        branch: child_branch,
+        join: Some(child_join),
+        then_arm: child_true,
+        else_arm: child_false,
+        ..
+    } = child
+    else {
+        return Ok(None);
+    };
+    let (
+        Region::Straight {
+            blocks: child_true_blocks,
+        },
+        Region::Straight {
+            blocks: child_false_blocks,
+        },
+    ) = (child_true.as_ref(), child_false.as_ref())
+    else {
+        return Ok(None);
+    };
+    let (
+        Some(bridge_entry),
+        Some(bridge_terminal),
+        Some(sibling_entry),
+        Some(sibling_terminal),
+        Some(child_true_terminal),
+        Some(child_false_terminal),
+    ) = (
+        bridge_blocks.first(),
+        bridge_blocks.last(),
+        sibling.first(),
+        sibling.last(),
+        child_true_blocks.last(),
+        child_false_blocks.last(),
+    )
+    else {
+        return Ok(None);
+    };
+    if child_join != bridge_entry || child_join == join || branch == child_branch {
+        return Ok(None);
+    }
+    let ConditionalValueAttempt::Proved(child_proof) =
+        prove_conditional_value(child, canonical, ssa, operations, budget)?
+    else {
+        return Ok(None);
+    };
+
+    // The complete candidate has one physical owner per block and stays on one canonical path.
+    let owned = region.blocks();
+    charge(
+        budget,
+        CountedBudgetDimension::IrItems,
+        u64::try_from(owned.len()).unwrap_or(u64::MAX),
+        Some(*branch_bci),
+    )?;
+    let distinct: BTreeSet<_> = owned.iter().map(|block| (*block).clone()).collect();
+    if distinct.len() != owned.len() || owned.iter().any(|block| block.path() != branch.path()) {
+        return Ok(None);
+    }
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            canonical
+                .edges()
+                .len()
+                .saturating_mul(2)
+                .saturating_add(owned.len())
+                .saturating_add(ssa.phis().len()),
+        )
+        .unwrap_or(u64::MAX),
+        Some(*branch_bci),
+    )?;
+    let mut incoming: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
+        BTreeMap::new();
+    let mut outgoing: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
+        BTreeMap::new();
+    for edge in canonical.edges() {
+        if distinct.contains(edge.to()) || edge.to() == join {
+            incoming
+                .entry(edge.to().clone())
+                .or_default()
+                .push((edge.kind(), edge.from().clone()));
+        }
+        if distinct.contains(edge.from()) {
+            outgoing
+                .entry(edge.from().clone())
+                .or_default()
+                .push((edge.kind(), edge.to().clone()));
+        }
+    }
+    let Some((_, taken_target)) = operations.get(*branch_bci).and_then(Operation::comparison)
+    else {
+        return Ok(None);
+    };
+    let (true_entry, false_entry) = if child_on_true {
+        (child_branch, sibling_entry)
+    } else {
+        (sibling_entry, child_branch)
+    };
+    if false_entry.bci() != taken_target {
+        return Ok(None);
+    }
+    let parent_outgoing = outgoing.get(branch).map(Vec::as_slice).unwrap_or(&[]);
+    if parent_outgoing.len() != 2
+        || parent_outgoing
+            .iter()
+            .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
+        || !parent_outgoing.iter().any(|(_, to)| to == true_entry)
+        || !parent_outgoing.iter().any(|(_, to)| to == false_entry)
+    {
+        return Ok(None);
+    }
+    let child_incoming = incoming.get(child_branch).map(Vec::as_slice).unwrap_or(&[]);
+    if child_incoming.len() != 1
+        || child_incoming[0].0 != CanonicalEdgeKind::Normal
+        || &child_incoming[0].1 != branch
+    {
+        return Ok(None);
+    }
+    let expected_join_predecessors: BTreeSet<_> =
+        [bridge_terminal, sibling_terminal].into_iter().collect();
+    let join_incoming = incoming.get(join).map(Vec::as_slice).unwrap_or(&[]);
+    let actual_join_predecessors: BTreeSet<_> =
+        join_incoming.iter().map(|(_, from)| from).collect();
+    if join_incoming.len() != 2
+        || join_incoming
+            .iter()
+            .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
+        || actual_join_predecessors != expected_join_predecessors
+    {
+        return Ok(None);
+    }
+    for (blocks, first_predecessors) in [
+        (
+            bridge_blocks,
+            vec![child_true_terminal, child_false_terminal],
+        ),
+        (sibling, vec![branch]),
+    ] {
+        for (index, block) in blocks.iter().enumerate() {
+            poll(budget, Some(block.bci()))?;
+            let expected_in: Vec<&CanonicalBlockId> = if index == 0 {
+                first_predecessors.clone()
+            } else {
+                vec![&blocks[index - 1]]
+            };
+            let expected_out = blocks.get(index + 1).unwrap_or(join);
+            let actual_in = incoming.get(block).map(Vec::as_slice).unwrap_or(&[]);
+            let actual_out = outgoing.get(block).map(Vec::as_slice).unwrap_or(&[]);
+            if actual_in.len() != expected_in.len()
+                || actual_in.iter().any(|(kind, from)| {
+                    *kind != CanonicalEdgeKind::Normal || !expected_in.contains(&from)
+                })
+                || actual_out.len() != 1
+                || actual_out[0].0 != CanonicalEdgeKind::Normal
+                || &actual_out[0].1 != expected_out
+            {
+                return Ok(None);
+            }
+        }
+    }
+
+    // Preserve every instruction of the bridge in exact execution order. This slice accepts one
+    // int constant, its one iadd, and a final structural transfer; no store, call or unknown op.
+    let mut bridge_steps = Vec::new();
+    for block in bridge_blocks {
+        let Some(ssa_block) = ssa.block(block) else {
+            return Ok(None);
+        };
+        for instruction in ssa_block.instructions() {
+            poll(budget, Some(instruction.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::IrItems,
+                1,
+                Some(instruction.bci()),
+            )?;
+            let Some(operation) = operations.get(instruction.bci()).cloned() else {
+                return Ok(None);
+            };
+            bridge_steps.push(IntermediateBridgeStep {
+                bci: instruction.bci(),
+                reads: instruction.reads().to_vec(),
+                writes: instruction.writes().to_vec(),
+                operation,
+            });
+        }
+    }
+    let [constant, addition, transfer] = bridge_steps.as_slice() else {
+        return Ok(None);
+    };
+    if !matches!(constant.operation, Operation::Push(ConstantValue::Int(_)))
+        || !matches!(
+            addition.operation,
+            Operation::Arithmetic {
+                op: ArithmeticOp::Add
+            }
+        )
+        || !matches!(transfer.operation, Operation::Transfer)
+        || !constant.reads.is_empty()
+        || constant.writes.len() != 1
+        || addition.reads.len() != 2
+        || addition.writes.len() != 1
+        || !transfer.reads.is_empty()
+        || !transfer.writes.is_empty()
+        || addition.bci != child_proof.consumer_bci
+    {
+        return Ok(None);
+    }
+    let (constant_slot, constant_value) = constant.writes[0];
+    let (result_slot, bridge_value) = addition.writes[0];
+    if !matches!(constant_slot, Slot::Stack(_))
+        || result_slot != Slot::Stack(child_proof.stack_depth)
+        || stack_operands_from_steps(&addition.reads)
+            != [
+                (Slot::Stack(child_proof.stack_depth), child_proof.phi),
+                (constant_slot, constant_value),
+            ]
+        || !matches!(ssa.value(constant_value).def(), Definition::Instruction { bci, .. } if *bci == constant.bci)
+        || !matches!(ssa.value(bridge_value).def(), Definition::Instruction { bci, .. } if *bci == addition.bci)
+        || ssa.value(constant_value).uses().len() != 1
+        || ssa.value(constant_value).uses()[0].bci() != Some(addition.bci)
+        || ssa.value(constant_value).uses()[0].block() != bridge_entry
+        || ssa.value(bridge_value).ty() != &Value::Int
+        || ssa.value(child_proof.phi).ty() != &Value::Int
+    {
+        return Ok(None);
+    }
+
+    let stack_phis: Vec<_> = ssa
+        .phis()
+        .iter()
+        .filter(|phi| phi.block() == join && matches!(phi.slot(), Slot::Stack(_)))
+        .collect();
+    let varying: Vec<_> = stack_phis
+        .iter()
+        .copied()
+        .filter(|phi| !matches!(phi.inputs(), [left, right] if left == right))
+        .collect();
+    let [phi] = varying.as_slice() else {
+        return Ok(None);
+    };
+    if stack_phis.iter().any(|other| other.value() != phi.value()
+        && !matches!(other.inputs(), [PhiInput::Value(left), PhiInput::Value(right)] if left == right))
+        || phi.inputs().len() != 2
+        || ssa.value(phi.value()).replaced_by().is_some()
+        || !matches!(ssa.value(phi.value()).def(), Definition::Phi { block, slot }
+            if block == join && *slot == phi.slot())
+        || ssa.value(phi.value()).ty() != &Value::Int
+    { return Ok(None) }
+    let side_values = [bridge_value, {
+        let Some(exit) = ssa.block(sibling_terminal).and_then(|block| {
+            block
+                .exit()
+                .iter()
+                .find(|(slot, _)| *slot == phi.slot())
+                .map(|(_, value)| *value)
+        }) else {
+            return Ok(None);
+        };
+        exit
+    }];
+    // Phi inputs carry no edge labels. Match their exact set only after both real predecessor
+    // exits and the two normal incoming edges have been established above.
+    let phi_inputs: Option<BTreeSet<ValueId>> = phi
+        .inputs()
+        .iter()
+        .map(|input| match input {
+            PhiInput::Value(value) => Some(*value),
+            PhiInput::Itself => None,
+        })
+        .collect();
+    if ssa.block(bridge_terminal).is_none_or(|block| {
+        !block
+            .exit()
+            .iter()
+            .any(|(slot, value)| *slot == phi.slot() && *value == bridge_value)
+    }) || side_values[0] == side_values[1]
+        || phi_inputs != Some(side_values.into_iter().collect())
+    {
+        return Ok(None);
+    }
+    let sibling_value = side_values[1];
+    if !matches!(ssa.value(sibling_value).def(), Definition::Instruction { block, .. } if sibling.contains(block))
+        || ssa.value(sibling_value).ty() != &Value::Int
+    {
+        return Ok(None);
+    }
+    for value in [bridge_value, sibling_value] {
+        let [usage] = ssa.value(value).uses() else {
+            return Ok(None);
+        };
+        if usage.block() != join || usage.bci().is_some() {
+            return Ok(None);
+        }
+    }
+    let [usage] = ssa.value(phi.value()).uses() else {
+        return Ok(None);
+    };
+    let Some(consumer_bci) = usage.bci() else {
+        return Ok(None);
+    };
+    let Some(join_block) = ssa.block(join) else {
+        return Ok(None);
+    };
+    let [consumer] = join_block.instructions() else {
+        return Ok(None);
+    };
+    if usage.block() != join
+        || consumer.bci() != consumer_bci
+        || !matches!(operations.get(consumer_bci), Some(Operation::Return))
+        || consumer
+            .reads()
+            .iter()
+            .filter(|(_, value)| *value == phi.value())
+            .count()
+            != 1
+    {
+        return Ok(None);
+    }
+    let (when_true, when_false) = if child_on_true {
+        (bridge_value, sibling_value)
+    } else {
+        (sibling_value, bridge_value)
+    };
+    Ok(Some(IntermediateJoinProof {
+        branch_bci: *branch_bci,
+        child: child_proof,
+        child_on_true,
+        join: join.clone(),
+        phi: phi.value(),
+        when_true,
+        when_false,
+        bridge_terminal: bridge_terminal.clone(),
+        bridge_steps,
+        consumer_bci,
+    }))
+}
+
+fn stack_operands_from_steps(reads: &[(Slot, ValueId)]) -> Vec<(Slot, ValueId)> {
+    let mut stack: Vec<_> = reads
+        .iter()
+        .copied()
+        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        .collect();
+    stack.sort_by_key(|(slot, _)| match slot {
+        Slot::Stack(depth) => *depth,
+        _ => unreachable!(),
+    });
+    stack
 }
 
 /// Proves a bounded `If` tree whose leaves all flow directly to one shared join.
@@ -7404,6 +7873,35 @@ impl Builder<'_> {
                 branch_bci,
                 ..
             } => {
+                match prove_intermediate_join_value(
+                    region,
+                    self.canonical,
+                    self.ssa,
+                    self.operations,
+                    self.budget,
+                )? {
+                    IntermediateJoinAttempt::Proved(proof) => {
+                        match self.build_intermediate_join_value(&proof, region) {
+                            Ok(expression) => {
+                                self.conditional_values.insert(proof.phi, expression);
+                                self.conditional_branches.insert(
+                                    proof.branch_bci,
+                                    ConditionalBranchPlan::Folded(proof.phi),
+                                );
+                            }
+                            Err(ConditionalValueBuildError::Refused(reason)) => {
+                                self.refuse_intermediate_join(region, proof.branch_bci, reason)?;
+                            }
+                            Err(ConditionalValueBuildError::Stop(stop)) => return Err(stop),
+                        }
+                        return Ok(());
+                    }
+                    IntermediateJoinAttempt::Refused(reason) => {
+                        self.refuse_intermediate_join(region, *branch_bci, reason.to_owned())?;
+                        return Ok(());
+                    }
+                    IntermediateJoinAttempt::NotCandidate => {}
+                }
                 if let Some(proof) = prove_conditional_tree_value(
                     region,
                     self.canonical,
@@ -7516,6 +8014,36 @@ impl Builder<'_> {
             | Region::LoopBreak { .. }
             | Region::LoopContinue { .. } => {}
         }
+        Ok(())
+    }
+
+    /// Quote every physical instruction of a refused two-join candidate. The ordinary region
+    /// quote names canonical raw-block starts; a bridge can hold several instructions in one
+    /// block, and dropping those BCIs would hide its effects or an exception it can throw.
+    fn refuse_intermediate_join(
+        &mut self,
+        region: &Region,
+        branch_bci: u32,
+        reason: String,
+    ) -> Result<(), StopReason> {
+        let mut bcis = Vec::new();
+        let mut seen = BTreeSet::new();
+        for block in region.blocks() {
+            for bci in self.fallback_instruction_bcis(block)? {
+                if seen.insert(bci) {
+                    bcis.push(bci);
+                }
+            }
+        }
+        for bci in self.quoted_bcis(branch_bci) {
+            if seen.insert(bci) {
+                bcis.push(bci);
+            }
+        }
+        self.conditional_branches.insert(
+            branch_bci,
+            ConditionalBranchPlan::Refused(reason, Some(bcis)),
+        );
         Ok(())
     }
 
@@ -7983,6 +8511,158 @@ impl Builder<'_> {
         }
         let statement = Stmt::new(kind, origin);
         Ok((expression, statement))
+    }
+
+    /// Builds both joins as one expression, with the child Phi visible only during bridge
+    /// rendering. No branch plan is committed until every arm, type and origin has passed.
+    fn build_intermediate_join_value(
+        &mut self,
+        proof: &IntermediateJoinProof,
+        root: &Region,
+    ) -> Result<Expr, ConditionalValueBuildError> {
+        let Region::If {
+            branch_bci,
+            then_arm,
+            else_arm,
+            join: Some(join),
+            ..
+        } = root
+        else {
+            return Err(ConditionalValueBuildError::Refused(
+                "the intermediate conditional changed shape after its proof".into(),
+            ));
+        };
+        if *branch_bci != proof.branch_bci
+            || join != &proof.join
+            || self.block_of.get(&proof.consumer_bci) != Some(&proof.join)
+            || self.conditional_values.contains_key(&proof.child.phi)
+        {
+            return Err(ConditionalValueBuildError::Refused(
+                "the intermediate conditional no longer has one unpublished child value".into(),
+            ));
+        }
+        let (sequence, sibling) = if proof.child_on_true {
+            (then_arm.as_ref(), else_arm.as_ref())
+        } else {
+            (else_arm.as_ref(), then_arm.as_ref())
+        };
+        let (Region::Sequence { regions }, Region::Straight { .. }) = (sequence, sibling) else {
+            return Err(ConditionalValueBuildError::Refused(
+                "the intermediate conditional lost its bridge or straight sibling".into(),
+            ));
+        };
+        let [
+            child,
+            bridge @ Region::Straight {
+                blocks: bridge_blocks,
+            },
+        ] = regions.as_slice()
+        else {
+            return Err(ConditionalValueBuildError::Refused(
+                "the intermediate conditional no longer has one child and one bridge".into(),
+            ));
+        };
+        let Region::If {
+            branch_bci: child_bci,
+            then_arm: child_true,
+            else_arm: child_false,
+            ..
+        } = child
+        else {
+            return Err(ConditionalValueBuildError::Refused(
+                "the intermediate child is no longer a conditional".into(),
+            ));
+        };
+        if *child_bci != proof.child.branch_bci
+            || bridge_blocks.last() != Some(&proof.bridge_terminal)
+        {
+            return Err(ConditionalValueBuildError::Refused(
+                "the intermediate child or bridge terminal changed after proof".into(),
+            ));
+        }
+        let child_expression =
+            self.build_conditional_value(&proof.child, child_true, child_false)?;
+        self.conditional_values
+            .insert(proof.child.phi, child_expression.clone());
+        let prepared = (|| -> Result<Expr, ConditionalValueBuildError> {
+            let bridge_value = if proof.child_on_true {
+                proof.when_true
+            } else {
+                proof.when_false
+            };
+            let sibling_value = if proof.child_on_true {
+                proof.when_false
+            } else {
+                proof.when_true
+            };
+            let mut bridge_sources = BTreeSet::new();
+            let mut sibling_sources = BTreeSet::new();
+            self.conditional_dependencies(
+                bridge_value,
+                &mut bridge_sources,
+                &mut BTreeSet::new(),
+                0,
+            )?;
+            self.conditional_dependencies(
+                sibling_value,
+                &mut sibling_sources,
+                &mut BTreeSet::new(),
+                0,
+            )?;
+            self.conditional_arm_is_expression(bridge, &bridge_sources, proof.branch_bci)?;
+            self.conditional_arm_is_expression(sibling, &sibling_sources, proof.branch_bci)?;
+
+            let test = self
+                .test_expr(proof.branch_bci, false)?
+                .derived_from(proof.branch_bci);
+            if test.presented != Some(Type::Boolean) {
+                return Err(ConditionalValueBuildError::Refused(
+                    "the outer intermediate-join test has no Java boolean type".into(),
+                ));
+            }
+            let when_true = self.render_value(proof.when_true, proof.consumer_bci, 0)?;
+            let when_false = self.render_value(proof.when_false, proof.consumer_bci, 0)?;
+            let expression = Expr::direct(
+                ExprKind::Conditional {
+                    test: Box::new(test.clone()),
+                    when_true: Box::new(when_true),
+                    when_false: Box::new(when_false),
+                },
+                proof.consumer_bci,
+            );
+            let Some(ty) = expression.presented.clone() else {
+                return Err(ConditionalValueBuildError::Refused(
+                    "the two intermediate-join values have no proved Java conditional type".into(),
+                ));
+            };
+            let mut origin = expression.origin;
+            for bci in child_expression
+                .origin
+                .bcis()
+                .into_iter()
+                .chain(test.origin.bcis())
+                .chain(bridge_sources)
+                .chain(sibling_sources)
+                .chain(proof.bridge_steps.iter().map(|step| step.bci))
+            {
+                origin = origin.plus_derived(Origin::derived(bci));
+            }
+            for block in root.blocks() {
+                if let Some(ssa_block) = self.ssa.block(block) {
+                    for instruction in ssa_block.instructions() {
+                        if matches!(
+                            self.operations.get(instruction.bci()),
+                            Some(Operation::Transfer)
+                        ) {
+                            origin = origin.plus_derived(Origin::derived(instruction.bci()));
+                        }
+                    }
+                }
+            }
+            Ok(Expr::new(expression.kind, origin).presenting(ty))
+        })();
+        self.conditional_values.remove(&proof.child.phi);
+        prepared
     }
 
     /// Builds a conditional only after its two entire straight arms have been accounted for by the
@@ -20135,6 +20815,9 @@ mod tests {
     const NESTED_CONDITIONAL_FIXTURE: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/NestedConditional.class"
     );
+    const INTERMEDIATE_JOIN_FIXTURE: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-26/conditional-intermediate-join/ConditionalIntermediateJoin.class"
+    );
     const NESTED_TREE_FIXTURE: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-conditional-values/nested-tree/NestedTree.class"
     );
@@ -20232,8 +20915,8 @@ mod tests {
         crate::report::RecoveryReport,
         ShortCircuitValueAttempt,
     ) {
-        let (region, ordinary, producer_bcis, recovered, report, short, _) =
-            fixture_value_attempts_with_tree(class, name, descriptor, short_region);
+        let (region, ordinary, producer_bcis, recovered, report, short, _, _) =
+            fixture_value_attempts_with_tree(class, name, descriptor, short_region, None);
         (region, ordinary, producer_bcis, recovered, report, short)
     }
 
@@ -20247,8 +20930,8 @@ mod tests {
         crate::report::RecoveryReport,
         Option<ConditionalTreeProof>,
     ) {
-        let (region, ordinary, _, _, report, _, tree) =
-            fixture_value_attempts_with_tree(class, name, descriptor, None);
+        let (region, ordinary, _, _, report, _, tree, _) =
+            fixture_value_attempts_with_tree(class, name, descriptor, None, None);
         (region, ordinary, report, tree)
     }
 
@@ -20257,6 +20940,7 @@ mod tests {
         name: &str,
         descriptor: &str,
         short_region: Option<&Region>,
+        mutate_region: Option<fn(&mut Region)>,
     ) -> (
         Region,
         ConditionalValueAttempt,
@@ -20265,6 +20949,7 @@ mod tests {
         crate::report::RecoveryReport,
         ShortCircuitValueAttempt,
         Option<ConditionalTreeProof>,
+        IntermediateJoinAttempt,
     ) {
         use jarde_jvm::engine::analyze_method_ir;
         use jarde_jvm::environment::ResolutionEnvironment;
@@ -20377,12 +21062,18 @@ mod tests {
             .find(|region| matches!(region, Region::If { .. }))
             .or_else(|| recovered.regions.first())
             .expect("the method has a region");
-        let candidate = candidate.clone();
+        let mut candidate = candidate.clone();
+        if let Some(mutate_region) = mutate_region {
+            mutate_region(&mut candidate);
+        }
         let attempt = prove_conditional_value(&candidate, canonical, ssa, &operations, &mut budget)
             .expect("the bounded conditional proof completes");
         let tree_attempt =
             prove_conditional_tree_value(&candidate, canonical, ssa, &operations, &mut budget)
                 .expect("the bounded conditional tree proof completes");
+        let intermediate_attempt =
+            prove_intermediate_join_value(&candidate, canonical, ssa, &operations, &mut budget)
+                .expect("the bounded intermediate join proof completes");
         if name == "run" {
             if let Region::If {
                 join: Some(join), ..
@@ -20469,7 +21160,90 @@ mod tests {
             report,
             short_attempt,
             tree_attempt,
+            intermediate_attempt,
         )
+    }
+
+    #[test]
+    fn intermediate_join_proof_binds_both_phis_and_ordered_bridge() {
+        let (_, ordinary, _, recovered, _, _, tree, attempt) = fixture_value_attempts_with_tree(
+            INTERMEDIATE_JOIN_FIXTURE,
+            "choose",
+            "(I)I",
+            None,
+            None,
+        );
+        assert!(matches!(
+            ordinary,
+            ConditionalValueAttempt::Refused(ConditionalValueRefusal::NonStraightArm)
+        ));
+        assert!(tree.is_none());
+        let IntermediateJoinAttempt::Proved(proof) = attempt else {
+            panic!("the frozen two-join shape must prove: {attempt:?}");
+        };
+        assert_eq!(
+            (
+                proof.branch_bci,
+                proof.child.branch_bci,
+                proof.child.join.bci(),
+                proof.join.bci()
+            ),
+            (1, 6, 18, 26)
+        );
+        assert_eq!(
+            proof
+                .bridge_steps
+                .iter()
+                .map(|step| step.bci)
+                .collect::<Vec<_>>(),
+            vec![18, 19, 20]
+        );
+        assert_eq!(proof.child.consumer_bci, 19);
+        assert_eq!(proof.consumer_bci, 26);
+        assert_eq!(proof.bridge_terminal.bci(), 18);
+        assert!(proof.child_on_true);
+        assert!(
+            recovered
+                .regions
+                .iter()
+                .filter(|region| region.blocks().iter().any(|block| block.bci() == 18))
+                .count()
+                == 1
+        );
+    }
+
+    #[test]
+    fn intermediate_join_proof_rejects_a_second_owner_of_the_bridge_block() {
+        fn overlap_bridge(region: &mut Region) {
+            let Region::If {
+                then_arm, else_arm, ..
+            } = region
+            else {
+                panic!("the frozen outer conditional must remain an If");
+            };
+            let Region::Sequence { regions } = then_arm.as_ref() else {
+                panic!("the frozen true arm contains the child and bridge");
+            };
+            let [_, Region::Straight { blocks: bridge }] = regions.as_slice() else {
+                panic!("the frozen true arm has one straight bridge");
+            };
+            let bridge_block = bridge[0].clone();
+            let Region::Straight { blocks: sibling } = else_arm.as_mut() else {
+                panic!("the frozen false arm is straight");
+            };
+            sibling.push(bridge_block);
+        }
+
+        // This is a proof-unit corruption of Region ownership, not a claim that javac produced
+        // such a tree. The unmodified class supplies real canonical edges and SSA identities.
+        let (_, _, _, _, _, _, _, attempt) = fixture_value_attempts_with_tree(
+            INTERMEDIATE_JOIN_FIXTURE,
+            "choose",
+            "(I)I",
+            None,
+            Some(overlap_bridge),
+        );
+        assert!(matches!(attempt, IntermediateJoinAttempt::Refused(_)));
     }
 
     #[test]
