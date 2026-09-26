@@ -2552,7 +2552,7 @@ impl Engine {
                 }
             }
         };
-        let enum_constant_body_relations = if capture_enum_group_code
+        let mut enum_constant_body_relations = if capture_enum_group_code
             && matches!(
                 &enum_constant_proof,
                 crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
@@ -2635,6 +2635,48 @@ impl Engine {
         } else {
             Vec::new()
         };
+        if matches!(
+            &enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ) {
+            for relation in &mut enum_constant_body_relations {
+                if !relation.use_census.exclusive || relation.constructor_bridge.is_err() {
+                    continue;
+                }
+                match prove_enum_constant_child_body(
+                    self,
+                    content,
+                    request,
+                    relation,
+                    &read.facts.methods,
+                    budget,
+                ) {
+                    Ok((proof, child_execution)) => {
+                        merge_execution(&mut execution, child_execution);
+                        relation.body_proof = Some(proof);
+                    }
+                    Err(error) => {
+                        let stop = stop_execution(&error, budget);
+                        merge_execution(&mut execution, stop);
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        enum_constant_proof =
+                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                reason: format!(
+                                    "enum constant subclass body proof stopped: {error}"
+                                ),
+                            };
+                        break;
+                    }
+                }
+                if !matches!(&execution, ExecutionReport::Complete { .. }) {
+                    enum_constant_proof =
+                        crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                            reason: "enum constant subclass body recovery stopped".to_owned(),
+                        };
+                    break;
+                }
+            }
+        }
         let mut projection_tail = None;
         if let crate::enum_constants::ClassSourceEnumConstantProof::Proved(group) =
             &enum_constant_proof
@@ -4525,6 +4567,12 @@ pub(crate) struct PendingEnumConstantBodyRelation {
     pub(crate) group_shape: PendingEnumConstantBodyGroupShape,
     /// Exact selected child Code edge to the already identified access constructor.
     pub(crate) constructor_bridge: std::result::Result<PendingEnumConstructorEdge, String>,
+    /// Typed Code evidence for each potential override, including the exception table. The
+    /// ordinary recovery report can omit this physical fact under an evidence selection.
+    pub(crate) child_code_evidence: std::result::Result<(), String>,
+    /// The selected child's complete physical method results, admitted only after every
+    /// source-visible member has passed the bounded body and declaration proof.
+    pub(crate) body_proof: Option<std::result::Result<Vec<ClassSourceMethod>, String>>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -5628,6 +5676,35 @@ fn resolve_enum_constant_body_relations(
         } else {
             Err("the selected child has no unique access constructor target".to_owned())
         };
+        let mut child_code_evidence = Ok(());
+        for method in &child_read.facts.methods {
+            budget.poll()?;
+            if method.name.raw().0 == b"<init>" || method.name.raw().0 == b"<clinit>" {
+                continue;
+            }
+            let code =
+                match jarde_reader::classfile::method_code_facts(&child_read.bytes, method, budget)
+                {
+                    Ok(code) => code,
+                    Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                        return Err(error);
+                    }
+                    Err(error) => {
+                        child_code_evidence =
+                            Err(format!("child override Code could not be read: {error}"));
+                        break;
+                    }
+                };
+            if code.stopped_at.is_some()
+                || !matches!(code.execution, ExecutionReport::Complete { .. })
+                || code.exception_handler_count != 0
+                || !code.exception_handlers.is_empty()
+            {
+                child_code_evidence =
+                    Err("child override has exceptional or incomplete Code".to_owned());
+                break;
+            }
+        }
         relations.push(PendingEnumConstantBodyRelation {
             field_index: u64::try_from(field_index).unwrap_or(u64::MAX),
             allocation_bci: allocation.head_bci,
@@ -5639,9 +5716,226 @@ fn resolve_enum_constant_body_relations(
             use_census: PendingEnumConstantBodyUseCensus::default(),
             group_shape: group_shape.clone(),
             constructor_bridge,
+            child_code_evidence,
+            body_proof: None,
         });
     }
     Ok(relations)
+}
+
+/// A child is read through the same class-source member path as an independent request. That
+/// path prepares its selected definition once and recovers each Code member once; retaining its
+/// records here lets the later projection consume the exact declaration and source map already
+/// paid for. A body verdict is private and cannot turn the parent group into `Proved` by itself.
+fn prove_enum_constant_child_body(
+    engine: &Engine,
+    content: &[ArtifactSnapshot],
+    request: &ClassSourceRequest,
+    relation: &PendingEnumConstantBodyRelation,
+    enum_methods: &[MemberHeader],
+    budget: &mut Budget,
+) -> Result<(
+    std::result::Result<Vec<ClassSourceMethod>, String>,
+    ExecutionReport,
+)> {
+    let refuse = |reason: &str| Err(reason.to_owned());
+    if let Err(reason) = &relation.child_code_evidence {
+        return Ok((
+            Err(reason.clone()),
+            ExecutionReport::Complete {
+                usage: budget.usage(),
+            },
+        ));
+    }
+    let child_request = ClassSourceRequest {
+        class: ClassRef::Definition {
+            definition: relation.subclass.clone(),
+        },
+        environment: request.environment.clone(),
+    };
+    // The proof needs region, declaration and source-map details even when the caller asks for
+    // essential evidence; optional public evidence selection cannot decide proof admission.
+    let OperationOutcome::Performed(child) = engine.class_source_with_evidence(
+        content,
+        &child_request,
+        &RecoveryEvidenceRequest::all(),
+        budget,
+    )?
+    else {
+        return Ok((
+            refuse("the selected child source is not a unique physical class"),
+            ExecutionReport::Complete {
+                usage: budget.usage(),
+            },
+        ));
+    };
+    let execution = child.execution.clone();
+    if !matches!(&execution, ExecutionReport::Complete { .. }) {
+        return Ok((
+            refuse("the selected child source did not complete"),
+            execution,
+        ));
+    }
+    if child.class != relation.subclass || child.declaration.is_none() {
+        return Ok((
+            refuse("the selected child source changed physical identity"),
+            execution,
+        ));
+    }
+    if !child.fields.is_empty() {
+        return Ok((
+            refuse("the selected child has an instance or static field"),
+            execution,
+        ));
+    }
+    let code_count = child
+        .methods
+        .iter()
+        .filter(|method| {
+            matches!(
+                method.item.body,
+                crate::MemberBodyEvidence::CodeAttribute { .. }
+            )
+        })
+        .count();
+    let body_runs: Vec<_> = child
+        .coverage
+        .artifact_structural
+        .scanned
+        .iter()
+        .filter(|range| range.label == "class_source_bodies")
+        .collect();
+    if !matches!(body_runs.as_slice(), [range] if range.start == 0 && range.end == code_count as u64)
+        || child.methods.iter().any(|method| {
+            !matches!(
+                &method.outcome,
+                class_source::ClassSourceOutcome::Recovered { .. }
+            )
+        })
+    {
+        return Ok((
+            refuse("the selected child did not complete one run per Code member"),
+            execution,
+        ));
+    }
+    let expected_constructor = PhysicalMethodId {
+        owner: relation.subclass.clone(),
+        name: JvmBytes(b"<init>".to_vec()),
+        descriptor: JvmBytes(relation.constructor_descriptor.clone()),
+    };
+    let mut constructors = 0;
+    let mut overrides = Vec::new();
+    for method in &child.methods {
+        budget.poll()?;
+        let name = method.item.name.raw().0.as_slice();
+        if name == b"<init>" {
+            constructors += 1;
+            if method.item.identity != expected_constructor
+                || method.item.access_flags != 0
+                || !matches!(
+                    &method.outcome,
+                    class_source::ClassSourceOutcome::Recovered { .. }
+                )
+            {
+                return Ok((
+                    refuse("the child constructor is not the unique compiler constructor"),
+                    execution,
+                ));
+            }
+            continue;
+        }
+        if name == b"<clinit>" {
+            return Ok((
+                refuse("the selected child has class initialization"),
+                execution,
+            ));
+        }
+        let Some(source_name) = std::str::from_utf8(name).ok() else {
+            return Ok((
+                refuse("the selected child method name is not Java text"),
+                execution,
+            ));
+        };
+        let flags = method.item.access_flags;
+        if !jarde_java::is_java_identifier(source_name)
+            || flags & (0x0002 | 0x0008 | 0x0040 | 0x0100 | 0x0400 | 0x1000) != 0
+        {
+            return Ok((
+                refuse("the selected child has a non-source override member"),
+                execution,
+            ));
+        }
+        let matching_base: Vec<_> = enum_methods
+            .iter()
+            .filter(|base| {
+                base.name.raw().0 == name
+                    && base.descriptor.raw().0 == method.item.descriptor.raw().0
+            })
+            .collect();
+        let [base] = matching_base.as_slice() else {
+            return Ok((
+                refuse("the selected child method has no unique base declaration"),
+                execution,
+            ));
+        };
+        if base.access_flags & (0x0002 | 0x0008 | 0x0010) != 0
+            || (base.access_flags & 0x0001 != 0 && flags & 0x0001 == 0)
+            || (base.access_flags & 0x0004 != 0 && flags & (0x0001 | 0x0004) == 0)
+        {
+            return Ok((
+                refuse("the child method cannot override its base declaration"),
+                execution,
+            ));
+        }
+        if !complete_enum_child_override(method) {
+            return Ok((
+                refuse("the child override body or declaration is not fully presentable"),
+                execution,
+            ));
+        }
+        overrides.push(method.clone());
+    }
+    if constructors != 1 || overrides.is_empty() {
+        return Ok((
+            refuse("the child does not have one constructor and source overrides"),
+            execution,
+        ));
+    }
+    Ok((Ok(overrides), execution))
+}
+
+fn complete_enum_child_override(method: &ClassSourceMethod) -> bool {
+    let class_source::ClassSourceOutcome::Recovered { report, analysis } = &method.outcome else {
+        return false;
+    };
+    matches!(&analysis.execution, ExecutionReport::Complete { .. })
+        && matches!(&report.execution, ExecutionReport::Complete { .. })
+        && report.produced()
+        && report.representation == crate::ir::Representation::Java
+        && report.quality == Quality::Structured
+        && report.syntax_status != crate::ir::SyntaxStatus::NotJava
+        && report.content == RecoveryContent::ContainsStatements
+        && report.fallbacks.is_empty()
+        && [
+            RecoveryEvidenceKind::SourceMap,
+            RecoveryEvidenceKind::RegionDetails,
+            RecoveryEvidenceKind::RuleDetails,
+        ]
+        .into_iter()
+        .all(|kind| report.evidence.state(kind) == jarde_java::EvidenceState::Complete)
+        && !report.regions.is_empty()
+        && report.regions.iter().all(|region| region.structured)
+        && report
+            .source_map
+            .segments()
+            .iter()
+            .any(|segment| segment.origin().primary().method() == Some(&method.item.identity))
+        && report
+            .declaration
+            .as_ref()
+            .is_some_and(|declaration| declaration.presented())
+        && method.declaration.is_some()
+        && method.markers.is_empty()
 }
 
 /// Census each selected input through P1's physical scanner. A relation is exclusive only when
@@ -8398,6 +8692,33 @@ mod enum_constant_body_relation_tests {
                 relation_tuples, expected_tuples,
                 "relation mapping for {class}"
             );
+            if expected > 0 {
+                for relation in &source_report.enum_constant_body_relations {
+                    let bodies = relation.body_proof.as_ref().expect("child body proof ran");
+                    let methods = bodies
+                        .as_ref()
+                        .unwrap_or_else(|reason| panic!("{class}: {reason}"));
+                    assert_eq!(methods.len(), 1);
+                    assert_eq!(methods[0].item.identity.owner, relation.subclass);
+                    assert_eq!(
+                        methods[0].item.name.raw().0,
+                        if class == "demo/Op" {
+                            b"apply".as_slice()
+                        } else {
+                            b"value".as_slice()
+                        }
+                    );
+                    assert!(complete_enum_child_override(&methods[0]));
+                    let mut fallback = methods[0].clone();
+                    if let class_source::ClassSourceOutcome::Recovered { report, .. } =
+                        &mut fallback.outcome
+                    {
+                        report.quality = Quality::Fallback;
+                        report.fallbacks.push("jre_test_fallback");
+                    }
+                    assert!(!complete_enum_child_override(&fallback));
+                }
+            }
             assert!(
                 source_report
                     .enum_constant_body_relations
@@ -8501,18 +8822,178 @@ mod enum_constant_body_relation_tests {
         let mut limits = budget().limits().clone();
         limits.analysis_steps = complete.usage.analysis_steps.saturating_sub(1);
         let bounded = report_with_budget(&entries, "demo/Op", Budget::new(limits));
-        assert!(
-            bounded
-                .enum_constant_body_relations
-                .iter()
-                .any(|relation| !relation.use_census.exclusive)
-        );
+        assert!(!matches!(
+            bounded.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Proved(_)
+        ));
         assert!(matches!(
             bounded.enum_constant_proof,
             crate::enum_constants::ClassSourceEnumConstantProof::Stopped { .. }
         ));
 
         assert_positive(&compiled_entries(false), false);
+    }
+
+    #[test]
+    fn enum_child_body_proof_rejects_fields_effects_and_unspellable_overrides() {
+        const FIELD: &str = "package demo; public enum Op { ADD { int capture; public int apply(int a, int b) { return a + b; } }, MULTIPLY { public int apply(int a, int b) { return a * b; } }; public abstract int apply(int a, int b); }";
+        let field = compiled_entries_with_op(false, FIELD);
+        let field_report = report(&field, "demo/Op");
+        let first = field_report
+            .enum_constant_body_relations
+            .iter()
+            .find(|relation| relation.subclass_owner == b"demo/Op$1")
+            .unwrap();
+        assert!(first.use_census.exclusive);
+        assert!(matches!(&first.body_proof, Some(Err(reason)) if reason.contains("field")));
+        assert!(matches!(
+            field_report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+
+        const EFFECT: &str = "package demo; public enum Op { ADD { { System.nanoTime(); } public int apply(int a, int b) { return a + b; } }, MULTIPLY { public int apply(int a, int b) { return a * b; } }; public abstract int apply(int a, int b); }";
+        let effect = compiled_entries_with_op(false, EFFECT);
+        let effect_report = report(&effect, "demo/Op");
+        let first = effect_report
+            .enum_constant_body_relations
+            .iter()
+            .find(|relation| relation.subclass_owner == b"demo/Op$1")
+            .unwrap();
+        assert!(first.constructor_bridge.is_err());
+        assert!(first.body_proof.is_none());
+        assert!(matches!(
+            effect_report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+
+        let mut illegal = compiled_entries(false);
+        let child = illegal
+            .iter_mut()
+            .find(|(name, _)| name == b"demo/Op$1.class")
+            .unwrap();
+        child.1 = mutate_method_flags(&child.1, b"apply", b"(II)I", 0x0001);
+        let illegal_report = report(&illegal, "demo/Op");
+        let first = illegal_report
+            .enum_constant_body_relations
+            .iter()
+            .find(|relation| relation.subclass_owner == b"demo/Op$1")
+            .unwrap();
+        assert!(matches!(&first.body_proof, Some(Err(reason)) if reason.contains("override")));
+        assert!(matches!(
+            illegal_report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+    }
+
+    #[test]
+    fn enum_child_exceptional_body_cannot_pass_full_recovery() {
+        const EXCEPTIONAL: &str = "package demo; public enum Op { ADD { public int apply(int a, int b) { try { return a + b; } catch (RuntimeException e) { return -1; } } }, MULTIPLY { public int apply(int a, int b) { return a * b; } }; public abstract int apply(int a, int b); }";
+        let entries = compiled_entries_with_op(false, EXCEPTIONAL);
+        let report = report(&entries, "demo/Op");
+        let first = report
+            .enum_constant_body_relations
+            .iter()
+            .find(|relation| relation.subclass_owner == b"demo/Op$1")
+            .unwrap();
+        assert!(
+            matches!(&first.body_proof, Some(Err(_))),
+            "{:#?}",
+            first.body_proof
+        );
+        assert!(matches!(
+            report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+    }
+
+    #[test]
+    fn enum_child_body_recovery_is_evidence_independent_and_budgeted() {
+        let entries = compiled_entries(false);
+        let essential = report(&entries, "demo/Op");
+        assert!(
+            essential
+                .enum_constant_body_relations
+                .iter()
+                .all(|relation| {
+                    matches!(&relation.body_proof, Some(Ok(methods)) if methods.len() == 1)
+                })
+        );
+        let engine = Engine::new();
+        let mut all_budget = budget();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(jar(&entries)), &mut all_budget)
+            .unwrap();
+        let request = ClassSourceRequest {
+            class: ClassRef::Name {
+                class: ClassNameQuery::internal("demo/Op"),
+            },
+            environment: EnvironmentRequest {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+                policy: EnvironmentPolicy::PlainJar,
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                loader: jarde_reader::view::LoaderId("app".to_owned()),
+            },
+        };
+        let OperationOutcome::Performed(all) = engine
+            .class_source_with_evidence(
+                std::slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut all_budget,
+            )
+            .unwrap()
+        else {
+            panic!("the selected enum is unique")
+        };
+        assert_eq!(all.text, essential.text);
+        for (left, right) in essential
+            .enum_constant_body_relations
+            .iter()
+            .zip(&all.enum_constant_body_relations)
+        {
+            assert_eq!(left.subclass, right.subclass);
+            let left = left.body_proof.as_ref().unwrap().as_ref().unwrap();
+            let right = right.body_proof.as_ref().unwrap().as_ref().unwrap();
+            assert_eq!(left[0].item.identity, right[0].item.identity);
+            assert_eq!(left[0].text, right[0].text);
+        }
+        let mut limits = budget().limits().clone();
+        limits.method_bodies = essential.usage.method_bodies.saturating_sub(1);
+        let bounded = report_with_budget(&entries, "demo/Op", Budget::new(limits));
+        assert!(matches!(
+            bounded.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Stopped { .. }
+        ));
+        assert!(!bounded.text.contains("ADD {"));
+
+        let mut read_budget = budget();
+        let op_bytes = &entries
+            .iter()
+            .find(|(name, _)| name == b"demo/Op.class")
+            .unwrap()
+            .1;
+        let op_facts = class_member_facts(op_bytes, &mut read_budget).unwrap();
+        let cancellation = jarde_reader::budget::CancellationToken::new();
+        let mut cancelled =
+            Budget::with_cancellation_token(budget().limits().clone(), cancellation.clone());
+        cancellation.cancel();
+        let result = prove_enum_constant_child_body(
+            &engine,
+            std::slice::from_ref(&snapshot),
+            &request,
+            &essential.enum_constant_body_relations[0],
+            &op_facts.methods,
+            &mut cancelled,
+        );
+        assert!(matches!(
+            result,
+            Err(Error::Cancelled { .. }) | Ok((Err(_), ExecutionReport::Cancelled { .. }))
+        ));
     }
 
     #[test]
