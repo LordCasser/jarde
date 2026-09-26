@@ -45,3 +45,4 @@
 - `jarde-Patrol.java.txt`：修前 jarde 完整类文本（各方法拒绝原因原文）。
 - `jadx-Patrol.java`：jadx 1.5.6 输出（偏离如上表）。
 - `javap.txt`：全类反汇编。
+- `multi-resource-twr/README.md`: self-contained two-resource fixture, Java 8/current-JDK exception-row layouts, verifier-valid wrong-end negative control, deterministic runtime cases, and available JADX/Jarde comparisons.
