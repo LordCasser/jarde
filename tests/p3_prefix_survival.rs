@@ -50,6 +50,18 @@
 //! needs a body that really has the graph-hole shape (the v45 `finallyPath`, whose three dead nodes
 //! `unaccounted_instructions` accounts for); re-pointing this case at one is the P3 1.1 owner's
 //! follow-up, and the case below pins the measured 2.15 presentation until then.
+//!
+//! # 2026-09-26 supersession
+//!
+//! Both members above now present **whole**, and their pins were updated to that: `guarded`'s
+//! condition renders since `recover-instanceof-expressions` (2c.9) made `instanceof` a value
+//! expression, and `loopThenBreak`'s body walk succeeds since the loop-transfer work
+//! (`present-proved-java-structure` 3.1's committed subset, pinned by `p3_loop_transfers`) reads a
+//! `goto` leaving the loop's block set as the `break` it states. The walk-level half of 1.1/1.2
+//! this file was created to pin — a proved prefix surviving a *walk* gap — has no committed fixture
+//! left that exercises it; the exactly-once guard that stays green here is the dead-copy naming of
+//! the third case, and re-pointing the walk-level pin at a real failure is the same owner
+//! follow-up.
 
 use jarde::*;
 use std::slice;
@@ -135,29 +147,6 @@ fn at(text: &str, needle: &str) -> usize {
         .unwrap_or_else(|| panic!("the text presents `{needle}`:\n{text}"))
 }
 
-/// Every BCI one member's text quotes, in the order the quotes name them.
-///
-/// A quote is the artifact's own statement of which bytecode it could not write: the emitter writes
-/// `// @bytecode` and then the instruction starts, space-separated. A quote with no BCI at all is
-/// not a thing this file expects, so the numbers are read strictly and an unparsable line panics
-/// rather than being skipped.
-fn quoted_bcis(text: &str) -> Vec<u32> {
-    let mut bcis = Vec::new();
-    for line in text.lines() {
-        let Some(rest) = line.trim().strip_prefix("// @bytecode ") else {
-            continue;
-        };
-        for number in rest.split_whitespace() {
-            bcis.push(
-                number
-                    .parse::<u32>()
-                    .unwrap_or_else(|_| panic!("`{number}` is not a quoted BCI:\n{text}")),
-            );
-        }
-    }
-    bcis
-}
-
 #[test]
 fn a_store_inside_the_failing_block_is_still_a_statement() {
     // `guarded(Ljava/lang/Object;)I` is
@@ -171,26 +160,23 @@ fn a_store_inside_the_failing_block_is_still_a_statement() {
     //
     // so the canonical graph is three blocks — `[0, 6)` (the store's lead **and** the branch),
     // `[9, 13)` (`return x + 1`) and `[13, 15)` (`return x`) — and the region walk presents the
-    // branch as `if@1`. The gap is the condition: `instanceof` (BCI 3) is `Operation::Other` today,
-    // so `build.rs`'s `test_expr` refuses it and the region is quoted. That quote is a *build*
-    // refusal, and the member is here to pin the half of P01 it can state: the statement in front
-    // of the gap is written (by `test_effects`, the block's own lead), the artifact is
-    // `contains_statements` with `quality=fallback`, and the quote names the failing branch (BCI 6)
-    // and both arms — the store is **not** lost. What it cannot state is "the fallback's BCI set
-    // holds no BCI of the store": the store's instructions (0, 1) live in the very block the
-    // condition fails in, which is the fusion the module comment above describes.
+    // branch as `if@1`. The member was pinned when `instanceof` (BCI 3) was still
+    // `Operation::Other`: the condition could not render, the region was quoted, and this test
+    // held the store statement beside that quote. Since `recover-instanceof-expressions` (2c.9)
+    // made `instanceof` a value expression the condition renders, so the whole member presents:
+    // the fused block's lead is still written as the statement in front of the branch (by
+    // `test_effects`, the block's own lead — the fusion the module comment above describes), and
+    // nothing is quoted any more.
     let sample = open(SAMPLE);
     let report = class_source_of(&sample, "Before");
     let text = text_of(&report, "guarded");
     at(text, "int local1 = 5;");
-    let quoted = quoted_bcis(text);
+    at(text, "arg0 instanceof java.lang.String");
+    at(text, "return local1 + 1;");
+    at(text, "return local1;");
     assert!(
-        quoted.contains(&6) && quoted.contains(&9) && quoted.contains(&13),
-        "the quote names the branch that could not be read and both of its arms:\n{text}"
-    );
-    assert!(
-        !text.contains("if ("),
-        "a branch whose condition cannot be rendered is quoted, never written as an empty `if`:\n{text}"
+        !text.contains("@bytecode"),
+        "the member presents whole, with no refused region left to quote:\n{text}"
     );
     assert_eq!(
         run_of(&report, "guarded").content,
@@ -199,13 +185,13 @@ fn a_store_inside_the_failing_block_is_still_a_statement() {
     );
     assert_eq!(
         run_of(&report, "guarded").quality,
-        Quality::Fallback,
+        Quality::Structured,
         "{text}"
     );
 }
 
 #[test]
-fn a_body_the_walk_claimed_is_named_even_when_its_loop_is_refused() {
+fn a_loop_whose_body_leaves_early_presents_its_break_and_exit() {
     // `loopThenBreak(I)I` is
     //
     // ```text
@@ -218,31 +204,28 @@ fn a_body_the_walk_claimed_is_named_even_when_its_loop_is_refused() {
     //
     // and the canonical graph is `[0, 2)`, `[2, 6)` (the header), `[6, 15)` (the body: the store
     // `x = x + n` and the `if (n == 5)` test), `[15, 18)` (the `break`'s `goto`) and `[18, 25)`
-    // (the latch). The body's walk fails on the test's branch — `15` is outside the loop's own
-    // block set, so the successor the frame drops is a way out this subset does not write
-    // (`FallbackReason::LoopLeavesEarly`) — and the loop's own post-condition then fails, so
-    // `header_tested_loop` answers `LoopShape` for the header alone. Before 1.2 the body's block
-    // stayed claimed and was named nowhere: no statement (its store is quoted with the test it
-    // shares the block with) and no `// @bytecode` line either.
-    //
-    // What this pins is the exactly-once invariant, stated as the property and not as a form: the
-    // statement names its block (`int local1 = 0;` is `[0, 2)`), and every other live block is
-    // named by a quote. `2` (the header) and `6` (the body) belong to the loop's own refusal; `15`,
-    // `18` and `25` are live blocks no region claimed, so the uncovered-blocks quote names them.
+    // (the latch). This member was the walk-level red run of 1.1/1.2: the body's walk dropped the
+    // successor outside the loop's own block set (`15`), the loop's post-condition failed and the
+    // body it had claimed was named nowhere. The loop-transfer work
+    // (`present-proved-java-structure` 3.1's committed subset, pinned by `p3_loop_transfers`) now
+    // reads that `goto` as the `break` it states, so the member presents whole: the store, the
+    // loop, the `break` arm and the latch's decrement are all statements, and every live block is
+    // claimed by the structure rather than named by a quote — the exactly-once invariant this file
+    // exists for, satisfied with no refusal at all.
     let sample = open(SAMPLE);
     let report = class_source_of(&sample, "Before");
     let text = text_of(&report, "loopThenBreak");
-    at(text, "int local1 = 0;");
-    let quoted = quoted_bcis(text);
-    for bci in [2u32, 6, 15, 18, 25] {
-        assert!(
-            quoted.contains(&bci),
-            "live block at BCI {bci} is named by a quote:\n{text}"
-        );
-    }
+    at(text, "int local1;");
+    at(text, "local1 = 0;");
+    at(text, "while (arg0 > 0)");
+    at(text, "local1 = local1 + arg0;");
+    at(text, "if (arg0 == 5)");
+    at(text, "break;");
+    at(text, "arg0 = arg0 - 1;");
+    at(text, "return local1;");
     assert!(
-        !text.contains("while"),
-        "the loop is refused whole rather than written without the exit its `break` states:\n{text}"
+        !text.contains("@bytecode"),
+        "the member presents whole, with no refused region left to quote:\n{text}"
     );
     assert_eq!(
         run_of(&report, "loopThenBreak").content,
@@ -251,11 +234,10 @@ fn a_body_the_walk_claimed_is_named_even_when_its_loop_is_refused() {
     );
     assert_eq!(
         run_of(&report, "loopThenBreak").quality,
-        Quality::Fallback,
+        Quality::Structured,
         "{text}"
     );
 }
-
 #[test]
 fn a_dead_exception_edge_does_not_quote_the_block_the_bytes_state() {
     // This case was named "a body the graph does not cover stays a whole method quote", and its

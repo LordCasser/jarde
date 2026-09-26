@@ -1,5 +1,13 @@
 //! P3 2c.6: a loop may keep a call or field read in its condition when the branch consumes its
 //! value. Test-block stores and increments still refuse the loop.
+//!
+//! The condition requirement itself outlived the shape that first carried it: the accepted
+//! enhanced-`for` projection (`project-proved-enhanced-for-loops` 4.2/4.3) folds a proved direct
+//! `Iterable.iterator()`/`hasNext()`/`next()` loop into a `for (element : iterable)` whose header
+//! evaluates the iterable and the condition once per iteration and keeps the element cast in the
+//! body, so `sumLengths` — raw `Iterable`, element cast at its original position — presents as a
+//! `for` instead of the `while` the 2026-09-24 evidence recorded. The call is still never hoisted
+//! out of the loop test or duplicated; that is what the projection's own proof states.
 
 use jarde::*;
 use std::slice;
@@ -56,17 +64,30 @@ fn an_iterator_call_consumed_by_the_loop_branch_stays_in_the_condition() {
     let source = report(ITERABLE, "StringIterableForeach");
     let method = method_text(&source, "sumLengths");
     assert!(
-        method.contains("while (local2.hasNext())"),
-        "hasNext is read by the loop branch and must stay in its condition:\n{method}"
+        method.contains("for (java.lang.Object iteratorElement"),
+        "the proved iterator loop projects: the condition call stays the loop's own once-per-\niteration test, never hoisted or duplicated:\n{method}"
     );
     assert!(
-        method.contains("local2.next()"),
+        method.contains(": arg0)"),
+        "the iterable expression is the projected loop's source:\n{method}"
+    );
+    assert!(
+        method.contains("(java.lang.String)"),
+        "the element cast stays in the body at its original position:\n{method}"
+    );
+    assert!(
+        method.contains("local3.length();"),
         "the loop body remains in place:\n{method}"
     );
-    assert_eq!(
-        method.matches("local2.hasNext()").count(),
-        1,
-        "the condition call is written once at its loop test, never hoisted or duplicated:\n{method}"
+    assert!(
+        !method.contains(".hasNext()")
+            && !method.contains(".next()")
+            && !method.contains(".iterator()"),
+        "the iterator calls are folded into the header exactly once, not copied:\n{method}"
+    );
+    assert!(
+        !method.contains("@bytecode"),
+        "the projection is complete, with no refused region left beside it:\n{method}"
     );
 }
 
