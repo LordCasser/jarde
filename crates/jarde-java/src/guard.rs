@@ -411,6 +411,24 @@ impl Unproven {
 /// A refusal and the instruction it is about.
 type Cause = (Unproven, u32);
 
+/// The resource proof can stop for its shape, or because its bounded read ran out of budget.
+enum TwrFailure {
+    Proof(Cause),
+    Stop(StopReason),
+}
+
+impl From<Cause> for TwrFailure {
+    fn from(cause: Cause) -> Self {
+        Self::Proof(cause)
+    }
+}
+
+impl From<StopReason> for TwrFailure {
+    fn from(reason: StopReason) -> Self {
+        Self::Stop(reason)
+    }
+}
+
 /// One instruction of the body, with the block it belongs to.
 #[derive(Clone, Copy)]
 struct Step<'a> {
@@ -2692,8 +2710,9 @@ fn resources(
             Ok(plan) => return Ok(Verdict::Claimed(plan)),
             // A copy the rest of the shape does not prove is no header of this rule: the row is read
             // as the `catch` its own table names, exactly as one after an ordinary assignment is.
-            Err(_) if copy.is_some() => continue,
-            Err(cause) => {
+            Err(TwrFailure::Stop(reason)) => return Err(reason),
+            Err(TwrFailure::Proof(_)) if copy.is_some() => continue,
+            Err(TwrFailure::Proof(cause)) => {
                 if failure.is_none() {
                     failure = Some(cause);
                 }
@@ -2713,14 +2732,14 @@ fn resources(
 
 /// One proved `try`-with-resources, from the shape's innermost row outwards.
 fn twr(
-    facts: &Facts<'_>,
+    facts: &mut Facts<'_>,
     profile: &crate::pass::RecoveryProfile,
     current: &CanonicalBlockId,
     innermost: &ExceptionHandlerFact,
-) -> Result<Plan, Cause> {
+) -> Result<Plan, TwrFailure> {
     let start = current.bci();
     if !TWR.admits(profile) {
-        return Err((Unproven::Profile, start));
+        return Err((Unproven::Profile, start).into());
     }
     // The levels, outward from the innermost row: each one is a row whose declared range strictly
     // contains the level inside it and whose handler closes a resource.
@@ -2757,7 +2776,7 @@ fn twr(
         }
         let (init, slot) = initialisation(facts, row.start_bci, floor)?;
         if resources.iter().any(|resource| resource.slot == slot) {
-            return Err((Unproven::ResourceSlot, init.0));
+            return Err((Unproven::ResourceSlot, init.0).into());
         }
         let handler = close_handler(facts, row, slot)?;
         resources.push(Resource {
@@ -2772,18 +2791,7 @@ fn twr(
     let innermost_handler = handlers.last().expect("one handler per level");
     let body = (innermost_level.start_bci, innermost_level.end_bci);
     if body.0 >= body.1 || !facts.statement_free(body) {
-        return Err((Unproven::Body, body.0));
-    }
-    // The ranges: every level's row must end where this shape ends it — the level inside it ends its
-    // handler there, and the innermost one ends where the normal close chain begins.
-    for (index, row) in chain.iter().enumerate() {
-        let expected = match handlers.get(index + 1) {
-            Some(inner) => inner.span.1,
-            None => body.1,
-        };
-        if row.end_bci != expected {
-            return Err((Unproven::RangeEnd, row.end_bci));
-        }
+        return Err((Unproven::Body, body.0).into());
     }
     // The normal path closes the resources in the reverse order of the header: the chain is matched
     // against the declarations from the last one back, and a chain that closes them in any other
@@ -2791,49 +2799,64 @@ fn twr(
     // bytecode ran.
     let mut at = body.1;
     let mut closes = vec![0u32; resources.len()];
+    let mut close_starts = vec![0u32; resources.len()];
     let mut pieces: Vec<(u32, u32)> = Vec::new();
     for (position, resource) in resources.iter().enumerate().rev() {
+        close_starts[position] = at;
         let Some((close_at, next)) = normal_close(facts, at, resource.slot) else {
-            return Err((Unproven::CloseOrder, at));
+            return Err((Unproven::CloseOrder, at).into());
         };
         closes[position] = close_at;
         pieces.push((at, next));
         at = next;
     }
+    // A level's main row ends at the first instruction of that resource's normal close group. Prove
+    // the close chain first: the endpoint is meaningful only after that group has been tied to this
+    // resource.
+    for (index, row) in chain.iter().enumerate() {
+        if row.end_bci != close_starts[index] {
+            return Err((Unproven::RangeEnd, row.end_bci).into());
+        }
+    }
     for (index, resource) in resources.iter_mut().enumerate() {
         resource.close_bci = closes[index];
     }
-    // The join is where the run continues after the statement. `javac` writes a `goto` there
-    // whenever the statement is followed by code of its own method — the target is then a block —
-    // and a statement whose normal path ends the method (`try (…) { return …; }`) has no code to
-    // continue at all: the row itself ends where the close chain does.
-    let join = facts.block_at(at);
-    if join.is_none() && at < facts.end_of(current) {
-        // The close chain runs into the rest of the statement's own block, and no block begins
-        // where it continues: the instructions after the statement are those of a block this shape
-        // has already claimed, and the walk can present neither them nor a place to continue at.
-        // This is the `try (…) { return …; }` javac writes without any branch — the value is kept
-        // in a local, the resources are closed, and the `return` reads the local back — and it is
-        // refused rather than presented with the statements that follow the statement dropped.
-        //
-        // Writing that tail is the one increment left of this shape, and it is P3 2.6's mechanism
-        // applied to the resource header: a `returns` on the shape, proved the way the monitor's is
-        // (the value the `return` reads is written **inside** the body's own range), appended by
-        // `build.rs` to the text **inside** the statement's braces, with the closes it replaced
-        // excluded from the range the body's statements are written from.
-        return Err((Unproven::Continuation, at));
-    }
-    // Every row that protects part of the statement's span has to be one of its own rows — or one of
-    // the clauses of the `try` this statement sits inside, which the walk writes around it. The two
-    // cases are told apart by the table's own geometry, and the geometry is javac's: a `try (…) { … }
-    // catch (…) { … }` whose body falls through to the code after it emits **two** user rows, because
-    // the clause has to cover the cleanup's rethrow as well as the statement's own code, and neither
-    // of them spans the statement from its first instruction to the end of its handler. A **single**
-    // row that does span it is the `catch` a compiler winds around the whole construct — the shape
-    // `tests/p3_guard.rs`'s `withCatch` states — and it keeps today's refusal.
     let mut rows: Vec<u32> = chain.iter().map(|row| row.ordinal).collect();
     for handler in &handlers {
         rows.push(handler.guard.ordinal);
+    }
+    // Each enclosing resource must protect the complete exceptional cleanup of the level inside
+    // it. Some javac layouts do that with the parent's main row. Others end the main row at its
+    // own normal close, and add one exact companion row for the child's handler. Read that row
+    // only when its protected range, catch type, and target all match the parent row; unexplained
+    // overlaps and extra rows remain for the rejection below.
+    let mut companions: Vec<ExceptionHandlerFact> = Vec::new();
+    for index in 0..chain.len().saturating_sub(1) {
+        let parent = chain[index];
+        let child_handler = handlers[index + 1].span;
+        if parent.start_bci <= child_handler.0 && parent.end_bci >= child_handler.1 {
+            continue;
+        }
+        let parent_catch = parent.catch_type_index;
+        let parent_handler = parent.handler_bci;
+        let mut exact = Vec::new();
+        for candidate_index in 0..facts.handlers.len() {
+            let candidate = facts.handlers[candidate_index].clone();
+            facts.charge(candidate.start_bci)?;
+            if candidate.start_bci == child_handler.0
+                && candidate.end_bci == child_handler.1
+                && candidate.catch_type_index == parent_catch
+                && candidate.handler_bci == parent_handler
+                && !rows.contains(&candidate.ordinal)
+            {
+                exact.push(candidate);
+            }
+        }
+        let [companion] = exact.as_slice() else {
+            return Err((Unproven::RangeEnd, child_handler.0).into());
+        };
+        companions.push(companion.clone());
+        rows.push(companion.ordinal);
     }
     let enclosure = enclosing_clauses(facts, current, &rows, handlers[0].span.1);
     for row in facts.handlers {
@@ -2853,9 +2876,37 @@ fn twr(
                 .any(|clause| clause.handler_bci == row.handler_bci)
         });
         if !enclosed {
-            return Err((Unproven::Unexplained, row.start_bci));
+            return Err((Unproven::Unexplained, row.start_bci).into());
         }
     }
+    // The join is where the run continues after the statement. `javac` writes a `goto` there
+    // whenever the statement is followed by code of its own method — the target is then a block —
+    // and a statement whose normal path ends the method (`try (…) { return …; }`) has no code to
+    // continue at all: the row itself ends where the close chain does.
+    let join = facts.block_at(at);
+    if join.is_none() && at < facts.end_of(current) {
+        // The close chain runs into the rest of the statement's own block, and no block begins
+        // where it continues: the instructions after the statement are those of a block this shape
+        // has already claimed, and the walk can present neither them nor a place to continue at.
+        // This is the `try (…) { return …; }` javac writes without any branch — the value is kept
+        // in a local, the resources are closed, and the `return` reads the local back — and it is
+        // refused rather than presented with the statements that follow the statement dropped.
+        //
+        // Writing that tail is the one increment left of this shape, and it is P3 2.6's mechanism
+        // applied to the resource header: a `returns` on the shape, proved the way the monitor's is
+        // (the value the `return` reads is written **inside** the body's own range), appended by
+        // `build.rs` to the text **inside** the statement's braces, with the closes it replaced
+        // excluded from the range the body's statements are written from.
+        return Err((Unproven::Continuation, at).into());
+    }
+    // Every row that protects part of the statement's span has to be one of its own rows — or one of
+    // the clauses of the `try` this statement sits inside, which the walk writes around it. The two
+    // cases are told apart by the table's own geometry, and the geometry is javac's: a `try (…) { … }
+    // catch (…) { … }` whose body falls through to the code after it emits **two** user rows, because
+    // the clause has to cover the cleanup's rethrow as well as the statement's own code, and neither
+    // of them spans the statement from its first instruction to the end of its handler. A **single**
+    // row that does span it is the `catch` a compiler winds around the whole construct — the shape
+    // `tests/p3_guard.rs`'s `withCatch` states — and it keeps today's refusal.
     // Every instruction between the statement's own start and its join belongs to the shape.
     for resource in &resources {
         pieces.push(resource.init);
@@ -2884,6 +2935,12 @@ fn twr(
         facts_read.push(handler.suppression_bci);
         facts_read.push(handler.suppression_call_bci);
         facts_read.push(handler.rethrow_bci);
+    }
+    for companion in &companions {
+        facts_read.push(companion.start_bci);
+        if let Some(last) = facts.previous_bci(companion.end_bci) {
+            facts_read.push(last);
+        }
     }
     facts_read.sort_unstable();
     facts_read.dedup();
