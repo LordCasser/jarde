@@ -14,6 +14,16 @@ const DO_LOOP_SOURCE: &str =
     include_str!("fixtures/proved-java-structure/loop-boolean-do/DoLoopBool.java");
 const JADX_DO_LOOP_SOURCE: &str =
     include_str!("../openspec/evidence/java-syntax-2026-09-26/loop-boolean-do/jadx.java");
+const DO_WHILE_CORE: &[u8] =
+    include_bytes!("fixtures/p3-do-while-body-transfers/v8/DoWhileCore.class");
+const DO_WHILE_CORE_SOURCE: &str =
+    include_str!("fixtures/p3-do-while-body-transfers/DoWhileCore.java");
+const DO_WHILE_SWITCH: &[u8] =
+    include_bytes!("fixtures/p3-do-while-body-transfers/v8/DoWhileSwitchBoundary.class");
+const DO_WHILE_SWITCH_SOURCE: &str =
+    include_str!("fixtures/p3-do-while-body-transfers/DoWhileSwitchBoundary.java");
+const DO_WHILE_TRANSFER_RUNNER: &str =
+    include_str!("fixtures/p3-do-while-body-transfers/DoWhileCoreRunner.java");
 
 fn budget() -> Budget {
     task_budget(&[]).expect("the task defaults are a bounded budget")
@@ -174,6 +184,153 @@ fn compound_do_while_tests_keep_the_shared_body_prefix_and_have_execution_parity
         expected,
         "the frozen JADX projection is a third executable comparison"
     );
+}
+
+#[test]
+#[ignore = "RED gate for recover-do-while-body-transfers tasks 2.1/2.2"]
+fn body_continue_and_break_edges_recover_with_original_trace_and_sources() {
+    assert_eq!(
+        blake3::hash(DO_WHILE_CORE).to_hex().as_str(),
+        "411de0f0b7d13f9727f5f8b35562c9dd133e7e236766df68797879a3d527929a",
+        "the permanent Java 8 fixture stays byte-for-byte pinned"
+    );
+
+    let scratch = Scratch::new();
+    fs::create_dir_all(scratch.path()).expect("create the fixture rebuild directory");
+    fs::write(
+        scratch.path().join("DoWhileCore.java"),
+        DO_WHILE_CORE_SOURCE,
+    )
+    .expect("write the permanent source");
+    fs::write(
+        scratch.path().join("DoWhileSwitchBoundary.java"),
+        DO_WHILE_SWITCH_SOURCE,
+    )
+    .expect("write the switch-boundary source");
+    fs::write(
+        scratch.path().join("DoWhileCoreRunner.java"),
+        DO_WHILE_TRANSFER_RUNNER,
+    )
+    .expect("write the permanent runner");
+    let compiled = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(scratch.path())
+        .args([
+            "DoWhileCore.java",
+            "DoWhileSwitchBoundary.java",
+            "DoWhileCoreRunner.java",
+        ])
+        .current_dir(scratch.path())
+        .output()
+        .expect("start javac for the permanent do-while fixture");
+    assert!(
+        compiled.status.success(),
+        "javac refused the fixture: {}",
+        String::from_utf8_lossy(&compiled.stderr)
+    );
+    assert_eq!(
+        fs::read(scratch.path().join("DoWhileCore.class")).expect("read compiled core"),
+        DO_WHILE_CORE,
+        "the permanent source reproduces the audited class"
+    );
+    assert_eq!(
+        fs::read(scratch.path().join("DoWhileSwitchBoundary.class"))
+            .expect("read compiled switch boundary"),
+        DO_WHILE_SWITCH,
+        "the nested-switch source reproduces its audited class"
+    );
+    assert_eq!(
+        run_java_named(
+            &scratch.path().to_path_buf(),
+            "DoWhileCoreRunner",
+            "original"
+        ),
+        "basic:0=1:trace=1\nbasic:1=1:trace=1\nbasic:4=1234:trace=1234\ncontinue:1=1:trace=1\ncontinue:4=134:trace=134\nbreak:1=1:trace=1\nbreak:5=12:trace=12\nswitch:2=199:trace=0\nswitch:3=19939:trace=0\n",
+        "the original class fixes each transfer's return value and visible trace"
+    );
+
+    let javap = Command::new("javap")
+        .args(["-c", "-p"])
+        .arg(scratch.path().join("DoWhileCore.class"))
+        .output()
+        .expect("start javap for the pinned core class");
+    assert!(javap.status.success(), "javap failed");
+    let code = String::from_utf8(javap.stdout).expect("javap output is UTF-8");
+    assert!(
+        code.contains("public static int withContinue(int);")
+            && code.contains("10: goto          24"),
+        "withContinue's edge skips the body remainder and targets the latch:\n{code}"
+    );
+    assert!(
+        code.contains("public static int withBreak(int);") && code.contains("10: goto          29"),
+        "withBreak's edge skips the body remainder and targets the loop exit:\n{code}"
+    );
+
+    let core_report = report_bytes(DO_WHILE_CORE, "DoWhileCore");
+    let mut missing_sources = Vec::new();
+    for (name, bcis) in [
+        ("withContinue", [7, 10, 13, 21, 24, 29, 32]),
+        ("withBreak", [7, 10, 13, 21, 24, 29, 32]),
+    ] {
+        let recovered = method(&core_report, name);
+        missing_sources.extend(
+            bcis.into_iter()
+                .filter(|bci| recovery(recovered).source_map.of_bci(*bci).is_empty())
+                .map(|bci| (name, bci)),
+        );
+    }
+    assert!(
+        missing_sources.is_empty(),
+        "source-map coverage remains part of the RED expectation; missing method/BCIs {missing_sources:?}"
+    );
+
+    let continue_method = method(&core_report, "withContinue");
+    let break_method = method(&core_report, "withBreak");
+    for recovered in [continue_method, break_method] {
+        assert_eq!(
+            recovery(recovered).quality,
+            jarde_jvm::ir::Quality::Structured,
+            "the RED expectation: the transfer body is fully represented:\n{}",
+            recovered.text
+        );
+        assert!(
+            !recovered.text.contains("@bytecode"),
+            "a proved body transfer leaves no quoted live instruction:\n{}",
+            recovered.text
+        );
+    }
+    assert_eq!(break_method.text.matches("break;").count(), 1);
+    assert_eq!(break_method.text.matches("return trace;").count(), 1);
+}
+
+#[test]
+fn a_switch_break_inside_do_while_is_not_emitted_as_an_unmarked_loop_break() {
+    let report = report_bytes(DO_WHILE_SWITCH, "DoWhileSwitchBoundary");
+    let recovered = method(&report, "switchBreak");
+    let body = recovery(recovered);
+    assert_eq!(
+        body.quality,
+        jarde_jvm::ir::Quality::Fallback,
+        "{}",
+        recovered.text
+    );
+    assert!(
+        recovered.text.contains("@bytecode") && !recovered.text.contains("do {"),
+        "the nested switch transfer stays explicitly refused until switch ownership is proved:\n{}",
+        recovered.text
+    );
+    assert!(
+        !recovered.text.contains("break;"),
+        "the switch's unlabelled break must never be mistaken for the enclosing loop's exit:\n{}",
+        recovered.text
+    );
+    for bci in [28, 38, 51] {
+        assert!(
+            !body.source_map.of_bci(bci).is_empty(),
+            "the negative boundary keeps BCI {bci} visible:\n{:?}",
+            body.source_map.segments()
+        );
+    }
 }
 
 #[test]

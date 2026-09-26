@@ -10,6 +10,12 @@
 
 **Non-Goals:** 不恢复原源码是否用 `continue` 的词面选择，不推断 `for`，不处理多层标记 `break`/`continue`、`switch` 内的 `break`、异常/不可约边或任意环外目标。父变更 `present-proved-java-structure` 的宽合同仍按独立任务推进。
 
+## JADX 算法对照
+
+本地 JADX `LoopRegionMaker.process` 先从 loop 的 exit node 挑 IF 条件，按 `isConditionAtEnd` 决定是否从 loop start 重建体区域，再扫描其它 exit edge 插入 `break`；`insertContinue` 则从 loop end 的 synthetic 前驱补 `continue`。这说明闩锁/体内分支应先按控制边角色区分，且体区域必须包含提前退出的边。Jarde 已有 `Region::Loop`、`LoopBreak/LoopContinue`、`Frame::loop_body` 和来源锚点，可以在现有区域证明中处理，无须移植 JADX 的指令改写流程。
+
+JADX 的 `insertLoopBreak` 会沿空路径和路径交叉点寻找插入位置，再把新 `BREAK` 指令附在边上；其 `canInsertContinue` 主要检查 synthetic 前驱和支配关系。它们适合作为候选边搜索的参考，但单凭这些条件不足以证明目标是本层唯一出口、桥无效果、来源没有重复归属，也不足以区分嵌套 `switch` 截获的无标记 `break`。本变更以原 CFG/SSA、路径所有权和真实 BCI 完整覆盖为准，不能只因为 JADX 生成了可编译文本就放宽准入。参见本地 `jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/LoopRegionMaker.java` 的 `process`、`makeLoopRegion`、`insertLoopBreak`、`insertContinue`。
+
 ## Decisions
 
 1. 区分循环测试与体内比较靠图上的**边角色**，不靠“头块含比较”这一语法迹象。只有头块的比较本身确实分流到循环外时才是头测候选；两条路径均留在体内、最终汇到唯一闩锁时，它就是体内 `if`。复用当前 `Region::If`、`Frame` 的边界/汇合和 `DoWhile` 语句；到闩锁的无效果转移可由结构化单臂 `if` 表达，无须为了还原 `continue` 字眼增加 AST。
