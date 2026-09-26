@@ -2613,6 +2613,19 @@ mod monitor_branch_tests {
                 ..
             })
         )));
+        let certified = accepted.iter().find_map(|verdict| match verdict {
+            Verdict::Claimed(plan) if matches!(plan.shape(), Shape::MonitorBranches { .. }) => {
+                Some(plan)
+            }
+            _ => None,
+        });
+        let facts = certified.expect("one certified two-arm monitor").facts();
+        for bci in [12, 13, 14, 19, 20, 21, 22, 23, 24, 25, 26] {
+            assert!(
+                facts.contains(&bci),
+                "monitor source provenance misses BCI {bci}"
+            );
+        }
         let refused = plans(refused, "choose", "(Ljava/lang/Object;I)I");
         assert!(!refused.iter().any(|verdict| matches!(
             verdict,

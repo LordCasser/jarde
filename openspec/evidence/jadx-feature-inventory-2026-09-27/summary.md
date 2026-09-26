@@ -29,16 +29,16 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 | 冻结差距已修复，单元待扩验 | DT-06 | [无捕获匿名父类实参对照](../java-syntax-2026-09-27/anonymous-super-direct/report.md) 与[修后源码](../java-syntax-2026-09-27/anonymous-super-direct/jarde-fixed-source/AnonymousSuperDirect.java)：单分配点、准确 `(II)V` 转发和同次 AST 证明后输出 `new Base(next(), next()) { ... }`；原/JADX/修后 Jarde Java 8 重编验证运行均为 `13:2`。捕获父类参数仍是独立未修形态 |
 | 冻结差距已修复，单元待扩验 | DT-10 | [普通枚举 0/1/4 常量](../java-syntax-2026-09-27/enum-arity/report.md) 已按完整字段表、构造器及 `$values()` 有序证明投影；原/JADX/修后 Jarde 完整源码 Java 8 重编验证运行均输出 `empty=0`、`one=ONLY:0/1`、`four=[NORTH, SOUTH, EAST, WEST]`。匿名常量体和其他枚举形态独立验收 |
 | 冻结差距已修复，单元待扩验 | EM-13 | 唯一同类 `ACC_VARARGS` 目标的完整调用数组可安全展开，冻结正反例重编运行通过；继承、跨类和其他 lowering 未纳入此闭环 |
+| 冻结差距已修复，单元待扩验 | CF-19 | [双臂 synchronized 多出口验收](../java-syntax-2026-09-22/synchronized-multi-exit/implementation-2026-09-27/README.md)：同锁、两条直线返回、精确双保护段与共享重抛 handler 获完整证书后，原/JADX/修后 Jarde 完整 Java 8 类重编验证运行三行相同；真实三臂负例整方法拒绝。其他 monitor lowering 待扩验。 |
 | 已证差距，已写独立 OpenSpec | DT-04 | [匿名类词法外围 `Inner.this` 对照](../java-syntax-2026-09-27/anonymous-inner-this/report.md)：原/JADX 完整源码 Java 8 重编验证运行同为 `true`、`38`；Jarde 保留物理 `this$0`，其构造器 pre-super 字段写入令完整源码无法按 Java 8 重编。[窄切片 OpenSpec](../../changes/recover-proved-anonymous-inner-this/) 限定准确外围捕获、唯一分配点和原子匿名源码投影，独立于 DT-06 父类实参。 |
 | 已证差距，已写独立 OpenSpec | DT-11 | [枚举构造实参三方对照](../java-syntax-2026-09-27/enum-constructor-arguments/README.md)：原/JADX 的整数静态字段/加法实参和字符串 varargs 均可 Java 8 重编运行；Jarde 的 int literal 对照通过，其余两种整组证明失败，降级源码不能重编。[第一窄切片 OpenSpec](../../changes/prove-enum-int-arguments/) 仅处理有界 int 表达式，String varargs 单列后续任务；JADX `TestEnums3` 的相关断言部分被注释，不能据此宣称测试已覆盖全部形态。 |
-| 已证差距，已写独立 OpenSpec | CF-19 | [多出口 synchronized 冻结样本](../java-syntax-2026-09-22/synchronized-multi-exit/current-main-2026-09-27.md)：当前主线 Jarde 的 `choose` 仍缺返回语句，整类 Java 8 重编失败；原/JADX 的三条返回/异常路径验证运行同值。[独立 OpenSpec](../../changes/recover-synchronized-multi-exit/) 已列出 handler、退出边和区域归属门槛；单出口等其他形态仍待扩验 |
 | 已证差距，已写独立 OpenSpec | EM-04 | [包信息源文件冻结对照](../java-syntax-2026-09-27/package-info-basic/report.md)：原/JADX 完整 Java 8 源码重编并验证运行输出 `true`；Jarde 将包注解类写成非法的 `interface package-info`，完整源码编译失败。[窄切片 OpenSpec](../../changes/recover-proved-package-info-source/) 仅覆盖完整证明的 Java 8 标准包信息类，不能照搬 JADX 的简单名/空成员判定。 |
 | JADX 未完成 | CF-17 | `TestTryWithResources` 的唯一目标标为 `@NotYetImplemented` |
 | 未测 | CF-01～16、CF-18、CF-20 | 18 个正向测试候选，见控制流账本 |
 | 未测 | DT-07～09、DT-12～29、DT-31 | 22 个候选，见声明/类型账本 |
 | 未测 | EM-01～03、EM-05～07、EM-10～12、EM-17～25、EM-27 | 19 个候选，见表达式/杂项账本 |
 
-当前有 **7 个冻结差距已修复但待扩验的单元、4 个已证差距、59 个未测的正向候选、1 个 JADX 未完成单元**。DT-02、DT-05、DT-06 和 DT-10 的窄切片与先前 DT-01/03、EM-13 均已通过 root 独立验收；这不自动把各单元全部变体标为“已追平”。DT-04、DT-11、CF-19 与 EM-04 已分别冻结窄差距并写 OpenSpec；任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
+当前有 **8 个冻结差距已修复但待扩验的单元、3 个已证差距、59 个未测的正向候选、1 个 JADX 未完成单元**。CF-19、DT-02、DT-05、DT-06 和 DT-10 的窄切片与先前 DT-01/03、EM-13 均已通过 root 独立验收；这不自动把各单元全部变体标为“已追平”。DT-04、DT-11 与 EM-04 已分别冻结窄差距并写 OpenSpec；任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
 
 独立回归债务：[具名成员类 `Outer.super` 桥测试与基线投影不一致](outer-super-bridge-baseline-debt.md)，在未修改的 `36b57495` 已可复现；归入 EM-12/DT-03 后续核验，不混入 DT-02 静态成员类实现。
 
