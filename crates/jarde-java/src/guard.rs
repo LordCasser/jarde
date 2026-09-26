@@ -151,7 +151,11 @@ impl Resource {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Shape {
     /// `try (T n = …; …) { body }`, with the resources in **declaration** order.
-    Resources(Vec<Resource>),
+    Resources {
+        resources: Vec<Resource>,
+        /// A post-close load/return pair whose saved value was proved to originate in the body.
+        returns: Option<u32>,
+    },
     /// `synchronized (lock) { body }`, with the BCI of the `monitorenter` the header reads its lock
     /// from.
     Monitor {
@@ -232,7 +236,7 @@ impl Plan {
     /// The registered rule that proved this region.
     pub fn pass(&self) -> &'static Pass {
         match self.shape {
-            Shape::Resources(_) => &TWR,
+            Shape::Resources { .. } => &TWR,
             Shape::Monitor { .. } => &MONITOR,
             Shape::Finally { .. } => &FINALLY,
         }
@@ -745,6 +749,116 @@ impl<'a> Facts<'a> {
             Some(at),
         )
     }
+}
+
+/// Proves the only post-close tail this TWR shape can move into its body: a local read followed by
+/// the method's terminal return, where the local's reaching value is a body store of a value the
+/// body already evaluated. The exact instruction slice and terminal CFG block keep any intervening
+/// statement or continuation outside this narrow rule.
+fn twr_return_tail(
+    facts: &mut Facts<'_>,
+    body: (u32, u32),
+    start: u32,
+) -> Result<Option<(u32, u32, u32)>, StopReason> {
+    let load_bci = start;
+    let Some(return_bci) = facts.next_bci(load_bci) else {
+        return Ok(None);
+    };
+    let Some(block) = facts.block_of(start).cloned() else {
+        return Ok(None);
+    };
+    let tail = facts.bcis((start, facts.end_of(&block)));
+    if tail != [load_bci, return_bci]
+        || facts.block_of(load_bci) != Some(&block)
+        || facts.block_of(return_bci) != Some(&block)
+    {
+        return Ok(None);
+    }
+    for bci in [load_bci, return_bci] {
+        facts.charge(bci)?;
+    }
+    if !facts.view.successor_ids(&block).is_empty() {
+        return Ok(None);
+    }
+    let Some(load) = facts.step(load_bci).map(|step| step.instruction) else {
+        return Ok(None);
+    };
+    let Some(return_instruction) = facts.step(return_bci).map(|step| step.instruction) else {
+        return Ok(None);
+    };
+    let Some(Operation::Load { slot: loaded_slot }) = facts.op(load_bci) else {
+        return Ok(None);
+    };
+    if facts.op(return_bci) != Some(&Operation::Return) {
+        return Ok(None);
+    }
+    let mut local_reads = load
+        .reads()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Local(_)));
+    let Some((Slot::Local(slot), local_value)) = local_reads.next() else {
+        return Ok(None);
+    };
+    if slot != loaded_slot || local_reads.next().is_some() {
+        return Ok(None);
+    }
+    let mut load_writes = load
+        .writes()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)));
+    let Some((_, loaded_value)) = load_writes.next() else {
+        return Ok(None);
+    };
+    if load_writes.next().is_some() {
+        return Ok(None);
+    }
+    let return_reads: Vec<ValueId> = return_instruction
+        .reads()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        .map(|(_, value)| *value)
+        .collect();
+    if return_reads.len() != 1 || !facts.same(return_reads[0], *loaded_value) {
+        return Ok(None);
+    }
+
+    let mut stores = Vec::new();
+    for store_bci in facts.bcis(body) {
+        facts.charge(store_bci)?;
+        if !matches!(facts.op(store_bci), Some(Operation::Store { slot: stored }) if stored == slot)
+        {
+            continue;
+        }
+        let Some(store) = facts.step(store_bci).map(|step| step.instruction) else {
+            continue;
+        };
+        if !store.writes().iter().any(|(target, written)| {
+            matches!(target, Slot::Local(target) if target == slot)
+                && facts.same(*written, *local_value)
+        }) {
+            continue;
+        }
+        let stack_inputs: Vec<ValueId> = store
+            .reads()
+            .iter()
+            .filter(|(source, _)| matches!(source, Slot::Stack(_)))
+            .map(|(_, value)| *value)
+            .collect();
+        if stack_inputs.len() != 1 {
+            continue;
+        }
+        let Definition::Instruction { bci: producer, .. } = facts.ssa.value(stack_inputs[0]).def()
+        else {
+            continue;
+        };
+        if body.0 <= *producer && *producer < store_bci {
+            stores.push((store_bci, stack_inputs[0]));
+        }
+    }
+    let [(store_bci, _)] = stores.as_slice() else {
+        return Ok(None);
+    };
+    Ok(Some((load_bci, return_bci, *store_bci)))
 }
 
 /// Whether an instruction's receiver is the value a preceding load produced.
@@ -1829,6 +1943,92 @@ mod finally_copy_tests {
         prove_finally_copy(&mut facts, row)
     }
 
+    fn resource_plan(class: &[u8], name: &str) -> Result<Plan, String> {
+        let mut budget = Budget::new(limits());
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
+            .map_err(|error| format!("snapshot: {error:?}"))?;
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(class).to_hex().to_string()),
+                length: class.len() as u64,
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let method = PhysicalMethodId {
+            owner: definition,
+            name: JvmBytes(name.as_bytes().to_vec()),
+            descriptor: JvmBytes(b"(I)I".to_vec()),
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_string()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let request = MethodAnalysisRequest {
+            environment: ResolutionEnvironment {
+                runtime: RuntimeView {
+                    physical: PhysicalView {
+                        snapshot: snapshot.id().clone(),
+                        scope: PhysicalScope::SnapshotAll,
+                    },
+                    profile: RuntimeProfile {
+                        java_release: 8,
+                        multi_release: MultiReleasePolicy::Disabled,
+                        layout: LayoutMode::Generic,
+                    },
+                    load_domain: domain.clone(),
+                },
+                domains: vec![domain],
+                providers: Vec::new(),
+            },
+            method,
+            stages: AnalysisStage::ALL.to_vec(),
+        };
+        let analyzed = analyze_method_ir(&[snapshot], &request, &mut budget)
+            .map_err(|error| format!("analysis: {error:?}"))?;
+        let ir = analyzed.ir();
+        let canonical = ir.canonical().unwrap();
+        let ssa = ir.ssa().unwrap();
+        let code = ir.code().unwrap();
+        let ops = Operations::of(code, ir.constant_pool());
+        let view = NormalFlowView::build(canonical, &mut budget).unwrap();
+        let current = canonical
+            .blocks()
+            .iter()
+            .find(|block| block.id().bci() == 0)
+            .map(|block| block.id())
+            .ok_or_else(|| "entry block missing".to_string())?;
+        let rows = code.exception_handlers.clone();
+        let mut facts = Facts::new(canonical, &view, ssa, &ops, &rows, &mut budget);
+        let row = rows
+            .first()
+            .ok_or_else(|| "resource row missing".to_string())?;
+        twr(&mut facts, &crate::pass::JAVA_8, current, row).map_err(|_| "TWR refused".to_string())
+    }
+
+    #[test]
+    fn a_terminal_saved_return_is_part_of_the_resource_plan() {
+        let class =
+            include_bytes!("../../../tests/fixtures/p3-multi-resource-twr/TwrReturnTail.class");
+        let plan = resource_plan(class, "runSaved").expect("the TWR structure is recognized");
+        assert!(matches!(
+            plan.shape(),
+            Shape::Resources {
+                returns: Some(20),
+                ..
+            }
+        ));
+    }
+
     #[test]
     fn implicit_cleanup_has_a_physical_copy_certificate() {
         let class = include_bytes!(
@@ -2821,6 +3021,11 @@ fn twr(
     for (index, resource) in resources.iter_mut().enumerate() {
         resource.close_bci = closes[index];
     }
+    let return_tail = twr_return_tail(facts, body, at)?;
+    let claimed_end = return_tail
+        .as_ref()
+        .map(|(_, return_bci, _)| facts.span_end(*return_bci))
+        .unwrap_or(at);
     let mut rows: Vec<u32> = chain.iter().map(|row| row.ordinal).collect();
     for handler in &handlers {
         rows.push(handler.guard.ordinal);
@@ -2864,7 +3069,7 @@ fn twr(
             continue;
         }
         let covers = facts
-            .bcis((start, at))
+            .bcis((start, claimed_end))
             .into_iter()
             .any(|bci| row.start_bci <= bci && bci < row.end_bci);
         if !covers {
@@ -2883,8 +3088,8 @@ fn twr(
     // whenever the statement is followed by code of its own method — the target is then a block —
     // and a statement whose normal path ends the method (`try (…) { return …; }`) has no code to
     // continue at all: the row itself ends where the close chain does.
-    let join = facts.block_at(at);
-    if join.is_none() && at < facts.end_of(current) {
+    let join = return_tail.is_none().then(|| facts.block_at(at)).flatten();
+    if return_tail.is_none() && join.is_none() && at < facts.end_of(current) {
         // The close chain runs into the rest of the statement's own block, and no block begins
         // where it continues: the instructions after the statement are those of a block this shape
         // has already claimed, and the walk can present neither them nor a place to continue at.
@@ -2916,15 +3121,21 @@ fn twr(
         pieces.push(handler.span);
         pieces.push((handler.guard.start_bci, handler.guard.end_bci));
     }
-    explained(facts, start, at, &pieces)?;
+    if let Some((load_bci, _, _)) = return_tail.as_ref() {
+        pieces.push((*load_bci, claimed_end));
+    }
+    explained(facts, start, claimed_end, &pieces)?;
     // Every block the statement owns holds an instruction of its own span, and `explained` has just
     // checked that no instruction of that span belongs to anything else: a handler the layout put
     // *outside* the span is deliberately not claimed here — the walk quotes it, and the run says so
     // in its fallbacks, rather than the statement claiming a block it does not write.
-    let mut owned: Vec<CanonicalBlockId> = facts.blocks_in((start, at));
+    let mut owned: Vec<CanonicalBlockId> = facts.blocks_in((start, claimed_end));
     owned.sort_by_key(|block| block.bci());
     let lead = (start, resources.first().map(|r| r.init.0).unwrap_or(start));
     let mut facts_read: Vec<u32> = Vec::new();
+    if let Some((load_bci, return_bci, store_bci)) = return_tail.as_ref() {
+        facts_read.extend([*load_bci, *return_bci, *store_bci]);
+    }
     for resource in &resources {
         facts_read.push(resource.close_bci);
         facts_read.push(resource.init.1.saturating_sub(1));
@@ -2946,7 +3157,10 @@ fn twr(
     facts_read.dedup();
     let _ = innermost_handler;
     Ok(Plan {
-        shape: Shape::Resources(resources),
+        shape: Shape::Resources {
+            resources,
+            returns: return_tail.as_ref().map(|(_, return_bci, _)| *return_bci),
+        },
         lead,
         body,
         owned,
