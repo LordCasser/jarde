@@ -5445,7 +5445,7 @@ fn prefix_method_annotations(text: String, annotations: &MemberAnnotationUses) -
 
 /// The text-only portion of a proved enum projection. The physical member records remain intact.
 pub(crate) struct EnumConstantSourceProjection {
-    group: crate::enum_constants::ProvedEnumConstantGroup,
+    group: crate::enum_constants::ProvedOrdinaryEnumConstantGroup,
     constants_text: String,
     constructor_texts: Vec<(u64, String)>,
     initializer_text: Option<String>,
@@ -5464,7 +5464,7 @@ pub(crate) fn prepare_enum_constant_source_projection(
     declaration: &ClassSourceDeclaration,
     fields: &[ClassSourceField],
     methods: &[ClassSourceMethod],
-    group: &crate::enum_constants::ProvedEnumConstantGroup,
+    group: &crate::enum_constants::ProvedOrdinaryEnumConstantGroup,
     terminal_constructor_body: Option<String>,
     initializer: Option<(u64, String)>,
     budget: &mut Budget,
