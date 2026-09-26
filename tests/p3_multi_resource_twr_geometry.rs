@@ -1,8 +1,8 @@
 //! The row geometry of the release-8 two-resource TWR proof.
 //!
-//! Task 2.1 is intentionally tested before the post-close return is presented: a proved normal
-//! close chain must advance the refusal from `RangeEnd` to the existing continuation refusal.
-//! Task 2.2 controls vary only the companion row that protects the inner handler.
+//! The frozen two-resource fixture exercises the split companion-row geometry. Its current resource
+//! initializer slices leave header producers for task 2.4 to own, so this suite also pins the
+//! precise integration boundary after close and return-tail proofs have succeeded.
 
 use jarde::*;
 use std::slice;
@@ -173,9 +173,17 @@ fn main_rows_end_at_their_proved_normal_close_and_exact_companion_is_owned() {
     let report = class_source(SAMPLE);
     let (text, recovered) = run_report(&report);
     assert!(
-        recovered.fallbacks.contains(&"jre_guard_continuation"),
-        "close geometry was proved before the intentionally unsupported return tail: {:?}; {:?}",
+        recovered.fallbacks.contains(&"jre_guard_span"),
+        "close geometry and the pure return tail are proved; the existing multi-resource header slices still leave producer bytes unowned for task 2.4: {:?}; {:?}",
         recovered.fallbacks,
+        recovered.diagnostics
+    );
+    assert!(
+        recovered
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.message.contains("BCI 0")),
+        "the remaining header gap is anchored at BCI 0: {:?}",
         recovered.diagnostics
     );
     assert!(

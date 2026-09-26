@@ -1438,7 +1438,7 @@ pub(crate) fn resource_slots(regions: &[Region]) -> BTreeSet<u16> {
     let mut slots: BTreeSet<u16> = BTreeSet::new();
     let mut walk = |region: &Region| match region {
         Region::Guard { plan, .. } => {
-            if let guard::Shape::Resources(resources) = plan.shape() {
+            if let guard::Shape::Resources { resources, .. } = plan.shape() {
                 for resource in resources {
                     slots.insert(resource.slot());
                 }
@@ -8023,7 +8023,9 @@ impl Builder<'_> {
                 }
                 self.range(plan.lead())?;
                 match plan.shape() {
-                    guard::Shape::Resources(resources) => {
+                    guard::Shape::Resources {
+                        resources, returns, ..
+                    } => {
                         let mut declarations = Vec::with_capacity(resources.len());
                         for resource in resources {
                             match self.resource_declaration(resource) {
@@ -8039,7 +8041,17 @@ impl Builder<'_> {
                         // instructions run: the closes the normal path performs are *not* written
                         // here — the compiler writes them for the resource the header declares,
                         // which is what makes each close run exactly once per path.
-                        let body = self.body_range(plan.body())?;
+                        let mut body = self.body_range(plan.body())?;
+                        if let Some(return_bci) = returns {
+                            let statement = match self.guarded_return(*return_bci) {
+                                Ok(statement) => statement,
+                                Err(reason) => {
+                                    let bcis = self.region_quote(region, *return_bci);
+                                    return self.fallback(bcis, &reason, *return_bci);
+                                }
+                            };
+                            body.push(statement);
+                        }
                         let mut origin = OriginSet::new(Origin::direct(
                             resources
                                 .first()
@@ -8082,7 +8094,7 @@ impl Builder<'_> {
                         // where the value is consumed, and not where the `getfield` runs, so the
                         // member is read exactly once and no local is invented for it.
                         if let Some(return_bci) = *returns {
-                            let statement = match self.synchronized_return(return_bci) {
+                            let statement = match self.guarded_return(return_bci) {
                                 Ok(statement) => statement,
                                 Err(reason) => {
                                     let bcis = self.region_quote(region, return_bci);
@@ -8104,7 +8116,7 @@ impl Builder<'_> {
                         // The guard has already rejected every control transfer inside this flat
                         // range. The saved local is written here before cleanup can run.
                         let mut body = self.body_range(plan.body())?;
-                        let return_stmt = match self.synchronized_return(*returns) {
+                        let return_stmt = match self.guarded_return(*returns) {
                             Ok(statement) => statement,
                             Err(reason) => {
                                 let bcis = self.region_quote(region, *returns);
@@ -8677,7 +8689,7 @@ impl Builder<'_> {
     /// nowhere else ([`Self::return_expr`] renders it, exactly as a `return` outside any statement
     /// would). It is never pushed as a statement of its own — the region's statements are the ones
     /// between the braces, and a `return` written after the statement would run after the exit.
-    fn synchronized_return(&mut self, return_bci: u32) -> Result<Stmt, ValueRenderFailure> {
+    fn guarded_return(&mut self, return_bci: u32) -> Result<Stmt, ValueRenderFailure> {
         let Some(instruction) = self.instructions.get(&return_bci).copied() else {
             return Err(format!(
                 "the return at BCI {return_bci} has no record in this run's names"
