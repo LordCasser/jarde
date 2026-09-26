@@ -24,4 +24,4 @@
 
 ## 4. 独立验收与资源收尾
 
-- [ ] 4.1 root 从冻结证据独立运行三方 Java 8 `-g`/`-g:none` 对照及所有拒绝控制；审查 Jarde 未采用 JADX 的 `$VALUES`/synthetic 隐藏启发式，执行相关 Rust 回归、fmt、可归因 Clippy、`openspec validate --strict`，记录验收与分离的架构债务，并清理私有 Cargo target。
+- [x] 4.1 root 从冻结证据独立运行三方 Java 8 `-g`/`-g:none` 对照及所有拒绝控制；审查 Jarde 未采用 JADX 的 `$VALUES`/synthetic 隐藏启发式，执行相关 Rust 回归、fmt、可归因 Clippy、`openspec validate --strict`，记录验收与分离的架构债务，并清理私有 Cargo target。[Root 总验收](verification-4.1.md)

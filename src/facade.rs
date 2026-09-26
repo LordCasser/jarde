@@ -10600,7 +10600,7 @@ public class Probe {
                 Some(EnumCodeReference::Field {
                     owner: owner.to_vec(),
                     name: b"alias".to_vec(),
-                    descriptor: descriptor,
+                    descriptor,
                 }),
             ),
             instruction(38, 1, 0xb1, None),
