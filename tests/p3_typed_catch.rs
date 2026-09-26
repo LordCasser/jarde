@@ -358,3 +358,58 @@ fn a_catch_type_of_zero_becomes_neither_a_catch_nor_a_finally() {
         "no clause of this member is written, and the body's own statements are:\n{text}"
     );
 }
+
+/// The frozen patrol sample the third 2.2 negative was measured on: javac 23.0.1,
+/// `--release 8 -g:none`, class bytes SHA-256
+/// `4438f33df86d0359bf65531e47b137f9528bb1029a095c5280cef97c287b294f`, committed beside the
+/// three-way analysis in `openspec/evidence/java-syntax-2026-09-26/`.
+const PATROL2: &[u8] = include_bytes!("../openspec/evidence/java-syntax-2026-09-26/Patrol2.class");
+
+#[test]
+fn a_multi_catch_handler_that_proves_no_statement_keeps_its_header_and_quotes_its_body() {
+    // `Patrol2.multiCatch(I)I` catches `NumberFormatException | FileSystemException` in one
+    // clause whose handler is `astore_1; aload_1; getMessage; ifnonnull 43` over
+    // `iconst_1; goto 44` and `iconst_2`, meeting at the shared `ireturn` at BCI 44. The
+    // conditional value that handler computes **folds** — its proof succeeds — but the join that
+    // would write it lies outside the clause body the walk claims, and there is no code after the
+    // `try` for the run to continue at, so the clause walk writes no statement. The text then
+    // presented `catch (…) e { }`: a handler that runs nothing, and dropped statements named
+    // nowhere. That is the empty-body state P3 2.2's third negative refuses: the header stays,
+    // the body becomes the BCI reference of the range it holds, and the join that never ran is
+    // still named by the run's own uncovered-blocks quote beside the statement.
+    let sample = open(PATROL2);
+    let report = class_source_of(&sample, "Patrol2");
+    let text = text_of(&report, "multiCatch");
+    let header = at(
+        text,
+        "catch (java.lang.NumberFormatException | java.nio.file.FileSystemException e)",
+    );
+    let body = at(text, "// @bytecode 31 32 33 36 39 40 43");
+    assert!(
+        header < body,
+        "the clause's own quote is written inside the clause, under its header:\n{text}"
+    );
+    assert!(
+        text.contains(
+            "the handler body proved no statement beside its header, so the clause quotes the bytecode its own range holds"
+        ),
+        "the quote states why the body it replaced could not be presented:\n{text}"
+    );
+    assert!(
+        text.contains("// @bytecode 44"),
+        "the join whose consumer would have written the folded value is named by the run's \
+         uncovered-blocks quote:\n{text}"
+    );
+    let run = run_of(&report, "multiCatch");
+    assert_eq!(
+        run.content,
+        RecoveryContent::ContainsStatements,
+        "the `try` body's statements are still written:\n{text}"
+    );
+    assert_eq!(run.quality, Quality::Fallback, "{text}");
+    assert!(
+        run.fallbacks.contains(&"jre_region_uncovered_blocks"),
+        "the join the handler's walk reached but no clause claims stays a stated quote: {:?}\n{text}",
+        run.fallbacks
+    );
+}
