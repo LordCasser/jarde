@@ -44,7 +44,7 @@ MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代
 
 ### Requirement: A proved Boolean value chain preserves short-circuit evaluation
 
-一个值位的分支链已经由 `ShortCircuitValue` 及 CFG/SSA Phi 证明、两个唯一生产叶严格为 `iconst_1` 和 `iconst_0`、返回消费者的 Java 类型已证明是 `boolean` 时，恢复 MUST 按原分支极性及求值顺序写出布尔值。可等价化简的返回链 MUST 使用 `&&`、`||` 或原条件本身，MUST NOT 继续把这类精确 0/1 值写成整数三元式后附 `% 2 != 0`。普通语句位 `if` 的共享前向汇合不受此要求影响，MUST 保持原语句结构；不得仅凭字节码声称找回作者原来的源码拼写。生产叶不是严格 0/1、返回类型不是已证明的 `boolean`，或链与 Phi 证明不闭合时，MUST NOT 按布尔常量简化；任意整数进入 `Z` 消费位时 MUST 保持 JVM 低位语义。字段、数组、调用参数与局部消费者留待各自任务验证。
+一个值位的分支链已经由 `ShortCircuitValue` 及 CFG/SSA Phi 证明、两个唯一生产叶严格为 `iconst_1` 和 `iconst_0`、返回消费者的 Java 类型已证明是 `boolean` 时，恢复 MUST 按原分支极性及求值顺序写出布尔值。可等价化简的返回链 MUST 使用 `&&`、`||` 或原条件本身，MUST NOT 继续把这类精确 0/1 值写成整数三元式后附 `% 2 != 0`。普通语句位 `if` 的共享前向汇合不受此要求影响，MUST 保持原语句结构；不得仅凭字节码声称找回作者原来的源码拼写。生产叶不是严格 0/1、返回类型不是已证明的 `boolean`，或链与 Phi 证明不闭合时，MUST NOT 按布尔常量简化；任意整数进入 `Z` 消费位时 MUST 保持 JVM 低位语义。其它已证布尔消费位由下一要求处理。
 
 #### Scenario: Pure and effectful Boolean returns
 
@@ -55,6 +55,20 @@ MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代
 
 - **WHEN** 同形状分支链的一个生产叶改成 `2`，或消费者是 `int`，或 Phi/边的唯一性证明失败
 - **THEN** 文本 MUST NOT 使用该链的布尔 `&&`/`||` 规范化；若能继续呈现原始整数值进入 `Z` 消费位，MUST 保留 `% 2 != 0`，否则按原拒绝路径引用 BCI（P11）
+
+### Requirement: A proved Boolean value chain remains Boolean at typed stores and calls
+
+同一 `ShortCircuitValue` 的 CFG/SSA Phi、两个严格 1/0 生产叶、唯一消费者与布尔类型均已证明时，静态或实例 `Z` 字段写入、`boolean[]` 元素写入、`(Z)V` 调用参数和已判定为布尔的局部声明 MUST 复用返回位的短路布尔表达式。可等价化简的链 MUST 保留原极性与调用次数，MUST NOT 再套数值三元或 `% 2 != 0`。实例接收者、数组引用和下标仍按字节码先于右值求值；短路右项只在原分支允许时执行。生产叶不是严格 1/0、消费者类型或唯一性未证明时，MUST 保留已有低位转换或局部引用，不得依据目标声明猜测布尔链。
+
+#### Scenario: Proven Boolean sinks keep their source evaluation order
+
+- **WHEN** 冻结 Java 8 类 `MixedBooleanField`、`MixedShortCircuitField`、`MixedArrayValue`、`MixedBooleanArgument` 和 `MixedBooleanLocal` 分别将 `(a && b()) || c()` 或 `(a || b()) && c()` 消费于已证明的字段、数组、调用和局部位置
+- **THEN** 相应语句 MUST 含 `&&`/`||` 而不含整数 1/0 三元与 `% 2 != 0`；字段接收者、数组引用、下标和 `b()`/`c()` 的调用次数、顺序、异常行为与原 class 一致；测试、生产叶及消费 BCI 有 source map，完整类经 Java 8 重编的 Runner 输出与原 class 一致（P02/P11）
+
+#### Scenario: An unproved store leaf retains its low-bit interpretation
+
+- **WHEN** 同形状链的一个生产叶改为 `2`，或字段描述符、数组元素、调用参数、局部决定并非已证明布尔，或 Phi 的唯一消费证明失败
+- **THEN** MUST NOT 输出该链的逻辑 `&&`/`||` 投影；原路径能呈现时保持整数低位转换，否则引用未证明的 BCI（P11）
 
 ### Requirement: A branch that exits a loop is represented before the loop is published
 
