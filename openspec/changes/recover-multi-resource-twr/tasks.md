@@ -7,7 +7,7 @@
 - [x] 2.1 `twr` 在正常 close 逆序证明后核对每层主行止于该层 close 起点；旧单行布局与新分段布局同测，单资源路径不退化。root 独立复跑几何 4/4、既有 guard 13/13、null resource 5/5、TWR catch 1/1（另 1 项既有 ignored）。
 - [x] 2.2 当外层主行未覆盖内层 handler 时，只接受范围精确相等、同类型、同目标的伴随保护行，并纳入已解释行及来源；缺失、额外、交叠、错误类型/目标的 patched 控制拒绝保持。新增样本进入预期的 continuation 拒绝而非 RangeEnd；verifier-valid patched 行与重复伴随行保持拒绝，来源含伴随行首末 BCI；root 审读预算停止传播与行集合。
 - [x] 2.3a 对 close 后纯 `load; return` 的体内已求值结果，用终端 CFG 块与 SSA 唯一 store 证明值来源和尾部无效果；已证 return 由 Builder 放入 TWR 体内。不同值或额外效果仍拒绝，旧 guard 定向回归通过。[Root 验收与未闭合的高层作用域边界](verification-2.3a.md)
-- [ ] 2.3b 完整方法验证 return 与资源体局部声明同一词法作用域：先把已证 TWR 清理 handler 的非连续块精确认领为 Guard 隐式重建部分，再按这些指令的 BCI 从源局部声明规划排除其 synthetic 读写；不得按全方法物理 slot 跳过声明。其它用户 handler/跨异常区作用域仍归 [异常区局部作用域任务](../preserve-local-scope-across-exception-regions/tasks.md)，证据不足时保留拒绝。
+- [x] 2.3b 完整方法验证 return 与资源体局部声明同一词法作用域：已证 TWR 清理 handler 的非连续块由 Guard 精确认领；仅按这些指令 BCI 从源局部声明规划排除 synthetic 读写，不按全方法物理 slot 跳过声明。竞争异常表行保持拒绝。其它用户 handler/跨异常区作用域仍归 [异常区局部作用域任务](../preserve-local-scope-across-exception-regions/tasks.md)。[Root 验收](verification-2.3b.md)
 - [ ] 2.4 多资源一条头的呈现：资源按初始化顺序、close 逆序证明逐层复用、suppressed 链锚点保留；精确认领每个资源初始化的 `new; dup` 生产者（当前冻结样例 BCI 0/10 缺口）；文本含两个资源声明、体语句及必要的体内 return，无 `@bytecode`；旧 `Guarded.two/three` 不退化。2.3b 的 handler 局部作用域仍是完整类验收前置。
 
 ## 3. 对照与门禁
