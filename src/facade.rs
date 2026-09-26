@@ -4806,6 +4806,27 @@ fn prove_interface_super_calls(
     Ok(proved)
 }
 
+/// The interface-super proof as the presentation consumes it.
+///
+/// The proof is optional evidence of what the artifact may spell, and a run the budget or the
+/// caller's cancellation stopped cannot spend more work on it. It degrades here — to its
+/// conservative answer, nothing proved, so no `interface`-qualified super call is spelled — and
+/// the stop is stated where every other stop is: by the presentation's own execution plane.
+/// Raising a stop in the middle of the presentation path would answer a legal request with an
+/// error instead of the partial or cancelled run it can still publish.
+fn interface_super_calls_presented(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    budget: &mut Budget,
+) -> Result<Vec<jarde_java::report::ProvedInterfaceSuperCall>> {
+    match prove_interface_super_calls(content, request, ir, budget) {
+        Ok(proved) => Ok(proved),
+        Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Ok(Vec::new()),
+        Err(error) => Err(error),
+    }
+}
+
 fn unique_source_default(
     root: &[u8],
     name: &[u8],
@@ -8315,7 +8336,7 @@ fn recovery_from_with_class_candidates(
         None => Vec::new(),
     };
     let interface_super_calls =
-        prove_interface_super_calls(content, request, analyzed.ir(), budget)?;
+        interface_super_calls_presented(content, request, analyzed.ir(), budget)?;
     // What the artifact this run is about to commit is *of*, as this entry's own trusted read states
     // it (D3'): the physical identity the run was bound to, the member record the selection above
     // established and the environment the run was validated under. This is the entry's statement and
