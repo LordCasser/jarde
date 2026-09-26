@@ -143,7 +143,7 @@ pub(crate) fn may_capture_group_code(class: &ClassFacts, member_table_complete: 
         || class.major_version != 52
         || class.minor_version != 0
         || class.access_flags & ACC_ENUM == 0
-        || class.access_flags & (ACC_INTERFACE | ACC_ABSTRACT) != 0
+        || class.access_flags & ACC_INTERFACE != 0
         || class
             .super_class
             .as_ref()
@@ -2804,6 +2804,15 @@ mod tests {
     const MEASURE_JADX_RUNNER: &str = include_str!(
         "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/jadx/sources/defpackage/MeasureRunner.java"
     );
+    const OP_SOURCE: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Op.java"
+    );
+    const MIXED_SOURCE: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Mixed.java"
+    );
+    const PLAIN_SOURCE: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Plain.java"
+    );
     const DELEGATING_ENUM_SOURCE: &str = r#"
 public enum DelegatingEnum {
     ZERO,
@@ -2839,6 +2848,200 @@ final class ConstructorEffects {
             value_of_descriptor(b"p/Stage"),
             b"(Ljava/lang/String;)Lp/Stage;"
         );
+    }
+
+    #[test]
+    fn java8_two_constant_enum_capture_admits_op_without_proving_or_fabricating_code() {
+        for debug in [true, false] {
+            for (name, source, abstract_enum, expected_allocations) in [
+                (
+                    "Op",
+                    OP_SOURCE,
+                    true,
+                    vec![
+                        (0, 7, b"demo/Op$1".as_slice()),
+                        (13, 20, b"demo/Op$2".as_slice()),
+                    ],
+                ),
+                (
+                    "Mixed",
+                    MIXED_SOURCE,
+                    false,
+                    vec![
+                        (0, 7, b"demo/Mixed$1".as_slice()),
+                        (13, 20, b"demo/Mixed".as_slice()),
+                    ],
+                ),
+                (
+                    "Plain",
+                    PLAIN_SOURCE,
+                    false,
+                    vec![
+                        (0, 7, b"demo/Plain".as_slice()),
+                        (13, 20, b"demo/Plain".as_slice()),
+                    ],
+                ),
+            ] {
+                let bytes = compile_frozen_enum(name, source, debug);
+                let facts = jarde_reader::classfile::class_facts(&bytes, &mut test_budget())
+                    .expect("the enum class facts decode");
+                assert_eq!(facts.access_flags & ACC_ABSTRACT != 0, abstract_enum);
+                assert!(
+                    may_capture_group_code(&facts, true),
+                    "{name} should enter the same-run candidate collector"
+                );
+                let snapshot = crate::Engine::new()
+                    .open(
+                        crate::ArtifactInput::bytes(bytes.clone()),
+                        &mut test_budget(),
+                    )
+                    .expect("the enum fixture opens");
+                let request = enum_request(&snapshot, &format!("demo/{name}"));
+                let report = performed(
+                    crate::Engine::new()
+                        .class_source(
+                            std::slice::from_ref(&snapshot),
+                            &request,
+                            &mut test_budget(),
+                        )
+                        .expect("the candidate class-source pass completes"),
+                );
+                assert!(matches!(
+                    report.enum_constant_proof,
+                    ClassSourceEnumConstantProof::Refused { .. }
+                ));
+                if name == "Op" {
+                    let abstract_apply = report
+                        .methods
+                        .iter()
+                        .find(|method| method.item.name.raw().0 == b"apply")
+                        .expect("the physical abstract method remains in the method table");
+                    assert_eq!(
+                        abstract_apply.no_body_kind,
+                        Some(crate::NoBodyKind::Abstract)
+                    );
+                    assert!(matches!(abstract_apply.outcome, ClassSourceOutcome::NoBody));
+                    assert!(!report.text.contains("ADD {"));
+                    assert!(!report.text.contains("MULTIPLY {"));
+                }
+                let environment = request
+                    .environment
+                    .build(std::slice::from_ref(&snapshot))
+                    .expect("the fixture environment builds");
+                for method in report
+                    .methods
+                    .iter()
+                    .filter(|method| matches!(method.outcome, ClassSourceOutcome::Recovered { .. }))
+                {
+                    // This direct candidate extraction test keeps the `MethodIr` and candidate
+                    // from one analysis run. The production class-source handoff is exercised by
+                    // the report above; no run's candidate is reconstructed from report text.
+                    let analysis = jarde_jvm::analyze_method_ir(
+                        std::slice::from_ref(&snapshot),
+                        &crate::ir::MethodAnalysisRequest {
+                            environment: environment.clone(),
+                            method: method.item.identity.clone(),
+                            stages: crate::AnalysisStage::ALL.to_vec(),
+                        },
+                        &mut test_budget(),
+                    )
+                    .expect("the method analysis completes");
+                    let candidate = capture_method_code(
+                        method.item.index,
+                        &method.item.identity,
+                        analysis.ir(),
+                        &mut test_budget(),
+                    )
+                    .expect("same-run enum facts fit the budget")
+                    .expect("every recovered method is retained as a candidate");
+                    assert_eq!(candidate.member.as_ref(), Some(&method.item.identity));
+                    assert!(candidate.complete, "{name} method Code is complete");
+                    if method.item.name.raw().0 == b"<clinit>" {
+                        for (new_bci, constructor_bci, owner) in &expected_allocations {
+                            let new = candidate
+                                .instructions
+                                .iter()
+                                .find(|instruction| instruction.bci == *new_bci)
+                                .expect("the expected allocation BCI is retained");
+                            assert_eq!(new.opcode, 0xbb);
+                            assert_eq!(
+                                new.reference,
+                                Some(EnumCodeReference::Class(owner.to_vec()))
+                            );
+                            let constructor = candidate
+                                .instructions
+                                .iter()
+                                .find(|instruction| instruction.bci == *constructor_bci)
+                                .expect("the expected constructor BCI is retained");
+                            assert_eq!(constructor.opcode, 0xb7);
+                            assert_eq!(
+                                constructor.reference,
+                                Some(EnumCodeReference::Method {
+                                    owner: owner.to_vec(),
+                                    name: b"<init>".to_vec(),
+                                    descriptor: b"(Ljava/lang/String;I)V".to_vec(),
+                                    interface: false,
+                                })
+                            );
+                        }
+                    }
+                    if name == "Op" && method.item.name.raw().0 == b"tag" {
+                        for name in [b"name".as_slice(), b"ordinal".as_slice()] {
+                            assert!(candidate.member_uses.iter().any(|use_site| {
+                                matches!(
+                                    &use_site.reference,
+                                    EnumCodeReference::Method { name: actual, .. }
+                                        if actual.as_slice() == name
+                                )
+                            }));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn abstract_enum_candidate_capture_observes_budget_and_cancellation() {
+        let bytes = compile_frozen_enum("Op", OP_SOURCE, true);
+        let snapshot = crate::Engine::new()
+            .open(crate::ArtifactInput::bytes(bytes), &mut test_budget())
+            .expect("the Op enum opens");
+        let request = enum_request(&snapshot, "demo/Op");
+
+        let mut limits = test_budget().limits().clone();
+        limits.ir_items = 0;
+        let mut exhausted = Budget::new(limits);
+        let report = performed(
+            crate::Engine::new()
+                .class_source(std::slice::from_ref(&snapshot), &request, &mut exhausted)
+                .expect("the report carries the bounded stop"),
+        );
+        assert!(matches!(
+            report.enum_constant_proof,
+            ClassSourceEnumConstantProof::Stopped { .. }
+        ));
+        assert!(!matches!(
+            report.execution,
+            ExecutionReport::Complete { .. }
+        ));
+
+        let cancellation = crate::CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled =
+            Budget::with_cancellation_token(test_budget().limits().clone(), cancellation);
+        match crate::Engine::new().class_source(
+            std::slice::from_ref(&snapshot),
+            &request,
+            &mut cancelled,
+        ) {
+            Ok(crate::OperationOutcome::Incomplete(candidates)) => assert!(matches!(
+                candidates.execution,
+                ExecutionReport::Cancelled { .. }
+            )),
+            Err(crate::Error::Cancelled { .. }) => {}
+            other => panic!("cancellation did not stop Op candidate collection: {other:?}"),
+        }
     }
 
     #[test]
@@ -4934,6 +5137,29 @@ final class ConstructorEffects {
         );
         fs::read(directory.join(format!("{class_name}.class")))
             .expect("the Java fixture class was emitted")
+    }
+
+    fn compile_frozen_enum(class_name: &str, source_text: &str, debug: bool) -> Vec<u8> {
+        let (directory, _cleanup) = java_test_directory(&format!("frozen-enum-{class_name}"));
+        fs::create_dir_all(&directory).expect("the private fixture directory is created");
+        let source = directory.join(format!("{class_name}.java"));
+        fs::write(&source, source_text).expect("the frozen Java source is written");
+        let mut command = Command::new("javac");
+        command.arg("--release").arg("8");
+        command.arg(if debug { "-g" } else { "-g:none" });
+        let output = command
+            .arg("-d")
+            .arg(&directory)
+            .arg(&source)
+            .output()
+            .expect("the Java 8 fixture compiler is available");
+        assert!(
+            output.status.success(),
+            "javac failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        fs::read(directory.join("demo").join(format!("{class_name}.class")))
+            .expect("the packaged Java fixture class was emitted")
     }
 
     fn compile_and_run_sources(
