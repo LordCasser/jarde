@@ -122,13 +122,16 @@ pub(crate) struct ScanResult {
 
 /// The candidate shapes a caller outside this crate may ask [`scan_candidates`] for.
 ///
-/// A declaration-reference scan is the only consumer above this crate, and it needs exactly
-/// two rules: the shape of a member reference and the shape of a signature-polymorphic method.
-/// Those two are what crosses the boundary — the scanner's third rule, [`CandidateRule::Exact`],
-/// is query-internal semantics: it names one complete target to compare against rather than a
-/// declaration to look for, and no caller above this crate states one.
+/// Candidate scans support member-shape matching, signature-polymorphic method matching and
+/// exact raw owner matching. [`CandidateRule::Exact`] remains query-internal semantics: it
+/// names one complete target to compare against rather than a declaration or owner to look for.
 #[derive(Clone, Debug)]
 pub enum CandidateFilter {
+    /// Any class, method or field symbol whose raw class owner bytes equal this value.
+    ///
+    /// A class symbol carries the class name itself; member symbols carry their declaring
+    /// owner. This is an exact byte comparison and performs no hierarchy resolution.
+    Owner { owner: JvmBytes },
     /// The raw shape of one member reference: a `SymbolRef::Method`/`SymbolRef::Field` whose
     /// name and descriptor bytes are equal.
     ///
@@ -161,6 +164,7 @@ impl From<CandidateFilter> for CandidateRule {
     /// rule the caller cannot state ([`CandidateRule::Exact`]) has no public spelling at all.
     fn from(filter: CandidateFilter) -> Self {
         match filter {
+            CandidateFilter::Owner { owner } => Self::Owner { owner },
             CandidateFilter::MemberShape { name, descriptor } => {
                 Self::MemberShape { name, descriptor }
             }
@@ -176,14 +180,16 @@ impl From<CandidateFilter> for CandidateRule {
 /// This is the one place that decision lives, so every consumer sub-scan applies the same
 /// rule and none of them compares targets on its own: [`CandidateRule::Exact`] is the
 /// behaviour `Engine::query` has always had (exact equality on the raw bytes the request
-/// names), and the two shape rules are the wider candidate rule a declaration-reference
-/// scan needs — a member reference is a candidate whenever the dimensions its declaration can
-/// be found under match, whatever owner the site spells. [`CandidateFilter`] is the caller's
-/// half of the same rule; `Exact` has no public spelling.
+/// names), while the three candidate rules match member shape, signature-polymorphic methods,
+/// or one exact raw owner. [`CandidateFilter`] is the caller's half of those rules; `Exact`
+/// has no public spelling.
 #[derive(Clone, Debug)]
 pub(crate) enum CandidateRule {
     /// The request's own target: the candidate must carry the same raw bytes.
     Exact(QueryTarget),
+    /// A class symbol named by these raw bytes, or a method/field symbol with these raw
+    /// owner bytes.
+    Owner { owner: JvmBytes },
     /// The raw shape of one member reference: a `SymbolRef::Method`/`SymbolRef::Field` whose
     /// name and descriptor bytes are equal.
     ///
@@ -221,6 +227,11 @@ impl CandidateRule {
     fn request_target(&self) -> QueryTarget {
         match self {
             Self::Exact(target) => target.clone(),
+            Self::Owner { owner } => QueryTarget::Symbol {
+                value: SymbolRef::Class {
+                    owner: owner.clone(),
+                },
+            },
             Self::MemberShape { name, descriptor } => QueryTarget::Symbol {
                 value: SymbolRef::Method {
                     owner: JvmBytes(Vec::new()),
@@ -1166,6 +1177,16 @@ impl<'a> ScanContext<'a> {
             CandidateRule::Exact(QueryTarget::Literal { value }) => {
                 (literal == Some(value)).then(|| XrefTarget::Literal {
                     value: value.clone(),
+                })
+            }
+            CandidateRule::Owner { owner } => {
+                let symbol = symbol?;
+                let found_owner = match symbol {
+                    SymbolRef::Class { owner } => owner,
+                    SymbolRef::Method { owner, .. } | SymbolRef::Field { owner, .. } => owner,
+                };
+                (found_owner.0 == owner.0).then(|| XrefTarget::Symbol {
+                    value: symbol.clone(),
                 })
             }
             CandidateRule::MemberShape { name, descriptor } => {
