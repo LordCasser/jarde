@@ -2574,7 +2574,53 @@ impl Engine {
                 &mut execution,
                 budget,
             ) {
-                Ok(relations) => relations,
+                Ok(mut relations) => {
+                    match census_enum_constant_body_uses(
+                        content,
+                        &environment,
+                        &definition,
+                        &mut relations,
+                        &mut execution,
+                        budget,
+                    ) {
+                        Ok(()) => {
+                            if relations.iter().any(|relation| {
+                                relation.use_census.scans.iter().any(|scan| {
+                                    !matches!(&scan.execution, ExecutionReport::Complete { .. })
+                                })
+                            }) {
+                                for relation in &mut relations {
+                                    relation.use_census.exclusive = false;
+                                    relation.use_census.refusal =
+                                        Some("the group owner census stopped".to_owned());
+                                }
+                                enum_constant_proof =
+                                    crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                        reason: "enum constant subclass use census stopped"
+                                            .to_owned(),
+                                    };
+                            }
+                            relations
+                        }
+                        Err(error) => {
+                            for relation in &mut relations {
+                                relation.use_census.exclusive = false;
+                                relation.use_census.refusal =
+                                    Some("the group owner census stopped".to_owned());
+                            }
+                            let stop = stop_execution(&error, budget);
+                            merge_execution(&mut execution, stop);
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            enum_constant_proof =
+                                crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                    reason: format!(
+                                        "enum constant subclass use census stopped: {error}"
+                                    ),
+                                };
+                            relations
+                        }
+                    }
+                }
                 Err(error) => {
                     let stop = stop_execution(&error, budget);
                     merge_execution(&mut execution, stop.clone());
@@ -4468,9 +4514,33 @@ pub(crate) struct PendingEnumConstantBodyRelation {
     pub(crate) constructor_descriptor: Vec<u8>,
     pub(crate) subclass_owner: Vec<u8>,
     pub(crate) subclass: PhysicalDefinitionId,
+    /// Anonymous-shaped typed InnerClasses rows in this selected child's own class file.
+    /// The census only uses rows naming another selected child of this same constant group.
+    pub(crate) anonymous_inner_owners: Vec<Vec<u8>>,
+    /// Exhaustive, selected-input owner references. `exclusive` is only a use-site conclusion;
+    /// constructor arguments, stack aliases and source projection remain unproved.
+    pub(crate) use_census: PendingEnumConstantBodyUseCensus,
     /// Same-run physical facts that establish the narrow zero-source-argument, ordered
     /// two-constant enum shape. This remains private pending evidence and grants no projection.
     pub(crate) group_shape: PendingEnumConstantBodyGroupShape,
+}
+
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub(crate) struct PendingEnumConstantBodyUseCensus {
+    pub(crate) scans: Vec<PendingEnumConstantBodyUseScan>,
+    pub(crate) exclusive: bool,
+    pub(crate) refusal: Option<String>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct PendingEnumConstantBodyUseScan {
+    pub(crate) snapshot: SnapshotId,
+    pub(crate) scope: PhysicalScope,
+    pub(crate) items: Vec<XrefItem>,
+    pub(crate) has_more: bool,
+    pub(crate) coverage: QueryCoverage,
+    pub(crate) execution: ExecutionReport,
+    pub(crate) diagnostics: Vec<Diagnostic>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -4957,6 +5027,23 @@ fn resolve_enum_constant_body_relations(
         let [inner] = inner_matches.as_slice() else {
             continue;
         };
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(nesting.inner_classes.len()).unwrap_or(u64::MAX),
+        )?;
+        let mut inner_rows = std::collections::BTreeMap::<Vec<u8>, (usize, bool)>::new();
+        for row in &nesting.inner_classes {
+            budget.poll()?;
+            if let Ok(name) = jarde_reader::classfile::cp_class_name(&child_pool, row.class_index) {
+                let entry = inner_rows.entry(name.0).or_insert((0, false));
+                entry.0 += 1;
+                entry.1 = row.outer_class_index == 0 && row.inner_name.is_none();
+            }
+        }
+        let anonymous_inner_owners = inner_rows
+            .into_iter()
+            .filter_map(|(owner, (count, anonymous))| (count == 1 && anonymous).then_some(owner))
+            .collect();
         let enum_inner_rows: Vec<_> = enum_nesting
             .inner_classes
             .iter()
@@ -5005,10 +5092,261 @@ fn resolve_enum_constant_body_relations(
             constructor_descriptor: descriptor.clone(),
             subclass_owner: allocation.class.as_bytes().to_vec(),
             subclass: definition,
+            anonymous_inner_owners,
+            use_census: PendingEnumConstantBodyUseCensus::default(),
             group_shape: group_shape.clone(),
         });
     }
     Ok(relations)
+}
+
+/// Census each selected input through P1's physical scanner. A relation is exclusive only when
+/// every selected range was fully read and its entire owner-reference set has an explanation.
+/// This says nothing about the constructed object's stack value or constructor arguments.
+fn census_enum_constant_body_uses(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    enum_definition: &PhysicalDefinitionId,
+    relations: &mut [PendingEnumConstantBodyRelation],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<()> {
+    use jarde_query::query::{XrefCertainty, XrefOperation, XrefTarget};
+    use jarde_query::xref::{CandidateFilter, scan_candidates};
+    use jarde_reader::model::SymbolRef;
+
+    if relations.is_empty() {
+        return Ok(());
+    }
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(environment.runtime.load_domain.roots.len() + relations.len())
+            .unwrap_or(u64::MAX),
+    )?;
+    let mut ranges = Vec::<(SnapshotId, PhysicalScope)>::new();
+    let mut unscannable_root = false;
+    for root in &environment.runtime.load_domain.roots {
+        let range = match root {
+            LoadRoot::StandaloneClass { snapshot } => {
+                Some((snapshot.clone(), PhysicalScope::SnapshotAll))
+            }
+            LoadRoot::Container { origin, prefix } => {
+                // P1 scopes a container tree, not a load-root prefix or one nested path. A
+                // wider scan may expose real extra uses, but cannot certify the narrower root.
+                if !prefix.0.is_empty() || !origin.steps.is_empty() {
+                    unscannable_root = true;
+                }
+                Some((
+                    origin.snapshot.clone(),
+                    PhysicalScope::ArtifactTree {
+                        root_container: origin.root_container.clone(),
+                    },
+                ))
+            }
+            LoadRoot::External { .. } => None,
+        };
+        if let Some(range) = range {
+            if !ranges.contains(&range) {
+                ranges.push(range);
+            }
+        } else {
+            unscannable_root = true;
+        }
+    }
+    let consumers = ConsumerSchema::new(
+        1,
+        [
+            ConsumerKind::Invocation,
+            ConsumerKind::Field,
+            ConsumerKind::Type,
+            ConsumerKind::Constant,
+            ConsumerKind::Exception,
+            ConsumerKind::Signature,
+            ConsumerKind::Annotation,
+            ConsumerKind::InnerNest,
+            ConsumerKind::Module,
+            ConsumerKind::Bootstrap,
+            ConsumerKind::Resource,
+        ],
+    );
+    let clinit = PhysicalMethodId {
+        owner: enum_definition.clone(),
+        name: JvmBytes(b"<clinit>".to_vec()),
+        descriptor: JvmBytes(b"()V".to_vec()),
+    };
+    let selected_children: Vec<_> = relations
+        .iter()
+        .map(|relation| {
+            (
+                relation.subclass.clone(),
+                relation.subclass_owner.clone(),
+                relation.anonymous_inner_owners.clone(),
+            )
+        })
+        .collect();
+    for relation in relations {
+        let census = &mut relation.use_census;
+        let mut new_count = 0;
+        let mut constructor_count = 0;
+        let mut access_descriptor_count = 0;
+        if ranges.is_empty() || unscannable_root {
+            census.refusal.get_or_insert_with(|| {
+                "a selected input root cannot be completely scanned".to_owned()
+            });
+        }
+        for (snapshot_id, scope) in &ranges {
+            budget.poll()?;
+            let Some(snapshot) = content
+                .iter()
+                .find(|candidate| candidate.id() == snapshot_id)
+            else {
+                census
+                    .refusal
+                    .get_or_insert_with(|| "a selected input snapshot was not provided".to_owned());
+                continue;
+            };
+            let scan = scan_candidates(
+                snapshot,
+                scope,
+                &consumers,
+                CandidateFilter::Owner {
+                    owner: JvmBytes(relation.subclass_owner.clone()),
+                },
+                0,
+                budget,
+            )?;
+            let complete = !scan.has_more
+                && matches!(&scan.execution, ExecutionReport::Complete { .. })
+                && scan.coverage.dimensions.artifact_structural.state
+                    == CoverageState::CompleteWithinSchema
+                && scan.coverage.unknown_candidates == 0
+                && scan.coverage.unsupported_categories.is_empty();
+            if !complete {
+                census.refusal.get_or_insert_with(|| {
+                    "the selected input owner scan is incomplete".to_owned()
+                });
+            }
+            for item in &scan.items {
+                let allowed_code = match (&item.source.location, &item.target) {
+                    (
+                        Location::Code { method, bci },
+                        XrefTarget::Symbol {
+                            value: SymbolRef::Class { owner },
+                        },
+                    ) if method == &clinit
+                        && *bci == relation.allocation_bci
+                        && owner.0 == relation.subclass_owner
+                        && item.operation == XrefOperation::New
+                        && item.consumer == Some(ConsumerKind::Type)
+                        && item.evidence.bci == Some(*bci)
+                        && item.evidence.opcode == Some(0xbb) =>
+                    {
+                        new_count += 1;
+                        true
+                    }
+                    (
+                        Location::Code { method, bci },
+                        XrefTarget::Symbol {
+                            value:
+                                SymbolRef::Method {
+                                    owner,
+                                    name,
+                                    descriptor,
+                                },
+                        },
+                    ) if method == &clinit
+                        && *bci == relation.constructor_bci
+                        && owner.0 == relation.subclass_owner
+                        && name.0 == b"<init>"
+                        && descriptor.0 == relation.constructor_descriptor
+                        && item.operation == XrefOperation::InvokeSpecial
+                        && item.consumer == Some(ConsumerKind::Invocation)
+                        && item.evidence.bci == Some(*bci)
+                        && item.evidence.opcode == Some(0xb7) =>
+                    {
+                        constructor_count += 1;
+                        true
+                    }
+                    _ => false,
+                };
+                // 2.1b checked unique typed InnerClasses self rows in both the enum and the
+                // child. Those are declaration metadata, not a second object use. Any other
+                // class, metadata operation, method, field or handle is additional use.
+                let allowed_nesting = matches!(
+                    (&item.source.location, &item.target),
+                    (
+                        Location::ClassOffset { definition, .. },
+                        XrefTarget::Symbol {
+                            value: SymbolRef::Class { owner },
+                        },
+                    ) if owner.0 == relation.subclass_owner
+                        && item.operation == XrefOperation::InnerClass
+                        && item.consumer == Some(ConsumerKind::InnerNest)
+                        && (definition == enum_definition
+                            || definition == &relation.subclass
+                            || selected_children.iter().any(|(selected, _, rows)| {
+                                selected == definition
+                                    && rows.contains(&relation.subclass_owner)
+                            }))
+                );
+                // 2.1c recorded the one synthetic access constructor and its exact marker
+                // owner. P1 reports descriptor types at the UTF8/class coordinate, so require
+                // exactly one such item across the census: a second declaration with that
+                // descriptor cannot be attributed to the verified bridge.
+                let allowed_access_descriptor = matches!(
+                    (&item.source.location, &item.target),
+                    (
+                        Location::ClassOffset { definition, .. },
+                        XrefTarget::Symbol {
+                            value: SymbolRef::Class { owner },
+                        },
+                    ) if definition == enum_definition
+                        && owner.0 == relation.subclass_owner
+                        && item.operation == XrefOperation::MethodDescriptor
+                        && item.consumer == Some(ConsumerKind::Type)
+                        && relation.group_shape.constructors.iter().any(|constructor| {
+                            constructor.access_marker_owner.as_deref()
+                                == Some(relation.subclass_owner.as_slice())
+                        })
+                );
+                if allowed_access_descriptor {
+                    access_descriptor_count += 1;
+                }
+                if item.certainty != XrefCertainty::Exact
+                    || !(allowed_code || allowed_nesting || allowed_access_descriptor)
+                {
+                    census.refusal.get_or_insert_with(|| {
+                        "the subclass has an additional owner use".to_owned()
+                    });
+                }
+            }
+            merge_execution(execution, scan.execution.clone());
+            census.scans.push(PendingEnumConstantBodyUseScan {
+                snapshot: snapshot_id.clone(),
+                scope: scope.clone(),
+                items: scan.items,
+                has_more: scan.has_more,
+                coverage: scan.coverage,
+                execution: scan.execution,
+                diagnostics: scan.diagnostics,
+            });
+        }
+        if new_count != 1 || constructor_count != 1 {
+            census.refusal.get_or_insert_with(|| {
+                "the exact enum construction uses were not unique".to_owned()
+            });
+        }
+        let has_access_marker = relation.group_shape.constructors.iter().any(|constructor| {
+            constructor.access_marker_owner.as_deref() == Some(relation.subclass_owner.as_slice())
+        });
+        if access_descriptor_count != usize::from(has_access_marker) {
+            census.refusal.get_or_insert_with(|| {
+                "the access constructor descriptor use is not unique".to_owned()
+            });
+        }
+        census.exclusive = census.refusal.is_none();
+    }
+    Ok(())
 }
 
 fn enum_access_constructor_marker_owner(descriptor: &[u8]) -> Option<Vec<u8>> {
@@ -7144,6 +7482,62 @@ mod enum_constant_body_relation_tests {
         changed
     }
 
+    fn mutate_initializer_new_owner(bytes: &[u8], new_bci: u32, new_owner: &[u8]) -> Vec<u8> {
+        let mut read_budget = budget();
+        let facts = class_member_facts(bytes, &mut read_budget).unwrap();
+        let pool = class_constant_pool(bytes, &read_budget).unwrap();
+        let class_index = pool
+            .iter()
+            .find(|entry| {
+                matches!(&entry.kind,
+                    jarde_reader::classfile::CpEntryKind::Class { name, .. }
+                        if name.0 == new_owner)
+            })
+            .expect("the other anonymous child class reference exists")
+            .index;
+        let clinit = facts
+            .methods
+            .iter()
+            .find(|method| method.name.raw().0 == b"<clinit>")
+            .unwrap();
+        let code = clinit
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0 == b"Code")
+            .unwrap();
+        let operand_offset =
+            usize::try_from(code.content_span.start).unwrap() + 8 + new_bci as usize + 1;
+        let mut changed = bytes.to_vec();
+        changed[operand_offset..operand_offset + 2].copy_from_slice(&class_index.to_be_bytes());
+        changed
+    }
+
+    fn mutate_child_super_call_owner(bytes: &[u8], new_owner: &[u8]) -> Vec<u8> {
+        let read_budget = budget();
+        let pool = class_constant_pool(bytes, &read_budget).unwrap();
+        let class_index = pool
+            .iter()
+            .find(|entry| {
+                matches!(&entry.kind,
+                    jarde_reader::classfile::CpEntryKind::Class { name, .. }
+                        if name.0 == new_owner)
+            })
+            .expect("the marker child class reference exists")
+            .index;
+        let call = pool
+            .iter()
+            .find(|entry| {
+                matches!(&entry.kind,
+                    jarde_reader::classfile::CpEntryKind::MethodRef { owner, name, .. }
+                        if owner.0 == b"demo/Op" && name.0 == b"<init>")
+            })
+            .expect("the child constructor's super call exists");
+        let offset = usize::try_from(call.span.start).unwrap() + 1;
+        let mut changed = bytes.to_vec();
+        changed[offset..offset + 2].copy_from_slice(&class_index.to_be_bytes());
+        changed
+    }
+
     fn assert_positive(entries: &[(Vec<u8>, Vec<u8>)], debug: bool) {
         for (class, expected) in [("demo/Op", 2), ("demo/Mixed", 1), ("demo/Plain", 0)] {
             let source_report = report(entries, class);
@@ -7152,6 +7546,31 @@ mod enum_constant_body_relation_tests {
                 expected,
                 "{class}, debug={debug}"
             );
+            for relation in &source_report.enum_constant_body_relations {
+                assert_eq!(relation.use_census.scans.len(), 1, "{class}, debug={debug}");
+                let scan = &relation.use_census.scans[0];
+                assert!(!scan.has_more);
+                assert_eq!(
+                    scan.coverage.dimensions.artifact_structural.state,
+                    CoverageState::CompleteWithinSchema
+                );
+                assert_eq!(scan.coverage.unknown_candidates, 0);
+                assert!(scan.coverage.unsupported_categories.is_empty());
+                assert!(matches!(scan.execution, ExecutionReport::Complete { .. }));
+                assert!(scan.items.iter().any(|item| {
+                    matches!(&item.source.location, Location::Code { bci, .. }
+                        if *bci == relation.allocation_bci)
+                        && item.operation == jarde_query::query::XrefOperation::New
+                }));
+                assert!(scan.items.iter().any(|item| {
+                    matches!(&item.source.location, Location::Code { bci, .. }
+                        if *bci == relation.constructor_bci)
+                        && item.operation == jarde_query::query::XrefOperation::InvokeSpecial
+                }));
+                // The unique access constructor marker and the selected sibling's unique
+                // anonymous InnerClasses row are compiler structure, not a second allocation.
+                assert!(relation.use_census.exclusive, "{class}, debug={debug}");
+            }
             assert!(!matches!(
                 source_report.enum_constant_proof,
                 crate::enum_constants::ClassSourceEnumConstantProof::Proved(_)
@@ -7380,13 +7799,79 @@ mod enum_constant_body_relation_tests {
         let mut limits = budget().limits().clone();
         limits.analysis_steps = complete.usage.analysis_steps.saturating_sub(1);
         let bounded = report_with_budget(&entries, "demo/Op", Budget::new(limits));
-        assert!(bounded.enum_constant_body_relations.is_empty());
+        assert!(
+            bounded
+                .enum_constant_body_relations
+                .iter()
+                .any(|relation| !relation.use_census.exclusive)
+        );
         assert!(matches!(
             bounded.enum_constant_proof,
             crate::enum_constants::ClassSourceEnumConstantProof::Stopped { .. }
         ));
 
         assert_positive(&compiled_entries(false), false);
+    }
+
+    #[test]
+    fn enum_constant_body_census_rejects_another_constant_and_other_class_code_use() {
+        let entries = compiled_entries(true);
+        let mut reused = entries.clone();
+        let op = &mut reused
+            .iter_mut()
+            .find(|(name, _)| name == b"demo/Op.class")
+            .unwrap()
+            .1;
+        *op = mutate_initializer_new_owner(op, 13, b"demo/Op$1");
+        *op = mutate_initializer_constructor_owner(op, 20, b"demo/Op$1");
+        let reused_report = report(&reused, "demo/Op");
+        assert_eq!(reused_report.enum_constant_body_relations.len(), 2);
+        assert!(
+            reused_report
+                .enum_constant_body_relations
+                .iter()
+                .all(|relation| !relation.use_census.exclusive)
+        );
+
+        let mut other_code = entries;
+        let child = &mut other_code
+            .iter_mut()
+            .find(|(name, _)| name == b"demo/Op$2.class")
+            .unwrap()
+            .1;
+        *child = mutate_child_super_call_owner(child, b"demo/Op$1");
+        let other_report = report(&other_code, "demo/Op");
+        let first = other_report
+            .enum_constant_body_relations
+            .iter()
+            .find(|relation| relation.subclass_owner == b"demo/Op$1")
+            .expect("the selected child relation survives a change to its Code");
+        assert!(!first.use_census.exclusive);
+        assert!(first.use_census.scans[0].items.iter().any(|item| {
+            matches!(&item.source.location, Location::Code { method, .. }
+                if method.owner != first.subclass && method.owner != other_report.class)
+                && item.operation == jarde_query::query::XrefOperation::InvokeSpecial
+        }));
+
+        let mut changed_sibling = compiled_entries(false);
+        let sibling = &mut changed_sibling
+            .iter_mut()
+            .find(|(name, _)| name == b"demo/Op$2.class")
+            .unwrap()
+            .1;
+        *sibling = mutate_anonymous_outer_index(sibling, b"demo/Op$1", b"demo/Op");
+        let changed_report = report(&changed_sibling, "demo/Op");
+        let first = changed_report
+            .enum_constant_body_relations
+            .iter()
+            .find(|relation| relation.subclass_owner == b"demo/Op$1")
+            .unwrap();
+        assert!(!first.use_census.exclusive);
+        assert!(first.use_census.scans[0].items.iter().any(|item| {
+            item.operation == jarde_query::query::XrefOperation::InnerClass
+                && matches!(&item.source.location, Location::ClassOffset { definition, .. }
+                    if definition != &first.subclass && definition != &changed_report.class)
+        }));
     }
 }
 
