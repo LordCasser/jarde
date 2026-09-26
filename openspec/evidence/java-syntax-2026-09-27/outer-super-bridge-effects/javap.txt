@@ -1,0 +1,134 @@
+Compiled from "OuterSuperEffects.java"
+public class OuterSuperEffects extends EffectsBase {
+  static int events;
+
+  public OuterSuperEffects();
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method EffectsBase."<init>":()V
+       4: return
+
+  static int tick(int, boolean);
+    Code:
+       0: getstatic     #11                 // Field events:I
+       3: bipush        10
+       5: imul
+       6: iload_0
+       7: iadd
+       8: putstatic     #11                 // Field events:I
+      11: iload_1
+      12: ifeq          42
+      15: new           #17                 // class java/lang/IllegalStateException
+      18: dup
+      19: new           #19                 // class java/lang/StringBuilder
+      22: dup
+      23: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+      26: ldc           #22                 // String tick
+      28: invokevirtual #24                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      31: iload_0
+      32: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      35: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      38: invokespecial #35                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      41: athrow
+      42: iload_0
+      43: ireturn
+
+  int combine(int, int);
+    Code:
+       0: getstatic     #11                 // Field events:I
+       3: bipush        10
+       5: imul
+       6: bipush        9
+       8: iadd
+       9: putstatic     #11                 // Field events:I
+      12: bipush        99
+      14: ireturn
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: new           #12                 // class OuterSuperEffects
+       3: dup
+       4: invokespecial #38                 // Method "<init>":()V
+       7: astore_1
+       8: new           #39                 // class OuterSuperEffects$Member
+      11: dup
+      12: aload_1
+      13: dup
+      14: invokestatic  #41                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      17: pop
+      18: invokespecial #47                 // Method OuterSuperEffects$Member."<init>":(LOuterSuperEffects;)V
+      21: astore_2
+      22: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      25: new           #19                 // class java/lang/StringBuilder
+      28: dup
+      29: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+      32: aload_2
+      33: iconst_0
+      34: invokevirtual #56                 // Method OuterSuperEffects$Member.run:(Z)I
+      37: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      40: ldc           #60                 // String :
+      42: invokevirtual #24                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      45: getstatic     #11                 // Field events:I
+      48: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      51: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      54: invokevirtual #62                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      57: iconst_0
+      58: putstatic     #11                 // Field events:I
+      61: aload_2
+      62: iconst_1
+      63: invokevirtual #56                 // Method OuterSuperEffects$Member.run:(Z)I
+      66: pop
+      67: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      70: ldc           #67                 // String missing exception
+      72: invokevirtual #62                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      75: goto          106
+      78: astore_3
+      79: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      82: new           #19                 // class java/lang/StringBuilder
+      85: dup
+      86: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+      89: ldc           #69                 // String fail:
+      91: invokevirtual #24                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      94: getstatic     #11                 // Field events:I
+      97: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     100: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     103: invokevirtual #62                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     106: return
+    Exception table:
+       from    to  target type
+          61    75    78   Class java/lang/IllegalStateException
+
+  static int access$001(OuterSuperEffects, int, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: invokespecial #1                  // Method EffectsBase.combine:(II)I
+       6: ireturn
+}
+Compiled from "OuterSuperEffects.java"
+class OuterSuperEffects$Member {
+  final OuterSuperEffects this$0;
+
+  OuterSuperEffects$Member(OuterSuperEffects);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #1                  // Field this$0:LOuterSuperEffects;
+       5: aload_0
+       6: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       9: return
+
+  int run(boolean);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field this$0:LOuterSuperEffects;
+       4: iconst_1
+       5: iload_1
+       6: invokestatic  #13                 // Method OuterSuperEffects.tick:(IZ)I
+       9: iconst_2
+      10: iconst_0
+      11: invokestatic  #13                 // Method OuterSuperEffects.tick:(IZ)I
+      14: invokestatic  #19                 // Method OuterSuperEffects.access$001:(LOuterSuperEffects;II)I
+      17: ireturn
+}

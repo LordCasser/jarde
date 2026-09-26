@@ -1,0 +1,229 @@
+Classfile <patched>/OuterSuperCases$Member.class
+  Last modified 2026年9月27日; size 1748 bytes
+  SHA-256 checksum 9af68c40dcd41c16bfe0ed008540624df95eb166c7dbe957f53ac9045bdbd98d
+  Compiled from "OuterSuperCases.java"
+class OuterSuperCases$Member extends MemberBase
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #2                          // OuterSuperCases$Member
+  super_class: #8                         // MemberBase
+  interfaces: 0, fields: 1, methods: 8, attributes: 3
+Constant pool:
+   #1 = Fieldref           #2.#3          // OuterSuperCases$Member.this$0:LOuterSuperCases;
+   #2 = Class              #4             // OuterSuperCases$Member
+   #3 = NameAndType        #5:#6          // this$0:LOuterSuperCases;
+   #4 = Utf8               OuterSuperCases$Member
+   #5 = Utf8               this$0
+   #6 = Utf8               LOuterSuperCases;
+   #7 = Methodref          #8.#9          // MemberBase."<init>":()V
+   #8 = Class              #10            // MemberBase
+   #9 = NameAndType        #11:#12        // "<init>":()V
+  #10 = Utf8               MemberBase
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Methodref          #14.#15        // OuterSuperCases.value:()I
+  #14 = Class              #16            // OuterSuperCases
+  #15 = NameAndType        #17:#18        // value:()I
+  #16 = Utf8               OuterSuperCases
+  #17 = Utf8               value
+  #18 = Utf8               ()I
+  #19 = Methodref          #14.#20        // OuterSuperCases.access$001:(LOuterSuperCases;)I
+  #20 = NameAndType        #21:#22        // access$001:(LOuterSuperCases;)I
+  #21 = Utf8               access$001
+  #22 = Utf8               (LOuterSuperCases;)I
+  #23 = Methodref          #14.#24        // OuterSuperCases.access$101:(LOuterSuperCases;)I
+  #24 = NameAndType        #25:#22        // access$101:(LOuterSuperCases;)I
+  #25 = Utf8               access$101
+  #26 = Methodref          #14.#27        // OuterSuperCases.access$201:(LOuterSuperCases;)I
+  #27 = NameAndType        #28:#22        // access$201:(LOuterSuperCases;)I
+  #28 = Utf8               access$201
+  #29 = InvokeDynamic      #0:#30         // #0:getAsInt:(LOuterSuperCases$Member;)Ljava/util/function/IntSupplier;
+  #30 = NameAndType        #31:#32        // getAsInt:(LOuterSuperCases$Member;)Ljava/util/function/IntSupplier;
+  #31 = Utf8               getAsInt
+  #32 = Utf8               (LOuterSuperCases$Member;)Ljava/util/function/IntSupplier;
+  #33 = Methodref          #2.#15         // OuterSuperCases$Member.value:()I
+  #34 = Methodref          #14.#35        // OuterSuperCases.access$301:(LOuterSuperCases;)I
+  #35 = NameAndType        #36:#22        // access$301:(LOuterSuperCases;)I
+  #36 = Utf8               access$301
+  #37 = Utf8               (LOuterSuperCases;)V
+  #38 = Utf8               Code
+  #39 = Utf8               LineNumberTable
+  #40 = Utf8               LocalVariableTable
+  #41 = Utf8               this
+  #42 = Utf8               LOuterSuperCases$Member;
+  #43 = Utf8               MethodParameters
+  #44 = Utf8               explicitOther
+  #45 = Utf8               other
+  #46 = Utf8               capturedOuterCall
+  #47 = Utf8               secondCapturedCall
+  #48 = Utf8               otherBridgeCandidate
+  #49 = Utf8               lambdaOuterCall
+  #50 = Utf8               ()Ljava/util/function/IntSupplier;
+  #51 = Utf8               ownCall
+  #52 = Utf8               lambda$lambdaOuterCall$0
+  #53 = Utf8               SourceFile
+  #54 = Utf8               OuterSuperCases.java
+  #55 = Utf8               BootstrapMethods
+  #56 = MethodType         #18            //  ()I
+  #57 = MethodHandle       7:#58          // REF_invokeSpecial OuterSuperCases$Member.lambda$lambdaOuterCall$0:()I
+  #58 = Methodref          #2.#59         // OuterSuperCases$Member.lambda$lambdaOuterCall$0:()I
+  #59 = NameAndType        #52:#18        // lambda$lambdaOuterCall$0:()I
+  #60 = MethodHandle       6:#61          // REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #61 = Methodref          #62.#63        // java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #62 = Class              #64            // java/lang/invoke/LambdaMetafactory
+  #63 = NameAndType        #65:#66        // metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #64 = Utf8               java/lang/invoke/LambdaMetafactory
+  #65 = Utf8               metafactory
+  #66 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #67 = Utf8               InnerClasses
+  #68 = Utf8               Member
+  #69 = Class              #70            // java/lang/invoke/MethodHandles$Lookup
+  #70 = Utf8               java/lang/invoke/MethodHandles$Lookup
+  #71 = Class              #72            // java/lang/invoke/MethodHandles
+  #72 = Utf8               java/lang/invoke/MethodHandles
+  #73 = Utf8               Lookup
+{
+  final OuterSuperCases this$0;
+    descriptor: LOuterSuperCases;
+    flags: (0x1010) ACC_FINAL, ACC_SYNTHETIC
+
+  OuterSuperCases$Member(OuterSuperCases);
+    descriptor: (LOuterSuperCases;)V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: putfield      #1                  // Field this$0:LOuterSuperCases;
+         5: aload_0
+         6: invokespecial #7                  // Method MemberBase."<init>":()V
+         9: return
+      LineNumberTable:
+        line 8: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      10     0  this   LOuterSuperCases$Member;
+            0      10     1 this$0   LOuterSuperCases;
+    MethodParameters:
+      Name                           Flags
+      <no name>                      final mandated
+
+  int explicitOther(OuterSuperCases);
+    descriptor: (LOuterSuperCases;)I
+    flags: (0x0000)
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: invokevirtual #13                 // Method OuterSuperCases.value:()I
+         4: ireturn
+      LineNumberTable:
+        line 9: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LOuterSuperCases$Member;
+            0       5     1 other   LOuterSuperCases;
+
+  int capturedOuterCall();
+    descriptor: ()I
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #1                  // Field this$0:LOuterSuperCases;
+         4: invokestatic  #19                 // Method OuterSuperCases.access$001:(LOuterSuperCases;)I
+         7: ireturn
+      LineNumberTable:
+        line 10: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       8     0  this   LOuterSuperCases$Member;
+
+  int secondCapturedCall();
+    descriptor: ()I
+    flags: (0x0000)
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #1                  // Field this$0:LOuterSuperCases;
+         4: invokestatic  #23                 // Method OuterSuperCases.access$101:(LOuterSuperCases;)I
+         7: iconst_1
+         8: iadd
+         9: ireturn
+      LineNumberTable:
+        line 11: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      10     0  this   LOuterSuperCases$Member;
+
+  int otherBridgeCandidate(OuterSuperCases);
+    descriptor: (LOuterSuperCases;)I
+    flags: (0x0000)
+    Code:
+      stack=1, locals=2, args_size=2
+         0: aload_1
+         1: nop
+         2: nop
+         3: nop
+         4: invokestatic  #23                 // Method OuterSuperCases.access$101:(LOuterSuperCases;)I
+         7: ireturn
+      LineNumberTable:
+        line 12: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       8     0  this   LOuterSuperCases$Member;
+            0       8     1 other   LOuterSuperCases;
+
+  java.util.function.IntSupplier lambdaOuterCall();
+    descriptor: ()Ljava/util/function/IntSupplier;
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokedynamic #29,  0             // InvokeDynamic #0:getAsInt:(LOuterSuperCases$Member;)Ljava/util/function/IntSupplier;
+         6: areturn
+      LineNumberTable:
+        line 13: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       7     0  this   LOuterSuperCases$Member;
+
+  int ownCall();
+    descriptor: ()I
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokevirtual #33                 // Method value:()I
+         4: ireturn
+      LineNumberTable:
+        line 14: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LOuterSuperCases$Member;
+
+  private int lambda$lambdaOuterCall$0();
+    descriptor: ()I
+    flags: (0x1002) ACC_PRIVATE, ACC_SYNTHETIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #1                  // Field this$0:LOuterSuperCases;
+         4: invokestatic  #34                 // Method OuterSuperCases.access$301:(LOuterSuperCases;)I
+         7: ireturn
+      LineNumberTable:
+        line 13: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       8     0  this   LOuterSuperCases$Member;
+}
+SourceFile: "OuterSuperCases.java"
+BootstrapMethods:
+  0: #60 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #56 ()I
+      #57 REF_invokeSpecial OuterSuperCases$Member.lambda$lambdaOuterCall$0:()I
+      #56 ()I
+InnerClasses:
+  #68= #2 of #14;                         // Member=class OuterSuperCases$Member of class OuterSuperCases
+  public static final #73= #69 of #71;    // Lookup=class java/lang/invoke/MethodHandles$Lookup of class java/lang/invoke/MethodHandles

@@ -120,6 +120,8 @@ pub struct RecoveryRequest<'a> {
     /// Exact captured-outer reads proved by the selected class-source family assembly.
     /// A direct method request has no lexical family and supplies none.
     pub captured_outer_reads: &'a [ProvedCapturedOuterRead],
+    /// Exact calls through a selected outer-super bridge, closed by the family proof.
+    pub outer_super_calls: &'a [ProvedOuterSuperCall],
     /// Which **optional evidence** this request wants delivered (change
     /// `add-demand-driven-core-results`, D1): the categories of detail records, and the driver BCI
     /// range they are restricted to. [`RecoveryEvidenceRequest::essential`] — the default
@@ -171,6 +173,23 @@ pub struct ProvedCapturedOuterRead {
     pub outer_source_name: String,
     pub constructor: PhysicalMethodId,
     pub constructor_write_bci: u32,
+}
+
+/// Trusted, non-serialized handoff for one physical static bridge call. The bridge instruction's
+/// BCI belongs to `bridge`, while `call_bci` and `capture_read_bci` belong to `caller`.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProvedOuterSuperCall {
+    pub caller: PhysicalMethodId,
+    pub call_bci: u32,
+    pub capture_read_bci: u32,
+    pub argument_bcis: Vec<u32>,
+    pub bridge: PhysicalMethodId,
+    pub bridge_invoke_bci: u32,
+    pub outer_source_name: String,
+    pub target_owner: String,
+    pub target_name: String,
+    pub target_descriptor: String,
 }
 
 /// One exact `invokespecial InterfaceMethodref` target proved writable as `I.super.m(...)`.
@@ -847,6 +866,7 @@ impl<'a> RecoveryRequest<'a> {
             member_inner_targets: &[],
             interface_super_calls: &[],
             captured_outer_reads: &[],
+            outer_super_calls: &[],
             evidence: RecoveryEvidenceRequest::essential(),
             subject: None,
         }
@@ -874,6 +894,12 @@ impl<'a> RecoveryRequest<'a> {
     /// Supply only the exact child reads closed by the selected family's capture certificate.
     pub fn with_captured_outer_reads(mut self, reads: &'a [ProvedCapturedOuterRead]) -> Self {
         self.captured_outer_reads = reads;
+        self
+    }
+
+    /// Supply only call sites closed by the selected family's outer-super bridge proof.
+    pub fn with_outer_super_calls(mut self, calls: &'a [ProvedOuterSuperCall]) -> Self {
+        self.outer_super_calls = calls;
         self
     }
 
@@ -2045,6 +2071,7 @@ fn recover_inner(
             member_inner_targets: request.member_inner_targets,
             interface_super_calls: request.interface_super_calls,
             captured_outer_reads: request.captured_outer_reads,
+            outer_super_calls: request.outer_super_calls,
             physical_method: request.ir.declaration().map(|member| member.identity()),
             // The class this body belongs to, as the run's own member declaration states it: the
             // fact a static call's pool owner is compared against, so that a call to this class is

@@ -8547,7 +8547,72 @@ fn project_class_source_member_family(
                     ));
                 };
                 if owner.0 == super_class.raw().0 && name.0 != b"<init>" {
-                    return Ok(Err("synthetic Outer.super method bridge is outside the proved family projection".to_owned()));
+                    let Some((outer_definition, outer_read)) =
+                        resolve_class_source_dependency_read_raw(
+                            content,
+                            environment,
+                            None,
+                            root_binary,
+                            execution,
+                            budget,
+                        )?
+                    else {
+                        return Ok(Err(
+                            "selected Outer physical definition cannot be reread for bridge proof"
+                                .to_owned(),
+                        ));
+                    };
+                    if outer_definition != root.class {
+                        return Ok(Err(
+                            "bridge proof resolved another Outer physical definition".to_owned(),
+                        ));
+                    }
+                    let Some((superclass_definition, superclass_read)) =
+                        resolve_class_source_dependency_read_raw(
+                            content,
+                            environment,
+                            None,
+                            &super_class.raw().0,
+                            execution,
+                            budget,
+                        )?
+                    else {
+                        return Ok(Err(
+                            "direct superclass physical definition is unavailable for bridge proof"
+                                .to_owned(),
+                        ));
+                    };
+                    let bridge = match crate::member_inner::prove_outer_super_bridge(
+                        &outer_read.facts,
+                        &superclass_read.facts,
+                        &superclass_definition,
+                        &method.item.identity,
+                        analyzed.ir(),
+                        budget,
+                    )? {
+                        Ok(proof) => proof,
+                        Err(reason) => {
+                            return Ok(Err(format!("Outer.super bridge refused: {reason}")));
+                        }
+                    };
+                    if let Err(reason) = prove_outer_super_bridge_use_closure(
+                        content,
+                        environment,
+                        root,
+                        child,
+                        proof,
+                        &bridge,
+                        execution,
+                        budget,
+                    )? {
+                        return Ok(Err(format!("Outer.super bridge refused: {reason}")));
+                    }
+                    // The certificate is ready for the family writer; until that expression and
+                    // source-map seam consumes it, this family must keep the physical text.
+                    return Ok(Err(
+                        "proved Outer.super bridge awaits atomic family writer projection"
+                            .to_owned(),
+                    ));
                 }
             }
         }
@@ -9089,6 +9154,416 @@ fn prove_member_family_external_use_closure(
         }
     }
     Ok(Ok(()))
+}
+
+/// Census the exact selected bridge definition. No single successful member call can authorize
+/// deleting the helper: every physical invocation must yield its own capture/argument proof, and
+/// a handle, bootstrap, unresolved use or partial scan rejects the whole certificate.
+#[allow(clippy::too_many_arguments)]
+fn prove_outer_super_bridge_use_closure(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    root: &ClassSourceReport,
+    child: &ClassSourceReport,
+    capture: &class_source::MemberCaptureProof,
+    bridge: &class_source::OuterSuperBridgeProof,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<class_source::OuterSuperBridgeClosureProof, String>> {
+    use crate::resolver::DeclarationRefQuery;
+    use jarde_reader::model::SymbolRef;
+
+    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    budget.poll()?;
+    if content.len() != 1
+        || environment.domains.len() != 1
+        || !environment.providers.is_empty()
+        || environment.runtime.load_domain.roots.len() != 1
+        || environment.runtime.load_domain.roots[0]
+            != (LoadRoot::Container {
+                origin: ContainerOrigin {
+                    snapshot: environment.runtime.physical.snapshot.clone(),
+                    root_container: ContainerId(ROOT_CONTAINER.to_owned()),
+                    steps: Vec::new(),
+                },
+                prefix: ArchiveNameBytes(Vec::new()),
+            })
+        || !matches!(
+            environment.runtime.profile.multi_release,
+            crate::MultiReleasePolicy::Disabled
+        )
+        || bridge.bridge.owner != root.class
+        || child.class != capture.constructor.owner
+        || root.class.snapshot() != &environment.runtime.physical.snapshot
+        || child.class.snapshot() != &environment.runtime.physical.snapshot
+    {
+        return refuse(
+            "bridge use closure cannot prove the selected input and visible dependency scope",
+        );
+    }
+    let query = DeclarationRefQuery {
+        environment: environment.clone(),
+        declaration: ResolvedMemberRef {
+            loader: environment.runtime.load_domain.loader.clone(),
+            definition: root.class.clone(),
+            member: SymbolRef::Method {
+                owner: bridge.outer_name.clone(),
+                name: bridge.bridge.name.clone(),
+                descriptor: bridge.bridge.descriptor.clone(),
+            },
+        },
+        scope: environment.runtime.physical.scope.clone(),
+        consumers: ConsumerSchema::new(
+            1,
+            [
+                ConsumerKind::Invocation,
+                ConsumerKind::Constant,
+                ConsumerKind::Bootstrap,
+            ],
+        ),
+        max_items: 0,
+    };
+    let scanned = jarde_jvm::declaration_references(content, &query, budget)?;
+    merge_execution(execution, scanned.execution.clone());
+    if scanned.analysis != ResolutionAnalysis::Performed
+        || !scanned.environment_problems.is_empty()
+        || !scanned.unsupported_categories.is_empty()
+        || scanned.unresolved_candidates != 0
+        || scanned.has_more
+        || !matches!(scanned.execution, ExecutionReport::Complete { .. })
+        || scanned.coverage.artifact_structural.state != CoverageState::CompleteWithinSchema
+        || scanned.coverage.runtime_resolution.state != CoverageState::CompleteWithinSchema
+    {
+        return refuse("bridge reference census is incomplete in selected physical scope");
+    }
+    let mut calls = Vec::new();
+    for item in &scanned.items {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let Some((method, bci)) = direct_member_bridge_invocation(
+            item.consumer,
+            item.operation,
+            &item.origin.members,
+            child,
+        ) else {
+            return refuse("bridge has a non-member, handle, bootstrap or non-static consumer");
+        };
+        let analyzed = jarde_jvm::analyze_method_ir(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: method.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            budget,
+        )?;
+        merge_execution(execution, analyzed.report().execution.clone());
+        if analyzed.report().method != method
+            || !matches!(
+                analyzed.report().execution,
+                ExecutionReport::Complete { .. }
+            )
+        {
+            return refuse("bridge caller analysis is incomplete");
+        }
+        let call = match crate::member_inner::prove_outer_super_call(
+            &method,
+            analyzed.ir(),
+            capture,
+            bridge,
+            bci,
+            budget,
+        )? {
+            Ok(call) => call,
+            Err(reason) => return Ok(Err(reason)),
+        };
+        if calls
+            .iter()
+            .any(|prior: &class_source::OuterSuperCallProof| {
+                prior.caller == call.caller && prior.call_bci == call.call_bci
+            })
+        {
+            return refuse("bridge census repeated one physical call point");
+        }
+        calls.push(call);
+    }
+    if calls.is_empty() {
+        return refuse("bridge has no proved member call site");
+    }
+    Ok(Ok(class_source::OuterSuperBridgeClosureProof {
+        bridge: bridge.clone(),
+        calls,
+    }))
+}
+
+fn direct_member_bridge_invocation(
+    consumer: ConsumerKind,
+    operation: jarde_query::query::XrefOperation,
+    origin: &[OriginMember],
+    child: &ClassSourceReport,
+) -> Option<(PhysicalMethodId, u32)> {
+    let [OriginMember::MethodPoint { method, bci }] = origin else {
+        return None;
+    };
+    (consumer == ConsumerKind::Invocation
+        && operation == jarde_query::query::XrefOperation::InvokeStatic
+        && method.owner == child.class
+        && child
+            .methods
+            .iter()
+            .any(|member| member.item.identity == *method))
+    .then(|| (method.clone(), *bci))
+}
+
+#[cfg(test)]
+mod outer_super_bridge_closure_tests {
+    use super::*;
+    use jarde_reader::budget::{CancellationToken, Limits};
+
+    const FIXTURE: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar"
+    );
+
+    fn budget() -> Budget {
+        Budget::new(Limits {
+            input_bytes: u64::MAX,
+            archive_entries: u64::MAX,
+            entry_bytes: u64::MAX,
+            read_bytes: u64::MAX,
+            class_bytes: u64::MAX,
+            attribute_bytes: u64::MAX,
+            code_bytes: u64::MAX,
+            result_items: u64::MAX,
+            output_bytes: u64::MAX,
+            class_headers: u64::MAX,
+            method_bodies: u64::MAX,
+            ir_items: u64::MAX,
+            ir_edges: u64::MAX,
+            analysis_steps: u64::MAX,
+            normalization_clones: u64::MAX,
+            nested_depth: u64::MAX,
+            dependency_depth: u64::MAX,
+            elapsed_millis: u64::MAX,
+        })
+    }
+
+    #[test]
+    fn exact_bridge_closure_requires_every_static_call_and_a_complete_scan() {
+        let engine = Engine::new();
+        let mut budget = budget();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(FIXTURE.to_vec()), &mut budget)
+            .unwrap();
+        let request_environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: crate::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let root = match engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("OuterReceiverCases"),
+                    },
+                    environment: request_environment.clone(),
+                },
+                &mut budget,
+            )
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("Outer must resolve: {other:?}"),
+        };
+        let class_source::ClassSourceMemberFamily::Prepared { child, capture, .. } =
+            &root.member_family
+        else {
+            panic!("frozen Outer member relation must prepare")
+        };
+        let class_source::ClassSourceMemberCapture::Proved { proof: capture } = capture else {
+            panic!("frozen Member capture must be proved")
+        };
+        let environment = request_environment
+            .build(std::slice::from_ref(&snapshot))
+            .unwrap();
+        let (outer_id, outer_read) = resolve_class_source_dependency_read_raw(
+            std::slice::from_ref(&snapshot),
+            &environment,
+            None,
+            b"OuterReceiverCases",
+            &mut ExecutionReport::Complete {
+                usage: budget.usage(),
+            },
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(outer_id, root.class);
+        let (parent_definition, parent_read) = resolve_class_source_dependency_read_raw(
+            std::slice::from_ref(&snapshot),
+            &environment,
+            None,
+            b"ReceiverBase",
+            &mut ExecutionReport::Complete {
+                usage: budget.usage(),
+            },
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        let bridge_id = root
+            .methods
+            .iter()
+            .find(|method| method.item.identity.name.0 == b"access$101")
+            .unwrap()
+            .item
+            .identity
+            .clone();
+        let analyzed = jarde_jvm::analyze_method_ir(
+            std::slice::from_ref(&snapshot),
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: bridge_id.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            &mut budget,
+        )
+        .unwrap();
+        let bridge = crate::member_inner::prove_outer_super_bridge(
+            &outer_read.facts,
+            &parent_read.facts,
+            &parent_definition,
+            &bridge_id,
+            analyzed.ir(),
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        let mut execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        let closure = prove_outer_super_bridge_use_closure(
+            std::slice::from_ref(&snapshot),
+            &environment,
+            &root,
+            child,
+            capture,
+            &bridge,
+            &mut execution,
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(closure.calls.len(), 1);
+        assert_eq!(closure.calls[0].call_bci, 38);
+        assert_eq!(closure.calls[0].capture_read_bci, 35);
+        assert_eq!(closure.calls[0].bridge, bridge);
+        let direct_origin = [OriginMember::MethodPoint {
+            method: closure.calls[0].caller.clone(),
+            bci: 38,
+        }];
+        assert!(
+            direct_member_bridge_invocation(
+                ConsumerKind::Invocation,
+                jarde_query::query::XrefOperation::InvokeStatic,
+                &direct_origin,
+                child,
+            )
+            .is_some()
+        );
+        for consumer in [ConsumerKind::Constant, ConsumerKind::Bootstrap] {
+            assert!(
+                direct_member_bridge_invocation(
+                    consumer,
+                    jarde_query::query::XrefOperation::InvokeStatic,
+                    &direct_origin,
+                    child,
+                )
+                .is_none()
+            );
+        }
+        assert!(
+            direct_member_bridge_invocation(
+                ConsumerKind::Invocation,
+                jarde_query::query::XrefOperation::InvokeStatic,
+                &[OriginMember::MethodPoint {
+                    method: bridge_id.clone(),
+                    bci: 38
+                }],
+                child,
+            )
+            .is_none()
+        );
+
+        // The same physical scope contains `access$000(other)` as well as capture uses. An
+        // accurate census of that helper cannot certify all its invocations as lexical Outer.
+        let mut unproved_helper = bridge.clone();
+        unproved_helper.bridge.name = JvmBytes(b"access$000".to_vec());
+        unproved_helper.bridge.descriptor = JvmBytes(b"(LOuterReceiverCases;)I".to_vec());
+        let mut execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        assert!(
+            prove_outer_super_bridge_use_closure(
+                std::slice::from_ref(&snapshot),
+                &environment,
+                &root,
+                child,
+                capture,
+                &unproved_helper,
+                &mut execution,
+                &mut budget,
+            )
+            .unwrap()
+            .is_err()
+        );
+
+        let mut limits = self::budget().limits().clone();
+        limits.analysis_steps = 0;
+        let mut limited = Budget::new(limits);
+        let mut execution = ExecutionReport::Complete {
+            usage: limited.usage(),
+        };
+        let stopped = prove_outer_super_bridge_use_closure(
+            std::slice::from_ref(&snapshot),
+            &environment,
+            &root,
+            child,
+            capture,
+            &bridge,
+            &mut execution,
+            &mut limited,
+        );
+        assert!(matches!(
+            stopped,
+            Err(Error::BudgetExceeded { .. }) | Ok(Err(_))
+        ));
+        let cancellation = CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled =
+            Budget::with_cancellation_token(self::budget().limits().clone(), cancellation);
+        let mut execution = ExecutionReport::Complete {
+            usage: cancelled.usage(),
+        };
+        assert!(matches!(
+            prove_outer_super_bridge_use_closure(
+                std::slice::from_ref(&snapshot),
+                &environment,
+                &root,
+                child,
+                capture,
+                &bridge,
+                &mut execution,
+                &mut cancelled,
+            ),
+            Err(Error::Cancelled { .. })
+        ));
+    }
 }
 
 /// A candidate is bounded by an emitter segment already tied to this exact physical method and

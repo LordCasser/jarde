@@ -1,0 +1,1 @@
+patched OuterSuperCases$Member.class: otherBridgeCandidate BCI 0..3 -> aload_1/nop/nop/nop; BCI 4 invokestatic cp#23 access$101

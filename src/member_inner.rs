@@ -5,7 +5,10 @@
 //! inferred from `$` or a constructor's first parameter alone.
 
 use crate::class_source::ClassSourceAssemblyContext;
-use crate::class_source::{MemberCallProof, MemberCaptureProof, MemberCaptureRead};
+use crate::class_source::{
+    MemberCallProof, MemberCaptureProof, MemberCaptureRead, OuterSuperBridgeProof,
+    OuterSuperCallProof,
+};
 use jarde_jvm::method_ir::{Definition, MethodIr, Slot, SsaTable, ValueId};
 use jarde_reader::budget::Budget;
 use jarde_reader::budget::CountedBudgetDimension;
@@ -13,7 +16,7 @@ use jarde_reader::classfile::{
     ClassMemberFacts, CpEntryFacts, CpEntryKind, DescriptorKind, MethodCodeFacts, attribute_facts,
     class_constant_pool, cp_class_name, cp_entry, descriptor_facts, method_code_facts,
 };
-use jarde_reader::model::PhysicalMethodId;
+use jarde_reader::model::{PhysicalDefinitionId, PhysicalMethodId};
 
 /// Consume a successful `new@1` verdict only for the exact constructor in the proved family.
 /// The rule has already closed the SSA instance, checked qualifier copies, sole consumer,
@@ -407,6 +410,445 @@ fn value_from_this_load(ssa: &SsaTable, value: ValueId) -> bool {
     };
     value_from_entry_load(ssa, value, Slot::Local(0), *bci)
         && ssa_instruction(ssa, *bci).is_some_and(|load| load.opcode() == 0x2a)
+}
+
+/// Prove a single, exact physical bridge. Requiring a straight-line body also rules out extra
+/// effects, hidden exits and a handler whose coverage a source-level call could change.
+pub(crate) fn prove_outer_super_bridge(
+    outer: &ClassMemberFacts,
+    superclass: &ClassMemberFacts,
+    superclass_definition: &PhysicalDefinitionId,
+    bridge: &PhysicalMethodId,
+    ir: &MethodIr,
+    budget: &mut Budget,
+) -> Result<std::result::Result<OuterSuperBridgeProof, String>> {
+    let Some(code) = ir.code() else {
+        return Ok(Err("bridge bytecode is unavailable".to_owned()));
+    };
+    prove_outer_super_bridge_body(
+        outer,
+        superclass,
+        superclass_definition,
+        bridge,
+        ir,
+        code,
+        budget,
+    )
+}
+
+fn prove_outer_super_bridge_body(
+    outer: &ClassMemberFacts,
+    superclass: &ClassMemberFacts,
+    superclass_definition: &PhysicalDefinitionId,
+    bridge: &PhysicalMethodId,
+    ir: &MethodIr,
+    code: &MethodCodeFacts,
+    budget: &mut Budget,
+) -> Result<std::result::Result<OuterSuperBridgeProof, String>> {
+    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    budget.poll()?;
+    if outer.stopped_at.is_some()
+        || outer.methods.len() as u64 != outer.method_count
+        || bridge.name.0 == b"<init>"
+        || bridge.name.0 == b"<clinit>"
+    {
+        return refuse("Outer method table or bridge identity is incomplete");
+    }
+    let definitions: Vec<_> = outer
+        .methods
+        .iter()
+        .filter(|method| {
+            method.name.raw().0 == bridge.name.0 && method.descriptor.raw().0 == bridge.descriptor.0
+        })
+        .collect();
+    let [method] = definitions.as_slice() else {
+        return refuse("bridge has no unique physical definition in selected Outer");
+    };
+    if !ir.declaration().is_some_and(|declaration| {
+        declaration.identity() == bridge && declaration.class_name().0 == outer.this_class.raw().0
+    }) || method.access_flags & (0x1000 | 0x0008) != 0x1008
+        || method.access_flags & (0x0400 | 0x0100) != 0
+    {
+        return refuse("bridge is not the selected Outer synthetic static method");
+    }
+    let Some(super_name) = outer.super_class.as_ref() else {
+        return refuse("Outer has no direct superclass");
+    };
+    if superclass.stopped_at.is_some()
+        || superclass.methods.len() as u64 != superclass.method_count
+        || superclass.this_class.raw().0 != super_name.raw().0
+        || superclass.access_flags & 0x0200 != 0
+    {
+        return refuse("selected direct superclass definition is incomplete or mismatched");
+    }
+    let descriptor = &bridge.descriptor.0;
+    let Ok(signature) = descriptor_facts(descriptor, DescriptorKind::Method) else {
+        return refuse("bridge descriptor is invalid");
+    };
+    let Some((receiver, ordinary)) = signature.parameters().split_first() else {
+        return refuse("bridge has no Outer receiver parameter");
+    };
+    if receiver.bytes(descriptor)
+        != Some(
+            [b"L".as_slice(), &outer.this_class.raw().0, b";"]
+                .concat()
+                .as_slice(),
+        )
+    {
+        return refuse("bridge first parameter is not the selected Outer");
+    }
+    let Some(ssa) = ir.ssa() else {
+        return refuse("bridge SSA is unavailable");
+    };
+    if code.stopped_at.is_some()
+        || !code.exception_handlers.is_empty()
+        || code.instructions.len() != ordinary.len() + 3
+    {
+        return refuse("bridge has an extra instruction, exit or exception handler");
+    }
+    let mut slot = 0u16;
+    let mut load_values = Vec::with_capacity(ordinary.len() + 1);
+    for (index, component) in signature.parameters().iter().enumerate() {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let instruction = &code.instructions[index];
+        let Some(load) = ssa_instruction(ssa, instruction.bci) else {
+            return refuse("bridge parameter load has no SSA instruction");
+        };
+        let Some(type_bytes) = component.bytes(descriptor) else {
+            return refuse("bridge parameter descriptor span is invalid");
+        };
+        if !bridge_load_opcode(instruction.opcode, type_bytes)
+            || load.reads().len() != 1
+            || load.writes().len() != 1
+            || load.reads()[0].0 != Slot::Local(slot)
+            || !value_from_entry_load(ssa, load.writes()[0].1, Slot::Local(slot), instruction.bci)
+        {
+            return refuse("bridge does not load its receiver and parameters in descriptor order");
+        }
+        load_values.push(load.writes()[0].1);
+        slot = slot.saturating_add(component.slots());
+    }
+    let invoke = &code.instructions[ordinary.len() + 1];
+    let returns = &code.instructions[ordinary.len() + 2];
+    if invoke.opcode != 0xb7
+        || !bridge_return_opcode(
+            returns.opcode,
+            signature.result().and_then(|part| part.bytes(descriptor)),
+        )
+    {
+        return refuse("bridge has no single matching invokespecial and return");
+    }
+    let Some(call) = ssa_instruction(ssa, invoke.bci) else {
+        return refuse("bridge invokespecial has no SSA instruction");
+    };
+    if call.reads().len() != load_values.len()
+        || call
+            .reads()
+            .iter()
+            .map(|(_, value)| *value)
+            .ne(load_values.iter().rev().copied())
+    {
+        return refuse("bridge invokespecial reorders or replaces parameters");
+    }
+    let Some(exit) = ssa_instruction(ssa, returns.bci) else {
+        return refuse("bridge return has no SSA instruction");
+    };
+    if signature.result().is_some() {
+        if call.writes().len() != 1
+            || exit.reads().len() != 1
+            || call.writes()[0].1 != exit.reads()[0].1
+        {
+            return refuse("bridge return is not the invokespecial result");
+        }
+    } else if !call.writes().is_empty() || !exit.reads().is_empty() {
+        return refuse("void bridge has an unexpected return value");
+    }
+    let Some(index) = invoke.constant_pool_index else {
+        return refuse("bridge invokespecial has no MethodRef");
+    };
+    let Ok(entry) = cp_entry(ir.constant_pool(), index) else {
+        return refuse("bridge invokespecial MethodRef is unreadable");
+    };
+    let CpEntryKind::MethodRef {
+        owner,
+        name,
+        descriptor: target_descriptor,
+        ..
+    } = &entry.kind
+    else {
+        return refuse("bridge invokespecial does not name a class method");
+    };
+    let mut expected_target = vec![b'('];
+    for parameter in ordinary {
+        let Some(bytes) = parameter.bytes(descriptor) else {
+            return refuse("bridge target parameter descriptor span is invalid");
+        };
+        expected_target.extend_from_slice(bytes);
+    }
+    expected_target.push(b')');
+    expected_target.extend_from_slice(
+        signature
+            .result()
+            .and_then(|part| part.bytes(descriptor))
+            .unwrap_or(b"V"),
+    );
+    if owner.0 != super_name.raw().0
+        || name.0 == b"<init>"
+        || name.0 == b"<clinit>"
+        || target_descriptor.0 != expected_target
+    {
+        return refuse("bridge target is not the direct superclass method with ordered parameters");
+    }
+    let targets: Vec<_> = superclass
+        .methods
+        .iter()
+        .filter(|method| {
+            method.name.raw().0 == name.0 && method.descriptor.raw().0 == target_descriptor.0
+        })
+        .collect();
+    let [target] = targets.as_slice() else {
+        return refuse("direct superclass has no unique exact bridge target definition");
+    };
+    if target.access_flags & (0x0002 | 0x0008 | 0x0400) != 0 {
+        return refuse("direct superclass target is private, static or abstract");
+    }
+    let outer_package = outer
+        .this_class
+        .raw()
+        .0
+        .rsplitn(2, |byte| *byte == b'/')
+        .nth(1);
+    let super_package = superclass
+        .this_class
+        .raw()
+        .0
+        .rsplitn(2, |byte| *byte == b'/')
+        .nth(1);
+    if target.access_flags & (0x0001 | 0x0004) == 0 && outer_package != super_package {
+        return refuse("direct superclass target is not accessible from Outer source");
+    }
+    Ok(Ok(OuterSuperBridgeProof {
+        bridge: bridge.clone(),
+        outer_name: outer.this_class.raw().clone(),
+        invoke_bci: invoke.bci,
+        target_method: PhysicalMethodId {
+            owner: superclass_definition.clone(),
+            name: name.clone(),
+            descriptor: target_descriptor.clone(),
+        },
+        target_owner: owner.clone(),
+        target_name: name.clone(),
+        target_descriptor: target_descriptor.clone(),
+    }))
+}
+
+fn bridge_load_opcode(opcode: u8, ty: &[u8]) -> bool {
+    let base = match ty.first().copied() {
+        Some(b'J') => 0x16,
+        Some(b'F') => 0x17,
+        Some(b'D') => 0x18,
+        Some(b'L' | b'[') => 0x19,
+        Some(b'B' | b'C' | b'I' | b'S' | b'Z') => 0x15,
+        _ => return false,
+    };
+    let implicit = match base {
+        0x15 => 0x1a,
+        0x16 => 0x1e,
+        0x17 => 0x22,
+        0x18 => 0x26,
+        _ => 0x2a,
+    };
+    opcode == base || (implicit..=implicit + 3).contains(&opcode)
+}
+
+fn bridge_return_opcode(opcode: u8, ty: Option<&[u8]>) -> bool {
+    match ty.and_then(|ty| ty.first().copied()) {
+        None => opcode == 0xb1,
+        Some(b'J') => opcode == 0xad,
+        Some(b'F') => opcode == 0xae,
+        Some(b'D') => opcode == 0xaf,
+        Some(b'L' | b'[') => opcode == 0xb0,
+        Some(b'B' | b'C' | b'I' | b'S' | b'Z') => opcode == 0xac,
+        _ => false,
+    }
+}
+
+/// Bind one `invokestatic` operand to the *value* read from the certified capture field.
+/// SSA operands of an invocation are recorded in pop order, so the receiver is last.
+pub(crate) fn prove_outer_super_call(
+    caller: &PhysicalMethodId,
+    ir: &MethodIr,
+    capture: &MemberCaptureProof,
+    bridge: &OuterSuperBridgeProof,
+    call_bci: u32,
+    budget: &mut Budget,
+) -> Result<std::result::Result<OuterSuperCallProof, String>> {
+    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    budget.poll()?;
+    if !ir
+        .declaration()
+        .is_some_and(|declaration| declaration.identity() == caller)
+        || caller.owner != capture.constructor.owner
+    {
+        return refuse("caller is not a method of the proved member definition");
+    }
+    let (Some(code), Some(ssa)) = (ir.code(), ir.ssa()) else {
+        return refuse("caller code or SSA is unavailable");
+    };
+    if code.stopped_at.is_some() {
+        return refuse("caller bytecode is incomplete");
+    }
+    let Some(instruction) = code
+        .instructions
+        .iter()
+        .find(|instruction| instruction.bci == call_bci)
+    else {
+        return refuse("bridge call BCI is absent from the physical caller");
+    };
+    if instruction.opcode != 0xb8
+        || !matches!(instruction.constant_pool_index.and_then(|index| cp_entry(ir.constant_pool(), index).ok()).map(|entry| &entry.kind),
+            Some(CpEntryKind::MethodRef { owner, name, descriptor, .. })
+                if owner == &bridge.outer_name
+                    && name == &bridge.bridge.name && descriptor == &bridge.bridge.descriptor)
+    {
+        return refuse("call does not name the exact static Outer bridge");
+    }
+    let Some(call) = ssa_instruction(ssa, call_bci) else {
+        return refuse("bridge call has no SSA instruction");
+    };
+    let Ok(signature) = descriptor_facts(&bridge.bridge.descriptor.0, DescriptorKind::Method)
+    else {
+        return refuse("bridge descriptor cannot be parsed at call site");
+    };
+    if call.reads().len() != signature.parameters().len() {
+        return refuse("bridge call SSA arity differs from its descriptor");
+    }
+    let Some(read_value) = call.reads().last().map(|(_, value)| *value) else {
+        return refuse("bridge call has no receiver operand");
+    };
+    let Definition::Instruction {
+        bci: capture_read_bci,
+        ..
+    } = ssa.value(read_value).def()
+    else {
+        return refuse("bridge receiver is not a direct capture SSA read");
+    };
+    if !capture.reads.iter().any(|read| {
+        read.method == *caller
+            && read.bci == *capture_read_bci
+            && read.consumer_bcis.contains(&call_bci)
+    }) {
+        return refuse("bridge receiver comes from another Outer value, not the proved capture");
+    }
+    let Some(field_read) = ssa_instruction(ssa, *capture_read_bci) else {
+        return refuse("capture read SSA instruction is missing");
+    };
+    if field_read.opcode() != 0xb4
+        || field_read.writes().len() != 1
+        || field_read.writes()[0].1 != read_value
+        || *capture_read_bci >= call_bci
+    {
+        return refuse("bridge receiver is not the earlier captured Outer field value");
+    }
+    let mut argument_bcis = Vec::new();
+    let mut argument_dependencies = std::collections::BTreeSet::new();
+    let mut previous = *capture_read_bci;
+    for (_, value) in call.reads().iter().rev().skip(1) {
+        let Some(dependencies) =
+            ordered_argument_dependencies(ssa, *value, *capture_read_bci, call_bci, budget)?
+        else {
+            return refuse("bridge argument has an unproved SSA dependency");
+        };
+        let Some((&first, &last)) = dependencies.first().zip(dependencies.last()) else {
+            return refuse("bridge argument has no physical producer after capture");
+        };
+        if first <= previous
+            || last >= call_bci
+            || dependencies
+                .iter()
+                .any(|bci| !argument_dependencies.insert(*bci))
+        {
+            return refuse("bridge arguments have overlapping or reordered effects");
+        }
+        previous = last;
+        argument_bcis.push(last);
+    }
+    let Some(read_index) = code
+        .instructions
+        .iter()
+        .position(|instruction| instruction.bci == *capture_read_bci)
+    else {
+        return refuse("capture read is absent from caller bytecode");
+    };
+    let Some(call_index) = code
+        .instructions
+        .iter()
+        .position(|instruction| instruction.bci == call_bci)
+    else {
+        return refuse("bridge call is absent from caller bytecode");
+    };
+    let Some(argument_instructions) = code.instructions.get(read_index + 1..call_index) else {
+        return refuse("bridge argument instruction range is invalid");
+    };
+    if argument_instructions.len() != argument_dependencies.len()
+        || argument_instructions.iter().any(|instruction| {
+            !argument_dependencies.contains(&instruction.bci)
+                || matches!(
+                    instruction.opcode,
+                    0x99..=0xa9 | 0xaa | 0xab | 0xc6 | 0xc7 | 0xc8 | 0xc9 | 0xbf
+                )
+        })
+    {
+        return refuse("bridge argument range contains an unrelated effect or control-flow exit");
+    }
+    // Moving the call into the source-level `Outer.super` expression must not move it across a
+    // handler boundary. This also keeps any argument effect in the same exception region.
+    for bci in std::iter::once(*capture_read_bci).chain(argument_dependencies.iter().copied()) {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if code.exception_handlers.iter().any(|handler| {
+            (handler.start_bci <= bci && bci < handler.end_bci)
+                != (handler.start_bci <= call_bci && call_bci < handler.end_bci)
+        }) {
+            return refuse("bridge expression crosses an exception handler boundary");
+        }
+    }
+    Ok(Ok(OuterSuperCallProof {
+        caller: caller.clone(),
+        call_bci,
+        capture_read_bci: *capture_read_bci,
+        argument_bcis,
+        bridge: bridge.clone(),
+    }))
+}
+
+fn ordered_argument_dependencies(
+    ssa: &SsaTable,
+    value: ValueId,
+    capture_bci: u32,
+    call_bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<std::collections::BTreeSet<u32>>> {
+    let mut pending = vec![value];
+    let mut seen = std::collections::HashSet::new();
+    let mut dependencies = std::collections::BTreeSet::new();
+    while let Some(value) = pending.pop() {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if !seen.insert(value) {
+            continue;
+        }
+        match ssa.value(value).def() {
+            Definition::Entry { .. } => {}
+            Definition::Instruction { bci, .. } if *bci > capture_bci && *bci < call_bci => {
+                let Some(instruction) = ssa_instruction(ssa, *bci) else {
+                    return Ok(None);
+                };
+                dependencies.insert(*bci);
+                pending.extend(instruction.reads().iter().map(|(_, input)| *input));
+            }
+            _ => return Ok(None),
+        }
+    }
+    Ok(Some(dependencies))
 }
 
 /// A class's own typed row is only a candidate until the selected child's row agrees.
@@ -1221,7 +1663,8 @@ mod tests {
     use crate::*;
     use jarde_reader::budget::{CancellationToken, Limits};
     use jarde_reader::classfile::{CpEntryKind, class_constant_pool, class_member_facts};
-    use std::io::Read;
+    use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
+    use std::io::{Cursor, Read, Write};
 
     const INNER: &[u8] = include_bytes!(
         "../openspec/evidence/java-syntax-2026-09-25/inner-generic-instance-constructor/simple-member/classes/nested/SimpleOuter$Inner.class"
@@ -1236,6 +1679,65 @@ mod tests {
     const FAMILY_JAR: &[u8] = include_bytes!(
         "../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar"
     );
+    const OUTER_SUPER_JAR: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar"
+    );
+
+    fn archive_class_bytes(archive_bytes: &[u8], path: &[u8]) -> Vec<u8> {
+        let archive = rawzip::ZipArchive::from_slice(archive_bytes).unwrap();
+        let mut entries = archive.entries();
+        while let Some(header) = entries.next_entry().unwrap() {
+            if header.file_path().as_ref() == path {
+                let entry = archive.get_entry(header.wayfinder()).unwrap();
+                let decoder = flate2::bufread::DeflateDecoder::new(entry.data());
+                let mut reader = entry.verifying_reader(decoder);
+                let mut bytes = Vec::new();
+                reader.read_to_end(&mut bytes).unwrap();
+                return bytes;
+            }
+        }
+        panic!("frozen archive contains requested class")
+    }
+
+    fn effectful_bridge_jar() -> Vec<u8> {
+        let entries: &[(&[u8], &[u8])] = &[
+            (
+                b"EffectsBase.class",
+                include_bytes!(
+                    "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class"
+                ),
+            ),
+            (
+                b"OuterSuperEffects.class",
+                include_bytes!(
+                    "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"
+                ),
+            ),
+            (
+                b"OuterSuperEffects$Member.class",
+                include_bytes!(
+                    "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"
+                ),
+            ),
+        ];
+        let mut output = Cursor::new(Vec::new());
+        {
+            let mut archive = ZipArchiveWriter::new(&mut output);
+            for (name, bytes) in entries {
+                let (mut entry, config) = archive
+                    .new_file(EntryPath::verbatim(name.to_vec()))
+                    .compression_method(CompressionMethod::new(0))
+                    .start()
+                    .unwrap();
+                let mut writer = config.wrap(&mut entry);
+                writer.write_all(bytes).unwrap();
+                let (_, descriptor) = writer.finish().unwrap();
+                entry.finish(descriptor).unwrap();
+            }
+            archive.finish().unwrap();
+        }
+        output.into_inner()
+    }
 
     fn family_bytes(path: &[u8]) -> Vec<u8> {
         let archive = rawzip::ZipArchive::from_slice(FAMILY_JAR).unwrap();
@@ -1278,6 +1780,358 @@ mod tests {
             crate::class_source::read_class_source_assembly_context(bytes, &shells, &pool, budget)
                 .unwrap();
         (facts, pool, nesting)
+    }
+
+    #[test]
+    fn bridge_load_and_return_opcodes_follow_jvm_parameter_categories() {
+        for (descriptor, generic, implicit, returns) in [
+            (b"I".as_slice(), 0x15, 0x1a, 0xac),
+            (b"J", 0x16, 0x1e, 0xad),
+            (b"F", 0x17, 0x22, 0xae),
+            (b"D", 0x18, 0x26, 0xaf),
+            (b"Ljava/lang/Object;", 0x19, 0x2a, 0xb0),
+            (b"[I", 0x19, 0x2a, 0xb0),
+        ] {
+            assert!(bridge_load_opcode(generic, descriptor));
+            for opcode in implicit..=implicit + 3 {
+                assert!(bridge_load_opcode(opcode, descriptor));
+            }
+            assert!(bridge_return_opcode(returns, Some(descriptor)));
+        }
+        assert!(bridge_return_opcode(0xb1, None));
+        assert!(!bridge_load_opcode(0x2a, b"I"));
+        assert!(!bridge_return_opcode(0xb1, Some(b"I")));
+    }
+
+    #[test]
+    fn outer_super_bridge_and_call_require_exact_body_target_and_capture_value() {
+        let engine = Engine::new();
+        let mut budget = budget();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(OUTER_SUPER_JAR.to_vec()), &mut budget)
+            .unwrap();
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let root = match engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("OuterReceiverCases"),
+                    },
+                    environment: environment.clone(),
+                },
+                &mut budget,
+            )
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("frozen Outer must resolve: {other:?}"),
+        };
+        let child = match engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("OuterReceiverCases$Member"),
+                    },
+                    environment: environment.clone(),
+                },
+                &mut budget,
+            )
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("frozen Member must resolve: {other:?}"),
+        };
+        let parent = match engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("ReceiverBase"),
+                    },
+                    environment: environment.clone(),
+                },
+                &mut budget,
+            )
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("frozen direct superclass must resolve: {other:?}"),
+        };
+        let selected = environment.build(std::slice::from_ref(&snapshot)).unwrap();
+        let outer_bytes = archive_class_bytes(OUTER_SUPER_JAR, b"OuterReceiverCases.class");
+        let parent_bytes = archive_class_bytes(OUTER_SUPER_JAR, b"ReceiverBase.class");
+        let child_bytes = archive_class_bytes(OUTER_SUPER_JAR, b"OuterReceiverCases$Member.class");
+        let outer_facts = class_member_facts(&outer_bytes, &mut budget).unwrap();
+        let parent_facts = class_member_facts(&parent_bytes, &mut budget).unwrap();
+        let child_facts = class_member_facts(&child_bytes, &mut budget).unwrap();
+        let bridge_id = root
+            .methods
+            .iter()
+            .find(|method| method.item.identity.name.0 == b"access$101")
+            .unwrap()
+            .item
+            .identity
+            .clone();
+        let bridge_analysis = jarde_jvm::analyze_method_ir(
+            std::slice::from_ref(&snapshot),
+            &crate::ir::MethodAnalysisRequest {
+                environment: selected.clone(),
+                method: bridge_id.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            &mut budget,
+        )
+        .unwrap();
+        let bridge = prove_outer_super_bridge(
+            &outer_facts,
+            &parent_facts,
+            &parent.class,
+            &bridge_id,
+            bridge_analysis.ir(),
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(bridge.invoke_bci, 1);
+        assert_eq!(bridge.target_owner.0, b"ReceiverBase");
+        assert_eq!(bridge.target_name.0, b"value");
+        assert_eq!(bridge.target_descriptor.0, b"()I");
+        assert_eq!(bridge.target_method.owner, parent.class);
+        assert_eq!(bridge.target_method.name, bridge.target_name);
+        assert_eq!(bridge.target_method.descriptor, bridge.target_descriptor);
+
+        let mut wrong_parent = parent_facts.clone();
+        wrong_parent.this_class = outer_facts.this_class.clone();
+        assert!(
+            prove_outer_super_bridge(
+                &outer_facts,
+                &wrong_parent,
+                &parent.class,
+                &bridge_id,
+                bridge_analysis.ir(),
+                &mut budget,
+            )
+            .unwrap()
+            .is_err()
+        );
+        let mut wrong_target = parent_facts.clone();
+        wrong_target
+            .methods
+            .iter_mut()
+            .find(|method| method.name.raw().0 == b"value")
+            .unwrap()
+            .access_flags |= 0x0008;
+        assert!(
+            prove_outer_super_bridge(
+                &outer_facts,
+                &wrong_target,
+                &parent.class,
+                &bridge_id,
+                bridge_analysis.ir(),
+                &mut budget,
+            )
+            .unwrap()
+            .is_err()
+        );
+        let mut extra_effect = bridge_analysis.ir().code().unwrap().clone();
+        extra_effect
+            .instructions
+            .insert(1, extra_effect.instructions[0].clone());
+        assert!(
+            prove_outer_super_bridge_body(
+                &outer_facts,
+                &parent_facts,
+                &parent.class,
+                &bridge_id,
+                bridge_analysis.ir(),
+                &extra_effect,
+                &mut budget,
+            )
+            .unwrap()
+            .is_err()
+        );
+
+        let analyses: Vec<_> = child_facts
+            .methods
+            .iter()
+            .map(|method| {
+                let id = PhysicalMethodId {
+                    owner: child.class.clone(),
+                    name: method.name.raw().clone(),
+                    descriptor: method.descriptor.raw().clone(),
+                };
+                let analysis = jarde_jvm::analyze_method_ir(
+                    std::slice::from_ref(&snapshot),
+                    &crate::ir::MethodAnalysisRequest {
+                        environment: selected.clone(),
+                        method: id.clone(),
+                        stages: MethodOperation::Analysis.stages().to_vec(),
+                    },
+                    &mut budget,
+                )
+                .unwrap();
+                (id, analysis)
+            })
+            .collect();
+        let irs: Vec<_> = analyses
+            .iter()
+            .map(|(id, analysis)| (id.clone(), analysis.ir()))
+            .collect();
+        let capture = prove_family_capture(b"OuterReceiverCases", &child_facts, &irs, &mut budget)
+            .unwrap()
+            .unwrap();
+        let (caller, compare) = analyses
+            .iter()
+            .find(|(id, _)| id.name.0 == b"compare")
+            .unwrap();
+        let call = prove_outer_super_call(caller, compare.ir(), &capture, &bridge, 38, &mut budget)
+            .unwrap()
+            .unwrap();
+        assert_eq!((call.capture_read_bci, call.call_bci), (35, 38));
+        assert!(call.argument_bcis.is_empty());
+
+        // `access$000(other)` has the same Outer parameter descriptor, but its SSA value is
+        // aload_1 rather than the captured field. A proof-unit symbolic substitution isolates
+        // that distinction from the different helper name.
+        let mut same_type_other = bridge.clone();
+        same_type_other.bridge.name = JvmBytes(b"access$000".to_vec());
+        let refusal = prove_outer_super_call(
+            caller,
+            compare.ir(),
+            &capture,
+            &same_type_other,
+            8,
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap_err();
+        assert!(refusal.contains("capture"), "{refusal}");
+        assert!(
+            prove_outer_super_call(caller, compare.ir(), &capture, &bridge, 50, &mut budget)
+                .unwrap()
+                .is_err()
+        ); // Member's own invokevirtual value()
+    }
+
+    #[test]
+    fn outer_super_call_keeps_effectful_arguments_in_physical_order() {
+        let jar = effectful_bridge_jar();
+        let engine = Engine::new();
+        let mut budget = budget();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(jar.clone()), &mut budget)
+            .unwrap();
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let selected = environment.build(std::slice::from_ref(&snapshot)).unwrap();
+        let report_for = |name: &str, budget: &mut Budget| match engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal(name),
+                    },
+                    environment: environment.clone(),
+                },
+                budget,
+            )
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("effect fixture class must resolve: {other:?}"),
+        };
+        let root = report_for("OuterSuperEffects", &mut budget);
+        let child = report_for("OuterSuperEffects$Member", &mut budget);
+        let parent = report_for("EffectsBase", &mut budget);
+        let outer_facts = class_member_facts(include_bytes!("../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"), &mut budget).unwrap();
+        let parent_facts = class_member_facts(include_bytes!("../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class"), &mut budget).unwrap();
+        let child_facts = class_member_facts(include_bytes!("../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"), &mut budget).unwrap();
+        let bridge_id = root
+            .methods
+            .iter()
+            .find(|method| method.item.identity.name.0 == b"access$001")
+            .unwrap()
+            .item
+            .identity
+            .clone();
+        let bridge_analysis = jarde_jvm::analyze_method_ir(
+            std::slice::from_ref(&snapshot),
+            &crate::ir::MethodAnalysisRequest {
+                environment: selected.clone(),
+                method: bridge_id.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            &mut budget,
+        )
+        .unwrap();
+        let bridge = prove_outer_super_bridge(
+            &outer_facts,
+            &parent_facts,
+            &parent.class,
+            &bridge_id,
+            bridge_analysis.ir(),
+            &mut budget,
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(bridge.target_descriptor.0, b"(II)I");
+        assert_eq!(bridge.invoke_bci, 3);
+        let analyses: Vec<_> = child_facts
+            .methods
+            .iter()
+            .map(|method| {
+                let id = PhysicalMethodId {
+                    owner: child.class.clone(),
+                    name: method.name.raw().clone(),
+                    descriptor: method.descriptor.raw().clone(),
+                };
+                let analysis = jarde_jvm::analyze_method_ir(
+                    std::slice::from_ref(&snapshot),
+                    &crate::ir::MethodAnalysisRequest {
+                        environment: selected.clone(),
+                        method: id.clone(),
+                        stages: MethodOperation::Analysis.stages().to_vec(),
+                    },
+                    &mut budget,
+                )
+                .unwrap();
+                (id, analysis)
+            })
+            .collect();
+        let irs: Vec<_> = analyses
+            .iter()
+            .map(|(id, analysis)| (id.clone(), analysis.ir()))
+            .collect();
+        let capture = prove_family_capture(b"OuterSuperEffects", &child_facts, &irs, &mut budget)
+            .unwrap()
+            .unwrap();
+        let (caller, run) = analyses.iter().find(|(id, _)| id.name.0 == b"run").unwrap();
+        let proof = prove_outer_super_call(caller, run.ir(), &capture, &bridge, 14, &mut budget)
+            .unwrap()
+            .unwrap();
+        assert_eq!(proof.capture_read_bci, 1);
+        assert_eq!(proof.argument_bcis, vec![6, 11]);
     }
 
     #[test]

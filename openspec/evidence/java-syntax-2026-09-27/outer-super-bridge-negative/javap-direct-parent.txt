@@ -1,0 +1,215 @@
+Classfile <direct>/DirectParentTargetCases.class
+  Last modified 2026年9月27日; size 893 bytes
+  SHA-256 checksum 8602953904a4a5c56e452998e0a39c16e4bd29ab599a7832c64f0ecdb3ac6222
+  Compiled from "DirectParentTargetCases.java"
+public class DirectParentTargetCases extends TargetBaseB
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #19                         // DirectParentTargetCases
+  super_class: #2                         // TargetBaseB
+  interfaces: 0, fields: 0, methods: 4, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // TargetBaseB.value:()I
+   #2 = Class              #4             // TargetBaseB
+   #3 = NameAndType        #5:#6          // value:()I
+   #4 = Utf8               TargetBaseB
+   #5 = Utf8               value
+   #6 = Utf8               ()I
+   #7 = Methodref          #2.#8          // TargetBaseB."<init>":()V
+   #8 = NameAndType        #9:#10         // "<init>":()V
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Fieldref           #12.#13        // java/lang/System.out:Ljava/io/PrintStream;
+  #12 = Class              #14            // java/lang/System
+  #13 = NameAndType        #15:#16        // out:Ljava/io/PrintStream;
+  #14 = Utf8               java/lang/System
+  #15 = Utf8               out
+  #16 = Utf8               Ljava/io/PrintStream;
+  #17 = Class              #18            // DirectParentTargetCases$Member
+  #18 = Utf8               DirectParentTargetCases$Member
+  #19 = Class              #20            // DirectParentTargetCases
+  #20 = Utf8               DirectParentTargetCases
+  #21 = Methodref          #19.#8         // DirectParentTargetCases."<init>":()V
+  #22 = Methodref          #17.#23        // DirectParentTargetCases$Member."<init>":(LDirectParentTargetCases;)V
+  #23 = NameAndType        #9:#24         // "<init>":(LDirectParentTargetCases;)V
+  #24 = Utf8               (LDirectParentTargetCases;)V
+  #25 = Methodref          #17.#26        // DirectParentTargetCases$Member.directParentCall:()I
+  #26 = NameAndType        #27:#6         // directParentCall:()I
+  #27 = Utf8               directParentCall
+  #28 = Methodref          #29.#30        // java/io/PrintStream.println:(I)V
+  #29 = Class              #31            // java/io/PrintStream
+  #30 = NameAndType        #32:#33        // println:(I)V
+  #31 = Utf8               java/io/PrintStream
+  #32 = Utf8               println
+  #33 = Utf8               (I)V
+  #34 = Utf8               Code
+  #35 = Utf8               LineNumberTable
+  #36 = Utf8               LocalVariableTable
+  #37 = Utf8               this
+  #38 = Utf8               LDirectParentTargetCases;
+  #39 = Utf8               main
+  #40 = Utf8               ([Ljava/lang/String;)V
+  #41 = Utf8               args
+  #42 = Utf8               [Ljava/lang/String;
+  #43 = Utf8               access$001
+  #44 = Utf8               (LDirectParentTargetCases;)I
+  #45 = Utf8               x0
+  #46 = Utf8               SourceFile
+  #47 = Utf8               DirectParentTargetCases.java
+  #48 = Utf8               InnerClasses
+  #49 = Utf8               Member
+{
+  public DirectParentTargetCases();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #7                  // Method TargetBaseB."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LDirectParentTargetCases;
+
+  int value();
+    descriptor: ()I
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: sipush        202
+         3: ireturn
+      LineNumberTable:
+        line 2: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       4     0  this   LDirectParentTargetCases;
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: getstatic     #11                 // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: new           #17                 // class DirectParentTargetCases$Member
+         6: dup
+         7: new           #19                 // class DirectParentTargetCases
+        10: dup
+        11: invokespecial #21                 // Method "<init>":()V
+        14: invokespecial #22                 // Method DirectParentTargetCases$Member."<init>":(LDirectParentTargetCases;)V
+        17: invokevirtual #25                 // Method DirectParentTargetCases$Member.directParentCall:()I
+        20: invokevirtual #28                 // Method java/io/PrintStream.println:(I)V
+        23: return
+      LineNumberTable:
+        line 9: 0
+        line 10: 23
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      24     0  args   [Ljava/lang/String;
+
+  static int access$001(DirectParentTargetCases);
+    descriptor: (LDirectParentTargetCases;)I
+    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method TargetBaseB.value:()I
+         4: ireturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0    x0   LDirectParentTargetCases;
+}
+SourceFile: "DirectParentTargetCases.java"
+InnerClasses:
+  #49= #17 of #19;                        // Member=class DirectParentTargetCases$Member of class DirectParentTargetCases
+Classfile <direct>/DirectParentTargetCases$Member.class
+  Last modified 2026年9月27日; size 651 bytes
+  SHA-256 checksum 24ed87954e02754260622aa28431c3b4bc526e31de9fa3b654a9e92373226b7f
+  Compiled from "DirectParentTargetCases.java"
+class DirectParentTargetCases$Member extends TargetMemberBase
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #2                          // DirectParentTargetCases$Member
+  super_class: #8                         // TargetMemberBase
+  interfaces: 0, fields: 1, methods: 2, attributes: 2
+Constant pool:
+   #1 = Fieldref           #2.#3          // DirectParentTargetCases$Member.this$0:LDirectParentTargetCases;
+   #2 = Class              #4             // DirectParentTargetCases$Member
+   #3 = NameAndType        #5:#6          // this$0:LDirectParentTargetCases;
+   #4 = Utf8               DirectParentTargetCases$Member
+   #5 = Utf8               this$0
+   #6 = Utf8               LDirectParentTargetCases;
+   #7 = Methodref          #8.#9          // TargetMemberBase."<init>":()V
+   #8 = Class              #10            // TargetMemberBase
+   #9 = NameAndType        #11:#12        // "<init>":()V
+  #10 = Utf8               TargetMemberBase
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Methodref          #14.#15        // DirectParentTargetCases.access$001:(LDirectParentTargetCases;)I
+  #14 = Class              #16            // DirectParentTargetCases
+  #15 = NameAndType        #17:#18        // access$001:(LDirectParentTargetCases;)I
+  #16 = Utf8               DirectParentTargetCases
+  #17 = Utf8               access$001
+  #18 = Utf8               (LDirectParentTargetCases;)I
+  #19 = Utf8               (LDirectParentTargetCases;)V
+  #20 = Utf8               Code
+  #21 = Utf8               LineNumberTable
+  #22 = Utf8               LocalVariableTable
+  #23 = Utf8               this
+  #24 = Utf8               LDirectParentTargetCases$Member;
+  #25 = Utf8               MethodParameters
+  #26 = Utf8               directParentCall
+  #27 = Utf8               ()I
+  #28 = Utf8               SourceFile
+  #29 = Utf8               DirectParentTargetCases.java
+  #30 = Utf8               InnerClasses
+  #31 = Utf8               Member
+{
+  final DirectParentTargetCases this$0;
+    descriptor: LDirectParentTargetCases;
+    flags: (0x1010) ACC_FINAL, ACC_SYNTHETIC
+
+  DirectParentTargetCases$Member(DirectParentTargetCases);
+    descriptor: (LDirectParentTargetCases;)V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: putfield      #1                  // Field this$0:LDirectParentTargetCases;
+         5: aload_0
+         6: invokespecial #7                  // Method TargetMemberBase."<init>":()V
+         9: return
+      LineNumberTable:
+        line 4: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      10     0  this   LDirectParentTargetCases$Member;
+            0      10     1 this$0   LDirectParentTargetCases;
+    MethodParameters:
+      Name                           Flags
+      <no name>                      final mandated
+
+  int directParentCall();
+    descriptor: ()I
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #1                  // Field this$0:LDirectParentTargetCases;
+         4: invokestatic  #13                 // Method DirectParentTargetCases.access$001:(LDirectParentTargetCases;)I
+         7: ireturn
+      LineNumberTable:
+        line 5: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       8     0  this   LDirectParentTargetCases$Member;
+}
+SourceFile: "DirectParentTargetCases.java"
+InnerClasses:
+  #31= #2 of #14;                         // Member=class DirectParentTargetCases$Member of class DirectParentTargetCases
