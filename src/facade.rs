@@ -9187,6 +9187,14 @@ public class Probe {
                 }
                 _ => assert!(!source_report.text.contains("READY {")),
             }
+            assert_eq!(
+                source_report
+                    .text
+                    .matches("selected enum child definition")
+                    .count(),
+                expected,
+                "{class}, debug={debug}"
+            );
             if expected == 0 {
                 let constructors: Vec<_> = source_report
                     .methods
@@ -9472,6 +9480,250 @@ public class Probe {
     }
 
     #[test]
+    fn enum_body_projection_is_atomic_when_the_second_body_cannot_be_written() {
+        let entries = compiled_entries(false);
+        let parent = report(&entries, "demo/Op");
+        let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Body(mut group),
+        ) = parent.enum_constant_proof.clone()
+        else {
+            panic!("the source must have a proved body group");
+        };
+        let shape = &parent.enum_constant_body_relations[0].group_shape;
+        let second = group.constants[1].methods.as_ref().unwrap();
+        let mut broken = second.to_vec();
+        broken[0].text = "incomplete method".to_owned();
+        group.constants[1].methods = Some(broken.into());
+        assert!(
+            class_source::prepare_enum_constant_body_source_projection(
+                parent.declaration.as_ref().unwrap(),
+                &parent.fields,
+                &parent.methods,
+                &group,
+                shape,
+                &mut budget(),
+            )
+            .unwrap()
+            .is_none()
+        );
+        let physical = class_source::source_text(
+            parent.declaration.as_ref().unwrap(),
+            &parent.fields,
+            &parent.methods,
+            &class_source::ClassSourceTextContext {
+                initializer_field_order: None,
+                declared_methods: parent.methods.len() as u64,
+                member_table: None,
+                execution: &parent.execution,
+                enum_projection: None,
+            },
+        );
+        assert!(!physical.contains("ADD {"));
+        assert!(!physical.contains("MULTIPLY {"));
+        assert!(!physical.contains("selected enum child definition"));
+        assert!(physical.contains(parent.fields[0].declaration.as_ref().unwrap()));
+        assert!(physical.contains(parent.fields[1].declaration.as_ref().unwrap()));
+        assert!(
+            physical.contains(
+                &parent
+                    .methods
+                    .iter()
+                    .find(|method| method.item.name.raw().0 == b"<init>")
+                    .unwrap()
+                    .text
+            )
+        );
+        // The first body was already staged locally when the second failed. No caller-visible
+        // projection exists, and neither the parent members nor the child Code was rewritten.
+        assert!(parent.text.contains("ADD {"));
+        assert!(parent.text.contains("MULTIPLY {"));
+        assert!(
+            parent
+                .fields
+                .iter()
+                .any(|field| field.item.name.raw().0 == b"ADD")
+        );
+        assert!(
+            parent
+                .methods
+                .iter()
+                .any(|method| method.item.name.raw().0 == b"<init>")
+        );
+        for relation in &parent.enum_constant_body_relations {
+            let child = relation.body_proof.as_ref().unwrap().as_ref().unwrap();
+            assert!(matches!(
+                child[0].outcome,
+                class_source::ClassSourceOutcome::Recovered { .. }
+            ));
+        }
+    }
+
+    #[test]
+    fn enum_body_projection_keeps_physical_json_and_independent_child_requests() {
+        for debug in [true, false] {
+            let entries = compiled_entries(debug);
+            let parent = report(&entries, "demo/Op");
+            let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+            ) = &parent.enum_constant_proof
+            else {
+                panic!("the source must have a proved body group");
+            };
+            let json = serde_json::to_value(&parent).unwrap();
+            assert_eq!(
+                json["fields"].as_array().unwrap().len(),
+                parent.fields.len()
+            );
+            assert_eq!(
+                json["methods"].as_array().unwrap().len(),
+                parent.methods.len()
+            );
+            for constant in &group.constants {
+                let field = &parent.fields[constant.field_index as usize];
+                assert_eq!(
+                    json["fields"][constant.field_index as usize]["item"]["identity"],
+                    serde_json::to_value(&field.item.identity).unwrap()
+                );
+                let child_id = constant.subclass.as_ref().unwrap();
+                assert!(parent.text.contains(&format!(
+                    "// jarde: selected enum child definition: {child_id:?}"
+                )));
+                let method = &constant.methods.as_ref().unwrap()[0];
+                let child = report(
+                    &entries,
+                    if constant.field_index == group.constants[0].field_index {
+                        "demo/Op$1"
+                    } else {
+                        "demo/Op$2"
+                    },
+                );
+                assert_eq!(&child.class, child_id);
+                let independent = child
+                    .methods
+                    .iter()
+                    .find(|item| item.item.identity == method.item.identity)
+                    .unwrap();
+                let class_source::ClassSourceOutcome::Recovered {
+                    report: child_code, ..
+                } = &independent.outcome
+                else {
+                    panic!("the independent child class source retains Code");
+                };
+                let class_source::ClassSourceOutcome::Recovered { report, .. } = &method.outcome
+                else {
+                    panic!("the selected child method has Code");
+                };
+                assert_eq!(child_code.text, report.text);
+                let method_json = serde_json::to_value(method).unwrap();
+                assert_eq!(
+                    method_json["item"]["identity"],
+                    serde_json::to_value(&method.item.identity).unwrap()
+                );
+                assert_eq!(
+                    method_json["outcome"]["report"]["source_map"],
+                    serde_json::to_value(&report.source_map).unwrap()
+                );
+                assert!(!report.source_map.segments().is_empty());
+
+                let engine = Engine::new();
+                let mut method_budget = budget();
+                let snapshot = engine
+                    .open(ArtifactInput::bytes(jar(&entries)), &mut method_budget)
+                    .unwrap();
+                let request = MethodOperationRequest {
+                    method: MethodRef::Method {
+                        method: method.item.identity.clone(),
+                    },
+                    environment: EnvironmentRequest {
+                        snapshot: snapshot.id().clone(),
+                        scope: PhysicalScope::SnapshotAll,
+                        policy: EnvironmentPolicy::PlainJar,
+                        profile: RuntimeProfile {
+                            java_release: 8,
+                            multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                            layout: LayoutMode::Generic,
+                        },
+                        loader: jarde_reader::view::LoaderId("app".to_owned()),
+                    },
+                };
+                let OperationOutcome::Performed(only) = engine
+                    .recover_target_with_evidence(
+                        std::slice::from_ref(&snapshot),
+                        &request,
+                        &RecoveryEvidenceRequest::all(),
+                        &mut method_budget,
+                    )
+                    .unwrap()
+                else {
+                    panic!("the selected child method must remain independently recoverable");
+                };
+                assert_eq!(only.method, method.item.identity);
+                assert_eq!(only.recovered.recovery().text, report.text);
+                assert_eq!(only.recovered.recovery().source_map, report.source_map);
+            }
+        }
+    }
+
+    #[test]
+    fn enum_body_projection_budget_and_cancellation_leave_no_half_body() {
+        let entries = compiled_entries(false);
+        let complete = report(&entries, "demo/Op");
+        for dimension in ["output", "read", "ir"] {
+            let mut limits = budget().limits().clone();
+            match dimension {
+                "output" => limits.output_bytes = complete.usage.output_bytes - 1,
+                "read" => limits.read_bytes = complete.usage.read_bytes - 1,
+                "ir" => limits.ir_items = complete.usage.ir_items - 1,
+                _ => unreachable!(),
+            }
+            let stopped = report_with_budget(&entries, "demo/Op", Budget::new(limits));
+            assert!(
+                matches!(
+                    stopped.enum_constant_proof,
+                    crate::enum_constants::ClassSourceEnumConstantProof::Stopped { .. }
+                ),
+                "{dimension}"
+            );
+            assert!(!stopped.text.contains("ADD {"), "{dimension}");
+            assert!(!stopped.text.contains("MULTIPLY {"), "{dimension}");
+            assert!(
+                !stopped.text.contains("selected enum child definition"),
+                "{dimension}"
+            );
+            if dimension == "output" {
+                assert_eq!(stopped.fields, complete.fields);
+                assert_eq!(stopped.methods.len(), complete.methods.len());
+                for (left, right) in stopped.methods.iter().zip(&complete.methods) {
+                    assert_eq!(left.item, right.item);
+                    assert_eq!(left.text, right.text);
+                }
+            }
+        }
+
+        let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+        ) = &complete.enum_constant_proof
+        else {
+            panic!("the complete input has a proved group");
+        };
+        let cancellation = jarde_reader::budget::CancellationToken::new();
+        let mut cancelled =
+            Budget::with_cancellation_token(budget().limits().clone(), cancellation.clone());
+        cancellation.cancel();
+        assert!(matches!(
+            class_source::prepare_enum_constant_body_source_projection(
+                complete.declaration.as_ref().unwrap(),
+                &complete.fields,
+                &complete.methods,
+                group,
+                &complete.enum_constant_body_relations[0].group_shape,
+                &mut cancelled,
+            ),
+            Err(Error::Cancelled { .. })
+        ));
+    }
+
+    #[test]
     fn enum_constant_body_relations_follow_each_verified_construction_and_reject_missing_or_changed_rows()
      {
         let entries = compiled_entries(true);
@@ -9728,6 +9980,7 @@ public class Probe {
             panic!("the selected enum is unique")
         };
         assert_eq!(all.text, essential.text);
+        assert!(all.text.contains("selected enum child definition"));
         for (left, right) in essential
             .enum_constant_body_relations
             .iter()

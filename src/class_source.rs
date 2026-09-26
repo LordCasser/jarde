@@ -5778,6 +5778,9 @@ pub(crate) fn prepare_enum_constant_body_source_projection(
             (None, None) => {}
             (Some(subclass), Some(body_methods)) if !body_methods.is_empty() => {
                 constants_text.push_str(" {\n");
+                constants_text.push_str("        // jarde: selected enum child definition: ");
+                constants_text.push_str(&format!("{subclass:?}"));
+                constants_text.push('\n');
                 for method in body_methods.iter() {
                     budget.poll()?;
                     if method.item.identity.owner != *subclass
