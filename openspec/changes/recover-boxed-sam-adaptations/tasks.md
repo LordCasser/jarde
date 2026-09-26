@@ -8,7 +8,8 @@
 - [x] 2.2 从现有同类 `ClassMembers` 精确选定合成 impl，证明完整无 handler 的参数 load→目标数组分配→return、数组类型与长度参数；名称/flag-only、额外效果、错误类型、缺成员事实控制拒绝。[Root 验收](verification-2.2.md)
 - [x] 2.3a 从同次 IR 的 LambdaMetafactory BSM 精确提取同类合成 impl MethodHandle 候选，追加到既有按需 callee 读取并复用已准备的类、预算和物理身份；实际 class-source/method-only 站点能把 helper Code 交给 2.2 证明，名称/flag-only 与缺失事实仍不能触发数组投影。[Root 集成验收](verification-2.3ab.md)
 - [x] 2.3b Builder 仅对已证数组 impl 且零捕获、唯一 SAM 长度参数的站点发 `T[]::new`；捕获长度的 `Supplier<int[]>` 不得误投影，其它装箱 SAM 使用点恢复含箭头调用的语句，来源 BCI 锚点与合成方法物理报告保留。真实 fixture 的方法级文本与类级保守回退均验证，不以单元构造的 ClassMembers 代替集成证明。[Root 集成验收](verification-2.3ab.md)
-- [ ] 2.3c 对同名 helper 做类级原子投影：从同次 IR/BSM/方法表普查全部同物理用途，以私有 typed AST sidecar 重发每个已证站点，预付费后同步省略 helper；JSON/方法级报告不变。其它直接调用/句柄、raw Function 目标、未分析方法、缺覆盖、预算/取消时保留普通合成调用与声明。用真正同名的 `arrayCtor`/`lambda$arrayCtor$0`、非泛型 `ArrayMaker.make(Integer)` 最小正例 Java 8 重编，并保留大 BoxedSamProbe 的 raw 目标负例。JADX 的精确句柄解析可借，立即 `DONT_GENERATE` 的无全用途省略不能照搬。
+- [x] 2.3c 对同名 helper 做首个类级原子投影：从同次 IR/BSM/方法表普查全部同物理用途，限于单方法、单站点、直接 `return` 唯一 Lambda 的 typed AST 形状，重发为 `T[]::new`；预算预付成功后才同步省略 helper。JSON/方法级报告保留物理成员与普通 lambda 文本。直接调用/LDC 句柄、raw `Function`、捕获长度、未分析方法、缺覆盖与预算停止不得误投影；与其它类级投影相撞时整组撤销。真正同名的 `arrayCtor`/`lambda$arrayCtor$0`、非泛型 `ArrayMaker.make(Integer)` 正例通过整类 Java 8 重编及原/恢复执行对照；冻结 BoxedSamProbe 的 raw 目标保留 helper。JADX 的精确句柄解析可借，立即 `DONT_GENERATE` 的无全用途省略不能照搬。[Root 集成验收](verification-2.3c.md)
+- [ ] 2.3d 扩展类级投影到多个站点、直接赋值和嵌套表达式：每个站点继续由同一 typed AST 与 BCI/CP/BSM 绑定，并证明同一 helper 的所有用途一次性可重发；任何站点或其它类级投影失败时整组保留物理 helper。补多站点、直接调用/句柄和预算/取消的 Java 8 执行及拒绝回归。不得把 2.3c 的单 `return` 正例当作这些形状的覆盖。
 
 ## 3. 对照与门禁
 
