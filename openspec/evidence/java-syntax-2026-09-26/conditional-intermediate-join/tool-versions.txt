@@ -1,0 +1,9 @@
+JADX 1.5.6
+javac 23.0.1
+openjdk version "23.0.1" 2024-10-15
+OpenJDK Runtime Environment (build 23.0.1+11-39)
+
+Jarde frozen CLI build:
+  repository commit: 64da3f82e00f862a030484b484740fda3a09b6fc
+  command: CARGO_TARGET_DIR=/tmp/jarde-conditional-intermediate-cargo-target cargo build -q -p jarde-cli
+  binary SHA-256: 63191034770cfc73ef0a6b04926fd0f41aac56e5448722babd1906912936ccb4

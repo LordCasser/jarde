@@ -1,0 +1,1 @@
+Not run: the emitted full class fails javac --release 8 -g:none with one missing return statement in choose(I)I. See jarde-javac.log.

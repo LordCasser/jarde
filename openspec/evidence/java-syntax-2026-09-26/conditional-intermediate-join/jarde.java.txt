@@ -1,0 +1,89 @@
+// jarde: presentation of `ConditionalIntermediateJoin` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class ConditionalIntermediateJoin extends java.lang.Object {
+    private static java.lang.String trace;
+
+    private static int fail;
+
+    public ConditionalIntermediateJoin() {
+        // @method <init>()V
+        // @declaration a constructor of `ConditionalIntermediateJoin`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    private static int f1() {
+        // @method f1()I
+        // @declaration a static method of `ConditionalIntermediateJoin`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        ConditionalIntermediateJoin.trace = new java.lang.StringBuilder().append(ConditionalIntermediateJoin.trace).append("f1,").toString();
+        if (ConditionalIntermediateJoin.fail == 1) {
+            throw new java.lang.IllegalStateException("f1");
+        } else {
+            return 10;
+        }
+    }
+
+    private static int f2() {
+        // @method f2()I
+        // @declaration a static method of `ConditionalIntermediateJoin`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        ConditionalIntermediateJoin.trace = new java.lang.StringBuilder().append(ConditionalIntermediateJoin.trace).append("f2,").toString();
+        if (ConditionalIntermediateJoin.fail == 2) {
+            throw new java.lang.IllegalStateException("f2");
+        } else {
+            return 20;
+        }
+    }
+
+    private static int f3() {
+        // @method f3()I
+        // @declaration a static method of `ConditionalIntermediateJoin`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        ConditionalIntermediateJoin.trace = new java.lang.StringBuilder().append(ConditionalIntermediateJoin.trace).append("f3,").toString();
+        if (ConditionalIntermediateJoin.fail == 3) {
+            throw new java.lang.IllegalStateException("f3");
+        } else {
+            return 30;
+        }
+    }
+
+    public static int choose(int arg0) {
+        // @method choose(I)I
+        // @declaration a static method of `ConditionalIntermediateJoin`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 > 0) {
+        } else {
+            // @bytecode 23
+            // the saved producer at BCI 23 has no bounded final expression consumer
+        }
+        // @bytecode 26
+        // the value at BCI 26 is the entry state of stack depth 0, which no instruction produced
+        // @bytecode 18 19 20
+        // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [18]
+    }
+
+    public static void reset(int arg0) {
+        // @method reset(I)V
+        // @declaration a static method of `ConditionalIntermediateJoin`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        ConditionalIntermediateJoin.trace = "";
+        ConditionalIntermediateJoin.fail = arg0;
+        return;
+    }
+
+    public static java.lang.String trace() {
+        // @method trace()Ljava/lang/String;
+        // @declaration a static method of `ConditionalIntermediateJoin`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return ConditionalIntermediateJoin.trace;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `ConditionalIntermediateJoin`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        ConditionalIntermediateJoin.trace = "";
+    }
+}
