@@ -1,0 +1,103 @@
+Classfile <classes>/generic/GenericRawCases.class
+  Last modified 2026?9?27?; size 823 bytes
+  SHA-256 checksum 966ed7e0e3cc4b342c0930b90640572428051e9c1df91814407e2a1f2b515e2c
+class generic.GenericRawCases extends generic.GenericParent
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #11                         // generic/GenericRawCases
+  super_class: #2                         // generic/GenericParent
+  interfaces: 0, fields: 0, methods: 3, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // generic/GenericParent.choose:(Ljava/lang/CharSequence;)Ljava/lang/String;
+   #2 = Class              #4             // generic/GenericParent
+   #3 = NameAndType        #5:#6          // choose:(Ljava/lang/CharSequence;)Ljava/lang/String;
+   #4 = Utf8               generic/GenericParent
+   #5 = Utf8               choose
+   #6 = Utf8               (Ljava/lang/CharSequence;)Ljava/lang/String;
+   #7 = Methodref          #2.#8          // generic/GenericParent."<init>":()V
+   #8 = NameAndType        #9:#10         // "<init>":()V
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Class              #12            // generic/GenericRawCases
+  #12 = Utf8               generic/GenericRawCases
+  #13 = Methodref          #11.#8         // generic/GenericRawCases."<init>":()V
+  #14 = Fieldref           #15.#16        // java/lang/System.out:Ljava/io/PrintStream;
+  #15 = Class              #17            // java/lang/System
+  #16 = NameAndType        #18:#19        // out:Ljava/io/PrintStream;
+  #17 = Utf8               java/lang/System
+  #18 = Utf8               out
+  #19 = Utf8               Ljava/io/PrintStream;
+  #20 = Class              #21            // generic/GenericRawCases$Member
+  #21 = Utf8               generic/GenericRawCases$Member
+  #22 = Methodref          #23.#24        // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #23 = Class              #25            // java/util/Objects
+  #24 = NameAndType        #26:#27        // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #25 = Utf8               java/util/Objects
+  #26 = Utf8               requireNonNull
+  #27 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #28 = Methodref          #20.#29        // generic/GenericRawCases$Member."<init>":(Lgeneric/GenericRawCases;)V
+  #29 = NameAndType        #9:#30         // "<init>":(Lgeneric/GenericRawCases;)V
+  #30 = Utf8               (Lgeneric/GenericRawCases;)V
+  #31 = String             #32            // value
+  #32 = Utf8               value
+  #33 = Methodref          #20.#34        // generic/GenericRawCases$Member.choose:(Ljava/lang/String;)Ljava/lang/String;
+  #34 = NameAndType        #5:#35         // choose:(Ljava/lang/String;)Ljava/lang/String;
+  #35 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #36 = Methodref          #37.#38        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #37 = Class              #39            // java/io/PrintStream
+  #38 = NameAndType        #40:#41        // println:(Ljava/lang/String;)V
+  #39 = Utf8               java/io/PrintStream
+  #40 = Utf8               println
+  #41 = Utf8               (Ljava/lang/String;)V
+  #42 = Utf8               Code
+  #43 = Utf8               main
+  #44 = Utf8               ([Ljava/lang/String;)V
+  #45 = Utf8               access$001
+  #46 = Utf8               (Lgeneric/GenericRawCases;Ljava/lang/CharSequence;)Ljava/lang/String;
+  #47 = Utf8               InnerClasses
+  #48 = Utf8               Member
+{
+  generic.GenericRawCases();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #7                  // Method generic/GenericParent."<init>":()V
+         4: return
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=2, args_size=1
+         0: new           #11                 // class generic/GenericRawCases
+         3: dup
+         4: invokespecial #13                 // Method "<init>":()V
+         7: astore_1
+         8: getstatic     #14                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: new           #20                 // class generic/GenericRawCases$Member
+        14: dup
+        15: aload_1
+        16: dup
+        17: invokestatic  #22                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+        20: pop
+        21: invokespecial #28                 // Method generic/GenericRawCases$Member."<init>":(Lgeneric/GenericRawCases;)V
+        24: ldc           #31                 // String value
+        26: invokevirtual #33                 // Method generic/GenericRawCases$Member.choose:(Ljava/lang/String;)Ljava/lang/String;
+        29: invokevirtual #36                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        32: return
+
+  static java.lang.String access$001(generic.GenericRawCases, java.lang.CharSequence);
+    descriptor: (Lgeneric/GenericRawCases;Ljava/lang/CharSequence;)Ljava/lang/String;
+    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokespecial #1                  // Method generic/GenericParent.choose:(Ljava/lang/CharSequence;)Ljava/lang/String;
+         5: areturn
+}
+InnerClasses:
+  #48= #20 of #11;                        // Member=class generic/GenericRawCases$Member of class generic/GenericRawCases

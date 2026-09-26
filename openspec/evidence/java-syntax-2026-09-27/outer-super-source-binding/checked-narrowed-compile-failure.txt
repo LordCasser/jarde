@@ -1,0 +1,4 @@
+<source>/checked/CheckedNarrowed.java:6: error: unreported exception IOException; must be caught or declared to be thrown
+            return CheckedNarrowed.super.select(value);
+                                               ^
+1 error

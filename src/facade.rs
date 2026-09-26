@@ -8483,6 +8483,7 @@ fn project_class_source_member_family(
         ));
     };
     let root_source_name = root_name.replace('/', ".");
+    let mut outer_super_bridges = Vec::new();
     if let Some(super_class) = root
         .declaration
         .as_ref()
@@ -8595,7 +8596,7 @@ fn project_class_source_member_family(
                             return Ok(Err(format!("Outer.super bridge refused: {reason}")));
                         }
                     };
-                    if let Err(reason) = prove_outer_super_bridge_use_closure(
+                    let closure = match prove_outer_super_bridge_use_closure(
                         content,
                         environment,
                         root,
@@ -8605,14 +8606,24 @@ fn project_class_source_member_family(
                         execution,
                         budget,
                     )? {
-                        return Ok(Err(format!("Outer.super bridge refused: {reason}")));
+                        Ok(closure) => closure,
+                        Err(reason) => {
+                            return Ok(Err(format!("Outer.super bridge refused: {reason}")));
+                        }
+                    };
+                    if let Err(reason) = prove_outer_super_source_binding(
+                        content,
+                        environment,
+                        &outer_read.facts,
+                        &superclass_definition,
+                        &superclass_read.facts,
+                        &bridge,
+                        execution,
+                        budget,
+                    )? {
+                        return Ok(Err(format!("Outer.super source binding refused: {reason}")));
                     }
-                    // The certificate is ready for the family writer; until that expression and
-                    // source-map seam consumes it, this family must keep the physical text.
-                    return Ok(Err(
-                        "proved Outer.super bridge awaits atomic family writer projection"
-                            .to_owned(),
-                    ));
+                    outer_super_bridges.push(closure);
                 }
             }
         }
@@ -8636,7 +8647,10 @@ fn project_class_source_member_family(
                                 || proof
                                     .reads
                                     .iter()
-                                    .any(|read| read.method == method.item.identity))))
+                                    .any(|read| read.method == method.item.identity)
+                                || outer_super_bridges
+                                    .iter()
+                                    .any(|closed| closed.bridge.bridge == method.item.identity))))
                     || !method.annotations.refusals.is_empty()
                     || !method.parameter_annotations.refusals.is_empty()
                     || !method.type_annotations.refusals.is_empty()
@@ -8691,6 +8705,15 @@ fn project_class_source_member_family(
     for physical in [root, child.as_ref()] {
         for method in &physical.methods {
             budget.poll()?;
+            if physical.class == root.class
+                && outer_super_bridges
+                    .iter()
+                    .any(|closed| closed.bridge.bridge == method.item.identity)
+            {
+                // Its complete bytecode and every use were proved before this loop. The physical
+                // report remains in `root.methods`; only the family source writer omits its text.
+                continue;
+            }
             let class_source::ClassSourceOutcome::Recovered { report, analysis } = &method.outcome
             else {
                 return Ok(Err(format!(
@@ -8707,10 +8730,28 @@ fn project_class_source_member_family(
                 .iter()
                 .filter(|read| read.method == method.item.identity)
                 .collect();
+            let outer_super_sites: Vec<_> = outer_super_bridges
+                .iter()
+                .flat_map(|closed| &closed.calls)
+                .filter(|site| site.caller == method.item.identity)
+                .collect();
+            if outer_super_sites.iter().any(|site| {
+                !matches!(
+                    capture_reads.iter().find(|read| read.bci == site.capture_read_bci),
+                    Some(read) if read.consumer_bcis == [site.call_bci]
+                )
+            }) {
+                return Ok(Err(
+                    "Outer.super capture read has another consumer whose source span is unproved"
+                        .to_owned(),
+                ));
+            }
             if !matches!(analysis.execution, ExecutionReport::Complete { .. })
                 || !matches!(report.execution, ExecutionReport::Complete { .. })
                 || !report.produced()
-                || ((call_sites.is_empty() && capture_reads.is_empty())
+                || ((call_sites.is_empty()
+                    && capture_reads.is_empty()
+                    && outer_super_sites.is_empty())
                     && (report.content != RecoveryContent::ContainsStatements
                         || report.regions.iter().any(|region| !region.structured)
                         || !report.fallbacks.is_empty()))
@@ -8769,7 +8810,7 @@ fn project_class_source_member_family(
                 });
                 continue;
             }
-            if call_sites.is_empty() && capture_reads.is_empty() {
+            if call_sites.is_empty() && capture_reads.is_empty() && outer_super_sites.is_empty() {
                 continue;
             }
             let analyzed = jarde_jvm::analyze_method_ir(
@@ -8812,6 +8853,30 @@ fn project_class_source_member_family(
                     constructor_write_bci: proof.write_bci,
                 })
                 .collect();
+            let mut proved_super_calls = Vec::new();
+            for site in &outer_super_sites {
+                let (Ok(owner), Ok(name), Ok(descriptor)) = (
+                    std::str::from_utf8(&site.bridge.target_owner.0),
+                    std::str::from_utf8(&site.bridge.target_name.0),
+                    std::str::from_utf8(&site.bridge.target_descriptor.0),
+                ) else {
+                    return Ok(Err(
+                        "Outer.super target has no exact Java spelling".to_owned()
+                    ));
+                };
+                proved_super_calls.push(jarde_java::ProvedOuterSuperCall {
+                    caller: site.caller.clone(),
+                    call_bci: site.call_bci,
+                    capture_read_bci: site.capture_read_bci,
+                    argument_bcis: site.argument_bcis.clone(),
+                    bridge: site.bridge.bridge.clone(),
+                    bridge_invoke_bci: site.bridge.invoke_bci,
+                    outer_source_name: root_source_name.clone(),
+                    target_owner: owner.to_owned(),
+                    target_name: name.to_owned(),
+                    target_descriptor: descriptor.to_owned(),
+                });
+            }
             let recovery = jarde_java::recover(
                 &jarde_java::RecoveryRequest::new(
                     analyzed.ir(),
@@ -8820,6 +8885,7 @@ fn project_class_source_member_family(
                 )
                 .with_member_inner_targets(std::slice::from_ref(&target))
                 .with_captured_outer_reads(&captured)
+                .with_outer_super_calls(&proved_super_calls)
                 .with_evidence(
                     RecoveryEvidenceRequest::essential()
                         .with_kind(RecoveryEvidenceKind::RuleDetails)
@@ -8888,7 +8954,73 @@ fn project_class_source_member_family(
                     ],
                 });
             }
+            for site in &outer_super_sites {
+                let Ok(name) = std::str::from_utf8(&site.bridge.target_name.0) else {
+                    return Ok(Err(
+                        "Outer.super target name has no Java spelling".to_owned()
+                    ));
+                };
+                let needle = format!("{root_source_name}.super.{name}");
+                let Some((start, end)) = family_recovery_token_span(
+                    method,
+                    &recovery,
+                    site.call_bci,
+                    site.call_bci,
+                    &needle,
+                    budget,
+                )?
+                else {
+                    return Ok(Err(format!(
+                        "Outer.super source span is absent for method {} BCI {}",
+                        method.item.index, site.call_bci
+                    )));
+                };
+                let capture_field = child
+                    .fields
+                    .iter()
+                    .find(|field| field.item.index == proof.field_index)
+                    .expect("validated capture field");
+                derived.push(class_source::MemberFamilyDerivedProjection {
+                    kind: class_source::MemberFamilyDerivedKind::OuterSuperCall,
+                    start,
+                    end,
+                    anchors: vec![
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: site.caller.clone(),
+                            bci: site.call_bci,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: site.caller.clone(),
+                            bci: site.capture_read_bci,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::Field {
+                            field: capture_field.item.identity.clone(),
+                            index: capture_field.item.index,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: proof.constructor.clone(),
+                            bci: proof.write_bci,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                            method: site.bridge.bridge.clone(),
+                            bci: site.bridge.invoke_bci,
+                        },
+                        class_source::MemberFamilyPhysicalAnchor::OuterSuperTarget {
+                            method: site.bridge.target_method.clone(),
+                            owner: site.bridge.target_owner.clone(),
+                            name: site.bridge.target_name.clone(),
+                            descriptor: site.bridge.target_descriptor.clone(),
+                        },
+                    ],
+                });
+            }
             for read in capture_reads {
+                if outer_super_sites
+                    .iter()
+                    .any(|site| site.capture_read_bci == read.bci)
+                {
+                    continue;
+                }
                 let needle = format!("{root_source_name}.this");
                 let Some((start, end)) = family_recovery_token_span(
                     method, &recovery, read.bci, read.bci, &needle, budget,
@@ -8942,6 +9074,7 @@ fn project_class_source_member_family(
         capture: proof,
         root_methods: &root_methods,
         child_methods: &child_methods,
+        outer_super_bridges: &outer_super_bridges,
     };
     let Some((text, derived)) = class_source::member_family_source_text(root, &member) else {
         return Ok(Err(
@@ -9295,6 +9428,149 @@ fn prove_outer_super_bridge_use_closure(
     }))
 }
 
+/// Prove that Java 8's `Outer.super.name(args)` has only the exact direct-parent
+/// declaration named by the bridge's MethodRef in the selected source hierarchy.
+/// The JVM target proof alone does not settle source overload or generic binding.
+#[allow(clippy::too_many_arguments)]
+fn prove_outer_super_source_binding(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    outer: &ClassMemberFacts,
+    parent_definition: &PhysicalDefinitionId,
+    parent: &ClassMemberFacts,
+    bridge: &class_source::OuterSuperBridgeProof,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<(), String>> {
+    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    if bridge.target_method.owner != *parent_definition
+        || bridge.target_owner.0 != parent.this_class.raw().0
+        || bridge.target_method.name != bridge.target_name
+        || bridge.target_method.descriptor != bridge.target_descriptor
+        || outer
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Signature")
+    {
+        return refuse("bridge target or Outer generic declaration cannot bind as Java source");
+    }
+    let Some(source_name) = std::str::from_utf8(&bridge.target_name.0).ok() else {
+        return refuse("bridge target method name has no Java source spelling");
+    };
+    let Some(source_owner) = std::str::from_utf8(&bridge.target_owner.0).ok() else {
+        return refuse("bridge target owner has no Java source spelling");
+    };
+    if !jarde_java::is_java_identifier(source_name)
+        || !source_owner.split('/').all(jarde_java::is_java_identifier)
+        || std::str::from_utf8(&bridge.target_descriptor.0).is_err()
+    {
+        return refuse("bridge target has no exact Java source spelling");
+    }
+    let mut pending = vec![(parent.this_class.raw().0.clone(), false)];
+    pending.extend(
+        outer
+            .interfaces
+            .iter()
+            .map(|interface| (interface.raw().0.clone(), true)),
+    );
+    let mut visited = std::collections::BTreeSet::new();
+    let mut exact_target = 0_u32;
+    while let Some((name, interface)) = pending.pop() {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if name == b"java/lang/Object" {
+            const OBJECT_METHODS: &[&[u8]] = &[
+                b"getClass",
+                b"hashCode",
+                b"equals",
+                b"clone",
+                b"toString",
+                b"notify",
+                b"notifyAll",
+                b"wait",
+                b"finalize",
+            ];
+            if OBJECT_METHODS.contains(&bridge.target_name.0.as_slice()) {
+                return refuse(
+                    "Object method name prevents proving a source binding without the selected JDK declaration",
+                );
+            }
+            continue;
+        }
+        if !visited.insert(name.clone()) {
+            continue;
+        }
+        let (definition, facts) = if name == parent.this_class.raw().0 && !interface {
+            (parent_definition.clone(), parent.clone())
+        } else {
+            let Some((definition, read)) = resolve_class_source_dependency_read_raw(
+                content,
+                environment,
+                None,
+                &name,
+                execution,
+                budget,
+            )?
+            else {
+                return refuse(
+                    "selected superclass or interface declaration is unavailable for Java source binding",
+                );
+            };
+            (definition, read.facts)
+        };
+        if facts.stopped_at.is_some()
+            || facts.method_count != facts.methods.len() as u64
+            || facts.field_count != facts.fields.len() as u64
+            || facts.this_class.raw().0 != name
+            || (facts.access_flags & ACC_INTERFACE != 0) != interface
+            || facts
+                .attributes
+                .iter()
+                .any(|attribute| attribute.name.raw().0 == b"Signature")
+        {
+            return refuse("source hierarchy declaration is incomplete or generic");
+        }
+        for method in &facts.methods {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if method.name.raw().0 != bridge.target_name.0 {
+                continue;
+            }
+            let is_target = definition == bridge.target_method.owner
+                && method.descriptor.raw().0 == bridge.target_descriptor.0;
+            if !is_target {
+                return refuse("source hierarchy contains a competing same-name method");
+            }
+            exact_target += 1;
+            if exact_target != 1
+                || method.attributes.iter().any(|attribute| {
+                    matches!(
+                        attribute.name.raw().0.as_slice(),
+                        b"Signature" | b"Exceptions"
+                    )
+                })
+            {
+                return refuse("target method generic or checked-exception surface is unproved");
+            }
+        }
+        pending.extend(
+            facts
+                .interfaces
+                .iter()
+                .map(|interface| (interface.raw().0.clone(), true)),
+        );
+        if !interface {
+            let Some(super_class) = facts.super_class.as_ref() else {
+                return refuse("source superclass chain ends before java/lang/Object");
+            };
+            pending.push((super_class.raw().0.clone(), false));
+        }
+    }
+    if exact_target != 1 {
+        return refuse("direct parent target has no unique source declaration");
+    }
+    Ok(Ok(()))
+}
+
 fn direct_member_bridge_invocation(
     consumer: ConsumerKind,
     operation: jarde_query::query::XrefOperation,
@@ -9318,10 +9594,45 @@ fn direct_member_bridge_invocation(
 mod outer_super_bridge_closure_tests {
     use super::*;
     use jarde_reader::budget::{CancellationToken, Limits};
+    use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
+    use std::io::{Cursor, Write};
 
     const FIXTURE: &[u8] = include_bytes!(
         "../openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar"
     );
+    const EFFECTS_BASE: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/EffectsBase.class"
+    );
+    const EFFECTS_OUTER: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"
+    );
+    const EFFECTS_MEMBER: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"
+    );
+
+    fn effects_jar() -> Vec<u8> {
+        let mut output = Cursor::new(Vec::new());
+        {
+            let mut archive = ZipArchiveWriter::new(&mut output);
+            for (name, bytes) in [
+                (b"EffectsBase.class".as_slice(), EFFECTS_BASE),
+                (b"OuterSuperEffects.class".as_slice(), EFFECTS_OUTER),
+                (b"OuterSuperEffects$Member.class".as_slice(), EFFECTS_MEMBER),
+            ] {
+                let (mut entry, config) = archive
+                    .new_file(EntryPath::verbatim(name.to_vec()))
+                    .compression_method(CompressionMethod::new(0))
+                    .start()
+                    .unwrap();
+                let mut writer = config.wrap(&mut entry);
+                writer.write_all(bytes).unwrap();
+                let (_, descriptor) = writer.finish().unwrap();
+                entry.finish(descriptor).unwrap();
+            }
+            archive.finish().unwrap();
+        }
+        output.into_inner()
+    }
 
     fn budget() -> Budget {
         Budget::new(Limits {
@@ -9344,6 +9655,192 @@ mod outer_super_bridge_closure_tests {
             dependency_depth: u64::MAX,
             elapsed_millis: u64::MAX,
         })
+    }
+
+    fn family_report_for(jar: Vec<u8>, class: &str, all: bool) -> ClassSourceReport {
+        let engine = Engine::new();
+        let mut budget = budget();
+        let snapshot = engine.open(ArtifactInput::bytes(jar), &mut budget).unwrap();
+        let request = ClassSourceRequest {
+            class: ClassRef::Name {
+                class: ClassNameQuery::internal(class),
+            },
+            environment: EnvironmentRequest {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+                policy: EnvironmentPolicy::PlainJar,
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: crate::MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                loader: LoaderId("app".to_owned()),
+            },
+        };
+        let evidence = if all {
+            RecoveryEvidenceRequest::all()
+        } else {
+            RecoveryEvidenceRequest::essential()
+        };
+        match engine
+            .class_source_with_evidence(&[snapshot], &request, &evidence, &mut budget)
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("Outer must resolve: {other:?}"),
+        }
+    }
+
+    fn family_report(all: bool) -> ClassSourceReport {
+        family_report_for(FIXTURE.to_vec(), "OuterReceiverCases", all)
+    }
+
+    #[test]
+    fn closed_bridge_projects_exact_outer_super_and_keeps_both_physical_methods() {
+        let default = family_report(false);
+        let all = family_report(true);
+        assert_eq!(default.text, all.text);
+        let class_source::ClassSourceMemberFamily::Prepared {
+            projection: default_projection,
+            ..
+        } = &default.member_family
+        else {
+            panic!("default member relation must prepare");
+        };
+        let class_source::ClassSourceMemberFamily::Prepared {
+            projection: all_projection,
+            ..
+        } = &all.member_family
+        else {
+            panic!("all-evidence member relation must prepare");
+        };
+        assert_eq!(default_projection, all_projection);
+        let class_source::ClassSourceMemberFamily::Prepared {
+            child, projection, ..
+        } = &all.member_family
+        else {
+            panic!("frozen member relation must prepare");
+        };
+        let class_source::ClassSourceMemberProjection::Projected { derived } = projection else {
+            panic!("frozen bridge family must project: {projection:?}");
+        };
+        assert!(
+            all.text.contains("OuterReceiverCases.super.value()"),
+            "{}",
+            all.text
+        );
+        assert!(!all.text.contains("access$101("), "{}", all.text);
+        let bridge = all
+            .methods
+            .iter()
+            .find(|method| method.item.identity.name.0 == b"access$101")
+            .expect("physical bridge report remains");
+        let caller = child
+            .methods
+            .iter()
+            .find(|method| method.item.identity.name.0 == b"compare")
+            .expect("physical Member caller remains");
+        let projected = derived
+            .iter()
+            .find(|item| item.kind == class_source::MemberFamilyDerivedKind::OuterSuperCall)
+            .expect("derived call exists");
+        assert_eq!(
+            &all.text[projected.start..projected.end],
+            "OuterReceiverCases.super.value"
+        );
+        assert!(projected.anchors.iter().any(|anchor| matches!(anchor,
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, bci }
+                if method == &caller.item.identity && *bci == 38)));
+        assert!(projected.anchors.iter().any(|anchor| matches!(anchor,
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, bci }
+                if method == &bridge.item.identity && *bci == 1)));
+        assert!(projected.anchors.iter().any(|anchor| matches!(anchor,
+            class_source::MemberFamilyPhysicalAnchor::OuterSuperTarget { method, owner, name, descriptor }
+                if method.owner != bridge.item.identity.owner
+                    && method.name == *name
+                    && method.descriptor == *descriptor
+                    && owner.0 == b"ReceiverBase")));
+    }
+
+    #[test]
+    fn effectful_outer_super_arguments_project_in_evaluation_order() {
+        let default = family_report_for(effects_jar(), "OuterSuperEffects", false);
+        let all = family_report_for(effects_jar(), "OuterSuperEffects", true);
+        assert_eq!(default.text, all.text);
+        let class_source::ClassSourceMemberFamily::Prepared {
+            projection: default_projection,
+            ..
+        } = &default.member_family
+        else {
+            panic!("default member relation must prepare");
+        };
+        let class_source::ClassSourceMemberFamily::Prepared {
+            projection: all_projection,
+            ..
+        } = &all.member_family
+        else {
+            panic!("all-evidence member relation must prepare");
+        };
+        assert_eq!(default_projection, all_projection);
+        let class_source::ClassSourceMemberFamily::Prepared {
+            child, projection, ..
+        } = &all.member_family
+        else {
+            panic!("effectful member relation must prepare");
+        };
+        let class_source::ClassSourceMemberProjection::Projected { derived } = projection else {
+            panic!("effectful bridge family must project: {projection:?}");
+        };
+        assert!(
+            all.text.contains("OuterSuperEffects.super.combine("),
+            "{}",
+            all.text
+        );
+        assert!(all.text.contains("tick(1, failFirst)"), "{}", all.text);
+        assert!(all.text.contains("tick(2, false)"), "{}", all.text);
+        assert_eq!(all.text.matches("tick(1, failFirst)").count(), 1);
+        assert_eq!(all.text.matches("tick(2, false)").count(), 1);
+        assert!(
+            all.text.find("tick(1, failFirst)").unwrap() < all.text.find("tick(2, false)").unwrap()
+        );
+        assert!(!all.text.contains("access$001("), "{}", all.text);
+        let bridge = all
+            .methods
+            .iter()
+            .find(|method| method.item.identity.name.0 == b"access$001")
+            .expect("physical bridge report remains");
+        let caller = child
+            .methods
+            .iter()
+            .find(|method| method.item.identity.name.0 == b"run")
+            .expect("physical Member caller remains");
+        let call = derived
+            .iter()
+            .find(|item| item.kind == class_source::MemberFamilyDerivedKind::OuterSuperCall)
+            .expect("derived call exists");
+        assert_eq!(
+            &all.text[call.start..call.end],
+            "OuterSuperEffects.super.combine"
+        );
+        assert!(call.anchors.iter().any(|anchor| matches!(anchor,
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, bci }
+                if method == &caller.item.identity && *bci == 14)));
+        assert!(call.anchors.iter().any(|anchor| matches!(anchor,
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, bci }
+                if method == &bridge.item.identity && *bci == 3)));
+        assert!(call.anchors.iter().any(|anchor| matches!(anchor,
+            class_source::MemberFamilyPhysicalAnchor::OuterSuperTarget { method, owner, name, descriptor }
+                if method.name == *name && method.descriptor == *descriptor
+                    && owner.0 == b"EffectsBase" && name.0 == b"combine"
+                    && descriptor.0 == b"(II)I")));
+        assert_eq!(
+            derived
+                .iter()
+                .filter(|item| item.kind
+                    == class_source::MemberFamilyDerivedKind::HiddenOuterSuperBridge)
+                .count(),
+            1
+        );
     }
 
     #[test]
@@ -9463,6 +9960,83 @@ mod outer_super_bridge_closure_tests {
         assert_eq!(closure.calls[0].call_bci, 38);
         assert_eq!(closure.calls[0].capture_read_bci, 35);
         assert_eq!(closure.calls[0].bridge, bridge);
+        let class_source::ClassSourceMemberFamily::Prepared {
+            projection: class_source::ClassSourceMemberProjection::Projected { derived },
+            ..
+        } = &root.member_family
+        else {
+            panic!("closed frozen family must project");
+        };
+        let call = derived
+            .iter()
+            .find(|item| item.kind == class_source::MemberFamilyDerivedKind::OuterSuperCall)
+            .unwrap();
+        assert!(call.anchors.iter().any(|anchor| matches!(anchor,
+            class_source::MemberFamilyPhysicalAnchor::OuterSuperTarget { method, owner, name, descriptor }
+                if method == &bridge.target_method
+                    && owner == &bridge.target_owner
+                    && name == &bridge.target_name
+                    && descriptor == &bridge.target_descriptor)));
+        assert!(
+            prove_outer_super_source_binding(
+                std::slice::from_ref(&snapshot),
+                &environment,
+                &outer_read.facts,
+                &parent_definition,
+                &parent_read.facts,
+                &bridge,
+                &mut execution,
+                &mut budget,
+            )
+            .unwrap()
+            .is_ok()
+        );
+        let mut overloaded_parent = parent_read.facts.clone();
+        let mut overload = overloaded_parent
+            .methods
+            .iter()
+            .find(|method| method.name.raw().0 == bridge.target_name.0)
+            .unwrap()
+            .clone();
+        overload.descriptor = overloaded_parent
+            .methods
+            .iter()
+            .find(|method| method.name.raw().0 == b"<init>")
+            .unwrap()
+            .descriptor
+            .clone();
+        overloaded_parent.methods.push(overload);
+        overloaded_parent.method_count += 1;
+        assert!(
+            prove_outer_super_source_binding(
+                std::slice::from_ref(&snapshot),
+                &environment,
+                &outer_read.facts,
+                &parent_definition,
+                &overloaded_parent,
+                &bridge,
+                &mut execution,
+                &mut budget,
+            )
+            .unwrap()
+            .is_err()
+        );
+        let mut wrong_target = bridge.clone();
+        wrong_target.target_method.owner = root.class.clone();
+        assert!(
+            prove_outer_super_source_binding(
+                std::slice::from_ref(&snapshot),
+                &environment,
+                &outer_read.facts,
+                &parent_definition,
+                &parent_read.facts,
+                &wrong_target,
+                &mut execution,
+                &mut budget,
+            )
+            .unwrap()
+            .is_err()
+        );
         let direct_origin = [OriginMember::MethodPoint {
             method: closure.calls[0].caller.clone(),
             bci: 38,

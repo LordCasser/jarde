@@ -1,0 +1,86 @@
+Classfile <classes>/overload/OverloadCases$Member.class
+  Last modified 2026?9?27?; size 700 bytes
+  SHA-256 checksum 0265f78361133a5f18d08ac303821ecaf3818770bbfd886b6c014bbf2b9c9ec3
+class overload.OverloadCases$Member
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #2                          // overload/OverloadCases$Member
+  super_class: #8                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 3, attributes: 1
+Constant pool:
+   #1 = Fieldref           #2.#3          // overload/OverloadCases$Member.this$0:Loverload/OverloadCases;
+   #2 = Class              #4             // overload/OverloadCases$Member
+   #3 = NameAndType        #5:#6          // this$0:Loverload/OverloadCases;
+   #4 = Utf8               overload/OverloadCases$Member
+   #5 = Utf8               this$0
+   #6 = Utf8               Loverload/OverloadCases;
+   #7 = Methodref          #8.#9          // java/lang/Object."<init>":()V
+   #8 = Class              #10            // java/lang/Object
+   #9 = NameAndType        #11:#12        // "<init>":()V
+  #10 = Utf8               java/lang/Object
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Methodref          #14.#15        // overload/OverloadCases.access$001:(Loverload/OverloadCases;Ljava/lang/Number;)Ljava/lang/String;
+  #14 = Class              #16            // overload/OverloadCases
+  #15 = NameAndType        #17:#18        // access$001:(Loverload/OverloadCases;Ljava/lang/Number;)Ljava/lang/String;
+  #16 = Utf8               overload/OverloadCases
+  #17 = Utf8               access$001
+  #18 = Utf8               (Loverload/OverloadCases;Ljava/lang/Number;)Ljava/lang/String;
+  #19 = Methodref          #14.#20        // overload/OverloadCases.access$101:(Loverload/OverloadCases;Ljava/lang/Integer;)Ljava/lang/String;
+  #20 = NameAndType        #21:#22        // access$101:(Loverload/OverloadCases;Ljava/lang/Integer;)Ljava/lang/String;
+  #21 = Utf8               access$101
+  #22 = Utf8               (Loverload/OverloadCases;Ljava/lang/Integer;)Ljava/lang/String;
+  #23 = Utf8               (Loverload/OverloadCases;)V
+  #24 = Utf8               Code
+  #25 = Utf8               MethodParameters
+  #26 = Utf8               numberStaticType
+  #27 = Utf8               (Ljava/lang/Number;)Ljava/lang/String;
+  #28 = Utf8               integerStaticType
+  #29 = Utf8               (Ljava/lang/Integer;)Ljava/lang/String;
+  #30 = Utf8               InnerClasses
+  #31 = Utf8               Member
+{
+  final overload.OverloadCases this$0;
+    descriptor: Loverload/OverloadCases;
+    flags: (0x1010) ACC_FINAL, ACC_SYNTHETIC
+
+  overload.OverloadCases$Member(overload.OverloadCases);
+    descriptor: (Loverload/OverloadCases;)V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: putfield      #1                  // Field this$0:Loverload/OverloadCases;
+         5: aload_0
+         6: invokespecial #7                  // Method java/lang/Object."<init>":()V
+         9: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      final mandated
+
+  java.lang.String numberStaticType(java.lang.Number);
+    descriptor: (Ljava/lang/Number;)Ljava/lang/String;
+    flags: (0x0000)
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: getfield      #1                  // Field this$0:Loverload/OverloadCases;
+         4: aload_1
+         5: invokestatic  #13                 // Method overload/OverloadCases.access$001:(Loverload/OverloadCases;Ljava/lang/Number;)Ljava/lang/String;
+         8: areturn
+
+  java.lang.String integerStaticType(java.lang.Integer);
+    descriptor: (Ljava/lang/Integer;)Ljava/lang/String;
+    flags: (0x0000)
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: getfield      #1                  // Field this$0:Loverload/OverloadCases;
+         4: aload_1
+         5: invokestatic  #19                 // Method overload/OverloadCases.access$101:(Loverload/OverloadCases;Ljava/lang/Integer;)Ljava/lang/String;
+         8: areturn
+}
+InnerClasses:
+  #31= #2 of #14;                         // Member=class overload/OverloadCases$Member of class overload/OverloadCases

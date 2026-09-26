@@ -1,0 +1,58 @@
+Classfile <classes>/checked/CheckedParent.class
+  Last modified 2026?9?27?; size 383 bytes
+  SHA-256 checksum e07ce3ebcf0d5533b4f91939b3cb6a395e585ae0c375d9f7d7b27b229f990edb
+class checked.CheckedParent
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #11                         // checked/CheckedParent
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 3, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = String             #8             // no-checked-exception
+   #8 = Utf8               no-checked-exception
+   #9 = String             #10            // checked-exception
+  #10 = Utf8               checked-exception
+  #11 = Class              #12            // checked/CheckedParent
+  #12 = Utf8               checked/CheckedParent
+  #13 = Utf8               Code
+  #14 = Utf8               select
+  #15 = Utf8               (Ljava/lang/Number;)Ljava/lang/String;
+  #16 = Utf8               (Ljava/lang/Integer;)Ljava/lang/String;
+  #17 = Utf8               Exceptions
+  #18 = Class              #19            // java/io/IOException
+  #19 = Utf8               java/io/IOException
+{
+  checked.CheckedParent();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  java.lang.String select(java.lang.Number);
+    descriptor: (Ljava/lang/Number;)Ljava/lang/String;
+    flags: (0x0000)
+    Code:
+      stack=1, locals=2, args_size=2
+         0: ldc           #7                  // String no-checked-exception
+         2: areturn
+
+  java.lang.String select(java.lang.Integer) throws java.io.IOException;
+    descriptor: (Ljava/lang/Integer;)Ljava/lang/String;
+    flags: (0x0000)
+    Code:
+      stack=1, locals=2, args_size=2
+         0: ldc           #9                  // String checked-exception
+         2: areturn
+    Exceptions:
+      throws java.io.IOException
+}

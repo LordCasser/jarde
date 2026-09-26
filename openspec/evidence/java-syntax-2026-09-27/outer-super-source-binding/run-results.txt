@@ -1,0 +1,12 @@
+$ java -Xverify:all overload.OverloadCases
+ancestor-number
+parent-integer
+
+$ java -Xverify:all generic.GenericCases
+type-variable
+
+$ java -Xverify:all generic.GenericRawCases
+char-sequence
+
+$ java -Xverify:all checked.CheckedOverloadCases
+no-checked-exception

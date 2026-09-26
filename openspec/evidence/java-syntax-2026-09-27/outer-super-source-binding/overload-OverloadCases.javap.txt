@@ -1,0 +1,135 @@
+Classfile <classes>/overload/OverloadCases.class
+  Last modified 2026?9?27?; size 1055 bytes
+  SHA-256 checksum ed89056d7380f7959a5b76175c5d5195bf6b9e7ddd2a0203ec24e4f588727dc1
+public class overload.OverloadCases extends overload.OverloadParent
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #14                         // overload/OverloadCases
+  super_class: #2                         // overload/OverloadParent
+  interfaces: 0, fields: 0, methods: 4, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // overload/OverloadParent.select:(Ljava/lang/Integer;)Ljava/lang/String;
+   #2 = Class              #4             // overload/OverloadParent
+   #3 = NameAndType        #5:#6          // select:(Ljava/lang/Integer;)Ljava/lang/String;
+   #4 = Utf8               overload/OverloadParent
+   #5 = Utf8               select
+   #6 = Utf8               (Ljava/lang/Integer;)Ljava/lang/String;
+   #7 = Methodref          #2.#8          // overload/OverloadParent.select:(Ljava/lang/Number;)Ljava/lang/String;
+   #8 = NameAndType        #5:#9          // select:(Ljava/lang/Number;)Ljava/lang/String;
+   #9 = Utf8               (Ljava/lang/Number;)Ljava/lang/String;
+  #10 = Methodref          #2.#11         // overload/OverloadParent."<init>":()V
+  #11 = NameAndType        #12:#13        // "<init>":()V
+  #12 = Utf8               <init>
+  #13 = Utf8               ()V
+  #14 = Class              #15            // overload/OverloadCases
+  #15 = Utf8               overload/OverloadCases
+  #16 = Methodref          #14.#11        // overload/OverloadCases."<init>":()V
+  #17 = Class              #18            // overload/OverloadCases$Member
+  #18 = Utf8               overload/OverloadCases$Member
+  #19 = Methodref          #20.#21        // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #20 = Class              #22            // java/util/Objects
+  #21 = NameAndType        #23:#24        // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #22 = Utf8               java/util/Objects
+  #23 = Utf8               requireNonNull
+  #24 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #25 = Methodref          #17.#26        // overload/OverloadCases$Member."<init>":(Loverload/OverloadCases;)V
+  #26 = NameAndType        #12:#27        // "<init>":(Loverload/OverloadCases;)V
+  #27 = Utf8               (Loverload/OverloadCases;)V
+  #28 = Methodref          #29.#30        // java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+  #29 = Class              #31            // java/lang/Integer
+  #30 = NameAndType        #32:#33        // valueOf:(I)Ljava/lang/Integer;
+  #31 = Utf8               java/lang/Integer
+  #32 = Utf8               valueOf
+  #33 = Utf8               (I)Ljava/lang/Integer;
+  #34 = Fieldref           #35.#36        // java/lang/System.out:Ljava/io/PrintStream;
+  #35 = Class              #37            // java/lang/System
+  #36 = NameAndType        #38:#39        // out:Ljava/io/PrintStream;
+  #37 = Utf8               java/lang/System
+  #38 = Utf8               out
+  #39 = Utf8               Ljava/io/PrintStream;
+  #40 = Methodref          #17.#41        // overload/OverloadCases$Member.numberStaticType:(Ljava/lang/Number;)Ljava/lang/String;
+  #41 = NameAndType        #42:#9         // numberStaticType:(Ljava/lang/Number;)Ljava/lang/String;
+  #42 = Utf8               numberStaticType
+  #43 = Methodref          #44.#45        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #44 = Class              #46            // java/io/PrintStream
+  #45 = NameAndType        #47:#48        // println:(Ljava/lang/String;)V
+  #46 = Utf8               java/io/PrintStream
+  #47 = Utf8               println
+  #48 = Utf8               (Ljava/lang/String;)V
+  #49 = Methodref          #17.#50        // overload/OverloadCases$Member.integerStaticType:(Ljava/lang/Integer;)Ljava/lang/String;
+  #50 = NameAndType        #51:#6         // integerStaticType:(Ljava/lang/Integer;)Ljava/lang/String;
+  #51 = Utf8               integerStaticType
+  #52 = Utf8               Code
+  #53 = Utf8               main
+  #54 = Utf8               ([Ljava/lang/String;)V
+  #55 = Utf8               access$001
+  #56 = Utf8               (Loverload/OverloadCases;Ljava/lang/Number;)Ljava/lang/String;
+  #57 = Utf8               access$101
+  #58 = Utf8               (Loverload/OverloadCases;Ljava/lang/Integer;)Ljava/lang/String;
+  #59 = Utf8               InnerClasses
+  #60 = Utf8               Member
+{
+  public overload.OverloadCases();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #10                 // Method overload/OverloadParent."<init>":()V
+         4: return
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=1
+         0: new           #14                 // class overload/OverloadCases
+         3: dup
+         4: invokespecial #16                 // Method "<init>":()V
+         7: astore_1
+         8: new           #17                 // class overload/OverloadCases$Member
+        11: dup
+        12: aload_1
+        13: dup
+        14: invokestatic  #19                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+        17: pop
+        18: invokespecial #25                 // Method overload/OverloadCases$Member."<init>":(Loverload/OverloadCases;)V
+        21: astore_2
+        22: bipush        7
+        24: invokestatic  #28                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        27: astore_3
+        28: getstatic     #34                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        31: aload_2
+        32: aload_3
+        33: invokevirtual #40                 // Method overload/OverloadCases$Member.numberStaticType:(Ljava/lang/Number;)Ljava/lang/String;
+        36: invokevirtual #43                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        39: getstatic     #34                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        42: aload_2
+        43: aload_3
+        44: invokevirtual #49                 // Method overload/OverloadCases$Member.integerStaticType:(Ljava/lang/Integer;)Ljava/lang/String;
+        47: invokevirtual #43                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        50: return
+
+  static java.lang.String access$001(overload.OverloadCases, java.lang.Number);
+    descriptor: (Loverload/OverloadCases;Ljava/lang/Number;)Ljava/lang/String;
+    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokespecial #7                  // Method overload/OverloadParent.select:(Ljava/lang/Number;)Ljava/lang/String;
+         5: areturn
+
+  static java.lang.String access$101(overload.OverloadCases, java.lang.Integer);
+    descriptor: (Loverload/OverloadCases;Ljava/lang/Integer;)Ljava/lang/String;
+    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokespecial #1                  // Method overload/OverloadParent.select:(Ljava/lang/Integer;)Ljava/lang/String;
+         5: areturn
+}
+InnerClasses:
+  #60= #17 of #14;                        // Member=class overload/OverloadCases$Member of class overload/OverloadCases

@@ -1,0 +1,108 @@
+Classfile <classes>/checked/CheckedOverloadCases.class
+  Last modified 2026?9?27?; size 868 bytes
+  SHA-256 checksum 977af307d7d3b525c4f0108a111c504974c10d4c5e391771a5e53bc06dca06a5
+public class checked.CheckedOverloadCases extends checked.CheckedParent
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #11                         // checked/CheckedOverloadCases
+  super_class: #2                         // checked/CheckedParent
+  interfaces: 0, fields: 0, methods: 3, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // checked/CheckedParent.select:(Ljava/lang/Number;)Ljava/lang/String;
+   #2 = Class              #4             // checked/CheckedParent
+   #3 = NameAndType        #5:#6          // select:(Ljava/lang/Number;)Ljava/lang/String;
+   #4 = Utf8               checked/CheckedParent
+   #5 = Utf8               select
+   #6 = Utf8               (Ljava/lang/Number;)Ljava/lang/String;
+   #7 = Methodref          #2.#8          // checked/CheckedParent."<init>":()V
+   #8 = NameAndType        #9:#10         // "<init>":()V
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Class              #12            // checked/CheckedOverloadCases
+  #12 = Utf8               checked/CheckedOverloadCases
+  #13 = Methodref          #11.#8         // checked/CheckedOverloadCases."<init>":()V
+  #14 = Fieldref           #15.#16        // java/lang/System.out:Ljava/io/PrintStream;
+  #15 = Class              #17            // java/lang/System
+  #16 = NameAndType        #18:#19        // out:Ljava/io/PrintStream;
+  #17 = Utf8               java/lang/System
+  #18 = Utf8               out
+  #19 = Utf8               Ljava/io/PrintStream;
+  #20 = Class              #21            // checked/CheckedOverloadCases$Member
+  #21 = Utf8               checked/CheckedOverloadCases$Member
+  #22 = Methodref          #23.#24        // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #23 = Class              #25            // java/util/Objects
+  #24 = NameAndType        #26:#27        // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #25 = Utf8               java/util/Objects
+  #26 = Utf8               requireNonNull
+  #27 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #28 = Methodref          #20.#29        // checked/CheckedOverloadCases$Member."<init>":(Lchecked/CheckedOverloadCases;)V
+  #29 = NameAndType        #9:#30         // "<init>":(Lchecked/CheckedOverloadCases;)V
+  #30 = Utf8               (Lchecked/CheckedOverloadCases;)V
+  #31 = Methodref          #32.#33        // java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+  #32 = Class              #34            // java/lang/Integer
+  #33 = NameAndType        #35:#36        // valueOf:(I)Ljava/lang/Integer;
+  #34 = Utf8               java/lang/Integer
+  #35 = Utf8               valueOf
+  #36 = Utf8               (I)Ljava/lang/Integer;
+  #37 = Methodref          #20.#38        // checked/CheckedOverloadCases$Member.numberStaticType:(Ljava/lang/Number;)Ljava/lang/String;
+  #38 = NameAndType        #39:#6         // numberStaticType:(Ljava/lang/Number;)Ljava/lang/String;
+  #39 = Utf8               numberStaticType
+  #40 = Methodref          #41.#42        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #41 = Class              #43            // java/io/PrintStream
+  #42 = NameAndType        #44:#45        // println:(Ljava/lang/String;)V
+  #43 = Utf8               java/io/PrintStream
+  #44 = Utf8               println
+  #45 = Utf8               (Ljava/lang/String;)V
+  #46 = Utf8               Code
+  #47 = Utf8               main
+  #48 = Utf8               ([Ljava/lang/String;)V
+  #49 = Utf8               access$001
+  #50 = Utf8               (Lchecked/CheckedOverloadCases;Ljava/lang/Number;)Ljava/lang/String;
+  #51 = Utf8               InnerClasses
+  #52 = Utf8               Member
+{
+  public checked.CheckedOverloadCases();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #7                  // Method checked/CheckedParent."<init>":()V
+         4: return
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=2, args_size=1
+         0: new           #11                 // class checked/CheckedOverloadCases
+         3: dup
+         4: invokespecial #13                 // Method "<init>":()V
+         7: astore_1
+         8: getstatic     #14                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: new           #20                 // class checked/CheckedOverloadCases$Member
+        14: dup
+        15: aload_1
+        16: dup
+        17: invokestatic  #22                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+        20: pop
+        21: invokespecial #28                 // Method checked/CheckedOverloadCases$Member."<init>":(Lchecked/CheckedOverloadCases;)V
+        24: iconst_3
+        25: invokestatic  #31                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        28: invokevirtual #37                 // Method checked/CheckedOverloadCases$Member.numberStaticType:(Ljava/lang/Number;)Ljava/lang/String;
+        31: invokevirtual #40                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        34: return
+
+  static java.lang.String access$001(checked.CheckedOverloadCases, java.lang.Number);
+    descriptor: (Lchecked/CheckedOverloadCases;Ljava/lang/Number;)Ljava/lang/String;
+    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokespecial #1                  // Method checked/CheckedParent.select:(Ljava/lang/Number;)Ljava/lang/String;
+         5: areturn
+}
+InnerClasses:
+  #52= #20 of #11;                        // Member=class checked/CheckedOverloadCases$Member of class checked/CheckedOverloadCases

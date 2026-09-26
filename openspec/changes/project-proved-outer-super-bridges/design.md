@@ -14,6 +14,8 @@
 
 1. **沿准确物理定义验证桥，不靠 `access$` 名称。** 候选必须解析到所选 Outer 的唯一 synthetic/static 方法，descriptor 的第一参数是 Outer，且完整 Code 只含局部读取、对 Outer 直接 superclass 方法的准确 `invokespecial` 和相应返回；参数/返回 descriptor、异常表、隐藏类初始化效果及额外指令都须被核对。一个目标不能同时由多个混淆定义承担。桥的 MethodRef 精确匹配只证明字节码分派；投影前还须确认 `Outer.super.method(args)` 在同一选定父类、同名重载、继承与泛型声明下重新编译仍绑定该 descriptor，且目标声明的 checked exceptions 可由调用者 `catch`/`throws` 表达，必要时使用已证安全的显式参数类型，无法证明则拒绝。替代方案是按方法名或 `ACC_SYNTHETIC` 直接内联；两者都允许错误目标或额外效果。
 
+   首个源级绑定证书以选定直接父类的准确目标声明为起点，预算内遍历父类与接口声明闭包，任何同名竞争声明、相关类/方法 `Signature`、不完整定义均拒绝。`java/lang/Object` 是 Java 8 固定根；输入未附带它的 class 时，仅对不属于其可见实例方法名集合的目标终止扫描，`equals`/`wait` 等名字仍拒绝。目标声明含 `Exceptions` 时，当前切片尚无调用者源码 `catch`/`throws` 的类型证书，故拒绝整个桥；这保持后续细化 checked exception 分析的空间。AST 侧现有 descriptor 感知的参数转换只能使用已证明安全的 cast，不能为了击败重载盲加 cast。上述拒绝是源级准入，不改变物理桥体与使用闭包证书。
+
 2. **调用点逐个证明捕获接收者和有序实参。** 使用第一阶段的唯一 capture SSA 证书，把每个物理调用的首参追到 Member 的 `this$0` 值；普通 `other` 即使 descriptor 同为 Outer 也拒绝。核对调用点到桥体、桥内目标的参数映射和表达式求值/异常顺序；不把 `special_receiver` 对当前 entry-this 的证书挪用到外层捕获值。替代方案是只由常量池 owner 或调用 receiver 静态类型决定 `Outer.super`，同类型参数反例会变成错分派。
 
 3. **完整使用闭包先于源码删除。** 在选定物理视图和请求可见的解析闭包中，沿已有 XRef/类引用事实枚举对该准确 `PhysicalMethodId` 的调用、method handle/bootstrap 和其他引用；每条调用必须落在已证家族方法中并具有自己的投影，其他引用一律拒绝整桥删除。不能因只看到了一个 Member 调用就把 helper 从 Outer 的文本中省掉。预算/取消贯穿扫描，部分覆盖不能升级为完整闭包。开放世界无法保证无未知字节码链接，因此报告只承诺选定 source unit/输入闭包，已知外部使用必须阻止投影。
