@@ -1661,6 +1661,11 @@ fn recover_inner(
         .method()
         .access_flags()
         .map(|flags| flags & 0x0020 != 0);
+    // The two-terminal-return claim may commit ownership only when the descriptor's own result
+    // is `boolean` — the same reading of the descriptor the builder re-checks (P3 1.4: an
+    // `int` method's shared `iconst_0; ireturn` leaf belongs to the one-armed `if` walk).
+    let return_is_boolean = build::return_type(request.facts.method().descriptor())
+        .is_some_and(|ty| matches!(ty, crate::ast::Type::Boolean));
     let mut recovered: Recovered = match crate::region::recover(
         canonical,
         &view,
@@ -1668,6 +1673,7 @@ fn recover_inner(
         &operations,
         code,
         method_synchronized,
+        return_is_boolean,
         &request.profile,
         budget,
     ) {

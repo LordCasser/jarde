@@ -18665,6 +18665,7 @@ mod tests {
             &operations,
             code,
             Some(false),
+            return_type(descriptor).is_some_and(|ty| matches!(ty, crate::ast::Type::Boolean)),
             &crate::pass::JAVA_8,
             &mut budget,
         )
