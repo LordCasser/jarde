@@ -569,7 +569,44 @@ pub enum ClassSourceMemberFamily {
         child: Box<ClassSourceReport>,
         /// Capture evidence only; a refused capture keeps both physical reports intact.
         capture: ClassSourceMemberCapture,
+        /// Family-local construction verdicts; original method bodies remain physical.
+        calls: ClassSourceMemberCalls,
     },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case")]
+pub enum ClassSourceMemberCalls {
+    Proved {
+        sites: Vec<MemberCallProof>,
+    },
+    Refused {
+        reason: String,
+        sites: Vec<MemberCallProof>,
+        refusals: Vec<MemberCallRefusal>,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MemberCallProof {
+    pub caller: PhysicalMethodId,
+    pub allocation_bci: u32,
+    pub copy_bci: u32,
+    pub qualifier_bci: u32,
+    pub null_check_bci: u32,
+    pub null_pop_bci: u32,
+    pub constructor_bci: u32,
+    pub constructor: PhysicalMethodId,
+    pub ordinary_argument_bcis: Vec<u32>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MemberCallRefusal {
+    pub caller: PhysicalMethodId,
+    pub allocation_bci: u32,
+    pub reason: String,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]

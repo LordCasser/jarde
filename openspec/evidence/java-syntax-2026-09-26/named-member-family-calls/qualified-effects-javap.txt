@@ -1,0 +1,307 @@
+Classfile jar:file:///Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-26/named-member-family-calls/qualified-effects.jar!/NamedMemberFamilyCalls.class
+  Last modified 1980年1月1日; size 1359 bytes
+  SHA-256 checksum f783e63e7448a022f8c106d35464f0a4e319f1215330ec0cf08088d4eb484a2a
+public class NamedMemberFamilyCalls
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // NamedMemberFamilyCalls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 6, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // NamedMemberFamilyCalls.state:I
+   #8 = Class              #10            // NamedMemberFamilyCalls
+   #9 = NameAndType        #11:#12        // state:I
+  #10 = Utf8               NamedMemberFamilyCalls
+  #11 = Utf8               state
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // NamedMemberFamilyCalls.EVENTS:Ljava/lang/StringBuilder;
+  #14 = NameAndType        #15:#16        // EVENTS:Ljava/lang/StringBuilder;
+  #15 = Utf8               EVENTS
+  #16 = Utf8               Ljava/lang/StringBuilder;
+  #17 = Methodref          #18.#19        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #18 = Class              #20            // java/lang/StringBuilder
+  #19 = NameAndType        #21:#22        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #20 = Utf8               java/lang/StringBuilder
+  #21 = Utf8               append
+  #22 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #23 = Class              #24            // NamedMemberFamilyCalls$Member
+  #24 = Utf8               NamedMemberFamilyCalls$Member
+  #25 = Methodref          #26.#27        // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #26 = Class              #28            // java/util/Objects
+  #27 = NameAndType        #29:#30        // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #28 = Utf8               java/util/Objects
+  #29 = Utf8               requireNonNull
+  #30 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #31 = String             #12            // I
+  #32 = Methodref          #8.#33         // NamedMemberFamilyCalls.mark:(Ljava/lang/String;I)I
+  #33 = NameAndType        #34:#35        // mark:(Ljava/lang/String;I)I
+  #34 = Utf8               mark
+  #35 = Utf8               (Ljava/lang/String;I)I
+  #36 = Methodref          #23.#37        // NamedMemberFamilyCalls$Member."<init>":(LNamedMemberFamilyCalls;I)V
+  #37 = NameAndType        #5:#38         // "<init>":(LNamedMemberFamilyCalls;I)V
+  #38 = Utf8               (LNamedMemberFamilyCalls;I)V
+  #39 = String             #40            // P
+  #40 = Utf8               P
+  #41 = Methodref          #8.#42         // NamedMemberFamilyCalls."<init>":(I)V
+  #42 = NameAndType        #5:#43         // "<init>":(I)V
+  #43 = Utf8               (I)V
+  #44 = Methodref          #8.#45         // NamedMemberFamilyCalls.internal:(LNamedMemberFamilyCalls;I)LNamedMemberFamilyCalls$Member;
+  #45 = NameAndType        #46:#47        // internal:(LNamedMemberFamilyCalls;I)LNamedMemberFamilyCalls$Member;
+  #46 = Utf8               internal
+  #47 = Utf8               (LNamedMemberFamilyCalls;I)LNamedMemberFamilyCalls$Member;
+  #48 = Class              #49            // java/lang/NullPointerException
+  #49 = Utf8               java/lang/NullPointerException
+  #50 = Methodref          #8.#51         // NamedMemberFamilyCalls.before:(LNamedMemberFamilyCalls;I)LNamedMemberFamilyCalls$Member;
+  #51 = NameAndType        #52:#47        // before:(LNamedMemberFamilyCalls;I)LNamedMemberFamilyCalls$Member;
+  #52 = Utf8               before
+  #53 = Fieldref           #54.#55        // java/lang/System.out:Ljava/io/PrintStream;
+  #54 = Class              #56            // java/lang/System
+  #55 = NameAndType        #57:#58        // out:Ljava/io/PrintStream;
+  #56 = Utf8               java/lang/System
+  #57 = Utf8               out
+  #58 = Utf8               Ljava/io/PrintStream;
+  #59 = Methodref          #18.#60        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #60 = NameAndType        #61:#62        // toString:()Ljava/lang/String;
+  #61 = Utf8               toString
+  #62 = Utf8               ()Ljava/lang/String;
+  #63 = Methodref          #64.#65        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #64 = Class              #66            // java/io/PrintStream
+  #65 = NameAndType        #67:#68        // println:(Ljava/lang/String;)V
+  #66 = Utf8               java/io/PrintStream
+  #67 = Utf8               println
+  #68 = Utf8               (Ljava/lang/String;)V
+  #69 = Methodref          #23.#70        // NamedMemberFamilyCalls$Member.read:()I
+  #70 = NameAndType        #71:#72        // read:()I
+  #71 = Utf8               read
+  #72 = Utf8               ()I
+  #73 = Methodref          #64.#74        // java/io/PrintStream.println:(I)V
+  #74 = NameAndType        #67:#43        // println:(I)V
+  #75 = Methodref          #18.#3         // java/lang/StringBuilder."<init>":()V
+  #76 = Utf8               Code
+  #77 = Utf8               main
+  #78 = Utf8               ([Ljava/lang/String;)V
+  #79 = Utf8               StackMapTable
+  #80 = Class              #81            // "[Ljava/lang/String;"
+  #81 = Utf8               [Ljava/lang/String;
+  #82 = Utf8               <clinit>
+  #83 = Utf8               InnerClasses
+  #84 = Utf8               Member
+{
+  static final java.lang.StringBuilder EVENTS;
+    descriptor: Ljava/lang/StringBuilder;
+    flags: (0x0018) ACC_STATIC, ACC_FINAL
+
+  int state;
+    descriptor: I
+    flags: (0x0000)
+
+  NamedMemberFamilyCalls(int);
+    descriptor: (I)V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iload_1
+         6: putfield      #7                  // Field state:I
+         9: return
+
+  static int mark(java.lang.String, int);
+    descriptor: (Ljava/lang/String;I)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: getstatic     #13                 // Field EVENTS:Ljava/lang/StringBuilder;
+         3: aload_0
+         4: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+         7: pop
+         8: iload_1
+         9: ireturn
+
+  NamedMemberFamilyCalls$Member internal(NamedMemberFamilyCalls, int);
+    descriptor: (LNamedMemberFamilyCalls;I)LNamedMemberFamilyCalls$Member;
+    flags: (0x0000)
+    Code:
+      stack=5, locals=3, args_size=3
+         0: new           #23                 // class NamedMemberFamilyCalls$Member
+         3: dup
+         4: aload_1
+         5: dup
+         6: invokestatic  #25                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+         9: pop
+        10: ldc           #31                 // String I
+        12: iload_2
+        13: invokestatic  #32                 // Method mark:(Ljava/lang/String;I)I
+        16: invokespecial #36                 // Method NamedMemberFamilyCalls$Member."<init>":(LNamedMemberFamilyCalls;I)V
+        19: areturn
+
+  NamedMemberFamilyCalls$Member before(NamedMemberFamilyCalls, int);
+    descriptor: (LNamedMemberFamilyCalls;I)LNamedMemberFamilyCalls$Member;
+    flags: (0x0000)
+    Code:
+      stack=4, locals=4, args_size=3
+         0: ldc           #39                 // String P
+         2: iload_2
+         3: invokestatic  #32                 // Method mark:(Ljava/lang/String;I)I
+         6: istore_3
+         7: new           #23                 // class NamedMemberFamilyCalls$Member
+        10: dup
+        11: aload_1
+        12: dup
+        13: invokestatic  #25                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+        16: pop
+        17: iload_3
+        18: invokespecial #36                 // Method NamedMemberFamilyCalls$Member."<init>":(LNamedMemberFamilyCalls;I)V
+        21: areturn
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=3, args_size=1
+         0: new           #8                  // class NamedMemberFamilyCalls
+         3: dup
+         4: bipush        7
+         6: invokespecial #41                 // Method "<init>":(I)V
+         9: astore_1
+        10: aload_1
+        11: aconst_null
+        12: iconst_1
+        13: invokevirtual #44                 // Method internal:(LNamedMemberFamilyCalls;I)LNamedMemberFamilyCalls$Member;
+        16: pop
+        17: goto          21
+        20: astore_2
+        21: aload_1
+        22: aconst_null
+        23: iconst_2
+        24: invokevirtual #50                 // Method before:(LNamedMemberFamilyCalls;I)LNamedMemberFamilyCalls$Member;
+        27: pop
+        28: goto          32
+        31: astore_2
+        32: getstatic     #53                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        35: getstatic     #13                 // Field EVENTS:Ljava/lang/StringBuilder;
+        38: invokevirtual #59                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        41: invokevirtual #63                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        44: getstatic     #53                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        47: aload_1
+        48: aload_1
+        49: iconst_3
+        50: invokevirtual #44                 // Method internal:(LNamedMemberFamilyCalls;I)LNamedMemberFamilyCalls$Member;
+        53: invokevirtual #69                 // Method NamedMemberFamilyCalls$Member.read:()I
+        56: invokevirtual #73                 // Method java/io/PrintStream.println:(I)V
+        59: getstatic     #53                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        62: aload_1
+        63: aload_1
+        64: iconst_4
+        65: invokevirtual #50                 // Method before:(LNamedMemberFamilyCalls;I)LNamedMemberFamilyCalls$Member;
+        68: invokevirtual #69                 // Method NamedMemberFamilyCalls$Member.read:()I
+        71: invokevirtual #73                 // Method java/io/PrintStream.println:(I)V
+        74: getstatic     #53                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        77: getstatic     #13                 // Field EVENTS:Ljava/lang/StringBuilder;
+        80: invokevirtual #59                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        83: invokevirtual #63                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        86: return
+      Exception table:
+         from    to  target type
+            10    17    20   Class java/lang/NullPointerException
+            21    28    31   Class java/lang/NullPointerException
+      StackMapTable: number_of_entries = 4
+        frame_type = 255 /* full_frame */
+          offset_delta = 20
+          locals = [ class "[Ljava/lang/String;", class NamedMemberFamilyCalls ]
+          stack = [ class java/lang/NullPointerException ]
+        frame_type = 0 /* same */
+        frame_type = 73 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NullPointerException ]
+        frame_type = 0 /* same */
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #18                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #75                 // Method java/lang/StringBuilder."<init>":()V
+         7: putstatic     #13                 // Field EVENTS:Ljava/lang/StringBuilder;
+        10: return
+}
+InnerClasses:
+  #84= #23 of #8;                         // Member=class NamedMemberFamilyCalls$Member of class NamedMemberFamilyCalls
+Classfile jar:file:///Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-26/named-member-family-calls/qualified-effects.jar!/NamedMemberFamilyCalls$Member.class
+  Last modified 1980年1月1日; size 405 bytes
+  SHA-256 checksum 566248f3feb394ec870380c973372826e80b6844d90ad7e65ebcec70168bf493
+class NamedMemberFamilyCalls$Member
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #2                          // NamedMemberFamilyCalls$Member
+  super_class: #8                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 2, attributes: 1
+Constant pool:
+   #1 = Fieldref           #2.#3          // NamedMemberFamilyCalls$Member.this$0:LNamedMemberFamilyCalls;
+   #2 = Class              #4             // NamedMemberFamilyCalls$Member
+   #3 = NameAndType        #5:#6          // this$0:LNamedMemberFamilyCalls;
+   #4 = Utf8               NamedMemberFamilyCalls$Member
+   #5 = Utf8               this$0
+   #6 = Utf8               LNamedMemberFamilyCalls;
+   #7 = Methodref          #8.#9          // java/lang/Object."<init>":()V
+   #8 = Class              #10            // java/lang/Object
+   #9 = NameAndType        #11:#12        // "<init>":()V
+  #10 = Utf8               java/lang/Object
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Fieldref           #14.#15        // NamedMemberFamilyCalls.state:I
+  #14 = Class              #16            // NamedMemberFamilyCalls
+  #15 = NameAndType        #17:#18        // state:I
+  #16 = Utf8               NamedMemberFamilyCalls
+  #17 = Utf8               state
+  #18 = Utf8               I
+  #19 = Utf8               (LNamedMemberFamilyCalls;I)V
+  #20 = Utf8               Code
+  #21 = Utf8               MethodParameters
+  #22 = Utf8               read
+  #23 = Utf8               ()I
+  #24 = Utf8               InnerClasses
+  #25 = Utf8               Member
+{
+  final NamedMemberFamilyCalls this$0;
+    descriptor: LNamedMemberFamilyCalls;
+    flags: (0x1010) ACC_FINAL, ACC_SYNTHETIC
+
+  NamedMemberFamilyCalls$Member(NamedMemberFamilyCalls, int);
+    descriptor: (LNamedMemberFamilyCalls;I)V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: aload_1
+         2: putfield      #1                  // Field this$0:LNamedMemberFamilyCalls;
+         5: aload_0
+         6: invokespecial #7                  // Method java/lang/Object."<init>":()V
+         9: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      final mandated
+      <no name>
+
+  int read();
+    descriptor: ()I
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #1                  // Field this$0:LNamedMemberFamilyCalls;
+         4: getfield      #13                 // Field NamedMemberFamilyCalls.state:I
+         7: ireturn
+}
+InnerClasses:
+  #25= #2 of #14;                         // Member=class NamedMemberFamilyCalls$Member of class NamedMemberFamilyCalls

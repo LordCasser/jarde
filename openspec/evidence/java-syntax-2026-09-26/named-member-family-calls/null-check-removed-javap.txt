@@ -1,0 +1,269 @@
+Classfile jar:file:///Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-26/named-member-family-calls/null-check-removed.jar!/NamedMemberFamilyStage1.class
+  Last modified 1980年1月1日; size 1087 bytes
+  SHA-256 checksum a672405da59f4b858d902e3d99d2138c564cd8921b870f0b3b6e66f2510ea65b
+  Compiled from "NamedMemberFamilyStage1.java"
+public class NamedMemberFamilyStage1
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #2                          // NamedMemberFamilyStage1
+  super_class: #8                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 3, attributes: 2
+Constant pool:
+   #1 = Fieldref           #2.#3          // NamedMemberFamilyStage1.secret:I
+   #2 = Class              #4             // NamedMemberFamilyStage1
+   #3 = NameAndType        #5:#6          // secret:I
+   #4 = Utf8               NamedMemberFamilyStage1
+   #5 = Utf8               secret
+   #6 = Utf8               I
+   #7 = Methodref          #8.#9          // java/lang/Object."<init>":()V
+   #8 = Class              #10            // java/lang/Object
+   #9 = NameAndType        #11:#12        // "<init>":()V
+  #10 = Utf8               java/lang/Object
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Fieldref           #2.#14         // NamedMemberFamilyStage1.state:I
+  #14 = NameAndType        #15:#6         // state:I
+  #15 = Utf8               state
+  #16 = Methodref          #2.#17         // NamedMemberFamilyStage1."<init>":(II)V
+  #17 = NameAndType        #11:#18        // "<init>":(II)V
+  #18 = Utf8               (II)V
+  #19 = Fieldref           #20.#21        // java/lang/System.out:Ljava/io/PrintStream;
+  #20 = Class              #22            // java/lang/System
+  #21 = NameAndType        #23:#24        // out:Ljava/io/PrintStream;
+  #22 = Utf8               java/lang/System
+  #23 = Utf8               out
+  #24 = Utf8               Ljava/io/PrintStream;
+  #25 = Class              #26            // NamedMemberFamilyStage1$Member
+  #26 = Utf8               NamedMemberFamilyStage1$Member
+  #27 = Methodref          #28.#29        // java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #28 = Class              #30            // java/util/Objects
+  #29 = NameAndType        #31:#32        // requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+  #30 = Utf8               java/util/Objects
+  #31 = Utf8               requireNonNull
+  #32 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #33 = Methodref          #25.#34        // NamedMemberFamilyStage1$Member."<init>":(LNamedMemberFamilyStage1;)V
+  #34 = NameAndType        #11:#35        // "<init>":(LNamedMemberFamilyStage1;)V
+  #35 = Utf8               (LNamedMemberFamilyStage1;)V
+  #36 = Methodref          #25.#37        // NamedMemberFamilyStage1$Member.read:(LNamedMemberFamilyStage1;)I
+  #37 = NameAndType        #38:#39        // read:(LNamedMemberFamilyStage1;)I
+  #38 = Utf8               read
+  #39 = Utf8               (LNamedMemberFamilyStage1;)I
+  #40 = Methodref          #41.#42        // java/io/PrintStream.println:(I)V
+  #41 = Class              #43            // java/io/PrintStream
+  #42 = NameAndType        #44:#45        // println:(I)V
+  #43 = Utf8               java/io/PrintStream
+  #44 = Utf8               println
+  #45 = Utf8               (I)V
+  #46 = Utf8               Code
+  #47 = Utf8               LineNumberTable
+  #48 = Utf8               LocalVariableTable
+  #49 = Utf8               this
+  #50 = Utf8               LNamedMemberFamilyStage1;
+  #51 = Utf8               main
+  #52 = Utf8               ([Ljava/lang/String;)V
+  #53 = Utf8               args
+  #54 = Utf8               [Ljava/lang/String;
+  #55 = Utf8               outer
+  #56 = Utf8               other
+  #57 = Utf8               access$000
+  #58 = Utf8               x0
+  #59 = Utf8               SourceFile
+  #60 = Utf8               NamedMemberFamilyStage1.java
+  #61 = Utf8               InnerClasses
+  #62 = Utf8               Member
+{
+  int state;
+    descriptor: I
+    flags: (0x0000)
+
+  private int secret;
+    descriptor: I
+    flags: (0x0002) ACC_PRIVATE
+
+  NamedMemberFamilyStage1(int, int);
+    descriptor: (II)V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: invokespecial #7                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iload_1
+         6: putfield      #13                 // Field state:I
+         9: aload_0
+        10: iload_2
+        11: putfield      #1                  // Field secret:I
+        14: return
+      LineNumberTable:
+        line 5: 0
+        line 6: 4
+        line 7: 9
+        line 8: 14
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      15     0  this   LNamedMemberFamilyStage1;
+            0      15     1 state   I
+            0      15     2 secret   I
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=3, args_size=1
+         0: new           #2                  // class NamedMemberFamilyStage1
+         3: dup
+         4: bipush        10
+         6: bipush        11
+         8: invokespecial #16                 // Method "<init>":(II)V
+        11: astore_1
+        12: new           #2                  // class NamedMemberFamilyStage1
+        15: dup
+        16: bipush        20
+        18: bipush        22
+        20: invokespecial #16                 // Method "<init>":(II)V
+        23: astore_2
+        24: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        27: new           #25                 // class NamedMemberFamilyStage1$Member
+        30: dup
+        31: aload_1
+        32: dup
+        33: nop
+        34: nop
+        35: nop
+        36: pop
+        37: invokespecial #33                 // Method NamedMemberFamilyStage1$Member."<init>":(LNamedMemberFamilyStage1;)V
+        40: aload_2
+        41: invokevirtual #36                 // Method NamedMemberFamilyStage1$Member.read:(LNamedMemberFamilyStage1;)I
+        44: invokevirtual #40                 // Method java/io/PrintStream.println:(I)V
+        47: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        50: aload_2
+        51: getfield      #13                 // Field state:I
+        54: invokevirtual #40                 // Method java/io/PrintStream.println:(I)V
+        57: return
+      LineNumberTable:
+        line 17: 0
+        line 18: 12
+        line 19: 24
+        line 20: 47
+        line 21: 57
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      58     0  args   [Ljava/lang/String;
+           12      46     1 outer   LNamedMemberFamilyStage1;
+           24      34     2 other   LNamedMemberFamilyStage1;
+
+  static int access$000(NamedMemberFamilyStage1);
+    descriptor: (LNamedMemberFamilyStage1;)I
+    flags: (0x1008) ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #1                  // Field secret:I
+         4: ireturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0    x0   LNamedMemberFamilyStage1;
+}
+SourceFile: "NamedMemberFamilyStage1.java"
+InnerClasses:
+  #62= #25 of #2;                         // Member=class NamedMemberFamilyStage1$Member of class NamedMemberFamilyStage1
+Classfile jar:file:///Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-26/named-member-family-calls/null-check-removed.jar!/NamedMemberFamilyStage1$Member.class
+  Last modified 1980年1月1日; size 681 bytes
+  SHA-256 checksum 4aca5ee46a09d5421d68235ad15aaec8113aa9a43ba5b2eaaf0aa653e87e5c52
+  Compiled from "NamedMemberFamilyStage1.java"
+class NamedMemberFamilyStage1$Member
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #2                          // NamedMemberFamilyStage1$Member
+  super_class: #8                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 2, attributes: 2
+Constant pool:
+   #1 = Fieldref           #2.#3          // NamedMemberFamilyStage1$Member.this$0:LNamedMemberFamilyStage1;
+   #2 = Class              #4             // NamedMemberFamilyStage1$Member
+   #3 = NameAndType        #5:#6          // this$0:LNamedMemberFamilyStage1;
+   #4 = Utf8               NamedMemberFamilyStage1$Member
+   #5 = Utf8               this$0
+   #6 = Utf8               LNamedMemberFamilyStage1;
+   #7 = Methodref          #8.#9          // java/lang/Object."<init>":()V
+   #8 = Class              #10            // java/lang/Object
+   #9 = NameAndType        #11:#12        // "<init>":()V
+  #10 = Utf8               java/lang/Object
+  #11 = Utf8               <init>
+  #12 = Utf8               ()V
+  #13 = Fieldref           #14.#15        // NamedMemberFamilyStage1.state:I
+  #14 = Class              #16            // NamedMemberFamilyStage1
+  #15 = NameAndType        #17:#18        // state:I
+  #16 = Utf8               NamedMemberFamilyStage1
+  #17 = Utf8               state
+  #18 = Utf8               I
+  #19 = Methodref          #14.#20        // NamedMemberFamilyStage1.access$000:(LNamedMemberFamilyStage1;)I
+  #20 = NameAndType        #21:#22        // access$000:(LNamedMemberFamilyStage1;)I
+  #21 = Utf8               access$000
+  #22 = Utf8               (LNamedMemberFamilyStage1;)I
+  #23 = Utf8               (LNamedMemberFamilyStage1;)V
+  #24 = Utf8               Code
+  #25 = Utf8               LineNumberTable
+  #26 = Utf8               LocalVariableTable
+  #27 = Utf8               this
+  #28 = Utf8               LNamedMemberFamilyStage1$Member;
+  #29 = Utf8               MethodParameters
+  #30 = Utf8               read
+  #31 = Utf8               other
+  #32 = Utf8               SourceFile
+  #33 = Utf8               NamedMemberFamilyStage1.java
+  #34 = Utf8               InnerClasses
+  #35 = Utf8               Member
+{
+  final NamedMemberFamilyStage1 this$0;
+    descriptor: LNamedMemberFamilyStage1;
+    flags: (0x1010) ACC_FINAL, ACC_SYNTHETIC
+
+  NamedMemberFamilyStage1$Member(NamedMemberFamilyStage1);
+    descriptor: (LNamedMemberFamilyStage1;)V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: putfield      #1                  // Field this$0:LNamedMemberFamilyStage1;
+         5: aload_0
+         6: invokespecial #7                  // Method java/lang/Object."<init>":()V
+         9: return
+      LineNumberTable:
+        line 10: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      10     0  this   LNamedMemberFamilyStage1$Member;
+            0      10     1 this$0   LNamedMemberFamilyStage1;
+    MethodParameters:
+      Name                           Flags
+      <no name>                      final mandated
+
+  int read(NamedMemberFamilyStage1);
+    descriptor: (LNamedMemberFamilyStage1;)I
+    flags: (0x0000)
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_1
+         1: getfield      #13                 // Field NamedMemberFamilyStage1.state:I
+         4: bipush        100
+         6: imul
+         7: aload_0
+         8: getfield      #1                  // Field this$0:LNamedMemberFamilyStage1;
+        11: invokestatic  #19                 // Method NamedMemberFamilyStage1.access$000:(LNamedMemberFamilyStage1;)I
+        14: iadd
+        15: ireturn
+      LineNumberTable:
+        line 12: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      16     0  this   LNamedMemberFamilyStage1$Member;
+            0      16     1 other   LNamedMemberFamilyStage1;
+}
+SourceFile: "NamedMemberFamilyStage1.java"
+InnerClasses:
+  #35= #2 of #14;                         // Member=class NamedMemberFamilyStage1$Member of class NamedMemberFamilyStage1

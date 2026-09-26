@@ -1,0 +1,13 @@
+# Member family call controls
+
+The unchanged stage-one [fixture](../named-member-family-stage1/fixture.jar) is the full-class positive case. Its `main` allocates `NamedMemberFamilyStage1$Member` at BCI 27, checks the exact captured qualifier at BCI 33, and invokes the package-private physical constructor at BCI 37. The selected root and child have matching `InnerClasses` rows. The production class-source path proves one call site and retains both original physical reports and Java texts; it does not emit a nested source family.
+
+`qualified-effects.jar` comes from [Java source](NamedMemberFamilyCalls.java) via [build-qualified-effects.py](build-qualified-effects.py). `javac --release 8 -g:none` makes a child constructor with only the six-instruction capture prologue. In `internal`, the member allocation/check precedes `mark("I", value)`; in `before`, `mark("P", value)` completes before the allocation. Both member calls are proved at their exact physical caller methods with ordinary argument producer BCIs 13 and 17. `java -Xverify:all` prints `P`, `7`, `7`, `PIP`: the null `internal` call has no `I` effect, while the null `before` call has the preceding `P` effect. See [javap](qualified-effects-javap.txt).
+
+`null-check-removed.jar` comes from the stage-one class via [build-null-check-removed.py](build-null-check-removed.py). The script replaces only the `invokestatic Objects.requireNonNull` instruction's three bytes with `nop`s; the following `pop` keeps the stack valid. `java -Xverify:all` executes and prints the stage-one `2011` and `20`. The call proof refuses BCI 27 because the early null check is absent, while the root `main` method, child physical constructor, and both source texts remain in their reports. Non-null output equality does not imply null behavior equality. See [javap](null-check-removed-javap.txt).
+
+`wrong-relation.jar` comes from [build-wrong-relation.py](build-wrong-relation.py). It clears the child self row's `outer_class_info_index` while leaving the root row and methods unchanged. `java -Xverify:all` executes and prints `2011` and `20`; the family relation refuses before a package-private member call certificate can be made. Both physical reports remain. See [javap](wrong-relation-javap.txt).
+
+SHA-256: `qualified-effects.jar` `cfb1efac3b2eec125a2c011d4eac18cc12aca490b21d6fe60227cde92ab8445d`; `null-check-removed.jar` `6152a99f234d3297a0828ee7789a1804925872ee039a9bb54b9f04144107c557`; `wrong-relation.jar` `0b71092d4416314b9d5c0ae8de3d8d1871cfc8b18f7456a112a6d40ad0900e4f`.
+
+Build/verification tools: `javac 23.0.1` with `--release 8`, OpenJDK `23.0.1` with `-Xverify:all`, Python `3.14.7`. Exact JVM output is retained in each `*-verify.txt` file.
