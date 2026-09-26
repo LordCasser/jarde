@@ -9,7 +9,7 @@
 - [x] 2.1 有界证明 `Region::If` 两臂与唯一变化的 stack Phi 输入的身份、前驱及唯一消费；透传的同值 stack Phi 可留在外围算术或调用表达式中，其他变化 Phi 拒绝；没有证明不得在一般 `Definition::Phi` 上猜条件值。root 修正预算和实际类型编译错误后，`a_conditional_proof_binds_each_straight_arm_to_one_stack_phi_and_consumer` 覆盖返回、赋值、算术、实参、引用、重载和抛错双臂，switch 拒绝测试通过；本项仅是证明函数，尚未接入表达式构建。
 - [x] 2.2 在现有表达式树/发射器增加条件表达式，保持分组、静态类型、Methodref 目标和一次求值；不得把两臂提前保存或重复输出调用。root 审读预构建、条件类型及优先级，重跑 `p3_conditional_values`；新 CLI `a3a29b59…` 的完整 `TernaryValues` 源含七个 `?:`，重编执行的 16 行值、trace、异常及 String 重载均与原/JADX 一致。
 - [x] 2.3 成功时归属测试/臂/跳转/消费者来源，失败时完整引用或预算停止；默认/all/replay 正文一致。真实 fixture 测试逐方法核对 all SourceMap 的 branch、两臂 producer、transfer、consumer，并在 IR/输出预算或取消下确认空文本、空来源和正确停止；root 的 `conditional-values-accepted/replay.py` 对 core/full/switch 三类按原 class SHA 重编并验证 essential/all 文本哈希一致、零引用、Java 8 重编和 `-Xverify:all` 输出一致。更宽的负向控制流边界仍列在 1.2/3.2 验收。
-- [ ] 2.4 核对已证明的双臂整数值接到真实 `putstatic`/`putfield` 唯一消费者时，既有 `Z` 字段写入收窄是否已完整保真；普通 `0`/`1` 和有效 `2`/`3` 均须按 JVM 实际低位结果重编执行，沿现有 final 字段左值规则，不把一般整数 Phi 或别的字段写入误类型化。当前 `AssertCore` 的静态 final 路径已通过三方重放；补真实 `putfield` 和未证明消费者边界后再决定是否需改代码。
+- [x] 2.4 核对已证明的双臂整数值接到真实 `putstatic`/`putfield` 唯一消费者时，既有 `Z` 字段写入收窄是否已完整保真；普通 `0`/`1` 和有效 `2`/`3` 均须按 JVM 实际低位结果重编执行，沿现有 final 字段左值规则，不把一般整数 Phi 或别的字段写入误类型化。`AssertCore` 静态 final 路径与新 `field-writes` 的静态/实例 `Z` 写入均通过；root 独立重放整类 Java 8 编译及 `-Xverify:all`，原/Jarde 0/1 和 2/3 各两行完全相同。`putfield I` 不被布尔收窄，既有 duplicate-Phi 多消费者保持拒绝；JADX 1.5.6 的 2/3 输出无法编译。复用现有字段写入规则，无生产代码变更。[证据](evidence/field-writes/README.md)
 
 ## 3. 整类语义与 root 验收
 

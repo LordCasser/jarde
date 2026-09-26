@@ -8,7 +8,7 @@
 
 `tests/fixtures/p3-assert-core/AssertCore-non01-arms.class` 另将同一 `<clinit>` 的 BCI 8/12 两条常量从 `1/0` 改为 `2/3`，其余指令和字段 descriptor 不变，SHA-256 为 `b52d39dd6ae7943d70b510c4925f23faadcc2fcc64c5cb7a2c309ae450de4e2c`。该 class 仍经 `-Xverify:all`，但 `-ea` 得 `0|0;0|0`、`-da` 得 `1|0;bad|2|1`，与原类正好反转。这是有效的 JVM 布尔字段写入，不是合法的 Java 布尔字面量分支；不能仅凭目标 `Z` descriptor 把非 0/1 整数 Phi 拼成两个布尔字面量。
 
-上述断言相关失败是冻结 CLI 的历史起点。当前 CLI `a3a29b59aa85c2d174b06033f874eb7d60a104dbccf1d20f5d88908273e92dd5` 已经复用条件值表达式和既有字段收窄，普通 `AssertCore` 输出 `(!AssertCore.class.desiredAssertionStatus() ? 1 : 0) % 2 != 0`，非 0/1 补丁输出对应 `2 : 3` 再收窄；两份均重编并与原类的 `-ea`/`-da` 行为一致，错误来源补丁的选择性启停亦一致，见 `evidence/assert-core-current/`。因此这里不再预设必须新写字段布尔机制；尚需独立验收真实 `putfield` 消费及一般整数 Phi 的拒绝边界。
+上述断言相关失败是冻结 CLI 的历史起点。当前 CLI `a3a29b59aa85c2d174b06033f874eb7d60a104dbccf1d20f5d88908273e92dd5` 已经复用条件值表达式和既有字段收窄，普通 `AssertCore` 输出 `(!AssertCore.class.desiredAssertionStatus() ? 1 : 0) % 2 != 0`，非 0/1 补丁输出对应 `2 : 3` 再收窄；两份均重编并与原类的 `-ea`/`-da` 行为一致，错误来源补丁的选择性启停亦一致，见 `evidence/assert-core-current/`。随后 [field-writes](evidence/field-writes/README.md) 的真实 `putstatic Z`/`putfield Z` 正例和合法 2/3 补丁已独立重编运行；同一类的 `putfield I` 不触发布尔收窄，既有 duplicate-Phi 多消费者保持拒绝。此子集复用现有字段写入规则，无须新写布尔机制；更广的一般 Phi 仍由独立条件值证明门控制。
 
 ## Goals / Non-Goals
 
