@@ -1653,6 +1653,30 @@ fn guard_return_ownership(
                         ambiguous_returns.insert(*return_bci);
                     }
                 }
+                if let guard::Shape::MonitorBranches {
+                    then_exit_bci,
+                    then_return_bci,
+                    else_exit_bci,
+                    else_return_bci,
+                    ..
+                } = plan.shape()
+                {
+                    for (return_bci, normal_exit_bci) in [
+                        (*then_return_bci, *then_exit_bci),
+                        (*else_return_bci, *else_exit_bci),
+                    ] {
+                        let record = GuardReturnOwnership {
+                            normal_exit_bci,
+                            body: plan.body(),
+                        };
+                        if !ambiguous_returns.contains(&return_bci)
+                            && ownership.insert(return_bci, record).is_some()
+                        {
+                            ownership.remove(&return_bci);
+                            ambiguous_returns.insert(return_bci);
+                        }
+                    }
+                }
             }
             Region::Sequence { regions } | Region::Loop { body: regions, .. } => {
                 pending.extend(regions.iter().rev());
@@ -10144,6 +10168,66 @@ impl Builder<'_> {
                             origin = origin.plus_derived(Origin::derived(*bci));
                         }
                         self.push(Stmt::new(StmtKind::Synchronized { lock, body }, origin))
+                    }
+                    guard::Shape::MonitorBranches {
+                        enter_bci,
+                        branch_bci,
+                        then_exit_bci,
+                        then_return_bci,
+                        else_exit_bci,
+                        else_return_bci,
+                    } => {
+                        let lock = match self.lock_expr(*enter_bci) {
+                            Ok(lock) => lock,
+                            Err(reason) => {
+                                let bcis = self.region_quote(region, *enter_bci);
+                                return self.fallback(bcis, &reason, *enter_bci);
+                            }
+                        };
+                        let cond = match self.test_expr(*branch_bci, false) {
+                            Ok(cond) => cond.derived_from(*branch_bci),
+                            Err(reason) => {
+                                let bcis = self.region_quote(region, *branch_bci);
+                                return self.fallback(bcis, &reason, *branch_bci);
+                            }
+                        };
+                        let then_statement = match self.guarded_return(*then_return_bci) {
+                            Ok(statement) => statement,
+                            Err(reason) => {
+                                let bcis = self.region_quote(region, *then_return_bci);
+                                return self.fallback(bcis, &reason, *then_return_bci);
+                            }
+                        };
+                        let else_statement = match self.guarded_return(*else_return_bci) {
+                            Ok(statement) => statement,
+                            Err(reason) => {
+                                let bcis = self.region_quote(region, *else_return_bci);
+                                return self.fallback(bcis, &reason, *else_return_bci);
+                            }
+                        };
+                        let branch = Stmt::new(
+                            StmtKind::If {
+                                cond,
+                                then_body: vec![then_statement],
+                                else_body: vec![else_statement],
+                            },
+                            OriginSet::new(Origin::direct(*branch_bci))
+                                .plus_derived(Origin::derived(*then_exit_bci))
+                                .plus_derived(Origin::derived(*then_return_bci))
+                                .plus_derived(Origin::derived(*else_exit_bci))
+                                .plus_derived(Origin::derived(*else_return_bci)),
+                        );
+                        let mut origin = OriginSet::new(Origin::direct(*enter_bci));
+                        for bci in plan.facts() {
+                            origin = origin.plus_derived(Origin::derived(*bci));
+                        }
+                        self.push(Stmt::new(
+                            StmtKind::Synchronized {
+                                lock,
+                                body: vec![branch],
+                            },
+                            origin,
+                        ))
                     }
                     guard::Shape::Finally {
                         normal_cleanup,

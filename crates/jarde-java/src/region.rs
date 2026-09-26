@@ -2167,7 +2167,15 @@ impl Walker<'_> {
             let leaving = self.leaving_edge(&current);
             // Examine once, before ownership changes. A structured finally consumes the verdict
             // here; every other guard keeps it for the ordinary branch below.
-            let mut guard_verdict = if leaving.is_some()
+            let monitor_entry = self.ssa.block(&current).is_some_and(|block| {
+                block.instructions().iter().any(|instruction| {
+                    matches!(
+                        self.operations.get(instruction.bci()),
+                        Some(Operation::Monitor { enter: true })
+                    )
+                })
+            });
+            let mut guard_verdict = if (leaving.is_some() || monitor_entry)
                 && frame.own_finally.is_none()
                 && !self.visited.contains(&node)
             {
@@ -2217,6 +2225,26 @@ impl Walker<'_> {
                     message: "the proved finally body has no complete bounded structure".into(),
                 };
                 return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+            }
+            if matches!(guard_verdict.as_ref(), Some(crate::guard::Verdict::Claimed(plan))
+                if matches!(plan.shape(), crate::guard::Shape::MonitorBranches { .. }))
+            {
+                let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
+                    unreachable!("the multi-exit monitor verdict was just matched")
+                };
+                for block in plan.owned() {
+                    if let Some(node) = self.view.index_of(block) {
+                        self.visited.insert(node);
+                    }
+                }
+                return Ok(one(
+                    Region::Guard {
+                        prefix,
+                        plan,
+                        body: None,
+                    },
+                    None,
+                ));
             }
             if !self.visited.insert(node) {
                 // The block is already part of the recovered structure: the walk has re-entered one
