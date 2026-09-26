@@ -15,4 +15,4 @@
 
 - [x] 3.1 原样重编译执行最小与完整样本，要求被证实的条件值零相关引用、原/JADX/jarde 的值、trace、异常和目标选择逐项相同；`assert-syntax/` 与 `assert-core/` 在独立 `-ea`/`-da` JVM 中核对条件/消息调用次数和异常身份，`assert-core/` 补丁还须在选择性启停下保持原类与错误来源类的不同结果。JADX 只有编译成功才算执行 oracle；本 change 不以是否输出源级 `assert` 或 synthetic flag 等价为成功标准。[Root 独立重放](verification-3.1.md)
 - [x] 3.2 root 独立审读 join/Phi 准入、条件表达式类型与来源，复跑 if/switch、局部、算术、调用、deferred 顺序及拒绝边界。[Root 独立审读与负例重放](verification-3.2.md)
-- [ ] 3.3 root 统一 census/fingerprint、fmt、适当 Cargo 测试及 OpenSpec strict；一般 Phi/区域债务保持独立。
+- [x] 3.3 root 统一 census/fingerprint、fmt、适当 Cargo 测试及 OpenSpec strict；一般 Phi/区域债务保持独立。[Root 门禁与结构计数](verification-3.3.md)
