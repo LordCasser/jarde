@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rebuild the frozen DT-11 enum constructor-argument comparison."""
 from __future__ import annotations
-import hashlib, json, os, shutil, subprocess, tempfile
+import hashlib, json, os, shutil, subprocess, tempfile, zipfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -75,6 +75,8 @@ if JADX_ROOT.exists():
 else:
     raise SystemExit("Set JADX_CHECKOUT to the fixed JADX source checkout")
 versions.append(f"JARDE source revision: {subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,text=True,stdout=subprocess.PIPE,check=True).stdout.strip()}")
+working_tree=subprocess.run(["git","status","--porcelain"],cwd=ROOT,text=True,stdout=subprocess.PIPE,check=True).stdout
+versions.append(f"JARDE working tree: {'modified' if working_tree.strip() else 'clean'} (the replay compiles the checkout contents)")
 versions.append(f"JARDE CLI source: {'external binary '+JARDE_CLI if JARDE_CLI else 'cargo run -p jarde-cli from repository root'}")
 
 with tempfile.TemporaryDirectory(prefix="dt11-audit-") as scratch:
@@ -93,6 +95,10 @@ with tempfile.TemporaryDirectory(prefix="dt11-audit-") as scratch:
         p,out,_=checked(f"original-run-{enum}",["java","-Xverify:all","-cp",str(original_classes),runner],combine=True)
         if out != EXPECTED_OUTPUTS[enum]: raise SystemExit(f"original runtime output changed: {enum}")
         statuses["original"][enum+"_run"]=p.returncode
+    classpath_jar=scratch/"original-classpath.jar"
+    with zipfile.ZipFile(classpath_jar,"w",zipfile.ZIP_DEFLATED) as archive:
+        for class_file in sorted(original_classes.glob("*.class")):
+            archive.write(class_file, class_file.name)
     for enum in ENUMS+["Ints"]:
         p,_,_=checked(f"javap-{enum}",["javap","-v","-p","-c","-classpath",str(original_classes),enum],combine=True,record=False)
         # Remove the volatile filesystem mtime and scratch path; retain class hash, full structure and Code.
@@ -110,7 +116,13 @@ with tempfile.TemporaryDirectory(prefix="dt11-audit-") as scratch:
                 source=GENERATED/"jadx"/f"{enum}.java"; source.parent.mkdir(exist_ok=True)
                 shutil.copyfile(found[0],source)
             else:
-                cmd=["cargo","run","--quiet","-p","jarde-cli","--","class-source","--input",str(original_classes/f"{enum}.class"),"--class",enum,"--policy","single-class","--format","text"] if not JARDE_CLI else [JARDE_CLI,"class-source","--input",str(original_classes/f"{enum}.class"),"--class",enum,"--policy","single-class","--format","text"]
+                if enum=="IntArgs":
+                    jarde_input=classpath_jar
+                    policy="plain-jar"
+                else:
+                    jarde_input=original_classes/f"{enum}.class"
+                    policy="single-class"
+                cmd=["cargo","run","--quiet","-p","jarde-cli","--","class-source","--input",str(jarde_input),"--class",enum,"--policy",policy,"--format","text"] if not JARDE_CLI else [JARDE_CLI,"class-source","--input",str(jarde_input),"--class",enum,"--policy",policy,"--format","text"]
                 p,out,_=save_run(f"jarde-{enum}",cmd,cwd=ROOT,env=env,record=False)
                 if p.returncode != 0: raise SystemExit(f"Jarde class-source failed ({p.returncode})")
                 source=GENERATED/f"jarde-{enum}.java"; source.write_text(out)
@@ -175,7 +187,7 @@ with tempfile.TemporaryDirectory(prefix="dt11-audit-") as scratch:
         raise SystemExit("Original fixture compilation/runtime results changed")
     if statuses["jadx"] != expected:
         raise SystemExit("JADX compilation/runtime results changed")
-    if statuses["jarde"].get("LiteralOnly_javac")!=0 or statuses["jarde"].get("LiteralOnly_run")!=0 or statuses["jarde"].get("IntArgs_javac")==0 or statuses["jarde"].get("StringVarargs_javac")==0:
+    if statuses["jarde"].get("LiteralOnly_javac")!=0 or statuses["jarde"].get("LiteralOnly_run")!=0 or statuses["jarde"].get("IntArgs_javac")!=0 or statuses["jarde"].get("IntArgs_run")!=0 or statuses["jarde"].get("StringVarargs_javac")==0:
         raise SystemExit("Jarde boundary results changed")
-    (GENERATED/"summary.json").write_text(json.dumps({"status":statuses,"expected":{"original":"all pass","jadx":"all compile and run","jarde":{"LiteralOnly":"compile and run","IntArgs":"javac failure; run not attempted","StringVarargs":"javac failure; run not attempted"}}},indent=2,ensure_ascii=False)+"\n")
+    (GENERATED/"summary.json").write_text(json.dumps({"status":statuses,"expected":{"original":"all pass","jadx":"all compile and run","jarde":{"LiteralOnly":"compile and run","IntArgs":"compile and run with explicit classpath","StringVarargs":"javac failure; run not attempted"}}},indent=2,ensure_ascii=False)+"\n")
 print((GENERATED/"summary.json").read_text())

@@ -9,10 +9,11 @@ use crate::class_source::{
     ClassSourceDeclaration, ClassSourceField, ClassSourceMethod, ClassSourceOutcome,
 };
 use crate::{Budget, CountedBudgetDimension, Result};
+use jarde_java::type_of_component;
 use jarde_jvm::method_ir::MethodIr;
 use jarde_reader::classfile::{
-    ClassFacts, CpEntryKind, ImmediateValue, InstructionFact, InstructionOperands, MemberHeader,
-    cp_entry,
+    ClassFacts, CpEntryKind, DescriptorKind, ImmediateValue, InstructionFact, InstructionOperands,
+    MemberHeader, cp_entry, descriptor_facts,
 };
 use jarde_reader::model::{ExecutionReport, PhysicalMethodId};
 
@@ -91,9 +92,51 @@ pub(crate) struct ProvedEnumConstant {
     pub(crate) field_index: u64,
     pub(crate) name: String,
     pub(crate) ordinal: i32,
-    pub(crate) source_argument: Option<i32>,
+    pub(crate) source_argument: Option<ProvedEnumIntArgument>,
     pub(crate) constructor_bci: u32,
     pub(crate) field_write_bci: u32,
+}
+
+/// A closed source expression proven from the enum initializer's same-run Code facts.
+///
+/// Every leaf and operator retains its initializer BCI. Static field nodes keep both the raw
+/// symbolic reference and the Java spelling derived from the repository's descriptor-name path;
+/// they are never replaced with a value looked up from another class.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum ProvedEnumIntArgument {
+    Literal {
+        value: i32,
+        bci: u32,
+    },
+    StaticField {
+        owner: Vec<u8>,
+        name: Vec<u8>,
+        descriptor: Vec<u8>,
+        source_owner: String,
+        source_name: String,
+        bci: u32,
+    },
+    Add {
+        left: Box<ProvedEnumIntArgument>,
+        right: Box<ProvedEnumIntArgument>,
+        bci: u32,
+    },
+}
+
+impl ProvedEnumIntArgument {
+    pub(crate) fn source_text(&self) -> String {
+        match self {
+            Self::Literal { value, .. } => value.to_string(),
+            Self::StaticField {
+                source_owner,
+                source_name,
+                ..
+            } => format!("{source_owner}.{source_name}"),
+            Self::Add { left, right, .. } => {
+                format!("{} + {}", left.source_text(), right.source_text())
+            }
+        }
+    }
 }
 
 /// A private handoff from task 2.1 to the class-source projection stages.
@@ -240,22 +283,11 @@ pub(crate) fn has_only_terminal_initializer_return(
     let [initializer] = matching_initializers.as_slice() else {
         return false;
     };
-    use jarde_java::report::{ClassInitializerStatementKind, ClassInitializerStep};
-    let prefix_count = group.initializer_prefix_statement_count;
-    let steps_are_only_prefix_and_return = initializer.steps.len() == prefix_count.saturating_add(1)
-        && initializer.steps[..prefix_count]
-            .iter()
-            .enumerate()
-            .all(|(order, step)| matches!(step, ClassInitializerStep::FieldWrite(write) if write.order == order))
-        && matches!(
-            initializer.steps.last(),
-            Some(ClassInitializerStep::Other {
-                order,
-                bci,
-                kind: ClassInitializerStatementKind::Return,
-            }) if *order == prefix_count && *bci == group.initializer_prefix_end_bci
-        );
-    !initializer.has_exception_handlers && steps_are_only_prefix_and_return
+    // The raw complete Code/BCI certificate owns the enum compiler-prefix shape. The structured
+    // sidecar can fail to classify javac's interleaved new/dup/getstatic sequence, so it only
+    // contributes the same-run identity and handler status here; the raw suffix above proves the
+    // exact terminal return boundary.
+    !initializer.has_exception_handlers
 }
 
 /// One exact user assignment that may follow the proved compiler-owned enum prefix.
@@ -310,9 +342,15 @@ pub(crate) fn prove_static_assignment_suffix(
         || group.initializer_prefix_end_bci != 34
         || group.constants.len() != 2
         || group.constants[0].name != "LOW"
-        || group.constants[0].source_argument != Some(2)
+        || group.constants[0]
+            .source_argument
+            .as_ref()
+            .is_none_or(|argument| argument.source_text() != "2")
         || group.constants[1].name != "HIGH"
-        || group.constants[1].source_argument != Some(5)
+        || group.constants[1]
+            .source_argument
+            .as_ref()
+            .is_none_or(|argument| argument.source_text() != "5")
     {
         return Ok(None);
     }
@@ -1313,7 +1351,7 @@ pub(crate) fn prove_group(
         vec![
             InitializerConstructorCall {
                 descriptor: CTOR_DESCRIPTOR.to_vec(),
-                source_argument: EnumSourceArgument::AnyLiteral,
+                source_argument: EnumSourceArgument::AnyIntExpression,
             };
             constants.len()
         ]
@@ -1365,11 +1403,9 @@ pub(crate) fn prove_group(
             "the same-run `<clinit>` structured statement sidecar is absent or ambiguous",
         ));
     };
-    if initializer_candidate.has_exception_handlers
-        || !completed_structured_clinit(&source_methods[clinit_index])
-    {
+    if initializer_candidate.has_exception_handlers {
         return Ok(refuse(
-            "the `<clinit>` statements are not a complete structured recovery",
+            "the `<clinit>` initializer sidecar includes an exception table",
         ));
     }
     let expected_write_bcis: Vec<u32> = prefix
@@ -1378,76 +1414,11 @@ pub(crate) fn prove_group(
         .copied()
         .chain(std::iter::once(prefix.backing_store_bci))
         .collect();
-    if initializer_candidate.steps.len() < expected_write_bcis.len() {
-        return Ok(refuse(
-            "the `<clinit>` statement sidecar omits part of the proven prefix",
-        ));
-    }
-    for (order, (step, expected_bci)) in initializer_candidate
-        .steps
-        .iter()
-        .zip(expected_write_bcis.iter())
-        .enumerate()
-    {
-        let jarde_java::report::ClassInitializerStep::FieldWrite(write) = step else {
-            return Ok(refuse(
-                "the `<clinit>` prefix contains an unclassified statement",
-            ));
-        };
-        if write.order != order
-            || write.bci != *expected_bci
-            || !write.is_static
-            || write.owner.as_bytes() != owner
-            || write.descriptor.as_bytes() != enum_descriptor.as_slice() && order < constants.len()
-        {
-            return Ok(ClassSourceEnumConstantProof::Refused {
-                reason: format!(
-                    "the `<clinit>` AST write does not match its physical Code fact (step {order}: sidecar order={}, BCI={}, static={}, receiver={}, owner={:?}, descriptor={:?}, expected BCI={expected_bci})",
-                    write.order,
-                    write.bci,
-                    write.is_static,
-                    write.has_receiver,
-                    write.owner,
-                    write.descriptor,
-                ),
-            });
-        }
-        if order < constants.len() {
-            let (field_index, name, _) = &constants[order];
-            if write.name.as_bytes() != field_headers[*field_index].name.raw().0.as_slice()
-                || String::from_utf16(field_headers[*field_index].name.utf16())
-                    .ok()
-                    .as_deref()
-                    != Some(write.spelled_name.as_str())
-                || write.descriptor.as_bytes() != enum_descriptor
-                || write.op != jarde_java::ast::AssignOp::Assign
-                || write
-                    .field_reads
-                    .as_ref()
-                    .is_none_or(|reads| !reads.is_empty())
-            {
-                return Ok(refuse(
-                    "a constant initialization statement has extra AST effects",
-                ));
-            }
-            let _ = name;
-        } else if write.name.as_bytes() != backing_field.name.raw().0.as_slice()
-            || String::from_utf16(backing_field.name.utf16())
-                .ok()
-                .as_deref()
-                != Some(write.spelled_name.as_str())
-            || write.descriptor.as_bytes() != array_descriptor(owner)
-            || write.op != jarde_java::ast::AssignOp::Assign
-            || write
-                .field_reads
-                .as_ref()
-                .is_none_or(|reads| !reads.is_empty())
-        {
-            return Ok(refuse(
-                "the `$VALUES` initialization statement has extra AST effects",
-            ));
-        }
-    }
+    // `prove_initializer_prefix` above consumed every raw Code instruction, operand/reference,
+    // BCI, constructor call and field write in order. Do not make the AST sidecar a second owner
+    // of this prefix: its enum-new fallback intentionally cannot represent getstatic interleaved
+    // between javac's `new`/`dup` and constructor call. Keep sidecar identity and handler checks
+    // as provenance and reject any unproved Code suffix separately.
 
     let source_arguments = prefix.source_arguments;
     let proved_constants = constants
@@ -1691,18 +1662,6 @@ fn expected_initializer_use(
         }
         _ => false,
     }
-}
-
-fn completed_structured_clinit(method: &ClassSourceMethod) -> bool {
-    matches!(
-        &method.outcome,
-        ClassSourceOutcome::Recovered { report, analysis }
-            if report.produced()
-                && report.quality == jarde_jvm::ir::Quality::Structured
-                && report.fallbacks.is_empty()
-                && matches!(report.execution, ExecutionReport::Complete { .. })
-                && matches!(analysis.execution, ExecutionReport::Complete { .. })
-    )
 }
 
 fn prove_constructor(
@@ -2599,7 +2558,7 @@ fn prove_values_factory(
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum EnumSourceArgument {
-    AnyLiteral,
+    AnyIntExpression,
     Exact(i32),
     None,
 }
@@ -2626,7 +2585,7 @@ struct InitializerPrefixProof {
     constant_bcis: Vec<u32>,
     backing_store_bci: u32,
     constructor_bcis: Vec<u32>,
-    source_arguments: Vec<Option<i32>>,
+    source_arguments: Vec<Option<ProvedEnumIntArgument>>,
     prefix_end_bci: u32,
     factory_call_bci: u32,
 }
@@ -2679,24 +2638,34 @@ fn prove_initializer_prefix(
             ));
         }
         let (call_offset, source_argument) = match &constructor_call_spec.source_argument {
-            EnumSourceArgument::AnyLiteral => {
-                let Some(argument) = instructions.get(cursor + 4).and_then(int_constant_value)
+            EnumSourceArgument::AnyIntExpression => {
+                let Some((argument_length, argument)) =
+                    prove_int_source_argument(instructions, cursor + 4)
                 else {
                     return Err(format!(
-                        "constant {} has no literal int source argument",
+                        "constant {} has no supported int source argument expression: {:?}",
+                        ordinal,
+                        instructions.get(cursor + 4)
+                    ));
+                };
+                (4 + argument_length, Some(argument))
+            }
+            EnumSourceArgument::Exact(expected) => {
+                let Some(argument) = instructions.get(cursor + 4).and_then(proved_int_literal)
+                else {
+                    return Err(format!(
+                        "constant {} does not pass an int literal source argument",
                         ordinal
                     ));
                 };
-                (5, Some(argument))
-            }
-            EnumSourceArgument::Exact(expected) => {
-                if !int_constant_at(instructions, cursor + 4, *expected) {
+                if !matches!(&argument, ProvedEnumIntArgument::Literal { value, .. } if value == expected)
+                {
                     return Err(format!(
                         "constant {} does not pass its exact literal source argument",
                         ordinal
                     ));
                 }
-                (5, Some(*expected))
+                (5, Some(argument))
             }
             EnumSourceArgument::None => (4, None),
         };
@@ -2706,6 +2675,15 @@ fn prove_initializer_prefix(
         let Some(field_store) = instructions.get(cursor + call_offset + 1) else {
             return Err(format!("constant {ordinal} has no field store"));
         };
+        if !instruction_sequence_is_contiguous(
+            instructions
+                .get(cursor..=cursor + call_offset + 1)
+                .unwrap_or(&[]),
+        ) {
+            return Err(format!(
+                "constant {ordinal} initializer instructions are not contiguous through the constructor call and field write"
+            ));
+        }
         if !method_reference(
             constructor_call,
             0xb7,
@@ -2787,6 +2765,12 @@ fn prove_initializer_prefix(
     {
         return Err(
             "the `$VALUES` store width disagrees with the following instruction BCI".to_owned(),
+        );
+    }
+    if !instruction_sequence_is_contiguous(instructions.get(..=cursor).unwrap_or(&[])) {
+        return Err(
+            "the enum constant and `$VALUES` prefix is not one contiguous instruction sequence"
+                .to_owned(),
         );
     }
     Ok(InitializerPrefixProof {
@@ -2928,6 +2912,133 @@ fn int_constant_value(instruction: &EnumCodeInstruction) -> Option<i32> {
         },
         _ => None,
     }
+}
+
+/// Prove one closed source int expression from consecutive instructions at the initializer stack
+/// argument position. The only nonliteral grammar is one resolved `getstatic:I`, optionally
+/// followed by one int literal and `iadd`; operand order is retained exactly as executed.
+fn prove_int_source_argument(
+    instructions: &[EnumCodeInstruction],
+    start: usize,
+) -> Option<(usize, ProvedEnumIntArgument)> {
+    let first = instructions.get(start)?;
+    if let Some(literal) = proved_int_literal(first) {
+        return Some((1, literal));
+    }
+    let field = proved_int_static_field(first)?;
+    let second = instructions.get(start.checked_add(1)?)?;
+    if let Some(literal) = proved_int_literal(second) {
+        let add = instructions.get(start.checked_add(2)?)?;
+        if add.opcode == 0x60
+            && add.width == 1
+            && add.immediate.is_none()
+            && add.local.is_none()
+            && add.reference.is_none()
+            && instruction_sequence_is_contiguous(instructions.get(start..=start + 2)?)
+        {
+            return Some((
+                3,
+                ProvedEnumIntArgument::Add {
+                    left: Box::new(field),
+                    right: Box::new(literal),
+                    bci: add.bci,
+                },
+            ));
+        }
+    }
+    Some((1, field))
+}
+
+fn proved_int_literal(instruction: &EnumCodeInstruction) -> Option<ProvedEnumIntArgument> {
+    let value = int_constant_value(instruction)?;
+    let operands_match = match instruction.opcode {
+        0x02..=0x08 => {
+            instruction.width == 1
+                && matches!(instruction.immediate, Some(ImmediateValue::Int(actual)) if actual == value)
+                && instruction.local.is_none()
+                && instruction.reference.is_none()
+        }
+        0x10 => {
+            instruction.width == 2
+                && matches!(instruction.immediate, Some(ImmediateValue::Int(_)))
+                && instruction.local.is_none()
+                && instruction.reference.is_none()
+        }
+        0x11 => {
+            instruction.width == 3
+                && matches!(instruction.immediate, Some(ImmediateValue::Int(_)))
+                && instruction.local.is_none()
+                && instruction.reference.is_none()
+        }
+        0x12 => {
+            instruction.width == 2
+                && instruction.immediate.is_none()
+                && instruction.local.is_none()
+                && matches!(instruction.reference, Some(EnumCodeReference::Integer(_)))
+        }
+        0x13 => {
+            instruction.width == 3
+                && instruction.immediate.is_none()
+                && instruction.local.is_none()
+                && matches!(instruction.reference, Some(EnumCodeReference::Integer(_)))
+        }
+        _ => false,
+    };
+    operands_match.then_some(ProvedEnumIntArgument::Literal {
+        value,
+        bci: instruction.bci,
+    })
+}
+
+fn proved_int_static_field(instruction: &EnumCodeInstruction) -> Option<ProvedEnumIntArgument> {
+    if instruction.opcode != 0xb2
+        || instruction.width != 3
+        || instruction.immediate.is_some()
+        || instruction.local.is_some()
+    {
+        return None;
+    }
+    let Some(EnumCodeReference::Field {
+        owner,
+        name,
+        descriptor,
+    }) = &instruction.reference
+    else {
+        return None;
+    };
+    if owner.is_empty() || descriptor != b"I" {
+        return None;
+    }
+    let source_name = String::from_utf8(name.clone()).ok()?;
+    if !jarde_java::is_java_identifier(&source_name) {
+        return None;
+    }
+    let owner_facts = descriptor_facts(&object_descriptor(owner), DescriptorKind::Field).ok()?;
+    let full_source_owner = type_of_component(owner_facts.single()?)?.spell().to_owned();
+    if full_source_owner
+        .split('.')
+        .any(|segment| !jarde_java::is_java_identifier(segment))
+    {
+        return None;
+    }
+    let source_owner = full_source_owner.rsplit('.').next()?.to_owned();
+    Some(ProvedEnumIntArgument::StaticField {
+        owner: owner.clone(),
+        name: name.clone(),
+        descriptor: descriptor.clone(),
+        source_owner,
+        source_name,
+        bci: instruction.bci,
+    })
+}
+
+fn instruction_sequence_is_contiguous(instructions: &[EnumCodeInstruction]) -> bool {
+    instructions.windows(2).all(|pair| {
+        pair[0]
+            .bci
+            .checked_add(pair[0].width)
+            .is_some_and(|next| next == pair[1].bci)
+    })
 }
 
 #[cfg(test)]
@@ -3234,6 +3345,424 @@ final class ConstructorEffects {
     }
 
     #[test]
+    fn int_static_field_arguments_preserve_the_same_run_expression_and_runtime_order() {
+        const INT_ENUM: &str = r#"public enum IntArgs {
+    LITERAL(1), FIELD(Ints.THREE), EXPR(Ints.THREE + 1);
+    private final int value;
+    IntArgs(int value) { this.value = value; }
+    int value() { return value; }
+}
+"#;
+        const INTS: &str = r#"final class Ints {
+    static int initializations;
+    static int THREE;
+    static { initializations++; THREE = 3; }
+}
+"#;
+        const RUNNER: &str = r#"public final class IntArgsRunner {
+    public static void main(String[] args) {
+        if (IntArgs.LITERAL.value() != 1 || IntArgs.FIELD.value() != 3 || IntArgs.EXPR.value() != 4) {
+            throw new AssertionError("enum constructor values or order changed");
+        }
+        if (Ints.initializations != 1) {
+            throw new AssertionError("static owner initialization count changed: " + Ints.initializations);
+        }
+        System.out.println("OK IntArgs");
+    }
+}
+"#;
+
+        let compiled = compile_java_sources(
+            "int-arguments-input",
+            &[("IntArgs", INT_ENUM), ("Ints", INTS)],
+        );
+        let bytes = compiled[0].clone();
+        let ints_bytes = compiled[1].clone();
+        let report =
+            enum_report_with_dependencies(&bytes, "IntArgs", &[ints_bytes], &mut test_budget());
+        let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(group)) =
+            &report.enum_constant_proof
+        else {
+            panic!(
+                "bounded int argument group should prove: {:?}; clinit={:?}",
+                report.enum_constant_proof,
+                report
+                    .methods
+                    .iter()
+                    .find(|method| method.item.name.raw().0 == b"<clinit>")
+                    .map(|method| (&method.outcome, &method.markers, &method.text))
+            );
+        };
+        assert_eq!(group.constants.len(), 3);
+        assert!(matches!(
+            group.constants[0].source_argument,
+            Some(ProvedEnumIntArgument::Literal { value: 1, .. })
+        ));
+        let Some(ProvedEnumIntArgument::StaticField {
+            owner,
+            name,
+            descriptor,
+            source_owner,
+            source_name,
+            bci: field_bci,
+        }) = &group.constants[1].source_argument
+        else {
+            panic!("FIELD must retain one field-reference leaf");
+        };
+        assert_eq!(owner, b"Ints");
+        assert_eq!(name, b"THREE");
+        assert_eq!(descriptor, b"I");
+        assert_eq!(source_owner, "Ints");
+        assert_eq!(source_name, "THREE");
+        assert_eq!(*field_bci + 3, group.constants[1].constructor_bci);
+        let Some(ProvedEnumIntArgument::Add {
+            left,
+            right,
+            bci: add_bci,
+        }) = &group.constants[2].source_argument
+        else {
+            panic!("EXPR must retain the ordered field-plus-literal expression");
+        };
+        assert!(matches!(
+            left.as_ref(),
+            ProvedEnumIntArgument::StaticField { owner, name, descriptor, .. }
+                if owner == b"Ints" && name == b"THREE" && descriptor == b"I"
+        ));
+        assert!(matches!(
+            right.as_ref(),
+            ProvedEnumIntArgument::Literal { value: 1, .. }
+        ));
+        assert_eq!(*add_bci + 1, group.constants[2].constructor_bci);
+        assert_eq!(
+            group.constants[1]
+                .source_argument
+                .as_ref()
+                .unwrap()
+                .source_text(),
+            "Ints.THREE"
+        );
+        assert_eq!(
+            group.constants[2]
+                .source_argument
+                .as_ref()
+                .unwrap()
+                .source_text(),
+            "Ints.THREE + 1"
+        );
+        assert!(
+            report
+                .text
+                .contains("LITERAL(1),\n    FIELD(Ints.THREE),\n    EXPR(Ints.THREE + 1);"),
+            "projected enum source: {}",
+            report.text
+        );
+        let clinit = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"<clinit>")
+            .expect("the physical initializer report remains present");
+        let ClassSourceOutcome::Recovered { report: clinit, .. } = &clinit.outcome else {
+            panic!("the physical initializer fallback remains independently reportable");
+        };
+        assert!(clinit.text.contains("@bytecode 14"));
+        assert!(
+            clinit
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.code == "jre_new_interleaved_effect" })
+        );
+
+        let original = compile_and_run_sources(
+            "enum-int-arguments-original",
+            &[
+                ("IntArgs.java", &format!("{INT_ENUM}\n{INTS}")),
+                ("IntArgsRunner.java", RUNNER),
+            ],
+            false,
+            "IntArgsRunner",
+        );
+        let jarde = compile_and_run_sources(
+            "enum-int-arguments-jarde",
+            &[
+                ("IntArgs.java", &report.text),
+                ("Ints.java", INTS),
+                ("IntArgsRunner.java", RUNNER),
+            ],
+            false,
+            "IntArgsRunner",
+        );
+        assert_eq!(original, "OK IntArgs\n");
+        assert_eq!(jarde, original);
+    }
+
+    #[test]
+    fn same_package_field_uses_its_short_source_name_and_preserves_initialization() {
+        const ENUM: &str = r#"package p;
+public enum PackageArgs {
+    VALUE(Ints.THREE);
+    final int value;
+    PackageArgs(int value) { this.value = value; }
+}
+"#;
+        const INTS: &str = r#"package p;
+final class Ints {
+    static int initializations;
+    static int THREE;
+    static { initializations++; THREE = 7; }
+}
+"#;
+        const RUNNER: &str = r#"package p;
+public final class PackageArgsRunner {
+    public static void main(String[] args) {
+        if (PackageArgs.VALUE.value != 7 || Ints.initializations != 1) {
+            throw new AssertionError("value or initializer count changed");
+        }
+        System.out.println("OK PackageArgs");
+    }
+}
+"#;
+        let compiled = compile_java_sources(
+            "same-package-short-owner",
+            &[("p/PackageArgs", ENUM), ("p/Ints", INTS)],
+        );
+        let report = enum_report_with_dependencies(
+            &compiled[0],
+            "p/PackageArgs",
+            &[compiled[1].clone()],
+            &mut test_budget(),
+        );
+        assert!(
+            report.text.contains("VALUE(Ints.THREE)"),
+            "same-package owner should use its short source name: {}",
+            report.text
+        );
+        assert!(!report.text.contains("VALUE(p.Ints.THREE)"));
+        let original = compile_and_run_sources(
+            "same-package-short-owner-original",
+            &[
+                ("p/PackageArgs.java", ENUM),
+                ("p/Ints.java", INTS),
+                ("p/PackageArgsRunner.java", RUNNER),
+            ],
+            false,
+            "p.PackageArgsRunner",
+        );
+        let jarde = compile_and_run_sources(
+            "same-package-short-owner-jarde",
+            &[
+                ("p/PackageArgs.java", &report.text),
+                ("p/Ints.java", INTS),
+                ("p/PackageArgsRunner.java", RUNNER),
+            ],
+            false,
+            "p.PackageArgsRunner",
+        );
+        assert_eq!(original, "OK PackageArgs\n");
+        assert_eq!(jarde, original);
+    }
+
+    #[test]
+    fn unsupported_int_argument_shapes_refuse_the_whole_constant_group() {
+        for (label, argument, extra) in [
+            ("method-call", "Ints.value()", ""),
+            ("second-getstatic", "Ints.THREE + Ints.ONE", ""),
+            ("unsupported-subtraction", "Ints.THREE - 1", ""),
+            ("literal-left", "1 + Ints.THREE", ""),
+            (
+                "constant-used-outside-prefix",
+                "Ints.THREE",
+                "static IntArgumentRefusal read() { return FIELD; }",
+            ),
+            (
+                "suffix-uses-constant",
+                "Ints.THREE",
+                "static { marker = IntArgumentRefusal.FIELD.value(); }",
+            ),
+        ] {
+            let source = format!(
+                "public enum IntArgumentRefusal {{ LITERAL(1), FIELD({argument}); final int n; static int marker; IntArgumentRefusal(int n) {{ this.n=n; }} int value() {{ return n; }} {extra} }}\nfinal class Ints {{ static int THREE=3; static int ONE=1; static int value() {{ return 3; }} }}\n"
+            );
+            let bytes = compile_java_class("IntArgumentRefusal", &source, false);
+            let report = enum_report(&bytes, "IntArgumentRefusal", &mut test_budget());
+            assert!(
+                matches!(
+                    report.enum_constant_proof,
+                    ClassSourceEnumConstantProof::Refused { .. }
+                ),
+                "{label} should refuse atomically: {:?}",
+                report.enum_constant_proof
+            );
+            assert!(
+                report
+                    .text
+                    .contains("public static final IntArgumentRefusal LITERAL;"),
+                "{label} must retain the first constant as a physical field:\n{}",
+                report.text
+            );
+            assert!(
+                !report.text.contains("LITERAL(1),"),
+                "{label} must not publish a partial enum constant group:\n{}",
+                report.text
+            );
+        }
+    }
+
+    #[test]
+    fn unsafe_static_field_owners_and_metadata_refuse_the_whole_group() {
+        let fixtures: [(&str, &[(&str, &str)], &[&str]); 4] = [
+            (
+                "final-field",
+                &[
+                    (
+                        "FieldGate",
+                        "public enum FieldGate { VALUE(Ints.THREE); final int n; FieldGate(int n) { this.n=n; } }",
+                    ),
+                    (
+                        "Ints",
+                        "final class Ints { static final int THREE = Integer.parseInt(\"3\"); }",
+                    ),
+                ],
+                &["Ints"],
+            ),
+            (
+                "cross-package",
+                &[
+                    (
+                        "demo/FieldGate",
+                        "package demo; public enum FieldGate { VALUE(elsewhere.Ints.THREE); final int n; FieldGate(int n) { this.n=n; } }",
+                    ),
+                    (
+                        "elsewhere/Ints",
+                        "package elsewhere; public final class Ints { public static int THREE = 3; }",
+                    ),
+                ],
+                &["demo/FieldGate", "elsewhere/Ints"],
+            ),
+            (
+                "nested-owner",
+                &[
+                    (
+                        "FieldGate",
+                        "public enum FieldGate { VALUE(Outer.Ints.THREE); final int n; FieldGate(int n) { this.n=n; } }",
+                    ),
+                    (
+                        "Outer",
+                        "public final class Outer { public static final class Ints { public static int THREE = 3; } }",
+                    ),
+                ],
+                &["Outer"],
+            ),
+            (
+                "same-package-shadow",
+                &[
+                    (
+                        "p/ShadowArgs",
+                        "package p; public enum ShadowArgs { VALUE(p.Ints.THREE); final int n; ShadowArgs(int n) { this.n=n; } static final class Ints { } }",
+                    ),
+                    (
+                        "p/Ints",
+                        "package p; public final class Ints { public static int THREE = 3; }",
+                    ),
+                ],
+                &["p/Ints"],
+            ),
+        ];
+        for (label, sources, dependency_names) in fixtures {
+            let compiled = compile_java_sources(&format!("field-gate-{label}"), sources);
+            let enum_index = sources
+                .iter()
+                .position(|(name, _)| name.ends_with("FieldGate") || name == &"p/ShadowArgs")
+                .expect("fixture enum is listed");
+            let enum_name = if label == "cross-package" {
+                "demo/FieldGate"
+            } else if label == "same-package-shadow" {
+                "p/ShadowArgs"
+            } else {
+                "FieldGate"
+            };
+            let dependencies = dependency_names
+                .iter()
+                .map(|dependency| {
+                    let index = sources
+                        .iter()
+                        .position(|(name, _)| name == dependency)
+                        .expect("dependency source is listed");
+                    compiled[index].clone()
+                })
+                .collect::<Vec<_>>();
+            let report = enum_report_with_dependencies(
+                &compiled[enum_index],
+                enum_name,
+                &dependencies,
+                &mut test_budget(),
+            );
+            assert!(
+                matches!(
+                    report.enum_constant_proof,
+                    ClassSourceEnumConstantProof::Refused { .. }
+                ),
+                "{label} must refuse: {:?}",
+                report.enum_constant_proof
+            );
+            assert!(
+                !report.text.contains("VALUE(Ints.THREE)")
+                    && !report.text.contains("VALUE(Outer.Ints.THREE)"),
+                "{label} must not publish a partially projected enum: {}",
+                report.text
+            );
+        }
+    }
+
+    #[test]
+    fn selected_environment_field_ambiguity_and_budget_stop_never_publish_int_arguments() {
+        const ENUM: &str = "public enum ResolvedInts { VALUE(Ints.THREE); final int n; ResolvedInts(int n) { this.n=n; } }";
+        const INTS_WITH_DUPLICATE_CANDIDATE: &str =
+            "final class Ints { static int THREE = 3; static int OTHER = 4; }";
+        let compiled = compile_java_sources(
+            "int-field-ambiguity",
+            &[
+                ("ResolvedInts", ENUM),
+                ("Ints", INTS_WITH_DUPLICATE_CANDIDATE),
+            ],
+        );
+        let mut ambiguous_field = compiled[1].clone();
+        let duplicate_name = ambiguous_field
+            .windows(b"OTHER".len())
+            .position(|window| window == b"OTHER")
+            .expect("the same-length field name is in the constant pool");
+        ambiguous_field[duplicate_name..duplicate_name + b"OTHER".len()].copy_from_slice(b"THREE");
+        let ambiguous = enum_report_with_dependencies(
+            &compiled[0],
+            "ResolvedInts",
+            &[ambiguous_field],
+            &mut test_budget(),
+        );
+        assert!(matches!(
+            ambiguous.enum_constant_proof,
+            ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(!ambiguous.text.contains("VALUE(Ints.THREE)"));
+
+        let mut limits = test_budget().limits().clone();
+        limits.class_headers = 2;
+        let stopped = enum_report_with_dependencies(
+            &compiled[0],
+            "ResolvedInts",
+            &[compiled[1].clone()],
+            &mut Budget::new(limits),
+        );
+        assert!(
+            matches!(
+                stopped.enum_constant_proof,
+                ClassSourceEnumConstantProof::Stopped { .. }
+            ),
+            "a stopped owner read must remain stopped: {:?}",
+            stopped.enum_constant_proof
+        );
+        assert!(!stopped.text.contains("VALUE(Ints.THREE)"));
+    }
+
+    #[test]
     fn frozen_four_constant_factory_rejects_wrong_length_and_duplicate_entries() {
         let snapshot = crate::Engine::new()
             .open(
@@ -3475,9 +4004,14 @@ final class ConstructorEffects {
             proof
                 .constants
                 .iter()
-                .map(|constant| constant.source_argument)
+                .map(|constant| {
+                    constant
+                        .source_argument
+                        .as_ref()
+                        .map(ProvedEnumIntArgument::source_text)
+                })
                 .collect::<Vec<_>>(),
-            [Some(4), Some(9)]
+            [Some("4".to_owned()), Some("9".to_owned())]
         );
         assert_eq!(proof.initializer_prefix_statement_count, 3);
         assert_eq!(proof.initializer_prefix_end_bci, 35);
@@ -3551,9 +4085,14 @@ final class ConstructorEffects {
             proof
                 .constants
                 .iter()
-                .map(|constant| constant.source_argument)
+                .map(|constant| {
+                    constant
+                        .source_argument
+                        .as_ref()
+                        .map(ProvedEnumIntArgument::source_text)
+                })
                 .collect::<Vec<_>>(),
-            [Some(2), Some(5)]
+            [Some("2".to_owned()), Some("5".to_owned())]
         );
         assert!(report.text.contains("LOW(2),\n    HIGH(5);"));
         assert!(report.text.contains("static int totalUnits;"));
@@ -4033,11 +4572,11 @@ final class ConstructorEffects {
             constructor_calls: &[
                 InitializerConstructorCall {
                     descriptor: CTOR_DESCRIPTOR.to_vec(),
-                    source_argument: EnumSourceArgument::AnyLiteral,
+                    source_argument: EnumSourceArgument::AnyIntExpression,
                 },
                 InitializerConstructorCall {
                     descriptor: CTOR_DESCRIPTOR.to_vec(),
-                    source_argument: EnumSourceArgument::AnyLiteral,
+                    source_argument: EnumSourceArgument::AnyIntExpression,
                 },
             ],
             enum_descriptor: &object_descriptor(b"Stage"),
@@ -5521,6 +6060,47 @@ final class ConstructorEffects {
         )
     }
 
+    fn enum_report_with_dependencies(
+        bytes: &[u8],
+        name: &str,
+        dependencies: &[Vec<u8>],
+        budget: &mut Budget,
+    ) -> crate::ClassSourceReport {
+        let engine = crate::Engine::new();
+        let mut snapshots = vec![
+            engine
+                .open(
+                    crate::ArtifactInput::bytes(bytes.to_vec()),
+                    &mut test_budget(),
+                )
+                .expect("the enum class opens"),
+        ];
+        for dependency in dependencies {
+            snapshots.push(
+                engine
+                    .open(
+                        crate::ArtifactInput::bytes(dependency.clone()),
+                        &mut test_budget(),
+                    )
+                    .expect("the dependency class opens"),
+            );
+        }
+        let mut request = enum_request(&snapshots[0], name);
+        request.environment.policy = crate::EnvironmentPolicy::ExplicitClasspath {
+            roots: snapshots
+                .iter()
+                .map(|snapshot| crate::LoadRoot::StandaloneClass {
+                    snapshot: snapshot.id().clone(),
+                })
+                .collect(),
+        };
+        performed(
+            engine
+                .class_source(&snapshots, &request, budget)
+                .expect("the class-source request succeeds"),
+        )
+    }
+
     fn compile_java_class(class_name: &str, source_text: &str, debug: bool) -> Vec<u8> {
         let (directory, _cleanup) = java_test_directory(&format!("input-{class_name}"));
         let source = directory.join(format!("{class_name}.java"));
@@ -5541,6 +6121,40 @@ final class ConstructorEffects {
         );
         fs::read(directory.join(format!("{class_name}.class")))
             .expect("the Java fixture class was emitted")
+    }
+
+    fn compile_java_sources(label: &str, sources: &[(&str, &str)]) -> Vec<Vec<u8>> {
+        let (directory, _cleanup) = java_test_directory(label);
+        let mut command = Command::new("javac");
+        command
+            .arg("--release")
+            .arg("8")
+            .arg("-g:none")
+            .arg("-d")
+            .arg(&directory);
+        for (name, source_text) in sources {
+            let source = directory.join(format!("{name}.java"));
+            if let Some(parent) = source.parent() {
+                fs::create_dir_all(parent).expect("the Java fixture package is created");
+            }
+            fs::write(&source, source_text).expect("the fixture source is written");
+            command.arg(source);
+        }
+        let output = command
+            .output()
+            .expect("the Java 8 fixture compiler is available");
+        assert!(
+            output.status.success(),
+            "javac failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        sources
+            .iter()
+            .map(|(name, _)| {
+                fs::read(directory.join(format!("{name}.class")))
+                    .expect("the fixture class was emitted")
+            })
+            .collect()
     }
 
     fn compile_frozen_enum(class_name: &str, source_text: &str, debug: bool) -> Vec<u8> {

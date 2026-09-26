@@ -17,8 +17,8 @@
     "jarde": {
       "LiteralOnly_javac": 0,
       "LiteralOnly_run": 0,
-      "IntArgs_javac": 1,
-      "IntArgs_run": 125,
+      "IntArgs_javac": 0,
+      "IntArgs_run": 0,
       "StringVarargs_javac": 1,
       "StringVarargs_run": 125
     }
@@ -28,7 +28,7 @@
     "jadx": "all compile and run",
     "jarde": {
       "LiteralOnly": "compile and run",
-      "IntArgs": "javac failure; run not attempted",
+      "IntArgs": "compile and run with explicit classpath",
       "StringVarargs": "javac failure; run not attempted"
     }
   }
