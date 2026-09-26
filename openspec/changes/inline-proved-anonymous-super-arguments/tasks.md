@@ -16,4 +16,4 @@
 
 ## 4. 架构师独立验收
 
-- [ ] 4.1 Root 独立复跑冻结三方与 fixed 回放、定向及 DT-05 回归、`cargo fmt --all -- --check`、`openspec validate inline-proved-anonymous-super-arguments --strict`；复核身份、参数次序、预算、来源和原子拒绝后，才更新 DT-06 窄切片状态并提交推送。
+- [x] 4.1 Root 独立复跑冻结三方与 fixed 回放、定向及 DT-05 回归、`cargo fmt --all -- --check`、`openspec validate inline-proved-anonymous-super-arguments --strict`；复核身份、参数次序、预算、来源和原子拒绝后，才更新 DT-06 窄切片状态并提交推送。

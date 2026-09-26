@@ -1,7 +1,6 @@
 from pathlib import Path
 import hashlib
 import os
-import shlex
 import subprocess
 import tempfile
 
@@ -10,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[4]
 FIX = ROOT / "tests/fixtures/proved-java-structure/anonymous-super-direct"
 EVD = Path(__file__).resolve().parent
 JADX_ROOT = Path(os.environ.get("JADX_ROOT", "/Users/lordcasser/workspace/testzone/jadx"))
+JADX = Path(os.environ.get("JADX", str(JADX_ROOT / "jadx-cli/build/install/jadx/bin/jadx")))
 EXPECTED = "13:2\n"
 CLASSES = ("AnonymousSuperDirect", "AnonymousSuperDirect$1", "Base")
 
@@ -32,7 +32,13 @@ def save(name, result, work):
         target_name = "jarde-fixed-" + name.removeprefix("jarde-")
     else:
         target_name = name.removesuffix(".log") + "-fixed.log"
-    (EVD / target_name).write_text(normalized(result, work))
+    if target_name.endswith("-cli.log"):
+        content = f"stdout_sha256={hashlib.sha256(result.stdout.encode()).hexdigest()}\nexit={result.returncode}\n"
+    elif target_name == "jarde-fixed-build.log":
+        content = f"exit={result.returncode}\n"
+    else:
+        content = normalized(result, work)
+    (EVD / target_name).write_text(content)
 
 
 def sha(path):
@@ -82,8 +88,7 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt06a-anonymous-super-direct-") a
 
     # JADX full-project source decode and Java 8 recompile.
     jadx_dir = work / "jadx-source"
-    args = shlex.join(["-d", str(jadx_dir), str(jar)])
-    jadx = run([str(JADX_ROOT / "gradlew"), "--no-daemon", ":jadx-cli:run", f"--args={args}"], cwd=JADX_ROOT)
+    jadx = run([str(JADX), "-d", str(jadx_dir), str(jar)])
     save("jadx.log", jadx, work)
     if jadx.returncode:
         raise SystemExit(jadx.returncode)

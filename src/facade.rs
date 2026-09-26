@@ -2405,7 +2405,7 @@ impl Engine {
             },
             environment: request.environment.clone(),
         };
-        let (child, _, child_asts, _, _) = self.prepare_physical_class_source(
+        let (child, _, child_asts, _, _, _) = self.prepare_physical_class_source(
             content,
             &child_request,
             evidence,
