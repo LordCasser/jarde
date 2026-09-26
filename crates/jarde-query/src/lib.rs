@@ -9,8 +9,9 @@
 //! above it (the definition resolver, the CFG/SSA passes, the JVM runtime environment) nor on
 //! the facade that composes them. What the resolver needs crosses as a candidate scan — the
 //! items one candidate rule found, under the caller's own limit — not as an opened-up scanner:
-//! [`query::execute`], [`xref::scan_candidates`] and the two candidate shapes of
-//! [`xref::CandidateFilter`] are the whole seam, and the scanner's other filters stay internal.
+//! [`query::execute`], [`xref::scan_candidates`] and its candidate filters
+//! ([`xref::CandidateFilter`]) are the whole seam, and the scanner's exact-target rule stays
+//! internal.
 
 pub mod plugin;
 pub mod query;
