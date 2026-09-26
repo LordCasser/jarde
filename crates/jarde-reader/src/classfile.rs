@@ -11548,9 +11548,17 @@ mod tests {
     /// 98 handler records and 340 branch/switch targets.
     ///
     /// The 2026-09 syntax-recovery expansion re-measured the sweep over the corpus as committed:
-    /// 310 classes, 1,645 bodies, 144 handler records, 880 branch/switch targets and the same
+    /// 316 classes, 1,674 bodies, 153 handler records, 902 branch/switch targets and the same
     /// eight subroutines — every `jsr`/`jsr_w` is still the ECJ corpus's, and no expansion
-    /// fixture carries one. The families the expansion added measure: `proved-java-structure`
+    /// fixture carries one. Relative to the 310/1,645/144/880 census frozen in `54e432ed`,
+    /// `p3-conditional-values/field-writes` adds `ConditionalFieldWrites.class` and
+    /// `ConditionalFieldWritesNon01.class` (five bodies and six branch targets each);
+    /// `p3-precise-rethrow/v8` adds `PreciseRethrowProbe`
+    /// (four bodies, one handler, two targets), `PreciseRethrowRunner` (three, one, one),
+    /// `PreciseRethrowBoundaryProbe` (seven, four, four) and `PreciseRethrowBoundaryRunner`
+    /// (five, three, three). Those six classes add the measured 29 bodies, nine handlers and 22
+    /// branch targets. Their source commits are `965d8cf5` and `54c02b9a` respectively. The other
+    /// families the expansion added measure: `proved-java-structure`
     /// 31 classes / 83 bodies / one handler record / 27 branch targets,
     /// `p3-carried-conditional-arguments` 7 / 25 / 0 / 32, `p3-typed-catch-boundary-return`
     /// 2 / 10 / 8 / 6, `recover-generic-enclosing-member-call-sites` 8 / 14 / 0 / 0 and
@@ -11642,8 +11650,8 @@ mod tests {
             ),
             // The 2026-09 syntax-recovery expansion re-measured the whole sweep over the corpus
             // as committed: see the closing paragraph of this test's documentation for the
-            // families the expansion added and their measured contributions.
-            (310, 1645, 144, 880, 8),
+            // classes added after the previous census and their measured contributions.
+            (316, 1674, 153, 902, 8),
             "fixture population changed: re-measure these counts"
         );
     }
