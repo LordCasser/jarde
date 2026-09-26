@@ -49,6 +49,9 @@ use jarde_reader::view::{
 /// The two concatenation classes: the one javac builds from release 5 on, and the earlier spelling.
 const STRING_BUILDER: &str = "java/lang/StringBuilder";
 const STRING_BUFFER: &str = "java/lang/StringBuffer";
+const BOXED_SAM_PROBE: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class"
+);
 
 fn limits() -> Limits {
     Limits {
@@ -304,6 +307,77 @@ fn recover_body(
         None => request,
     };
     recover(&request, budget)
+}
+
+#[test]
+fn array_helper_candidate_reads_the_exact_bsm_member_and_proves_its_code() {
+    let payload = analyze(
+        BOXED_SAM_PROBE,
+        b"arrayCtor",
+        b"()Ljava/util/function/Function;",
+    );
+    let candidates = jarde_java::lambda::array_helper_candidates(payload.analysis.ir());
+    assert_eq!(
+        candidates,
+        vec![jarde_java::lambda::ArrayHelperCandidate {
+            call_site: 0,
+            owner: bytes(b"BoxedSamProbe"),
+            name: bytes(b"lambda$arrayCtor$0"),
+            descriptor: bytes(b"(I)[I"),
+        }],
+        "the helper read is justified by the same run's exact BSM chain"
+    );
+
+    let members = members_of(BOXED_SAM_PROBE);
+    let helper = members
+        .members()
+        .iter()
+        .find(|member| member.name() == "lambda$arrayCtor$0")
+        .expect("the selected class table has the exact helper member");
+    assert_eq!(helper.descriptor(), "(I)[I");
+    assert!(helper.code().is_some(), "the helper Code was decoded");
+
+    let facts = facts_of_exact(
+        BOXED_SAM_PROBE,
+        b"arrayCtor",
+        b"()Ljava/util/function/Function;",
+        0,
+        vec![],
+    );
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, Some(&members), &mut budget);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        report.text.contains("int[]::new"),
+        "the exact helper Code proof selects the array-reference AST:\n{}",
+        report.text
+    );
+    assert_eq!(
+        report.lambdas.first().and_then(|site| site.form),
+        Some(jarde_java::LambdaForm::MethodReference)
+    );
+    let direct = report.source_map.direct_of_bci(0);
+    assert!(
+        direct
+            .iter()
+            .any(|segment| segment.text(&report.text) == "int[]::new"),
+        "the generated array reference retains the indy BCI: {direct:?}"
+    );
+
+    let mut budget = Budget::new(limits());
+    let unproved = recover_body(&payload, &facts, None, &mut budget);
+    assert!(unproved.produced(), "{:?}", unproved.outcome);
+    assert!(
+        unproved
+            .text
+            .contains("-> BoxedSamProbe.lambda$arrayCtor$0((java.lang.Integer) p0)"),
+        "without the same-class Code proof, the adapter may keep its ordinary helper call:\n{}",
+        unproved.text
+    );
+    assert_eq!(
+        unproved.lambdas.first().and_then(|site| site.form),
+        Some(jarde_java::LambdaForm::Lambda)
+    );
 }
 
 /// Presents one fixture body under the full budget.

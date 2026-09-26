@@ -95,10 +95,11 @@ use jarde_reader::classfile::{
     Base, BaseType, BootstrapMethodFacts, CpEntryFacts, CpEntryKind, DescriptorComponent,
     DescriptorCursor, DescriptorKind, MethodCodeFacts, cp_entry, descriptor_facts,
 };
-use jarde_reader::model::ExecutionReport;
+use jarde_reader::model::{ExecutionReport, JvmBytes};
 
 use crate::ast::Type;
-use crate::facts::{ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC, ClassMembers, DynamicSite};
+use crate::decode::Operations;
+use crate::facts::{ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC, ClassMembers, DynamicSite, Operation};
 use crate::pass::{IrTable, LAMBDA, Precondition, RecoveryProfile, RuleVersion};
 use crate::stop::{StopReason, charge, poll};
 
@@ -155,6 +156,22 @@ pub enum LambdaForm {
     Lambda,
     /// `Qualifier::name` — a reference to the implementation member itself.
     MethodReference,
+}
+
+/// One same-run BSM reference to a candidate javac array-constructor helper.
+///
+/// This only justifies reading the named member body. [`prove_array_constructor`] remains the
+/// authority that decides whether the body can be presented as an array constructor reference.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ArrayHelperCandidate {
+    /// The `invokedynamic` instruction whose BSM names the helper.
+    pub call_site: u32,
+    /// The owner stated by the BSM's implementation handle.
+    pub owner: JvmBytes,
+    /// The exact helper name stated by that handle.
+    pub name: JvmBytes,
+    /// The exact helper descriptor stated by that handle.
+    pub descriptor: JvmBytes,
 }
 
 /// The implementation handle of one verified site, resolved.
@@ -754,7 +771,11 @@ pub(crate) fn plan(
             });
         }
     };
-    let array_constructor = prove_array_constructor(&implementation, pool, members, budget, at)?;
+    let array_constructor = if captures.is_empty() && sam_params.len() == 1 {
+        prove_array_constructor(&implementation, pool, members, budget, at)?
+    } else {
+        None
+    };
     // A method reference has no expression slot where an erased SAM argument can receive its
     // conversions. Keep it only when both stages are identity. A bound receiver also carries a
     // creation-time null check; converting that reference to a lambda would defer the check until
@@ -777,7 +798,10 @@ pub(crate) fn plan(
             )),
         });
     }
-    let form = if reference_shape && !parameter_adaptation {
+    // A proved compiler helper is the bytecode implementation of a source-level array
+    // constructor reference. Its parameter adaptation (for example Integer -> int) is expressed
+    // by the functional target type, just as it is for `int[]::new` in Java source.
+    let form = if array_constructor.is_some() || (reference_shape && !parameter_adaptation) {
         LambdaForm::MethodReference
     } else {
         LambdaForm::Lambda
@@ -909,7 +933,7 @@ fn prove_array_constructor_code(
     let [load_operands, allocation_operands, return_operands] = code.operands() else {
         return Ok(None);
     };
-    if load_operands.effective_opcode != 0x15
+    if !matches!(load_operands.effective_opcode, 0x15 | 0x1a)
         || load_operands.local.map(|local| local.index) != Some(0)
         || allocation_operands.effective_opcode != 0xbc
             && allocation_operands.effective_opcode != 0xbd
@@ -1020,6 +1044,106 @@ fn handle_of(pool: &[CpEntryFacts], index: u16) -> Option<Member> {
         }),
         // A field handle names a field, and a handle whose reference does not resolve is not a
         // member this layer may state.
+        _ => None,
+    }
+}
+
+/// Finds the narrow same-run BSM references whose member Code could prove an array constructor.
+///
+/// The returned handles are only read candidates. They are derived from the exact
+/// `invokedynamic` → LambdaMetafactory bootstrap → implementation MethodHandle chain in this IR,
+/// restricted to a same-class static `lambda$` helper with `(int) array` descriptor shape. The
+/// member table and its complete Code still have to pass [`prove_array_constructor`].
+pub fn array_helper_candidates(ir: &jarde_jvm::method_ir::MethodIr) -> Vec<ArrayHelperCandidate> {
+    let (Some(code), Some(declaration)) = (ir.code(), ir.declaration()) else {
+        return Vec::new();
+    };
+    let pool = ir.constant_pool();
+    let owner = declaration.class_name();
+    let operations = Operations::of(code, pool);
+    let mut candidates = Vec::new();
+    for instruction in &code.instructions {
+        let Some(Operation::InvokeDynamic(site)) = operations.get(instruction.bci) else {
+            continue;
+        };
+        let Some(entry) = ir
+            .bootstrap_methods()
+            .get(usize::from(site.bootstrap_index()))
+        else {
+            continue;
+        };
+        let Some((factory_kind, factory_owner, factory_name, _)) =
+            method_handle_member(pool, entry.method_ref)
+        else {
+            continue;
+        };
+        if factory_kind != REF_INVOKE_STATIC
+            || factory_owner.0.as_slice() != FACTORY_OWNER.as_bytes()
+            || !FACTORY_METHODS
+                .iter()
+                .any(|name| factory_name.0.as_slice() == name.as_bytes())
+        {
+            continue;
+        }
+        let Ok((_, implementation_index, _)) = arguments_of(entry, pool) else {
+            continue;
+        };
+        let Some((implementation_kind, implementation_owner, implementation_name, descriptor)) =
+            method_handle_member(pool, implementation_index)
+        else {
+            continue;
+        };
+        if implementation_kind != REF_INVOKE_STATIC
+            || implementation_owner != owner
+            || !implementation_name.0.starts_with(BODY_MARKER.as_bytes())
+        {
+            continue;
+        }
+        let Ok(descriptor_text) = std::str::from_utf8(&descriptor.0) else {
+            continue;
+        };
+        let Some((parameters, Some(Type::Reference(array_type)))) = parse_method(descriptor_text)
+        else {
+            continue;
+        };
+        if parameters.as_slice() != [Type::Int] || !array_type.ends_with("[]") {
+            continue;
+        }
+        candidates.push(ArrayHelperCandidate {
+            call_site: instruction.bci,
+            owner: implementation_owner.clone(),
+            name: implementation_name.clone(),
+            descriptor: descriptor.clone(),
+        });
+    }
+    candidates
+}
+
+/// Resolves only the raw member bytes and kind of one method-handle pool entry.
+fn method_handle_member(
+    pool: &[CpEntryFacts],
+    index: u16,
+) -> Option<(u8, &JvmBytes, &JvmBytes, &JvmBytes)> {
+    let Ok(CpEntryKind::MethodHandle {
+        reference_kind,
+        reference_index,
+    }) = cp_entry(pool, index).map(|entry| &entry.kind)
+    else {
+        return None;
+    };
+    match cp_entry(pool, *reference_index).map(|entry| &entry.kind) {
+        Ok(CpEntryKind::MethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        })
+        | Ok(CpEntryKind::InterfaceMethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        }) => Some((*reference_kind, owner, name, descriptor)),
         _ => None,
     }
 }
@@ -1531,6 +1655,11 @@ mod tests {
         );
         let plan = planned.outcome.expect("the SAM adaptation remains proved");
         assert_eq!(plan.array_constructor, Some(proof.clone()));
+        assert_eq!(
+            plan.form,
+            LambdaForm::MethodReference,
+            "a capture-free unary SAM may retain the verified array constructor reference"
+        );
 
         // Method-only requests retain the generic lambda plan but cannot claim an array target.
         let method_only = plan_for_named_test(
@@ -1676,6 +1805,32 @@ mod tests {
             )
             .expect("handlers are a non-proof, never inferred over")
             .is_none()
+        );
+    }
+
+    #[test]
+    fn captured_array_length_does_not_receive_an_array_constructor_proof() {
+        let flags = ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC;
+        let members = class_members_for_helper(Some(array_helper_code(10)), flags);
+        let captures = [(Some(2), Some(Type::Int))];
+        let planned = plan_for_named_test(
+            "(I)Ljava/util/function/Supplier;",
+            "()Ljava/lang/Object;",
+            REF_INVOKE_STATIC,
+            "(I)[I",
+            "()[I",
+            &captures,
+            "lambda$arrayCtor$0",
+            Some(&members),
+        );
+        let plan = planned
+            .outcome
+            .expect("the captured helper remains a valid zero-argument Supplier lambda");
+        assert_eq!(plan.captures, 1);
+        assert_eq!(plan.form, LambdaForm::Lambda);
+        assert!(
+            plan.array_constructor.is_none(),
+            "a captured length cannot be represented by a no-capture `int[]::new` reference"
         );
     }
 

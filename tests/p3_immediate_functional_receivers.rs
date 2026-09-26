@@ -392,6 +392,74 @@ fn all_three_frozen_classes_keep_typed_immediate_receivers_and_compile_whole() {
 }
 
 #[test]
+fn captured_array_length_stays_a_lambda_call_and_keeps_its_physical_helper() {
+    let scratch = Scratch::new();
+    let original = scratch.child("captured-array-original");
+    fs::write(
+        original.join("CapturedArray.java"),
+        "import java.util.function.Supplier;\n\
+         public class CapturedArray {\n\
+             static Supplier<int[]> array(int n) { return () -> new int[n]; }\n\
+         }\n",
+    )
+    .expect("write the javac capture fixture");
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("CapturedArray.java"))
+        .output()
+        .expect("JDK javac is available for the captured-array regression");
+    assert!(
+        compile.status.success(),
+        "javac rejected the original fixture:\n{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+
+    let bytes = fs::read(original.join("CapturedArray.class"))
+        .expect("javac writes the captured-array class");
+    let snapshot = open(&bytes);
+    let recovered = class_source(&snapshot, "CapturedArray", &RecoveryEvidenceRequest::all());
+    let array = body(&recovered, "array");
+    assert_eq!(array.lambdas.len(), 1, "{:?}", array.lambdas);
+    assert_eq!(
+        array.lambdas[0].form,
+        Some(LambdaForm::Lambda),
+        "the zero-argument SAM binds its array length at creation time"
+    );
+    assert!(
+        array.text.contains("lambda$array$0"),
+        "the physical helper call is retained:\n{}",
+        array.text
+    );
+    assert!(
+        !array.text.contains("int[]::new"),
+        "a captured length cannot become a no-capture array constructor reference:\n{}",
+        array.text
+    );
+    assert!(
+        recovered.text.contains("lambda$array$0"),
+        "the physical helper declaration remains in class-source:\n{}",
+        recovered.text
+    );
+
+    let emitted = scratch.child("captured-array-emitted");
+    fs::write(emitted.join("CapturedArray.java"), &recovered.text)
+        .expect("write the reconstructed class source");
+    let recompile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&emitted)
+        .arg(emitted.join("CapturedArray.java"))
+        .output()
+        .expect("JDK javac is available for reconstructed-source validation");
+    assert!(
+        recompile.status.success(),
+        "javac rejected the captured-array recovery:\n{}\n{}",
+        recovered.text,
+        String::from_utf8_lossy(&recompile.stderr)
+    );
+}
+
+#[test]
 fn receiver_cast_output_and_ir_budgets_and_cancellation_do_not_publish_partial_java() {
     let snapshot = open(DIRECT_METHOD);
     let identity = method_identity(&snapshot, b"abs", b"(I)I");
