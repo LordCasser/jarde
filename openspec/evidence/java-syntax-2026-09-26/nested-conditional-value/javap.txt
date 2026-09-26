@@ -1,6 +1,6 @@
 Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/NestedConditional.class
-  Last modified 2026年9月26日; size 1069 bytes
-  SHA-256 checksum 5e904bc949d43a010ddf7352b31066707f1b60db8b37cb0e012d38c91d203780
+  Last modified 2026年9月26日; size 1002 bytes
+  SHA-256 checksum 5ce186a8d366a729a4796eb8afb36f35fcedf8f864f90ba04ceda195dd4a6bb2
 public final class NestedConditional
   minor version: 0
   major version: 52
@@ -26,10 +26,10 @@ Constant pool:
   #15 = Utf8               innerLimit
   #16 = String             #17            // 3
   #17 = Utf8               3
-  #18 = Methodref          #8.#19         // NestedConditional.arm:(Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
-  #19 = NameAndType        #20:#21        // arm:(Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
+  #18 = Methodref          #8.#19         // NestedConditional.arm:(Ljava/lang/StringBuilder;Ljava/lang/String;II)I
+  #19 = NameAndType        #20:#21        // arm:(Ljava/lang/StringBuilder;Ljava/lang/String;II)I
   #20 = Utf8               arm
-  #21 = Utf8               (Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
+  #21 = Utf8               (Ljava/lang/StringBuilder;Ljava/lang/String;II)I
   #22 = String             #23            // 2
   #23 = Utf8               2
   #24 = String             #25            // 1
@@ -65,8 +65,6 @@ Constant pool:
   #54 = Utf8               (I)I
   #55 = Utf8               StackMapTable
   #56 = Utf8               nestedEffects
-  #57 = Class              #58            // java/lang/String
-  #58 = Utf8               java/lang/String
 {
   private NestedConditional();
     descriptor: ()V
@@ -106,12 +104,12 @@ Constant pool:
     descriptor: (ILjava/lang/StringBuilder;)I
     flags: (0x0009) ACC_PUBLIC, ACC_STATIC
     Code:
-      stack=5, locals=3, args_size=2
+      stack=4, locals=3, args_size=2
          0: iload_0
          1: iload_0
          2: aload_1
          3: invokestatic  #7                  // Method outerLimit:(ILjava/lang/StringBuilder;)I
-         6: if_icmple     50
+         6: if_icmple     40
          9: iload_0
         10: iload_0
         11: aload_1
@@ -120,39 +118,26 @@ Constant pool:
         18: aload_1
         19: ldc           #16                 // String 3
         21: iconst_3
-        22: iconst_0
-        23: invokestatic  #18                 // Method arm:(Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
-        26: goto          58
+        22: iconst_m1
+        23: invokestatic  #18                 // Method arm:(Ljava/lang/StringBuilder;Ljava/lang/String;II)I
+        26: goto          48
         29: aload_1
         30: ldc           #22                 // String 2
         32: iconst_2
         33: iload_0
-        34: bipush        12
-        36: if_icmpne     43
-        39: iconst_1
-        40: goto          44
-        43: iconst_0
-        44: invokestatic  #18                 // Method arm:(Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
-        47: goto          58
-        50: aload_1
-        51: ldc           #24                 // String 1
-        53: iconst_1
-        54: iconst_0
-        55: invokestatic  #18                 // Method arm:(Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
-        58: istore_2
-        59: iload_2
-        60: ireturn
-      StackMapTable: number_of_entries = 5
+        34: invokestatic  #18                 // Method arm:(Ljava/lang/StringBuilder;Ljava/lang/String;II)I
+        37: goto          48
+        40: aload_1
+        41: ldc           #24                 // String 1
+        43: iconst_1
+        44: iconst_m1
+        45: invokestatic  #18                 // Method arm:(Ljava/lang/StringBuilder;Ljava/lang/String;II)I
+        48: istore_2
+        49: iload_2
+        50: ireturn
+      StackMapTable: number_of_entries = 3
         frame_type = 29 /* same */
-        frame_type = 255 /* full_frame */
-          offset_delta = 13
-          locals = [ int, class java/lang/StringBuilder ]
-          stack = [ class java/lang/StringBuilder, class java/lang/String, int ]
-        frame_type = 255 /* full_frame */
-          offset_delta = 0
-          locals = [ int, class java/lang/StringBuilder ]
-          stack = [ class java/lang/StringBuilder, class java/lang/String, int, int ]
-        frame_type = 5 /* same */
+        frame_type = 10 /* same */
         frame_type = 71 /* same_locals_1_stack_item */
           stack = [ int ]
 
@@ -199,8 +184,8 @@ Constant pool:
       StackMapTable: number_of_entries = 1
         frame_type = 23 /* same */
 
-  private static int arm(java.lang.StringBuilder, java.lang.String, int, boolean);
-    descriptor: (Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
+  private static int arm(java.lang.StringBuilder, java.lang.String, int, int);
+    descriptor: (Ljava/lang/StringBuilder;Ljava/lang/String;II)I
     flags: (0x000a) ACC_PRIVATE, ACC_STATIC
     Code:
       stack=3, locals=4, args_size=4
@@ -209,14 +194,15 @@ Constant pool:
          2: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
          5: pop
          6: iload_3
-         7: ifeq          20
-        10: new           #47                 // class java/lang/ArithmeticException
-        13: dup
-        14: ldc           #49                 // String arm-2
-        16: invokespecial #51                 // Method java/lang/ArithmeticException."<init>":(Ljava/lang/String;)V
-        19: athrow
-        20: iload_2
-        21: ireturn
+         7: bipush        12
+         9: if_icmpne     22
+        12: new           #47                 // class java/lang/ArithmeticException
+        15: dup
+        16: ldc           #49                 // String arm-2
+        18: invokespecial #51                 // Method java/lang/ArithmeticException."<init>":(Ljava/lang/String;)V
+        21: athrow
+        22: iload_2
+        23: ireturn
       StackMapTable: number_of_entries = 1
-        frame_type = 20 /* same */
+        frame_type = 22 /* same */
 }

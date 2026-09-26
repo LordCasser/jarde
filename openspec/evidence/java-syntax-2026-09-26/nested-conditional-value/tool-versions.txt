@@ -1,7 +1,8 @@
 javac: javac 23.0.1
 java: OpenJDK 23.0.1
 JADX: 1.5.6
-Jarde baseline source commit: ee18bef1c5919370b4889af964519733001278a0
-Jarde CLI command: cargo build --release -p jarde-cli
-compiler flags: --release 8 -g:none
-runtime flags: -Xverify:all
+Jarde baseline source commit: e9bb60bb41aeeab241fc78bef348f7564b74fcd3 (git archive isolated source)
+Jarde CLI build: cargo build --release -p jarde-cli --manifest-path /tmp/jarde-ncv-e9bb-src/Cargo.toml with CARGO_TARGET_DIR=/tmp/jarde-ncv-e9bb-target
+Jarde CLI SHA-256 is recorded in jarde-cli.sha256; no shared working-tree build.rs was used.
+compiler flags: javac --release 8 -g:none
+runtime flags: java -Xverify:all

@@ -1,6 +1,12 @@
-d7a671916840facb77b43675cd40e83bfd3b30c4c9bcd4a1ffd02e8f7be33a32  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/NestedConditional.java
+4f7cfd3d65e798ba849bec01acfab49764b1589f0900ce5bfcd8958bb4677325  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/NestedConditional.java
 72a855acfc0c14c7ca45214daaad23ade0e07265896a9545fc10ee0942a9e8a5  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/Runner.java
-5e904bc949d43a010ddf7352b31066707f1b60db8b37cb0e012d38c91d203780  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/NestedConditional.class
+5ce186a8d366a729a4796eb8afb36f35fcedf8f864f90ba04ceda195dd4a6bb2  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/NestedConditional.class
 02d746463ceb56f1faf89d6b3deb508e7aba8f5c1682850dac234efcb6ad34f1  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/Runner.class
-50b2909a56b96d425b31ff0ce7c7a481bbb96df6f65d9f2ac39156711eb2b983  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jadx-classes/defpackage/NestedConditional.class
-0090903d4d01c631043f5244b7441a9b44ca45b19a49a49ae9489ce0a65f10bb  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jadx-classes/defpackage/Runner.class
+d8fe5d773acfd9e68a86dfd8e02336d0233926f21ec62d3dd9c6e1f28a78ed45  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jadx/NestedConditional.java
+90fb980964354a4fc3c875bf8eaa172f519b767f6b7b4e62e8d1875fa2c70f10  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jadx/Runner.java
+a5489239d5807d5bb17a337a50f905aec0ecffa66660ec4e3788307c9d297b3d  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jadx-classes/defpackage/NestedConditional.class
+2747fe24f1a646f1faf30572c0976e7a85995189dc2ab64344235614322ebc1c  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jadx-classes/defpackage/Runner.class
+5a75890808d16bcd7b14ef0dde7be0d1e4751245a3133fda4997106c5de216cf  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jarde/NestedConditional.java
+3252d903fe2450672d8b2b6e7736b8798c3f08b7a1bffd29af7775513bfe550a  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jarde-method.java
+37431e341704cecd78e609e971ab435a92ced890efa90c5af211749e89254c3e  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jarde-helper-source.java
+b4a32487bbb3ea580fb4b5b8536653950aad001ba5f5c09f0b2d1a610e717d19  openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jarde-helper-classes/JardeHelperProof.class

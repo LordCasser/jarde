@@ -9,9 +9,9 @@ public final class NestedConditional {
     public static int nestedEffects(int a, StringBuilder events) {
         int t = a > outerLimit(a, events)
                 ? (a > innerLimit(a, events)
-                    ? arm(events, "3", 3, false)
-                    : arm(events, "2", 2, a == 12))
-                : arm(events, "1", 1, false);
+                    ? arm(events, "3", 3, -1)
+                    : arm(events, "2", 2, a))
+                : arm(events, "1", 1, -1);
         return t;
     }
 
@@ -31,9 +31,9 @@ public final class NestedConditional {
         return 100;
     }
 
-    private static int arm(StringBuilder events, String label, int value, boolean fail) {
+    private static int arm(StringBuilder events, String label, int value, int failAt) {
         events.append(label);
-        if (fail) {
+        if (failAt == 12) {
             throw new ArithmeticException("arm-2");
         }
         return value;

@@ -31,17 +31,18 @@ public final class NestedConditional extends java.lang.Object {
             if (arg0 > innerLimit(arg0, arg1)) {
                 // @bytecode 18 23
                 // the saved producer at BCI 23 has no bounded final expression consumer
+            } else {
+                // @bytecode 29 33 34
+                // the saved producer at BCI 34 has no bounded final expression consumer
             }
         } else {
-            // @bytecode 50 55
-            // the saved producer at BCI 55 has no bounded final expression consumer
+            // @bytecode 40 45
+            // the saved producer at BCI 45 has no bounded final expression consumer
         }
-        // @bytecode 58
-        // the value at BCI 58 is the entry state of stack depth 0, which no instruction produced
-        // @bytecode 59 60
-        // the statement at BCI 60 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
-        // @bytecode 44 47
-        // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [44]
+        // @bytecode 48
+        // the value at BCI 48 is the entry state of stack depth 0, which no instruction produced
+        // @bytecode 49 50
+        // the statement at BCI 50 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
     }
 
     private static int outerLimit(int arg0, java.lang.StringBuilder arg1) {
@@ -68,12 +69,12 @@ public final class NestedConditional extends java.lang.Object {
         }
     }
 
-    private static int arm(java.lang.StringBuilder arg0, java.lang.String arg1, int arg2, boolean arg3) {
-        // @method arm(Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
+    private static int arm(java.lang.StringBuilder arg0, java.lang.String arg1, int arg2, int arg3) {
+        // @method arm(Ljava/lang/StringBuilder;Ljava/lang/String;II)I
         // @declaration a static method of `NestedConditional`, member flags 0x000a
         // recovered from bytecode; presentation is not claimed to compile
         arg0.append(arg1);
-        if (arg3) {
+        if (arg3 == 12) {
             throw new java.lang.ArithmeticException("arm-2");
         } else {
             return arg2;

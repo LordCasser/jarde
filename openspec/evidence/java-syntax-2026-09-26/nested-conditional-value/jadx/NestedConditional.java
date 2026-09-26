@@ -17,12 +17,10 @@ public final class NestedConditional {
 
     public static int nestedEffects(int i, StringBuilder sb) {
         int iArm;
-        if (i <= outerLimit(i, sb)) {
-            iArm = arm(sb, "1", 1, false);
-        } else if (i > innerLimit(i, sb)) {
-            iArm = arm(sb, "3", 3, false);
+        if (i > outerLimit(i, sb)) {
+            iArm = i > innerLimit(i, sb) ? arm(sb, "3", 3, -1) : arm(sb, "2", 2, i);
         } else {
-            iArm = arm(sb, "2", 2, i == 12);
+            iArm = arm(sb, "1", 1, -1);
         }
         return iArm;
     }
@@ -43,9 +41,9 @@ public final class NestedConditional {
         return 100;
     }
 
-    private static int arm(StringBuilder sb, String str, int i, boolean z) {
+    private static int arm(StringBuilder sb, String str, int i, int i2) {
         sb.append(str);
-        if (z) {
+        if (i2 == 12) {
             throw new ArithmeticException("arm-2");
         }
         return i;

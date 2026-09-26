@@ -1,22 +1,25 @@
 blocks:
   BCI 0 blocks [0]
-  BCI 6 blocks [6]
-  BCI 20 blocks [20]
-  BCI 12 blocks [12]
-  BCI 16 blocks [16]
-  BCI 21 blocks [21]
+  BCI 9 blocks [9]
+  BCI 40 blocks [40]
+  BCI 18 blocks [18]
+  BCI 29 blocks [29]
+  BCI 48 blocks [48]
 normal edges:
-  0 -> 6
-  0 -> 20
-  6 -> 12
-  6 -> 16
-  12 -> 21
-  16 -> 21
-  20 -> 21
+  0 -> 9
+  0 -> 40
+  9 -> 18
+  9 -> 29
+  18 -> 48
+  29 -> 48
+  40 -> 48
 phis:
-  block=21 slot=Local(0) inputs=["Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) }", "Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) }", "Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) }"]
-  block=21 slot=Stack(0) inputs=["Instruction { block: CanonicalBlockId { bci: 12, path: [] }, bci: 12 }", "Instruction { block: CanonicalBlockId { bci: 16, path: [] }, bci: 16 }", "Instruction { block: CanonicalBlockId { bci: 20, path: [] }, bci: 20 }"]
+  block=48 slot=Local(0) inputs=["Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) }", "Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) }", "Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) }"]
+  block=48 slot=Local(1) inputs=["Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(1) }", "Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(1) }", "Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(1) }"]
+  block=48 slot=Stack(0) inputs=["Instruction { block: CanonicalBlockId { bci: 18, path: [] }, bci: 23 }", "Instruction { block: CanonicalBlockId { bci: 29, path: [] }, bci: 34 }", "Instruction { block: CanonicalBlockId { bci: 40, path: [] }, bci: 45 }"]
 values at block join:
   ValueId(0) Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) } replaced=None
-  ValueId(1) Phi { block: CanonicalBlockId { bci: 21, path: [] }, slot: Local(0) } replaced=Some(ValueId(0))
-  ValueId(2) Phi { block: CanonicalBlockId { bci: 21, path: [] }, slot: Stack(0) } replaced=None
+  ValueId(1) Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(1) } replaced=None
+  ValueId(2) Phi { block: CanonicalBlockId { bci: 48, path: [] }, slot: Local(0) } replaced=Some(ValueId(0))
+  ValueId(3) Phi { block: CanonicalBlockId { bci: 48, path: [] }, slot: Local(1) } replaced=Some(ValueId(1))
+  ValueId(4) Phi { block: CanonicalBlockId { bci: 48, path: [] }, slot: Stack(0) } replaced=None
