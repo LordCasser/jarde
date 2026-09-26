@@ -2653,7 +2653,7 @@ impl Engine {
                 ) {
                     Ok((proof, child_execution)) => {
                         merge_execution(&mut execution, child_execution);
-                        relation.body_proof = Some(proof);
+                        relation.body_proof = Some(proof.map(std::sync::Arc::from));
                     }
                     Err(error) => {
                         let stop = stop_execution(&error, budget);
@@ -4604,7 +4604,7 @@ pub(crate) struct PendingEnumConstantBodyRelation {
     pub(crate) child_code_evidence: std::result::Result<(), String>,
     /// The selected child's complete physical method results, admitted only after every
     /// source-visible member has passed the bounded body and declaration proof.
-    pub(crate) body_proof: Option<std::result::Result<Vec<ClassSourceMethod>, String>>,
+    pub(crate) body_proof: Option<std::result::Result<std::sync::Arc<[ClassSourceMethod]>, String>>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -6241,11 +6241,11 @@ fn prove_enum_constant_body_group(
             .iter()
             .filter(|relation| relation.field_index == constant.field_index)
             .collect();
-        let subclass = if constant.allocation_owner == owner {
+        let (subclass, methods) = if constant.allocation_owner == owner {
             if !matching.is_empty() || !direct_bcis.contains(&constant.constructor_bci) {
                 return Ok(refuse("a direct constant has an unexpected child relation"));
             }
-            None
+            (None, None)
         } else {
             let [relation] = matching.as_slice() else {
                 return Ok(refuse("an anonymous constant has no unique selected child"));
@@ -6283,15 +6283,18 @@ fn prove_enum_constant_body_group(
             if !selected_children.insert(&relation.subclass) {
                 return Ok(refuse("one selected child is assigned to two constants"));
             }
-            Some(relation.subclass.clone())
+            (Some(relation.subclass.clone()), Some(methods.clone()))
         };
         if subclass.is_none() && !shape.abstract_methods.is_empty() {
             return Ok(refuse("an abstract enum has a constant without a body"));
         }
         proved.push(ProvedEnumBodyConstant {
             field_index: constant.field_index,
+            allocation_bci: constant.allocation_bci,
             constructor_bci: constant.constructor_bci,
+            field_write_bci: prefix.constant_field_write_bcis[ordinal],
             subclass,
+            methods,
         });
     }
     if relations.len() != selected_children.len() {
@@ -9172,6 +9175,94 @@ mod enum_constant_body_relation_tests {
             bounded_usage.elapsed_millis = complete.usage.elapsed_millis;
             assert_eq!(bounded_usage, complete.usage, "budget usage for {class}");
             assert!(bounded.enum_constant_body_relations.is_empty());
+        }
+    }
+
+    #[test]
+    fn proved_body_group_shares_selected_methods_and_their_physical_origins() {
+        for debug in [true, false] {
+            let entries = compiled_entries(debug);
+            for (class, children) in [("demo/Op", 2), ("demo/Mixed", 1)] {
+                let parent = report(&entries, class);
+                let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                    crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+                ) = &parent.enum_constant_proof
+                else {
+                    panic!("the complete {class} body group must prove");
+                };
+                assert_eq!(group.constants.len(), 2);
+                let main_code_count = parent
+                    .methods
+                    .iter()
+                    .filter(|method| {
+                        matches!(
+                            method.item.body,
+                            crate::MemberBodyEvidence::CodeAttribute { .. }
+                        )
+                    })
+                    .count() as u64;
+                // Each selected child pays once for the typed constructor edge, once for its
+                // constructor recovery, and once per retained override. Group assembly pays zero.
+                let child_body_count: u64 = group
+                    .constants
+                    .iter()
+                    .filter_map(|item| {
+                        item.methods
+                            .as_ref()
+                            .map(|methods| 2 + methods.len() as u64)
+                    })
+                    .sum();
+                assert_eq!(
+                    parent.usage.method_bodies,
+                    main_code_count + child_body_count
+                );
+                assert_eq!(
+                    group
+                        .constants
+                        .iter()
+                        .filter(|item| item.subclass.is_some())
+                        .count(),
+                    children
+                );
+                let shape = &parent.enum_constant_body_relations[0].group_shape;
+                let prefix = shape.initializer_prefix.as_ref().unwrap();
+                for (position, item) in group.constants.iter().enumerate() {
+                    let candidate = &shape.constants[position];
+                    assert_eq!(item.field_index, candidate.field_index);
+                    assert_eq!(item.allocation_bci, candidate.allocation_bci);
+                    assert_eq!(item.constructor_bci, candidate.constructor_bci);
+                    assert_eq!(
+                        item.field_write_bci,
+                        prefix.constant_field_write_bcis[position]
+                    );
+                    let relation = parent
+                        .enum_constant_body_relations
+                        .iter()
+                        .find(|relation| relation.field_index == item.field_index);
+                    match (&item.subclass, &item.methods, relation) {
+                        (None, None, None) => {}
+                        (Some(subclass), Some(methods), Some(relation)) => {
+                            assert_eq!(subclass, &relation.subclass);
+                            let retained = relation.body_proof.as_ref().unwrap().as_ref().unwrap();
+                            assert!(std::sync::Arc::ptr_eq(methods, retained));
+                            assert_eq!(methods.len(), 1);
+                            for method in methods.iter() {
+                                assert_eq!(method.item.identity.owner, *subclass);
+                                let class_source::ClassSourceOutcome::Recovered { report, .. } =
+                                    &method.outcome
+                                else {
+                                    panic!("the selected override must retain its recovered Code");
+                                };
+                                assert!(report.source_map.segments().iter().any(|segment| {
+                                    segment.origin().primary().method()
+                                        == Some(&method.item.identity)
+                                }));
+                            }
+                        }
+                        other => panic!("proved constant and relation disagree: {other:?}"),
+                    }
+                }
+            }
         }
     }
 
