@@ -6,6 +6,8 @@
 
 实施接缝须先区分**采集**与**成功证明**：当前 `may_capture_group_code` 会在 `ACC_ABSTRACT` 处排除 `Op`，而 `prove_group` 还把每个主类方法有 Code、构造 owner 为主枚举及一/两条已知构造器作为成功门。首步仅放宽 Java 8 两常量候选的便宜采集门，沿既有 prepared member 单次运行保留 `<clinit>` 的精确 `new`/`invokespecial` owner、BCI 和全方法 member-use；无 Code 的抽象声明保留物理头事实，不伪造空 Code。之后在同一选定环境和 Budget 下按构造点读取唯一子类，核对 typed `InnerClasses`/`EnclosingMethod` 与主类声明；再把主类抽象声明和 synthetic 访问构造器作为待证的具体形状。以上任何中间状态都不能产生 `Proved` 或触发类源码投影；2.2/2.3 的独占使用、委托语义和子类正文闭合后才原子发布。这样复用现有候选/reader/类装配接缝，无须新增通用 visitor 或按 `$1` 名称枚举子类。
 
+2.1b 的子类关联保存在 class-source 报告的私有 `serde(skip)` 侧车中，仅供同次后续证明消费；只有当前两常量组为 `Refused` 且 `<clinit>` 同次扫描含已验证的非主类构造 owner 时才读取目标类。关联记录保留常量字段索引、分配与构造 BCI、构造描述符和选定物理定义，本身不改变 `Refused`，没有类源码投影权；普通已证明枚举不会因此多读依赖。
+
 冻结的 `javap` 还揭示两个不能略过的主类差异：`Op` 带 `ACC_ABSTRACT`，其 `apply(II)I` 无 Code；`Op`/`Mixed` 的主类除了私有 `(String,int)` 构造器，还有 javac 生成的 `(String,int,Op$1)` / `(String,int,Mixed$1)` synthetic 访问桥。匿名子类构造器传 `null` 给这条桥，桥再原样转发 name/ordinal 至主类私有构造器。现有基础证明既拒绝抽象 enum，也要求每个方法都有 Code、恰好一条构造器；因此正例必须证明完整构造链、抽象声明和每个常量体的实现，不能仅让常量调用点换 owner 后绕过这些门。[等宽 ordinal 转发反例](../../evidence/java-syntax-2026-09-25/enum-constant-body-bridge-controls/analysis.md)已证明该访问桥一处变化即可令 JADX 重编结果从原 class 的 `ADD:1` 变为 `ADD:0`，虽两者均通过 verifier。
 
 ## Goals / Non-Goals
