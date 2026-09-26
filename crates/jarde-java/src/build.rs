@@ -40,6 +40,8 @@
 use std::cell::OnceCell;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 
+#[cfg(test)]
+use jarde_jvm::method_ir::SsaUse;
 use jarde_jvm::method_ir::{
     CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, Definition, PhiInput, RefType, Slot,
     SsaInstruction, SsaTable, SsaValue, Value, ValueId,
@@ -2913,22 +2915,23 @@ fn prove_conditional_value_with_forward(
     } else {
         None
     };
-    let [use_record] = uses else {
-        if let Some(consumer_bci) = carried_consumer {
-            return Ok(ConditionalValueAttempt::Proved(ConditionalValueProof {
-                branch: branch.clone(),
-                branch_bci: *branch_bci,
-                join: join.clone(),
-                phi: phi.value(),
-                stack_depth,
-                when_true,
-                when_false,
-                consumer_bci,
-            }));
+    let use_record = match exactly_one_use(uses) {
+        Ok(use_record) => use_record,
+        Err(reason) => {
+            if let Some(consumer_bci) = carried_consumer {
+                return Ok(ConditionalValueAttempt::Proved(ConditionalValueProof {
+                    branch: branch.clone(),
+                    branch_bci: *branch_bci,
+                    join: join.clone(),
+                    phi: phi.value(),
+                    stack_depth,
+                    when_true,
+                    when_false,
+                    consumer_bci,
+                }));
+            }
+            return Ok(ConditionalValueAttempt::Refused(reason));
         }
-        return Ok(ConditionalValueAttempt::Refused(
-            ConditionalValueRefusal::PhiUseCount,
-        ));
     };
     let Some(consumer_bci) = use_record.bci() else {
         return Ok(ConditionalValueAttempt::Refused(
@@ -2965,6 +2968,13 @@ fn prove_conditional_value_with_forward(
         when_false,
         consumer_bci,
     }))
+}
+
+fn exactly_one_use<T>(uses: &[T]) -> Result<&T, ConditionalValueRefusal> {
+    let [use_record] = uses else {
+        return Err(ConditionalValueRefusal::PhiUseCount);
+    };
+    Ok(use_record)
 }
 
 /// Proves the narrow two-join shape before any child value is made visible to the builder.
@@ -20818,6 +20828,9 @@ mod tests {
     const INTERMEDIATE_JOIN_FIXTURE: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-26/conditional-intermediate-join/ConditionalIntermediateJoin.class"
     );
+    const INTERMEDIATE_UNKNOWN_OPERATION_FIXTURE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-intermediate-join/unknown-operation/ConditionalIntermediateJoin.class"
+    );
     const NESTED_TREE_FIXTURE: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-conditional-values/nested-tree/NestedTree.class"
     );
@@ -20915,7 +20928,7 @@ mod tests {
         crate::report::RecoveryReport,
         ShortCircuitValueAttempt,
     ) {
-        let (region, ordinary, producer_bcis, recovered, report, short, _, _) =
+        let (region, ordinary, producer_bcis, recovered, report, short, _, _, _) =
             fixture_value_attempts_with_tree(class, name, descriptor, short_region, None);
         (region, ordinary, producer_bcis, recovered, report, short)
     }
@@ -20930,7 +20943,7 @@ mod tests {
         crate::report::RecoveryReport,
         Option<ConditionalTreeProof>,
     ) {
-        let (region, ordinary, _, _, report, _, tree, _) =
+        let (region, ordinary, _, _, report, _, tree, _, _) =
             fixture_value_attempts_with_tree(class, name, descriptor, None, None);
         (region, ordinary, report, tree)
     }
@@ -20950,6 +20963,7 @@ mod tests {
         ShortCircuitValueAttempt,
         Option<ConditionalTreeProof>,
         IntermediateJoinAttempt,
+        Vec<(u32, Vec<SsaUse>)>,
     ) {
         use jarde_jvm::engine::analyze_method_ir;
         use jarde_jvm::environment::ResolutionEnvironment;
@@ -21074,6 +21088,12 @@ mod tests {
         let intermediate_attempt =
             prove_intermediate_join_value(&candidate, canonical, ssa, &operations, &mut budget)
                 .expect("the bounded intermediate join proof completes");
+        let stack_phi_uses = ssa
+            .phis()
+            .iter()
+            .filter(|phi| matches!(phi.slot(), Slot::Stack(_)))
+            .map(|phi| (phi.block().bci(), ssa.value(phi.value()).uses().to_vec()))
+            .collect();
         if name == "run" {
             if let Region::If {
                 join: Some(join), ..
@@ -21161,18 +21181,20 @@ mod tests {
             short_attempt,
             tree_attempt,
             intermediate_attempt,
+            stack_phi_uses,
         )
     }
 
     #[test]
     fn intermediate_join_proof_binds_both_phis_and_ordered_bridge() {
-        let (_, ordinary, _, recovered, _, _, tree, attempt) = fixture_value_attempts_with_tree(
-            INTERMEDIATE_JOIN_FIXTURE,
-            "choose",
-            "(I)I",
-            None,
-            None,
-        );
+        let (_, ordinary, _, recovered, _, _, tree, attempt, phi_uses) =
+            fixture_value_attempts_with_tree(
+                INTERMEDIATE_JOIN_FIXTURE,
+                "choose",
+                "(I)I",
+                None,
+                None,
+            );
         assert!(matches!(
             ordinary,
             ConditionalValueAttempt::Refused(ConditionalValueRefusal::NonStraightArm)
@@ -21201,6 +21223,14 @@ mod tests {
         assert_eq!(proof.child.consumer_bci, 19);
         assert_eq!(proof.consumer_bci, 26);
         assert_eq!(proof.bridge_terminal.bci(), 18);
+        assert_eq!(
+            phi_uses.iter().find(|(join, _)| *join == 18).unwrap().1[0].bci(),
+            Some(19)
+        );
+        assert_eq!(
+            phi_uses.iter().find(|(join, _)| *join == 26).unwrap().1[0].bci(),
+            Some(26)
+        );
         assert!(proof.child_on_true);
         assert!(
             recovered
@@ -21232,11 +21262,19 @@ mod tests {
                 panic!("the frozen false arm is straight");
             };
             sibling.push(bridge_block);
+            assert_eq!(
+                region
+                    .blocks()
+                    .iter()
+                    .filter(|block| block.bci() == 18)
+                    .count(),
+                2
+            );
         }
 
         // This is a proof-unit corruption of Region ownership, not a claim that javac produced
         // such a tree. The unmodified class supplies real canonical edges and SSA identities.
-        let (_, _, _, _, _, _, _, attempt) = fixture_value_attempts_with_tree(
+        let (_, _, _, _, _, _, _, attempt, _) = fixture_value_attempts_with_tree(
             INTERMEDIATE_JOIN_FIXTURE,
             "choose",
             "(I)I",
@@ -21244,6 +21282,58 @@ mod tests {
             Some(overlap_bridge),
         );
         assert!(matches!(attempt, IntermediateJoinAttempt::Refused(_)));
+    }
+
+    #[test]
+    fn intermediate_join_proof_rejects_a_second_ssa_use() {
+        // Direct SSA proof unit: preserve the frozen class's real child and outer
+        // Phi use records, then add a second consumer of the child Phi. JVM DUP
+        // creates a new SSA identity, so it cannot stand in for this fact.
+        let (_, _, _, _, _, _, _, attempt, phi_uses) = fixture_value_attempts_with_tree(
+            INTERMEDIATE_JOIN_FIXTURE,
+            "choose",
+            "(I)I",
+            None,
+            None,
+        );
+        assert!(matches!(attempt, IntermediateJoinAttempt::Proved(_)));
+        let child_uses = &phi_uses.iter().find(|(join, _)| *join == 18).unwrap().1;
+        let outer_uses = &phi_uses.iter().find(|(join, _)| *join == 26).unwrap().1;
+        assert_eq!(
+            child_uses.iter().map(SsaUse::bci).collect::<Vec<_>>(),
+            [Some(19)]
+        );
+        assert_eq!(
+            outer_uses.iter().map(SsaUse::bci).collect::<Vec<_>>(),
+            [Some(26)]
+        );
+        assert!(exactly_one_use(child_uses).is_ok());
+        let mut extra_use = child_uses.clone();
+        extra_use.push(outer_uses[0].clone());
+        assert_eq!(extra_use[1].bci(), Some(26));
+        assert_eq!(
+            exactly_one_use(&extra_use),
+            Err(ConditionalValueRefusal::PhiUseCount)
+        );
+    }
+
+    #[test]
+    fn intermediate_join_proof_rejects_a_verifier_valid_unknown_operation() {
+        // The source graph has the same two joins and operand types, but IXOR is
+        // outside the bridge's explicitly proved iadd language.
+        let (_, _, _, _, report, _, _, attempt, phi_uses) = fixture_value_attempts_with_tree(
+            INTERMEDIATE_UNKNOWN_OPERATION_FIXTURE,
+            "choose",
+            "(I)I",
+            None,
+            None,
+        );
+        assert_eq!(
+            phi_uses.iter().find(|(join, _)| *join == 18).unwrap().1[0].bci(),
+            Some(19)
+        );
+        assert!(matches!(attempt, IntermediateJoinAttempt::Refused(_)));
+        assert!(report.text.contains("@bytecode"));
     }
 
     #[test]
