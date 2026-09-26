@@ -19204,6 +19204,7 @@ mod tests {
             &view,
             ssa,
             &operations,
+            &crate::init::Sites::empty(),
             code,
             Some(false),
             return_type(descriptor).is_some_and(|ty| matches!(ty, crate::ast::Type::Boolean)),

@@ -101,6 +101,7 @@ use jarde_reader::classfile::ExceptionHandlerFact;
 use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::facts::{CompareOp, Operation};
+use crate::init::Sites;
 use crate::normal_flow::NormalFlowView;
 use crate::pass::{FINALLY, MONITOR, Pass, TWR};
 use crate::refusal::Refusal;
@@ -327,6 +328,8 @@ pub(crate) enum Unproven {
     FinallyCopy,
 }
 
+type ResourceInitialisation = ((u32, u32), u16);
+
 impl Unproven {
     /// The diagnostic code this refusal is reported under.
     pub(crate) fn code(self) -> &'static str {
@@ -450,6 +453,7 @@ struct Facts<'a> {
     ssa: &'a SsaTable,
     ops: &'a Operations,
     handlers: &'a [ExceptionHandlerFact],
+    sites: &'a Sites,
     budget: &'a mut Budget,
     /// Every instruction of the body by BCI, with the block it belongs to.
     index: BTreeMap<u32, Step<'a>>,
@@ -468,6 +472,7 @@ impl<'a> Facts<'a> {
         ssa: &'a SsaTable,
         ops: &'a Operations,
         handlers: &'a [ExceptionHandlerFact],
+        sites: &'a Sites,
         budget: &'a mut Budget,
     ) -> Self {
         let mut index = BTreeMap::new();
@@ -499,6 +504,7 @@ impl<'a> Facts<'a> {
             ssa,
             ops,
             handlers,
+            sites,
             budget,
             index,
             order,
@@ -966,7 +972,11 @@ fn receiver_is(facts: &Facts<'_>, call: &SsaInstruction, load: &SsaInstruction) 
 /// write a slot with a value the span produced. A statement that ended before this one fails that
 /// criterion (its own store's value is read by nothing inside), which is what stops the growth — and
 /// it never crosses `floor`, the instruction the walk had already reached.
-fn initialisation(facts: &Facts<'_>, end: u32, floor: u32) -> Result<((u32, u32), u16), Cause> {
+fn initialisation(
+    facts: &Facts<'_>,
+    end: u32,
+    floor: u32,
+) -> Result<ResourceInitialisation, Cause> {
     let store = facts
         .previous_bci(end)
         .filter(|store| *store >= floor)
@@ -974,20 +984,61 @@ fn initialisation(facts: &Facts<'_>, end: u32, floor: u32) -> Result<((u32, u32)
     let Some(Operation::Store { slot }) = facts.op(store) else {
         return Err((Unproven::ResourceInit, store));
     };
+    match constructed_initialisation(facts, store, floor, end) {
+        Ok(Some(init)) => return Ok(init),
+        Err(at) => return Err((Unproven::ResourceInit, at)),
+        Ok(None) => {}
+    }
     let mut start = store;
     while let Some(previous) = facts.previous_bci(start) {
-        if previous < floor {
-            break;
-        }
-        if !single_statement(facts, (previous, end), store) {
+        if previous < floor || !single_statement(facts, (previous, end), store) {
             break;
         }
         start = previous;
     }
-    if !single_statement(facts, (start, end), store) {
-        return Err((Unproven::ResourceInit, store));
+    if single_statement(facts, (start, end), store) {
+        return Ok(((start, end), *slot));
     }
-    Ok(((start, end), *slot))
+    Err((Unproven::ResourceInit, store))
+}
+
+/// Whether this store consumes one verified construction site as its complete initializer.
+///
+/// Reuse the initializer's verified construction site rather than growing backward across the
+/// constructor's stack effects.
+fn constructed_initialisation(
+    facts: &Facts<'_>,
+    store: u32,
+    floor: u32,
+    end: u32,
+) -> Result<Option<ResourceInitialisation>, u32> {
+    let Some(Operation::Store { slot }) = facts.op(store) else {
+        return Ok(None);
+    };
+    let Some(step) = facts.step(store) else {
+        return Ok(None);
+    };
+    let reads = step.instruction.reads();
+    let Some((_, value)) = (reads.len() == 1).then(|| reads[0]) else {
+        return Ok(None);
+    };
+    let Some(site) = facts.sites.site_producing(facts.ssa, value) else {
+        return Ok(None);
+    };
+    let site_start = site.head;
+    if site_start < floor || site.constructor >= store || facts.span_end(store) != end {
+        return Err(store);
+    }
+    let actual: BTreeSet<u32> = facts.bcis((site_start, end)).into_iter().collect();
+    let mut expected = site.expression.clone();
+    expected.insert(store);
+    if site.expression.is_empty()
+        || actual != expected
+        || !site.expression.contains(&site.constructor)
+    {
+        return Err(store);
+    }
+    Ok(Some(((site_start, end), *slot)))
 }
 
 /// Whether the store before a row's protected range is a resource's own initialisation.
@@ -2014,7 +2065,16 @@ mod finally_copy_tests {
             token.cancel();
         }
         let mut proof_budget = Budget::with_cancellation_token(proof_limits, token);
-        let mut facts = Facts::new(canonical, &view, ssa, &ops, &rows, &mut proof_budget);
+        let sites = crate::init::Sites::empty();
+        let mut facts = Facts::new(
+            canonical,
+            &view,
+            ssa,
+            &ops,
+            &rows,
+            &sites,
+            &mut proof_budget,
+        );
         prove_finally_copy(&mut facts, row)
     }
 
@@ -2083,7 +2143,8 @@ mod finally_copy_tests {
             .map(|block| block.id())
             .ok_or_else(|| "entry block missing".to_string())?;
         let rows = code.exception_handlers.clone();
-        let mut facts = Facts::new(canonical, &view, ssa, &ops, &rows, &mut budget);
+        let sites = crate::init::Sites::empty();
+        let mut facts = Facts::new(canonical, &view, ssa, &ops, &rows, &sites, &mut budget);
         let row = rows
             .first()
             .ok_or_else(|| "resource row missing".to_string())?;
@@ -2217,11 +2278,12 @@ pub(crate) fn examine(
     ssa: &SsaTable,
     ops: &Operations,
     handlers: &[ExceptionHandlerFact],
+    sites: &Sites,
     profile: &crate::pass::RecoveryProfile,
     current: &CanonicalBlockId,
     budget: &mut Budget,
 ) -> Result<Verdict, StopReason> {
-    let mut facts = Facts::new(canonical, view, ssa, ops, handlers, budget);
+    let mut facts = Facts::new(canonical, view, ssa, ops, handlers, sites, budget);
     facts.charge(current.bci())?;
     match guarded(&mut facts, profile, current)? {
         Some(verdict) => Ok(verdict),
@@ -2382,7 +2444,8 @@ pub(crate) fn catches(
     // the union of the header's own ranges and the clause's is asked **first**, because only the
     // rule can say which of them are its own, and the reading left over is what this statement
     // writes. Both answer `None` for a block the rules own and do not present.
-    let mut facts = Facts::new(canonical, view, ssa, ops, handlers, budget);
+    let sites = crate::init::Sites::empty();
+    let mut facts = Facts::new(canonical, view, ssa, ops, handlers, &sites, budget);
     let (named, (start, ends)): (Vec<&ExceptionHandlerFact>, (u32, Vec<u32>)) =
         match clauses_of(&rows_here) {
             Some(plain) => {
@@ -3232,7 +3295,7 @@ fn twr(
     }
     for resource in &resources {
         facts_read.push(resource.close_bci);
-        facts_read.push(resource.init.1.saturating_sub(1));
+        facts_read.extend(facts.bcis(resource.init));
     }
     for handler in &handlers {
         facts_read.push(handler.primary_bci);

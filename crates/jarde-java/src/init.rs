@@ -83,6 +83,11 @@ pub(crate) struct Site {
     /// instruction produces no statement of its own — its text is the `new` expression, written
     /// where the instance is consumed and nowhere else.
     pub(crate) owned: BTreeSet<u32>,
+    /// Every instruction from the allocation through the constructor call that the verifier
+    /// accepted as this expression, including the value-producing argument instructions. A
+    /// resource header can use this closed range to prove that its complete initializer is this
+    /// site followed by the store that consumes the constructed instance.
+    pub(crate) expression: BTreeSet<u32>,
 }
 
 /// The local qualifier and exact check already proved for one physical member constructor.
@@ -212,6 +217,16 @@ impl Sites {
     /// The accepted site whose allocation begins at `head`, if `new@1` verified it.
     pub(crate) fn site_at_head(&self, head: u32) -> Option<&Site> {
         self.sites.iter().find(|site| site.head == head)
+    }
+
+    /// The uniquely accepted construction site that produced this SSA value.
+    pub(crate) fn site_producing(&self, ssa: &SsaTable, value: ValueId) -> Option<&Site> {
+        let mut matches = self
+            .sites
+            .iter()
+            .filter(|site| is_the_instance(ssa, value, &[site.head, site.dup, site.constructor]));
+        let site = matches.next()?;
+        matches.next().is_none().then_some(site)
     }
 
     /// Every candidate the rule refused, in BCI order.
@@ -531,6 +546,14 @@ fn verify(
     if let Some(member) = &member {
         owned.extend(member.owned.iter().copied());
     }
+    let constructor_index = block
+        .iter()
+        .position(|instruction| instruction.bci() == at)
+        .expect("the selected constructor belongs to this block");
+    let expression = block[index..=constructor_index]
+        .iter()
+        .map(SsaInstruction::bci)
+        .collect();
     Ok(Site {
         head,
         dup: dup.bci(),
@@ -539,6 +562,7 @@ fn verify(
         arguments,
         member_inner: member.map(|proof| proof.site),
         owned,
+        expression,
     })
 }
 

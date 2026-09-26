@@ -1797,11 +1797,35 @@ fn recover_inner(
     // `int` method's shared `iconst_0; ireturn` leaf belongs to the one-armed `if` walk).
     let return_is_boolean = build::return_type(request.facts.method().descriptor())
         .is_some_and(|ty| matches!(ty, crate::ast::Type::Boolean));
+    // These plans depend only on this run's decoded SSA facts. Build them before Region because
+    // Guard needs read-only access to verified construction sites while proving resource headers.
+    let fields = match field::plan(
+        ssa,
+        &operations,
+        request.facts.method().declaring_class(),
+        request.facts.method().name(),
+        request.facts.method().descriptor(),
+        request.ir.class_fields(),
+        budget,
+    ) {
+        Ok(fields) => fields,
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+    };
+    let chains = concat::plan(ssa, &operations);
+    let sites = init::sites(
+        ssa,
+        &operations,
+        chains.owned(),
+        &fields,
+        request.member_inner_targets,
+        code,
+    );
     let mut recovered: Recovered = match crate::region::recover(
         canonical,
         &view,
         ssa,
         &operations,
+        &sites,
         code,
         method_synchronized,
         return_is_boolean,
@@ -1835,18 +1859,6 @@ fn recover_inner(
     // Field declarations are borrowed from the same class facts as the body. The field plan keeps
     // the proof that lets a blank same-class static final write lose its qualifier, and the same
     // proof supplies the names the local naming walk must reserve.
-    let fields = match field::plan(
-        ssa,
-        &operations,
-        request.facts.method().declaring_class(),
-        request.facts.method().name(),
-        request.facts.method().descriptor(),
-        request.ir.class_fields(),
-        budget,
-    ) {
-        Ok(fields) => fields,
-        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
-    };
     let reserved_field_names = match fields.simple_static_final_names(budget) {
         Ok(names) => names,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
@@ -1877,7 +1889,6 @@ fn recover_inner(
     // are verified or refused and the gaps are stated here, and none of these calls builds an owning
     // record. The records the request selected are materialized from these plans *after* the artifact
     // is committed (the evidence phase below), so a run that stops inside the evidence keeps its text.
-    let chains = concat::plan(ssa, &operations);
     let bridge = bridge::plan(request.facts.method(), ssa, &operations);
     if let (Some(plan), Some(candidate_slot)) = (bridge.as_ref(), bridge_candidate.as_deref_mut()) {
         let member = request
@@ -1916,14 +1927,6 @@ fn recover_inner(
     // The construction sites reserve the concatenation chains' instructions, because one instruction
     // is never two shapes: the allocation a verified chain builds is written inside the `+` expression
     // and not a second time as a `new`.
-    let sites = init::sites(
-        ssa,
-        &operations,
-        chains.owned(),
-        &fields,
-        request.member_inner_targets,
-        code,
-    );
     if let Some(output) = anonymous_allocations.as_deref_mut() {
         let member = request
             .subject

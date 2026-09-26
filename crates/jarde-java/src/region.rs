@@ -1082,6 +1082,7 @@ pub(crate) fn recover(
     view: &NormalFlowView,
     ssa: &SsaTable,
     operations: &Operations,
+    sites: &crate::init::Sites,
     code: &MethodCodeFacts,
     method_synchronized: Option<bool>,
     // Whether the method's descriptor states a `boolean` result — the fact the
@@ -1206,6 +1207,7 @@ pub(crate) fn recover(
         view,
         ssa,
         operations,
+        sites,
         code,
         method_synchronized,
         has_reachable_explicit_monitor,
@@ -1825,6 +1827,7 @@ struct Walker<'a> {
     view: &'a NormalFlowView,
     ssa: &'a SsaTable,
     operations: &'a Operations,
+    sites: &'a crate::init::Sites,
     code: &'a MethodCodeFacts,
     /// Whether the declaring method is synchronized, as the same recovery request states it. An
     /// absent flag is not evidence that the JVM's implicit method monitor is absent.
@@ -2136,6 +2139,7 @@ impl Walker<'_> {
                     self.ssa,
                     self.operations,
                     self.handlers,
+                    self.sites,
                     self.profile,
                     &current,
                     self.budget,
