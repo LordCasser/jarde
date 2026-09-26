@@ -5,7 +5,7 @@
 ## 2. 配对证明与呈现
 
 - [x] 2.1 将提前的栈形状门限于精确捕获，`lambda.rs` 逐槽证明 SAM→instantiated→impl 的参数与反向返回转换（含装箱/拆箱）；arity/错误类型对/静态性负例保持拒绝，现有 Object 与捕获路径不退化。[Root 验收与既存预算测试债务](verification-2.1.md)
-- [ ] 2.2 从现有同类 `ClassMembers` 精确选定合成 impl，证明完整无 handler 的参数 load→目标数组分配→return、数组类型与长度参数；名称/flag-only、额外效果、错误类型、缺成员事实控制拒绝。
+- [x] 2.2 从现有同类 `ClassMembers` 精确选定合成 impl，证明完整无 handler 的参数 load→目标数组分配→return、数组类型与长度参数；名称/flag-only、额外效果、错误类型、缺成员事实控制拒绝。[Root 验收](verification-2.2.md)
 - [ ] 2.3 Builder 对已证数组 impl 发 `T[]::new`；其它装箱 SAM 使用点恢复含箭头调用的语句，来源 BCI 锚点与合成方法物理报告保留；重编译检查同名合成方法无冲突。
 
 ## 3. 对照与门禁
