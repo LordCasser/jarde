@@ -1,0 +1,119 @@
+// jarde: presentation of `BoxedSamProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public final class BoxedSamProbe extends java.lang.Object {
+    public BoxedSamProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `BoxedSamProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    private int supply() {
+        // @method supply()I
+        // @declaration an instance method of `BoxedSamProbe`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        return 7;
+    }
+
+    private int supplyOther() {
+        // @method supplyOther()I
+        // @declaration an instance method of `BoxedSamProbe`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        return 9;
+    }
+
+    private int supplyMinimum() {
+        // @method supplyMinimum()I
+        // @declaration an instance method of `BoxedSamProbe`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        return -2147483648;
+    }
+
+    private static int staticRef(java.lang.String arg0) {
+        // @method staticRef(Ljava/lang/String;)I
+        // @declaration a static method of `BoxedSamProbe`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.length();
+    }
+
+    private static int staticRefOther(java.lang.String arg0) {
+        // @method staticRefOther(Ljava/lang/String;)I
+        // @declaration a static method of `BoxedSamProbe`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0.length() + 10;
+    }
+
+    // jarde: generic Signature projection refused for `supplier()Ljava/util/function/Supplier;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    java.util.function.Supplier supplier() {
+        // jarde: not recovered: the recovery run for `supplier()Ljava/util/function/Supplier;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method supplier()Ljava/util/function/Supplier;
+        // @declaration an instance method of `BoxedSamProbe`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6
+        // the erased SAM `()Ljava/lang/Object;`, instantiated type `()Ljava/lang/Integer;` and implementation `BoxedSamProbe.supply()I` require a parameter or return conversion outside the proven identity, Object check, or Object upcast cases
+    }
+
+    // jarde: generic Signature projection refused for `minimumSupplier()Ljava/util/function/Supplier;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    java.util.function.Supplier minimumSupplier() {
+        // jarde: not recovered: the recovery run for `minimumSupplier()Ljava/util/function/Supplier;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method minimumSupplier()Ljava/util/function/Supplier;
+        // @declaration an instance method of `BoxedSamProbe`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 6
+        // the erased SAM `()Ljava/lang/Object;`, instantiated type `()Ljava/lang/Integer;` and implementation `BoxedSamProbe.supplyMinimum()I` require a parameter or return conversion outside the proven identity, Object check, or Object upcast cases
+    }
+
+    // jarde: generic Signature projection refused for `function()Ljava/util/function/Function;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    java.util.function.Function function() {
+        // jarde: not recovered: the recovery run for `function()Ljava/util/function/Function;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method function()Ljava/util/function/Function;
+        // @declaration an instance method of `BoxedSamProbe`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 5
+        // the erased SAM `(Ljava/lang/Object;)Ljava/lang/Object;`, instantiated type `(Ljava/lang/String;)Ljava/lang/Integer;` and implementation `BoxedSamProbe.staticRef(Ljava/lang/String;)I` require a parameter or return conversion outside the proven identity, Object check, or Object upcast cases
+    }
+
+    // jarde: generic Signature projection refused for `arrayCtor()Ljava/util/function/Function;`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    java.util.function.Function arrayCtor() {
+        // jarde: not recovered: the recovery run for `arrayCtor()Ljava/util/function/Function;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method arrayCtor()Ljava/util/function/Function;
+        // @declaration an instance method of `BoxedSamProbe`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 5
+        // the implementation `BoxedSamProbe.lambda$arrayCtor$0(I)[I` takes `int` at parameter 0 and the site binds `java.lang.Integer` there, which is not the same shape
+    }
+
+    // jarde: generic Signature projection refused for `dispatch(Ljava/util/function/Supplier;Ljava/util/function/Function;)I`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    private int dispatch(java.util.function.Supplier arg1, java.util.function.Function arg2) {
+        // @method dispatch(Ljava/util/function/Supplier;Ljava/util/function/Function;)I
+        // @declaration an instance method of `BoxedSamProbe`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        return ((java.lang.Integer) arg1.get()).intValue() + ((java.lang.Integer) arg2.apply((java.lang.Object) "x")).intValue();
+    }
+
+    int chainedSites() {
+        // jarde: not recovered: the recovery run for `chainedSites()I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method chainedSites()I
+        // @declaration an instance method of `BoxedSamProbe`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 31 12 27 0 1 15 16
+        // the erased SAM `()Ljava/lang/Object;`, instantiated type `()Ljava/lang/Integer;` and implementation `BoxedSamProbe.supply()I` require a parameter or return conversion outside the proven identity, Object check, or Object upcast cases
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `BoxedSamProbe`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 199 231 253 285
+        // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    private static int[] lambda$arrayCtor$0(int arg0) {
+        // @method lambda$arrayCtor$0(I)[I
+        // @declaration a static method of `BoxedSamProbe`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return new int[arg0];
+    }
+}

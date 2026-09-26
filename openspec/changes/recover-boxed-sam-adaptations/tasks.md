@@ -1,6 +1,6 @@
 ## 1. 冻结形状与三方基线
 
-- [ ] 1.1 自写 Java 8 fixture：`Supplier<Integer>`/`Function<String,Integer>`/`Function<Integer,int[]>` 站点各一、串联两站点的方法、`int[]::new` 使用点；javac --release 8 编译冻结 SHA；记录擦除 SAM/instantiated/impl 三段类型、合成分配方法的完整 Code、原 class 执行输出、jadx 1.5.6 的数组 lambda 展开与 jarde 修前整方法引用。
+- [x] 1.1 自写 Java 8 fixture：`Supplier<Integer>`/`Function<String,Integer>`/`Function<Integer,int[]>` 站点各一、串联两站点的方法、`int[]::new` 使用点；javac --release 8 编译冻结 SHA；记录擦除 SAM/instantiated/impl 三段类型、合成分配方法的完整 Code、原 class 执行输出、jadx 1.5.6 的数组 lambda 展开与 jarde 修前整方法引用。[三方证据与 Root 重放](../../evidence/java-syntax-2026-09-26/boxed-sam-adaptations/README.md)
 
 ## 2. 配对证明与呈现
 

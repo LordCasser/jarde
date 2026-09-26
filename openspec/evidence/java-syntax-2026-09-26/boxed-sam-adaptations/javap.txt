@@ -1,0 +1,504 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class
+  Last modified 2026年9月26日; size 3485 bytes
+  SHA-256 checksum 42dec3fe7f959bf4577417bd497cc14b5a55c59b0e6354e8eb65a9be33e8d32b
+public final class BoxedSamProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #42                         // BoxedSamProbe
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 14, attributes: 2
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Class              #8            // java/lang/Integer
+    #8 = Utf8               java/lang/Integer
+    #9 = Integer            -2147483648
+   #10 = Methodref          #11.#12       // java/lang/String.length:()I
+   #11 = Class              #13           // java/lang/String
+   #12 = NameAndType        #14:#15       // length:()I
+   #13 = Utf8               java/lang/String
+   #14 = Utf8               length
+   #15 = Utf8               ()I
+   #16 = InvokeDynamic      #0:#17        // #0:get:(LBoxedSamProbe;)Ljava/util/function/Supplier;
+   #17 = NameAndType        #18:#19       // get:(LBoxedSamProbe;)Ljava/util/function/Supplier;
+   #18 = Utf8               get
+   #19 = Utf8               (LBoxedSamProbe;)Ljava/util/function/Supplier;
+   #20 = InvokeDynamic      #1:#17        // #1:get:(LBoxedSamProbe;)Ljava/util/function/Supplier;
+   #21 = InvokeDynamic      #2:#22        // #2:apply:()Ljava/util/function/Function;
+   #22 = NameAndType        #23:#24       // apply:()Ljava/util/function/Function;
+   #23 = Utf8               apply
+   #24 = Utf8               ()Ljava/util/function/Function;
+   #25 = InvokeDynamic      #3:#22        // #3:apply:()Ljava/util/function/Function;
+   #26 = InterfaceMethodref #27.#28       // java/util/function/Supplier.get:()Ljava/lang/Object;
+   #27 = Class              #29           // java/util/function/Supplier
+   #28 = NameAndType        #18:#30       // get:()Ljava/lang/Object;
+   #29 = Utf8               java/util/function/Supplier
+   #30 = Utf8               ()Ljava/lang/Object;
+   #31 = Methodref          #7.#32        // java/lang/Integer.intValue:()I
+   #32 = NameAndType        #33:#15       // intValue:()I
+   #33 = Utf8               intValue
+   #34 = String             #35           // x
+   #35 = Utf8               x
+   #36 = InterfaceMethodref #37.#38       // java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+   #37 = Class              #39           // java/util/function/Function
+   #38 = NameAndType        #23:#40       // apply:(Ljava/lang/Object;)Ljava/lang/Object;
+   #39 = Utf8               java/util/function/Function
+   #40 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+   #41 = Methodref          #42.#43       // BoxedSamProbe.dispatch:(Ljava/util/function/Supplier;Ljava/util/function/Function;)I
+   #42 = Class              #44           // BoxedSamProbe
+   #43 = NameAndType        #45:#46       // dispatch:(Ljava/util/function/Supplier;Ljava/util/function/Function;)I
+   #44 = Utf8               BoxedSamProbe
+   #45 = Utf8               dispatch
+   #46 = Utf8               (Ljava/util/function/Supplier;Ljava/util/function/Function;)I
+   #47 = InvokeDynamic      #4:#17        // #4:get:(LBoxedSamProbe;)Ljava/util/function/Supplier;
+   #48 = InvokeDynamic      #5:#22        // #5:apply:()Ljava/util/function/Function;
+   #49 = Methodref          #42.#3        // BoxedSamProbe."<init>":()V
+   #50 = Fieldref           #51.#52       // java/lang/System.out:Ljava/io/PrintStream;
+   #51 = Class              #53           // java/lang/System
+   #52 = NameAndType        #54:#55       // out:Ljava/io/PrintStream;
+   #53 = Utf8               java/lang/System
+   #54 = Utf8               out
+   #55 = Utf8               Ljava/io/PrintStream;
+   #56 = Class              #57           // java/lang/StringBuilder
+   #57 = Utf8               java/lang/StringBuilder
+   #58 = Methodref          #56.#3        // java/lang/StringBuilder."<init>":()V
+   #59 = String             #60           // supplier=
+   #60 = Utf8               supplier=
+   #61 = Methodref          #56.#62       // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #62 = NameAndType        #63:#64       // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #63 = Utf8               append
+   #64 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #65 = Methodref          #42.#66       // BoxedSamProbe.supplier:()Ljava/util/function/Supplier;
+   #66 = NameAndType        #67:#68       // supplier:()Ljava/util/function/Supplier;
+   #67 = Utf8               supplier
+   #68 = Utf8               ()Ljava/util/function/Supplier;
+   #69 = Methodref          #56.#70       // java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #70 = NameAndType        #63:#71       // append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #71 = Utf8               (Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #72 = Methodref          #56.#73       // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #73 = NameAndType        #74:#75       // toString:()Ljava/lang/String;
+   #74 = Utf8               toString
+   #75 = Utf8               ()Ljava/lang/String;
+   #76 = Methodref          #77.#78       // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #77 = Class              #79           // java/io/PrintStream
+   #78 = NameAndType        #80:#81       // println:(Ljava/lang/String;)V
+   #79 = Utf8               java/io/PrintStream
+   #80 = Utf8               println
+   #81 = Utf8               (Ljava/lang/String;)V
+   #82 = String             #83           // minimum=
+   #83 = Utf8               minimum=
+   #84 = Methodref          #42.#85       // BoxedSamProbe.minimumSupplier:()Ljava/util/function/Supplier;
+   #85 = NameAndType        #86:#68       // minimumSupplier:()Ljava/util/function/Supplier;
+   #86 = Utf8               minimumSupplier
+   #87 = String             #88           // function=
+   #88 = Utf8               function=
+   #89 = Methodref          #42.#90       // BoxedSamProbe.function:()Ljava/util/function/Function;
+   #90 = NameAndType        #91:#24       // function:()Ljava/util/function/Function;
+   #91 = Utf8               function
+   #92 = String             #93           // abc
+   #93 = Utf8               abc
+   #94 = String             #95           // chained=
+   #95 = Utf8               chained=
+   #96 = Methodref          #42.#97       // BoxedSamProbe.chainedSites:()I
+   #97 = NameAndType        #98:#15       // chainedSites:()I
+   #98 = Utf8               chainedSites
+   #99 = Methodref          #56.#100      // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #100 = NameAndType        #63:#101      // append:(I)Ljava/lang/StringBuilder;
+  #101 = Utf8               (I)Ljava/lang/StringBuilder;
+  #102 = Methodref          #42.#103      // BoxedSamProbe.arrayCtor:()Ljava/util/function/Function;
+  #103 = NameAndType        #104:#24      // arrayCtor:()Ljava/util/function/Function;
+  #104 = Utf8               arrayCtor
+  #105 = String             #106          // array=
+  #106 = Utf8               array=
+  #107 = Methodref          #7.#108       // java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+  #108 = NameAndType        #109:#110     // valueOf:(I)Ljava/lang/Integer;
+  #109 = Utf8               valueOf
+  #110 = Utf8               (I)Ljava/lang/Integer;
+  #111 = Class              #112          // "[I"
+  #112 = Utf8               [I
+  #113 = String             #114          // null-array=returned
+  #114 = Utf8               null-array=returned
+  #115 = Class              #116          // java/lang/Throwable
+  #116 = Utf8               java/lang/Throwable
+  #117 = String             #118          // null-array=
+  #118 = Utf8               null-array=
+  #119 = Methodref          #2.#120       // java/lang/Object.getClass:()Ljava/lang/Class;
+  #120 = NameAndType        #121:#122     // getClass:()Ljava/lang/Class;
+  #121 = Utf8               getClass
+  #122 = Utf8               ()Ljava/lang/Class;
+  #123 = Methodref          #124.#125     // java/lang/Class.getSimpleName:()Ljava/lang/String;
+  #124 = Class              #126          // java/lang/Class
+  #125 = NameAndType        #127:#75      // getSimpleName:()Ljava/lang/String;
+  #126 = Utf8               java/lang/Class
+  #127 = Utf8               getSimpleName
+  #128 = String             #129          // negative-array=returned
+  #129 = Utf8               negative-array=returned
+  #130 = String             #131          // negative-array=
+  #131 = Utf8               negative-array=
+  #132 = Utf8               Code
+  #133 = Utf8               supply
+  #134 = Utf8               supplyOther
+  #135 = Utf8               supplyMinimum
+  #136 = Utf8               staticRef
+  #137 = Utf8               (Ljava/lang/String;)I
+  #138 = Utf8               staticRefOther
+  #139 = Utf8               Signature
+  #140 = Utf8               ()Ljava/util/function/Supplier<Ljava/lang/Integer;>;
+  #141 = Utf8               ()Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/Integer;>;
+  #142 = Utf8               ()Ljava/util/function/Function<Ljava/lang/Integer;[I>;
+  #143 = Utf8               (Ljava/util/function/Supplier<Ljava/lang/Integer;>;Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/Integer;>;)I
+  #144 = Utf8               main
+  #145 = Utf8               ([Ljava/lang/String;)V
+  #146 = Utf8               StackMapTable
+  #147 = Class              #148          // "[Ljava/lang/String;"
+  #148 = Utf8               [Ljava/lang/String;
+  #149 = Utf8               lambda$arrayCtor$0
+  #150 = Utf8               (I)[I
+  #151 = Utf8               BootstrapMethods
+  #152 = MethodType         #30           //  ()Ljava/lang/Object;
+  #153 = MethodHandle       7:#154        // REF_invokeSpecial BoxedSamProbe.supply:()I
+  #154 = Methodref          #42.#155      // BoxedSamProbe.supply:()I
+  #155 = NameAndType        #133:#15      // supply:()I
+  #156 = MethodType         #157          //  ()Ljava/lang/Integer;
+  #157 = Utf8               ()Ljava/lang/Integer;
+  #158 = MethodHandle       7:#159        // REF_invokeSpecial BoxedSamProbe.supplyMinimum:()I
+  #159 = Methodref          #42.#160      // BoxedSamProbe.supplyMinimum:()I
+  #160 = NameAndType        #135:#15      // supplyMinimum:()I
+  #161 = MethodType         #40           //  (Ljava/lang/Object;)Ljava/lang/Object;
+  #162 = MethodHandle       6:#163        // REF_invokeStatic BoxedSamProbe.staticRef:(Ljava/lang/String;)I
+  #163 = Methodref          #42.#164      // BoxedSamProbe.staticRef:(Ljava/lang/String;)I
+  #164 = NameAndType        #136:#137     // staticRef:(Ljava/lang/String;)I
+  #165 = MethodType         #166          //  (Ljava/lang/String;)Ljava/lang/Integer;
+  #166 = Utf8               (Ljava/lang/String;)Ljava/lang/Integer;
+  #167 = MethodHandle       6:#168        // REF_invokeStatic BoxedSamProbe.lambda$arrayCtor$0:(I)[I
+  #168 = Methodref          #42.#169      // BoxedSamProbe.lambda$arrayCtor$0:(I)[I
+  #169 = NameAndType        #149:#150     // lambda$arrayCtor$0:(I)[I
+  #170 = MethodType         #171          //  (Ljava/lang/Integer;)[I
+  #171 = Utf8               (Ljava/lang/Integer;)[I
+  #172 = MethodHandle       7:#173        // REF_invokeSpecial BoxedSamProbe.supplyOther:()I
+  #173 = Methodref          #42.#174      // BoxedSamProbe.supplyOther:()I
+  #174 = NameAndType        #134:#15      // supplyOther:()I
+  #175 = MethodHandle       6:#176        // REF_invokeStatic BoxedSamProbe.staticRefOther:(Ljava/lang/String;)I
+  #176 = Methodref          #42.#177      // BoxedSamProbe.staticRefOther:(Ljava/lang/String;)I
+  #177 = NameAndType        #138:#137     // staticRefOther:(Ljava/lang/String;)I
+  #178 = MethodHandle       6:#179        // REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #179 = Methodref          #180.#181     // java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #180 = Class              #182          // java/lang/invoke/LambdaMetafactory
+  #181 = NameAndType        #183:#184     // metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #182 = Utf8               java/lang/invoke/LambdaMetafactory
+  #183 = Utf8               metafactory
+  #184 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #185 = Utf8               InnerClasses
+  #186 = Class              #187          // java/lang/invoke/MethodHandles$Lookup
+  #187 = Utf8               java/lang/invoke/MethodHandles$Lookup
+  #188 = Class              #189          // java/lang/invoke/MethodHandles
+  #189 = Utf8               java/lang/invoke/MethodHandles
+  #190 = Utf8               Lookup
+{
+  public BoxedSamProbe();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  private int supply();
+    descriptor: ()I
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: bipush        7
+         2: ireturn
+
+  private int supplyOther();
+    descriptor: ()I
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: bipush        9
+         2: ireturn
+
+  private int supplyMinimum();
+    descriptor: ()I
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: ldc           #9                  // int -2147483648
+         2: ireturn
+
+  private static int staticRef(java.lang.String);
+    descriptor: (Ljava/lang/String;)I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokevirtual #10                 // Method java/lang/String.length:()I
+         4: ireturn
+
+  private static int staticRefOther(java.lang.String);
+    descriptor: (Ljava/lang/String;)I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: invokevirtual #10                 // Method java/lang/String.length:()I
+         4: bipush        10
+         6: iadd
+         7: ireturn
+
+  java.util.function.Supplier<java.lang.Integer> supplier();
+    descriptor: ()Ljava/util/function/Supplier;
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokedynamic #16,  0             // InvokeDynamic #0:get:(LBoxedSamProbe;)Ljava/util/function/Supplier;
+         6: areturn
+    Signature: #140                         // ()Ljava/util/function/Supplier<Ljava/lang/Integer;>;
+
+  java.util.function.Supplier<java.lang.Integer> minimumSupplier();
+    descriptor: ()Ljava/util/function/Supplier;
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokedynamic #20,  0             // InvokeDynamic #1:get:(LBoxedSamProbe;)Ljava/util/function/Supplier;
+         6: areturn
+    Signature: #140                         // ()Ljava/util/function/Supplier<Ljava/lang/Integer;>;
+
+  java.util.function.Function<java.lang.String, java.lang.Integer> function();
+    descriptor: ()Ljava/util/function/Function;
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: invokedynamic #21,  0             // InvokeDynamic #2:apply:()Ljava/util/function/Function;
+         5: areturn
+    Signature: #141                         // ()Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/Integer;>;
+
+  java.util.function.Function<java.lang.Integer, int[]> arrayCtor();
+    descriptor: ()Ljava/util/function/Function;
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: invokedynamic #25,  0             // InvokeDynamic #3:apply:()Ljava/util/function/Function;
+         5: areturn
+    Signature: #142                         // ()Ljava/util/function/Function<Ljava/lang/Integer;[I>;
+
+  private int dispatch(java.util.function.Supplier<java.lang.Integer>, java.util.function.Function<java.lang.String, java.lang.Integer>);
+    descriptor: (Ljava/util/function/Supplier;Ljava/util/function/Function;)I
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_1
+         1: invokeinterface #26,  1           // InterfaceMethod java/util/function/Supplier.get:()Ljava/lang/Object;
+         6: checkcast     #7                  // class java/lang/Integer
+         9: invokevirtual #31                 // Method java/lang/Integer.intValue:()I
+        12: aload_2
+        13: ldc           #34                 // String x
+        15: invokeinterface #36,  2           // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+        20: checkcast     #7                  // class java/lang/Integer
+        23: invokevirtual #31                 // Method java/lang/Integer.intValue:()I
+        26: iadd
+        27: ireturn
+    Signature: #143                         // (Ljava/util/function/Supplier<Ljava/lang/Integer;>;Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/Integer;>;)I
+
+  int chainedSites();
+    descriptor: ()I
+    flags: (0x0000)
+    Code:
+      stack=4, locals=1, args_size=1
+         0: aload_0
+         1: aload_0
+         2: invokedynamic #16,  0             // InvokeDynamic #0:get:(LBoxedSamProbe;)Ljava/util/function/Supplier;
+         7: invokedynamic #21,  0             // InvokeDynamic #2:apply:()Ljava/util/function/Function;
+        12: invokespecial #41                 // Method dispatch:(Ljava/util/function/Supplier;Ljava/util/function/Function;)I
+        15: aload_0
+        16: aload_0
+        17: invokedynamic #47,  0             // InvokeDynamic #4:get:(LBoxedSamProbe;)Ljava/util/function/Supplier;
+        22: invokedynamic #48,  0             // InvokeDynamic #5:apply:()Ljava/util/function/Function;
+        27: invokespecial #41                 // Method dispatch:(Ljava/util/function/Supplier;Ljava/util/function/Function;)I
+        30: iadd
+        31: ireturn
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=1
+         0: new           #42                 // class BoxedSamProbe
+         3: dup
+         4: invokespecial #49                 // Method "<init>":()V
+         7: astore_1
+         8: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: new           #56                 // class java/lang/StringBuilder
+        14: dup
+        15: invokespecial #58                 // Method java/lang/StringBuilder."<init>":()V
+        18: ldc           #59                 // String supplier=
+        20: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        23: aload_1
+        24: invokevirtual #65                 // Method supplier:()Ljava/util/function/Supplier;
+        27: invokeinterface #26,  1           // InterfaceMethod java/util/function/Supplier.get:()Ljava/lang/Object;
+        32: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        35: invokevirtual #72                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        38: invokevirtual #76                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        41: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        44: new           #56                 // class java/lang/StringBuilder
+        47: dup
+        48: invokespecial #58                 // Method java/lang/StringBuilder."<init>":()V
+        51: ldc           #82                 // String minimum=
+        53: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        56: aload_1
+        57: invokevirtual #84                 // Method minimumSupplier:()Ljava/util/function/Supplier;
+        60: invokeinterface #26,  1           // InterfaceMethod java/util/function/Supplier.get:()Ljava/lang/Object;
+        65: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        68: invokevirtual #72                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        71: invokevirtual #76                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        74: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        77: new           #56                 // class java/lang/StringBuilder
+        80: dup
+        81: invokespecial #58                 // Method java/lang/StringBuilder."<init>":()V
+        84: ldc           #87                 // String function=
+        86: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        89: aload_1
+        90: invokevirtual #89                 // Method function:()Ljava/util/function/Function;
+        93: ldc           #92                 // String abc
+        95: invokeinterface #36,  2           // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+       100: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+       103: invokevirtual #72                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       106: invokevirtual #76                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       109: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       112: new           #56                 // class java/lang/StringBuilder
+       115: dup
+       116: invokespecial #58                 // Method java/lang/StringBuilder."<init>":()V
+       119: ldc           #94                 // String chained=
+       121: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       124: aload_1
+       125: invokevirtual #96                 // Method chainedSites:()I
+       128: invokevirtual #99                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       131: invokevirtual #72                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       134: invokevirtual #76                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       137: aload_1
+       138: invokevirtual #102                // Method arrayCtor:()Ljava/util/function/Function;
+       141: astore_2
+       142: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       145: new           #56                 // class java/lang/StringBuilder
+       148: dup
+       149: invokespecial #58                 // Method java/lang/StringBuilder."<init>":()V
+       152: ldc           #105                // String array=
+       154: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       157: aload_2
+       158: iconst_3
+       159: invokestatic  #107                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       162: invokeinterface #36,  2           // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+       167: checkcast     #111                // class "[I"
+       170: arraylength
+       171: invokevirtual #99                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       174: invokevirtual #72                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       177: invokevirtual #76                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       180: aload_2
+       181: aconst_null
+       182: invokeinterface #36,  2           // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+       187: pop
+       188: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       191: ldc           #113                // String null-array=returned
+       193: invokevirtual #76                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       196: goto          231
+       199: astore_3
+       200: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       203: new           #56                 // class java/lang/StringBuilder
+       206: dup
+       207: invokespecial #58                 // Method java/lang/StringBuilder."<init>":()V
+       210: ldc           #117                // String null-array=
+       212: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       215: aload_3
+       216: invokevirtual #119                // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       219: invokevirtual #123                // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+       222: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       225: invokevirtual #72                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       228: invokevirtual #76                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       231: aload_2
+       232: iconst_m1
+       233: invokestatic  #107                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       236: invokeinterface #36,  2           // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+       241: pop
+       242: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       245: ldc           #128                // String negative-array=returned
+       247: invokevirtual #76                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       250: goto          285
+       253: astore_3
+       254: getstatic     #50                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       257: new           #56                 // class java/lang/StringBuilder
+       260: dup
+       261: invokespecial #58                 // Method java/lang/StringBuilder."<init>":()V
+       264: ldc           #130                // String negative-array=
+       266: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       269: aload_3
+       270: invokevirtual #119                // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       273: invokevirtual #123                // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+       276: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       279: invokevirtual #72                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       282: invokevirtual #76                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       285: return
+      Exception table:
+         from    to  target type
+           180   196   199   Class java/lang/Throwable
+           231   250   253   Class java/lang/Throwable
+      StackMapTable: number_of_entries = 4
+        frame_type = 255 /* full_frame */
+          offset_delta = 199
+          locals = [ class "[Ljava/lang/String;", class BoxedSamProbe, class java/util/function/Function ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 31 /* same */
+        frame_type = 85 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 31 /* same */
+
+  private static int[] lambda$arrayCtor$0(int);
+    descriptor: (I)[I
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: newarray       int
+         3: areturn
+}
+BootstrapMethods:
+  0: #178 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #152 ()Ljava/lang/Object;
+      #153 REF_invokeSpecial BoxedSamProbe.supply:()I
+      #156 ()Ljava/lang/Integer;
+  1: #178 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #152 ()Ljava/lang/Object;
+      #158 REF_invokeSpecial BoxedSamProbe.supplyMinimum:()I
+      #156 ()Ljava/lang/Integer;
+  2: #178 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #161 (Ljava/lang/Object;)Ljava/lang/Object;
+      #162 REF_invokeStatic BoxedSamProbe.staticRef:(Ljava/lang/String;)I
+      #165 (Ljava/lang/String;)Ljava/lang/Integer;
+  3: #178 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #161 (Ljava/lang/Object;)Ljava/lang/Object;
+      #167 REF_invokeStatic BoxedSamProbe.lambda$arrayCtor$0:(I)[I
+      #170 (Ljava/lang/Integer;)[I
+  4: #178 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #152 ()Ljava/lang/Object;
+      #172 REF_invokeSpecial BoxedSamProbe.supplyOther:()I
+      #156 ()Ljava/lang/Integer;
+  5: #178 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #161 (Ljava/lang/Object;)Ljava/lang/Object;
+      #175 REF_invokeStatic BoxedSamProbe.staticRefOther:(Ljava/lang/String;)I
+      #165 (Ljava/lang/String;)Ljava/lang/Integer;
+InnerClasses:
+  public static final #190= #186 of #188; // Lookup=class java/lang/invoke/MethodHandles$Lookup of class java/lang/invoke/MethodHandles

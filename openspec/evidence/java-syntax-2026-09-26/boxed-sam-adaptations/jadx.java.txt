@@ -1,0 +1,75 @@
+package defpackage;
+
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+/* JADX INFO: loaded from: BoxedSamProbe.class */
+public final class BoxedSamProbe {
+    private int supply() {
+        return 7;
+    }
+
+    private int supplyOther() {
+        return 9;
+    }
+
+    private int supplyMinimum() {
+        return Integer.MIN_VALUE;
+    }
+
+    private static int staticRef(String str) {
+        return str.length();
+    }
+
+    private static int staticRefOther(String str) {
+        return str.length() + 10;
+    }
+
+    Supplier<Integer> supplier() {
+        return this::supply;
+    }
+
+    Supplier<Integer> minimumSupplier() {
+        return this::supplyMinimum;
+    }
+
+    Function<String, Integer> function() {
+        return BoxedSamProbe::staticRef;
+    }
+
+    Function<Integer, int[]> arrayCtor() {
+        return i -> {
+            return new int[i];
+        };
+    }
+
+    private int dispatch(Supplier<Integer> supplier, Function<String, Integer> function) {
+        return supplier.get().intValue() + function.apply("x").intValue();
+    }
+
+    int chainedSites() {
+        return dispatch(this::supply, BoxedSamProbe::staticRef) + dispatch(this::supplyOther, BoxedSamProbe::staticRefOther);
+    }
+
+    public static void main(String[] strArr) {
+        BoxedSamProbe boxedSamProbe = new BoxedSamProbe();
+        System.out.println("supplier=" + boxedSamProbe.supplier().get());
+        System.out.println("minimum=" + boxedSamProbe.minimumSupplier().get());
+        System.out.println("function=" + boxedSamProbe.function().apply("abc"));
+        System.out.println("chained=" + boxedSamProbe.chainedSites());
+        Function<Integer, int[]> functionArrayCtor = boxedSamProbe.arrayCtor();
+        System.out.println("array=" + functionArrayCtor.apply(3).length);
+        try {
+            functionArrayCtor.apply(null);
+            System.out.println("null-array=returned");
+        } catch (Throwable th) {
+            System.out.println("null-array=" + th.getClass().getSimpleName());
+        }
+        try {
+            functionArrayCtor.apply(-1);
+            System.out.println("negative-array=returned");
+        } catch (Throwable th2) {
+            System.out.println("negative-array=" + th2.getClass().getSimpleName());
+        }
+    }
+}

@@ -1,0 +1,7 @@
+supplier=7
+minimum=-2147483648
+function=3
+chained=28
+array=3
+null-array=NullPointerException
+negative-array=NegativeArraySizeException
