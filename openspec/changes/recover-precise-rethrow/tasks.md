@@ -5,7 +5,7 @@
 ## 2. guard 判别与子句呈现
 
 - [ ] 2.1 `finally_copy` 候选加 `catch_type == 0` 前置；具名行不再产生 `Unproven::FinallyCopy`。定向测试：具名行精确重抛不再被该候选拒绝，any 行候选与既有 finally/TWR 证明全部保持。
-- [ ] 2.2 具名单行 handler 末条 `athrow` 的操作数为入口存储槽位时，子句体末呈现 `throw <参数名>;`（复用 throw 语句路径）；来源含入口存储与 `athrow` BCI；多行到达 handler 不适用。呈现测试含正例文本、来源锚点、负例保持现状。
+- [ ] 2.2 具名单行 handler 末条 `athrow` 的操作数为入口存储槽位时，子句体末呈现 `throw <参数名>;`（复用 throw 语句路径）；来源含入口存储与 `athrow` BCI。多行到达 handler 交给既有 catch 路径，不加保留旧误判的阻断；呈现测试含正例文本、来源锚点，以及多捕获的已证明/仍拒绝部分和非参数重抛控制。
 
 ## 3. 对照与门禁
 

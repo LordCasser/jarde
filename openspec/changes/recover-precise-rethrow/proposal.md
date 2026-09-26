@@ -10,7 +10,7 @@ jadx 1.5.6 同场景把它恢复为 try/catch，但把 `throws java.text.ParseEx
 
 - `finally_copy` 候选检测 MUST 先要求该行的 `catch_type == 0`（any）；具名类型行不再进入 finally 拷贝候选，保持其用户 catch 身份。
 - 具名 catch 行的 handler 体以重抛该行 catch 参数结尾（末条 `athrow` 的值是 handler 入口存储的同一局部）时，该子句按普通用户 catch 呈现，体末是 `throw e;`（`e` 为子句参数名）。来源保留 handler 入口存储与 `athrow` 的 BCI。
-- 单一具名行覆盖该 handler 入口时才适用本形状；同一 handler 入口被多行到达（多捕获 `A | B` 编码为多行）不在此 change 范围，保持今天的处理。
+- 单一具名行覆盖该 handler 入口是本形状的正例。多行到同一入口的多捕获不新增证明器；去掉错误的 finally 候选后它交给既有 catch 路径，可能呈现已证明的部分语句，其余转换仍按现有拒绝边界处理。
 - `catch_type == 0` 的行与 TWR/monitor 的既有证明路径不变；本 change 不把 any 行改写成用户 catch。
 - 自写 Java 8 fixture 经 javac、jadx、jarde 三方对照；重编译执行比较两种抛出模式与正常完成路径的返回值与异常类型；jadx 对 `Exceptions` 属性的宽化偏离如实记录为 jadx 偏离，不作为 jarde 的通过条件。
 
@@ -28,4 +28,4 @@ jadx 1.5.6 同场景把它恢复为 try/catch，但把 `throws java.text.ParseEx
 
 实现集中在 `crates/jarde-java/src/guard.rs`（候选检测、catch 子句建造）与 `build.rs`/`emit.rs` 的子句体末 `throw` 语句呈现，及对应 fixture/test。`recover-throw-statements` 已交付的 `throw` 值语句是本 change 的直接复用；TWR/finally 的行几何规则（`close_of_level`、`enclosing_clauses`）不变。无新 crate、pass、生产依赖。
 
-非目标：多捕获（多行到同一 handler）的并集类型拼写；handler 体中非参数值的一般 `throw` 新形状；`catch_type == 0` 行的任何放宽；方法级 `throws` 拼写规则改动。
+非目标：新增多捕获并集类型的证明或拼写机制；handler 体中非参数值的一般 `throw` 新形状；`catch_type == 0` 行的任何放宽；方法级 `throws` 拼写规则改动。
