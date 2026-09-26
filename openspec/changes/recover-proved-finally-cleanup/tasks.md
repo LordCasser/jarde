@@ -10,7 +10,7 @@
 
 - [x] 2.1 在现有 `guard`/pass 机制中证明一个 straight 非覆盖 cleanup 的正常/异常副本等价、操作数与成员身份及每条出口恰好一次；须在比较副本前检查 catch-all 半开保护范围均不包含正常或 handler 清理指令，否则其自身抛错可能重入。以不同 cleanup 目标/参数、竞争 handler、范围缺口、1.5 的范围扩围、重复或额外消费者为拒绝测试，预算/取消沿既有停止契约。
 - [x] 2.2 用现有 `Plan`/`Region::Guard` 半开指令范围认领 body、两份 cleanup、handler 与返回，给现有 `Try` AST/emitter 加最小可选 finally 正文；先对直线型正文设无分支/转移门槛，检查融合块中无独立重复语句、无遗漏物理指令，资源/monitor/typed-catch 回归不变。不得让平坦 `body_range` 静默吞掉分支。
-- [ ] 2.3 证明 try 返回值在 cleanup 前保存、正常路径返回该旧值，handler 重抛捕获的同一异常；cleanup 自身抛错时按 Java 完成优先级覆盖。已冻结[直线调用抛错四路径样本](../../evidence/java-syntax-2026-09-24/finally-straight-cleanup-throws/analysis.md)；再以[同块前置赋值与返回快照样本](../../evidence/java-syntax-2026-09-24/finally-lead-snapshot/analysis.md)检验已有 `Plan.lead`，不把 lead 错放入受保护范围。`ImplicitCleanup` 的受保护正文含 `if`/`throw`，须通过既有 Region 结构表达或继续引用，不能以平坦范围冒充完整正文。对于覆盖型 return/throw、未知值稳定性或不能呈现的生产者，保守引用完整候选而非生成错义 finally。
+- [ ] 2.3 证明 try 返回值在 cleanup 前保存、正常路径返回该旧值，handler 重抛捕获的同一异常；cleanup 自身抛错时按 Java 完成优先级覆盖。`FinallyLeadSnapshot` 的同块前置赋值与返回快照已由[verification-2.3-lead.md](verification-2.3-lead.md)验收；直线 `cleanup()` 抛错四路径已由[verification-2.2.md](verification-2.2.md)验收。剩余实现门槛仅为 `ImplicitCleanup.run()` 受保护正文中分支/`throw` 的 Region 子结构、完成语义和拒绝边界：须完整表达或继续引用，不能以平坦范围冒充正文。对于覆盖型 return/throw、未知值稳定性或不能呈现的生产者，保守引用完整候选而非生成错义 finally；本任务仍未完成。
 - [ ] 2.4 核对默认/完整来源正文相同且涵盖 try、正常和异常 cleanup、保存返回、异常表及 rethrow 的真实 BCI/成员；正文/来源预算、取消和深度界限得到既有有界结果，不留下半个 finally。
 
 ## 3. 整类对照与主代理验收
