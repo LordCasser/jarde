@@ -1,0 +1,7 @@
+defpackage/OuterLocalBoundary.java:12:    String compareWithLocal(final OuterLocalBoundary other) {
+defpackage/OuterLocalBoundary.java:21:                return other.state + ":" + this.this$0.state + ":" + OuterLocalBoundary.super.value();
+defpackage/OuterLocalBoundary.java:29:        System.out.println(outer.compareWithLocal(other));
+defpackage/OuterReceiverCases.java:25:        String compare(OuterReceiverCases other) {
+defpackage/OuterReceiverCases.java:26:            return other.state + ":" + OuterReceiverCases.this.state + ":" + OuterReceiverCases.super.value() + ":" + value();
+defpackage/OuterReceiverCases.java:36:            return other.state;
+defpackage/OuterReceiverCases.java:45:        printStream.println(outer.new Member().compare(other));

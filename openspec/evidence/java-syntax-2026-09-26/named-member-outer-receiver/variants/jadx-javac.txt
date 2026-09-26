@@ -1,0 +1,10 @@
+jadx-generated/defpackage/OuterLocalBoundary.java:13: 错误: 无法将类 Object中的构造器 Object应用到给定类型;
+        return new Object(this) { // from class: OuterLocalBoundary.1Local
+               ^
+  需要: 没有参数
+  找到:    OuterLocalBoundary
+  原因: 实际参数列表和形式参数列表长度不同
+jadx-generated/defpackage/OuterLocalBoundary.java:17: 错误: 不兼容的类型: <匿名Object>无法转换为OuterLocalBoundary
+                this.this$0 = this;
+                              ^
+2 个错误

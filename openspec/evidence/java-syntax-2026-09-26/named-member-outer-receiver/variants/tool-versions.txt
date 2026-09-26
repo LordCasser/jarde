@@ -1,0 +1,6 @@
+openjdk version "23.0.1" 2024-10-15
+javac 23.0.1
+jadx 1.5.6
+jarde-cli built from repository revision 00d99baf8e05824a8a4037dd00b7de72c3fdb47f with: CARGO_TARGET_DIR=/tmp/jarde-concat-constructor-agent-target cargo build -p jarde-cli --locked
+Java compile: javac --release 8 -g
+JADX named-member recompile: javac --release 8 -Xlint:-options

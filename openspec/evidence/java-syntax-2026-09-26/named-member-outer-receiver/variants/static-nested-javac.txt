@@ -1,0 +1,11 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/StaticNestedIllegal.java:4: 错误: 无法从静态上下文中引用非静态 变量 this
+            return StaticNestedIllegal.this.value() + StaticNestedIllegal.super.value();
+                                      ^
+openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/StaticNestedIllegal.java:4: 错误: 无法从静态上下文中引用非静态 变量 super
+            return StaticNestedIllegal.this.value() + StaticNestedIllegal.super.value();
+                                                                         ^
+2 个错误
+3 个警告
