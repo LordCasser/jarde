@@ -1066,8 +1066,8 @@ fn anonymous_inner_this_refuses_an_additional_local_capture_and_keeps_physical_c
     fs::write(
         directory.join("Inner.java"),
         "public class Inner { static Object observed; int value = 37;\n\
-         Runnable make(int captured) { return new Runnable() {\n\
-         public void run() { observed = Inner.this; Inner.this.value += captured; }\
+         Runnable make(int captured, int second) { return new Runnable() {\n\
+         public void run() { observed = Inner.this; Inner.this.value += captured + second; }\
          }; } }\n",
     )
     .expect("write the enclosing-instance plus local-capture class");
@@ -1105,6 +1105,7 @@ fn anonymous_inner_this_refuses_an_additional_local_capture_and_keeps_physical_c
     );
     assert!(child.text.contains("this$0"), "{}", child.text);
     assert!(child.text.contains("captured"), "{}", child.text);
+    assert!(child.text.contains("second"), "{}", child.text);
 }
 
 #[test]
@@ -1141,13 +1142,165 @@ fn anonymous_inner_this_refuses_a_mismatched_enclosing_method_identity() {
 }
 
 #[test]
+fn anonymous_inner_this_refuses_a_second_owner_allocation_and_keeps_physical_child() {
+    let mut root = ANONYMOUS_INNER_THIS_ROOT.to_vec();
+    let methods = test_method_headers(ANONYMOUS_INNER_THIS_ROOT);
+    let make = methods
+        .iter()
+        .find(|method| method.name == b"make")
+        .expect("the direct-return factory exists");
+    let make_code = make
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("the factory has Code");
+    let make_start = make_code.data_offset + 8;
+    let child_class = test_u16(ANONYMOUS_INNER_THIS_ROOT, make_start + 1);
+    let constructor = test_method_reference(
+        ANONYMOUS_INNER_THIS_ROOT,
+        b"Inner$1",
+        b"<init>",
+        b"(LInner;)V",
+    );
+    let main = methods
+        .iter()
+        .find(|method| method.name == b"main")
+        .expect("the runner exists");
+    let main_code = main
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("the runner has Code");
+    let code_start = main_code.data_offset + 8;
+    let old_code_length = test_u32(ANONYMOUS_INNER_THIS_ROOT, main_code.data_offset + 4);
+    assert_eq!(
+        ANONYMOUS_INNER_THIS_ROOT[code_start + old_code_length - 1],
+        0xb1
+    );
+
+    // Reuse the same physical child from a second method in the owner. This tests the
+    // owner-wide allocation inventory rather than only duplicate sites in the candidate method.
+    let mut second_site = vec![0xbb];
+    u16b(
+        &mut second_site,
+        u16::try_from(child_class).expect("the child class index fits u16"),
+    );
+    second_site.extend([0x59, 0x2b, 0xb7]); // dup; aload_1 (the existing Inner local); invokespecial
+    u16b(&mut second_site, constructor);
+    second_site.push(0x57); // pop
+    root.splice(
+        code_start + old_code_length - 1..code_start + old_code_length - 1,
+        second_site.clone(),
+    );
+    test_put_u16(&mut root, main_code.data_offset, 3);
+    test_put_u32(
+        &mut root,
+        main_code.data_offset + 4,
+        old_code_length + second_site.len(),
+    );
+    test_put_u32(
+        &mut root,
+        main_code.length_offset,
+        main_code.length + second_site.len(),
+    );
+
+    let snapshot = open(zip_of(&[
+        (b"Inner.class", &root),
+        (b"Inner$1.class", ANONYMOUS_INNER_THIS_CHILD),
+    ]));
+    let report = class_source_of(&snapshot, "Inner", EnvironmentPolicy::PlainJar);
+    assert!(report.text.contains("new Inner$1(this)"), "{}", report.text);
+    assert!(
+        !report.text.contains("new java.lang.Runnable() {"),
+        "{}",
+        report.text
+    );
+    let child = class_source_of(&snapshot, "Inner$1", EnvironmentPolicy::PlainJar);
+    assert!(child.text.contains("this$0"), "{}", child.text);
+}
+
+#[test]
+fn anonymous_inner_this_refuses_a_fallback_child_method_without_partial_projection() {
+    let mut child_bytes = ANONYMOUS_INNER_THIS_CHILD.to_vec();
+    let run = test_method_headers(ANONYMOUS_INNER_THIS_CHILD)
+        .into_iter()
+        .find(|method| method.name == b"run" && method.descriptor == b"()V")
+        .expect("the anonymous Runnable method exists");
+    let code = run
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("run() has Code");
+    child_bytes[code.data_offset + 8] = 0xcb; // reserved opcode makes this physical method mixed
+    let snapshot = open(zip_of(&[
+        (b"Inner.class", ANONYMOUS_INNER_THIS_ROOT),
+        (b"Inner$1.class", &child_bytes),
+    ]));
+    let root = class_source_of(&snapshot, "Inner", EnvironmentPolicy::PlainJar);
+    assert!(root.text.contains("new Inner$1(this)"), "{}", root.text);
+    assert!(
+        !root.text.contains("new java.lang.Runnable() {"),
+        "{}",
+        root.text
+    );
+    let child = class_source_of(&snapshot, "Inner$1", EnvironmentPolicy::PlainJar);
+    assert!(child.text.contains("this$0"), "{}", child.text);
+    let run = child
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"run")
+        .expect("the physical fallback remains listed");
+    assert!(
+        matches!(run.outcome, ClassSourceOutcome::Recovered { ref report, .. }
+        if report.quality == jarde::ir::Quality::Fallback
+            && !report.outcome.produced()),
+        "physical child method must retain its stopped fallback: {:?}",
+        run.outcome
+    );
+}
+
+#[test]
+fn anonymous_inner_this_refuses_a_cross_class_constructor_reference() {
+    let scratch = BridgeProjectionScratch::new();
+    let directory = scratch.child("inner-this-cross-class-reference");
+    fs::write(directory.join("Inner.class"), ANONYMOUS_INNER_THIS_ROOT)
+        .expect("write the frozen owner class");
+    fs::write(directory.join("Inner$1.class"), ANONYMOUS_INNER_THIS_CHILD)
+        .expect("write the frozen anonymous class");
+    fs::write(
+        directory.join("Other.java"),
+        "final class Other { static Runnable make(Inner outer) { return new Inner$1(outer); } }\n",
+    )
+    .expect("write a second physical owner of the anonymous constructor");
+    compile_java_8(&directory, "Other.java", &directory);
+    let other = fs::read(directory.join("Other.class")).expect("read the second owner");
+    let snapshot = open(zip_of(&[
+        (b"Inner.class", ANONYMOUS_INNER_THIS_ROOT),
+        (b"Inner$1.class", ANONYMOUS_INNER_THIS_CHILD),
+        (b"Other.class", &other),
+    ]));
+    let root = class_source_of(&snapshot, "Inner", EnvironmentPolicy::PlainJar);
+    assert!(root.text.contains("new Inner$1(this)"), "{}", root.text);
+    assert!(
+        !root.text.contains("new java.lang.Runnable() {"),
+        "{}",
+        root.text
+    );
+    assert!(
+        class_source_of(&snapshot, "Inner$1", EnvironmentPolicy::PlainJar)
+            .text
+            .contains("this$0")
+    );
+}
+
+#[test]
 fn anonymous_inner_this_budget_and_cancellation_never_publish_partial_projection() {
     let snapshot = open(zip_of(&[
         (b"Inner.class", ANONYMOUS_INNER_THIS_ROOT),
         (b"Inner$1.class", ANONYMOUS_INNER_THIS_CHILD),
     ]));
     let engine = Engine::new();
-    let request = request(
+    let root_request = request(
         &snapshot,
         ClassRef::Name {
             class: ClassNameQuery::internal("Inner"),
@@ -1158,7 +1311,7 @@ fn anonymous_inner_this_budget_and_cancellation_never_publish_partial_projection
         engine
             .class_source_with_evidence(
                 slice::from_ref(&snapshot),
-                &request,
+                &root_request,
                 &RecoveryEvidenceRequest::all(),
                 &mut budget(),
             )
@@ -1166,6 +1319,62 @@ fn anonymous_inner_this_budget_and_cancellation_never_publish_partial_projection
     );
     assert!(complete.text.contains("new java.lang.Runnable() {"));
     assert!(complete.text.contains("Inner.this"));
+    let make = complete
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"make")
+        .expect("the caller method remains physically reported");
+    let make_report = match &make.outcome {
+        ClassSourceOutcome::Recovered { report, .. } => report,
+        other => panic!("the caller method recovered: {other:?}"),
+    };
+    let child_request = request(
+        &snapshot,
+        ClassRef::Name {
+            class: ClassNameQuery::internal("Inner$1"),
+        },
+        EnvironmentPolicy::PlainJar,
+    );
+    let physical_child = performed(
+        Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &child_request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .expect("the independent child source map is available"),
+    );
+    let run = physical_child
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"run")
+        .expect("the physical child method remains listed");
+    let run_report = match &run.outcome {
+        ClassSourceOutcome::Recovered { report, .. } => report,
+        other => panic!("the physical child method recovered: {other:?}"),
+    };
+    assert!(
+        !run_report.source_map.of_bci(1).is_empty(),
+        "physical source map does not retain the first capture read: {:#?} text={}",
+        run_report.source_map.segments(),
+        run.text
+    );
+    assert!(!run_report.source_map.of_bci(8).is_empty());
+    assert!(make_report.source_map.segments().iter().any(|segment| {
+        segment.origin().primary().method() == Some(&make.item.identity)
+            && segment.mentions(4).is_some()
+    }));
+    let constructor = physical_child
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"<init>")
+        .expect("the physical child constructor remains listed");
+    let constructor_report = match &constructor.outcome {
+        ClassSourceOutcome::Recovered { report, .. } => report,
+        other => panic!("the physical child constructor recovered: {other:?}"),
+    };
+    assert!(!constructor_report.source_map.of_bci(2).is_empty());
 
     let cap = complete.usage.output_bytes.saturating_sub(1);
     let mut constrained =
@@ -1175,7 +1384,7 @@ fn anonymous_inner_this_budget_and_cancellation_never_publish_partial_projection
         engine
             .class_source_with_evidence(
                 slice::from_ref(&snapshot),
-                &request,
+                &root_request,
                 &RecoveryEvidenceRequest::all(),
                 &mut constrained,
             )
@@ -1201,7 +1410,7 @@ fn anonymous_inner_this_budget_and_cancellation_never_publish_partial_projection
     let outcome = engine
         .class_source_with_evidence(
             slice::from_ref(&snapshot),
-            &request,
+            &root_request,
             &RecoveryEvidenceRequest::all(),
             &mut cancelled,
         )
