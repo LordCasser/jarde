@@ -2166,6 +2166,56 @@
       "path": "tests/fixtures/p3-conditional-values/mixed-short-circuit-return/Runner.java"
     },
     {
+      "blake3": "7f3862390e6c448f3def661526ba85a2100cfbfbe6a2e0f5620ab60a9fb7a4a5",
+      "bytes": 318,
+      "path": "tests/fixtures/p3-conditional-values/nested-independent-effect/NestedIndependentEffect.class"
+    },
+    {
+      "blake3": "021451119b41743993e2f13fb3e018891a2b363fea0ca7c306e1d4d4aae5fcfa",
+      "bytes": 418,
+      "path": "tests/fixtures/p3-conditional-values/nested-independent-effect/NestedIndependentEffect.java"
+    },
+    {
+      "blake3": "6114bf7a37365bc501d11506f047b9edc39186ef72687970caa205f032328218",
+      "bytes": 297,
+      "path": "tests/fixtures/p3-conditional-values/nested-repeated-use/NestedRepeatedUse.class"
+    },
+    {
+      "blake3": "bd1ab5056d7a42bbd05c63e0019398e6732439af8386a77112198437a9e0c4e9",
+      "bytes": 194,
+      "path": "tests/fixtures/p3-conditional-values/nested-repeated-use/NestedRepeatedUse.java"
+    },
+    {
+      "blake3": "0398478c6aae80f7ba3fcccde7e461bf56797aeb398e953a8ab62793bafa24d1",
+      "bytes": 231,
+      "path": "tests/fixtures/p3-conditional-values/nested-tree/NestedTree.class"
+    },
+    {
+      "blake3": "02d4e72e58c01b0093cea56b07b304c0cddfd3ee715e98541f03d37891e13d99",
+      "bytes": 146,
+      "path": "tests/fixtures/p3-conditional-values/nested-tree/NestedTree.java"
+    },
+    {
+      "blake3": "ea92a8aed961d1761f708ff5060eeb165ec423f79d12371351f0b50d04acf1bc",
+      "bytes": 184,
+      "path": "tests/fixtures/p3-conditional-values/nested-type/NestedType$Left.class"
+    },
+    {
+      "blake3": "87d91e140af848d64e2a464f22020b9586c10cd163602cb3579fcb456c795f6f",
+      "bytes": 186,
+      "path": "tests/fixtures/p3-conditional-values/nested-type/NestedType$Right.class"
+    },
+    {
+      "blake3": "8a758937f17eaefc67fa176571a3cc9c289387516b9e574f632c0f228ef2c395",
+      "bytes": 367,
+      "path": "tests/fixtures/p3-conditional-values/nested-type/NestedType.class"
+    },
+    {
+      "blake3": "45a8047efcfd76eed6db2b40915c2fbe4c185a390f32538289a30099b3e003c2",
+      "bytes": 223,
+      "path": "tests/fixtures/p3-conditional-values/nested-type/NestedType.java"
+    },
+    {
       "blake3": "6817d0a1a005634af8ccf30dfc7ec7b796353da07dbe0bb13f1a4c077cc7a2ca",
       "bytes": 414,
       "path": "tests/fixtures/p3-conditional-values/short-circuit-chain-shared-true-controls/ChainOrFieldDuplicatePhi.class"
@@ -2444,6 +2494,31 @@
       "blake3": "ce00e1ecc9d4ac833a081e77f3bb811a163c6846622d25ad9f70016e58412825",
       "bytes": 1338,
       "path": "tests/fixtures/p3-deferred-value-order/v8/DeferredValueOrder.class"
+    },
+    {
+      "blake3": "3f120563513ad245b32d53432ab08a01ae8f2f7e3c220f651368e8abd77cb286",
+      "bytes": 871,
+      "path": "tests/fixtures/p3-do-while-body-transfers/DoWhileCore.java"
+    },
+    {
+      "blake3": "c74a575f369862b2ae28b9a9103e669f21af49684114c12e216b952252a902a0",
+      "bytes": 1080,
+      "path": "tests/fixtures/p3-do-while-body-transfers/DoWhileCoreRunner.java"
+    },
+    {
+      "blake3": "5d535d20f65f7ddbb1fb1b99399fb6d4065bff5c7498b828c4c2529808b22606",
+      "bytes": 416,
+      "path": "tests/fixtures/p3-do-while-body-transfers/DoWhileSwitchBoundary.java"
+    },
+    {
+      "blake3": "411de0f0b7d13f9727f5f8b35562c9dd133e7e236766df68797879a3d527929a",
+      "bytes": 498,
+      "path": "tests/fixtures/p3-do-while-body-transfers/v8/DoWhileCore.class"
+    },
+    {
+      "blake3": "ccfb662e56b67f4760cbf5fc5bdbb492924335e109e1cfe233c4c9d8c4dc9497",
+      "bytes": 268,
+      "path": "tests/fixtures/p3-do-while-body-transfers/v8/DoWhileSwitchBoundary.class"
     },
     {
       "blake3": "1e05fd5106d8fc5ad1a6ccbdd7de042e5ede25fc981c5030510f0e3af13e25b2",
@@ -2909,6 +2984,26 @@
       "blake3": "8c4fa31c9e8fe492a242c755343755ba482795685d5bf98cbfd767ff8db32ba7",
       "bytes": 548,
       "path": "tests/fixtures/p3-interface-field-initializers/v8/negative/forward-read/ForwardProbe.class"
+    },
+    {
+      "blake3": "c5869e20c2e07c4f0102a56b36128f1104c15c148e98f45b2d4d4b241363660f",
+      "bytes": 2125,
+      "path": "tests/fixtures/p3-intermediate-join/GenerateBridgeControls.java"
+    },
+    {
+      "blake3": "aabff1b6e99bb15d2b1881b958f0744305d64d672050ded62ec16fbff6bfa9e3",
+      "bytes": 786,
+      "path": "tests/fixtures/p3-intermediate-join/IntermediateJoinNegative.class"
+    },
+    {
+      "blake3": "df440b830bba87a9c696dee97c515ff9aa4e6727e352bd58063691c827d7a799",
+      "bytes": 836,
+      "path": "tests/fixtures/p3-intermediate-join/IntermediateJoinNegative.java"
+    },
+    {
+      "blake3": "add381d6b9f9b76e5b2c59551c36b63731346f7992f2ae317a5ca7517eaba361",
+      "bytes": 987,
+      "path": "tests/fixtures/p3-intermediate-join/unknown-operation/ConditionalIntermediateJoin.class"
     },
     {
       "blake3": "caebc1cf7b84501face11b87ea839b71f366898c43edc4e8925a1bbdfeceb930",

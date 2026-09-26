@@ -130,13 +130,19 @@ These Java syntax audit inputs use javac 23.0.1 `--release 8`; fixture-specific 
 and patches are documented beside the inputs. The reader census walks every committed `.class`
 under this directory, validates the complete class and member views, and counts each decodable Code
 body, handler and control-flow target. The 2026-09 syntax-recovery expansion's current corpus
-measures 316 classes, 1,674 Code attributes, 153 handler records, 902 branch/switch targets and
+measures 330 classes, 1,730 Code attributes, 160 handler records, 1,000 branch/switch targets and
 eight historical subroutines. Since the 310 / 1,645 / 144 / 880 baseline recorded in
 `54e432ed`, two frozen inputs for conditional boolean field stores add five Code bodies and six
 branch targets each; four `p3-precise-rethrow/v8` inputs add 19 Code bodies, nine handlers and ten
 branch targets. Together these six classes account for the 29 bodies, nine handlers and 22 targets
-in the updated census. This is a structural input census, not a claim that every fixture is fully
-recovered.
+in that census. Since the census recorded in `9a0c2a11`, several commits added 14 more classes:
+six nested conditional-value fixtures,
+four loop/transfer fixtures, two intermediate-join controls, `BoolValue` and `TwrReturnTail`.
+Together they add 56 Code bodies, seven handlers and 98 branch/switch targets; all are referenced
+by tests or an OpenSpec record, and the generated bridge control is reproducible from its recorded
+input and generator. See [the census verification](../../openspec/evidence/java-syntax-2026-09-26/reader-census/analysis.md)
+for the full class list and provenance. This is a structural input census, not a claim that every
+fixture is fully recovered.
 `corpus-fingerprint.json` records the current corpus file count and digests; adding a fixture input
 requires regenerating and reviewing that manifest. Structural counts do not imply syntax recovery
 acceptance.
@@ -197,7 +203,7 @@ an illegal release shape.
 
 Every file below `tests/fixtures/` and `fuzz/corpus/` — the checked-in samples and archives, the
 golden documents, and the committed fuzz seeds — is fingerprinted in one document.
-`corpus-fingerprint.json` records a blake3 digest and a byte count for each of the 767 files it
+`corpus-fingerprint.json` records a blake3 digest and a byte count for each of the 810 files it
 covered when it was written — the count is data, not a promise — and beside them the index P5's
 measurement baseline reads: the eight corpus dimensions (versions,
 compiler, packaging, identity, bytecode, recovery, degradation, adversarial), the carrier behind
