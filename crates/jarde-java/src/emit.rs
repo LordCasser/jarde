@@ -1296,14 +1296,14 @@ enum Side {
 
 /// The level at which a following `.`, `::` or `[` applies to the whole expression: a Primary or an
 /// ExpressionName (JLS 15.8, 6.5.6) is the tightest text this subset writes.
-const PRIMARY: u8 = 11;
+const PRIMARY: u8 = 13;
 
 /// The postfix operators (JLS 15.14) bind above unary operators and primary suffixes.
-const POSTFIX: u8 = 12;
+const POSTFIX: u8 = 14;
 
 /// The level of the unary `!` (JLS 15.15.6): tighter than every binary operator, looser than a
 /// primary — `!b.f()` reads as `!(b.f())`, so a `!` in a primary position keeps its own group.
-const UNARY: u8 = 10;
+const UNARY: u8 = 12;
 
 /// The conditional operator binds below every binary operator and above assignment/lambda text.
 const CONDITIONAL: u8 = 1;
@@ -1316,7 +1316,7 @@ const CONDITIONAL: u8 = 1;
 /// every suffix; the binary operators are 15.17–15.20; `!` is 15.15.6; everything else is a Primary
 /// or an ExpressionName. The comparison is a total rule rather than a table over pairs because
 /// every binary operator this subset writes is left-associative, and the AST's subset carries no
-/// assignment, conditional or boolean-and/or node whose associativity would need a second rule.
+/// assignment node whose associativity would need a second rule.
 fn expression_binding(kind: &ExprKind) -> u8 {
     match kind {
         ExprKind::Lambda { .. } => 0,
@@ -1341,17 +1341,19 @@ fn expression_binding(kind: &ExprKind) -> u8 {
 
 /// How tightly Java binds one binary operator, in the units [`expression_binding`] compares. The
 /// values descend in Java precedence order from multiplicative through additive, shift, relational,
-/// equality, bitwise `&`, `^` and `|`.
+/// equality, bitwise `&`, `^` and `|`, then logical `&&` and `||`.
 fn binary_binding(op: BinaryOp) -> u8 {
     match op {
-        BinaryOp::Multiply | BinaryOp::Divide | BinaryOp::Remainder => 9,
-        BinaryOp::Add | BinaryOp::Subtract => 8,
-        BinaryOp::LeftShift | BinaryOp::RightShift | BinaryOp::UnsignedRightShift => 7,
-        BinaryOp::Less | BinaryOp::LessOrEqual | BinaryOp::Greater | BinaryOp::GreaterOrEqual => 6,
-        BinaryOp::Equal | BinaryOp::NotEqual => 5,
-        BinaryOp::BitwiseAnd => 4,
-        BinaryOp::BitwiseXor => 3,
-        BinaryOp::BitwiseOr => 2,
+        BinaryOp::Multiply | BinaryOp::Divide | BinaryOp::Remainder => 11,
+        BinaryOp::Add | BinaryOp::Subtract => 10,
+        BinaryOp::LeftShift | BinaryOp::RightShift | BinaryOp::UnsignedRightShift => 9,
+        BinaryOp::Less | BinaryOp::LessOrEqual | BinaryOp::Greater | BinaryOp::GreaterOrEqual => 8,
+        BinaryOp::Equal | BinaryOp::NotEqual => 7,
+        BinaryOp::BitwiseAnd => 6,
+        BinaryOp::BitwiseXor => 5,
+        BinaryOp::BitwiseOr => 4,
+        BinaryOp::LogicalAnd => 3,
+        BinaryOp::LogicalOr => 2,
     }
 }
 
@@ -3215,6 +3217,44 @@ mod tests {
             emitted.text.contains("arg0 + (arg1 | arg2);"),
             "a lower-precedence bitwise child of `+` keeps its required parentheses:\n{}",
             emitted.text
+        );
+    }
+
+    #[test]
+    fn logical_operators_keep_their_precedence_over_bitwise_operators() {
+        let bool_local = |name, bci| local_at(name, bci).presenting(Type::Boolean);
+        let (logical, _) = emitted_value(binary_at(
+            BinaryOp::LogicalOr,
+            bool_local("arg0", 1),
+            binary_at(
+                BinaryOp::LogicalAnd,
+                bool_local("arg1", 2),
+                bool_local("arg2", 3),
+                4,
+            ),
+            5,
+        ));
+        assert!(
+            logical.text.contains("arg0 || arg1 && arg2;"),
+            "{}",
+            logical.text
+        );
+
+        let (bitwise, _) = emitted_value(binary_at(
+            BinaryOp::BitwiseOr,
+            bool_local("arg0", 6),
+            binary_at(
+                BinaryOp::LogicalAnd,
+                bool_local("arg1", 7),
+                bool_local("arg2", 8),
+                9,
+            ),
+            10,
+        ));
+        assert!(
+            bitwise.text.contains("arg0 | (arg1 && arg2);"),
+            "logical conjunction binds less tightly than bitwise OR:\n{}",
+            bitwise.text
         );
     }
 
