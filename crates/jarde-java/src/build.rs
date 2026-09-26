@@ -337,6 +337,7 @@ pub(crate) struct Inputs<'a> {
     /// The exact interface-special targets whose Java source binding the facade proved.
     pub(crate) interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
     pub(crate) captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
+    pub(crate) outer_super_calls: &'a [crate::report::ProvedOuterSuperCall],
     pub(crate) physical_method: Option<&'a jarde_reader::model::PhysicalMethodId>,
     /// The class that declares this member, in the class file's own internal form
     /// (`java/lang/Integer`), as the run's own member declaration states it.
@@ -5009,6 +5010,17 @@ pub(crate) fn build(
         inputs.fields,
         budget,
     )?;
+    validate_outer_super_calls(
+        inputs.outer_super_calls,
+        inputs.captured_outer_reads,
+        inputs.physical_method,
+        inputs.declaring_class,
+        operations,
+        ssa,
+        inputs.fields,
+        &instructions,
+        budget,
+    )?;
     let declarations = declarations(
         regions,
         canonical,
@@ -5041,6 +5053,7 @@ pub(crate) fn build(
         member_inner_targets: inputs.member_inner_targets,
         interface_super_calls: inputs.interface_super_calls,
         captured_outer_reads: inputs.captured_outer_reads,
+        outer_super_calls: inputs.outer_super_calls,
         declaring_class: inputs.declaring_class,
         direct_super_class: inputs.direct_super_class,
         direct_interfaces: inputs.direct_interfaces,
@@ -5243,6 +5256,129 @@ fn validate_captured_outer_reads(
     Ok(())
 }
 
+/// A family certificate authorizes only its exact static call site. Recheck the bridge reference
+/// and the SSA values in this body before any projection can consume the handoff.
+#[allow(clippy::too_many_arguments)]
+fn validate_outer_super_calls(
+    calls: &[crate::report::ProvedOuterSuperCall],
+    reads: &[crate::report::ProvedCapturedOuterRead],
+    method: Option<&jarde_reader::model::PhysicalMethodId>,
+    declaring_class: Option<&str>,
+    operations: &Operations,
+    ssa: &SsaTable,
+    fields: &field::Plan,
+    instructions: &BTreeMap<u32, &SsaInstruction>,
+    budget: &mut Budget,
+) -> Result<(), StopReason> {
+    let mut seen = BTreeSet::new();
+    for proof in calls {
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(proof.argument_bcis.len())
+                .unwrap_or(u64::MAX)
+                .saturating_add(1),
+            Some(proof.call_bci),
+        )?;
+        poll(budget, Some(proof.call_bci))?;
+        let capture = reads
+            .iter()
+            .find(|read| read.method == proof.caller && read.read_bci == proof.capture_read_bci);
+        let call = instructions.get(&proof.call_bci).copied();
+        let target = match operations.get(proof.call_bci) {
+            Some(Operation::Invoke(target)) => Some(target),
+            _ => None,
+        };
+        let params = parameter_descriptors(&proof.target_descriptor);
+        let valid = match (capture, call, target, params) {
+            (Some(capture), Some(call), Some(target), Some(params)) => {
+                let bridge_descriptor = std::str::from_utf8(&proof.bridge.descriptor.0).ok();
+                let target_tail = proof.target_descriptor.strip_prefix('(');
+                let expected_prefix = format!("(L{};", capture.outer_internal_name);
+                let operands = stack_operands(call);
+                let read = instructions.get(&proof.capture_read_bci).copied();
+                let capture_shape = fields.claim(proof.capture_read_bci);
+                let expected_bridge = bridge_descriptor.zip(target_tail).is_some_and(
+                    |(bridge_descriptor, target_tail)| {
+                        bridge_descriptor.strip_prefix(&expected_prefix) == Some(target_tail)
+                    },
+                );
+                method == Some(&proof.caller)
+                    && declaring_class.is_some_and(|owner| owner != target.owner())
+                    && target.owner() == capture.outer_internal_name
+                    && target.kind() == InvokeKind::Static
+                    && !target.is_interface_reference()
+                    && call.opcode() == 0xb8
+                    && target.name().as_bytes() == proof.bridge.name.0
+                    && target.descriptor().as_bytes() == proof.bridge.descriptor.0
+                    && proof.call_bci > proof.capture_read_bci
+                    && seen.insert(proof.call_bci)
+                    && proof.outer_source_name == capture.outer_source_name
+                    && spell_reference(&proof.target_owner).is_some()
+                    && is_java_identifier(&proof.target_name)
+                    && expected_bridge
+                    && params.len() == proof.argument_bcis.len()
+                    && operands.len() == proof.argument_bcis.len() + 1
+                    && read.is_some_and(|read| read.opcode() == 0xb4)
+                    && capture_shape.is_some_and(|(_, shape)| {
+                        shape.receiver.is_some_and(|receiver| {
+                            receiver_is_entry_this(ssa, operations, instructions, receiver)
+                        })
+                    })
+                    && operands
+                        .first()
+                        .is_some_and(|(_, value)| comes_from(ssa, *value, proof.capture_read_bci))
+                    && operands[1..]
+                        .iter()
+                        .zip(&proof.argument_bcis)
+                        .all(|((_, value), bci)| {
+                            *bci > proof.capture_read_bci
+                                && *bci < proof.call_bci
+                                && comes_from(ssa, *value, *bci)
+                        })
+            }
+            _ => false,
+        };
+        if !valid {
+            return Err(StopReason::EvidenceRefused {
+                code: "jre_outer_super_call_refused",
+                at: Some(proof.call_bci),
+                message: "the supplied outer-super call does not match this physical method, bridge Methodref, captured read and ordered SSA arguments".to_owned(),
+            });
+        }
+    }
+    Ok(())
+}
+
+fn receiver_is_entry_this(
+    ssa: &SsaTable,
+    operations: &Operations,
+    instructions: &BTreeMap<u32, &SsaInstruction>,
+    receiver: ValueId,
+) -> bool {
+    match ssa.value(receiver).def() {
+        Definition::Entry {
+            slot: Slot::Local(0),
+            ..
+        } => true,
+        Definition::Instruction { bci, .. } => {
+            matches!(operations.get(*bci), Some(Operation::Load { slot: 0 }))
+                && instructions.get(bci).is_some_and(|instruction| {
+                    local_read(instruction, 0).is_some_and(|entry| {
+                        matches!(
+                            ssa.value(entry).def(),
+                            Definition::Entry {
+                                slot: Slot::Local(0),
+                                ..
+                            }
+                        )
+                    })
+                })
+        }
+        _ => false,
+    }
+}
+
 /// Adds stable local reads reached while quoting a call's operands. The ordinary producer walk
 /// omits these when their declared local still denotes the same value; a quoted call has no
 /// argument text where that declaration could stand in for the actual load. The ordered set makes
@@ -5299,6 +5435,7 @@ struct Builder<'a> {
     member_inner_targets: &'a [crate::report::ProvedMemberInnerTarget],
     interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
     captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
+    outer_super_calls: &'a [crate::report::ProvedOuterSuperCall],
     /// The class this body belongs to, in internal form, when the run's own member declaration
     /// states it: the fact a static call's pool owner is compared against (P3 4.4).
     declaring_class: Option<&'a str>,
@@ -15021,6 +15158,47 @@ impl Builder<'_> {
         depth: usize,
     ) -> Result<Expr, ValueRenderFailure> {
         let operands = stack_operands(instruction);
+        if let Some(proof) = self
+            .outer_super_calls
+            .iter()
+            .find(|proof| proof.call_bci == bci)
+            .cloned()
+        {
+            // Validation already tied this site to the exact Methodref, capture and SSA producers.
+            // A popped qualifier would add another evaluation that `Outer.super` cannot express.
+            if self.pops().qualifier_at(bci).is_some() {
+                return Err(format!(
+                    "the proved outer-super call at BCI {bci} has a discarded static qualifier"
+                )
+                .into());
+            }
+            let mut arguments = Vec::with_capacity(operands.len() - 1);
+            for (_, value) in &operands[1..] {
+                arguments.push(self.render_value(*value, at, depth + 1)?);
+            }
+            let arguments = self.arguments(&proof.target_descriptor, arguments, bci)?;
+            let receiver = Expr::new(
+                ExprKind::Super {
+                    qualifier: Some(proof.outer_source_name.clone()),
+                },
+                OriginSet::new(Origin::direct(proof.capture_read_bci)),
+            );
+            let origin = OriginSet::new(Origin::direct(bci))
+                .plus_derived(Origin::derived(proof.capture_read_bci))
+                .plus_derived(Origin::derived(proof.bridge_invoke_bci).in_method(&proof.bridge));
+            let call = Expr::new(
+                ExprKind::Call {
+                    receiver: Some(Box::new(receiver)),
+                    name: proof.target_name.clone(),
+                    args: arguments,
+                },
+                origin,
+            );
+            return Ok(match return_type(&proof.target_descriptor) {
+                Some(ty) => call.presenting(ty),
+                None => call,
+            });
+        }
         let (receiver, args) = match target.kind() {
             // A static call reads no receiver from the stack: what its text names is the class its
             // own pool entry names, and the only thing that decides how it is written is whether
@@ -15240,40 +15418,7 @@ impl Builder<'_> {
 
     /// Proves a receiver is the direct `aload 0` value from the method entry.
     fn receiver_is_entry_this(&self, receiver: ValueId) -> bool {
-        match self.ssa.value(receiver).def() {
-            Definition::Entry {
-                slot: Slot::Local(0),
-                ..
-            } => true,
-            Definition::Instruction { bci, .. } => {
-                let Some(Operation::Load { slot: 0 }) = self.operations.get(*bci) else {
-                    return false;
-                };
-                let Some(instruction) = self.instructions.get(bci) else {
-                    return false;
-                };
-                let Some(entry) = local_read(instruction, 0) else {
-                    return false;
-                };
-                matches!(
-                    self.ssa.value(entry).def(),
-                    Definition::Entry {
-                        slot: Slot::Local(0),
-                        ..
-                    }
-                )
-            }
-            Definition::Entry {
-                slot: Slot::Stack(_),
-                ..
-            }
-            | Definition::Entry {
-                slot: Slot::Local(1..),
-                ..
-            }
-            | Definition::Phi { .. }
-            | Definition::Caught { .. } => false,
-        }
+        receiver_is_entry_this(self.ssa, self.operations, &self.instructions, receiver)
     }
 
     /// Whether the current class header declares this exact special target private.
@@ -19947,6 +20092,229 @@ pub(crate) fn spell_reference(descriptor: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn outer_super_handoff_projects_exact_bridge_and_refuses_a_stale_argument() {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        const MEMBER: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects$Member.class"
+        );
+        const OUTER: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-27/outer-super-bridge-effects/OuterSuperEffects.class"
+        );
+        let mut budget = Budget::new(jarde_reader::budget::Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 100,
+            method_bodies: 100,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 32,
+            dependency_depth: 32,
+            elapsed_millis: u64::MAX,
+        });
+        let member_snapshot =
+            ArtifactSnapshot::open(ArtifactInput::bytes(MEMBER.to_vec()), &mut budget)
+                .expect("member fixture opens");
+        let outer_snapshot =
+            ArtifactSnapshot::open(ArtifactInput::bytes(OUTER.to_vec()), &mut budget)
+                .expect("outer fixture opens");
+        let definition = |snapshot: &ArtifactSnapshot, bytes: &[u8]| PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(bytes).to_hex().to_string()),
+                length: u64::try_from(bytes.len()).expect("fixture length fits"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let member_definition = definition(&member_snapshot, MEMBER);
+        let outer_definition = definition(&outer_snapshot, OUTER);
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_string()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![
+                LoadRoot::StandaloneClass {
+                    snapshot: member_snapshot.id().clone(),
+                },
+                LoadRoot::StandaloneClass {
+                    snapshot: outer_snapshot.id().clone(),
+                },
+            ],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let environment = ResolutionEnvironment {
+            runtime: RuntimeView {
+                physical: PhysicalView {
+                    snapshot: member_snapshot.id().clone(),
+                    scope: PhysicalScope::SnapshotAll,
+                },
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                load_domain: domain.clone(),
+            },
+            domains: vec![domain],
+            providers: Vec::new(),
+        };
+        let caller = PhysicalMethodId {
+            owner: member_definition.clone(),
+            name: JvmBytes(b"run".to_vec()),
+            descriptor: JvmBytes(b"(Z)I".to_vec()),
+        };
+        let analysis = analyze_method_ir(
+            &[member_snapshot, outer_snapshot],
+            &MethodAnalysisRequest {
+                environment,
+                method: caller.clone(),
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut budget,
+        )
+        .expect("member run analyzes");
+        let facts = crate::facts::RecoveryFacts::new(
+            crate::facts::MethodFacts::new("run", "(Z)I", 2)
+                .with_access_flags(0)
+                .with_declaring_class(crate::facts::DeclaringClass::new(
+                    "OuterSuperEffects$Member",
+                    0,
+                )),
+        );
+        let reads = [crate::report::ProvedCapturedOuterRead {
+            method: caller.clone(),
+            read_bci: 1,
+            field_owner: "OuterSuperEffects$Member".to_string(),
+            field_name: "this$0".to_string(),
+            field_descriptor: "LOuterSuperEffects;".to_string(),
+            outer_internal_name: "OuterSuperEffects".to_string(),
+            outer_source_name: "OuterSuperEffects".to_string(),
+            constructor: PhysicalMethodId {
+                owner: member_definition,
+                name: JvmBytes(b"<init>".to_vec()),
+                descriptor: JvmBytes(b"(LOuterSuperEffects;)V".to_vec()),
+            },
+            constructor_write_bci: 2,
+        }];
+        let valid = crate::report::ProvedOuterSuperCall {
+            caller,
+            call_bci: 14,
+            capture_read_bci: 1,
+            argument_bcis: vec![6, 11],
+            bridge: PhysicalMethodId {
+                owner: outer_definition,
+                name: JvmBytes(b"access$001".to_vec()),
+                descriptor: JvmBytes(b"(LOuterSuperEffects;II)I".to_vec()),
+            },
+            bridge_invoke_bci: 3,
+            outer_source_name: "OuterSuperEffects".to_string(),
+            target_owner: "EffectsBase".to_string(),
+            target_name: "combine".to_string(),
+            target_descriptor: "(II)I".to_string(),
+        };
+        let valid_calls = [valid.clone()];
+        let request =
+            crate::report::RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
+                .with_captured_outer_reads(&reads)
+                .with_outer_super_calls(&valid_calls)
+                .with_evidence(crate::evidence::RecoveryEvidenceRequest::all());
+        let report = crate::report::recover(&request, &mut budget);
+        assert!(report.produced(), "{:?}", report.stop());
+        assert_eq!(report.quality, jarde_jvm::ir::Quality::Structured);
+        assert!(
+            report.text.contains("OuterSuperEffects.super.combine("),
+            "{}",
+            report.text
+        );
+        assert_eq!(report.text.matches("tick(").count(), 2, "{}", report.text);
+        assert!(
+            report
+                .text
+                .find("tick(1,")
+                .expect("first argument is tick(1, ...)")
+                < report
+                    .text
+                    .find("tick(2,")
+                    .expect("second argument is tick(2, ...)"),
+            "{}",
+            report.text
+        );
+        let bridge_origin = report.source_map.segments().iter().find(|segment| {
+            segment.origin().primary().bci() == 14
+                && segment.origin().primary().method() == Some(&valid.caller)
+                && segment
+                    .origin()
+                    .derived()
+                    .iter()
+                    .any(|origin| origin.bci() == 1 && origin.method() == Some(&valid.caller))
+                && segment
+                    .origin()
+                    .derived()
+                    .iter()
+                    .any(|origin| origin.bci() == 3 && origin.method() == Some(&valid.bridge))
+        });
+        assert!(bridge_origin.is_some(), "bridge origin was not carried");
+
+        let request =
+            crate::report::RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
+                .with_captured_outer_reads(&reads);
+        let ordinary = crate::report::recover(&request, &mut budget);
+        assert!(ordinary.produced(), "{:?}", ordinary.stop());
+        assert!(ordinary.text.contains("access$001("), "{}", ordinary.text);
+        assert!(
+            !ordinary.text.contains(".super.combine("),
+            "{}",
+            ordinary.text
+        );
+
+        let mut stale_argument = valid.clone();
+        stale_argument.argument_bcis[1] = 10;
+        let mut stale_bridge = valid;
+        stale_bridge.bridge.name.0 = b"access$002".to_vec();
+        for invalid in [stale_argument, stale_bridge] {
+            let invalid_calls = [invalid];
+            let request =
+                crate::report::RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
+                    .with_captured_outer_reads(&reads)
+                    .with_outer_super_calls(&invalid_calls);
+            let report = crate::report::recover(&request, &mut budget);
+            assert!(matches!(
+                report.stop(),
+                Some(StopReason::EvidenceRefused {
+                    code: "jre_outer_super_call_refused",
+                    at: Some(14),
+                    ..
+                })
+            ));
+        }
+    }
 
     #[test]
     fn a_proved_member_construction_keeps_the_qualifier_and_hides_only_the_physical_prefix() {

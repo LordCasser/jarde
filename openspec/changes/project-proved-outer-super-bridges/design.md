@@ -12,7 +12,7 @@
 
 ## Decisions
 
-1. **沿准确物理定义验证桥，不靠 `access$` 名称。** 候选必须解析到所选 Outer 的唯一 synthetic/static 方法，descriptor 的第一参数是 Outer，且完整 Code 只含局部读取、对 Outer 直接 superclass 方法的准确 `invokespecial` 和相应返回；参数/返回 descriptor、异常表、隐藏类初始化效果及额外指令都须被核对。一个目标不能同时由多个混淆定义承担。替代方案是按方法名或 `ACC_SYNTHETIC` 直接内联；两者都允许错误目标或额外效果。
+1. **沿准确物理定义验证桥，不靠 `access$` 名称。** 候选必须解析到所选 Outer 的唯一 synthetic/static 方法，descriptor 的第一参数是 Outer，且完整 Code 只含局部读取、对 Outer 直接 superclass 方法的准确 `invokespecial` 和相应返回；参数/返回 descriptor、异常表、隐藏类初始化效果及额外指令都须被核对。一个目标不能同时由多个混淆定义承担。桥的 MethodRef 精确匹配只证明字节码分派；投影前还须确认 `Outer.super.method(args)` 在同一选定父类、同名重载、继承与泛型声明下重新编译仍绑定该 descriptor，且目标声明的 checked exceptions 可由调用者 `catch`/`throws` 表达，必要时使用已证安全的显式参数类型，无法证明则拒绝。替代方案是按方法名或 `ACC_SYNTHETIC` 直接内联；两者都允许错误目标或额外效果。
 
 2. **调用点逐个证明捕获接收者和有序实参。** 使用第一阶段的唯一 capture SSA 证书，把每个物理调用的首参追到 Member 的 `this$0` 值；普通 `other` 即使 descriptor 同为 Outer 也拒绝。核对调用点到桥体、桥内目标的参数映射和表达式求值/异常顺序；不把 `special_receiver` 对当前 entry-this 的证书挪用到外层捕获值。替代方案是只由常量池 owner 或调用 receiver 静态类型决定 `Outer.super`，同类型参数反例会变成错分派。
 
@@ -24,7 +24,7 @@
 
 ## Risks / Trade-offs
 
-- [桥只有等价外观却调用不同目标] → 解析 Outer 的直接父类与准确方法 descriptor，核对 `invokespecial`，用 Base/Outer/MemberBase 三种返回值区分。
+- [桥只有等价外观却调用不同目标] → 解析 Outer 的直接父类与准确方法 descriptor，核对 `invokespecial`，再核对生成调用的 Java 8 重载/泛型绑定；用 Base/Outer/MemberBase 三种返回值区分。
 - [隐藏 helper 后仍有外部物理使用] → 预算内完整扫描选定输入及可见依赖；任何未投影或不透明引用拒绝文本删除，物理方法始终留报告。
 - [多处调用中的一处失败] → 按桥整体原子提交，拒绝时全部调用维持物理来源，不发布混合的半套 `Outer.super`。
 - [异常处理器或参数效果被移动] → 对桥体、调用点逐条核对覆盖和有序值依赖，不成立就拒绝。

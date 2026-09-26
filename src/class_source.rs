@@ -692,6 +692,39 @@ pub struct MemberCaptureRead {
     pub consumer_bcis: Vec<u32>,
 }
 
+/// A physical, linear bridge from a selected Outer to its direct superclass method.
+/// This is evidence only; the family writer must separately accept every use before hiding it.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OuterSuperBridgeProof {
+    pub bridge: PhysicalMethodId,
+    pub outer_name: JvmBytes,
+    pub invoke_bci: u32,
+    pub target_method: PhysicalMethodId,
+    pub target_owner: JvmBytes,
+    pub target_name: JvmBytes,
+    pub target_descriptor: JvmBytes,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OuterSuperCallProof {
+    pub caller: PhysicalMethodId,
+    pub call_bci: u32,
+    pub capture_read_bci: u32,
+    pub argument_bcis: Vec<u32>,
+    pub bridge: OuterSuperBridgeProof,
+}
+
+/// Complete physical use census within the selected input and request-visible scope. It does
+/// not by itself prove Java source overload binding; the writer must establish that separately.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OuterSuperBridgeClosureProof {
+    pub bridge: OuterSuperBridgeProof,
+    pub calls: Vec<OuterSuperCallProof>,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ClassSourceMemberRelation {
