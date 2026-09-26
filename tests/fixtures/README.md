@@ -129,9 +129,10 @@ compression are the production paths, not a test double.
 These Java syntax audit inputs use javac 23.0.1 `--release 8`; fixture-specific generation commands
 and patches are documented beside the inputs. The reader census walks every committed `.class`
 under this directory, validates the complete class and member views, and counts each decodable Code
-body, handler and control-flow target. With the conditional-value and assert-core inputs it measures 164
-classes, 1,152 Code attributes, 98 handler records, 381 branch/switch targets and eight historical
-subroutines. This is a structural input census, not a claim that every fixture is fully recovered.
+body, handler and control-flow target. With the 2026-09 syntax-recovery expansion's corpus it
+measures 310 classes, 1,645 Code attributes, 144 handler records, 880 branch/switch targets and
+eight historical subroutines. This is a structural input census, not a claim that every fixture is
+fully recovered.
 `corpus-fingerprint.json` records the current corpus file count and digests; adding a fixture input
 requires regenerating and reviewing that manifest. Structural counts do not imply syntax recovery
 acceptance.
@@ -192,7 +193,7 @@ an illegal release shape.
 
 Every file below `tests/fixtures/` and `fuzz/corpus/` — the checked-in samples and archives, the
 golden documents, and the committed fuzz seeds — is fingerprinted in one document.
-`corpus-fingerprint.json` records a blake3 digest and a byte count for each of the 120 files it
+`corpus-fingerprint.json` records a blake3 digest and a byte count for each of the 767 files it
 covered when it was written — the count is data, not a promise — and beside them the index P5's
 measurement baseline reads: the eight corpus dimensions (versions,
 compiler, packaging, identity, bytecode, recovery, degradation, adversarial), the carrier behind

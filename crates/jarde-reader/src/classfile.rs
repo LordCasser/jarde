@@ -11546,6 +11546,21 @@ mod tests {
     /// qualifier fixture adds one class. Together these 12 classes add 170 bodies, four handler
     /// records and 79 branch/switch targets. The current census is 123 classes, 896 bodies,
     /// 98 handler records and 340 branch/switch targets.
+    ///
+    /// The 2026-09 syntax-recovery expansion re-measured the sweep over the corpus as committed:
+    /// 310 classes, 1,645 bodies, 144 handler records, 880 branch/switch targets and the same
+    /// eight subroutines — every `jsr`/`jsr_w` is still the ECJ corpus's, and no expansion
+    /// fixture carries one. The families the expansion added measure: `proved-java-structure`
+    /// 31 classes / 83 bodies / one handler record / 27 branch targets,
+    /// `p3-carried-conditional-arguments` 7 / 25 / 0 / 32, `p3-typed-catch-boundary-return`
+    /// 2 / 10 / 8 / 6, `recover-generic-enclosing-member-call-sites` 8 / 14 / 0 / 0 and
+    /// `p3-nested-array-initializers` 4 / 12 / 0 / 1; inside the families this ledger already
+    /// names, the conditional-values short-circuit matrix contributes 32 classes / 130 bodies /
+    /// seven handler records / 182 branch targets and the compound-lvalue boundary classes
+    /// 17 classes / 306 bodies / four handler records / 84 branch targets, with the rest of the
+    /// growth spread over the remaining one-class probes. Every fixture directory the expansion
+    /// brought in is named by a test or an OpenSpec record, and `corpus-fingerprint.json` was
+    /// re-rendered for it.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -11625,14 +11640,10 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            // The class-annotation fixtures add 12 classes and nine Code methods. The array
-            // initializer fixture adds one class and 13 Code methods. The interface-field
-            // initializer fixture adds nine classes and 24 Code methods. The three immediate
-            // functional receiver fixtures add nine more Code methods. The bridge-projection
-            // fixtures add four classes and eleven Code methods without branches or handlers.
-            // The conditional-value and assert-core inputs add six subject/patched classes,
-            // 46 Code methods and 35 branch targets; their runners remain source-only.
-            (164, 1152, 98, 381, 8),
+            // The 2026-09 syntax-recovery expansion re-measured the whole sweep over the corpus
+            // as committed: see the closing paragraph of this test's documentation for the
+            // families the expansion added and their measured contributions.
+            (310, 1645, 144, 880, 8),
             "fixture population changed: re-measure these counts"
         );
     }

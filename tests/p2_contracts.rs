@@ -1742,10 +1742,12 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
     );
     // The counted dimensions 3.3 uses are real now: one header read, one body attempt, the IR
     // items and steps of the raw graph, and the def-use edges 4.3 bills over the frames. This
-    // fixture's body is straight-line code with a handler no instruction of its protected range
-    // can enter, so neither the raw graph nor the canonical graph holds an edge; the edges this
-    // request bills are the names' own def-use edges, one per use, and a run that stops before
-    // the `ssa` phase bills none of them.
+    // fixture's body is straight-line code and no instruction of the record's protected range
+    // `[0, 4)` can throw, so the record is stated by its range: the raw graph holds the one edge
+    // the range declares to the handler at 9, and the canonical graph derives the handler path's
+    // own edges from it (three in all before `frame`). The edges this request bills beyond those
+    // are the names' own def-use edges, one per use, and a run that stops before the `ssa` phase
+    // bills none of them.
     let mut frames_only = request.clone();
     frames_only.stages = vec![AnalysisStage::Frame];
     let mut frames_budget = Budget::new(analysis_limits());
@@ -1757,7 +1759,11 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
         )
         .expect("a legal request is answered, not raised");
     let usage = budget.usage();
-    assert_eq!(frames_budget.usage().ir_edges, 0, "no edge before 4.3");
+    assert_eq!(
+        frames_budget.usage().ir_edges,
+        3,
+        "no def-use edge before 4.3"
+    );
     assert_eq!(usage.class_headers, 1);
     assert_eq!(usage.method_bodies, 1);
     assert!(
