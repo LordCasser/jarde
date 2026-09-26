@@ -166,6 +166,12 @@ pub enum LambdaForm {
 pub struct ArrayHelperCandidate {
     /// The `invokedynamic` instruction whose BSM names the helper.
     pub call_site: u32,
+    /// The exact InvokeDynamic constant-pool entry used by the site.
+    pub site_cp: u16,
+    /// The class BootstrapMethods row selected by this site's InvokeDynamic constant.
+    pub bootstrap_index: u16,
+    /// The exact CP index of the implementation handle in that row's argument list.
+    pub implementation_index: u16,
     /// The owner stated by the BSM's implementation handle.
     pub owner: JvmBytes,
     /// The exact helper name stated by that handle.
@@ -223,6 +229,11 @@ impl Member {
     /// The member's name.
     pub(crate) fn name(&self) -> &str {
         &self.name
+    }
+
+    /// The implementation member's exact descriptor from the resolved same-run handle.
+    pub(crate) fn descriptor(&self) -> &str {
+        &self.descriptor
     }
 }
 
@@ -1111,6 +1122,9 @@ pub fn array_helper_candidates(ir: &jarde_jvm::method_ir::MethodIr) -> Vec<Array
         }
         candidates.push(ArrayHelperCandidate {
             call_site: instruction.bci,
+            site_cp: site.cp(),
+            bootstrap_index: site.bootstrap_index(),
+            implementation_index,
             owner: implementation_owner.clone(),
             name: implementation_name.clone(),
             descriptor: descriptor.clone(),

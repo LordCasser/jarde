@@ -363,6 +363,9 @@ pub struct ClassSourceRecovery {
     pub bridge: Option<ClassSourceBridgeCandidate>,
     /// Same-run enum-table reads consumed by integer switches, for bounded class-level proof.
     pub enum_switches: Vec<ClassSourceEnumSwitchCandidate>,
+    /// Same-run proved array-helper call sites, retained privately for atomic class-source
+    /// projection after the class-wide helper-use census.
+    pub array_constructors: Vec<ClassSourceArrayConstructorCandidate>,
     /// Same-run Fieldref operations of this physical method, used to reject mutable aliases of a
     /// selected synthetic table in visible class-source members.
     pub enum_switch_field_uses: Vec<ClassSourceEnumSwitchFieldUse>,
@@ -374,6 +377,36 @@ pub struct ClassSourceRecovery {
     /// run stopped before retaining the scan or had no physical method identity; `complete=false`
     /// means raw `new` opcode facts did not all resolve through the existing decoder.
     pub anonymous_allocations: Option<AnonymousAllocationScan>,
+}
+
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceArrayConstructorCandidate {
+    pub member: jarde_reader::model::PhysicalMethodId,
+    pub helper: jarde_reader::model::PhysicalMethodId,
+    pub helper_owner: jarde_reader::model::JvmBytes,
+    pub bootstrap_index: u16,
+    pub implementation_index: u16,
+    pub sites: Vec<ArrayConstructorProjectionSite>,
+    pub(crate) projection: std::sync::Arc<ArrayConstructorProjectionSource>,
+}
+
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ArrayConstructorProjectionSite {
+    pub use_site: u32,
+    pub site_cp: u16,
+    pub array_type: String,
+    pub target_type: String,
+    pub helper_name: jarde_reader::model::JvmBytes,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ArrayConstructorProjectionSource {
+    pub(crate) program: crate::build::Program,
+    pub(crate) facts: crate::facts::RecoveryFacts,
+    pub(crate) declaration: Option<crate::declaration::Declaration>,
+    pub(crate) member: jarde_reader::model::PhysicalMethodId,
 }
 
 /// The complete same-run census, with an explicit marker for allocation opcodes not decoded as
@@ -688,6 +721,97 @@ pub fn emit_class_source_enum_switch(
     Ok(Some(emitted.text))
 }
 
+/// Re-emits the same-run typed body after replacing only the array-constructor sites selected by
+/// the class-wide proof. The AST, not previously rendered text, is the input to this projection.
+pub fn emit_class_source_array_constructors(
+    candidate: &ClassSourceArrayConstructorCandidate,
+    budget: &mut Budget,
+) -> Result<Option<String>, crate::stop::StopReason> {
+    let source = &candidate.projection;
+    if candidate.sites.len() != 1 || source.program.stmts.len() != 1 {
+        return Ok(None);
+    }
+    let site = &candidate.sites[0];
+    let helper_owner = std::str::from_utf8(&candidate.helper_owner.0)
+        .ok()
+        .map(|owner| owner.replace('/', "."));
+    let helper_name = std::str::from_utf8(&candidate.helper.name.0).ok();
+    let (Some(helper_owner), Some(helper_name)) = (helper_owner, helper_name) else {
+        return Ok(None);
+    };
+    let crate::ast::StmtKind::Return {
+        value: Some(expression),
+    } = &source.program.stmts[0].kind
+    else {
+        return Ok(None);
+    };
+    let crate::ast::ExprKind::Lambda { params, body } = &expression.kind else {
+        return Ok(None);
+    };
+    let exact_site = expression.origin.primary().bci() == site.use_site
+        && expression.origin.primary().cp() == Some(site.site_cp)
+        && params.len() == 1
+        && matches!(
+            &body.kind,
+            crate::ast::ExprKind::Call {
+                receiver: Some(receiver),
+                name,
+                args,
+            } if args.len() == 1
+            && name == helper_name
+                && matches!(&receiver.kind, crate::ast::ExprKind::Path(owner) if owner == &helper_owner)
+                && matches!(
+                    (params.first(), args.first().map(|argument| &argument.kind)),
+                    (Some(parameter), Some(crate::ast::ExprKind::Local(argument)))
+                        if &parameter.name == argument
+                )
+        );
+    if !exact_site {
+        return Ok(None);
+    }
+    let work = 7_u64
+        .saturating_add(
+            u64::try_from(source.program.array_constructor_sites.len()).unwrap_or(u64::MAX),
+        )
+        .saturating_add(u64::try_from(source.program.lambdas.len()).unwrap_or(u64::MAX))
+        .saturating_add(u64::try_from(source.program.lambda_refusals.len()).unwrap_or(u64::MAX))
+        .saturating_add(u64::try_from(source.program.accessors.len()).unwrap_or(u64::MAX))
+        .saturating_add(u64::try_from(source.program.accessor_refusals.len()).unwrap_or(u64::MAX))
+        .saturating_add(u64::try_from(source.program.field_increments.len()).unwrap_or(u64::MAX));
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        work,
+        Some(site.use_site),
+    )?;
+    let mut program = source.program.clone();
+    let crate::ast::StmtKind::Return {
+        value: Some(expression),
+    } = &mut program.stmts[0].kind
+    else {
+        return Ok(None);
+    };
+    let origin = expression.origin.clone();
+    let presented = expression.presented.clone();
+    expression.kind = crate::ast::ExprKind::MethodReference {
+        qualifier: Box::new(crate::ast::Expr::new(
+            crate::ast::ExprKind::Path(site.array_type.clone()),
+            origin.clone(),
+        )),
+        name: "new".to_owned(),
+    };
+    expression.origin = origin;
+    expression.presented = presented;
+    let emitted = crate::emit::emit(
+        &program.stmts,
+        &source.facts,
+        source.declaration.as_ref(),
+        Some(&source.member),
+        budget,
+    )?;
+    Ok(Some(emitted.text))
+}
+
 impl<'a> RecoveryRequest<'a> {
     /// One request over one payload, one fact set and one profile, with no member table.
     ///
@@ -965,7 +1089,7 @@ impl RecoveryReport {
 /// refusal leaves no work half done — see [`crate::stop`].
 pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryReport {
     recover_inner(
-        request, budget, None, None, None, None, None, None, None, None, true,
+        request, budget, None, None, None, None, None, None, None, None, None, true,
     )
 }
 
@@ -1487,6 +1611,7 @@ pub fn recover_for_class_source(
     let mut bridge = None;
     let mut enum_switches = None;
     let mut enum_switch_field_uses = None;
+    let mut array_constructors = None;
     let mut generic_return = None;
     let mut generic_constructor = None;
     let mut anonymous_allocations = None;
@@ -1497,6 +1622,7 @@ pub fn recover_for_class_source(
         collect_enum_constructor.then_some(&mut enum_constructor),
         Some(&mut bridge),
         Some(&mut enum_switches),
+        Some(&mut array_constructors),
         Some(&mut enum_switch_field_uses),
         prove_generic_return.then_some(&mut generic_return),
         prove_generic_return.then_some(&mut generic_constructor),
@@ -1510,6 +1636,7 @@ pub fn recover_for_class_source(
         enum_constructor = None;
         bridge = None;
         enum_switches = None;
+        array_constructors = None;
         enum_switch_field_uses = None;
         generic_return = None;
         generic_constructor = None;
@@ -1521,6 +1648,7 @@ pub fn recover_for_class_source(
         enum_constructor,
         bridge,
         enum_switches: enum_switches.unwrap_or_default(),
+        array_constructors: array_constructors.unwrap_or_default(),
         enum_switch_field_uses: enum_switch_field_uses.unwrap_or_default(),
         generic_return,
         generic_constructor,
@@ -1535,6 +1663,7 @@ fn recover_inner(
     mut enum_constructor: Option<&mut Option<ClassEnumConstructorCandidates>>,
     mut bridge_candidate: Option<&mut Option<ClassSourceBridgeCandidate>>,
     mut enum_switch_candidate: Option<&mut Option<Vec<ClassSourceEnumSwitchCandidate>>>,
+    array_constructor_candidate: Option<&mut Option<Vec<ClassSourceArrayConstructorCandidate>>>,
     mut enum_switch_field_use: Option<&mut Option<Vec<ClassSourceEnumSwitchFieldUse>>>,
     generic_return: Option<&mut Option<GenericReturnCandidate>>,
     generic_constructor: Option<&mut Option<GenericConstructorCandidate>>,
@@ -1982,6 +2111,88 @@ fn recover_inner(
             }
             Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
         }
+    }
+    if let Some(array_constructors) = array_constructor_candidate
+        && !program.array_constructor_sites.is_empty()
+    {
+        let Some(member) = request
+            .ir
+            .declaration()
+            .map(|declaration| declaration.identity().clone())
+        else {
+            return stopped(
+                method,
+                profile.clone(),
+                &selection,
+                StopReason::IrTableMissing {
+                    table: "declaration",
+                },
+                budget,
+            );
+        };
+        if let Err(stop) = crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(program.statements.max(1)).unwrap_or(u64::MAX),
+            program
+                .array_constructor_sites
+                .first()
+                .map(|site| site.use_site),
+        ) {
+            return stopped(method, profile.clone(), &selection, stop, budget);
+        }
+        if let Err(stop) = crate::stop::poll(
+            budget,
+            program
+                .array_constructor_sites
+                .first()
+                .map(|site| site.use_site),
+        ) {
+            return stopped(method, profile.clone(), &selection, stop, budget);
+        }
+        let projection = std::sync::Arc::new(ArrayConstructorProjectionSource {
+            program: program.clone(),
+            facts: request.facts.clone(),
+            declaration: declaration.declaration().cloned(),
+            member: member.clone(),
+        });
+        let exact_helpers = crate::lambda::array_helper_candidates(request.ir);
+        let mut candidates = Vec::new();
+        for site in &program.array_constructor_sites {
+            let Some(helper) = exact_helpers.iter().find(|helper| {
+                helper.call_site == site.use_site
+                    && helper.site_cp == site.site_cp
+                    && request
+                        .ir
+                        .declaration()
+                        .is_some_and(|declaration| helper.owner.0 == declaration.class_name().0)
+                    && std::str::from_utf8(&helper.name.0).ok() == Some(site.helper_name.as_str())
+                    && std::str::from_utf8(&helper.descriptor.0).ok()
+                        == Some(site.helper_descriptor.as_str())
+            }) else {
+                continue;
+            };
+            candidates.push(ClassSourceArrayConstructorCandidate {
+                member: member.clone(),
+                helper: jarde_reader::model::PhysicalMethodId {
+                    owner: member.owner.clone(),
+                    name: helper.name.clone(),
+                    descriptor: helper.descriptor.clone(),
+                },
+                helper_owner: helper.owner.clone(),
+                bootstrap_index: helper.bootstrap_index,
+                implementation_index: helper.implementation_index,
+                sites: vec![ArrayConstructorProjectionSite {
+                    use_site: site.use_site,
+                    site_cp: site.site_cp,
+                    array_type: site.array_type.clone(),
+                    target_type: site.target_type.clone(),
+                    helper_name: helper.name.clone(),
+                }],
+                projection: projection.clone(),
+            });
+        }
+        *array_constructors = Some(candidates);
     }
     // The identity of the body being presented, as the payload's own declaration states it: the
     // member every anchor of this artifact belongs to (P3 3.2). A run that read no member header

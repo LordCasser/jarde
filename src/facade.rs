@@ -1529,6 +1529,15 @@ impl Engine {
         let mut enum_constructor_candidate_runs = Vec::new();
         let mut enum_code_candidates = Vec::new();
         let mut enum_switch_candidate_runs = Vec::new();
+        let mut array_constructor_candidate_runs = Vec::new();
+        let mut array_helper_use_runs = Vec::new();
+        // This only avoids scanning unrelated classes. A header-level synthetic lambda helper is
+        // not proof of a projection; all eligibility still comes from same-run Code/CP/AST facts.
+        let array_helper_census_needed = read.facts.methods.iter().any(|member| {
+            member.name.raw().0.starts_with(b"lambda$")
+                && member.access_flags & (0x0002 | 0x0008 | 0x1000) == (0x0002 | 0x0008 | 0x1000)
+                && code_shell(member).is_some()
+        });
         let mut enum_switch_field_use_runs = Vec::new();
         let mut enum_switch_scanned_members = Vec::new();
         // The anonymous-body follow-up consumes these method-scoped scans from this same assembly.
@@ -1937,6 +1946,9 @@ impl Engine {
                                         .any(|attribute| attribute.name.raw().0 == b"Signature"),
                                     capture_enum_group_code,
                                     capture_enum_constructor_ast,
+                                    array_helper_census_needed,
+                                    capture_array_helper_use_table: array_helper_use_runs
+                                        .is_empty(),
                                 },
                                 budget,
                             ) {
@@ -1946,6 +1958,8 @@ impl Engine {
                                     enum_constructor: enum_constructor_candidates,
                                     bridge: bridge_candidate,
                                     enum_switches: enum_switch_candidates,
+                                    array_constructors: array_constructor_candidates,
+                                    array_helper_uses,
                                     enum_switch_field_uses,
                                     generic_return,
                                     generic_constructor,
@@ -1966,6 +1980,12 @@ impl Engine {
                                     }
                                     if let Some(candidates) = enum_switch_candidates {
                                         enum_switch_candidate_runs.extend(candidates);
+                                    }
+                                    if let Some(candidates) = array_constructor_candidates {
+                                        array_constructor_candidate_runs.extend(candidates);
+                                    }
+                                    if let Some(scan) = array_helper_uses {
+                                        array_helper_use_runs.push(scan);
                                     }
                                     if let Some(uses) = enum_switch_field_uses {
                                         enum_switch_scanned_members.push(item.identity.clone());
@@ -2081,6 +2101,11 @@ impl Engine {
             }
         }
         let mut enum_switch_proofs = Vec::new();
+        let mut array_projection_method_texts: Vec<(u64, String)> = Vec::new();
+        let mut array_helper_method_indices: Vec<u64> = Vec::new();
+        let mut array_projection_markers = Vec::new();
+        let mut array_projection_members: Vec<(u64, Vec<u64>)> = Vec::new();
+        let mut array_original_member_texts: Vec<(u64, String)> = Vec::new();
         // Keep the same-run census local until its class-level proof is implemented. Methods whose
         // preparation or body run never happened are absent; they are not empty scans.
         let enum_projection_complete = structure_complete
@@ -2096,6 +2121,28 @@ impl Engine {
                         return true;
                     }
                     enum_switch_scanned_members.contains(&method.item.identity)
+                        && matches!(
+                            &method.outcome,
+                            class_source::ClassSourceOutcome::Recovered { analysis, .. }
+                                if matches!(&analysis.execution, ExecutionReport::Complete { .. })
+                        )
+                });
+        let array_projection_complete = structure_complete
+            && !ended
+            && methods.len() == read.facts.methods.len()
+            && read
+                .facts
+                .methods
+                .iter()
+                .zip(&methods)
+                .all(|(header, method)| {
+                    if code_shell(header).is_none() {
+                        return true;
+                    }
+                    class_source_runs_body(header)
+                        && array_helper_use_runs.iter().any(|scan| {
+                            scan.complete && scan.member.as_ref() == Some(&method.item.identity)
+                        })
                         && matches!(
                             &method.outcome,
                             class_source::ClassSourceOutcome::Recovered { analysis, .. }
@@ -2416,6 +2463,199 @@ impl Engine {
                     proof.refusal = Some(
                         "the class-source enum projection batch stopped before commit".to_owned(),
                     );
+                }
+            }
+        }
+        let mut array_projection_stopped = false;
+        if array_projection_complete && !array_constructor_candidate_runs.is_empty() {
+            let mut by_helper: Vec<(
+                PhysicalMethodId,
+                Vec<jarde_java::report::ClassSourceArrayConstructorCandidate>,
+            )> = Vec::new();
+            for candidate in array_constructor_candidate_runs.iter().cloned() {
+                if let Some((_, sites)) = by_helper
+                    .iter_mut()
+                    .find(|(helper, _)| *helper == candidate.helper)
+                {
+                    sites.push(candidate);
+                } else {
+                    by_helper.push((candidate.helper.clone(), vec![candidate]));
+                }
+            }
+            for (helper, candidates) in by_helper {
+                if array_projection_stopped {
+                    break;
+                }
+                let census = array_helper_census_refusal(
+                    &candidates[0],
+                    &candidates,
+                    &array_helper_use_runs,
+                    budget,
+                );
+                let refusal = match census {
+                    Ok(refusal) => refusal,
+                    Err(error) => {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        break;
+                    }
+                };
+                if refusal.is_none() {
+                    let collides_with_enum_switch = candidates.iter().any(|candidate| {
+                        enum_switch_proofs
+                            .iter()
+                            .any(|proof| proof.projected && proof.member == candidate.member)
+                    });
+                    let collides_with_bridge = candidates.iter().any(|candidate| {
+                        _bridge_candidate_runs.iter().any(|bridge| {
+                            bridge.presented && bridge.member.as_ref() == Some(&candidate.member)
+                        })
+                    });
+                    if collides_with_enum_switch || collides_with_bridge {
+                        continue;
+                    }
+                    let mut helper_members = methods
+                        .iter()
+                        .filter(|method| method.item.identity == helper);
+                    let Some(helper_method) = helper_members.next() else {
+                        continue;
+                    };
+                    if helper_members.next().is_some() {
+                        continue;
+                    }
+                    let mut candidate_by_member: Vec<(
+                        PhysicalMethodId,
+                        jarde_java::report::ClassSourceArrayConstructorCandidate,
+                    )> = Vec::new();
+                    for candidate in candidates {
+                        if let Some((_, grouped)) = candidate_by_member
+                            .iter_mut()
+                            .find(|(member, _)| *member == candidate.member)
+                        {
+                            grouped.sites.extend(candidate.sites);
+                        } else {
+                            candidate_by_member.push((candidate.member.clone(), candidate));
+                        }
+                    }
+                    let mut staged = Vec::new();
+                    let mut accepted = true;
+                    for (member, candidate) in candidate_by_member {
+                        let mut member_matches = methods
+                            .iter()
+                            .enumerate()
+                            .filter(|(_, method)| method.item.identity == member);
+                        let Some((method_index, method)) = member_matches.next() else {
+                            accepted = false;
+                            break;
+                        };
+                        if member_matches.next().is_some() {
+                            accepted = false;
+                            break;
+                        }
+                        if !array_target_declaration_matches(&candidate, method) {
+                            accepted = false;
+                            break;
+                        }
+                        let class_source::ClassSourceOutcome::Recovered { report, analysis } =
+                            &method.outcome
+                        else {
+                            accepted = false;
+                            break;
+                        };
+                        if !matches!(analysis.execution, ExecutionReport::Complete { .. })
+                            || !report.outcome.produced()
+                            || report.quality != jarde_jvm::ir::Quality::Structured
+                            || !report.fallbacks.is_empty()
+                        {
+                            accepted = false;
+                            break;
+                        }
+                        let projected_body =
+                            match jarde_java::report::emit_class_source_array_constructors(
+                                &candidate, budget,
+                            ) {
+                                Ok(Some(text)) => text,
+                                Ok(None) => {
+                                    accepted = false;
+                                    break;
+                                }
+                                Err(stop) => {
+                                    let error = enum_projection_stop_error(
+                                        stop,
+                                        "array-constructor projection",
+                                        "array_constructor_projection_stopped",
+                                    );
+                                    merge_execution(&mut execution, stop_execution(&error, budget));
+                                    diagnostics
+                                        .push(stop_diagnostic(&error, class_provenance.clone()));
+                                    accepted = false;
+                                    array_projection_stopped = true;
+                                    break;
+                                }
+                            };
+                        let marker = format!(
+                            "// jarde: projected {} array-constructor site(s) at {:?} from exact helper {:?}",
+                            candidate.sites.len(),
+                            candidate
+                                .sites
+                                .iter()
+                                .map(|site| site.use_site)
+                                .collect::<Vec<_>>(),
+                            helper.name,
+                        );
+                        let Some(full_text) = method.array_projection_text(&projected_body, marker)
+                        else {
+                            accepted = false;
+                            break;
+                        };
+                        if let Err(error) = budget.charge(
+                            CountedBudgetDimension::OutputBytes,
+                            u64::try_from(full_text.len()).unwrap_or(u64::MAX),
+                        ) {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            accepted = false;
+                            array_projection_stopped = true;
+                            break;
+                        }
+                        staged.push((method_index, method.item.index, full_text));
+                    }
+                    let overlaps_existing = staged.iter().any(|(_, member_index, _)| {
+                        array_projection_members
+                            .iter()
+                            .any(|(_, members)| members.contains(member_index))
+                    });
+                    if accepted && !staged.is_empty() && !overlaps_existing {
+                        let marker = format!(
+                            "// jarde: omitted physical helper {:?} after proving all same-class uses are projected",
+                            helper.name,
+                        );
+                        if let Err(error) = budget.charge(
+                            CountedBudgetDimension::OutputBytes,
+                            u64::try_from(marker.len()).unwrap_or(u64::MAX),
+                        ) {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            array_projection_stopped = true;
+                        } else {
+                            array_projection_method_texts.extend(
+                                staged.iter().map(|(_, index, text)| (*index, text.clone())),
+                            );
+                            array_helper_method_indices.push(helper_method.item.index);
+                            array_projection_markers.push(marker);
+                            let member_indices = staged
+                                .iter()
+                                .map(|(method_index, member_index, _)| {
+                                    array_original_member_texts
+                                        .push((*member_index, methods[*method_index].text.clone()));
+                                    *member_index
+                                })
+                                .collect();
+                            array_projection_members
+                                .push((helper_method.item.index, member_indices));
+                        }
+                    }
+                    continue;
                 }
             }
         }
@@ -2881,12 +3121,55 @@ impl Engine {
                 }
             }
         }
+        let invalid_array_helpers: std::collections::BTreeSet<u64> = array_projection_members
+            .iter()
+            .filter_map(|(helper_index, member_indices)| {
+                let changed = member_indices.iter().any(|member_index| {
+                    let originals = array_original_member_texts
+                        .iter()
+                        .filter(|(index, _)| index == member_index)
+                        .collect::<Vec<_>>();
+                    let current = methods
+                        .iter()
+                        .filter(|method| method.item.index == *member_index)
+                        .collect::<Vec<_>>();
+                    match (originals.as_slice(), current.as_slice()) {
+                        ([(_, original)], [method]) => method.text != *original,
+                        _ => true,
+                    }
+                });
+                changed.then_some(*helper_index)
+            })
+            .collect();
+        if !invalid_array_helpers.is_empty() {
+            let rejected_members: std::collections::BTreeSet<u64> = array_projection_members
+                .iter()
+                .filter(|(helper_index, _)| invalid_array_helpers.contains(helper_index))
+                .flat_map(|(_, members)| members.iter().copied())
+                .collect();
+            array_helper_method_indices.retain(|index| !invalid_array_helpers.contains(index));
+            array_projection_markers = array_helper_method_indices
+                .iter()
+                .filter_map(|index| {
+                    array_projection_members
+                        .iter()
+                        .position(|(helper_index, _)| helper_index == index)
+                        .and_then(|position| array_projection_markers.get(position).cloned())
+                })
+                .collect();
+            array_projection_method_texts.retain(|(index, _)| !rejected_members.contains(index));
+            array_projection_members
+                .retain(|(helper_index, _)| !invalid_array_helpers.contains(helper_index));
+        }
         let text_context = class_source::ClassSourceTextContext {
             initializer_field_order: initializer_field_order.as_deref(),
             declared_methods: read.facts.method_count,
             member_table: read.facts.stopped_at.as_ref(),
             execution: &execution,
             enum_projection: enum_projection.as_ref(),
+            array_helper_indices: Some(&array_helper_method_indices),
+            array_method_texts: Some(&array_projection_method_texts),
+            array_helper_markers: Some(&array_projection_markers),
         };
         let text = class_source::source_text(&declaration, &fields, &methods, &text_context);
         let coverage = class_source_coverage(
@@ -3833,6 +4116,514 @@ fn class_source_runs_body(member: &MemberHeader) -> bool {
     code_shell(member).is_some() && class_source::spellable_descriptor(&member.descriptor.raw().0)
 }
 
+fn scan_array_helper_uses(
+    ir: &jarde_jvm::method_ir::MethodIr,
+    capture_bootstrap_table: bool,
+    budget: &mut Budget,
+) -> Result<Option<ArrayHelperUseScan>> {
+    use jarde_reader::classfile::CpEntryKind as K;
+
+    let Some(code) = ir.code() else {
+        return Ok(None);
+    };
+    let Some(declaration) = ir.declaration() else {
+        return Ok(Some(ArrayHelperUseScan::default()));
+    };
+    let instruction_cost = u64::try_from(code.instructions.len()).unwrap_or(u64::MAX);
+    let bootstrap_cost = if capture_bootstrap_table {
+        ir.bootstrap_methods().iter().fold(0_u64, |sum, bootstrap| {
+            sum.saturating_add(1 + u64::try_from(bootstrap.arguments.len()).unwrap_or(u64::MAX))
+        })
+    } else {
+        0
+    };
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        instruction_cost.saturating_add(bootstrap_cost),
+    )?;
+    let pool = ir.constant_pool();
+    let identity = declaration.identity().clone();
+    let mut scan = ArrayHelperUseScan {
+        complete: code.stopped_at.is_none(),
+        member: Some(identity),
+        ..ArrayHelperUseScan::default()
+    };
+    for (instruction, operands) in code.instructions.iter().zip(code.operands()) {
+        let opcode = operands.effective_opcode;
+        let Some(index) = operands.constant_pool_index else {
+            continue;
+        };
+        let entry = match jarde_reader::classfile::cp_entry(pool, index) {
+            Ok(entry) => entry,
+            Err(_) => {
+                scan.complete = false;
+                continue;
+            }
+        };
+        if (0xb6..=0xb9).contains(&opcode) {
+            if let Some(target) = method_reference_identity(pool, index) {
+                scan.direct_calls.push(target);
+            } else {
+                scan.complete = false;
+            }
+        } else if matches!(opcode, 0x12..=0x14) {
+            match &entry.kind {
+                K::MethodHandle { .. } => {
+                    if let Some(target) = method_handle_identity(pool, index) {
+                        scan.ldc_handles.push(target);
+                    } else {
+                        scan.complete = false;
+                    }
+                }
+                K::Dynamic {
+                    bootstrap_method_attr_index,
+                    ..
+                } => {
+                    scan.dynamic_bootstrap_indices
+                        .push(*bootstrap_method_attr_index);
+                }
+                _ => {}
+            }
+        } else if opcode == 0xba {
+            match &entry.kind {
+                K::InvokeDynamic {
+                    bootstrap_method_attr_index,
+                    ..
+                } => scan.invokedynamic_sites.push((
+                    instruction.bci,
+                    index,
+                    *bootstrap_method_attr_index,
+                )),
+                _ => scan.complete = false,
+            }
+        }
+    }
+    if capture_bootstrap_table {
+        for (bootstrap_index, bootstrap) in ir.bootstrap_methods().iter().enumerate() {
+            let bootstrap_index = u16::try_from(bootstrap_index).unwrap_or(u16::MAX);
+            let bootstrap_handle = method_handle_identity(pool, bootstrap.method_ref);
+            if bootstrap_handle.is_none() {
+                scan.complete = false;
+            }
+            let mut arguments = Vec::with_capacity(bootstrap.arguments.len());
+            for cp_index in bootstrap.arguments.iter().copied() {
+                match jarde_reader::classfile::cp_entry(pool, cp_index).map(|entry| &entry.kind) {
+                    Ok(K::MethodHandle { .. }) => {
+                        if let Some(target) = method_handle_identity(pool, cp_index) {
+                            arguments
+                                .push(ArrayBootstrapArgument::MethodHandle { cp_index, target });
+                        } else {
+                            scan.complete = false;
+                        }
+                    }
+                    Ok(K::Dynamic {
+                        bootstrap_method_attr_index,
+                        ..
+                    }) => arguments.push(ArrayBootstrapArgument::Dynamic {
+                        bootstrap_index: *bootstrap_method_attr_index,
+                    }),
+                    Ok(_) => arguments.push(ArrayBootstrapArgument::Other),
+                    Err(_) => scan.complete = false,
+                }
+            }
+            scan.bootstrap_rows.push(ArrayBootstrapRow {
+                index: bootstrap_index,
+                bootstrap: bootstrap_handle,
+                arguments,
+            });
+        }
+    }
+    Ok(Some(scan))
+}
+
+fn method_reference_identity(
+    pool: &[jarde_reader::classfile::CpEntryFacts],
+    index: u16,
+) -> Option<RawMethodReference> {
+    use jarde_reader::classfile::CpEntryKind as K;
+    match &jarde_reader::classfile::cp_entry(pool, index).ok()?.kind {
+        K::MethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        }
+        | K::InterfaceMethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        } => Some(RawMethodReference {
+            owner: owner.clone(),
+            name: name.clone(),
+            descriptor: descriptor.clone(),
+        }),
+        _ => None,
+    }
+}
+
+fn method_handle_identity(
+    pool: &[jarde_reader::classfile::CpEntryFacts],
+    index: u16,
+) -> Option<RawMethodReference> {
+    use jarde_reader::classfile::CpEntryKind as K;
+    let K::MethodHandle {
+        reference_index, ..
+    } = &jarde_reader::classfile::cp_entry(pool, index).ok()?.kind
+    else {
+        return None;
+    };
+    method_reference_identity(pool, *reference_index)
+}
+
+fn same_raw_method(
+    reference: &RawMethodReference,
+    candidate: &jarde_java::report::ClassSourceArrayConstructorCandidate,
+) -> bool {
+    same_raw_target(
+        reference,
+        &RawMethodReference {
+            owner: candidate.helper_owner.clone(),
+            name: candidate.helper.name.clone(),
+            descriptor: candidate.helper.descriptor.clone(),
+        },
+    )
+}
+
+fn same_raw_target(reference: &RawMethodReference, helper: &RawMethodReference) -> bool {
+    reference.owner == helper.owner
+        && reference.name == helper.name
+        && reference.descriptor == helper.descriptor
+}
+
+fn array_helper_has_direct_use(helper: &RawMethodReference, scans: &[ArrayHelperUseScan]) -> bool {
+    scans.iter().any(|scan| {
+        scan.direct_calls
+            .iter()
+            .chain(&scan.ldc_handles)
+            .any(|reference| same_raw_target(reference, helper))
+    })
+}
+
+#[cfg(test)]
+mod array_helper_census_tests {
+    use super::*;
+
+    fn method_reference(owner: &[u8], name: &[u8], descriptor: &[u8]) -> RawMethodReference {
+        RawMethodReference {
+            owner: jarde_reader::model::JvmBytes(owner.to_vec()),
+            name: jarde_reader::model::JvmBytes(name.to_vec()),
+            descriptor: jarde_reader::model::JvmBytes(descriptor.to_vec()),
+        }
+    }
+
+    #[test]
+    fn direct_invocation_and_ldc_handle_refuse_the_exact_physical_helper() {
+        let helper = method_reference(b"p/Subject", b"lambda$arrayCtor$0", b"(I)[I");
+        let mut scan = ArrayHelperUseScan::default();
+        scan.direct_calls.push(helper.clone());
+        assert!(array_helper_has_direct_use(
+            &helper,
+            std::slice::from_ref(&scan)
+        ));
+
+        scan.direct_calls.clear();
+        scan.ldc_handles.push(helper.clone());
+        assert!(array_helper_has_direct_use(
+            &helper,
+            std::slice::from_ref(&scan)
+        ));
+
+        scan.ldc_handles[0].descriptor = jarde_reader::model::JvmBytes(b"(J)[I".to_vec());
+        assert!(!array_helper_has_direct_use(
+            &helper,
+            std::slice::from_ref(&scan)
+        ));
+    }
+}
+
+fn array_helper_census_refusal(
+    helper: &jarde_java::report::ClassSourceArrayConstructorCandidate,
+    candidates: &[jarde_java::report::ClassSourceArrayConstructorCandidate],
+    scans: &[ArrayHelperUseScan],
+    budget: &mut Budget,
+) -> Result<Option<String>> {
+    if candidates.is_empty() || scans.is_empty() {
+        return Ok(Some("the same-run class use census is absent".to_owned()));
+    }
+    let Some(first) = scans.first() else {
+        return Ok(Some("the same-run class use census is absent".to_owned()));
+    };
+    let setup_cost = u64::try_from(scans.len())
+        .unwrap_or(u64::MAX)
+        .saturating_add(u64::try_from(first.bootstrap_rows.len()).unwrap_or(u64::MAX))
+        .saturating_add(u64::try_from(candidates.len()).unwrap_or(u64::MAX));
+    budget.charge(CountedBudgetDimension::IrItems, setup_cost)?;
+    let row_count = u64::try_from(first.bootstrap_rows.len()).unwrap_or(u64::MAX);
+    let argument_count = first.bootstrap_rows.iter().fold(0_u64, |sum, row| {
+        sum.saturating_add(u64::try_from(row.arguments.len()).unwrap_or(u64::MAX))
+    });
+    let scan_count = u64::try_from(scans.len()).unwrap_or(u64::MAX);
+    let reference_count = scans.iter().fold(0_u64, |sum, scan| {
+        sum.saturating_add(u64::try_from(scan.direct_calls.len()).unwrap_or(u64::MAX))
+            .saturating_add(u64::try_from(scan.ldc_handles.len()).unwrap_or(u64::MAX))
+    });
+    let indy_count = scans.iter().fold(0_u64, |sum, scan| {
+        sum.saturating_add(u64::try_from(scan.invokedynamic_sites.len()).unwrap_or(u64::MAX))
+    });
+    let dynamic_count = scans.iter().fold(0_u64, |sum, scan| {
+        sum.saturating_add(u64::try_from(scan.dynamic_bootstrap_indices.len()).unwrap_or(u64::MAX))
+    });
+    let candidate_site_count = candidates.iter().fold(0_u64, |sum, candidate| {
+        sum.saturating_add(u64::try_from(candidate.sites.len()).unwrap_or(u64::MAX))
+    });
+    let candidate_count = u64::try_from(candidates.len()).unwrap_or(u64::MAX);
+    let work = row_count
+        .saturating_mul(row_count)
+        .saturating_mul(2)
+        .saturating_add(argument_count)
+        .saturating_add(reference_count)
+        .saturating_add(scan_count.saturating_mul(row_count.saturating_add(argument_count)))
+        .saturating_add(indy_count)
+        .saturating_add(dynamic_count)
+        .saturating_add(
+            candidate_site_count.saturating_mul(
+                scan_count
+                    .saturating_add(indy_count)
+                    .saturating_add(row_count)
+                    .saturating_add(1),
+            ),
+        )
+        .saturating_add(
+            argument_count
+                .saturating_mul(scan_count)
+                .saturating_mul(indy_count)
+                .saturating_mul(candidate_site_count.saturating_add(1)),
+        )
+        .saturating_add(argument_count.saturating_mul(candidate_count))
+        .saturating_add(candidate_count);
+    budget.charge(CountedBudgetDimension::IrItems, work)?;
+
+    let helper_target = RawMethodReference {
+        owner: helper.helper_owner.clone(),
+        name: helper.helper.name.clone(),
+        descriptor: helper.helper.descriptor.clone(),
+    };
+    for scan in scans {
+        budget.poll()?;
+        if !scan.complete || scan.member.is_none() {
+            return Ok(Some(
+                "at least one same-run method Code/use scan is incomplete".to_owned(),
+            ));
+        }
+        if array_helper_has_direct_use(&helper_target, std::slice::from_ref(scan)) {
+            return Ok(Some(
+                "the helper has a direct invocation or ldc MethodHandle use".to_owned(),
+            ));
+        }
+    }
+    for scan in scans {
+        budget.poll()?;
+        if !scan.bootstrap_rows.is_empty() && scan.bootstrap_rows != first.bootstrap_rows {
+            return Ok(Some(
+                "same-run method payloads disagree about the class bootstrap table".to_owned(),
+            ));
+        }
+    }
+
+    let mut reachable = std::collections::BTreeSet::new();
+    for scan in scans {
+        budget.poll()?;
+        for (_, _, bootstrap_index) in &scan.invokedynamic_sites {
+            budget.poll()?;
+            reachable.insert(*bootstrap_index);
+        }
+        reachable.extend(scan.dynamic_bootstrap_indices.iter().copied());
+    }
+    let mut queue = reachable
+        .iter()
+        .copied()
+        .collect::<std::collections::VecDeque<_>>();
+    while let Some(index) = queue.pop_front() {
+        budget.poll()?;
+        if let Some(row) = first.bootstrap_rows.iter().find(|row| row.index == index) {
+            for argument in &row.arguments {
+                budget.poll()?;
+                if let ArrayBootstrapArgument::Dynamic { bootstrap_index } = argument
+                    && reachable.insert(*bootstrap_index)
+                {
+                    queue.push_back(*bootstrap_index);
+                }
+            }
+        }
+    }
+    if reachable
+        .iter()
+        .any(|index| !first.bootstrap_rows.iter().any(|row| row.index == *index))
+    {
+        return Ok(Some(
+            "a reachable dynamic site names a missing bootstrap row".to_owned(),
+        ));
+    }
+
+    let mut accepted = Vec::new();
+    for candidate in candidates {
+        budget.poll()?;
+        if candidate.helper != helper.helper || candidate.helper_owner != helper.helper_owner {
+            return Ok(Some(
+                "the grouped sites do not name one exact physical helper".to_owned(),
+            ));
+        }
+        for site in &candidate.sites {
+            budget.poll()?;
+            let Some(scan) = scans
+                .iter()
+                .find(|scan| scan.member.as_ref() == Some(&candidate.member))
+            else {
+                return Ok(Some(
+                    "a projected site has no complete same-run method scan".to_owned(),
+                ));
+            };
+            if !scan.invokedynamic_sites.contains(&(
+                site.use_site,
+                site.site_cp,
+                candidate.bootstrap_index,
+            )) {
+                return Ok(Some(
+                    "a projected site does not match its exact BCI/CP/bootstrap tuple".to_owned(),
+                ));
+            }
+            let Some(row) = first
+                .bootstrap_rows
+                .iter()
+                .find(|row| row.index == candidate.bootstrap_index)
+            else {
+                return Ok(Some("a projected site has no bootstrap row".to_owned()));
+            };
+            if !matches!(
+                row.arguments.get(1),
+                Some(ArrayBootstrapArgument::MethodHandle { cp_index, target })
+                    if *cp_index == candidate.implementation_index
+                        && same_raw_method(target, helper)
+            ) {
+                return Ok(Some(
+                    "the exact bootstrap implementation argument does not name the helper"
+                        .to_owned(),
+                ));
+            }
+            accepted.push((
+                candidate.member.clone(),
+                site.use_site,
+                site.site_cp,
+                candidate.bootstrap_index,
+                candidate.implementation_index,
+            ));
+        }
+    }
+
+    for bootstrap_index in &reachable {
+        budget.poll()?;
+        let Some(row) = first
+            .bootstrap_rows
+            .iter()
+            .find(|row| row.index == *bootstrap_index)
+        else {
+            return Ok(Some("a reachable bootstrap row is absent".to_owned()));
+        };
+        if row
+            .bootstrap
+            .as_ref()
+            .is_some_and(|reference| same_raw_method(reference, helper))
+        {
+            return Ok(Some(
+                "a reachable bootstrap method handle names the helper".to_owned(),
+            ));
+        }
+        for (argument_index, argument) in row.arguments.iter().enumerate() {
+            budget.poll()?;
+            if let ArrayBootstrapArgument::MethodHandle { cp_index, target } = argument
+                && same_raw_method(target, helper)
+            {
+                if argument_index != 1
+                    || !candidates.iter().any(|candidate| {
+                        candidate.bootstrap_index == *bootstrap_index
+                            && candidate.implementation_index == *cp_index
+                    })
+                {
+                    return Ok(Some(
+                        "a reachable bootstrap row has an additional helper handle use".to_owned(),
+                    ));
+                }
+                for scan in scans {
+                    budget.poll()?;
+                    for (bci, site_cp, site_bootstrap) in &scan.invokedynamic_sites {
+                        budget.poll()?;
+                        let Some(member) = scan.member.clone() else {
+                            return Ok(Some("a method scan has no physical identity".to_owned()));
+                        };
+                        if site_bootstrap == bootstrap_index
+                            && !accepted.contains(&(
+                                member,
+                                *bci,
+                                *site_cp,
+                                *site_bootstrap,
+                                *cp_index,
+                            ))
+                        {
+                            return Ok(Some(
+                                "a bootstrap row also serves an unprojected invokedynamic site"
+                                    .to_owned(),
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Ok(None)
+}
+
+fn array_target_declaration_matches(
+    candidate: &jarde_java::report::ClassSourceArrayConstructorCandidate,
+    method: &ClassSourceMethod,
+) -> bool {
+    let (Some(declaration), Ok(method_name)) = (
+        method.declaration.as_deref(),
+        std::str::from_utf8(&method.item.name.raw().0),
+    ) else {
+        return false;
+    };
+    if declaration.contains('<') || declaration.contains('>') {
+        return false;
+    }
+    let Some(header) = declaration.split('(').next() else {
+        return false;
+    };
+    let Some((return_prefix, _)) = header.rsplit_once(method_name) else {
+        return false;
+    };
+    let Some(spelled_type) = return_prefix.split_whitespace().last() else {
+        return false;
+    };
+    candidate.sites.iter().all(|site| {
+        let target_simple = site
+            .target_type
+            .rsplit('.')
+            .next()
+            .unwrap_or(&site.target_type);
+        let descriptor_return = format!("L{};", site.target_type.replace('.', "/"));
+        let descriptor_matches = method
+            .item
+            .descriptor
+            .raw()
+            .0
+            .split(|byte| *byte == b')')
+            .next_back()
+            .is_some_and(|result| result == descriptor_return.as_bytes());
+        descriptor_matches && (spelled_type == site.target_type || spelled_type == target_simple)
+    })
+}
+
 /// How one class-source request produces the bodies of the members that declare one (task 7.3).
 ///
 /// Exactly one of these is decided per request, before the member loop: the class is prepared once
@@ -3881,6 +4672,8 @@ struct PreparedMemberRecovery {
     enum_constructor: Option<jarde_java::report::ClassEnumConstructorCandidates>,
     bridge: Option<jarde_java::bridge::ClassSourceBridgeCandidate>,
     enum_switches: Option<Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>>,
+    array_constructors: Option<Vec<jarde_java::report::ClassSourceArrayConstructorCandidate>>,
+    array_helper_uses: Option<ArrayHelperUseScan>,
     enum_switch_field_uses: Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
     generic_return: Option<jarde_java::report::GenericReturnCandidate>,
     generic_constructor: Option<jarde_java::report::GenericConstructorCandidate>,
@@ -3888,10 +4681,49 @@ struct PreparedMemberRecovery {
     enum_code: Option<crate::enum_constants::EnumMethodCodeCandidate>,
 }
 
+#[derive(Clone, Debug, Default)]
+struct ArrayHelperUseScan {
+    complete: bool,
+    member: Option<PhysicalMethodId>,
+    direct_calls: Vec<RawMethodReference>,
+    ldc_handles: Vec<RawMethodReference>,
+    bootstrap_rows: Vec<ArrayBootstrapRow>,
+    invokedynamic_sites: Vec<(u32, u16, u16)>,
+    dynamic_bootstrap_indices: Vec<u16>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct RawMethodReference {
+    owner: jarde_reader::model::JvmBytes,
+    name: jarde_reader::model::JvmBytes,
+    descriptor: jarde_reader::model::JvmBytes,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct ArrayBootstrapRow {
+    index: u16,
+    bootstrap: Option<RawMethodReference>,
+    arguments: Vec<ArrayBootstrapArgument>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum ArrayBootstrapArgument {
+    MethodHandle {
+        cp_index: u16,
+        target: RawMethodReference,
+    },
+    Dynamic {
+        bootstrap_index: u16,
+    },
+    Other,
+}
+
 struct PreparedMemberOptions {
     prove_generic_return: bool,
     capture_enum_group_code: bool,
     capture_enum_constructor_ast: bool,
+    array_helper_census_needed: bool,
+    capture_array_helper_use_table: bool,
 }
 
 fn recover_prepared_member(
@@ -3905,6 +4737,15 @@ fn recover_prepared_member(
     budget: &mut Budget,
 ) -> Result<PreparedMemberRecovery> {
     let analyzed = jarde_jvm::analyze_prepared_method_ir(content, prepared, request, budget)?;
+    let array_helper_uses = if options.array_helper_census_needed {
+        scan_array_helper_uses(
+            analyzed.ir(),
+            options.capture_array_helper_use_table,
+            budget,
+        )?
+    } else {
+        None
+    };
     let enum_code_candidate = if options.capture_enum_group_code {
         crate::enum_constants::capture_method_code(
             method_index,
@@ -3926,6 +4767,7 @@ fn recover_prepared_member(
         enum_constructor,
         bridge,
         enum_switches,
+        array_constructors,
         enum_switch_field_uses,
         generic_return,
         generic_constructor,
@@ -3961,6 +4803,8 @@ fn recover_prepared_member(
         enum_constructor,
         bridge,
         enum_switches,
+        array_constructors,
+        array_helper_uses,
         enum_switch_field_uses,
         generic_return,
         generic_constructor,
@@ -8049,7 +8893,7 @@ mod member_inner_target_tests {
             };
             let evidence = jarde_java::RecoveryEvidenceRequest::essential()
                 .with_kind(jarde_java::RecoveryEvidenceKind::RuleDetails);
-            let (detailed, _, _, _, _, _, generic_return, _, _) =
+            let (detailed, _, _, _, _, _, _, generic_return, _, _) =
                 recovery_from_with_class_candidates(
                     std::slice::from_ref(&snapshot),
                     &request,
@@ -9541,6 +10385,9 @@ public class Probe {
                 member_table: None,
                 execution: &parent.execution,
                 enum_projection: None,
+                array_helper_indices: None,
+                array_method_texts: None,
+                array_helper_markers: None,
             },
         );
         assert!(!physical.contains("ADD {"));
@@ -12600,6 +13447,7 @@ fn recovery_presented_for_class_source(
     Option<jarde_java::report::ClassEnumConstructorCandidates>,
     Option<jarde_java::bridge::ClassSourceBridgeCandidate>,
     Option<Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>>,
+    Option<Vec<jarde_java::report::ClassSourceArrayConstructorCandidate>>,
     Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
     Option<jarde_java::report::GenericReturnCandidate>,
     Option<jarde_java::report::GenericConstructorCandidate>,
@@ -12696,7 +13544,7 @@ fn recovery_from(
         false,
         false,
     )
-    .map(|(recovered, _, _, _, _, _, _, _, _)| recovered)
+    .map(|(recovered, _, _, _, _, _, _, _, _, _)| recovered)
 }
 
 fn recovery_from_with_class_candidates(
@@ -12716,6 +13564,7 @@ fn recovery_from_with_class_candidates(
     Option<jarde_java::report::ClassEnumConstructorCandidates>,
     Option<jarde_java::bridge::ClassSourceBridgeCandidate>,
     Option<Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>>,
+    Option<Vec<jarde_java::report::ClassSourceArrayConstructorCandidate>>,
     Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
     Option<jarde_java::report::GenericReturnCandidate>,
     Option<jarde_java::report::GenericConstructorCandidate>,
@@ -12793,6 +13642,7 @@ fn recovery_from_with_class_candidates(
         enum_constructor_candidates,
         bridge_candidate,
         enum_switch_candidates,
+        array_constructor_candidates,
         enum_switch_field_uses,
         generic_return,
         generic_constructor,
@@ -12811,6 +13661,7 @@ fn recovery_from_with_class_candidates(
                 result.enum_constructor,
                 result.bridge,
                 Some(result.enum_switches),
+                Some(result.array_constructors),
                 Some(result.enum_switch_field_uses),
                 result.generic_return,
                 result.generic_constructor,
@@ -12830,6 +13681,7 @@ fn recovery_from_with_class_candidates(
                 result.enum_constructor,
                 result.bridge,
                 Some(result.enum_switches),
+                Some(result.array_constructors),
                 Some(result.enum_switch_field_uses),
                 result.generic_return,
                 result.generic_constructor,
@@ -12846,9 +13698,11 @@ fn recovery_from_with_class_candidates(
             None,
             None,
             None,
+            None,
         ),
         None => (
             jarde_java::recover(&request, budget),
+            None,
             None,
             None,
             None,
@@ -12911,6 +13765,7 @@ fn recovery_from_with_class_candidates(
         enum_constructor_candidates,
         bridge_candidate,
         enum_switch_candidates,
+        array_constructor_candidates,
         enum_switch_field_uses,
         generic_return,
         generic_constructor,
