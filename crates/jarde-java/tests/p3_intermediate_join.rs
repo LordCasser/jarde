@@ -23,6 +23,9 @@ const FIXTURE: &[u8] = include_bytes!(
 );
 const NEGATIVE: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-intermediate-join/IntermediateJoinNegative.class");
+const UNKNOWN_BRIDGE: &[u8] = include_bytes!(
+    "../../../tests/fixtures/p3-intermediate-join/unknown-operation/ConditionalIntermediateJoin.class"
+);
 
 fn limits() -> Limits {
     Limits {
@@ -244,6 +247,26 @@ fn verifier_valid_independent_call_and_division_bridges_remain_referenced() {
                 "{method}: BCI {bci} lost its physical source"
             );
         }
+    }
+}
+
+#[test]
+fn verifier_valid_unknown_bridge_keeps_the_whole_candidate_referenced() {
+    let report = recover_class_method_with_budget(
+        UNKNOWN_BRIDGE,
+        "ConditionalIntermediateJoin",
+        "choose",
+        "(I)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(report.text.contains("@bytecode") && !report.text.contains(" ? "));
+    for bci in [0, 4, 9, 15, 18, 19, 20, 23, 26] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci} lost its physical source"
+        );
     }
 }
 

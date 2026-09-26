@@ -2732,15 +2732,15 @@ impl Walker<'_> {
         if tail_next.is_some() || blocks.first() != Some(next) {
             return Ok(false);
         }
-        let owned: BTreeSet<_> = blocks.iter().cloned().collect();
         let newly_visited: BTreeSet<_> = self
             .visited
             .difference(&already_visited)
             .filter_map(|node| self.view.id_of(*node).cloned())
             .collect();
-        if owned.len() != blocks.len() || owned != newly_visited {
+        if !continuation_claims_are_exact(blocks, &newly_visited) {
             return Ok(false);
         }
+        let owned: BTreeSet<_> = blocks.iter().cloned().collect();
         let Some(boundary_id) = self.view.id_of(boundary) else {
             return Ok(false);
         };
@@ -2791,10 +2791,7 @@ impl Walker<'_> {
             let expected_out = blocks.get(index + 1).unwrap_or(boundary_id);
             let actual_in = incoming.get(block).map(Vec::as_slice).unwrap_or(&[]);
             let actual_out = outgoing.get(block).map(Vec::as_slice).unwrap_or(&[]);
-            if actual_in.len() != expected_in.len()
-                || actual_in.iter().any(|(kind, predecessor)| {
-                    *kind != CanonicalEdgeKind::Normal || !expected_in.contains(predecessor)
-                })
+            if !exact_normal_predecessors(actual_in, &expected_in)
                 || actual_out.len() != 1
                 || actual_out[0].0 != CanonicalEdgeKind::Normal
                 || &actual_out[0].1 != expected_out
@@ -6477,9 +6474,90 @@ impl Walker<'_> {
     }
 }
 
+/// Both inner arms must actually enter the continuation. Cardinality plus membership alone
+/// would let two identical incoming edges stand in for the missing second predecessor.
+fn exact_normal_predecessors<T: Ord>(actual: &[(CanonicalEdgeKind, T)], expected: &[T]) -> bool {
+    actual.len() == expected.len()
+        && expected.iter().collect::<BTreeSet<_>>().len() == expected.len()
+        && actual
+            .iter()
+            .all(|(kind, _)| *kind == CanonicalEdgeKind::Normal)
+        && actual.iter().map(|(_, from)| from).collect::<BTreeSet<_>>()
+            == expected.iter().collect::<BTreeSet<_>>()
+}
+
+fn continuation_claims_are_exact<T: Ord + Clone>(blocks: &[T], visited: &BTreeSet<T>) -> bool {
+    let owners: BTreeSet<_> = blocks.iter().cloned().collect();
+    owners.len() == blocks.len() && &owners == visited
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn intermediate_join_requires_both_distinct_normal_predecessors() {
+        let expected = [9_u32, 15];
+        assert!(exact_normal_predecessors(
+            &[
+                (CanonicalEdgeKind::Normal, 9),
+                (CanonicalEdgeKind::Normal, 15),
+            ],
+            &expected,
+        ));
+        assert!(!exact_normal_predecessors(
+            &[
+                (CanonicalEdgeKind::Normal, 9),
+                (CanonicalEdgeKind::Normal, 9),
+            ],
+            &expected,
+        ));
+        assert!(!exact_normal_predecessors(
+            &[
+                (CanonicalEdgeKind::Normal, 9),
+                (CanonicalEdgeKind::Normal, 9),
+            ],
+            &[9, 9],
+        ));
+        for kind in [
+            CanonicalEdgeKind::Call { call_site: 12 },
+            CanonicalEdgeKind::Exception { handler_ordinal: 0 },
+            CanonicalEdgeKind::Return { call_site: 12 },
+        ] {
+            assert!(!exact_normal_predecessors(
+                &[(CanonicalEdgeKind::Normal, 9), (kind, 15)],
+                &expected,
+            ));
+        }
+        assert!(!exact_normal_predecessors(
+            &[
+                (CanonicalEdgeKind::Normal, 9),
+                (CanonicalEdgeKind::Normal, 15),
+                (CanonicalEdgeKind::Normal, 23),
+            ],
+            &expected,
+        ));
+    }
+
+    #[test]
+    fn intermediate_join_requires_one_new_claim_per_tail_block() {
+        assert!(continuation_claims_are_exact(
+            &[18_u32, 20],
+            &BTreeSet::from([18, 20])
+        ));
+        assert!(!continuation_claims_are_exact(
+            &[18_u32, 18],
+            &BTreeSet::from([18])
+        ));
+        assert!(!continuation_claims_are_exact(
+            &[18_u32, 20],
+            &BTreeSet::from([18])
+        ));
+        assert!(!continuation_claims_are_exact(
+            &[18_u32],
+            &BTreeSet::from([18, 20])
+        ));
+    }
 
     #[test]
     fn a_fallback_names_the_code_and_the_place_it_could_not_prove() {
