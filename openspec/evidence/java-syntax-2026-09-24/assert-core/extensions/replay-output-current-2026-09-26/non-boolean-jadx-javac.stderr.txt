@@ -1,0 +1,4 @@
+/private/tmp/jarde-assert-current-replay12/non-boolean-jadx/sources/defpackage/AssertCore.java:13: 错误: 不兼容的类型: int无法转换为boolean
+        $assertionsDisabled = !AssertCore.class.desiredAssertionStatus() ? 2 : 3;
+                                                                         ^
+1 个错误

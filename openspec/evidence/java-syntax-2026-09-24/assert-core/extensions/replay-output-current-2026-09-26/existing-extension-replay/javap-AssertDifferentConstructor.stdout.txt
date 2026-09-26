@@ -1,0 +1,125 @@
+Classfile /private/tmp/jarde-assert-current-replay12/existing-extension-replay/negative-classes/AssertDifferentConstructor.class
+  Last modified 2026年9月26日; size 733 bytes
+  SHA-256 checksum d94bded16b62e9fa8af1143da531aed3b897bef27dcb9928d1cf75bda16195c5
+  Compiled from "AssertDifferentConstructor.java"
+public class AssertDifferentConstructor
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #7                          // AssertDifferentConstructor
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 4, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // AssertDifferentConstructor
+   #8 = Utf8               AssertDifferentConstructor
+   #9 = Methodref          #10.#11        // java/lang/Class.desiredAssertionStatus:()Z
+  #10 = Class              #12            // java/lang/Class
+  #11 = NameAndType        #13:#14        // desiredAssertionStatus:()Z
+  #12 = Utf8               java/lang/Class
+  #13 = Utf8               desiredAssertionStatus
+  #14 = Utf8               ()Z
+  #15 = Fieldref           #7.#16         // AssertDifferentConstructor.$assertionsDisabled:Z
+  #16 = NameAndType        #17:#18        // $assertionsDisabled:Z
+  #17 = Utf8               $assertionsDisabled
+  #18 = Utf8               Z
+  #19 = Class              #20            // java/lang/AssertionError
+  #20 = Utf8               java/lang/AssertionError
+  #21 = Methodref          #19.#22        // java/lang/AssertionError."<init>":(I)V
+  #22 = NameAndType        #5:#23         // "<init>":(I)V
+  #23 = Utf8               (I)V
+  #24 = Methodref          #7.#25         // AssertDifferentConstructor.disabled:()Z
+  #25 = NameAndType        #26:#14        // disabled:()Z
+  #26 = Utf8               disabled
+  #27 = Utf8               Code
+  #28 = Utf8               LineNumberTable
+  #29 = Utf8               LocalVariableTable
+  #30 = Utf8               this
+  #31 = Utf8               LAssertDifferentConstructor;
+  #32 = Utf8               StackMapTable
+  #33 = Utf8               check
+  #34 = Utf8               (Z)V
+  #35 = Utf8               condition
+  #36 = Utf8               <clinit>
+  #37 = Utf8               SourceFile
+  #38 = Utf8               AssertDifferentConstructor.java
+{
+  static final boolean $assertionsDisabled;
+    descriptor: Z
+    flags: (0x1018) ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public AssertDifferentConstructor();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LAssertDifferentConstructor;
+
+  private static boolean disabled();
+    descriptor: ()Z
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #7                  // class AssertDifferentConstructor
+         2: invokevirtual #9                  // Method java/lang/Class.desiredAssertionStatus:()Z
+         5: ifne          12
+         8: iconst_1
+         9: goto          13
+        12: iconst_0
+        13: ireturn
+      LineNumberTable:
+        line 5: 0
+      StackMapTable: number_of_entries = 2
+        frame_type = 12 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  static void check(boolean);
+    descriptor: (Z)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: getstatic     #15                 // Field $assertionsDisabled:Z
+         3: ifne          20
+         6: iload_0
+         7: ifne          20
+        10: new           #19                 // class java/lang/AssertionError
+        13: dup
+        14: bipush        42
+        16: invokespecial #21                 // Method java/lang/AssertionError."<init>":(I)V
+        19: athrow
+        20: return
+      LineNumberTable:
+        line 9: 0
+        line 10: 10
+        line 12: 20
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      21     0 condition   Z
+      StackMapTable: number_of_entries = 1
+        frame_type = 20 /* same */
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokestatic  #24                 // Method disabled:()Z
+         3: putstatic     #15                 // Field $assertionsDisabled:Z
+         6: return
+      LineNumberTable:
+        line 2: 0
+}
+SourceFile: "AssertDifferentConstructor.java"

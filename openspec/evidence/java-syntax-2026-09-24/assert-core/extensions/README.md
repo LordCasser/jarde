@@ -36,4 +36,18 @@ These are ordinary javac-generated classes with an explicit `$assertionsDisabled
 
 `AssertDifferentConstructor.class` SHA-256 is `d94bded16b62e9fa8af1143da531aed3b897bef27dcb9928d1cf75bda16195c5`. Its `check(Z)V` constructs `AssertionError` with descriptor `(I)V` at BCI 16, unlike the no-message `()V` or message `(Object)V` forms javac emits for Java `assert`. It verifies under both modes; the enabled runner prints message `42`, and disabled execution does not throw.
 
-The frozen original class and both refusal classes are compiled by javac; the refusal classes also compile from JADX 1.5.6 output and preserve the same observed values. This is a refusal-shape control, not a claim that Jarde has already rejected them: the current CLI binary is absent, so Jarde replay remains to be run after the shared build.
+The frozen original class and both refusal classes are compiled by javac; the refusal classes also compile from JADX 1.5.6 output and preserve the same observed values. The original shape replay above freezes JVM-valid input behavior; the current Jarde CLI replay is recorded separately below.
+
+## Current CLI replay (2026-09-26)
+
+[`replay-current-2026-09-26.md`](replay-current-2026-09-26.md) records the deterministic three-way replay made with a private Cargo target. Run it with:
+
+```sh
+python3 openspec/evidence/java-syntax-2026-09-24/assert-core/extensions/replay-current.py \
+  --cli /path/to/jarde-cli \
+  --out "$(mktemp -d /tmp/assert-current.XXXXXX)"
+```
+
+The saved [`replay-output-current-2026-09-26/`](replay-output-current-2026-09-26/) contains the core/wrong-owner replay, original/JADX/Jarde extension sources and compile/run transcripts, class hashes, and full javap output. The `AssertDuplicateStatusWrite` fixture compiles with a mutable `Z` status field and two writes, then changes only the field flags to static-final-synthetic (`0x1018`); it passes `-Xverify:all`. JADX and Jarde preserve the duplicate assignment, which Java 8 source compilation rejects for a final field. The new `AssertHandlerBoundary` fixture uses a javac-generated exception table; after changing only the assertion-field access flags to `0x1018`, its class also passes `-Xverify:all`. Current Jarde explicitly marks `check(Z)V` as not recovered and explanation-only. Its partial class happens to compile, but that does not make the missing method body an equivalent recovery.
+
+The existing `AssertCore-non01-arms.class` from `tests/fixtures/p3-assert-core/` is reused at SHA-256 `b52d39dd6ae7943d70b510c4925f23faadcc2fcc64c5cb7a2c309ae450de4e2c`; this extension does not introduce a second 2/3 patch.

@@ -1,0 +1,4 @@
+/private/tmp/jarde-assert-current-replay12/duplicate-status-jarde-source/AssertDuplicateStatusWrite.java:38: 错误: 可能已分配变量$assertionsDisabled
+        $assertionsDisabled = false;
+        ^
+1 个错误

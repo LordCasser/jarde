@@ -1,0 +1,105 @@
+{
+  "git_revision": "9e62a11b334d440d5e4089e73f329de7274f7bc8",
+  "tools": {
+    "cli_sha256": "2d6e745caa3440bfefdc112aaa2a4411af8ac25264a85034f3fc2fdfe15f11d1",
+    "javac": "javac 23.0.1",
+    "java": "openjdk version \"23.0.1\" 2024-10-15",
+    "jadx": "1.5.6"
+  },
+  "assert_core_replay": "see assert-core-current-replay/summary.json",
+  "existing_extension_replay": "see existing-extension-replay/summary.json",
+  "non_boolean": {
+    "class_sha256": "b52d39dd6ae7943d70b510c4925f23faadcc2fcc64c5cb7a2c309ae450de4e2c",
+    "source_sha256": "cf3be5621023c8164e1022b5a23518c6775eac71533ec68f52bcfd9c090f980f",
+    "patch_replay_script_sha256": "e197b9149ed3a83a3af854e976da4c810b75feeeb79c5f8418f5dd112cb79205",
+    "original_modes": {
+      "enabled": "0|0;0|0\n",
+      "disabled": "1|0;bad|2|1\n"
+    },
+    "javap": "see non-boolean-javap.stdout.txt",
+    "jadx_source_sha256": "653b758ef45013286ee24d26c04903389b212616f9478ce10fed03c5e567b155",
+    "jadx_javac_exit": 1,
+    "jarde_source_sha256": "f39688f3c06c2a7a6bb2392f687ad58ff8e7bf0d46f93a18d3ba23ab4d571ca5",
+    "jarde_javac_exit": 0,
+    "jarde_modes": {
+      "enabled": "0|0;0|0\n",
+      "disabled": "1|0;bad|2|1\n"
+    }
+  },
+  "duplicate_status_write": {
+    "class_sha256": "17e988592792a34bd92ebf3bf9539cb6827f6ab5bd6a8d4db53a7ef9a91c0ef5",
+    "flag_patch": {
+      "descriptor": "Z",
+      "flags_before": "0x0008",
+      "flags_after": "0x1018",
+      "changed_bytes": 2
+    },
+    "sources": {
+      "AssertDuplicateStatusWrite.java": "b1e9be66836efda45518a224afafbefabf24f736b75558a023f5ec48d5c9f11d",
+      "AssertDuplicateStatusWriteRunner.java": "c8aea1749a6b8f5ae2fab9ba22b2b9e0c003baef851ef4b19df2c0891d1f7a30"
+    },
+    "javap": "see duplicate-status-javap.stdout.txt",
+    "original_modes": {
+      "enabled": "AssertionError\n",
+      "disabled": "AssertionError\n"
+    },
+    "jadx_source_sha256": "2012910fe0b2ae623b24e7a0e7109ea246f01a34a7cdd736593ce05c369e897b",
+    "jadx_javac_exit": 1,
+    "jarde_source_sha256": "e51062d015d89f176f45217957b0eda969c549c413ed7e60baa7ccfaa2b771b9",
+    "jarde_javac_exit": 1
+  },
+  "handler": {
+    "class_sha256": "7d84084d8f2002ddce5337c7a5e50ed0e12878db551f10450a888c911e13f162",
+    "flag_patch": {
+      "descriptor": "Z",
+      "flags_before": "0x0018",
+      "flags_after": "0x1018",
+      "changed_bytes": 2
+    },
+    "sources": {
+      "AssertHandlerBoundary.java": "8d85064c8673b063037dfebcd818b62d78d2eea603af04d20c39b4c8c8e55b34",
+      "AssertHandlerBoundaryRunner.java": "3712bdb0989ac4eafd0dbb09cc951c88e57db577d77a78737b6b29a599e7dee8"
+    },
+    "modes": {
+      "enabled": "generated=1;condition=escaped:condition\n",
+      "disabled": "generated=0;condition=none\n"
+    },
+    "jadx_source_sha256": "0964c077cd63b623e7d9fe86f64fc0171686b9dc76749ec01917733f9aa5b8de",
+    "jarde_source_sha256": "c75afaa650f05fdcf769c8e02e1ab9a4bc554c3b2c62567bd70dbc8c6ce2f026",
+    "jadx_modes": {
+      "enabled": "generated=1;condition=escaped:condition\n",
+      "disabled": "generated=0;condition=none\n"
+    },
+    "jarde_javac_exit": 0,
+    "jarde_modes": {
+      "enabled": "generated=0;condition=none\n",
+      "disabled": "generated=0;condition=none\n"
+    }
+  },
+  "positive": {
+    "class_sha256": "cf37e61be49733e3273ee46567129eb72eb52ba2051a879f212b2eb569fe419b",
+    "jarde_source_sha256": "694fec8baf8d88015cc1256ff7f4157ca9490de09a58af0e831cb10a68392155",
+    "javac_exit": 0,
+    "modes": {
+      "enabled": "init=1;plain-true=12;plain-false=AssertionError:null;multiple-true=12222;multiple-second-false=AssertionError:message;effects=12222223\n",
+      "disabled": "init=1;plain-true=1;plain-false=none;multiple-true=1;multiple-second-false=none;effects=1\n"
+    }
+  },
+  "negative_jarde": {
+    "extra-field": {
+      "class_sha256": "a7ea4f420050e3e803ba91336ad5d670f6c85d4747f9d506843976ef9da6cdbc",
+      "jarde_source_sha256": "4d701fa1834ff95f4f551c7727614847448164e29bcf3b4bafccb445ae5412be",
+      "javac_exit": 0
+    },
+    "different-constructor": {
+      "class_sha256": "d94bded16b62e9fa8af1143da531aed3b897bef27dcb9928d1cf75bda16195c5",
+      "jarde_source_sha256": "a0c578f79cfe91be31c91c7736c68294c726cb506ddc7bc3c57647ad246bb9cd",
+      "javac_exit": 0
+    },
+    "javac_exit": 0,
+    "modes": {
+      "enabled": "extra=AssertionError:null:writes=1;probe=false;ctor=AssertionError:42;\n",
+      "disabled": "probe=true;\n"
+    }
+  }
+}

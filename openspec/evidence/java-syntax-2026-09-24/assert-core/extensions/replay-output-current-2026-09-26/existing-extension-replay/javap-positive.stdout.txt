@@ -1,0 +1,217 @@
+Classfile /private/tmp/jarde-assert-current-replay12/existing-extension-replay/positive-classes/AssertVariants.class
+  Last modified 2026年9月26日; size 1094 bytes
+  SHA-256 checksum cf37e61be49733e3273ee46567129eb72eb52ba2051a879f212b2eb569fe419b
+  Compiled from "AssertVariants.java"
+public class AssertVariants
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // AssertVariants
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 6, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // AssertVariants.effects:I
+   #8 = Class              #10            // AssertVariants
+   #9 = NameAndType        #11:#12        // effects:I
+  #10 = Utf8               AssertVariants
+  #11 = Utf8               effects
+  #12 = Utf8               I
+  #13 = String             #14            // message
+  #14 = Utf8               message
+  #15 = Fieldref           #8.#16         // AssertVariants.$assertionsDisabled:Z
+  #16 = NameAndType        #17:#18        // $assertionsDisabled:Z
+  #17 = Utf8               $assertionsDisabled
+  #18 = Utf8               Z
+  #19 = Methodref          #8.#20         // AssertVariants.probe:(Z)Z
+  #20 = NameAndType        #21:#22        // probe:(Z)Z
+  #21 = Utf8               probe
+  #22 = Utf8               (Z)Z
+  #23 = Class              #24            // java/lang/AssertionError
+  #24 = Utf8               java/lang/AssertionError
+  #25 = Methodref          #23.#3         // java/lang/AssertionError."<init>":()V
+  #26 = Methodref          #8.#27         // AssertVariants.detail:()Ljava/lang/String;
+  #27 = NameAndType        #28:#29        // detail:()Ljava/lang/String;
+  #28 = Utf8               detail
+  #29 = Utf8               ()Ljava/lang/String;
+  #30 = Methodref          #23.#31        // java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+  #31 = NameAndType        #5:#32         // "<init>":(Ljava/lang/Object;)V
+  #32 = Utf8               (Ljava/lang/Object;)V
+  #33 = Methodref          #34.#35        // java/lang/Class.desiredAssertionStatus:()Z
+  #34 = Class              #36            // java/lang/Class
+  #35 = NameAndType        #37:#38        // desiredAssertionStatus:()Z
+  #36 = Utf8               java/lang/Class
+  #37 = Utf8               desiredAssertionStatus
+  #38 = Utf8               ()Z
+  #39 = Utf8               Code
+  #40 = Utf8               LineNumberTable
+  #41 = Utf8               LocalVariableTable
+  #42 = Utf8               this
+  #43 = Utf8               LAssertVariants;
+  #44 = Utf8               value
+  #45 = Utf8               noMessage
+  #46 = Utf8               (Z)I
+  #47 = Utf8               condition
+  #48 = Utf8               StackMapTable
+  #49 = Utf8               multiple
+  #50 = Utf8               (ZZ)I
+  #51 = Utf8               first
+  #52 = Utf8               second
+  #53 = Utf8               <clinit>
+  #54 = Utf8               SourceFile
+  #55 = Utf8               AssertVariants.java
+{
+  static int effects;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  static final boolean $assertionsDisabled;
+    descriptor: Z
+    flags: (0x1018) ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public AssertVariants();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LAssertVariants;
+
+  private static boolean probe(boolean);
+    descriptor: (Z)Z
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #7                  // Field effects:I
+         3: bipush        10
+         5: imul
+         6: iconst_2
+         7: iadd
+         8: putstatic     #7                  // Field effects:I
+        11: iload_0
+        12: ireturn
+      LineNumberTable:
+        line 9: 0
+        line 10: 11
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      13     0 value   Z
+
+  private static java.lang.String detail();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #7                  // Field effects:I
+         3: bipush        10
+         5: imul
+         6: iconst_3
+         7: iadd
+         8: putstatic     #7                  // Field effects:I
+        11: ldc           #13                 // String message
+        13: areturn
+      LineNumberTable:
+        line 14: 0
+        line 15: 11
+
+  static int noMessage(boolean);
+    descriptor: (Z)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #15                 // Field $assertionsDisabled:Z
+         3: ifne          21
+         6: iload_0
+         7: invokestatic  #19                 // Method probe:(Z)Z
+        10: ifne          21
+        13: new           #23                 // class java/lang/AssertionError
+        16: dup
+        17: invokespecial #25                 // Method java/lang/AssertionError."<init>":()V
+        20: athrow
+        21: getstatic     #7                  // Field effects:I
+        24: ireturn
+      LineNumberTable:
+        line 19: 0
+        line 20: 21
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      25     0 condition   Z
+      StackMapTable: number_of_entries = 1
+        frame_type = 21 /* same */
+
+  static int multiple(boolean, boolean);
+    descriptor: (ZZ)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: getstatic     #15                 // Field $assertionsDisabled:Z
+         3: ifne          21
+         6: iload_0
+         7: invokestatic  #19                 // Method probe:(Z)Z
+        10: ifne          21
+        13: new           #23                 // class java/lang/AssertionError
+        16: dup
+        17: invokespecial #25                 // Method java/lang/AssertionError."<init>":()V
+        20: athrow
+        21: getstatic     #15                 // Field $assertionsDisabled:Z
+        24: ifne          45
+        27: iload_1
+        28: invokestatic  #19                 // Method probe:(Z)Z
+        31: ifne          45
+        34: new           #23                 // class java/lang/AssertionError
+        37: dup
+        38: invokestatic  #26                 // Method detail:()Ljava/lang/String;
+        41: invokespecial #30                 // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        44: athrow
+        45: getstatic     #7                  // Field effects:I
+        48: ireturn
+      LineNumberTable:
+        line 24: 0
+        line 25: 21
+        line 26: 45
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      49     0 first   Z
+            0      49     1 second   Z
+      StackMapTable: number_of_entries = 2
+        frame_type = 21 /* same */
+        frame_type = 23 /* same */
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc           #8                  // class AssertVariants
+         2: invokevirtual #33                 // Method java/lang/Class.desiredAssertionStatus:()Z
+         5: ifne          12
+         8: iconst_1
+         9: goto          13
+        12: iconst_0
+        13: putstatic     #15                 // Field $assertionsDisabled:Z
+        16: getstatic     #7                  // Field effects:I
+        19: iconst_1
+        20: iadd
+        21: putstatic     #7                  // Field effects:I
+        24: return
+      LineNumberTable:
+        line 1: 0
+        line 5: 16
+        line 6: 24
+      StackMapTable: number_of_entries = 2
+        frame_type = 12 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+}
+SourceFile: "AssertVariants.java"

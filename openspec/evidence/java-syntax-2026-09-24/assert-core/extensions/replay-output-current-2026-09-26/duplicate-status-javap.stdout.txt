@@ -1,0 +1,126 @@
+Classfile /private/tmp/jarde-assert-current-replay12/duplicate-status-original-classes/AssertDuplicateStatusWrite.class
+  Last modified 2026年9月26日; size 731 bytes
+  SHA-256 checksum 17e988592792a34bd92ebf3bf9539cb6827f6ab5bd6a8d4db53a7ef9a91c0ef5
+  Compiled from "AssertDuplicateStatusWrite.java"
+public class AssertDuplicateStatusWrite
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #7                          // AssertDuplicateStatusWrite
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 4, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // AssertDuplicateStatusWrite
+   #8 = Utf8               AssertDuplicateStatusWrite
+   #9 = Methodref          #10.#11        // java/lang/Class.desiredAssertionStatus:()Z
+  #10 = Class              #12            // java/lang/Class
+  #11 = NameAndType        #13:#14        // desiredAssertionStatus:()Z
+  #12 = Utf8               java/lang/Class
+  #13 = Utf8               desiredAssertionStatus
+  #14 = Utf8               ()Z
+  #15 = Fieldref           #7.#16         // AssertDuplicateStatusWrite.$assertionsDisabled:Z
+  #16 = NameAndType        #17:#18        // $assertionsDisabled:Z
+  #17 = Utf8               $assertionsDisabled
+  #18 = Utf8               Z
+  #19 = Class              #20            // java/lang/AssertionError
+  #20 = Utf8               java/lang/AssertionError
+  #21 = Methodref          #19.#3         // java/lang/AssertionError."<init>":()V
+  #22 = Methodref          #7.#23         // AssertDuplicateStatusWrite.disabled:()Z
+  #23 = NameAndType        #24:#14        // disabled:()Z
+  #24 = Utf8               disabled
+  #25 = Utf8               Code
+  #26 = Utf8               LineNumberTable
+  #27 = Utf8               LocalVariableTable
+  #28 = Utf8               this
+  #29 = Utf8               LAssertDuplicateStatusWrite;
+  #30 = Utf8               StackMapTable
+  #31 = Utf8               check
+  #32 = Utf8               (Z)V
+  #33 = Utf8               condition
+  #34 = Utf8               <clinit>
+  #35 = Utf8               SourceFile
+  #36 = Utf8               AssertDuplicateStatusWrite.java
+{
+  static final boolean $assertionsDisabled;
+    descriptor: Z
+    flags: (0x1018) ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public AssertDuplicateStatusWrite();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LAssertDuplicateStatusWrite;
+
+  private static boolean disabled();
+    descriptor: ()Z
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #7                  // class AssertDuplicateStatusWrite
+         2: invokevirtual #9                  // Method java/lang/Class.desiredAssertionStatus:()Z
+         5: ifne          12
+         8: iconst_1
+         9: goto          13
+        12: iconst_0
+        13: ireturn
+      LineNumberTable:
+        line 5: 0
+      StackMapTable: number_of_entries = 2
+        frame_type = 12 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  static void check(boolean);
+    descriptor: (Z)V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #15                 // Field $assertionsDisabled:Z
+         3: ifne          18
+         6: iload_0
+         7: ifne          18
+        10: new           #19                 // class java/lang/AssertionError
+        13: dup
+        14: invokespecial #21                 // Method java/lang/AssertionError."<init>":()V
+        17: athrow
+        18: return
+      LineNumberTable:
+        line 14: 0
+        line 15: 10
+        line 17: 18
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      19     0 condition   Z
+      StackMapTable: number_of_entries = 1
+        frame_type = 18 /* same */
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokestatic  #22                 // Method disabled:()Z
+         3: putstatic     #15                 // Field $assertionsDisabled:Z
+         6: iconst_0
+         7: putstatic     #15                 // Field $assertionsDisabled:Z
+        10: return
+      LineNumberTable:
+        line 9: 0
+        line 10: 6
+        line 11: 10
+}
+SourceFile: "AssertDuplicateStatusWrite.java"

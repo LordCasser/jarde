@@ -1,0 +1,118 @@
+{
+  "tools": {
+    "javac": "javac 23.0.1",
+    "java": "openjdk version \"23.0.1\" 2024-10-15",
+    "jadx": "1.5.6",
+    "jarde_cli": "unavailable: target/debug/jarde-cli is absent; no build was started"
+  },
+  "sources": {
+    "AssertVariants.java": "1c7542b2d63c0568fb23d906f6267e7f8181faa520478a289c14bb1e0452d26b",
+    "AssertVariantsRunner.java": "192845a6f4dfc2030ea35ca2938aacf1ffc5bd0070157be33b7651e1e5444c28",
+    "AssertExtraFieldAccess.java": "f6f9917367f3255d069c06f0f4e34eb29b0ca03a0c2a64c77bf20a11524da6c9",
+    "AssertDifferentConstructor.java": "e88ee3c714c6821b076098e374bf4d2390f9eb194ef6fe38974b5519f1622b86",
+    "RejectRunner.java": "9022ed127fcfb464b4e3f992e565fb6f4f229537332846cb64308d3abe21416f"
+  },
+  "positive": {
+    "class_sha256": "cf37e61be49733e3273ee46567129eb72eb52ba2051a879f212b2eb569fe419b",
+    "modes": {
+      "enabled": "init=1;plain-true=12;plain-false=AssertionError:null;multiple-true=12222;multiple-second-false=AssertionError:message;effects=12222223\n",
+      "disabled": "init=1;plain-true=1;plain-false=none;multiple-true=1;multiple-second-false=none;effects=1\n"
+    },
+    "assert_bcis": [
+      "#15 = Fieldref           #8.#16         // AssertVariants.$assertionsDisabled:Z",
+      "#16 = NameAndType        #17:#18        // $assertionsDisabled:Z",
+      "#17 = Utf8               $assertionsDisabled",
+      "#23 = Class              #24            // java/lang/AssertionError",
+      "#24 = Utf8               java/lang/AssertionError",
+      "#25 = Methodref          #23.#3         // java/lang/AssertionError.\"<init>\":()V",
+      "#30 = Methodref          #23.#31        // java/lang/AssertionError.\"<init>\":(Ljava/lang/Object;)V",
+      "#33 = Methodref          #34.#35        // java/lang/Class.desiredAssertionStatus:()Z",
+      "#35 = NameAndType        #37:#38        // desiredAssertionStatus:()Z",
+      "#37 = Utf8               desiredAssertionStatus",
+      "static final boolean $assertionsDisabled;",
+      "0: getstatic     #15                 // Field $assertionsDisabled:Z",
+      "13: new           #23                 // class java/lang/AssertionError",
+      "17: invokespecial #25                 // Method java/lang/AssertionError.\"<init>\":()V",
+      "0: getstatic     #15                 // Field $assertionsDisabled:Z",
+      "13: new           #23                 // class java/lang/AssertionError",
+      "17: invokespecial #25                 // Method java/lang/AssertionError.\"<init>\":()V",
+      "21: getstatic     #15                 // Field $assertionsDisabled:Z",
+      "34: new           #23                 // class java/lang/AssertionError",
+      "41: invokespecial #30                 // Method java/lang/AssertionError.\"<init>\":(Ljava/lang/Object;)V",
+      "2: invokevirtual #33                 // Method java/lang/Class.desiredAssertionStatus:()Z",
+      "13: putstatic     #15                 // Field $assertionsDisabled:Z"
+    ],
+    "jadx_source_sha256": "b0fc9bc93391c5d672c5e3632f8bfe0d2b1178631e0b2472d7dac4ea933d30c9",
+    "jadx_modes": {
+      "enabled": "init=1;plain-true=12;plain-false=AssertionError:null;multiple-true=12222;multiple-second-false=AssertionError:message;effects=12222223\n",
+      "disabled": "init=1;plain-true=1;plain-false=none;multiple-true=1;multiple-second-false=none;effects=1\n"
+    }
+  },
+  "negative": {
+    "AssertExtraFieldAccess": {
+      "patch": {
+        "descriptor": "Z",
+        "flags_before": "0x0018",
+        "flags_after": "0x1018",
+        "changed_bytes": 2
+      },
+      "class_sha256": "a7ea4f420050e3e803ba91336ad5d670f6c85d4747f9d506843976ef9da6cdbc",
+      "interesting_javap": [
+        "#9 = Methodref          #10.#11        // java/lang/Class.desiredAssertionStatus:()Z",
+        "#11 = NameAndType        #13:#14        // desiredAssertionStatus:()Z",
+        "#13 = Utf8               desiredAssertionStatus",
+        "#15 = Fieldref           #7.#16         // AssertExtraFieldAccess.$assertionsDisabled:Z",
+        "#16 = NameAndType        #17:#18        // $assertionsDisabled:Z",
+        "#17 = Utf8               $assertionsDisabled",
+        "#23 = Class              #24            // java/lang/AssertionError",
+        "#24 = Utf8               java/lang/AssertionError",
+        "#25 = Methodref          #23.#3         // java/lang/AssertionError.\"<init>\":()V",
+        "static final boolean $assertionsDisabled;",
+        "2: invokevirtual #9                  // Method java/lang/Class.desiredAssertionStatus:()Z",
+        "0: getstatic     #15                 // Field $assertionsDisabled:Z",
+        "0: getstatic     #15                 // Field $assertionsDisabled:Z",
+        "19: new           #23                 // class java/lang/AssertionError",
+        "23: invokespecial #25                 // Method java/lang/AssertionError.\"<init>\":()V",
+        "3: putstatic     #15                 // Field $assertionsDisabled:Z"
+      ]
+    },
+    "AssertDifferentConstructor": {
+      "patch": {
+        "descriptor": "Z",
+        "flags_before": "0x0018",
+        "flags_after": "0x1018",
+        "changed_bytes": 2
+      },
+      "class_sha256": "d94bded16b62e9fa8af1143da531aed3b897bef27dcb9928d1cf75bda16195c5",
+      "interesting_javap": [
+        "#9 = Methodref          #10.#11        // java/lang/Class.desiredAssertionStatus:()Z",
+        "#11 = NameAndType        #13:#14        // desiredAssertionStatus:()Z",
+        "#13 = Utf8               desiredAssertionStatus",
+        "#15 = Fieldref           #7.#16         // AssertDifferentConstructor.$assertionsDisabled:Z",
+        "#16 = NameAndType        #17:#18        // $assertionsDisabled:Z",
+        "#17 = Utf8               $assertionsDisabled",
+        "#19 = Class              #20            // java/lang/AssertionError",
+        "#20 = Utf8               java/lang/AssertionError",
+        "#21 = Methodref          #19.#22        // java/lang/AssertionError.\"<init>\":(I)V",
+        "static final boolean $assertionsDisabled;",
+        "2: invokevirtual #9                  // Method java/lang/Class.desiredAssertionStatus:()Z",
+        "0: getstatic     #15                 // Field $assertionsDisabled:Z",
+        "10: new           #19                 // class java/lang/AssertionError",
+        "16: invokespecial #21                 // Method java/lang/AssertionError.\"<init>\":(I)V",
+        "3: putstatic     #15                 // Field $assertionsDisabled:Z"
+      ]
+    },
+    "jadx_source_sha256": {
+      "AssertExtraFieldAccess.java": "d6a36daf82d0b2d8e982d1b56af620a4579b005f93249ba52a0a3208c6d78bf5",
+      "AssertDifferentConstructor.java": "ee358d1b71949db57d60369fa549aa391d1135d3a47db88e09cd9b16489f6840"
+    },
+    "jadx_modes": {
+      "enabled": "extra=AssertionError:null:writes=1;probe=false;ctor=AssertionError:42;\n",
+      "disabled": "probe=true;\n"
+    }
+  },
+  "negative_runner": {
+    "enabled": "extra=AssertionError:null:writes=1;probe=false;ctor=AssertionError:42;\n",
+    "disabled": "probe=true;\n"
+  }
+}
