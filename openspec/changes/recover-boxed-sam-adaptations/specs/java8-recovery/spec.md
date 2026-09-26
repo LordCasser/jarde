@@ -2,7 +2,7 @@
 
 ### Requirement: SAM adaptation proves wrapper-primitive slot pairs
 
-lambda/方法引用站点的适配证明 SHALL 在 impl 方法类型与 instantiated 方法类型 arity 一致、且每个对应槽位为「恒等 / 已证明的 Object 检查或上溯 / 基本类型与其唯一包装类的装箱或拆箱」之一时接受该站点，箭头文本按既有规则呈现。数组构造器引用（impl 为合成分配方法，逐槽与 instantiated 对应）SHALL 同样被接受并被呈现为 `T[]::new` 形式的箭头。配对不可证明时 MUST 保持既有拒绝并保留原方法体呈现。
+lambda/方法引用站点的适配证明 SHALL 对擦除 SAM、instantiated 与 impl 三种方法类型的参数和返回逐槽证明两段转换；每段只能为「恒等 / 已证明的 Object 检查或上溯 / 基本类型与其唯一包装类的装箱或拆箱」。捕获值的精确类型门 MUST 保持。数组构造器引用的 impl 若为合成方法，SHALL 仅在同次物理成员 Code 完整证明为单次目标数组分配并返回后呈现为 `T[]::new`；名称或 synthetic 标志 MUST NOT 代替 Code 证明。配对或 Code 不可证明时 MUST 保持既有拒绝并保留原方法体呈现。
 
 #### Scenario: Primitive implementation behind a boxed SAM
 
@@ -12,11 +12,11 @@ lambda/方法引用站点的适配证明 SHALL 在 impl 方法类型与 instanti
 #### Scenario: Array constructor reference
 
 - **WHEN** `Function<Integer, int[]>` 绑定 `int[]::new`，实现为编译器生成的合成分配方法
-- **THEN** 使用点 SHALL 呈现 `int[]::new` 箭头，合成分配方法保留在类文本中并标注已被使用点呈现
+- **THEN** 使用点 SHALL 呈现 `int[]::new` 箭头，合成分配方法的物理报告 SHALL 保留；类源码中保留该方法时 SHALL 通过 Java 8 重编译，不得与重新生成的合成方法冲突
 
 #### Scenario: Unprovable pairs keep the refusal
 
-- **WHEN** impl 与 instantiated 的槽位对不是上述任一类（arity 不同、`String`↔`int`、静态性不匹配、impl 读不到）
+- **WHEN** 擦除 SAM→instantiated→impl 的任一槽位对不是上述任一类（arity 不同、`String`↔`int`、包装类不对应、静态性不匹配），或数组 impl 的 Code 读不到/含额外效果
 - **THEN** 站点 SHALL 保持既有拒绝码与引用呈现，MUST NOT 发明适配或丢掉 impl 的效果
 
 #### Scenario: Execution through the adapted SAM
