@@ -10115,12 +10115,16 @@ impl Builder<'_> {
                 1,
                 anchor_for_charge,
             )?;
+            // A verified concatenation's own values have no life outside the chain — the shape
+            // renders them in one expression — and the bounded final-consumer walk below would
+            // refuse every `append`'s return once the receiver chain outgrows `MAX_VALUE_DEPTH`.
             if matches!(
                 value_facts.def(),
                 Definition::Instruction { bci, .. }
                     if self.compounds.owns_read(*bci)
                         || self.compounds.keeps_inline(*bci)
                         || self.postfix.owns(*bci)
+                        || self.chains.owns(*bci)
             ) {
                 continue;
             }
