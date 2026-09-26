@@ -1569,6 +1569,38 @@ impl Engine {
                 reason: "physical family relation or preparation is incomplete".to_owned(),
             }
         };
+        let calls = match (&relation, &capture) {
+            (Ok(true), class_source::ClassSourceMemberCapture::Proved { proof })
+                if physically_complete =>
+            {
+                match prove_class_source_member_calls(
+                    content,
+                    environment,
+                    root_report,
+                    &child,
+                    root_name,
+                    candidate,
+                    proof,
+                    &mut capture_execution,
+                    budget,
+                ) {
+                    Ok(calls) => calls,
+                    Err(error) => {
+                        merge_execution(&mut capture_execution, stop_execution(&error, budget));
+                        class_source::ClassSourceMemberCalls::Refused {
+                            reason: "member call proof stopped".to_owned(),
+                            sites: Vec::new(),
+                            refusals: Vec::new(),
+                        }
+                    }
+                }
+            }
+            _ => class_source::ClassSourceMemberCalls::Refused {
+                reason: "family relation or capture proof is incomplete".to_owned(),
+                sites: Vec::new(),
+                refusals: Vec::new(),
+            },
+        };
         let family = match relation {
             Ok(true) if physically_complete => Family::Prepared {
                 relation: class_source::ClassSourceMemberRelation {
@@ -1579,6 +1611,7 @@ impl Engine {
                 },
                 child,
                 capture,
+                calls,
             },
             Ok(true) => Family::Refused {
                 reason: "root or child physical preparation did not complete".to_owned(),
@@ -8320,6 +8353,249 @@ fn prove_class_source_member_capture(
     match crate::member_inner::prove_family_capture(root_name, child, &irs, budget)? {
         Ok(proof) => Ok(Capture::Proved { proof }),
         Err(reason) => Ok(Capture::Refused { reason }),
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn prove_class_source_member_calls(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    root: &ClassSourceReport,
+    child: &ClassSourceReport,
+    root_name: &[u8],
+    candidate: &crate::member_inner::FamilyRootCandidate,
+    capture: &class_source::MemberCaptureProof,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<class_source::ClassSourceMemberCalls> {
+    use class_source::{ClassSourceMemberCalls as Calls, MemberCallRefusal};
+    let Some(root_binary) = std::str::from_utf8(root_name).ok() else {
+        return Ok(Calls::Refused {
+            reason: "root binary name cannot be used for a Java source path".to_owned(),
+            sites: Vec::new(),
+            refusals: Vec::new(),
+        });
+    };
+    let Some(child_binary) = std::str::from_utf8(&candidate.child_name).ok() else {
+        return Ok(Calls::Refused {
+            reason: "member binary name cannot be used for a Java source path".to_owned(),
+            sites: Vec::new(),
+            refusals: Vec::new(),
+        });
+    };
+    if !root_binary
+        .split('/')
+        .all(jarde_java::names::is_java_identifier)
+    {
+        return Ok(Calls::Refused {
+            reason: "root binary name has no proved Java source spelling".to_owned(),
+            sites: Vec::new(),
+            refusals: Vec::new(),
+        });
+    }
+    if capture.constructor.owner != child.class {
+        return Ok(Calls::Refused {
+            reason: "capture constructor belongs to another physical definition".to_owned(),
+            sites: Vec::new(),
+            refusals: Vec::new(),
+        });
+    }
+    let Some(constructor_descriptor) = std::str::from_utf8(&capture.constructor.descriptor.0).ok()
+    else {
+        return Ok(Calls::Refused {
+            reason: "capture constructor descriptor has no exact UTF-8 rule target".to_owned(),
+            sites: Vec::new(),
+            refusals: Vec::new(),
+        });
+    };
+    if [root, child].iter().any(|physical| {
+        physical.declaration.as_ref().is_none_or(|declaration| {
+            declaration.generic_signature.is_some() || declaration.generic_refusal.is_some()
+        })
+    }) {
+        return Ok(Calls::Refused {
+            reason: "family call source path requires non-generic root and member headers"
+                .to_owned(),
+            sites: Vec::new(),
+            refusals: Vec::new(),
+        });
+    }
+    let root_source = root_binary.replace('/', ".");
+    let target = jarde_java::report::ProvedMemberInnerTarget {
+        definition: child.class.clone(),
+        owner: child_binary.to_owned(),
+        outer: root_binary.to_owned(),
+        simple_name: candidate.simple_name.clone(),
+        constructor_descriptor: constructor_descriptor.to_owned(),
+        capture_field: capture.field_name.clone(),
+        generic_diamond: false,
+        source_type_path: vec![
+            source_type_path_segment(&root.class, root_binary, root_source.clone(), 0, None, true),
+            source_type_path_segment(
+                &child.class,
+                child_binary,
+                format!("{root_source}.{}", candidate.simple_name),
+                0,
+                Some(root_binary.to_owned()),
+                false,
+            ),
+        ],
+    };
+    let targets = [target];
+    let mut sites = Vec::new();
+    let mut refusals = Vec::new();
+    for physical in [root, child] {
+        for method in &physical.methods {
+            match &method.outcome {
+                class_source::ClassSourceOutcome::Recovered { .. } => {}
+                class_source::ClassSourceOutcome::NoBody => continue,
+                _ => {
+                    return Ok(Calls::Refused {
+                        reason: "a family method with unknown body prevents a complete call census"
+                            .to_owned(),
+                        sites,
+                        refusals,
+                    });
+                }
+            }
+            if let Err(error) = budget.poll() {
+                merge_execution(execution, stop_execution(&error, budget));
+                return Ok(Calls::Refused {
+                    reason: "member call scan stopped".to_owned(),
+                    sites,
+                    refusals,
+                });
+            }
+            let caller = method.item.identity.clone();
+            // Both callers are in the proved lexical source family. This is the accessibility
+            // premise for a non-public member/constructor; raw ACC_PUBLIC is not consulted.
+            if caller.owner != root.class && caller.owner != child.class {
+                return Ok(Calls::Refused {
+                    reason: "candidate caller is outside the proved source family".to_owned(),
+                    sites,
+                    refusals,
+                });
+            }
+            let analyzed = match jarde_jvm::analyze_method_ir(
+                content,
+                &crate::ir::MethodAnalysisRequest {
+                    environment: environment.clone(),
+                    method: caller.clone(),
+                    stages: MethodOperation::Analysis.stages().to_vec(),
+                },
+                budget,
+            ) {
+                Ok(analyzed) => analyzed,
+                Err(error) => {
+                    merge_execution(execution, stop_execution(&error, budget));
+                    return Ok(Calls::Refused {
+                        reason: "member call analysis stopped".to_owned(),
+                        sites,
+                        refusals,
+                    });
+                }
+            };
+            merge_execution(execution, analyzed.report().execution.clone());
+            if analyzed.report().method != caller
+                || !matches!(
+                    analyzed.report().execution,
+                    ExecutionReport::Complete { .. }
+                )
+            {
+                return Ok(Calls::Refused {
+                    reason: "member call analysis did not complete".to_owned(),
+                    sites,
+                    refusals,
+                });
+            }
+            let Some(code) = analyzed.ir().code() else {
+                return Ok(Calls::Refused {
+                    reason: "recovered family method has no complete bytecode".to_owned(),
+                    sites,
+                    refusals,
+                });
+            };
+            let mut allocations = Vec::new();
+            for instruction in &code.instructions {
+                if let Err(error) = budget.charge(CountedBudgetDimension::AnalysisSteps, 1) {
+                    merge_execution(execution, stop_execution(&error, budget));
+                    return Ok(Calls::Refused {
+                        reason: "member allocation scan stopped".to_owned(),
+                        sites,
+                        refusals,
+                    });
+                }
+                if instruction.opcode == 0xbb
+                    && instruction.constant_pool_index.is_some_and(|index| {
+                        jarde_reader::classfile::cp_class_name(analyzed.ir().constant_pool(), index)
+                            .is_ok_and(|name| name.0 == candidate.child_name)
+                    })
+                {
+                    allocations.push(instruction.bci);
+                }
+            }
+            if allocations.is_empty() {
+                continue;
+            }
+            let facts = recovery_facts(analyzed.ir().declaration(), Some(code), &caller);
+            let proof_request = jarde_java::RecoveryRequest::new(
+                analyzed.ir(),
+                &facts,
+                environment.runtime.profile.clone(),
+            )
+            .with_member_inner_targets(&targets)
+            .with_evidence(
+                RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::RuleDetails),
+            );
+            let recovery = jarde_java::recover(&proof_request, budget);
+            merge_execution(execution, recovery.execution.clone());
+            if !matches!(recovery.execution, ExecutionReport::Complete { .. })
+                || !recovery.produced()
+            {
+                return Ok(Calls::Refused {
+                    reason: "member call new@1 proof did not complete".to_owned(),
+                    sites,
+                    refusals,
+                });
+            }
+            for head in allocations {
+                let Some(record) = recovery
+                    .news
+                    .iter()
+                    .find(|record| record.head == head && record.class == child_binary)
+                else {
+                    refusals.push(MemberCallRefusal {
+                        caller: caller.clone(),
+                        allocation_bci: head,
+                        reason: "new@1 did not publish this child allocation".to_owned(),
+                    });
+                    continue;
+                };
+                match crate::member_inner::prove_family_call_site(
+                    &caller,
+                    analyzed.ir(),
+                    record,
+                    &capture.constructor,
+                    &candidate.child_name,
+                ) {
+                    Ok(site) => sites.push(site),
+                    Err(reason) => refusals.push(MemberCallRefusal {
+                        caller: caller.clone(),
+                        allocation_bci: head,
+                        reason,
+                    }),
+                }
+            }
+        }
+    }
+    if refusals.is_empty() {
+        Ok(Calls::Proved { sites })
+    } else {
+        Ok(Calls::Refused {
+            reason: "one or more family member allocations lack a closed new@1 proof".to_owned(),
+            sites,
+            refusals,
+        })
     }
 }
 

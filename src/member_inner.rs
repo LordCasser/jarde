@@ -5,7 +5,7 @@
 //! inferred from `$` or a constructor's first parameter alone.
 
 use crate::class_source::ClassSourceAssemblyContext;
-use crate::class_source::{MemberCaptureProof, MemberCaptureRead};
+use crate::class_source::{MemberCallProof, MemberCaptureProof, MemberCaptureRead};
 use jarde_jvm::method_ir::{Definition, MethodIr, Slot, SsaTable, ValueId};
 use jarde_reader::budget::Budget;
 use jarde_reader::budget::CountedBudgetDimension;
@@ -14,6 +14,97 @@ use jarde_reader::classfile::{
     class_constant_pool, cp_class_name, cp_entry, descriptor_facts, method_code_facts,
 };
 use jarde_reader::model::PhysicalMethodId;
+
+/// Consume a successful `new@1` verdict only for the exact constructor in the proved family.
+/// The rule has already closed the SSA instance, checked qualifier copies, sole consumer,
+/// argument dependency/effect order and exception coverage. These physical anchors ensure that
+/// its decision is about the selected child and can later be mapped without changing this body.
+pub(crate) fn prove_family_call_site(
+    caller: &PhysicalMethodId,
+    ir: &MethodIr,
+    record: &jarde_java::init::NewRecord,
+    constructor: &PhysicalMethodId,
+    child_name: &[u8],
+) -> std::result::Result<MemberCallProof, String> {
+    let refuse = |reason: &str| Err(reason.to_owned());
+    if !record.presented {
+        return Err(record.refusal.as_ref().map_or_else(
+            || "new@1 refused the member allocation without a reason".to_owned(),
+            |refusal| format!("{}: {}", refusal.code, refusal.message),
+        ));
+    }
+    let (Some(code), Some(dup), Some(call_bci)) = (ir.code(), record.dup, record.constructor)
+    else {
+        return refuse("new@1 did not publish complete construction anchors");
+    };
+    let pool = ir.constant_pool();
+    let Some(head_index) = code
+        .instructions
+        .iter()
+        .position(|instruction| instruction.bci == record.head)
+    else {
+        return refuse("new@1 allocation BCI is absent from the physical method");
+    };
+    let Some([head, copy, qualifier, qualifier_copy, check, pop]) =
+        code.instructions.get(head_index..head_index + 6)
+    else {
+        return refuse("member allocation lacks the contiguous checked qualifier");
+    };
+    if head.opcode != 0xbb
+        || copy.opcode != 0x59
+        || copy.bci != dup
+        || qualifier_copy.opcode != 0x59
+        || pop.opcode != 0x57
+        || !cp_class_name(pool, head.constant_pool_index.unwrap_or(0))
+            .is_ok_and(|name| name.0 == child_name)
+    {
+        return refuse("new@1 anchors do not identify the exact child allocation");
+    }
+    let Some(call) = code
+        .instructions
+        .iter()
+        .find(|instruction| instruction.bci == call_bci)
+    else {
+        return refuse("new@1 constructor BCI is absent from the physical method");
+    };
+    if call.opcode != 0xb7
+        || !matches!(cp_entry(pool, call.constant_pool_index.unwrap_or(0)).ok().map(|entry| &entry.kind),
+            Some(CpEntryKind::MethodRef { owner, name, descriptor, .. })
+                if owner.0 == child_name
+                    && name.0 == constructor.name.0 && descriptor.0 == constructor.descriptor.0)
+    {
+        return refuse("member call does not name the selected physical constructor");
+    }
+    if check.opcode != 0xb8
+        || !matches!(cp_entry(pool, check.constant_pool_index.unwrap_or(0)).ok().map(|entry| &entry.kind),
+        Some(CpEntryKind::MethodRef { owner, name, descriptor, .. })
+            if owner.0 == b"java/util/Objects" && name.0 == b"requireNonNull"
+                && descriptor.0 == b"(Ljava/lang/Object;)Ljava/lang/Object;")
+    {
+        return refuse("member call has no exact early requireNonNull check");
+    }
+    let Some((&first, ordinary)) = record.arguments.split_first() else {
+        return refuse("new@1 did not identify the physical outer argument");
+    };
+    if first != qualifier_copy.bci
+        || ordinary
+            .iter()
+            .any(|bci| *bci <= pop.bci || *bci >= call_bci)
+    {
+        return refuse("member call argument anchors do not follow the null check");
+    }
+    Ok(MemberCallProof {
+        caller: caller.clone(),
+        allocation_bci: record.head,
+        copy_bci: dup,
+        qualifier_bci: qualifier.bci,
+        null_check_bci: check.bci,
+        null_pop_bci: pop.bci,
+        constructor_bci: call_bci,
+        constructor: constructor.clone(),
+        ordinary_argument_bcis: ordinary.to_vec(),
+    })
+}
 
 /// This proof is deliberately narrower than the existing public `prove_target`: it uses the
 /// already selected member relation and accepts a package-private physical constructor.

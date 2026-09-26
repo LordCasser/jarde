@@ -690,8 +690,11 @@ fn verify_member(
         )));
     }
     let outer_descriptor = format!("L{};", target.outer);
+    // Frame facts retain a `new`/`this` class name as an internal name, while a descriptor
+    // parameter keeps its `L...;` spelling. Both name this exact selected Outer.
     if !matches!(ssa.value(qualifier_writes[0].1).ty(),
-        Value::Ref(RefType::Named { name, .. }) if name == outer_descriptor.as_bytes())
+        Value::Ref(RefType::Named { name, .. })
+            if name == target.outer.as_bytes() || name == outer_descriptor.as_bytes())
     {
         return Err(shape(format!(
             "the qualifier at BCI {} has no exact static type `{}` for member binding (SSA type {:?})",
