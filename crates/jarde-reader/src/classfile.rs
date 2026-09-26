@@ -11569,6 +11569,14 @@ mod tests {
     /// growth spread over the remaining one-class probes. Every fixture directory the expansion
     /// brought in is named by a test or an OpenSpec record, and `corpus-fingerprint.json` was
     /// re-rendered for it.
+    ///
+    /// Since the census recorded in `9a0c2a11`, 14 permanent classes were added across the
+    /// conditional-value, loop/transfer, intermediate-join, short-circuit-return and resource-tail
+    /// fixtures. Each has Java source or a documented generated verifier-valid control and
+    /// test/OpenSpec provenance. Four were already in the corpus fingerprint; the other ten are
+    /// added there by this census update. They contribute 56 Code bodies, seven handlers and 98
+    /// branch/switch targets. The measured census is now 330 classes, 1,730 bodies, 160 handler
+    /// records, 1,000 branch/switch targets and the same eight subroutines.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -11651,7 +11659,7 @@ mod tests {
             // The 2026-09 syntax-recovery expansion re-measured the whole sweep over the corpus
             // as committed: see the closing paragraph of this test's documentation for the
             // classes added after the previous census and their measured contributions.
-            (316, 1674, 153, 902, 8),
+            (330, 1730, 160, 1000, 8),
             "fixture population changed: re-measure these counts"
         );
     }
