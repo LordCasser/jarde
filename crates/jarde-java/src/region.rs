@@ -2549,8 +2549,38 @@ impl Walker<'_> {
                         return Ok(gap(prefix, vec![branch], reason, next));
                     }
                     let arm_frame = frame.arm(join_node, Some(branch_bci));
-                    let (then_run, then_next) = self.region_at(&fall_through, &arm_frame)?;
-                    let (else_run, else_next) = self.region_at(&taken, &arm_frame)?;
+                    let before_arms = self.visited.clone();
+                    let (mut then_run, then_next) = self.region_at(&fall_through, &arm_frame)?;
+                    let (mut else_run, else_next) = self.region_at(&taken, &arm_frame)?;
+                    // A nested value can meet at its own join before this arm meets the outer
+                    // join. Keep that intervening straight run inside the *same* arm and frame.
+                    // The helper refuses a partial or multiply entered continuation before any
+                    // of its visited nodes can become a published owner.
+                    let then_continued = self.continue_inner_join_arm(
+                        &mut then_run,
+                        then_next.as_ref(),
+                        &arm_frame,
+                    )?;
+                    let else_continued = if then_continued {
+                        self.continue_inner_join_arm(&mut else_run, else_next.as_ref(), &arm_frame)?
+                    } else {
+                        false
+                    };
+                    if !then_continued || !else_continued {
+                        let entered: Vec<_> = self
+                            .visited
+                            .difference(&before_arms)
+                            .filter_map(|node| self.view.id_of(*node).cloned())
+                            .chain(then_next)
+                            .chain(else_next)
+                            .collect();
+                        self.visited = before_arms;
+                        let reason = FallbackReason::ArmsDoNotMeet {
+                            block_bci: branch.bci(),
+                        };
+                        let next = self.unclaimed_join(join.as_ref());
+                        return Ok(gap(prefix, gap_blocks(&branch, entered), reason, next));
+                    }
                     // An arm the branch cannot present is quoted, not dropped and not written as if
                     // the branch had been: both arms' blocks are named by the refusal, each once.
                     let arm_blocks: Vec<CanonicalBlockId> = then_run
@@ -2637,6 +2667,144 @@ impl Walker<'_> {
                 }
             }
         }
+    }
+
+    /// Continue one nested `If`'s unclaimed forward join inside its enclosing arm. The only
+    /// admitted tail is a closed straight run ending at the arm's original boundary. The visited
+    /// snapshot is checked against its physical blocks before the run is attached to the arm.
+    fn continue_inner_join_arm(
+        &mut self,
+        run: &mut Vec<Region>,
+        next: Option<&CanonicalBlockId>,
+        frame: &Frame,
+    ) -> Result<bool, StopReason> {
+        let Some(next) = next else { return Ok(true) };
+        let Some(boundary) = frame.boundary else {
+            return Ok(true);
+        };
+        if self.view.index_of(next) == Some(boundary) {
+            return Ok(true);
+        }
+        let Some(Region::If {
+            branch,
+            then_arm,
+            else_arm,
+            join: Some(inner_join),
+            ..
+        }) = run.last()
+        else {
+            return Ok(true);
+        };
+        if inner_join != next || next.path() != branch.path() || next.bci() <= branch.bci() {
+            return Ok(false);
+        }
+        let (
+            Region::Straight {
+                blocks: then_blocks,
+            },
+            Region::Straight {
+                blocks: else_blocks,
+            },
+        ) = (then_arm.as_ref(), else_arm.as_ref())
+        else {
+            return Ok(false);
+        };
+        let (Some(then_end), Some(else_end)) = (then_blocks.last(), else_blocks.last()) else {
+            return Ok(false);
+        };
+        let Some(next_node) = self.view.index_of(next) else {
+            return Ok(false);
+        };
+        if self.visited.contains(&next_node)
+            || frame
+                .scope
+                .as_ref()
+                .is_some_and(|scope| !scope.contains(&next_node))
+            || frame.stops_at_switch_boundary(next_node)
+        {
+            return Ok(false);
+        }
+        let already_visited = self.visited.clone();
+        let (tail, tail_next) = self.region_at(next, frame)?;
+        let [Region::Straight { blocks }] = tail.as_slice() else {
+            return Ok(false);
+        };
+        if tail_next.is_some() || blocks.first() != Some(next) {
+            return Ok(false);
+        }
+        let owned: BTreeSet<_> = blocks.iter().cloned().collect();
+        let newly_visited: BTreeSet<_> = self
+            .visited
+            .difference(&already_visited)
+            .filter_map(|node| self.view.id_of(*node).cloned())
+            .collect();
+        if owned.len() != blocks.len() || owned != newly_visited {
+            return Ok(false);
+        }
+        let Some(boundary_id) = self.view.id_of(boundary) else {
+            return Ok(false);
+        };
+        if blocks.iter().any(|block| {
+            block.path() != branch.path()
+                || block.bci() >= boundary_id.bci()
+                || self.view.index_of(block).is_none_or(|node| {
+                    frame
+                        .scope
+                        .as_ref()
+                        .is_some_and(|scope| !scope.contains(&node))
+                })
+        }) {
+            return Ok(false);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len().saturating_add(blocks.len()))
+                .unwrap_or(u64::MAX),
+            Some(next.bci()),
+        )?;
+        let mut incoming: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
+            BTreeMap::new();
+        let mut outgoing: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
+            BTreeMap::new();
+        for edge in self.canonical.edges() {
+            if owned.contains(edge.to()) {
+                incoming
+                    .entry(edge.to().clone())
+                    .or_default()
+                    .push((edge.kind(), edge.from().clone()));
+            }
+            if owned.contains(edge.from()) {
+                outgoing
+                    .entry(edge.from().clone())
+                    .or_default()
+                    .push((edge.kind(), edge.to().clone()));
+            }
+        }
+        for (index, block) in blocks.iter().enumerate() {
+            poll(self.budget, Some(block.bci()))?;
+            let expected_in: Vec<_> = if index == 0 {
+                vec![then_end.clone(), else_end.clone()]
+            } else {
+                vec![blocks[index - 1].clone()]
+            };
+            let expected_out = blocks.get(index + 1).unwrap_or(boundary_id);
+            let actual_in = incoming.get(block).map(Vec::as_slice).unwrap_or(&[]);
+            let actual_out = outgoing.get(block).map(Vec::as_slice).unwrap_or(&[]);
+            if actual_in.len() != expected_in.len()
+                || actual_in.iter().any(|(kind, predecessor)| {
+                    *kind != CanonicalEdgeKind::Normal || !expected_in.contains(predecessor)
+                })
+                || actual_out.len() != 1
+                || actual_out[0].0 != CanonicalEdgeKind::Normal
+                || &actual_out[0].1 != expected_out
+                || self.view.successor_ids(block) != [expected_out.clone()]
+            {
+                return Ok(false);
+            }
+        }
+        run.extend(tail);
+        Ok(true)
     }
 
     /// A join the walk may continue at after a gap: the one the gap proved, when no region has
