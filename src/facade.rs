@@ -3593,6 +3593,8 @@ fn validate_initializer_expression(
             ExprKind::Integer(_)
             | ExprKind::Boolean(_)
             | ExprKind::Long(_)
+            | ExprKind::Float(_)
+            | ExprKind::Double(_)
             | ExprKind::Str(_)
             | ExprKind::Path(_)
             | ExprKind::Super { .. } => {}

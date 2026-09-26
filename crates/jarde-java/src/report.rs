@@ -1304,6 +1304,8 @@ fn collect_expression_anchors(expr: &Expr, anchors: &mut std::collections::BTree
         | ExprKind::Integer(_)
         | ExprKind::Boolean(_)
         | ExprKind::Long(_)
+        | ExprKind::Float(_)
+        | ExprKind::Double(_)
         | ExprKind::Str(_)
         | ExprKind::Null
         | ExprKind::ClassLiteral { .. }
@@ -2822,6 +2824,8 @@ fn visit_class_initializer_field_reads(
         | ExprKind::Integer(_)
         | ExprKind::Boolean(_)
         | ExprKind::Long(_)
+        | ExprKind::Float(_)
+        | ExprKind::Double(_)
         | ExprKind::Str(_)
         | ExprKind::Null
         | ExprKind::ClassLiteral { .. }
@@ -2950,6 +2954,8 @@ fn charge_expression_tree_at_depth(
         | ExprKind::Local(_)
         | ExprKind::Boolean(_)
         | ExprKind::Long(_)
+        | ExprKind::Float(_)
+        | ExprKind::Double(_)
         | ExprKind::Str(_)
         | ExprKind::Null
         | ExprKind::ClassLiteral { .. }

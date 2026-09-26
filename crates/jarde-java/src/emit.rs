@@ -870,6 +870,8 @@ impl<'a> Emitter<'a> {
             ExprKind::Integer(value) => emitter.put(&value.to_string(), at),
             ExprKind::Boolean(value) => emitter.put(if *value { "true" } else { "false" }, at),
             ExprKind::Long(value) => emitter.put(&format!("{value}L"), at),
+            ExprKind::Float(bits) => emitter.put(&spell_float(*bits), at),
+            ExprKind::Double(bits) => emitter.put(&spell_double(*bits), at),
             ExprKind::Str(value) => emitter.put(&format!("\"{}\"", escape_string(value)), at),
             ExprKind::Null => emitter.put("null", at),
             ExprKind::ClassLiteral { ty } => {
@@ -1089,13 +1091,17 @@ impl<'a> Emitter<'a> {
                 emitter.operand(value, UNARY)
             }
             ExprKind::Neg { value } => {
-                // A nested negation or a negative integer literal needs a lexical group: without
+                // A nested negation or a negative numeric literal needs a lexical group: without
                 // it the two minus tokens merge into `--`, which Java parses as decrement (and
-                // rejects for a value operand) rather than as two unary negations.
+                // rejects for a value operand) rather than as two unary negations. A float or
+                // double literal's sign is one of its own bits, so `-0.0f` reaches this printer
+                // already signed and needs the same protection.
                 emitter.put("-", at)?;
                 let lexical_group = matches!(&value.kind, ExprKind::Neg { .. })
                     || matches!(&value.kind, ExprKind::Integer(value) if *value < 0)
-                    || matches!(&value.kind, ExprKind::Long(value) if *value < 0);
+                    || matches!(&value.kind, ExprKind::Long(value) if *value < 0)
+                    || matches!(&value.kind, ExprKind::Float(bits) if *bits >> 31 == 1)
+                    || matches!(&value.kind, ExprKind::Double(bits) if *bits >> 63 == 1);
                 if lexical_group {
                     emitter.put("(", Some(value.origin.primary().bci()))?;
                     emitter.expr(value)?;
@@ -1347,6 +1353,50 @@ fn binary_binding(op: BinaryOp) -> u8 {
         BinaryOp::BitwiseXor => 3,
         BinaryOp::BitwiseOr => 2,
     }
+}
+
+/// One `float` literal's text, spelled exactly from the raw bits the class file stated.
+///
+/// The literal is the hexadecimal floating-point form (JLS 3.10.2), which a compiler reads back
+/// bit for bit — the one spelling whose round-trip needs no rounding decision at all. The fields
+/// are decomposed from the `u32` by integer arithmetic, never through a host `f32`: the sign is
+/// the top bit (written as the unary minus Java folds back onto the constant), the 23 mantissa
+/// bits shift left one so the 24 significand bits split into one integer hex digit and six
+/// fractional ones, and the exponent keeps its own bias of 127. An exponent field of zero — zero
+/// and the subnormals — writes integer part `0` at the minimal normal exponent (`p-126`), which
+/// is what the encoding itself says those fields mean; the sign of zero survives as its own minus.
+/// The suffix is always there, because a spelling that could be read as a double would select the
+/// wrong overload.
+///
+/// Only finite bits reach this function: infinities and the one admitted NaN are presented as the
+/// proved constant divisions of these leaves where the constant is read, and an unpresentable NaN
+/// is refused before any text exists to spell.
+fn spell_float(bits: u32) -> String {
+    let sign = if bits >> 31 == 1 { "-" } else { "" };
+    let exponent = (bits >> 23) & 0xff;
+    let fraction = (bits & 0x007f_ffff) << 1;
+    let (integer, biased) = if exponent == 0 {
+        (0, -126)
+    } else {
+        (1, i32::try_from(exponent).unwrap_or(0) - 127)
+    };
+    format!("{sign}0x{integer:x}.{fraction:06x}p{biased}f")
+}
+
+/// One `double` literal's text, by the same raw-bits rule as [`spell_float`]: the 53 significand
+/// bits split into one integer hex digit and thirteen fractional ones (52 mantissa bits need no
+/// shift), the exponent keeps its bias of 1023, an exponent field of zero writes the subnormal
+/// form at `p-1022`, and the suffix is always written.
+fn spell_double(bits: u64) -> String {
+    let sign = if bits >> 63 == 1 { "-" } else { "" };
+    let exponent = (bits >> 52) & 0x7ff;
+    let fraction = bits & 0x000f_ffff_ffff_ffff;
+    let (integer, biased) = if exponent == 0 {
+        (0, -1022)
+    } else {
+        (1, i32::try_from(exponent).unwrap_or(0) - 1023)
+    };
+    format!("{sign}0x{integer:x}.{fraction:013x}p{biased}d")
 }
 
 /// One string literal's text, escaped by Unicode scalar.
@@ -2616,6 +2666,69 @@ mod tests {
             "a negative long literal must stay separate from the outer minus:\n{}",
             long_literal.text
         );
+
+        // A float literal's sign is one of its own bits, so a negation over a signed constant is
+        // the same lexical shape: `-` `-0x…` would read as decrement without the group.
+        let (float_literal, _map) = emitted_value(Expr::direct(
+            ExprKind::Neg {
+                value: Box::new(Expr::direct(ExprKind::Float(0x8000_0000), 10)),
+            },
+            11,
+        ));
+        assert!(
+            float_literal.text.contains("-(-0x0.000000p-126f);"),
+            "a negative zero literal must stay separate from the outer minus:\n{}",
+            float_literal.text
+        );
+
+        let (double_literal, _map) = emitted_value(Expr::direct(
+            ExprKind::Neg {
+                value: Box::new(Expr::direct(ExprKind::Double(0xbff0_0000_0000_0000), 12)),
+            },
+            13,
+        ));
+        assert!(
+            double_literal.text.contains("-(-0x1.0000000000000p0d);"),
+            "a negative double literal must stay separate from the outer minus:\n{}",
+            double_literal.text
+        );
+    }
+
+    /// A finite float/double literal is spelled from its own bits in the hexadecimal
+    /// floating-point form, which round-trips bit for bit: signed zero, the subnormals, the
+    /// minimal normal, the maximum and ordinary values keep every field the class file stated,
+    /// and the `f`/`d` suffix is always written.
+    #[test]
+    fn floating_literals_are_spelled_exactly_from_their_own_bits() {
+        let spell_f = |bits| spell_float(bits);
+        let spell_d = |bits| spell_double(bits);
+
+        // Zero keeps its sign as its own minus; the encoding's zero exponent field writes the
+        // subnormal form at the minimal normal exponent.
+        assert_eq!(spell_f(0), "0x0.000000p-126f");
+        assert_eq!(spell_f(0x8000_0000), "-0x0.000000p-126f");
+        assert_eq!(spell_d(0), "0x0.0000000000000p-1022d");
+        assert_eq!(spell_d(0x8000_0000_0000_0000), "-0x0.0000000000000p-1022d");
+
+        // The ordinary and boundary values the fixture returns, each with the exact fields its
+        // bits state: the 24/53 significand bits split into one integer digit and six/thirteen
+        // fractional ones, the exponent at its own bias.
+        assert_eq!(spell_f(0x3f80_0000), "0x1.000000p0f");
+        assert_eq!(spell_f(0x4000_0000), "0x1.000000p1f");
+        assert_eq!(spell_f(0xbf80_0000), "-0x1.000000p0f");
+        assert_eq!(spell_f(0x3dcc_cccd), "0x1.99999ap-4f");
+        assert_eq!(spell_f(0x3e80_0000), "0x1.000000p-2f");
+        assert_eq!(spell_f(0x0000_0001), "0x0.000002p-126f");
+        assert_eq!(spell_f(0x0080_0000), "0x1.000000p-126f");
+        assert_eq!(spell_f(0x7f7f_ffff), "0x1.fffffep127f");
+        assert_eq!(spell_d(0x3ff0_0000_0000_0000), "0x1.0000000000000p0d");
+        assert_eq!(spell_d(0x4000_0000_0000_0000), "0x1.0000000000000p1d");
+        assert_eq!(spell_d(0xbff0_0000_0000_0000), "-0x1.0000000000000p0d");
+        assert_eq!(spell_d(0x3fb9_9999_9999_999a), "0x1.999999999999ap-4d");
+        assert_eq!(spell_d(0x3fd0_0000_0000_0000), "0x1.0000000000000p-2d");
+        assert_eq!(spell_d(0x0000_0000_0000_0001), "0x0.0000000000001p-1022d");
+        assert_eq!(spell_d(0x0010_0000_0000_0000), "0x1.0000000000000p-1022d");
+        assert_eq!(spell_d(0x7fef_ffff_ffff_ffff), "0x1.fffffffffffffp1023d");
     }
 
     /// A concatenation chain's parts: the first `+` starts a **string** concatenation when the first

@@ -1,0 +1,2 @@
+floatNan=ffc00000
+doubleNan=fff8000000000000

@@ -1,0 +1,2 @@
+/tmp/fbits/original/FloatingBits536.class: 04a43f21d3e95e8440e3d378d858be5755820f0030a57d9cf08f232830863bbf
+/tmp/fbits/FloatingConstantsNanFold.class: 226eb2c15883f4fed13d337ae183b2c9297a578b4527945d9024036cee3b989f

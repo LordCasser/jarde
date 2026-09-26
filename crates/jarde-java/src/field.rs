@@ -474,6 +474,8 @@ pub(crate) fn committed_presentations(
                 | ExprKind::Integer(_)
                 | ExprKind::Boolean(_)
                 | ExprKind::Long(_)
+                | ExprKind::Float(_)
+                | ExprKind::Double(_)
                 | ExprKind::Str(_)
                 | ExprKind::Null
                 | ExprKind::ClassLiteral { .. }

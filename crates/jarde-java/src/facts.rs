@@ -233,6 +233,14 @@ pub enum ConstantValue {
     Int(i64),
     /// A `long` constant, which the presentation writes with its `L` suffix.
     Long(i64),
+    /// A `float` constant as its **raw bits** (`fconst_0..2`, or one `CONSTANT_Float` entry reached
+    /// by `ldc`/`ldc_w`). The bits are never read through a host `f32`: spelling and the NaN
+    /// admission below read the fields the pattern states, so no host round-trip can normalize a
+    /// value the class file stated exactly.
+    Float(u32),
+    /// A `double` constant as its **raw bits** (`dconst_0/1`, or one `CONSTANT_Double` entry
+    /// reached by `ldc2_w`), for the same reason [`ConstantValue::Float`] keeps the `u32`.
+    Double(u64),
     /// A `String` constant, as the constant-pool entry spells it; escaping happens in the emitter.
     String(String),
     /// `aconst_null`.
@@ -241,6 +249,88 @@ pub enum ConstantValue {
     /// spelling this layer proved it can write, and the index of that entry in the same class's
     /// constant pool.
     Class { ty: String, pool_index: u16 },
+}
+
+impl ConstantValue {
+    /// The one `float` NaN pattern this layer presents: the standard positive quiet NaN.
+    ///
+    /// Every other NaN — a negative one, a signaling one, one with a payload — has sign, payload or
+    /// signaling state that a Java constant expression this layer can write cannot carry, and
+    /// normalizing any of them would publish a value a raw-bit read of the class would refute.
+    pub const CANONICAL_NAN_FLOAT_BITS: u32 = 0x7fc0_0000;
+    /// The one `double` NaN pattern this layer presents, by the same rule.
+    pub const CANONICAL_NAN_DOUBLE_BITS: u64 = 0x7ff8_0000_0000_0000;
+
+    /// The exponent-field value of one `float`'s bits.
+    fn float_exponent(bits: u32) -> u32 {
+        (bits >> 23) & 0xff
+    }
+
+    /// The exponent-field value of one `double`'s bits.
+    fn double_exponent(bits: u64) -> u32 {
+        ((bits >> 52) & 0x7ff) as u32
+    }
+
+    /// Whether one `float`'s bits are finite: neither infinity nor a NaN.
+    pub fn float_is_finite(bits: u32) -> bool {
+        Self::float_exponent(bits) != 0xff
+    }
+
+    /// Whether one `double`'s bits are finite.
+    pub fn double_is_finite(bits: u64) -> bool {
+        Self::double_exponent(bits) != 0x7ff
+    }
+
+    /// What this layer presents one `float` bit pattern as, sharing the admission judgment with
+    /// every constant construction, instruction presentation and failure producer path that reads
+    /// one (the single place a NaN bit pattern is judged).
+    ///
+    /// A finite pattern is its own literal. Positive infinity, negative infinity and the one
+    /// admitted NaN are presented as the proved constant divisions of finite leaves (`1/0`, `-1/0`,
+    /// `0/0`) — no runtime call, no new node shape. A NaN this change cannot present exactly stays
+    /// a stated refusal: its bits name no expression, and the consumer that reads it is quoted with
+    /// it rather than normalized to the default NaN.
+    pub fn float_presentation(bits: u32) -> SpecialValuePresentation {
+        match Self::float_exponent(bits) {
+            0xff if bits == 0x7f80_0000 => SpecialValuePresentation::PositiveInfinity,
+            0xff if bits == 0xff80_0000 => SpecialValuePresentation::NegativeInfinity,
+            0xff if bits == Self::CANONICAL_NAN_FLOAT_BITS => {
+                SpecialValuePresentation::CanonicalNan
+            }
+            0xff => SpecialValuePresentation::UnpresentableNan,
+            _ => SpecialValuePresentation::Finite,
+        }
+    }
+
+    /// What this layer presents one `double` bit pattern as, by the same rule as
+    /// [`ConstantValue::float_presentation`].
+    pub fn double_presentation(bits: u64) -> SpecialValuePresentation {
+        match Self::double_exponent(bits) {
+            0x7ff if bits == 0x7ff0_0000_0000_0000 => SpecialValuePresentation::PositiveInfinity,
+            0x7ff if bits == 0xfff0_0000_0000_0000 => SpecialValuePresentation::NegativeInfinity,
+            0x7ff if bits == Self::CANONICAL_NAN_DOUBLE_BITS => {
+                SpecialValuePresentation::CanonicalNan
+            }
+            0x7ff => SpecialValuePresentation::UnpresentableNan,
+            _ => SpecialValuePresentation::Finite,
+        }
+    }
+}
+
+/// How this layer presents one floating bit pattern that is not a finite literal of its own.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SpecialValuePresentation {
+    /// A finite value: its own exact literal.
+    Finite,
+    /// Positive infinity, presented as the proved `1/0` constant division.
+    PositiveInfinity,
+    /// Negative infinity, presented as the proved `-1/0` constant division.
+    NegativeInfinity,
+    /// The standard positive quiet NaN, presented as the proved `0/0` constant division.
+    CanonicalNan,
+    /// A NaN whose sign, payload or signaling state no expression of this change carries: an
+    /// explicit refusal, never a normalization.
+    UnpresentableNan,
 }
 
 /// The arithmetic a bytecode instruction performs.
