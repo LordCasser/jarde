@@ -1346,7 +1346,7 @@ impl Engine {
             usage: budget.usage(),
         };
         let mut diagnostics = Vec::new();
-        let (read, search_coverage, class_item) = match bind_class(
+        let bound = match bind_class(
             snapshot,
             &view.scope,
             &request.class,
@@ -1354,7 +1354,7 @@ impl Engine {
             &mut diagnostics,
             budget,
         )? {
-            ClassBinding::Bound(bound) => (bound.read, bound.search_coverage, bound.class_item),
+            ClassBinding::Bound(bound) => bound,
             ClassBinding::Ambiguous(candidates) => {
                 return Ok(OperationOutcome::Ambiguous(candidates));
             }
@@ -1362,6 +1362,247 @@ impl Engine {
                 return Ok(OperationOutcome::Incomplete(candidates));
             }
         };
+        let (mut report, family_scan) = self.prepare_physical_class_source(
+            content,
+            request,
+            evidence,
+            &environment,
+            snapshot,
+            view,
+            stages,
+            *bound,
+            execution,
+            diagnostics,
+            budget,
+        )?;
+        report.member_family = match family_scan {
+            crate::member_inner::FamilyRootScan::Absent => {
+                class_source::ClassSourceMemberFamily::Absent
+            }
+            crate::member_inner::FamilyRootScan::Refused(reason) => {
+                class_source::ClassSourceMemberFamily::Refused {
+                    reason,
+                    child: None,
+                }
+            }
+            crate::member_inner::FamilyRootScan::Candidate(candidate) => {
+                let root_name = report
+                    .declaration
+                    .as_ref()
+                    .expect("candidate requires a published root declaration")
+                    .item
+                    .declaration
+                    .this_class
+                    .raw()
+                    .0
+                    .clone();
+                match self.prepare_class_source_member_family(
+                    content,
+                    request,
+                    evidence,
+                    &environment,
+                    snapshot,
+                    &report,
+                    &root_name,
+                    &candidate,
+                    budget,
+                ) {
+                    Ok((family, family_execution)) => {
+                        merge_execution(&mut report.execution, family_execution);
+                        family
+                    }
+                    Err(error) => {
+                        merge_execution(&mut report.execution, stop_execution(&error, budget));
+                        report.diagnostics.push(stop_diagnostic(
+                            &error,
+                            Some(definition_provenance(&report.class)),
+                        ));
+                        class_source::ClassSourceMemberFamily::Refused {
+                            reason: "member family preparation stopped".to_owned(),
+                            child: None,
+                        }
+                    }
+                }
+            }
+        };
+        report.usage = budget.usage();
+        report.execution = with_usage(report.execution, budget.usage());
+        Ok(OperationOutcome::Performed(report))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn prepare_class_source_member_family(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
+        environment: &ResolutionEnvironment,
+        snapshot: &ArtifactSnapshot,
+        root_report: &ClassSourceReport,
+        root_name: &[u8],
+        candidate: &crate::member_inner::FamilyRootCandidate,
+        budget: &mut Budget,
+    ) -> Result<(class_source::ClassSourceMemberFamily, ExecutionReport)> {
+        use class_source::ClassSourceMemberFamily as Family;
+        let mut child_execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        let Some((child_definition, child_read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            None,
+            &candidate.child_name,
+            &mut child_execution,
+            budget,
+        )?
+        else {
+            return Ok((
+                Family::Refused {
+                    reason: "selected environment did not uniquely resolve the member definition"
+                        .to_owned(),
+                    child: None,
+                },
+                child_execution,
+            ));
+        };
+        let relation = (|| -> Result<bool> {
+            let pool = class_constant_pool(&child_read.bytes, budget)?;
+            let shells: Vec<_> = child_read
+                .facts
+                .attributes
+                .iter()
+                .filter(|attribute| {
+                    matches!(
+                        attribute.name.raw().0.as_slice(),
+                        b"InnerClasses" | b"EnclosingMethod"
+                    )
+                })
+                .cloned()
+                .collect();
+            let nesting = class_source::read_class_source_assembly_context(
+                &child_read.bytes,
+                &shells,
+                &pool,
+                budget,
+            )?;
+            crate::member_inner::child_relation_agrees(
+                root_name,
+                candidate,
+                &child_read.facts,
+                &nesting,
+                &pool,
+                budget,
+            )
+        })();
+        if let Err(error) = &relation {
+            merge_execution(&mut child_execution, stop_execution(error, budget));
+        }
+        let child_class_item = match charge_item(budget) {
+            Ok(()) => Some(child_read.class.clone()),
+            Err(error) => {
+                merge_execution(&mut child_execution, stop_execution(&error, budget));
+                None
+            }
+        };
+        let mut child_diagnostics = Vec::new();
+        if let Err(error) = publish_diagnostics(
+            child_read.diagnostics.clone(),
+            &mut child_diagnostics,
+            budget,
+        ) {
+            merge_execution(&mut child_execution, stop_execution(&error, budget));
+            child_diagnostics.push(stop_diagnostic(
+                &error,
+                Some(definition_provenance(&child_definition)),
+            ));
+        }
+        let child_request = ClassSourceRequest {
+            class: ClassRef::Definition {
+                definition: child_definition.clone(),
+            },
+            environment: request.environment.clone(),
+        };
+        let (child, _) = self.prepare_physical_class_source(
+            content,
+            &child_request,
+            evidence,
+            environment,
+            snapshot,
+            root_report.view.clone(),
+            root_report.stages.clone(),
+            BoundClass {
+                read: child_read,
+                search_coverage: None,
+                class_item: child_class_item,
+            },
+            child_execution,
+            child_diagnostics,
+            budget,
+        )?;
+        let child = Box::new(child);
+        let physically_complete = matches!(root_report.execution, ExecutionReport::Complete { .. })
+            && matches!(child.execution, ExecutionReport::Complete { .. });
+        let family = match relation {
+            Ok(true) if physically_complete => Family::Prepared {
+                relation: class_source::ClassSourceMemberRelation {
+                    root: root_report.class.clone(),
+                    child: child_definition,
+                    simple_name: candidate.simple_name.clone(),
+                    access_flags: candidate.access_flags,
+                },
+                child,
+            },
+            Ok(true) => Family::Refused {
+                reason: "root or child physical preparation did not complete".to_owned(),
+                child: Some(child),
+            },
+            Ok(false) => Family::Refused {
+                reason: "selected child has no unique matching InnerClasses self row or has EnclosingMethod identity".to_owned(),
+                child: Some(child),
+            },
+            Err(error) => Family::Refused {
+                reason: match error {
+                    Error::BudgetExceeded { .. } | Error::Cancelled { .. } => {
+                        "selected child relation proof stopped"
+                    }
+                    _ => "selected child nesting attributes could not be read",
+                }
+                .to_owned(),
+                child: Some(child),
+            },
+        };
+        let execution = match &family {
+            Family::Prepared { child, .. }
+            | Family::Refused {
+                child: Some(child), ..
+            } => child.execution.clone(),
+            _ => unreachable!("resolved child remains in family result"),
+        };
+        Ok((family, execution))
+    }
+
+    /// Prepare one already bound physical definition. Family assembly calls this sequentially for
+    /// each selected definition with the same request budget; no public operation is re-entered.
+    #[allow(clippy::too_many_arguments)]
+    fn prepare_physical_class_source(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
+        environment: &ResolutionEnvironment,
+        snapshot: &ArtifactSnapshot,
+        view: PhysicalView,
+        stages: Vec<AnalysisStage>,
+        bound: BoundClass,
+        mut execution: ExecutionReport,
+        mut diagnostics: Vec<Diagnostic>,
+        budget: &mut Budget,
+    ) -> Result<(ClassSourceReport, crate::member_inner::FamilyRootScan)> {
+        let BoundClass {
+            read,
+            search_coverage,
+            class_item,
+        } = bound;
         let ClassContentItem::ClassDeclaration(item) = read.class.clone() else {
             unreachable!("a class read publishes a class declaration item")
         };
@@ -1388,34 +1629,38 @@ impl Engine {
             // The class confirmed its own item and could not publish it (a refused `result_items`
             // charge): the report keeps the identity and the stop and presents nothing at all, which
             // is what a report that could not pay for its own declaration may say.
-            return Ok(OperationOutcome::Performed(ClassSourceReport {
-                view,
-                class: definition,
-                declaration: None,
-                stages,
-                fields: Vec::new(),
-                methods: Vec::new(),
-                bridge_proofs: Vec::new(),
-                enum_switch_proofs: Vec::new(),
-                initializer_proof: if read.facts.access_flags & ACC_INTERFACE != 0
-                    && read.facts.access_flags & ACC_ANNOTATION == 0
-                {
-                    ClassSourceInitializerProof::Refused {
+            return Ok((
+                ClassSourceReport {
+                    view,
+                    class: definition,
+                    declaration: None,
+                    stages,
+                    fields: Vec::new(),
+                    methods: Vec::new(),
+                    member_family: class_source::ClassSourceMemberFamily::Absent,
+                    bridge_proofs: Vec::new(),
+                    enum_switch_proofs: Vec::new(),
+                    initializer_proof: if read.facts.access_flags & ACC_INTERFACE != 0
+                        && read.facts.access_flags & ACC_ANNOTATION == 0
+                    {
+                        ClassSourceInitializerProof::Refused {
                         reason: "the class declaration was not published, so its interface initializer group cannot be proved".to_owned(),
                     }
-                } else {
-                    ClassSourceInitializerProof::NotApplicable
+                    } else {
+                        ClassSourceInitializerProof::NotApplicable
+                    },
+                    enum_constant_proof:
+                        crate::enum_constants::ClassSourceEnumConstantProof::NotApplicable,
+                    enum_constant_body_relations: Vec::new(),
+                    text: String::new(),
+                    limits: budget.limits().clone(),
+                    usage: budget.usage(),
+                    coverage: class_view_coverage(search_coverage.as_ref(), &read.facts, false),
+                    execution: with_usage(execution, budget.usage()),
+                    diagnostics,
                 },
-                enum_constant_proof:
-                    crate::enum_constants::ClassSourceEnumConstantProof::NotApplicable,
-                enum_constant_body_relations: Vec::new(),
-                text: String::new(),
-                limits: budget.limits().clone(),
-                usage: budget.usage(),
-                coverage: class_view_coverage(search_coverage.as_ref(), &read.facts, false),
-                execution: with_usage(execution, budget.usage()),
-                diagnostics,
-            }));
+                crate::member_inner::FamilyRootScan::Absent,
+            ));
         }
         let class_provenance = Some(definition_provenance(&definition));
         // How many members this presentation could run a body for at all: one that declares a `Code`
@@ -1614,6 +1859,7 @@ impl Engine {
             .cloned()
             .collect();
         let mut assembly_context = class_source::ClassSourceAssemblyContext::default();
+        let mut family_scan = crate::member_inner::FamilyRootScan::Absent;
         if !nesting_shells.is_empty() {
             match class_source::read_class_source_assembly_context(
                 &read.bytes,
@@ -1621,10 +1867,30 @@ impl Engine {
                 &pool,
                 budget,
             ) {
-                Ok(context) => assembly_context = context,
+                Ok(context) => {
+                    assembly_context = context;
+                    match crate::member_inner::scan_family_root(
+                        &read.facts.this_class.raw().0,
+                        &assembly_context,
+                        &pool,
+                        budget,
+                    ) {
+                        Ok(scan) => family_scan = scan,
+                        Err(error) => {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            family_scan = crate::member_inner::FamilyRootScan::Refused(
+                                "member relation scan stopped".to_owned(),
+                            );
+                        }
+                    }
+                }
                 Err(error) => {
                     merge_execution(&mut execution, stop_execution(&error, budget));
                     diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    family_scan = crate::member_inner::FamilyRootScan::Refused(
+                        "typed nesting attributes could not be read".to_owned(),
+                    );
                 }
             }
         }
@@ -3178,25 +3444,29 @@ impl Engine {
             declared_bodies,
             attempted == declared_bodies,
         );
-        Ok(OperationOutcome::Performed(ClassSourceReport {
-            view,
-            class: definition,
-            declaration: Some(declaration),
-            stages,
-            fields,
-            methods,
-            bridge_proofs,
-            enum_switch_proofs,
-            initializer_proof,
-            enum_constant_proof,
-            enum_constant_body_relations,
-            text,
-            limits: budget.limits().clone(),
-            usage: budget.usage(),
-            coverage,
-            execution: with_usage(execution, budget.usage()),
-            diagnostics,
-        }))
+        Ok((
+            ClassSourceReport {
+                view,
+                class: definition,
+                declaration: Some(declaration),
+                stages,
+                fields,
+                methods,
+                member_family: class_source::ClassSourceMemberFamily::Absent,
+                bridge_proofs,
+                enum_switch_proofs,
+                initializer_proof,
+                enum_constant_proof,
+                enum_constant_body_relations,
+                text,
+                limits: budget.limits().clone(),
+                usage: budget.usage(),
+                coverage,
+                execution: with_usage(execution, budget.usage()),
+                diagnostics,
+            },
+            family_scan,
+        ))
     }
 }
 

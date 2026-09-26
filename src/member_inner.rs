@@ -4,11 +4,162 @@
 //! request's environment; a method recovery consumes the resulting narrow fact, never a class name
 //! inferred from `$` or a constructor's first parameter alone.
 
+use crate::class_source::ClassSourceAssemblyContext;
 use jarde_reader::budget::Budget;
+use jarde_reader::budget::CountedBudgetDimension;
 use jarde_reader::classfile::{
-    ClassMemberFacts, CpEntryKind, DescriptorKind, attribute_facts, class_constant_pool,
-    cp_class_name, cp_entry, descriptor_facts, method_code_facts,
+    ClassMemberFacts, CpEntryFacts, CpEntryKind, DescriptorKind, attribute_facts,
+    class_constant_pool, cp_class_name, cp_entry, descriptor_facts, method_code_facts,
 };
+
+/// A class's own typed row is only a candidate until the selected child's row agrees.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct FamilyRootCandidate {
+    pub(crate) child_name: Vec<u8>,
+    pub(crate) simple_name: String,
+    pub(crate) access_flags: u16,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum FamilyRootScan {
+    Absent,
+    Refused(String),
+    Candidate(FamilyRootCandidate),
+}
+
+const FAMILY_FORBIDDEN_FLAGS: u16 = 0x0008 | 0x0200 | 0x2000 | 0x4000;
+const FAMILY_VISIBILITY_FLAGS: u16 = 0x0001 | 0x0002 | 0x0004;
+
+/// Discover at most one direct named non-static child from the root's typed InnerClasses rows.
+/// No binary-name search is used: the class index in the row supplies the exact symbolic target.
+pub(crate) fn scan_family_root(
+    root: &[u8],
+    nesting: &ClassSourceAssemblyContext,
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+) -> Result<FamilyRootScan> {
+    if nesting.enclosing_method.is_some() {
+        return Ok(FamilyRootScan::Refused(
+            "selected root has EnclosingMethod identity".to_owned(),
+        ));
+    }
+    let mut candidate = None;
+    let mut static_names = Vec::new();
+    for row in &nesting.inner_classes {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        // This slice writes one top-level source unit. A typed self row with an outer owner
+        // proves that the selected root itself belongs to a larger family.
+        if row.outer_class_index != 0
+            && cp_class_name(pool, row.class_index).is_ok_and(|name| name.0 == root)
+        {
+            return Ok(FamilyRootScan::Refused(
+                "selected root has an InnerClasses self row naming an outer class".to_owned(),
+            ));
+        }
+        if row.outer_class_index == 0 {
+            continue;
+        }
+        let Ok(outer) = cp_class_name(pool, row.outer_class_index) else {
+            return Ok(FamilyRootScan::Refused(
+                "InnerClasses outer class index is invalid".to_owned(),
+            ));
+        };
+        if outer.0 != root {
+            continue;
+        }
+        // Static nested declarations do not join this captured-member subset. Retain their
+        // identities so a contradictory static row for the selected child still rejects it.
+        if row.access_flags & 0x0008 != 0 {
+            let Ok(name) = cp_class_name(pool, row.class_index) else {
+                return Ok(FamilyRootScan::Refused(
+                    "static nested class index is invalid".to_owned(),
+                ));
+            };
+            static_names.push(name.0);
+            continue;
+        }
+        let Ok(child) = cp_class_name(pool, row.class_index) else {
+            return Ok(FamilyRootScan::Refused(
+                "direct member class index is invalid".to_owned(),
+            ));
+        };
+        let Some(simple) = row
+            .inner_name
+            .as_ref()
+            .and_then(|name| std::str::from_utf8(&name.0).ok())
+        else {
+            return Ok(FamilyRootScan::Refused(
+                "direct member has no UTF-8 source name".to_owned(),
+            ));
+        };
+        if !jarde_java::names::is_java_identifier(simple)
+            || child.0 != [root, b"$", simple.as_bytes()].concat()
+            || row.access_flags & FAMILY_FORBIDDEN_FLAGS != 0
+            || (row.access_flags & FAMILY_VISIBILITY_FLAGS).count_ones() > 1
+            || row.access_flags & (0x0010 | 0x0400) == (0x0010 | 0x0400)
+        {
+            return Ok(FamilyRootScan::Refused(
+                "direct member is not a source-spellable named non-static class".to_owned(),
+            ));
+        }
+        let next = FamilyRootCandidate {
+            child_name: child.0,
+            simple_name: simple.to_owned(),
+            access_flags: row.access_flags,
+        };
+        if candidate.replace(next).is_some() {
+            return Ok(FamilyRootScan::Refused(
+                "multiple direct member rows are outside the one-child family subset".to_owned(),
+            ));
+        }
+    }
+    if candidate
+        .as_ref()
+        .is_some_and(|selected: &FamilyRootCandidate| static_names.contains(&selected.child_name))
+    {
+        return Ok(FamilyRootScan::Refused(
+            "selected member also has a conflicting static InnerClasses row".to_owned(),
+        ));
+    }
+    Ok(candidate.map_or(FamilyRootScan::Absent, FamilyRootScan::Candidate))
+}
+
+/// The selected child must independently state the identical unique self relation.
+pub(crate) fn child_relation_agrees(
+    root: &[u8],
+    candidate: &FamilyRootCandidate,
+    child: &ClassMemberFacts,
+    nesting: &ClassSourceAssemblyContext,
+    pool: &[CpEntryFacts],
+    budget: &mut Budget,
+) -> Result<bool> {
+    if child.stopped_at.is_some()
+        || child.this_class.raw().0 != candidate.child_name
+        || nesting.enclosing_method.is_some()
+    {
+        return Ok(false);
+    }
+    let mut self_row = None;
+    for row in &nesting.inner_classes {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let Ok(name) = cp_class_name(pool, row.class_index) else {
+            return Ok(false);
+        };
+        if name.0 == candidate.child_name && self_row.replace(row).is_some() {
+            return Ok(false);
+        }
+    }
+    let Some(row) = self_row else {
+        return Ok(false);
+    };
+    Ok(row.outer_class_index != 0
+        && cp_class_name(pool, row.outer_class_index).is_ok_and(|outer| outer.0 == root)
+        && row
+            .inner_name
+            .as_ref()
+            .is_some_and(|name| name.0 == candidate.simple_name.as_bytes())
+        && row.access_flags == candidate.access_flags)
+}
 use jarde_reader::error::{Error, Result};
 use jarde_reader::signature::{
     SignatureType, parse_class_signature, parse_method_signature, prove_class_signature_erasure,
@@ -684,6 +835,271 @@ mod tests {
     );
     const GENERIC_OWNER: &str = "minimal/Outer$Inner";
     const GENERIC_DESCRIPTOR: &str = "(Lminimal/Outer;Ljava/lang/Object;)V";
+    const FAMILY_JAR: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar"
+    );
+
+    fn family_bytes(path: &[u8]) -> Vec<u8> {
+        let archive = rawzip::ZipArchive::from_slice(FAMILY_JAR).unwrap();
+        let mut entries = archive.entries();
+        while let Some(header) = entries.next_entry().unwrap() {
+            if header.file_path().as_ref() == path {
+                let entry = archive.get_entry(header.wayfinder()).unwrap();
+                let decoder = flate2::bufread::DeflateDecoder::new(entry.data());
+                let mut reader = entry.verifying_reader(decoder);
+                let mut bytes = Vec::new();
+                reader.read_to_end(&mut bytes).unwrap();
+                return bytes;
+            }
+        }
+        panic!("frozen family jar contains requested class")
+    }
+
+    fn family_facts(
+        bytes: &[u8],
+        budget: &mut Budget,
+    ) -> (
+        ClassMemberFacts,
+        Vec<CpEntryFacts>,
+        ClassSourceAssemblyContext,
+    ) {
+        let facts = class_member_facts(bytes, budget).unwrap();
+        let pool = class_constant_pool(bytes, budget).unwrap();
+        let shells: Vec<_> = facts
+            .attributes
+            .iter()
+            .filter(|attribute| {
+                matches!(
+                    attribute.name.raw().0.as_slice(),
+                    b"InnerClasses" | b"EnclosingMethod"
+                )
+            })
+            .cloned()
+            .collect();
+        let nesting =
+            crate::class_source::read_class_source_assembly_context(bytes, &shells, &pool, budget)
+                .unwrap();
+        (facts, pool, nesting)
+    }
+
+    #[test]
+    fn family_relation_needs_matching_typed_rows_and_uses_member_flags() {
+        let root_bytes = family_bytes(b"NamedMemberFamilyStage1.class");
+        let child_bytes = family_bytes(b"NamedMemberFamilyStage1$Member.class");
+        let mut budget = budget();
+        let (_, root_pool, root_nesting) = family_facts(&root_bytes, &mut budget);
+        let (child_facts, child_pool, child_nesting) = family_facts(&child_bytes, &mut budget);
+        let FamilyRootScan::Candidate(candidate) = scan_family_root(
+            b"NamedMemberFamilyStage1",
+            &root_nesting,
+            &root_pool,
+            &mut budget,
+        )
+        .unwrap() else {
+            panic!("root typed row names one child")
+        };
+        assert_eq!(candidate.simple_name, "Member");
+        assert_eq!(candidate.access_flags & FAMILY_VISIBILITY_FLAGS, 0);
+        assert_eq!(child_facts.access_flags & 0x0001, 0);
+        assert!(
+            child_relation_agrees(
+                b"NamedMemberFamilyStage1",
+                &candidate,
+                &child_facts,
+                &child_nesting,
+                &child_pool,
+                &mut budget,
+            )
+            .unwrap()
+        );
+
+        let mut no_root_row = root_nesting.clone();
+        no_root_row.inner_classes.clear();
+        assert_eq!(
+            scan_family_root(
+                b"NamedMemberFamilyStage1",
+                &no_root_row,
+                &root_pool,
+                &mut budget,
+            )
+            .unwrap(),
+            FamilyRootScan::Absent
+        );
+        let mut duplicate_root = root_nesting.clone();
+        duplicate_root
+            .inner_classes
+            .push(root_nesting.inner_classes[0].clone());
+        assert!(matches!(
+            scan_family_root(
+                b"NamedMemberFamilyStage1",
+                &duplicate_root,
+                &root_pool,
+                &mut budget,
+            )
+            .unwrap(),
+            FamilyRootScan::Refused(_)
+        ));
+        let mut static_only = root_nesting.clone();
+        static_only.inner_classes[0].access_flags |= 0x0008;
+        assert_eq!(
+            scan_family_root(
+                b"NamedMemberFamilyStage1",
+                &static_only,
+                &root_pool,
+                &mut budget,
+            )
+            .unwrap(),
+            FamilyRootScan::Absent
+        );
+        let mut static_sibling = root_nesting.clone();
+        let mut static_row = root_nesting.inner_classes[0].clone();
+        static_row.access_flags |= 0x0008;
+        static_sibling.inner_classes.push(static_row);
+        assert!(matches!(
+            scan_family_root(
+                b"NamedMemberFamilyStage1",
+                &static_sibling,
+                &root_pool,
+                &mut budget,
+            )
+            .unwrap(),
+            FamilyRootScan::Refused(_)
+        ));
+        let mut sibling_pool = root_pool.clone();
+        let mut sibling_class = sibling_pool
+            .iter()
+            .find(|entry| entry.index == root_nesting.inner_classes[0].class_index)
+            .unwrap()
+            .clone();
+        sibling_class.index = sibling_pool.iter().map(|entry| entry.index).max().unwrap() + 1;
+        let CpEntryKind::Class { name, .. } = &mut sibling_class.kind else {
+            unreachable!("InnerClasses class index names a Class entry")
+        };
+        name.0 = b"NamedMemberFamilyStage1$Static".to_vec();
+        let sibling_index = sibling_class.index;
+        sibling_pool.push(sibling_class);
+        static_sibling.inner_classes.last_mut().unwrap().class_index = sibling_index;
+        assert!(matches!(
+            scan_family_root(
+                b"NamedMemberFamilyStage1",
+                &static_sibling,
+                &sibling_pool,
+                &mut budget,
+            )
+            .unwrap(),
+            FamilyRootScan::Candidate(found) if found == candidate
+        ));
+        let mut dollar_pool = root_pool.clone();
+        let child_entry = dollar_pool
+            .iter_mut()
+            .find(|entry| entry.index == root_nesting.inner_classes[0].class_index)
+            .unwrap();
+        let CpEntryKind::Class { name, .. } = &mut child_entry.kind else {
+            unreachable!("InnerClasses class index names a Class entry")
+        };
+        name.0 = b"NamedMemberFamilyStage1$$A".to_vec();
+        let mut dollar_row = root_nesting.clone();
+        dollar_row.inner_classes[0].inner_name =
+            Some(jarde_reader::model::JvmBytes(b"$A".to_vec()));
+        assert!(matches!(
+            scan_family_root(
+                b"NamedMemberFamilyStage1",
+                &dollar_row,
+                &dollar_pool,
+                &mut budget,
+            )
+            .unwrap(),
+            FamilyRootScan::Candidate(found) if found.simple_name == "$A"
+        ));
+        let root_class_index = root_pool
+            .iter()
+            .find_map(|entry| match &entry.kind {
+                CpEntryKind::Class { name, .. } if name.0 == b"NamedMemberFamilyStage1" => {
+                    Some(entry.index)
+                }
+                _ => None,
+            })
+            .unwrap();
+        let mut nested_root = root_nesting.clone();
+        let mut self_row = root_nesting.inner_classes[0].clone();
+        self_row.class_index = root_class_index;
+        nested_root.inner_classes.push(self_row);
+        assert!(matches!(
+            scan_family_root(
+                b"NamedMemberFamilyStage1",
+                &nested_root,
+                &root_pool,
+                &mut budget,
+            )
+            .unwrap(),
+            FamilyRootScan::Refused(_)
+        ));
+
+        let mut missing_child_row = child_nesting.clone();
+        missing_child_row.inner_classes.clear();
+        assert!(
+            !child_relation_agrees(
+                b"NamedMemberFamilyStage1",
+                &candidate,
+                &child_facts,
+                &missing_child_row,
+                &child_pool,
+                &mut budget,
+            )
+            .unwrap()
+        );
+        let mut wrong_flags = child_nesting.clone();
+        wrong_flags.inner_classes[0].access_flags |= 0x0001;
+        assert!(
+            !child_relation_agrees(
+                b"NamedMemberFamilyStage1",
+                &candidate,
+                &child_facts,
+                &wrong_flags,
+                &child_pool,
+                &mut budget,
+            )
+            .unwrap()
+        );
+        let mut local = child_nesting.clone();
+        local.enclosing_method = Some(jarde_reader::classfile::EnclosingMethodFacts {
+            class_index: 1,
+            method_index: 1,
+        });
+        assert!(
+            !child_relation_agrees(
+                b"NamedMemberFamilyStage1",
+                &candidate,
+                &child_facts,
+                &local,
+                &child_pool,
+                &mut budget,
+            )
+            .unwrap()
+        );
+    }
+
+    #[test]
+    fn family_row_scan_observes_real_budget_and_cancellation() {
+        let bytes = family_bytes(b"NamedMemberFamilyStage1.class");
+        let mut setup = budget();
+        let (_, pool, nesting) = family_facts(&bytes, &mut setup);
+        let mut limited = Budget::new(Limits {
+            analysis_steps: 0,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            scan_family_root(b"NamedMemberFamilyStage1", &nesting, &pool, &mut limited),
+            Err(Error::BudgetExceeded { .. })
+        ));
+        let cancellation = CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled = Budget::with_cancellation_token(Limits::default(), cancellation);
+        assert!(matches!(
+            scan_family_root(b"NamedMemberFamilyStage1", &nesting, &pool, &mut cancelled),
+            Err(Error::Cancelled { .. })
+        ));
+    }
 
     fn budget() -> Budget {
         Budget::new(Limits {
