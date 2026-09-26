@@ -1,11 +1,13 @@
 ## 1. 冻结形状与三方基线
 
-- [ ] 1.1 自写两资源 Java 8 fixture（正例：读取返回/内层抛出/外层 close 抛出/正常关闭四条路径；负例：patch 行范围错一级），javac --release 8 与 9+ 各编译一份，冻结 SHA；记录 javap 行几何、原 class 执行输出（含 suppressed 顺序）、jadx 1.5.6 输出（展开为嵌套 try，记为其偏离）、jarde 修前输出（RangeEnd 引用）。
+- [ ] 1.1 自写两资源 Java 8 fixture（正例：读取返回/内层抛出/外层 close 抛出/正常关闭四条路径；负例：等宽 patch 主行结束或伴随行的范围/目标），javac --release 8 与 9+ 各编译一份，冻结 SHA；记录 javap 行几何、原 class 执行输出（含 suppressed 顺序）、jadx 1.5.6 输出（展开为嵌套 try，记为其偏离）、jarde 修前输出（RangeEnd 引用），并对照旧 `Guarded.two/three` 的单行布局。
 
 ## 2. 层级几何与呈现
 
-- [ ] 2.1 `twr` 几何校验改为「每层行止于该层正常 close 链起点」；单资源路径回归保持绿。定向测试：两层链通过、patched 负例拒绝保持、单资源不变。
-- [ ] 2.2 多资源一条头的呈现：资源按初始化顺序、close 逆序证明逐层复用、suppressed 链锚点保留；文本含两个资源声明与体语句，无 `@bytecode`。
+- [ ] 2.1 `twr` 在正常 close 逆序证明后核对每层主行止于该层 close 起点；旧单行布局与新分段布局同测，单资源路径不退化。
+- [ ] 2.2 当外层主行未覆盖内层 handler 时，只接受范围精确相等、同类型、同目标的伴随保护行，并纳入已解释行及来源；缺失、额外、交叠、错误类型/目标的 patched 控制拒绝保持。
+- [ ] 2.3 对 close 后纯 `load; return` 的体内已求值结果，证明值来源与尾部无效果后把 return 放在 TWR 体内；不同值或额外效果保持拒绝，不把局部声明与 return 错分作用域。
+- [ ] 2.4 多资源一条头的呈现：资源按初始化顺序、close 逆序证明逐层复用、suppressed 链锚点保留；文本含两个资源声明、体语句及必要的体内 return，无 `@bytecode`；旧 `Guarded.two/three` 不退化。
 
 ## 3. 对照与门禁
 
