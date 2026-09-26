@@ -2,7 +2,7 @@
 
 ### Requirement: SAM adaptation proves wrapper-primitive slot pairs
 
-lambda/方法引用站点的适配证明 SHALL 对擦除 SAM、instantiated 与 impl 三种方法类型的参数和返回逐槽证明两段转换；每段只能为「恒等 / 已证明的 Object 检查或上溯 / 基本类型与其唯一包装类的装箱或拆箱」。捕获值的精确类型门 MUST 保持。数组构造器引用的 impl 若为合成方法，SHALL 从同次 BSM 的精确句柄经既有按需成员读取取得 Code，且仅在同次物理成员 Code 完整证明为单次目标数组分配并返回后呈现为 `T[]::new`；名称或 synthetic 标志 MUST NOT 代替 Code 证明。类源码若省略该合成方法声明，MUST 先证明选定输入范围内没有未投影的其它使用，同时保留其物理方法报告。候选读取、用途证明或 Code 不可证明时 MUST 拒绝数组引用；独立适配仍已证明的站点 MAY 保留调用原合成方法的普通 lambda 文本及物理声明，不得输出同名冲突的半投影。
+lambda/方法引用站点的适配证明 SHALL 对擦除 SAM、instantiated 与 impl 三种方法类型的参数和返回逐槽证明两段转换；每段只能为「恒等 / 已证明的 Object 检查或上溯 / 基本类型与其唯一包装类的装箱或拆箱」。捕获值的精确类型门 MUST 保持。数组构造器引用的 impl 若为合成方法，SHALL 从同次 BSM 的精确句柄经既有按需成员读取取得 Code，且仅在同次物理成员 Code 完整证明为单次目标数组分配并返回、站点零捕获且长度来自唯一 SAM 参数后呈现为 `T[]::new`；名称或 synthetic 标志 MUST NOT 代替 Code 证明。类源码若省略该合成方法声明，MUST 先证明选定输入范围内没有未投影的其它使用且声明的函数式目标类型足以通过 Java 8 类型检查，同时保留其物理方法报告。候选读取、用途证明、Code 或源码目标类型不可证明时 MUST 拒绝类级数组引用；独立适配仍已证明的站点 MAY 保留调用原合成方法的普通 lambda 文本及物理声明，不得输出同名冲突或 raw 目标类型错误的半投影。
 
 #### Scenario: Primitive implementation behind a boxed SAM
 
@@ -12,7 +12,12 @@ lambda/方法引用站点的适配证明 SHALL 对擦除 SAM、instantiated 与 
 #### Scenario: Array constructor reference
 
 - **WHEN** `Function<Integer, int[]>` 绑定 `int[]::new`，实现为编译器生成的合成分配方法
-- **THEN** 使用点 SHALL 呈现 `int[]::new` 箭头，合成分配方法的物理报告 SHALL 保留；已证明只由此站点使用的 helper 在类源码中 SHALL 原子省略其物理声明，并通过 Java 8 重编译，不得与重新生成的合成方法冲突
+- **THEN** 独立方法使用点 SHALL 呈现 `int[]::new` 箭头，合成分配方法的物理报告 SHALL 保留；类源码仅在其函数式目标声明已证可写且 helper 所有用途均已投影时 SHALL 原子省略物理声明，并通过 Java 8 重编译，不得与重新生成的合成方法冲突；raw `Function` 声明不能承载引用时 SHALL 保留普通 helper 调用和声明
+
+#### Scenario: Captured allocation length is a lambda
+
+- **WHEN** `Supplier<int[]>` 的站点捕获一个 `int` 长度，实现 helper 同样恰为 `load; newarray; areturn`
+- **THEN** 站点 MUST 保留零参数 lambda 调用形状，MUST NOT 呈现需要一个 SAM 参数的 `int[]::new`
 
 #### Scenario: Unprovable pairs keep the refusal
 
