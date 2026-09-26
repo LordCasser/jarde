@@ -1,0 +1,6 @@
+javac: javac 23.0.1
+java: OpenJDK 23.0.1
+JADX: 1.5.6
+Jarde CLI source: current workspace build, cargo build --release -p jarde-cli
+compiler flags: --release 8 -g:none
+runtime flags: -Xverify:all

@@ -1,0 +1,234 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/NestedConditional.class
+  Last modified 2026年9月26日; size 1134 bytes
+  SHA-256 checksum 0ee804d152e66374254e140d166ca867989e97d22435d75ca85051b3dc40b768
+public final class NestedConditional
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #8                          // NestedConditional
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 6, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // NestedConditional.outerLimit:(ILjava/lang/StringBuilder;)I
+   #8 = Class              #10            // NestedConditional
+   #9 = NameAndType        #11:#12        // outerLimit:(ILjava/lang/StringBuilder;)I
+  #10 = Utf8               NestedConditional
+  #11 = Utf8               outerLimit
+  #12 = Utf8               (ILjava/lang/StringBuilder;)I
+  #13 = Methodref          #8.#14         // NestedConditional.innerLimit:(ILjava/lang/StringBuilder;)I
+  #14 = NameAndType        #15:#12        // innerLimit:(ILjava/lang/StringBuilder;)I
+  #15 = Utf8               innerLimit
+  #16 = String             #17            // 3
+  #17 = Utf8               3
+  #18 = Methodref          #8.#19         // NestedConditional.arm:(Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
+  #19 = NameAndType        #20:#21        // arm:(Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
+  #20 = Utf8               arm
+  #21 = Utf8               (Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
+  #22 = String             #23            // 2
+  #23 = Utf8               2
+  #24 = String             #25            // 1
+  #25 = Utf8               1
+  #26 = Methodref          #27.#28        // java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+  #27 = Class              #29            // java/lang/StringBuilder
+  #28 = NameAndType        #30:#31        // append:(C)Ljava/lang/StringBuilder;
+  #29 = Utf8               java/lang/StringBuilder
+  #30 = Utf8               append
+  #31 = Utf8               (C)Ljava/lang/StringBuilder;
+  #32 = Class              #33            // java/lang/IllegalArgumentException
+  #33 = Utf8               java/lang/IllegalArgumentException
+  #34 = String             #35            // outer
+  #35 = Utf8               outer
+  #36 = Methodref          #32.#37        // java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+  #37 = NameAndType        #5:#38         // "<init>":(Ljava/lang/String;)V
+  #38 = Utf8               (Ljava/lang/String;)V
+  #39 = Class              #40            // java/lang/IllegalStateException
+  #40 = Utf8               java/lang/IllegalStateException
+  #41 = String             #42            // inner
+  #42 = Utf8               inner
+  #43 = Methodref          #39.#37        // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #44 = Methodref          #27.#45        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #45 = NameAndType        #30:#46        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #46 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #47 = Class              #48            // java/lang/ArithmeticException
+  #48 = Utf8               java/lang/ArithmeticException
+  #49 = Methodref          #27.#3         // java/lang/StringBuilder."<init>":()V
+  #50 = String             #51            // arm-
+  #51 = Utf8               arm-
+  #52 = Methodref          #27.#53        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #53 = NameAndType        #54:#55        // toString:()Ljava/lang/String;
+  #54 = Utf8               toString
+  #55 = Utf8               ()Ljava/lang/String;
+  #56 = Methodref          #47.#37        // java/lang/ArithmeticException."<init>":(Ljava/lang/String;)V
+  #57 = Utf8               Code
+  #58 = Utf8               nested
+  #59 = Utf8               (I)I
+  #60 = Utf8               StackMapTable
+  #61 = Utf8               nestedEffects
+  #62 = Class              #63            // java/lang/String
+  #63 = Utf8               java/lang/String
+{
+  private NestedConditional();
+    descriptor: ()V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int nested(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: iload_0
+         1: bipush        10
+         3: if_icmple     20
+         6: iload_0
+         7: bipush        100
+         9: if_icmple     16
+        12: iconst_3
+        13: goto          21
+        16: iconst_2
+        17: goto          21
+        20: iconst_1
+        21: istore_1
+        22: iload_1
+        23: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 16 /* same */
+        frame_type = 3 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  public static int nestedEffects(int, java.lang.StringBuilder);
+    descriptor: (ILjava/lang/StringBuilder;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=3, args_size=2
+         0: iload_0
+         1: iload_0
+         2: aload_1
+         3: invokestatic  #7                  // Method outerLimit:(ILjava/lang/StringBuilder;)I
+         6: if_icmple     50
+         9: iload_0
+        10: iload_0
+        11: aload_1
+        12: invokestatic  #13                 // Method innerLimit:(ILjava/lang/StringBuilder;)I
+        15: if_icmple     29
+        18: aload_1
+        19: ldc           #16                 // String 3
+        21: iconst_3
+        22: iconst_0
+        23: invokestatic  #18                 // Method arm:(Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
+        26: goto          58
+        29: aload_1
+        30: ldc           #22                 // String 2
+        32: iconst_2
+        33: iload_0
+        34: bipush        12
+        36: if_icmpne     43
+        39: iconst_1
+        40: goto          44
+        43: iconst_0
+        44: invokestatic  #18                 // Method arm:(Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
+        47: goto          58
+        50: aload_1
+        51: ldc           #24                 // String 1
+        53: iconst_1
+        54: iconst_0
+        55: invokestatic  #18                 // Method arm:(Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
+        58: istore_2
+        59: iload_2
+        60: ireturn
+      StackMapTable: number_of_entries = 5
+        frame_type = 29 /* same */
+        frame_type = 255 /* full_frame */
+          offset_delta = 13
+          locals = [ int, class java/lang/StringBuilder ]
+          stack = [ class java/lang/StringBuilder, class java/lang/String, int ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 0
+          locals = [ int, class java/lang/StringBuilder ]
+          stack = [ class java/lang/StringBuilder, class java/lang/String, int, int ]
+        frame_type = 5 /* same */
+        frame_type = 71 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static int outerLimit(int, java.lang.StringBuilder);
+    descriptor: (ILjava/lang/StringBuilder;)I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: aload_1
+         1: bipush        79
+         3: invokevirtual #26                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+         6: pop
+         7: iload_0
+         8: ifne          21
+        11: new           #32                 // class java/lang/IllegalArgumentException
+        14: dup
+        15: ldc           #34                 // String outer
+        17: invokespecial #36                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+        20: athrow
+        21: bipush        10
+        23: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 21 /* same */
+
+  private static int innerLimit(int, java.lang.StringBuilder);
+    descriptor: (ILjava/lang/StringBuilder;)I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: aload_1
+         1: bipush        73
+         3: invokevirtual #26                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+         6: pop
+         7: iload_0
+         8: bipush        50
+        10: if_icmpne     23
+        13: new           #39                 // class java/lang/IllegalStateException
+        16: dup
+        17: ldc           #41                 // String inner
+        19: invokespecial #43                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        22: athrow
+        23: bipush        100
+        25: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 23 /* same */
+
+  private static int arm(java.lang.StringBuilder, java.lang.String, int, boolean);
+    descriptor: (Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=4
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+         5: pop
+         6: iload_3
+         7: ifeq          37
+        10: new           #47                 // class java/lang/ArithmeticException
+        13: dup
+        14: new           #27                 // class java/lang/StringBuilder
+        17: dup
+        18: invokespecial #49                 // Method java/lang/StringBuilder."<init>":()V
+        21: ldc           #50                 // String arm-
+        23: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        26: aload_1
+        27: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        30: invokevirtual #52                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        33: invokespecial #56                 // Method java/lang/ArithmeticException."<init>":(Ljava/lang/String;)V
+        36: athrow
+        37: iload_2
+        38: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 37 /* same */
+}

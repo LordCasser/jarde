@@ -1,0 +1,22 @@
+blocks:
+  BCI 0 blocks [0]
+  BCI 6 blocks [6]
+  BCI 20 blocks [20]
+  BCI 12 blocks [12]
+  BCI 16 blocks [16]
+  BCI 21 blocks [21]
+normal edges:
+  0 -> 6
+  0 -> 20
+  6 -> 12
+  6 -> 16
+  12 -> 21
+  16 -> 21
+  20 -> 21
+phis:
+  block=21 slot=Local(0) inputs=["Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) }", "Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) }", "Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) }"]
+  block=21 slot=Stack(0) inputs=["Instruction { block: CanonicalBlockId { bci: 12, path: [] }, bci: 12 }", "Instruction { block: CanonicalBlockId { bci: 16, path: [] }, bci: 16 }", "Instruction { block: CanonicalBlockId { bci: 20, path: [] }, bci: 20 }"]
+values at block join:
+  ValueId(0) Entry { block: CanonicalBlockId { bci: 0, path: [] }, slot: Local(0) } replaced=None
+  ValueId(1) Phi { block: CanonicalBlockId { bci: 21, path: [] }, slot: Local(0) } replaced=Some(ValueId(0))
+  ValueId(2) Phi { block: CanonicalBlockId { bci: 21, path: [] }, slot: Stack(0) } replaced=None

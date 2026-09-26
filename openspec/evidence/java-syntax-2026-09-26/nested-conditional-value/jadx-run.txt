@@ -1,0 +1,15 @@
+nested(9)=1
+nested(10)=1
+nested(11)=2
+nested(99)=2
+nested(100)=2
+nested(101)=3
+effects(0)=IllegalArgumentException;message=outer;events=O
+effects(5)=1;events=O1
+effects(10)=1;events=O1
+effects(11)=2;events=OI2
+effects(12)=ArithmeticException;message=arm-2;events=OI2
+effects(50)=IllegalStateException;message=inner;events=OI
+effects(100)=2;events=OI2
+effects(101)=3;events=OI3
+effects(150)=3;events=OI3
