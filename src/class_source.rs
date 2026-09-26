@@ -511,7 +511,8 @@ pub struct ClassSourceReport {
     pub(crate) enum_constant_body_relations: Vec<crate::facade::PendingEnumConstantBodyRelation>,
     /// The assembled Java source. Empty exactly when [`Self::declaration`] is `None`. A proved
     /// member projection contains one root source unit with a nested child declaration; refusal
-    /// retains this root's physical text. This string has no whole-unit source map yet.
+    /// retains this root's physical text. The narrow derived ranges in `member_family` refer to
+    /// this string; method-local recovery maps still refer only to their own recovery text.
     pub text: String,
     /// The complete effective limits this request ran under.
     pub limits: Limits,
@@ -582,8 +583,51 @@ pub enum ClassSourceMemberFamily {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case")]
 pub enum ClassSourceMemberProjection {
-    Refused { reason: String },
-    Projected,
+    Refused {
+        reason: String,
+    },
+    Projected {
+        derived: Vec<MemberFamilyDerivedProjection>,
+    },
+}
+
+/// A source-unit byte range created by the proved family writer. It never replaces a physical
+/// method's recovery map: the range is in the root report's `text`, while every anchor names its
+/// own physical definition and member.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MemberFamilyDerivedProjection {
+    pub kind: MemberFamilyDerivedKind,
+    pub start: usize,
+    pub end: usize,
+    pub anchors: Vec<MemberFamilyPhysicalAnchor>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MemberFamilyDerivedKind {
+    MemberConstruction,
+    CapturedOuterRead,
+    HiddenCaptureField,
+    HiddenConstructorParameter,
+    HiddenCaptureWrite,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum MemberFamilyPhysicalAnchor {
+    Field {
+        field: jarde_reader::model::PhysicalMemberId,
+        index: u64,
+    },
+    MethodPoint {
+        method: PhysicalMethodId,
+        bci: u32,
+    },
+    ConstructorParameter {
+        method: PhysicalMethodId,
+        index: u32,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -6020,7 +6064,8 @@ pub(crate) fn source_text(
     methods: &[ClassSourceMethod],
     context: &ClassSourceTextContext<'_>,
 ) -> String {
-    source_text_with_member(declaration, fields, methods, context, None)
+    source_text_with_member(declaration, fields, methods, context, None, &mut Vec::new())
+        .expect("ordinary class writer has no derived ranges to translate")
 }
 
 /// A family source unit is assembled from physical member records, with only certified body
@@ -6029,8 +6074,91 @@ pub(crate) struct MemberFamilyTextProjection<'a> {
     pub(crate) relation: &'a ClassSourceMemberRelation,
     pub(crate) child: &'a ClassSourceReport,
     pub(crate) capture: &'a MemberCaptureProof,
-    pub(crate) root_methods: &'a [(u64, String)],
-    pub(crate) child_methods: &'a [(u64, String)],
+    pub(crate) root_methods: &'a [MemberFamilyMethodText],
+    pub(crate) child_methods: &'a [MemberFamilyMethodText],
+}
+
+pub(crate) struct MemberFamilyMethodText {
+    pub(crate) index: u64,
+    pub(crate) text: String,
+    /// Ranges in `text`, translated by the family writer when it appends the method.
+    pub(crate) derived: Vec<MemberFamilyDerivedProjection>,
+}
+
+/// Translate one exact, single-line recovery span through this writer's artifact placement.
+/// The equality check catches any drift in the envelope/statements indentation contract.
+pub(crate) fn member_family_recovered_span(
+    method: &ClassSourceMethod,
+    recovery: &RecoveryReport,
+    start: usize,
+    end: usize,
+) -> Option<(usize, usize)> {
+    let declaration = method.declaration.as_ref()?;
+    let body = artifact(&recovery.text)?;
+    let source = recovery.text.get(start..end)?;
+    if source.is_empty() || source.contains('\n') {
+        return None;
+    }
+    let annotations = method
+        .annotations
+        .uses
+        .iter()
+        .map(|annotation| 4 + annotation.len() + 1)
+        .sum::<usize>();
+    let marker_len = if method.has_only_explanation_marker() {
+        0
+    } else {
+        method
+            .markers
+            .iter()
+            .map(|marker| indent(&format!("{marker}\n"), 2).len())
+            .sum()
+    };
+    let block_prefix = annotations + format!("    {declaration} {{\n").len() + marker_len;
+    let envelope_end = body.envelope.len();
+    let (part, local_start, local_end, depth, prefix) = if end <= envelope_end {
+        (body.envelope, start, end, 2, block_prefix)
+    } else {
+        let statement_start = envelope_end + 2;
+        if start < statement_start || end > statement_start + body.statements.len() {
+            return None;
+        }
+        (
+            body.statements,
+            start - statement_start,
+            end - statement_start,
+            1,
+            block_prefix + indent(body.envelope, 2).len(),
+        )
+    };
+    let mapped_start = prefix + indented_offset(part, local_start, depth, false)?;
+    let mapped_end = prefix + indented_offset(part, local_end, depth, true)?;
+    let text = member_family_recovered_method_text(method, recovery)?;
+    (text.get(mapped_start..mapped_end)? == source).then_some((mapped_start, mapped_end))
+}
+
+fn indented_offset(text: &str, offset: usize, depth: usize, end_boundary: bool) -> Option<usize> {
+    if offset > text.len() || !text.is_char_boundary(offset) {
+        return None;
+    }
+    let mut source = 0;
+    let mut written = 0;
+    for line in text.split_inclusive('\n') {
+        if end_boundary && offset == source {
+            return Some(written);
+        }
+        let padding = if line.trim_end_matches('\n').is_empty() {
+            0
+        } else {
+            4 * depth
+        };
+        if offset < source + line.len() {
+            return Some(written + padding + offset - source);
+        }
+        written += padding + line.len();
+        source += line.len();
+    }
+    (offset == source).then_some(written)
 }
 
 pub(crate) fn member_family_recovered_method_text(
@@ -6136,7 +6264,7 @@ pub(crate) fn member_family_constructor_text(
 pub(crate) fn member_family_source_text(
     root: &ClassSourceReport,
     member: &MemberFamilyTextProjection<'_>,
-) -> Option<String> {
+) -> Option<(String, Vec<MemberFamilyDerivedProjection>)> {
     let declaration = root.declaration.as_ref()?;
     let child_declaration = member.child.declaration.as_ref()?;
     let capture_field = member
@@ -6180,13 +6308,36 @@ pub(crate) fn member_family_source_text(
     if source_text(declaration, &root.fields, &root.methods, &context) != root.text {
         return None;
     }
-    Some(source_text_with_member(
+    let mut derived = Vec::new();
+    let text = source_text_with_member(
         declaration,
         &root.fields,
         &root.methods,
         &context,
         Some(member),
-    ))
+        &mut derived,
+    )?;
+    let expected = 1
+        + member
+            .root_methods
+            .iter()
+            .map(|method| method.derived.len())
+            .sum::<usize>()
+        + member
+            .child_methods
+            .iter()
+            .map(|method| method.derived.len())
+            .sum::<usize>();
+    if derived.len() != expected
+        || derived.iter().any(|entry| {
+            entry.start >= entry.end
+                || text.get(entry.start..entry.end).is_none()
+                || entry.anchors.is_empty()
+        })
+    {
+        return None;
+    }
+    Some((text, derived))
 }
 
 fn source_text_with_member(
@@ -6195,7 +6346,8 @@ fn source_text_with_member(
     methods: &[ClassSourceMethod],
     context: &ClassSourceTextContext<'_>,
     member_family: Option<&MemberFamilyTextProjection<'_>>,
-) -> String {
+    derived: &mut Vec<MemberFamilyDerivedProjection>,
+) -> Option<String> {
     let initializer_field_order = context.initializer_field_order;
     let declared_methods = context.declared_methods;
     let member_table = context.member_table;
@@ -6331,13 +6483,13 @@ fn source_text_with_member(
             out.push('\n');
         }
         first = false;
-        if let Some((_, projected)) = member_family.and_then(|member| {
+        if let Some(projected) = member_family.and_then(|member| {
             member
                 .root_methods
                 .iter()
-                .find(|(index, _)| *index == method.item.index)
+                .find(|projected| projected.index == method.item.index)
         }) {
-            out.push_str(projected);
+            append_family_method(&mut out, projected, false, derived)?;
         } else if let Some((_, projected)) = array_method_texts
             .and_then(|texts| texts.iter().find(|(index, _)| *index == method.item.index))
         {
@@ -6375,13 +6527,22 @@ fn source_text_with_member(
         if !first {
             out.push('\n');
         }
-        out.push_str(&render_member_class(member));
+        let offset = out.len();
+        let (child_text, child_derived) = render_member_class(member)?;
+        out.push_str(&child_text);
+        derived.extend(child_derived.into_iter().map(|mut entry| {
+            entry.start += offset;
+            entry.end += offset;
+            entry
+        }));
     }
     out.push_str("}\n");
-    out
+    Some(out)
 }
 
-fn render_member_class(member: &MemberFamilyTextProjection<'_>) -> String {
+fn render_member_class(
+    member: &MemberFamilyTextProjection<'_>,
+) -> Option<(String, Vec<MemberFamilyDerivedProjection>)> {
     let child = member.child;
     let declaration = child
         .declaration
@@ -6398,16 +6559,33 @@ fn render_member_class(member: &MemberFamilyTextProjection<'_>) -> String {
     facts.access_flags = (facts.access_flags & !SOURCE_CLASS_FLAGS)
         | (member.relation.access_flags & SOURCE_CLASS_FLAGS);
     let mut out = String::new();
+    let mut derived = Vec::new();
     for annotation in &declaration.annotation_uses {
         out.push_str(&indent(&format!("{annotation}\n"), 1));
     }
-    out.push_str(&indent(
+    let class_header = indent(
         &format!(
             "{} {{\n",
             class_declaration(&member.relation.simple_name, &facts)
         ),
         1,
-    ));
+    );
+    let header_start = out.len();
+    out.push_str(&class_header);
+    let capture_field = child
+        .fields
+        .iter()
+        .find(|field| field.item.index == member.capture.field_index)
+        .expect("validated capture field");
+    derived.push(MemberFamilyDerivedProjection {
+        kind: MemberFamilyDerivedKind::HiddenCaptureField,
+        start: header_start,
+        end: out.len() - 1,
+        anchors: vec![MemberFamilyPhysicalAnchor::Field {
+            field: capture_field.item.identity.clone(),
+            index: capture_field.item.index,
+        }],
+    });
     let mut first = true;
     for field in &child.fields {
         if field.item.index == member.capture.field_index {
@@ -6431,15 +6609,50 @@ fn render_member_class(member: &MemberFamilyTextProjection<'_>) -> String {
             out.push('\n');
         }
         first = false;
-        let text = member
+        if let Some(projected) = member
             .child_methods
             .iter()
-            .find(|(index, _)| *index == method.item.index)
-            .map_or(method.text.as_str(), |(_, text)| text.as_str());
-        out.push_str(&indent(text, 1));
+            .find(|projected| projected.index == method.item.index)
+        {
+            append_family_method(&mut out, projected, true, &mut derived)?;
+        } else {
+            out.push_str(&indent(&method.text, 1));
+        }
     }
     out.push_str("    }\n");
-    out
+    Some((out, derived))
+}
+
+fn append_family_method(
+    out: &mut String,
+    method: &MemberFamilyMethodText,
+    nested: bool,
+    derived: &mut Vec<MemberFamilyDerivedProjection>,
+) -> Option<()> {
+    let offset = out.len();
+    if nested {
+        out.push_str(&indent(&method.text, 1));
+    } else {
+        out.push_str(&method.text);
+    }
+    for entry in &method.derived {
+        let mut entry = entry.clone();
+        if nested {
+            let source_span = method.text.get(entry.start..entry.end)?;
+            let start = indented_offset(&method.text, entry.start, 1, false)?;
+            let end = indented_offset(&method.text, entry.end, 1, true)?;
+            entry.start = offset + start;
+            entry.end = offset + end;
+            if out.get(entry.start..entry.end) != Some(source_span) {
+                return None;
+            }
+        } else {
+            entry.start += offset;
+            entry.end += offset;
+        }
+        derived.push(entry);
+    }
+    Some(())
 }
 
 /// The name of the member table one stop happened in.

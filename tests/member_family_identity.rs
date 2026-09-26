@@ -48,6 +48,15 @@ fn report_from(bytes: Vec<u8>, limits: Limits) -> ClassSourceReport {
 }
 
 fn report_from_named(bytes: Vec<u8>, name: &str, limits: Limits) -> ClassSourceReport {
+    report_from_named_with_evidence(bytes, name, limits, &RecoveryEvidenceRequest::essential())
+}
+
+fn report_from_named_with_evidence(
+    bytes: Vec<u8>,
+    name: &str,
+    limits: Limits,
+    evidence: &RecoveryEvidenceRequest,
+) -> ClassSourceReport {
     let engine = Engine::new();
     let mut budget = Budget::new(limits);
     let snapshot = engine
@@ -70,11 +79,223 @@ fn report_from_named(bytes: Vec<u8>, name: &str, limits: Limits) -> ClassSourceR
         },
     };
     match engine
-        .class_source(std::slice::from_ref(&snapshot), &request, &mut budget)
+        .class_source_with_evidence(
+            std::slice::from_ref(&snapshot),
+            &request,
+            evidence,
+            &mut budget,
+        )
         .expect("class-source returns a report")
     {
         OperationOutcome::Performed(report) => report,
         other => panic!("unexpected selection: {other:?}"),
+    }
+}
+
+#[test]
+fn family_derived_ranges_keep_exact_source_and_physical_owners() {
+    let mut essential_text_and_ranges = None;
+    for evidence in [
+        RecoveryEvidenceRequest::essential(),
+        RecoveryEvidenceRequest::all(),
+    ] {
+        let report = report_from_named_with_evidence(
+            FAMILY_JAR.to_vec(),
+            "NamedMemberFamilyStage1",
+            task_limits(&[]).unwrap(),
+            &evidence,
+        );
+        let ClassSourceMemberFamily::Prepared {
+            child,
+            capture: ClassSourceMemberCapture::Proved { proof },
+            calls: ClassSourceMemberCalls::Proved { sites },
+            projection: ClassSourceMemberProjection::Projected { derived },
+            ..
+        } = &report.member_family
+        else {
+            panic!(
+                "family must project with either evidence selection: {:?}",
+                report.member_family
+            )
+        };
+        assert_eq!(derived.len(), 5);
+        if let Some((text, ranges)) = &essential_text_and_ranges {
+            assert_eq!(&report.text, text);
+            assert_eq!(derived, ranges);
+        } else {
+            essential_text_and_ranges = Some((report.text.clone(), derived.clone()));
+        }
+        for entry in derived {
+            assert!(entry.start < entry.end && entry.end <= report.text.len());
+            assert!(report.text.is_char_boundary(entry.start));
+            assert!(report.text.is_char_boundary(entry.end));
+            assert!(!report.text[entry.start..entry.end].is_empty());
+            assert!(!entry.anchors.is_empty());
+        }
+        let by_kind = |kind| derived.iter().find(|entry| entry.kind == kind).unwrap();
+        let construction = by_kind(MemberFamilyDerivedKind::MemberConstruction);
+        assert_eq!(
+            &report.text[construction.start..construction.end],
+            "new Member"
+        );
+        assert!(matches!(
+            &construction.anchors[0],
+            MemberFamilyPhysicalAnchor::MethodPoint { method, bci }
+                if method == &sites[0].caller && *bci == 27 && method.owner == report.class
+        ));
+        assert!(matches!(
+            &construction.anchors[2],
+            MemberFamilyPhysicalAnchor::ConstructorParameter { method, index }
+                if method == &proof.constructor && *index == 0 && method.owner == child.class
+        ));
+        let read = by_kind(MemberFamilyDerivedKind::CapturedOuterRead);
+        assert_eq!(
+            &report.text[read.start..read.end],
+            "NamedMemberFamilyStage1.this"
+        );
+        assert!(matches!(
+            &read.anchors[0],
+            MemberFamilyPhysicalAnchor::MethodPoint { method, bci }
+                if method == &proof.reads[0].method && *bci == 8 && method.owner == child.class
+        ));
+        let field = by_kind(MemberFamilyDerivedKind::HiddenCaptureField);
+        assert!(report.text[field.start..field.end].contains("class Member extends"));
+        assert!(matches!(
+            &field.anchors[0],
+            MemberFamilyPhysicalAnchor::Field { field, index }
+                if field.owner == child.class && *index == proof.field_index
+        ));
+        for kind in [
+            MemberFamilyDerivedKind::HiddenConstructorParameter,
+            MemberFamilyDerivedKind::HiddenCaptureWrite,
+        ] {
+            let entry = by_kind(kind);
+            assert!(report.text[entry.start..entry.end].contains("Member() {"));
+        }
+        assert!(matches!(
+            &by_kind(MemberFamilyDerivedKind::HiddenCaptureWrite).anchors[0],
+            MemberFamilyPhysicalAnchor::MethodPoint { method, bci }
+                if method == &proof.constructor && *bci == proof.write_bci
+        ));
+        let serialized = serde_json::to_value(&report).unwrap();
+        assert_eq!(
+            serialized["member_family"]["projection"]["state"],
+            "projected"
+        );
+        assert_eq!(
+            serialized["member_family"]["projection"]["derived"]
+                .as_array()
+                .unwrap()
+                .len(),
+            5
+        );
+        assert_eq!(
+            serialized["member_family"]["child"]["class"],
+            serde_json::to_value(&child.class).unwrap()
+        );
+        if evidence == RecoveryEvidenceRequest::all() {
+            let root_ctor = report
+                .methods
+                .iter()
+                .find(|method| method.item.identity.name.0 == b"<init>")
+                .unwrap();
+            let child_ctor = child
+                .methods
+                .iter()
+                .find(|method| method.item.identity.name.0 == b"<init>")
+                .unwrap();
+            let (
+                ClassSourceOutcome::Recovered {
+                    report: root_recovery,
+                    ..
+                },
+                ClassSourceOutcome::Recovered {
+                    report: child_recovery,
+                    ..
+                },
+            ) = (&root_ctor.outcome, &child_ctor.outcome)
+            else {
+                panic!("constructors recovered")
+            };
+            assert!(!root_recovery.source_map.of_bci(0).is_empty());
+            assert!(!child_recovery.source_map.of_bci(0).is_empty());
+            assert_ne!(
+                root_ctor.item.identity.owner,
+                child_ctor.item.identity.owner
+            );
+            assert!(root_recovery.source_map.of_bci(0).iter().any(|segment| {
+                segment.origin().primary().method() == Some(&root_ctor.item.identity)
+            }));
+            assert!(child_recovery.source_map.of_bci(0).iter().any(|segment| {
+                segment.origin().primary().method() == Some(&child_ctor.item.identity)
+            }));
+            assert_eq!(
+                serialized["methods"][root_ctor.item.index as usize]["outcome"]["report"]["source_map"],
+                serde_json::to_value(&root_recovery.source_map).unwrap()
+            );
+            assert_eq!(
+                serialized["member_family"]["child"]["methods"][child_ctor.item.index as usize]["outcome"]
+                    ["report"]["source_map"],
+                serde_json::to_value(&child_recovery.source_map).unwrap()
+            );
+        }
+    }
+}
+
+#[test]
+fn two_member_allocations_in_one_caller_get_distinct_source_ranges() {
+    let temp = TestDirectory::new();
+    std::fs::write(
+        temp.path().join("MultiCall.java"),
+        "class MultiCall { class Member { Member() {} int value() { return 1; } } int run(MultiCall outer) { return outer.new Member().value() + outer.new Member().value(); } }",
+    )
+    .unwrap();
+    let output = Command::new("javac")
+        .args(["--release", "8", "-g:none", "MultiCall.java"])
+        .current_dir(temp.path())
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let root = std::fs::read(temp.path().join("MultiCall.class")).unwrap();
+    let child = std::fs::read(temp.path().join("MultiCall$Member.class")).unwrap();
+    let report = report_from_named(
+        jar_of(&[
+            (b"MultiCall.class", &root),
+            (b"MultiCall$Member.class", &child),
+        ]),
+        "MultiCall",
+        task_limits(&[]).unwrap(),
+    );
+    let ClassSourceMemberFamily::Prepared {
+        calls: ClassSourceMemberCalls::Proved { sites },
+        projection: ClassSourceMemberProjection::Projected { derived },
+        ..
+    } = &report.member_family
+    else {
+        let reason = match &report.member_family {
+            ClassSourceMemberFamily::Prepared { projection, .. } => format!("{projection:?}"),
+            other => format!("{other:?}"),
+        };
+        panic!("two-call family did not project: {reason}")
+    };
+    assert_eq!(sites.len(), 2);
+    assert_eq!(sites[0].caller, sites[1].caller);
+    assert_ne!(sites[0].allocation_bci, sites[1].allocation_bci);
+    let constructions: Vec<_> = derived
+        .iter()
+        .filter(|entry| entry.kind == MemberFamilyDerivedKind::MemberConstruction)
+        .collect();
+    assert_eq!(constructions.len(), 2);
+    assert_ne!(constructions[0].start, constructions[1].start);
+    for (entry, site) in constructions.into_iter().zip(sites) {
+        assert_eq!(&report.text[entry.start..entry.end], "new Member");
+        assert!(
+            matches!(&entry.anchors[0], MemberFamilyPhysicalAnchor::MethodPoint { method, bci } if method == &site.caller && *bci == site.allocation_bci)
+        );
     }
 }
 
@@ -192,7 +413,7 @@ fn selected_family_keeps_two_physical_reports_under_one_budget() {
         matches!(
             report.member_family,
             ClassSourceMemberFamily::Prepared {
-                projection: ClassSourceMemberProjection::Projected,
+                projection: ClassSourceMemberProjection::Projected { .. },
                 ..
             }
         ),
@@ -246,7 +467,7 @@ fn projected_stage1_compiles_and_matches_original_and_jadx_java8_behavior() {
     assert!(matches!(
         report.member_family,
         ClassSourceMemberFamily::Prepared {
-            projection: ClassSourceMemberProjection::Projected,
+            projection: ClassSourceMemberProjection::Projected { .. },
             ..
         }
     ));
@@ -346,7 +567,7 @@ fn family_call_rerender_restores_effect_and_null_exception_order() {
         panic!("effect family relation is not prepared");
     };
     assert!(
-        matches!(projection, ClassSourceMemberProjection::Projected),
+        matches!(projection, ClassSourceMemberProjection::Projected { .. }),
         "{projection:?}"
     );
     let run_method = report
@@ -479,6 +700,16 @@ fn member_call_without_early_null_check_retains_physical_source() {
     }));
     assert!(child_report.text.contains("this$0"));
     assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+    let serialized = serde_json::to_value(&report).unwrap();
+    assert_eq!(
+        serialized["member_family"]["projection"]["state"],
+        "refused"
+    );
+    assert!(
+        serialized["member_family"]["projection"]
+            .get("derived")
+            .is_none()
+    );
 }
 
 #[test]
@@ -594,6 +825,16 @@ fn projection_budget_stop_keeps_capture_calls_and_both_physical_reports() {
     assert_eq!(stopped.methods.len(), complete.methods.len());
     assert!(!stopped.text.contains("class Member"));
     assert!(child.text.contains("this$0"));
+    let serialized = serde_json::to_value(&stopped).unwrap();
+    assert_eq!(
+        serialized["member_family"]["projection"]["state"],
+        "refused"
+    );
+    assert!(
+        serialized["member_family"]["projection"]
+            .get("derived")
+            .is_none()
+    );
 }
 
 #[test]

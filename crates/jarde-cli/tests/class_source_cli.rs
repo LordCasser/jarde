@@ -719,6 +719,54 @@ fn the_json_mode_is_the_librarys_own_document() {
     );
 }
 
+#[test]
+fn member_family_json_keeps_derived_ranges_and_two_physical_definitions() {
+    let fixture = repository_fixture(
+        "../../openspec/evidence/java-syntax-2026-09-26/named-member-family-stage1/fixture.jar",
+    );
+    let mut texts = Vec::new();
+    for evidence in [None, Some("all")] {
+        let mut args = vec![
+            "class-source",
+            "--input",
+            path_of(&fixture),
+            "--policy",
+            "plain-jar",
+            "--class",
+            "NamedMemberFamilyStage1",
+            "--format",
+            "json",
+        ];
+        if let Some(evidence) = evidence {
+            args.extend(["--evidence", evidence]);
+        }
+        let output = run(&args);
+        assert_eq!(status(&output), EXIT_COMPLETE, "{}", stderr_text(&output));
+        let document = stdout_json(&output);
+        assert_eq!(
+            document["member_family"]["projection"]["state"],
+            "projected"
+        );
+        let text = document["text"].as_str().unwrap();
+        let derived = document["member_family"]["projection"]["derived"]
+            .as_array()
+            .unwrap();
+        assert_eq!(derived.len(), 5);
+        for entry in derived {
+            let start = entry["start"].as_u64().unwrap() as usize;
+            let end = entry["end"].as_u64().unwrap() as usize;
+            assert!(start < end);
+            assert!(text.get(start..end).is_some());
+        }
+        assert_ne!(
+            document["class"],
+            document["member_family"]["child"]["class"]
+        );
+        texts.push(text.to_owned());
+    }
+    assert_eq!(texts[0], texts[1]);
+}
+
 // ---------------------------------------------------------------------------------------------
 // Nothing is disguised, and a member's failure is that member's
 // ---------------------------------------------------------------------------------------------
