@@ -5445,7 +5445,9 @@ fn prefix_method_annotations(text: String, annotations: &MemberAnnotationUses) -
 
 /// The text-only portion of a proved enum projection. The physical member records remain intact.
 pub(crate) struct EnumConstantSourceProjection {
-    group: crate::enum_constants::ProvedOrdinaryEnumConstantGroup,
+    constant_field_indices: Vec<u64>,
+    backing_field_index: u64,
+    implicit_method_indices: Vec<u64>,
     constants_text: String,
     constructor_texts: Vec<(u64, String)>,
     initializer_text: Option<String>,
@@ -5714,10 +5716,138 @@ pub(crate) fn prepare_enum_constant_source_projection(
     budget.charge(CountedBudgetDimension::OutputBytes, output_bytes)?;
 
     Ok(Some(EnumConstantSourceProjection {
-        group: group.clone(),
+        constant_field_indices: group
+            .constants
+            .iter()
+            .map(|constant| constant.field_index)
+            .collect(),
+        backing_field_index: group.backing_field_index,
+        implicit_method_indices: [
+            group.initializer_method_index,
+            group.values_method_index,
+            group.value_of_method_index,
+            group.values_factory_method_index,
+        ]
+        .into(),
         constants_text,
         constructor_texts,
         initializer_text,
+    }))
+}
+
+/// Place the members retained by the proved body group directly inside their owning constant.
+/// The method text is the selected child's same-run member artifact, not parsed class source.
+pub(crate) fn prepare_enum_constant_body_source_projection(
+    declaration: &ClassSourceDeclaration,
+    fields: &[ClassSourceField],
+    methods: &[ClassSourceMethod],
+    group: &crate::enum_constants::ProvedEnumConstantBodyGroup,
+    shape: &crate::facade::PendingEnumConstantBodyGroupShape,
+    budget: &mut Budget,
+) -> Result<Option<EnumConstantSourceProjection>> {
+    if group.constants.len() != 2 || shape.constants.len() != 2 || shape.implicit_members.len() != 6
+    {
+        return Ok(None);
+    }
+    let mut constants_text = String::new();
+    let mut constant_field_indices = Vec::with_capacity(2);
+    for (position, constant) in group.constants.iter().enumerate() {
+        budget.poll()?;
+        let Some(field) = usize::try_from(constant.field_index)
+            .ok()
+            .and_then(|index| fields.get(index))
+        else {
+            return Ok(None);
+        };
+        if shape.constants[position].field_index != constant.field_index
+            || shape.constants[position].constructor_bci != constant.constructor_bci
+            || field.item.index != constant.field_index
+            || field.item.identity.owner != declaration.item.definition
+            || field.declaration.is_none()
+            || !field.markers.is_empty()
+        {
+            return Ok(None);
+        }
+        let (name, aliased) = written_name(&field.item.name.raw().0);
+        if aliased {
+            return Ok(None);
+        }
+        constants_text.push_str("    ");
+        constants_text.push_str(&name);
+        match (&constant.subclass, &constant.methods) {
+            (None, None) => {}
+            (Some(subclass), Some(body_methods)) if !body_methods.is_empty() => {
+                constants_text.push_str(" {\n");
+                for method in body_methods.iter() {
+                    budget.poll()?;
+                    if method.item.identity.owner != *subclass
+                        || method.declaration.is_none()
+                        || !method.markers.is_empty()
+                        || !matches!(method.outcome, ClassSourceOutcome::Recovered { .. })
+                        || !method.text.ends_with("}\n")
+                    {
+                        return Ok(None);
+                    }
+                    constants_text.push_str(&indent(&method.text, 1));
+                }
+                constants_text.push_str("    }");
+            }
+            _ => return Ok(None),
+        }
+        constants_text.push_str(if position + 1 == group.constants.len() {
+            ";\n"
+        } else {
+            ",\n"
+        });
+        constant_field_indices.push(constant.field_index);
+    }
+    let backing_field_index = shape.implicit_members[0].table_index;
+    let backing_field = usize::try_from(backing_field_index)
+        .ok()
+        .and_then(|index| fields.get(index));
+    if shape.implicit_members[0].name != b"$VALUES"
+        || backing_field.is_none_or(|field| {
+            field.item.index != backing_field_index
+                || field.item.identity.owner != declaration.item.definition
+        })
+    {
+        return Ok(None);
+    }
+    let mut implicit_method_indices = Vec::new();
+    for member in shape
+        .implicit_members
+        .iter()
+        .skip(1)
+        .chain(shape.constructors.iter())
+    {
+        let Some(method) = usize::try_from(member.table_index)
+            .ok()
+            .and_then(|index| methods.get(index))
+        else {
+            return Ok(None);
+        };
+        if method.item.index != member.table_index
+            || method.item.identity.owner != declaration.item.definition
+            || method.item.name.raw().0 != member.name
+            || method.item.descriptor.raw().0 != member.descriptor
+        {
+            return Ok(None);
+        }
+        if !implicit_method_indices.contains(&member.table_index) {
+            implicit_method_indices.push(member.table_index);
+        }
+    }
+    budget.charge(
+        CountedBudgetDimension::OutputBytes,
+        u64::try_from(constants_text.len()).unwrap_or(u64::MAX),
+    )?;
+    Ok(Some(EnumConstantSourceProjection {
+        constant_field_indices,
+        backing_field_index,
+        implicit_method_indices,
+        constants_text,
+        constructor_texts: Vec::new(),
+        initializer_text: None,
     }))
 }
 
@@ -5808,12 +5938,10 @@ pub(crate) fn source_text(
     for &field_index in field_order {
         let field = &fields[field_index];
         if enum_projection.is_some_and(|projection| {
-            field.item.index == projection.group.backing_field_index
+            field.item.index == projection.backing_field_index
                 || projection
-                    .group
-                    .constants
-                    .iter()
-                    .any(|constant| constant.field_index == field.item.index)
+                    .constant_field_indices
+                    .contains(&field.item.index)
         }) {
             continue;
         }
@@ -5854,10 +5982,9 @@ pub(crate) fn source_text(
                 out.push_str(constructor_text);
                 continue;
             }
-            if method.item.index == projection.group.initializer_method_index
-                || method.item.index == projection.group.values_method_index
-                || method.item.index == projection.group.value_of_method_index
-                || method.item.index == projection.group.values_factory_method_index
+            if projection
+                .implicit_method_indices
+                .contains(&method.item.index)
             {
                 continue;
             }
