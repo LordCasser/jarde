@@ -529,6 +529,9 @@ pub enum Region {
         prefix: Vec<CanonicalBlockId>,
         /// What the rule proved: the shape, the guarded body and every block the statement owns.
         plan: crate::guard::Plan,
+        /// An internally structured protected body. The enclosing plan remains its sole physical
+        /// owner; this tree supplies lexical structure to the Java writer.
+        body: Option<Box<Region>>,
     },
     /// `try { … } catch (T n) { … }` — a protected range the exception table states, with one clause
     /// per row that names its `catch` type.
@@ -753,7 +756,7 @@ impl Region {
             Self::Fallback { blocks, .. } => blocks.iter().collect(),
             Self::LoopBreak { .. } => Vec::new(),
             Self::LoopContinue { .. } => Vec::new(),
-            Self::Guard { prefix, plan } => {
+            Self::Guard { prefix, plan, .. } => {
                 let mut blocks: Vec<&CanonicalBlockId> = prefix.iter().collect();
                 blocks.extend(plan.owned());
                 blocks
@@ -950,10 +953,13 @@ pub(crate) fn project_string_switches(
                     visit(&mut clause.body, ir, budget)?;
                 }
             }
+            Region::Guard {
+                body: Some(body), ..
+            } => visit(body, ir, budget)?,
             Region::ShortCircuitValue { .. } | Region::TwoExitReturn { .. } => {}
             Region::Straight { .. }
             | Region::Fallback { .. }
-            | Region::Guard { .. }
+            | Region::Guard { body: None, .. }
             | Region::LoopBreak { .. }
             | Region::LoopContinue { .. } => {}
         }
@@ -1682,6 +1688,8 @@ struct Frame {
     /// so the walk that recovers it starts at it, and reading it as the start of *another* `try`
     /// would be reading the statement it is already building (see [`Walker::try_region`]).
     own_try: Option<usize>,
+    /// The one proved catch-all row consumed by an enclosing finally certificate.
+    own_finally: Option<(u32, (u32, u32))>,
     /// Other case-entry nodes of a switch arm. They end this arm before the next case claims them.
     case_entries: Option<BTreeSet<usize>>,
     /// The exact normal-flow target of a `break` from the loop whose body this frame walks.
@@ -1738,6 +1746,7 @@ impl Frame {
             scope: Some(scope),
             own_loop: Some(header),
             own_try: None,
+            own_finally: None,
             case_entries: self.case_entries.clone(),
             loop_exit: exit,
             loop_targets: {
@@ -1770,6 +1779,7 @@ impl Frame {
             // An `if` inside a protected range is still inside that range in either arm. Keep
             // its owner so a throwing arm's exception edges can be matched to this try's catches.
             own_try: self.own_try,
+            own_finally: self.own_finally,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
             loop_targets: self.loop_targets.clone(),
@@ -1787,6 +1797,7 @@ impl Frame {
             scope: self.scope.clone(),
             own_loop: None,
             own_try: self.own_try,
+            own_finally: self.own_finally,
             case_entries: Some(case_entries),
             loop_exit: self.loop_exit,
             loop_targets: self.loop_targets.clone(),
@@ -1807,6 +1818,7 @@ impl Frame {
             scope: self.scope.clone(),
             own_loop: None,
             own_try: Some(start),
+            own_finally: None,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
             loop_targets: self.loop_targets.clone(),
@@ -1984,6 +1996,17 @@ fn one(region: Region, next: Option<CanonicalBlockId>) -> Run {
     (vec![region], next)
 }
 
+fn finally_body_supported(region: &Region) -> bool {
+    match region {
+        Region::Straight { .. } => true,
+        Region::Sequence { regions } => regions.iter().all(finally_body_supported),
+        Region::If {
+            then_arm, else_arm, ..
+        } => finally_body_supported(then_arm) && finally_body_supported(else_arm),
+        _ => false,
+    }
+}
+
 impl Walker<'_> {
     /// The region that starts at one block, and the block the run continues at afterwards.
     ///
@@ -2122,6 +2145,7 @@ impl Walker<'_> {
             // starts in this block, and the walk that recovers it starts there too
             // ([`Self::try_region`]).
             if frame.own_try != Some(node)
+                && frame.own_finally.is_none()
                 && self.starts_catch(&current)
                 && let Some((body, lead, catches, join, tails)) =
                     self.try_region(&current, node, frame)?
@@ -2135,20 +2159,14 @@ impl Walker<'_> {
                 run.extend(tails);
                 return Ok((run, join));
             }
-            if !self.visited.insert(node) {
-                // The block is already part of the recovered structure: the walk has re-entered one
-                // it is building, which is no shape this subset proves. The prefix keeps its
-                // statements; the block itself is quoted.
-                let reason = FallbackReason::Loop {
-                    block_bci: current.bci(),
-                };
-                return Ok(gap(prefix, vec![current.clone()], reason, None));
-            }
-            if let Some(reason) = self.leaving_edge(&current) {
-                // P3 2.4: the two edges this walk has always refused — an exception edge and a
-                // subroutine entry — are where the guarded regions live. A rule that proves one
-                // claims every block the statement owns, and the walk continues after it.
-                match crate::guard::examine(
+            let leaving = self.leaving_edge(&current);
+            // Examine once, before ownership changes. A structured finally consumes the verdict
+            // here; every other guard keeps it for the ordinary branch below.
+            let mut guard_verdict = if leaving.is_some()
+                && frame.own_finally.is_none()
+                && !self.visited.contains(&node)
+            {
+                Some(crate::guard::examine(
                     self.canonical,
                     self.view,
                     self.ssa,
@@ -2158,26 +2176,85 @@ impl Walker<'_> {
                     self.profile,
                     &current,
                     self.budget,
-                )? {
-                    crate::guard::Verdict::Claimed(plan) => {
-                        for block in plan.owned() {
-                            if let Some(node) = self.view.index_of(block) {
-                                self.visited.insert(node);
-                            }
+                )?)
+            } else {
+                None
+            };
+            // A finally certificate with control flow needs the same pre-visited recursive entry
+            // as a named try. Nothing is claimed until the child has covered the exact protected
+            // block set and every edge has been accounted for.
+            if matches!(guard_verdict.as_ref(), Some(crate::guard::Verdict::Claimed(plan))
+                if matches!(plan.shape(), crate::guard::Shape::Finally { structured: true, .. }))
+            {
+                let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
+                    unreachable!("the structured finally verdict was just matched")
+                };
+                if let Some(body) = self.finally_body(&current, &plan, frame)? {
+                    let join = plan.join().cloned();
+                    for block in plan.owned() {
+                        if let Some(node) = self.view.index_of(block) {
+                            self.visited.insert(node);
                         }
-                        let join = plan.join().cloned();
-                        return Ok(one(Region::Guard { prefix, plan }, join));
                     }
-                    crate::guard::Verdict::Refused { pass, refusal, at } => {
-                        let reason = FallbackReason::Guard {
-                            pass,
-                            code: refusal.code(),
-                            at,
-                            message: refusal.message().to_string(),
-                        };
-                        return Ok(gap(prefix, vec![current], reason, None));
+                    return Ok(one(
+                        Region::Guard {
+                            prefix,
+                            plan,
+                            body: Some(Box::new(body)),
+                        },
+                        join,
+                    ));
+                }
+                let reason = FallbackReason::Guard {
+                    pass: None,
+                    code: "jre_guard_finally_copy",
+                    at: current.bci(),
+                    message: "the proved finally body has no complete bounded structure".into(),
+                };
+                return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+            }
+            if !self.visited.insert(node) {
+                // The block is already part of the recovered structure: the walk has re-entered one
+                // it is building, which is no shape this subset proves. The prefix keeps its
+                // statements; the block itself is quoted.
+                let reason = FallbackReason::Loop {
+                    block_bci: current.bci(),
+                };
+                return Ok(gap(prefix, vec![current.clone()], reason, None));
+            }
+            if let Some(reason) = leaving {
+                // P3 2.4: the two edges this walk has always refused — an exception edge and a
+                // subroutine entry — are where the guarded regions live. A rule that proves one
+                // claims every block the statement owns, and the walk continues after it.
+                if let Some(verdict) = guard_verdict.take() {
+                    match verdict {
+                        crate::guard::Verdict::Claimed(plan) => {
+                            for block in plan.owned() {
+                                if let Some(node) = self.view.index_of(block) {
+                                    self.visited.insert(node);
+                                }
+                            }
+                            let join = plan.join().cloned();
+                            return Ok(one(
+                                Region::Guard {
+                                    prefix,
+                                    plan,
+                                    body: None,
+                                },
+                                join,
+                            ));
+                        }
+                        crate::guard::Verdict::Refused { pass, refusal, at } => {
+                            let reason = FallbackReason::Guard {
+                                pass,
+                                code: refusal.code(),
+                                at,
+                                message: refusal.message().to_string(),
+                            };
+                            return Ok(gap(prefix, vec![current], reason, None));
+                        }
+                        crate::guard::Verdict::NotGuarded => {}
                     }
-                    crate::guard::Verdict::NotGuarded => {}
                 }
                 // P3 2.7: a block this walk reached as the protected range of a `try`, whose every
                 // exception edge is one a named `catch` row of the table accounts for, is written
@@ -2201,6 +2278,9 @@ impl Walker<'_> {
                 // must quote the block for. The handler it named is named by the uncovered-blocks
                 // scan below, like any other live block no statement reached.
                 if !self.leaves_only_through_dead_edges(&current)
+                    && frame
+                        .own_finally
+                        .is_none_or(|row| !self.finally_edges_accounted(&current, row))
                     && (frame.own_try.is_none() || !self.edges_accounted_by_catches(&current))
                 {
                     return Ok(gap(prefix, vec![current], reason, None));
@@ -2748,6 +2828,147 @@ impl Walker<'_> {
             block = next;
         }
         block
+    }
+
+    fn finally_body(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let crate::guard::Shape::Finally {
+            row_ordinal, save, ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        let expected: BTreeSet<usize> = plan
+            .owned()
+            .iter()
+            .filter_map(|block| {
+                self.ssa
+                    .block(block)
+                    .is_some_and(|names| {
+                        names.instructions().iter().any(|instruction| {
+                            plan.body().0 <= instruction.bci() && instruction.bci() < plan.body().1
+                        })
+                    })
+                    .then(|| self.view.index_of(block))
+                    .flatten()
+            })
+            .collect();
+        let Some(start_node) = self.view.index_of(start) else {
+            return Ok(None);
+        };
+        if !expected.contains(&start_node)
+            || expected.iter().any(|node| {
+                self.visited.contains(node)
+                    || outer
+                        .scope
+                        .as_ref()
+                        .is_some_and(|scope| !scope.contains(node))
+            })
+            || expected.iter().any(|node| {
+                *node != start_node
+                    && self
+                        .view
+                        .predecessors(*node)
+                        .iter()
+                        .any(|parent| !expected.contains(parent))
+            })
+        {
+            return Ok(None);
+        }
+        let previous = self.visited.clone();
+        let mut frame = outer.clone();
+        frame.scope = Some(expected.clone());
+        frame.boundary = None;
+        frame.own_try = None;
+        frame.own_finally = Some((*row_ordinal, plan.body()));
+        let walked = self.region_at(start, &frame);
+        let (regions, next) = match walked {
+            Ok(result) => result,
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        let body = if regions.len() == 1 {
+            regions.into_iter().next().unwrap()
+        } else {
+            Region::Sequence { regions }
+        };
+        let blocks = body.blocks();
+        let actual: BTreeSet<usize> = blocks
+            .iter()
+            .filter_map(|block| self.view.index_of(block))
+            .collect();
+        let save_count = blocks
+            .iter()
+            .filter(|block| {
+                self.ssa.block(block).is_some_and(|names| {
+                    names
+                        .instructions()
+                        .iter()
+                        .any(|instruction| instruction.bci() == *save)
+                })
+            })
+            .count();
+        if next.is_some()
+            || !finally_body_supported(&body)
+            || actual != expected
+            || actual.len() != blocks.len()
+            || save_count != 1
+            || self
+                .visited
+                .difference(&previous)
+                .copied()
+                .collect::<BTreeSet<_>>()
+                != expected
+        {
+            self.visited = previous;
+            return Ok(None);
+        }
+        Ok(Some(body))
+    }
+
+    fn finally_edges_accounted(
+        &self,
+        block: &CanonicalBlockId,
+        (ordinal, span): (u32, (u32, u32)),
+    ) -> bool {
+        let handler = self
+            .canonical
+            .handler_rows()
+            .iter()
+            .find(|row| row.ordinal() == ordinal)
+            .and_then(|row| row.handler());
+        let mut accounted = false;
+        for edge in self
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == block)
+        {
+            match edge.kind() {
+                CanonicalEdgeKind::Exception { handler_ordinal } => {
+                    if handler_ordinal != ordinal
+                        || handler != Some(edge.to())
+                        || !self.ssa.block(block).is_some_and(|names| {
+                            names.instructions().iter().any(|instruction| {
+                                span.0 <= instruction.bci() && instruction.bci() < span.1
+                            })
+                        })
+                    {
+                        return false;
+                    }
+                    accounted = true;
+                }
+                CanonicalEdgeKind::Call { .. } => return false,
+                CanonicalEdgeKind::Normal | CanonicalEdgeKind::Return { .. } => {}
+            }
+        }
+        accounted
     }
 
     /// Whether a block leaves through an edge the projection does not carry.

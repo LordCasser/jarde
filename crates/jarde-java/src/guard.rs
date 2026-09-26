@@ -179,6 +179,9 @@ pub enum Shape {
     Finally {
         normal_cleanup: (u32, u32),
         returns: u32,
+        save: u32,
+        row_ordinal: u32,
+        structured: bool,
     },
 }
 
@@ -3063,8 +3066,8 @@ fn resources(
                 && facts.bcis((start, proof.protected.0)).iter().all(|bci| {
                     facts.block_of(*bci) == Some(current) && facts.covering(*bci).is_empty()
                 })
-                && facts.statement_free(proof.protected)
             {
+                let structured = !facts.statement_free(proof.protected);
                 let return_end = facts.span_end(proof.saved_return.1);
                 let handler_end = facts.span_end(proof.primary.2);
                 let pieces = [
@@ -3090,6 +3093,9 @@ fn resources(
                         shape: Shape::Finally {
                             normal_cleanup: proof.normal_cleanup,
                             returns: proof.saved_return.1,
+                            save: proof.saved_return.0,
+                            row_ordinal: proof.row_ordinal,
+                            structured,
                         },
                         lead: (start, proof.protected.0),
                         body: proof.protected,

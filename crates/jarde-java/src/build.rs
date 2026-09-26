@@ -1162,10 +1162,13 @@ fn short_circuit_local_booleans(
                 pending.push(body);
                 pending.extend(catches.iter().map(|clause| clause.body()));
             }
+            Region::Guard {
+                body: Some(body), ..
+            } => pending.push(body),
             Region::Straight { .. }
             | Region::TwoExitReturn { .. }
             | Region::Fallback { .. }
-            | Region::Guard { .. }
+            | Region::Guard { body: None, .. }
             | Region::LoopBreak { .. }
             | Region::LoopContinue { .. } => {}
         }
@@ -1513,8 +1516,11 @@ fn collect_guards(region: &Region, visit: &mut impl FnMut(&Region)) {
                 collect_guards(clause.body(), visit);
             }
         }
+        Region::Guard {
+            body: Some(body), ..
+        } => collect_guards(body, visit),
         Region::ShortCircuitValue { .. } | Region::TwoExitReturn { .. } => {}
-        Region::Guard { .. }
+        Region::Guard { body: None, .. }
         | Region::Straight { .. }
         | Region::Fallback { .. }
         | Region::LoopBreak { .. }
@@ -2095,6 +2101,12 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
                 );
             }
         }
+        Region::Guard {
+            body: Some(body), ..
+        } => {
+            out.tries.insert(path.clone());
+            collect_paths(body, &child(path, 0), out);
+        }
         Region::Sequence { regions } => {
             for (index, region) in regions.iter().enumerate() {
                 collect_paths(
@@ -2108,7 +2120,7 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
         | Region::TwoExitReturn { .. }
         | Region::Fallback { .. }
         | Region::ShortCircuitValue { .. }
-        | Region::Guard { .. }
+        | Region::Guard { body: None, .. }
         | Region::LoopBreak { .. }
         | Region::LoopContinue { .. } => {}
     }
@@ -2242,7 +2254,7 @@ fn own_blocks(region: &Region) -> Vec<CanonicalBlockId> {
         // A guarded statement writes its own header and the blocks of its body; every other block it
         // claims — the closes, the handlers, the later resources' initialisations — produces no
         // statement of its own, which is exactly what keeps a close from running twice.
-        Region::Guard { prefix, plan } => {
+        Region::Guard { prefix, plan, .. } => {
             let mut blocks = prefix.clone();
             blocks.extend(plan.owned().iter().cloned());
             blocks
@@ -2297,10 +2309,13 @@ fn unaccounted_region_bcis(region: &Region) -> Vec<u32> {
                 bcis.extend(unaccounted_region_bcis(clause.body()));
             }
         }
+        Region::Guard {
+            body: Some(body), ..
+        } => bcis.extend(unaccounted_region_bcis(body)),
         Region::Fallback { reason, .. } => bcis.extend_from_slice(reason.unaccounted()),
         Region::ShortCircuitValue { .. } | Region::TwoExitReturn { .. } => {}
         Region::Straight { .. }
-        | Region::Guard { .. }
+        | Region::Guard { body: None, .. }
         | Region::LoopBreak { .. }
         | Region::LoopContinue { .. } => {}
     }
@@ -4588,6 +4603,8 @@ pub(crate) fn build(
         loop_headers: Vec::new(),
         labeled_loop_headers: BTreeSet::new(),
         switch_depth: 0,
+        finally_span: None,
+        finally_return: None,
     };
     if let Some(reason) = builder.declarations.incomplete.get(&Vec::new()).cloned() {
         // An access outside every claimed region has no narrower complete closure. Refuse the
@@ -4877,6 +4894,37 @@ struct Builder<'a> {
     loop_headers: Vec<u32>,
     labeled_loop_headers: BTreeSet<u32>,
     /// A switch intercepts an unlabelled break, so a loop break from one of its arms is labeled.
+    switch_depth: usize,
+    /// Physical slice of the protected body while its internal Region is written.
+    finally_span: Option<(u32, u32)>,
+    /// The unique save instruction and physical return of that bounded body.
+    finally_return: Option<(u32, u32)>,
+}
+
+/// State that a speculative structured finally body may change before its enclosing Try exists.
+struct FinallyCheckpoint {
+    stmts: Vec<Stmt>,
+    declared: BTreeSet<LocalVariable>,
+    chained_firsts: BTreeMap<u32, (LocalVariable, String)>,
+    undeclared: BTreeSet<String>,
+    statements: usize,
+    ragged: bool,
+    lambdas: Vec<LambdaSite>,
+    array_constructor_sites: Vec<ArrayConstructorSite>,
+    lambda_params: BTreeSet<String>,
+    accessors: Vec<AccessorSite>,
+    deferred: Vec<(ValueId, u32)>,
+    bindings: BTreeMap<ValueId, Binding>,
+    binding_refused: BTreeSet<ValueId>,
+    synthetic_names: BTreeSet<String>,
+    lambdas_presented: u64,
+    lambda_refusals: Vec<Gap>,
+    accessors_presented: u64,
+    accessor_refusals: Vec<Gap>,
+    clause_parameters: BTreeSet<u32>,
+    settled: BTreeSet<u32>,
+    loop_headers: Vec<u32>,
+    labeled_loop_headers: BTreeSet<u32>,
     switch_depth: usize,
 }
 
@@ -6852,6 +6900,62 @@ fn compound_origin(store: u32, duplicate: u32, read: u32, add: u32) -> OriginSet
 }
 
 impl Builder<'_> {
+    fn finally_checkpoint(&self) -> FinallyCheckpoint {
+        FinallyCheckpoint {
+            stmts: self.stmts.clone(),
+            declared: self.declared.clone(),
+            chained_firsts: self.chained_firsts.clone(),
+            undeclared: self.undeclared.clone(),
+            statements: self.statements,
+            ragged: self.ragged,
+            lambdas: self.lambdas.clone(),
+            array_constructor_sites: self.array_constructor_sites.clone(),
+            lambda_params: self.lambda_params.clone(),
+            accessors: self.accessors.clone(),
+            deferred: self.deferred.clone(),
+            bindings: self.bindings.clone(),
+            binding_refused: self.binding_refused.clone(),
+            synthetic_names: self.synthetic_names.clone(),
+            lambdas_presented: self.lambdas_presented,
+            lambda_refusals: self.lambda_refusals.clone(),
+            accessors_presented: self.accessors_presented,
+            accessor_refusals: self.accessor_refusals.clone(),
+            clause_parameters: self.clause_parameters.clone(),
+            settled: self.settled.clone(),
+            loop_headers: self.loop_headers.clone(),
+            labeled_loop_headers: self.labeled_loop_headers.clone(),
+            switch_depth: self.switch_depth,
+        }
+    }
+
+    fn restore_finally(&mut self, checkpoint: FinallyCheckpoint) {
+        self.stmts = checkpoint.stmts;
+        self.declared = checkpoint.declared;
+        self.chained_firsts = checkpoint.chained_firsts;
+        self.undeclared = checkpoint.undeclared;
+        self.statements = checkpoint.statements;
+        self.ragged = checkpoint.ragged;
+        self.lambdas = checkpoint.lambdas;
+        self.array_constructor_sites = checkpoint.array_constructor_sites;
+        self.lambda_params = checkpoint.lambda_params;
+        self.accessors = checkpoint.accessors;
+        self.deferred = checkpoint.deferred;
+        self.bindings = checkpoint.bindings;
+        self.binding_refused = checkpoint.binding_refused;
+        self.synthetic_names = checkpoint.synthetic_names;
+        self.lambdas_presented = checkpoint.lambdas_presented;
+        self.lambda_refusals = checkpoint.lambda_refusals;
+        self.accessors_presented = checkpoint.accessors_presented;
+        self.accessor_refusals = checkpoint.accessor_refusals;
+        self.clause_parameters = checkpoint.clause_parameters;
+        self.settled = checkpoint.settled;
+        self.loop_headers = checkpoint.loop_headers;
+        self.labeled_loop_headers = checkpoint.labeled_loop_headers;
+        self.switch_depth = checkpoint.switch_depth;
+        self.finally_span = None;
+        self.finally_return = None;
+    }
+
     /// Build the entire two-return statement before any of its blocks are suppressed.
     fn build_two_exit_return(
         &mut self,
@@ -7367,6 +7471,9 @@ impl Builder<'_> {
                     self.prepare_conditional_region(clause.body())?;
                 }
             }
+            Region::Guard {
+                body: Some(body), ..
+            } => self.prepare_conditional_region(body)?,
             Region::ShortCircuitValue { consumer, .. } => {
                 if let ShortCircuitValueAttempt::Proved(proof) = prove_short_circuit_value(
                     region,
@@ -7405,7 +7512,7 @@ impl Builder<'_> {
             },
             Region::Straight { .. }
             | Region::Fallback { .. }
-            | Region::Guard { .. }
+            | Region::Guard { body: None, .. }
             | Region::LoopBreak { .. }
             | Region::LoopContinue { .. } => {}
         }
@@ -8330,6 +8437,8 @@ impl Builder<'_> {
             let at = bcis.first().copied().unwrap_or(0);
             return self.fallback(bcis, &reason, at);
         }
+        let mut finally_checkpoint = matches!(region, Region::Guard { body: Some(_), .. })
+            .then(|| self.finally_checkpoint());
         self.declare_at(path)?;
         match region {
             Region::Sequence { regions } => {
@@ -8932,7 +9041,11 @@ impl Builder<'_> {
                     OriginSet::new(Origin::direct(*source_bci)),
                 ))
             }
-            Region::Guard { prefix, plan } => {
+            Region::Guard {
+                prefix,
+                plan,
+                body: structured_body,
+            } => {
                 // The walk wrote nothing of the statement's own header: the first resource's
                 // initialisation (or the monitor's entry) is the last block it reached, and the
                 // region owns it now.
@@ -9030,25 +9143,52 @@ impl Builder<'_> {
                     guard::Shape::Finally {
                         normal_cleanup,
                         returns,
+                        save,
+                        ..
                     } => {
-                        // The guard has already rejected every control transfer inside this flat
-                        // range. The saved local is written here before cleanup can run.
-                        let mut body = self.body_range(plan.body())?;
-                        let return_stmt = match self.guarded_return(*returns) {
-                            Ok(statement) => statement,
-                            Err(reason) => {
-                                let bcis = self.region_quote(region, *returns);
-                                return self.fallback(bcis, &reason, *returns);
+                        let body = if let Some(inner) = structured_body {
+                            let outer = std::mem::take(&mut self.stmts);
+                            self.finally_span = Some(plan.body());
+                            self.finally_return = Some((*save, *returns));
+                            let walked = self.region(inner, &child(path, 0));
+                            self.finally_span = None;
+                            self.finally_return = None;
+                            let body = std::mem::replace(&mut self.stmts, outer);
+                            if let Err(stop) = walked {
+                                self.restore_finally(
+                                    finally_checkpoint
+                                        .take()
+                                        .expect("structured finally checkpoint"),
+                                );
+                                return Err(stop);
+                            }
+                            body
+                        } else {
+                            let mut body = self.body_range(plan.body())?;
+                            let return_stmt = match self.guarded_return(*returns) {
+                                Ok(statement) => statement,
+                                Err(reason) => {
+                                    let bcis = self.region_quote(region, *returns);
+                                    return self.fallback(bcis, &reason, *returns);
+                                }
+                            };
+                            body.push(return_stmt);
+                            body
+                        };
+                        let finally_body = match self.body_range(*normal_cleanup) {
+                            Ok(body) => body,
+                            Err(stop) => {
+                                if let Some(checkpoint) = finally_checkpoint.take() {
+                                    self.restore_finally(checkpoint);
+                                }
+                                return Err(stop);
                             }
                         };
-                        body.push(return_stmt);
-                        let finally_body = self.body_range(*normal_cleanup)?;
-                        if body
-                            .iter()
-                            .chain(&finally_body)
-                            .any(|statement| matches!(statement.kind, StmtKind::Fallback { .. }))
-                        {
+                        if body.iter().chain(&finally_body).any(statement_has_fallback) {
                             let bcis = self.region_quote(region, *returns);
+                            if let Some(checkpoint) = finally_checkpoint.take() {
+                                self.restore_finally(checkpoint);
+                            }
                             return self.fallback(
                                 bcis,
                                 "the proved finally contains an instruction this Java writer cannot state",
@@ -9059,7 +9199,7 @@ impl Builder<'_> {
                         for bci in plan.facts() {
                             origin = origin.plus_derived(Origin::derived(*bci));
                         }
-                        self.push(Stmt::new(
+                        let statement = Stmt::new(
                             StmtKind::Try {
                                 resources: Vec::new(),
                                 catches: Vec::new(),
@@ -9067,7 +9207,34 @@ impl Builder<'_> {
                                 finally_body: Some(finally_body),
                             },
                             origin,
-                        ))
+                        );
+                        if structured_body.is_some()
+                            && (undeclared_local(&statement, &self.undeclared).is_some()
+                                || finally_checkpoint.as_ref().is_some_and(|checkpoint| {
+                                    self.stmts[checkpoint.stmts.len()..]
+                                        .iter()
+                                        .any(statement_has_fallback)
+                                }))
+                        {
+                            let bcis = self.region_quote(region, *returns);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("structured finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the proved finally has an unpresented declaration or lead",
+                                *returns,
+                            );
+                        }
+                        let pushed = self.push(statement);
+                        if pushed.is_err()
+                            && let Some(checkpoint) = finally_checkpoint.take()
+                        {
+                            self.restore_finally(checkpoint);
+                        }
+                        pushed
                     }
                 }
             }
@@ -11026,6 +11193,16 @@ impl Builder<'_> {
         for instruction in &instructions {
             self.instruction(instruction)?;
         }
+        if let Some((save, return_bci)) = self.finally_return
+            && instructions
+                .iter()
+                .any(|instruction| instruction.bci() == save)
+        {
+            match self.guarded_return(return_bci) {
+                Ok(statement) => self.push(statement)?,
+                Err(reason) => self.fallback(vec![save, return_bci], reason, return_bci)?,
+            }
+        }
         Ok(())
     }
 
@@ -11723,6 +11900,12 @@ impl Builder<'_> {
     fn instruction(&mut self, instruction: &SsaInstruction) -> Result<(), StopReason> {
         poll(self.budget, Some(instruction.bci()))?;
         let at = instruction.bci();
+        if self
+            .finally_span
+            .is_some_and(|span| at < span.0 || at >= span.1)
+        {
+            return Ok(());
+        }
         if let Some(rejection) = self.binding_rejections.get(&at).cloned() {
             return self.reject_binding(rejection);
         }
@@ -18082,6 +18265,49 @@ fn replace_wrapped_array_read(expr: &mut Expr, bci: u32, name: &str, ty: &Type) 
 ///
 /// A `Declare`'s own name is *not* collected: the statement is the declaration, and the walk is
 /// asked about the names a statement **reads**.
+fn statement_has_fallback(stmt: &Stmt) -> bool {
+    match &stmt.kind {
+        StmtKind::Fallback { .. } => true,
+        StmtKind::If {
+            then_body,
+            else_body,
+            ..
+        } => then_body
+            .iter()
+            .chain(else_body)
+            .any(statement_has_fallback),
+        StmtKind::While { body, .. }
+        | StmtKind::DoWhile { body, .. }
+        | StmtKind::ForEach { body, .. }
+        | StmtKind::Synchronized { body, .. } => body.iter().any(statement_has_fallback),
+        StmtKind::For {
+            init, update, body, ..
+        } => {
+            statement_has_fallback(init)
+                || statement_has_fallback(update)
+                || body.iter().any(statement_has_fallback)
+        }
+        StmtKind::Switch { arms, .. } => arms
+            .iter()
+            .any(|arm| arm.body.iter().any(statement_has_fallback)),
+        StmtKind::Try {
+            body,
+            catches,
+            finally_body,
+            ..
+        } => {
+            body.iter().any(statement_has_fallback)
+                || catches
+                    .iter()
+                    .any(|clause| clause.body.iter().any(statement_has_fallback))
+                || finally_body
+                    .as_ref()
+                    .is_some_and(|body| body.iter().any(statement_has_fallback))
+        }
+        _ => false,
+    }
+}
+
 fn stated_by_statement(stmt: &Stmt, names: &mut Vec<String>, bcis: &mut Vec<u32>) {
     bcis.extend(stmt.origin.bcis());
     match &stmt.kind {
