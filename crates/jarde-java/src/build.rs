@@ -69,8 +69,7 @@ use crate::field;
 use crate::guard;
 use crate::init;
 use crate::lambda::{
-    self, DynamicCheck, ImplementationConversion, LambdaCapture, LambdaForm, LambdaRecord,
-    LambdaRefusal, Reach, Refusal,
+    self, LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, Reach, Refusal, TypeConversion,
 };
 use crate::names::{LocalVariable, NameTable, RenderedName, is_java_identifier};
 use crate::pass::{LAMBDA, Precondition, RecoveryProfile};
@@ -15302,11 +15301,11 @@ impl Builder<'_> {
                 .iter()
                 .map(|adaptation| {
                     1_u64
-                        + u64::from(adaptation.dynamic_check == DynamicCheck::CheckCast)
-                        + u64::from(
-                            adaptation.implementation_conversion
-                                == ImplementationConversion::WidenToObject,
-                        )
+                        + u64::from(adaptation.sam_to_dynamic == TypeConversion::CheckCast)
+                        + u64::from(matches!(
+                            adaptation.dynamic_to_implementation,
+                            TypeConversion::CheckCast | TypeConversion::WidenToObject
+                        ))
                 })
                 .sum::<u64>();
             poll(self.budget, Some(bci)).map_err(ValueRenderFailure::Stop)?;
@@ -15326,7 +15325,7 @@ impl Builder<'_> {
                 let name = self.param_name(index);
                 let mut value = Expr::new(ExprKind::Local(name.clone()), site_origin.clone())
                     .presenting(adaptation.sam.clone());
-                if adaptation.dynamic_check == DynamicCheck::CheckCast {
+                if adaptation.sam_to_dynamic == TypeConversion::CheckCast {
                     value = Expr::new(
                         ExprKind::Cast {
                             ty: adaptation.dynamic.clone(),
@@ -15335,7 +15334,10 @@ impl Builder<'_> {
                         site_origin.clone(),
                     );
                 }
-                if adaptation.implementation_conversion == ImplementationConversion::WidenToObject {
+                if matches!(
+                    adaptation.dynamic_to_implementation,
+                    TypeConversion::CheckCast | TypeConversion::WidenToObject
+                ) {
                     value = Expr::new(
                         ExprKind::Cast {
                             ty: adaptation.implementation.clone(),

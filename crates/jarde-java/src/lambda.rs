@@ -46,16 +46,16 @@
 //! 5. the site's descriptor, the SAM method type and the instantiated method type all parse;
 //! 6. the implementation handle is an invocation (a field handle is not one this layer presents);
 //! 7. **the arity lines up**: the operands the handle is given — the site's captures followed by the
-//!    SAM's own parameters — are exactly its receiver plus its parameters, and each aligned position
-//!    has the same descriptor shape. This is the check that keeps a site whose implementation
-//!    disagrees with its SAM from being printed as a lambda that would not mean the same thing.
+//!    SAM's own parameters — are exactly its receiver plus its parameters. Captures must match the
+//!    frame, site and implementation types exactly; each SAM parameter then proves both descriptor
+//!    edges independently. This is the check that keeps an unproved implementation/SAM pairing
+//!    from being printed as a lambda that would not mean the same thing.
 //!
 //! The plan retains the erased SAM, instantiated and implementation parameter types separately.
-//! It proves only the conversions this layer can state without a class hierarchy: an erased
-//! `Object` checked to an instantiated reference/array type, then an identical implementation type
-//! or an upcast to `Object`. Returns use the implementation-to-erased-SAM direction and admit only
-//! identity or a reference upcast to `Object`; the instantiated return remains evidence, not a new
-//! check. Unknown reference relations and other conversions are refused.
+//! It proves each edge from those descriptors: identity, an `Object` check/upcast, or boxing and
+//! unboxing between one primitive and its unique wrapper. Parameters flow SAM → instantiated →
+//! implementation; returns flow implementation → instantiated → SAM. Unknown reference relations
+//! and other conversions are refused.
 //!
 //! # The two presentations, and what decides which is written
 //!
@@ -237,9 +237,9 @@ pub(crate) struct Plan {
 
 /// The bounded conversions proved from one site's bootstrap descriptors.
 ///
-/// The writer consumes these facts directly: each SAM argument names the erased declaration,
-/// dynamic check and implementation argument type in order, while the return records the actual
-/// implementation-to-erased-SAM conversion. No class hierarchy or generic signature is inferred.
+/// Each SAM argument names the erased declaration, instantiated type and implementation argument,
+/// plus both conversions in order. Returns record both conversions in the reverse direction. No
+/// class hierarchy or generic signature is inferred.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct AdaptationPlan {
     pub(crate) parameters: Vec<ParameterAdaptation>,
@@ -254,42 +254,39 @@ pub(crate) struct ParameterAdaptation {
     pub(crate) dynamic: Type,
     /// The implementation parameter (or receiver) reached by this SAM argument.
     pub(crate) implementation: Type,
-    pub(crate) dynamic_check: DynamicCheck,
-    pub(crate) implementation_conversion: ImplementationConversion,
+    pub(crate) sam_to_dynamic: TypeConversion,
+    pub(crate) dynamic_to_implementation: TypeConversion,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum DynamicCheck {
+pub(crate) enum TypeConversion {
     Identity,
-    /// A runtime reference cast from erased `Object` to the instantiated reference/array type.
+    /// A runtime reference cast from `Object` to the stated reference/array type.
     CheckCast,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum ImplementationConversion {
-    Identity,
-    /// A statically known reference upcast from the instantiated type to implementation `Object`.
+    /// A statically known reference upcast to `Object`.
     WidenToObject,
+    /// Java's primitive-to-corresponding-wrapper conversion.
+    BoxPrimitive,
+    /// Java's corresponding-wrapper-to-primitive conversion.
+    UnboxPrimitive,
+    /// The implementation result is discarded by a void instantiated/SAM return.
+    DropToVoid,
+    /// Both ends of this edge are void.
+    Void,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct ReturnAdaptation {
     /// Erased SAM return type; `None` means `void`.
     pub(crate) sam: Option<Type>,
-    /// Instantiated return type, retained as bootstrap evidence but never used to invent a check.
+    /// Instantiated return type, retained as the middle point of the return proof.
     pub(crate) dynamic: Option<Type>,
     /// The implementation return type; constructors produce their owner despite descriptor `V`.
     pub(crate) implementation: Option<Type>,
-    pub(crate) conversion: ReturnConversion,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum ReturnConversion {
-    Void,
-    Identity,
-    WidenToObject,
-    /// The erased SAM is void, so the implementation's result is discarded.
-    DropToVoid,
+    /// Proven implementation → instantiated conversion.
+    pub(crate) implementation_to_dynamic: TypeConversion,
+    /// Proven instantiated → erased SAM conversion.
+    pub(crate) dynamic_to_sam: TypeConversion,
 }
 
 /// Why one site was not presented.
@@ -401,9 +398,8 @@ impl LambdaRefusal {
 ///
 /// `captures` are the values the site reads, in the order it reads them: each one's BCI (as far as
 /// the run states one) and the type the frames state for it — `None` when this run states no type.
-/// The types are what the arity and shape checks align against the implementation handle, so a site
-/// whose arguments are not the shape the handle needs is refused here rather than written, and a
-/// site whose captures are not *readable from this run's facts* is refused as well.
+/// Capture types must agree exactly with the site and implementation descriptors. A site whose
+/// captures are not *readable from this run's facts* is refused as well.
 pub(crate) fn plan(
     site: &DynamicSite,
     table: &[BootstrapMethodFacts],
@@ -663,7 +659,7 @@ pub(crate) fn plan(
     // The operands the handle is *given*: the values the site captures, then the SAM's parameters.
     // They have to be exactly the receiver the handle takes plus the parameters it declares.
     let given = captures.len() + sam_params.len();
-    if given != implementation_params.len() + receiver {
+    if !implementation_arity_matches(given, implementation_params.len(), receiver) {
         return Ok(Verdict {
             evidence,
             outcome: Err(Refusal::shape(
@@ -713,29 +709,6 @@ pub(crate) fn plan(
             });
         }
     }
-    let mut bound: Vec<Type> = capture_types;
-    bound.extend(instantiated_params.iter().cloned());
-    if let Some((position, (bound, expected))) = bound
-        .iter()
-        .zip(expected.iter())
-        .enumerate()
-        .find(|(_, (bound, expected))| shape(bound) != shape(expected))
-    {
-        return Ok(Verdict {
-            evidence,
-            outcome: Err(Refusal::shape(
-                "jre_lambda_sam_types",
-                format!(
-                    "the implementation `{}.{}{}` takes `{}` at parameter {position} and the site binds `{}` there, which is not the same shape",
-                    source_name(&implementation.owner),
-                    implementation.name,
-                    implementation.descriptor,
-                    expected.spell(),
-                    bound.spell(),
-                ),
-            )),
-        });
-    }
     let adaptation = match adaptation_plan(
         &sam_params,
         &instantiated_params,
@@ -753,7 +726,7 @@ pub(crate) fn plan(
                 outcome: Err(Refusal::shape(
                     "jre_lambda_sam_types",
                     format!(
-                        "the erased SAM `{sam}`, instantiated type `{instantiated}` and implementation `{}.{}{}` require a parameter or return conversion outside the proven identity, Object check, or Object upcast cases",
+                        "the erased SAM `{sam}`, instantiated type `{instantiated}` and implementation `{}.{}{}` require a parameter or return conversion outside identity, Object check/upcast, or the matching primitive-wrapper pair",
                         source_name(&implementation.owner),
                         implementation.name,
                         implementation.descriptor,
@@ -762,13 +735,13 @@ pub(crate) fn plan(
             });
         }
     };
-    // A method reference has no expression slot where an erased SAM argument can first receive its
-    // dynamic check and then its implementation conversion. Keep it only when those stages are all
-    // identity. A bound receiver also carries a creation-time null check; converting that reference
-    // to a lambda would defer the check until invocation, so refuse that adaptation shape.
+    // A method reference has no expression slot where an erased SAM argument can receive its
+    // conversions. Keep it only when both stages are identity. A bound receiver also carries a
+    // creation-time null check; converting that reference to a lambda would defer the check until
+    // invocation, so refuse that adaptation shape.
     let parameter_adaptation = adaptation.parameters.iter().any(|parameter| {
-        parameter.dynamic_check != DynamicCheck::Identity
-            || parameter.implementation_conversion != ImplementationConversion::Identity
+        parameter.sam_to_dynamic != TypeConversion::Identity
+            || parameter.dynamic_to_implementation != TypeConversion::Identity
     });
     let reference_shape = receiver == captures.len() && !implementation.is_generated_body();
     if reference_shape
@@ -954,31 +927,6 @@ fn kind_word(kind: u8) -> &'static str {
     }
 }
 
-/// The shape one type has on the operand stack, for the capture-prefix alignment check.
-///
-/// The int-shaped primitives are one shape: the bytecode holds a `boolean`, a `byte`, a `char`, a
-/// `short` and an `int` in the same slot and verifies them alike. References share a stack shape;
-/// SAM argument conversions are separately constrained by [`adaptation_plan`].
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum Shape {
-    Int,
-    Long,
-    Float,
-    Double,
-    Reference,
-}
-
-/// The stack shape of one type.
-fn shape(ty: &Type) -> Shape {
-    match ty {
-        Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int => Shape::Int,
-        Type::Long => Shape::Long,
-        Type::Float => Shape::Float,
-        Type::Double => Shape::Double,
-        Type::Reference(_) => Shape::Reference,
-    }
-}
-
 /// Prove only conversions whose direction and type follow from the descriptors themselves.
 ///
 /// The `implementation` vector includes the receiver as its first operand when the handle takes
@@ -1025,26 +973,15 @@ fn adaptation_plan(
             return Err(AdaptationFailure::Refusal);
         }
 
-        let dynamic_check = if sam == dynamic {
-            DynamicCheck::Identity
-        } else if is_object(sam) && is_reference(dynamic) {
-            DynamicCheck::CheckCast
-        } else {
-            return Err(AdaptationFailure::Refusal);
-        };
-        let implementation_conversion = if dynamic == &implementation_type {
-            ImplementationConversion::Identity
-        } else if is_reference(dynamic) && is_object(&implementation_type) {
-            ImplementationConversion::WidenToObject
-        } else {
-            return Err(AdaptationFailure::Refusal);
-        };
+        let sam_to_dynamic = type_conversion(sam, dynamic).ok_or(AdaptationFailure::Refusal)?;
+        let dynamic_to_implementation =
+            type_conversion(dynamic, &implementation_type).ok_or(AdaptationFailure::Refusal)?;
         parameters.push(ParameterAdaptation {
             sam: sam.clone(),
             dynamic: dynamic.clone(),
             implementation: implementation_type,
-            dynamic_check,
-            implementation_conversion,
+            sam_to_dynamic,
+            dynamic_to_implementation,
         });
     }
 
@@ -1053,16 +990,21 @@ fn adaptation_plan(
     } else {
         implementation_return
     };
-    let conversion = match (&implementation_return, &sam_return) {
-        (None, None) => ReturnConversion::Void,
-        (Some(_), None) => ReturnConversion::DropToVoid,
-        (Some(implementation), Some(sam)) if implementation == sam => ReturnConversion::Identity,
-        (Some(implementation), Some(sam)) if is_reference(implementation) && is_object(sam) => {
-            ReturnConversion::WidenToObject
+    let implementation_to_dynamic = match (&implementation_return, &dynamic_return) {
+        (None, None) => TypeConversion::Void,
+        (Some(_), None) if sam_return.is_none() => TypeConversion::DropToVoid,
+        (Some(implementation), Some(dynamic)) => {
+            type_conversion(implementation, dynamic).ok_or(AdaptationFailure::Refusal)?
         }
-        _ => {
-            return Err(AdaptationFailure::Refusal);
+        _ => return Err(AdaptationFailure::Refusal),
+    };
+    let dynamic_to_sam = match (&dynamic_return, &sam_return) {
+        (None, None) => TypeConversion::Void,
+        (Some(_), None) => TypeConversion::DropToVoid,
+        (Some(dynamic), Some(sam)) => {
+            type_conversion(dynamic, sam).ok_or(AdaptationFailure::Refusal)?
         }
+        _ => return Err(AdaptationFailure::Refusal),
     };
 
     Ok(AdaptationPlan {
@@ -1071,8 +1013,53 @@ fn adaptation_plan(
             sam: sam_return,
             dynamic: dynamic_return,
             implementation: implementation_return,
-            conversion,
+            implementation_to_dynamic,
+            dynamic_to_sam,
         },
+    })
+}
+
+/// Prove one descriptor-to-descriptor edge without resolving arbitrary class inheritance.
+fn type_conversion(from: &Type, to: &Type) -> Option<TypeConversion> {
+    if from == to {
+        Some(TypeConversion::Identity)
+    } else if is_object(from) && is_reference(to) {
+        Some(TypeConversion::CheckCast)
+    } else if is_reference(from) && is_object(to) {
+        Some(TypeConversion::WidenToObject)
+    } else if primitive_wrapper(from, to) {
+        Some(TypeConversion::BoxPrimitive)
+    } else if primitive_wrapper(to, from) {
+        Some(TypeConversion::UnboxPrimitive)
+    } else {
+        None
+    }
+}
+
+fn implementation_arity_matches(given: usize, parameters: usize, receiver: usize) -> bool {
+    parameters.checked_add(receiver) == Some(given)
+}
+
+/// Whether the arguments are one primitive and its unique Java wrapper, in either direction.
+fn primitive_wrapper(primitive: &Type, wrapper: &Type) -> bool {
+    let (Type::Reference(wrapper), Some(name)) = (wrapper, primitive_wrapper_name(primitive))
+    else {
+        return false;
+    };
+    wrapper == name
+}
+
+fn primitive_wrapper_name(ty: &Type) -> Option<&'static str> {
+    Some(match ty {
+        Type::Boolean => "java.lang.Boolean",
+        Type::Byte => "java.lang.Byte",
+        Type::Char => "java.lang.Character",
+        Type::Short => "java.lang.Short",
+        Type::Int => "java.lang.Integer",
+        Type::Long => "java.lang.Long",
+        Type::Float => "java.lang.Float",
+        Type::Double => "java.lang.Double",
+        Type::Reference(_) => return None,
     })
 }
 
@@ -1220,6 +1207,71 @@ mod tests {
         }
     }
 
+    fn plan_for_test(
+        site_descriptor: &str,
+        sam_descriptor: &str,
+        implementation_kind: u8,
+        implementation_descriptor: &str,
+        instantiated_descriptor: &str,
+        captures: &[(Option<u32>, Option<Type>)],
+    ) -> Verdict {
+        let pool = vec![
+            cp(
+                1,
+                CpEntryKind::MethodHandle {
+                    reference_kind: REF_INVOKE_STATIC,
+                    reference_index: 2,
+                },
+            ),
+            cp(2, method_ref(FACTORY_OWNER, "metafactory", "()V")),
+            cp(
+                3,
+                CpEntryKind::MethodType {
+                    descriptor_index: 0,
+                    descriptor: JvmBytes(sam_descriptor.as_bytes().to_vec()),
+                },
+            ),
+            cp(
+                4,
+                CpEntryKind::MethodHandle {
+                    reference_kind: implementation_kind,
+                    reference_index: 5,
+                },
+            ),
+            cp(
+                5,
+                method_ref("test/Target", "apply", implementation_descriptor),
+            ),
+            cp(
+                6,
+                CpEntryKind::MethodType {
+                    descriptor_index: 0,
+                    descriptor: JvmBytes(instantiated_descriptor.as_bytes().to_vec()),
+                },
+            ),
+        ];
+        let bootstraps = [BootstrapMethodFacts {
+            method_ref: 1,
+            arguments: vec![3, 4, 6],
+        }];
+        let site = DynamicSite::new(7, 0, "apply", site_descriptor);
+        let mut budget = Budget::new(Limits {
+            analysis_steps: u64::MAX,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        plan(
+            &site,
+            &bootstraps,
+            &pool,
+            captures,
+            &crate::pass::JAVA_8,
+            &mut budget,
+            7,
+        )
+        .expect("default test budget is ample for one lambda site")
+    }
+
     #[test]
     fn a_method_descriptor_is_read_into_parameters_and_a_return_type() {
         let (params, returns) =
@@ -1313,23 +1365,6 @@ mod tests {
                 "`{descriptor}` states no Java type"
             );
         }
-    }
-
-    #[test]
-    fn the_int_shaped_primitives_are_one_shape_and_a_reference_is_not_a_primitive() {
-        assert_eq!(shape(&Type::Boolean), shape(&Type::Int));
-        assert_eq!(shape(&Type::Byte), shape(&Type::Char));
-        assert_eq!(shape(&Type::Short), Shape::Int);
-        assert_ne!(shape(&Type::Int), shape(&Type::Long));
-        assert_ne!(
-            shape(&Type::Reference("java.lang.String".to_string())),
-            shape(&Type::Int)
-        );
-        assert_eq!(
-            shape(&Type::Reference("java.lang.String".to_string())),
-            shape(&Type::Reference("java.lang.Object".to_string())),
-            "references share a stack shape; adaptation is proved separately"
-        );
     }
 
     fn method_types(descriptor: &str) -> (Vec<Type>, Option<Type>) {
@@ -1475,10 +1510,10 @@ mod tests {
             plan.parameters[0].dynamic,
             Type::Reference("java.lang.String".to_string())
         );
-        assert_eq!(plan.parameters[0].dynamic_check, DynamicCheck::CheckCast);
+        assert_eq!(plan.parameters[0].sam_to_dynamic, TypeConversion::CheckCast);
         assert_eq!(
-            plan.parameters[0].implementation_conversion,
-            ImplementationConversion::Identity
+            plan.parameters[0].dynamic_to_implementation,
+            TypeConversion::Identity
         );
 
         let (dynamic_params, dynamic_return) = method_types("([Ljava/lang/String;)V");
@@ -1498,13 +1533,250 @@ mod tests {
             Type::Reference("java.lang.String[]".to_string())
         );
         assert_eq!(
-            array_plan.parameters[0].dynamic_check,
-            DynamicCheck::CheckCast
+            array_plan.parameters[0].sam_to_dynamic,
+            TypeConversion::CheckCast
         );
     }
 
     #[test]
-    fn adaptation_plan_accepts_identity_and_only_the_proven_object_upcast() {
+    fn adaptation_plan_proves_boxed_sam_parameter_and_return_edges() {
+        let (sam_params, sam_return) = method_types("()Ljava/lang/Object;");
+        let (dynamic_params, dynamic_return) = method_types("()Ljava/lang/Integer;");
+        let (implementation_params, implementation_return) = method_types("()I");
+        let supplier = adaptation_plan_for_test(
+            &sam_params,
+            &dynamic_params,
+            (sam_return, dynamic_return),
+            &implementation_params,
+            implementation_return,
+            &static_member("()I"),
+            0,
+        )
+        .expect("primitive implementation result boxes to instantiated Integer, then Object");
+        assert_eq!(
+            supplier.returns.implementation_to_dynamic,
+            TypeConversion::BoxPrimitive
+        );
+        assert_eq!(
+            supplier.returns.dynamic_to_sam,
+            TypeConversion::WidenToObject
+        );
+
+        let (sam_params, sam_return) = method_types("(Ljava/lang/Object;)Ljava/lang/Object;");
+        let (dynamic_params, dynamic_return) = method_types("(Ljava/lang/Integer;)[I");
+        let (implementation_params, implementation_return) = method_types("(I)[I");
+        let array_function = adaptation_plan_for_test(
+            &sam_params,
+            &dynamic_params,
+            (sam_return, dynamic_return),
+            &implementation_params,
+            implementation_return,
+            &static_member("(I)[I"),
+            0,
+        )
+        .expect("Object checks to Integer, Integer unboxes to int");
+        assert_eq!(
+            array_function.parameters[0].sam_to_dynamic,
+            TypeConversion::CheckCast
+        );
+        assert_eq!(
+            array_function.parameters[0].dynamic_to_implementation,
+            TypeConversion::UnboxPrimitive
+        );
+        assert_eq!(
+            array_function.returns.implementation_to_dynamic,
+            TypeConversion::Identity
+        );
+        assert_eq!(
+            array_function.returns.dynamic_to_sam,
+            TypeConversion::WidenToObject
+        );
+
+        let (sam_params, sam_return) = method_types("(Ljava/lang/Object;)Ljava/lang/Object;");
+        let (dynamic_params, dynamic_return) =
+            method_types("(Ljava/lang/String;)Ljava/lang/Integer;");
+        let (implementation_params, implementation_return) = method_types("(Ljava/lang/String;)I");
+        let function = adaptation_plan_for_test(
+            &sam_params,
+            &dynamic_params,
+            (sam_return, dynamic_return),
+            &implementation_params,
+            implementation_return,
+            &static_member("(Ljava/lang/String;)I"),
+            0,
+        )
+        .expect("erased Function argument checks to String and primitive result boxes");
+        assert_eq!(
+            function.parameters[0].sam_to_dynamic,
+            TypeConversion::CheckCast
+        );
+        assert_eq!(
+            function.parameters[0].dynamic_to_implementation,
+            TypeConversion::Identity
+        );
+        assert_eq!(
+            function.returns.implementation_to_dynamic,
+            TypeConversion::BoxPrimitive
+        );
+        assert_eq!(
+            function.returns.dynamic_to_sam,
+            TypeConversion::WidenToObject
+        );
+    }
+
+    #[test]
+    fn plan_accepts_boxed_array_length_but_keeps_instance_handle_arity_and_captures_exact() {
+        let verdict = plan_for_test(
+            "()Ljava/util/function/Function;",
+            "(Ljava/lang/Object;)Ljava/lang/Object;",
+            REF_INVOKE_STATIC,
+            "(I)[I",
+            "(Ljava/lang/Integer;)[I",
+            &[],
+        );
+        let plan = match verdict.outcome {
+            Ok(plan) => plan,
+            Err(refusal) => panic!("boxed array length adaptation refused: {refusal:?}"),
+        };
+        assert_eq!(plan.form, LambdaForm::Lambda);
+        assert_eq!(
+            plan.adaptation.parameters[0].sam_to_dynamic,
+            TypeConversion::CheckCast
+        );
+        assert_eq!(
+            plan.adaptation.parameters[0].dynamic_to_implementation,
+            TypeConversion::UnboxPrimitive
+        );
+
+        let receiver_capture = [(Some(2), Some(Type::Reference("test.Target".to_string())))];
+        let captured_receiver = plan_for_test(
+            "(Ltest/Target;)Ljava/util/function/Supplier;",
+            "()Ljava/lang/Object;",
+            5,
+            "()I",
+            "()Ljava/lang/Integer;",
+            &receiver_capture,
+        );
+        let captured_receiver = match captured_receiver.outcome {
+            Ok(plan) => plan,
+            Err(refusal) => panic!("exact bound receiver remains accepted: {refusal:?}"),
+        };
+        assert_eq!(captured_receiver.captures, 1);
+        assert_eq!(captured_receiver.form, LambdaForm::MethodReference);
+
+        let mismatch = plan_for_test(
+            "()Ljava/util/function/Function;",
+            "(Ljava/lang/Object;)Ljava/lang/Object;",
+            5,
+            "(I)[I",
+            "(Ljava/lang/Integer;)[I",
+            &[],
+        );
+        let mismatch_refusal = match mismatch.outcome {
+            Err(refusal) => refusal,
+            Ok(_) => panic!("receiver handle needs an extra operand"),
+        };
+        assert_eq!(mismatch_refusal.code(), "jre_lambda_sam_arity");
+
+        let captures = [(
+            Some(3),
+            Some(Type::Reference("java.lang.Integer".to_string())),
+        )];
+        let capture_mismatch = plan_for_test(
+            "(Ljava/lang/String;)Ljava/util/function/Function;",
+            "()Ljava/lang/Object;",
+            REF_INVOKE_STATIC,
+            "(Ljava/lang/String;)Ljava/lang/String;",
+            "()Ljava/lang/String;",
+            &captures,
+        );
+        let capture_refusal = match capture_mismatch.outcome {
+            Err(refusal) => refusal,
+            Ok(_) => panic!("capture frame/site/impl types must be exact"),
+        };
+        assert_eq!(capture_refusal.code(), "jre_lambda_sam_types");
+    }
+
+    #[test]
+    fn boxed_adaptation_pairs_are_exact_and_arity_keeps_receiver_staticness() {
+        for (primitive, wrapper) in [
+            (Type::Boolean, "java.lang.Boolean"),
+            (Type::Byte, "java.lang.Byte"),
+            (Type::Char, "java.lang.Character"),
+            (Type::Short, "java.lang.Short"),
+            (Type::Int, "java.lang.Integer"),
+            (Type::Long, "java.lang.Long"),
+            (Type::Float, "java.lang.Float"),
+            (Type::Double, "java.lang.Double"),
+        ] {
+            let wrapper_type = Type::Reference(wrapper.to_string());
+            assert_eq!(
+                type_conversion(&primitive, &wrapper_type),
+                Some(TypeConversion::BoxPrimitive)
+            );
+            assert_eq!(
+                type_conversion(&wrapper_type, &primitive),
+                Some(TypeConversion::UnboxPrimitive)
+            );
+        }
+
+        assert_eq!(
+            type_conversion(&Type::Int, &Type::Reference("java.lang.Long".to_string())),
+            None,
+            "only the unique matching wrapper is accepted"
+        );
+        assert_eq!(
+            type_conversion(&Type::Reference("java.lang.String".to_string()), &Type::Int),
+            None,
+            "an unrelated reference cannot unbox to a primitive"
+        );
+        assert!(
+            adaptation_plan_for_test(
+                &[Type::Reference("java.lang.Object".to_string())],
+                &[Type::Reference("java.lang.Long".to_string())],
+                (None, None),
+                &[Type::Int],
+                None,
+                &static_member("(I)V"),
+                0,
+            )
+            .is_err(),
+            "Integer-to-int cannot be inferred through Long"
+        );
+        assert!(
+            adaptation_plan_for_test(
+                &[Type::Reference("java.lang.Object".to_string())],
+                &[],
+                (None, None),
+                &[Type::Int],
+                None,
+                &static_member("(I)V"),
+                0,
+            )
+            .is_err(),
+            "different SAM and instantiated arities are refused"
+        );
+        assert!(
+            adaptation_plan_for_test(
+                &[Type::Reference("java.lang.String".to_string())],
+                &[Type::Reference("java.lang.String".to_string())],
+                (None, None),
+                &[Type::Int],
+                None,
+                &static_member("(I)V"),
+                0,
+            )
+            .is_err(),
+            "String cannot be adapted to int"
+        );
+        assert!(!implementation_arity_matches(1, 0, 0));
+        assert!(implementation_arity_matches(1, 0, 1));
+        assert!(!implementation_arity_matches(0, 0, 1));
+        assert!(implementation_arity_matches(0, 0, 0));
+    }
+
+    #[test]
+    fn adaptation_plan_preserves_identity_and_proven_object_conversions() {
         let (sam_params, sam_return) = method_types("(Ljava/lang/String;)Ljava/lang/Object;");
         let (dynamic_params, dynamic_return) =
             method_types("(Ljava/lang/String;)Ljava/lang/String;");
@@ -1520,12 +1792,22 @@ mod tests {
             0,
         )
         .expect("same parameter type and String-to-Object return upcast");
-        assert_eq!(identity.parameters[0].dynamic_check, DynamicCheck::Identity);
         assert_eq!(
-            identity.parameters[0].implementation_conversion,
-            ImplementationConversion::Identity
+            identity.parameters[0].sam_to_dynamic,
+            TypeConversion::Identity
         );
-        assert_eq!(identity.returns.conversion, ReturnConversion::WidenToObject);
+        assert_eq!(
+            identity.parameters[0].dynamic_to_implementation,
+            TypeConversion::Identity
+        );
+        assert_eq!(
+            identity.returns.implementation_to_dynamic,
+            TypeConversion::Identity
+        );
+        assert_eq!(
+            identity.returns.dynamic_to_sam,
+            TypeConversion::WidenToObject
+        );
         assert_eq!(identity.returns.dynamic, dynamic_return);
 
         let (sam_params, sam_return) = method_types("(Ljava/lang/Object;)V");
@@ -1541,10 +1823,13 @@ mod tests {
             0,
         )
         .expect("String dynamically checked, then widened to implementation Object");
-        assert_eq!(upcast.parameters[0].dynamic_check, DynamicCheck::CheckCast);
         assert_eq!(
-            upcast.parameters[0].implementation_conversion,
-            ImplementationConversion::WidenToObject
+            upcast.parameters[0].sam_to_dynamic,
+            TypeConversion::CheckCast
+        );
+        assert_eq!(
+            upcast.parameters[0].dynamic_to_implementation,
+            TypeConversion::WidenToObject
         );
     }
 
@@ -1567,11 +1852,9 @@ mod tests {
             "this layer has no Number/Integer inheritance proof"
         );
 
-        let (sam_params, sam_return) = method_types("(Ljava/lang/String;)Ljava/lang/String;");
-        let (dynamic_params, dynamic_return) =
-            method_types("(Ljava/lang/String;)Ljava/lang/String;");
-        let (implementation_params, implementation_return) =
-            method_types("(Ljava/lang/String;)Ljava/lang/Object;");
+        let (sam_params, sam_return) = method_types("()Ljava/lang/String;");
+        let (dynamic_params, dynamic_return) = method_types("()Ljava/lang/Integer;");
+        let (implementation_params, implementation_return) = method_types("()Ljava/lang/Number;");
         assert!(
             adaptation_plan_for_test(
                 &sam_params,
@@ -1579,16 +1862,16 @@ mod tests {
                 (sam_return, dynamic_return),
                 &implementation_params,
                 implementation_return,
-                &static_member("(Ljava/lang/String;)Ljava/lang/Object;"),
+                &static_member("()Ljava/lang/Number;"),
                 0,
             )
             .is_err(),
-            "Object-to-String return narrowing is unsupported"
+            "this layer does not infer arbitrary Number-to-Integer or Integer-to-String relations"
         );
     }
 
     #[test]
-    fn instantiated_return_is_retained_without_inventing_a_check() {
+    fn instantiated_return_is_retained_and_both_edges_are_proved() {
         let (sam_params, sam_return) = method_types("()Ljava/lang/Object;");
         let (dynamic_params, dynamic_return) = method_types("()Ljava/lang/String;");
         let (implementation_params, implementation_return) = method_types("()Ljava/lang/Object;");
@@ -1614,7 +1897,11 @@ mod tests {
             plan.returns.implementation,
             Some(Type::Reference("java.lang.Object".to_string()))
         );
-        assert_eq!(plan.returns.conversion, ReturnConversion::Identity);
+        assert_eq!(
+            plan.returns.implementation_to_dynamic,
+            TypeConversion::CheckCast
+        );
+        assert_eq!(plan.returns.dynamic_to_sam, TypeConversion::WidenToObject);
     }
 
     #[test]
@@ -1635,7 +1922,11 @@ mod tests {
         assert_eq!(plan.returns.sam, None);
         assert_eq!(plan.returns.dynamic, None);
         assert_eq!(plan.returns.implementation, Some(Type::Int));
-        assert_eq!(plan.returns.conversion, ReturnConversion::DropToVoid);
+        assert_eq!(
+            plan.returns.implementation_to_dynamic,
+            TypeConversion::DropToVoid
+        );
+        assert_eq!(plan.returns.dynamic_to_sam, TypeConversion::Void);
 
         let (sam_params, sam_return) = method_types("()I");
         let (dynamic_params, dynamic_return) = method_types("()I");
