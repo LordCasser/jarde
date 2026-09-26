@@ -7,8 +7,5 @@ openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jarde/NestedCo
 openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jarde/NestedConditional.java:45: 错误: 缺少返回语句
     }
     ^
-openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/jarde/NestedConditional.java:86: 错误: 缺少返回语句
-    }
-    ^
-3 个错误
+2 个错误
 3 个警告

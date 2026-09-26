@@ -1,6 +1,7 @@
 javac: javac 23.0.1
 java: OpenJDK 23.0.1
 JADX: 1.5.6
-Jarde CLI source: current workspace build, cargo build --release -p jarde-cli
+Jarde baseline source commit: ee18bef1c5919370b4889af964519733001278a0
+Jarde CLI command: cargo build --release -p jarde-cli
 compiler flags: --release 8 -g:none
 runtime flags: -Xverify:all

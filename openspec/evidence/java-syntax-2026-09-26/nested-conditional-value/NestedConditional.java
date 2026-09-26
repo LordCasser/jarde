@@ -34,7 +34,7 @@ public final class NestedConditional {
     private static int arm(StringBuilder events, String label, int value, boolean fail) {
         events.append(label);
         if (fail) {
-            throw new ArithmeticException("arm-" + label);
+            throw new ArithmeticException("arm-2");
         }
         return value;
     }

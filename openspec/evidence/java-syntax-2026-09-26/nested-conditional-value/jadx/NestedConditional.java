@@ -46,7 +46,7 @@ public final class NestedConditional {
     private static int arm(StringBuilder sb, String str, int i, boolean z) {
         sb.append(str);
         if (z) {
-            throw new ArithmeticException("arm-" + str);
+            throw new ArithmeticException("arm-2");
         }
         return i;
     }

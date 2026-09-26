@@ -1,6 +1,6 @@
 Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-26/nested-conditional-value/original-classes/NestedConditional.class
-  Last modified 2026年9月26日; size 1134 bytes
-  SHA-256 checksum 0ee804d152e66374254e140d166ca867989e97d22435d75ca85051b3dc40b768
+  Last modified 2026年9月26日; size 1069 bytes
+  SHA-256 checksum 5e904bc949d43a010ddf7352b31066707f1b60db8b37cb0e012d38c91d203780
 public final class NestedConditional
   minor version: 0
   major version: 52
@@ -57,21 +57,16 @@ Constant pool:
   #46 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
   #47 = Class              #48            // java/lang/ArithmeticException
   #48 = Utf8               java/lang/ArithmeticException
-  #49 = Methodref          #27.#3         // java/lang/StringBuilder."<init>":()V
-  #50 = String             #51            // arm-
-  #51 = Utf8               arm-
-  #52 = Methodref          #27.#53        // java/lang/StringBuilder.toString:()Ljava/lang/String;
-  #53 = NameAndType        #54:#55        // toString:()Ljava/lang/String;
-  #54 = Utf8               toString
-  #55 = Utf8               ()Ljava/lang/String;
-  #56 = Methodref          #47.#37        // java/lang/ArithmeticException."<init>":(Ljava/lang/String;)V
-  #57 = Utf8               Code
-  #58 = Utf8               nested
-  #59 = Utf8               (I)I
-  #60 = Utf8               StackMapTable
-  #61 = Utf8               nestedEffects
-  #62 = Class              #63            // java/lang/String
-  #63 = Utf8               java/lang/String
+  #49 = String             #50            // arm-2
+  #50 = Utf8               arm-2
+  #51 = Methodref          #47.#37        // java/lang/ArithmeticException."<init>":(Ljava/lang/String;)V
+  #52 = Utf8               Code
+  #53 = Utf8               nested
+  #54 = Utf8               (I)I
+  #55 = Utf8               StackMapTable
+  #56 = Utf8               nestedEffects
+  #57 = Class              #58            // java/lang/String
+  #58 = Utf8               java/lang/String
 {
   private NestedConditional();
     descriptor: ()V
@@ -208,27 +203,20 @@ Constant pool:
     descriptor: (Ljava/lang/StringBuilder;Ljava/lang/String;IZ)I
     flags: (0x000a) ACC_PRIVATE, ACC_STATIC
     Code:
-      stack=4, locals=4, args_size=4
+      stack=3, locals=4, args_size=4
          0: aload_0
          1: aload_1
          2: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
          5: pop
          6: iload_3
-         7: ifeq          37
+         7: ifeq          20
         10: new           #47                 // class java/lang/ArithmeticException
         13: dup
-        14: new           #27                 // class java/lang/StringBuilder
-        17: dup
-        18: invokespecial #49                 // Method java/lang/StringBuilder."<init>":()V
-        21: ldc           #50                 // String arm-
-        23: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
-        26: aload_1
-        27: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
-        30: invokevirtual #52                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
-        33: invokespecial #56                 // Method java/lang/ArithmeticException."<init>":(Ljava/lang/String;)V
-        36: athrow
-        37: iload_2
-        38: ireturn
+        14: ldc           #49                 // String arm-2
+        16: invokespecial #51                 // Method java/lang/ArithmeticException."<init>":(Ljava/lang/String;)V
+        19: athrow
+        20: iload_2
+        21: ireturn
       StackMapTable: number_of_entries = 1
-        frame_type = 37 /* same */
+        frame_type = 20 /* same */
 }

@@ -74,12 +74,7 @@ public final class NestedConditional extends java.lang.Object {
         // recovered from bytecode; presentation is not claimed to compile
         arg0.append(arg1);
         if (arg3) {
-            // @bytecode 10
-            // the instruction at BCI 10 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
-            // @bytecode 13
-            // the instruction at BCI 13 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
-            // @bytecode 36 33 26
-            // the value at BCI 36 comes from an Duplicate at BCI 13, which produces no expression this subset writes
+            throw new java.lang.ArithmeticException("arm-2");
         } else {
             return arg2;
         }
