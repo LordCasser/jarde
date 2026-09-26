@@ -79,6 +79,25 @@ MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代
 - **WHEN** `while (a > 0 && b > 0)` 编译出的 BCI 3 与 7 均向 BCI 23 循环出口跳转，且体内更新只在两个条件都为真时执行
 - **THEN** 对 `(a=1,b=0)`，若方法被标成 `Structured`，恢复源码经 Java 8 重编后 MUST 立即返回原 class 的 `0`；未证明复合头或显式退出时 MUST 保留引用，MUST NOT 写成没有 `break` 的 `while (a>0) { if (b>0) { 更新 } }`（P02/P04）
 
+### Requirement: A homogeneous loop test chain keeps its execution order
+
+当一个自然循环的头部或闩锁由同质、短路的条件分支链构成，且每个测试位的操作数、块内效果边界、顺序入口、正常流边及共同的循环体入口和精确出口均可证明时，恢复源码 MUST 按实际求值顺序写 `&&` 或 `||`。每条测试及测试链的每条出口边 MUST 恰好由该循环条件认领；体内其它出口仍按显式 `break` 的证明处理。条件里的调用和字段读取 MUST 保持原次数和求值位置。`do-while` 的第一测试可以和体语句处在同一 canonical 块，此时体前缀 MUST 先执行且只执行一次，条件只认领其后的测试值；`||` 还可以由多个分支各自回到循环体入口，不得因多个物理回边而丢失该语法。若链的归属或极性不能证明，MUST 保留引用或既有的已证明显式 `break`，MUST NOT 猜测运算符优先级或发布丢失出口的结构。该写法是语义等价的规范化，不声称能区分作者是否写过 `while(true)` 与 `break`（P04）。
+
+#### Scenario: Header-tested AND and OR use one loop condition
+
+- **WHEN** 冻结 `LoopBool` 的 `andWhile` 两个假边都到同一出口，或 `orWhile` 两个真边都到同一循环体入口，另一路依次进入第二测试与同一出口
+- **THEN** 分别写出 `while (arg0 > 0 && arg1 > 0)` 与 `while (arg0 > 0 || arg1 > 0)`；体内更新恰执行原 class 的次数，原 class 与 Java 8 重编的恢复源码在有界输入上一致，每个测试 BCI 都有来源（P04）
+
+#### Scenario: Latch-tested AND and OR retain do-while
+
+- **WHEN** 冻结 `DoLoopBool` 的 `andDo` 与 `orDo` 均先执行循环体再进入两个纯测试，前者只有最后一个测试回跳且两个失败边到同一出口，后者两个测试各有回跳且最后失败边到出口
+- **THEN** 两个方法仍是 `do { … } while (arg0 > 0 &&/|| arg1 > 0)`，而非在体内增删执行次数的 `while`；原 class 与 Java 8 重编的恢复源码在 `(3,3)`、`(3,-1)`、`(0,0)` 上结果一致（P04）
+
+#### Scenario: An unproved or mixed chain keeps a visible gap
+
+- **WHEN** 同一测试链混用 `&&` 与 `||`，或测试块有额外效果、额外入边、不同出口、不可证操作数或不受条件认领的退出边
+- **THEN** MUST NOT 把该链拼成复合循环条件，也 MUST NOT 输出没有缺口却改变原执行的循环；已证明的体内退出可以保持显式 `break`，其余未证明部分须引用并说明 BCI（P04）
+
 ### Requirement: An ordinary array access is an index expression
 
 `iaload`、`iastore`、`arraylength` 与 `newarray` MUST 按该指令自己的操作数呈现，MUST NOT 只在枚举 `switch` 的分派表被证明时才允许出现。读取 MUST 写成 `array[index]`，写入 MUST 写成 `array[index] = value`，`arraylength` MUST 写成 `array.length`，`newarray` MUST 写成 `new T[length]`，元素类型取该指令的 `atype`。`enumswitch@1` 已经认领的 `iaload` MUST 保持今天的分派表拼写，普通读取不得抢这条证明。

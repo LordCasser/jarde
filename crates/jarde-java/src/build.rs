@@ -2199,7 +2199,16 @@ fn own_blocks(region: &Region) -> Vec<CanonicalBlockId> {
         Region::StringSwitch { dispatch, .. } => dispatch.clone(),
         // The test block is the condition written *inside* the loop statement; the header belongs
         // to the body when the body claims it (`collect_paths` walks the body first).
-        Region::Loop { header, test, .. } => vec![header.clone(), test.clone()],
+        Region::Loop { header, tests, .. } => {
+            let mut blocks = vec![header.clone()];
+            blocks.extend(
+                tests
+                    .iter()
+                    .map(|(test, _, _)| test.clone())
+                    .filter(|test| test != header),
+            );
+            blocks
+        }
         Region::LoopBreak { .. } | Region::LoopContinue { .. } => Vec::new(),
         Region::Fallback { blocks, .. } => blocks.clone(),
         Region::ShortCircuitValue {
@@ -7958,9 +7967,9 @@ impl Builder<'_> {
             }
             Region::Loop {
                 header,
-                test_bci,
+                tests,
+                test_operator,
                 form,
-                continuation,
                 for_header,
                 body,
                 ..
@@ -7969,15 +7978,46 @@ impl Builder<'_> {
                 // calls it makes run once per evaluation — the loop's own count, not the count of a
                 // hoisted copy. Which of the two senses continues the loop is a decode fact
                 // (`Continuation`), and the condition is that sense, not its negation.
-                let taken = *continuation == Continuation::Taken;
-                let cond = match self.test_expr(*test_bci, taken) {
-                    Ok(cond) => cond,
-                    Err(reason) => {
-                        let bcis = self.region_quote(region, *test_bci);
-                        return self.fallback(bcis, &reason, *test_bci);
-                    }
+                let Some((_, first_test_bci, _)) = tests.first() else {
+                    let bcis = self.region_quote(region, header.bci());
+                    return self.fallback(bcis, "the loop has no proved test", header.bci());
                 };
-                let cond = cond.derived_from(*test_bci);
+                let first_test_bci = *first_test_bci;
+                let mut cond = None;
+                for (_, test_bci, continuation) in tests {
+                    let test_bci = *test_bci;
+                    let taken = *continuation == Continuation::Taken;
+                    let test = match self.test_expr(test_bci, taken) {
+                        Ok(test) => test.derived_from(test_bci),
+                        Err(reason) => {
+                            let bcis = self.region_quote(region, test_bci);
+                            return self.fallback(bcis, &reason, test_bci);
+                        }
+                    };
+                    cond = Some(match cond {
+                        None => test,
+                        Some(left) => {
+                            let Some(operator) = test_operator else {
+                                let bcis = self.region_quote(region, test_bci);
+                                return self.fallback(
+                                    bcis,
+                                    "multiple loop tests have no proved short-circuit operator",
+                                    test_bci,
+                                );
+                            };
+                            binary(*operator, left, test, first_test_bci).derived_from(test_bci)
+                        }
+                    });
+                }
+                let cond = cond.expect("the loop's test list was checked non-empty");
+                if tests.len() == 1 && test_operator.is_some() {
+                    let bcis = self.region_quote(region, first_test_bci);
+                    return self.fallback(
+                        bcis,
+                        "one loop test cannot own a short-circuit operator",
+                        first_test_bci,
+                    );
+                }
                 let for_init_index = for_header.as_ref().and_then(|proof| {
                     let index = self.stmts.iter().rposition(|stmt| {
                         stmt.origin.primary().bci() == proof.init_bci
@@ -7992,12 +8032,20 @@ impl Builder<'_> {
                         .then_some(index)
                 });
                 if let Some(proof) = for_header {
+                    if tests.len() != 1 {
+                        let bcis = self.region_quote(region, first_test_bci);
+                        return self.fallback(
+                            bcis,
+                            "the counted-loop proof covers only one test",
+                            first_test_bci,
+                        );
+                    }
                     if for_init_index.is_none() {
-                        let bcis = self.region_quote(region, *test_bci);
+                        let bcis = self.region_quote(region, first_test_bci);
                         return self.fallback(
                             bcis,
                             "the counted loop's preceding local initialisation did not produce one Java header clause",
-                            *test_bci,
+                            first_test_bci,
                         );
                     }
                     self.settled.insert(proof.update_bci);
@@ -8025,11 +8073,11 @@ impl Builder<'_> {
                     let Some(update_instruction) =
                         self.instructions.get(&proof.update_bci).copied()
                     else {
-                        let bcis = self.region_quote(region, *test_bci);
+                        let bcis = self.region_quote(region, first_test_bci);
                         return self.fallback(
                             bcis,
                             "the proved for update has no SSA instruction",
-                            *test_bci,
+                            first_test_bci,
                         );
                     };
                     let outer = std::mem::take(&mut self.stmts);
@@ -8037,28 +8085,28 @@ impl Builder<'_> {
                     let mut update_stmts = std::mem::replace(&mut self.stmts, outer);
                     built?;
                     let Some(update) = update_stmts.pop() else {
-                        let bcis = self.region_quote(region, *test_bci);
+                        let bcis = self.region_quote(region, first_test_bci);
                         return self.fallback(
                             bcis,
                             "the proved for update made no Java assignment",
-                            *test_bci,
+                            first_test_bci,
                         );
                     };
                     if !update_stmts.is_empty() || !matches!(update.kind, StmtKind::Assign { .. }) {
-                        let bcis = self.region_quote(region, *test_bci);
+                        let bcis = self.region_quote(region, first_test_bci);
                         return self.fallback(
                             bcis,
                             "the proved for update did not make one local assignment",
-                            *test_bci,
+                            first_test_bci,
                         );
                     }
                     let Some(initial) = for_init_index.and_then(|index| self.stmts.get(index))
                     else {
-                        let bcis = self.region_quote(region, *test_bci);
+                        let bcis = self.region_quote(region, first_test_bci);
                         return self.fallback(
                             bcis,
                             "the proved for initialisation is absent",
-                            *test_bci,
+                            first_test_bci,
                         );
                     };
                     let init_name = match &initial.kind {
@@ -8072,11 +8120,11 @@ impl Builder<'_> {
                         unreachable!("update checked above")
                     };
                     if init_name != update_name {
-                        let bcis = self.region_quote(region, *test_bci);
+                        let bcis = self.region_quote(region, first_test_bci);
                         return self.fallback(
                             bcis,
                             "the for initialisation and update name different locals",
-                            *test_bci,
+                            first_test_bci,
                         );
                     }
                     let initial = self
@@ -8105,13 +8153,14 @@ impl Builder<'_> {
                         },
                     }
                 };
-                let projected = if let Some(proof) = for_header {
-                    self.array_for_each_candidate(proof, *test_bci, path, &kind, body)?
-                } else {
-                    None
-                };
-                let iterable_projected = if for_header.is_none() {
-                    self.iterable_for_each_candidate(*test_bci, &kind, body)?
+                let projected =
+                    if let Some(proof) = for_header.as_ref().filter(|_| tests.len() == 1) {
+                        self.array_for_each_candidate(proof, first_test_bci, path, &kind, body)?
+                    } else {
+                        None
+                    };
+                let iterable_projected = if for_header.is_none() && tests.len() == 1 {
+                    self.iterable_for_each_candidate(first_test_bci, &kind, body)?
                 } else {
                     None
                 };
@@ -8140,7 +8189,7 @@ impl Builder<'_> {
                         self.synthetic_names.insert(name);
                         (kind, origin)
                     } else {
-                        (kind, OriginSet::new(Origin::direct(*test_bci)))
+                        (kind, OriginSet::new(Origin::direct(first_test_bci)))
                     };
                 self.push(Stmt::new(kind, origin))
             }
