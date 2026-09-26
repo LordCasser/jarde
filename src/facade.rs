@@ -4523,6 +4523,16 @@ pub(crate) struct PendingEnumConstantBodyRelation {
     /// Same-run physical facts that establish the narrow zero-source-argument, ordered
     /// two-constant enum shape. This remains private pending evidence and grants no projection.
     pub(crate) group_shape: PendingEnumConstantBodyGroupShape,
+    /// Exact selected child Code edge to the already identified access constructor.
+    pub(crate) constructor_bridge: std::result::Result<PendingEnumConstructorEdge, String>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct PendingEnumConstructorEdge {
+    pub(crate) caller: PhysicalMethodId,
+    pub(crate) call_bci: u32,
+    pub(crate) target_owner: Vec<u8>,
+    pub(crate) target_descriptor: Vec<u8>,
 }
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -4550,6 +4560,11 @@ pub(crate) struct PendingEnumConstantBodyGroupShape {
     pub(crate) implicit_members: Vec<PendingEnumConstantBodyMember>,
     pub(crate) abstract_methods: Vec<PendingEnumConstantBodyMember>,
     pub(crate) constructors: Vec<PendingEnumConstantBodyMember>,
+    /// The private constructor reaches java/lang/Enum unchanged; the optional synthetic
+    /// access constructor reaches that private constructor unchanged and ignores its marker.
+    pub(crate) constructor_chain: std::result::Result<Vec<PendingEnumConstructorEdge>, String>,
+    /// Ordinary constants use their own physical constructor without an access bridge.
+    pub(crate) direct_constant_bcis: std::result::Result<Vec<u32>, String>,
     /// Exact same-run `<clinit>` prefix evidence; a refusal leaves the physical relations intact.
     pub(crate) initializer_prefix:
         std::result::Result<PendingEnumConstantBodyInitializerPrefix, String>,
@@ -4586,6 +4601,218 @@ pub(crate) struct PendingEnumConstantBodyMember {
     pub(crate) has_code: bool,
     /// The raw object type in a javac enum access-constructor descriptor, when this is that record.
     pub(crate) access_marker_owner: Option<Vec<u8>>,
+}
+
+/// Check the entire straight-line constructor body, not just its `invokespecial`. The
+/// positional loads establish that neither name nor ordinal was replaced; the optional
+/// `aconst_null` is the only value allowed in the marker slot. No other effect can hide here.
+fn prove_enum_constructor_instructions(
+    instructions: &[crate::enum_constants::EnumCodeInstruction],
+    expected_owner: &[u8],
+    expected_descriptor: &[u8],
+    marker: bool,
+) -> std::result::Result<u32, String> {
+    use crate::enum_constants::EnumCodeReference;
+
+    let refusal =
+        || "the constructor does not forward unchanged name/ordinal on a pure edge".to_owned();
+    let opcodes: &[u8] = if marker {
+        &[0x2a, 0x2b, 0x1c, 0x01, 0xb7, 0xb1]
+    } else {
+        &[0x2a, 0x2b, 0x1c, 0xb7, 0xb1]
+    };
+    if instructions.len() != opcodes.len() {
+        return Err(refusal());
+    }
+    let mut next_bci = 0;
+    for (position, instruction) in instructions.iter().enumerate() {
+        if instruction.bci != next_bci
+            || instruction.opcode != opcodes[position]
+            || instruction.width != if instruction.opcode == 0xb7 { 3 } else { 1 }
+            || instruction.immediate.is_some()
+            || (instruction.opcode != 0xb7 && instruction.reference.is_some())
+            || (instruction.opcode == 0xb7 && instruction.local.is_some())
+            || (instruction.opcode != 0xb7
+                && instruction.local
+                    != match position {
+                        0 => Some(0),
+                        1 => Some(1),
+                        2 => Some(2),
+                        _ => None,
+                    })
+        {
+            return Err(refusal());
+        }
+        next_bci = next_bci
+            .checked_add(instruction.width)
+            .ok_or_else(refusal)?;
+    }
+    let call = &instructions[instructions.len() - 2];
+    if !matches!(&call.reference,
+        Some(EnumCodeReference::Method { owner, name, descriptor, interface: false })
+            if owner == expected_owner && name == b"<init>" && descriptor == expected_descriptor)
+    {
+        return Err(refusal());
+    }
+    Ok(call.bci)
+}
+
+fn prove_enum_constructor_candidate(
+    candidates: &[crate::enum_constants::EnumMethodCodeCandidate],
+    member: &PendingEnumConstantBodyMember,
+    identity: &PhysicalMethodId,
+    target_owner: &[u8],
+    target_descriptor: &[u8],
+) -> std::result::Result<PendingEnumConstructorEdge, String> {
+    let matching: Vec<_> = candidates
+        .iter()
+        .filter(|candidate| candidate.table_index == member.table_index)
+        .collect();
+    let [code] = matching.as_slice() else {
+        return Err("the selected main constructor has no unique same-run Code".to_owned());
+    };
+    if code.member.as_ref() != Some(identity)
+        || !member.has_code
+        || !code.complete
+        || code.exception_handler_count != 0
+    {
+        return Err("the selected main constructor Code is incomplete".to_owned());
+    }
+    let call_bci = prove_enum_constructor_instructions(
+        &code.instructions,
+        target_owner,
+        target_descriptor,
+        false,
+    )?;
+    Ok(PendingEnumConstructorEdge {
+        caller: identity.clone(),
+        call_bci,
+        target_owner: target_owner.to_vec(),
+        target_descriptor: target_descriptor.to_vec(),
+    })
+}
+
+fn prove_enum_physical_constructor(
+    bytes: &[u8],
+    header: &jarde_reader::classfile::MemberHeader,
+    identity: PhysicalMethodId,
+    pool: &[jarde_reader::classfile::CpEntryFacts],
+    enum_owner: &[u8],
+    access_descriptor: &[u8],
+    marker: bool,
+    budget: &mut Budget,
+) -> Result<std::result::Result<PendingEnumConstructorEdge, String>> {
+    use jarde_reader::classfile::{CpEntryKind, cp_entry, method_code_facts};
+
+    if !header
+        .attributes
+        .iter()
+        .any(|attribute| attribute.name.raw().0 == b"Code")
+    {
+        return Ok(Err("the selected child constructor has no Code".to_owned()));
+    }
+    budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
+    let code = match method_code_facts(bytes, header, budget) {
+        Ok(code) => code,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => return Err(error),
+        Err(_) => {
+            return Ok(Err(
+                "the selected child constructor Code cannot be read".to_owned()
+            ));
+        }
+    };
+    match &code.execution {
+        ExecutionReport::Cancelled { .. } => {
+            return Err(Error::Cancelled {
+                reason: "the selected child constructor Code read was cancelled".to_owned(),
+            });
+        }
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded { dimension },
+            ..
+        } => {
+            let counted = CountedBudgetDimension::try_from(*dimension).map_err(|()| {
+                Error::unsupported(
+                    "enum_constructor_code_stop",
+                    "the child constructor Code read stopped on an uncounted dimension",
+                )
+            })?;
+            let limit = budget.limits().counted_limit(counted);
+            let consumed = match counted {
+                CountedBudgetDimension::CodeBytes => budget.usage().code_bytes,
+                CountedBudgetDimension::ResultItems => budget.usage().result_items,
+                _ => 0,
+            };
+            return Err(Error::BudgetExceeded {
+                dimension: *dimension,
+                limit,
+                consumed,
+                requested: limit.saturating_sub(consumed).saturating_add(1),
+            });
+        }
+        _ => {}
+    }
+    if code.stopped_at.is_some()
+        || !matches!(code.execution, ExecutionReport::Complete { .. })
+        || code.exception_handler_count != 0
+        || !code.exception_handlers.is_empty()
+        || code.instructions.len() != code.operands().len()
+        || code
+            .instructions
+            .last()
+            .is_none_or(|last| u64::from(last.bci) + u64::from(last.width) != code.code_span.length)
+    {
+        return Ok(Err(
+            "the selected child constructor Code is incomplete".to_owned()
+        ));
+    }
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(code.instructions.len()).unwrap_or(u64::MAX),
+    )?;
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(code.instructions.len()).unwrap_or(u64::MAX),
+    )?;
+    let mut instructions = Vec::with_capacity(code.instructions.len());
+    for (instruction, operands) in code.instructions.iter().zip(code.operands()) {
+        budget.poll()?;
+        let reference = if let Some(index) = instruction.constant_pool_index {
+            match cp_entry(pool, index).map(|entry| &entry.kind) {
+                Ok(CpEntryKind::MethodRef {
+                    owner,
+                    name,
+                    descriptor,
+                    ..
+                }) => Some(crate::enum_constants::EnumCodeReference::Method {
+                    owner: owner.0.clone(),
+                    name: name.0.clone(),
+                    descriptor: descriptor.0.clone(),
+                    interface: false,
+                }),
+                _ => Some(crate::enum_constants::EnumCodeReference::Other),
+            }
+        } else {
+            None
+        };
+        instructions.push(crate::enum_constants::EnumCodeInstruction {
+            bci: instruction.bci,
+            width: instruction.width,
+            opcode: instruction.opcode,
+            immediate: operands.immediate,
+            local: operands.local.map(|local| local.index),
+            reference,
+        });
+    }
+    let result =
+        prove_enum_constructor_instructions(&instructions, enum_owner, access_descriptor, marker)
+            .map(|call_bci| PendingEnumConstructorEdge {
+                caller: identity,
+                call_bci,
+                target_owner: enum_owner.to_vec(),
+                target_descriptor: access_descriptor.to_vec(),
+            });
+    Ok(result)
 }
 
 fn prove_enum_body_values_factory(
@@ -5175,12 +5402,76 @@ fn resolve_enum_constant_body_relations(
         &constant_shape,
         &implicit_members[0],
     );
+    let constructor_proof_work = code_candidates
+        .len()
+        .saturating_mul(constructors.len())
+        .saturating_add(
+            code_candidates
+                .iter()
+                .filter(|candidate| {
+                    constructors
+                        .iter()
+                        .any(|constructor| constructor.table_index == candidate.table_index)
+                })
+                .map(|candidate| candidate.instructions.len())
+                .sum::<usize>(),
+        )
+        .saturating_add(constant_shape.len());
+    budget.charge(
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(constructor_proof_work).unwrap_or(u64::MAX),
+    )?;
+    budget.poll()?;
+    let constructor_identity = |member: &PendingEnumConstantBodyMember| PhysicalMethodId {
+        owner: clinit_identity.owner.clone(),
+        name: JvmBytes(member.name.clone()),
+        descriptor: JvmBytes(member.descriptor.clone()),
+    };
+    let constructor_chain = (|| {
+        let private = constructors
+            .iter()
+            .find(|member| member.descriptor == BASE_CTOR)
+            .ok_or_else(|| "the unique private enum constructor is absent".to_owned())?;
+        let private_edge = prove_enum_constructor_candidate(
+            code_candidates,
+            private,
+            &constructor_identity(private),
+            b"java/lang/Enum",
+            BASE_CTOR,
+        )?;
+        let mut edges = vec![private_edge];
+        if needs_bridge {
+            let access = constructors
+                .iter()
+                .find(|member| member.access_marker_owner.is_some())
+                .ok_or_else(|| "the unique synthetic access constructor is absent".to_owned())?;
+            edges.push(prove_enum_constructor_candidate(
+                code_candidates,
+                access,
+                &constructor_identity(access),
+                enum_owner,
+                BASE_CTOR,
+            )?);
+        }
+        Ok(edges)
+    })();
+    let direct_constant_bcis = (|| {
+        initializer_prefix.as_ref().map_err(Clone::clone)?;
+        constructor_chain.as_ref().map_err(Clone::clone)?;
+        Ok(constant_shape
+            .iter()
+            .filter(|constant| constant.constructor_owner == enum_owner)
+            .map(|constant| constant.constructor_bci)
+            .collect())
+    })();
     let group_shape = PendingEnumConstantBodyGroupShape {
         enum_access_flags,
         constants: constant_shape,
         implicit_members,
         abstract_methods,
         constructors,
+        constructor_chain,
+        direct_constant_bcis,
         initializer_prefix,
     };
 
@@ -5313,9 +5604,30 @@ fn resolve_enum_constant_body_relations(
             .iter()
             .filter(|method| method.descriptor.raw().0 == descriptor.as_slice())
             .collect();
-        if child_constructors.len() != 1 || matching_constructors.len() != 1 {
+        let [child_constructor] = matching_constructors.as_slice() else {
+            continue;
+        };
+        if child_constructors.len() != 1 {
             continue;
         }
+        let constructor_bridge = if let Some(access) = group_shape
+            .constructors
+            .iter()
+            .find(|member| member.access_marker_owner.is_some())
+        {
+            prove_enum_physical_constructor(
+                &child_read.bytes,
+                child_constructor,
+                member_identity(&definition, child_constructor),
+                &child_pool,
+                enum_owner,
+                &access.descriptor,
+                true,
+                budget,
+            )?
+        } else {
+            Err("the selected child has no unique access constructor target".to_owned())
+        };
         relations.push(PendingEnumConstantBodyRelation {
             field_index: u64::try_from(field_index).unwrap_or(u64::MAX),
             allocation_bci: allocation.head_bci,
@@ -5326,6 +5638,7 @@ fn resolve_enum_constant_body_relations(
             anonymous_inner_owners,
             use_census: PendingEnumConstantBodyUseCensus::default(),
             group_shape: group_shape.clone(),
+            constructor_bridge,
         });
     }
     Ok(relations)
@@ -7770,6 +8083,60 @@ mod enum_constant_body_relation_tests {
         changed
     }
 
+    fn mutate_constructor_byte(bytes: &[u8], descriptor: &[u8], bci: u32, byte: u8) -> Vec<u8> {
+        let mut read_budget = budget();
+        let facts = class_member_facts(bytes, &mut read_budget).unwrap();
+        let code = facts
+            .methods
+            .iter()
+            .find(|method| {
+                method.name.raw().0 == b"<init>" && method.descriptor.raw().0 == descriptor
+            })
+            .unwrap()
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0 == b"Code")
+            .unwrap();
+        let mut changed = bytes.to_vec();
+        changed[usize::try_from(code.content_span.start).unwrap() + 8 + bci as usize] = byte;
+        changed
+    }
+
+    fn mutate_constructor_call_target(
+        bytes: &[u8],
+        descriptor: &[u8],
+        bci: u32,
+        target_owner: &[u8],
+    ) -> Vec<u8> {
+        let mut read_budget = budget();
+        let facts = class_member_facts(bytes, &mut read_budget).unwrap();
+        let pool = class_constant_pool(bytes, &read_budget).unwrap();
+        let target = pool
+            .iter()
+            .find(|entry| {
+                matches!(&entry.kind,
+                jarde_reader::classfile::CpEntryKind::MethodRef { owner, name, descriptor, .. }
+                    if owner.0 == target_owner && name.0 == b"<init>"
+                        && descriptor.0 == b"(Ljava/lang/String;I)V")
+            })
+            .unwrap();
+        let code = facts
+            .methods
+            .iter()
+            .find(|method| {
+                method.name.raw().0 == b"<init>" && method.descriptor.raw().0 == descriptor
+            })
+            .unwrap()
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0 == b"Code")
+            .unwrap();
+        let offset = usize::try_from(code.content_span.start).unwrap() + 8 + bci as usize + 1;
+        let mut changed = bytes.to_vec();
+        changed[offset..offset + 2].copy_from_slice(&target.index.to_be_bytes());
+        changed
+    }
+
     fn mutate_initializer_name_argument(bytes: &[u8], argument_bci: u32, name: &[u8]) -> Vec<u8> {
         let read_budget = budget();
         let pool = class_constant_pool(bytes, &read_budget).unwrap();
@@ -7849,6 +8216,28 @@ mod enum_constant_body_relation_tests {
                 "{class}, debug={debug}"
             );
             for relation in &source_report.enum_constant_body_relations {
+                let edge = relation.constructor_bridge.as_ref().unwrap();
+                assert_eq!(edge.caller.owner, relation.subclass);
+                assert_eq!(edge.call_bci, 4);
+                assert_eq!(edge.target_owner, class.as_bytes());
+                assert_eq!(
+                    relation
+                        .group_shape
+                        .constructor_chain
+                        .as_ref()
+                        .unwrap()
+                        .len(),
+                    2
+                );
+                assert_eq!(
+                    relation
+                        .group_shape
+                        .direct_constant_bcis
+                        .as_ref()
+                        .unwrap()
+                        .len(),
+                    usize::from(class == "demo/Mixed")
+                );
                 assert_eq!(relation.use_census.scans.len(), 1, "{class}, debug={debug}");
                 let scan = &relation.use_census.scans[0];
                 assert!(!scan.has_more);
@@ -8159,6 +8548,12 @@ mod enum_constant_body_relation_tests {
             .iter()
             .find(|relation| relation.subclass_owner == b"demo/Op$1")
             .expect("the selected child relation survives a change to its Code");
+        let changed_child = other_report
+            .enum_constant_body_relations
+            .iter()
+            .find(|relation| relation.subclass_owner == b"demo/Op$2")
+            .unwrap();
+        assert!(changed_child.constructor_bridge.is_err());
         assert!(!first.use_census.exclusive);
         assert!(first.use_census.scans[0].items.iter().any(|item| {
             matches!(&item.source.location, Location::Code { method, .. }
@@ -8185,6 +8580,236 @@ mod enum_constant_body_relation_tests {
                 && matches!(&item.source.location, Location::ClassOffset { definition, .. }
                     if definition != &first.subclass && definition != &changed_report.class)
         }));
+    }
+
+    #[test]
+    fn enum_constructor_edges_require_exact_forwarding_and_targets() {
+        const BASE: &[u8] = b"(Ljava/lang/String;I)V";
+        const ACCESS: &[u8] = b"(Ljava/lang/String;ILdemo/Op$1;)V";
+        for debug in [true, false] {
+            let entries = compiled_entries(debug);
+            let good = report(&entries, "demo/Op");
+            assert_eq!(good.enum_constant_body_relations.len(), 2);
+            assert!(good.enum_constant_body_relations.iter().all(|relation| {
+                relation.group_shape.constructor_chain.is_ok()
+                    && relation.constructor_bridge.is_ok()
+            }));
+
+            let plain = entries
+                .iter()
+                .find(|(name, _)| name == b"demo/Plain.class")
+                .unwrap();
+            let plain_report = report(&entries, "demo/Plain");
+            assert!(plain_report.enum_constant_body_relations.is_empty());
+            let prove_plain = |bytes: &[u8]| {
+                let mut read_budget = budget();
+                let facts = class_member_facts(bytes, &mut read_budget).unwrap();
+                let pool = class_constant_pool(bytes, &read_budget).unwrap();
+                let header = facts
+                    .methods
+                    .iter()
+                    .find(|method| {
+                        method.name.raw().0 == b"<init>" && method.descriptor.raw().0 == BASE
+                    })
+                    .unwrap();
+                prove_enum_physical_constructor(
+                    bytes,
+                    header,
+                    member_identity(&plain_report.class, header),
+                    &pool,
+                    b"java/lang/Enum",
+                    BASE,
+                    false,
+                    &mut read_budget,
+                )
+                .unwrap()
+            };
+            let direct = prove_plain(&plain.1).unwrap();
+            assert_eq!(direct.call_bci, 3);
+            assert_eq!(direct.target_owner, b"java/lang/Enum");
+            assert!(prove_plain(&mutate_constructor_byte(&plain.1, BASE, 2, 0x04)).is_err());
+            assert!(
+                prove_plain(&mutate_constructor_call_target(
+                    &plain.1,
+                    BASE,
+                    3,
+                    b"demo/Plain",
+                ))
+                .is_err()
+            );
+
+            let mixed = report(&entries, "demo/Mixed");
+            assert_eq!(mixed.enum_constant_body_relations.len(), 1);
+            assert_eq!(
+                mixed.enum_constant_body_relations[0]
+                    .group_shape
+                    .direct_constant_bcis,
+                Ok(vec![20]),
+            );
+            let mut changed_mixed_constructor = entries.clone();
+            let mixed_bytes = &mut changed_mixed_constructor
+                .iter_mut()
+                .find(|(name, _)| name == b"demo/Mixed.class")
+                .unwrap()
+                .1;
+            *mixed_bytes = mutate_constructor_byte(mixed_bytes, BASE, 2, 0x04);
+            let changed_mixed_report = report(&changed_mixed_constructor, "demo/Mixed");
+            assert_eq!(changed_mixed_report.enum_constant_body_relations.len(), 1);
+            assert!(
+                changed_mixed_report.enum_constant_body_relations[0]
+                    .group_shape
+                    .constructor_chain
+                    .is_err()
+            );
+            assert!(
+                changed_mixed_report.enum_constant_body_relations[0]
+                    .group_shape
+                    .direct_constant_bcis
+                    .is_err()
+            );
+
+            // BCI 20 is the ordinary constant's invokespecial in Mixed's physical <clinit>.
+            // It must call Mixed.<init>, even though the first constant uses Mixed$1.
+            let mut changed_mixed_target = entries.clone();
+            let mixed_bytes = &mut changed_mixed_target
+                .iter_mut()
+                .find(|(name, _)| name == b"demo/Mixed.class")
+                .unwrap()
+                .1;
+            *mixed_bytes = mutate_initializer_constructor_owner(mixed_bytes, 20, b"demo/Mixed$1");
+            let changed_mixed_target_report = report(&changed_mixed_target, "demo/Mixed");
+            assert!(
+                changed_mixed_target_report
+                    .enum_constant_body_relations
+                    .is_empty()
+            );
+
+            for (bci, opcode) in [(2, 0x04), (0, 0x2d), (6, 0xbf)] {
+                let mut changed = entries.clone();
+                let op = &mut changed
+                    .iter_mut()
+                    .find(|(name, _)| name == b"demo/Op.class")
+                    .unwrap()
+                    .1;
+                *op = mutate_constructor_byte(op, ACCESS, bci, opcode);
+                let changed_report = report(&changed, "demo/Op");
+                assert!(
+                    changed_report
+                        .enum_constant_body_relations
+                        .iter()
+                        .all(|relation| { relation.group_shape.constructor_chain.is_err() }),
+                    "bridge edit at {bci}, debug={debug}"
+                );
+            }
+
+            let mut changed_target = entries.clone();
+            let op = &mut changed_target
+                .iter_mut()
+                .find(|(name, _)| name == b"demo/Op.class")
+                .unwrap()
+                .1;
+            *op = mutate_constructor_call_target(op, ACCESS, 3, b"java/lang/Enum");
+            let target_report = report(&changed_target, "demo/Op");
+            assert!(
+                target_report
+                    .enum_constant_body_relations
+                    .iter()
+                    .all(|relation| { relation.group_shape.constructor_chain.is_err() }),
+                "wrong bridge target, debug={debug}"
+            );
+
+            let mut changed_child = entries.clone();
+            let child = &mut changed_child
+                .iter_mut()
+                .find(|(name, _)| name == b"demo/Op$1.class")
+                .unwrap()
+                .1;
+            *child = mutate_constructor_byte(child, BASE, 3, 0x2c);
+            let child_report = report(&changed_child, "demo/Op");
+            let first = child_report
+                .enum_constant_body_relations
+                .iter()
+                .find(|relation| relation.subclass_owner == b"demo/Op$1")
+                .unwrap();
+            assert!(
+                first.constructor_bridge.is_err(),
+                "non-null marker, debug={debug}"
+            );
+
+            let op = entries
+                .iter()
+                .find(|(name, _)| name == b"demo/Op.class")
+                .unwrap();
+            let mutated_private = mutate_constructor_byte(&op.1, BASE, 2, 0x04);
+            let mut changed_private = entries.clone();
+            changed_private
+                .iter_mut()
+                .find(|(name, _)| name == b"demo/Op.class")
+                .unwrap()
+                .1 = mutated_private;
+            let private_report = report(&changed_private, "demo/Op");
+            assert!(
+                private_report
+                    .enum_constant_body_relations
+                    .iter()
+                    .all(|relation| { relation.group_shape.constructor_chain.is_err() }),
+                "private constructor changed ordinal, debug={debug}"
+            );
+        }
+    }
+
+    #[test]
+    fn enum_child_constructor_read_preserves_budget_and_cancellation_stops() {
+        let entries = compiled_entries(false);
+        let child = entries
+            .iter()
+            .find(|(name, _)| name == b"demo/Op$1.class")
+            .unwrap();
+        let selected = report(&entries, "demo/Op").enum_constant_body_relations[0]
+            .subclass
+            .clone();
+        let mut read_budget = budget();
+        let facts = class_member_facts(&child.1, &mut read_budget).unwrap();
+        let pool = class_constant_pool(&child.1, &read_budget).unwrap();
+        let header = facts
+            .methods
+            .iter()
+            .find(|method| method.name.raw().0 == b"<init>")
+            .unwrap();
+        let identity = member_identity(&selected, header);
+        let mut limits = budget().limits().clone();
+        limits.code_bytes = 3;
+        let mut bounded = Budget::new(limits);
+        assert!(matches!(
+            prove_enum_physical_constructor(
+                &child.1,
+                header,
+                identity.clone(),
+                &pool,
+                b"demo/Op",
+                b"(Ljava/lang/String;ILdemo/Op$1;)V",
+                true,
+                &mut bounded,
+            ),
+            Err(Error::BudgetExceeded { .. })
+        ));
+        let cancellation = jarde_reader::budget::CancellationToken::new();
+        let mut cancelled =
+            Budget::with_cancellation_token(budget().limits().clone(), cancellation.clone());
+        cancellation.cancel();
+        assert!(matches!(
+            prove_enum_physical_constructor(
+                &child.1,
+                header,
+                identity,
+                &pool,
+                b"demo/Op",
+                b"(Ljava/lang/String;ILdemo/Op$1;)V",
+                true,
+                &mut cancelled,
+            ),
+            Err(Error::Cancelled { .. })
+        ));
     }
 
     #[test]
