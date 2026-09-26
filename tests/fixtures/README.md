@@ -129,10 +129,14 @@ compression are the production paths, not a test double.
 These Java syntax audit inputs use javac 23.0.1 `--release 8`; fixture-specific generation commands
 and patches are documented beside the inputs. The reader census walks every committed `.class`
 under this directory, validates the complete class and member views, and counts each decodable Code
-body, handler and control-flow target. With the 2026-09 syntax-recovery expansion's corpus it
-measures 310 classes, 1,645 Code attributes, 144 handler records, 880 branch/switch targets and
-eight historical subroutines. This is a structural input census, not a claim that every fixture is
-fully recovered.
+body, handler and control-flow target. The 2026-09 syntax-recovery expansion's current corpus
+measures 316 classes, 1,674 Code attributes, 153 handler records, 902 branch/switch targets and
+eight historical subroutines. Since the 310 / 1,645 / 144 / 880 baseline recorded in
+`54e432ed`, two frozen inputs for conditional boolean field stores add five Code bodies and six
+branch targets each; four `p3-precise-rethrow/v8` inputs add 19 Code bodies, nine handlers and ten
+branch targets. Together these six classes account for the 29 bodies, nine handlers and 22 targets
+in the updated census. This is a structural input census, not a claim that every fixture is fully
+recovered.
 `corpus-fingerprint.json` records the current corpus file count and digests; adding a fixture input
 requires regenerating and reviewing that manifest. Structural counts do not imply syntax recovery
 acceptance.
