@@ -26,11 +26,14 @@ const ACC_SYNTHETIC: u16 = 0x1000;
 const ACC_ABSTRACT: u16 = 0x0400;
 const ACC_NATIVE: u16 = 0x0100;
 const ACC_INTERFACE: u16 = 0x0200;
+const ACC_VARARGS: u16 = 0x0080;
 
 const ENUM_SUPER: &[u8] = b"java/lang/Enum";
 const CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;II)V";
 const DELEGATING_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I)V";
+const STRING_VARARGS_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I[Ljava/lang/String;)V";
 const ENUM_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I)V";
+const MAX_ENUM_STRING_VARARGS_ELEMENTS: usize = 64;
 const VALUES_DESCRIPTOR_PREFIX: &[u8] = b"()[L";
 const VALUE_OF_DESCRIPTOR_PREFIX: &[u8] = b"(Ljava/lang/String;)L";
 const ENUM_VALUE_OF_DESCRIPTOR: &[u8] = b"(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;";
@@ -92,9 +95,35 @@ pub(crate) struct ProvedEnumConstant {
     pub(crate) field_index: u64,
     pub(crate) name: String,
     pub(crate) ordinal: i32,
-    pub(crate) source_argument: Option<ProvedEnumIntArgument>,
+    pub(crate) source_argument: Option<ProvedEnumSourceArgument>,
     pub(crate) constructor_bci: u32,
     pub(crate) field_write_bci: u32,
+}
+
+/// A source argument tail proved from the enum initializer's same-run Code facts.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum ProvedEnumSourceArgument {
+    Int(ProvedEnumIntArgument),
+    StringVarargs(Vec<ProvedEnumStringLiteral>),
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ProvedEnumStringLiteral {
+    pub(crate) value: String,
+    pub(crate) bci: u32,
+}
+
+impl ProvedEnumSourceArgument {
+    pub(crate) fn source_text(&self) -> String {
+        match self {
+            Self::Int(argument) => argument.source_text(),
+            Self::StringVarargs(values) => values
+                .iter()
+                .map(|value| format!("\"{}\"", jarde_java::escape_string(&value.value)))
+                .collect::<Vec<_>>()
+                .join(", "),
+        }
+    }
 }
 
 /// A closed source expression proven from the enum initializer's same-run Code facts.
@@ -239,8 +268,8 @@ pub(crate) fn has_only_terminal_initializer_return(
         return false;
     };
     if group.constructor_signature_present
-        && !constructor.enum_constructor_source_signature
-        && !constructor.enum_constructor_no_arg_source_signature
+        && constructor.enum_constructor_source_tail
+            == crate::class_source::EnumConstructorSourceTail::Unrecognized
     {
         return false;
     }
@@ -1057,7 +1086,10 @@ pub(crate) fn prove_group(
                     .find(|method| method.name.raw().0 == b"<init>")
                     .map(|method| method.descriptor.raw().0.as_slice())
                     .unwrap_or(&[]);
-                if descriptor != CTOR_DESCRIPTOR && descriptor != DELEGATING_CTOR_DESCRIPTOR {
+                if descriptor != CTOR_DESCRIPTOR
+                    && descriptor != DELEGATING_CTOR_DESCRIPTOR
+                    && descriptor != STRING_VARARGS_CTOR_DESCRIPTOR
+                {
                     return Ok(refuse("the enum has an unsupported constructor descriptor"));
                 }
                 let constructor_index = match unique_method(method_headers, b"<init>", descriptor) {
@@ -1181,8 +1213,17 @@ pub(crate) fn prove_group(
         Err(reason) => return Ok(refuse(&reason)),
     };
 
+    let constructor_flags_valid =
+        if method_headers[constructor_index].descriptor.raw().0 == STRING_VARARGS_CTOR_DESCRIPTOR {
+            exact_method_flags(
+                &method_headers[constructor_index],
+                ACC_PRIVATE | ACC_VARARGS,
+            )
+        } else {
+            exact_method_flags(&method_headers[constructor_index], ACC_PRIVATE)
+        };
     if !exact_method_flags(&method_headers[clinit_index], ACC_STATIC)
-        || !exact_method_flags(&method_headers[constructor_index], ACC_PRIVATE)
+        || !constructor_flags_valid
         || !exact_method_flags(&method_headers[values_index], ACC_PUBLIC | ACC_STATIC)
         || !exact_method_flags(&method_headers[value_of_index], ACC_PUBLIC | ACC_STATIC)
         || !exact_method_flags(
@@ -1235,6 +1276,17 @@ pub(crate) fn prove_group(
     if let Some(index) = delegating_constructor_index {
         projected_methods.push(index);
     }
+    if method_headers[constructor_index].descriptor.raw().0 == STRING_VARARGS_CTOR_DESCRIPTOR
+        && !enum_constructor_signature_matches(
+            &method_headers[constructor_index],
+            &source_methods[constructor_index],
+            STRING_VARARGS_CTOR_DESCRIPTOR,
+        )
+    {
+        return Ok(refuse(
+            "the String... constructor lacks the exact source Signature and ACC_VARARGS evidence",
+        ));
+    }
     let projected_constructor_descriptors: Vec<Vec<u8>> = if delegating_constructor_index.is_some()
     {
         vec![
@@ -1243,6 +1295,9 @@ pub(crate) fn prove_group(
         ]
     } else if method_headers[constructor_index].descriptor.raw().0 == DELEGATING_CTOR_DESCRIPTOR {
         vec![DELEGATING_CTOR_DESCRIPTOR.to_vec()]
+    } else if method_headers[constructor_index].descriptor.raw().0 == STRING_VARARGS_CTOR_DESCRIPTOR
+    {
+        vec![STRING_VARARGS_CTOR_DESCRIPTOR.to_vec()]
     } else {
         vec![CTOR_DESCRIPTOR.to_vec()]
     };
@@ -1297,6 +1352,12 @@ pub(crate) fn prove_group(
             ));
         }
         None
+    } else if method_headers[constructor_index].descriptor.raw().0 == STRING_VARARGS_CTOR_DESCRIPTOR
+    {
+        match prove_string_varargs_constructor(constructor, owner, field_headers, budget)? {
+            Ok((field_index, _)) => Some(field_index),
+            Err(reason) => return Ok(refuse(&reason)),
+        }
     } else {
         match prove_constructor(constructor, owner, field_headers) {
             Ok((field_index, _)) => Some(field_index),
@@ -1305,7 +1366,7 @@ pub(crate) fn prove_group(
     };
     if expected_ctor_field.is_some_and(|index| source_fields[index].declaration.is_none()) {
         return Ok(refuse(
-            "the constructor's source integer field is not faithfully declared",
+            "the constructor's source field is not faithfully declared",
         ));
     }
     if !prove_values(values, owner, backing_field.name.raw().0.as_slice()) {
@@ -1347,6 +1408,15 @@ pub(crate) fn prove_group(
             };
             constants.len()
         ]
+    } else if method_headers[constructor_index].descriptor.raw().0 == STRING_VARARGS_CTOR_DESCRIPTOR
+    {
+        vec![
+            InitializerConstructorCall {
+                descriptor: STRING_VARARGS_CTOR_DESCRIPTOR.to_vec(),
+                source_argument: EnumSourceArgument::StringVarargs,
+            };
+            constants.len()
+        ]
     } else {
         vec![
             InitializerConstructorCall {
@@ -1359,6 +1429,18 @@ pub(crate) fn prove_group(
     let prefix = if let Some(edge) = &delegation_edge {
         edge.initializer_prefix.clone()
     } else {
+        // The raw matcher below is deliberately small but still inspects the selected complete
+        // initializer stream. Charge and poll that bounded work before any local interpretation.
+        let mut literal_bytes = 0_u64;
+        for instruction in &clinit.instructions {
+            budget.charge(CountedBudgetDimension::IrItems, 3)?;
+            budget.poll()?;
+            if let Some(EnumCodeReference::String(value)) = &instruction.reference {
+                literal_bytes =
+                    literal_bytes.saturating_add(u64::try_from(value.len()).unwrap_or(u64::MAX));
+            }
+        }
+        budget.charge(CountedBudgetDimension::AnalysisSteps, literal_bytes)?;
         match prove_initializer_prefix(InitializerPrefixInput {
             code: clinit,
             owner,
@@ -1664,6 +1746,96 @@ fn expected_initializer_use(
     }
 }
 
+fn prove_string_varargs_constructor(
+    code: &EnumMethodCodeCandidate,
+    owner: &[u8],
+    fields: &[MemberHeader],
+    budget: &mut Budget,
+) -> Result<std::result::Result<(usize, u32), String>> {
+    let instructions = &code.instructions;
+    let refused = |reason: &str| Err(reason.to_owned());
+    if !code.complete || code.exception_handler_count != 0 {
+        return Ok(refused(
+            "the String... constructor Code is incomplete or has handlers",
+        ));
+    }
+    if instructions.len() != 8 || !instructions_are_contiguous(instructions, budget)? {
+        return Ok(refused(
+            "the String... constructor is not one complete eight-instruction body",
+        ));
+    }
+    let canonical_local = |instruction: &EnumCodeInstruction, opcode: u8, slot: u16| {
+        instruction.opcode == opcode
+            && instruction.width == 1
+            && instruction.immediate.is_none()
+            && instruction.local == Some(slot)
+            && instruction.reference.is_none()
+    };
+    if !canonical_local(&instructions[0], 0x2a, 0)
+        || !canonical_local(&instructions[1], 0x2b, 1)
+        || !canonical_local(&instructions[2], 0x1c, 2)
+        || !method_reference(
+            &instructions[3],
+            0xb7,
+            ENUM_SUPER,
+            b"<init>",
+            ENUM_CTOR_DESCRIPTOR,
+            false,
+        )
+        || instructions[3].width != 3
+        || !canonical_local(&instructions[4], 0x2a, 0)
+        || !canonical_local(&instructions[5], 0x2d, 3)
+        || instructions[6].opcode != 0xb5
+        || instructions[6].width != 3
+        || instructions[6].immediate.is_some()
+        || instructions[6].local.is_some()
+        || instructions[7].opcode != 0xb1
+        || instructions[7].width != 1
+        || instructions[7].immediate.is_some()
+        || instructions[7].local.is_some()
+        || instructions[7].reference.is_some()
+    {
+        return Ok(refused(
+            "the String... constructor has effects beyond Enum initialization and one String[] field store",
+        ));
+    }
+    let Some(EnumCodeReference::Field {
+        owner: field_owner,
+        name,
+        descriptor,
+    }) = &instructions[6].reference
+    else {
+        return Ok(refused(
+            "the String... field store has no complete Fieldref",
+        ));
+    };
+    if field_owner != owner || descriptor != b"[Ljava/lang/String;" {
+        return Ok(refused(
+            "the String... constructor stores a different field type or owner",
+        ));
+    }
+    let matching_fields: Vec<_> = fields
+        .iter()
+        .enumerate()
+        .filter(|(_, field)| {
+            field.descriptor.raw().0 == b"[Ljava/lang/String;"
+                && field.access_flags & (ACC_STATIC | ACC_ENUM) == 0
+        })
+        .map(|(index, _)| index)
+        .collect();
+    let [field_index] = matching_fields.as_slice() else {
+        return Ok(refused(
+            "the enum does not have exactly one String[] instance field",
+        ));
+    };
+    if fields[*field_index].name.raw().0 != *name {
+        return Ok(refused(
+            "the String... constructor stores a String[] field other than the unique target",
+        ));
+    }
+    Ok(Ok((*field_index, instructions[3].bci)))
+}
+
 fn prove_constructor(
     code: &EnumMethodCodeCandidate,
     owner: &[u8],
@@ -1715,6 +1887,16 @@ fn prove_constructor(
         return Err("the enum constructor's int field target is absent or ambiguous".to_owned());
     };
     Ok((*field_index, instructions[3].bci))
+}
+
+fn decode_ascii_enum_string(raw: &[u8]) -> Option<String> {
+    if raw.is_empty() {
+        return Some(String::new());
+    }
+    if raw.iter().any(|byte| !(1..=0x7f).contains(byte)) {
+        return None;
+    }
+    String::from_utf8(raw.to_vec()).ok()
 }
 
 fn prove_implicit_enum_constructor(
@@ -2436,8 +2618,18 @@ fn enum_constructor_signature_matches(
     physical_descriptor: &[u8],
 ) -> bool {
     let source_shape = match physical_descriptor {
-        DELEGATING_CTOR_DESCRIPTOR => source.enum_constructor_no_arg_source_signature,
-        CTOR_DESCRIPTOR => source.enum_constructor_source_signature,
+        DELEGATING_CTOR_DESCRIPTOR => {
+            source.enum_constructor_source_tail
+                == crate::class_source::EnumConstructorSourceTail::NoArg
+        }
+        CTOR_DESCRIPTOR => {
+            source.enum_constructor_source_tail
+                == crate::class_source::EnumConstructorSourceTail::Int
+        }
+        STRING_VARARGS_CTOR_DESCRIPTOR => {
+            source.enum_constructor_source_tail
+                == crate::class_source::EnumConstructorSourceTail::StringVarargs
+        }
         _ => false,
     };
     source_shape
@@ -2450,6 +2642,8 @@ fn enum_constructor_signature_matches(
             .count()
             == 1
         && allowed_method_attributes(header, &[b"Code", b"MethodParameters", b"Signature"])
+        && (physical_descriptor != STRING_VARARGS_CTOR_DESCRIPTOR
+            || header.access_flags == (ACC_PRIVATE | ACC_VARARGS))
 }
 
 fn instructions_are_contiguous(
@@ -2560,6 +2754,7 @@ fn prove_values_factory(
 enum EnumSourceArgument {
     AnyIntExpression,
     Exact(i32),
+    StringVarargs,
     None,
 }
 
@@ -2585,7 +2780,7 @@ struct InitializerPrefixProof {
     constant_bcis: Vec<u32>,
     backing_store_bci: u32,
     constructor_bcis: Vec<u32>,
-    source_arguments: Vec<Option<ProvedEnumIntArgument>>,
+    source_arguments: Vec<Option<ProvedEnumSourceArgument>>,
     prefix_end_bci: u32,
     factory_call_bci: u32,
 }
@@ -2648,7 +2843,10 @@ fn prove_initializer_prefix(
                         instructions.get(cursor + 4)
                     ));
                 };
-                (4 + argument_length, Some(argument))
+                (
+                    4 + argument_length,
+                    Some(ProvedEnumSourceArgument::Int(argument)),
+                )
             }
             EnumSourceArgument::Exact(expected) => {
                 let Some(argument) = instructions.get(cursor + 4).and_then(proved_int_literal)
@@ -2665,7 +2863,86 @@ fn prove_initializer_prefix(
                         ordinal
                     ));
                 }
-                (5, Some(argument))
+                (5, Some(ProvedEnumSourceArgument::Int(argument)))
+            }
+            EnumSourceArgument::StringVarargs => {
+                let Some(array_length) = instructions.get(cursor + 4).and_then(proved_int_literal)
+                else {
+                    return Err(format!("constant {ordinal} has no literal String[] length"));
+                };
+                let ProvedEnumIntArgument::Literal { value: count, .. } = array_length else {
+                    return Err(format!(
+                        "constant {ordinal} String[] length is not a literal"
+                    ));
+                };
+                let Ok(count) = usize::try_from(count) else {
+                    return Err(format!("constant {ordinal} String[] length is negative"));
+                };
+                if count > MAX_ENUM_STRING_VARARGS_ELEMENTS {
+                    return Err(format!(
+                        "constant {ordinal} exceeds the bounded String... element count"
+                    ));
+                }
+                let Some(array) = instructions.get(cursor + 5) else {
+                    return Err(format!("constant {ordinal} has no String[] allocation"));
+                };
+                if !class_reference(array, 0xbd, b"java/lang/String")
+                    || array.width != 3
+                    || array.immediate.is_some()
+                    || array.local.is_some()
+                {
+                    return Err(format!(
+                        "constant {ordinal} does not allocate a fresh String[]"
+                    ));
+                }
+                let mut values = Vec::with_capacity(count);
+                let mut offset = 6_usize;
+                for element_index in 0..count {
+                    let start = cursor + offset;
+                    let Some([duplicate, index, literal, store]) = instructions
+                        .get(start..start + 4)
+                        .and_then(|items| <&[EnumCodeInstruction; 4]>::try_from(items).ok())
+                    else {
+                        return Err(format!(
+                            "constant {ordinal} has an incomplete String[] element write"
+                        ));
+                    };
+                    if duplicate.opcode != 0x59
+                        || duplicate.width != 1
+                        || duplicate.immediate.is_some()
+                        || duplicate.local.is_some()
+                        || duplicate.reference.is_some()
+                        || !matches!(proved_int_literal(index), Some(ProvedEnumIntArgument::Literal { value, .. }) if value == element_index as i32)
+                        || !matches!(literal.opcode, 0x12 | 0x13)
+                        || literal.width != if literal.opcode == 0x12 { 2 } else { 3 }
+                        || literal.immediate.is_some()
+                        || literal.local.is_some()
+                        || !matches!(&literal.reference, Some(EnumCodeReference::String(_)))
+                        || store.opcode != 0x53
+                        || store.width != 1
+                        || store.immediate.is_some()
+                        || store.local.is_some()
+                        || store.reference.is_some()
+                    {
+                        return Err(format!(
+                            "constant {ordinal} String[] element {element_index} is not an ordered literal write"
+                        ));
+                    }
+                    let Some(EnumCodeReference::String(raw)) = &literal.reference else {
+                        unreachable!();
+                    };
+                    let value = decode_ascii_enum_string(raw.as_slice())
+                        .ok_or_else(|| format!("constant {ordinal} String[] element {element_index} is outside the ASCII literal slice"))?;
+                    values.push(ProvedEnumStringLiteral {
+                        value,
+                        bci: literal.bci,
+                    });
+                    offset += 4;
+                }
+                (
+                    offset,
+                    Some(ProvedEnumSourceArgument::StringVarargs(values)),
+                )
             }
             EnumSourceArgument::None => (4, None),
         };
@@ -3345,6 +3622,293 @@ final class ConstructorEffects {
     }
 
     #[test]
+    fn string_varargs_arrays_are_proved_and_projected_atomically() {
+        const SOURCE: &str = include_str!(
+            "../openspec/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
+        );
+        let bytes = compile_java_class("StringVarargs", SOURCE, false);
+        let report = enum_report(&bytes, "StringVarargs", &mut test_budget());
+        let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(group)) =
+            &report.enum_constant_proof
+        else {
+            panic!(
+                "String... group should prove from complete class facts: {:?}",
+                report.enum_constant_proof
+            );
+        };
+        assert_eq!(group.constants.len(), 3);
+        let expected = [
+            ("PAIR", vec![".dex", ".class"]),
+            ("SINGLE", vec![".xml"]),
+            ("EMPTY", vec![]),
+        ];
+        for (constant, (name, values)) in group.constants.iter().zip(expected) {
+            assert_eq!(constant.name, name);
+            let Some(ProvedEnumSourceArgument::StringVarargs(actual)) = &constant.source_argument
+            else {
+                panic!("{} must retain a proved String... argument", constant.name);
+            };
+            assert_eq!(
+                actual
+                    .iter()
+                    .map(|value| value.value.as_str())
+                    .collect::<Vec<_>>(),
+                values
+            );
+            assert_eq!(actual.len(), values.len());
+            assert!(actual.windows(2).all(|pair| pair[0].bci < pair[1].bci));
+            assert!(
+                actual
+                    .iter()
+                    .all(|value| value.bci < constant.constructor_bci)
+            );
+        }
+        assert!(report.text.contains("PAIR(\".dex\", \".class\"),"));
+        assert!(report.text.contains("SINGLE(\".xml\"),"));
+        assert!(report.text.contains("EMPTY();"));
+        assert!(
+            report
+                .text
+                .contains("private StringVarargs(java.lang.String... arg0)")
+        );
+        assert!(
+            !report
+                .text
+                .contains("public static final StringVarargs PAIR;")
+        );
+    }
+
+    #[test]
+    fn unsupported_string_varargs_classfiles_refuse_the_complete_group() {
+        let cases = [
+            (
+                "missing-varargs-flag",
+                "public enum Bad { ONE(new String[]{\"x\"}); private final String[] values; Bad(String[] values) { this.values = values; } }",
+            ),
+            (
+                "ambiguous-string-fields",
+                "public enum Bad { ONE(\"x\"); private final String[] values; private String[] other; Bad(String... values) { this.values = values; } }",
+            ),
+            (
+                "nonliteral-element",
+                "public enum Bad { ONE(value()); private final String[] values; Bad(String... values) { this.values = values; } static String value() { return \"x\"; } }",
+            ),
+            (
+                "extra-array-consumer",
+                "public enum Bad { ONE(consume(new String[]{\"x\"})); private final String[] values; Bad(String... values) { this.values = values; } static String[] consume(String[] values) { return values; } }",
+            ),
+            (
+                "different-array-type",
+                "public enum Bad { ONE((String[])(Object)new StringBuilder[]{new StringBuilder(\"x\")}); private final String[] values; Bad(String... values) { this.values = values; } }",
+            ),
+            (
+                "non-ascii-mutf8-literal",
+                "public enum Bad { ONE(\"é\"); private final String[] values; Bad(String... values) { this.values = values; } }",
+            ),
+            (
+                "invalid-initializer-suffix",
+                "public enum Bad { ONE(\"x\"); private final String[] values; Bad(String... values) { this.values = values; } static { touch(); } static void touch() {} }",
+            ),
+        ];
+        for (case, source) in cases {
+            let bytes = compile_java_class("Bad", source, false);
+            if case == "different-array-type" {
+                verify_classfile_without_initialization("Bad", &bytes);
+            }
+            let report = enum_report(&bytes, "Bad", &mut test_budget());
+            if case == "invalid-initializer-suffix" {
+                assert!(matches!(
+                    report.enum_constant_proof,
+                    ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(_))
+                ));
+            } else {
+                assert!(
+                    matches!(
+                        report.enum_constant_proof,
+                        ClassSourceEnumConstantProof::Refused { .. }
+                    ),
+                    "{case}: {:?}",
+                    report.enum_constant_proof
+                );
+            }
+            assert!(
+                report.text.contains("public static final Bad ONE;"),
+                "{case}: {}",
+                report.text
+            );
+            assert!(
+                !report.text.contains("enum Bad {\n    ONE("),
+                "{case}: {}",
+                report.text
+            );
+        }
+    }
+
+    #[test]
+    fn string_varargs_source_uses_the_existing_java_literal_escaper() {
+        let source = r#"public enum Escaped { VALUE("\"\\\n"); private final String[] values; Escaped(String... values) { this.values = values; } }"#;
+        let bytes = compile_java_class("Escaped", source, false);
+        let report = enum_report(&bytes, "Escaped", &mut test_budget());
+        assert!(matches!(
+            report.enum_constant_proof,
+            ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(_))
+        ));
+        assert!(
+            report.text.contains(r#"VALUE("\"\\\n");"#),
+            "{}",
+            report.text
+        );
+        let _recompiled = compile_java_class("Escaped", &report.text, false);
+    }
+
+    #[test]
+    fn one_unproved_string_varargs_constant_refuses_all_constants() {
+        let source = "public enum Bad { GOOD(\"ok\"), BAD(value()); private final String[] values; Bad(String... values) { this.values = values; } static String value() { return \"bad\"; } }";
+        let bytes = compile_java_class("Bad", source, false);
+        let report = enum_report(&bytes, "Bad", &mut test_budget());
+        assert!(matches!(
+            report.enum_constant_proof,
+            ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(report.text.contains("public static final Bad GOOD;"));
+        assert!(report.text.contains("public static final Bad BAD;"));
+        assert!(!report.text.contains("enum Bad {\n    GOOD("));
+    }
+
+    #[test]
+    fn string_varargs_signature_mismatch_refuses_without_partial_projection() {
+        const SOURCE: &str = include_str!(
+            "../openspec/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
+        );
+        let mut bytes = compile_java_class("StringVarargs", SOURCE, false);
+        replace_constant_pool_utf8(
+            &mut bytes,
+            b"([Ljava/lang/String;)V",
+            b"([Ljava/lang/Strung;)V",
+        );
+        verify_classfile_without_initialization("StringVarargs", &bytes);
+        let report = enum_report(&bytes, "StringVarargs", &mut test_budget());
+        assert!(matches!(
+            report.enum_constant_proof,
+            ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(
+            report
+                .text
+                .contains("public static final StringVarargs PAIR;")
+        );
+        assert!(!report.text.contains("PAIR(\".dex\""));
+    }
+
+    #[test]
+    fn missing_string_varargs_constructor_code_refuses_the_group() {
+        const SOURCE: &str = include_str!(
+            "../openspec/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
+        );
+        let mut bytes = compile_java_class("StringVarargs", SOURCE, false);
+        remove_method_attribute(
+            &mut bytes,
+            b"<init>",
+            STRING_VARARGS_CTOR_DESCRIPTOR,
+            b"Code",
+        );
+        let report = enum_report(&bytes, "StringVarargs", &mut test_budget());
+        assert!(matches!(
+            report.enum_constant_proof,
+            ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(
+            report
+                .text
+                .contains("public static final StringVarargs PAIR;")
+        );
+        assert!(!report.text.contains("PAIR(\".dex\""));
+    }
+
+    #[test]
+    fn repeated_string_array_index_write_is_jvm_verifiable_and_refused() {
+        const SOURCE: &str = include_str!(
+            "../openspec/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
+        );
+        let mut bytes = compile_java_class("StringVarargs", SOURCE, false);
+        let candidates: Vec<_> = bytes
+            .windows(4)
+            .enumerate()
+            .filter_map(|(at, bytes)| {
+                (bytes[0] == 0x59 && bytes[1] == 0x04 && matches!(bytes[2], 0x12 | 0x13))
+                    .then_some(at + 1)
+            })
+            .collect();
+        assert_eq!(candidates.len(), 1, "the PAIR second index store is unique");
+        bytes[candidates[0]] = 0x03; // PAIR writes index zero twice; the JVM still verifies it.
+        verify_classfile_without_initialization("StringVarargs", &bytes);
+        let report = enum_report(&bytes, "StringVarargs", &mut test_budget());
+        assert!(matches!(
+            report.enum_constant_proof,
+            ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(
+            report
+                .text
+                .contains("public static final StringVarargs PAIR;")
+        );
+        assert!(!report.text.contains("PAIR(\".dex\""));
+    }
+
+    #[test]
+    fn string_varargs_low_budget_and_cancellation_keep_the_group_unpublished() {
+        const SOURCE: &str = include_str!(
+            "../openspec/evidence/java-syntax-2026-09-27/enum-constructor-arguments/StringVarargs.java"
+        );
+        let bytes = compile_java_class("StringVarargs", SOURCE, false);
+
+        let mut limits = test_budget().limits().clone();
+        limits.ir_items = 150;
+        let budgeted = enum_report(&bytes, "StringVarargs", &mut Budget::new(limits));
+        assert!(matches!(
+            budgeted.enum_constant_proof,
+            ClassSourceEnumConstantProof::Stopped { .. }
+        ));
+        assert!(!budgeted.text.contains("PAIR(\".dex\""));
+        assert!(
+            budgeted
+                .text
+                .contains("public static final StringVarargs PAIR;")
+        );
+
+        let token = crate::CancellationToken::new();
+        token.cancel();
+        let engine = crate::Engine::new();
+        let snapshot = engine
+            .open(crate::ArtifactInput::bytes(bytes), &mut test_budget())
+            .expect("the fixture opens before cancellation");
+        let request = enum_request(&snapshot, "StringVarargs");
+        let mut cancelled = Budget::with_cancellation_token(test_budget().limits().clone(), token);
+        match engine
+            .class_source(std::slice::from_ref(&snapshot), &request, &mut cancelled)
+            .expect("cancellation remains an ordinary partial operation result")
+        {
+            crate::OperationOutcome::Incomplete(candidates) => {
+                assert!(matches!(
+                    candidates.execution,
+                    ExecutionReport::Cancelled { .. }
+                ));
+                assert!(candidates.candidates.is_empty());
+            }
+            crate::OperationOutcome::Performed(report) => {
+                assert!(matches!(
+                    report.execution,
+                    ExecutionReport::Cancelled { .. }
+                ));
+                assert!(!report.text.contains("PAIR(\".dex\""));
+            }
+            crate::OperationOutcome::Ambiguous(candidates) => {
+                panic!("the standalone cancellation fixture became ambiguous: {candidates:?}");
+            }
+        }
+    }
+
+    #[test]
     fn int_static_field_arguments_preserve_the_same_run_expression_and_runtime_order() {
         const INT_ENUM: &str = r#"public enum IntArgs {
     LITERAL(1), FIELD(Ints.THREE), EXPR(Ints.THREE + 1);
@@ -3396,16 +3960,18 @@ final class ConstructorEffects {
         assert_eq!(group.constants.len(), 3);
         assert!(matches!(
             group.constants[0].source_argument,
-            Some(ProvedEnumIntArgument::Literal { value: 1, .. })
+            Some(ProvedEnumSourceArgument::Int(
+                ProvedEnumIntArgument::Literal { value: 1, .. }
+            ))
         ));
-        let Some(ProvedEnumIntArgument::StaticField {
+        let Some(ProvedEnumSourceArgument::Int(ProvedEnumIntArgument::StaticField {
             owner,
             name,
             descriptor,
             source_owner,
             source_name,
             bci: field_bci,
-        }) = &group.constants[1].source_argument
+        })) = &group.constants[1].source_argument
         else {
             panic!("FIELD must retain one field-reference leaf");
         };
@@ -3415,11 +3981,11 @@ final class ConstructorEffects {
         assert_eq!(source_owner, "Ints");
         assert_eq!(source_name, "THREE");
         assert_eq!(*field_bci + 3, group.constants[1].constructor_bci);
-        let Some(ProvedEnumIntArgument::Add {
+        let Some(ProvedEnumSourceArgument::Int(ProvedEnumIntArgument::Add {
             left,
             right,
             bci: add_bci,
-        }) = &group.constants[2].source_argument
+        })) = &group.constants[2].source_argument
         else {
             panic!("EXPR must retain the ordered field-plus-literal expression");
         };
@@ -4008,7 +4574,7 @@ public final class PackageArgsRunner {
                     constant
                         .source_argument
                         .as_ref()
-                        .map(ProvedEnumIntArgument::source_text)
+                        .map(ProvedEnumSourceArgument::source_text)
                 })
                 .collect::<Vec<_>>(),
             [Some("4".to_owned()), Some("9".to_owned())]
@@ -4089,7 +4655,7 @@ public final class PackageArgsRunner {
                     constant
                         .source_argument
                         .as_ref()
-                        .map(ProvedEnumIntArgument::source_text)
+                        .map(ProvedEnumSourceArgument::source_text)
                 })
                 .collect::<Vec<_>>(),
             [Some("2".to_owned()), Some("5".to_owned())]
@@ -5141,8 +5707,8 @@ public final class PackageArgsRunner {
         let mut wrong_terminal_signature = baseline.clone();
         let terminal_index =
             constructor_index_for(&wrong_terminal_signature.method_headers, CTOR_DESCRIPTOR);
-        wrong_terminal_signature.source_methods[terminal_index].enum_constructor_source_signature =
-            false;
+        wrong_terminal_signature.source_methods[terminal_index].enum_constructor_source_tail =
+            crate::class_source::EnumConstructorSourceTail::Unrecognized;
         cases.push((
             "terminal source Signature has the wrong shape",
             wrong_terminal_signature,
@@ -5153,8 +5719,8 @@ public final class PackageArgsRunner {
             &wrong_delegating_signature.method_headers,
             DELEGATING_CTOR_DESCRIPTOR,
         );
-        wrong_delegating_signature.source_methods[delegating_index]
-            .enum_constructor_no_arg_source_signature = false;
+        wrong_delegating_signature.source_methods[delegating_index].enum_constructor_source_tail =
+            crate::class_source::EnumConstructorSourceTail::Unrecognized;
         cases.push((
             "delegating source Signature has the wrong shape",
             wrong_delegating_signature,
@@ -6099,6 +6665,173 @@ public final class PackageArgsRunner {
                 .class_source(&snapshots, &request, budget)
                 .expect("the class-source request succeeds"),
         )
+    }
+
+    fn replace_constant_pool_utf8(bytes: &mut [u8], from: &[u8], to: &[u8]) {
+        assert_eq!(
+            from.len(),
+            to.len(),
+            "the fixture mutation preserves the constant length"
+        );
+        let constant_count = usize::from(u16::from_be_bytes([bytes[8], bytes[9]]));
+        let mut index = 1;
+        let mut cursor = 10;
+        let mut replacements = 0;
+        while index < constant_count {
+            let tag = bytes[cursor];
+            cursor += 1;
+            match tag {
+                1 => {
+                    let length =
+                        usize::from(u16::from_be_bytes([bytes[cursor], bytes[cursor + 1]]));
+                    cursor += 2;
+                    if &bytes[cursor..cursor + length] == from {
+                        bytes[cursor..cursor + length].copy_from_slice(to);
+                        replacements += 1;
+                    }
+                    cursor += length;
+                }
+                3 | 4 => cursor += 4,
+                5 | 6 => {
+                    cursor += 8;
+                    index += 1;
+                }
+                7 | 8 | 16 | 19 | 20 => cursor += 2,
+                9 | 10 | 11 | 12 | 17 | 18 => cursor += 4,
+                15 => cursor += 3,
+                other => panic!("unknown constant-pool tag in fixture: {other}"),
+            }
+            index += 1;
+        }
+        assert_eq!(
+            replacements, 1,
+            "the Signature spelling is unique in this fixture"
+        );
+    }
+
+    fn remove_method_attribute(
+        bytes: &mut Vec<u8>,
+        method_name: &[u8],
+        descriptor: &[u8],
+        attribute_name: &[u8],
+    ) {
+        let read_u16 = |bytes: &[u8], offset: usize| {
+            usize::from(u16::from_be_bytes([bytes[offset], bytes[offset + 1]]))
+        };
+        let constant_count = read_u16(bytes, 8);
+        let mut utf8 = vec![None; constant_count];
+        let mut index = 1;
+        let mut cursor = 10;
+        while index < constant_count {
+            let tag = bytes[cursor];
+            cursor += 1;
+            match tag {
+                1 => {
+                    let length = read_u16(bytes, cursor);
+                    cursor += 2;
+                    utf8[index] = Some(bytes[cursor..cursor + length].to_vec());
+                    cursor += length;
+                }
+                3 | 4 => cursor += 4,
+                5 | 6 => {
+                    cursor += 8;
+                    index += 1;
+                }
+                7 | 8 | 16 | 19 | 20 => cursor += 2,
+                9 | 10 | 11 | 12 | 17 | 18 => cursor += 4,
+                15 => cursor += 3,
+                other => panic!("unknown fixture constant-pool tag: {other}"),
+            }
+            index += 1;
+        }
+        let member_end = |bytes: &[u8], mut offset: usize| {
+            let count_at = offset + 6;
+            let count = read_u16(bytes, count_at);
+            offset += 8;
+            for _ in 0..count {
+                let length = usize::try_from(u32::from_be_bytes(
+                    bytes[offset + 2..offset + 6].try_into().unwrap(),
+                ))
+                .unwrap();
+                offset += 6 + length;
+            }
+            (offset, count_at)
+        };
+        cursor += 6;
+        let interfaces = read_u16(bytes, cursor);
+        cursor += 2 + interfaces * 2;
+        let fields = read_u16(bytes, cursor);
+        cursor += 2;
+        for _ in 0..fields {
+            cursor = member_end(bytes, cursor).0;
+        }
+        let methods = read_u16(bytes, cursor);
+        cursor += 2;
+        for _ in 0..methods {
+            let start = cursor;
+            let name_index = read_u16(bytes, start + 2);
+            let descriptor_index = read_u16(bytes, start + 4);
+            let attribute_count_offset = start + 6;
+            let attribute_count = read_u16(bytes, attribute_count_offset);
+            cursor += 8;
+            for _ in 0..attribute_count {
+                let attribute_start = cursor;
+                let attribute_index = read_u16(bytes, cursor);
+                let length = usize::try_from(u32::from_be_bytes(
+                    bytes[cursor + 2..cursor + 6].try_into().unwrap(),
+                ))
+                .unwrap();
+                cursor += 6 + length;
+                if utf8[name_index].as_deref() == Some(method_name)
+                    && utf8[descriptor_index].as_deref() == Some(descriptor)
+                    && utf8[attribute_index].as_deref() == Some(attribute_name)
+                {
+                    let count = read_u16(bytes, attribute_count_offset);
+                    bytes.drain(attribute_start..cursor);
+                    bytes[attribute_count_offset..attribute_count_offset + 2]
+                        .copy_from_slice(&u16::try_from(count - 1).unwrap().to_be_bytes());
+                    return;
+                }
+            }
+        }
+        panic!("the target method attribute is absent");
+    }
+
+    fn verify_classfile_without_initialization(class_name: &str, classfile: &[u8]) {
+        let (directory, _cleanup) = java_test_directory("class-verification");
+        fs::write(directory.join(format!("{class_name}.class")), classfile)
+            .expect("the mutated classfile is written");
+        fs::write(
+            directory.join("VerifyClass.java"),
+            "public final class VerifyClass { public static void main(String[] args) throws Exception { Class.forName(args[0], false, VerifyClass.class.getClassLoader()); System.out.println(\"VERIFIED \" + args[0]); } }",
+        )
+        .expect("the verification helper source is written");
+        let compile = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-d"])
+            .arg(&directory)
+            .arg(directory.join("VerifyClass.java"))
+            .output()
+            .expect("the Java 8 compiler is available");
+        assert!(
+            compile.status.success(),
+            "verification helper compiles: {}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        let output = Command::new("java")
+            .args(["-Xverify:all", "-cp"])
+            .arg(&directory)
+            .args(["VerifyClass", class_name])
+            .output()
+            .expect("the Java 8 runtime is available");
+        assert!(
+            output.status.success(),
+            "class verifies without initialization: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert_eq!(
+            String::from_utf8_lossy(&output.stdout),
+            format!("VERIFIED {class_name}\n")
+        );
     }
 
     fn compile_java_class(class_name: &str, source_text: &str, debug: bool) -> Vec<u8> {

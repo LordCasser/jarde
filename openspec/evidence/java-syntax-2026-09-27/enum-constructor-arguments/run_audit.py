@@ -152,10 +152,7 @@ with tempfile.TemporaryDirectory(prefix="dt11-audit-") as scratch:
                     raise SystemExit(f"{tool} runtime output differs from original: {enum}")
                 statuses[tool][enum+"_run"]=rp.returncode
             else:
-                if tool == "jarde" and enum != "LiteralOnly" and (cp.returncode != 1 or "enum constant expected" not in compile_output):
-                    raise SystemExit(f"unexpected Jarde javac failure: {enum}")
-                (GENERATED/f"{tool}-run-{enum}.log").write_text("NOT ATTEMPTED: javac failed; no runnable class set exists.\n")
-                statuses[tool][enum+"_run"]=125
+                raise SystemExit(f"{tool} source failed Java 8 compilation: {enum}; inspect generated/{tool}-javac-{enum}.log")
     versions.append(f"JADX launcher SHA-256: {sha(JADX)}")
     for rel in ["jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar","jadx-cli/build/install/jadx/lib/jadx-core-dev.jar"]:
         p=JADX_ROOT/rel
@@ -178,7 +175,7 @@ with tempfile.TemporaryDirectory(prefix="dt11-audit-") as scratch:
         raise SystemExit("Original fixture compilation/runtime results changed")
     if statuses["jadx"] != expected:
         raise SystemExit("JADX compilation/runtime results changed")
-    if statuses["jarde"].get("LiteralOnly_javac")!=0 or statuses["jarde"].get("LiteralOnly_run")!=0 or statuses["jarde"].get("IntArgs_javac")!=0 or statuses["jarde"].get("IntArgs_run")!=0 or statuses["jarde"].get("StringVarargs_javac")==0:
-        raise SystemExit("Jarde boundary results changed")
-    (GENERATED/"summary.json").write_text(json.dumps({"status":statuses,"expected":{"original":"all pass","jadx":"all compile and run","jarde":{"LiteralOnly":"compile and run","IntArgs":"compile and run with explicit classpath","StringVarargs":"javac failure; run not attempted"}}},indent=2,ensure_ascii=False)+"\n")
+    if statuses["jarde"] != expected:
+        raise SystemExit("Jarde compilation/runtime results changed")
+    (GENERATED/"summary.json").write_text(json.dumps({"status":statuses,"expected":{"original":"all pass","jadx":"all compile and run","jarde":"all compile and run"}},indent=2,ensure_ascii=False)+"\n")
 print((GENERATED/"summary.json").read_text())

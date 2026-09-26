@@ -1,7 +1,7 @@
 JADX path: /Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx
 JADX checkout: /Users/lordcasser/workspace/testzone/jadx
 JADX checkout commit: 2fb1b16386941660fda07e9017285aec40fcb37f
-JARDE source revision: 5ed6b36043ca4b3d1d4e1c6ce239672ae587e52a
+JARDE source revision: 655b70a56f7236cd8fb20a289be356919e2b4528
 JARDE CLI source: cargo run -p jarde-cli from repository checkout
 JADX launcher SHA-256: 5d115ed2ecb34b2f96ae80704b966ffa3d9cce33c2de3cdf8d348a8159b116e3
 jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar SHA-256: d56d54d7fd2317f21a2fc79ee295afb4144bdbb8354d591f51253beb814fd3bd

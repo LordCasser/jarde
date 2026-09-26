@@ -19,17 +19,13 @@
       "LiteralOnly_run": 0,
       "IntArgs_javac": 0,
       "IntArgs_run": 0,
-      "StringVarargs_javac": 1,
-      "StringVarargs_run": 125
+      "StringVarargs_javac": 0,
+      "StringVarargs_run": 0
     }
   },
   "expected": {
     "original": "all pass",
     "jadx": "all compile and run",
-    "jarde": {
-      "LiteralOnly": "compile and run",
-      "IntArgs": "compile and run with explicit classpath",
-      "StringVarargs": "javac failure; run not attempted"
-    }
+    "jarde": "all compile and run"
   }
 }

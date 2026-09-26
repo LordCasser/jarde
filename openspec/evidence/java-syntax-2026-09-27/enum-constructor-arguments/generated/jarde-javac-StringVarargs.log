@@ -1,8 +1,4 @@
 warning: [options] source value 8 is obsolete and will be removed in a future release
 warning: [options] target value 8 is obsolete and will be removed in a future release
 warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
-<TEMP>/compile-jarde-StringVarargs/StringVarargs.java:4: error: enum constant expected here
-    public static final StringVarargs PAIR;
-    ^
-1 error
 3 warnings

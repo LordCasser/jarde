@@ -385,6 +385,20 @@ pub struct ClassSourceField {
 
 /// One method of the presented class: the record of the class read, the spelling of its declaration,
 /// the text this presentation wrote for it, and the result of its own body's run.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum EnumConstructorSourceTail {
+    Unrecognized,
+    NoArg,
+    Int,
+    StringVarargs,
+}
+
+impl EnumConstructorSourceTail {
+    fn is_recognized(self) -> bool {
+        self != Self::Unrecognized
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ClassSourceMethod {
@@ -437,12 +451,9 @@ pub struct ClassSourceMethod {
     /// Same-run source candidate retained for the final family writer only.
     #[serde(skip)]
     pub(crate) same_run_generic_return: Option<GenericReturnCandidate>,
-    /// Whether the parsed constructor Signature states exactly the source-level int parameter.
+    /// Closed source-tail shape parsed from this physical constructor's Signature.
     #[serde(skip)]
-    pub(crate) enum_constructor_source_signature: bool,
-    /// Whether the no-source-argument enum constructor has its exact `()V` source Signature.
-    #[serde(skip)]
-    pub(crate) enum_constructor_no_arg_source_signature: bool,
+    pub(crate) enum_constructor_source_tail: EnumConstructorSourceTail,
     /// Whether the ordinary physical-descriptor projection refused that source tail only because
     /// the VM-injected enum name and ordinal make its descriptor longer.
     #[serde(skip)]
@@ -1750,20 +1761,40 @@ pub(crate) fn project_method_signature(
             .0;
         let parsed = parse_method_signature(&raw, budget)?;
         let name = &member.name.raw().0;
-        record.enum_constructor_source_signature = shells.len() == 1
+        record.enum_constructor_source_tail = if shells.len() == 1
             && name.as_slice() == b"<init>"
             && member.descriptor.raw().0.as_slice() == b"(Ljava/lang/String;II)V"
             && parsed.type_parameters.is_empty()
             && parsed.parameters.as_slice() == [SignatureType::Base(b'I')]
             && parsed.result.is_none()
-            && parsed.throws.is_empty();
-        record.enum_constructor_no_arg_source_signature = shells.len() == 1
+            && parsed.throws.is_empty()
+        {
+            EnumConstructorSourceTail::Int
+        } else if shells.len() == 1
             && name.as_slice() == b"<init>"
             && member.descriptor.raw().0.as_slice() == b"(Ljava/lang/String;I)V"
             && parsed.type_parameters.is_empty()
             && parsed.parameters.is_empty()
             && parsed.result.is_none()
-            && parsed.throws.is_empty();
+            && parsed.throws.is_empty()
+        {
+            EnumConstructorSourceTail::NoArg
+        } else if shells.len() == 1
+            && name.as_slice() == b"<init>"
+            && member.descriptor.raw().0.as_slice() == b"(Ljava/lang/String;I[Ljava/lang/String;)V"
+            && parsed.type_parameters.is_empty()
+            && matches!(parsed.parameters.as_slice(), [SignatureType::Array(element)]
+                if matches!(element.as_ref(), SignatureType::Class(class)
+                    if class.segments.len() == 1
+                        && class.segments[0].binary_name == b"java/lang/String"
+                        && class.segments[0].arguments.is_empty()))
+            && parsed.result.is_none()
+            && parsed.throws.is_empty()
+        {
+            EnumConstructorSourceTail::StringVarargs
+        } else {
+            EnumConstructorSourceTail::Unrecognized
+        };
         let erasure = prove_method_signature_erasure_with_class_scope(
             &parsed,
             &member.descriptor.raw().0,
@@ -1910,14 +1941,13 @@ pub(crate) fn project_method_signature(
         Ok(None) => Ok(()),
         Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => Err(error),
         Err(error) => {
-            record.enum_constructor_signature_erasure_refused = (record
-                .enum_constructor_source_signature
-                || record.enum_constructor_no_arg_source_signature)
-                && matches!(
-                    &error,
-                    Error::InvalidInput { code, .. }
-                        if code == "jvm_signature_erasure_mismatch"
-                );
+            record.enum_constructor_signature_erasure_refused =
+                record.enum_constructor_source_tail.is_recognized()
+                    && matches!(
+                        &error,
+                        Error::InvalidInput { code, .. }
+                            if code == "jvm_signature_erasure_mismatch"
+                    );
             record.refuse_generic(&error.to_string(), budget)
         }
     }
@@ -5813,8 +5843,7 @@ impl ClassSourceMethod {
             markers,
             outcome: ClassSourceOutcome::NoBody,
             same_run_generic_return: None,
-            enum_constructor_source_signature: false,
-            enum_constructor_no_arg_source_signature: false,
+            enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
     }
@@ -5834,8 +5863,7 @@ impl ClassSourceMethod {
             markers,
             outcome: ClassSourceOutcome::Unspelled,
             same_run_generic_return: None,
-            enum_constructor_source_signature: false,
-            enum_constructor_no_arg_source_signature: false,
+            enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
     }
@@ -5872,8 +5900,7 @@ impl ClassSourceMethod {
                 diagnostics,
             },
             same_run_generic_return: None,
-            enum_constructor_source_signature: false,
-            enum_constructor_no_arg_source_signature: false,
+            enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
     }
@@ -5914,8 +5941,7 @@ impl ClassSourceMethod {
             markers,
             outcome: ClassSourceOutcome::Recovered { report, analysis },
             same_run_generic_return,
-            enum_constructor_source_signature: false,
-            enum_constructor_no_arg_source_signature: false,
+            enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
     }
@@ -6011,7 +6037,10 @@ pub(crate) fn prepare_enum_constant_source_projection(
         || (!no_source_constructor && constructor.declaration.is_none())
         || (!no_source_constructor
             && group.constructor_signature_present
-            && !constructor.enum_constructor_source_signature)
+            && !matches!(
+                constructor.enum_constructor_source_tail,
+                EnumConstructorSourceTail::Int | EnumConstructorSourceTail::StringVarargs
+            ))
         || (!constructor.markers.is_empty() && !has_only_enum_signature_marker)
         || !constructor.annotations.refusals.is_empty()
         || !constructor.parameter_annotations.refusals.is_empty()
@@ -6033,18 +6062,19 @@ pub(crate) fn prepare_enum_constant_source_projection(
     }
 
     let implicit_signature_shape = if group.constructor_signature_present {
-        constructor.enum_constructor_no_arg_source_signature
+        constructor.enum_constructor_source_tail == EnumConstructorSourceTail::NoArg
             && constructor.enum_constructor_signature_erasure_refused
             && constructor.markers.len() == 1
     } else {
-        !constructor.enum_constructor_no_arg_source_signature
+        constructor.enum_constructor_source_tail != EnumConstructorSourceTail::NoArg
             && !constructor.enum_constructor_signature_erasure_refused
             && constructor.markers.is_empty()
     };
     if no_source_constructor
         && (group.delegating_constructor_method_index.is_some()
             || constructor.item.descriptor.raw().0 != b"(Ljava/lang/String;I)V"
-            || constructor.enum_constructor_source_signature
+            || constructor.enum_constructor_source_tail == EnumConstructorSourceTail::Int
+            || constructor.enum_constructor_source_tail == EnumConstructorSourceTail::StringVarargs
             || !implicit_signature_shape)
     {
         return Ok(None);
@@ -6072,7 +6102,7 @@ pub(crate) fn prepare_enum_constant_source_projection(
         };
         let valid_hidden_constructor = |method: &ClassSourceMethod| {
             method.declaration.is_some()
-                && method.enum_constructor_no_arg_source_signature
+                && method.enum_constructor_source_tail == EnumConstructorSourceTail::NoArg
                 && method.enum_constructor_signature_erasure_refused
                 && method.markers.len() == 1
                 && method.annotations.refusals.is_empty()
@@ -6095,7 +6125,8 @@ pub(crate) fn prepare_enum_constant_source_projection(
             || !valid_hidden_constructor(delegating)
             || group.constructor_body.is_none()
             || terminal_constructor_body.is_none()
-            || group.constructor_signature_present != constructor.enum_constructor_source_signature
+            || group.constructor_signature_present
+                != (constructor.enum_constructor_source_tail == EnumConstructorSourceTail::Int)
         {
             return Ok(None);
         }
@@ -6163,13 +6194,29 @@ pub(crate) fn prepare_enum_constant_source_projection(
             let Some(field_name) = field_name.as_deref() else {
                 return Ok(None);
             };
+            let string_varargs = constructor.enum_constructor_source_tail
+                == EnumConstructorSourceTail::StringVarargs;
+            if string_varargs
+                && (constructor.item.descriptor.raw().0
+                    != b"(Ljava/lang/String;I[Ljava/lang/String;)V"
+                    || constructor.item.access_flags != 0x0082
+                    || constructor
+                        .type_annotations
+                        .parameter_uses
+                        .get(2)
+                        .is_some_and(|uses| !uses.is_empty()))
+            {
+                return Ok(None);
+            }
             let source_parameter_type_uses = constructor
                 .type_annotations
                 .parameter_uses
                 .get(2)
                 .map(Vec::as_slice)
                 .unwrap_or(&[]);
-            let Some(parameter_type) = (if source_parameter_type_uses.is_empty() {
+            let Some(parameter_type) = (if string_varargs {
+                Some("java.lang.String...".to_owned())
+            } else if source_parameter_type_uses.is_empty() {
                 Some("int".to_owned())
             } else {
                 decorate_qualified_type("int", source_parameter_type_uses)
@@ -6246,6 +6293,19 @@ pub(crate) fn prepare_enum_constant_source_projection(
         constants_text.push_str("    ");
         constants_text.push_str(&constant.name);
         if let Some(argument) = &constant.source_argument {
+            if let crate::enum_constants::ProvedEnumSourceArgument::StringVarargs(values) = argument
+            {
+                let source_capacity = values.iter().fold(0_u64, |total, value| {
+                    total
+                        .saturating_add(
+                            u64::try_from(value.value.len())
+                                .unwrap_or(u64::MAX)
+                                .saturating_mul(6),
+                        )
+                        .saturating_add(4)
+                });
+                budget.charge(CountedBudgetDimension::OutputBytes, source_capacity)?;
+            }
             constants_text.push('(');
             constants_text.push_str(&argument.source_text());
             constants_text.push(')');
