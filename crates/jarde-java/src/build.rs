@@ -20351,9 +20351,17 @@ mod tests {
                 .count(),
             1
         );
-        assert!(report.text.contains("rhs()"), "{}", report.text);
-        assert!(report.text.contains("?"), "{}", report.text);
-        assert!(report.text.contains(": 1"), "{}", report.text);
+        assert!(
+            report
+                .text
+                .contains("SharedTrueShortCircuit.result = arg0 || rhs();"),
+            "{}",
+            report.text
+        );
+        assert_eq!(report.text.matches("rhs()").count(), 1, "{}", report.text);
+        assert!(!report.text.contains("?"), "{}", report.text);
+        assert!(!report.text.contains(": 1"), "{}", report.text);
+        assert!(!report.text.contains("% 2 != 0"), "{}", report.text);
         assert!(!report.text.contains("@bytecode"), "{}", report.text);
         let mapped_bcis: BTreeSet<_> = report
             .source_map
