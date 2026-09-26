@@ -56,6 +56,15 @@ MUST NOT 用空的 `if`、空的 `catch`、空的 `switch` 或空的方法体代
 - **WHEN** 同形状分支链的一个生产叶改成 `2`，或消费者是 `int`，或 Phi/边的唯一性证明失败
 - **THEN** 文本 MUST NOT 使用该链的布尔 `&&`/`||` 规范化；若能继续呈现原始整数值进入 `Z` 消费位，MUST 保留 `% 2 != 0`，否则按原拒绝路径引用 BCI（P11）
 
+### Requirement: A branch that exits a loop is represented before the loop is published
+
+循环体内的分支有边指向该循环的已证明出口时，该边 MUST 由循环条件、显式的 `break` 或局部引用保留。区域覆盖所有自然循环块并不足以证明出口语义；若没有一种 Java 结构能保留这条边，MUST 引用该循环，MUST NOT 输出无缺口标记却改变退出行为的 `while`。
+
+#### Scenario: The second conjunct exits the loop
+
+- **WHEN** `while (a > 0 && b > 0)` 编译出的 BCI 3 与 7 均向 BCI 23 循环出口跳转，且体内更新只在两个条件都为真时执行
+- **THEN** 对 `(a=1,b=0)`，若方法被标成 `Structured`，恢复源码经 Java 8 重编后 MUST 立即返回原 class 的 `0`；未证明复合头或显式退出时 MUST 保留引用，MUST NOT 写成没有 `break` 的 `while (a>0) { if (b>0) { 更新 } }`（P02/P04）
+
 ### Requirement: An ordinary array access is an index expression
 
 `iaload`、`iastore`、`arraylength` 与 `newarray` MUST 按该指令自己的操作数呈现，MUST NOT 只在枚举 `switch` 的分派表被证明时才允许出现。读取 MUST 写成 `array[index]`，写入 MUST 写成 `array[index] = value`，`arraylength` MUST 写成 `array.length`，`newarray` MUST 写成 `new T[length]`，元素类型取该指令的 `atype`。`enumswitch@1` 已经认领的 `iaload` MUST 保持今天的分派表拼写，普通读取不得抢这条证明。
