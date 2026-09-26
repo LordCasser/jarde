@@ -1,0 +1,3 @@
+472810b668f774a453c938ab8c9d834dee7c249eca7392cea31dab08c8412746  tests/fixtures/proved-java-structure/anonymous-interface-basic/AnonymousInterfaceBasic$1.class
+81f24db72e9917af4aaf0f30c4f05d7bfc9bec1cb2818c675e3f7785be4bf80f  tests/fixtures/proved-java-structure/anonymous-interface-basic/AnonymousInterfaceBasic.class
+da47699b3bf61dc75f0c6fd29a342e55ee416e4e096f63920a88b6ff38035eeb  tests/fixtures/proved-java-structure/anonymous-interface-basic/I.class

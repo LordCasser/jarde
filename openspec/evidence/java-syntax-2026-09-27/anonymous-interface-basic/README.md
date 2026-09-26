@@ -1,0 +1,11 @@
+# DT-05 anonymous interface implementation
+
+This fixture isolates `new I() { ... }`: one top-level interface, one uncaptured anonymous implementation, and exactly one allocation site. It has no initializer, nested anonymous class, or constructor arguments. Its Java 8 source and frozen class files are in [`tests/fixtures/proved-java-structure/anonymous-interface-basic/`](../../../../tests/fixtures/proved-java-structure/anonymous-interface-basic/).
+
+`javac --release 8 -g:none` compiles the original sources to the same three frozen class files, checked by SHA-256. The original classes pass `java -Xverify:all` and print `7`. [`javap.txt`](../../../../tests/fixtures/proved-java-structure/anonymous-interface-basic/javap.txt) shows the sole anonymous `new AnonymousInterfaceBasic$1` at BCI 0 of `make()` and its no-argument constructor call at BCI 4; there are no other `new` instructions in the fixture.
+
+The replay compares the same jar with local JADX 1.5.6 and Jarde. JADX's complete generated source set is saved under [`jadx-source/`](jadx-source/); its Java 8 compile and execution results are in `jadx-javac.log` and `jadx-run.log`. JADX writes `return new I() { ... }`; the complete source set compiles without the original jar on its classpath and prints `7`.
+
+Jarde class-source output for `AnonymousInterfaceBasic`, `AnonymousInterfaceBasic$1`, and `I` is saved beside this file; [`jarde-cli-status.txt`](jarde-cli-status.txt) records the three request statuses. Its entry point still writes `return new AnonymousInterfaceBasic$1();` and emits the physical class declaration separately. `jarde-javac.log` records the full-set Java 8 compilation with no classpath; `jarde-run.log` records execution of those compiled sources without the original jar. The replay retries with the original jar on the classpath only if the no-classpath compile fails, saving that attempt as `jarde-javac-with-classpath.log`.
+
+Run `python3 replay.py` from any directory. It builds the local Jarde CLI with a temporary Cargo target directory, creates all other intermediates in a temporary directory, checks frozen-class identity, refreshes the evidence logs and source snapshots, and removes the build and intermediate directories on exit. The tested tools were JDK 23.0.1 with `--release 8`, JADX 1.5.6, and the Jarde worktree used by the replay.
