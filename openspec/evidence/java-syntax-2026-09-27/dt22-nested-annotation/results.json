@@ -1,0 +1,44 @@
+{
+  "jadx_commit": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "javac": "javac 23.0.1",
+  "source_sha256": {
+    "Holder.java": "b812b91ab2e0e9634282bed7232a5a71d4c796792f8c112869a68933e22ec595",
+    "TopDefault.java": "8d171a8d2c6ff487b805d7a37c6ff2f95e74f9ba18db84de96528c9c3ecd70fe",
+    "Dollar$A.java": "f8dc88176b1a00321332c4ef07b4d4d86dac72c349c4f2786d390351ccc84254",
+    "Runner.java": "61a574a5e81f1b81f3c4fc1cc544c9b846053f5155848b060cd25c9779389585"
+  },
+  "class_sha256": {
+    "Dollar$A": "a1ada308f9810da414fc32591379b2505f73e12557c0cd064efbc5331a7e805c",
+    "Holder$A": "4a6cf49fa22e06b748786a22d30d3b02c114946c4bd95b20bb8cc4ebc5fdb8df",
+    "Holder": "55a71566b45d3f8bebbc8aa4be09537ab71b9c42f83e9f84a9380fbb60b602ea",
+    "Runner": "188df512a6b56786422e91130289c50e369dd80d2f1d056f7b1062bccaeadfec",
+    "TopDefault": "9692274bb789cbf5b6aa1b990d349d891a732606b5a4ee517391fc1fa49ad351"
+  },
+  "original": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stdout": "nested=1.1\ntop=1.1:3\ndollar=7\n"
+  },
+  "jadx": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stdout": "nested=1.1\ntop=1.1:3\ndollar=7\n"
+  },
+  "jarde_sources_only_compile_exit": 0,
+  "jarde_original_api": {
+    "compile_exit": 1,
+    "compile_diagnostic": "<FIXTURE>/Runner.java:5: error: cannot find symbol\n        System.out.println(\"nested=\" + Holder.A.class.getMethod(\"value\").getDefaultValue());\n                                             ^\n  symbol:   class A\n  location: class Holder\n1 error\n"
+  },
+  "jarde_headers": {
+    "Holder": "public class Holder extends java.lang.Object {",
+    "Holder$A": "public @interface Holder$A {",
+    "TopDefault": "public @interface TopDefault {",
+    "Dollar$A": "public @interface Dollar$A {"
+  },
+  "assertions": {
+    "original_jadx_java8_verified_equal": true,
+    "jarde_top_level_defaults_preserved": true,
+    "jarde_physical_nested_default_preserved": true,
+    "jarde_nested_owner_source_api_missing": true
+  }
+}

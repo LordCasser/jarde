@@ -1,0 +1,10 @@
+package dt22;
+
+/* JADX INFO: loaded from: input.jar:dt22/Holder.class */
+public class Holder {
+
+    /* JADX INFO: loaded from: input.jar:dt22/Holder$A.class */
+    public @interface A {
+        float value() default 1.1f;
+    }
+}

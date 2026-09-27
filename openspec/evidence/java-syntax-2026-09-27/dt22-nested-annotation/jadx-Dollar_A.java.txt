@@ -1,0 +1,6 @@
+package dt22;
+
+/* JADX INFO: loaded from: input.jar:dt22/Dollar$A.class */
+public @interface Dollar$A {
+    int value() default 7;
+}
