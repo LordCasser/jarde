@@ -492,14 +492,17 @@ fn candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar(
         ClassInitializerStep::Other { bci, .. } => *bci,
     };
 
-    let ordinary_facts = RecoveryFacts::new(
+    let ineligible_facts = RecoveryFacts::new(
         MethodFacts::new("<clinit>", "()V", 0)
             .with_access_flags(0x0008)
-            .with_declaring_class(DeclaringClass::new("InterfaceInitProbe", 0x0001)),
+            .with_declaring_class(DeclaringClass::new(
+                "InterfaceInitProbe",
+                ACC_INTERFACE | ACC_ANNOTATION,
+            )),
     );
-    let ordinary_request = RecoveryRequest::new(
+    let ineligible_request = RecoveryRequest::new(
         fixture.analysis.ir(),
-        &ordinary_facts,
+        &ineligible_facts,
         jarde_java::pass::JAVA_8,
     );
 
@@ -518,12 +521,12 @@ fn candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar(
                 ..
             }) if at == first_candidate_bci
         ) {
-            let mut ordinary_bounded = limits();
-            ordinary_bounded.ir_items = ir_items_limit;
-            let mut ordinary_budget = Budget::new(ordinary_bounded);
-            let ordinary =
-                recover_for_class_source(&ordinary_request, &mut ordinary_budget, false, false);
-            if ordinary.report.produced() {
+            let mut ineligible_bounded = limits();
+            ineligible_bounded.ir_items = ir_items_limit;
+            let mut ineligible_budget = Budget::new(ineligible_bounded);
+            let ineligible =
+                recover_for_class_source(&ineligible_request, &mut ineligible_budget, false, false);
+            if ineligible.report.produced() {
                 found = Some(stopped);
                 break;
             }
@@ -545,9 +548,9 @@ fn candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar(
 }
 
 #[test]
-fn initializer_sidecar_is_limited_to_non_annotation_interfaces() {
+fn initializer_sidecar_covers_ordinary_classes_and_interfaces_but_not_annotations() {
     let fixture = fixture(INTERFACE_INIT, "InterfaceInitProbe");
-    for flags in [0x0001, ACC_INTERFACE | ACC_ANNOTATION] {
+    for flags in [0x0001, ACC_INTERFACE, ACC_INTERFACE | ACC_ANNOTATION] {
         let facts = RecoveryFacts::new(
             MethodFacts::new("<clinit>", "()V", 0)
                 .with_access_flags(0x0008)
@@ -560,7 +563,11 @@ fn initializer_sidecar_is_limited_to_non_annotation_interfaces() {
         let mut adapter_budget = Budget::new(limits());
         let mut actual = recover_for_class_source(&request, &mut adapter_budget, false, false);
 
-        assert!(actual.initializer.is_none(), "class flags {flags:#06x}");
+        assert_eq!(
+            actual.initializer.is_some(),
+            flags & ACC_ANNOTATION == 0,
+            "class flags {flags:#06x}"
+        );
         clear_sidecar_usage(&mut expected);
         clear_sidecar_usage(&mut actual.report);
         assert_eq!(actual.report, expected, "class flags {flags:#06x}");

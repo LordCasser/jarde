@@ -533,9 +533,9 @@ pub enum ClassSourceOutcome {
 /// One class presented as Java source, with the facts it was spelled from.
 ///
 /// `text` is the assembled source: the class declaration, then its fields (in proved `<clinit>` write
-/// order for a projected ordinary-interface group, otherwise in physical field-table order), then
+/// order for a projected static group, otherwise in physical field-table order), then
 /// its methods in the order the class file's own method table declares them. A fully projected
-/// interface initializer is omitted from assembled source, but remains in `methods` with its
+/// proved static initializer is omitted from assembled source, but remains in `methods` with its
 /// original recovery result. A proved enum group likewise changes only this assembled text: its
 /// constants and source constructor replace the proved compiler-generated declarations, and a
 /// narrowly proved static suffix may replace the matching `<clinit>` statements. Every physical
@@ -600,7 +600,7 @@ pub struct ClassSourceReport {
     /// Cross-class enum-switch mapping decisions from this class-source run, including refusals.
     #[doc(hidden)]
     pub enum_switch_proofs: Vec<ClassSourceEnumSwitchProof>,
-    /// The all-or-nothing proof result for ordinary Java 8 interface field initializers. The
+    /// The all-or-nothing proof result for ordinary Java 8 static field initializers. The
     /// proof's field indices and write positions remain available beside the projected declarations;
     /// the original method records and recovery reports are retained in [`Self::methods`].
     pub initializer_proof: ClassSourceInitializerProof,
@@ -1013,11 +1013,11 @@ pub struct ClassSourceBridgeProof {
     pub refusal: Option<String>,
 }
 
-/// Whether the complete ordinary-interface initializer group passed its structural proof.
+/// Whether the complete ordinary interface or class static initializer group passed proof.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum ClassSourceInitializerProof {
-    /// The class is outside this proof's Java 8 ordinary-interface scope.
+    /// The class is outside this proof's scope or has no ordinary-class runtime static group.
     NotApplicable,
     /// Every runtime field write in the group passed, in original `<clinit>` order.
     Proved {
