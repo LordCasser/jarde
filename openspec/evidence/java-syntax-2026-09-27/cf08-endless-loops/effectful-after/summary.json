@@ -1,0 +1,40 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestEndlessLoop.java": "a8b077628d7d84d1dd69e51ae2cf0de62210b3f0753461f2c85b0fca829b5df5",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestEndlessLoop2.java": "1b967881e6f833d1a30e7425a2afb386e149cf73745247df348bb7b6831d298e",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestMultiEntryLoop.java": "17b9f250a1b32e368b4c8c69b4ec660c9722cf2aee3eb8bd1a6fd63fbc866e74",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestNotIndexedLoop.java": "dc08e939d5d5ab12c2f4a89e11b266a7e9592ca6289e700241a5eca2f29980b5",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/blocks/FixMultiEntryLoops.java": "0c2b67bbb15648632767625db7163bed579efcc66fc3a58b9466760f01eb945a",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/LoopRegionMaker.java": "a77bedda10bdb0d36f3979c27c1fc9471da726b36f34ae14d505f6f659c6b13e",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/LoopRegionVisitor.java": "921f09e8934fda33452a00359588b293117f160813477e7068fa1ec3b71e6515"
+  },
+  "input_sha256": "1d8d906d5bb3bf10d7220d46af6453ef2baaa096a228f4d1a7a5ad3d4f857eaf",
+  "runner_sha256": "ba71a9f1a2b557e5dc63f9163c446de60076273ce3d804fd4ca5d6ec26cbec0d",
+  "original_class_sha256": "2e27cffb9361cbd78a689b404457b68d6bc31f1739362659ce71c0e276c0bae8",
+  "jarde_cli_sha256": "333290fa055bb7de4dd7670371d3ef0a3c789095f8fae04dbee3821513fa08f5",
+  "original": {
+    "source_sha256": "1d8d906d5bb3bf10d7220d46af6453ef2baaa096a228f4d1a7a5ad3d4f857eaf",
+    "javac_exit": 0,
+    "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n3 \u4e2a\u8b66\u544a",
+    "runtime_exit": 0,
+    "stdout": "8:1\n3:0\n8:1",
+    "runtime_stderr": ""
+  },
+  "jadx": {
+    "source_sha256": "266df1ba965e3dc554fceed098f888d8fb3b81a4f6d8815da7c5a7b6c98b168a",
+    "javac_exit": 0,
+    "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n3 \u4e2a\u8b66\u544a",
+    "runtime_exit": 0,
+    "stdout": "8:1\n3:0\n8:1",
+    "runtime_stderr": ""
+  },
+  "jarde": {
+    "source_sha256": "56f6329d74d80abab24c4681f4c3e329af7cc9d139ac76781fb8189056dc57ef",
+    "javac_exit": 0,
+    "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n3 \u4e2a\u8b66\u544a",
+    "runtime_exit": 0,
+    "stdout": "8:1\n3:0\n8:1",
+    "runtime_stderr": ""
+  }
+}

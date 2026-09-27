@@ -1,0 +1,49 @@
+exit=0
+stdout:
+public final class cf08effects.EffectfulExits {
+  static int calls;
+
+  public cf08effects.EffectfulExits();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static int cost(int);
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: iload_0
+       9: ireturn
+
+  public static int pick(int[]);
+    Code:
+       0: iconst_0
+       1: istore_2
+       2: iload_2
+       3: aload_0
+       4: arraylength
+       5: if_icmplt     17
+       8: bipush        7
+      10: invokestatic  #13                 // Method cost:(I)I
+      13: istore_1
+      14: goto          35
+      17: aload_0
+      18: iload_2
+      19: iaload
+      20: istore_1
+      21: iload_1
+      22: iconst_3
+      23: if_icmpne     29
+      26: goto          35
+      29: iinc          2, 1
+      32: goto          2
+      35: iload_1
+      36: getstatic     #7                  // Field calls:I
+      39: iadd
+      40: ireturn
+}
+
+stderr:

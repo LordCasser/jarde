@@ -373,13 +373,15 @@ pub enum Continuation {
     FallThrough,
 }
 
-/// Whether a loop tests before its body or after it.
+/// Where the loop's test is presented.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LoopForm {
     /// `while (cond) { … }`: the test is the header, and the body runs only when it holds.
     While,
     /// `do { … } while (cond);`: the test is the latch, and the body runs once before it is read.
     DoWhile,
+    /// `while (true) { … }`: both exits are explicit, proved breaks in the body.
+    Endless,
 }
 
 /// One group of `switch` keys that share a target, with the region that target begins.
@@ -485,7 +487,8 @@ pub enum Region {
         groups: Vec<SwitchGroup>,
         join: Option<CanonicalBlockId>,
     },
-    /// A natural loop with an ordered, proved set of test branches.
+    /// A natural loop with an ordered, proved set of header/latch tests, or an empty set
+    /// when an Endless body's `If` regions own both exit tests.
     ///
     /// A header-tested loop owns its header test and any additional homogeneous short-circuit
     /// tests in execution order. A latch-tested loop currently owns its one proved latch test.
@@ -505,8 +508,7 @@ pub enum Region {
         /// body.
         body: Vec<Region>,
         exit: Option<CanonicalBlockId>,
-        /// Transfer BCIs whose control effect this loop presents, proved by the two-gateway
-        /// certificate. Ordinary loops carry no extra origins.
+        /// Hidden transfers represented by this loop's structure rather than a statement.
         gateway_origins: Vec<u32>,
     },
     /// An edge in a loop body whose target is this loop's proved Java break destination.
@@ -754,10 +756,11 @@ impl Region {
             } => {
                 let mut blocks = Vec::new();
                 // A do-while body can own its entry or the effectful prefix of its latch.
-                // Those fields then name the shape, while the body is their physical owner.
+                // An endless body owns its header. These fields name the shape while the
+                // body remains the physical owner.
                 // Keep duplicates inside the body visible to the method-level ownership check.
                 let body_owns = |block: &CanonicalBlockId| {
-                    *form == LoopForm::DoWhile
+                    *form != LoopForm::While
                         && body
                             .iter()
                             .flat_map(Region::blocks)
@@ -1724,7 +1727,7 @@ struct Frame {
     /// header is inside the structure it is building, not a nested loop. Only a separately proved
     /// first entry may walk that block as body code (see [`Walker::region_at`]).
     own_loop: Option<usize>,
-    /// Only a proved body branch may enter its own do-while header for the first body walk.
+    /// A proved do-while body branch or endless body may enter its own header once.
     /// Other shapes retain the re-entry stop until their body ownership is proved separately.
     allow_own_loop_entry: bool,
     /// The block of the `try` this frame is the protected range of. The range begins at that block,
@@ -5207,11 +5210,10 @@ impl Walker<'_> {
 
     /// The loop whose header this walk just entered.
     ///
-    /// Two shapes are provable, and both put the test *inside* the loop statement: a header that
-    /// tests (`while`/`for`), and a single latch that tests after the body (`do … while`). The
-    /// graph facts that make them provable are checked before anything is built — one latch, one
-    /// entry, no block of the body leaving the loop, and a test whose block holds no effect of its
-    /// own — and every other loop is quoted with its own reason.
+    /// Header and latch tests remain inside their loop statement (`while`/`for` or `do … while`).
+    /// The narrow effectful dual-exit shape instead keeps its header test as the body's first
+    /// `If` inside `while (true)`. Each shape checks its entry, latch, edges and ownership before
+    /// building; a loop without that proof is quoted with its reason.
     fn loop_region(
         &mut self,
         header: &CanonicalBlockId,
@@ -5276,6 +5278,9 @@ impl Walker<'_> {
                 return Ok(region);
             }
         }
+        if let Some(region) = self.effectful_dual_exit_loop(header, header_node, &loop_of, frame)? {
+            return Ok(region);
+        }
         if let Some(region) = self.header_tested_loop(header, header_node, &blocks, frame)? {
             return Ok(region);
         }
@@ -5289,6 +5294,465 @@ impl Walker<'_> {
             block_bci: header.bci(),
         };
         Ok(gap(Vec::new(), vec![header.clone()], reason, None))
+    }
+
+    /// Only the two-break shape whose header's losing arm writes a local through one call.
+    /// All edges and the join value are proved before changing the body frame's scope.
+    fn effectful_dual_exit_loop(
+        &mut self,
+        header: &CanonicalBlockId,
+        header_node: usize,
+        loop_of: &crate::normal_flow::NaturalLoop,
+        frame: &Frame,
+    ) -> Result<Option<Run>, StopReason> {
+        let blocks = loop_of.blocks();
+        if frame.scope.is_some()
+            || frame.boundary.is_some()
+            || frame.shared_tail.is_some()
+            || !self.handlers.is_empty()
+            || blocks.len() != 3
+        {
+            return Ok(None);
+        }
+        let latches: Vec<_> = loop_of.latches().iter().copied().collect();
+        let [latch] = latches.as_slice() else {
+            return Ok(None);
+        };
+        let header_successors = self.view.successors(header_node);
+        let [first, second] = header_successors.as_slice() else {
+            return Ok(None);
+        };
+        let (body, effect) = match (blocks.contains(first), blocks.contains(second)) {
+            (true, false) => (*first, *second),
+            (false, true) => (*second, *first),
+            _ => return Ok(None),
+        };
+        if body == header_node || body == *latch || self.view.successors(*latch) != [header_node] {
+            return Ok(None);
+        }
+        let body_successors = self.view.successors(body);
+        let [body_first, body_second] = body_successors.as_slice() else {
+            return Ok(None);
+        };
+        let bridge = if *body_first == *latch {
+            *body_second
+        } else if *body_second == *latch {
+            *body_first
+        } else {
+            return Ok(None);
+        };
+        if blocks.contains(&bridge)
+            || bridge == effect
+            || self.loop_exit_nodes(blocks) != BTreeSet::from([effect, bridge])
+        {
+            return Ok(None);
+        }
+        let effect_successors = self.view.successors(effect);
+        let [join] = effect_successors.as_slice() else {
+            return Ok(None);
+        };
+        let join = *join;
+        if self.view.successors(bridge) != [join] || blocks.contains(&join) || join == effect {
+            return Ok(None);
+        }
+        let Some((body_id, effect_id, bridge_id, latch_id, join_id)) = (|| {
+            Some((
+                self.view.id_of(body)?.clone(),
+                self.view.id_of(effect)?.clone(),
+                self.view.id_of(bridge)?.clone(),
+                self.view.id_of(*latch)?.clone(),
+                self.view.id_of(join)?.clone(),
+            ))
+        })() else {
+            return Ok(None);
+        };
+        let Some(header_test) = self.terminal_bci(header) else {
+            return Ok(None);
+        };
+        let Some(body_test) = self.terminal_bci(&body_id) else {
+            return Ok(None);
+        };
+        if !self
+            .operations
+            .get(header_test)
+            .is_some_and(|op| op.comparison().is_some())
+            || !self
+                .operations
+                .get(body_test)
+                .is_some_and(|op| op.comparison().is_some())
+            || self.test_is_pure(header, header_test, true).is_err()
+        {
+            return Ok(None);
+        }
+        let scan = self
+            .canonical
+            .edges()
+            .len()
+            .saturating_mul(16)
+            .saturating_add(self.code.instructions.len().saturating_mul(8))
+            .saturating_add(self.ssa.phis().len().saturating_mul(2))
+            .saturating_add(
+                self.ssa
+                    .blocks()
+                    .iter()
+                    .map(|block| block.instructions().len())
+                    .sum::<usize>(),
+            );
+        poll(self.budget, Some(header.bci()))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(scan).unwrap_or(u64::MAX),
+            Some(header.bci()),
+        )?;
+        // The shape is a single-entry natural loop with one pure latch. The two exit
+        // blocks have exactly one owner each, and the join has no third normal input.
+        let incoming = |to: &CanonicalBlockId| {
+            self.canonical
+                .edges()
+                .iter()
+                .filter(|edge| edge.to() == to)
+                .map(|edge| (edge.kind(), edge.from().clone()))
+                .collect::<Vec<_>>()
+        };
+        let outgoing = |from: &CanonicalBlockId| {
+            self.canonical
+                .edges()
+                .iter()
+                .filter(|edge| edge.from() == from)
+                .map(|edge| (edge.kind(), edge.to().clone()))
+                .collect::<Vec<_>>()
+        };
+        let header_in = incoming(header);
+        if header_in.len() != 2
+            || header_in
+                .iter()
+                .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
+            || header_in
+                .iter()
+                .filter(|(_, from)| from == &latch_id)
+                .count()
+                != 1
+            || header_in
+                .iter()
+                .filter(|(_, from)| from != &latch_id)
+                .any(|(_, from)| {
+                    self.view
+                        .index_of(from)
+                        .is_none_or(|node| blocks.contains(&node))
+                })
+            || !exact_normal_predecessors(&incoming(&body_id), &[header.clone()])
+            || !exact_normal_predecessors(&incoming(&effect_id), &[header.clone()])
+            || !exact_normal_predecessors(&incoming(&bridge_id), &[body_id.clone()])
+            || !exact_normal_predecessors(&incoming(&latch_id), &[body_id.clone()])
+            || !exact_normal_predecessors(
+                &incoming(&join_id),
+                &[effect_id.clone(), bridge_id.clone()],
+            )
+            || !exact_normal_predecessors(&outgoing(header), &[body_id.clone(), effect_id.clone()])
+            || !exact_normal_predecessors(
+                &outgoing(&body_id),
+                &[bridge_id.clone(), latch_id.clone()],
+            )
+            || !exact_normal_predecessors(&outgoing(&effect_id), &[join_id.clone()])
+            || !exact_normal_predecessors(&outgoing(&bridge_id), &[join_id.clone()])
+            || !exact_normal_predecessors(&outgoing(&latch_id), &[header.clone()])
+            || self.view.successors(body) != [bridge, *latch]
+                && self.view.successors(body) != [*latch, bridge]
+            || self.leaving_edge(header).is_some()
+            || [
+                body_id.clone(),
+                effect_id.clone(),
+                bridge_id.clone(),
+                latch_id.clone(),
+                join_id.clone(),
+            ]
+            .iter()
+            .any(|id| self.leaving_edge(id).is_some())
+        {
+            return Ok(None);
+        }
+        let selected = [
+            header, &body_id, &effect_id, &bridge_id, &latch_id, &join_id,
+        ];
+        for id in selected {
+            let Some(block) = self
+                .canonical
+                .blocks()
+                .iter()
+                .find(|block| block.id() == id)
+            else {
+                return Ok(None);
+            };
+            let Some(names) = self.ssa.block(id) else {
+                return Ok(None);
+            };
+            let decoded: Vec<_> = self
+                .code
+                .instructions
+                .iter()
+                .filter(|instruction| {
+                    instruction.bci >= id.bci() && instruction.bci < block.end_bci()
+                })
+                .map(|instruction| instruction.bci)
+                .collect();
+            if id.is_clone()
+                || block.blocks() != [id.bci()]
+                || decoded
+                    != names
+                        .instructions()
+                        .iter()
+                        .map(|instruction| instruction.bci())
+                        .collect::<Vec<_>>()
+                || names
+                    .instructions()
+                    .iter()
+                    .any(|instruction| self.operations.get(instruction.bci()).is_none())
+            {
+                return Ok(None);
+            }
+        }
+        let (
+            Some(effect_names),
+            Some(body_names),
+            Some(bridge_names),
+            Some(latch_names),
+            Some(join_names),
+        ) = (
+            self.ssa.block(&effect_id),
+            self.ssa.block(&body_id),
+            self.ssa.block(&bridge_id),
+            self.ssa.block(&latch_id),
+            self.ssa.block(&join_id),
+        )
+        else {
+            return Ok(None);
+        };
+        let [push, call, store, transfer] = effect_names.instructions() else {
+            return Ok(None);
+        };
+        let [bridge_transfer] = bridge_names.instructions() else {
+            return Ok(None);
+        };
+        let [increment, latch_transfer] = latch_names.instructions() else {
+            return Ok(None);
+        };
+        let Some((Slot::Local(slot), effect_value)) = store.writes().first().copied() else {
+            return Ok(None);
+        };
+        let Some(body_store) = body_names.instructions().iter().find(|instruction| {
+            matches!(self.operations.get(instruction.bci()), Some(Operation::Store { slot: written }) if *written == slot)
+        }) else {
+            return Ok(None);
+        };
+        let Some((Slot::Local(_), body_value)) = body_store.writes().first().copied() else {
+            return Ok(None);
+        };
+        if !matches!(self.operations.get(push.bci()), Some(Operation::Push(_)))
+            || !matches!(self.operations.get(call.bci()), Some(Operation::Invoke(_)))
+            || !matches!(self.operations.get(store.bci()), Some(Operation::Store { slot: written }) if *written == slot)
+            || !matches!(
+                self.operations.get(transfer.bci()),
+                Some(Operation::Transfer)
+            )
+            || !matches!(
+                self.operations.get(bridge_transfer.bci()),
+                Some(Operation::Transfer)
+            )
+            || !matches!(
+                self.operations.get(increment.bci()),
+                Some(Operation::Increment { .. })
+            )
+            || !matches!(
+                self.operations.get(latch_transfer.bci()),
+                Some(Operation::Transfer)
+            )
+            || !matches!(transfer.opcode(), 0xa7 | 0xc8)
+            || !matches!(bridge_transfer.opcode(), 0xa7 | 0xc8)
+            || !matches!(latch_transfer.opcode(), 0xa7 | 0xc8)
+            || body_names
+                .instructions()
+                .last()
+                .is_none_or(|instruction| instruction.bci() != body_test)
+            || body_names
+                .instructions()
+                .iter()
+                .filter(|instruction| {
+                    matches!(
+                        self.operations.get(instruction.bci()),
+                        Some(Operation::Store { .. })
+                    )
+                })
+                .count()
+                != 1
+            || body_names.instructions().iter().any(|instruction| {
+                matches!(
+                    self.operations.get(instruction.bci()),
+                    Some(Operation::Invoke(_) | Operation::InvokeDynamic(_))
+                )
+            })
+            || store.writes() != [(Slot::Local(slot), effect_value)]
+            || body_store.writes() != [(Slot::Local(slot), body_value)]
+            || call.writes().len() != 1
+            || !matches!(call.writes()[0].0, Slot::Stack(_))
+            || store.reads() != call.writes()
+            || push.writes().len() != 1
+            || !call.reads().contains(&push.writes()[0])
+            || self.ssa.value(effect_value).uses().len() != 1
+            || self.ssa.value(effect_value).uses()[0].block() != &join_id
+            || self.ssa.value(effect_value).uses()[0].bci().is_some()
+        {
+            return Ok(None);
+        }
+        let body_value_uses = self.ssa.value(body_value).uses();
+        if body_value_uses.len() != 2
+            || body_value_uses.iter().filter(|usage| usage.block() == &join_id && usage.bci().is_none()).count() != 1
+            || body_value_uses.iter().filter(|usage| {
+                usage.block() == &body_id && usage.bci().is_some_and(|bci| {
+                    body_names.instructions().iter().any(|instruction| {
+                        instruction.bci() == bci
+                            && matches!(self.operations.get(bci), Some(Operation::Load { slot: read }) if *read == slot)
+                            && instruction.reads().contains(&(Slot::Local(slot), body_value))
+                    })
+                })
+            }).count() != 1
+        {
+            return Ok(None);
+        }
+        let phis: Vec<_> = self
+            .ssa
+            .phis()
+            .iter()
+            .filter(|phi| phi.block() == &join_id && phi.slot() == Slot::Local(slot))
+            .collect();
+        let [phi] = phis.as_slice() else {
+            return Ok(None);
+        };
+        if phi.inputs().len() != 2
+            || !phi.inputs().contains(&PhiInput::Value(effect_value))
+            || !phi.inputs().contains(&PhiInput::Value(body_value))
+            || self.ssa.value(phi.value()).replaced_by().is_some()
+            || join_names
+                .entry()
+                .iter()
+                .filter(|(at, _)| *at == Slot::Local(slot))
+                .count()
+                != 1
+            || !join_names
+                .entry()
+                .contains(&(Slot::Local(slot), phi.value()))
+        {
+            return Ok(None);
+        }
+        let [use_] = self.ssa.value(phi.value()).uses() else {
+            return Ok(None);
+        };
+        if use_.block() != &join_id
+            || !join_names.instructions().iter().any(|instruction| {
+                use_.bci() == Some(instruction.bci())
+                    && instruction.reads().contains(&(Slot::Local(slot), phi.value()))
+                    && matches!(self.operations.get(instruction.bci()), Some(Operation::Load { slot: read }) if *read == slot)
+            })
+            || !self.loop_exit_bridge(body, bridge, &join_id, blocks)
+        {
+            return Ok(None);
+        }
+        let mut scope = blocks.clone();
+        scope.extend([effect, bridge]);
+        let mut body_frame = frame.loop_body(
+            &scope,
+            join,
+            header_node,
+            header_node,
+            Some(join),
+            Some(join),
+            BTreeSet::from([join]),
+            &BTreeSet::new(),
+            &BTreeSet::new(),
+        );
+        body_frame.allow_own_loop_entry = true;
+        let (body_regions, next) = self.loop_body_sequence(header, &body_frame, &scope)?;
+        let owners: Vec<_> = body_regions
+            .iter()
+            .flat_map(Region::blocks)
+            .cloned()
+            .collect();
+        let owned_nodes: BTreeSet<_> = owners
+            .iter()
+            .filter_map(|id| self.view.index_of(id))
+            .collect();
+        let exits_through = |arm: &Region, block: &CanonicalBlockId, at: u32| {
+            matches!(arm, Region::Sequence { regions }
+                if matches!(regions.as_slice(),
+                    [Region::Straight { blocks }, Region::LoopBreak { source_bci, loop_header }]
+                    if blocks == &[block.clone()] && *source_bci == at && loop_header == header))
+        };
+        let body_shape = if let [
+            Region::If {
+                branch,
+                branch_bci,
+                then_arm,
+                else_arm,
+                ..
+            },
+        ] = body_regions.as_slice()
+        {
+            let arms = [then_arm.as_ref(), else_arm.as_ref()];
+            branch == header
+                && *branch_bci == header_test
+                && arms.iter().any(|arm| exits_through(arm, &effect_id, transfer.bci()))
+                && arms.iter().any(|arm| {
+                    if let Region::If {
+                        branch,
+                        branch_bci,
+                        then_arm,
+                        else_arm,
+                        ..
+                    } = arm
+                    {
+                        let inner = [then_arm.as_ref(), else_arm.as_ref()];
+                        branch == &body_id
+                            && *branch_bci == body_test
+                            && inner.iter().any(|arm| {
+                                exits_through(arm, &bridge_id, bridge_transfer.bci())
+                            })
+                            && inner.iter().any(|arm| {
+                                matches!(arm, Region::Straight { blocks } if blocks == &[latch_id.clone()])
+                            })
+                    } else {
+                        false
+                    }
+                })
+        } else {
+            false
+        };
+        if !body_shape
+            || next.as_ref() != Some(&join_id)
+            || owners.len() != scope.len()
+            || owned_nodes != scope
+            || !body_regions.iter().all(Region::is_structured)
+        {
+            return Ok(Some(Self::loop_fallback(
+                header,
+                FallbackReason::LoopShape {
+                    block_bci: header.bci(),
+                },
+                body_regions,
+            )));
+        }
+        Ok(Some((
+            vec![Region::Loop {
+                header: header.clone(),
+                tests: Vec::new(),
+                test_operator: None,
+                form: LoopForm::Endless,
+                for_header: None,
+                body: body_regions,
+                exit: Some(join_id.clone()),
+                gateway_origins: vec![latch_transfer.bci()],
+            }],
+            Some(join_id),
+        )))
     }
 
     /// The `while`/`for` shape: the header's own branch tests and one of its arms leaves the loop.

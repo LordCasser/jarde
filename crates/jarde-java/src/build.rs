@@ -2970,6 +2970,10 @@ fn own_blocks(region: &Region) -> Vec<CanonicalBlockId> {
         Region::StringSwitch { dispatch, .. } => dispatch.clone(),
         // The test block is the condition written *inside* the loop statement; the header belongs
         // to the body when the body claims it (`collect_paths` walks the body first).
+        Region::Loop {
+            form: LoopForm::Endless,
+            ..
+        } => Vec::new(),
         Region::Loop { header, tests, .. } => {
             let mut blocks = vec![header.clone()];
             blocks.extend(
@@ -12195,38 +12199,60 @@ impl Builder<'_> {
                 // calls it makes run once per evaluation — the loop's own count, not the count of a
                 // hoisted copy. Which of the two senses continues the loop is a decode fact
                 // (`Continuation`), and the condition is that sense, not its negation.
-                let Some((_, first_test_bci, _)) = tests.first() else {
-                    let bcis = self.region_quote(region, header.bci());
-                    return self.fallback(bcis, "the loop has no proved test", header.bci());
+                let first_test_bci = match (form, tests.first()) {
+                    (LoopForm::Endless, None)
+                        if test_operator.is_none() && for_header.is_none() =>
+                    {
+                        header.bci()
+                    }
+                    (LoopForm::Endless, _) => {
+                        let bcis = self.region_quote(region, header.bci());
+                        return self.fallback(
+                            bcis,
+                            "the endless loop has unexpected header tests",
+                            header.bci(),
+                        );
+                    }
+                    (_, Some((_, bci, _))) => *bci,
+                    (_, None) => {
+                        let bcis = self.region_quote(region, header.bci());
+                        return self.fallback(bcis, "the loop has no proved test", header.bci());
+                    }
                 };
-                let first_test_bci = *first_test_bci;
-                let mut cond = None;
-                for (_, test_bci, continuation) in tests {
-                    let test_bci = *test_bci;
-                    let taken = *continuation == Continuation::Taken;
-                    let test = match self.test_expr(test_bci, taken) {
-                        Ok(test) => test.derived_from(test_bci),
-                        Err(reason) => {
-                            let bcis = self.region_quote(region, test_bci);
-                            return self.fallback(bcis, &reason, test_bci);
-                        }
-                    };
-                    cond = Some(match cond {
-                        None => test,
-                        Some(left) => {
-                            let Some(operator) = test_operator else {
+                let cond = if *form == LoopForm::Endless {
+                    Expr::new(
+                        ExprKind::Boolean(true),
+                        OriginSet::new(Origin::derived(header.bci())),
+                    )
+                } else {
+                    let mut cond = None;
+                    for (_, test_bci, continuation) in tests {
+                        let test_bci = *test_bci;
+                        let taken = *continuation == Continuation::Taken;
+                        let test = match self.test_expr(test_bci, taken) {
+                            Ok(test) => test.derived_from(test_bci),
+                            Err(reason) => {
                                 let bcis = self.region_quote(region, test_bci);
-                                return self.fallback(
-                                    bcis,
-                                    "multiple loop tests have no proved short-circuit operator",
-                                    test_bci,
-                                );
-                            };
-                            binary(*operator, left, test, first_test_bci).derived_from(test_bci)
-                        }
-                    });
-                }
-                let cond = cond.expect("the loop's test list was checked non-empty");
+                                return self.fallback(bcis, &reason, test_bci);
+                            }
+                        };
+                        cond = Some(match cond {
+                            None => test,
+                            Some(left) => {
+                                let Some(operator) = test_operator else {
+                                    let bcis = self.region_quote(region, test_bci);
+                                    return self.fallback(
+                                        bcis,
+                                        "multiple loop tests have no proved short-circuit operator",
+                                        test_bci,
+                                    );
+                                };
+                                binary(*operator, left, test, first_test_bci).derived_from(test_bci)
+                            }
+                        });
+                    }
+                    cond.expect("the loop's test list was checked non-empty")
+                };
                 if tests.len() == 1 && test_operator.is_some() {
                     let bcis = self.region_quote(region, first_test_bci);
                     return self.fallback(
@@ -12368,6 +12394,11 @@ impl Builder<'_> {
                             cond,
                             body: loop_body,
                         },
+                        LoopForm::Endless => StmtKind::While {
+                            label,
+                            cond,
+                            body: loop_body,
+                        },
                     }
                 };
                 let projected =
@@ -12406,7 +12437,14 @@ impl Builder<'_> {
                         self.synthetic_names.insert(name);
                         (kind, origin)
                     } else {
-                        (kind, OriginSet::new(Origin::direct(first_test_bci)))
+                        (
+                            kind,
+                            OriginSet::new(if *form == LoopForm::Endless {
+                                Origin::derived(first_test_bci)
+                            } else {
+                                Origin::direct(first_test_bci)
+                            }),
+                        )
                     };
                 let origin = gateway_origins.iter().fold(origin, |origin, bci| {
                     origin.plus_derived(Origin::derived(*bci))

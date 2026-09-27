@@ -1,0 +1,81 @@
+{
+  "representation": "java",
+  "quality": "structured",
+  "regions": [
+    {
+      "bci": 0,
+      "blocks": [
+        0
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "straight",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 2,
+      "blocks": [
+        2,
+        8,
+        17,
+        26,
+        29
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "loop",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 35,
+      "blocks": [
+        35
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "straight",
+        "version": "1"
+      },
+      "structured": true
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "jre_recovery_produced",
+      "message": "3 region(s), 12 statement(s), 33 segment(s), 578 byte(s) written from 7 canonical block(s)",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_field_accesses",
+      "message": "1 field instruction(s) read under field@1: 1 presented, 0 refused",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_enumswitch_shape",
+      "message": "the array read at BCI 19 was not presented: the array the read at BCI 19 indexes is produced at BCI 17, which is not a static field of this run's pool",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_enumswitch",
+      "message": "1 dispatch-table read(s) read under enumswitch@1: 0 presented as the table read the bytecode performs, 1 refused; the constants those entries stand for are the enum class's own declaration, which this run does not hold, so no `case T.CONST:` label is written",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_declaration",
+      "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+      "provenance": null,
+      "severity": "info"
+    }
+  ]
+}
