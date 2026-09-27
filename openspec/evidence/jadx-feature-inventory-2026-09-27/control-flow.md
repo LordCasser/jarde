@@ -86,7 +86,7 @@ CF-16 审计状态：**已证 finally 重复执行差距**。固定测试断言�
 该账本唯一列出 215/215 个文件：主归属总数与目录总数一致，未归属文件数为 0。当前有 19 个正向能力单元（CF-01..16、CF-18..20；CF-17 空缺是刻意保留的未完成目标），其中 CF-20 单独覆盖整数位掩码谓词。CF-17 的 `TestTryWithResources.java` 仍计在 215 文件总数内，但标为 `PENDING-CF-17`，不进入已支持能力计数。交叉项只负责唯一账本归类，不另计能力单元。
 新增 CF-20 的原因是 `conditions/TestConditions17.java` 的正向断言要求整数 `(a & SOMETHING) != 0` 的位运算符继续出现在输出中；CF-01 的相邻正例 `TestBitwiseAnd.java` / `TestBitwiseOr.java` 则是 boolean `&` / `|` 被规范化为短路 `&&` / `||`。两者结果语义不同，合并在 CF-01 会把应保留的整数 bit mask 误写成逻辑组合。实现关注点是 `IfNode` 的比较操作与 codegen 的一般位运算表达式输出，不声称覆盖全部 JVM 位运算。
 `@NotYetImplemented` 共 12 个方法/场景，见上节。除 CF-17 的唯一 TWR 目标外，标记仅排除被标记的方法作为正向基线，不自动否定同一文件其余未标记测试：`TestConditions18`、`TestTernary2`、`TestTernaryInIf2`、`TestLoopDetection3`、`TestBreakInLoop3`、`TestTryAfterDeclaration`、`TestTryCatchFinally8`、`TestTryCatchFinally19`、`TestNestedTryCatch5`、`TestFinally3`、`TestTryCatchFinally18`。其中 `TestTryCatchFinally18.testJ8` 注释为需调查的 J8 场景；该文件另一 profile 测试仍可支撑 CF-16。CF-20 的位掩码测试未标记。
-CF-12 于 2026-09-27 完成代表样本三方 Java 8 完整类编译/运行对照；控制流在同目标多标签、fall-through、缺省 default 三形态一致，发现整数 switch 常量字段名恢复差距。证据与断言强度见 `openspec/evidence/java-syntax-2026-09-27/cf12-integer-switch/report.md`。本账本其余项目此前未按统一门槛重放，后续完成项见下列状态记录。
+CF-12 于 2026-09-27 完成代表样本三方 Java 8 完整类编译/运行对照；控制流在同目标多标签、fall-through、缺省 default 三形态一致。发现的整数 switch 常量字段名差距已按完整类字段表的唯一性证明修复，主线独立验收见 `openspec/evidence/java-syntax-2026-09-27/cf12-integer-switch/root-acceptance-2026-09-27.md`。本账本其余项目此前未按统一门槛重放，后续完成项见下列状态记录。
 
 CF-14 于 2026-09-27 完成三项代表 JADX 测试和 Java 8 样本的源码编译/运行审计。基本碰撞/分组形态三方语义与源码结构一致；嵌套 switch 的完整样本在 Jarde 输出处无法编译，内层最终判别 switch 的块落入未覆盖 fallback；独立 hash 用途负边界则由 Jarde 保守保留 lowering 并正确运行。证据、固定 SHA 和断言强度见 `openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/report.md`；其它项目状态见本文件下方记录。
 
