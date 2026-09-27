@@ -119,9 +119,11 @@ def main():
             raise RuntimeError('JADX Shape nesting changed')
         if 'class A<T> implements Comparable<A<T>>' not in jadx_generic:
             raise RuntimeError('JADX generic member changed')
-        if 'interface I' in jarde_shape or 'class A' in jarde_shape or 'class A' in jarde_generic:
-            raise RuntimeError('Jarde baseline nesting changed')
-        missing = ['Shape.I', 'Shape.A', 'Generic.A']
+        if (jarde_shape.count('public static interface I') != 1
+                or jarde_shape.count('public static abstract class A') != 1
+                or 'class A' in jarde_generic):
+            raise RuntimeError('Jarde proved Shape pair or Generic refusal changed')
+        missing = ['Generic.A']
     else:
         jadx_single = (out / 'source/jadx/em01/SingleAbstract.java').read_text()
         jarde_single = (out / 'source/jarde/em01/SingleAbstract.java').read_text()

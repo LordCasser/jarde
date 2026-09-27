@@ -694,6 +694,11 @@ pub enum ClassSourceMemberFamily {
         /// A resolved child is retained even when the two physical rows disagree.
         child: Option<Box<ClassSourceReport>>,
     },
+    RefusedPair {
+        reason: String,
+        /// Every child physically prepared before the joint proof refused.
+        children: Vec<Box<ClassSourceReport>>,
+    },
     Prepared {
         relation: ClassSourceMemberRelation,
         child: Box<ClassSourceReport>,
@@ -704,6 +709,17 @@ pub enum ClassSourceMemberFamily {
         /// Source-unit projection is separate from the physical relation and local certificates.
         projection: ClassSourceMemberProjection,
     },
+    PreparedPair {
+        /// The root's InnerClasses order, retained with each selected physical child.
+        members: [ClassSourcePairMember; 2],
+        projection: ClassSourceMemberProjection,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct ClassSourcePairMember {
+    pub relation: ClassSourceMemberRelation,
+    pub child: Box<ClassSourceReport>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -809,6 +825,7 @@ pub enum MemberFamilyDerivedKind {
     MemberGenericSignature,
     MemberConstructorName,
     MemberClassDeclaration,
+    MemberMethodDeclaration,
     CapturedOuterRead,
     OuterSuperCall,
     HiddenCaptureField,
@@ -8004,6 +8021,105 @@ pub(crate) fn member_family_source_text(
             .map(|method| method.derived.len())
             .sum::<usize>();
     if derived.len() != expected
+        || derived.iter().any(|entry| {
+            entry.start >= entry.end
+                || text.get(entry.start..entry.end).is_none()
+                || entry.anchors.is_empty()
+        })
+    {
+        return None;
+    }
+    Some((text, derived))
+}
+
+/// Assemble the two separately proved declaration-only children inside the existing root writer.
+/// The physical root remains the equality baseline, and neither child's text is published alone.
+pub(crate) fn declaration_pair_source_text(
+    root: &ClassSourceReport,
+    members: &[ClassSourcePairMember; 2],
+) -> Option<(String, Vec<MemberFamilyDerivedProjection>)> {
+    let declaration = root.declaration.as_ref()?;
+    let context = ClassSourceTextContext {
+        initializer_field_order: None,
+        declared_methods: root.methods.len() as u64,
+        member_table: None,
+        execution: &root.execution,
+        enum_projection: None,
+        array_helper_indices: None,
+        array_method_texts: None,
+        array_helper_markers: None,
+    };
+    if source_text(declaration, &root.fields, &root.methods, &context) != root.text {
+        return None;
+    }
+    let mut nested_text = String::new();
+    let mut nested_derived = Vec::new();
+    for (index, member) in members.iter().enumerate() {
+        if member.relation.root != root.class || member.relation.child != member.child.class {
+            return None;
+        }
+        let mut methods = Vec::new();
+        for method in &member.child.methods {
+            let mut derived = Vec::new();
+            if method.item.identity.name.0 != b"<init>" {
+                let declaration = method.declaration.as_ref()?;
+                let mut positions = method.text.match_indices(declaration);
+                let (start, _) = positions.next()?;
+                if positions.next().is_some() {
+                    return None;
+                }
+                derived.push(MemberFamilyDerivedProjection {
+                    kind: MemberFamilyDerivedKind::MemberMethodDeclaration,
+                    start,
+                    end: start + declaration.len(),
+                    anchors: vec![MemberFamilyPhysicalAnchor::MethodSignature {
+                        method: method.item.identity.clone(),
+                    }],
+                });
+            }
+            methods.push(MemberFamilyMethodText {
+                index: method.item.index,
+                text: method.text.clone(),
+                derived,
+            });
+        }
+        let projection = MemberFamilyTextProjection {
+            relation: &member.relation,
+            child: &member.child,
+            capture: None,
+            static_target: None,
+            root_methods: &[],
+            child_methods: &methods,
+            outer_super_bridges: &[],
+        };
+        let (text, derived) = render_member_class(&projection)?;
+        if index != 0 {
+            nested_text.push('\n');
+        }
+        let offset = nested_text.len();
+        nested_text.push_str(&text);
+        nested_derived.extend(derived.into_iter().map(|mut entry| {
+            entry.start += offset;
+            entry.end += offset;
+            entry
+        }));
+    }
+    let nested = NestedClassSourceText {
+        text: nested_text,
+        derived: nested_derived,
+    };
+    let mut derived = Vec::new();
+    let text = source_text_with_member(
+        declaration,
+        &root.fields,
+        &root.methods,
+        &context,
+        None,
+        &[],
+        Some(&nested),
+        &mut derived,
+    )?;
+    if derived.len() != 6
         || derived.iter().any(|entry| {
             entry.start >= entry.end
                 || text.get(entry.start..entry.end).is_none()
