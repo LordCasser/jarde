@@ -1594,6 +1594,11 @@ pub struct GenericConstructorCandidate {
 pub enum GenericReturnValue {
     /// The body is exactly one effect-free `return;` instruction.
     EmptyVoid,
+    /// A complete, straight-line void body whose parameter locals are never reassigned. This is
+    /// used only as same-run evidence for a source-level generic parameter projection: the body
+    /// remains typed from its physical descriptor while the declaration may name a subtype
+    /// variable with the same proved erasure.
+    VoidBody,
     /// The body is exactly an effect-free `aconst_null; areturn` sequence.
     NullLiteral,
     Parameter(u16),
@@ -2750,7 +2755,7 @@ fn generic_return_candidate(
             .saturating_add(1),
         None,
     )?;
-    if program.ragged || program.stmts.len() != 1 {
+    if program.ragged || program.stmts.is_empty() {
         return Ok(None);
     }
     if matches!(program.stmts[0].kind, StmtKind::Return { value: None }) {
@@ -2812,6 +2817,53 @@ fn generic_return_candidate(
         return Ok(Some(GenericReturnCandidate {
             parameters,
             value: GenericReturnValue::EmptyVoid,
+        }));
+    }
+    // A method-local type variable may replace a physical reference parameter in the source
+    // header only when the emitted body is itself complete and the parameter's physical local is
+    // immutable. Since T's first bound erases to the descriptor type, reads remain assignable to
+    // every context that accepted the erased reference; writes are refused because they would
+    // require a value of the unknown subtype T. The class-source layer additionally restricts this
+    // candidate to the exact one-variable `<T extends B> void set(T, boolean)` shape.
+    if matches!(
+        program.stmts.last().map(|statement| &statement.kind),
+        Some(StmtKind::Return { value: None })
+    ) && program.statements == program.stmts.len()
+        && program.stmts.len() > 1
+        && code.stopped_at.is_none()
+        && code.exception_handler_count == 0
+        && code.exception_handlers.is_empty()
+        && ssa.blocks().len() == 1
+        && ssa.phis().is_empty()
+        && !program.ragged
+        && ssa.blocks()[0].instructions().len() == code.instructions.len()
+        && ssa.effects().instructions().len() == code.instructions.len()
+    {
+        let parameter_slots: std::collections::BTreeSet<_> =
+            parameter_types.keys().copied().collect();
+        if ssa.blocks()[0].instructions().iter().any(|instruction| {
+            instruction.writes().iter().any(
+                |(slot, _)| matches!(slot, Slot::Local(index) if parameter_slots.contains(index)),
+            )
+        }) {
+            return Ok(None);
+        }
+        let mut parameters = Vec::with_capacity(parameter_types.len());
+        for slot in parameter_types.keys() {
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                1,
+                None,
+            )?;
+            let Some(name) = names.whole(*slot) else {
+                return Ok(None);
+            };
+            parameters.push((*slot, name.text().to_owned()));
+        }
+        return Ok(Some(GenericReturnCandidate {
+            parameters,
+            value: GenericReturnValue::VoidBody,
         }));
     }
     let StmtKind::Return { value: Some(value) } = &program.stmts[0].kind else {

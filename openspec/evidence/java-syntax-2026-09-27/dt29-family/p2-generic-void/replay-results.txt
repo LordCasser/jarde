@@ -1,0 +1,38 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+3 个警告
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+3 个警告
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+3 个警告
+original: p2-ok:true:true:true:true:1
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+3 个警告
+jadx: p2-ok:true:true:true:true:1
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+3 个警告
+jarde: p2-ok:true:true:true:true:1
+14:    public <T extends dt29p2.Bound> void set(T arg1, boolean arg2) {
+Setter descriptor and Signature lines (original / Jarde):
+    descriptor: ()V
+    descriptor: (Ldt29p2/Bound;Z)V
+    Signature: #19                          // <T:Ldt29p2/Bound;>(TT;Z)V
+    descriptor: (Ldt29p2/Bound;ZI)V
+    descriptor: ()V
+    descriptor: (Ldt29p2/Bound;Z)V
+    Signature: #19                          // <T:Ldt29p2/Bound;>(TT;Z)V
+    descriptor: (Ldt29p2/Bound;ZI)V
+negative wrong-bound: descriptor declaration retained; generic projection refused
+negative unbound-variable: descriptor declaration retained; generic projection refused
+negative IncompatibleSetter: descriptor declaration retained; generic projection refused
+negative OverloadedSetter: descriptor declaration retained; generic projection refused
+budget stop: partial

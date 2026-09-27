@@ -2076,6 +2076,15 @@ pub(crate) fn project_method_signature(
                 parameters,
                 value: GenericReturnValue::NullLiteral,
             }) if parameters.is_empty());
+        let body_generic_void = matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
+            && !parsed.type_parameters.is_empty()
+            && parsed.result.is_none()
+            && parsed.throws.is_empty()
+            && attributes.throws_raw.is_empty()
+            && matches!(candidate, Some(GenericReturnCandidate {
+                parameters,
+                value: GenericReturnValue::VoidBody,
+            }) if !parameters.is_empty());
         let body_ordinary_parameterized_null_return = matches!(
             record.outcome,
             ClassSourceOutcome::Recovered { .. }
@@ -2175,6 +2184,19 @@ pub(crate) fn project_method_signature(
             (
                 declaration,
                 "same-run AST/Code/SSA exact null-return and method-local Signature scope/erasure proof",
+            )
+        } else if body_generic_void {
+            let declaration = generic_void_body_declaration(
+                record,
+                attributes,
+                &parsed,
+                candidate,
+                &erasure.type_parameters,
+                budget,
+            )?;
+            (
+                declaration,
+                "same-run complete straight-line AST/Code/SSA parameter-use and Signature erasure proof",
             )
         } else if body_ordinary_parameterized_null_return {
             let declaration = ordinary_parameterized_declaration(
@@ -3523,6 +3545,7 @@ fn ordinary_parameterized_declaration(
             }
             GenericReturnValue::EmptyVoid if empty_void_wildcard_parameter => Some(Vec::new()),
             GenericReturnValue::EmptyVoid => None,
+            GenericReturnValue::VoidBody => None,
             GenericReturnValue::NullLiteral if allow_null_return => Some(Vec::new()),
             GenericReturnValue::NullLiteral => None,
             GenericReturnValue::Parameter(slot) => signature
@@ -4012,6 +4035,57 @@ fn signature_result_matches_member_creation(
         && !class.segments[0].arguments.is_empty()
 }
 
+fn generic_void_body_declaration(
+    record: &ClassSourceMethod,
+    attributes: &MemberAttributes,
+    parsed: &jarde_reader::signature::MethodSignature,
+    candidate: Option<&GenericReturnCandidate>,
+    erasures: &[TypeParameterErasure],
+    budget: &mut Budget,
+) -> Result<String> {
+    let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
+    let [parameter] = parsed.type_parameters.as_slice() else {
+        return Err(refused(
+            "generic void body requires exactly one method type parameter",
+        ));
+    };
+    let Some(SignatureType::Class(bound)) = parameter.class_bound.as_ref() else {
+        return Err(refused("generic void body requires one class bound"));
+    };
+    let Some(physical) = method_descriptor(&record.item.descriptor.raw().0, false, false) else {
+        return Err(refused(
+            "physical generic void descriptor cannot be spelled",
+        ));
+    };
+    if !parameter.interface_bounds.is_empty()
+        || bound.segments.len() != 1
+        || !bound.segments[0].arguments.is_empty()
+        || erasures.len() != 1
+        || erasures[0].name != parameter.name
+        || !erasures[0].descriptor.starts_with(b"L")
+        || parsed.parameters.as_slice()
+            != [
+                SignatureType::TypeVariable(parameter.name.clone()),
+                SignatureType::Base(b'Z'),
+            ]
+        || physical.parameters.len() != 2
+        || physical.parameters[1].0 != "boolean"
+        || physical.parameters[0].0 == "boolean"
+        || !attributes.throws_raw.is_empty()
+        || !matches!(candidate, Some(GenericReturnCandidate {
+            parameters,
+            value: GenericReturnValue::VoidBody,
+        }) if parameters.len() == 2)
+    {
+        return Err(refused(
+            "generic void body must be `<T extends B> void` with physical `(B, boolean)`, exact erasure, and two same-run parameter slots",
+        ));
+    }
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    generic_method_declaration(record, attributes, parsed, candidate, false)
+}
+
 fn generic_method_declaration(
     record: &ClassSourceMethod,
     attributes: &MemberAttributes,
@@ -4023,10 +4097,12 @@ fn generic_method_declaration(
     let candidate = candidate
         .ok_or_else(|| refused("the recovered AST/SSA body is not a direct parameter return"))?;
     let item = &record.item;
+    let void_body = matches!(candidate.value, GenericReturnValue::VoidBody);
     let null_instance_return = matches!(candidate.value, GenericReturnValue::NullLiteral);
     let is_static = item.access_flags & ACC_STATIC != 0;
     if record.declaration.is_none()
-        || is_static == null_instance_return
+        || (void_body && is_static)
+        || (!void_body && is_static == null_instance_return)
         || item.access_flags
             & !(ACC_PUBLIC
                 | ACC_PRIVATE
@@ -4081,14 +4157,22 @@ fn generic_method_declaration(
             bounds.join(" & "),
         ));
     }
-    let Some(SignatureType::TypeVariable(result_variable)) = &parsed.result else {
-        return Err(refused("result is outside the supported source shape"));
-    };
-    let Some((_, result_name, _)) = variables
-        .iter()
-        .find(|(name, _, _)| name == result_variable)
-    else {
-        return Err(refused("result variable is outside the method scope"));
+    let result_name = if void_body {
+        if parsed.result.is_some() {
+            return Err(refused("proved void body has a non-void Signature result"));
+        }
+        "void"
+    } else {
+        let Some(SignatureType::TypeVariable(result_variable)) = &parsed.result else {
+            return Err(refused("result is outside the supported source shape"));
+        };
+        let Some((_, result_name, _)) = variables
+            .iter()
+            .find(|(name, _, _)| name == result_variable)
+        else {
+            return Err(refused("result variable is outside the method scope"));
+        };
+        result_name.as_str()
     };
     if parsed.parameters.len() != candidate.parameters.len() {
         return Err(refused("parameter count differs from the same-run body"));
@@ -4110,7 +4194,7 @@ fn generic_method_declaration(
             ));
         }
     }
-    let signature = method_descriptor(&item.descriptor.raw().0, true, false)
+    let signature = method_descriptor(&item.descriptor.raw().0, is_static, false)
         .ok_or_else(|| refused("physical descriptor cannot be spelled"))?;
     if signature.parameters.len() != candidate.parameters.len() {
         return Err(refused("parameter slot mapping differs from descriptor"));
@@ -4134,7 +4218,11 @@ fn generic_method_declaration(
                 else {
                     return Err(refused("parameter variable is outside the method scope"));
                 };
-                if name == result_variable {
+                if parsed
+                    .result
+                    .as_ref()
+                    .is_some_and(|result| matches!(result, SignatureType::TypeVariable(result) if result == name))
+                {
                     result_slots.push(*slot);
                 }
                 spelling.clone()
@@ -4167,6 +4255,7 @@ fn generic_method_declaration(
     }
     let return_proved = match candidate.value {
         GenericReturnValue::EmptyVoid => false,
+        GenericReturnValue::VoidBody => void_body && parsed.result.is_none(),
         GenericReturnValue::NullLiteral => null_instance_return && parsed.parameters.is_empty(),
         GenericReturnValue::Parameter(slot) => result_slots.contains(&slot),
         GenericReturnValue::Conditional {
