@@ -1,0 +1,83 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde)
+error[E0061]: this function takes 4 arguments but 3 arguments were supplied
+    --> src/member_inner.rs:2600:18
+     |
+2600 |           assert!(!capture_write_is_unique_site(
+     |  __________________^^^^^^^^^^^^^^^^^^^^^^^^^^^^-
+2601 | |             read_id,
+2602 | |             8,
+2603 | |             &proved.constructor
+2604 | |         ));
+     | |_________- argument #4 of type `u32` is missing
+     |
+note: function defined here
+    --> src/member_inner.rs:529:4
+     |
+ 529 | fn capture_write_is_unique_site(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+ 533 |     write_bci: u32,
+     |     --------------
+help: provide the argument
+     |
+2600 |         assert!(!capture_write_is_unique_site(
+2601 |             read_id,
+2602 |             8,
+2603 ~             &proved.constructor,
+2604 +             /* u32 */,
+     |
+
+error[E0061]: this function takes 10 arguments but 9 arguments were supplied
+    --> src/member_inner.rs:2611:23
+     |
+2611 |         let refusal = scan_capture_method_uses(
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+2620 |             &mut budget,
+     |             ----------- argument #9 of type `u32` is missing
+     |
+note: function defined here
+    --> src/member_inner.rs:458:4
+     |
+ 458 | fn scan_capture_method_uses(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+ 467 |     write_bci: u32,
+     |     --------------
+help: provide the argument
+     |
+2611 |         let refusal = scan_capture_method_uses(
+ ...
+2619 |             b"LNamedMemberFamilyStage1;",
+2620 ~             /* u32 */,
+2621 ~             &mut budget,
+     |
+
+error[E0061]: this function takes 10 arguments but 9 arguments were supplied
+    --> src/member_inner.rs:2627:23
+     |
+2627 |         let refusal = scan_capture_method_uses(
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+2636 |             &mut budget,
+     |             ----------- argument #9 of type `u32` is missing
+     |
+note: function defined here
+    --> src/member_inner.rs:458:4
+     |
+ 458 | fn scan_capture_method_uses(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+ 467 |     write_bci: u32,
+     |     --------------
+help: provide the argument
+     |
+2627 |         let refusal = scan_capture_method_uses(
+ ...
+2635 |             b"LNamedMemberFamilyStage1;",
+2636 ~             /* u32 */,
+2637 ~             &mut budget,
+     |
+
+For more information about this error, try `rustc --explain E0061`.
+error: could not compile `jarde` (lib test) due to 3 previous errors

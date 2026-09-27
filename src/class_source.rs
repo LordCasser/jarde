@@ -1367,7 +1367,11 @@ fn parameter_names(facts: Option<&RecoveryFacts>, slots: u16) -> Vec<String> {
             _ => SlotEvidence::Split(names.into_iter().map(Some).collect()),
         })
         .collect();
-    let table = NameTable::build(slots, slots, &evidence);
+    let table = if facts.is_some_and(|facts| facts.method().has_receiver()) {
+        NameTable::build_with_receiver(slots, slots, &evidence)
+    } else {
+        NameTable::build(slots, slots, &evidence)
+    };
     (0..slots)
         .map(|slot| {
             table
@@ -1793,6 +1797,62 @@ pub(crate) struct MemberAttributes {
     pub(crate) throws: Vec<String>,
     /// The same physical exception names before source spelling, for signature erasure proof.
     pub(crate) throws_raw: Vec<Vec<u8>>,
+    /// A complete descriptor-to-slot projection of this member's parameter attribute.
+    pub(crate) parameters: Option<Vec<ProvedMethodParameter>>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ProvedMethodParameter {
+    pub(crate) slot: u16,
+    pub(crate) name: String,
+    pub(crate) is_final: bool,
+}
+
+fn prove_method_parameters(
+    entries: &[jarde_reader::classfile::MethodParameterFacts],
+    descriptor: &[u8],
+    flags: u16,
+) -> Option<Vec<ProvedMethodParameter>> {
+    let signature = method_descriptor(descriptor, is_static(flags), flags & ACC_VARARGS != 0)?;
+    if entries.len() != signature.parameters.len() || flags & (0x1000 | 0x0040) != 0 {
+        return None;
+    }
+    let mut used = std::collections::BTreeSet::new();
+    let parameters: Vec<ProvedMethodParameter> = entries
+        .iter()
+        .zip(signature.parameters.iter())
+        .map(|(entry, (_, slot))| {
+            if entry.access_flags & (0x1000 | 0x8000) != 0 {
+                return None;
+            }
+            let name = std::str::from_utf8(&entry.name.as_ref()?.0).ok()?;
+            if !is_java_identifier(name) || !used.insert(name.to_owned()) {
+                return None;
+            }
+            Some(ProvedMethodParameter {
+                slot: *slot,
+                name: name.to_owned(),
+                is_final: entry.access_flags & ACC_FINAL != 0,
+            })
+        })
+        .collect::<Option<_>>()?;
+    let mut evidence = vec![SlotEvidence::Unnamed; usize::from(signature.slots)];
+    for parameter in &parameters {
+        evidence[usize::from(parameter.slot)] = SlotEvidence::Whole(parameter.name.clone());
+    }
+    let table = if is_static(flags) {
+        NameTable::build(signature.slots, signature.slots, &evidence)
+    } else {
+        NameTable::build_with_receiver(signature.slots, signature.slots, &evidence)
+    };
+    parameters
+        .iter()
+        .all(|parameter| {
+            table
+                .name(LocalVariable::whole(parameter.slot))
+                .is_some_and(|name| name.text() == parameter.name)
+        })
+        .then_some(parameters)
 }
 
 /// The declaration facts one member's own attribute table states (JVMS 4.7.4, 4.7.22).
@@ -1822,10 +1882,41 @@ pub(crate) fn declared_member_attributes(
     } else {
         Vec::new()
     };
+    let parameters = if member
+        .attributes
+        .iter()
+        .any(|attribute| attribute.name.raw().0 == b"MethodParameters")
+    {
+        let entries = attribute_facts(
+            bytes,
+            &attribute_shells(member, b"MethodParameters"),
+            pool,
+            budget,
+        )?
+        .method_parameters;
+        if let Some(entries) = entries {
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(member.descriptor.raw().0.len())
+                    .unwrap_or(u64::MAX)
+                    .saturating_add(
+                        u64::try_from(entries.len())
+                            .unwrap_or(u64::MAX)
+                            .saturating_mul(4),
+                    ),
+            )?;
+            prove_method_parameters(&entries, &member.descriptor.raw().0, member.access_flags)
+        } else {
+            None
+        }
+    } else {
+        None
+    };
     Ok(MemberAttributes {
         default,
         throws: throws_raw.iter().map(|name| class_name(name)).collect(),
         throws_raw,
+        parameters,
     })
 }
 
@@ -4745,6 +4836,7 @@ fn spell_method_declaration(
                 &signature,
                 parameter_annotations,
                 &type_annotations.parameter_uses,
+                attributes.and_then(|attributes| attributes.parameters.as_deref()),
             ));
             declaration.push_str(&throws_clause(throws));
             return Spelled {
@@ -4816,6 +4908,7 @@ fn spell_method_declaration(
         &signature,
         parameter_annotations,
         &type_annotations.parameter_uses,
+        attributes.and_then(|attributes| attributes.parameters.as_deref()),
     ));
     declaration.push_str(&throws_clause(throws));
     if let Some(default) = default {
@@ -5054,8 +5147,22 @@ fn arguments(
     signature: &Signature,
     parameter_annotations: &[Vec<String>],
     type_annotations: &[Vec<String>],
+    proved: Option<&[ProvedMethodParameter]>,
 ) -> String {
     let names = parameter_names(facts, signature.slots);
+    let proved = proved.filter(|parameters| {
+        facts.is_some_and(|facts| {
+            facts.debug_locals().len() == parameters.len()
+                && parameters
+                    .iter()
+                    .zip(facts.debug_locals())
+                    .all(|(parameter, local)| {
+                        local.slot() == parameter.slot
+                            && local.name() == parameter.name
+                            && local.range().is_none()
+                    })
+        })
+    });
     let written: Vec<String> = signature
         .parameters
         .iter()
@@ -5078,7 +5185,16 @@ fn arguments(
                 .flatten()
                 .map(|annotation| format!("{annotation} "))
                 .collect::<String>();
-            format!("{annotations}{ty} {name}")
+            let final_word = if proved
+                .and_then(|parameters| parameters.get(position))
+                .is_some_and(|parameter| {
+                    parameter.slot == *slot && parameter.name == name && parameter.is_final
+                }) {
+                "final "
+            } else {
+                ""
+            };
+            format!("{annotations}{final_word}{ty} {name}")
         })
         .collect();
     format!("({})", written.join(", "))
@@ -8424,6 +8540,93 @@ mod tests {
         assert_eq!(empty.slots, 0);
     }
 
+    #[test]
+    fn method_parameters_need_a_complete_safe_slot_projection() {
+        let entry = |name: Option<&[u8]>, flags| jarde_reader::classfile::MethodParameterFacts {
+            name_index: u16::from(name.is_some()),
+            name: name.map(|name| jarde_reader::model::JvmBytes(name.to_vec())),
+            access_flags: flags,
+        };
+        let entries = [entry(Some(b"first"), 0), entry(Some(b"second"), ACC_FINAL)];
+        let proved = prove_method_parameters(&entries, b"(JDI)V", 0);
+        assert!(proved.is_none(), "descriptor count must match");
+        let proved = prove_method_parameters(&entries, b"(JD)V", 0).unwrap();
+        assert_eq!(
+            proved.iter().map(|item| item.slot).collect::<Vec<_>>(),
+            [1, 3]
+        );
+        assert!(proved[1].is_final);
+        let static_proved = prove_method_parameters(&entries, b"(JD)V", ACC_STATIC).unwrap();
+        assert_eq!(
+            static_proved
+                .iter()
+                .map(|item| item.slot)
+                .collect::<Vec<_>>(),
+            [0, 2]
+        );
+        for entries in [
+            [entry(None, 0), entry(Some(b"second"), 0)],
+            [entry(Some(b"first"), 0), entry(Some(b"first"), 0)],
+            [entry(Some(b"class"), 0), entry(Some(b"second"), 0)],
+            [entry(Some(b"first"), 0x1000), entry(Some(b"second"), 0)],
+            [entry(Some(b"first"), 0x8000), entry(Some(b"second"), 0)],
+        ] {
+            assert!(prove_method_parameters(&entries, b"(JD)V", 0).is_none());
+        }
+        assert!(prove_method_parameters(&entries, b"(JD)V", 0x0040).is_none());
+        assert!(
+            prove_method_parameters(
+                &[entry(Some(b"wide"), 0), entry(Some(b"arg2"), 0)],
+                b"(JLjava/lang/String;)V",
+                0,
+            )
+            .is_none(),
+            "an invented name for a wide slot cannot alias a source parameter"
+        );
+    }
+
+    #[test]
+    fn projected_parameter_names_and_final_are_one_declaration() {
+        let signature =
+            method_descriptor(b"(Ljava/lang/String;I)Ljava/lang/String;", false, false).unwrap();
+        let parameters = vec![
+            ProvedMethodParameter {
+                slot: 1,
+                name: "paramStr".into(),
+                is_final: false,
+            },
+            ProvedMethodParameter {
+                slot: 2,
+                name: "number".into(),
+                is_final: true,
+            },
+        ];
+        let facts = RecoveryFacts::new(
+            jarde_java::MethodFacts::new("named", "(Ljava/lang/String;I)Ljava/lang/String;", 3)
+                .with_access_flags(0),
+        )
+        .with_debug_locals(vec![
+            jarde_java::DebugLocal::named(1, "paramStr"),
+            jarde_java::DebugLocal::named(2, "number"),
+        ]);
+        assert_eq!(
+            arguments(Some(&facts), &signature, &[], &[], Some(&parameters)),
+            "(java.lang.String paramStr, final int number)"
+        );
+        assert_eq!(
+            arguments(None, &signature, &[], &[], Some(&parameters)),
+            "(java.lang.String arg1, int arg2)"
+        );
+        let lvt = facts.clone().with_debug_locals(vec![
+            jarde_java::DebugLocal::over(1, "paramStr", 0, 4),
+            jarde_java::DebugLocal::over(2, "number", 0, 4),
+        ]);
+        assert_eq!(
+            arguments(Some(&lvt), &signature, &[], &[], Some(&parameters)),
+            "(java.lang.String paramStr, int number)"
+        );
+    }
+
     /// P3 6.7: `ACC_VARARGS` (0x0080) is the member's own fact that its **last** parameter is the
     /// variable-arity one, and the two facts it takes to write a `...` meet in the signature: the
     /// flag, and a descriptor whose last component is an array. The reading of the descriptor itself
@@ -8438,12 +8641,15 @@ mod tests {
             "the descriptor's own types are read the same way with and without the flag"
         );
         assert!(ints.varargs);
-        assert_eq!(arguments(None, &ints, &[], &[]), "(int arg0, int... arg1)");
+        assert_eq!(
+            arguments(None, &ints, &[], &[], None),
+            "(int arg0, int... arg1)"
+        );
 
         // `[[B`: the dots take the place of the **last** `[]`, so the element type keeps the `[]`
         // it has and the parameter is written `byte[]...`, never `byte[][]` or `byte...`.
         let grid = method_descriptor(b"([[B)V", true, true).expect("a method descriptor");
-        assert_eq!(arguments(None, &grid, &[], &[]), "(byte[]... arg0)");
+        assert_eq!(arguments(None, &grid, &[], &[], None), "(byte[]... arg0)");
 
         // The controls. The same descriptor without the flag keeps the array spelling, and the flag
         // on a member whose last parameter is not an array is written as the descriptor states it.
@@ -8451,13 +8657,13 @@ mod tests {
             method_descriptor(b"(I[I)V", true, false).expect("a method descriptor");
         assert!(!without_the_flag.varargs);
         assert_eq!(
-            arguments(None, &without_the_flag, &[], &[]),
+            arguments(None, &without_the_flag, &[], &[], None),
             "(int arg0, int[] arg1)"
         );
         let not_an_array = method_descriptor(b"(II)V", true, true).expect("a method descriptor");
         assert!(!not_an_array.varargs, "no `...` is invented for an `int`");
         assert_eq!(
-            arguments(None, &not_an_array, &[], &[]),
+            arguments(None, &not_an_array, &[], &[], None),
             "(int arg0, int arg1)"
         );
         let no_parameters = method_descriptor(b"()V", true, true).expect("a method descriptor");
@@ -8465,12 +8671,12 @@ mod tests {
             !no_parameters.varargs,
             "there is no last parameter to reach"
         );
-        assert_eq!(arguments(None, &no_parameters, &[], &[]), "()");
+        assert_eq!(arguments(None, &no_parameters, &[], &[], None), "()");
 
         // The flag reaches the descriptor's last parameter and not the slot the receiver holds: an
         // instance member's `this` is no position of the list, so the dots land on slot 1 here.
         let instance = method_descriptor(b"([I)V", false, true).expect("a method descriptor");
-        assert_eq!(arguments(None, &instance, &[], &[]), "(int... arg1)");
+        assert_eq!(arguments(None, &instance, &[], &[], None), "(int... arg1)");
     }
 
     /// JVMS 2.6.1: an array fills **one** slot whatever its element type, and a member that is not
