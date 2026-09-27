@@ -472,30 +472,32 @@ fn a_write_that_cannot_be_spelled_as_the_decided_type_terminates_its_structure()
 }
 
 #[test]
-fn a_value_the_evidence_cannot_type_is_refused_where_a_boolean_is_required() {
-    // `unproven`: the same body as `literalArmed` under a `Z` descriptor, where the position requires
-    // a boolean the evidence does not have (`int x = 0;`/`boolean x = true;` are one bytecode shape,
-    // and the sole writes are literals). The layer refuses the return instead of publishing an `int`
-    // spelling the member's own signature rejects — the same boundary before and after this change,
-    // and the proof that the plan's decision is read where the position's requirement is.
+fn an_int_local_at_a_boolean_return_uses_the_jvm_low_bit() {
+    // `unproven` has the same literal-only local writes as `literalArmed`, but its method descriptor
+    // is `Z`. The writes do not prove the local itself is boolean: the declaration stays `int`.
+    // `ireturn Z` consumes the low bit of its int-sized operand, so the return position can still be
+    // presented as `local1 % 2 != 0`. This is the boundary contract exercised by
+    // `tests/p3_integer_boolean_return_contract.rs`, rather than a boolean type inference.
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);
-    let report = recover(&engine, &fixture, b"unproven", b"(Z)Z");
-    assert_refused(&report, "unproven", 12);
+    let text = whole_body(&engine, &fixture, b"unproven", b"(Z)Z");
     assert!(
-        report.text.contains("int local1;"),
+        text.contains("int local1;"),
         "the declaration keeps the type the literal-only writes decide:\n{}",
-        report.text
+        text
     );
     assert!(
-        !report.text.contains("boolean local1"),
+        text.contains("local1 = 1;") && text.contains("local1 = 0;"),
+        "the literal-only writes keep their int spelling:\n{text}"
+    );
+    assert!(
+        text.contains("return local1 % 2 != 0;"),
+        "the boolean return spells the JVM low-bit behavior:\n{text}"
+    );
+    assert!(
+        !text.contains("boolean local1"),
         "no local of this member is presented as a boolean:\n{}",
-        report.text
-    );
-    assert!(
-        !report.text.contains("return local1;"),
-        "the refused return is not published in its `int` spelling:\n{}",
-        report.text
+        text
     );
 }
 
@@ -569,25 +571,13 @@ fn the_type_decision_is_billed_and_a_stopped_run_commits_nothing() {
     // is charged to the same `IrItems` dimension the statements are (`crates/jarde-java/src/build.rs`,
     // `decide_types`) and polled through the same `stop.rs` entry, and no new dimension is added.
     //
-    // Both numbers below are this request's own deterministic usage, as the pinned-usage cases in
-    // `tests/p3_declaration_handoff.rs` state theirs. `relayed`'s chain has three entries: `x` (its
-    // first write stores the `Z` parameter's load, which seeds the queue), then `y` (its write
-    // stores a read of `x`) and then `z` — so three charges are the plan's, and the run's total is
-    // 378 without them. `IR_ITEMS_BEFORE_THE_PLAN` is the bound at which the plan's own first entry
-    // is the charge that is refused: with the plan billed, the first charge that carries a BCI is
-    // `x`'s write at BCI 1; with the plan's billing removed, that same bound reaches the first
-    // statement's charge at BCI 9 instead, so this assertion is what stops the billing from being
-    // dropped silently.
-    //
-    // The evidence selection this file presents under is the full one (`RecoveredEvidenceRequest::all`,
-    // `recover` above). Every category of it is charged to the same dimension, one `IrItems` per
-    // owning record (`add-demand-driven-core-results`, D1/D3): this body's evidence phase
-    // materializes its two region records, its one rule record (the declaration; the body has no
-    // other rule's record) and the sixteen spans of its source map, so the full run is 381 + 2 + 1 +
-    // 16 = 400. The plan's three entries are still three of the run's own charges and are inside
-    // that 381, which is what this assertion is about.
-    const RELAYED_IR_ITEMS: u64 = 400;
-    const IR_ITEMS_BEFORE_THE_PLAN: u64 = 369;
+    // `relayed`'s chain has three entries: `x` (its first write stores the `Z` parameter's load,
+    // which seeds the queue), then `y` (its write stores a read of `x`) and then `z`. The full-run
+    // count and cutoff below are pinned for this request. At the cutoff the run stops on `x`'s write
+    // at BCI 1, keeping a concrete source anchor on the budget boundary so the plan's charge cannot
+    // be removed without changing the result.
+    const RELAYED_IR_ITEMS: u64 = 464;
+    const IR_ITEMS_BEFORE_THE_PLAN: u64 = 374;
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);
     let ample = recover(&engine, &fixture, b"relayed", b"(Z)Z");
