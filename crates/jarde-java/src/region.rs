@@ -1743,6 +1743,8 @@ struct Frame {
     transfer_source_bci: Option<u32>,
     /// A switch's own join must remain a switch break instead of becoming a loop break.
     switch_join: Option<usize>,
+    /// Only a proved switch arm may treat the current loop's update as a continue transfer.
+    switch_continue: Option<usize>,
 }
 
 #[derive(Clone, Debug)]
@@ -1811,6 +1813,7 @@ impl Frame {
             },
             transfer_source_bci: None,
             switch_join: self.switch_join,
+            switch_continue: None,
         }
     }
 
@@ -1837,11 +1840,18 @@ impl Frame {
             loop_targets: self.loop_targets.clone(),
             transfer_source_bci: source_bci.or(self.transfer_source_bci),
             switch_join: self.switch_join,
+            switch_continue: self.switch_continue,
         }
     }
 
     /// One switch arm, bounded by the other proven case entries as well as its enclosing join.
-    fn switch_arm(&self, join: Option<usize>, entries: &BTreeSet<usize>, source_bci: u32) -> Self {
+    fn switch_arm(
+        &self,
+        join: Option<usize>,
+        entries: &BTreeSet<usize>,
+        source_bci: u32,
+        continue_target: Option<usize>,
+    ) -> Self {
         let mut case_entries = self.case_entries.clone().unwrap_or_default();
         case_entries.extend(entries.iter().copied());
         Self {
@@ -1857,6 +1867,7 @@ impl Frame {
             loop_targets: self.loop_targets.clone(),
             transfer_source_bci: Some(source_bci),
             switch_join: join.or(self.switch_join),
+            switch_continue: continue_target,
         }
     }
 
@@ -1880,6 +1891,7 @@ impl Frame {
             loop_targets: self.loop_targets.clone(),
             transfer_source_bci: self.transfer_source_bci,
             switch_join: self.switch_join,
+            switch_continue: self.switch_continue,
         }
     }
 
@@ -2147,7 +2159,8 @@ impl Walker<'_> {
                     frame.loop_targets.iter().rev().find_map(|target| {
                         if target.break_target == Some(node) {
                             Some((target.header, false))
-                        } else if current_loop != Some(target.header)
+                        } else if (current_loop != Some(target.header)
+                            || frame.switch_continue == Some(node))
                             && target.continue_target == node
                         {
                             Some((target.header, true))
@@ -6910,14 +6923,16 @@ impl Walker<'_> {
     }
 
     /// Find the one join of switch paths that stay in the current loop. An arm may instead end
-    /// at an exact, already proved loop break target. This is a bounded proof over this switch's
-    /// own successor paths; it does not claim blocks or change the normal-flow graph.
+    /// at an exact, already proved loop break target. For the current loop's update, a case must
+    /// end in its own explicit transfer; a normal path through the shared join is not a continue.
+    /// This bounded proof does not claim blocks or change the normal-flow graph.
     fn switch_loop_join(
         &mut self,
         branch: usize,
         successors: &[CanonicalBlockId],
         frame: &Frame,
         at: u32,
+        continue_target: Option<usize>,
     ) -> Result<Option<usize>, StopReason> {
         let Some(scope) = &frame.scope else {
             return Ok(None);
@@ -6938,19 +6953,24 @@ impl Walker<'_> {
         for candidate in scope {
             if *candidate == branch
                 || entries.contains(candidate)
+                || continue_target == Some(*candidate)
                 || frame.boundary == Some(*candidate)
                 || self.view.predecessors(*candidate).len() < 2
                 || !self.view.dominates(branch, *candidate)
+                || (continue_target.is_some()
+                    && !self.forward_join_predecessors(branch, *candidate))
             {
                 continue;
             }
             let mut normal_arms = 0;
+            let mut continue_arms = 0;
             let mut valid = true;
             for entry in &entries {
                 let mut seen = BTreeSet::new();
-                let mut work = vec![*entry];
+                let mut work = vec![(*entry, None)];
                 let mut reaches_join = false;
-                while let Some(current) = work.pop() {
+                let mut reaches_continue = false;
+                while let Some((current, predecessor)) = work.pop() {
                     poll(self.budget, Some(at))?;
                     charge(
                         self.budget,
@@ -6962,12 +6982,38 @@ impl Walker<'_> {
                         reaches_join = true;
                         continue;
                     }
+                    if continue_target == Some(current) {
+                        let explicit_transfer = predecessor.is_some_and(|source| {
+                            self.view.successors(source) == [current]
+                                && self
+                                    .view
+                                    .id_of(source)
+                                    .and_then(|block| self.terminal_bci(block))
+                                    .and_then(|bci| self.operations.get(bci))
+                                    .is_some_and(|operation| {
+                                        matches!(operation, Operation::Transfer)
+                                    })
+                        });
+                        if !explicit_transfer {
+                            valid = false;
+                            break;
+                        }
+                        reaches_continue = true;
+                        continue;
+                    }
                     if exits.contains(&current) {
                         continue;
                     }
                     if !scope.contains(&current)
                         || frame.boundary == Some(current)
                         || (current != *entry && entries.contains(&current))
+                        || (continue_target.is_some()
+                            && self
+                                .view
+                                .id_of(current)
+                                .and_then(|block| self.terminal_bci(block))
+                                .and_then(|bci| self.operations.get(bci))
+                                .is_some_and(|operation| operation.switch().is_some()))
                         || !seen.insert(current)
                     {
                         valid = false;
@@ -6978,14 +7024,16 @@ impl Walker<'_> {
                         valid = false;
                         break;
                     }
-                    work.extend(next);
+                    work.extend(next.into_iter().map(|successor| (successor, Some(current))));
                 }
-                if !valid {
+                if !valid || (reaches_join && reaches_continue) {
+                    valid = false;
                     break;
                 }
                 normal_arms += usize::from(reaches_join);
+                continue_arms += usize::from(reaches_continue);
             }
-            if valid && normal_arms >= 2 {
+            if valid && normal_arms >= 2 && (continue_target.is_none() || continue_arms > 0) {
                 proved.push(*candidate);
             }
         }
@@ -7037,19 +7085,27 @@ impl Walker<'_> {
             .view
             .immediate_post_dominator(node)
             .filter(|join| *join != node);
-        let post_is_loop_exit = post_join.is_some_and(|join| {
+        let post_is_loop_break = post_join.is_some_and(|join| {
             frame
                 .loop_targets
                 .iter()
                 .any(|target| target.break_target == Some(join))
         });
+        let switch_continue = post_join.filter(|join| {
+            frame
+                .loop_targets
+                .last()
+                .is_some_and(|target| target.continue_target == *join)
+        });
+        let post_is_loop_exit = post_is_loop_break || switch_continue.is_some();
         let forward_join = if !post_is_loop_exit && post_join.is_none() {
             self.switch_forward_join(node, successors, frame, branch.bci())?
         } else {
             None
         };
         let join_node = if post_is_loop_exit {
-            let Some(local_join) = self.switch_loop_join(node, successors, frame, branch_bci)?
+            let Some(local_join) =
+                self.switch_loop_join(node, successors, frame, branch_bci, switch_continue)?
             else {
                 // An enclosing loop exit cannot stand in for a switch's local join. Without a
                 // unique in-loop meeting point the arm ownership remains unproved.
@@ -7194,14 +7250,14 @@ impl Walker<'_> {
                 if let Some(current) = current {
                     other_entries.remove(&current);
                 }
-                frame.switch_arm(join_node, &other_entries, branch_bci)
+                frame.switch_arm(join_node, &other_entries, branch_bci, switch_continue)
             } else if join_node.is_some() {
                 // The switch's shared join belongs to the continuation after the switch. The
                 // ordinary branch boundary is checked only after `visited` is changed, so two arms
                 // reaching it would be mistaken for a loop re-entry. Keep other case entries
                 // unbounded unless fallthrough was proved: otherwise a cross-case route could be
                 // silently emitted as an independent arm with an inserted `break`.
-                frame.switch_arm(join_node, &BTreeSet::new(), branch_bci)
+                frame.switch_arm(join_node, &BTreeSet::new(), branch_bci, None)
             } else {
                 // With no proven join, preserve the ordinary frame's transfer and ownership rules.
                 frame.arm(join_node, Some(branch_bci))
