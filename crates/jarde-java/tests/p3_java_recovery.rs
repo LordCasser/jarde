@@ -823,6 +823,124 @@ fn a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted() {
 }
 
 #[test]
+fn an_unconsumed_array_length_keeps_the_loop_test_quoted() {
+    // The length read throws on a null array. Since `pop` discards its value instead of the
+    // terminal branch consuming it, the read cannot be moved into the condition or discarded.
+    const UNUSED_LENGTH: &[u8] = &[
+        0x03, // 0: iconst_0
+        0x3c, // 1: istore_1
+        0xa7, 0x00, 0x03, // 2: goto 5
+        0x01, // 5: aconst_null (the loop header)
+        0xbe, // 6: arraylength
+        0x57, // 7: pop
+        0x1b, // 8: iload_1
+        0x99, 0x00, 0x09, // 9: ifeq 18
+        0x84, 0x01, 0x01, // 12: iinc 1, 1
+        0xa7, 0xff, 0xf6, // 15: goto 5
+        0xb1, // 18: return
+    ];
+    let class = test_class::single_method(52, 2, 2, UNUSED_LENGTH);
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(!report.text.contains("while"), "{}", report.text);
+    assert!(report.text.contains("@bytecode"), "{}", report.text);
+    let refusal = report
+        .regions
+        .iter()
+        .find(|region| region.code == Some("jre_region_unmet_precondition"))
+        .expect("the loop rule explains why the loop remains quoted");
+    assert_eq!(
+        refusal.bci, 5,
+        "the source range keeps the loop header's physical BCI"
+    );
+    assert!(
+        refusal
+            .message
+            .as_deref()
+            .is_some_and(|message| message.contains("BCI 6")),
+        "the unconsumed throwing read is named: {refusal:?}"
+    );
+}
+
+#[test]
+fn a_reused_array_length_value_keeps_the_loop_test_quoted() {
+    // The same throwing value is duplicated and consumed as both branch operands. There is no
+    // single expression position in which the condition can present it exactly once.
+    const REUSED_LENGTH: &[u8] = &[
+        0x03, // 0: iconst_0
+        0x3c, // 1: istore_1
+        0xa7, 0x00, 0x03, // 2: goto 5
+        0x01, // 5: aconst_null (the loop header)
+        0xbe, // 6: arraylength
+        0x59, // 7: dup
+        0xa2, 0x00, 0x09, // 8: if_icmpge 17 (compares one value with itself)
+        0x84, 0x01, 0x01, // 11: iinc 1, 1
+        0xa7, 0xff, 0xf7, // 14: goto 5
+        0xb1, // 17: return
+    ];
+    let class = test_class::single_method(52, 2, 2, REUSED_LENGTH);
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(!report.text.contains("while"), "{}", report.text);
+    assert!(report.text.contains("@bytecode"), "{}", report.text);
+    assert!(
+        report.regions.iter().any(|region| {
+            region.code == Some("jre_region_unmet_precondition")
+                && region
+                    .message
+                    .as_deref()
+                    .is_some_and(|message| message.contains("BCI 7"))
+        }),
+        "the repeated-value operation remains the reason for refusal: {:?}",
+        report.regions
+    );
+}
+
+#[test]
+fn an_array_length_with_an_extra_test_effect_keeps_the_loop_quoted() {
+    // `iinc` shares the terminal test block with `arraylength`; presenting the latter in the
+    // condition cannot preserve the former's once-per-test position.
+    const LENGTH_AND_TEST_WRITE: &[u8] = &[
+        0x03, // 0: iconst_0
+        0x3c, // 1: istore_1
+        0xa7, 0x00, 0x03, // 2: goto 5
+        0x01, // 5: aconst_null (the loop header)
+        0xbe, // 6: arraylength
+        0x84, 0x01, 0x01, // 7: iinc 1, 1
+        0x1b, // 10: iload_1
+        0xa2, 0x00, 0x09, // 11: if_icmpge 20
+        0x84, 0x01, 0x01, // 14: iinc 1, 1
+        0xa7, 0xff, 0xf4, // 17: goto 5
+        0xb1, // 20: return
+    ];
+    let class = test_class::single_method(52, 2, 2, LENGTH_AND_TEST_WRITE);
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(!report.text.contains("while"), "{}", report.text);
+    assert!(report.text.contains("@bytecode"), "{}", report.text);
+    assert!(
+        report.regions.iter().any(|region| {
+            region.code == Some("jre_region_unmet_precondition")
+                && region
+                    .message
+                    .as_deref()
+                    .is_some_and(|message| message.contains("BCI 7"))
+        }),
+        "the test write remains the reason for refusal: {:?}",
+        report.regions
+    );
+}
+
+#[test]
 fn a_straight_line_body_with_a_call_reaches_text_and_a_segment_table() {
     let class = test_class::single_method(52, 8, 2, STRAIGHT_LINE);
     let payload = analyze(&class, b"method", b"()V");

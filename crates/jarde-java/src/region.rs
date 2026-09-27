@@ -3820,18 +3820,51 @@ impl Walker<'_> {
     /// increment, an unused call, a return or an operation this subset does not model is an
     /// **effect** of the test block. A call or field read used by the branch can stay in the
     /// condition expression; an unused call has nowhere to go that keeps its execution count and
-    /// order. Hoisting it out would run it once, and putting it in the body would run it after the
-    /// test, so the structure is quoted instead.
-    fn test_is_pure(&self, block: &CanonicalBlockId, test_bci: u32) -> Result<(), FallbackReason> {
+    /// order. For header-tested loops, an array-length read can stay there only when its SSA value
+    /// has exactly one consumer, so the expression tree cannot evaluate the throwing read twice.
+    /// Hoisting it out would run it once, and putting it in the body would run it after the test,
+    /// so the structure is quoted instead.
+    fn test_is_pure(
+        &self,
+        block: &CanonicalBlockId,
+        test_bci: u32,
+        allow_array_length: bool,
+    ) -> Result<(), FallbackReason> {
         let Some(names) = self.ssa.block(block) else {
             return Ok(());
         };
         let condition_bcis = self.condition_value_bcis(block, test_bci, names);
+        let mut reads_per_value = BTreeMap::new();
+        for (_, value) in names
+            .instructions()
+            .iter()
+            .flat_map(|instruction| instruction.reads())
+        {
+            let uses = reads_per_value.entry(*value).or_insert(0_usize);
+            *uses = uses.saturating_add(1);
+        }
         for instruction in names.instructions() {
             if instruction.bci() == test_bci {
                 continue;
             }
             let operation = self.operations.get(instruction.bci());
+            let array_length_is_single_use = matches!(operation, Some(Operation::ArrayLength))
+                && instruction.writes().len() == 1
+                && instruction
+                    .writes()
+                    .iter()
+                    .all(|(_, value)| reads_per_value.get(value) == Some(&1));
+            let condition_value = condition_bcis.contains(&instruction.bci())
+                && (matches!(
+                    operation,
+                    Some(
+                        Operation::Invoke(_)
+                            | Operation::Field {
+                                access: crate::facts::FieldAccess::Read,
+                                ..
+                            }
+                    )
+                ) || (allow_array_length && matches!(operation, Some(Operation::ArrayLength))));
             let value_only = matches!(
                 operation,
                 Some(
@@ -3841,17 +3874,9 @@ impl Walker<'_> {
                         | Operation::Negate
                         | Operation::NumericComparison { .. },
                 )
-            ) || (condition_bcis.contains(&instruction.bci())
-                && matches!(
-                    operation,
-                    Some(
-                        Operation::Invoke(_)
-                            | Operation::Field {
-                                access: crate::facts::FieldAccess::Read,
-                                ..
-                            }
-                    )
-                ));
+            ) || (condition_value
+                && (!matches!(operation, Some(Operation::ArrayLength))
+                    || array_length_is_single_use));
             if !value_only {
                 // The loop pass declares this precondition (`pass::LOOP.requires(StatementFree)`)
                 // and the check is stated through the declaration: the reason carries the rule
@@ -5385,7 +5410,7 @@ impl Walker<'_> {
         {
             return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
         }
-        if let Err(reason) = self.test_is_pure(header, test_bci) {
+        if let Err(reason) = self.test_is_pure(header, test_bci, true) {
             return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
         }
         // Which way through the test iterates: the branch's own target says it, and nothing else
@@ -5799,7 +5824,7 @@ impl Walker<'_> {
         {
             return Ok(Err(reason));
         }
-        if let Err(reason) = self.test_is_pure(block, test_bci) {
+        if let Err(reason) = self.test_is_pure(block, test_bci, true) {
             return Ok(Err(reason));
         }
         let successors = self.view.successor_ids(block);
@@ -6591,7 +6616,7 @@ impl Walker<'_> {
                 return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
             }
         }
-        let latch_body_prefix = if let Err(reason) = self.test_is_pure(&latch, test_bci) {
+        let latch_body_prefix = if let Err(reason) = self.test_is_pure(&latch, test_bci, false) {
             let Some((_, first_condition, condition_bcis)) = self.first_latch_test_suffix(&latch)
             else {
                 return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
