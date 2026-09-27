@@ -131,6 +131,13 @@ impl BinaryOp {
     }
 }
 
+/// The direction of a proved postfix update.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum PostfixDirection {
+    Increment,
+    Decrement,
+}
+
 /// What one expression is.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ExprKind {
@@ -231,13 +238,15 @@ pub enum ExprKind {
     /// element is, and what the element *is* is stated by the type the node presents
     /// ([`Expr::presented`]), which [`crate::build`] reads from the array's own type.
     Index { array: Box<Expr>, index: Box<Expr> },
-    /// `target++` — the old value of one already-proved writable `int` field or `int[]` element,
-    /// after the target has been incremented.
+    /// A postfix `++` or `--` update of an already-proved writable `int` target.
     ///
     /// The target remains an expression so its receiver, array and index retain their own grouping
-    /// and origins. Recovery builds this node only after proving the bytecode's read, write and old
-    /// value return refer to the same writable target.
-    PostIncrement { target: Box<Expr> },
+    /// and origins. Recovery builds this node only after proving the bytecode's read and write, and
+    /// any value consumer or statement effect, refer to the same writable target.
+    PostfixUpdate {
+        target: Box<Expr>,
+        direction: PostfixDirection,
+    },
     /// `array.length` — the length of an array, written where the value is consumed.
     ///
     /// It is a node of its own and never a field access (P3 2b): `array.length` is an operator of
@@ -512,9 +521,9 @@ fn presented_of(kind: &ExprKind) -> Option<Type> {
         ExprKind::New { ty, .. } => Some(Type::Reference(ty.clone())),
         // An array's length is an `int` (JLS 10.7), whatever the array's element is.
         ExprKind::ArrayLength { .. } => Some(Type::Int),
-        // Java's postfix increment expression has the type of its variable; this recovery node is
-        // built only for the proved `int` field and array-element shapes.
-        ExprKind::PostIncrement { target } => target.presented.clone(),
+        // Java's postfix update expression has the type of its variable; this node is built only
+        // for a proved writable target and update direction.
+        ExprKind::PostfixUpdate { target, .. } => target.presented.clone(),
         // A creation's own shape states the array it builds: the element type and one dimension per
         // length. A node with no length at all states no array — it builds nothing — and presents
         // none rather than the bare element.

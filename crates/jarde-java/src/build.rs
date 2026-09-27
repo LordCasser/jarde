@@ -55,8 +55,8 @@ use jarde_reader::error::Error as ReaderError;
 
 use crate::accessor::{self, AccessorRecord, AccessorRefusal, AccessorShape};
 use crate::ast::{
-    AssignOp, BinaryOp, ConcatPart, ConstructorTarget, Expr, ExprKind, LambdaParam, ResourceDecl,
-    Stmt, StmtKind, SwitchArm, SwitchLabels, Type,
+    AssignOp, BinaryOp, ConcatPart, ConstructorTarget, Expr, ExprKind, LambdaParam,
+    PostfixDirection, ResourceDecl, Stmt, StmtKind, SwitchArm, SwitchLabels, Type,
 };
 use crate::bridge;
 use crate::concat;
@@ -5746,6 +5746,15 @@ pub(crate) fn build(
         }
     }
     let compounds = CompoundAssignments::prove(ssa, operations, inputs.fields, budget)?;
+    let unit_field_updates = UnitFieldUpdates::prove(
+        ssa,
+        operations,
+        inputs.fields,
+        inputs.class_fields,
+        inputs.declaring_class,
+        inputs.has_receiver,
+        budget,
+    )?;
     let array_initializers = ArrayInitializers::prove(ssa, operations, inputs.fields, budget)?;
     let long_assignment_result = LongAssignmentResult::prove(
         canonical,
@@ -5832,6 +5841,7 @@ pub(crate) fn build(
         enums: inputs.enums,
         allow_array_constructor_method_references: inputs.allow_array_constructor_method_references,
         compounds,
+        unit_field_updates,
         long_assignment_result,
         long_assignment_refused: false,
         postfix: PostfixUpdates::default(),
@@ -6228,6 +6238,8 @@ struct Builder<'a> {
     allow_array_constructor_method_references: bool,
     /// The bounded `int` field and array updates proved from this body's final stores.
     compounds: CompoundAssignments,
+    /// Exact statement-only current-class `int` field `++`/`--` updates.
+    unit_field_updates: UnitFieldUpdates,
     /// The one closed category-2 assignment-result shape, if this body proves it completely.
     long_assignment_result: Option<LongAssignmentResult>,
     /// The closed field/return pair is quoted as one unit if its prepared rendering cannot commit.
@@ -6460,6 +6472,25 @@ struct PostfixUpdate {
     store: u32,
     returns: u32,
     /// Every instruction absorbed by the expression, excluding its store and return.
+    anchors: Vec<u32>,
+}
+
+/// A statement-only, same-class `int` field update ending immediately before a void return.
+#[derive(Default)]
+struct UnitFieldUpdates {
+    statements: BTreeMap<u32, UnitFieldUpdate>,
+    owned: BTreeSet<u32>,
+}
+
+#[derive(Clone)]
+struct UnitFieldUpdate {
+    owner: String,
+    name: String,
+    static_field: bool,
+    direction: PostfixDirection,
+    load: Option<u32>,
+    read: u32,
+    store: u32,
     anchors: Vec<u32>,
 }
 
@@ -6807,6 +6838,366 @@ impl PostfixUpdates {
         }
         Ok(plan)
     }
+}
+
+impl UnitFieldUpdates {
+    fn prove(
+        ssa: &SsaTable,
+        operations: &Operations,
+        fields: &field::Plan,
+        class_fields: Option<&[jarde_reader::classfile::MemberHeader]>,
+        declaring_class: Option<&str>,
+        has_receiver: bool,
+        budget: &mut Budget,
+    ) -> Result<Self, StopReason> {
+        let mut plan = Self::default();
+        let mut effects = None;
+        for block in ssa.blocks() {
+            for (position, returns) in block.instructions().iter().enumerate() {
+                if returns.opcode() != 0xb1
+                    || !matches!(operations.get(returns.bci()), Some(Operation::Return))
+                    || !stack_operands(returns).is_empty()
+                {
+                    continue;
+                }
+                let instructions = block.instructions();
+                let mut update = None;
+                if position >= 6 {
+                    let window = &instructions[position - 6..=position];
+                    if unit_instance_candidate(window, operations) {
+                        if effects.is_none() {
+                            effects = Some(index_postfix_effects(ssa, budget)?);
+                        }
+                        update = prove_unit_instance_update(
+                            ssa,
+                            operations,
+                            fields,
+                            class_fields,
+                            declaring_class,
+                            has_receiver,
+                            block,
+                            window,
+                            effects.as_ref().expect("candidate initializes effects"),
+                            budget,
+                        )?;
+                    }
+                }
+                if update.is_none() && position >= 4 {
+                    let window = &instructions[position - 4..=position];
+                    if unit_static_candidate(window, operations) {
+                        if effects.is_none() {
+                            effects = Some(index_postfix_effects(ssa, budget)?);
+                        }
+                        update = prove_unit_static_update(
+                            ssa,
+                            operations,
+                            fields,
+                            class_fields,
+                            declaring_class,
+                            block,
+                            window,
+                            effects.as_ref().expect("candidate initializes effects"),
+                            budget,
+                        )?;
+                    }
+                }
+                if let Some(update) = update {
+                    plan.owned.extend(update.anchors.iter().copied());
+                    plan.statements.insert(update.store, update);
+                }
+            }
+        }
+        Ok(plan)
+    }
+
+    fn statement_at(&self, store: u32) -> Option<&UnitFieldUpdate> {
+        self.statements.get(&store)
+    }
+
+    fn owns(&self, bci: u32) -> bool {
+        self.owned.contains(&bci)
+    }
+}
+
+const ACC_VOLATILE_FIELD: u16 = 0x0040;
+const ACC_FINAL_FIELD: u16 = 0x0010;
+
+fn unit_instance_candidate(window: &[SsaInstruction], operations: &Operations) -> bool {
+    matches!(window, [load, dup, read, one, add, store, returns]
+        if [load.opcode(), dup.opcode(), read.opcode(), one.opcode(), add.opcode(), store.opcode(), returns.opcode()]
+            == [0x2a, OPCODE_DUP, 0xb4, 0x04, 0x60, 0xb5, 0xb1]
+            && matches!(operations.get(one.bci()), Some(Operation::Push(ConstantValue::Int(1))))
+            && matches!(operations.get(add.bci()), Some(Operation::Arithmetic { op: ArithmeticOp::Add }))
+            && matches!(operations.get(returns.bci()), Some(Operation::Return)))
+}
+
+fn unit_static_candidate(window: &[SsaInstruction], operations: &Operations) -> bool {
+    matches!(window, [read, one, sub, store, returns]
+        if [read.opcode(), one.opcode(), sub.opcode(), store.opcode(), returns.opcode()]
+            == [0xb2, 0x04, 0x64, 0xb3, 0xb1]
+            && matches!(operations.get(one.bci()), Some(Operation::Push(ConstantValue::Int(1))))
+            && matches!(operations.get(sub.bci()), Some(Operation::Arithmetic { op: ArithmeticOp::Subtract }))
+            && matches!(operations.get(returns.bci()), Some(Operation::Return)))
+}
+
+fn declared_field_is_updateable_int(
+    class_fields: Option<&[jarde_reader::classfile::MemberHeader]>,
+    name: &str,
+    is_static: bool,
+) -> bool {
+    let Some(class_fields) = class_fields else {
+        return false;
+    };
+    let mut matches = class_fields.iter().filter(|field| {
+        field.name.raw().0.as_slice() == name.as_bytes()
+            && field.descriptor.raw().0.as_slice() == b"I"
+    });
+    let Some(field) = matches.next() else {
+        return false;
+    };
+    matches.next().is_none()
+        && (field.access_flags & crate::facts::ACC_STATIC != 0) == is_static
+        && field.access_flags & (ACC_VOLATILE_FIELD | ACC_FINAL_FIELD) == 0
+}
+
+fn unit_handlers_are_empty(
+    effects: &BTreeMap<(CanonicalBlockId, u32), &jarde_jvm::method_ir::CanonicalInstructionEffect>,
+    block: &CanonicalBlockId,
+    window: &[SsaInstruction],
+) -> bool {
+    window.iter().all(|instruction| {
+        effects
+            .get(&(block.clone(), instruction.bci()))
+            .is_some_and(|effect| effect.handlers().is_empty())
+    })
+}
+
+fn prove_unit_instance_update(
+    ssa: &SsaTable,
+    operations: &Operations,
+    fields: &field::Plan,
+    class_fields: Option<&[jarde_reader::classfile::MemberHeader]>,
+    declaring_class: Option<&str>,
+    has_receiver: bool,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    window: &[SsaInstruction],
+    effects: &BTreeMap<(CanonicalBlockId, u32), &jarde_jvm::method_ir::CanonicalInstructionEffect>,
+    budget: &mut Budget,
+) -> Result<Option<UnitFieldUpdate>, StopReason> {
+    let [load, dup, read, one, add, store, returns] = window else {
+        return Ok(None);
+    };
+    for instruction in window {
+        poll(budget, Some(instruction.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(instruction.bci()),
+        )?;
+    }
+    let Some(declaring_class) = declaring_class else {
+        return Ok(None);
+    };
+    let Some((read_field, read_shape)) = fields.claim(read.bci()) else {
+        return Ok(None);
+    };
+    let Some((write_field, write_shape)) = fields.claim(store.bci()) else {
+        return Ok(None);
+    };
+    if !has_receiver
+        || !matches!(
+            operations.get(load.bci()),
+            Some(Operation::Load { slot: 0 })
+        )
+        || !matches!(
+            operations.get(read.bci()),
+            Some(Operation::Field {
+                access: FieldAccess::Read,
+                ..
+            })
+        )
+        || !matches!(
+            operations.get(store.bci()),
+            Some(Operation::Field {
+                access: FieldAccess::Write,
+                ..
+            })
+        )
+        || read_field.access != FieldAccess::Read
+        || write_field.access != FieldAccess::Write
+        || read_field.is_static
+        || write_field.is_static
+        || read_field.owner != declaring_class
+        || write_field.owner != declaring_class
+        || read_field.owner != write_field.owner
+        || read_field.name != write_field.name
+        || read_field.descriptor != "I"
+        || read_field.descriptor != write_field.descriptor
+        || !declared_field_is_updateable_int(class_fields, &read_field.name, false)
+        || read_shape.writes()
+        || !write_shape.writes()
+        || !unit_handlers_are_empty(effects, block.block(), window)
+    {
+        return Ok(None);
+    }
+    let Some((_, loaded_receiver)) = one_stack_output(load) else {
+        return Ok(None);
+    };
+    let Some((_, dup_input)) = single_stack_read(dup) else {
+        return Ok(None);
+    };
+    let copies = stack_outputs(dup);
+    let Some(read_receiver) = read_shape.receiver else {
+        return Ok(None);
+    };
+    let Some(write_receiver) = write_shape.receiver else {
+        return Ok(None);
+    };
+    let Some((_, old)) = one_stack_output(read) else {
+        return Ok(None);
+    };
+    let Some((_, one_value)) = one_stack_output(one) else {
+        return Ok(None);
+    };
+    let Some(sum) = one_stack_output(add).map(|(_, value)| value) else {
+        return Ok(None);
+    };
+    let Some((left, right)) = two_stack_values(add) else {
+        return Ok(None);
+    };
+    if loaded_receiver != dup_input
+        || copies.len() != 2
+        || copies[0].1 == copies[1].1
+        || read_receiver == write_receiver
+        || !copies.iter().any(|(_, value)| *value == read_receiver)
+        || !copies.iter().any(|(_, value)| *value == write_receiver)
+        || !comes_from(ssa, dup_input, load.bci())
+        || !comes_from(ssa, read_receiver, dup.bci())
+        || !comes_from(ssa, write_receiver, dup.bci())
+        || write_shape.value != Some(sum)
+        || !(comes_from(ssa, left, read.bci()) && comes_from(ssa, right, one.bci())
+            || comes_from(ssa, left, one.bci()) && comes_from(ssa, right, read.bci()))
+        || !only_use_at(ssa, loaded_receiver, dup.bci())
+        || !only_use_at(ssa, read_receiver, read.bci())
+        || !only_use_at(ssa, write_receiver, store.bci())
+        || !only_use_at(ssa, old, add.bci())
+        || !only_use_at(ssa, one_value, add.bci())
+        || !only_use_at(ssa, sum, store.bci())
+        || !stack_operands(returns).is_empty()
+    {
+        return Ok(None);
+    }
+    Ok(Some(UnitFieldUpdate {
+        owner: read_field.owner.clone(),
+        name: read_field.name.clone(),
+        static_field: false,
+        direction: PostfixDirection::Increment,
+        load: Some(load.bci()),
+        read: read.bci(),
+        store: store.bci(),
+        anchors: vec![load.bci(), dup.bci(), read.bci(), one.bci(), add.bci()],
+    }))
+}
+
+fn prove_unit_static_update(
+    ssa: &SsaTable,
+    operations: &Operations,
+    fields: &field::Plan,
+    class_fields: Option<&[jarde_reader::classfile::MemberHeader]>,
+    declaring_class: Option<&str>,
+    block: &jarde_jvm::method_ir::SsaBlock,
+    window: &[SsaInstruction],
+    effects: &BTreeMap<(CanonicalBlockId, u32), &jarde_jvm::method_ir::CanonicalInstructionEffect>,
+    budget: &mut Budget,
+) -> Result<Option<UnitFieldUpdate>, StopReason> {
+    let [read, one, sub, store, returns] = window else {
+        return Ok(None);
+    };
+    for instruction in window {
+        poll(budget, Some(instruction.bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(instruction.bci()),
+        )?;
+    }
+    let Some(declaring_class) = declaring_class else {
+        return Ok(None);
+    };
+    let Some((read_field, read_shape)) = fields.claim(read.bci()) else {
+        return Ok(None);
+    };
+    let Some((write_field, write_shape)) = fields.claim(store.bci()) else {
+        return Ok(None);
+    };
+    if !matches!(
+        operations.get(read.bci()),
+        Some(Operation::Field {
+            access: FieldAccess::Read,
+            ..
+        })
+    ) || !matches!(
+        operations.get(store.bci()),
+        Some(Operation::Field {
+            access: FieldAccess::Write,
+            ..
+        })
+    ) || read_field.access != FieldAccess::Read
+        || write_field.access != FieldAccess::Write
+        || !read_field.is_static
+        || !write_field.is_static
+        || read_field.owner != declaring_class
+        || write_field.owner != declaring_class
+        || read_field.owner != write_field.owner
+        || read_field.name != write_field.name
+        || read_field.descriptor != "I"
+        || read_field.descriptor != write_field.descriptor
+        || !declared_field_is_updateable_int(class_fields, &read_field.name, true)
+        || read_shape.receiver.is_some()
+        || read_shape.writes()
+        || write_shape.receiver.is_some()
+        || !write_shape.writes()
+        || !unit_handlers_are_empty(effects, block.block(), window)
+    {
+        return Ok(None);
+    }
+    let Some((_, old)) = one_stack_output(read) else {
+        return Ok(None);
+    };
+    let Some((_, one_value)) = one_stack_output(one) else {
+        return Ok(None);
+    };
+    let Some(difference) = one_stack_output(sub).map(|(_, value)| value) else {
+        return Ok(None);
+    };
+    let Some((left, right)) = two_stack_values(sub) else {
+        return Ok(None);
+    };
+    if !matches!(
+        operations.get(one.bci()),
+        Some(Operation::Push(ConstantValue::Int(1)))
+    ) || write_shape.value != Some(difference)
+        || !(comes_from(ssa, left, read.bci()) && comes_from(ssa, right, one.bci())
+            || comes_from(ssa, left, one.bci()) && comes_from(ssa, right, read.bci()))
+        || !only_use_at(ssa, old, sub.bci())
+        || !only_use_at(ssa, one_value, sub.bci())
+        || !only_use_at(ssa, difference, store.bci())
+        || !stack_operands(returns).is_empty()
+    {
+        return Ok(None);
+    }
+    Ok(Some(UnitFieldUpdate {
+        owner: read_field.owner.clone(),
+        name: read_field.name.clone(),
+        static_field: true,
+        direction: PostfixDirection::Decrement,
+        load: None,
+        read: read.bci(),
+        store: store.bci(),
+        anchors: vec![read.bci(), one.bci(), sub.bci()],
+    }))
 }
 
 fn index_postfix_effects<'a>(
@@ -13914,6 +14305,9 @@ impl Builder<'_> {
             }
             return self.long_assignment_result_statement(&result);
         }
+        if let Some(update) = self.unit_field_updates.statement_at(at).cloned() {
+            return self.unit_field_update_statement(&update);
+        }
         // An instruction a verified concatenation chain or a verified construction site owns
         // produces no statement of its own: the text it would have written is written *inside* the
         // expression that shape became, and skipping it here is exactly what keeps an operand from
@@ -13942,7 +14336,7 @@ impl Builder<'_> {
         // constant and the `iadd` are the `1` it adds, and the `dup_x1` left the value the method
         // returns. None of them writes a statement of its own — the `putfield` would otherwise write
         // the field assignment this shape exists to spell as one update.
-        if self.increments().owns(at) || self.postfix.owns(at) {
+        if self.increments().owns(at) || self.postfix.owns(at) || self.unit_field_updates.owns(at) {
             return Ok(());
         }
         let write = instruction
@@ -14965,8 +15359,9 @@ impl Builder<'_> {
             |origin, bci| origin.plus_derived(Origin::derived(*bci)),
         );
         let expression = Expr::new(
-            ExprKind::PostIncrement {
+            ExprKind::PostfixUpdate {
                 target: Box::new(target),
+                direction: PostfixDirection::Increment,
             },
             origin,
         )
@@ -16254,8 +16649,9 @@ impl Builder<'_> {
                                         ).into());
                                     }
                                     Expr::direct(
-                                        ExprKind::PostIncrement {
+                                        ExprKind::PostfixUpdate {
                                             target: Box::new(self.local(variable, &name, postfix.load)),
+                                            direction: PostfixDirection::Increment,
                                         },
                                         postfix.update,
                                     )
@@ -17556,6 +17952,60 @@ impl Builder<'_> {
             ),
             Widening::Position,
         )
+    }
+
+    fn unit_field_update_statement(&mut self, update: &UnitFieldUpdate) -> Result<(), StopReason> {
+        let mut quoted = update.anchors.clone();
+        quoted.push(update.store);
+        let receiver = if update.static_field {
+            let Some(owner) = spell_reference(&update.owner) else {
+                return self.fallback(
+                    quoted,
+                    format!(
+                        "the field owner `{}` cannot be spelled as a Java type",
+                        update.owner
+                    ),
+                    update.store,
+                );
+            };
+            Expr::new(
+                ExprKind::Path(owner),
+                OriginSet::new(Origin::derived(update.read)),
+            )
+        } else {
+            let Some(load) = update.load else {
+                return self.fallback(
+                    quoted,
+                    "the proved instance field update lost its receiver load",
+                    update.store,
+                );
+            };
+            Expr::direct(ExprKind::Local("this".to_owned()), load)
+        };
+        let target = Expr::new(
+            ExprKind::Field {
+                receiver: Box::new(receiver),
+                name: update.name.clone(),
+            },
+            OriginSet::new(Origin::direct(update.read)),
+        )
+        .presenting(Type::Int);
+        let origin = update.anchors.iter().fold(
+            OriginSet::new(Origin::direct(update.store)),
+            |origin, bci| origin.plus_derived(Origin::derived(*bci)),
+        );
+        let expression = Expr::new(
+            ExprKind::PostfixUpdate {
+                target: Box::new(target),
+                direction: update.direction,
+            },
+            origin,
+        )
+        .presenting(Type::Int);
+        self.push(Stmt::new(
+            StmtKind::Expr(expression),
+            OriginSet::new(Origin::direct(update.store)),
+        ))
     }
 
     fn field_write(
@@ -20865,7 +21315,9 @@ fn stated_by_expression(expr: &Expr, names: &mut Vec<String>, bcis: &mut Vec<u32
         }
         ExprKind::Field { receiver, .. }
         | ExprKind::ArrayLength { array: receiver }
-        | ExprKind::PostIncrement { target: receiver } => {
+        | ExprKind::PostfixUpdate {
+            target: receiver, ..
+        } => {
             stated_by_expression(receiver, names, bcis);
         }
         ExprKind::Index { array, index } => {
