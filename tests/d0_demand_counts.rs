@@ -363,7 +363,8 @@ fn one_requested_body_decodes_one_body_and_runs_no_recovery() {
 
 /// D02's shape, re-frozen by D2, and the D1 evidence selection re-frozen beside it: one
 /// materialization of the selected class, one preparation over that same read, one body decode per
-/// member that declares a body — and, in the ordinary request, **not one** owning detail record.
+/// member that declares a body — and, in the ordinary class-source request, no optional detail
+/// record beyond its selected source map.
 ///
 /// The D0 baseline this test was written with said two materializations (`class_headers == 2`: the
 /// binding read and the preparation's own read) and one preparation, and it asserted that "the
@@ -405,10 +406,9 @@ fn a_class_source_request_materializes_its_class_once_and_prepares_it_once() {
     assert_eq!(counted.recovery_runs, 8);
     assert_eq!(usage.method_bodies, 8);
 
-    // D1's own re-freeze: the ordinary request publishes **none** of the optional categories, and
-    // the request that states the full selection publishes them with the same text and the same
-    // decisions. "Nothing is constructed and then hidden" is what the two runs together say: the
-    // constructions of the unselected run are counted where they would happen.
+    // D1's own re-freeze: class_source explicitly selects SourceMap for its presentation, while the
+    // request that states the full selection publishes the other optional categories too. Both
+    // runs retain the same text and decisions; the count below ensures no unselected detail is built.
     let published: Vec<OptionalRecords> = report
         .methods
         .iter()
@@ -419,17 +419,26 @@ fn a_class_source_request_materializes_its_class_once_and_prepares_it_once() {
         .collect();
     assert_eq!(published.len(), 8);
     let total: usize = published.iter().map(OptionalRecords::optional_total).sum();
-    println!("class_source default selection: optional records={total} per-member={published:?}");
+    let segments: usize = published.iter().map(|records| records.segments).sum();
+    println!(
+        "class_source default selection: optional records={total}, source-map segments={segments} per-member={published:?}"
+    );
+    assert!(segments > 0, "class_source selects source-map evidence");
     assert_eq!(
-        total, 0,
-        "the ordinary request materializes no optional detail record at all"
+        total, segments,
+        "the ordinary class-source request materializes only its selected source-map records"
     );
     for method in &report.methods {
         if let ClassSourceOutcome::Recovered { report, .. } = &method.outcome {
             for kind in RecoveryEvidenceKind::SUPPORTED {
+                let expected = if kind == RecoveryEvidenceKind::SourceMap {
+                    EvidenceState::Complete
+                } else {
+                    EvidenceState::NotRequested
+                };
                 assert_eq!(
                     report.evidence.state(kind),
-                    EvidenceState::NotRequested,
+                    expected,
                     "the report states the selection it was presented under"
                 );
             }
