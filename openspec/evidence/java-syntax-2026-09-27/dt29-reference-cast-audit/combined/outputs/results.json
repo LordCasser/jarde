@@ -1,0 +1,62 @@
+{
+  "expected_stdout": "runnable:1111:0000:1111:ClassCastException\n",
+  "fixed_jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "input_class_sha256": {
+    "dt29/Both": "e8e4b1a14f5e64f93d5c4e5e0793e8593322726b72611f085aaa89a127d83c97",
+    "dt29/CloseOnly": "6d6d2c2a9e7179605d19f2212915aacd7b47b4c1e303ec7f50cf59a5ca1156ee",
+    "dt29/FieldCast": "edfa6bc9d2f32b5c8d50cceb202b50fcee7d5372a1e9fa5bc52e36f46950e2ff",
+    "dt29/FieldCast$1": "fd0ebcb19b51ddae01283ba1e8bfecf6489f926e6734240c031d57c2fbac44ce",
+    "dt29/FieldCast$A": "57fd9ded9797ecb5f90cc3d2601c06c8a3e6eee11ff099bef6da772b4af6e54e",
+    "dt29/FieldCast$B": "dd2dd6899b2c52b2285653366daf4df6fa4ef0aa473297c59cc3645cd7bd0c4a",
+    "dt29/FieldCast$C": "baf10627203c491206ffbf9e48c1e2ab5c2b1f271a5e1d5c8273acc6594d7f4a",
+    "dt29/FieldCast$D": "6c88339c91942c6cf2695fc77f72eafb11ff2069fe9935045946e1378dd08f43",
+    "dt29/InterfaceCast": "edc3244847d196739b152be518e40204b29f14592afbb4754afed081df1dfe5c"
+  },
+  "input_classes": [
+    "dt29/Both",
+    "dt29/CloseOnly",
+    "dt29/FieldCast$1",
+    "dt29/FieldCast$A",
+    "dt29/FieldCast$B",
+    "dt29/FieldCast$C",
+    "dt29/FieldCast$D",
+    "dt29/FieldCast",
+    "dt29/InterfaceCast"
+  ],
+  "jadx": {
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "runnable:1111:0000:1111:ClassCastException\n"
+  },
+  "jarde": {
+    "compile_exit": 1,
+    "compile_stderr": "<TMP>/jarde-src/dt29/FieldCast$A.java:33: error: missing return statement\n    }\n    ^\n1 error\n"
+  },
+  "jarde_report_classes": [
+    "dt29/Both",
+    "dt29/CloseOnly",
+    "dt29/FieldCast",
+    "dt29/FieldCast$1",
+    "dt29/FieldCast$A",
+    "dt29/FieldCast$B",
+    "dt29/FieldCast$C",
+    "dt29/FieldCast$D",
+    "dt29/InterfaceCast"
+  ],
+  "original": {
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "runnable:1111:0000:1111:ClassCastException\n"
+  },
+  "source_assertions": {
+    "jadx_interface_cast": true,
+    "jadx_private_field_owner_cast": true,
+    "jarde_inherited_field_writes_incomplete": true,
+    "jarde_interface_cast": true,
+    "jarde_overload_cast": true
+  }
+}

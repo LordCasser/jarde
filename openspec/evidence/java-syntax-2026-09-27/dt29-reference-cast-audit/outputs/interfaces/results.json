@@ -1,0 +1,39 @@
+{
+  "expected_stdout": "runnable:ClassCastException\n",
+  "input_class_sha256": {
+    "dt29/Both": "e8e4b1a14f5e64f93d5c4e5e0793e8593322726b72611f085aaa89a127d83c97",
+    "dt29/CloseOnly": "6d6d2c2a9e7179605d19f2212915aacd7b47b4c1e303ec7f50cf59a5ca1156ee",
+    "dt29/InterfaceCast": "edc3244847d196739b152be518e40204b29f14592afbb4754afed081df1dfe5c"
+  },
+  "input_classes": [
+    "dt29/Both",
+    "dt29/CloseOnly",
+    "dt29/InterfaceCast"
+  ],
+  "jadx": {
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "runnable:ClassCastException\n"
+  },
+  "jarde": {
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "runnable:ClassCastException\n"
+  },
+  "jarde_report_classes": [
+    "dt29/Both",
+    "dt29/CloseOnly",
+    "dt29/InterfaceCast"
+  ],
+  "original": {
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "runnable:ClassCastException\n"
+  }
+}

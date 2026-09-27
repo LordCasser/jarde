@@ -1,0 +1,85 @@
+{
+  "combined_testfieldcast_scope": "retained as combined pending evidence under combined/",
+  "fixed_jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "interfaces": {
+    "expected_stdout": "runnable:ClassCastException\n",
+    "input_class_sha256": {
+      "dt29/Both": "e8e4b1a14f5e64f93d5c4e5e0793e8593322726b72611f085aaa89a127d83c97",
+      "dt29/CloseOnly": "6d6d2c2a9e7179605d19f2212915aacd7b47b4c1e303ec7f50cf59a5ca1156ee",
+      "dt29/InterfaceCast": "edc3244847d196739b152be518e40204b29f14592afbb4754afed081df1dfe5c"
+    },
+    "input_classes": [
+      "dt29/Both",
+      "dt29/CloseOnly",
+      "dt29/InterfaceCast"
+    ],
+    "jadx": {
+      "compile_exit": 0,
+      "compile_stderr": "",
+      "run_exit": 0,
+      "run_stderr": "",
+      "run_stdout": "runnable:ClassCastException\n"
+    },
+    "jarde": {
+      "compile_exit": 0,
+      "compile_stderr": "",
+      "run_exit": 0,
+      "run_stderr": "",
+      "run_stdout": "runnable:ClassCastException\n"
+    },
+    "jarde_report_classes": [
+      "dt29/Both",
+      "dt29/CloseOnly",
+      "dt29/InterfaceCast"
+    ],
+    "original": {
+      "compile_exit": 0,
+      "compile_stderr": "",
+      "run_exit": 0,
+      "run_stderr": "",
+      "run_stdout": "runnable:ClassCastException\n"
+    }
+  },
+  "jarde_source_baseline": "85117144069a5ab6901792b2c0a9f73951f2f3b8",
+  "private_field": {
+    "expected_stdout": "true:false\n",
+    "input_class_sha256": {
+      "dt29/PrivateFieldFamily": "abfa0b8c36f7120efce4e013c024878a109596020c59edfe2d76fdfdbacdaa6d",
+      "dt29/PrivateFieldFamily$A": "3805172d6bcc7f9a1719c602597bcdaa8ac8bd0d58ae1a4079e37969996b8ce0",
+      "dt29/PrivateFieldFamily$B": "aba40da881cf51281bfc37aee8eaf9a11e9c5a9b5bfcf61c1fae3b46142a247e"
+    },
+    "input_classes": [
+      "dt29/PrivateFieldFamily$A",
+      "dt29/PrivateFieldFamily$B",
+      "dt29/PrivateFieldFamily"
+    ],
+    "jadx": {
+      "compile_exit": 0,
+      "compile_stderr": "",
+      "run_exit": 0,
+      "run_stderr": "",
+      "run_stdout": "true:false\n"
+    },
+    "jarde": {
+      "compile_exit": 1,
+      "compile_stderr": "<TMP>/private-field-jarde-src/dt29/PrivateFieldFamily$A.java:29: error: missing return statement\n    }\n    ^\n1 error\n"
+    },
+    "jarde_report_classes": [
+      "dt29/PrivateFieldFamily",
+      "dt29/PrivateFieldFamily$A",
+      "dt29/PrivateFieldFamily$B"
+    ],
+    "original": {
+      "compile_exit": 0,
+      "compile_stderr": "",
+      "run_exit": 0,
+      "run_stderr": "",
+      "run_stdout": "true:false\n"
+    }
+  },
+  "private_field_remaining_failures": [
+    "B.set: superclass-owned public field write is refused",
+    "B.set: B-to-A accessor receiver conversion is unproved",
+    "A.access$002: private field write helper has no recoverable body/return"
+  ]
+}

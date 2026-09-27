@@ -1,0 +1,3099 @@
+{
+  "bridge_proofs": [],
+  "class": {
+    "class_bytes": {
+      "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+      "length": 439
+    },
+    "location": {
+      "entry": {
+        "ordinal": 3,
+        "origin": {
+          "root_container": "root",
+          "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+          "steps": []
+        },
+        "raw_name": [
+          100,
+          116,
+          50,
+          57,
+          47,
+          70,
+          105,
+          101,
+          108,
+          100,
+          67,
+          97,
+          115,
+          116,
+          36,
+          65,
+          46,
+          99,
+          108,
+          97,
+          115,
+          115
+        ]
+      },
+      "kind": "archive_entry"
+    },
+    "variant": {
+      "kind": "base"
+    }
+  },
+  "coverage": {
+    "artifact_structural": {
+      "scanned": [
+        {
+          "end": 9,
+          "label": "central_directory_entries",
+          "start": 0
+        },
+        {
+          "end": 1,
+          "label": "navigation_candidates",
+          "start": 0
+        },
+        {
+          "end": 4,
+          "label": "class_fields",
+          "start": 0
+        },
+        {
+          "end": 3,
+          "label": "class_methods",
+          "start": 0
+        },
+        {
+          "end": 3,
+          "label": "class_source_bodies",
+          "start": 0
+        }
+      ],
+      "skipped": [],
+      "state": "complete_within_schema",
+      "uninterpreted_extensions": []
+    },
+    "dynamic_analysis": {
+      "scanned": [],
+      "skipped": [],
+      "state": "not_requested",
+      "uninterpreted_extensions": []
+    },
+    "runtime_resolution": {
+      "scanned": [],
+      "skipped": [],
+      "state": "not_requested",
+      "uninterpreted_extensions": []
+    }
+  },
+  "declaration": {
+    "annotation_attributes": [],
+    "annotation_refusals": [],
+    "annotation_uses": [],
+    "declaration": "public class FieldCast$A extends java.lang.Object",
+    "generic_refusal": null,
+    "generic_signature": null,
+    "item": {
+      "binding": {
+        "kind": "path_name_agrees"
+      },
+      "declaration": {
+        "access_flags": 33,
+        "interfaces": [],
+        "super_class": {
+          "escaped": "java/lang/Object",
+          "raw": [
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116
+          ],
+          "utf16": [
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116
+          ]
+        },
+        "this_class": {
+          "escaped": "dt29/FieldCast$A",
+          "raw": [
+            100,
+            116,
+            50,
+            57,
+            47,
+            70,
+            105,
+            101,
+            108,
+            100,
+            67,
+            97,
+            115,
+            116,
+            36,
+            65
+          ],
+          "utf16": [
+            100,
+            116,
+            50,
+            57,
+            47,
+            70,
+            105,
+            101,
+            108,
+            100,
+            67,
+            97,
+            115,
+            116,
+            36,
+            65
+          ]
+        }
+      },
+      "definition": {
+        "class_bytes": {
+          "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+          "length": 439
+        },
+        "location": {
+          "entry": {
+            "ordinal": 3,
+            "origin": {
+              "root_container": "root",
+              "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+              "steps": []
+            },
+            "raw_name": [
+              100,
+              116,
+              50,
+              57,
+              47,
+              70,
+              105,
+              101,
+              108,
+              100,
+              67,
+              97,
+              115,
+              116,
+              36,
+              65,
+              46,
+              99,
+              108,
+              97,
+              115,
+              115
+            ]
+          },
+          "kind": "archive_entry"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "member_table": null
+    },
+    "name": "FieldCast$A"
+  },
+  "diagnostics": [],
+  "enum_switch_proofs": [],
+  "execution": {
+    "status": "complete",
+    "usage": {
+      "analysis_steps": 123,
+      "archive_entries": 22,
+      "attribute_bytes": 261,
+      "class_bytes": 878,
+      "class_headers": 1,
+      "code_bytes": 17,
+      "dependency_depth": 0,
+      "elapsed_millis": "<elapsed>",
+      "entry_bytes": 439,
+      "input_bytes": 3711,
+      "ir_edges": 12,
+      "ir_items": 267,
+      "method_bodies": 3,
+      "nested_depth": 0,
+      "normalization_clones": 0,
+      "output_bytes": 931,
+      "read_bytes": 285,
+      "result_items": 37
+    }
+  },
+  "fields": [
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "public boolean publicField",
+      "item": {
+        "access_flags": 1,
+        "descriptor": {
+          "escaped": "Z",
+          "raw": [
+            90
+          ],
+          "utf16": [
+            90
+          ]
+        },
+        "identity": {
+          "member": {
+            "descriptor": [
+              90
+            ],
+            "kind": "field",
+            "name": [
+              112,
+              117,
+              98,
+              108,
+              105,
+              99,
+              70,
+              105,
+              101,
+              108,
+              100
+            ]
+          },
+          "owner": {
+            "class_bytes": {
+              "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+              "length": 439
+            },
+            "location": {
+              "entry": {
+                "ordinal": 3,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                  "steps": []
+                },
+                "raw_name": [
+                  100,
+                  116,
+                  50,
+                  57,
+                  47,
+                  70,
+                  105,
+                  101,
+                  108,
+                  100,
+                  67,
+                  97,
+                  115,
+                  116,
+                  36,
+                  65,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 0,
+        "name": {
+          "escaped": "publicField",
+          "raw": [
+            112,
+            117,
+            98,
+            108,
+            105,
+            99,
+            70,
+            105,
+            101,
+            108,
+            100
+          ],
+          "utf16": [
+            112,
+            117,
+            98,
+            108,
+            105,
+            99,
+            70,
+            105,
+            101,
+            108,
+            100
+          ]
+        }
+      },
+      "markers": [],
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [],
+        "refusals": [],
+        "return_uses": []
+      }
+    },
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "boolean packagePrivateField",
+      "item": {
+        "access_flags": 0,
+        "descriptor": {
+          "escaped": "Z",
+          "raw": [
+            90
+          ],
+          "utf16": [
+            90
+          ]
+        },
+        "identity": {
+          "member": {
+            "descriptor": [
+              90
+            ],
+            "kind": "field",
+            "name": [
+              112,
+              97,
+              99,
+              107,
+              97,
+              103,
+              101,
+              80,
+              114,
+              105,
+              118,
+              97,
+              116,
+              101,
+              70,
+              105,
+              101,
+              108,
+              100
+            ]
+          },
+          "owner": {
+            "class_bytes": {
+              "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+              "length": 439
+            },
+            "location": {
+              "entry": {
+                "ordinal": 3,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                  "steps": []
+                },
+                "raw_name": [
+                  100,
+                  116,
+                  50,
+                  57,
+                  47,
+                  70,
+                  105,
+                  101,
+                  108,
+                  100,
+                  67,
+                  97,
+                  115,
+                  116,
+                  36,
+                  65,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 1,
+        "name": {
+          "escaped": "packagePrivateField",
+          "raw": [
+            112,
+            97,
+            99,
+            107,
+            97,
+            103,
+            101,
+            80,
+            114,
+            105,
+            118,
+            97,
+            116,
+            101,
+            70,
+            105,
+            101,
+            108,
+            100
+          ],
+          "utf16": [
+            112,
+            97,
+            99,
+            107,
+            97,
+            103,
+            101,
+            80,
+            114,
+            105,
+            118,
+            97,
+            116,
+            101,
+            70,
+            105,
+            101,
+            108,
+            100
+          ]
+        }
+      },
+      "markers": [],
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [],
+        "refusals": [],
+        "return_uses": []
+      }
+    },
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "protected boolean protectedField",
+      "item": {
+        "access_flags": 4,
+        "descriptor": {
+          "escaped": "Z",
+          "raw": [
+            90
+          ],
+          "utf16": [
+            90
+          ]
+        },
+        "identity": {
+          "member": {
+            "descriptor": [
+              90
+            ],
+            "kind": "field",
+            "name": [
+              112,
+              114,
+              111,
+              116,
+              101,
+              99,
+              116,
+              101,
+              100,
+              70,
+              105,
+              101,
+              108,
+              100
+            ]
+          },
+          "owner": {
+            "class_bytes": {
+              "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+              "length": 439
+            },
+            "location": {
+              "entry": {
+                "ordinal": 3,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                  "steps": []
+                },
+                "raw_name": [
+                  100,
+                  116,
+                  50,
+                  57,
+                  47,
+                  70,
+                  105,
+                  101,
+                  108,
+                  100,
+                  67,
+                  97,
+                  115,
+                  116,
+                  36,
+                  65,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 2,
+        "name": {
+          "escaped": "protectedField",
+          "raw": [
+            112,
+            114,
+            111,
+            116,
+            101,
+            99,
+            116,
+            101,
+            100,
+            70,
+            105,
+            101,
+            108,
+            100
+          ],
+          "utf16": [
+            112,
+            114,
+            111,
+            116,
+            101,
+            99,
+            116,
+            101,
+            100,
+            70,
+            105,
+            101,
+            108,
+            100
+          ]
+        }
+      },
+      "markers": [],
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [],
+        "refusals": [],
+        "return_uses": []
+      }
+    },
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "private boolean privateField",
+      "item": {
+        "access_flags": 2,
+        "descriptor": {
+          "escaped": "Z",
+          "raw": [
+            90
+          ],
+          "utf16": [
+            90
+          ]
+        },
+        "identity": {
+          "member": {
+            "descriptor": [
+              90
+            ],
+            "kind": "field",
+            "name": [
+              112,
+              114,
+              105,
+              118,
+              97,
+              116,
+              101,
+              70,
+              105,
+              101,
+              108,
+              100
+            ]
+          },
+          "owner": {
+            "class_bytes": {
+              "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+              "length": 439
+            },
+            "location": {
+              "entry": {
+                "ordinal": 3,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                  "steps": []
+                },
+                "raw_name": [
+                  100,
+                  116,
+                  50,
+                  57,
+                  47,
+                  70,
+                  105,
+                  101,
+                  108,
+                  100,
+                  67,
+                  97,
+                  115,
+                  116,
+                  36,
+                  65,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 3,
+        "name": {
+          "escaped": "privateField",
+          "raw": [
+            112,
+            114,
+            105,
+            118,
+            97,
+            116,
+            101,
+            70,
+            105,
+            101,
+            108,
+            100
+          ],
+          "utf16": [
+            112,
+            114,
+            105,
+            118,
+            97,
+            116,
+            101,
+            70,
+            105,
+            101,
+            108,
+            100
+          ]
+        }
+      },
+      "markers": [],
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [],
+        "refusals": [],
+        "return_uses": []
+      }
+    }
+  ],
+  "initializer_proof": {
+    "kind": "not_applicable"
+  },
+  "limits": {
+    "analysis_steps": 4194304,
+    "archive_entries": 65536,
+    "attribute_bytes": 67108864,
+    "class_bytes": 67108864,
+    "class_headers": 4096,
+    "code_bytes": 16777216,
+    "dependency_depth": 8,
+    "elapsed_millis": 30000,
+    "entry_bytes": 67108864,
+    "input_bytes": 67108864,
+    "ir_edges": 4194304,
+    "ir_items": 4194304,
+    "method_bodies": 4096,
+    "nested_depth": 4,
+    "normalization_clones": 1048576,
+    "output_bytes": 16777216,
+    "read_bytes": 67108864,
+    "result_items": 65536
+  },
+  "member_family": {
+    "child": null,
+    "reason": "selected root has an InnerClasses self row naming an outer class",
+    "state": "refused"
+  },
+  "methods": [
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "public FieldCast$A()",
+      "item": {
+        "access_flags": 1,
+        "body": {
+          "content_span": {
+            "length": 17,
+            "start": 340
+          },
+          "kind": "code_attribute"
+        },
+        "descriptor": {
+          "escaped": "()V",
+          "raw": [
+            40,
+            41,
+            86
+          ],
+          "utf16": [
+            40,
+            41,
+            86
+          ]
+        },
+        "identity": {
+          "descriptor": [
+            40,
+            41,
+            86
+          ],
+          "name": [
+            60,
+            105,
+            110,
+            105,
+            116,
+            62
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+              "length": 439
+            },
+            "location": {
+              "entry": {
+                "ordinal": 3,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                  "steps": []
+                },
+                "raw_name": [
+                  100,
+                  116,
+                  50,
+                  57,
+                  47,
+                  70,
+                  105,
+                  101,
+                  108,
+                  100,
+                  67,
+                  97,
+                  115,
+                  116,
+                  36,
+                  65,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 0,
+        "name": {
+          "escaped": "<init>",
+          "raw": [
+            60,
+            105,
+            110,
+            105,
+            116,
+            62
+          ],
+          "utf16": [
+            60,
+            105,
+            110,
+            105,
+            116,
+            62
+          ]
+        }
+      },
+      "markers": [],
+      "no_body_kind": null,
+      "outcome": {
+        "analysis": {
+          "diagnostics": 0,
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 23,
+              "archive_entries": 22,
+              "attribute_bytes": 213,
+              "class_bytes": 878,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": "<elapsed>",
+              "entry_bytes": 439,
+              "input_bytes": 3711,
+              "ir_edges": 2,
+              "ir_items": 48,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 0,
+              "read_bytes": 285,
+              "result_items": 34
+            }
+          }
+        },
+        "kind": "recovered",
+        "report": {
+          "accessors": [],
+          "aliased_names": [],
+          "artifact": {
+            "agreement": {
+              "state": "not_stated"
+            },
+            "binding": {
+              "engine": "0.1.0",
+              "environment": {
+                "content": [
+                  "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc"
+                ],
+                "domain_loaders": [
+                  "app"
+                ],
+                "providers": [],
+                "runtime": {
+                  "load_domain": {
+                    "delegation": {
+                      "kind": "parent_first"
+                    },
+                    "external_override": "none",
+                    "loader": "app",
+                    "module_mode": {
+                      "kind": "class_path"
+                    },
+                    "parent_loader": null,
+                    "roots": [
+                      {
+                        "kind": "container",
+                        "origin": {
+                          "root_container": "root",
+                          "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                          "steps": []
+                        },
+                        "prefix": []
+                      }
+                    ],
+                    "runtime_transformation": "none"
+                  },
+                  "physical": {
+                    "scope": {
+                      "kind": "snapshot_all"
+                    },
+                    "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc"
+                  },
+                  "profile": {
+                    "java_release": 8,
+                    "layout": {
+                      "kind": "generic"
+                    },
+                    "multi_release": {
+                      "kind": "disabled"
+                    }
+                  }
+                }
+              },
+              "member_ordinal": 0,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  86
+                ],
+                "name": [
+                  60,
+                  105,
+                  110,
+                  105,
+                  116,
+                  62
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                    "length": 439
+                  },
+                  "location": {
+                    "entry": {
+                      "ordinal": 3,
+                      "origin": {
+                        "root_container": "root",
+                        "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                        "steps": []
+                      },
+                      "raw_name": [
+                        100,
+                        116,
+                        50,
+                        57,
+                        47,
+                        70,
+                        105,
+                        101,
+                        108,
+                        100,
+                        67,
+                        97,
+                        115,
+                        116,
+                        36,
+                        65,
+                        46,
+                        99,
+                        108,
+                        97,
+                        115,
+                        115
+                      ]
+                    },
+                    "kind": "archive_entry"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "profile": {
+                "java_release": 8,
+                "layout": {
+                  "kind": "generic"
+                },
+                "multi_release": {
+                  "kind": "disabled"
+                }
+              },
+              "registry": 71,
+              "rules": [
+                "straight@1",
+                "if@1",
+                "loop@1",
+                "switch@1",
+                "lambda@1",
+                "concat@1",
+                "bridge@1",
+                "accessor@1",
+                "new@1",
+                "field@1",
+                "enumswitch@1",
+                "init@1",
+                "declaration@1",
+                "twr@1",
+                "monitor@1",
+                "finally@1"
+              ],
+              "schema": 1,
+              "text_bytes": 190,
+              "text_digest": "0e2c3a18808b9e8115c08c8884572239"
+            }
+          },
+          "bridges": [],
+          "compile_status": "not_attempted",
+          "concats": [],
+          "content": "contains_statements",
+          "declaration": null,
+          "diagnostics": [
+            {
+              "code": "jre_recovery_produced",
+              "message": "1 region(s), 2 statement(s), 2 segment(s), 190 byte(s) written from 1 canonical block(s)",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_constructor_prologue",
+              "message": "the body is an instance initializer and its prologue is written under init@1 as `super`: the call at BCI 1 names `java/lang/Object`, and the class that declares this constructor is `dt29/FieldCast$A`",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_declaration",
+              "message": "the artifact's envelope states the member's declaration under declaration@1: a constructor",
+              "provenance": null,
+              "severity": "info"
+            }
+          ],
+          "enum_switches": [],
+          "evidence": {
+            "categories": [
+              {
+                "kind": "source_map",
+                "state": {
+                  "state": "complete"
+                }
+              },
+              {
+                "kind": "region_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "rule_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "name_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "read_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              }
+            ],
+            "requested": {
+              "driver_bci_range": null,
+              "expected_artifact": null,
+              "kinds": [
+                "source_map"
+              ]
+            }
+          },
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 38,
+              "archive_entries": 22,
+              "attribute_bytes": 213,
+              "class_bytes": 878,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": "<elapsed>",
+              "entry_bytes": 439,
+              "input_bytes": 3711,
+              "ir_edges": 2,
+              "ir_items": 65,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 190,
+              "read_bytes": 285,
+              "result_items": 34
+            }
+          },
+          "fallbacks": [],
+          "fields": [],
+          "init": null,
+          "lambdas": [],
+          "method": "<init>()V",
+          "news": [],
+          "outcome": "produced",
+          "profile": {
+            "java_release": 8,
+            "layout": {
+              "kind": "generic"
+            },
+            "multi_release": {
+              "kind": "disabled"
+            }
+          },
+          "quality": "structured",
+          "regions": [],
+          "representation": "java",
+          "rules": [],
+          "semantic_validation": "unproven",
+          "source_map": {
+            "segments": [
+              {
+                "end": 176,
+                "origin": {
+                  "derived": [
+                    {
+                      "bci": 0,
+                      "cp": null,
+                      "method": {
+                        "descriptor": [
+                          40,
+                          41,
+                          86
+                        ],
+                        "name": [
+                          60,
+                          105,
+                          110,
+                          105,
+                          116,
+                          62
+                        ],
+                        "owner": {
+                          "class_bytes": {
+                            "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                            "length": 439
+                          },
+                          "location": {
+                            "entry": {
+                              "ordinal": 3,
+                              "origin": {
+                                "root_container": "root",
+                                "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                                "steps": []
+                              },
+                              "raw_name": [
+                                100,
+                                116,
+                                50,
+                                57,
+                                47,
+                                70,
+                                105,
+                                101,
+                                108,
+                                100,
+                                67,
+                                97,
+                                115,
+                                116,
+                                36,
+                                65,
+                                46,
+                                99,
+                                108,
+                                97,
+                                115,
+                                115
+                              ]
+                            },
+                            "kind": "archive_entry"
+                          },
+                          "variant": {
+                            "kind": "base"
+                          }
+                        }
+                      },
+                      "provenance": "Derived"
+                    }
+                  ],
+                  "primary": {
+                    "bci": 1,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        60,
+                        105,
+                        110,
+                        105,
+                        116,
+                        62
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                          "length": 439
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 3,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              67,
+                              97,
+                              115,
+                              116,
+                              36,
+                              65,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 163
+              },
+              {
+                "end": 188,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 4,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        60,
+                        105,
+                        110,
+                        105,
+                        116,
+                        62
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                          "length": 439
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 3,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              67,
+                              97,
+                              115,
+                              116,
+                              36,
+                              65,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 176
+              }
+            ]
+          },
+          "syntax_status": "unchecked",
+          "text": "// @method <init>()V\n// @declaration a constructor of `dt29.FieldCast$A`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    super();\n    return;\n}\n",
+          "verification": "not_performed"
+        }
+      },
+      "parameter_annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses_by_position": []
+      },
+      "text": "    public FieldCast$A() {\n        // @method <init>()V\n        // @declaration a constructor of `dt29.FieldCast$A`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n",
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [],
+        "refusals": [],
+        "return_uses": []
+      }
+    },
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "static boolean access$002(dt29.FieldCast$A arg0, boolean arg1)",
+      "item": {
+        "access_flags": 4104,
+        "body": {
+          "content_span": {
+            "length": 19,
+            "start": 371
+          },
+          "kind": "code_attribute"
+        },
+        "descriptor": {
+          "escaped": "(Ldt29/FieldCast$A;Z)Z",
+          "raw": [
+            40,
+            76,
+            100,
+            116,
+            50,
+            57,
+            47,
+            70,
+            105,
+            101,
+            108,
+            100,
+            67,
+            97,
+            115,
+            116,
+            36,
+            65,
+            59,
+            90,
+            41,
+            90
+          ],
+          "utf16": [
+            40,
+            76,
+            100,
+            116,
+            50,
+            57,
+            47,
+            70,
+            105,
+            101,
+            108,
+            100,
+            67,
+            97,
+            115,
+            116,
+            36,
+            65,
+            59,
+            90,
+            41,
+            90
+          ]
+        },
+        "identity": {
+          "descriptor": [
+            40,
+            76,
+            100,
+            116,
+            50,
+            57,
+            47,
+            70,
+            105,
+            101,
+            108,
+            100,
+            67,
+            97,
+            115,
+            116,
+            36,
+            65,
+            59,
+            90,
+            41,
+            90
+          ],
+          "name": [
+            97,
+            99,
+            99,
+            101,
+            115,
+            115,
+            36,
+            48,
+            48,
+            50
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+              "length": 439
+            },
+            "location": {
+              "entry": {
+                "ordinal": 3,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                  "steps": []
+                },
+                "raw_name": [
+                  100,
+                  116,
+                  50,
+                  57,
+                  47,
+                  70,
+                  105,
+                  101,
+                  108,
+                  100,
+                  67,
+                  97,
+                  115,
+                  116,
+                  36,
+                  65,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 1,
+        "name": {
+          "escaped": "access$002",
+          "raw": [
+            97,
+            99,
+            99,
+            101,
+            115,
+            115,
+            36,
+            48,
+            48,
+            50
+          ],
+          "utf16": [
+            97,
+            99,
+            99,
+            101,
+            115,
+            115,
+            36,
+            48,
+            48,
+            50
+          ]
+        }
+      },
+      "markers": [
+        "// jarde: not recovered: the recovery run for `access$002(Ldt29/FieldCast$A;Z)Z` produced no statement (explanation only); the artifact's own comment lines are below"
+      ],
+      "no_body_kind": null,
+      "outcome": {
+        "analysis": {
+          "diagnostics": 0,
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 67,
+              "archive_entries": 22,
+              "attribute_bytes": 238,
+              "class_bytes": 878,
+              "class_headers": 1,
+              "code_bytes": 12,
+              "dependency_depth": 0,
+              "elapsed_millis": "<elapsed>",
+              "entry_bytes": 439,
+              "input_bytes": 3711,
+              "ir_edges": 9,
+              "ir_items": 161,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 190,
+              "read_bytes": 285,
+              "result_items": 35
+            }
+          }
+        },
+        "kind": "recovered",
+        "report": {
+          "accessors": [],
+          "aliased_names": [],
+          "artifact": {
+            "agreement": {
+              "state": "not_stated"
+            },
+            "binding": {
+              "engine": "0.1.0",
+              "environment": {
+                "content": [
+                  "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc"
+                ],
+                "domain_loaders": [
+                  "app"
+                ],
+                "providers": [],
+                "runtime": {
+                  "load_domain": {
+                    "delegation": {
+                      "kind": "parent_first"
+                    },
+                    "external_override": "none",
+                    "loader": "app",
+                    "module_mode": {
+                      "kind": "class_path"
+                    },
+                    "parent_loader": null,
+                    "roots": [
+                      {
+                        "kind": "container",
+                        "origin": {
+                          "root_container": "root",
+                          "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                          "steps": []
+                        },
+                        "prefix": []
+                      }
+                    ],
+                    "runtime_transformation": "none"
+                  },
+                  "physical": {
+                    "scope": {
+                      "kind": "snapshot_all"
+                    },
+                    "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc"
+                  },
+                  "profile": {
+                    "java_release": 8,
+                    "layout": {
+                      "kind": "generic"
+                    },
+                    "multi_release": {
+                      "kind": "disabled"
+                    }
+                  }
+                }
+              },
+              "member_ordinal": 1,
+              "method": {
+                "descriptor": [
+                  40,
+                  76,
+                  100,
+                  116,
+                  50,
+                  57,
+                  47,
+                  70,
+                  105,
+                  101,
+                  108,
+                  100,
+                  67,
+                  97,
+                  115,
+                  116,
+                  36,
+                  65,
+                  59,
+                  90,
+                  41,
+                  90
+                ],
+                "name": [
+                  97,
+                  99,
+                  99,
+                  101,
+                  115,
+                  115,
+                  36,
+                  48,
+                  48,
+                  50
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                    "length": 439
+                  },
+                  "location": {
+                    "entry": {
+                      "ordinal": 3,
+                      "origin": {
+                        "root_container": "root",
+                        "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                        "steps": []
+                      },
+                      "raw_name": [
+                        100,
+                        116,
+                        50,
+                        57,
+                        47,
+                        70,
+                        105,
+                        101,
+                        108,
+                        100,
+                        67,
+                        97,
+                        115,
+                        116,
+                        36,
+                        65,
+                        46,
+                        99,
+                        108,
+                        97,
+                        115,
+                        115
+                      ]
+                    },
+                    "kind": "archive_entry"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "profile": {
+                "java_release": 8,
+                "layout": {
+                  "kind": "generic"
+                },
+                "multi_release": {
+                  "kind": "disabled"
+                }
+              },
+              "registry": 71,
+              "rules": [
+                "straight@1",
+                "if@1",
+                "loop@1",
+                "switch@1",
+                "lambda@1",
+                "concat@1",
+                "bridge@1",
+                "accessor@1",
+                "new@1",
+                "field@1",
+                "enumswitch@1",
+                "init@1",
+                "declaration@1",
+                "twr@1",
+                "monitor@1",
+                "finally@1"
+              ],
+              "schema": 1,
+              "text_bytes": 522,
+              "text_digest": "0cde5852f0a785744655157fb76d3901"
+            }
+          },
+          "bridges": [],
+          "compile_status": "not_attempted",
+          "concats": [],
+          "content": "explanation_only",
+          "declaration": null,
+          "diagnostics": [
+            {
+              "code": "jre_recovery_produced",
+              "message": "1 region(s), 3 statement(s), 3 segment(s), 522 byte(s) written from 1 canonical block(s)",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_field_not_emitted",
+              "message": "the field access at BCI 3 passed field identity proof, but no matching Java field operation was emitted by the final body",
+              "provenance": null,
+              "severity": "warning"
+            },
+            {
+              "code": "jre_field_accesses",
+              "message": "1 field instruction(s) read under field@1: 0 presented, 1 refused",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_declaration",
+              "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+              "provenance": null,
+              "severity": "info"
+            }
+          ],
+          "enum_switches": [],
+          "evidence": {
+            "categories": [
+              {
+                "kind": "source_map",
+                "state": {
+                  "state": "complete"
+                }
+              },
+              {
+                "kind": "region_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "rule_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "name_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "read_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              }
+            ],
+            "requested": {
+              "driver_bci_range": null,
+              "expected_artifact": null,
+              "kinds": [
+                "source_map"
+              ]
+            }
+          },
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 85,
+              "archive_entries": 22,
+              "attribute_bytes": 238,
+              "class_bytes": 878,
+              "class_headers": 1,
+              "code_bytes": 12,
+              "dependency_depth": 0,
+              "elapsed_millis": "<elapsed>",
+              "entry_bytes": 439,
+              "input_bytes": 3711,
+              "ir_edges": 9,
+              "ir_items": 191,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 712,
+              "read_bytes": 285,
+              "result_items": 35
+            }
+          },
+          "fallbacks": [],
+          "fields": [],
+          "init": null,
+          "lambdas": [],
+          "method": "access$002(Ldt29/FieldCast$A;Z)Z",
+          "news": [],
+          "outcome": "produced",
+          "profile": {
+            "java_release": 8,
+            "layout": {
+              "kind": "generic"
+            },
+            "multi_release": {
+              "kind": "disabled"
+            }
+          },
+          "quality": "fallback",
+          "regions": [],
+          "representation": "mixed",
+          "rules": [],
+          "semantic_validation": "unproven",
+          "source_map": {
+            "segments": [
+              {
+                "end": 274,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 2,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        76,
+                        100,
+                        116,
+                        50,
+                        57,
+                        47,
+                        70,
+                        105,
+                        101,
+                        108,
+                        100,
+                        67,
+                        97,
+                        115,
+                        116,
+                        36,
+                        65,
+                        59,
+                        90,
+                        41,
+                        90
+                      ],
+                      "name": [
+                        97,
+                        99,
+                        99,
+                        101,
+                        115,
+                        115,
+                        36,
+                        48,
+                        48,
+                        50
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                          "length": 439
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 3,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              67,
+                              97,
+                              115,
+                              116,
+                              36,
+                              65,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 188
+              },
+              {
+                "end": 397,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 3,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        76,
+                        100,
+                        116,
+                        50,
+                        57,
+                        47,
+                        70,
+                        105,
+                        101,
+                        108,
+                        100,
+                        67,
+                        97,
+                        115,
+                        116,
+                        36,
+                        65,
+                        59,
+                        90,
+                        41,
+                        90
+                      ],
+                      "name": [
+                        97,
+                        99,
+                        99,
+                        101,
+                        115,
+                        115,
+                        36,
+                        48,
+                        48,
+                        50
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                          "length": 439
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 3,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              67,
+                              97,
+                              115,
+                              116,
+                              36,
+                              65,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 274
+              },
+              {
+                "end": 520,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 6,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        76,
+                        100,
+                        116,
+                        50,
+                        57,
+                        47,
+                        70,
+                        105,
+                        101,
+                        108,
+                        100,
+                        67,
+                        97,
+                        115,
+                        116,
+                        36,
+                        65,
+                        59,
+                        90,
+                        41,
+                        90
+                      ],
+                      "name": [
+                        97,
+                        99,
+                        99,
+                        101,
+                        115,
+                        115,
+                        36,
+                        48,
+                        48,
+                        50
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                          "length": 439
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 3,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              67,
+                              97,
+                              115,
+                              116,
+                              36,
+                              65,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 397
+              }
+            ]
+          },
+          "syntax_status": "not_java",
+          "text": "// @method access$002(Ldt29/FieldCast$A;Z)Z\n// @declaration a static method of `dt29.FieldCast$A`, member flags 0x1008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 2\n    // the instruction at BCI 2 is not part of the provable subset\n    // @bytecode 3\n    // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes\n    // @bytecode 6\n    // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes\n}\n",
+          "verification": "not_performed"
+        }
+      },
+      "parameter_annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses_by_position": [
+          [],
+          []
+        ]
+      },
+      "text": "    static boolean access$002(dt29.FieldCast$A arg0, boolean arg1) {\n        // jarde: not recovered: the recovery run for `access$002(Ldt29/FieldCast$A;Z)Z` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method access$002(Ldt29/FieldCast$A;Z)Z\n        // @declaration a static method of `dt29.FieldCast$A`, member flags 0x1008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 2\n        // the instruction at BCI 2 is not part of the provable subset\n        // @bytecode 3\n        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes\n        // @bytecode 6\n        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes\n    }\n",
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [
+          [],
+          []
+        ],
+        "refusals": [],
+        "return_uses": []
+      }
+    },
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "static boolean access$000(dt29.FieldCast$A arg0)",
+      "item": {
+        "access_flags": 4104,
+        "body": {
+          "content_span": {
+            "length": 17,
+            "start": 404
+          },
+          "kind": "code_attribute"
+        },
+        "descriptor": {
+          "escaped": "(Ldt29/FieldCast$A;)Z",
+          "raw": [
+            40,
+            76,
+            100,
+            116,
+            50,
+            57,
+            47,
+            70,
+            105,
+            101,
+            108,
+            100,
+            67,
+            97,
+            115,
+            116,
+            36,
+            65,
+            59,
+            41,
+            90
+          ],
+          "utf16": [
+            40,
+            76,
+            100,
+            116,
+            50,
+            57,
+            47,
+            70,
+            105,
+            101,
+            108,
+            100,
+            67,
+            97,
+            115,
+            116,
+            36,
+            65,
+            59,
+            41,
+            90
+          ]
+        },
+        "identity": {
+          "descriptor": [
+            40,
+            76,
+            100,
+            116,
+            50,
+            57,
+            47,
+            70,
+            105,
+            101,
+            108,
+            100,
+            67,
+            97,
+            115,
+            116,
+            36,
+            65,
+            59,
+            41,
+            90
+          ],
+          "name": [
+            97,
+            99,
+            99,
+            101,
+            115,
+            115,
+            36,
+            48,
+            48,
+            48
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+              "length": 439
+            },
+            "location": {
+              "entry": {
+                "ordinal": 3,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                  "steps": []
+                },
+                "raw_name": [
+                  100,
+                  116,
+                  50,
+                  57,
+                  47,
+                  70,
+                  105,
+                  101,
+                  108,
+                  100,
+                  67,
+                  97,
+                  115,
+                  116,
+                  36,
+                  65,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 2,
+        "name": {
+          "escaped": "access$000",
+          "raw": [
+            97,
+            99,
+            99,
+            101,
+            115,
+            115,
+            36,
+            48,
+            48,
+            48
+          ],
+          "utf16": [
+            97,
+            99,
+            99,
+            101,
+            115,
+            115,
+            36,
+            48,
+            48,
+            48
+          ]
+        }
+      },
+      "markers": [],
+      "no_body_kind": null,
+      "outcome": {
+        "analysis": {
+          "diagnostics": 0,
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 106,
+              "archive_entries": 22,
+              "attribute_bytes": 261,
+              "class_bytes": 878,
+              "class_headers": 1,
+              "code_bytes": 17,
+              "dependency_depth": 0,
+              "elapsed_millis": "<elapsed>",
+              "entry_bytes": 439,
+              "input_bytes": 3711,
+              "ir_edges": 12,
+              "ir_items": 242,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 712,
+              "read_bytes": 285,
+              "result_items": 36
+            }
+          }
+        },
+        "kind": "recovered",
+        "report": {
+          "accessors": [],
+          "aliased_names": [],
+          "artifact": {
+            "agreement": {
+              "state": "not_stated"
+            },
+            "binding": {
+              "engine": "0.1.0",
+              "environment": {
+                "content": [
+                  "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc"
+                ],
+                "domain_loaders": [
+                  "app"
+                ],
+                "providers": [],
+                "runtime": {
+                  "load_domain": {
+                    "delegation": {
+                      "kind": "parent_first"
+                    },
+                    "external_override": "none",
+                    "loader": "app",
+                    "module_mode": {
+                      "kind": "class_path"
+                    },
+                    "parent_loader": null,
+                    "roots": [
+                      {
+                        "kind": "container",
+                        "origin": {
+                          "root_container": "root",
+                          "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                          "steps": []
+                        },
+                        "prefix": []
+                      }
+                    ],
+                    "runtime_transformation": "none"
+                  },
+                  "physical": {
+                    "scope": {
+                      "kind": "snapshot_all"
+                    },
+                    "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc"
+                  },
+                  "profile": {
+                    "java_release": 8,
+                    "layout": {
+                      "kind": "generic"
+                    },
+                    "multi_release": {
+                      "kind": "disabled"
+                    }
+                  }
+                }
+              },
+              "member_ordinal": 2,
+              "method": {
+                "descriptor": [
+                  40,
+                  76,
+                  100,
+                  116,
+                  50,
+                  57,
+                  47,
+                  70,
+                  105,
+                  101,
+                  108,
+                  100,
+                  67,
+                  97,
+                  115,
+                  116,
+                  36,
+                  65,
+                  59,
+                  41,
+                  90
+                ],
+                "name": [
+                  97,
+                  99,
+                  99,
+                  101,
+                  115,
+                  115,
+                  36,
+                  48,
+                  48,
+                  48
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                    "length": 439
+                  },
+                  "location": {
+                    "entry": {
+                      "ordinal": 3,
+                      "origin": {
+                        "root_container": "root",
+                        "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                        "steps": []
+                      },
+                      "raw_name": [
+                        100,
+                        116,
+                        50,
+                        57,
+                        47,
+                        70,
+                        105,
+                        101,
+                        108,
+                        100,
+                        67,
+                        97,
+                        115,
+                        116,
+                        36,
+                        65,
+                        46,
+                        99,
+                        108,
+                        97,
+                        115,
+                        115
+                      ]
+                    },
+                    "kind": "archive_entry"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "profile": {
+                "java_release": 8,
+                "layout": {
+                  "kind": "generic"
+                },
+                "multi_release": {
+                  "kind": "disabled"
+                }
+              },
+              "registry": 71,
+              "rules": [
+                "straight@1",
+                "if@1",
+                "loop@1",
+                "switch@1",
+                "lambda@1",
+                "concat@1",
+                "bridge@1",
+                "accessor@1",
+                "new@1",
+                "field@1",
+                "enumswitch@1",
+                "init@1",
+                "declaration@1",
+                "twr@1",
+                "monitor@1",
+                "finally@1"
+              ],
+              "schema": 1,
+              "text_bytes": 219,
+              "text_digest": "762366608e413cb2b114f366103c2513"
+            }
+          },
+          "bridges": [],
+          "compile_status": "not_attempted",
+          "concats": [],
+          "content": "contains_statements",
+          "declaration": null,
+          "diagnostics": [
+            {
+              "code": "jre_recovery_produced",
+              "message": "1 region(s), 1 statement(s), 3 segment(s), 219 byte(s) written from 1 canonical block(s)",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_field_accesses",
+              "message": "1 field instruction(s) read under field@1: 1 presented, 0 refused",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_declaration",
+              "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+              "provenance": null,
+              "severity": "info"
+            }
+          ],
+          "enum_switches": [],
+          "evidence": {
+            "categories": [
+              {
+                "kind": "source_map",
+                "state": {
+                  "state": "complete"
+                }
+              },
+              {
+                "kind": "region_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "rule_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "name_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "read_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              }
+            ],
+            "requested": {
+              "driver_bci_range": null,
+              "expected_artifact": null,
+              "kinds": [
+                "source_map"
+              ]
+            }
+          },
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 121,
+              "archive_entries": 22,
+              "attribute_bytes": 261,
+              "class_bytes": 878,
+              "class_headers": 1,
+              "code_bytes": 17,
+              "dependency_depth": 0,
+              "elapsed_millis": "<elapsed>",
+              "entry_bytes": 439,
+              "input_bytes": 3711,
+              "ir_edges": 12,
+              "ir_items": 267,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 931,
+              "read_bytes": 285,
+              "result_items": 36
+            }
+          },
+          "fallbacks": [],
+          "fields": [],
+          "init": null,
+          "lambdas": [],
+          "method": "access$000(Ldt29/FieldCast$A;)Z",
+          "news": [],
+          "outcome": "produced",
+          "profile": {
+            "java_release": 8,
+            "layout": {
+              "kind": "generic"
+            },
+            "multi_release": {
+              "kind": "disabled"
+            }
+          },
+          "quality": "structured",
+          "regions": [],
+          "representation": "java",
+          "rules": [],
+          "semantic_validation": "unproven",
+          "source_map": {
+            "segments": [
+              {
+                "end": 202,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 0,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        76,
+                        100,
+                        116,
+                        50,
+                        57,
+                        47,
+                        70,
+                        105,
+                        101,
+                        108,
+                        100,
+                        67,
+                        97,
+                        115,
+                        116,
+                        36,
+                        65,
+                        59,
+                        41,
+                        90
+                      ],
+                      "name": [
+                        97,
+                        99,
+                        99,
+                        101,
+                        115,
+                        115,
+                        36,
+                        48,
+                        48,
+                        48
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                          "length": 439
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 3,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              67,
+                              97,
+                              115,
+                              116,
+                              36,
+                              65,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 198
+              },
+              {
+                "end": 215,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 1,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        76,
+                        100,
+                        116,
+                        50,
+                        57,
+                        47,
+                        70,
+                        105,
+                        101,
+                        108,
+                        100,
+                        67,
+                        97,
+                        115,
+                        116,
+                        36,
+                        65,
+                        59,
+                        41,
+                        90
+                      ],
+                      "name": [
+                        97,
+                        99,
+                        99,
+                        101,
+                        115,
+                        115,
+                        36,
+                        48,
+                        48,
+                        48
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                          "length": 439
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 3,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              67,
+                              97,
+                              115,
+                              116,
+                              36,
+                              65,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 198
+              },
+              {
+                "end": 217,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 4,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        76,
+                        100,
+                        116,
+                        50,
+                        57,
+                        47,
+                        70,
+                        105,
+                        101,
+                        108,
+                        100,
+                        67,
+                        97,
+                        115,
+                        116,
+                        36,
+                        65,
+                        59,
+                        41,
+                        90
+                      ],
+                      "name": [
+                        97,
+                        99,
+                        99,
+                        101,
+                        115,
+                        115,
+                        36,
+                        48,
+                        48,
+                        48
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "9ad5caa529d460c8e21ae63607b2626acf7238a08b9e2f2d7c74b28dca59b70a",
+                          "length": 439
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 3,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              67,
+                              97,
+                              115,
+                              116,
+                              36,
+                              65,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 187
+              }
+            ]
+          },
+          "syntax_status": "unchecked",
+          "text": "// @method access$000(Ldt29/FieldCast$A;)Z\n// @declaration a static method of `dt29.FieldCast$A`, member flags 0x1008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    return arg0.privateField;\n}\n",
+          "verification": "not_performed"
+        }
+      },
+      "parameter_annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses_by_position": [
+          []
+        ]
+      },
+      "text": "    static boolean access$000(dt29.FieldCast$A arg0) {\n        // @method access$000(Ldt29/FieldCast$A;)Z\n        // @declaration a static method of `dt29.FieldCast$A`, member flags 0x1008\n        // recovered from bytecode; presentation is not claimed to compile\n        return arg0.privateField;\n    }\n",
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [
+          []
+        ],
+        "refusals": [],
+        "return_uses": []
+      }
+    }
+  ],
+  "nested_annotation_family": {
+    "state": "absent"
+  },
+  "nested_enum_family": {
+    "state": "absent"
+  },
+  "outcome": "performed",
+  "stages": [
+    "raw_facts",
+    "raw_cfg",
+    "legacy_normalization",
+    "canonical_cfg",
+    "frame",
+    "ssa"
+  ],
+  "text": "// jarde: presentation of `dt29/FieldCast$A` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\npackage dt29;\n\npublic class FieldCast$A extends java.lang.Object {\n    public boolean publicField;\n\n    boolean packagePrivateField;\n\n    protected boolean protectedField;\n\n    private boolean privateField;\n\n    public FieldCast$A() {\n        // @method <init>()V\n        // @declaration a constructor of `dt29.FieldCast$A`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n\n    static boolean access$002(dt29.FieldCast$A arg0, boolean arg1) {\n        // jarde: not recovered: the recovery run for `access$002(Ldt29/FieldCast$A;Z)Z` produced no statement (explanation only); the artifact's own comment lines are below\n        // @method access$002(Ldt29/FieldCast$A;Z)Z\n        // @declaration a static method of `dt29.FieldCast$A`, member flags 0x1008\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 2\n        // the instruction at BCI 2 is not part of the provable subset\n        // @bytecode 3\n        // the value at BCI 3 comes from an Other at BCI 2, which produces no expression this subset writes\n        // @bytecode 6\n        // the value at BCI 6 comes from an Other at BCI 2, which produces no expression this subset writes\n    }\n\n    static boolean access$000(dt29.FieldCast$A arg0) {\n        // @method access$000(Ldt29/FieldCast$A;)Z\n        // @declaration a static method of `dt29.FieldCast$A`, member flags 0x1008\n        // recovered from bytecode; presentation is not claimed to compile\n        return arg0.privateField;\n    }\n}\n",
+  "usage": {
+    "analysis_steps": 123,
+    "archive_entries": 22,
+    "attribute_bytes": 261,
+    "class_bytes": 878,
+    "class_headers": 1,
+    "code_bytes": 17,
+    "dependency_depth": 0,
+    "elapsed_millis": "<elapsed>",
+    "entry_bytes": 439,
+    "input_bytes": 3711,
+    "ir_edges": 12,
+    "ir_items": 267,
+    "method_bodies": 3,
+    "nested_depth": 0,
+    "normalization_clones": 0,
+    "output_bytes": 931,
+    "read_bytes": 285,
+    "result_items": 37
+  },
+  "view": {
+    "scope": {
+      "kind": "snapshot_all"
+    },
+    "snapshot": "bc6435330a1370222d2f5bfa4307475f1397cee3c4d2fe38270e2f59031a87dc"
+  }
+}
