@@ -1,0 +1,237 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "jadx-core/src/test/java/jadx/tests/integration/types/TestFieldCast.java": "a57ca7a3f4571dca914f7f39fb8dbdee929da51720f59bf37bebdece1074fc5f",
+    "jadx-core/src/test/java/jadx/tests/integration/types/TestInterfacesCast.java": "446576f103a4026919e7cd0b683ecb0fff4de6bbf83006cbcde7524bbe4370ee",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/ModVisitor.java": "2d208158695097fd5ee4bfb833fa865b4b75e0f784fc9b8fde1ffbb3e49cf69f",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/ShadowFieldVisitor.java": "50811e321fd841b298b96f3f12bad7d481a0207de5b21c2386d78f24e9d713d5",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/SimplifyVisitor.java": "71aede9230b70a162d65b782c9e4c09e1a6d03925927787a6de6603a838798e2"
+  },
+  "jarde_cli_sha256": "7f8dafe1d928570cde099a10807a395ca209ea2e54f5479fd6295d99ec9dc92f",
+  "input_sha256": {
+    "Both.java": "b84757e36e19fb2d10a374e0841c75abacc9b4e2384ae863680e3604ffe510c2",
+    "CloseOnly.java": "fc1b59d7d804883c0165d9db7457d42d75bc4f58df17ddff93683787640ddcb4",
+    "FieldCast.java": "daadc9da3711519ed2d0c7f2157c420d2a13540ed6898f182a3f64591be0c2af",
+    "InterfaceCast.java": "d45154ea413d8b0bd2b8d0f7440b8a2bd2859ec3c2e0558e850e566fc71ab181",
+    "Runner.java": "0f76a2f99c839d12bd9b9094a8ca07e6289c09ae38ffa13c9f441160ed740de9"
+  },
+  "class_sha256": {
+    "dt29/Both": "e8e4b1a14f5e64f93d5c4e5e0793e8593322726b72611f085aaa89a127d83c97",
+    "dt29/CloseOnly": "6d6d2c2a9e7179605d19f2212915aacd7b47b4c1e303ec7f50cf59a5ca1156ee",
+    "dt29/FieldCast$1": "fd0ebcb19b51ddae01283ba1e8bfecf6489f926e6734240c031d57c2fbac44ce",
+    "dt29/FieldCast$A": "57fd9ded9797ecb5f90cc3d2601c06c8a3e6eee11ff099bef6da772b4af6e54e",
+    "dt29/FieldCast$B": "dd2dd6899b2c52b2285653366daf4df6fa4ef0aa473297c59cc3645cd7bd0c4a",
+    "dt29/FieldCast$C": "baf10627203c491206ffbf9e48c1e2ab5c2b1f271a5e1d5c8273acc6594d7f4a",
+    "dt29/FieldCast$D": "6c88339c91942c6cf2695fc77f72eafb11ff2069fe9935045946e1378dd08f43",
+    "dt29/FieldCast": "edfa6bc9d2f32b5c8d50cceb202b50fcee7d5372a1e9fa5bc52e36f46950e2ff",
+    "dt29/InterfaceCast": "edc3244847d196739b152be518e40204b29f14592afbb4754afed081df1dfe5c"
+  },
+  "classes": [
+    "Both",
+    "CloseOnly",
+    "FieldCast$1",
+    "FieldCast$A",
+    "FieldCast$B",
+    "FieldCast$C",
+    "FieldCast$D",
+    "FieldCast",
+    "InterfaceCast"
+  ],
+  "original": {
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "stdout": "runnable:1111:0000:1111:ClassCastException\n",
+    "run_stderr": ""
+  },
+  "jadx": {
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "stdout": "runnable:1111:0000:1111:ClassCastException\n",
+    "run_stderr": ""
+  },
+  "jarde": {
+    "compile_exit": 1,
+    "compile_stderr": "<TMP>/jarde-source/dt29/FieldCast.java:28: 错误: 缺少返回语句\n    }\n    ^\n<TMP>/jarde-source/dt29/FieldCast.java:49: 错误: 缺少返回语句\n    }\n    ^\n2 个错误\n"
+  },
+  "jarde_methods": {
+    "dt29/Both": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "close",
+        "descriptor": "()V",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "run",
+        "descriptor": "()V",
+        "quality": "structured",
+        "quoted_bcis": []
+      }
+    ],
+    "dt29/CloseOnly": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "close",
+        "descriptor": "()V",
+        "quality": "structured",
+        "quoted_bcis": []
+      }
+    ],
+    "dt29/FieldCast$1": [],
+    "dt29/FieldCast$A": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "access$002",
+        "descriptor": "(Ldt29/FieldCast$A;Z)Z",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "access$000",
+        "descriptor": "(Ldt29/FieldCast$A;)Z",
+        "quality": "structured",
+        "quoted_bcis": []
+      }
+    ],
+    "dt29/FieldCast$B": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "self",
+        "descriptor": "(Z)V",
+        "quality": "structured",
+        "quoted_bcis": []
+      }
+    ],
+    "dt29/FieldCast$C": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "set",
+        "descriptor": "(Ldt29/FieldCast$B;Z)V",
+        "quality": "fallback",
+        "quoted_bcis": [
+          2,
+          7,
+          12,
+          17
+        ]
+      }
+    ],
+    "dt29/FieldCast$D": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "set",
+        "descriptor": "(Ldt29/FieldCast$B;Z)V",
+        "quality": "fallback",
+        "quoted_bcis": [
+          2,
+          7,
+          12,
+          17
+        ]
+      },
+      {
+        "name": "<init>",
+        "descriptor": "(Ldt29/FieldCast$1;)V",
+        "quality": "structured",
+        "quoted_bcis": []
+      }
+    ],
+    "dt29/FieldCast": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "run",
+        "descriptor": "()Ljava/lang/String;",
+        "quality": "fallback",
+        "quoted_bcis": [
+          17,
+          34,
+          83
+        ]
+      },
+      {
+        "name": "bits",
+        "descriptor": "(Ldt29/FieldCast$A;)Ljava/lang/String;",
+        "quality": "fallback",
+        "quoted_bcis": [
+          0,
+          21,
+          38,
+          55,
+          72,
+          72,
+          78
+        ]
+      }
+    ],
+    "dt29/InterfaceCast": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "asRunnable",
+        "descriptor": "(Ljava/io/Closeable;)Ljava/lang/Runnable;",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "choose",
+        "descriptor": "(Ljava/io/Closeable;)Ljava/lang/String;",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "choose",
+        "descriptor": "(Ljava/lang/Runnable;)Ljava/lang/String;",
+        "quality": "structured",
+        "quoted_bcis": []
+      },
+      {
+        "name": "chooseRunnable",
+        "descriptor": "(Ljava/io/Closeable;)Ljava/lang/String;",
+        "quality": "structured",
+        "quoted_bcis": []
+      }
+    ]
+  }
+}
