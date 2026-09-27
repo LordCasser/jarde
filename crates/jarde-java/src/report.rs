@@ -3821,6 +3821,7 @@ fn recover_inner(
             direct_super_class: request.ir.direct_super_class(),
             direct_interfaces: request.ir.direct_interfaces(),
             class_methods: request.ir.class_methods(),
+            class_fields: request.ir.class_fields(),
             bridge: bridge.as_ref(),
             sites: &sites,
             prologues: &prologues,
