@@ -1,0 +1,122 @@
+exit=0
+stdout:
+public class cf03.BranchShapes {
+  public static int hits;
+
+  public cf03.BranchShapes();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  private static boolean matches(java.lang.String, java.lang.String);
+    Code:
+       0: getstatic     #7                  // Field hits:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field hits:I
+       8: aload_0
+       9: aload_1
+      10: invokevirtual #13                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      13: ireturn
+
+  public static int chain(java.lang.String);
+    Code:
+       0: iconst_0
+       1: putstatic     #7                  // Field hits:I
+       4: aload_0
+       5: ldc           #19                 // String a
+       7: invokestatic  #21                 // Method matches:(Ljava/lang/String;Ljava/lang/String;)Z
+      10: ifeq          18
+      13: iconst_1
+      14: istore_1
+      15: goto          71
+      18: aload_0
+      19: ldc           #25                 // String b
+      21: invokestatic  #21                 // Method matches:(Ljava/lang/String;Ljava/lang/String;)Z
+      24: ifeq          32
+      27: iconst_2
+      28: istore_1
+      29: goto          71
+      32: aload_0
+      33: ldc           #27                 // String 3
+      35: invokestatic  #21                 // Method matches:(Ljava/lang/String;Ljava/lang/String;)Z
+      38: ifeq          46
+      41: iconst_3
+      42: istore_1
+      43: goto          71
+      46: aload_0
+      47: ldc           #29                 // String $
+      49: invokestatic  #21                 // Method matches:(Ljava/lang/String;Ljava/lang/String;)Z
+      52: ifeq          60
+      55: iconst_4
+      56: istore_1
+      57: goto          71
+      60: iconst_m1
+      61: istore_1
+      62: getstatic     #7                  // Field hits:I
+      65: bipush        10
+      67: iadd
+      68: putstatic     #7                  // Field hits:I
+      71: iload_1
+      72: bipush        10
+      74: imul
+      75: istore_1
+      76: iload_1
+      77: invokestatic  #31                 // Method java/lang/Math.abs:(I)I
+      80: ireturn
+
+  public static boolean nested(boolean, int, int);
+    Code:
+       0: iload_0
+       1: ifeq          14
+       4: iload_1
+       5: ifeq          12
+       8: iload_2
+       9: ifne          24
+      12: iconst_0
+      13: ireturn
+      14: iload_1
+      15: ifeq          22
+      18: iload_2
+      19: ifne          24
+      22: iconst_0
+      23: ireturn
+      24: getstatic     #7                  // Field hits:I
+      27: iconst_1
+      28: iadd
+      29: putstatic     #7                  // Field hits:I
+      32: iconst_1
+      33: ireturn
+
+  public static int guards(java.lang.String);
+    Code:
+       0: aload_0
+       1: ifnonnull     6
+       4: iconst_m1
+       5: ireturn
+       6: aload_0
+       7: invokevirtual #37                 // Method java/lang/String.length:()I
+      10: iconst_1
+      11: if_icmpeq     17
+      14: bipush        -2
+      16: ireturn
+      17: aload_0
+      18: iconst_0
+      19: invokevirtual #41                 // Method java/lang/String.charAt:(I)C
+      22: istore_1
+      23: iload_1
+      24: bipush        97
+      26: if_icmpne     31
+      29: iconst_1
+      30: ireturn
+      31: iload_1
+      32: bipush        98
+      34: if_icmpne     39
+      37: iconst_2
+      38: ireturn
+      39: iconst_0
+      40: ireturn
+}
+
+stderr:
