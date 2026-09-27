@@ -2,6 +2,8 @@
 
 固定 JADX HEAD `2fb1b16386941660fda07e9017285aec40fcb37f` 的 Java 正例要求根源码包含 `public static abstract class A<T> implements Comparable<A<T>>`。现有 [EM-01 回放](../../java-syntax-2026-09-27/em01-declarations/replay.py)中，原类和固定 JADX 的完整 `Generic` 源码经 Java 8 重编、`-Xverify:all` 运行均输出 `1:java.lang.Comparable<em01.Generic$A<T>>`。EM-01 已验收的 `Shape.I`/`Shape.A` 联合声明不含字段、泛型或 bridge，不能代表此正例。`TestClassImplementsSignature` 另有 Raung 畸形签名负例，`TestIncorrectFieldSignature` 是 Smali 负例；二者不计入可编译正例。
 
+额外的外部 consumer [`BridgeRunner.java`](BridgeRunner.java) 用 Java 8 源码直接引用 `Generic.A<String>`，并通过反射检查泛型接口、方法数和桥标志，通过擦除调用检查错误参数的 `ClassCastException`。原始 `Generic.java` 与固定 JADX 的完整 `Generic.java` 分别重编后，在 `java -Xverify:all` 下均产生 [`BridgeRunner.expected.txt`](BridgeRunner.expected.txt) 中的六行；这个结果作为后续 Jarde 全源码验收基线。
+
 `Generic.class` 对唯一 child `Generic$A` 有直接 `InnerClasses` row；child 的 self row 与之吻合。child 物理类为 public abstract，类 Signature 是 `<T:Ljava/lang/Object;>Ljava/lang/Object;Ljava/lang/Comparable<Lem01/Generic$A<TT;>;>;`，字段 `value:Object` 的 Signature 为 `TT;`，源码方法 `compareTo(Generic$A):int` 的参数 Signature 引用 `T`，另有编译器生成的 `compareTo(Object):int`（`ACC_PUBLIC|ACC_BRIDGE|ACC_SYNTHETIC`）。Jarde 对 child 的物理读取和方法正文完整，但根源码只输出根构造器；当前 [`multi` 重放](../../java-syntax-2026-09-27/em01-declarations/replay.py)明确只剩 `Generic.A` 缺失。
 
 这里不是单一的嵌套 writer 漏字：
