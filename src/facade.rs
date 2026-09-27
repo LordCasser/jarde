@@ -2393,14 +2393,11 @@ impl Engine {
             && physically_complete
             && candidate.access_flags & 0x0008 != 0
         {
-            match static_target.filter(|target| target.definition == child_definition) {
-                Some(target) => class_source::ClassSourceMemberCapture::StaticNoCapture {
-                    target: Box::new(target.clone()),
-                },
-                None => class_source::ClassSourceMemberCapture::Refused {
-                    reason: "static no-capture target was not proved from the class-level relation"
-                        .to_owned(),
-                },
+            class_source::ClassSourceMemberCapture::StaticNoCapture {
+                target: static_target
+                    .filter(|target| target.definition == child_definition)
+                    .cloned()
+                    .map(Box::new),
             }
         } else if matches!(relation, Ok(true)) && physically_complete {
             match prove_class_source_member_capture(
@@ -2429,20 +2426,37 @@ impl Engine {
             (Ok(true), class_source::ClassSourceMemberCapture::StaticNoCapture { target })
                 if physically_complete =>
             {
-                match prove_class_source_static_calls(
-                    &root_report.methods,
-                    &child.methods,
-                    target,
-                    budget,
-                ) {
-                    Ok(calls) => calls,
-                    Err(error) => {
-                        merge_execution(&mut capture_execution, stop_execution(&error, budget));
-                        class_source::ClassSourceMemberCalls::Refused {
-                            reason: "static member call proof stopped".to_owned(),
-                            sites: Vec::new(),
-                            refusals: Vec::new(),
+                if let Some(target) = target {
+                    match prove_class_source_static_calls(
+                        &root_report.methods,
+                        &child.methods,
+                        target,
+                        budget,
+                    ) {
+                        Ok(class_source::ClassSourceMemberCalls::StaticDeclarationOnly)
+                            if !static_declaration_only_shape(candidate, &child_facts, &child) =>
+                        {
+                            class_source::ClassSourceMemberCalls::Refused {
+                                reason: "static declaration-only child is outside the abstract member slice".to_owned(),
+                                sites: Vec::new(),
+                                refusals: Vec::new(),
+                            }
                         }
+                        Ok(calls) => calls,
+                        Err(error) => {
+                            merge_execution(&mut capture_execution, stop_execution(&error, budget));
+                            class_source::ClassSourceMemberCalls::Refused {
+                                reason: "static member call proof stopped".to_owned(),
+                                sites: Vec::new(),
+                                refusals: Vec::new(),
+                            }
+                        }
+                    }
+                } else {
+                    class_source::ClassSourceMemberCalls::Refused {
+                        reason: "static constructor definition proof is incomplete".to_owned(),
+                        sites: Vec::new(),
+                        refusals: Vec::new(),
                     }
                 }
             }
@@ -13723,6 +13737,49 @@ fn prove_anonymous_capture(
     }
 }
 
+fn static_declaration_only_shape(
+    candidate: &crate::member_inner::FamilyRootCandidate,
+    facts: &jarde_reader::classfile::ClassMemberFacts,
+    child: &class_source::ClassSourceReport,
+) -> bool {
+    if candidate.access_flags != 0x0409
+        || facts.access_flags & 0x0400 == 0
+        || facts.access_flags & (0x0200 | 0x2000 | 0x4000) != 0
+        || !facts.fields.is_empty()
+        || facts.methods.len() != 2
+        || child.declaration.as_ref().is_none_or(|declaration| {
+            !declaration.annotation_uses.is_empty()
+                || !declaration.annotation_refusals.is_empty()
+                || declaration.generic_signature.is_some()
+                || declaration.generic_refusal.is_some()
+                || !declaration.item.declaration.interfaces.is_empty()
+        })
+    {
+        return false;
+    }
+    let mut constructor = false;
+    let mut abstract_method = false;
+    for method in &facts.methods {
+        if method.name.raw().0 == b"<init>" {
+            constructor = method.descriptor.raw().0 == b"()V"
+                && method.access_flags == 0x0001
+                && method.attributes.len() == 1
+                && method.attributes[0].name.raw().0 == b"Code";
+        } else {
+            abstract_method = method.access_flags == 0x0401 && method.attributes.is_empty();
+        }
+    }
+    constructor
+        && abstract_method
+        && child.methods.iter().any(|method| {
+            method.item.name.raw().0 != b"<init>"
+                && method.no_body_kind == Some(NoBodyKind::Abstract)
+                && matches!(method.outcome, class_source::ClassSourceOutcome::NoBody)
+                && method.declaration.is_some()
+                && method.markers.len() == 1
+        })
+}
+
 fn prove_class_source_static_calls(
     root_methods: &[class_source::ClassSourceMethod],
     child_methods: &[class_source::ClassSourceMethod],
@@ -13779,11 +13836,7 @@ fn prove_class_source_static_calls(
         }
     }
     if sites.is_empty() {
-        return Ok(Calls::Refused {
-            reason: "root has no same-run direct return of the selected static member".to_owned(),
-            sites: Vec::new(),
-            refusals: Vec::new(),
-        });
+        return Ok(Calls::StaticDeclarationOnly);
     }
     Ok(Calls::StaticProved { sites })
 }
@@ -13820,7 +13873,6 @@ fn project_class_source_static_member_family(
         || root.declaration.is_none()
         || child.declaration.is_none()
         || child.fields.len() != 0
-        || sites.is_empty()
     {
         return Ok(Err("static family physical proof is incomplete".to_owned()));
     }
@@ -13829,23 +13881,25 @@ fn project_class_source_static_member_family(
     for physical in [root, child] {
         for method in &physical.methods {
             budget.poll()?;
-            let class_source::ClassSourceOutcome::Recovered { report, analysis } = &method.outcome
-            else {
-                return Ok(Err(
-                    "static family has a method without a complete body proof".to_owned(),
-                ));
+            let complete = match &method.outcome {
+                class_source::ClassSourceOutcome::Recovered { report, analysis } => {
+                    matches!(analysis.execution, ExecutionReport::Complete { .. })
+                        && matches!(report.execution, ExecutionReport::Complete { .. })
+                        && report.produced()
+                        && report.quality == Quality::Structured
+                        && report.fallbacks.is_empty()
+                        && method.markers.iter().all(|marker| {
+                            marker.starts_with("// jarde: descriptor type path for `")
+                        })
+                }
+                class_source::ClassSourceOutcome::NoBody if sites.is_empty() => {
+                    physical.class == child.class
+                        && method.no_body_kind == Some(NoBodyKind::Abstract)
+                        && method.markers.len() == 1
+                }
+                _ => false,
             };
-            if !matches!(analysis.execution, ExecutionReport::Complete { .. })
-                || !matches!(report.execution, ExecutionReport::Complete { .. })
-                || !report.produced()
-                || report.quality != Quality::Structured
-                || !report.fallbacks.is_empty()
-                || method.declaration.is_none()
-                || method
-                    .markers
-                    .iter()
-                    .any(|marker| !marker.starts_with("// jarde: descriptor type path for `"))
-            {
+            if !complete || method.declaration.is_none() {
                 return Ok(Err(format!(
                     "static family method {} is incomplete or retains fallback",
                     method.item.index
@@ -14067,14 +14121,29 @@ fn project_class_source_member_family(
     else {
         return Ok(Err("family relation is not prepared".to_owned()));
     };
-    if let (
-        ClassSourceMemberCapture::StaticNoCapture { target },
-        ClassSourceMemberCalls::StaticProved { sites },
-    ) = (capture, calls)
+    if let ClassSourceMemberCapture::StaticNoCapture {
+        target: Some(target),
+    } = capture
     {
-        return project_class_source_static_member_family(
-            root, relation, child, target, sites, execution, budget,
-        );
+        match calls {
+            ClassSourceMemberCalls::StaticProved { sites } => {
+                return project_class_source_static_member_family(
+                    root, relation, child, target, sites, execution, budget,
+                );
+            }
+            ClassSourceMemberCalls::StaticDeclarationOnly => {
+                return project_class_source_static_member_family(
+                    root,
+                    relation,
+                    child,
+                    target,
+                    &[],
+                    execution,
+                    budget,
+                );
+            }
+            _ => {}
+        }
     }
     let ClassSourceMemberCapture::Proved { proof } = capture else {
         return Ok(Err("capture proof is incomplete".to_owned()));

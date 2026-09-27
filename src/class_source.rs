@@ -845,6 +845,7 @@ pub enum ClassSourceMemberCalls {
     StaticProved {
         sites: Vec<StaticMemberCallProof>,
     },
+    StaticDeclarationOnly,
     Refused {
         reason: String,
         sites: Vec<MemberCallProof>,
@@ -892,7 +893,7 @@ pub enum ClassSourceMemberCapture {
     },
     StaticNoCapture {
         #[serde(skip)]
-        target: Box<jarde_java::report::ProvedStaticMemberTarget>,
+        target: Option<Box<jarde_java::report::ProvedStaticMemberTarget>>,
     },
     Refused {
         reason: String,
@@ -7595,7 +7596,7 @@ pub(crate) fn member_family_source_text(
         || !child_declaration.annotation_refusals.is_empty()
         || (member.capture.is_some() && member.relation.access_flags & ACC_STATIC != 0)
         || (member.capture.is_none() && (member.relation.access_flags & ACC_STATIC == 0
-            || member.static_target.is_none_or(|target| target.definition != member.child.class)
+            || member.static_target.is_some_and(|target| target.definition != member.child.class)
             || !member.child.fields.is_empty()))
         || child_declaration.item.declaration.access_flags
             & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION)
@@ -7650,8 +7651,8 @@ pub(crate) fn member_family_source_text(
         None,
         &mut derived,
     )?;
-    let expected = usize::from(member.capture.is_some() || member.static_target.is_some())
-        + usize::from(member.static_target.is_some())
+    let expected = 1
+        + usize::from(member.capture.is_none())
         + member.outer_super_bridges.len()
         + member
             .root_methods
@@ -7949,7 +7950,11 @@ fn render_member_class(
     }
     let mut class_header_declaration = class_declaration(&member.relation.simple_name, &facts);
     if member.relation.access_flags & ACC_STATIC != 0 {
-        class_header_declaration = class_header_declaration.replacen("class ", "static class ", 1);
+        let visibility_len = ["public ", "protected ", "private "]
+            .iter()
+            .find(|prefix| class_header_declaration.starts_with(**prefix))
+            .map_or(0, |prefix| prefix.len());
+        class_header_declaration.insert_str(visibility_len, "static ");
     }
     let class_header = indent(&format!("{class_header_declaration} {{\n"), 1);
     let header_start = out.len();
@@ -7969,14 +7974,14 @@ fn render_member_class(
                 index: capture_field.item.index,
             }],
         });
-    } else if let Some(target) = member.static_target {
+    } else {
         derived.push(MemberFamilyDerivedProjection {
             kind: MemberFamilyDerivedKind::MemberClassDeclaration,
             start: header_start,
             end: out.len() - 1,
             anchors: vec![
                 MemberFamilyPhysicalAnchor::ClassDefinition {
-                    definition: target.definition.clone(),
+                    definition: member.relation.child.clone(),
                 },
                 MemberFamilyPhysicalAnchor::ClassDefinition {
                     definition: member.relation.root.clone(),
@@ -8016,9 +8021,7 @@ fn render_member_class(
             .find(|projected| projected.index == method.item.index)
         {
             let mut projected = projected.clone();
-            if method.item.identity.name.0 == b"<init>"
-                && let Some(target) = member.static_target
-            {
+            if method.item.identity.name.0 == b"<init>" && member.capture.is_none() {
                 let old_name = &declaration.name;
                 let old_token = format!("{old_name}(");
                 let Some(local_start) = projected.text.find(&old_token) else {
@@ -8038,7 +8041,7 @@ fn render_member_class(
                             bci: 0,
                         },
                         MemberFamilyPhysicalAnchor::ClassDefinition {
-                            definition: target.definition.clone(),
+                            definition: member.relation.child.clone(),
                         },
                     ],
                 });

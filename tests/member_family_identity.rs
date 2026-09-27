@@ -404,7 +404,11 @@ fn change_child_inner_class_outer(bytes: &[u8], child: &[u8], wrong_outer: &[u8]
             .expect("fixture constant pool contains requested class")
     };
     let child_index = class_index(child);
-    let wrong_outer_index = class_index(wrong_outer);
+    let wrong_outer_index = if wrong_outer.is_empty() {
+        0
+    } else {
+        class_index(wrong_outer)
+    };
 
     let mut offset = cursor + 6;
     let interfaces = read_u16(&patched, offset) as usize;
@@ -750,6 +754,184 @@ fn static_member_projects_as_nested_and_keeps_dollar_top_level_independent() {
 }
 
 #[test]
+fn declaration_only_static_abstract_member_projects_once_with_physical_anchors() {
+    const SOURCE: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-27/em01-declarations/input-single/em01/SingleAbstract.java"
+    );
+    const RUNNER: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-27/em01-declarations/input-single/em01/Runner.java"
+    );
+    let compile = |source: &str| {
+        let temp = TestDirectory::new();
+        std::fs::write(temp.path().join("SingleAbstract.java"), source).unwrap();
+        let output = Command::new("javac")
+            .args([
+                "--release",
+                "8",
+                "-g:none",
+                "-d",
+                ".",
+                "SingleAbstract.java",
+            ])
+            .current_dir(temp.path())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let root = std::fs::read(temp.path().join("em01/SingleAbstract.class")).unwrap();
+        let child = std::fs::read(temp.path().join("em01/SingleAbstract$A.class")).unwrap();
+        (temp, root, child)
+    };
+    let (temp, root_bytes, child_bytes) = compile(SOURCE);
+    let jar = jar_of(&[
+        (b"em01/SingleAbstract.class", &root_bytes),
+        (b"em01/SingleAbstract$A.class", &child_bytes),
+    ]);
+    let root = report_from_named(
+        jar.clone(),
+        "em01/SingleAbstract",
+        task_limits(&[]).unwrap(),
+    );
+    let ClassSourceMemberFamily::Prepared {
+        child,
+        calls: ClassSourceMemberCalls::StaticDeclarationOnly,
+        projection: ClassSourceMemberProjection::Projected { derived },
+        ..
+    } = &root.member_family
+    else {
+        panic!(
+            "expected declaration-only projection: {:?}",
+            root.member_family
+        );
+    };
+    assert_eq!(
+        root.text.matches("public static abstract class A").count(),
+        1
+    );
+    assert!(root.text.contains("A() {"), "{}", root.text);
+    assert!(root.text.contains("abstract int test2();"), "{}", root.text);
+    assert_eq!(derived.len(), 2);
+    for kind in [
+        MemberFamilyDerivedKind::MemberClassDeclaration,
+        MemberFamilyDerivedKind::MemberConstructorName,
+    ] {
+        let entry = derived.iter().find(|entry| entry.kind == kind).unwrap();
+        assert!(entry.anchors.iter().any(|anchor| matches!(anchor,
+            MemberFamilyPhysicalAnchor::ClassDefinition { definition } if definition == &child.class)));
+    }
+    let physical = report_from_named(
+        jar.clone(),
+        "em01/SingleAbstract$A",
+        task_limits(&[]).unwrap(),
+    );
+    assert!(physical.text.contains("SingleAbstract$A()"));
+    assert_eq!(child.class, physical.class);
+    std::fs::write(temp.path().join("SingleAbstract.java"), &root.text).unwrap();
+    std::fs::write(temp.path().join("Runner.java"), RUNNER).unwrap();
+    let output = Command::new("javac")
+        .args([
+            "--release",
+            "8",
+            "-g:none",
+            "-d",
+            ".",
+            "SingleAbstract.java",
+            "Runner.java",
+        ])
+        .current_dir(temp.path())
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-cp", ".", "em01.Runner"])
+        .current_dir(temp.path())
+        .output()
+        .unwrap();
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(String::from_utf8(run.stdout).unwrap(), "true:1\n");
+
+    let wrong_child = change_child_inner_class_outer(&child_bytes, b"em01/SingleAbstract$A", b"");
+    let wrong = report_from_named(
+        jar_of(&[
+            (b"em01/SingleAbstract.class", &root_bytes),
+            (b"em01/SingleAbstract$A.class", &wrong_child),
+        ]),
+        "em01/SingleAbstract",
+        task_limits(&[]).unwrap(),
+    );
+    assert!(!wrong.text.contains("static abstract class A"));
+    assert!(matches!(
+        wrong.member_family,
+        ClassSourceMemberFamily::Refused { .. }
+    ));
+
+    for source in [
+        SOURCE.replace("    }\n}", "        int state;\n    }\n}"),
+        SOURCE.replace("class A {", "class A<T> {"),
+        SOURCE.replace("abstract int test2();", "abstract <T> int test2();"),
+        SOURCE.replace(
+            "public static abstract class A",
+            "@Deprecated public static abstract class A",
+        ),
+        SOURCE.replace(
+            "    public static abstract class A",
+            "    static A echo(A value) { return value; }\n    public static abstract class A",
+        ),
+    ] {
+        let (_, root, child) = compile(&source);
+        let report = report_from_named(
+            jar_of(&[
+                (b"em01/SingleAbstract.class", &root),
+                (b"em01/SingleAbstract$A.class", &child),
+            ]),
+            "em01/SingleAbstract",
+            task_limits(&[]).unwrap(),
+        );
+        assert!(
+            !report.text.contains("static abstract class A"),
+            "{}",
+            report.text
+        );
+    }
+    let second = SOURCE.replace("    }\n}", "    }\n    static class B {}\n}");
+    let (extra, root, child) = compile(&second);
+    let other = std::fs::read(extra.path().join("em01/SingleAbstract$B.class")).unwrap();
+    let report = report_from_named(
+        jar_of(&[
+            (b"em01/SingleAbstract.class", &root),
+            (b"em01/SingleAbstract$A.class", &child),
+            (b"em01/SingleAbstract$B.class", &other),
+        ]),
+        "em01/SingleAbstract",
+        task_limits(&[]).unwrap(),
+    );
+    assert!(!report.text.contains("static abstract class A"));
+
+    let mut low = task_limits(&[]).unwrap();
+    low.output_bytes = report_from_named(
+        jar.clone(),
+        "em01/SingleAbstract",
+        task_limits(&[]).unwrap(),
+    )
+    .usage
+    .output_bytes
+    .saturating_sub(1);
+    let stopped = report_from_named(jar, "em01/SingleAbstract", low);
+    assert!(!stopped.text.contains("static abstract class A"));
+}
+
+#[test]
 fn static_member_incomplete_targets_never_publish_partial_nested_source() {
     let compile = |name: &str, source: &str, children: &[&str], top_level: &[&str]| {
         let temp = TestDirectory::new();
@@ -810,7 +992,7 @@ fn static_member_incomplete_targets_never_publish_partial_nested_source() {
         assert!(matches!(
             report.member_family,
             ClassSourceMemberFamily::Prepared {
-                capture: ClassSourceMemberCapture::Refused { .. },
+                capture: ClassSourceMemberCapture::StaticNoCapture { target: None },
                 projection: ClassSourceMemberProjection::Refused { .. },
                 ..
             }

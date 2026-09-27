@@ -1252,6 +1252,7 @@ pub(crate) fn scan_family_root(
     let mut candidate = None;
     let mut static_candidate = None;
     let mut static_names = Vec::new();
+    let mut direct_rows = 0usize;
     for row in &nesting.inner_classes {
         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
         // This slice writes one top-level source unit. A typed self row with an outer owner
@@ -1265,6 +1266,9 @@ pub(crate) fn scan_family_root(
         }
         if row.outer_class_index == 0 {
             continue;
+        }
+        if cp_class_name(pool, row.outer_class_index).is_ok_and(|outer| outer.0 == root) {
+            direct_rows += 1;
         }
         // Enum member rows are consumed by the class-source enum-family proof. They are outside
         // this ordinary construction/capture family and must not be admitted or reported as a
@@ -1336,6 +1340,14 @@ pub(crate) fn scan_family_root(
     {
         return Ok(FamilyRootScan::Refused(
             "selected member also has a conflicting static InnerClasses row".to_owned(),
+        ));
+    }
+    if static_candidate
+        .as_ref()
+        .is_some_and(|selected| selected.access_flags & 0x0400 != 0 && direct_rows != 1)
+    {
+        return Ok(FamilyRootScan::Refused(
+            "declaration-only static abstract member requires one direct child row".to_owned(),
         ));
     }
     Ok(candidate
