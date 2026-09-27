@@ -74,3 +74,33 @@ java -Xverify:all -cp /tmp/jarde-cf16-jarde-final SharedFinallyCallRunner
 ```
 
 `p3_shared_catchall_finally` 定向测试还检查完整输出含两个字面量 return、唯一具名 catch/cleanup、无 bytecode fallback，且 source map 覆盖 `handled` 全部 24 个物理 BCI：`0,1,4,5,8,11,12,14,17,18,20,21,24,25,26,27,29,30,33,34,35,36,39,40`。同一测试把异常行交换、把 try 的 catch-all 保护终点扩至 24，并把一份清理调用改指向另一个真实 `static void other()`；均拒绝 finally 恢复。另一个 Java 8 样本 `SharedFinallyExtraReturn` 在 try 内加入提前返回，也被拒绝。额外返回样本经 `java -Xverify:all` 输出 `early:1 / normal:1 / caught:1`。`other()` 目标样本先由源码编译，再把 catch 副本的 `invokestatic #25 cleanup:()V` 改为 `#13 other:()V`；修改后的 class 经 `java -Xverify:all` 输出 `normal:1 / caught:2`。交换行与扩围行的字节码也分别通过 `-Xverify:all`，拒绝属于恢复证书而非验证器失败。Guard 单测另覆盖缺行/handler 变化、预算耗尽与取消传播。
+
+## 字段型三副本恢复验收
+
+本次字段切片复用同一共享 finally 证书。`SharedFinally.handled` 的三份清理 span 分别是 `[21,29)`、`[35,43)`、`[46,54)`；逐份检查 `getstatic` 和 `putstatic` 的完整静态字段身份、相同 `int` 常量、`iadd` 操作码 `0x60`，以及字段读值、常量和加法结果各自唯一的 SSA 消费者。三条异常行、两处保存返回及 handler 原异常重抛仍由原证书认领。只有首份清理 span 构成一条 `finally` 语句，其余物理 BCI 与三条异常行均作为来源保留。`p3_shared_catchall_finally` 的字段正例核完整 `handled` 无 `@bytecode`，source map 恰好覆盖全部 33 个物理 BCI：`0,1,4,5,8,11,12,14,17,18,20,21,24,25,26,29,30,31,32,34,35,38,39,40,43,44,45,46,49,50,51,54,55`。
+
+当前 Jarde 生成的完整类冻结于 `jarde-field-after/SharedFinally.java`。三份完整 Java 8 类源码分别 `javac --release 8 -g:none -Xlint:-options` 重编，并以 `java -Xverify:all` 执行：
+
+| 来源 | 正常路径 | 具名 catch 路径 |
+| --- | --- | --- |
+| 原 `SharedFinally.java` | `normal:1` | `caught:1` |
+| 固定 JADX 完整源码 | `normal:2` | `caught:1` |
+| 当前 Jarde 完整源码 | `normal:1` | `caught:1` |
+
+从仓库根目录重放（每个输出目录独立，防止同名 class 串用）：
+
+```sh
+javac --release 8 -g:none -Xlint:-options -d /tmp/jarde-cf16-field-original tests/fixtures/p3-shared-catchall-finally/SharedFinally.java tests/fixtures/p3-shared-catchall-finally/SharedFinallyRunner.java
+java -Xverify:all -cp /tmp/jarde-cf16-field-original SharedFinallyRunner
+javac --release 8 -g:none -Xlint:-options -d /tmp/jarde-cf16-field-jadx tests/fixtures/p3-shared-catchall-finally/jadx/sources/defpackage/SharedFinally.java tests/fixtures/p3-shared-catchall-finally/jadx/JadxRunner.java
+java -Xverify:all -cp /tmp/jarde-cf16-field-jadx defpackage.JadxRunner
+javac --release 8 -g:none -Xlint:-options -d /tmp/jarde-cf16-field-jarde tests/fixtures/p3-shared-catchall-finally/jarde-field-after/SharedFinally.java tests/fixtures/p3-shared-catchall-finally/SharedFinallyRunner.java
+java -Xverify:all -cp /tmp/jarde-cf16-field-jarde SharedFinallyRunner
+```
+
+负例把 `SharedFinallyOtherField` catch 副本的字段读从 `#7 cleanupCount:I` 改为真实的 `#24 otherCount:I`，把原类 catch 副本的 `iconst_1` 改为 `iconst_2`，并将原类 try catch-all 行终点从 21 扩到 29；每次只改一项，三个变异类均由 `java -Xverify:all` 加载/执行并被恢复证书拒绝。另一个 `mid-entry/SharedFinally.class` 由同目录 `MidEntryPatch.java` 在首份字段读后插入进入 `iconst_1` 的显式 `goto`，JDK ASM 重算帧；`Class.forName` 在 `-Xverify:all` 下通过，证书仍拒绝跨块清理。生成命令使用本机 JDK 的内部 ASM，仅用于冻结测试类：
+
+```sh
+javac --add-exports java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED --add-exports java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED -d /tmp/jarde-cf16-patcher tests/fixtures/p3-shared-catchall-finally/mid-entry/MidEntryPatch.java
+java --add-exports java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED --add-exports java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED -cp /tmp/jarde-cf16-patcher MidEntryPatch tests/fixtures/p3-shared-catchall-finally/v8/SharedFinally.class tests/fixtures/p3-shared-catchall-finally/mid-entry/SharedFinally.class
+```

@@ -6275,7 +6275,7 @@ pub(crate) fn build(
         switch_depth: 0,
         finally_span: None,
         finally_return: None,
-        shared_call_finally: None,
+        shared_finally: None,
     };
     if let Some(reason) = builder.declarations.incomplete.get(&Vec::new()).cloned() {
         // An access outside every claimed region has no narrower complete closure. Refuse the
@@ -7028,16 +7028,16 @@ struct Builder<'a> {
     finally_return: Option<(u32, u32)>,
     /// The one synthetic Region::Try nested in a proved shared catch-all guard. Its two child
     /// bodies use different physical slices and saved returns, but emit one existing Try AST.
-    shared_call_finally: Option<SharedCallFinallyBuild>,
+    shared_finally: Option<SharedFinallyBuild>,
 }
 
 #[derive(Clone)]
-struct SharedCallFinallyBuild {
+struct SharedFinallyBuild {
     path: RegionPath,
     protected: (u32, u32),
     catch_body: (u32, u32),
     returns: [(u32, u32); 2],
-    normal_cleanup: u32,
+    normal_cleanup: (u32, u32),
     facts: Vec<u32>,
 }
 
@@ -9922,7 +9922,7 @@ impl Builder<'_> {
         self.switch_depth = checkpoint.switch_depth;
         self.finally_span = None;
         self.finally_return = None;
-        self.shared_call_finally = None;
+        self.shared_finally = None;
     }
 
     /// Build the two-test early return as one statement. The separate tail remains owned by the
@@ -12791,7 +12791,7 @@ impl Builder<'_> {
                         }
                         pushed
                     }
-                    guard::Shape::SharedCallFinally {
+                    guard::Shape::SharedFinally {
                         catch_body,
                         normal_cleanup,
                         returns,
@@ -12826,7 +12826,7 @@ impl Builder<'_> {
                         }
                         let nested_path = child(path, 0);
                         let mark = self.stmts.len();
-                        self.shared_call_finally = Some(SharedCallFinallyBuild {
+                        self.shared_finally = Some(SharedFinallyBuild {
                             path: nested_path.clone(),
                             protected: plan.body(),
                             catch_body: *catch_body,
@@ -12835,7 +12835,7 @@ impl Builder<'_> {
                             facts: plan.facts().to_vec(),
                         });
                         let built = self.region(inner, &nested_path);
-                        self.shared_call_finally = None;
+                        self.shared_finally = None;
                         if let Err(stop) = built {
                             self.restore_finally(
                                 finally_checkpoint
@@ -12871,7 +12871,7 @@ impl Builder<'_> {
                 catches,
             } => {
                 let shared = self
-                    .shared_call_finally
+                    .shared_finally
                     .as_ref()
                     .filter(|shared| shared.path == *path)
                     .cloned();
@@ -12988,7 +12988,7 @@ impl Builder<'_> {
                     for bci in &shared.facts {
                         origin = origin.plus_derived(Origin::derived(*bci));
                     }
-                    Some(self.body_range((shared.normal_cleanup, shared.normal_cleanup + 1))?)
+                    Some(self.body_range(shared.normal_cleanup)?)
                 } else {
                     None
                 };
@@ -14872,7 +14872,7 @@ impl Builder<'_> {
         };
         let instructions: Vec<SsaInstruction> = names.instructions().to_vec();
         for instruction in &instructions {
-            if self.shared_call_finally.is_some()
+            if self.shared_finally.is_some()
                 && self
                     .finally_return
                     .is_some_and(|(save, _)| save == instruction.bci())
@@ -14886,7 +14886,7 @@ impl Builder<'_> {
                 .iter()
                 .any(|instruction| instruction.bci() == save)
         {
-            let returned = if self.shared_call_finally.is_some() {
+            let returned = if self.shared_finally.is_some() {
                 self.shared_saved_return(save, return_bci)
             } else {
                 self.guarded_return(return_bci)

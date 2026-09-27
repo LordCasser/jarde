@@ -6,6 +6,11 @@ use std::slice;
 
 const CALL: &[u8] =
     include_bytes!("fixtures/p3-shared-catchall-finally/v8/SharedFinallyCall.class");
+const FIELD: &[u8] = include_bytes!("fixtures/p3-shared-catchall-finally/v8/SharedFinally.class");
+const OTHER_FIELD: &[u8] =
+    include_bytes!("fixtures/p3-shared-catchall-finally/v8/SharedFinallyOtherField.class");
+const MID_ENTRY: &[u8] =
+    include_bytes!("fixtures/p3-shared-catchall-finally/mid-entry/SharedFinally.class");
 const EXTRA_RETURN: &[u8] =
     include_bytes!("fixtures/p3-shared-catchall-finally/v8/SharedFinallyExtraReturn.class");
 const OTHER_TARGET: &[u8] =
@@ -98,6 +103,43 @@ fn shared_call_has_one_source_finally_and_all_physical_origins() {
 }
 
 #[test]
+fn shared_field_has_one_source_finally_and_all_physical_origins() {
+    let report = source(FIELD, "SharedFinally");
+    let method = handled(&report);
+    let text = &method.text;
+    assert!(
+        text.contains("catch (java.lang.IllegalArgumentException"),
+        "{text}"
+    );
+    assert!(text.contains("return \"normal\";"), "{text}");
+    assert!(text.contains("return \"caught\";"), "{text}");
+    assert_eq!(text.matches("} finally {").count(), 1, "{text}");
+    assert_eq!(
+        text.matches("cleanupCount = SharedFinally.cleanupCount + 1;")
+            .count(),
+        1,
+        "{text}"
+    );
+    assert!(!text.contains("@bytecode"), "{text}");
+    let ClassSourceOutcome::Recovered { report, .. } = &method.outcome else {
+        panic!("handled recovered: {:?}", method.outcome);
+    };
+    let origins: BTreeSet<u32> = report
+        .source_map
+        .segments()
+        .iter()
+        .flat_map(|segment| segment.origin().bcis())
+        .collect();
+    assert_eq!(
+        origins,
+        BTreeSet::from([
+            0, 1, 4, 5, 8, 11, 12, 14, 17, 18, 20, 21, 24, 25, 26, 29, 30, 31, 32, 34, 35, 38, 39,
+            40, 43, 44, 45, 46, 49, 50, 51, 54, 55,
+        ])
+    );
+}
+
+#[test]
 fn changed_rows_targets_or_extra_completion_cannot_claim_one_finally() {
     let named = [0, 4, 0, 21, 0, 26, 0, 13];
     let try_any = [0, 4, 0, 21, 0, 35, 0, 0];
@@ -130,4 +172,91 @@ fn changed_rows_targets_or_extra_completion_cannot_claim_one_finally() {
             "{case}: {text}"
         );
     }
+}
+
+#[test]
+fn changed_field_increment_or_protection_cannot_claim_one_finally() {
+    // The extra field is a real static int in the frozen class. Only the catch
+    // copy's read changes; its write still targets cleanupCount.
+    let changed_field = replace_once(
+        OTHER_FIELD,
+        &[0x4d, 0xb2, 0, 7, 0x04, 0x60, 0xb3, 0, 7],
+        &[0x4d, 0xb2, 0, 24, 0x04, 0x60, 0xb3, 0, 7],
+    );
+    let changed_increment = replace_once(
+        FIELD,
+        &[0x4d, 0xb2, 0, 7, 0x04, 0x60, 0xb3, 0, 7],
+        &[0x4d, 0xb2, 0, 7, 0x05, 0x60, 0xb3, 0, 7],
+    );
+    let try_any = [0, 4, 0, 21, 0, 45, 0, 0];
+    let widened = replace_once(FIELD, &try_any, &[0, 4, 0, 29, 0, 45, 0, 0]);
+    for (case, bytes, class) in [
+        ("field", changed_field, "SharedFinallyOtherField"),
+        ("increment", changed_increment, "SharedFinally"),
+        ("widened", widened, "SharedFinally"),
+        ("mid_entry", MID_ENTRY.to_vec(), "SharedFinally"),
+    ] {
+        let report = source(&bytes, class);
+        let text = &handled(&report).text;
+        assert!(!text.contains("} finally {"), "{case}: {text}");
+        assert!(
+            text.contains("@bytecode") || text.contains("stopped"),
+            "{case}: {text}"
+        );
+    }
+}
+
+#[test]
+fn field_candidate_budget_and_cancellation_publish_no_partial_finally() {
+    let engine = Engine::new();
+    let mut opening = task_budget(&[]).expect("bounded defaults");
+    let snapshot = engine
+        .open(ArtifactInput::bytes(FIELD.to_vec()), &mut opening)
+        .expect("field class opens");
+    let request = ClassSourceRequest {
+        class: ClassRef::Name {
+            class: ClassNameQuery::internal("SharedFinally"),
+        },
+        environment: EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::SingleClass,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        },
+    };
+    let mut limits = task_limits(&[]).expect("bounded defaults");
+    limits.analysis_steps = 1;
+    let stopped = engine
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut Budget::new(limits),
+        )
+        .expect("budget stop is reported");
+    if let OperationOutcome::Performed(report) = stopped {
+        assert!(
+            !report
+                .methods
+                .iter()
+                .any(|method| method.text.contains("} finally {"))
+        );
+    }
+
+    let cancellation = CancellationToken::new();
+    cancellation.cancel();
+    let stopped = engine
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut Budget::with_cancellation_token(task_limits(&[]).unwrap(), cancellation),
+        )
+        .expect("cancellation is reported");
+    assert!(matches!(stopped, OperationOutcome::Incomplete(_)));
 }
