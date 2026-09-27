@@ -8,4 +8,4 @@
 
 - [x] 2.1 原/JADX/Jarde 完整 Java 8 类重编、`java -Xverify:all` 三行同为 `4 / 13 / 11`，`run` 无 `@bytecode`，局部 BCI、循环更新与外层 `+10` 各有唯一来源。
 - [x] 2.2 重放已验收 CF-08 纯双网关、CF-07/09 和相关 if/loop 测试；原 `NotIndexedLoop` 带效果双出口仍拒绝，不把它混入本修复。
-- [ ] 2.3 运行 fmt、crate check、`git diff --check`、`openspec validate recover-loop-arm-join-continuation --strict`，记录合并态结果并清理 Cargo 构建残留。
+- [x] 2.3 运行 fmt、crate check、`git diff --check`、`openspec validate recover-loop-arm-join-continuation --strict`，记录合并态结果并清理 Cargo 构建残留。
