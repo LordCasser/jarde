@@ -5100,11 +5100,14 @@ fn prove_short_circuit_value(
         }
     }
 
+    let int_return = return_type == Some(&Type::Int);
     let producer = |block: &CanonicalBlockId, names: &jarde_jvm::method_ir::SsaBlock, expected| {
         let (first, tail) = names.instructions().split_first()?;
-        if !matches!(operations.get(first.bci()), Some(Operation::Push(ConstantValue::Int(value))) if *value == expected)
+        if !matches!(operations.get(first.bci()), Some(Operation::Push(ConstantValue::Int(value))) if int_return || *value == expected)
             || !tail.iter().all(|instruction| {
                 matches!(operations.get(instruction.bci()), Some(Operation::Transfer))
+                    && instruction.reads().is_empty()
+                    && instruction.writes().is_empty()
             })
         {
             return None;
@@ -5379,7 +5382,10 @@ fn prove_short_circuit_value(
             ));
         }
         (0xac, Some(Operation::Return))
-            if return_type == Some(&Type::Boolean) && consumer_ssa.instructions().len() == 1 =>
+            if matches!(return_type, Some(Type::Boolean | Type::Int))
+                && consumer_ssa.instructions().len() == 1
+                && first_consumer.writes().is_empty()
+                && (return_type != Some(&Type::Int) || outgoing.get(consumer).is_none()) =>
         {
             ShortCircuitConsumer::Return
         }
@@ -10025,11 +10031,13 @@ impl Builder<'_> {
                 "the short-circuit Phi at BCI {at} has no Java integer conditional type"
             )));
         }
-        // `prove_short_circuit_value` has already established the exact 1/0 leaves and that
-        // this Phi has one typed Boolean consumer. Reuse the same evaluation-order-preserving
-        // projection at every proved Boolean sink; callers with other integer values never
-        // reach this point with a successful proof.
-        let expression = if let Some(projected) =
+        // Only the 1/0 Boolean sinks may fold the conditional into a Boolean expression.
+        // A proved int return retains both literal values and the original test order.
+        let int_return =
+            proof.consumer == ShortCircuitConsumer::Return && self.return_type == Some(Type::Int);
+        let expression = if int_return {
+            expression
+        } else if let Some(projected) =
             self.shared_tail_short_circuit_expression(region, &expression)?
         {
             projected
@@ -10221,9 +10229,9 @@ impl Builder<'_> {
                 (value, kind)
             }
         };
-        if value.presented != Some(Type::Boolean) {
+        if value.presented != Some(if int_return { Type::Int } else { Type::Boolean }) {
             return Err(ConditionalValueBuildError::Refused(format!(
-                "the short-circuit consumer value at BCI {at} is not a Java boolean"
+                "the short-circuit consumer value at BCI {at} has no proved Java type"
             )));
         }
         let mut origin = OriginSet::new(Origin::direct(at));
@@ -23604,6 +23612,10 @@ mod tests {
     const MIXED_SHORT_CIRCUIT_INT_RETURN_FIXTURE: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-conditional-values/mixed-short-circuit-int-return/MixedIntReturn.class"
     );
+    const CF04_NESTED_INT_FIXTURE: &[u8] =
+        include_bytes!("../../../tests/fixtures/cf04-nested-int/cf04/TernaryCases.class");
+    const CF04_NESTED_INT_NEGATIVE_FIXTURE: &[u8] =
+        include_bytes!("../../../tests/fixtures/cf04-nested-int/cf04/Negative.class");
     const MIXED_SHORT_CIRCUIT_ARGUMENT_FIXTURE: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-conditional-values/mixed-short-circuit-argument/MixedBooleanArgument.class"
     );
@@ -23890,6 +23902,8 @@ mod tests {
                 2
             } else if descriptor == "(II)Z" {
                 2
+            } else if descriptor == "(ZZZ)I" {
+                3
             } else if descriptor == "(ILjava/lang/StringBuilder;)I" {
                 2
             } else if descriptor == "(ILNestedType$Left;LNestedType$Right;)Ljava/lang/Object;" {
@@ -24493,7 +24507,7 @@ mod tests {
     }
 
     #[test]
-    fn the_same_ireturn_in_an_int_method_cannot_claim_boolean_value() {
+    fn an_int_ireturn_preserves_its_literal_values() {
         let (region, _, _, _, report, attempt) = fixture_value_attempts(
             MIXED_SHORT_CIRCUIT_INT_RETURN_FIXTURE,
             "value",
@@ -24504,9 +24518,80 @@ mod tests {
             matches!(region, Region::ShortCircuitValue { .. }),
             "{region:?}"
         );
+        assert!(
+            matches!(attempt, ShortCircuitValueAttempt::Proved(_)),
+            "{attempt:?}"
+        );
+        assert_eq!(
+            report.quality,
+            jarde_jvm::ir::Quality::Structured,
+            "{}",
+            report.text
+        );
+        assert!(report.text.contains("return "), "{}", report.text);
+        assert!(report.text.contains("?"), "{}", report.text);
+        for bci in [0, 1, 4, 7, 10, 13, 16, 17, 20, 21] {
+            assert!(
+                !report.source_map.of_bci(bci).is_empty(),
+                "unmapped {bci}: {}",
+                report.text
+            );
+        }
+    }
+
+    #[test]
+    fn cf04_nested_int_return_has_one_closed_value_and_physical_origin() {
+        let (region, _, _, _, report, attempt) =
+            fixture_value_attempts(CF04_NESTED_INT_FIXTURE, "nested", "(ZZZ)I", None);
+        let Region::ShortCircuitValue {
+            tests,
+            consumer_bci,
+            ..
+        } = &region
+        else {
+            panic!("the nested chain has no shared value region: {region:?}");
+        };
+        assert_eq!(
+            tests.iter().map(|(_, bci)| *bci).collect::<Vec<_>>(),
+            [1, 5, 12]
+        );
+        assert_eq!(*consumer_bci, 20);
+        let ShortCircuitValueAttempt::Proved(proof) = attempt else {
+            panic!("the integer return has no closed proof: {attempt:?}");
+        };
+        assert_eq!(proof.consumer, ShortCircuitConsumer::Return);
+        assert_ne!(proof.true_producer, proof.false_producer);
+        assert_eq!(
+            report.quality,
+            jarde_jvm::ir::Quality::Structured,
+            "{}",
+            report.text
+        );
+        assert_eq!(report.text.matches("return ").count(), 1, "{}", report.text);
+        assert!(report.text.contains("? 1 : 2"), "{}", report.text);
+        for bci in [1, 5, 12, 15, 16, 19, 20] {
+            assert!(
+                !report.source_map.of_bci(bci).is_empty(),
+                "unmapped {bci}: {}",
+                report.text
+            );
+        }
+    }
+
+    #[test]
+    fn cf04_int_return_refuses_a_non_literal_producer() {
+        let non_literal = replace_one_bytecode_sequence(
+            CF04_NESTED_INT_FIXTURE,
+            &[0x04, 0xa7, 0x00, 0x04, 0x05, 0xac],
+            &[0x04, 0xa7, 0x00, 0x04, 0x1c, 0xac],
+        );
+        let (original_region, _, _, _, _, _) =
+            fixture_value_attempts(CF04_NESTED_INT_FIXTURE, "nested", "(ZZZ)I", None);
+        let (_, _, _, _, report, attempt) =
+            fixture_value_attempts(&non_literal, "nested", "(ZZZ)I", Some(&original_region));
         assert_eq!(
             attempt,
-            ShortCircuitValueAttempt::Refused(ShortCircuitValueRefusal::Consumer)
+            ShortCircuitValueAttempt::Refused(ShortCircuitValueRefusal::Producer)
         );
         assert_eq!(
             report.quality,
@@ -24514,11 +24599,45 @@ mod tests {
             "{}",
             report.text
         );
-        assert!(!report.text.contains("return "), "{}", report.text);
-        for bci in [0, 1, 4, 7, 10, 13, 16, 17, 20, 21] {
+        for bci in [15, 19, 20] {
             assert!(
                 !report.source_map.of_bci(bci).is_empty(),
                 "unmapped {bci}: {}",
+                report.text
+            );
+        }
+    }
+
+    #[test]
+    fn cf04_int_return_refuses_extra_consumer_and_handler_edges() {
+        let (original_region, _, _, _, _, _) =
+            fixture_value_attempts(CF04_NESTED_INT_FIXTURE, "nested", "(ZZZ)I", None);
+        for (name, return_bci) in [("extraConsumer", 24), ("protectedReturn", 23)] {
+            let (region, _, _, _, report, attempt) = fixture_value_attempts(
+                CF04_NESTED_INT_NEGATIVE_FIXTURE,
+                name,
+                "(ZZZ)I",
+                (name == "extraConsumer").then_some(&original_region),
+            );
+            assert!(
+                !matches!(attempt, ShortCircuitValueAttempt::Proved(_)),
+                "{name}: a non-unique consumer or exception edge was admitted: {region:?}"
+            );
+            if name == "extraConsumer" {
+                assert_eq!(
+                    attempt,
+                    ShortCircuitValueAttempt::Refused(ShortCircuitValueRefusal::Consumer)
+                );
+            }
+            assert_eq!(
+                report.quality,
+                jarde_jvm::ir::Quality::Fallback,
+                "{name}: {}",
+                report.text
+            );
+            assert!(
+                !report.source_map.of_bci(return_bci).is_empty(),
+                "{name}: {}",
                 report.text
             );
         }
