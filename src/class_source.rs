@@ -587,6 +587,9 @@ pub struct ClassSourceReport {
     /// A separately proved direct member annotation. Its child remains a physical report even
     /// when the owner's assembled source contains the declaration.
     pub nested_annotation_family: ClassSourceNestedAnnotationFamily,
+    /// The bounded anonymous-interface expression projection, with ranges in `text` and anchors
+    /// to the physical root/child method sites that supplied each generated expression.
+    pub anonymous_interface_projection: ClassSourceAnonymousInterfaceProjection,
     /// Same-run class-level bridge admission results. These are adapter evidence for the
     /// subsequent source projection and remain visible beside the physical method records.
     #[doc(hidden)]
@@ -735,6 +738,18 @@ pub enum ClassSourceNestedAnnotationProjection {
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case")]
+pub enum ClassSourceAnonymousInterfaceProjection {
+    Absent,
+    Refused {
+        reason: String,
+    },
+    Projected {
+        derived: Vec<MemberFamilyDerivedProjection>,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case")]
 pub enum ClassSourceMemberProjection {
     Refused {
         reason: String,
@@ -773,6 +788,7 @@ pub enum MemberFamilyDerivedKind {
     HiddenConstructorParameter,
     HiddenCaptureWrite,
     HiddenOuterSuperBridge,
+    NestedAnonymousExpression,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -6262,6 +6278,14 @@ impl ClassSourceMethod {
     /// declaration and annotations come from its own selected physical class; `body` is emitted
     /// from that method's same-run AST at the corresponding nested indentation.
     pub(crate) fn anonymous_projection_text(&self, body: &str) -> Option<String> {
+        self.anonymous_projection_text_at(body, 3)
+    }
+
+    pub(crate) fn anonymous_projection_text_at(
+        &self,
+        body: &str,
+        declaration_indent: usize,
+    ) -> Option<String> {
         let declaration = self.declaration.as_ref()?;
         // Java 8 anonymous bodies cannot declare static methods; bridge and synthetic methods
         // are physical implementation artifacts rather than source declarations.
@@ -6286,18 +6310,52 @@ impl ClassSourceMethod {
             return None;
         }
         let mut text = String::new();
+        let indentation = "    ".repeat(declaration_indent);
         for annotation in &self.annotations.uses {
-            text.push_str("            ");
+            text.push_str(&indentation);
             text.push_str(annotation);
             text.push('\n');
         }
-        text.push_str(&format!("            {declaration} {{\n"));
+        text.push_str(&format!("{indentation}{declaration} {{\n"));
         text.push_str(body);
-        text.push_str("            }\n");
+        text.push_str(&indentation);
+        text.push_str("}\n");
         Some(text)
     }
 
     pub(crate) fn anonymous_return_projection_text(&self, body: &str) -> Option<String> {
+        self.anonymous_return_projection_parts(body, 1)
+            .map(|(text, _)| text)
+    }
+
+    pub(crate) fn anonymous_return_projection(
+        &self,
+        body: &jarde_java::report::ClassSourceAnonymousReturn,
+        anchors: Vec<MemberFamilyPhysicalAnchor>,
+    ) -> Option<MemberFamilyMethodText> {
+        let (text, body_start) = self.anonymous_return_projection_parts(&body.text, 1)?;
+        let start = body_start.checked_add(body.expression_range.start)?;
+        let end = body_start.checked_add(body.expression_range.end)?;
+        if start >= end || text.get(start..end)? != body.text.get(body.expression_range.clone())? {
+            return None;
+        }
+        Some(MemberFamilyMethodText {
+            index: self.item.index,
+            text,
+            derived: vec![MemberFamilyDerivedProjection {
+                kind: MemberFamilyDerivedKind::NestedAnonymousExpression,
+                start,
+                end,
+                anchors,
+            }],
+        })
+    }
+
+    fn anonymous_return_projection_parts(
+        &self,
+        body: &str,
+        declaration_indent: usize,
+    ) -> Option<(String, usize)> {
         let declaration = self.declaration.as_ref()?;
         if !self.markers.is_empty()
             || !self.parameter_annotations.refusals.is_empty()
@@ -6319,15 +6377,18 @@ impl ClassSourceMethod {
             return None;
         }
         let mut text = String::new();
+        let indentation = "    ".repeat(declaration_indent);
         for annotation in &self.annotations.uses {
-            text.push_str("    ");
+            text.push_str(&indentation);
             text.push_str(annotation);
             text.push('\n');
         }
-        text.push_str(&format!("    {declaration} {{\n"));
+        text.push_str(&format!("{indentation}{declaration} {{\n"));
+        let body_start = text.len();
         text.push_str(body);
-        text.push_str("    }\n");
-        Some(text)
+        text.push_str(&indentation);
+        text.push_str("}\n");
+        Some((text, body_start))
     }
 
     /// One member whose declaration carries no `Code` attribute: the declaration Java spells for it
@@ -7130,6 +7191,54 @@ pub(crate) fn source_text_with_nested_declaration(
     )
     .expect("nested enum source writer has no member-family ranges to translate");
     (text, derived)
+}
+
+/// Rebuild one ordinary root source unit with staged method text and translate its physical spans.
+/// This intentionally accepts only a root the ordinary writer reproduces exactly; class-family or
+/// initializer projections need their own combined certificate and are refused here.
+pub(crate) fn source_text_with_method_projections(
+    root: &ClassSourceReport,
+    method_texts: &[MemberFamilyMethodText],
+) -> Option<(String, Vec<MemberFamilyDerivedProjection>)> {
+    let declaration = root.declaration.as_ref()?;
+    let context = ClassSourceTextContext {
+        initializer_field_order: None,
+        declared_methods: u64::try_from(root.methods.len()).ok()?,
+        member_table: None,
+        execution: &root.execution,
+        enum_projection: None,
+        array_helper_indices: None,
+        array_method_texts: None,
+        array_helper_markers: None,
+    };
+    if source_text(declaration, &root.fields, &root.methods, &context) != root.text {
+        return None;
+    }
+    let mut derived = Vec::new();
+    let text = source_text_with_member(
+        declaration,
+        &root.fields,
+        &root.methods,
+        &context,
+        None,
+        method_texts,
+        None,
+        &mut derived,
+    )?;
+    let expected = method_texts
+        .iter()
+        .map(|method| method.derived.len())
+        .sum::<usize>();
+    if derived.len() != expected
+        || derived.iter().any(|entry| {
+            entry.start >= entry.end
+                || text.get(entry.start..entry.end).is_none()
+                || entry.anchors.is_empty()
+        })
+    {
+        return None;
+    }
+    Some((text, derived))
 }
 
 /// A family source unit is assembled from physical member records, with only certified body
