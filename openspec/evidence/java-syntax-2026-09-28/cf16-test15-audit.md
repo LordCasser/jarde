@@ -39,7 +39,7 @@ jadx --no-res --single-class trycatch.TestTryCatchFinally15 \
 
 ## Java 8 classfile 对照
 
-smali 测试输入不能直接交给 Jarde（其恢复入口接收 JVM classfile）。为验证这个语义而非伪称 DEX 等于 classfile，我按注释中的方法结构制作了仅用于审计的 Java 8 等价样本：保留具名 RuntimeException catch、其内部输出 Parcel 清理、外层输入 Parcel finally；`Parcel`/`IBinder`/`RemoteException` 为可记录事件的最小 stub。用本机 `javac --release 8 -g:none -Xlint:-options` 编译后，目标 JVM 异常表仍是典型三行几何（BCI 不同于 DEX）：
+smali 测试输入不能直接交给 Jarde（其恢复入口接收 JVM classfile）。可重复的 Java 8 等价样本现保存在 [`cf16-test15-equivalent/`](cf16-test15-equivalent/README.md)：[目标源码](cf16-test15-equivalent/original/TestTryCatchFinally15.java)、[Android stub](cf16-test15-equivalent/original/android/os/)、[五路径 runner](cf16-test15-equivalent/probe/Runner.java)、[期望输出](cf16-test15-equivalent/expected/)及[完整 replay 脚本](cf16-test15-equivalent/replay.sh)。它保留具名 RuntimeException catch、其内部输出 Parcel 清理和外层输入 Parcel finally；BCI 与 DEX 不同，异常表冻结为：
 
 ```text
 from 4 to 25 target 32   Class java/lang/RuntimeException
@@ -47,38 +47,18 @@ from 4 to 25 target 41   any
 from 32 to 43 target 41  any
 ```
 
-该 classfile SHA-256 为 `f7114f29d3e5e5c927816705e9587787908262f16d8806effcdfbd7e1d6c82f5`。`java -Xverify:all` 原类结果：正常 `obtain;transact;read;in.recycle;return:out;`；transact 运行时异常为 `obtain;transact;out.recycle;in.recycle;throw:IllegalStateException:transact;`；checked RemoteException 为 `obtain;transact;in.recycle;throw:RemoteException:transact;`；readException 运行时异常为 `obtain;transact;read;out.recycle;in.recycle;throw:IllegalStateException:read;`。
+固定 Java 8 等价 class SHA-256 为 `880a6934faa48c317538cc37e4dc72c4d1130d8b50b4a78c0656a583565b4ba3`。`java -Xverify:all` 原类结果见 [`expected/original.txt`](cf16-test15-equivalent/expected/original.txt)：正常、transact 运行时异常、checked RemoteException 与 readException 运行时异常均能还原输入/输出 Parcel 清理顺序。
 
-对该 Java 8 classfile 运行固定 JADX CLI，得到的关键方法体与 smali 输出相同。为隔离其清理覆盖错误，我将这段发射方法体原样放进一个仅改名的 package-private adapter，并重用原样本 Parcel/Binder stub；adapter 用 Java 8 重编译且通过 `java -Xverify:all`。当输入 Parcel 的首次 `recycle()` 抛一次 `IllegalStateException` 时，原类日志为 `obtain;transact;read;in.recycle;throw:IllegalStateException:recycle;`，JADX 适配输出为 `obtain;transact;read;in.recycle;out.recycle;in.recycle;throw:IllegalStateException:recycle;`。这证明异常发生在 finally 清理调用本身时，JADX 将该调用放入保护范围会触发第二次清理；成功返回的普通路径仍只有一次清理。
+重放脚本直接对固定 smali 调用 pinned JADX，并由输出构造受控 adapter。adapter 只移除无关 blank-final 字段限制并增加 binder 构造器，脚本逐字核对 `test()` 方法体在 adapter 中保持不变。原与 JADX 结果分别见 [`expected/original.txt`](cf16-test15-equivalent/expected/original.txt) 和 [`expected/jadx.txt`](cf16-test15-equivalent/expected/jadx.txt)。当输入 Parcel 的首次 `recycle()` 抛一次 `IllegalStateException` 时，原类日志为 `obtain;transact;read;in.recycle;throw:IllegalStateException:recycle;`，JADX adapter 为 `obtain;transact;read;in.recycle;out.recycle;in.recycle;throw:IllegalStateException:recycle;`。异常发生在 finally 清理调用本身时，JADX 把该调用放进仍受保护区域会触发重复清理；正常成功返回仍只有一次清理。
 
-用当前主线 `d81df5235891feaf50a3ca9822d41ca2f336299c` 的 class-source 路径读取同一个 Java 8 classfile（单类输入，报告 class digest `4a8572a4715218ee84bae385b8c5060524cfb3c622872fce1aa128dd026e3da9`）。`test(ILTestTryCatchFinally15$Parcel;)LTestTryCatchFinally15$Parcel;` 没有发射语句，标记为 “explanation only”；正文指出 `local 3 crosses a quoted fallback region`。这是安全拒绝，不是一个能运行的 Jarde 重建；对该输出没有声称通过编译或语义对照。
-
-用于复放的核心命令为：
-
-```sh
-javac --release 8 -g:none -Xlint:-options -d "$RUN/original" \
-  "$RUN/TestTryCatchFinally15.java" "$RUN/Runner.java"
-java -Xverify:all -cp "$RUN/original" Runner cleanup
-
-"$JADX_BIN" --no-res --single-class TestTryCatchFinally15 \
-  -d "$RUN/jadx" "$RUN/original/TestTryCatchFinally15.class"
-# 以 decompiled test 方法体构造只改类名/类型限定符的 adapter，再运行：
-java -Xverify:all -cp "$RUN/jadx-adapter:$RUN/original" JadxRunner cleanup
-
-CARGO_TARGET_DIR=/private/tmp/jarde-cf16-test15-cargo-target \
-  CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS=1 cargo run --locked -q -p jarde-cli -- \
-  class-source --policy single-class --input "$RUN/original/TestTryCatchFinally15.class" \
-  --class TestTryCatchFinally15 --format text
-```
-
-这次 classfile 的完整 `javap -p -c -v` 输出 SHA-256 为 `32ff61e5fa147d771ebd72ad3fcfedfe8e86ac3ba7451d2f97ac9d30c10142d4`；固定 JADX 的 JVM 等价样本源码 SHA-256 为 `67d02546bef5b3fec800a7814b2d434bbdbed9fcbdac44c17a3fb34470528fd5`。所有样本、runner、编译产物和 CLI 报告都在 `/private/tmp/jarde-cf16-test15.*`；Jarde 专用 Cargo target 已用 `cargo clean` 清理。
+用主线 class-source 路径读取此 Java 8 classfile，目标 `test(ILandroid/os/Parcel;)Landroid/os/Parcel;` 没有发射语句，标记为 “explanation only”；正文指出 `local 3 crosses a quoted fallback region`。这是安全拒绝，不是一个能运行的 Jarde 重建；报告没有声称通过编译或语义对照。可重复命令为 `openspec/evidence/java-syntax-2026-09-28/cf16-test15-equivalent/replay.sh`；脚本用独立临时 Cargo target 并在退出时 `cargo clean`，默认删除生成目录，`KEEP_OUTPUTS=1` 才保留 Jarde 报告等中间输出。
 
 ## 当前 Guard / Region / Builder 接缝
 
-- [`guard.rs::prove_finally_copy`](/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/crates/jarde-java/src/guard.rs:2012) 的直线证书接受单条 catch-all 行；Test15 的 classfile 有三行，且有具名 RuntimeException handler 和覆盖 catch 正文的第二 catch-all，故此证书不是入口。
-- [`guard.rs::prove_conditional_finally`](/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/crates/jarde-java/src/guard.rs:2362) 更窄：必须恰好一条 catch-all 行、void 正常 return、两副本各为固定的一次判空/可选调用序列；与 Test15 的返回 Parcel + typed catch + catch-body cleanup 不同。
-- 最接近的证明接缝是三行 `SharedFinally`：[`shared_finally_candidate`](/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/crates/jarde-java/src/guard.rs:4093) 对三行会依次试 `prove_shared_join_finally` 与 [`prove_shared_finally`](/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/crates/jarde-java/src/guard.rs:3405)。两者要求三份配对清理；旧证书还只接受无参 static void 调用或受限 static int 增量（[`shared_cleanup_span` / `shared_cleanup_copies`](/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/crates/jarde-java/src/guard.rs:2562)），并要求两份正常副本有已保存返回或共同 transfer。Test15 是一份正常输入清理 + 一份 any handler 输入清理；catch 自身仅回收输出 Parcel 后抛出。因此既不能把 catch-body cleanup 当成 finally，也不是已有三副本完成形式。
-- [`region.rs::shared_finally_body`](/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/crates/jarde-java/src/region.rs:4328) 能为受证三行形态构造 typed try/catch 的有界正文；Builder 的 [`Shape::Finally` 分支](/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/crates/jarde-java/src/build.rs:12982) 能构造普通 catch-all finally，但只消费已证的 `Finally` 计划与完整结构化正文。Region/Builder 的 AST 承载物可复用，不能绕过前置 Guard 的异常行及完成证明。
+- [`guard.rs::prove_finally_copy`](../../../../crates/jarde-java/src/guard.rs:2012) 的直线证书接受单条 catch-all 行；Test15 的 classfile 有三行，且有具名 RuntimeException handler 和覆盖 catch 正文的第二 catch-all，故此证书不是入口。
+- [`guard.rs::prove_conditional_finally`](../../../../crates/jarde-java/src/guard.rs:2362) 更窄：必须恰好一条 catch-all 行、void 正常 return、两副本各为固定的一次判空/可选调用序列；与 Test15 的返回 Parcel + typed catch + catch-body cleanup 不同。
+- 最接近的证明接缝是三行 `SharedFinally`：[`shared_finally_candidate`](../../../../crates/jarde-java/src/guard.rs:4093) 对三行会依次试 `prove_shared_join_finally` 与 [`prove_shared_finally`](../../../../crates/jarde-java/src/guard.rs:3405)。两者要求三份配对清理；旧证书还只接受无参 static void 调用或受限 static int 增量（[`shared_cleanup_span` / `shared_cleanup_copies`](../../../../crates/jarde-java/src/guard.rs:2562)），并要求两份正常副本有已保存返回或共同 transfer。Test15 是一份正常输入清理 + 一份 any handler 输入清理；catch 自身仅回收输出 Parcel 后抛出。因此既不能把 catch-body cleanup 当成 finally，也不是已有三副本完成形式。
+- [`region.rs::shared_finally_body`](../../../../crates/jarde-java/src/region.rs:4328) 能为受证三行形态构造 typed try/catch 的有界正文；Builder 的 [`Shape::Finally` 分支](../../../../crates/jarde-java/src/build.rs:12982) 能构造普通 catch-all finally，但只消费已证的 `Finally` 计划与完整结构化正文。Region/Builder 的 AST 承载物可复用，不能绕过前置 Guard 的异常行及完成证明。
 
 ## 建议的最窄边界
 
