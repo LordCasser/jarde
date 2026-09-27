@@ -1,0 +1,93 @@
+{
+  "representation": "mixed",
+  "quality": "fallback",
+  "regions": [
+    {
+      "bci": 0,
+      "blocks": [
+        0,
+        4,
+        9
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "if",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 50,
+      "blocks": [
+        50
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "straight",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 11,
+      "blocks": [
+        11,
+        17,
+        26,
+        44,
+        35,
+        38
+      ],
+      "code": "jre_region_uncovered_blocks",
+      "message": "6 live block(s) are reachable only through edges the normal-flow view leaves out: [11, 17, 26, 44, 35, 38]",
+      "rule": null,
+      "structured": false
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "jre_region_uncovered_blocks",
+      "message": "6 live block(s) are reachable only through edges the normal-flow view leaves out: [11, 17, 26, 44, 35, 38]",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_recovery_produced",
+      "message": "3 region(s), 1 statement(s), 1 segment(s), 364 byte(s) written from 10 canonical block(s)",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_field_not_emitted",
+      "message": "the field access at BCI 45 passed field identity proof, but no matching Java field operation was emitted by the final body",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_field_accesses",
+      "message": "1 field instruction(s) read under field@1: 0 presented, 1 refused",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_enumswitch_shape",
+      "message": "the array read at BCI 28 was not presented: the array the read at BCI 28 indexes is produced at BCI 26, which is not a static field of this run's pool",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_enumswitch",
+      "message": "1 dispatch-table read(s) read under enumswitch@1: 0 presented as the table read the bytecode performs, 1 refused; the constants those entries stand for are the enum class's own declaration, which this run does not hold, so no `case T.CONST:` label is written",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_declaration",
+      "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+      "provenance": null,
+      "severity": "info"
+    }
+  ]
+}
