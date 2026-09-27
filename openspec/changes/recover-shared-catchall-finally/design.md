@@ -1,25 +1,25 @@
 ## Context
 
-`FinallyOnce.handled` 的异常表为 `[4,21)->31 IAE`、`[4,21)->65 any`、`[31,55)->65 any`。正常副本 21–26、具名 catch 正常副本 55–60、异常副本 66–71；正常返回先在 BCI 20 保存 slot 1，再从 29 读取/30 返回，catch 返回先在 54 保存 slot 2，再从 63 读取/64 返回，handler 在 65 保存原异常 slot 3，74 读取/75 重抛。同一个 catch-all handler 65 同时是 try 和具名 catch 的异常后继。slot 1 还被具名 catch 参数复用，其 SSA 定义不同；不能放宽词法局部范围来掩盖当前 `local 1 crosses a quoted fallback region`。
+见 `proposal.md`。冻结 `SharedFinallyCall.handled` 的异常行依 ordinal 为 0 `[4,21)→26 IAE`、1 `[4,21)→35 any`、2 `[26,30)→35 any`。正常路径 BCI 20 保存返回值、21 调用清理、24/25 读取并返回；具名 catch 路径 BCI 26 保存异常、29 保存另一返回值、30 调用清理、33/34 读取并返回；共用 handler BCI 35 保存原异常、36 调用清理、39/40 读取并重抛。slot 1 的正常返回与 catch 参数是不同定义。前缀 0–3 重置计数器，保护范围从 4 开始。
 
-现有 `guard.rs::prove_finally_copy` 在 1 条 catch-all、1 个正常返回和 1 个异常副本上证明 SSA 归一化、半开异常范围、保存值/同对象重抛；`Plan` 只有完整证明后才 Claim。结构化 `finally` 正文经受限子 Region 和已有 `Try.finally_body` 输出，暂存所有权再提交。当前多行竞争被明确拒绝。JADX `MarkFinallyVisitor` 的“先找 catch-all/scope，再比较每个出口的副本，最后抑制重复指令”可参考调查顺序；其 `DONT_GENERATE` 可变块和本例正常路径重复清理不能作为 Jarde 的证明或运行 oracle。
+现有 `prove_finally_copy` 只有一条异常行和一个正常返回，`Frame::own_finally` 与 `finally_edges_accounted` 也只记一条，`region_at` 先尝试具名 catch，Builder 的 finally 分支硬编码空 catches。此前可行性审计已确认不能通过放松单出口证书、扩张局部词法范围或仅修改输出修复。固定 JADX 在正常路径调用两次清理，因此只作语法参考，原 class 是行为 oracle。
 
 ## Goals / Non-Goals
 
-**Goals:** 仅在上述三行、三份清理和两条返回完成流的一一对应被完整证明时，输出一份 `try { … } catch (IAE e) { … } finally { cleanup(); }`；保留两条返回值快照、同一异常对象的重抛和每条路径一次清理。完整源码可用 Java 8 重编，Jarde 与原 class 正常/catch 计数一致。
+**Goals:** 为冻结调用形态建立一个私有原子证书，分别恢复 try `[4,21)` 和 catch `[26,30)` 的有界正文，复用现有 `Try` AST 输出一份 finally；两份返回值与原异常身份、每条路径清理一次以及物理来源完整闭合。
 
-**Non-Goals:** `escaping()` 的只有异常出口形态、原 `FinallyOnce.main()` 的资源误判、多个具名 catch/handler、循环或 switch 内 finally、任意覆盖/返回替代、跨 quoted fallback 的一般局部范围修复，以及沿用 JADX 的错误副本去重。
+**Non-Goals:** `SharedFinally` 的 `cleanupCount++` 三副本效果、`FinallyOnce.escaping()` 的只有异常出口、多个具名 catch、其他清理操作、循环/switch 中 finally、一般局部作用域修复、通用异常 IR 或新 AST。原 `FinallyOnce` 的其他方法继续独立记录。
 
 ## Decisions
 
-1. **先行证明三条异常行的优先级与半开边界。** 以物理 row ordinal、`start_pc/end_pc/handler_pc/catch_type` 匹配唯一具名 IAE 行及两条共享同一 catch-all handler 的范围；前者必须先于 try catch-all 覆盖 `[4,21)`，后者再精确覆盖具名 catch 正文 `[31,55)`。正常清理的任何可抛指令不得落入其对应 catch-all 的保护范围，避免清理再次被 handler 捕获。JVM 有效的扩围 `[0,23)->25` 反例必须继续拒绝，不能将真实两次清理折成一次。
-2. **对每个完成出口逐份比效果和值。** 用既有 SSA 归一化/Operation 身份、相同调用或字段目标、实参稳定性与顺序检查 21–26、55–60、66–71 清理等价；每个副本有唯一入口和完成后继，没有额外消费者/分支。正常返回的 slot 1 和 catch 返回的 slot 2 都在清理前保存，返回各自的同一 SSA 值；handler 保留并重抛进入它的同一异常对象。尤其区分复用的 slot 1 在具名 catch 的新 SSA 定义。任何额外行/边、值变化、不同目标或清理替代完成都拒绝。
-3. **只扩现有私有 Guard 证书和所有权提交。** 成功后将一个具名 catch、两个正常出口与共用 catch-all 作为同一 `Plan` 的完整 owned/facts 闭包；受保护 try/catch 正文用现有受限子 Region 恢复，不把异常清理复制进任一正常正文。Region 只能在证书通过、三个副本和所有 BCI 均被解释后一次性提交 visited；失败恢复 checkpoint，引用完整候选。现有 `Try` AST 同时容纳 catches 与 `finally_body`，无需新异常节点或独立后处理器。
-4. **优先用最小类族验收语义。** 独立 `handled`+计数器与外部 Runner 可让 catch 返回字面量，以免字符串拼接掩盖本项；应覆盖正常返回、具名 catch 返回、未匹配异常重抛和清理自身抛错覆盖原完成（后两者仅在相同有界形态可表达时纳入）。前两者必须三方 Java 8 全类重编验证运行，并单列固定 JADX 的正常路径重复清理差异。再回放原 `FinallyOnce`：若 `escaping/main` 仍引用，只声明 `handled` 恢复，不把整类误标已追平。证书须记录三条异常行，source map 覆盖三份副本和两个 saved-return 的物理 BCI；预算、取消原子停止。
+1. **整体证明三行，保留单出口证书原状。** 新私有证书要求 ordinal、半开范围、handler、catch 类型和行优先级同时匹配。三个清理副本各为一条相同目标的无参 `invokestatic cleanup()V`，按 SSA 使用关系证明两个 saved-return 在清理后原值返回，以及 handler 重抛最初收到的异常。每个副本只能有已证明入口；清理不能被对应 catch-all 再覆盖。这样不把字段读-加-写的可交换性误当成调用等价性。JADX 的副本查找顺序可参考，但其抑制重复语句和正常路径重复清理不能成为 Jarde 的所有权依据。
+2. **两个受限子 Region 共同拥有异常表。** 证书先形成完整的 try/catch/finally 物理集合及三条异常行，随后从 `[4,21)` 和 `[26,30)` 各恢复一份不交叠正文。Region 在候选证书通过后才选择该形态，避免既有具名 catch 优先分支截走入口。两个正文、两个返回副本、异常副本和计数器前缀均必须一次认领并有直接或派生来源；无法闭合就撤回整个候选。
+3. **复用 `Try`，在 Builder 中保留两份返回快照。** 在同一 checkpoint 内构造已有 `StmtKind::Try { body, catches, finally_body }`，而非新增节点。try 和 catch 正文分别保留原保存值与返回的定义/使用关系，catch 参数不得与正常返回的 slot 1 合并。唯一清理语句放入 finally。任何局部声明、source map、预算或取消失败都原子回滚。
+4. **用完整类和原 class 验收。** 冻结 `SharedFinallyCall`、Runner、字节码与三方基线；分别重编原/JADX/Jarde 完整 Java 8 类并 `java -Xverify:all`。Jarde 正常/catch 返回与计数须等于原 class 的 `normal:1 / caught:1`，且 `handled` 不含引用。JADX 的 `normal:2` 单列。加入扩围 catch-all、row/handler 改动、副本额外入口/目标差异、返回或重抛关系不闭合、预算/取消的拒绝回归；不把未覆盖的 `FinallyOnce` 方法记为已恢复。
 
 ## Risks / Trade-offs
 
-- [把 catch 正文副本当成 try 正文或丢失具名 catch 优先级] → 按 row ordinal 与半开范围证明每条真实异常边，两个保护区和 handler owner 必须闭合。
-- [在清理后重新计算返回或丢失原异常] → SSA 证明两条 saved value/return 和 handler 同对象 rethrow，并用副作用计数运行对照。
-- [JADX 可编译但清理重复] → 以原 class 为语义 oracle，固定 JADX 保留为有记录的差异，不作为等价断言。
-- [多出口子 Region 部分认领] → 先暂存完整 Guard/Region/Builder 状态，未闭合时回退为原物理引用。
+- [具名 catch 优先级或共享 handler 被错误折叠] → 三行 ordinal、两个半开范围及每条异常边共同证明；失败保留整体引用。
+- [slot 1 复用导致错误返回或局部穿越] → 两条返回分别按物理定义/使用追溯，catch 参数另设作用域。
+- [清理调用在正常路径重复或被丢弃] → 三份副本分别归属，运行计数以原 class 为准，并核 source map。
+- [多子 Region 部分认领] → 在一个 checkpoint 暂存所有权和输出，任一环节失败撤回整个候选。

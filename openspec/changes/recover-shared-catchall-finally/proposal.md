@@ -1,12 +1,12 @@
 ## Why
 
-CF-16 的单正常出口 `finally` 已受证恢复，但 `FinallyOnce.handled(boolean)` 仍因具名 `IllegalArgumentException` catch 与两个保护范围共用同一 catch-all handler 而整体引用，完整 Jarde 源码缺返回。原 class 在正常/catch 路径各清理一次；固定 JADX 源码虽可重编，却在正常路径清理两次。继续只按相似调用去重会损坏语义。
+CF-16 的单正常出口 `finally` 已受证恢复，但 `SharedFinallyCall.handled(boolean)` 因具名 `IllegalArgumentException` catch 与两个保护范围共用同一 catch-all handler 而整体引用，完整 Jarde 源码缺返回。原 class 在正常/catch 路径各调用一次清理；固定 JADX 源码虽可重编，却在正常路径清理两次。现有单出口证书不能靠放宽边界复用。
 
 ## What Changes
 
-- 对**一个具名 catch、两个按半开 BCI 范围排列的 catch-all 行、一个共用直线异常清理 handler、两个正常返回副本**建立私有多出口证书，证明每条完成路径恰执行一次同一清理。
-- 复用现有 `guard` 的 SSA 副本比较、`Plan`/Region 有界子正文及 `StmtKind::Try` 的 catch/finally 输出；只在行优先级、返回值快照、异常身份、物理所有权与来源全部闭合后发布。
-- 构造只含该 `handled` 形态和计数器的 Java 8 类族，分别重编运行原 class、固定 JADX、Jarde 完整源码；Jarde 与原 class 必须一致，记录而非复制 JADX 的重复清理差异。
+- 首片只针对一个具名 catch、两个按半开 BCI 范围排列的 catch-all 行、共用 handler、两个正常返回和三份相同无参静态 `cleanup()V` 调用，建立不可分割的私有多出口证书。
+- 复用现有 `Plan`、有界子 Region 与 `StmtKind::Try`；行优先级、两份返回快照、异常身份、物理所有权与来源全部闭合后才发布。
+- 重编运行已冻结的 `SharedFinallyCall` 原 class、固定 JADX 和 Jarde 完整源码；Jarde 与原 class 必须一致，记录 JADX 的重复清理差异。字段自增清理和 `FinallyOnce.escaping()` 留作独立后续范围。
 
 ## Capabilities
 
