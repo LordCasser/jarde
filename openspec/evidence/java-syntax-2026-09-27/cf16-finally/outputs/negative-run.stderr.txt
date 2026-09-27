@@ -1,0 +1,22 @@
+java.lang.Exception: test
+	at TestTryCatchFinally$TestCls.exc(Unknown Source)
+	at TestTryCatchFinally$TestCls.test(Unknown Source)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at RunnerReflect.main(Unknown Source)
+java.lang.Exception: test
+	at TestTryCatchFinally$TestCls.exc(Unknown Source)
+	at TestTryCatchFinally$TestCls.test(Unknown Source)
+	at TestTryCatchFinally$TestCls.check(Unknown Source)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at RunnerReflect.main(Unknown Source)
+Exception in thread "main" java.lang.reflect.InvocationTargetException
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:118)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at RunnerReflect.main(Unknown Source)
+Caused by: java.lang.AssertionError: expected true
+	at jadx.tests.api.utils.assertj.JadxAssertions$BoolAssertion.isTrue(Unknown Source)
+	at TestTryCatchFinally$TestCls.check(Unknown Source)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	... 2 more

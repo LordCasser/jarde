@@ -1,0 +1,13 @@
+java.lang.Exception: test
+	at defpackage.TestTryCatchFinally$TestCls.exc(Unknown Source)
+	at defpackage.TestTryCatchFinally$TestCls.test(Unknown Source)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at RunnerReflect.main(Unknown Source)
+java.lang.Exception: test
+	at defpackage.TestTryCatchFinally$TestCls.exc(Unknown Source)
+	at defpackage.TestTryCatchFinally$TestCls.test(Unknown Source)
+	at defpackage.TestTryCatchFinally$TestCls.check(Unknown Source)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at RunnerReflect.main(Unknown Source)

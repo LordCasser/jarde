@@ -1,0 +1,70 @@
+public class TestTryCatchFinally$TestCls {
+  public boolean f;
+
+  public TestTryCatchFinally$TestCls();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  private boolean test(java.lang.Object);
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: putfield      #7                  // Field f:Z
+       5: aload_1
+       6: invokestatic  #13                 // Method exc:(Ljava/lang/Object;)Z
+       9: pop
+      10: aload_0
+      11: iconst_1
+      12: putfield      #7                  // Field f:Z
+      15: goto          39
+      18: astore_2
+      19: aload_2
+      20: invokevirtual #19                 // Method java/lang/Exception.printStackTrace:()V
+      23: aload_0
+      24: iconst_0
+      25: putfield      #7                  // Field f:Z
+      28: goto          39
+      31: astore_3
+      32: aload_0
+      33: iconst_1
+      34: putfield      #7                  // Field f:Z
+      37: aload_3
+      38: athrow
+      39: aload_0
+      40: getfield      #7                  // Field f:Z
+      43: ireturn
+    Exception table:
+       from    to  target type
+           5    10    18   Class java/lang/Exception
+           5    10    31   any
+          18    23    31   any
+
+  private static boolean exc(java.lang.Object) throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: ifnonnull     14
+       4: new           #17                 // class java/lang/Exception
+       7: dup
+       8: ldc           #22                 // String test
+      10: invokespecial #24                 // Method java/lang/Exception."<init>":(Ljava/lang/String;)V
+      13: athrow
+      14: aload_0
+      15: instanceof    #27                 // class java/lang/String
+      18: ireturn
+
+  public void check();
+    Code:
+       0: aload_0
+       1: ldc           #29                 // String a
+       3: invokespecial #31                 // Method test:(Ljava/lang/Object;)Z
+       6: invokestatic  #33                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Z)Ljadx/tests/api/utils/assertj/JadxAssertions$BoolAssertion;
+       9: invokevirtual #39                 // Method jadx/tests/api/utils/assertj/JadxAssertions$BoolAssertion.isTrue:()V
+      12: aload_0
+      13: aconst_null
+      14: invokespecial #31                 // Method test:(Ljava/lang/Object;)Z
+      17: invokestatic  #33                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Z)Ljadx/tests/api/utils/assertj/JadxAssertions$BoolAssertion;
+      20: invokevirtual #39                 // Method jadx/tests/api/utils/assertj/JadxAssertions$BoolAssertion.isTrue:()V
+      23: return
+}

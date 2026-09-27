@@ -1,0 +1,4 @@
+/tmp/jarde-cf16-finally-replay.54A30S/jarde/TestTryCatchFinally$TestCls.java:23: 错误: 缺少返回语句
+    }
+    ^
+1 个错误
