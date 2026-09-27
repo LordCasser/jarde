@@ -1,0 +1,10 @@
+P3VISITED blocks=[0] visited=[0]
+P3JOIN branch=0 ipdom=Some(11) then=Some(6) else=Some(10) ft=false fe=false frame_boundary=None
+P3VISITED blocks=[0, 6, 10, 11] visited=[0, 6, 10, 11]
+P3JOIN branch=0 ipdom=Some(12) then=Some(7) else=Some(11) ft=false fe=false frame_boundary=None
+P3VISITED blocks=[0, 7, 11, 12] visited=[0, 7, 11, 12]
+P3VISITED blocks=[0, 4, 14, 10, 15] visited=[0, 4, 14, 10, 15]
+P3JOIN branch=0 ipdom=None then=Some(4) else=Some(11) ft=false fe=true frame_boundary=None
+P3JOIN branch=4 ipdom=None then=Some(11) else=Some(13) ft=true fe=false frame_boundary=Some(11)
+P3JOIN branch=13 ipdom=Some(28) then=Some(23) else=Some(27) ft=false fe=false frame_boundary=Some(11)
+P3VISITED blocks=[0, 4, 11, 13, 23, 27, 28] visited=[0, 4, 11, 13, 23, 27]
