@@ -1,0 +1,6 @@
+normal=body,finally,ok
+caught=body,finally,ok
+error=body,finally,AssertionError:body
+finally=body,finally,IllegalArgumentException:finally
+caught-finally=body,finally,IllegalArgumentException:finally
+error-finally=body,finally,IllegalArgumentException:finally
