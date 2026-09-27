@@ -18,4 +18,8 @@ public final class NestedShape {
     public static String observe() {
         return Major.FIRST + ":" + Major.Minor.LEFT;
     }
+
+    public static String literal() {
+        return "dt13.NestedShape$Major";
+    }
 }

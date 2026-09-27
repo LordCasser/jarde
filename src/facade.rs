@@ -1294,7 +1294,7 @@ impl Engine {
         self.class_source_with_evidence(
             content,
             request,
-            &RecoveryEvidenceRequest::essential(),
+            &RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
             budget,
         )
     }
@@ -1482,6 +1482,98 @@ impl Engine {
                 }
             }
         }
+        let nested_enum = self.prepare_nested_enum_family(
+            content,
+            request,
+            evidence,
+            &environment,
+            snapshot,
+            &report,
+            &root_nesting,
+            2,
+            budget,
+        );
+        match nested_enum {
+            Ok((family, nested_execution)) => {
+                merge_execution(&mut report.execution, nested_execution);
+                report.nested_enum_family = family;
+            }
+            Err(error) => {
+                merge_execution(&mut report.execution, stop_execution(&error, budget));
+                report.diagnostics.push(stop_diagnostic(
+                    &error,
+                    Some(definition_provenance(&report.class)),
+                ));
+                report.nested_enum_family = class_source::ClassSourceNestedEnumFamily::Refused {
+                    reason: "nested enum proof stopped".to_owned(),
+                    child: None,
+                };
+            }
+        }
+        if let class_source::ClassSourceNestedEnumFamily::Refused { reason, .. } =
+            &report.nested_enum_family
+        {
+            report.diagnostics.push(nested_enum_refusal_diagnostic(
+                reason,
+                definition_provenance(&report.class),
+            ));
+        }
+        if matches!(
+            report.nested_enum_family,
+            class_source::ClassSourceNestedEnumFamily::Prepared { .. }
+        ) {
+            let mut projection_execution = ExecutionReport::Complete {
+                usage: budget.usage(),
+            };
+            let projected = project_class_source_nested_enum(
+                content,
+                &environment,
+                &report,
+                &mut projection_execution,
+                budget,
+            );
+            merge_execution(&mut report.execution, projection_execution);
+            match projected {
+                Ok(Ok((text, derived))) => {
+                    report.text = text;
+                    if let class_source::ClassSourceNestedEnumFamily::Prepared {
+                        projection, ..
+                    } = &mut report.nested_enum_family
+                    {
+                        *projection =
+                            class_source::ClassSourceNestedEnumProjection::Projected { derived };
+                    }
+                }
+                Ok(Err(reason)) => {
+                    report.diagnostics.push(nested_enum_refusal_diagnostic(
+                        &reason,
+                        definition_provenance(&report.class),
+                    ));
+                    if let class_source::ClassSourceNestedEnumFamily::Prepared {
+                        projection, ..
+                    } = &mut report.nested_enum_family
+                    {
+                        *projection =
+                            class_source::ClassSourceNestedEnumProjection::Refused { reason };
+                    }
+                }
+                Err(error) => {
+                    merge_execution(&mut report.execution, stop_execution(&error, budget));
+                    report.diagnostics.push(stop_diagnostic(
+                        &error,
+                        Some(definition_provenance(&report.class)),
+                    ));
+                    if let class_source::ClassSourceNestedEnumFamily::Prepared {
+                        projection, ..
+                    } = &mut report.nested_enum_family
+                    {
+                        *projection = class_source::ClassSourceNestedEnumProjection::Refused {
+                            reason: format!("nested enum source projection stopped: {error}"),
+                        };
+                    }
+                }
+            }
+        }
         if matches!(
             report.member_family,
             class_source::ClassSourceMemberFamily::Absent
@@ -1512,6 +1604,256 @@ impl Engine {
         report.usage = budget.usage();
         report.execution = with_usage(report.execution, budget.usage());
         Ok(OperationOutcome::Performed(report))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn prepare_nested_enum_family(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
+        environment: &ResolutionEnvironment,
+        snapshot: &ArtifactSnapshot,
+        root_report: &ClassSourceReport,
+        nesting: &class_source::ClassSourceAssemblyContext,
+        remaining_depth: usize,
+        budget: &mut Budget,
+    ) -> Result<(class_source::ClassSourceNestedEnumFamily, ExecutionReport)> {
+        use class_source::{
+            ClassSourceMemberRelation as Relation, ClassSourceNestedEnumFamily as Family,
+        };
+        let mut execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        if remaining_depth == 0 || root_report.declaration.is_none() {
+            return Ok((Family::Absent, execution));
+        }
+        let owner = root_report
+            .declaration
+            .as_ref()
+            .expect("checked declaration")
+            .item
+            .declaration
+            .this_class
+            .raw()
+            .0
+            .clone();
+        let (child_name, simple_name, access_flags) =
+            match crate::member_inner::scan_nested_enum_root(&owner, nesting, budget)? {
+                crate::member_inner::FamilyRootScan::Absent => {
+                    return Ok((Family::Absent, execution));
+                }
+                crate::member_inner::FamilyRootScan::Refused(reason) => {
+                    return Ok((
+                        Family::Refused {
+                            reason,
+                            child: None,
+                        },
+                        execution,
+                    ));
+                }
+                crate::member_inner::FamilyRootScan::Candidate(candidate) => (
+                    candidate.child_name,
+                    candidate.simple_name,
+                    candidate.access_flags,
+                ),
+            };
+        const ACC_ENUM: u16 = 0x4000;
+        let Some((child_definition, child_read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            None,
+            &child_name,
+            &mut execution,
+            budget,
+        )?
+        else {
+            return Ok((
+                Family::Refused {
+                    reason:
+                        "selected environment did not uniquely resolve the nested enum definition"
+                            .to_owned(),
+                    child: None,
+                },
+                execution,
+            ));
+        };
+        let pool = class_constant_pool(&child_read.bytes, budget)?;
+        let shells: Vec<_> = child_read
+            .facts
+            .attributes
+            .iter()
+            .filter(|attribute| {
+                matches!(
+                    attribute.name.raw().0.as_slice(),
+                    b"InnerClasses" | b"EnclosingMethod"
+                )
+            })
+            .cloned()
+            .collect();
+        let child_nesting = match class_source::read_class_source_assembly_context(
+            &child_read.bytes,
+            &shells,
+            &pool,
+            budget,
+        ) {
+            Ok(nesting) => nesting,
+            Err(error) => {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                return Ok((
+                    Family::Refused {
+                        reason: "nested enum InnerClasses proof stopped".to_owned(),
+                        child: None,
+                    },
+                    execution,
+                ));
+            }
+        };
+        let relation_candidate = crate::member_inner::FamilyRootCandidate {
+            child_name: child_name.clone(),
+            simple_name: simple_name.clone(),
+            access_flags,
+        };
+        let relation = crate::member_inner::child_relation_agrees(
+            &owner,
+            &relation_candidate,
+            &child_read.facts,
+            &child_nesting,
+            &pool,
+            budget,
+        )?;
+        let class_version = child_read.bytes.get(4..8).map(|version| {
+            (
+                u16::from_be_bytes([version[0], version[1]]),
+                u16::from_be_bytes([version[2], version[3]]),
+            )
+        });
+        if !relation
+            || child_read.facts.access_flags & ACC_ENUM == 0
+            || class_version != Some((0, 52))
+        {
+            return Ok((
+                Family::Refused {
+                    reason: "nested enum lacks matching two-sided Java 8 enum member evidence"
+                        .to_owned(),
+                    child: None,
+                },
+                execution,
+            ));
+        }
+        let child_request = ClassSourceRequest {
+            class: ClassRef::Definition {
+                definition: child_definition.clone(),
+            },
+            environment: request.environment.clone(),
+        };
+        let child_class_item = match charge_item(budget) {
+            Ok(()) => Some(child_read.class.clone()),
+            Err(error) => {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                return Ok((
+                    Family::Refused {
+                        reason: "nested enum child report stopped before publication".to_owned(),
+                        child: None,
+                    },
+                    execution,
+                ));
+            }
+        };
+        let (mut child, _, _, _, child_nesting, _) = self.prepare_physical_class_source(
+            content,
+            &child_request,
+            evidence,
+            environment,
+            snapshot,
+            root_report.view.clone(),
+            root_report.stages.clone(),
+            BoundClass {
+                read: child_read,
+                search_coverage: None,
+                class_item: child_class_item,
+            },
+            ExecutionReport::Complete {
+                usage: budget.usage(),
+            },
+            Vec::new(),
+            false,
+            budget,
+        )?;
+        if !matches!(child.execution, ExecutionReport::Complete { .. })
+            || !matches!(
+                child.enum_constant_proof,
+                crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                    crate::enum_constants::ProvedEnumConstantGroup::Ordinary(_)
+                )
+            )
+        {
+            let child = Box::new(child);
+            return Ok((
+                Family::Refused {
+                    reason: "nested enum child lacks a complete ordinary enum group proof"
+                        .to_owned(),
+                    child: Some(child),
+                },
+                execution,
+            ));
+        }
+        if remaining_depth > 1 {
+            let grandchildren = self.prepare_nested_enum_family(
+                content,
+                &child_request,
+                evidence,
+                environment,
+                snapshot,
+                &child,
+                &child_nesting,
+                remaining_depth - 1,
+                budget,
+            );
+            let (grandchildren, descendant_execution) = match grandchildren {
+                Ok(prepared) => prepared,
+                Err(error) => {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    let child = Box::new(child);
+                    return Ok((
+                        Family::Refused {
+                            reason: "nested enum descendant proof stopped".to_owned(),
+                            child: Some(child),
+                        },
+                        execution,
+                    ));
+                }
+            };
+            merge_execution(&mut execution, descendant_execution);
+            child.nested_enum_family = grandchildren;
+            if let Family::Refused { reason, .. } = &child.nested_enum_family {
+                let reason = reason.clone();
+                let child = Box::new(child);
+                return Ok((
+                    Family::Refused {
+                        reason: format!("nested enum descendant was refused: {reason}"),
+                        child: Some(child),
+                    },
+                    execution,
+                ));
+            }
+        }
+        let child = Box::new(child);
+        Ok((
+            Family::Prepared {
+                relation: Relation {
+                    root: root_report.class.clone(),
+                    child: child_definition,
+                    simple_name,
+                    access_flags,
+                },
+                child,
+                projection: class_source::ClassSourceNestedEnumProjection::Refused {
+                    reason: "nested enum projection has not completed".to_owned(),
+                },
+            },
+            execution,
+        ))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -2947,6 +3289,7 @@ impl Engine {
                     fields: Vec::new(),
                     methods: Vec::new(),
                     member_family: class_source::ClassSourceMemberFamily::Absent,
+                    nested_enum_family: class_source::ClassSourceNestedEnumFamily::Absent,
                     bridge_proofs: Vec::new(),
                     enum_switch_proofs: Vec::new(),
                     initializer_proof: if read.facts.access_flags & ACC_INTERFACE != 0
@@ -4947,6 +5290,7 @@ impl Engine {
                 fields,
                 methods,
                 member_family: class_source::ClassSourceMemberFamily::Absent,
+                nested_enum_family: class_source::ClassSourceNestedEnumFamily::Absent,
                 bridge_proofs,
                 enum_switch_proofs,
                 initializer_proof,
@@ -11595,6 +11939,629 @@ fn project_class_source_member_family(
     Ok(Ok((text, derived)))
 }
 
+fn project_class_source_nested_enum(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    root: &ClassSourceReport,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<(String, Vec<class_source::MemberFamilyDerivedProjection>), String>>
+{
+    let Some(declaration) = root.declaration.as_ref() else {
+        return Ok(Err("nested enum owner has no source declaration".to_owned()));
+    };
+    let Some(owner_binary) =
+        std::str::from_utf8(&declaration.item.declaration.this_class.raw().0).ok()
+    else {
+        return Ok(Err(
+            "nested enum owner has no exact UTF-8 identity".to_owned()
+        ));
+    };
+    let owner_source_name = owner_binary.replace('/', ".");
+    let mut targets = Vec::new();
+    if !collect_nested_enum_targets(root, &owner_source_name, &mut targets) {
+        return Ok(Err(
+            "nested enum identity has no exact source spelling".to_owned()
+        ));
+    }
+    let root_methods = match prove_nested_enum_method_texts(
+        content,
+        environment,
+        root,
+        &targets,
+        execution,
+        budget,
+    )? {
+        Ok(methods) => methods,
+        Err(reason) => return Ok(Err(reason)),
+    };
+    let nested = match render_nested_enum_at(
+        content,
+        environment,
+        root,
+        &owner_source_name,
+        execution,
+        budget,
+    )? {
+        Ok(nested) => nested,
+        Err(reason) => return Ok(Err(reason)),
+    };
+    let declaration = root.declaration.as_ref().unwrap();
+    let context = class_source::ClassSourceTextContext {
+        initializer_field_order: None,
+        declared_methods: root.methods.len() as u64,
+        member_table: None,
+        execution: &root.execution,
+        enum_projection: None,
+        array_helper_indices: None,
+        array_method_texts: None,
+        array_helper_markers: None,
+    };
+    if class_source::source_text(declaration, &root.fields, &root.methods, &context) != root.text {
+        return Ok(Err(
+            "root class has another source projection outside this nested-enum slice".to_owned(),
+        ));
+    }
+    let (text, derived) = class_source::source_text_with_nested_enum(
+        declaration,
+        &root.fields,
+        &root.methods,
+        &context,
+        &root_methods,
+        &nested,
+    );
+    budget.poll()?;
+    let added_output = text
+        .len()
+        .saturating_sub(root.text.len())
+        .try_into()
+        .unwrap_or(u64::MAX);
+    budget.charge(CountedBudgetDimension::OutputBytes, added_output)?;
+    Ok(Ok((text, derived)))
+}
+
+struct NestedEnumSourceTarget<'a> {
+    binary_name: Vec<u8>,
+    source_name: String,
+    owner: &'a ClassSourceReport,
+    child: &'a ClassSourceReport,
+}
+
+fn collect_nested_enum_targets<'a>(
+    owner: &'a ClassSourceReport,
+    owner_source_name: &str,
+    targets: &mut Vec<NestedEnumSourceTarget<'a>>,
+) -> bool {
+    let class_source::ClassSourceNestedEnumFamily::Prepared {
+        relation, child, ..
+    } = &owner.nested_enum_family
+    else {
+        return true;
+    };
+    let Some(binary_name) = child
+        .declaration
+        .as_ref()
+        .map(|declaration| declaration.item.declaration.this_class.raw().0.clone())
+    else {
+        return false;
+    };
+    if std::str::from_utf8(&binary_name).is_err() {
+        return false;
+    }
+    let source_name = format!("{owner_source_name}.{}", relation.simple_name);
+    targets.push(NestedEnumSourceTarget {
+        binary_name,
+        source_name: source_name.clone(),
+        owner,
+        child,
+    });
+    collect_nested_enum_targets(child, &source_name, targets)
+}
+
+fn render_nested_enum_at(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    owner: &ClassSourceReport,
+    owner_source_name: &str,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<class_source::NestedEnumSourceText, String>> {
+    use class_source::MemberFamilyPhysicalAnchor as Anchor;
+    let class_source::ClassSourceNestedEnumFamily::Prepared {
+        relation, child, ..
+    } = &owner.nested_enum_family
+    else {
+        return Ok(Err("nested enum relation is not prepared".to_owned()));
+    };
+    if !matches!(owner.execution, ExecutionReport::Complete { .. })
+        || !matches!(child.execution, ExecutionReport::Complete { .. })
+    {
+        return Ok(Err(
+            "owner or enum physical preparation is incomplete".to_owned()
+        ));
+    }
+    let Some(declaration) = child.declaration.as_ref() else {
+        return Ok(Err("nested enum has no source declaration".to_owned()));
+    };
+    let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+        crate::enum_constants::ProvedEnumConstantGroup::Ordinary(group),
+    ) = &child.enum_constant_proof
+    else {
+        return Ok(Err("nested enum group is not completely proved".to_owned()));
+    };
+    if !declaration.annotation_uses.is_empty()
+        || !declaration.annotation_refusals.is_empty()
+        || group.constructor_field_index.is_some()
+        || group.delegating_constructor_method_index.is_some()
+    {
+        return Ok(Err(
+            "nested enum annotations or constructor delegation are outside this slice".to_owned(),
+        ));
+    }
+    let descendant = match &child.nested_enum_family {
+        class_source::ClassSourceNestedEnumFamily::Prepared { .. } => {
+            let child_source_name = format!("{owner_source_name}.{}", relation.simple_name);
+            match render_nested_enum_at(
+                content,
+                environment,
+                child,
+                &child_source_name,
+                execution,
+                budget,
+            )? {
+                Ok(nested) => Some(nested),
+                Err(reason) => return Ok(Err(reason)),
+            }
+        }
+        class_source::ClassSourceNestedEnumFamily::Absent => None,
+        class_source::ClassSourceNestedEnumFamily::Refused { reason, .. } => {
+            return Ok(Err(format!("nested enum descendant was refused: {reason}")));
+        }
+    };
+    let child_source_name = format!("{owner_source_name}.{}", relation.simple_name);
+    let mut descendants = Vec::new();
+    if !collect_nested_enum_targets(child, &child_source_name, &mut descendants) {
+        return Ok(Err(
+            "nested enum descendant has no exact source identity".to_owned()
+        ));
+    }
+    let child_methods = match prove_nested_enum_method_texts(
+        content,
+        environment,
+        child,
+        &descendants,
+        execution,
+        budget,
+    )? {
+        Ok(methods) => methods,
+        Err(reason) => return Ok(Err(reason)),
+    };
+    let terminal_constructor_body = if let Some(body) = group.constructor_body.as_deref() {
+        let Some(method) = child
+            .methods
+            .iter()
+            .find(|method| method.item.index == group.constructor_method_index)
+        else {
+            return Ok(Err("nested enum constructor record is missing".to_owned()));
+        };
+        let emitted = jarde_java::report::emit_class_enum_constructor_body(
+            &body.candidate,
+            &method.item.identity,
+            budget,
+        )
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "nested enum constructor source emission",
+                "enum_constructor_ir_missing",
+            )
+        })?;
+        let Some(text) = emitted else {
+            return Ok(Err(
+                "nested enum constructor body could not be emitted".to_owned()
+            ));
+        };
+        Some(text)
+    } else {
+        None
+    };
+    let Some(enum_projection) = class_source::prepare_enum_constant_source_projection(
+        declaration,
+        &child.fields,
+        &child.methods,
+        group,
+        terminal_constructor_body,
+        None,
+        budget,
+    )?
+    else {
+        return Ok(Err(
+            "nested enum physical records cannot reproduce its proved group".to_owned(),
+        ));
+    };
+    let context = class_source::ClassSourceTextContext {
+        initializer_field_order: None,
+        declared_methods: child.methods.len() as u64,
+        member_table: None,
+        execution: &child.execution,
+        enum_projection: Some(&enum_projection),
+        array_helper_indices: None,
+        array_method_texts: None,
+        array_helper_markers: None,
+    };
+    if class_source::source_text(declaration, &child.fields, &child.methods, &context) != child.text
+    {
+        return Ok(Err(
+            "nested enum has another physical source projection outside this slice".to_owned(),
+        ));
+    }
+    let Some(initializer) = child
+        .methods
+        .iter()
+        .find(|method| method.item.index == group.initializer_method_index)
+    else {
+        return Ok(Err(
+            "proved enum initializer method is not retained".to_owned()
+        ));
+    };
+    let constants = group
+        .constants
+        .iter()
+        .filter_map(|constant| {
+            child
+                .fields
+                .iter()
+                .find(|field| field.item.index == constant.field_index)
+                .map(|field| field.item.identity.clone())
+        })
+        .collect::<Vec<_>>();
+    if constants.len() != group.constants.len() {
+        return Ok(Err(
+            "one or more proved enum constants lack physical fields".to_owned(),
+        ));
+    }
+    let mut anchors = vec![
+        Anchor::ClassDefinition {
+            definition: relation.root.clone(),
+        },
+        Anchor::ClassDefinition {
+            definition: relation.child.clone(),
+        },
+        Anchor::EnumConstantGroup {
+            definition: relation.child.clone(),
+            constants,
+            initializer: initializer.item.identity.clone(),
+        },
+    ];
+    let nested = class_source::nested_enum_source_text(
+        &relation.simple_name,
+        relation.access_flags,
+        declaration,
+        &child.fields,
+        &child.methods,
+        &enum_projection,
+        &child_methods,
+        descendant.as_ref(),
+        std::mem::take(&mut anchors),
+    );
+    Ok(match nested {
+        Some(nested) => Ok(nested),
+        None => Err("nested enum records could not be rendered atomically".to_owned()),
+    })
+}
+
+fn prove_nested_enum_method_texts(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    owner: &ClassSourceReport,
+    targets: &[NestedEnumSourceTarget<'_>],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<Vec<class_source::MemberFamilyMethodText>, String>> {
+    let mut projected = Vec::new();
+    for method in &owner.methods {
+        let class_source::ClassSourceOutcome::Recovered {
+            report: recovery, ..
+        } = &method.outcome
+        else {
+            continue;
+        };
+        let mut edits = Vec::new();
+        for target in targets {
+            // The lexical scan examines every byte even when it finds no candidate. Charge that
+            // work before scanning so a large recovered method cannot bypass the request budget.
+            budget.poll()?;
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                recovery.text.len() as u64,
+            )?;
+            let binary_name = match std::str::from_utf8(&target.binary_name) {
+                Ok(name) => name.replace('/', "."),
+                Err(_) => return Ok(Err("nested enum name is not UTF-8".to_owned())),
+            };
+            let Some(spans) = java_code_name_spans(&recovery.text, &binary_name) else {
+                return Ok(Err("nested enum source artifact is malformed".to_owned()));
+            };
+            for (start, end) in spans {
+                budget.poll()?;
+                let mut smallest = usize::MAX;
+                let mut source_bcis = std::collections::BTreeSet::new();
+                for segment in recovery.source_map.segments() {
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if segment.start() > start
+                        || segment.end() < end
+                        || segment.origin().primary().method() != Some(&method.item.identity)
+                    {
+                        continue;
+                    }
+                    if segment.len() < smallest {
+                        smallest = segment.len();
+                        source_bcis.clear();
+                    }
+                    if segment.len() == smallest {
+                        source_bcis.extend(segment.origin().bcis());
+                    }
+                }
+                if source_bcis.is_empty() {
+                    return Ok(Err(format!(
+                        "nested enum token in method {} has no exact source-map origin",
+                        method.item.index
+                    )));
+                }
+                edits.push((start, end, target, source_bcis));
+            }
+        }
+        if edits.is_empty() {
+            continue;
+        }
+        let analyzed = match jarde_jvm::analyze_method_ir(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: method.item.identity.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            budget,
+        ) {
+            Ok(analyzed) => analyzed,
+            Err(error) => {
+                merge_execution(execution, stop_execution(&error, budget));
+                return Err(error);
+            }
+        };
+        merge_execution(execution, analyzed.report().execution.clone());
+        if analyzed.report().method != method.item.identity
+            || !matches!(
+                analyzed.report().execution,
+                ExecutionReport::Complete { .. }
+            )
+        {
+            return Ok(Err(
+                "nested enum source reference analysis did not complete".to_owned(),
+            ));
+        }
+        let Some(code) = analyzed.ir().code() else {
+            return Ok(Err(
+                "nested enum source reference has no complete bytecode".to_owned()
+            ));
+        };
+        let mut replacements = Vec::new();
+        for (start, end, target, source_bcis) in edits {
+            let child_internal = &target.binary_name;
+            let Some(crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                crate::enum_constants::ProvedEnumConstantGroup::Ordinary(group),
+            )) = Some(&target.child.enum_constant_proof)
+            else {
+                return Ok(Err(
+                    "nested enum reference target has no ordinary enum proof".to_owned(),
+                ));
+            };
+            let mut matching = Vec::new();
+            for bci in source_bcis {
+                let Some(instruction) = code.instructions.iter().find(|insn| insn.bci == bci)
+                else {
+                    continue;
+                };
+                if instruction.opcode != 0xb2 {
+                    continue;
+                }
+                let Some(index) = instruction.constant_pool_index else {
+                    continue;
+                };
+                let Ok(entry) =
+                    jarde_reader::classfile::cp_entry(analyzed.ir().constant_pool(), index)
+                else {
+                    continue;
+                };
+                let jarde_reader::classfile::CpEntryKind::FieldRef {
+                    owner: field_owner,
+                    name,
+                    descriptor,
+                    ..
+                } = &entry.kind
+                else {
+                    continue;
+                };
+                if field_owner.0 != *child_internal {
+                    continue;
+                }
+                let Some(field) = target.child.fields.iter().find(|field| {
+                    let jarde_reader::model::MemberKey::Field {
+                        name: physical_name,
+                        descriptor: physical_descriptor,
+                    } = &field.item.identity.member
+                    else {
+                        return false;
+                    };
+                    physical_name.0 == name.0
+                        && physical_descriptor.0 == descriptor.0
+                        && group
+                            .constants
+                            .iter()
+                            .any(|constant| constant.field_index == field.item.index)
+                }) else {
+                    continue;
+                };
+                matching.push((bci, field));
+            }
+            if matching.len() != 1 {
+                return Ok(Err(format!(
+                    "nested enum token in method {} is not tied to one proved enum constant reference",
+                    method.item.index
+                )));
+            }
+            let (bci, field) = matching[0];
+            replacements.push((
+                start,
+                end,
+                target.source_name.clone(),
+                bci,
+                field.item.identity.clone(),
+                field.item.index,
+                target.owner.class.clone(),
+                target.child.class.clone(),
+            ));
+        }
+        replacements.sort_by_key(|replacement| replacement.0);
+        if replacements.windows(2).any(|pair| pair[0].1 > pair[1].0) {
+            return Ok(Err("nested enum source references overlap".to_owned()));
+        }
+        let mut rewritten = recovery.clone();
+        for (start, end, replacement, ..) in replacements.iter().rev() {
+            rewritten.text.replace_range(start..end, &replacement);
+        }
+        let Some(text) = class_source::member_family_recovered_method_text(method, &rewritten)
+        else {
+            return Ok(Err(
+                "nested enum source method cannot be reassembled".to_owned()
+            ));
+        };
+        let mut adjusted = Vec::new();
+        let mut prefix_delta = 0isize;
+        for (start, end, replacement, bci, field, index, owner_definition, child_definition) in
+            &replacements
+        {
+            let final_start = start.checked_add_signed(prefix_delta).ok_or_else(|| {
+                Error::invalid_input("nested_enum_source_offset_invalid", "source span overflow")
+            })?;
+            let final_end = final_start + replacement.len();
+            let Some((local_start, local_end)) = class_source::member_family_recovered_span(
+                method,
+                &rewritten,
+                final_start,
+                final_end,
+            ) else {
+                return Ok(Err(
+                    "nested enum source-map span does not survive method placement".to_owned(),
+                ));
+            };
+            adjusted.push(class_source::MemberFamilyDerivedProjection {
+                kind: class_source::MemberFamilyDerivedKind::NestedEnumTypeReference,
+                start: local_start,
+                end: local_end,
+                anchors: vec![
+                    class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                        method: method.item.identity.clone(),
+                        bci: *bci,
+                    },
+                    class_source::MemberFamilyPhysicalAnchor::Field {
+                        field: field.clone(),
+                        index: *index,
+                    },
+                    class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                        definition: owner_definition.clone(),
+                    },
+                    class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                        definition: child_definition.clone(),
+                    },
+                ],
+            });
+            prefix_delta += replacement.len() as isize - (end - start) as isize;
+        }
+        projected.push(class_source::MemberFamilyMethodText {
+            index: method.item.index,
+            text,
+            derived: adjusted,
+        });
+    }
+    Ok(Ok(projected))
+}
+
+fn java_code_name_spans(source: &str, name: &str) -> Option<Vec<(usize, usize)>> {
+    fn identifier_byte(byte: u8) -> bool {
+        byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'$') || byte >= 0x80
+    }
+    let bytes = source.as_bytes();
+    let needle = name.as_bytes();
+    let mut spans = Vec::new();
+    let mut index = 0usize;
+    while index < bytes.len() {
+        if bytes[index..].starts_with(b"//") {
+            index = bytes[index..]
+                .iter()
+                .position(|byte| *byte == b'\n')
+                .map_or(bytes.len(), |offset| index + offset);
+            continue;
+        }
+        if bytes[index..].starts_with(b"/*") {
+            let offset = bytes[index + 2..]
+                .windows(2)
+                .position(|pair| pair == b"*/")?;
+            index += 2 + offset + 2;
+            continue;
+        }
+        if matches!(bytes[index], b'"' | b'\'') {
+            let quote = bytes[index];
+            index += 1;
+            let mut closed = false;
+            while index < bytes.len() {
+                if bytes[index] == b'\\' {
+                    index = (index + 2).min(bytes.len());
+                } else if bytes[index] == quote {
+                    index += 1;
+                    closed = true;
+                    break;
+                } else {
+                    index += 1;
+                }
+            }
+            if !closed {
+                return None;
+            }
+            continue;
+        }
+        if bytes[index..].starts_with(needle) {
+            let before = index
+                .checked_sub(1)
+                .is_some_and(|pos| identifier_byte(bytes[pos]));
+            let end = index + needle.len();
+            let after = bytes.get(end).is_some_and(|byte| identifier_byte(*byte));
+            if !before && !after {
+                spans.push((index, end));
+                index = end;
+                continue;
+            }
+        }
+        let next = source[index..].chars().next()?;
+        index += next.len_utf8();
+    }
+    Some(spans)
+}
+
+#[cfg(test)]
+mod nested_enum_source_rewrite_tests {
+    use super::java_code_name_spans;
+
+    #[test]
+    fn candidate_spans_skip_literals_and_comments_for_later_physical_proof() {
+        let source = r#"class C { String text = "dt13.NestedShape$Major"; // dt13.NestedShape$Major
+/* dt13.NestedShape$Major */ Object value = dt13.NestedShape$Major.FIRST; }"#;
+        let spans = java_code_name_spans(source, "dt13.NestedShape$Major").unwrap();
+        assert_eq!(spans.len(), 1);
+        assert_eq!(&source[spans[0].0..spans[0].1], "dt13.NestedShape$Major");
+    }
+}
+
 /// Hiding a capture field and constructor argument changes the source unit's public surface.
 /// Only the exact bytecode points already certified by the capture and call proofs may consume
 /// those declarations. The declaration-reference scanner supplies the bounded physical census;
@@ -14866,6 +15833,171 @@ mod enum_constant_body_relation_tests {
         report_with_budget(entries, class, budget())
     }
 
+    fn nested_enum_entries() -> Vec<(Vec<u8>, Vec<u8>)> {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir = std::env::temp_dir().join(format!(
+            "jarde-nested-enum-{}-{nonce}-{}",
+            std::process::id(),
+            NEXT_FIXTURE_ID.fetch_add(1, Ordering::Relaxed)
+        ));
+        let source = dir.join("source/dt13/NestedShape.java");
+        let classes = dir.join("classes");
+        fs::create_dir_all(source.parent().unwrap()).unwrap();
+        fs::create_dir_all(&classes).unwrap();
+        fs::write(
+            &source,
+            "package dt13; public class NestedShape { public enum Major { FIRST, SECOND; public enum Minor { LEFT, RIGHT } } public static String observe() { return Major.FIRST + \" : \" + Major.Minor.LEFT; } public static String literal() { return \"dt13.NestedShape$Major\"; } }",
+        )
+        .unwrap();
+        let compile = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-d"])
+            .arg(&classes)
+            .arg(&source)
+            .output()
+            .expect("javac is available for nested enum proof tests");
+        assert!(
+            compile.status.success(),
+            "javac failed: {}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        let entries = fs::read_dir(classes.join("dt13"))
+            .unwrap()
+            .map(|entry| {
+                let path = entry.unwrap().path();
+                (
+                    format!("dt13/{}", path.file_name().unwrap().to_string_lossy()).into_bytes(),
+                    fs::read(path).unwrap(),
+                )
+            })
+            .collect();
+        fs::remove_dir_all(dir).unwrap();
+        entries
+    }
+
+    #[test]
+    fn nested_enum_projection_is_proved_and_budget_stop_is_atomic() {
+        let entries = nested_enum_entries();
+        let complete = report(&entries, "dt13/NestedShape");
+        let class_source::ClassSourceNestedEnumFamily::Prepared {
+            relation,
+            child,
+            projection: class_source::ClassSourceNestedEnumProjection::Projected { derived },
+        } = &complete.nested_enum_family
+        else {
+            panic!(
+                "two-level nested enum fixture is fully projected: {:?}",
+                complete.nested_enum_family
+            );
+        };
+        assert_eq!(relation.simple_name, "Major");
+        assert!(complete.text.contains("public enum Major {"));
+        assert!(complete.text.contains("public enum Minor {"));
+        assert!(child.text.contains("public enum NestedShape$Major {"));
+        assert_eq!(
+            derived
+                .iter()
+                .filter(|projection| {
+                    projection.kind == class_source::MemberFamilyDerivedKind::NestedEnumDeclaration
+                })
+                .count(),
+            2,
+            "derived projections: {derived:#?}\ntext: {}",
+            complete.text
+        );
+        assert_eq!(
+            derived
+                .iter()
+                .filter(|projection| {
+                    projection.kind
+                        == class_source::MemberFamilyDerivedKind::NestedEnumTypeReference
+                })
+                .count(),
+            2
+        );
+        assert!(derived.iter().any(|projection| {
+            projection.anchors.iter().any(|anchor| {
+                matches!(
+                    anchor,
+                    class_source::MemberFamilyPhysicalAnchor::EnumConstantGroup { .. }
+                )
+            })
+        }));
+
+        let mut wrong_enum_group = entries.clone();
+        let major = wrong_enum_group
+            .iter_mut()
+            .find(|(name, _)| name == b"dt13/NestedShape$Major.class")
+            .unwrap();
+        major.1 = mutate_initializer_byte(&major.1, 10, 0xb2);
+        let refused = report(&wrong_enum_group, "dt13/NestedShape");
+        assert!(!refused.text.contains("public enum Major {"));
+        assert!(matches!(
+            refused.nested_enum_family,
+            class_source::ClassSourceNestedEnumFamily::Refused { .. }
+        ));
+        assert!(
+            refused
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.code == "nested_enum_source_refused" })
+        );
+
+        // A child whose declared field table stops before its first field has no complete
+        // constant-group certificate, even though the owner's InnerClasses row still names it.
+        let mut truncated_fields = entries.clone();
+        let major = truncated_fields
+            .iter_mut()
+            .find(|(name, _)| name == b"dt13/NestedShape$Major.class")
+            .unwrap();
+        let pool = class_constant_pool(&major.1, &budget()).unwrap();
+        let class_header = pool
+            .iter()
+            .map(|entry| entry.span.start + entry.span.length)
+            .max()
+            .unwrap() as usize;
+        let interfaces =
+            u16::from_be_bytes([major.1[class_header + 6], major.1[class_header + 7]]) as usize;
+        let field_table = class_header + 8 + interfaces * 2;
+        assert!(u16::from_be_bytes([major.1[field_table], major.1[field_table + 1]]) > 0);
+        major.1.truncate(field_table + 3);
+        let truncated = report(&truncated_fields, "dt13/NestedShape");
+        assert!(!truncated.text.contains("public enum Major {"));
+        assert!(!matches!(
+            truncated.nested_enum_family,
+            class_source::ClassSourceNestedEnumFamily::Prepared {
+                projection: class_source::ClassSourceNestedEnumProjection::Projected { .. },
+                ..
+            }
+        ));
+
+        let mut limits = budget().limits().clone();
+        limits.output_bytes = complete.usage.output_bytes.saturating_sub(1);
+        let stopped = report_with_budget(&entries, "dt13/NestedShape", Budget::new(limits));
+        assert!(!stopped.text.contains("public enum Major {"));
+        assert!(matches!(
+            stopped.nested_enum_family,
+            class_source::ClassSourceNestedEnumFamily::Prepared {
+                projection: class_source::ClassSourceNestedEnumProjection::Refused { .. },
+                ..
+            }
+        ));
+        assert!(
+            !matches!(stopped.execution, ExecutionReport::Complete { .. }),
+            "complete usage {:?}; stopped usage {:?}",
+            complete.usage,
+            stopped.usage
+        );
+        assert!(
+            stopped
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.code.starts_with("budget_exceeded_") })
+        );
+    }
+
     fn run_enum_source(
         directory: &std::path::Path,
         label: &str,
@@ -16302,9 +17434,11 @@ public class Probe {
             crate::enum_constants::ClassSourceEnumConstantProof::Stopped { .. }
         ));
 
-        let complete = report(&entries, "demo/Op");
         let mut limits = budget().limits().clone();
-        limits.analysis_steps = complete.usage.analysis_steps.saturating_sub(1);
+        // The report now performs a separately charged nested-member census after enum proof;
+        // total report usage minus one no longer isolates the enum proof's own stop boundary.
+        // Exhaust analysis before proof begins so this assertion remains about enum proof state.
+        limits.analysis_steps = 0;
         let bounded = report_with_budget(&entries, "demo/Op", Budget::new(limits));
         assert!(!matches!(
             bounded.enum_constant_proof,
@@ -18759,6 +19893,15 @@ pub(crate) fn stop_diagnostic(error: &Error, provenance: Option<Provenance>) -> 
         },
         message: error.to_string(),
         provenance,
+    }
+}
+
+fn nested_enum_refusal_diagnostic(reason: &str, provenance: Provenance) -> Diagnostic {
+    Diagnostic {
+        code: "nested_enum_source_refused".to_owned(),
+        severity: DiagnosticSeverity::Warning,
+        message: reason.to_owned(),
+        provenance: Some(provenance),
     }
 }
 

@@ -3,26 +3,39 @@
   "javac": "javac 23.0.1",
   "java_version": "openjdk version \"23.0.1\" 2024-10-15\nOpenJDK Runtime Environment (build 23.0.1+11-39)\nOpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)",
   "source_sha256": {
-    "NestedShape.java": "7cf2be6e2c2687c5520fadaf507c8d5e1af9f7d022c94a17d7cdca40a54b5bf1",
+    "NestedShape.java": "4925f579ca3f22008c0452d78e755cae8913b8814e7318737831514afdfe143a",
     "InterfaceShape.java": "c65b376a044986b9f8a078f44c014fa6b68d188a556124963bfb4551a0a12d91",
     "PlainShape.java": "34104bddc75706c7bcb54169b4bcbfca8fa5154d12ca5fa6c7b5702ccf8bb9eb",
     "PlainImpl.java": "2b425a7da9489d335dd0525538e0b8dd4c3ba578f44fab93648ad7f49066f03d",
-    "Runner.java": "3209e2fc1740ed8e9da2bd65ccbc2c5748fcc1a28dc386e5abb4661c9d3ae902",
+    "Dollar$Shape.java": "acf375400da3598da91d729fe7a13598f79dad6dda4e64279b44ed710c8a4e06",
+    "Runner.java": "2ce042bb955eb3201e5da9e906e59c98ed2e10ebabfccaaf28b685c7b76e60dc",
     "JardeFlatRunner.java": "79e53a1e142677de4eaa2a70d672b6d3f9f7681583d6ce5c8a2d2334b197f06d"
   },
   "class_sha256": {
+    "dt13/Dollar$Shape": "dfdb22c62f088f292d7879eb38cf45c0558b5e59356f29d1bf0755d7f80c21f2",
     "dt13/InterfaceShape": "3aa8da476b70f27bf977bd08f66544cda5313511cc3faa9addad54d195f59077",
     "dt13/Marker": "fcc6bf597dd3ee6a7ccfbb04affd1791098d4a281c28c7918e6156d550aafbf0",
     "dt13/NestedShape$Major$Minor": "5450827d6859f7a804d1c1da1a38f3d8b06aef3e6d6448435ef95dd0b4dd0e7f",
     "dt13/NestedShape$Major": "0f0a869e4319028e3b357f1071ffd8cbbf5b85055f991425312395f5251fc88b",
-    "dt13/NestedShape": "34fb96b3d03b5f9920264864e5dde24d2303ee4aa2980852f27f3796d1dcd89d",
+    "dt13/NestedShape": "4dbf0ee74f49fea62670fec678a1382bc7dccc74bf181cdabe0076922ea29d04",
     "dt13/PlainImpl": "0abb34ef5551cc05910b0003afe2620ed7c00e74d7ab2e14a082825694e50dbc",
     "dt13/PlainShape": "12ca4d24b4fe9834f9897ab1b839d0fc8724cfd20c91c07b85703faccf8b9d98",
-    "dt13/Runner": "41fcfe1f0a3c30828e18f0024e086a8bba9eb05c385e96e86cf15c80e399e98b"
+    "dt13/Runner": "b8ace1129ca15e02c8ccb9322ace23615f9641364bab9a9e97ddcdaef60cbed6"
   },
   "negative_boundary": "PlainShape must remain a non-implementing enum; PlainImpl remains a class implementing Marker",
-  "nested_api_boundary": "original Runner uses NestedShape.Major and NestedShape.Major.Minor; JardeFlatRunner uses emitted top-level dollar-named types",
+  "nested_enum_negative_results": {
+    "missing_child_row": "nested enum lacks matching two-sided Java 8 enum member evidence",
+    "duplicate_owner_row": "owner has multiple direct nested enum rows outside the two-level subset",
+    "non_enum_conflicting_owner_row": "nested enum owner row is duplicated or conflicts with another member row",
+    "conflicting_child_flags": "nested enum lacks matching two-sided Java 8 enum member evidence",
+    "wrong_enum_flags": "nested enum lacks matching two-sided Java 8 enum member evidence",
+    "duplicate_child_definition": "refused"
+  },
+  "nested_api_boundary": "original Runner uses NestedShape.Major and NestedShape.Major.Minor; root Jarde source projects nested enums and physically proved enum constant references while child class-source reports stay independently available",
   "jarde_class_source": {
+    "dt13/Dollar$Shape": {
+      "exit": 0
+    },
     "dt13/InterfaceShape": {
       "exit": 0
     },
@@ -60,29 +73,29 @@
     "compile_exit": 0
   },
   "jarde_original_api_runner": {
-    "compile_exit": 1,
-    "compile_stdout": "",
-    "compile_stderr": "<TMP>/jarde-api-runner-src/dt13/Runner.java:5: error: cannot find symbol\n        NestedShape.Major major = NestedShape.Major.FIRST;\n                   ^\n  symbol:   class Major\n  location: class NestedShape\n<TMP>/jarde-api-runner-src/dt13/Runner.java:5: error: cannot find symbol\n        NestedShape.Major major = NestedShape.Major.FIRST;\n                                             ^\n  symbol:   variable Major\n  location: class NestedShape\n<TMP>/jarde-api-runner-src/dt13/Runner.java:6: error: cannot find symbol\n        NestedShape.Major.Minor minor = NestedShape.Major.Minor.LEFT;\n                   ^\n  symbol:   class Major\n  location: class NestedShape\n<TMP>/jarde-api-runner-src/dt13/Runner.java:6: error: cannot find symbol\n        NestedShape.Major.Minor minor = NestedShape.Major.Minor.LEFT;\n                                                   ^\n  symbol:   variable Major\n  location: class NestedShape\n4 errors\n"
-  },
-  "jarde_flat_runner": {
     "compile_exit": 0,
     "run_exit": 0,
     "run_stdout": "nested=FIRST:LEFT:FIRST:LEFT\ninterface=FIRST:true\nplain=FIRST:false\nclass=true\n",
     "run_stderr": ""
   },
+  "jarde_physical_child_compile_exits": {
+    "Dollar$Shape": 0,
+    "NestedShape$Major$Minor": 0,
+    "NestedShape$Major": 0
+  },
   "runtime_equal": {
     "original_jadx": true,
-    "original_jarde_flat": true,
-    "original_jarde_original_api": null
+    "original_jarde_original_api": true
   },
   "assertions": {
     "original_java8_compile_and_verified_run": true,
     "jadx_complete_java8_compile_and_verified_run_matches_original": true,
-    "jarde_physical_source_set_java8_compiles": true,
-    "jarde_flat_name_consumer_verified_run_matches_original": true,
-    "jarde_original_nested_api_consumer_baseline_rejected": true,
-    "jarde_nested_api_expected_unresolved_major_diagnostics": 4,
+    "jarde_root_level_source_set_java8_compiles": true,
+    "jarde_independent_nested_enum_reports_java8_compile": true,
+    "jarde_original_nested_api_consumer_verified_run_matches_original": true,
+    "nested_binary_name_string_literal_preserved": true,
     "jarde_enum_implements_marker_header": true,
-    "plain_enum_negative_boundary": true
+    "plain_enum_negative_boundary": true,
+    "dollar_named_top_level_enum_stays_top_level": true
   }
 }

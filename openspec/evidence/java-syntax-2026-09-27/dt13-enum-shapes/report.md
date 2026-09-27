@@ -2,7 +2,7 @@
 
 ## 结论
 
-本次把 DT-13 拆成两个独立子形态。`enum implements I` 的声明头在冻结样例上与 JADX 对齐；嵌套枚举存在可复现的源 API 差距：Jarde 单类源码入口将成员枚举输出为 `$` 名顶层类型，丢失词法嵌套关系。全部生成的物理类文本集合自身可编译；改用原始消费者的 `NestedShape.Major` / `NestedShape.Major.Minor` API 时，Java 8 编译失败。只用展开的二进制名 `NestedShape$Major` / `NestedShape$Major$Minor` 编译、`-Xverify:all` 运行则成功，说明差距是类级源码装配与成员声明投影，不是枚举常量运行逻辑。
+初始冻结重放把 DT-13 拆成两个独立子形态。`enum implements I` 的声明头当时已与 JADX 对齐；嵌套枚举当时存在可复现的源 API 差距：Jarde 单类源码入口将成员枚举输出为 `$` 名顶层类型，丢失词法嵌套关系。以下保留该基线及原始诊断供审计。实现后的 fixed 重放已经通过原始 `NestedShape.Major` / `NestedShape.Major.Minor` API 编译和 `-Xverify:all` 运行；详见本报告末尾新增结果。
 
 结果仅覆盖本文冻结的简单形状，不宣称 `TestInnerEnums` 全部能力已追平：其枚举构造实参（byte 与另一枚举）另属 DT-11；`TestEnumsInterface` 还含每个常量独立匿名子类和覆盖方法，属于 DT-12，不在本次接口声明验收内。
 
@@ -108,3 +108,16 @@ class=true
 已建立独立窄 OpenSpec `recover-proved-nested-enum-source`：只讨论在父类/enum 词法位置输出已完整证明的嵌套 enum 声明，覆盖 fixture 中两级 `NestedShape.Major.Minor` 关系；维持整组拒绝和物理类报告，不处理任意成员类。
 
 `enum implements I` 无需另开实现任务；本样例无差距。TestEnumsInterface 里的匿名常量体继续归 DT-12。带构造参数的嵌套 enum 不在这份窄切片中，它本身受 DT-11 证据约束；首个实现可限制为当前无参数/普通常量组的形状，或明确依赖已通过的现有 enum proof，但不得据此声称 TestInnerEnums 已追平。
+
+## Fixed DT-13 implementation replay
+
+在 `recover-proved-nested-enum-source` 实现后重新运行本目录的 `replay.py`。它用临时 Java/Rust 输出目录构造并编译原始、JADX、Jarde 源码；root-level Jarde 文件集合包含已投影的 `NestedShape`，并由原始 `Runner` 调用 `NestedShape.Major` 与 `NestedShape.Major.Minor`。Jarde 根级集合和 JADX 集合均以 Java 8 编译，并用 `-Xverify:all` 运行，输出逐字节一致：
+
+```text
+nested=FIRST:LEFT:FIRST:LEFT
+interface=FIRST:true
+plain=FIRST:false
+class=true
+```
+
+重放还查询 root JSON，验证两级声明分别带 owner/child 与 enum group anchors，root 对 `Major`、`Minor` 常量的两处类型路径改写各自带有同轮 method-point 和 enum field anchor，且 summary 不复制 child report；对 `Major`、`Minor` 的独立 class-source 查询仍保留各自物理 class 声明。根 fixture 还返回字面量 `dt13.NestedShape$Major`，Runner 对它做精确检查，以证明类型名投影不修改字符串。重放的固定拒绝控制覆盖缺失 child row、重复 owner row、同名非 enum row、冲突 child flags、错误 enum flags 和同名重复 definition；Rust 测试还把 enum `<clinit>` 的 `putstatic` 改成 `getstatic`，要求错误常量组整组拒绝。拒绝结果不在 root 文本留下 `Major` 的部分嵌套声明，报告通过 `nested_enum_family` 和 diagnostics 保留拒绝原因。Rust budget/cancellation 单测验证停止信号及原子投影边界。具体状态和工具版本见同目录 `results.json`。
