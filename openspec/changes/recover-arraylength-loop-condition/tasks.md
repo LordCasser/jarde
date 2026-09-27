@@ -5,5 +5,5 @@
 
 ## 2. 完整类验收
 
-- [ ] 2.1 对隔离 `StepIndex` 和组合 `ForeachCases` 重放原 class、固定 JADX、修后 Jarde 的完整 Java 8 重编与 `java -Xverify:all`；逐行核对 `4` 与 `10/abc/4`，补充 null 数组异常位置/次数对照并记录来源哈希。StepIndex 和 null 对照通过；组合 Jarde 在 BCI 53 的 `List→Iterable` 参数转换仍缺安全证据，输出 `10/4`，详见 [验证记录](verification.md)。
+- [x] 2.1 对隔离 `StepIndex` 和组合 `ForeachCases` 重放原 class、固定 JADX、修后 Jarde 的完整 Java 8 重编与 `java -Xverify:all`；逐行核对 `4` 与 `10/abc/4`，补充 null 数组异常位置/次数对照并记录来源哈希。最新主线组合三方均通过，见 [root 独立验收](../../evidence/java-syntax-2026-09-27/cf10-foreach/isolation/arraylength-root-acceptance-2026-09-27.md)。
 - [x] 2.2 运行相邻 foreach/循环回归、预算/取消门、`cargo fmt --all -- --check`、相关 crate 测试、workspace check 与 `openspec validate recover-arraylength-loop-condition --strict`；将结果写入 CF-10 证据并保持 CF-10 单元状态为部分已测。
