@@ -1,0 +1,8 @@
+package dt15;
+
+import java.lang.Comparable;
+import java.lang.Number;
+
+/* JADX INFO: loaded from: input.jar:dt15/Bounds.class */
+public class Bounds<T extends Number & Comparable<T>> {
+}

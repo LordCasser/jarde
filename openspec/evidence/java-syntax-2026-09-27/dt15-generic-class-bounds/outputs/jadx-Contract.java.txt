@@ -1,0 +1,7 @@
+package dt15;
+
+import java.lang.Number;
+
+/* JADX INFO: loaded from: input.jar:dt15/Contract.class */
+public interface Contract<X extends Number> {
+}

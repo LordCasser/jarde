@@ -1,0 +1,40 @@
+{
+  "jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "javac": "javac 23.0.1",
+  "source_sha256": {
+    "Bounds.java": "1ed4a1832906c3943cb35248f49493c08c5a3e3d6f848a094280a2565903237b",
+    "Contract.java": "ec3b775266f81d69815e22815957ebdbc4d5613e98670799416f2d70cb83eab2",
+    "Plain.java": "302e7be682c85d9b87549fec59274d59deac4ce41703dc00a53287455c33bda0",
+    "Runner.java": "19eb40efbc6c6950f6c385809b724f0822cab7fa528f3ffb6631ceb6d038fb69"
+  },
+  "class_sha256": {
+    "Bounds.class": "a0371ce4549081a168f0715434696d70dddb097f07eeced8d202d709b536c7b8",
+    "Contract.class": "94c5cc85d150bc5b6c36543b0572ce4baee7629ac2ef5f597d1b917505f2671e",
+    "Plain.class": "01e2611af4a42b12ddbc7ffd9cd739fa2459157fd79cc6d284208a438e36e13b",
+    "Runner.class": "af8102252038fff46978a60a93975bcae2da41a2346aad854485d9fb8fd9204b"
+  },
+  "outputs_sha256": {
+    "jadx-Bounds.java.txt": "5624b1bec58dd5d59007f12a4445dd3e97d73ef6c98f249be926ac77be74132f",
+    "jadx-Contract.java.txt": "9e2df6c62740d8b6f8085693576c60cfc5f5c6a780f25cbed7165838c894228f",
+    "jadx-Plain.java.txt": "8088bf574a978af38d99bfe761505e139000426ce678137a4a401beca8e5f7a7",
+    "jarde-Bounds.java.txt": "479ecd89d0068981ad7ce88f10a14c80b6c2dc1a12d493b1968ea1d9bd25df62",
+    "jarde-Contract.java.txt": "0119a941d5cf8e58b642bb453b5c2aacfaa25741ed224a887f44a038a0b5def3",
+    "jarde-Plain.java.txt": "c6b13d1e51469447b10eb62291cd7fb95653c9f050f7369eb93cf7929f1e19a5"
+  },
+  "original": {
+    "compile_exit": 0,
+    "verified_run_exit": 0,
+    "stdout": "T:java.lang.Number:java.lang.Comparable<T>\nX:java.lang.Number\n0:true\n"
+  },
+  "jadx": {
+    "compile_exit": 0,
+    "verified_run_exit": 0,
+    "stdout": "T:java.lang.Number:java.lang.Comparable<T>\nX:java.lang.Number\n0:true\n"
+  },
+  "jarde": {
+    "compile_exit": 0,
+    "verified_run_exit": 0,
+    "stdout": "T:java.lang.Number:java.lang.Comparable<T>\nX:java.lang.Number\n0:true\n"
+  },
+  "scope": "top-level class and interface bounds only; no nested generic member or generic method claim"
+}
