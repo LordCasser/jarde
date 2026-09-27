@@ -31,7 +31,7 @@ abc
 4
 ```
 
-JADX retains the stride loop as indexed `for (int i = 0; i < values.length; i += 2)`; it does not rewrite it as foreach. Jarde recovers `sum` as `for (int value : local2)` and `join` as `for (java.lang.Object iteratorElement25 : values)` with the String cast inside. It does not rewrite `everyOther` as foreach, but declines its method body with `local 1 crosses a quoted fallback region`; consequently the assembled Jarde class source is incomplete and fails `javac --release 8` with a missing return. This is a concrete Jarde coverage gap for this valid counted-loop boundary. The observed diagnostic is a quoted-fallback/local-scope rejection; this audit did not trace the internal Region failure or establish that its cause is the same as CF-08, so the relation remains unproven.
+JADX retains the stride loop as indexed `for (int i = 0; i < values.length; i += 2)`; it does not rewrite it as foreach. Jarde recovers `sum` as `for (int value : local2)` and `join` as `for (java.lang.Object iteratorElement25 : values)` with the String cast inside. It does not rewrite `everyOther` as foreach, but declines its method body with `local 1 crosses a quoted fallback region`; this alone makes the assembled Jarde class fail `javac --release 8` with a missing return. The same assembled source **also** quotes part of `main`: the invocation of `join(Iterable)` receives a `List` from `Arrays.asList`, and reference-conversion evidence is unavailable at that layer. The two diagnostics identify distinct remaining coverage gaps; this audit did not trace either to an internal root cause or establish that the counted-loop failure shares CF-08's cause.
 
 Artifacts in this directory preserve the input, original compiled class, JADX source/classes, Jarde assembled source, and run outputs. Reproduction commands:
 
@@ -42,7 +42,7 @@ cargo run -q -p jarde-cli -- class-source --input original/ForeachCases.class --
 javac --release 8 -g -Xlint:-options -d jadx-classes jadx/sources/defpackage/ForeachCases.java
 java -Xverify:all -cp original ForeachCases
 java -Xverify:all -cp jadx-classes defpackage.ForeachCases
-javac --release 8 -g -Xlint:-options -d jarde jarde/ForeachCases.java # expected failure: missing return in everyOther
+javac --release 8 -g -Xlint:-options -d jarde jarde/ForeachCases.java # expected failure: missing return in everyOther; main also contains a quoted invocation
 ```
 
 Jarde focused verification on this baseline:
