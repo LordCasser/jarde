@@ -381,6 +381,29 @@ fn cf18_fixed_methods_preserve_rows_dispatch_and_presented_origins() {
         for bci in anchors {
             assert!(!report.source_map.of_bci(bci).is_empty(), "BCI {bci} has no source anchor:\n{}", report.text);
         }
+        let physical: std::collections::BTreeSet<_> = code
+            .instructions
+            .iter()
+            .map(|instruction| instruction.bci)
+            .collect();
+        let digest = blake3::hash(class).to_hex().to_string();
+        let mapped: std::collections::BTreeSet<_> = report
+            .source_map
+            .segments()
+            .iter()
+            .flat_map(|segment| {
+                std::iter::once(segment.origin().primary()).chain(segment.origin().derived())
+            })
+            .filter(|origin| {
+                origin.method().is_some_and(|method| {
+                    method.name.0 == b"run"
+                        && method.owner.class_bytes.length == class.len() as u64
+                        && method.owner.class_bytes.digest.0 == digest
+                })
+            })
+            .map(|origin| origin.bci())
+            .collect();
+        assert_eq!(mapped, physical, "every physical instruction BCI needs an origin in the exact run() class");
         for segment in report.source_map.segments() {
             let origin = segment.origin().primary();
             let method = origin.method().expect("a source anchor names its physical method");

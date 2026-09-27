@@ -3215,6 +3215,7 @@ fn own_blocks(region: &Region) -> Vec<CanonicalBlockId> {
             lead: _,
             body,
             catches,
+            normal_exit_bci: _,
         } => {
             let mut blocks = prefix.clone();
             blocks.extend(body.blocks().into_iter().cloned());
@@ -13052,6 +13053,7 @@ impl Builder<'_> {
                 lead,
                 body,
                 catches,
+                normal_exit_bci,
             } => {
                 let shared = self
                     .shared_finally
@@ -13166,6 +13168,9 @@ impl Builder<'_> {
                 ));
                 for clause in catches {
                     origin = origin.plus_derived(Origin::derived(clause.handler().bci()));
+                }
+                if let Some(bci) = normal_exit_bci {
+                    origin = origin.plus_derived(Origin::derived(*bci));
                 }
                 let finally_body = if let Some(shared) = &shared {
                     for bci in &shared.facts {

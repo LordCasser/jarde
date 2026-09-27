@@ -18,8 +18,12 @@ pub(crate) struct FragmentedCatch {
     pub(crate) inner_row: u32,
     pub(crate) outer_start: u32,
     pub(crate) inner_start: u32,
+    /// The proved terminal goto from the inner protected body to its normal continuation.
+    pub(crate) inner_exit_bci: u32,
     pub(crate) outer_join: CanonicalBlockId,
     pub(crate) update: CanonicalBlockId,
+    /// The proved terminal goto from the update block back to this loop's header.
+    pub(crate) update_transfer_bci: u32,
     pub(crate) loop_header: usize,
     /// Ordinary successors of exception-only blocks which enter the natural loop.
     pub(crate) loop_entries: BTreeSet<(usize, usize)>,
@@ -335,6 +339,12 @@ pub(crate) fn prove(
         let Some(update_ssa) = ssa.block(update_id) else {
             continue;
         };
+        let Some(update_transfer) = update_ssa.instructions().last() else {
+            continue;
+        };
+        if !matches!(update_transfer.opcode(), 0xa7 | 0xc8) {
+            continue;
+        }
         let Some(update_step) = update_ssa
             .instructions()
             .iter()
@@ -452,8 +462,10 @@ pub(crate) fn prove(
             inner_row: inner.ordinal,
             outer_start: first.start_bci,
             inner_start: inner.start_bci,
+            inner_exit_bci: inner.end_bci,
             outer_join: outer_exit,
             update: update_id.clone(),
+            update_transfer_bci: update_transfer.bci(),
             loop_header: header,
             loop_entries,
             exceptional_blocks,

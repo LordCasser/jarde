@@ -566,6 +566,9 @@ pub enum Region {
         lead: (u32, u32),
         /// The protected range, recovered as a region of its own.
         body: Box<Region>,
+        /// A certified terminal goto whose normal continuation is represented by this try's
+        /// lexical sequence, rather than by a Java transfer statement.
+        normal_exit_bci: Option<u32>,
         /// The clauses, in exception-table order.
         catches: Vec<CatchClause>,
     },
@@ -2293,6 +2296,11 @@ impl Walker<'_> {
                     lead,
                     body,
                     catches,
+                    normal_exit_bci: self.fragmented.as_ref().and_then(|proof| {
+                        (proof.outer_start != proof.inner_start
+                            && current.bci() == proof.inner_start)
+                            .then_some(proof.inner_exit_bci)
+                    }),
                 }];
                 run.extend(tails);
                 if self.fragmented.as_ref().is_some_and(|proof| {
@@ -3680,6 +3688,9 @@ impl Walker<'_> {
                     lead: inner.lead,
                     body: Box::new(body),
                     catches,
+                    normal_exit_bci: self.fragmented.as_ref().and_then(|proof| {
+                        (start.bci() == proof.inner_start).then_some(proof.inner_exit_bci)
+                    }),
                 };
                 tails.extend(inner_tails);
                 if certified
@@ -3937,6 +3948,7 @@ impl Walker<'_> {
             prefix: Vec::new(),
             lead: (plan.body().0, plan.body().0),
             body: Box::new(try_body),
+            normal_exit_bci: None,
             catches: vec![CatchClause {
                 type_indices: vec![*catch_type],
                 handler: catch_handler.clone(),
@@ -6962,6 +6974,17 @@ impl Walker<'_> {
             };
             return Ok(Some(Self::loop_fallback(header, reason, body)));
         }
+        let mut gateway_origins = exit_gateway
+            .map(|(_, _, origins)| origins.to_vec())
+            .unwrap_or_default();
+        if let Some(proof) = self.fragmented.as_ref()
+            && proof.loop_header == header_node
+            && for_header
+                .as_ref()
+                .is_some_and(|candidate| candidate.update_block == proof.update)
+        {
+            gateway_origins.push(proof.update_transfer_bci);
+        }
         let run = vec![Region::Loop {
             header: header.clone(),
             tests: vec![(header.clone(), test_bci, continuation)],
@@ -6970,9 +6993,7 @@ impl Walker<'_> {
             for_header,
             body,
             exit: Some(outside.clone()),
-            gateway_origins: exit_gateway
-                .map(|(_, _, origins)| origins.to_vec())
-                .unwrap_or_default(),
+            gateway_origins,
         }];
         Ok(Some((run, Some(outside))))
     }
