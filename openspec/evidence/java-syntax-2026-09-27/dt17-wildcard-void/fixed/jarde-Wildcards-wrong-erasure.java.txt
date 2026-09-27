@@ -1,0 +1,60 @@
+// jarde: presentation of `dt17/Wildcards` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt17;
+
+public class Wildcards extends java.lang.Object {
+    public Wildcards() {
+        // @method <init>()V
+        // @declaration a constructor of `dt17.Wildcards`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `any(Ljava/util/List;)V`: invalid input (jvm_signature_erasure_mismatch): erased Signature disagrees with the physical descriptor at parameter 0
+    public static void any(java.util.List arg0) {
+        // @method any(Ljava/util/List;)V
+        // @declaration a static method of `dt17.Wildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    public static void ext(java.util.List<? extends java.lang.Number> arg0) {
+        // jarde: generic Signature `(Ljava/util/List<+Ljava/lang/Number;>;)V` projected after descriptor erasure and same-run AST/Code/SSA unused-parameter proof
+        // @method ext(Ljava/util/List;)V
+        // @declaration a static method of `dt17.Wildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    public static void sup(java.util.List<? super java.lang.String> arg0) {
+        // jarde: generic Signature `(Ljava/util/List<-Ljava/lang/String;>;)V` projected after descriptor erasure and same-run AST/Code/SSA unused-parameter proof
+        // @method sup(Ljava/util/List;)V
+        // @declaration a static method of `dt17.Wildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    public static void extArray(java.util.List<? extends byte[]> arg0) {
+        // jarde: generic Signature `(Ljava/util/List<+[B>;)V` projected after descriptor erasure and same-run AST/Code/SSA unused-parameter proof
+        // @method extArray(Ljava/util/List;)V
+        // @declaration a static method of `dt17.Wildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    public static void supArray(java.util.List<? super int[]> arg0) {
+        // jarde: generic Signature `(Ljava/util/List<-[I>;)V` projected after descriptor erasure and same-run AST/Code/SSA unused-parameter proof
+        // @method supArray(Ljava/util/List;)V
+        // @declaration a static method of `dt17.Wildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    public static void raw(java.util.List arg0) {
+        // @method raw(Ljava/util/List;)V
+        // @declaration a static method of `dt17.Wildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+}

@@ -1,0 +1,6 @@
+any=java.util.List<?>
+ext=java.util.List<? extends java.lang.Number>
+sup=java.util.List<? super java.lang.String>
+extArray=java.util.List<? extends byte[]>
+supArray=java.util.List<? super int[]>
+raw=java.util.List

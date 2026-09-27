@@ -1,0 +1,121 @@
+// jarde: presentation of `dt17/NegativeWildcards` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt17;
+
+public class NegativeWildcards extends java.lang.Object {
+    public NegativeWildcards() {
+        // @method <init>()V
+        // @declaration a constructor of `dt17.NegativeWildcards`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `used(Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static void used(java.util.List arg0) {
+        // @method used(Ljava/util/List;)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0.size();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `assigned(Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static void assigned(java.util.List arg0) {
+        // @method assigned(Ljava/util/List;)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        arg0 = null;
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `called(Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static void called(java.util.List arg0) {
+        // @method called(Ljava/util/List;)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        helper(arg0);
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `extraInstruction(Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static void extraInstruction(java.util.List arg0) {
+        // @method extraInstruction(Ljava/util/List;)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (java.lang.System.nanoTime() == 0L) {
+            return;
+        } else {
+            return;
+        }
+    }
+
+    // jarde: generic Signature projection refused for `helper(Ljava/util/List;)V`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    public static void helper(java.util.List arg0) {
+        // @method helper(Ljava/util/List;)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `handled(Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static void handled(java.util.List arg0) {
+        // @method handled(Ljava/util/List;)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            throw new java.lang.IllegalStateException();
+        } catch (java.lang.IllegalStateException local1) {
+            return;
+        }
+    }
+
+    // jarde: generic Signature projection refused for `extra(Ljava/util/List;I)V`: unsupported (ordinary_generic_source_unproved): return source is not a proven parameter value or selected member creation
+    public static void extra(java.util.List arg0, int arg1) {
+        // @method extra(Ljava/util/List;I)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `nested(Ljava/util/List;)V`: unsupported (generic_source_shape_unproved): class name has no unambiguous Java source spelling
+    public static void nested(java.util.List arg0) {
+        // @method nested(Ljava/util/List;)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `annotated(Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): member flags, annotation positions, or source name cannot be preserved
+    public static void annotated(java.util.List arg0) {
+        // jarde: type annotation refused: target=0x16 info=[0] path=[TypePathEntry { kind: 3, index: 0 }]: non-empty type_path is not source-spellable in this change
+        // @method annotated(Ljava/util/List;)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `same(Ljava/util/List;)V`: unsupported (generic_call_binding_unproved): a same-class Methodref names this method or an adjacent overload
+    public static void same(java.util.List arg0) {
+        // @method same(Ljava/util/List;)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `trigger(Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public static void trigger(java.util.List arg0) {
+        // @method trigger(Ljava/util/List;)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        same(arg0);
+        return;
+    }
+
+    public static void raw(java.util.List arg0) {
+        // @method raw(Ljava/util/List;)V
+        // @declaration a static method of `dt17.NegativeWildcards`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+}

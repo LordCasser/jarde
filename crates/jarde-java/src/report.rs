@@ -1611,7 +1611,6 @@ fn generic_return_candidate(
         };
         let effects = ssa.effects().instructions();
         if body_operations.next().is_some()
-            || !parameter_types.is_empty()
             || *operation_bci != instruction.bci()
             || instruction.bci() != code.instructions[0].bci
             || instruction.opcode() != 0xb1
@@ -1628,8 +1627,21 @@ fn generic_return_candidate(
         {
             return Ok(None);
         }
+        let mut parameters = Vec::with_capacity(parameter_types.len());
+        for slot in parameter_types.keys() {
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                1,
+                None,
+            )?;
+            let Some(name) = names.whole(*slot) else {
+                return Ok(None);
+            };
+            parameters.push((*slot, name.text().to_owned()));
+        }
         return Ok(Some(GenericReturnCandidate {
-            parameters: Vec::new(),
+            parameters,
             value: GenericReturnValue::EmptyVoid,
         }));
     }
