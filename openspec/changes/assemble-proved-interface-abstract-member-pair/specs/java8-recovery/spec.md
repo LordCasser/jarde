@@ -6,7 +6,7 @@
 
 #### Scenario: Two direct declaration-only members
 
-- **WHEN** 根类有准确双向关系的 `public interface I` 与 `public static abstract class A`，`I` 只有两个无 Code 的 public abstract 方法，`A` 只有默认构造器和一个无 Code 抽象方法，二者没有字段、Signature 或根级构造使用
+- **WHEN** 根类仅有无成员使用的默认构造器及准确双向关系的 `public interface I` 与 `public static abstract class A`，`I` 只有两个无 Code 的 public abstract 方法，`A` 只有默认构造器和一个无 Code 抽象方法，二者没有字段或 Signature
 - **THEN** 根源码同时包含合法的 `I` 与 `A`，和同一外部 Runner 一起 Java 8 重编、验证运行及反射结果与原 class 一致
 
 #### Scenario: One member is not proved

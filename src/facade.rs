@@ -1410,6 +1410,45 @@ impl Engine {
                     child: None,
                 }
             }
+            crate::member_inner::FamilyRootScan::DeclarationPair(candidates) => {
+                let root_name = report
+                    .declaration
+                    .as_ref()
+                    .expect("pair requires a published root declaration")
+                    .item
+                    .declaration
+                    .this_class
+                    .raw()
+                    .0
+                    .clone();
+                match self.prepare_class_source_declaration_pair(
+                    content,
+                    request,
+                    evidence,
+                    &environment,
+                    snapshot,
+                    &report,
+                    &root_name,
+                    &candidates,
+                    budget,
+                ) {
+                    Ok((family, family_execution)) => {
+                        merge_execution(&mut report.execution, family_execution);
+                        family
+                    }
+                    Err(error) => {
+                        merge_execution(&mut report.execution, stop_execution(&error, budget));
+                        report.diagnostics.push(stop_diagnostic(
+                            &error,
+                            Some(definition_provenance(&report.class)),
+                        ));
+                        class_source::ClassSourceMemberFamily::Refused {
+                            reason: "declaration-pair preparation stopped".to_owned(),
+                            child: None,
+                        }
+                    }
+                }
+            }
             crate::member_inner::FamilyRootScan::Candidate(candidate) => {
                 let root_name = report
                     .declaration
@@ -1454,47 +1493,63 @@ impl Engine {
         if matches!(
             report.member_family,
             class_source::ClassSourceMemberFamily::Prepared { .. }
+                | class_source::ClassSourceMemberFamily::PreparedPair { .. }
         ) {
             let mut projection_execution = ExecutionReport::Complete {
                 usage: budget.usage(),
             };
-            let projected = project_class_source_member_family(
-                content,
-                &environment,
-                &report,
-                &mut projection_execution,
-                budget,
-            );
+            let projected = if matches!(
+                report.member_family,
+                class_source::ClassSourceMemberFamily::PreparedPair { .. }
+            ) {
+                project_class_source_declaration_pair(&report, budget)
+            } else {
+                project_class_source_member_family(
+                    content,
+                    &environment,
+                    &report,
+                    &mut projection_execution,
+                    budget,
+                )
+            };
             merge_execution(&mut report.execution, projection_execution);
             match projected {
                 Ok(Ok((text, derived))) => {
                     report.text = text;
-                    if let class_source::ClassSourceMemberFamily::Prepared { projection, .. } =
-                        &mut report.member_family
-                    {
-                        *projection =
-                            class_source::ClassSourceMemberProjection::Projected { derived };
+                    match &mut report.member_family {
+                        class_source::ClassSourceMemberFamily::Prepared { projection, .. }
+                        | class_source::ClassSourceMemberFamily::PreparedPair {
+                            projection, ..
+                        } => {
+                            *projection =
+                                class_source::ClassSourceMemberProjection::Projected { derived };
+                        }
+                        _ => {}
                     }
                 }
-                Ok(Err(reason)) => {
-                    if let class_source::ClassSourceMemberFamily::Prepared { projection, .. } =
-                        &mut report.member_family
-                    {
+                Ok(Err(reason)) => match &mut report.member_family {
+                    class_source::ClassSourceMemberFamily::Prepared { projection, .. }
+                    | class_source::ClassSourceMemberFamily::PreparedPair { projection, .. } => {
                         *projection = class_source::ClassSourceMemberProjection::Refused { reason };
                     }
-                }
+                    _ => {}
+                },
                 Err(error) => {
                     merge_execution(&mut report.execution, stop_execution(&error, budget));
                     report.diagnostics.push(stop_diagnostic(
                         &error,
                         Some(definition_provenance(&report.class)),
                     ));
-                    if let class_source::ClassSourceMemberFamily::Prepared { projection, .. } =
-                        &mut report.member_family
-                    {
-                        *projection = class_source::ClassSourceMemberProjection::Refused {
-                            reason: format!("family source projection stopped: {error}"),
-                        };
+                    match &mut report.member_family {
+                        class_source::ClassSourceMemberFamily::Prepared { projection, .. }
+                        | class_source::ClassSourceMemberFamily::PreparedPair {
+                            projection, ..
+                        } => {
+                            *projection = class_source::ClassSourceMemberProjection::Refused {
+                                reason: format!("family source projection stopped: {error}"),
+                            };
+                        }
+                        _ => {}
                     }
                 }
             }
@@ -1825,6 +1880,9 @@ impl Engine {
                     candidate.simple_name,
                     candidate.access_flags,
                 ),
+                crate::member_inner::FamilyRootScan::DeclarationPair(_) => {
+                    return Ok((Family::Absent, execution));
+                }
             };
         const ACC_ENUM: u16 = 0x4000;
         let Some((child_definition, child_read)) = resolve_class_source_dependency_read_raw(
@@ -2067,6 +2125,9 @@ impl Engine {
                     candidate.simple_name,
                     candidate.access_flags,
                 ),
+                crate::member_inner::FamilyRootScan::DeclarationPair(_) => {
+                    return Ok((Family::Absent, execution));
+                }
             };
         let Some((child_definition, child_read)) = resolve_class_source_dependency_read_raw(
             content,
@@ -2559,6 +2620,158 @@ impl Engine {
         let mut execution = execution;
         merge_execution(&mut execution, capture_execution);
         Ok((family, execution))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn prepare_class_source_declaration_pair(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
+        environment: &ResolutionEnvironment,
+        snapshot: &ArtifactSnapshot,
+        root: &ClassSourceReport,
+        root_name: &[u8],
+        candidates: &[crate::member_inner::FamilyRootCandidate; 2],
+        budget: &mut Budget,
+    ) -> Result<(class_source::ClassSourceMemberFamily, ExecutionReport)> {
+        use class_source::{
+            ClassSourceMemberFamily as Family, ClassSourceMemberRelation as Relation,
+        };
+        let mut execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        let mut prepared: Vec<class_source::ClassSourcePairMember> = Vec::with_capacity(2);
+        for candidate in candidates {
+            budget.poll()?;
+            let mut child_execution = ExecutionReport::Complete {
+                usage: budget.usage(),
+            };
+            let Some((definition, read)) = resolve_class_source_dependency_read_raw(
+                content,
+                environment,
+                None,
+                &candidate.child_name,
+                &mut child_execution,
+                budget,
+            )?
+            else {
+                merge_execution(&mut execution, child_execution);
+                return Ok((
+                    Family::RefusedPair {
+                        reason: "one declaration-pair child has no unique selected definition"
+                            .to_owned(),
+                        children: prepared.into_iter().map(|member| member.child).collect(),
+                    },
+                    execution,
+                ));
+            };
+            let pool = class_constant_pool(&read.bytes, budget)?;
+            let shells: Vec<_> = read
+                .facts
+                .attributes
+                .iter()
+                .filter(|attribute| {
+                    matches!(
+                        attribute.name.raw().0.as_slice(),
+                        b"InnerClasses" | b"EnclosingMethod"
+                    )
+                })
+                .cloned()
+                .collect();
+            let nesting = class_source::read_class_source_assembly_context(
+                &read.bytes,
+                &shells,
+                &pool,
+                budget,
+            )?;
+            let relation_agrees = crate::member_inner::child_relation_agrees(
+                root_name,
+                candidate,
+                &read.facts,
+                &nesting,
+                &pool,
+                budget,
+            )?;
+            let facts = read.facts.clone();
+            charge_item(budget)?;
+            let class_item = Some(read.class.clone());
+            let mut child_diagnostics = Vec::new();
+            publish_diagnostics(read.diagnostics.clone(), &mut child_diagnostics, budget)?;
+            let child_request = ClassSourceRequest {
+                class: ClassRef::Definition {
+                    definition: definition.clone(),
+                },
+                environment: request.environment.clone(),
+            };
+            let (child, _, _, _, _, _) = self.prepare_physical_class_source(
+                content,
+                &child_request,
+                evidence,
+                environment,
+                snapshot,
+                root.view.clone(),
+                root.stages.clone(),
+                BoundClass {
+                    read,
+                    search_coverage: None,
+                    class_item,
+                },
+                child_execution,
+                child_diagnostics,
+                false,
+                budget,
+            )?;
+            merge_execution(&mut execution, child.execution.clone());
+            let complete = matches!(child.execution, ExecutionReport::Complete { .. })
+                && matches!(root.execution, ExecutionReport::Complete { .. })
+                && child.diagnostics.is_empty()
+                && facts.stopped_at.is_none()
+                && facts.methods.len() as u64 == facts.method_count;
+            let shape = if candidate.access_flags == 0x0609 {
+                interface_declaration_only_shape(candidate, &facts, &child)
+            } else {
+                static_declaration_only_shape(candidate, &facts, &child)
+            };
+            if !relation_agrees || !complete || !shape {
+                let mut children: Vec<_> =
+                    prepared.into_iter().map(|member| member.child).collect();
+                children.push(Box::new(child));
+                return Ok((
+                    Family::RefusedPair {
+                        reason: if relation_agrees {
+                            "one declaration-pair child is not a complete declaration-only member"
+                        } else {
+                            "one declaration-pair child has no matching unique self relation"
+                        }
+                        .to_owned(),
+                        children,
+                    },
+                    execution,
+                ));
+            }
+            prepared.push(class_source::ClassSourcePairMember {
+                relation: Relation {
+                    root: root.class.clone(),
+                    child: definition,
+                    simple_name: candidate.simple_name.clone(),
+                    access_flags: candidate.access_flags,
+                },
+                child: Box::new(child),
+            });
+        }
+        let Ok(members) = prepared.try_into() else {
+            unreachable!("two candidates")
+        };
+        Ok((
+            Family::PreparedPair {
+                members,
+                projection: class_source::ClassSourceMemberProjection::Refused {
+                    reason: "declaration-pair projection has not completed".to_owned(),
+                },
+            },
+            execution,
+        ))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -15009,6 +15222,49 @@ fn static_declaration_only_shape(
         })
 }
 
+fn interface_declaration_only_shape(
+    candidate: &crate::member_inner::FamilyRootCandidate,
+    facts: &jarde_reader::classfile::ClassMemberFacts,
+    child: &class_source::ClassSourceReport,
+) -> bool {
+    candidate.access_flags == 0x0609
+        && facts.access_flags == 0x0601
+        && facts.fields.is_empty()
+        && facts.methods.len() == 2
+        && child.fields.is_empty()
+        && child.methods.len() == facts.methods.len()
+        && facts
+            .attributes
+            .iter()
+            .all(|attribute| attribute.name.raw().0 != b"Signature")
+        && child.declaration.as_ref().is_some_and(|declaration| {
+            declaration.annotation_uses.is_empty()
+                && declaration.annotation_refusals.is_empty()
+                && declaration.generic_signature.is_none()
+                && declaration.generic_refusal.is_none()
+                && declaration.item.declaration.interfaces.is_empty()
+        })
+        && facts
+            .methods
+            .iter()
+            .zip(&child.methods)
+            .all(|(fact, method)| {
+                fact.name.raw().0 != b"<init>"
+                    && fact.name.raw().0 != b"<clinit>"
+                    && fact.access_flags == 0x0401
+                    && fact.attributes.is_empty()
+                    && method.item.name.raw().0 == fact.name.raw().0
+                    && method.item.descriptor.raw().0 == fact.descriptor.raw().0
+                    && method.no_body_kind == Some(NoBodyKind::Abstract)
+                    && matches!(method.outcome, class_source::ClassSourceOutcome::NoBody)
+                    && method
+                        .declaration
+                        .as_ref()
+                        .is_some_and(|text| text.ends_with(')'))
+                    && method.markers.len() == 1
+            })
+}
+
 fn prove_class_source_static_calls(
     root_methods: &[class_source::ClassSourceMethod],
     child_methods: &[class_source::ClassSourceMethod],
@@ -15327,6 +15583,90 @@ fn project_class_source_static_member_family(
     }
     budget.charge(CountedBudgetDimension::OutputBytes, text.len() as u64)?;
     let _ = execution;
+    Ok(Ok((text, derived)))
+}
+
+fn project_class_source_declaration_pair(
+    root: &ClassSourceReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<(String, Vec<class_source::MemberFamilyDerivedProjection>), String>>
+{
+    let class_source::ClassSourceMemberFamily::PreparedPair { members, .. } = &root.member_family
+    else {
+        return Ok(Err("declaration pair is not prepared".to_owned()));
+    };
+    let Some(declaration) = root.declaration.as_ref() else {
+        return Ok(Err("root declaration is incomplete".to_owned()));
+    };
+    let root_method = root.methods.first();
+    let expected_constructor = format!("public {}() {{", declaration.name);
+    let root_shape = matches!(root.execution, ExecutionReport::Complete { .. })
+        && root.diagnostics.is_empty()
+        && declaration.item.declaration.access_flags == 0x0021
+        && declaration.item.declaration.interfaces.is_empty()
+        && declaration.annotation_uses.is_empty()
+        && declaration.annotation_refusals.is_empty()
+        && declaration.generic_signature.is_none()
+        && declaration.generic_refusal.is_none()
+        && root.fields.is_empty()
+        && root.methods.len() == 1
+        && root_method.is_some_and(|method| {
+            method.item.identity.name.0 == b"<init>"
+                && method.item.identity.descriptor.0 == b"()V"
+                && method.item.access_flags == 0x0001
+                && matches!(&method.outcome, class_source::ClassSourceOutcome::Recovered { report, analysis }
+                    if matches!(analysis.execution, ExecutionReport::Complete { .. })
+                        && matches!(report.execution, ExecutionReport::Complete { .. })
+                        && report.produced()
+                        && report.quality == Quality::Structured
+                        && report.fallbacks.is_empty())
+                && method.text.lines().map(str::trim)
+                    .filter(|line| !line.is_empty() && !line.starts_with("//"))
+                    .collect::<Vec<_>>()
+                    == [expected_constructor.as_str(), "super();", "return;", "}"]
+        });
+    if !root_shape {
+        return Ok(Err(
+            "root has an unproved member use or declaration".to_owned()
+        ));
+    }
+    for member in members {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if !matches!(member.child.execution, ExecutionReport::Complete { .. })
+            || member.child.declaration.is_none()
+            || !member.child.fields.is_empty()
+            || member.child.methods.iter().any(|method| {
+                method.declaration.is_none()
+                    || match &method.outcome {
+                        class_source::ClassSourceOutcome::NoBody => {
+                            method.no_body_kind != Some(NoBodyKind::Abstract)
+                                || method.markers.len() != 1
+                        }
+                        class_source::ClassSourceOutcome::Recovered { report, analysis } => {
+                            !matches!(analysis.execution, ExecutionReport::Complete { .. })
+                                || !matches!(report.execution, ExecutionReport::Complete { .. })
+                                || !report.produced()
+                                || report.quality != Quality::Structured
+                                || !report.fallbacks.is_empty()
+                                || !method.markers.is_empty()
+                        }
+                        _ => true,
+                    }
+            })
+        {
+            return Ok(Err(
+                "one declaration-pair child report is incomplete".to_owned()
+            ));
+        }
+    }
+    let Some((text, derived)) = class_source::declaration_pair_source_text(root, members) else {
+        return Ok(Err(
+            "pair writer could not re-emit both declarations and origins".to_owned(),
+        ));
+    };
+    budget.charge(CountedBudgetDimension::AnalysisSteps, text.len() as u64)?;
+    budget.charge(CountedBudgetDimension::OutputBytes, text.len() as u64)?;
     Ok(Ok((text, derived)))
 }
 

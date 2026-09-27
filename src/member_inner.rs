@@ -1067,6 +1067,7 @@ pub(crate) enum FamilyRootScan {
     Absent,
     Refused(String),
     Candidate(FamilyRootCandidate),
+    DeclarationPair([FamilyRootCandidate; 2]),
 }
 
 /// Find the one Java 8 nested enum slice this class-source writer supports. The typed row supplies
@@ -1236,7 +1237,7 @@ pub(crate) fn scan_nested_annotation_root(
 const FAMILY_FORBIDDEN_FLAGS: u16 = 0x0200 | 0x2000 | 0x4000;
 const FAMILY_VISIBILITY_FLAGS: u16 = 0x0001 | 0x0002 | 0x0004;
 
-/// Discover at most one direct named child from the root's typed InnerClasses rows.
+/// Discover one direct named child, or the bounded interface/abstract declaration pair.
 /// No binary-name search is used: the class index in the row supplies the exact symbolic target.
 pub(crate) fn scan_family_root(
     root: &[u8],
@@ -1251,6 +1252,7 @@ pub(crate) fn scan_family_root(
     }
     let mut candidate = None;
     let mut static_candidate = None;
+    let mut declaration_pair = Vec::new();
     let mut static_names = Vec::new();
     let mut direct_rows = 0usize;
     for row in &nesting.inner_classes {
@@ -1305,7 +1307,7 @@ pub(crate) fn scan_family_root(
         };
         if !jarde_java::names::is_java_identifier(simple)
             || child.0 != [root, b"$", simple.as_bytes()].concat()
-            || row.access_flags & FAMILY_FORBIDDEN_FLAGS != 0
+            || (row.access_flags & FAMILY_FORBIDDEN_FLAGS != 0 && row.access_flags != 0x0609)
             || (row.access_flags & FAMILY_VISIBILITY_FLAGS).count_ones() > 1
             || row.access_flags & (0x0010 | 0x0400) == (0x0010 | 0x0400)
         {
@@ -1318,6 +1320,12 @@ pub(crate) fn scan_family_root(
             simple_name: simple.to_owned(),
             access_flags: row.access_flags,
         };
+        if row.access_flags == 0x0609 || row.access_flags == 0x0409 {
+            declaration_pair.push(next.clone());
+        }
+        if row.access_flags == 0x0609 {
+            continue;
+        }
         if row.access_flags & 0x0008 != 0 {
             static_names.push(next.child_name.clone());
             if static_candidate.replace(next).is_some() {
@@ -1340,6 +1348,29 @@ pub(crate) fn scan_family_root(
     {
         return Ok(FamilyRootScan::Refused(
             "selected member also has a conflicting static InnerClasses row".to_owned(),
+        ));
+    }
+    if declaration_pair.len() == 2
+        && direct_rows == 2
+        && declaration_pair[0].child_name != declaration_pair[1].child_name
+        && declaration_pair
+            .iter()
+            .any(|member| member.access_flags == 0x0609)
+        && declaration_pair
+            .iter()
+            .any(|member| member.access_flags == 0x0409)
+    {
+        return Ok(FamilyRootScan::DeclarationPair([
+            declaration_pair.remove(0),
+            declaration_pair.remove(0),
+        ]));
+    }
+    if declaration_pair
+        .iter()
+        .any(|member| member.access_flags == 0x0609)
+    {
+        return Ok(FamilyRootScan::Refused(
+            "interface member is outside the exact two-declaration family subset".to_owned(),
         ));
     }
     if static_candidate
