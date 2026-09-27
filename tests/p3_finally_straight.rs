@@ -104,6 +104,7 @@ fn a_branching_protected_body_stays_inside_structured_finally() {
     );
     assert!(text.contains("int local0 = mark(2);"), "{text}");
     assert!(text.contains("return local0;"), "{text}");
+    assert!(text.contains("} finally {"), "{text}");
     assert_eq!(text.matches("cleanup();").count(), 1, "{text}");
     assert!(!text.contains("@bytecode"), "{text}");
 }
