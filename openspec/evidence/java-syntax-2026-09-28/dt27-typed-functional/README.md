@@ -15,3 +15,5 @@
 运行 `python3 replay.py /absolute/path/to/jarde-cli [output-directory]`。脚本先核冻结 class 的 SHA-256、固定 JADX checkout HEAD 和该 checkout 构建的 `dev` launcher，然后分别重编原源码、固定 JADX 与 Jarde 的完整 Java 8 类；三方 `java -Xverify:all` 输出及三项反射泛型返回类型逐字一致。Jarde 的三处方法引用和物理来源分别是 `Integer::parseInt`（BCI 0、CP #13）、`this::length`（BCI 1、CP #17）、`this::label`（BCI 1、CP #20）。运行目录同时保存实施前 `cdc98472` 的 raw/拒绝状态。
 
 脚本只改写 class 常量池里的 `Signature` UTF8 项，证明参数与结果两种伪造签名保持 Code/descriptor/indy 不变且 verifier 有效；另以真实 Java 8 编译构造与实例化 SAM 冲突的伪造目标。三者均拒绝泛型声明投影。`NearRefs.java` 覆盖额外效果、handler、nullable 绑定、创建时副作用和 holder 替换，均经 verifier 运行并保持拒绝。`--budget output_bytes=500` 的 CLI 输出文件未创建，未泄漏半份类源码。取消状态另由 `tests/class_source.rs` 的该冻结 class 测试覆盖。
+
+在合并 `origin/main`（`80520a31`）后，fresh CLI 的脚本复跑通过。固定非泛型 DT-27 审计的原/JADX/Jarde 完整类均重编并运行 `2:-3:RuntimeException`，仍输出 `Math::abs`、`this::number`、`RuntimeException::new`。描述符适配的两个 Java 8 运行回归、数组构造与 lambda helper 的 16 个回归、class-source 泛型回归、`cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、格式检查、OpenSpec strict 与 diff check 均通过。`4.3` 留给独立审阅，不据此宣称 DT-27 整体完成。
