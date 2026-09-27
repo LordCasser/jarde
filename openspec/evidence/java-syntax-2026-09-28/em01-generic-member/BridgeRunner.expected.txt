@@ -1,0 +1,6 @@
+type-parameters=1
+interface=java.lang.Comparable<em01.Generic$A<T>>
+methods=2:1
+typed=0
+bridge-null=0
+bridge-wrong=ClassCastException
