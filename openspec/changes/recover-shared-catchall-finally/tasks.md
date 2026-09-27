@@ -1,7 +1,7 @@
 ## 1. 冻结多出口基线与可行性
 
-- [ ] 1.1 提取仅含 `handled`、计数器及外部 Runner 的最小 Java 8 类族；catch 返回可用字面量以隔离本项。固定原 class/JADX/Jarde 完整源码与 `javac --release 8 -g:none`、`java -Xverify:all` 结果，核真实异常行 ordinal、BCI/SSA 与三份副本。原 class 为运行 oracle，JADX 的实际结果单独记录；冻结 `FinallyOnce` 的已证 `normal:2` 差异不得被当成等价目标。
-- [ ] 1.2 在现有 Guard/Region/Builder 逐点验证三行、两返回、共用 handler 的有界子正文所有权和局部声明可行性；若无法完整表达，保存拒绝与具体阻碍，不放宽旧证书或输出部分 try。
+- [x] 1.1 提取仅含 `handled`、计数器及外部 Runner 的最小 Java 8 类族；catch 返回可用字面量以隔离本项。固定原 class/JADX/Jarde 完整源码与 `javac --release 8 -g:none`、`java -Xverify:all` 结果，核真实异常行 ordinal、BCI/SSA 与三份副本。原 class 为运行 oracle，JADX 的实际结果单独记录；冻结 `FinallyOnce` 的已证 `normal:2` 差异不得被当成等价目标。
+- [x] 1.2 在现有 Guard/Region/Builder 逐点验证三行、两返回、共用 handler 的有界子正文所有权和局部声明可行性；若无法完整表达，保存拒绝与具体阻碍，不放宽旧证书或输出部分 try。
 
 ## 2. 私有多出口证书与投影（仅在 1.2 可行后）
 
