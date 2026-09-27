@@ -28,10 +28,15 @@ JADX_PRODUCTION = {
     "InsnGen.java": "c6308a71dd870d7f13bb8ac7efdb58191966cd6a5254aa11e443c95af6bafed6",
 }
 EXPECTED = """java.lang.Integer:1:true
+integer-bounds:-128:true:127:true
+integer-outside:-129:false:128:false
+integer-context:java.lang.Integer:1
 java.lang.Boolean:true:true
+boolean-false:java.lang.Boolean:false:true
 java.lang.Byte:2:true
 java.lang.Short:3:true
 java.lang.Character:c:true
+character-bounds:127:true:128:false
 java.lang.Long:4:true
 0:0:7
 true:false
@@ -126,6 +131,13 @@ def main():
         original = compile_and_run("original", original_source, output, temporary)
         if original["javac_exit"] or original["runtime_exit"] or original["stdout"] != EXPECTED:
             raise RuntimeError("original Java 8 source did not match the frozen runner")
+        extra_class = run(
+            ["javac", "--release", "8", "-g:none", "-d",
+             temporary / "original-classes", INPUT / "SecondConsumerCases.java"],
+            output / "second-consumer-javac.log",
+        )
+        if extra_class.returncode:
+            raise RuntimeError("the separate second-consumer fixture did not compile")
         bytecode = run(
             ["javap", "-c", "-p", "-classpath", temporary / "original-classes", "em25.BoxingAudit"],
             output / "javap-BoxingAudit.txt",
@@ -157,16 +169,63 @@ def main():
             raise RuntimeError("Jarde class-source failed")
         jarde_source = source_dir / "jarde-BoxingAudit.java"
         jarde_source.write_text(jarde_result.stdout)
+        second_consumer = run(
+            [args.jarde, "class-source", "--input", jar, "--class", "em25.SecondConsumerCases",
+             "--policy", "plain-jar", "--release", "8", "--format", "text"],
+            output / "jarde-second-consumer.log",
+            compact_output=True,
+        )
+        if second_consumer.returncode or "Integer.valueOf(1)" not in second_consumer.stdout or "@bytecode" not in second_consumer.stdout:
+            raise RuntimeError("the second-consumer shape did not retain its call and physical fallback")
+        (source_dir / "jarde-SecondConsumerCases.java").write_text(second_consumer.stdout)
+
+        mapped = run(
+            [args.jarde, "class-source", "--input", jar, "--class", "em25.BoxingAudit",
+             "--policy", "plain-jar", "--release", "8", "--format", "json",
+             "--evidence", "source_map"],
+            output / "jarde-source-map.json.log",
+        )
+        if mapped.returncode:
+            raise RuntimeError("Jarde source-map evidence failed")
+        source_map_report = json.loads(mapped.stdout)
+        for method in ("boxInteger()Ljava/lang/Object;", "boxBoolean()Ljava/lang/Object;",
+                       "boxCharacter()Ljava/lang/Character;"):
+            report = next(
+                item["outcome"]["report"] for item in source_map_report["methods"]
+                if item["outcome"].get("report", {}).get("method") == method
+            )
+            segments = report["source_map"]["segments"]
+            direct_bcis = {segment["origin"]["primary"]["bci"] for segment in segments}
+            derived_bcis = {
+                origin["bci"]
+                for segment in segments
+                for origin in segment["origin"]["derived"]
+            }
+            if len(direct_bcis) < 2 or not derived_bcis:
+                raise RuntimeError(f"{method} lost its literal, call or return source anchors")
 
         jadx_text = jadx_source.read_text()
         jarde_text = jarde_source.read_text()
         for text, required in (
             (jadx_text, ("return 1;", "return true;", "return (byte) 2;", "return (short) 3;", "return 'c';", "return 4L;")),
-            (jarde_text, ("Integer.valueOf(1)", "Boolean.valueOf(true)", "Byte.valueOf((byte) 2)",
-                          "Short.valueOf((short) 3)", "Character.valueOf('c')", "Long.valueOf(4L)")),
+            (jarde_text, ("return 1;", "return true;", "return 'c';", "return -128;", "return 127;",
+                          "return '\\u007f';", "Integer.valueOf(-129)", "Integer.valueOf(128)",
+                          "Integer.valueOf(1);", "Byte.valueOf((byte) 2)", "Short.valueOf((short) 3)",
+                          "Character.valueOf('\\u0080')", "Long.valueOf(4L)")),
         ):
             if not all(fragment in text for fragment in required):
                 raise RuntimeError("fixed boxing output changed")
+        for method, expected in (
+            ("integerAsNumber", "return java.lang.Integer.valueOf(1);"),
+            ("integerConsumedByCall", "return retain((java.lang.Integer) java.lang.Integer.valueOf(1));"),
+            ("integerBelowRange", "return java.lang.Integer.valueOf(-129);"),
+            ("integerAboveRange", "return java.lang.Integer.valueOf(128);"),
+            ("characterAboveAscii", "return java.lang.Character.valueOf('\\u0080');"),
+        ):
+            method_start = jarde_text.index(f" {method}(")
+            method_end = jarde_text.index("\n    }", method_start)
+            if expected not in jarde_text[method_start:method_end]:
+                raise RuntimeError(f"Jarde did not preserve the conservative {method} form")
         if ".longValue()" not in jadx_text or ".longValue()" not in jarde_text:
             raise RuntimeError("fixed unboxing output changed")
         for label, source in (("jadx", jadx_source), ("jarde", jarde_source)):

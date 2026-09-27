@@ -1,0 +1,42 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_test_sha256": {
+    "others/TestDeboxing.java": "dd5e91add226300c88cbfe8d5439df452d4d08de12e9e300e87fe1c86028486b",
+    "others/TestDeboxing2.java": "869e00fe5919c7bf472503a2464b2bc09b9a8c87f9fcedd4e160e0e1c8f28ec0",
+    "others/TestCastOfNull.java": "66411af895706dbbb5b93405ecba6d85ab7b9a2eef2d79b7a04d6f9da2bfc301",
+    "others/TestDuplicateCast.java": "165b608b0e4d77b352bce2056a98272829429398eb41e2dba7ec8336f5c93220",
+    "others/TestPrimitiveCasts.java": "924b8c295f10cbff4a6cc6dfba6bc0fe3c996881b5f4579ad4cf397706132cad",
+    "invoke/TestCastInOverloadedInvoke.java": "ce275a64584f006b8e6ee9e516cee134fe1d85a650880f7638cbade6bb4ebc0c"
+  },
+  "jadx_production_sha256": {
+    "DeboxingVisitor.java": "e4073f2d0a34ef9fe5cf4deb82d834235d92c10410c2ecdfec3d6c724b39fb9a",
+    "MethodInvokeVisitor.java": "60ee5bd34ad003d48c85bc622f7ac160f4a197acb894999140fcedf1914129ff",
+    "TypeInferenceVisitor.java": "946a0f9d556fc35fa1a6850b5aa2cb66b923d6ac83bca326f548383e2a0357ea",
+    "InsnGen.java": "c6308a71dd870d7f13bb8ac7efdb58191966cd6a5254aa11e443c95af6bafed6"
+  },
+  "jarde_cli_sha256": "79600bb2b7184db026d17ce6aa64a8bc93e128af777850eaf852a2691585e9e0",
+  "input_sha256": {
+    "BoxingAudit.java": "1b897d382f267b4c0ffcb75499699022c14bbc25e5668fefcdb1de1d38b57976",
+    "Runner.java": "338a87d555c51b1abb2a143b916458f35c2886564a61fb4c46a866d3a010c092",
+    "SecondConsumerCases.java": "81957a02ddc30849bf76fb3437cf3e22241d01a11b0f2564254def800f148b7a"
+  },
+  "original_class_sha256": "dd516be1e9e085d27b2fb3689b9a2ac7f5555713111e67fcf3f6dae1dff7f226",
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "java.lang.Integer:1:true\ninteger-bounds:-128:true:127:true\ninteger-outside:-129:false:128:false\ninteger-context:java.lang.Integer:1\njava.lang.Boolean:true:true\nboolean-false:java.lang.Boolean:false:true\njava.lang.Byte:2:true\njava.lang.Short:3:true\njava.lang.Character:c:true\ncharacter-bounds:127:true:128:false\njava.lang.Long:4:true\n0:0:7\ntrue:false\nnull-unbox:NPE",
+    "source_sha256": "1b897d382f267b4c0ffcb75499699022c14bbc25e5668fefcdb1de1d38b57976"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "java.lang.Integer:1:true\ninteger-bounds:-128:true:127:true\ninteger-outside:-129:false:128:false\ninteger-context:java.lang.Integer:1\njava.lang.Boolean:true:true\nboolean-false:java.lang.Boolean:false:true\njava.lang.Byte:2:true\njava.lang.Short:3:true\njava.lang.Character:c:true\ncharacter-bounds:127:true:128:false\njava.lang.Long:4:true\n0:0:7\ntrue:false\nnull-unbox:NPE",
+    "source_sha256": "8048a492ecf94f80303f0681934372e3f4a58e7245d08233410fc9d7e866ff4f"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "java.lang.Integer:1:true\ninteger-bounds:-128:true:127:true\ninteger-outside:-129:false:128:false\ninteger-context:java.lang.Integer:1\njava.lang.Boolean:true:true\nboolean-false:java.lang.Boolean:false:true\njava.lang.Byte:2:true\njava.lang.Short:3:true\njava.lang.Character:c:true\ncharacter-bounds:127:true:128:false\njava.lang.Long:4:true\n0:0:7\ntrue:false\nnull-unbox:NPE",
+    "source_sha256": "a948bea60b39185552124c420d93db03b9f4c50843aee0cd68af7d1df2c85bfe"
+  }
+}
