@@ -1,0 +1,40 @@
+[
+  {
+    "switch_bci": 8,
+    "read_bci": 7,
+    "table_owner": "single/Subject$1",
+    "table_name": "$SwitchMap$single$Mode",
+    "projected": true,
+    "refusal": null,
+    "entries": [
+      {
+        "constant": [
+          79,
+          78,
+          69
+        ],
+        "constant_field_bci": 12,
+        "handler_bci": 23,
+        "handler_ordinal": 0,
+        "key": 1,
+        "ordinal_bci": 15,
+        "store_bci": 19,
+        "table_read_bci": 9
+      },
+      {
+        "constant": [
+          84,
+          87,
+          79
+        ],
+        "constant_field_bci": 27,
+        "handler_bci": 38,
+        "handler_ordinal": 1,
+        "key": 2,
+        "ordinal_bci": 30,
+        "store_bci": 34,
+        "table_read_bci": 24
+      }
+    ]
+  }
+]

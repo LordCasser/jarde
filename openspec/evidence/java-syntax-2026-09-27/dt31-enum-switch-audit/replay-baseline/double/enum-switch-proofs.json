@@ -1,0 +1,20 @@
+[
+  {
+    "switch_bci": 10,
+    "read_bci": 9,
+    "table_owner": "doublecase/Subject$1",
+    "table_name": "$SwitchMap$doublecase$Count",
+    "projected": false,
+    "refusal": "the method has multiple enum switch sites and grouped AST projection is not available",
+    "entries": []
+  },
+  {
+    "switch_bci": 51,
+    "read_bci": 50,
+    "table_owner": "doublecase/Subject$1",
+    "table_name": "$SwitchMap$doublecase$Animal",
+    "projected": false,
+    "refusal": "the method has multiple enum switch sites and grouped AST projection is not available",
+    "entries": []
+  }
+]

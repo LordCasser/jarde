@@ -1,0 +1,177 @@
+{
+  "jarde_sha256": "7bd7ebe1fd0837cd8ca552380361c23a006d4bb3a7818ed21850c66f5e290678",
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "cases": {
+    "single": {
+      "expected": "1\n2\n0\nnull:NPE",
+      "source_sha256": {
+        "input": {
+          "Runner.java": "bb30ce71623b7770a08a1016b8752ce65c85e846267784949d31af93779b5833",
+          "direct-ordinal/DirectOrdinalRunner.java": "a9a5bc15c4f4283493101b31dc241ee81a0c3b65e72993c3e4698540f23e9cef",
+          "direct-ordinal/SparseSwitch.java": "537c63d72b49314a4087cb7b454175230114566ac1cd296aeff7a0bc6ad18149",
+          "double/Animal.java": "b4a23ccb5161cf0b7a76b2146a1fb01f35eb2343c00c538d754e3c57f09824c5",
+          "double/Count.java": "859f5a4d4a1cb8a33a8df40711f1726d203a619536583d442ce4969f5fd0611b",
+          "double/Subject.java": "9cf00376fca8c977f0200844523a5d1c7b1918913590b401d438fb997dc2ab23",
+          "single/Mode.java": "4fd3b80c9b7ab84369921eecffda11442b99c7cdff632a48c5dbb1b245fef943",
+          "single/Subject.java": "9f667eb6f37929644358e25abd4b4d4621acbebe8f3879003fd193aa92e19b12"
+        },
+        "jadx": {
+          "doublecase/Animal.java": "b6e912e119ca8e99d7c216211f8566121a90c631844f48695ab2fd0aab81534b",
+          "doublecase/Count.java": "5f0b5e69f3ccaf0905712269554ea0840292b3db23961019029ceea00437147f",
+          "doublecase/Subject.java": "51127ace58a379d3d5113ea782ae9788fe551dde1d2c905314bd4c90235f61ae",
+          "dt31/DirectOrdinalRunner.java": "dbf7502e711f8406b503c712a708b7808dab2446c2517a1e51ca6e3d1f1f408d",
+          "dt31/SparseSwitch.java": "1468d34276d799991564abf30d65edeb3e8c5dd9a72a274d8748de1f5db0368c",
+          "single/Mode.java": "fa3d9c7779a8b5139088ffb15ab3a67aa85e35f7e0c41fe160667be3bdc6b9cd",
+          "single/Subject.java": "e6b07dfa5f0b37c9534992a8b4685e316ce2222f4b6759b939898582d7f3cb13"
+        },
+        "jarde": {
+          "doublecase/Animal.java": "fb28083c316e7cc02c8860139c75123894a22474c513e6bc1c7c35fd069e1138",
+          "doublecase/Count.java": "9d18ed389d5dd9801922d6dde1c521ad295674c126b7bc54d8b5f59f8b92b70a",
+          "doublecase/Subject$1.java": "89c32c7f3716495fce2d9906fd4cc73ff391ca7eb374c7378acf9bd83c038bd2",
+          "doublecase/Subject.java": "a6bb63a12b89cd92e1a006d377cf236b360deab8faffee395d77769005564760",
+          "single/Mode.java": "af5150f013c53446c865090a12b8ae795825785efab9c3d0c287616c8504eeea",
+          "single/Subject$1.java": "de8f2e4d92f458d2c723af57a45dc50e17dfafe98352a3441eb71d64b5706e8f",
+          "single/Subject.java": "d88f6744dc9354dbd08f41334fa34668ea936de9542d6190644506e4307ed15b"
+        }
+      },
+      "original": {
+        "exit": 0,
+        "stdout": "1\n2\n0\nnull:NPE"
+      },
+      "jadx_javac_exit": 0,
+      "jadx": {
+        "exit": 0,
+        "stdout": "1\n2\n0\nnull:NPE"
+      },
+      "jarde_javac_exit": 0,
+      "jarde": {
+        "exit": 0,
+        "stdout": "1\n2\n0\nnull:NPE"
+      },
+      "double_site_refusal": null,
+      "enum_switch_proofs": [
+        {
+          "switch_bci": 8,
+          "read_bci": 7,
+          "table_owner": "single/Subject$1",
+          "table_name": "$SwitchMap$single$Mode",
+          "projected": true,
+          "refusal": null,
+          "entries": [
+            {
+              "constant": [
+                79,
+                78,
+                69
+              ],
+              "constant_field_bci": 12,
+              "handler_bci": 23,
+              "handler_ordinal": 0,
+              "key": 1,
+              "ordinal_bci": 15,
+              "store_bci": 19,
+              "table_read_bci": 9
+            },
+            {
+              "constant": [
+                84,
+                87,
+                79
+              ],
+              "constant_field_bci": 27,
+              "handler_bci": 38,
+              "handler_ordinal": 1,
+              "key": 2,
+              "ordinal_bci": 30,
+              "store_bci": 34,
+              "table_read_bci": 24
+            }
+          ]
+        }
+      ]
+    },
+    "double": {
+      "expected": "21\n12\n20\nnull-count:NPE\nnull-animal:NPE",
+      "source_sha256": {
+        "input": {
+          "Runner.java": "bb30ce71623b7770a08a1016b8752ce65c85e846267784949d31af93779b5833",
+          "direct-ordinal/DirectOrdinalRunner.java": "a9a5bc15c4f4283493101b31dc241ee81a0c3b65e72993c3e4698540f23e9cef",
+          "direct-ordinal/SparseSwitch.java": "537c63d72b49314a4087cb7b454175230114566ac1cd296aeff7a0bc6ad18149",
+          "double/Animal.java": "b4a23ccb5161cf0b7a76b2146a1fb01f35eb2343c00c538d754e3c57f09824c5",
+          "double/Count.java": "859f5a4d4a1cb8a33a8df40711f1726d203a619536583d442ce4969f5fd0611b",
+          "double/Subject.java": "9cf00376fca8c977f0200844523a5d1c7b1918913590b401d438fb997dc2ab23",
+          "single/Mode.java": "4fd3b80c9b7ab84369921eecffda11442b99c7cdff632a48c5dbb1b245fef943",
+          "single/Subject.java": "9f667eb6f37929644358e25abd4b4d4621acbebe8f3879003fd193aa92e19b12"
+        },
+        "jadx": {
+          "doublecase/Animal.java": "b6e912e119ca8e99d7c216211f8566121a90c631844f48695ab2fd0aab81534b",
+          "doublecase/Count.java": "5f0b5e69f3ccaf0905712269554ea0840292b3db23961019029ceea00437147f",
+          "doublecase/Subject.java": "51127ace58a379d3d5113ea782ae9788fe551dde1d2c905314bd4c90235f61ae",
+          "dt31/DirectOrdinalRunner.java": "dbf7502e711f8406b503c712a708b7808dab2446c2517a1e51ca6e3d1f1f408d",
+          "dt31/SparseSwitch.java": "1468d34276d799991564abf30d65edeb3e8c5dd9a72a274d8748de1f5db0368c",
+          "single/Mode.java": "fa3d9c7779a8b5139088ffb15ab3a67aa85e35f7e0c41fe160667be3bdc6b9cd",
+          "single/Subject.java": "e6b07dfa5f0b37c9534992a8b4685e316ce2222f4b6759b939898582d7f3cb13"
+        },
+        "jarde": {
+          "doublecase/Animal.java": "fb28083c316e7cc02c8860139c75123894a22474c513e6bc1c7c35fd069e1138",
+          "doublecase/Count.java": "9d18ed389d5dd9801922d6dde1c521ad295674c126b7bc54d8b5f59f8b92b70a",
+          "doublecase/Subject$1.java": "89c32c7f3716495fce2d9906fd4cc73ff391ca7eb374c7378acf9bd83c038bd2",
+          "doublecase/Subject.java": "a6bb63a12b89cd92e1a006d377cf236b360deab8faffee395d77769005564760",
+          "single/Mode.java": "af5150f013c53446c865090a12b8ae795825785efab9c3d0c287616c8504eeea",
+          "single/Subject$1.java": "de8f2e4d92f458d2c723af57a45dc50e17dfafe98352a3441eb71d64b5706e8f",
+          "single/Subject.java": "d88f6744dc9354dbd08f41334fa34668ea936de9542d6190644506e4307ed15b"
+        }
+      },
+      "original": {
+        "exit": 0,
+        "stdout": "21\n12\n20\nnull-count:NPE\nnull-animal:NPE"
+      },
+      "jadx_javac_exit": 0,
+      "jadx": {
+        "exit": 0,
+        "stdout": "21\n12\n20\nnull-count:NPE\nnull-animal:NPE"
+      },
+      "jarde_javac_exit": 0,
+      "jarde": {
+        "exit": 0,
+        "stdout": "21\n12\n20\nnull-count:NPE\nnull-animal:NPE"
+      },
+      "double_site_refusal": "the method has multiple enum switch sites and grouped AST projection is not available",
+      "enum_switch_proofs": [
+        {
+          "switch_bci": 10,
+          "read_bci": 9,
+          "table_owner": "doublecase/Subject$1",
+          "table_name": "$SwitchMap$doublecase$Count",
+          "projected": false,
+          "refusal": "the method has multiple enum switch sites and grouped AST projection is not available",
+          "entries": []
+        },
+        {
+          "switch_bci": 51,
+          "read_bci": 50,
+          "table_owner": "doublecase/Subject$1",
+          "table_name": "$SwitchMap$doublecase$Animal",
+          "projected": false,
+          "refusal": "the method has multiple enum switch sites and grouped AST projection is not available",
+          "entries": []
+        }
+      ]
+    }
+  },
+  "direct_ordinal": {
+    "input_sha256": {
+      "Count.smali": "639991481c673eda448b35c503558612eeb6cb2028626fc48e6de875ef05be0d",
+      "SparseSwitch.smali": "cc1137e68aa71544e105ed7fbda2894f7c0500e3f4d29e7185b8d9d4e6d84586"
+    },
+    "dex_sha256": "4ac42f26804e7d0b6a49a3ca5d8d920862c9abb8accfdaf2a068e0071017d77b",
+    "jadx_source_sha256": "fa9682c21c5452b245c2bea4e2500506ec3c1bed6ededa7307d8dcad62b48b15",
+    "expected": "ONE=0\nTWO=1\nTHREE=2",
+    "javac_exit": 0,
+    "runtime": {
+      "exit": 0,
+      "stdout": "ONE=0\nTWO=1\nTHREE=2"
+    },
+    "interpretation": "Sparse keys 1,2 are preserved as numeric ordinal cases; mapToCases returns null because it writes casesMap[ordinal] into an array sized to caseCount=2. This is a safe fallback, not a wrong label mapping."
+  }
+}
