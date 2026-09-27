@@ -1,0 +1,37 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestEndlessLoop.java": "a8b077628d7d84d1dd69e51ae2cf0de62210b3f0753461f2c85b0fca829b5df5",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestEndlessLoop2.java": "1b967881e6f833d1a30e7425a2afb386e149cf73745247df348bb7b6831d298e",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestMultiEntryLoop.java": "17b9f250a1b32e368b4c8c69b4ec660c9722cf2aee3eb8bd1a6fd63fbc866e74",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestNotIndexedLoop.java": "dc08e939d5d5ab12c2f4a89e11b266a7e9592ca6289e700241a5eca2f29980b5",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/blocks/FixMultiEntryLoops.java": "0c2b67bbb15648632767625db7163bed579efcc66fc3a58b9466760f01eb945a",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/LoopRegionMaker.java": "a77bedda10bdb0d36f3979c27c1fc9471da726b36f34ae14d505f6f659c6b13e",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/LoopRegionVisitor.java": "921f09e8934fda33452a00359588b293117f160813477e7068fa1ec3b71e6515"
+  },
+  "input_sha256": "508c2640dcf1ef594fb491f3cbc30d8d2a9b758aaab8dd928fa8e36aa080965d",
+  "runner_sha256": "5b5d0b871bcd4c6a703bc18621be8cdd77d560cbc36f2bd0414aa3a5d95cc290",
+  "original_class_sha256": "b1e6bd92f8fe92e726e7a2a95461327dd3f7abe65ee7f451f1225777ed7ea6d4",
+  "jarde_cli_sha256": "6b94a3e7c5d640d7034c96827913db08f7d473c88008418037f776bc1d80d8cd",
+  "original": {
+    "source_sha256": "508c2640dcf1ef594fb491f3cbc30d8d2a9b758aaab8dd928fa8e36aa080965d",
+    "javac_exit": 0,
+    "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n3 \u4e2a\u8b66\u544a",
+    "runtime_exit": 0,
+    "stdout": "null\nnull\nf\nh",
+    "runtime_stderr": ""
+  },
+  "jadx": {
+    "source_sha256": "b034f9d1a5dfa2ab830e61c3238aa7f4c1d931fa9f30f87a6fddd21b305fddd8",
+    "javac_exit": 0,
+    "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n3 \u4e2a\u8b66\u544a",
+    "runtime_exit": 0,
+    "stdout": "null\nnull\nf\nh",
+    "runtime_stderr": ""
+  },
+  "jarde": {
+    "source_sha256": "942026426e023220801cb22f899f6d0843061ad5c47826721be83f9a70ae540c",
+    "javac_exit": 1,
+    "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde/openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/baseline/source/jarde/cf08/NotIndexedLoop.java:21: \u9519\u8bef: \u7f3a\u5c11\u8fd4\u56de\u8bed\u53e5\n    }\n    ^\n1 \u4e2a\u9519\u8bef\n3 \u4e2a\u8b66\u544a"
+  }
+}
