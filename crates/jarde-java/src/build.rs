@@ -7226,6 +7226,7 @@ struct SharedFinallyBuild {
     completion: guard::SharedFinallyCompletion,
     normal_cleanup: (u32, u32),
     facts: Vec<u32>,
+    segmented: Option<((u32, u32), u32)>,
 }
 
 /// State that a speculative structured finally body may change before its enclosing Try exists.
@@ -13050,6 +13051,85 @@ impl Builder<'_> {
                         }
                         pushed
                     }
+                    guard::Shape::SegmentedFinally {
+                        catch_body,
+                        cleanup,
+                        early_return,
+                        transfers,
+                        ..
+                    } => {
+                        let Some(inner @ Region::Try { catches, .. }) = structured_body.as_deref()
+                        else {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("segmented finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the segmented finally has no bounded try and catch",
+                                plan.body().0,
+                            );
+                        };
+                        if catches.len() != 1 {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("segmented finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the segmented finally has no unique named catch",
+                                plan.body().0,
+                            );
+                        }
+                        let nested_path = child(path, 0);
+                        let mark = self.stmts.len();
+                        self.shared_finally = Some(SharedFinallyBuild {
+                            path: nested_path.clone(),
+                            protected: plan.body(),
+                            catch_body: *catch_body,
+                            completion: guard::SharedFinallyCompletion::Joined {
+                                transfers: *transfers,
+                            },
+                            normal_cleanup: cleanup[1],
+                            facts: plan.facts().to_vec(),
+                            segmented: Some((cleanup[0], *early_return)),
+                        });
+                        let built = self.region(inner, &nested_path);
+                        self.shared_finally = None;
+                        if let Err(stop) = built {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("segmented finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                        let complete = self.stmts[mark..].iter().all(|statement| {
+                            !statement_has_fallback(statement)
+                                && undeclared_local(statement, &self.undeclared).is_none()
+                        }) && self.stmts[mark..].iter().any(|statement| {
+                            matches!(&statement.kind, StmtKind::Try { finally_body: Some(body), catches, .. }
+                                if body.len() == 1 && catches.len() == 1)
+                        });
+                        if !complete {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("segmented finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the segmented finally has an unpresented body, declaration, or cleanup",
+                                plan.body().0,
+                            );
+                        }
+                        Ok(())
+                    }
                     guard::Shape::SharedFinally {
                         catch_body,
                         normal_cleanup,
@@ -13092,6 +13172,7 @@ impl Builder<'_> {
                             completion: completion.clone(),
                             normal_cleanup: *normal_cleanup,
                             facts: plan.facts().to_vec(),
+                            segmented: None,
                         });
                         let built = self.region(inner, &nested_path);
                         self.shared_finally = None;
@@ -15868,6 +15949,14 @@ impl Builder<'_> {
     fn instruction(&mut self, instruction: &SsaInstruction) -> Result<(), StopReason> {
         poll(self.budget, Some(instruction.bci()))?;
         let at = instruction.bci();
+        if self
+            .shared_finally
+            .as_ref()
+            .and_then(|shared| shared.segmented)
+            .is_some_and(|(cleanup, _)| cleanup.0 <= at && at < cleanup.1)
+        {
+            return Ok(());
+        }
         if self.local_assignments.contains_key(&at)
             || self
                 .local_assignments
@@ -16175,10 +16264,16 @@ impl Builder<'_> {
                     },
                     None => None,
                 };
-                self.push(Stmt::new(
-                    StmtKind::Return { value },
-                    OriginSet::new(Origin::direct(at)),
-                ))
+                let mut origin = OriginSet::new(Origin::direct(at));
+                if let Some((cleanup, return_bci)) =
+                    self.shared_finally.as_ref().and_then(|shared| shared.segmented)
+                    && at == return_bci
+                {
+                    for (&bci, _) in self.instructions.range(cleanup.0..cleanup.1) {
+                        origin = origin.plus_derived(Origin::derived(bci));
+                    }
+                }
+                self.push(Stmt::new(StmtKind::Return { value }, origin))
             }
             Some(Operation::Throw) => {
                 let Some((_, value)) = single_stack_read(instruction) else {

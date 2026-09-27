@@ -1750,6 +1750,8 @@ struct Frame {
     /// catch and try catch-all are both present in the protected body; the catch body owns its
     /// separate catch-all row.
     own_finally: Option<((u32, (u32, u32)), Option<(u32, (u32, u32))>)>,
+    /// The four protected rows of the one five-row segmented finally certificate.
+    segmented_finally_rows: Option<[(u32, (u32, u32)); 4]>,
     /// The sole inner named row admitted by a proved two-copy outer finally body.
     nested_finally_row: Option<u32>,
     /// Other case-entry nodes of a switch arm. They end this arm before the next case claims them.
@@ -1819,6 +1821,7 @@ impl Frame {
             allow_own_loop_entry: false,
             own_try: None,
             own_finally: None,
+            segmented_finally_rows: None,
             nested_finally_row: None,
             case_entries: self.case_entries.clone(),
             loop_exit: exit,
@@ -1857,6 +1860,7 @@ impl Frame {
             // its owner so a throwing arm's exception edges can be matched to this try's catches.
             own_try: self.own_try,
             own_finally: self.own_finally,
+            segmented_finally_rows: self.segmented_finally_rows,
             nested_finally_row: self.nested_finally_row,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
@@ -1886,6 +1890,7 @@ impl Frame {
             allow_own_loop_entry: false,
             own_try: self.own_try,
             own_finally: self.own_finally,
+            segmented_finally_rows: self.segmented_finally_rows,
             nested_finally_row: self.nested_finally_row,
             case_entries: Some(case_entries),
             loop_exit: self.loop_exit,
@@ -1912,6 +1917,7 @@ impl Frame {
             allow_own_loop_entry: false,
             own_try: Some(start),
             own_finally: self.nested_finally_row.and(self.own_finally),
+            segmented_finally_rows: self.segmented_finally_rows,
             nested_finally_row: self.nested_finally_row,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
@@ -2283,6 +2289,9 @@ impl Walker<'_> {
                     crate::guard::Shape::SharedFinally { .. } => {
                         self.shared_finally_body(&current, &plan, frame)?
                     }
+                    crate::guard::Shape::SegmentedFinally { .. } => {
+                        self.segmented_finally_body(&current, &plan, frame)?
+                    }
                     _ => None,
                 };
                 if let Some(body) = body {
@@ -2504,6 +2513,9 @@ impl Walker<'_> {
                     && frame
                         .own_finally
                         .is_none_or(|row| !self.finally_edges_accounted(&current, row))
+                    && frame
+                        .segmented_finally_rows
+                        .is_none_or(|rows| !self.segmented_finally_edges_accounted(&current, rows))
                     && (frame.own_try.is_none() || !self.edges_accounted_by_catches(&current))
                 {
                     return Ok(gap(prefix, vec![current], reason, None));
@@ -3987,6 +3999,7 @@ impl Walker<'_> {
             try_rows,
             plan,
             outer,
+            None,
         )?;
         let Some(try_body) = try_body else {
             self.visited = previous;
@@ -4003,6 +4016,85 @@ impl Walker<'_> {
             catch_rows,
             plan,
             outer,
+            None,
+        );
+        let catch = match catch {
+            Ok(catch) => catch,
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        let Some(catch) = catch else {
+            self.visited = previous;
+            return Ok(None);
+        };
+        let try_blocks = try_body.blocks().into_iter().collect::<BTreeSet<_>>();
+        let catch_blocks = catch.blocks().into_iter().collect::<BTreeSet<_>>();
+        if !try_blocks.is_disjoint(&catch_blocks) {
+            self.visited = previous;
+            return Ok(None);
+        }
+        Ok(Some(Region::Try {
+            prefix: Vec::new(),
+            lead: (plan.body().0, plan.body().0),
+            body: Box::new(try_body),
+            normal_exit_bci: None,
+            catches: vec![CatchClause {
+                type_indices: vec![*catch_type],
+                handler: catch_handler.clone(),
+                parameter: *catch_parameter,
+                body: Box::new(catch),
+            }],
+        }))
+    }
+
+    fn segmented_finally_body(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let crate::guard::Shape::SegmentedFinally {
+            rows,
+            segments,
+            catch_body,
+            catch_handler,
+            catch_type,
+            catch_parameter,
+            ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        let previous = self.visited.clone();
+        let owned_rows = [
+            (rows[0], segments[0]),
+            (rows[1], segments[1]),
+            (rows[2], segments[0]),
+            (rows[3], segments[1]),
+        ];
+        let try_body = self.bounded_shared_finally_body(
+            start,
+            plan.body(),
+            None,
+            (owned_rows[0], Some(owned_rows[2])),
+            plan,
+            outer,
+            Some(owned_rows),
+        )?;
+        let Some(try_body) = try_body else {
+            self.visited = previous;
+            return Ok(None);
+        };
+        let catch = self.bounded_shared_finally_body(
+            catch_handler,
+            *catch_body,
+            None,
+            ((rows[4], *catch_body), None),
+            plan,
+            outer,
+            None,
         );
         let catch = match catch {
             Ok(catch) => catch,
@@ -4043,6 +4135,7 @@ impl Walker<'_> {
         rows: ((u32, (u32, u32)), Option<(u32, (u32, u32))>),
         plan: &crate::guard::Plan,
         outer: &Frame,
+        segmented_rows: Option<[(u32, (u32, u32)); 4]>,
     ) -> Result<Option<Region>, StopReason> {
         let expected: BTreeSet<usize> = plan
             .owned()
@@ -4087,6 +4180,7 @@ impl Walker<'_> {
         frame.boundary = None;
         frame.own_try = Some(start_node);
         frame.own_finally = Some(rows);
+        frame.segmented_finally_rows = segmented_rows;
         let walked = self.region_at(start, &frame);
         let (regions, next) = match walked {
             Ok(result) => result,
@@ -4132,6 +4226,28 @@ impl Walker<'_> {
             return Ok(None);
         }
         Ok(Some(body))
+    }
+
+    fn segmented_finally_edges_accounted(
+        &self,
+        block: &CanonicalBlockId,
+        rows: [(u32, (u32, u32)); 4],
+    ) -> bool {
+        let first = self.ssa.block(block).is_some_and(|names| {
+            names.instructions().iter().any(|instruction| {
+                rows[0].1.0 <= instruction.bci() && instruction.bci() < rows[0].1.1
+            })
+        });
+        let second = self.ssa.block(block).is_some_and(|names| {
+            names.instructions().iter().any(|instruction| {
+                rows[1].1.0 <= instruction.bci() && instruction.bci() < rows[1].1.1
+            })
+        });
+        match (first, second) {
+            (true, false) => self.finally_edges_accounted(block, (rows[0], Some(rows[2]))),
+            (false, true) => self.finally_edges_accounted(block, (rows[1], Some(rows[3]))),
+            (false, false) | (true, true) => false,
+        }
     }
 
     fn finally_edges_accounted(

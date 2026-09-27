@@ -25,6 +25,29 @@ const FIXTURE: &[u8] =
 const NESTED_TEST_CLS: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class"
 );
+const SEGMENTED_TEST13_FIXED: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/TestTryCatchFinally13$TestCls.fixed.class"
+);
+const SEGMENTED_TEST13_ACCEPTANCE: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/acceptance/TestTryCatchFinally13$TestCls.class"
+);
+const SEGMENTED_TEST13_NEGATIVES: [&[u8]; 5] = [
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/cleanup-target.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/branch-bypass.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/range-expanded.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/rethrow-changed.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/acceptance/external-entry.class"
+    ),
+];
 const NESTED_OTHER_CONSTANT: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3MatchingOtherConstant.class"
 );
@@ -501,4 +524,111 @@ fn shared_join_stop_discards_text_and_source_map() {
     );
     assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
     assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+}
+
+#[test]
+fn segmented_test13_has_one_owner_and_all_physical_origins() {
+    for class in [SEGMENTED_TEST13_FIXED, SEGMENTED_TEST13_ACCEPTANCE] {
+        let report = recover_method(
+            class,
+            "test",
+            "(I)V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls",
+            0x0001,
+            None,
+        );
+        assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+        assert_eq!(
+            report.text.matches("finally {").count(),
+            1,
+            "{}",
+            report.text
+        );
+        assert_eq!(
+            report.text.matches("this.doSomething4();").count(),
+            1,
+            "{}",
+            report.text
+        );
+        assert!(
+            report.text.contains("== -12) {\n            return;"),
+            "{}",
+            report.text
+        );
+        assert!(
+            report.text.contains("catch (java.lang.Exception"),
+            "{}",
+            report.text
+        );
+        assert!(!report.text.contains("@bytecode"), "{}", report.text);
+        let blocks: Vec<_> = report
+            .regions
+            .iter()
+            .flat_map(|region| &region.blocks)
+            .copied()
+            .collect();
+        assert_eq!(
+            blocks.len(),
+            blocks.iter().copied().collect::<BTreeSet<_>>().len()
+        );
+        assert_eq!(
+            blocks.iter().copied().collect::<BTreeSet<_>>(),
+            BTreeSet::from([0, 10, 15, 21, 28, 33, 37, 44, 56, 63]),
+            "{}",
+            report.text,
+        );
+        for bci in [
+            0, 1, 4, 5, 7, 10, 11, 14, 15, 16, 18, 21, 22, 25, 28, 29, 30, 33, 34, 37, 38, 41, 44,
+            45, 46, 49, 50, 53, 56, 57, 58, 61, 62, 63,
+        ] {
+            assert!(
+                !report.source_map.of_bci(bci).is_empty(),
+                "BCI {bci}: {}",
+                report.text
+            );
+        }
+    }
+}
+
+#[test]
+fn segmented_test13_neighbors_and_stops_publish_no_partial_finally() {
+    for class in SEGMENTED_TEST13_NEGATIVES {
+        let report = recover_method(
+            class,
+            "test",
+            "(I)V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls",
+            0x0001,
+            None,
+        );
+        assert!(!report.text.contains("finally {"), "{}", report.text);
+    }
+    for budget in [
+        {
+            let mut tiny = limits();
+            tiny.ir_items = 1;
+            Budget::new(tiny)
+        },
+        {
+            let mut tiny = limits();
+            tiny.output_bytes = 1;
+            Budget::new(tiny)
+        },
+        {
+            let token = CancellationToken::new();
+            token.cancel();
+            Budget::with_cancellation_token(limits(), token)
+        },
+    ] {
+        let report = recover_method(
+            SEGMENTED_TEST13_ACCEPTANCE,
+            "test",
+            "(I)V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls",
+            0x0001,
+            Some(budget),
+        );
+        assert!(report.text.is_empty() && report.source_map.is_empty());
+        assert!(report.stop().is_some());
+    }
 }
