@@ -14,4 +14,4 @@
 - [x] 3.1 按同轮 SSA 证明并呈现 handler 参数、累计值及循环索引的完整局部作用域；仅修正本候选阻碍，核两固定完整类均无 `@bytecode` 且 Java 8 重编成功，额外值来源不能闭合时保持原子拒绝。
 - [x] 3.2 分别重编原/JADX/Jarde 的两份完整 Java 8 类并运行 `java -Xverify:all`：缩小类三方 `4:110`，完整类 Jarde 与原类 `124:115`；固定 JADX 完整类的错误外抛/非零退出作为负对照保存。
 - [x] 3.3 复跑既有 catch、循环、finally/TWR、预算/取消及 verifier 有效负例；`cargo test -p jarde-java --tests --locked`、`cargo fmt --all -- --check`、`cargo check --workspace --locked`、`openspec validate recover-fragmented-loop-catches --strict`、`git diff --check` 通过，清理专用 Cargo target。
-- [ ] 3.4 root 独立审阅证书、异常派发、SSA、来源和完整类三方行为并记录验收；通过后更新 CF-18 清单，仅把已验证的固定形态标为恢复。
+- [x] 3.4 root 独立审阅证书、异常派发、SSA、来源和完整类三方行为并记录验收；通过后更新 CF-18 清单，仅把已验证的固定形态标为恢复。
