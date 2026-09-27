@@ -15376,9 +15376,64 @@ impl Builder<'_> {
                                 operands.len()
                             ).into());
                         };
-                        let boolean = self.boolean_evidence(value, at).has_seed();
-                        let left = self.render_value(*left_value, at, depth + 1)?;
+                        let boolean_xor_literal = if *op == BitwiseOp::Xor
+                            && instruction.opcode() == 0x82
+                            && instruction.reads().len() == 2
+                            && instruction.writes().len() == 1
+                            && matches!(
+                                self.ssa.value(value).def(),
+                                Definition::Instruction { bci: definition, .. }
+                                    if *definition == bci
+                            )
+                            && instruction.writes()[0].1 == value
+                        {
+                            let right_literal = match self.ssa.value(*right_value).def() {
+                                Definition::Instruction {
+                                    bci: literal_bci, ..
+                                } if matches!(
+                                    self.operations.get(*literal_bci),
+                                    Some(Operation::Push(ConstantValue::Int(0 | 1)))
+                                ) && self.ssa.value(*right_value).uses().len() == 1
+                                    && self.ssa.value(*right_value).uses()[0].bci() == Some(bci) =>
+                                {
+                                    match self.operations.get(*literal_bci) {
+                                        Some(Operation::Push(ConstantValue::Int(value))) => {
+                                            Some((*value == 1, *literal_bci))
+                                        }
+                                        _ => None,
+                                    }
+                                }
+                                _ => None,
+                            };
+                            right_literal.filter(|_| {
+                                self.boolean_evidence(*left_value, at).has_seed()
+                            })
+                        } else {
+                            None
+                        };
+                        let mut left = self.render_value(*left_value, at, depth + 1)?;
+                        if let Some((negate, literal_bci)) = boolean_xor_literal
+                            && left.presented == Some(Type::Boolean)
+                        {
+                            if negate {
+                                let origin = OriginSet::new(Origin::direct(bci))
+                                    .plus_derived(Origin::derived(literal_bci));
+                                return Ok(Expr::new(
+                                    ExprKind::Not {
+                                        value: Box::new(left),
+                                    },
+                                    origin,
+                                ));
+                            }
+                            left.origin = left
+                                .origin
+                                .clone()
+                                .plus_derived(Origin::derived(bci))
+                                .plus_derived(Origin::derived(literal_bci));
+                            return Ok(left);
+                        }
                         let right = self.render_value(*right_value, at, depth + 1)?;
+                        let boolean = self.boolean_evidence(value, at).has_seed();
                         let (left, right) = if boolean {
                             (boolean_spelling(left), boolean_spelling(right))
                         } else {

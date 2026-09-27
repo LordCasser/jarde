@@ -97,10 +97,14 @@ def main():
         jarde_source.write_text(jarde_result.stdout)
         for expected in ("return (arg1 + 2) * 3", "return arg1 - (arg2 - arg3)",
                          "return arg1 / (arg2 / arg3)", "return this.left() | this.right()",
-                         "return arg1 ^ true", "return this.left() ^ true",
-                         "return this.left() ^ false", "return arg1 ^ -1L"):
+                         "return !arg1", "return !this.left()",
+                         "return this.left()", "return arg1 ^ -1L"):
             if expected not in jarde_result.stdout:
                 raise RuntimeError(f"Jarde arithmetic source shape missing: {expected}")
+        for redundant in ("return arg1 ^ true", "return this.left() ^ true",
+                          "return this.left() ^ false"):
+            if redundant in jarde_result.stdout:
+                raise RuntimeError(f"Jarde retained a proved redundant XOR: {redundant}")
         jadx_text = jadx_source.read_text()
         for expected in ("return (i + 2) * 3", "return i - (i2 - i3)",
                          "return i / (i2 / i3)", "return left() | right()",

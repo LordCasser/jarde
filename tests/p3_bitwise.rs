@@ -69,12 +69,7 @@ const METHODS: &[(&[u8], &[u8], &[u32], &[&str])] = &[
         &[0, 1, 2, 3],
         &["return arg0 ^ arg1;"],
     ),
-    (
-        b"constant",
-        b"(Z)Z",
-        &[0, 1, 2, 3],
-        &["return arg0 ^ true;"],
-    ),
+    (b"constant", b"(Z)Z", &[0, 1, 2, 3], &["return !arg0;"]),
     (
         b"ordered",
         b"(ZZ)Z",
