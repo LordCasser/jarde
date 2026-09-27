@@ -1,5 +1,7 @@
 # EM-01：静态成员声明与泛型父接口首片审计
 
+本文记录实施前的固定基线；`Shape.I`/`Shape.A` 与 `Generic.A<T>` 均已在后续的 [Generic.A 独立验收](../../java-syntax-2026-09-28/em01-generic-member/root-acceptance.md)中通过完整三方重编与运行。下文所说的 Jarde 缺失指当时的 CLI，不代表当前主线。
+
 固定 JADX `2fb1b16386941660fda07e9017285aec40fcb37f` 中，`TestClassGen` 活动断言要求根类内的 `public interface I` 和 `public static abstract class A`，`TestClassImplementsSignature` 的 Java 测试要求 `public static abstract class A<T> implements Comparable<A<T>>`。后者还有独立 Raung 畸形签名测试；`TestIncorrectFieldSignature` 是 Smali 负例，均不能冒充合法 Java 8 重编正例。三份测试哈希固定在 [replay.py](replay.py)。
 
 [input/](input/) 用 Java 8 完整 `Shape`、`Generic` 与共同 Runner 隔离上述两个正例。原 class 和固定 JADX 的两份完整根源码通过 `javac --release 8` 与 `java -Xverify:all`，输出相同：

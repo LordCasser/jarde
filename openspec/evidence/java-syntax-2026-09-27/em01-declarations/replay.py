@@ -108,8 +108,7 @@ def main():
             physical_dir.mkdir(parents=True, exist_ok=True)
             (physical_dir / (name.replace('.', '_').replace('$', '_') + '.java')).write_text(result.stdout)
         jadx = compile_run('jadx', jadx_sources, runner, out, work, True, expected)
-        jarde = compile_run('jarde', jarde_sources, runner, out, work,
-                            args.fixture == 'single', expected)
+        jarde = compile_run('jarde', jarde_sources, runner, out, work, True, expected)
     if args.fixture == 'multi':
         jadx_shape = (out / 'source/jadx/em01/Shape.java').read_text()
         jadx_generic = (out / 'source/jadx/em01/Generic.java').read_text()
@@ -121,9 +120,10 @@ def main():
             raise RuntimeError('JADX generic member changed')
         if (jarde_shape.count('public static interface I') != 1
                 or jarde_shape.count('public static abstract class A') != 1
-                or 'class A' in jarde_generic):
-            raise RuntimeError('Jarde proved Shape pair or Generic refusal changed')
-        missing = ['Generic.A']
+                or jarde_generic.count('public static abstract class A<T>') != 1
+                or 'implements java.lang.Comparable<A<T>>' not in jarde_generic):
+            raise RuntimeError('Jarde proved Shape pair or Generic member changed')
+        missing = []
     else:
         jadx_single = (out / 'source/jadx/em01/SingleAbstract.java').read_text()
         jarde_single = (out / 'source/jarde/em01/SingleAbstract.java').read_text()
