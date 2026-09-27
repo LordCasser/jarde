@@ -1,0 +1,41 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_test_sha256": {
+    "others/TestDeboxing.java": "dd5e91add226300c88cbfe8d5439df452d4d08de12e9e300e87fe1c86028486b",
+    "others/TestDeboxing2.java": "869e00fe5919c7bf472503a2464b2bc09b9a8c87f9fcedd4e160e0e1c8f28ec0",
+    "others/TestCastOfNull.java": "66411af895706dbbb5b93405ecba6d85ab7b9a2eef2d79b7a04d6f9da2bfc301",
+    "others/TestDuplicateCast.java": "165b608b0e4d77b352bce2056a98272829429398eb41e2dba7ec8336f5c93220",
+    "others/TestPrimitiveCasts.java": "924b8c295f10cbff4a6cc6dfba6bc0fe3c996881b5f4579ad4cf397706132cad",
+    "invoke/TestCastInOverloadedInvoke.java": "ce275a64584f006b8e6ee9e516cee134fe1d85a650880f7638cbade6bb4ebc0c"
+  },
+  "jadx_production_sha256": {
+    "DeboxingVisitor.java": "e4073f2d0a34ef9fe5cf4deb82d834235d92c10410c2ecdfec3d6c724b39fb9a",
+    "MethodInvokeVisitor.java": "60ee5bd34ad003d48c85bc622f7ac160f4a197acb894999140fcedf1914129ff",
+    "TypeInferenceVisitor.java": "946a0f9d556fc35fa1a6850b5aa2cb66b923d6ac83bca326f548383e2a0357ea",
+    "InsnGen.java": "c6308a71dd870d7f13bb8ac7efdb58191966cd6a5254aa11e443c95af6bafed6"
+  },
+  "jarde_cli_sha256": "9328d74ef4ff0a6d6baeb39ebf1fe7b5e76b91751eaa760127b74be600e02180",
+  "input_sha256": {
+    "BoxingAudit.java": "73d36bf8f1528f4d54eb6880e917c8f8566f822133221d68e1f3b8dd46a6d15d",
+    "Runner.java": "3a1debae8e0be6671437d1ba535f34cbb7c92addfc978c67b70dbc309eb7614c"
+  },
+  "original_class_sha256": "143b306e9a7e124d039a02f3247550acf7f10eda61cade92f4c261baefb4346a",
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "java.lang.Integer:1:true\njava.lang.Boolean:true:true\njava.lang.Byte:2:true\njava.lang.Short:3:true\njava.lang.Character:c:true\njava.lang.Long:4:true\n0:0:7\ntrue:false\nnull-unbox:NPE",
+    "source_sha256": "73d36bf8f1528f4d54eb6880e917c8f8566f822133221d68e1f3b8dd46a6d15d"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "java.lang.Integer:1:true\njava.lang.Boolean:true:true\njava.lang.Byte:2:true\njava.lang.Short:3:true\njava.lang.Character:c:true\njava.lang.Long:4:true\n0:0:7\ntrue:false\nnull-unbox:NPE",
+    "source_sha256": "b46d40385a4a7f3a0ae3fa22ed4261cbfd3df0afc19c0c44057b4c8bd113d09a"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "java.lang.Integer:1:true\njava.lang.Boolean:true:true\njava.lang.Byte:2:true\njava.lang.Short:3:true\njava.lang.Character:c:true\njava.lang.Long:4:true\n0:0:7\ntrue:false\nnull-unbox:NPE",
+    "source_sha256": "24dfd32612c2239cfe5aff7ed0c7b768d3312c7fd3a92159db5fa00c788c16e0"
+  }
+}

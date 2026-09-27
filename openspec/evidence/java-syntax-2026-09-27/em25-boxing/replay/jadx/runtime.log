@@ -1,0 +1,9 @@
+java.lang.Integer:1:true
+java.lang.Boolean:true:true
+java.lang.Byte:2:true
+java.lang.Short:3:true
+java.lang.Character:c:true
+java.lang.Long:4:true
+0:0:7
+true:false
+null-unbox:NPE

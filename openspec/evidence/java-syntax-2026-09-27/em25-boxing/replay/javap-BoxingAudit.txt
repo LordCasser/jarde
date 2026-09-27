@@ -1,0 +1,60 @@
+public final class em25.BoxingAudit {
+  private em25.BoxingAudit();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static java.lang.Object boxInteger();
+    Code:
+       0: iconst_1
+       1: invokestatic  #7                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       4: areturn
+
+  public static java.lang.Object boxBoolean();
+    Code:
+       0: iconst_1
+       1: invokestatic  #13                 // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+       4: areturn
+
+  public static java.lang.Object boxByte();
+    Code:
+       0: iconst_2
+       1: invokestatic  #18                 // Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;
+       4: areturn
+
+  public static java.lang.Short boxShort();
+    Code:
+       0: iconst_3
+       1: invokestatic  #23                 // Method java/lang/Short.valueOf:(S)Ljava/lang/Short;
+       4: areturn
+
+  public static java.lang.Character boxCharacter();
+    Code:
+       0: bipush        99
+       2: invokestatic  #28                 // Method java/lang/Character.valueOf:(C)Ljava/lang/Character;
+       5: areturn
+
+  public static java.lang.Long boxLong();
+    Code:
+       0: ldc2_w        #33                 // long 4l
+       3: invokestatic  #35                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+       6: areturn
+
+  public static long unboxOrDefault(java.lang.Long);
+    Code:
+       0: aload_0
+       1: ifnonnull     9
+       4: lconst_0
+       5: invokestatic  #35                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+       8: astore_0
+       9: aload_0
+      10: invokevirtual #40                 // Method java/lang/Long.longValue:()J
+      13: lreturn
+
+  public static boolean unbox(java.lang.Boolean);
+    Code:
+       0: aload_0
+       1: invokevirtual #44                 // Method java/lang/Boolean.booleanValue:()Z
+       4: ireturn
+}
