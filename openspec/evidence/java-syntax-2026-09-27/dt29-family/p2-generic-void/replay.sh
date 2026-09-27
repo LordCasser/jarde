@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+export PYTHONDONTWRITEBYTECODE=1
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../../../../.." && pwd)
 EVIDENCE="$ROOT/openspec/evidence/java-syntax-2026-09-27/dt29-family/p2-generic-void"

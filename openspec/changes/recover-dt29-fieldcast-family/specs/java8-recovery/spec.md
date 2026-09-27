@@ -14,10 +14,10 @@
 
 ### Requirement: 受证有正文的泛型 void 方法保留声明元数据
 
-当方法 `Signature` 的参数化声明与物理 descriptor 的擦除一致，且正文内所有参数使用均能以相同物理类型安全呈现时，系统 SHALL 在 Java 8 源码中恢复该泛型方法声明。系统 MUST 不因泛型外观重写物理 SSA 类型或丢失源级反射元数据。
+当方法 `Signature` 的参数化声明与物理 descriptor 的擦除一致，且完整正文的同 run AST/SSA 证明参数槽不被写入、所有参数使用均能以相同物理擦除类型安全呈现时，系统 SHALL 在 Java 8 源码中恢复该泛型方法声明。系统 MUST 不因泛型外观重写物理 SSA 类型或丢失源级反射元数据。若 class bound 含 `$`，系统仅可复用已选物理 descriptor 提供的相同参数源码拼写；当前选中 class 自己的唯一 `InnerClasses` 记录须证明当前类与 bound 名称具有相同 outer 和合法的直系 inner 名，且相关源码名均为合法 Java 标识符。该属性给出 nesting 声明事实，不代替 bound 定义的独立读取；不得仅凭字符串替换推导 nested source name。预算或取消停止 MUST 原子地保留物理声明，不得发布半截泛型头。
 
 #### Scenario: D 的有副作用泛型 setter
-- **WHEN** `D.set` 具有 `<T extends B> void set(T, boolean)` 签名，擦除为 `(B,Z)V`，并在正文中通过参数写入已证明的父类字段
+- **WHEN** `D.set` 具有 `<T extends B> void set(T, boolean)` 签名，擦除为 `(B,Z)V`，且同 run 正文证书覆盖四次已证明的父类字段写入和 accessor 调用
 - **THEN** 完整源码 SHALL 可重编、运行，反射所得类型参数、上界、泛型参数及物理参数类型与原 class 一致
 
 #### Scenario: 签名或使用不闭合

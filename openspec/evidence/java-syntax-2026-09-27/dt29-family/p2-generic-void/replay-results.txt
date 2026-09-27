@@ -36,3 +36,4 @@ negative unbound-variable: descriptor declaration retained; generic projection r
 negative IncompatibleSetter: descriptor declaration retained; generic projection refused
 negative OverloadedSetter: descriptor declaration retained; generic projection refused
 budget stop: partial
+Rust targeted checks: `cargo test --locked --lib void_generic_` passed (2 tests): pre-cancellation and exhausted analysis budget stop the VoidBody proof before declaration publication, and output-byte exhaustion leaves the complete generic declaration unpublished.
