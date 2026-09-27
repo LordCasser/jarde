@@ -1,0 +1,18 @@
+package dt14;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/* JADX INFO: loaded from: input.jar:dt14/CustomInit.class */
+public enum CustomInit {
+    RED,
+    BLUE;
+
+    public static final Map<String, CustomInit> BY_NAME = new HashMap();
+
+    static {
+        for (CustomInit customInit : values()) {
+            BY_NAME.put(customInit.name(), customInit);
+        }
+    }
+}

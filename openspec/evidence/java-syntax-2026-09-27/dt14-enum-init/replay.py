@@ -22,9 +22,10 @@ MODES = {
     "fixed-custom": frozenset({"custom-init"}),
     "fixed-ternary": frozenset({"ternary-init"}),
     "fixed-both": frozenset({"custom-init", "ternary-init"}),
+    "fixed-string": frozenset({"custom-init", "ternary-init", "test-string-ternary-shape", "alternating-string-ternary"}),
 }
 if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in MODES):
-    raise SystemExit("usage: replay.py [baseline|fixed-custom|fixed-ternary|fixed-both]")
+    raise SystemExit("usage: replay.py [baseline|fixed-custom|fixed-ternary|fixed-both|fixed-string]")
 MODE = sys.argv[1] if len(sys.argv) == 2 else "baseline"
 FIXED = MODES[MODE]
 OUTPUT = HERE if MODE == "baseline" else HERE / MODE
@@ -46,6 +47,11 @@ CASES = {
         "runner": HERE / "StringTernaryInitRunner.java",
         "expected": "string-ternary=A:B:2\n",
         "jarde_error_source": "public static final dt14.StringTernaryInit FIRST;",
+    },
+    "alternating-string-ternary": {
+        "source": HERE / "AlternatingStringInit.java",
+        "runner": HERE / "AlternatingStringInitRunner.java",
+        "expected": "alternating=1:B:3:3\n",
     },
     "literal-argument-control": {
         "source": HERE / "LiteralInit.java",
@@ -144,6 +150,8 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt14-enum-init-") as temporary:
         cli = Path(JARDE_CLI)
 
     for label, case in CASES.items():
+        if label == "alternating-string-ternary" and MODE != "fixed-string":
+            continue
         source = case["source"]
         runner = case["runner"]
         source_hashes[source.name] = hashlib.sha256(source.read_bytes()).hexdigest()

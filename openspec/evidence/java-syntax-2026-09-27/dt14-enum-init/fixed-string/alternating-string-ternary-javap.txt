@@ -1,0 +1,279 @@
+Classfile <TMP>/alternating-string-ternary/original/dt14/AlternatingStringInit.class
+  Last modified <NORMALIZED>; size 1445 bytes
+  SHA-256 checksum 2ed219e091bb4dd2bef6613d8a731ac69b58cebc1bcd8152c8e091ef3798fc13
+public final class dt14.AlternatingStringInit extends java.lang.Enum<dt14.AlternatingStringInit>
+  minor version: 0
+  major version: 52
+  flags: (0x4031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_ENUM
+  this_class: #1                          // dt14/AlternatingStringInit
+  super_class: #23                        // java/lang/Enum
+  interfaces: 0, fields: 6, methods: 7, attributes: 1
+Constant pool:
+   #1 = Class              #2             // dt14/AlternatingStringInit
+   #2 = Utf8               dt14/AlternatingStringInit
+   #3 = Fieldref           #1.#4          // dt14/AlternatingStringInit.FIRST:Ldt14/AlternatingStringInit;
+   #4 = NameAndType        #5:#6          // FIRST:Ldt14/AlternatingStringInit;
+   #5 = Utf8               FIRST
+   #6 = Utf8               Ldt14/AlternatingStringInit;
+   #7 = Fieldref           #1.#8          // dt14/AlternatingStringInit.SECOND:Ldt14/AlternatingStringInit;
+   #8 = NameAndType        #9:#6          // SECOND:Ldt14/AlternatingStringInit;
+   #9 = Utf8               SECOND
+  #10 = Fieldref           #1.#11         // dt14/AlternatingStringInit.THIRD:Ldt14/AlternatingStringInit;
+  #11 = NameAndType        #12:#6         // THIRD:Ldt14/AlternatingStringInit;
+  #12 = Utf8               THIRD
+  #13 = Fieldref           #1.#14         // dt14/AlternatingStringInit.$VALUES:[Ldt14/AlternatingStringInit;
+  #14 = NameAndType        #15:#16        // $VALUES:[Ldt14/AlternatingStringInit;
+  #15 = Utf8               $VALUES
+  #16 = Utf8               [Ldt14/AlternatingStringInit;
+  #17 = Methodref          #18.#19        // "[Ldt14/AlternatingStringInit;".clone:()Ljava/lang/Object;
+  #18 = Class              #16            // "[Ldt14/AlternatingStringInit;"
+  #19 = NameAndType        #20:#21        // clone:()Ljava/lang/Object;
+  #20 = Utf8               clone
+  #21 = Utf8               ()Ljava/lang/Object;
+  #22 = Methodref          #23.#24        // java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #23 = Class              #25            // java/lang/Enum
+  #24 = NameAndType        #26:#27        // valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #25 = Utf8               java/lang/Enum
+  #26 = Utf8               valueOf
+  #27 = Utf8               (Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #28 = Methodref          #23.#29        // java/lang/Enum."<init>":(Ljava/lang/String;I)V
+  #29 = NameAndType        #30:#31        // "<init>":(Ljava/lang/String;I)V
+  #30 = Utf8               <init>
+  #31 = Utf8               (Ljava/lang/String;I)V
+  #32 = Fieldref           #1.#33         // dt14/AlternatingStringInit.value:Ljava/lang/String;
+  #33 = NameAndType        #34:#35        // value:Ljava/lang/String;
+  #34 = Utf8               value
+  #35 = Utf8               Ljava/lang/String;
+  #36 = Fieldref           #1.#37         // dt14/AlternatingStringInit.calls:I
+  #37 = NameAndType        #38:#39        // calls:I
+  #38 = Utf8               calls
+  #39 = Utf8               I
+  #40 = String             #5             // FIRST
+  #41 = Methodref          #1.#42         // dt14/AlternatingStringInit.choose:()Z
+  #42 = NameAndType        #43:#44        // choose:()Z
+  #43 = Utf8               choose
+  #44 = Utf8               ()Z
+  #45 = String             #46            // 1
+  #46 = Utf8               1
+  #47 = String             #48            // A
+  #48 = Utf8               A
+  #49 = Methodref          #1.#50         // dt14/AlternatingStringInit."<init>":(Ljava/lang/String;ILjava/lang/String;)V
+  #50 = NameAndType        #30:#51        // "<init>":(Ljava/lang/String;ILjava/lang/String;)V
+  #51 = Utf8               (Ljava/lang/String;ILjava/lang/String;)V
+  #52 = String             #9             // SECOND
+  #53 = String             #54            // 2
+  #54 = Utf8               2
+  #55 = String             #56            // B
+  #56 = Utf8               B
+  #57 = String             #12            // THIRD
+  #58 = String             #59            // 3
+  #59 = Utf8               3
+  #60 = String             #61            // C
+  #61 = Utf8               C
+  #62 = Methodref          #1.#63         // dt14/AlternatingStringInit.$values:()[Ldt14/AlternatingStringInit;
+  #63 = NameAndType        #64:#65        // $values:()[Ldt14/AlternatingStringInit;
+  #64 = Utf8               $values
+  #65 = Utf8               ()[Ldt14/AlternatingStringInit;
+  #66 = Utf8               values
+  #67 = Utf8               Code
+  #68 = Utf8               (Ljava/lang/String;)Ldt14/AlternatingStringInit;
+  #69 = Utf8               MethodParameters
+  #70 = Utf8               Signature
+  #71 = Utf8               (Ljava/lang/String;)V
+  #72 = Utf8               ()Ljava/lang/String;
+  #73 = Utf8               StackMapTable
+  #74 = Utf8               <clinit>
+  #75 = Utf8               ()V
+  #76 = Class              #77            // java/lang/String
+  #77 = Utf8               java/lang/String
+  #78 = Utf8               Ljava/lang/Enum<Ldt14/AlternatingStringInit;>;
+{
+  public static final dt14.AlternatingStringInit FIRST;
+    descriptor: Ldt14/AlternatingStringInit;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final dt14.AlternatingStringInit SECOND;
+    descriptor: Ldt14/AlternatingStringInit;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final dt14.AlternatingStringInit THIRD;
+    descriptor: Ldt14/AlternatingStringInit;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  static int calls;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  private final java.lang.String value;
+    descriptor: Ljava/lang/String;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private static final dt14.AlternatingStringInit[] $VALUES;
+    descriptor: [Ldt14/AlternatingStringInit;
+    flags: (0x101a) ACC_PRIVATE, ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public static dt14.AlternatingStringInit[] values();
+    descriptor: ()[Ldt14/AlternatingStringInit;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #13                 // Field $VALUES:[Ldt14/AlternatingStringInit;
+         3: invokevirtual #17                 // Method "[Ldt14/AlternatingStringInit;".clone:()Ljava/lang/Object;
+         6: checkcast     #18                 // class "[Ldt14/AlternatingStringInit;"
+         9: areturn
+
+  public static dt14.AlternatingStringInit valueOf(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ldt14/AlternatingStringInit;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: ldc           #1                  // class dt14/AlternatingStringInit
+         2: aload_0
+         3: invokestatic  #22                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+         6: checkcast     #1                  // class dt14/AlternatingStringInit
+         9: areturn
+    MethodParameters:
+      Name                           Flags
+      <no name>                      mandated
+
+  private dt14.AlternatingStringInit(java.lang.String);
+    descriptor: (Ljava/lang/String;ILjava/lang/String;)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=3, locals=4, args_size=4
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: invokespecial #28                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+         6: aload_0
+         7: aload_3
+         8: putfield      #32                 // Field value:Ljava/lang/String;
+        11: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+      <no name>
+    Signature: #71                          // (Ljava/lang/String;)V
+
+  java.lang.String value();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #32                 // Field value:Ljava/lang/String;
+         4: areturn
+
+  static boolean choose();
+    descriptor: ()Z
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #36                 // Field calls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #36                 // Field calls:I
+         8: getstatic     #36                 // Field calls:I
+        11: iconst_2
+        12: irem
+        13: iconst_1
+        14: if_icmpne     21
+        17: iconst_1
+        18: goto          22
+        21: iconst_0
+        22: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 21 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static dt14.AlternatingStringInit[] $values();
+    descriptor: ()[Ldt14/AlternatingStringInit;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_3
+         1: anewarray     #1                  // class dt14/AlternatingStringInit
+         4: dup
+         5: iconst_0
+         6: getstatic     #3                  // Field FIRST:Ldt14/AlternatingStringInit;
+         9: aastore
+        10: dup
+        11: iconst_1
+        12: getstatic     #7                  // Field SECOND:Ldt14/AlternatingStringInit;
+        15: aastore
+        16: dup
+        17: iconst_2
+        18: getstatic     #10                 // Field THIRD:Ldt14/AlternatingStringInit;
+        21: aastore
+        22: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=5, locals=0, args_size=0
+         0: new           #1                  // class dt14/AlternatingStringInit
+         3: dup
+         4: ldc           #40                 // String FIRST
+         6: iconst_0
+         7: invokestatic  #41                 // Method choose:()Z
+        10: ifeq          18
+        13: ldc           #45                 // String 1
+        15: goto          20
+        18: ldc           #47                 // String A
+        20: invokespecial #49                 // Method "<init>":(Ljava/lang/String;ILjava/lang/String;)V
+        23: putstatic     #3                  // Field FIRST:Ldt14/AlternatingStringInit;
+        26: new           #1                  // class dt14/AlternatingStringInit
+        29: dup
+        30: ldc           #52                 // String SECOND
+        32: iconst_1
+        33: invokestatic  #41                 // Method choose:()Z
+        36: ifeq          44
+        39: ldc           #53                 // String 2
+        41: goto          46
+        44: ldc           #55                 // String B
+        46: invokespecial #49                 // Method "<init>":(Ljava/lang/String;ILjava/lang/String;)V
+        49: putstatic     #7                  // Field SECOND:Ldt14/AlternatingStringInit;
+        52: new           #1                  // class dt14/AlternatingStringInit
+        55: dup
+        56: ldc           #57                 // String THIRD
+        58: iconst_2
+        59: invokestatic  #41                 // Method choose:()Z
+        62: ifeq          70
+        65: ldc           #58                 // String 3
+        67: goto          72
+        70: ldc           #60                 // String C
+        72: invokespecial #49                 // Method "<init>":(Ljava/lang/String;ILjava/lang/String;)V
+        75: putstatic     #10                 // Field THIRD:Ldt14/AlternatingStringInit;
+        78: invokestatic  #62                 // Method $values:()[Ldt14/AlternatingStringInit;
+        81: putstatic     #13                 // Field $VALUES:[Ldt14/AlternatingStringInit;
+        84: return
+      StackMapTable: number_of_entries = 6
+        frame_type = 255 /* full_frame */
+          offset_delta = 18
+          locals = []
+          stack = [ uninitialized 0, uninitialized 0, class java/lang/String, int ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 1
+          locals = []
+          stack = [ uninitialized 0, uninitialized 0, class java/lang/String, int, class java/lang/String ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 23
+          locals = []
+          stack = [ uninitialized 26, uninitialized 26, class java/lang/String, int ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 1
+          locals = []
+          stack = [ uninitialized 26, uninitialized 26, class java/lang/String, int, class java/lang/String ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 23
+          locals = []
+          stack = [ uninitialized 52, uninitialized 52, class java/lang/String, int ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 1
+          locals = []
+          stack = [ uninitialized 52, uninitialized 52, class java/lang/String, int, class java/lang/String ]
+}
+Signature: #78                          // Ljava/lang/Enum<Ldt14/AlternatingStringInit;>;

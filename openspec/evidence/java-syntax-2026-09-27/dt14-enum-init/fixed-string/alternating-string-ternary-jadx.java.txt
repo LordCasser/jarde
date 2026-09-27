@@ -1,0 +1,24 @@
+package dt14;
+
+/* JADX INFO: loaded from: input.jar:dt14/AlternatingStringInit.class */
+public enum AlternatingStringInit {
+    FIRST(choose() ? "1" : "A"),
+    SECOND(choose() ? "2" : "B"),
+    THIRD(choose() ? "3" : "C");
+
+    static int calls;
+    private final String value;
+
+    AlternatingStringInit(String str) {
+        this.value = str;
+    }
+
+    String value() {
+        return this.value;
+    }
+
+    static boolean choose() {
+        calls++;
+        return calls % 2 == 1;
+    }
+}

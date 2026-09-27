@@ -1,0 +1,26 @@
+// jarde: presentation of `dt14/CustomInit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt14;
+
+// jarde: class Signature `Ljava/lang/Enum<Ldt14/CustomInit;>;` not projected
+// jarde: class Signature projection refused: unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position
+public enum CustomInit {
+    RED,
+    BLUE;
+
+    // jarde: field Signature projection refused for `BY_NAMELjava/util/Map;`: unsupported (field_generic_source_unproved): field name, flags, descriptor, or type-use annotation path cannot be preserved
+    public static final java.util.Map BY_NAME;
+
+    static {
+        dt14.CustomInit[] local0;
+        int local1;
+        int local2;
+        BY_NAME = new java.util.HashMap();
+        local0 = values();
+        local1 = local0.length;
+        for (local2 = 0; local2 < local1; local2 = local2 + 1) {
+            dt14.CustomInit local3 = local0[local2];
+            dt14.CustomInit.BY_NAME.put((java.lang.Object) local3.name(), (java.lang.Object) local3);
+        }
+    }
+}

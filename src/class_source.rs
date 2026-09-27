@@ -6789,7 +6789,9 @@ pub(crate) fn prepare_enum_constant_source_projection(
             && group.constructor_signature_present
             && !matches!(
                 constructor.enum_constructor_source_tail,
-                EnumConstructorSourceTail::Int | EnumConstructorSourceTail::StringVarargs
+                EnumConstructorSourceTail::Int
+                    | EnumConstructorSourceTail::SingleString
+                    | EnumConstructorSourceTail::StringVarargs
             ))
         || (!constructor.markers.is_empty() && !has_only_enum_signature_marker)
         || !constructor.annotations.refusals.is_empty()
@@ -6947,6 +6949,8 @@ pub(crate) fn prepare_enum_constant_source_projection(
             };
             let string_varargs = constructor.enum_constructor_source_tail
                 == EnumConstructorSourceTail::StringVarargs;
+            let single_string =
+                constructor.enum_constructor_source_tail == EnumConstructorSourceTail::SingleString;
             if string_varargs
                 && (constructor.item.descriptor.raw().0
                     != b"(Ljava/lang/String;I[Ljava/lang/String;)V"
@@ -6967,10 +6971,19 @@ pub(crate) fn prepare_enum_constant_source_projection(
                 .unwrap_or(&[]);
             let Some(parameter_type) = (if string_varargs {
                 Some("java.lang.String...".to_owned())
+            } else if single_string && source_parameter_type_uses.is_empty() {
+                Some("java.lang.String".to_owned())
             } else if source_parameter_type_uses.is_empty() {
                 Some("int".to_owned())
             } else {
-                decorate_qualified_type("int", source_parameter_type_uses)
+                decorate_qualified_type(
+                    if single_string {
+                        "java.lang.String"
+                    } else {
+                        "int"
+                    },
+                    source_parameter_type_uses,
+                )
             }) else {
                 return Ok(None);
             };
