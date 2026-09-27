@@ -1,0 +1,9 @@
+# DT-14 标量 String 条件实参：主线独立验收
+
+root 将实现提交拣入主线为 `b3dd2a21`，从合并后的源码独立构建 `jarde-cli`，SHA-256 为 `43e6641d9a8d4e761968c2cb99e77ba4c2ce26375549b7f55037eb45ab315075`。固定 JADX checkout 是 `2fb1b16386941660fda07e9017285aec40fcb37f`。独立执行 `JARDE_CLI=/tmp/jarde-root-dt14-string-target/debug/jarde-cli python3 openspec/evidence/java-syntax-2026-09-27/dt14-enum-init/replay.py fixed-string`；重生成的全部受版本控制证据与实施分支逐字一致，没有输出漂移。完整输入类、JADX/Jarde 源码及三方编译和运行结果见 [`fixed-string/results.json`](fixed-string/results.json)。
+
+原 class、固定 JADX 与 Jarde 的**完整 Java 8 类源码**分别以 `javac --release 8` 重编、`java -Xverify:all` 运行。固定 `StringTernaryInit` 三方均输出 `string-ternary=A:B:2`；交替条件 fixture 三方均输出 `alternating=1:B:3:3`，同时覆盖 String true/false arm、每项条件调用次数及顺序。int 三元控制输出 `ternary=1:20:1:3`，普通、字面量和用户 Map suffix 控制分别为 `plain=2:true`、`literal=1:20`、`map=2:true:true`。Jarde 两份 String 条件源码哈希为 `7e500442d2b49e42c81b9cd3f58b4b51d43142b9b84bf1f9127c70395f29deba` 与 `73950055d5fe8f9f108c19ed8302bce16d8a95bacc9bfcea54c2211d90f635d8`。
+
+代码审阅确认：只为准确 `(String,int,String)` 私有构造器及本类唯一 String 字段 store 建立标量证书；String literal 和 5 指令条件菱形共享现有布尔谓词身份检查，按 `ifeq/ifne` 真正极性呈现一个条件调用。原有 `String...` 数组证书仍独立，整组任何一项不闭合则拒绝投影；物理 `<clinit>`、构造器、字段与 source map 继续可查。`cargo test -p jarde --lib --locked` 148/148、`cargo test -p jarde-java --lib --locked` 233/233、`cargo check --workspace --locked`、`cargo fmt --all -- --check`、OpenSpec strict、`git diff --check` 均通过。此验收只将 DT-14 的固定 String 交叉差距转为“已修复、单元待扩验”，不将所有 enum 初始化形态判为追平。
+
+额外运行 `cargo test --all-features --locked` 时，另一个 `tests/p3_new_value.rs::a_leftover_two_instructions_read_keeps_its_refusal` 断言在第 245 行失败：测试期待对第二次 `dup` 读取的特定拒绝文本，当前报告为 `the copy at BCI 7 has no proved local assignment`；同目标单独重跑为 3 通过、1 失败。该测试输入 `Built.localNew()` 与本轮 enum 证书和输出路径无关，暂作为独立测试断言/拒绝来源债务，不在 DT-14 改动中修复。普通 `cargo test --locked` 还因未启用测试代码要求的 `test-support` feature 无法编译 `d0_counts`/`BulkProbe` 相关集成目标；完整套件应使用 `--all-features`，这不构成生产代码缺口。
