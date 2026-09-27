@@ -44,7 +44,7 @@
 //! out, and the one a caller has to be able to rely on without reading diagnostics.
 
 use jarde_jvm::ir::{CompileStatus, Quality, Representation, SemanticValidation, SyntaxStatus};
-use jarde_jvm::method_ir::{MethodIr, Slot, SsaTable};
+use jarde_jvm::method_ir::{Definition, MethodIr, Slot, SsaTable};
 use jarde_reader::budget::{Budget, BudgetDimension, UsageSnapshot};
 use jarde_reader::classfile::VerificationStatus;
 use jarde_reader::model::{
@@ -187,6 +187,21 @@ pub struct ProvedCapturedOuterRead {
     pub field_descriptor: String,
     pub outer_internal_name: String,
     pub outer_source_name: String,
+    pub constructor: PhysicalMethodId,
+    pub constructor_write_bci: u32,
+}
+
+/// A physical capture-field read replaced by a root method's exactly proved parameter value.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProvedCapturedParameterRead {
+    pub method: PhysicalMethodId,
+    pub read_bci: u32,
+    pub field_owner: String,
+    pub field_name: String,
+    pub field_descriptor: String,
+    pub parameter_slot: u16,
+    pub parameter_name: String,
     pub constructor: PhysicalMethodId,
     pub constructor_write_bci: u32,
 }
@@ -474,10 +489,31 @@ pub fn class_source_anonymous_return_site(
 /// argument from the source-level interface creation.
 #[doc(hidden)]
 pub fn class_source_anonymous_outer_argument_bci(ast: &ClassSourceMethodAst) -> Option<u32> {
+    let bci = class_source_anonymous_single_argument_bci(ast)?;
     let (_, _, args) = class_source_direct_return_new(&ast.projection.program)?;
     let [argument] = args else { return None };
-    matches!(argument.kind, crate::ast::ExprKind::Local(ref name) if name == "this")
-        .then(|| argument.origin.primary().bci())
+    (matches!(argument.kind, crate::ast::ExprKind::Local(ref name) if name == "this")
+        && argument.origin.primary().bci() == bci)
+        .then_some(bci)
+}
+
+/// The exact BCI of a direct-return site's sole constructor argument, regardless of its source
+/// expression. The facade may erase it only after a physical capture proof closes that value.
+#[doc(hidden)]
+pub fn class_source_anonymous_single_argument_bci(ast: &ClassSourceMethodAst) -> Option<u32> {
+    let (_, _, args) = class_source_direct_return_new(&ast.projection.program)?;
+    let [argument] = args else { return None };
+    Some(argument.origin.primary().bci())
+}
+
+/// The same-run spelling for the sole physical parameter at `slot`. This bounded helper is used
+/// only after a descriptor/SSA proof has established that the anonymous constructor receives that
+/// exact entry parameter.
+#[doc(hidden)]
+pub fn class_source_single_parameter_name(ast: &ClassSourceMethodAst, slot: u16) -> Option<String> {
+    (slot == 0 && ast.projection.parameter_names.len() == 1)
+        .then(|| ast.projection.parameter_names[0].clone())
+        .flatten()
 }
 
 /// Emits the retained statements of one selected physical class-source method. The supplied
@@ -541,6 +577,53 @@ pub fn project_class_source_captured_outer_reads(
     reads: &[ProvedCapturedOuterRead],
     budget: &mut Budget,
 ) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
+    let reads = reads
+        .iter()
+        .map(CapturedReadReplacement::Outer)
+        .collect::<Vec<_>>();
+    project_class_source_captured_reads(ast, &reads, budget)
+}
+
+/// Projects only the exact field-read expressions certified as a root parameter capture.
+#[doc(hidden)]
+pub fn project_class_source_captured_parameter_reads(
+    ast: &ClassSourceMethodAst,
+    reads: &[ProvedCapturedParameterRead],
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
+    let reads = reads
+        .iter()
+        .map(CapturedReadReplacement::Parameter)
+        .collect::<Vec<_>>();
+    project_class_source_captured_reads(ast, &reads, budget)
+}
+
+enum CapturedReadReplacement<'a> {
+    Outer(&'a ProvedCapturedOuterRead),
+    Parameter(&'a ProvedCapturedParameterRead),
+}
+
+impl CapturedReadReplacement<'_> {
+    fn method(&self) -> &PhysicalMethodId {
+        match self {
+            Self::Outer(read) => &read.method,
+            Self::Parameter(read) => &read.method,
+        }
+    }
+
+    fn read_bci(&self) -> u32 {
+        match self {
+            Self::Outer(read) => read.read_bci,
+            Self::Parameter(read) => read.read_bci,
+        }
+    }
+}
+
+fn project_class_source_captured_reads(
+    ast: &ClassSourceMethodAst,
+    reads: &[CapturedReadReplacement<'_>],
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceMethodAst>, crate::stop::StopReason> {
     if reads.is_empty() {
         return Ok(None);
     }
@@ -551,10 +634,10 @@ pub fn project_class_source_captured_outer_reads(
             budget,
             jarde_reader::budget::CountedBudgetDimension::IrItems,
             1,
-            Some(read.read_bci),
+            Some(read.read_bci()),
         )?;
-        crate::stop::poll(budget, Some(read.read_bci))?;
-        if &read.method != method || expected.insert(read.read_bci, read).is_some() {
+        crate::stop::poll(budget, Some(read.read_bci()))?;
+        if read.method() != method || expected.insert(read.read_bci(), read).is_some() {
             return Ok(None);
         }
     }
@@ -598,7 +681,7 @@ pub fn project_class_source_captured_outer_reads(
 
 fn project_captured_stmt(
     stmt: &mut crate::ast::Stmt,
-    expected: &std::collections::BTreeMap<u32, &ProvedCapturedOuterRead>,
+    expected: &std::collections::BTreeMap<u32, &CapturedReadReplacement<'_>>,
     matched: &mut std::collections::BTreeMap<u32, usize>,
     budget: &mut Budget,
 ) -> Result<(), crate::stop::StopReason> {
@@ -704,7 +787,7 @@ fn project_captured_stmt(
 
 fn project_captured_stmts(
     stmts: &mut [crate::ast::Stmt],
-    expected: &std::collections::BTreeMap<u32, &ProvedCapturedOuterRead>,
+    expected: &std::collections::BTreeMap<u32, &CapturedReadReplacement<'_>>,
     matched: &mut std::collections::BTreeMap<u32, usize>,
     budget: &mut Budget,
 ) -> Result<(), crate::stop::StopReason> {
@@ -716,7 +799,7 @@ fn project_captured_stmts(
 
 fn project_captured_expr(
     expr: &mut Expr,
-    expected: &std::collections::BTreeMap<u32, &ProvedCapturedOuterRead>,
+    expected: &std::collections::BTreeMap<u32, &CapturedReadReplacement<'_>>,
     matched: &mut std::collections::BTreeMap<u32, usize>,
     budget: &mut Budget,
 ) -> Result<(), crate::stop::StopReason> {
@@ -729,18 +812,31 @@ fn project_captured_expr(
     )?;
     crate::stop::poll(budget, Some(expr.origin.primary().bci()))?;
     if let Some(read) = expected.get(&expr.origin.primary().bci()) {
+        let valid_field = match read {
+            CapturedReadReplacement::Outer(read) => read.field_name.as_str(),
+            CapturedReadReplacement::Parameter(read) => read.field_name.as_str(),
+        };
         if let ExprKind::Field { receiver, name } = &expr.kind
             && matches!(receiver.kind, ExprKind::Local(ref local) if local == "this")
-            && name == &read.field_name
+            && name == valid_field
         {
-            *matched.entry(read.read_bci).or_default() += 1;
-            expr.kind = ExprKind::QualifiedThis {
-                qualifier: read.outer_source_name.clone(),
-            };
-            expr.presented = Some(Type::Reference(read.outer_source_name.clone()));
+            match read {
+                CapturedReadReplacement::Outer(read) => {
+                    *matched.entry(read.read_bci).or_default() += 1;
+                    expr.kind = ExprKind::QualifiedThis {
+                        qualifier: read.outer_source_name.clone(),
+                    };
+                    expr.presented = Some(Type::Reference(read.outer_source_name.clone()));
+                }
+                CapturedReadReplacement::Parameter(read) => {
+                    *matched.entry(read.read_bci).or_default() += 1;
+                    expr.kind = ExprKind::Local(read.parameter_name.clone());
+                    expr.presented = Some(Type::Double);
+                }
+            }
             return Ok(());
         }
-        *matched.entry(read.read_bci).or_default() += 2;
+        *matched.entry(read.read_bci()).or_default() += 2;
         return Ok(());
     }
     match &mut expr.kind {
@@ -1127,6 +1223,42 @@ pub struct AnonymousAllocationCandidate {
     pub constructor_bci: Option<u32>,
     /// Ordered producer BCIs of the constructor's arguments for verified sites.
     pub argument_bcis: Vec<u32>,
+    /// Constructor arguments that are direct, unmodified entry parameters with no other SSA use.
+    /// One `None` means that argument could not be closed to one such parameter.
+    pub argument_parameter_slots: Vec<Option<u16>>,
+}
+
+fn anonymous_direct_double_parameter_slot(
+    ssa: &SsaTable,
+    producer_bci: u32,
+    consumer_bci: u32,
+) -> Option<u16> {
+    let loads: Vec<_> = ssa
+        .blocks()
+        .iter()
+        .flat_map(|block| block.instructions())
+        .filter(|instruction| instruction.bci() == producer_bci)
+        .collect();
+    let [load] = loads.as_slice() else {
+        return None;
+    };
+    if !matches!(load.opcode(), 0x18 | 0x26..=0x29) || load.reads().len() != 1 {
+        return None;
+    }
+    let Slot::Local(slot) = load.reads()[0].0 else {
+        return None;
+    };
+    let [(_, value)] = load.writes() else {
+        return None;
+    };
+    if !matches!(ssa.value(*value).def(), Definition::Instruction { bci, .. } if *bci == producer_bci)
+        || !matches!(ssa.value(load.reads()[0].1).def(), Definition::Entry { slot: Slot::Local(entry_slot), .. } if *entry_slot == slot)
+        || ssa.value(*value).uses().len() != 1
+        || ssa.value(*value).uses()[0].bci() != Some(consumer_bci)
+    {
+        return None;
+    }
+    Some(slot)
 }
 
 /// Parameter slots, rather than rendered text, identify the values in this proof.
@@ -3564,6 +3696,14 @@ fn recover_inner(
                     return stopped(method, profile.clone(), &selection, stop, budget);
                 }
                 let site = sites.site_at_head(candidate.head);
+                let argument_parameter_slots = site.map_or_else(Vec::new, |site| {
+                    site.arguments
+                        .iter()
+                        .map(|bci| {
+                            anonymous_direct_double_parameter_slot(ssa, *bci, site.constructor)
+                        })
+                        .collect()
+                });
                 allocations.push(AnonymousAllocationCandidate {
                     member: member.clone(),
                     head_bci: candidate.head,
@@ -3571,6 +3711,7 @@ fn recover_inner(
                     verified: candidate.verified && site.is_some(),
                     constructor_bci: site.map(|site| site.constructor),
                     argument_bcis: site.map_or_else(Vec::new, |site| site.arguments.clone()),
+                    argument_parameter_slots,
                 });
             }
             *output = Some(AnonymousAllocationScan {
@@ -3649,21 +3790,17 @@ fn recover_inner(
             .declaration()
             .map(|member| member.identity().clone())
     {
-        let parameter_names: Vec<Option<String>> = if retain_all_method_asts {
-            request
-                .facts
-                .method()
-                .parameter_types()
-                .keys()
-                .map(|slot| {
-                    names
-                        .whole(*slot)
-                        .map(|rendered| rendered.text().to_owned())
-                })
-                .collect()
-        } else {
-            Vec::new()
-        };
+        let parameter_names: Vec<Option<String>> = request
+            .facts
+            .method()
+            .parameter_types()
+            .keys()
+            .map(|slot| {
+                names
+                    .whole(*slot)
+                    .map(|rendered| rendered.text().to_owned())
+            })
+            .collect();
         let instruction_bcis: Vec<u32> = if retain_all_method_asts {
             request
                 .ir
