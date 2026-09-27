@@ -32,7 +32,15 @@ IllegalStateException:multi
 
 `javap -c -v` 的异常表也确认了类型顺序和 handler 关系：`ordinary` 的 BCI 范围 `[0,32)` 先映射至 handler BCI 33 `IllegalArgumentException`，再映射至 BCI 57 `IllegalStateException`；`multi` 的 `[0,24)` 有两行，分别为 `IllegalArgumentException` 与 `IllegalStateException`，都指向 BCI 24。同一 handler 被还原为一个 multi-catch，运行时两种实际异常的类名输出未交换或丢失。
 
-本轮没有发现普通 typed catch / multi-catch 首片差距。JADX 固定的 empty-catch 与 unreachable-catch 代表测试断言弱、且后者依赖 Smali；这两类没有纳入三方运行首片，仍需单独扩验，因此 CF-15 只标部分已测。
+先前审计没有发现普通 typed catch / multi-catch 首片差距。JADX 固定的 empty-catch 与 unreachable-catch 代表测试断言弱、且后者依赖 Smali；当时这两类没有纳入三方运行首片，仍需单独扩验，因此 CF-15 只标部分已测。下文补记空 catch 的邻近 Java 8 形态。
+
+## 固定测试复核与窄边界
+
+固定 JADX checkout `2fb1b16386941660fda07e9017285aec40fcb37f` 中定向 Gradle 测试 `TestEmptyCatch` 与 `TestUnreachableCatch` 均通过。通过只证明测试可运行并满足其实际断言，不提升断言本身的强度：`TestEmptyCatch` 的真实 Smali `<clinit>` 有五个 `NoSuchFieldError` 空 handler，测试只数五个 try 和五个 catch 头，没有检查 handler body 为空或 enum 映射正确；`TestUnreachableCatch` 的 Java 片段只是注释，实际 Smali 禁编译、允许 warning，测试只检查输出含 `IOException` 和 `Collections.unmodifiableMap`，没有 catch 结构或可达性断言。因此后者不构成 CF-15 正向结论。
+
+对 empty-catch 另做的邻近 Java 8 enum switch-map 复现记录了异常表五行：`9..20→23`、`24..35→38`、`39..50→53`、`54..65→68`、`69..80→83`。原始、JADX、Jarde 三份完整 Java 8 源码均重编并以 `java -Xverify:all` 执行，输出均为 `1..5`。这是邻近 Java 源形态的窄验证，不能声称固定 DEX 直接运行 Jarde；临时对照目录已清理，本记录不提供可重放 fixture。故空 catch 仅在该窄形态下有通过证据，整体仍待扩验。
+
+另一个邻近 Java 8 双 `AutoCloseable` / try-with-resources 复现中，原/JADX 的四行运行输出相同（`0:2,2:-2,12:-2,21:-1`），Jarde 在 BCI 53 报 `jre_guard_handler + jre_region_uncovered_blocks`。这是 CF-17/TWR 的交叉研究线索，不作为 CF-15 实现或计数依据；临时目录已清理，没有可重放 fixture。
 
 证据文件保存输入、三方完整源码、原始 class 和三方运行输出。定向验证结果：`CARGO_TARGET_DIR=/tmp/jarde-cf15-target CARGO_INCREMENTAL=0 cargo test --test p3_typed_catch --test p3_nested_try`，typed catch 6/6、nested try 2/2 通过；这些现有测试是补充，不代替固定 JADX 测试或本次三方源样本。
 
