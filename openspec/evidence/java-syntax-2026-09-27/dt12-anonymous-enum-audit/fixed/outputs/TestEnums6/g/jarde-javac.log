@@ -1,0 +1,9 @@
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+<REPO>/openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/fixed/outputs/TestEnums6/g/jarde-source/demo/Numbers.java:6: error: enum constant expected here
+    public static final demo.Numbers ZERO;
+    ^
+1 error
+3 warnings
+exit=1
