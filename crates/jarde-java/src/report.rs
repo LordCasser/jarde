@@ -421,6 +421,8 @@ pub struct ClassSourceRecovery {
     /// Same-run proved array-helper call sites, retained privately for atomic class-source
     /// projection after the class-wide helper-use census.
     pub array_constructors: Vec<ClassSourceArrayConstructorCandidate>,
+    /// Same-run unbound synthetic-lambda helper candidates for bounded class-source projection.
+    pub lambda_helpers: Vec<ClassSourceLambdaHelperCandidate>,
     /// Same-run Fieldref operations of this physical method, used to reject mutable aliases of a
     /// selected synthetic table in visible class-source members.
     pub enum_switch_field_uses: Vec<ClassSourceEnumSwitchFieldUse>,
@@ -806,6 +808,15 @@ pub fn emit_class_source_anonymous_return(
 pub(crate) struct ClassSourceMethodAstSource {
     pub(crate) program: crate::build::Program,
     pub(crate) member: jarde_reader::model::PhysicalMethodId,
+    /// The presentation name assigned to each descriptor parameter slot, in descriptor order.
+    /// `None` means a reused slot did not have one unambiguous whole-slot name.
+    pub(crate) parameter_names: Vec<Option<String>>,
+    pub(crate) complete_code: bool,
+    pub(crate) has_exception_handlers: bool,
+    pub(crate) instruction_count: usize,
+    /// Every physical instruction BCI observed in the complete Code attribute. A certificate
+    /// compares this exact set to the admitted AST anchors; a matching node count is insufficient.
+    pub(crate) instruction_bcis: Vec<u32>,
 }
 
 #[doc(hidden)]
@@ -818,6 +829,27 @@ pub struct ClassSourceArrayConstructorCandidate {
     pub implementation_index: u16,
     pub sites: Vec<ArrayConstructorProjectionSite>,
     pub(crate) projection: std::sync::Arc<ArrayConstructorProjectionSource>,
+}
+
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceLambdaHelperCandidate {
+    pub member: jarde_reader::model::PhysicalMethodId,
+    pub helper: jarde_reader::model::PhysicalMethodId,
+    pub helper_owner: jarde_reader::model::JvmBytes,
+    pub bootstrap_index: u16,
+    pub implementation_index: u16,
+    pub use_site: u32,
+    pub site_cp: u16,
+    pub(crate) projection: std::sync::Arc<LambdaHelperProjectionSource>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct LambdaHelperProjectionSource {
+    pub(crate) program: crate::build::Program,
+    pub(crate) facts: crate::facts::RecoveryFacts,
+    pub(crate) declaration: Option<crate::declaration::Declaration>,
+    pub(crate) member: jarde_reader::model::PhysicalMethodId,
 }
 
 #[doc(hidden)]
@@ -1254,6 +1286,181 @@ pub fn emit_class_source_array_constructors(
     Ok(Some(emitted.text))
 }
 
+/// Inlines one same-class, no-capture primitive lambda helper only after class-source has proved
+/// its exact bootstrap ownership and unique use. The helper AST must be a complete one-return
+/// arithmetic body; its physical method report is retained by the caller.
+pub fn emit_class_source_lambda_helper(
+    candidate: &ClassSourceLambdaHelperCandidate,
+    helper_ast: &ClassSourceMethodAst,
+    budget: &mut Budget,
+) -> Result<Option<String>, crate::stop::StopReason> {
+    let caller = &candidate.projection;
+    let helper = &helper_ast.projection;
+    if caller.member != candidate.member
+        || helper.member != candidate.helper
+        || !helper.complete_code
+        || helper.has_exception_handlers
+        || caller.program.ragged
+        || caller.program.stmts.len() != 1
+        || helper.program.ragged
+        || helper.program.stmts.len() != 1
+    {
+        return Ok(None);
+    }
+    let nodes =
+        program_node_count(&helper.program).saturating_add(program_node_count(&caller.program));
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        nodes,
+        Some(candidate.use_site),
+    )?;
+    crate::stop::poll(budget, Some(candidate.use_site))?;
+    let Ok(descriptor) = std::str::from_utf8(&candidate.helper.descriptor.0) else {
+        return Ok(None);
+    };
+    let Some((parameters, Some(Type::Int))) = crate::lambda::parse_method(descriptor) else {
+        return Ok(None);
+    };
+    if !(parameters.is_empty()
+        || parameters.as_slice() == [Type::Int]
+        || parameters.as_slice() == [Type::Int, Type::Int])
+        || helper.parameter_names.len() != parameters.len()
+        || helper.parameter_names.iter().any(Option::is_none)
+    {
+        return Ok(None);
+    }
+    let crate::ast::StmtKind::Return { value: Some(donor) } = &helper.program.stmts[0].kind else {
+        return Ok(None);
+    };
+    if !lambda_helper_instruction_coverage(helper) {
+        return Ok(None);
+    }
+    let crate::ast::StmtKind::Return {
+        value: Some(lambda),
+    } = &caller.program.stmts[0].kind
+    else {
+        return Ok(None);
+    };
+    let crate::ast::ExprKind::Lambda {
+        params: lambda_params,
+        body,
+    } = &lambda.kind
+    else {
+        return Ok(None);
+    };
+    let crate::ast::ExprKind::Call {
+        receiver: Some(receiver),
+        name,
+        args,
+    } = &body.kind
+    else {
+        return Ok(None);
+    };
+    let helper_name = String::from_utf8_lossy(&candidate.helper.name.0);
+    let helper_owner = String::from_utf8_lossy(&candidate.helper_owner.0).replace('/', ".");
+    if lambda.origin.primary().bci() != candidate.use_site
+        || lambda.origin.primary().cp() != Some(candidate.site_cp)
+        || lambda_params.len() != parameters.len()
+        || args.len() != parameters.len()
+        || name != helper_name.as_ref()
+        || !matches!(&receiver.kind, crate::ast::ExprKind::Path(owner) if owner == &helper_owner)
+        || !args.iter().zip(lambda_params).all(|(arg, param)| matches!(&arg.kind, crate::ast::ExprKind::Local(local) if local == &param.name))
+    {
+        return Ok(None);
+    }
+    let substitutions: std::collections::BTreeMap<String, String> = helper
+        .parameter_names
+        .iter()
+        .zip(lambda_params)
+        .map(|(name, param)| {
+            (
+                name.clone().expect("checked parameter name"),
+                param.name.clone(),
+            )
+        })
+        .collect();
+    let mut inlined = donor.clone();
+    if !rewrite_lambda_arithmetic(&mut inlined, &substitutions) {
+        return Ok(None);
+    }
+    let mut program = caller.program.clone();
+    let crate::ast::StmtKind::Return {
+        value: Some(lambda),
+    } = &mut program.stmts[0].kind
+    else {
+        return Ok(None);
+    };
+    let crate::ast::ExprKind::Lambda { body, .. } = &mut lambda.kind else {
+        return Ok(None);
+    };
+    **body = inlined;
+    let emitted = crate::emit::emit(
+        &program.stmts,
+        &caller.facts,
+        caller.declaration.as_ref(),
+        Some(&caller.member),
+        budget,
+    )?;
+    Ok(Some(emitted.text))
+}
+
+/// A count of AST nodes can coincide with Code instructions while dropping an effect or opcode.
+/// The lambda proof therefore requires exact set equality between physical BCIs and every anchor
+/// claimed by the complete one-return AST.
+fn lambda_helper_instruction_coverage(helper: &ClassSourceMethodAstSource) -> bool {
+    let [statement] = helper.program.stmts.as_slice() else {
+        return false;
+    };
+    let crate::ast::StmtKind::Return {
+        value: Some(expression),
+    } = &statement.kind
+    else {
+        return false;
+    };
+    let mut ast_anchors = std::collections::BTreeSet::new();
+    ast_anchors.extend(statement.origin.bcis());
+    collect_expression_anchors(expression, &mut ast_anchors);
+    let physical_bcis: std::collections::BTreeSet<_> =
+        helper.instruction_bcis.iter().copied().collect();
+    !physical_bcis.is_empty()
+        && physical_bcis.len() == helper.instruction_bcis.len()
+        && physical_bcis == ast_anchors
+        && helper.instruction_bcis.len() == helper.instruction_count
+}
+
+fn rewrite_lambda_arithmetic(
+    expression: &mut crate::ast::Expr,
+    substitutions: &std::collections::BTreeMap<String, String>,
+) -> bool {
+    use crate::ast::{BinaryOp, ExprKind};
+    match &mut expression.kind {
+        ExprKind::Local(name) => {
+            let Some(replacement) = substitutions.get(name) else {
+                return false;
+            };
+            *name = replacement.clone();
+            true
+        }
+        ExprKind::Integer(_) => true,
+        ExprKind::Neg { value } => rewrite_lambda_arithmetic(value, substitutions),
+        ExprKind::Binary { op, left, right }
+            if matches!(
+                op,
+                BinaryOp::Add
+                    | BinaryOp::Subtract
+                    | BinaryOp::Multiply
+                    | BinaryOp::Divide
+                    | BinaryOp::Remainder
+            ) =>
+        {
+            rewrite_lambda_arithmetic(left, substitutions)
+                && rewrite_lambda_arithmetic(right, substitutions)
+        }
+        _ => false,
+    }
+}
+
 impl<'a> RecoveryRequest<'a> {
     /// One request over one payload, one fact set and one profile, with no member table.
     ///
@@ -1552,7 +1759,8 @@ impl RecoveryReport {
 /// refusal leaves no work half done — see [`crate::stop`].
 pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryReport {
     recover_inner(
-        request, budget, None, None, None, None, None, None, None, None, None, None, false, true,
+        request, budget, None, None, None, None, None, None, None, None, None, None, None, false,
+        true,
     )
 }
 
@@ -2330,6 +2538,7 @@ pub fn recover_for_class_source_with_anonymous_ast(
     let mut enum_switches = None;
     let mut enum_switch_field_uses = None;
     let mut array_constructors = None;
+    let mut lambda_helpers = None;
     let mut generic_return = None;
     let mut generic_constructor = None;
     let mut anonymous_allocations = None;
@@ -2342,6 +2551,7 @@ pub fn recover_for_class_source_with_anonymous_ast(
         Some(&mut bridge),
         Some(&mut enum_switches),
         Some(&mut array_constructors),
+        Some(&mut lambda_helpers),
         Some(&mut enum_switch_field_uses),
         prove_generic_return.then_some(&mut generic_return),
         (prove_generic_return || prove_empty_constructor).then_some(&mut generic_constructor),
@@ -2358,6 +2568,7 @@ pub fn recover_for_class_source_with_anonymous_ast(
         bridge = None;
         enum_switches = None;
         array_constructors = None;
+        lambda_helpers = None;
         enum_switch_field_uses = None;
         generic_return = None;
         generic_constructor = None;
@@ -2371,6 +2582,7 @@ pub fn recover_for_class_source_with_anonymous_ast(
         bridge,
         enum_switches: enum_switches.unwrap_or_default(),
         array_constructors: array_constructors.unwrap_or_default(),
+        lambda_helpers: lambda_helpers.unwrap_or_default(),
         enum_switch_field_uses: enum_switch_field_uses.unwrap_or_default(),
         generic_return,
         generic_constructor,
@@ -2387,6 +2599,7 @@ fn recover_inner(
     mut bridge_candidate: Option<&mut Option<ClassSourceBridgeCandidate>>,
     mut enum_switch_candidate: Option<&mut Option<Vec<ClassSourceEnumSwitchCandidate>>>,
     array_constructor_candidate: Option<&mut Option<Vec<ClassSourceArrayConstructorCandidate>>>,
+    mut lambda_helper_candidate: Option<&mut Option<Vec<ClassSourceLambdaHelperCandidate>>>,
     mut enum_switch_field_use: Option<&mut Option<Vec<ClassSourceEnumSwitchFieldUse>>>,
     generic_return: Option<&mut Option<GenericReturnCandidate>>,
     generic_constructor: Option<&mut Option<GenericConstructorCandidate>>,
@@ -2776,8 +2989,39 @@ fn recover_inner(
             .declaration()
             .map(|member| member.identity().clone())
     {
+        let parameter_names: Vec<Option<String>> = if retain_all_method_asts {
+            request
+                .facts
+                .method()
+                .parameter_types()
+                .keys()
+                .map(|slot| {
+                    names
+                        .whole(*slot)
+                        .map(|rendered| rendered.text().to_owned())
+                })
+                .collect()
+        } else {
+            Vec::new()
+        };
+        let instruction_bcis: Vec<u32> = if retain_all_method_asts {
+            request
+                .ir
+                .code()
+                .map(|code| {
+                    code.instructions
+                        .iter()
+                        .map(|instruction| instruction.bci)
+                        .collect()
+                })
+                .unwrap_or_default()
+        } else {
+            Vec::new()
+        };
         let weight = if retain_all_method_asts {
             program_node_count(&program)
+                .saturating_add(u64::try_from(parameter_names.len()).unwrap_or(u64::MAX))
+                .saturating_add(u64::try_from(instruction_bcis.len()).unwrap_or(u64::MAX))
         } else {
             2
         };
@@ -2796,6 +3040,16 @@ fn recover_inner(
             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
                 program: program.clone(),
                 member,
+                parameter_names,
+                complete_code: request.ir.code().is_some_and(|code| {
+                    matches!(code.execution, ExecutionReport::Complete { .. })
+                        && code.stopped_at.is_none()
+                }),
+                has_exception_handlers: request.ir.code().is_some_and(|code| {
+                    code.exception_handler_count != 0 || !code.exception_handlers.is_empty()
+                }),
+                instruction_count: request.ir.code().map_or(0, |code| code.instructions.len()),
+                instruction_bcis,
             }),
         });
     }
@@ -2956,6 +3210,53 @@ fn recover_inner(
             });
         }
         *array_constructors = Some(candidates);
+    }
+    if let Some(lambda_helpers) = lambda_helper_candidate.as_deref_mut()
+        && let (Some(member), Some(member_declaration)) = (
+            request
+                .ir
+                .declaration()
+                .map(|member| member.identity().clone()),
+            request.ir.declaration(),
+        )
+        && !program.lambdas.is_empty()
+    {
+        let exact_helpers = crate::lambda::synthetic_lambda_helper_candidates(request.ir);
+        let projection = std::sync::Arc::new(LambdaHelperProjectionSource {
+            program: program.clone(),
+            facts: request.facts.clone(),
+            declaration: declaration.declaration().cloned(),
+            member: member.clone(),
+        });
+        let mut candidates = Vec::new();
+        for site in &program.lambdas {
+            if !site.captures.is_empty() {
+                continue;
+            }
+            let Some(helper) = exact_helpers.iter().find(|helper| {
+                helper.call_site == site.use_site
+                    && helper.site_cp == site.site_cp
+                    && helper.owner.0 == member_declaration.class_name().0
+            }) else {
+                continue;
+            };
+            let helper_identity = jarde_reader::model::PhysicalMethodId {
+                owner: member.owner.clone(),
+                name: helper.name.clone(),
+                descriptor: helper.descriptor.clone(),
+            };
+            candidates.push(ClassSourceLambdaHelperCandidate {
+                member: member.clone(),
+                helper: helper_identity,
+                helper_owner: helper.owner.clone(),
+                bootstrap_index: helper.bootstrap_index,
+                implementation_index: helper.implementation_index,
+                use_site: helper.call_site,
+                site_cp: helper.site_cp,
+                projection: projection.clone(),
+            });
+        }
+        *lambda_helpers = Some(candidates);
     }
     // The identity of the body being presented, as the payload's own declaration states it: the
     // member every anchor of this artifact belongs to (P3 3.2). A run that read no member header
@@ -4575,6 +4876,76 @@ mod class_initializer_candidate_tests {
 }
 
 #[cfg(test)]
+mod lambda_helper_instruction_coverage_tests {
+    use super::*;
+    use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
+    use jarde_reader::model::{
+        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+        PhysicalVariant, SnapshotId,
+    };
+    use std::collections::BTreeMap;
+
+    fn helper(instruction_bcis: Vec<u32>) -> ClassSourceMethodAstSource {
+        let member = jarde_reader::model::PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: SnapshotId("lambda-coverage-test".to_owned()),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest("lambda-coverage-test".to_owned()),
+                    length: 1,
+                },
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(b"lambda$test$0".to_vec()),
+            descriptor: JvmBytes(b"()I".to_vec()),
+        };
+        let origin = OriginSet::new(crate::source_map::Origin::direct(0));
+        let program = build::Program {
+            stmts: vec![Stmt::new(
+                StmtKind::Return {
+                    value: Some(Expr::new(ExprKind::Integer(1), origin.clone())),
+                },
+                origin,
+            )],
+            field_increments: BTreeMap::new(),
+            statements: 1,
+            ragged: false,
+            lambdas: Vec::new(),
+            accessors: Vec::new(),
+            array_constructor_sites: Vec::new(),
+            lambda_refusals: Vec::new(),
+            accessor_refusals: Vec::new(),
+            lambdas_presented: 0,
+            accessors_presented: 0,
+        };
+        ClassSourceMethodAstSource {
+            program,
+            member,
+            parameter_names: Vec::new(),
+            complete_code: true,
+            has_exception_handlers: false,
+            instruction_count: instruction_bcis.len(),
+            instruction_bcis,
+        }
+    }
+
+    #[test]
+    fn equal_node_and_instruction_counts_do_not_cover_an_extra_physical_instruction() {
+        let mismatched = helper(vec![0, 1]);
+        assert_eq!(program_node_count(&mismatched.program), 2);
+        assert_eq!(mismatched.instruction_count, 2);
+        assert!(
+            !lambda_helper_instruction_coverage(&mismatched),
+            "an extra physical effect/instruction with coincident counts must refuse the helper"
+        );
+
+        let exact = helper(vec![0]);
+        assert!(lambda_helper_instruction_coverage(&exact));
+    }
+}
+
+#[cfg(test)]
 mod anonymous_capture_projection_tests {
     use super::*;
     use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
@@ -4634,7 +5005,15 @@ mod anonymous_capture_projection_tests {
             accessors_presented: 0,
         };
         ClassSourceMethodAst {
-            projection: std::sync::Arc::new(ClassSourceMethodAstSource { program, member }),
+            projection: std::sync::Arc::new(ClassSourceMethodAstSource {
+                program,
+                member,
+                parameter_names: Vec::new(),
+                complete_code: false,
+                has_exception_handlers: false,
+                instruction_count: 0,
+                instruction_bcis: Vec::new(),
+            }),
         }
     }
 
