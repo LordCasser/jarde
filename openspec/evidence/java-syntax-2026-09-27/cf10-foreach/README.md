@@ -11,7 +11,7 @@ SHA-256 hashes below identify the exact fixed JADX files audited.
 | `TestArrayForEach.java` | `26312025f90e53e283b7044f1c184411ca9ba5300f325f04d248ada9613326d6` |
 | `TestArrayForEach3.java` | `a67f5b84ae14d3f657d2688fd37ec71c5882fb11ba1a8d0c041666cfadbf0299` |
 | `TestArrayForEachNegative.java` | `d4c880e095351c3cf665c580dd7d5236178366d7584a5c6d3e474337e09c8c8f` |
-| `TestIterableForEach.java` | `115ee466f2d428b537d2688fd37ec71c5882fb11ba1a8d0c041666cfadbf0299` |
+| `TestIterableForEach.java` | `115ee466f2d428b5372deff6cec7aa5a0246573fd5ede80b24f74153a0728012` |
 | `TestIterableForEach3.java` | `0486f737f156d1ac843056deb5be2bff3d46cafc78b77e52220fd44dcc8a989e` |
 | `LoopRegionVisitor.java` | `921f09e8934fda33452a00359588b293117f160813477e7068fa1ec3b71e6515` |
 | `ForEachLoop.java` | `e16fba634dbc7dda08e6a69e5a0263953f0a5b1ffdae4d12272a2bab458a8321` |
@@ -31,7 +31,7 @@ abc
 4
 ```
 
-JADX retains the stride loop as indexed `for (int i = 0; i < values.length; i += 2)`; it does not rewrite it as foreach. Jarde recovers `sum` as `for (int value : local2)` and `join` as `for (java.lang.Object iteratorElement25 : values)` with the String cast inside. It does not rewrite `everyOther` as foreach, but declines its method body with `local 1 crosses a quoted fallback region`; consequently the assembled Jarde class source is incomplete and fails `javac --release 8` with a missing return. This is a concrete Jarde coverage gap for this valid counted-loop boundary, shared with the already-recorded CF-08 quoted-fallback/local-scope debt; it is not a new mechanism proposal or an independent implementation task.
+JADX retains the stride loop as indexed `for (int i = 0; i < values.length; i += 2)`; it does not rewrite it as foreach. Jarde recovers `sum` as `for (int value : local2)` and `join` as `for (java.lang.Object iteratorElement25 : values)` with the String cast inside. It does not rewrite `everyOther` as foreach, but declines its method body with `local 1 crosses a quoted fallback region`; consequently the assembled Jarde class source is incomplete and fails `javac --release 8` with a missing return. This is a concrete Jarde coverage gap for this valid counted-loop boundary. The observed diagnostic is a quoted-fallback/local-scope rejection; this audit did not trace the internal Region failure or establish that its cause is the same as CF-08, so the relation remains unproven.
 
 Artifacts in this directory preserve the input, original compiled class, JADX source/classes, Jarde assembled source, and run outputs. Reproduction commands:
 
