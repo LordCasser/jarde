@@ -1,0 +1,49 @@
+public final class cf08join.LoopIfJoin {
+  public cf08join.LoopIfJoin();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int run(boolean, boolean);
+    Code:
+       0: iconst_0
+       1: istore_2
+       2: iload_0
+       3: ifeq          32
+       6: iload_1
+       7: ifeq          15
+      10: iconst_1
+      11: istore_2
+      12: goto          26
+      15: iload_2
+      16: iconst_3
+      17: if_icmpge     26
+      20: iinc          2, 1
+      23: goto          15
+      26: iinc          2, 10
+      29: goto          34
+      32: iconst_4
+      33: istore_2
+      34: iload_2
+      35: ireturn
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: iconst_0
+       4: iconst_0
+       5: invokestatic  #13                 // Method run:(ZZ)I
+       8: invokevirtual #19                 // Method java/io/PrintStream.println:(I)V
+      11: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      14: iconst_1
+      15: iconst_0
+      16: invokestatic  #13                 // Method run:(ZZ)I
+      19: invokevirtual #19                 // Method java/io/PrintStream.println:(I)V
+      22: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      25: iconst_1
+      26: iconst_1
+      27: invokestatic  #13                 // Method run:(ZZ)I
+      30: invokevirtual #19                 // Method java/io/PrintStream.println:(I)V
+      33: return
+}
