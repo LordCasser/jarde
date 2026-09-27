@@ -1,0 +1,252 @@
+Classfile <TMP>/test-string-ternary-shape/original/dt14/StringTernaryInit.class
+  Last modified <NORMALIZED>; size 1346 bytes
+  SHA-256 checksum 0e8b2e0054866ac21b52bcf46a8d9b73ee2aa9ed89918819d1948dfe43d7f6d6
+public final class dt14.StringTernaryInit extends java.lang.Enum<dt14.StringTernaryInit>
+  minor version: 0
+  major version: 52
+  flags: (0x4031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_ENUM
+  this_class: #1                          // dt14/StringTernaryInit
+  super_class: #23                        // java/lang/Enum
+  interfaces: 0, fields: 5, methods: 7, attributes: 1
+Constant pool:
+   #1 = Class              #2             // dt14/StringTernaryInit
+   #2 = Utf8               dt14/StringTernaryInit
+   #3 = Fieldref           #1.#4          // dt14/StringTernaryInit.FIRST:Ldt14/StringTernaryInit;
+   #4 = NameAndType        #5:#6          // FIRST:Ldt14/StringTernaryInit;
+   #5 = Utf8               FIRST
+   #6 = Utf8               Ldt14/StringTernaryInit;
+   #7 = Fieldref           #1.#8          // dt14/StringTernaryInit.SECOND:Ldt14/StringTernaryInit;
+   #8 = NameAndType        #9:#6          // SECOND:Ldt14/StringTernaryInit;
+   #9 = Utf8               SECOND
+  #10 = Fieldref           #1.#11         // dt14/StringTernaryInit.ANY:Ldt14/StringTernaryInit;
+  #11 = NameAndType        #12:#6         // ANY:Ldt14/StringTernaryInit;
+  #12 = Utf8               ANY
+  #13 = Fieldref           #1.#14         // dt14/StringTernaryInit.$VALUES:[Ldt14/StringTernaryInit;
+  #14 = NameAndType        #15:#16        // $VALUES:[Ldt14/StringTernaryInit;
+  #15 = Utf8               $VALUES
+  #16 = Utf8               [Ldt14/StringTernaryInit;
+  #17 = Methodref          #18.#19        // "[Ldt14/StringTernaryInit;".clone:()Ljava/lang/Object;
+  #18 = Class              #16            // "[Ldt14/StringTernaryInit;"
+  #19 = NameAndType        #20:#21        // clone:()Ljava/lang/Object;
+  #20 = Utf8               clone
+  #21 = Utf8               ()Ljava/lang/Object;
+  #22 = Methodref          #23.#24        // java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #23 = Class              #25            // java/lang/Enum
+  #24 = NameAndType        #26:#27        // valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #25 = Utf8               java/lang/Enum
+  #26 = Utf8               valueOf
+  #27 = Utf8               (Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #28 = Methodref          #23.#29        // java/lang/Enum."<init>":(Ljava/lang/String;I)V
+  #29 = NameAndType        #30:#31        // "<init>":(Ljava/lang/String;I)V
+  #30 = Utf8               <init>
+  #31 = Utf8               (Ljava/lang/String;I)V
+  #32 = Fieldref           #1.#33         // dt14/StringTernaryInit.value:Ljava/lang/String;
+  #33 = NameAndType        #34:#35        // value:Ljava/lang/String;
+  #34 = Utf8               value
+  #35 = Utf8               Ljava/lang/String;
+  #36 = String             #5             // FIRST
+  #37 = Methodref          #1.#38         // dt14/StringTernaryInit.useNumber:()Z
+  #38 = NameAndType        #39:#40        // useNumber:()Z
+  #39 = Utf8               useNumber
+  #40 = Utf8               ()Z
+  #41 = String             #42            // 1
+  #42 = Utf8               1
+  #43 = String             #44            // A
+  #44 = Utf8               A
+  #45 = Methodref          #1.#46         // dt14/StringTernaryInit."<init>":(Ljava/lang/String;ILjava/lang/String;)V
+  #46 = NameAndType        #30:#47        // "<init>":(Ljava/lang/String;ILjava/lang/String;)V
+  #47 = Utf8               (Ljava/lang/String;ILjava/lang/String;)V
+  #48 = String             #9             // SECOND
+  #49 = String             #50            // 2
+  #50 = Utf8               2
+  #51 = String             #52            // B
+  #52 = Utf8               B
+  #53 = String             #12            // ANY
+  #54 = Methodref          #1.#55         // dt14/StringTernaryInit.$values:()[Ldt14/StringTernaryInit;
+  #55 = NameAndType        #56:#57        // $values:()[Ldt14/StringTernaryInit;
+  #56 = Utf8               $values
+  #57 = Utf8               ()[Ldt14/StringTernaryInit;
+  #58 = Utf8               values
+  #59 = Utf8               Code
+  #60 = Utf8               (Ljava/lang/String;)Ldt14/StringTernaryInit;
+  #61 = Utf8               MethodParameters
+  #62 = Utf8               Signature
+  #63 = Utf8               (Ljava/lang/String;)V
+  #64 = Utf8               ()Ljava/lang/String;
+  #65 = Utf8               <clinit>
+  #66 = Utf8               ()V
+  #67 = Utf8               StackMapTable
+  #68 = Class              #69            // java/lang/String
+  #69 = Utf8               java/lang/String
+  #70 = Utf8               Ljava/lang/Enum<Ldt14/StringTernaryInit;>;
+{
+  public static final dt14.StringTernaryInit FIRST;
+    descriptor: Ldt14/StringTernaryInit;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final dt14.StringTernaryInit SECOND;
+    descriptor: Ldt14/StringTernaryInit;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final dt14.StringTernaryInit ANY;
+    descriptor: Ldt14/StringTernaryInit;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  private final java.lang.String value;
+    descriptor: Ljava/lang/String;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private static final dt14.StringTernaryInit[] $VALUES;
+    descriptor: [Ldt14/StringTernaryInit;
+    flags: (0x101a) ACC_PRIVATE, ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public static dt14.StringTernaryInit[] values();
+    descriptor: ()[Ldt14/StringTernaryInit;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #13                 // Field $VALUES:[Ldt14/StringTernaryInit;
+         3: invokevirtual #17                 // Method "[Ldt14/StringTernaryInit;".clone:()Ljava/lang/Object;
+         6: checkcast     #18                 // class "[Ldt14/StringTernaryInit;"
+         9: areturn
+
+  public static dt14.StringTernaryInit valueOf(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ldt14/StringTernaryInit;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: ldc           #1                  // class dt14/StringTernaryInit
+         2: aload_0
+         3: invokestatic  #22                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+         6: checkcast     #1                  // class dt14/StringTernaryInit
+         9: areturn
+    MethodParameters:
+      Name                           Flags
+      <no name>                      mandated
+
+  private dt14.StringTernaryInit(java.lang.String);
+    descriptor: (Ljava/lang/String;ILjava/lang/String;)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=3, locals=4, args_size=4
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: invokespecial #28                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+         6: aload_0
+         7: aload_3
+         8: putfield      #32                 // Field value:Ljava/lang/String;
+        11: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+      <no name>
+    Signature: #63                          // (Ljava/lang/String;)V
+
+  java.lang.String value();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #32                 // Field value:Ljava/lang/String;
+         4: areturn
+
+  static boolean useNumber();
+    descriptor: ()Z
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: ireturn
+
+  private static dt14.StringTernaryInit[] $values();
+    descriptor: ()[Ldt14/StringTernaryInit;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_3
+         1: anewarray     #1                  // class dt14/StringTernaryInit
+         4: dup
+         5: iconst_0
+         6: getstatic     #3                  // Field FIRST:Ldt14/StringTernaryInit;
+         9: aastore
+        10: dup
+        11: iconst_1
+        12: getstatic     #7                  // Field SECOND:Ldt14/StringTernaryInit;
+        15: aastore
+        16: dup
+        17: iconst_2
+        18: getstatic     #10                 // Field ANY:Ldt14/StringTernaryInit;
+        21: aastore
+        22: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=5, locals=0, args_size=0
+         0: new           #1                  // class dt14/StringTernaryInit
+         3: dup
+         4: ldc           #36                 // String FIRST
+         6: iconst_0
+         7: invokestatic  #37                 // Method useNumber:()Z
+        10: ifeq          18
+        13: ldc           #41                 // String 1
+        15: goto          20
+        18: ldc           #43                 // String A
+        20: invokespecial #45                 // Method "<init>":(Ljava/lang/String;ILjava/lang/String;)V
+        23: putstatic     #3                  // Field FIRST:Ldt14/StringTernaryInit;
+        26: new           #1                  // class dt14/StringTernaryInit
+        29: dup
+        30: ldc           #48                 // String SECOND
+        32: iconst_1
+        33: invokestatic  #37                 // Method useNumber:()Z
+        36: ifeq          44
+        39: ldc           #49                 // String 2
+        41: goto          46
+        44: ldc           #51                 // String B
+        46: invokespecial #45                 // Method "<init>":(Ljava/lang/String;ILjava/lang/String;)V
+        49: putstatic     #7                  // Field SECOND:Ldt14/StringTernaryInit;
+        52: new           #1                  // class dt14/StringTernaryInit
+        55: dup
+        56: ldc           #53                 // String ANY
+        58: iconst_2
+        59: invokestatic  #37                 // Method useNumber:()Z
+        62: ifeq          70
+        65: ldc           #41                 // String 1
+        67: goto          72
+        70: ldc           #49                 // String 2
+        72: invokespecial #45                 // Method "<init>":(Ljava/lang/String;ILjava/lang/String;)V
+        75: putstatic     #10                 // Field ANY:Ldt14/StringTernaryInit;
+        78: invokestatic  #54                 // Method $values:()[Ldt14/StringTernaryInit;
+        81: putstatic     #13                 // Field $VALUES:[Ldt14/StringTernaryInit;
+        84: return
+      StackMapTable: number_of_entries = 6
+        frame_type = 255 /* full_frame */
+          offset_delta = 18
+          locals = []
+          stack = [ uninitialized 0, uninitialized 0, class java/lang/String, int ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 1
+          locals = []
+          stack = [ uninitialized 0, uninitialized 0, class java/lang/String, int, class java/lang/String ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 23
+          locals = []
+          stack = [ uninitialized 26, uninitialized 26, class java/lang/String, int ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 1
+          locals = []
+          stack = [ uninitialized 26, uninitialized 26, class java/lang/String, int, class java/lang/String ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 23
+          locals = []
+          stack = [ uninitialized 52, uninitialized 52, class java/lang/String, int ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 1
+          locals = []
+          stack = [ uninitialized 52, uninitialized 52, class java/lang/String, int, class java/lang/String ]
+}
+Signature: #70                          // Ljava/lang/Enum<Ldt14/StringTernaryInit;>;

@@ -1,0 +1,34 @@
+// jarde: presentation of `dt14/AlternatingStringInit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt14;
+
+// jarde: class Signature `Ljava/lang/Enum<Ldt14/AlternatingStringInit;>;` not projected
+// jarde: class Signature projection refused: unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position
+public enum AlternatingStringInit {
+    FIRST(choose() ? "1" : "A"),
+    SECOND(choose() ? "2" : "B"),
+    THIRD(choose() ? "3" : "C");
+
+    static int calls;
+
+    private final java.lang.String value;
+
+    private AlternatingStringInit(java.lang.String arg0) {
+        this.value = arg0;
+    }
+
+    java.lang.String value() {
+        // @method value()Ljava/lang/String;
+        // @declaration an instance method of `dt14.AlternatingStringInit`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.value;
+    }
+
+    static boolean choose() {
+        // @method choose()Z
+        // @declaration a static method of `dt14.AlternatingStringInit`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        dt14.AlternatingStringInit.calls = dt14.AlternatingStringInit.calls + 1;
+        return dt14.AlternatingStringInit.calls % 2 == 1;
+    }
+}
