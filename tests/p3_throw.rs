@@ -68,7 +68,7 @@ fn class_source_of(snapshot: &ArtifactSnapshot) -> ClassSourceReport {
     }
 }
 
-fn class_source_without_evidence(snapshot: &ArtifactSnapshot) -> ClassSourceReport {
+fn class_source_with_default_selection(snapshot: &ArtifactSnapshot) -> ClassSourceReport {
     let request = request(snapshot);
     match Engine::new()
         .class_source(slice::from_ref(snapshot), &request, &mut budget())
@@ -298,9 +298,9 @@ fn throw_sources_keep_real_bcis_and_member_identity() {
 }
 
 #[test]
-fn source_map_is_not_built_by_default() {
+fn class_source_default_selection_includes_source_maps() {
     let snapshot = open(FIXTURE);
-    let report = class_source_without_evidence(&snapshot);
+    let report = class_source_with_default_selection(&snapshot);
     let complete = class_source_of(&snapshot);
     assert_eq!(
         report.text, complete.text,
@@ -312,13 +312,13 @@ fn source_map_is_not_built_by_default() {
             panic!("the positive fixture method has no recovery report: {method:?}");
         };
         assert!(
-            report.source_map.is_empty(),
-            "default recovery unexpectedly built source-map evidence for `{}`",
+            !report.source_map.is_empty(),
+            "the class-source default selection requested no source map for `{}`",
             String::from_utf8_lossy(&method.item.name.raw().0)
         );
         assert_eq!(
             report.evidence.state(RecoveryEvidenceKind::SourceMap),
-            EvidenceState::NotRequested
+            EvidenceState::Complete
         );
     }
 }

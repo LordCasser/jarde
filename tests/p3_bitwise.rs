@@ -211,7 +211,7 @@ fn class_source_of(snapshot: &ArtifactSnapshot) -> ClassSourceReport {
     }
 }
 
-fn class_source_without_evidence(snapshot: &ArtifactSnapshot) -> ClassSourceReport {
+fn class_source_with_default_selection(snapshot: &ArtifactSnapshot) -> ClassSourceReport {
     let request = request(snapshot);
     match Engine::new()
         .class_source(slice::from_ref(snapshot), &request, &mut budget())
@@ -311,7 +311,7 @@ fn fixture_has_the_complete_integral_and_boolean_surface() {
 fn bitwise_source_uses_real_bcis_and_default_text_is_stable() {
     let snapshot = open(FIXTURE);
     let report = class_source_of(&snapshot);
-    let default = class_source_without_evidence(&snapshot);
+    let default = class_source_with_default_selection(&snapshot);
     assert_eq!(
         default.text, report.text,
         "evidence selection changes the artifact"
@@ -350,8 +350,8 @@ fn bitwise_source_uses_real_bcis_and_default_text_is_stable() {
             other => panic!("default recovery was not recovered: {other:?}"),
         };
         assert!(
-            default_recovery.source_map.is_empty(),
-            "default recovery unexpectedly built a source map for {}{}",
+            !default_recovery.source_map.is_empty(),
+            "the class-source default selection requested no source map for {}{}",
             String::from_utf8_lossy(name),
             String::from_utf8_lossy(descriptor)
         );
@@ -359,7 +359,7 @@ fn bitwise_source_uses_real_bcis_and_default_text_is_stable() {
             default_recovery
                 .evidence
                 .state(RecoveryEvidenceKind::SourceMap),
-            EvidenceState::NotRequested
+            EvidenceState::Complete
         );
     }
 }
@@ -379,12 +379,13 @@ fn a_bitwise_class_source_budget_and_cancellation_are_bounded_outcomes() {
 
     let mut ordinary = budget();
     Engine::new()
-        .class_source(
+        .class_source_with_evidence(
             slice::from_ref(&snapshot),
             &request(&snapshot),
+            &RecoveryEvidenceRequest::essential(),
             &mut ordinary,
         )
-        .expect("the default class-source request completes");
+        .expect("the essential class-source request completes");
     let mut source_limits = ordinary.limits().clone();
     source_limits.ir_items = ordinary.usage().ir_items.saturating_add(130);
     let mut source_stopped = Budget::new(source_limits);
