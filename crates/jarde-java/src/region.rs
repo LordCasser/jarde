@@ -2333,6 +2333,9 @@ impl Walker<'_> {
                     crate::guard::Shape::SharedFinally { .. } => self
                         .shared_finally_body(&current, &plan, frame)?
                         .map(|body| (body, None)),
+                    crate::guard::Shape::EmptyCatchCallFinally { .. } => self
+                        .empty_catch_call_finally_body(&current, &plan, frame)?
+                        .map(|body| (body, None)),
                     crate::guard::Shape::SegmentedFinally { .. } => self
                         .segmented_finally_body(&current, &plan, frame)?
                         .map(|body| (body, None)),
@@ -4323,6 +4326,63 @@ impl Walker<'_> {
             return Ok(None);
         }
         Ok(Some(region))
+    }
+
+    fn empty_catch_call_finally_body(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let crate::guard::Shape::EmptyCatchCallFinally {
+            catch_handler,
+            catch_type,
+            catch_parameter,
+            ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        if plan.body().0 != start.bci()
+            || plan.owned().iter().any(|block| {
+                self.view.index_of(block).is_none_or(|node| {
+                    self.visited.contains(&node)
+                        || outer
+                            .scope
+                            .as_ref()
+                            .is_some_and(|scope| !scope.contains(&node))
+                })
+            })
+        {
+            return Ok(None);
+        }
+        for block in plan.owned() {
+            poll(self.budget, Some(block.bci()))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(block.bci()),
+            )?;
+        }
+        Ok(Some(Region::Try {
+            prefix: Vec::new(),
+            lead: (start.bci(), start.bci()),
+            body: Box::new(Region::Straight {
+                blocks: vec![start.clone()],
+            }),
+            normal_exit_bci: None,
+            catches: vec![CatchClause {
+                types: crate::guard::CatchTypes::Named(vec![*catch_type]),
+                handler: catch_handler.clone(),
+                parameter: *catch_parameter,
+                // The certificate owns all three instructions in this block. The store
+                // supplies the header; the call and transfer are represented by finally.
+                body: Box::new(Region::Straight {
+                    blocks: vec![catch_handler.clone()],
+                }),
+            }],
+        }))
     }
 
     fn shared_finally_body(

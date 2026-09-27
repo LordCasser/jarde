@@ -12,8 +12,8 @@ use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
 use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
 use jarde_reader::model::{
-    ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
-    PhysicalVariant,
+    ClassBytesId, Digest, ExecutionReport, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+    PhysicalMethodId, PhysicalVariant,
 };
 use jarde_reader::view::{
     DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode, MultiReleasePolicy,
@@ -22,6 +22,26 @@ use jarde_reader::view::{
 
 const FIXTURE: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoin.class");
+const EMPTY_CATCH_TEST16: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/Test16.class"
+);
+const EMPTY_CATCH_TEST16_NEIGHBORS: [&[u8]; 5] = [
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/different-target.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/cleanup-covered.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/rows-swapped.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/throwable-rewritten.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/external-cleanup-entry.class"
+    ),
+];
 const NESTED_TEST_CLS: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class"
 );
@@ -307,6 +327,103 @@ fn fixed_shared_join_has_one_finally_and_complete_physical_ownership() {
             "BCI {bci} has no source origin"
         );
     }
+}
+
+#[test]
+fn empty_catch_test16_has_one_finally_and_two_real_rows() {
+    let recover = |class, budget| {
+        recover_method(
+            class,
+            "test",
+            "()V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally16$TestCls",
+            0x0001,
+            budget,
+        )
+    };
+    let report = recover(EMPTY_CATCH_TEST16, None);
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert_eq!(
+        report.text.matches("finally {").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("doFinally();").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert!(
+        report
+            .text
+            .contains("catch (java.lang.Exception arg1) {\n    }"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    let blocks: Vec<_> = report
+        .regions
+        .iter()
+        .flat_map(|region| &region.blocks)
+        .copied()
+        .collect();
+    assert_eq!(
+        blocks.iter().copied().collect::<BTreeSet<_>>(),
+        BTreeSet::from([0, 9, 16, 22])
+    );
+    assert_eq!(blocks.len(), 4);
+    for bci in [0, 3, 6, 9, 10, 13, 16, 17, 20, 21, 22] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "missing BCI {bci}"
+        );
+    }
+    for neighbor in EMPTY_CATCH_TEST16_NEIGHBORS {
+        let refused = recover(neighbor, None);
+        assert!(!refused.text.contains("finally {"), "{}", refused.text);
+        assert!(refused.text.contains("@bytecode"), "{}", refused.text);
+    }
+    let mut tiny = limits();
+    tiny.ir_items = 1;
+    let stopped = recover(EMPTY_CATCH_TEST16, Some(Budget::new(tiny)));
+    assert!(stopped.stop().is_some());
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    let full = recover(EMPTY_CATCH_TEST16, Some(Budget::new(limits())));
+    let ExecutionReport::Complete { usage } = full.execution else {
+        panic!("complete run")
+    };
+    let mut late = limits();
+    late.analysis_steps = usage.analysis_steps - 1;
+    let stopped = recover(EMPTY_CATCH_TEST16, Some(Budget::new(late)));
+    assert!(matches!(
+        stopped.stop(),
+        Some(StopReason::Budget {
+            dimension: CountedBudgetDimension::AnalysisSteps,
+            ..
+        })
+    ));
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    let mut output = limits();
+    output.output_bytes = 1;
+    let stopped = recover(EMPTY_CATCH_TEST16, Some(Budget::new(output)));
+    assert!(matches!(
+        stopped.stop(),
+        Some(StopReason::Budget {
+            dimension: CountedBudgetDimension::OutputBytes,
+            ..
+        })
+    ));
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover(
+        EMPTY_CATCH_TEST16,
+        Some(Budget::with_cancellation_token(limits(), token)),
+    );
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
 }
 
 #[test]

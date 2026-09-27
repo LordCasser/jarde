@@ -7276,6 +7276,7 @@ struct SharedFinallyBuild {
     normal_cleanup: (u32, u32),
     facts: Vec<u32>,
     segmented: Option<((u32, u32), u32)>,
+    empty_catch: bool,
 }
 
 /// State that a speculative structured finally body may change before its enclosing Try exists.
@@ -13276,6 +13277,7 @@ impl Builder<'_> {
                             normal_cleanup: cleanup[1],
                             facts: plan.facts().to_vec(),
                             segmented: Some((cleanup[0], *early_return)),
+                            empty_catch: false,
                         });
                         let built = self.region(inner, &nested_path);
                         self.shared_finally = None;
@@ -13309,12 +13311,31 @@ impl Builder<'_> {
                         }
                         Ok(())
                     }
-                    guard::Shape::SharedFinally {
-                        catch_body,
-                        normal_cleanup,
-                        completion,
-                        ..
-                    } => {
+                    guard::Shape::SharedFinally { .. }
+                    | guard::Shape::EmptyCatchCallFinally { .. } => {
+                        let (catch_body, normal_cleanup, completion, empty_catch) =
+                            match plan.shape() {
+                                guard::Shape::SharedFinally {
+                                    catch_body,
+                                    normal_cleanup,
+                                    completion,
+                                    ..
+                                } => (*catch_body, *normal_cleanup, completion.clone(), false),
+                                guard::Shape::EmptyCatchCallFinally {
+                                    catch_handler,
+                                    cleanup,
+                                    transfers,
+                                    ..
+                                } => (
+                                    (catch_handler.bci(), catch_handler.bci()),
+                                    cleanup[0],
+                                    guard::SharedFinallyCompletion::Joined {
+                                        transfers: *transfers,
+                                    },
+                                    true,
+                                ),
+                                _ => unreachable!(),
+                            };
                         let Some(inner @ Region::Try { catches, .. }) = structured_body.as_deref()
                         else {
                             let bcis = self.region_quote(region, plan.body().0);
@@ -13347,11 +13368,12 @@ impl Builder<'_> {
                         self.shared_finally = Some(SharedFinallyBuild {
                             path: nested_path.clone(),
                             protected: plan.body(),
-                            catch_body: *catch_body,
-                            completion: completion.clone(),
-                            normal_cleanup: *normal_cleanup,
+                            catch_body,
+                            completion,
+                            normal_cleanup,
                             facts: plan.facts().to_vec(),
                             segmented: None,
+                            empty_catch,
                         });
                         let built = self.region(inner, &nested_path);
                         self.shared_finally = None;
@@ -13459,11 +13481,15 @@ impl Builder<'_> {
                             guard::SharedFinallyCompletion::Joined { .. } => None,
                         };
                     }
-                    let walked = self.arm(
-                        clause.body(),
-                        &mut handler,
-                        &child(path, u32::try_from(index + 1).unwrap_or(u32::MAX)),
-                    );
+                    let walked = if shared.as_ref().is_some_and(|shared| shared.empty_catch) {
+                        Ok(())
+                    } else {
+                        self.arm(
+                            clause.body(),
+                            &mut handler,
+                            &child(path, u32::try_from(index + 1).unwrap_or(u32::MAX)),
+                        )
+                    };
                     self.finally_span = previous_finally.0;
                     self.finally_return = previous_finally.1;
                     walked?;
@@ -13475,6 +13501,7 @@ impl Builder<'_> {
                     // would state a handler that runs nothing, and the dropped statements would
                     // be named nowhere.
                     if handler.is_empty()
+                        && !shared.as_ref().is_some_and(|shared| shared.empty_catch)
                         && let Some((reason, bcis)) =
                             self.unpresented_clause_body(clause.body(), clause.handler().bci())?
                     {

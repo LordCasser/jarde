@@ -215,6 +215,16 @@ pub enum Shape {
         catch_cleanup: (u32, u32),
         completion: SharedFinallyCompletion,
     },
+    /// Two real same-range rows and an empty named catch, with three identical call copies.
+    EmptyCatchCallFinally {
+        rows: [u32; 2],
+        cleanup_target: crate::facts::CallTarget,
+        catch_handler: CanonicalBlockId,
+        catch_type: u16,
+        catch_parameter: u16,
+        cleanup: [(u32, u32); 3],
+        transfers: [u32; 2],
+    },
     /// The one five-row, two-segment, four-copy Java 8 finally certificate.
     SegmentedFinally {
         rows: [u32; 5],
@@ -312,6 +322,7 @@ impl Plan {
             Shape::Finally { .. }
             | Shape::ConditionalFinally { .. }
             | Shape::SharedFinally { .. }
+            | Shape::EmptyCatchCallFinally { .. }
             | Shape::SegmentedFinally { .. } => &FINALLY,
         }
     }
@@ -2820,6 +2831,262 @@ fn boolean_join_cleanup(
     Ok(Some(copies))
 }
 
+/// The exact Java 8 empty-catch lowering has two *same-range* rows. Its catch store is only
+/// the parameter binding; all three cleanup calls are outside both rows. Prove the entire
+/// method shape so no edge can enter a hidden copy or skip the one shared return.
+fn prove_empty_catch_call_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [named, any] = facts.handlers else {
+        return Ok(None);
+    };
+    let [
+        body,
+        normal,
+        normal_jump,
+        named_store,
+        catch_copy,
+        catch_jump,
+        primary_store,
+        primary_copy,
+        primary_load,
+        rethrow,
+        returns,
+    ] = facts.order.as_slice()
+    else {
+        return Ok(None);
+    };
+    let [
+        body,
+        normal,
+        normal_jump,
+        named_store,
+        catch_copy,
+        catch_jump,
+        primary_store,
+        primary_copy,
+        primary_load,
+        rethrow,
+        returns,
+    ] = [
+        *body,
+        *normal,
+        *normal_jump,
+        *named_store,
+        *catch_copy,
+        *catch_jump,
+        *primary_store,
+        *primary_copy,
+        *primary_load,
+        *rethrow,
+        *returns,
+    ];
+    if body != 0
+        || current.bci() != body
+        || named.ordinal + 1 != any.ordinal
+        || named.catch_type_index.is_none()
+        || any.catch_type_index.is_some()
+        || (named.start_bci, named.end_bci) != (body, normal)
+        || (any.start_bci, any.end_bci) != (body, normal)
+        || named.handler_bci != named_store
+        || any.handler_bci != primary_store
+        || !matches!(facts.op(body), Some(Operation::Invoke(call))
+            if call.kind() == InvokeKind::Static && call.descriptor() == "()V")
+        || facts.op(normal_jump) != Some(&Operation::Transfer)
+        || facts.op(catch_jump) != Some(&Operation::Transfer)
+        || facts.op(rethrow) != Some(&Operation::Throw)
+        || facts.op(returns) != Some(&Operation::Return)
+        || !facts
+            .step(returns)
+            .is_some_and(|step| step.instruction.reads().is_empty())
+        || !matches!(facts.op(named_store), Some(Operation::Store { .. }))
+        || !matches!(facts.op(primary_store), Some(Operation::Store { .. }))
+        || !handler_binding(facts, named_store)
+        || !handler_binding(facts, primary_store)
+        || !shared_cleanup_copies(
+            facts,
+            [
+                (normal, normal),
+                (catch_copy, catch_copy),
+                (primary_copy, primary_copy),
+            ],
+        )?
+    {
+        return Ok(None);
+    }
+    // The body and each copy consume no argument or receiver and leave no operand stack value.
+    for bci in [body, normal, catch_copy, primary_copy] {
+        facts.charge(bci)?;
+        let Some(step) = facts.step(bci) else {
+            return Ok(None);
+        };
+        if !stack_operands(step.instruction).is_empty()
+            || step
+                .instruction
+                .writes()
+                .iter()
+                .any(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        {
+            return Ok(None);
+        }
+    }
+    // Exact physical coverage: the only protected instruction is the body call.
+    for bci in facts.order.clone() {
+        facts.charge(bci)?;
+        let expected = if bci == body {
+            &[named.ordinal, any.ordinal][..]
+        } else {
+            &[][..]
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+        {
+            return Ok(None);
+        }
+    }
+    let (Some(body_block), Some(named_block), Some(primary_block), Some(join)) = (
+        facts.block_at(body),
+        facts.row_handler(named),
+        facts.row_handler(any),
+        facts.block_at(returns),
+    ) else {
+        return Ok(None);
+    };
+    if body_block != *current
+        || named_block.bci() != named_store
+        || primary_block.bci() != primary_store
+        || [
+            (&body_block, &[body, normal, normal_jump][..]),
+            (&named_block, &[named_store, catch_copy, catch_jump]),
+            (
+                &primary_block,
+                &[primary_store, primary_copy, primary_load, rethrow],
+            ),
+            (&join, &[returns]),
+        ]
+        .iter()
+        .any(|(block, expected)| {
+            facts
+                .in_block(block)
+                .iter()
+                .map(SsaInstruction::bci)
+                .collect::<Vec<_>>()
+                != *expected
+        })
+        || facts.canonical.blocks().len() != 4
+        || facts.view.successor_ids(&body_block) != [join.clone()]
+        || facts.view.successor_ids(&named_block) != [join.clone()]
+        || !facts.view.successor_ids(&primary_block).is_empty()
+        || !facts.view.successor_ids(&join).is_empty()
+    {
+        return Ok(None);
+    }
+    let Some(join_node) = facts.view.index_of(&join) else {
+        return Ok(None);
+    };
+    if facts.view.predecessors(join_node).len() != 2 {
+        return Ok(None);
+    }
+    // The named parameter has no instruction consumer. The catch-all slot feeds only the
+    // load, and the load's stack value feeds only athrow, preserving the incoming Throwable.
+    let (Some(named_step), Some(saved), Some(loaded), Some(thrown)) = (
+        facts.step(named_store),
+        facts.step(primary_store),
+        facts.step(primary_load),
+        facts.step(rethrow),
+    ) else {
+        return Ok(None);
+    };
+    let Some((_, named_value)) = named_step
+        .instruction
+        .writes()
+        .iter()
+        .find(|(slot, _)| matches!(slot, Slot::Local(_)))
+    else {
+        return Ok(None);
+    };
+    if facts
+        .order
+        .iter()
+        .copied()
+        .filter(|bci| *bci != named_store)
+        .any(|bci| {
+            facts.step(bci).is_some_and(|step| {
+                step.instruction
+                    .reads()
+                    .iter()
+                    .any(|(_, read)| facts.same(*read, *named_value))
+            })
+        })
+    {
+        return Ok(None);
+    }
+    if !matches!((facts.op(primary_store), facts.op(primary_load)),
+        (Some(Operation::Store { slot: stored }), Some(Operation::Load { slot: loaded })) if stored == loaded)
+        || !saved.instruction.writes().iter().any(|(_, written)| {
+            loaded
+                .instruction
+                .reads()
+                .iter()
+                .any(|(_, read)| facts.same(*written, *read))
+        })
+        || !loaded.instruction.writes().iter().any(|(slot, written)| {
+            matches!(slot, Slot::Stack(_))
+                && stack_operands(thrown.instruction)
+                    .iter()
+                    .any(|(_, read)| facts.same(*written, *read))
+        })
+        || stack_operands(thrown.instruction).len() != 1
+    {
+        return Ok(None);
+    }
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        let valid = match edge.kind() {
+            CanonicalEdgeKind::Exception { handler_ordinal } => {
+                edge.from() == &body_block
+                    && ((handler_ordinal == named.ordinal && edge.to() == &named_block)
+                        || (handler_ordinal == any.ordinal && edge.to() == &primary_block))
+            }
+            CanonicalEdgeKind::Normal => {
+                (edge.from() == &body_block && edge.to() == &join)
+                    || (edge.from() == &named_block && edge.to() == &join)
+            }
+            CanonicalEdgeKind::Call { .. } | CanonicalEdgeKind::Return { .. } => false,
+        };
+        if !valid {
+            return Ok(None);
+        }
+    }
+    Ok(Some(Plan {
+        shape: Shape::EmptyCatchCallFinally {
+            rows: [named.ordinal, any.ordinal],
+            cleanup_target: match facts.op(normal) {
+                Some(Operation::Invoke(target)) => target.clone(),
+                _ => unreachable!(),
+            },
+            catch_handler: named_block,
+            catch_type: named.catch_type_index.unwrap(),
+            catch_parameter: match facts.op(named_store) {
+                Some(Operation::Store { slot }) => *slot,
+                _ => unreachable!(),
+            },
+            cleanup: [normal, catch_copy, primary_copy].map(|bci| (bci, facts.span_end(bci))),
+            transfers: [normal_jump, catch_jump],
+        },
+        lead: (body, body),
+        body: (body, normal),
+        owned: vec![body_block, facts.row_handler(named).unwrap(), primary_block],
+        join: Some(join),
+        facts: facts.order.clone(),
+    }))
+}
+
 /// Javac's outer finally around an inner named catch has one normal copy after the entire
 /// protected range and one handler copy. This certificate is separate from saved returns and
 /// from the three-row shared-join layout: both rows, both copies, and the one continuation close
@@ -4127,6 +4394,9 @@ pub(crate) fn shared_finally_candidate(
         return prove_segmented_finally(&mut facts, current);
     }
     if handlers.len() == 2 {
+        if let Some(plan) = prove_empty_catch_call_finally(&mut facts, current)? {
+            return Ok(Some(plan));
+        }
         return prove_nested_join_finally(&mut facts, current);
     }
     if let Some(plan) = prove_shared_join_finally(&mut facts, current)? {
@@ -4381,6 +4651,83 @@ mod finally_copy_tests {
     const CALL: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyCall.class"
     );
+    const EMPTY_CATCH_TEST16: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/Test16.class"
+    );
+    const EMPTY_CATCH_TEST16_NEIGHBORS: [&[u8]; 5] = [
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/different-target.class"
+        ),
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/cleanup-covered.class"
+        ),
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/rows-swapped.class"
+        ),
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/throwable-rewritten.class"
+        ),
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/external-cleanup-entry.class"
+        ),
+    ];
+
+    #[test]
+    fn empty_catch_test16_two_real_rows_three_call_copies() {
+        let probe = |class, stop| shared_probe_method(class, b"test", b"()V", |_| {}, stop);
+        let plan = probe(EMPTY_CATCH_TEST16, None)
+            .unwrap()
+            .expect("two-row certificate");
+        let Shape::EmptyCatchCallFinally {
+            rows,
+            cleanup_target,
+            catch_handler,
+            catch_type,
+            catch_parameter,
+            cleanup,
+            transfers,
+        } = plan.shape()
+        else {
+            panic!("wrong certificate")
+        };
+        assert_eq!(*rows, [0, 1]);
+        assert_eq!(
+            (catch_handler.bci(), *catch_type, *catch_parameter),
+            (9, 15, 1)
+        );
+        assert_eq!(*cleanup, [(3, 6), (10, 13), (17, 20)]);
+        assert_eq!(*transfers, [6, 13]);
+        assert_eq!(cleanup_target.kind(), InvokeKind::Static);
+        assert_eq!(
+            cleanup_target.owner(),
+            "jadx/tests/integration/trycatch/TestTryCatchFinally16$TestCls$TCls"
+        );
+        assert_eq!(
+            (cleanup_target.name(), cleanup_target.descriptor()),
+            ("doFinally", "()V")
+        );
+        assert_eq!(plan.body(), (0, 3));
+        assert_eq!(plan.facts(), &[0, 3, 6, 9, 10, 13, 16, 17, 20, 21, 22]);
+        assert_eq!(
+            plan.owned()
+                .iter()
+                .map(CanonicalBlockId::bci)
+                .collect::<Vec<_>>(),
+            [0, 9, 16]
+        );
+        assert_eq!(plan.join().map(CanonicalBlockId::bci), Some(22));
+        for neighbor in EMPTY_CATCH_TEST16_NEIGHBORS {
+            assert!(probe(neighbor, None).unwrap().is_none());
+        }
+        assert!(matches!(
+            probe(EMPTY_CATCH_TEST16, Some("budget")),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            probe(EMPTY_CATCH_TEST16, Some("cancel")),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
     const CONCAT_SAVED: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-27/cf16-finally/original/FinallyOnce.class"
     );
@@ -5434,6 +5781,9 @@ fn guarded(
         return Ok(Some(verdict));
     }
     if FINALLY.admits(profile) {
+        if let Some(plan) = prove_empty_catch_call_finally(facts, current)? {
+            return Ok(Some(Verdict::Claimed(plan)));
+        }
         if let Some(plan) = prove_nested_join_finally(facts, current)? {
             return Ok(Some(Verdict::Claimed(plan)));
         }
