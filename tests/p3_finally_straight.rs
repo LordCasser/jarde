@@ -93,15 +93,19 @@ fn a_straight_proved_copy_has_one_cleanup_and_returns_the_saved_local() {
 }
 
 #[test]
-fn a_branching_protected_body_does_not_flatten_into_finally() {
+fn a_branching_protected_body_stays_inside_structured_finally() {
     let report = source(BRANCHING, "ImplicitCleanup");
     let text = run_text(&report);
+    assert!(text.contains("try {"), "{text}");
+    assert!(text.contains("if (ImplicitCleanup.throwTry)"), "{text}");
     assert!(
-        text.contains("jre_guard_finally_copy") || text.contains("finally` copy"),
+        text.contains("throw ImplicitCleanup.TRY_FAILURE;"),
         "{text}"
     );
-    assert!(!text.contains("} finally {"), "{text}");
-    assert!(text.contains("@bytecode"), "{text}");
+    assert!(text.contains("int local0 = mark(2);"), "{text}");
+    assert!(text.contains("return local0;"), "{text}");
+    assert_eq!(text.matches("cleanup();").count(), 1, "{text}");
+    assert!(!text.contains("@bytecode"), "{text}");
 }
 
 #[test]
