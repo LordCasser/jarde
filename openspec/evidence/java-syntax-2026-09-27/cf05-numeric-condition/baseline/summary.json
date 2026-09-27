@@ -1,0 +1,57 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "jadx-core/src/test/java/jadx/tests/integration/conditions/TestBooleanToInt.java": "a82a15622aa3b6daa7e88ef874569f9d2fa99583be666c1edfb08331c4371414",
+    "jadx-core/src/test/java/jadx/tests/integration/conditions/TestBooleanToByte.java": "77ebe4a249a800a175c92880d333bdb59d04d150e61c62245edc6e13370dd76e",
+    "jadx-core/src/test/java/jadx/tests/integration/conditions/TestBooleanToLong.java": "9919efff02920db41b6c7852d26fe13ca096dafe04cf618375ee095f3eaa0eaf",
+    "jadx-core/src/test/java/jadx/tests/integration/conditions/TestCast.java": "23d6502e840d3b7bfa94430b2c0450661cf8de30606c59e4bfcbb25b02800c2b",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/ModVisitor.java": "2d208158695097fd5ee4bfb833fa865b4b75e0f784fc9b8fde1ffbb3e49cf69f",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/typeinference/FixTypesVisitor.java": "22cbc270e1c4480e7f00737d3c9a60a0ef14f8defd4ae738ff7bc5cbde9431d3",
+    "jadx-core/src/main/java/jadx/core/codegen/InsnGen.java": "c6308a71dd870d7f13bb8ac7efdb58191966cd6a5254aa11e443c95af6bafed6"
+  },
+  "jarde_cli_sha256": "d3d88af09d584eae96bb77cc617ea440cb0149afdb4edc3dfd1bb3feef648d0a",
+  "cases": {
+    "input_sha256": "8cb9e15d444778df09764421db506ee99777ef1a7e9ec060745a9c7ac0d46872",
+    "runner_sha256": "cd1d79e078747245a7e7e401a00637d200cc24d9969aafa12530d937fde6efbf",
+    "original_class_sha256": "673d6d56972c9d3b789675dafa44cfb8428480f2c558b93564a0a634143665ba",
+    "original": {
+      "source_sha256": "8cb9e15d444778df09764421db506ee99777ef1a7e9ec060745a9c7ac0d46872",
+      "javac_exit": 0,
+      "runtime_exit": 0,
+      "stdout": "1\n1\n1\n1.0\n1.0\n100\n100\n200\n209\n-32568\n0\n0\n0\n0.0\n0.0\n101\n107\n201\n200\n200"
+    },
+    "jadx": {
+      "source_sha256": "97e3e0554e5a1ee0823f7e34a83651610ce3de0c0deb0e0d3992bfe30720c380",
+      "javac_exit": 0,
+      "runtime_exit": 0,
+      "stdout": "1\n1\n1\n1.0\n1.0\n100\n100\n200\n209\n-32568\n0\n0\n0\n0.0\n0.0\n101\n107\n201\n200\n200"
+    },
+    "jarde": {
+      "source_sha256": "c4a6234b8768003302abc9b5986f5975f9d6fc3dfa5d09ba088b66a907941ecc",
+      "javac_exit": 1
+    }
+  },
+  "basic": {
+    "input_sha256": "11b64bd24f3a2049f4d3c2d6e6487af1643f684ab597e531fcce038333675e73",
+    "runner_sha256": "601728f35394cc858ccb7cae8c025cd941f751c1a3bf7f490205e916ff944bc9",
+    "original_class_sha256": "927d04e020936c65cb195226396a4a7df20eec83d37e084b37e2cdeddcc579d3",
+    "original": {
+      "source_sha256": "11b64bd24f3a2049f4d3c2d6e6487af1643f684ab597e531fcce038333675e73",
+      "javac_exit": 0,
+      "runtime_exit": 0,
+      "stdout": "1\n1\n1\n1.0\n1.0\n0\n0\n0\n0.0\n0.0"
+    },
+    "jadx": {
+      "source_sha256": "b8808f8f0df5aa75c67e916032771e58cba4e98a0b38f17725be4dc3f8e9e80d",
+      "javac_exit": 0,
+      "runtime_exit": 0,
+      "stdout": "1\n1\n1\n1.0\n1.0\n0\n0\n0\n0.0\n0.0"
+    },
+    "jarde": {
+      "source_sha256": "b6c8f8138cf019264648073a527a99e1e0d62f2b4b0c170bd0c108f159aa617f",
+      "javac_exit": 0,
+      "runtime_exit": 0,
+      "stdout": "1\n1\n1\n1.0\n1.0\n0\n0\n0\n0.0\n0.0"
+    }
+  }
+}

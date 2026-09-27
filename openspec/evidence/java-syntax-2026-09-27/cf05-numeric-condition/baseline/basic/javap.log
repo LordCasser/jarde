@@ -1,0 +1,56 @@
+exit=0
+stdout:
+public class cf05.ConversionBasic {
+  public cf05.ConversionBasic();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int asInt(boolean);
+    Code:
+       0: iload_0
+       1: ifeq          8
+       4: iconst_1
+       5: goto          9
+       8: iconst_0
+       9: ireturn
+
+  public static long asLong(boolean);
+    Code:
+       0: iload_0
+       1: ifeq          8
+       4: lconst_1
+       5: goto          9
+       8: lconst_0
+       9: lreturn
+
+  public static byte asByte(boolean);
+    Code:
+       0: iload_0
+       1: ifeq          8
+       4: iconst_1
+       5: goto          9
+       8: iconst_0
+       9: ireturn
+
+  public static float asFloat(boolean);
+    Code:
+       0: iload_0
+       1: ifeq          8
+       4: fconst_1
+       5: goto          9
+       8: fconst_0
+       9: freturn
+
+  public static double asDouble(boolean);
+    Code:
+       0: iload_0
+       1: ifeq          8
+       4: dconst_1
+       5: goto          9
+       8: dconst_0
+       9: dreturn
+}
+
+stderr:
