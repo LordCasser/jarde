@@ -2696,9 +2696,6 @@ fn all_reads_reach_presented_writes(
             1,
             Some(write.bci),
         )?;
-        let Some(stored) = write.stored else {
-            return Ok(false);
-        };
         let Some(written) = write.written else {
             return Ok(false);
         };
@@ -2708,6 +2705,32 @@ fn all_reads_reach_presented_writes(
         if *bci != write.bci {
             return Ok(false);
         }
+        // `iinc` reads and writes the same local at one BCI. The builder presents it as one
+        // statement, so it has no stack producer tree to inline at the write.
+        if let Some(Operation::Increment { slot, .. }) = operations.get(write.bci) {
+            let Some(step) = ssa.block(block).and_then(|block| {
+                block
+                    .instructions()
+                    .iter()
+                    .find(|step| step.bci() == write.bci)
+            }) else {
+                return Ok(false);
+            };
+            if step.reads().len() != 1
+                || step.writes() != &[(Slot::Local(*slot), written)]
+                || step.reads()[0].0 != Slot::Local(*slot)
+                || paths
+                    .paths
+                    .get(block)
+                    .is_none_or(|path| paths.fallbacks.contains(path))
+            {
+                return Ok(false);
+            }
+            continue;
+        }
+        let Some(stored) = write.stored else {
+            return Ok(false);
+        };
         let mut seen = BTreeSet::new();
         if !presented_int_store_value(
             ssa, operations, paths, stored, block, write.bci, &mut seen, budget, 0,

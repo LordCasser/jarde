@@ -315,6 +315,171 @@ fn describe(payload: &Payload) -> String {
     described
 }
 
+#[test]
+fn cf18_fixed_methods_preserve_rows_dispatch_and_presented_origins() {
+    for (class, expected_rows, throw_sites, anchors, catch_bci, result) in [
+        (
+            include_bytes!("../../../openspec/evidence/java-syntax-2026-09-27/cf18-handler-region-triage/HandlerLoopProbe.class").as_slice(),
+            vec![(0, 9, 16, 19), (1, 9, 29, 38), (2, 32, 35, 38)],
+            vec![(11, vec![0, 1]), (20, vec![1]), (26, vec![1])],
+            vec![9, 11, 19, 32, 38, 51],
+            vec![19, 38],
+            "local0 = local0 + work(local1)",
+        ),
+        (
+            include_bytes!("../../../openspec/evidence/java-syntax-2026-09-27/cf18-exception-regions/baseline/ExceptionRegionsAudit.original.class").as_slice(),
+            vec![(0, 28, 35, 38), (1, 13, 25, 72), (2, 28, 52, 72), (3, 55, 69, 72)],
+            vec![(17, vec![1]), (22, vec![1]), (30, vec![0, 2]), (39, vec![2]), (45, vec![2])],
+            vec![13, 17, 28, 30, 38, 52, 55, 58, 63, 66, 72, 85],
+            vec![38, 72],
+            "local0 = local0 + work(local1)",
+        ),
+    ] {
+        let payload = analyze(class, b"run", b"()I");
+        let ir = payload.analysis.ir();
+        let canonical = ir.canonical().unwrap();
+        let code = ir.code().unwrap();
+        let ssa = ir.ssa().unwrap();
+        assert_eq!(
+            code.exception_handlers.iter().map(|row| (row.ordinal, row.start_bci, row.end_bci, row.handler_bci)).collect::<Vec<_>>(),
+            expected_rows
+        );
+        assert_eq!(
+            canonical.throw_sites().iter().filter(|site| !site.handlers().is_empty()).map(|site| (site.bci(), site.handlers().to_vec())).collect::<Vec<_>>(),
+            throw_sites
+        );
+        for row in canonical.handler_rows() {
+            assert_eq!(row.handler().map(|id| id.bci()), Some(row.handler_bci()));
+            assert!(!row.protected().is_empty(), "even rows without actual throw sites retain their protected blocks");
+        }
+        for bci in catch_bci {
+            let block = ssa.blocks().iter().find(|block| block.block().bci() == bci).unwrap();
+            let store = &block.instructions()[0];
+            assert_eq!(store.reads().len(), 1);
+            assert!(matches!(ssa.value(store.reads()[0].1).def(), jarde_jvm::method_ir::Definition::Caught { .. } | jarde_jvm::method_ir::Definition::Phi { .. }));
+        }
+        let report = recover_body(&payload, &facts_of(class, b"run", 0, vec![]), &mut Budget::new(limits()));
+        assert!(report.fallbacks.is_empty(), "{:?}\n{}", report.fallbacks, report.text);
+        assert_eq!(report.representation, Representation::Java);
+        assert_eq!(report.quality, Quality::Structured);
+        assert!(report.text.contains(result), "{}", report.text);
+        assert!(!report.text.contains("@bytecode"), "{}", report.text);
+        assert_eq!(report.text.matches("catch (java.lang.NumberFormatException").count(), 1);
+        assert_eq!(report.text.matches("catch (java.lang.IllegalStateException").count(), 1);
+        let mut owned = std::collections::BTreeSet::new();
+        for region in &report.regions {
+            assert!(region.structured);
+            for bci in &region.blocks {
+                assert!(owned.insert(*bci), "BCI {bci} received two Region owners");
+            }
+        }
+        assert_eq!(
+            owned,
+            canonical.blocks().iter().map(|block| block.id().bci()).collect(),
+            "every Canonical block has exactly one Region owner"
+        );
+        for bci in anchors {
+            assert!(!report.source_map.of_bci(bci).is_empty(), "BCI {bci} has no source anchor:\n{}", report.text);
+        }
+        for segment in report.source_map.segments() {
+            let origin = segment.origin().primary();
+            let method = origin.method().expect("a source anchor names its physical method");
+            assert_eq!(method.name.0, b"run");
+            assert_eq!(method.owner.class_bytes.length, class.len() as u64);
+            assert_eq!(method.owner.class_bytes.digest.0, blake3::hash(class).to_hex().to_string());
+        }
+    }
+}
+
+#[test]
+fn cf18_verifier_valid_near_misses_refuse_the_whole_method() {
+    for class in [
+        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/wrong-type/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/wrong-order/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/missing-protection/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/extra-throw-site/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/other-loop-point/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/ordinary-handler-entry/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/handler-index-write/ExceptionRegionsAudit.class").as_slice(),
+        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/crossing-range/ExceptionRegionsAudit.class").as_slice(),
+    ] {
+        let payload = analyze(class, b"run", b"()I");
+        let report = recover_body(&payload, &facts_of(class, b"run", 0, vec![]), &mut Budget::new(limits()));
+        assert!(!report.fallbacks.is_empty(), "{}", report.text);
+        assert!(!report.text.contains("catch (java.lang.IllegalStateException"), "{}", report.text);
+    }
+}
+
+#[test]
+fn cf18_budget_and_cancellation_never_publish_partial_source() {
+    let class = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-27/cf18-exception-regions/baseline/ExceptionRegionsAudit.original.class"
+    );
+    let payload = analyze(class, b"run", b"()I");
+    let facts = facts_of(class, b"run", 0, vec![]);
+    let complete = recover_body(&payload, &facts, &mut Budget::new(limits()));
+    assert!(complete.produced());
+    let mut bounded = Budget::new(Limits {
+        output_bytes: complete.text.len() as u64 - 1,
+        ..limits()
+    });
+    let stopped = recover_body(&payload, &facts, &mut bounded);
+    assert!(!stopped.produced());
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    assert!(matches!(stopped.stop(), Some(StopReason::Budget { .. })));
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut cancelled_budget = Budget::with_cancellation_token(limits(), token);
+    let cancelled = recover_body(&payload, &facts, &mut cancelled_budget);
+    assert!(!cancelled.produced());
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+}
+
+/// Run with `--ignored --nocapture` to regenerate the committed same-analysis facts.
+#[test]
+#[ignore = "CF-18 evidence dump"]
+fn cf18_same_run_facts() {
+    for (name, class) in [
+        ("HandlerLoopProbe", include_bytes!("../../../openspec/evidence/java-syntax-2026-09-27/cf18-handler-region-triage/HandlerLoopProbe.class").as_slice()),
+        ("ExceptionRegionsAudit", include_bytes!("../../../openspec/evidence/java-syntax-2026-09-27/cf18-exception-regions/baseline/ExceptionRegionsAudit.original.class").as_slice()),
+    ] {
+        let payload = analyze(class, b"run", b"()I");
+        let ir = payload.analysis.ir();
+        let canonical = ir.canonical().unwrap();
+        let ssa = ir.ssa().unwrap();
+        let code = ir.code().unwrap();
+        println!("CLASS {name}");
+        for row in &code.exception_handlers {
+            println!("ROW {} [{}..{}) -> {} type {:?}", row.ordinal, row.start_bci, row.end_bci, row.handler_bci, row.catch_type_index);
+        }
+        for block in canonical.blocks() {
+            println!("BLOCK {}..{} {:?} protected {:?}", block.id().bci(), block.end_bci(), block.blocks(), block.protected());
+        }
+        for edge in canonical.edges() {
+            println!("EDGE {} {:?} {}", edge.from().bci(), edge.kind(), edge.to().bci());
+        }
+        for row in canonical.handler_rows() {
+            println!("CANONICAL_ROW {} -> {:?} protected {:?}", row.ordinal(), row.handler().map(|id| id.bci()), row.protected().iter().map(|id| id.bci()).collect::<Vec<_>>());
+        }
+        for site in canonical.throw_sites() {
+            println!("CANONICAL_SITE {} block {} handlers {:?}", site.bci(), site.block().bci(), site.handlers());
+        }
+        for phi in ssa.phis() {
+            println!("PHI block {} slot {:?} value {:?} inputs {:?}", phi.block().bci(), phi.slot(), phi.value(), phi.inputs());
+        }
+        for block in ssa.blocks() {
+            println!("SSA_BLOCK {} entry {:?} exit {:?}", block.block().bci(), block.entry(), block.exit());
+            for step in block.instructions() {
+                println!("SSA_STEP {} opcode {:02x} read {:?} write {:?}", step.bci(), step.opcode(), step.reads(), step.writes());
+            }
+        }
+        for (id, value) in ssa.values_with_ids() {
+            println!("VALUE {:?} {:?} origin {:?} uses {:?} replaced {:?}", id, value.def(), value.origin(), value.uses(), value.replaced_by());
+        }
+    }
+}
+
 /// `aconst_null; astore_1; aload_1; lconst_0; invokeinterface Runnable.run:(J)V; return`
 ///
 /// One straight-line body whose call has a real receiver (the local the null was stored into), a real

@@ -3507,6 +3507,7 @@ pub(crate) fn catches(
     ssa: &SsaTable,
     ops: &Operations,
     handlers: &[ExceptionHandlerFact],
+    fragmented: Option<&crate::fragmented_catch::FragmentedCatch>,
     profile: &crate::pass::RecoveryProfile,
     current: &CanonicalBlockId,
     budget: &mut Budget,
@@ -3524,6 +3525,9 @@ pub(crate) fn catches(
             row.catch_type_index.is_some()
                 && row.start_bci >= current.bci()
                 && last.is_some_and(|last| row.start_bci <= last)
+                && !fragmented.is_some_and(|proof| {
+                    current.bci() != proof.outer_start && proof.is_outer_row(row.ordinal)
+                })
         })
         .collect();
     if rows_here.is_empty() {
@@ -3621,7 +3625,7 @@ pub(crate) fn catches(
         }
         [inner_end, outer_end] => {
             let (inner, outer) = (rows_of(*inner_end), rows_of(*outer_end));
-            if !nests(&inner, &outer, handlers) {
+            if !nests(&inner, &outer, handlers, fragmented) {
                 return Ok(None);
             }
             let Some(inner_sites) = clause_sites(&facts, &inner) else {
@@ -3632,14 +3636,21 @@ pub(crate) fn catches(
             };
             // The outer statement's body **is** the inner statement, so the code after the outer
             // `try` is the code after the inner one: both levels state that join.
-            let join = join_after(&facts, *inner_end);
+            let inner_join = join_after(&facts, *inner_end);
+            let join = fragmented
+                .filter(|proof| {
+                    outer.iter().all(|row| proof.is_outer_row(row.ordinal))
+                        && inner.iter().all(|row| row.ordinal == proof.inner_row)
+                })
+                .map(|proof| proof.outer_join.clone())
+                .or_else(|| inner_join.clone());
             Ok(Some(Catches {
                 sites: outer_sites,
                 join: join.clone(),
                 lead,
                 inner: Some(Box::new(Catches {
                     sites: inner_sites,
-                    join,
+                    join: inner_join,
                     lead,
                     inner: None,
                 })),
@@ -3666,6 +3677,7 @@ fn nests(
     inner: &[&ExceptionHandlerFact],
     outer: &[&ExceptionHandlerFact],
     handlers: &[ExceptionHandlerFact],
+    fragmented: Option<&crate::fragmented_catch::FragmentedCatch>,
 ) -> bool {
     let (Some(inner_end), Some(outer_end)) = (
         inner.first().map(|row| row.end_bci),
@@ -3684,7 +3696,11 @@ fn nests(
             })
             .all(|other| (other.start_bci, other.end_bci) == (row.start_bci, row.end_bci))
     });
-    handler_inside && own_rows_only
+    let certified_split = fragmented.is_some_and(|proof| {
+        inner.iter().all(|row| row.ordinal == proof.inner_row)
+            && outer.iter().all(|row| proof.is_outer_row(row.ordinal))
+    });
+    handler_inside && (own_rows_only || certified_split)
 }
 
 /// The clauses of one protected range: one site per handler entry, in exception-table order.
