@@ -851,7 +851,7 @@ fn project_captured_expr(
     }
     match &mut expr.kind {
         ExprKind::InstanceOf { value, .. }
-        | ExprKind::PostIncrement { target: value }
+        | ExprKind::PostfixUpdate { target: value, .. }
         | ExprKind::ArrayLength { array: value }
         | ExprKind::Cast { value, .. }
         | ExprKind::Not { value }
@@ -2864,7 +2864,7 @@ fn collect_expression_anchors(expr: &Expr, anchors: &mut std::collections::BTree
         | ExprKind::Field {
             receiver: value, ..
         }
-        | ExprKind::PostIncrement { target: value }
+        | ExprKind::PostfixUpdate { target: value, .. }
         | ExprKind::ArrayLength { array: value }
         | ExprKind::Cast { value, .. }
         | ExprKind::Not { value }
@@ -4768,7 +4768,7 @@ fn program_node_count(program: &build::Program) -> u64 {
         use ExprKind as K;
         match &expression.kind {
             K::InstanceOf { value, .. }
-            | K::PostIncrement { target: value }
+            | K::PostfixUpdate { target: value, .. }
             | K::ArrayLength { array: value }
             | K::Cast { value, .. }
             | K::Not { value }
@@ -5138,7 +5138,9 @@ fn visit_class_initializer_field_reads(
         }
         | ExprKind::Not { value: qualifier }
         | ExprKind::Neg { value: qualifier }
-        | ExprKind::PostIncrement { target: qualifier } => {
+        | ExprKind::PostfixUpdate {
+            target: qualifier, ..
+        } => {
             visit_class_initializer_field_reads(qualifier, fields, budget, reads, complete)?;
         }
         ExprKind::Index { array, index } => {
@@ -5260,7 +5262,9 @@ fn charge_expression_tree_at_depth(
         }
         | ExprKind::Not { value: qualifier }
         | ExprKind::Neg { value: qualifier }
-        | ExprKind::PostIncrement { target: qualifier } => {
+        | ExprKind::PostfixUpdate {
+            target: qualifier, ..
+        } => {
             charge_expression_tree_at_depth(qualifier, budget, depth + 1)?;
         }
         ExprKind::Field { receiver, .. } => {

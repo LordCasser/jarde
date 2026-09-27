@@ -7815,7 +7815,7 @@ fn validate_initializer_expression(
                 pending.push(index);
                 pending.push(array);
             }
-            ExprKind::PostIncrement { .. } => {
+            ExprKind::PostfixUpdate { .. } => {
                 return Ok(Some(
                     "a postfix update has no interface-initializer evaluation proof".to_owned(),
                 ));

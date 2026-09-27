@@ -55,7 +55,7 @@
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::model::PhysicalMethodId;
 
-use crate::ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind, Type};
+use crate::ast::{BinaryOp, Expr, ExprKind, PostfixDirection, Stmt, StmtKind, Type};
 use crate::declaration::Declaration;
 use crate::evidence::{EvidencePhase, Materialized, SegmentPublication};
 use crate::facts::RecoveryFacts;
@@ -1093,12 +1093,18 @@ impl<'a> Emitter<'a> {
                 emitter.expr(index)?;
                 emitter.put("]", at)
             }
-            ExprKind::PostIncrement { target } => {
+            ExprKind::PostfixUpdate { target, direction } => {
                 // The writable target is already proved by recovery. Its value is written in the
                 // same suffix position as a field receiver or array indexee, then the postfix
                 // operator is anchored at the update node's own origin.
                 emitter.operand(target, PRIMARY)?;
-                emitter.put("++", at)
+                emitter.put(
+                    match direction {
+                        PostfixDirection::Increment => "++",
+                        PostfixDirection::Decrement => "--",
+                    },
+                    at,
+                )
             }
             // `array.length`: `.` is the same suffix `[` is, so the array is written in the indexee
             // position and the member is spelled by the node (P3 2b). It is deliberately not a
@@ -1442,7 +1448,7 @@ const CONDITIONAL: u8 = 1;
 fn expression_binding(kind: &ExprKind) -> u8 {
     match kind {
         ExprKind::Lambda { .. } => 0,
-        ExprKind::PostIncrement { .. } => POSTFIX,
+        ExprKind::PostfixUpdate { .. } => POSTFIX,
         ExprKind::Conditional { .. } => CONDITIONAL,
         ExprKind::Binary { op, .. } => binary_binding(*op),
         ExprKind::InstanceOf { .. } => binary_binding(BinaryOp::Less),
@@ -2609,8 +2615,9 @@ mod tests {
         let negated_increment = Expr::direct(
             ExprKind::Neg {
                 value: Box::new(Expr::new(
-                    ExprKind::PostIncrement {
+                    ExprKind::PostfixUpdate {
                         target: Box::new(simple_target),
+                        direction: PostfixDirection::Increment,
                     },
                     OriginSet::new(Origin::direct(5)),
                 )),
@@ -2638,8 +2645,9 @@ mod tests {
         )
         .presenting(Type::Int);
         let field_increment = Expr::new(
-            ExprKind::PostIncrement {
+            ExprKind::PostfixUpdate {
                 target: Box::new(field_target),
+                direction: PostfixDirection::Increment,
             },
             OriginSet::new(Origin::direct(20)).plus_derived(Origin::derived(17)),
         );
@@ -2672,8 +2680,9 @@ mod tests {
         )
         .presenting(Type::Int);
         let index_increment = Expr::new(
-            ExprKind::PostIncrement {
+            ExprKind::PostfixUpdate {
                 target: Box::new(index_target),
+                direction: PostfixDirection::Increment,
             },
             OriginSet::new(Origin::direct(25)),
         );
