@@ -1,0 +1,84 @@
+// jarde: presentation of `dt14/TernaryInit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt14;
+
+public enum TernaryInit {
+    public static final dt14.TernaryInit FIRST;
+
+    public static final dt14.TernaryInit SECOND;
+
+    public static final dt14.TernaryInit ANY;
+
+    static int calls;
+
+    private final int code;
+
+    private static final dt14.TernaryInit[] $VALUES;
+
+    public static dt14.TernaryInit[] values() {
+        // @method values()[Ldt14/TernaryInit;
+        // @declaration a static method of `dt14.TernaryInit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (dt14.TernaryInit[]) dt14.TernaryInit.$VALUES.clone();
+    }
+
+    public static dt14.TernaryInit valueOf(java.lang.String arg0) {
+        // @method valueOf(Ljava/lang/String;)Ldt14/TernaryInit;
+        // @declaration a static method of `dt14.TernaryInit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (dt14.TernaryInit) java.lang.Enum.valueOf(dt14.TernaryInit.class, arg0);
+    }
+
+    // jarde: generic Signature projection refused for `<init>(Ljava/lang/String;II)V`: invalid input (jvm_signature_erasure_mismatch): erased Signature disagrees with the physical descriptor at parameter count
+    private TernaryInit(java.lang.String arg1, int arg2, int arg3) {
+        // @method <init>(Ljava/lang/String;II)V
+        // @declaration a constructor of `dt14.TernaryInit`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super(arg1, arg2);
+        this.code = arg3;
+        return;
+    }
+
+    int code() {
+        // @method code()I
+        // @declaration an instance method of `dt14.TernaryInit`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.code;
+    }
+
+    public static boolean useNumber() {
+        // @method useNumber()Z
+        // @declaration a static method of `dt14.TernaryInit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        dt14.TernaryInit.calls = dt14.TernaryInit.calls + 1;
+        return dt14.TernaryInit.calls % 2 == 1;
+    }
+
+    private static dt14.TernaryInit[] $values() {
+        // @method $values()[Ldt14/TernaryInit;
+        // @declaration a static method of `dt14.TernaryInit`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return new dt14.TernaryInit[]{dt14.TernaryInit.FIRST, dt14.TernaryInit.SECOND, dt14.TernaryInit.ANY};
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `dt14.TernaryInit`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 4 6 7 10 13 14 17
+        // the carried argument crosses an independent instruction at BCI 19
+        // @bytecode 19 22 25 28 29 31 32 35 38 39 42
+        // the carried argument crosses an independent instruction at BCI 19
+        // @bytecode 44
+        // the dependency chain from BCI 44 to final consumer 47 is not bounded
+        // @bytecode 47 44
+        // the value at BCI 47 was produced by a saved declaration this run could not commit
+        // @bytecode 50
+        // the instruction at BCI 50 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 53
+        // the instruction at BCI 53 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 71 68
+        // the value at BCI 71 comes from an Duplicate at BCI 53, which produces no expression this subset writes
+        dt14.TernaryInit.$VALUES = $values();
+    }
+}

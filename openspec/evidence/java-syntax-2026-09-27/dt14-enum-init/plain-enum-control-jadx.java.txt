@@ -1,0 +1,7 @@
+package dt14;
+
+/* JADX INFO: loaded from: input.jar:dt14/PlainInit.class */
+public enum PlainInit {
+    RED,
+    BLUE
+}
