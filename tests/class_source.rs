@@ -149,6 +149,188 @@ const EM03_SOURCE: &str = include_str!(
 );
 
 #[test]
+fn direct_override_projection_requires_selected_complete_ordinary_parent() {
+    let scratch = BridgeProjectionScratch::new();
+    let root = scratch.child("direct-override");
+    let base = root.join("Base.java");
+    let child = root.join("Child.java");
+    fs::write(&base, "package p; public class Base { void f() {} }").unwrap();
+    fs::write(
+        &child,
+        "package p; public class Child extends Base { public void f() {} }",
+    )
+    .unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&root)
+        .args([&base, &child])
+        .output()
+        .unwrap();
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let base_bytes = fs::read(root.join("p/Base.class")).unwrap();
+    let child_bytes = fs::read(root.join("p/Child.class")).unwrap();
+    let jar = open(zip_of(&[
+        (b"p/Base.class", &base_bytes),
+        (b"p/Child.class", &child_bytes),
+    ]));
+    let report = class_source_of(&jar, "p/Child", EnvironmentPolicy::PlainJar);
+    assert_eq!(
+        report.text.matches("@Override").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(report.direct_override_proofs.len(), 1);
+    let proof = &report.direct_override_proofs[0];
+    assert_eq!(proof.child.name.0, b"f");
+    assert_eq!(proof.parent.name.0, b"f");
+    assert_eq!(proof.parent.descriptor.0, b"()V");
+    let physical = report
+        .methods
+        .iter()
+        .find(|method| method.item.identity == proof.child)
+        .unwrap();
+    assert!(!physical.text.contains("@Override"));
+    assert!(physical.annotations.uses.is_empty());
+    assert!(report.text.contains(&physical.text));
+    let mut bounded =
+        task_budget(&[BudgetOverride::new("output_bytes", report.usage.output_bytes - 1).unwrap()])
+            .unwrap();
+    let stopped = performed(
+        Engine::new()
+            .class_source(
+                slice::from_ref(&jar),
+                &request(
+                    &jar,
+                    ClassRef::Name {
+                        class: ClassNameQuery::internal("p/Child"),
+                    },
+                    EnvironmentPolicy::PlainJar,
+                ),
+                &mut bounded,
+            )
+            .unwrap(),
+    );
+    assert!(!stopped.text.contains("@Override"));
+    assert!(stopped.direct_override_proofs.is_empty());
+    assert!(!matches!(
+        stopped.execution,
+        ExecutionReport::Complete { .. }
+    ));
+
+    for entries in [
+        vec![(b"p/Child.class".as_slice(), child_bytes.as_slice())],
+        vec![
+            (b"p/Base.class".as_slice(), base_bytes.as_slice()),
+            (b"p/Base.class".as_slice(), base_bytes.as_slice()),
+            (b"p/Child.class".as_slice(), child_bytes.as_slice()),
+        ],
+    ] {
+        let snapshot = open(zip_of(&entries));
+        let negative = class_source_of(&snapshot, "p/Child", EnvironmentPolicy::PlainJar);
+        assert!(!negative.text.contains("@Override"), "{}", negative.text);
+        assert!(negative.direct_override_proofs.is_empty());
+    }
+
+    for (variant, source) in [
+        (
+            "private",
+            "package p; public class Base { private void f() {} }",
+        ),
+        (
+            "static",
+            "package p; public class Base { static void f() {} }",
+        ),
+        (
+            "final",
+            "package p; public class Base { final void f() {} }",
+        ),
+        (
+            "final-class",
+            "package p; public final class Base { void f() {} }",
+        ),
+        (
+            "signature",
+            "package p; public class Base<T> { void f() {} }",
+        ),
+    ] {
+        let directory = scratch.child(variant);
+        let path = directory.join("Base.java");
+        fs::write(&path, source).unwrap();
+        let compiled = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-d"])
+            .arg(&directory)
+            .arg(&path)
+            .output()
+            .unwrap();
+        assert!(
+            compiled.status.success(),
+            "{}",
+            String::from_utf8_lossy(&compiled.stderr)
+        );
+        let changed_base = fs::read(directory.join("p/Base.class")).unwrap();
+        let snapshot = open(zip_of(&[
+            (b"p/Base.class", &changed_base),
+            (b"p/Child.class", &child_bytes),
+        ]));
+        let negative = class_source_of(&snapshot, "p/Child", EnvironmentPolicy::PlainJar);
+        assert!(
+            !negative.text.contains("@Override"),
+            "{variant}: {}",
+            negative.text
+        );
+        assert!(negative.direct_override_proofs.is_empty());
+    }
+    for (variant, source) in [
+        (
+            "child-static",
+            "package p; public class Child extends Base { public static void f() {} }",
+        ),
+        (
+            "wrong-descriptor",
+            "package p; public class Child extends Base { public void f(int value) {} }",
+        ),
+        (
+            "child-signature",
+            "package p; public class Child<T> extends Base { public void f() {} }",
+        ),
+    ] {
+        let directory = scratch.child(variant);
+        let variant_base = directory.join("Base.java");
+        let variant_child = directory.join("Child.java");
+        fs::write(&variant_base, "package p; public class Base {}").unwrap();
+        fs::write(&variant_child, source).unwrap();
+        let compiled = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-d"])
+            .arg(&directory)
+            .args([&variant_base, &variant_child])
+            .output()
+            .unwrap();
+        assert!(
+            compiled.status.success(),
+            "{}",
+            String::from_utf8_lossy(&compiled.stderr)
+        );
+        let changed_child = fs::read(directory.join("p/Child.class")).unwrap();
+        let snapshot = open(zip_of(&[
+            (b"p/Base.class", &base_bytes),
+            (b"p/Child.class", &changed_child),
+        ]));
+        let negative = class_source_of(&snapshot, "p/Child", EnvironmentPolicy::PlainJar);
+        assert!(
+            !negative.text.contains("@Override"),
+            "{variant}: {}",
+            negative.text
+        );
+        assert!(negative.direct_override_proofs.is_empty());
+    }
+}
+
+#[test]
 fn method_parameters_name_body_and_declaration_only_without_lvt() {
     let scratch = BridgeProjectionScratch::new();
     for (variant, options, expected) in [

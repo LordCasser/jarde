@@ -103,8 +103,8 @@ def main():
             raise RuntimeError(f'{label}: interface modifier shape changed')
         if '@Override' in private or '@Override' in cross:
             raise RuntimeError(f'{label}: invalid override annotation')
-        if label == 'jadx' and '@Override' not in source:
-            raise RuntimeError('JADX no longer emits proved same-package override')
+        if source.count('@Override') != 1:
+            raise RuntimeError(f'{label}: expected one proved same-package override')
     summary = {'jadx_revision': revision, 'jadx_tests_sha256': TESTS,
                'jarde_cli_sha256': digest(args.jarde), 'original': original,
                'jadx': jadx, 'jarde': jarde,

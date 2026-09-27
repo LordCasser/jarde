@@ -576,6 +576,9 @@ pub struct ClassSourceReport {
     /// The methods of the class read, in the order its method table declares them, each with the
     /// result of its own run.
     pub methods: Vec<ClassSourceMethod>,
+    /// Source-only direct override hints, each anchored to the child and selected parent methods.
+    /// Neither method's physical annotation attributes are changed.
+    pub direct_override_proofs: Vec<ClassSourceDirectOverrideProof>,
     /// Direct member evidence for this request. A prepared child keeps its own physical class,
     /// member table, coverage, execution and source maps. Its `usage` is the cumulative snapshot
     /// of the *same* request budget at the end of that child's preparation.
@@ -654,6 +657,13 @@ pub struct ClassSourceReport {
     /// as a class view keeps a refused body's — one finding has one home, and the class's own list
     /// stays the list of things that happened to the class.
     pub diagnostics: Vec<Diagnostic>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassSourceDirectOverrideProof {
+    pub child: jarde_reader::model::PhysicalMethodId,
+    pub parent: jarde_reader::model::PhysicalMethodId,
 }
 
 /// Prepared family identity, capture and calls are independent of the final source projection.

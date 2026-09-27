@@ -1730,6 +1730,18 @@ impl Engine {
                 }
             }
         }
+        if matches!(report.execution, ExecutionReport::Complete { .. }) {
+            match project_direct_override_annotations(content, &environment, &mut report, budget) {
+                Ok(()) => {}
+                Err(error) => {
+                    merge_execution(&mut report.execution, stop_execution(&error, budget));
+                    report.diagnostics.push(stop_diagnostic(
+                        &error,
+                        Some(definition_provenance(&report.class)),
+                    ));
+                }
+            }
+        }
         report.usage = budget.usage();
         report.execution = with_usage(report.execution, budget.usage());
         Ok(OperationOutcome::Performed(report))
@@ -4646,6 +4658,7 @@ impl Engine {
                     stages,
                     fields: Vec::new(),
                     methods: Vec::new(),
+                    direct_override_proofs: Vec::new(),
                     member_family: class_source::ClassSourceMemberFamily::Absent,
                     nested_enum_family: class_source::ClassSourceNestedEnumFamily::Absent,
                     nested_annotation_family:
@@ -6992,6 +7005,7 @@ impl Engine {
                 stages,
                 fields,
                 methods,
+                direct_override_proofs: Vec::new(),
                 member_family: class_source::ClassSourceMemberFamily::Absent,
                 nested_enum_family: class_source::ClassSourceNestedEnumFamily::Absent,
                 nested_annotation_family: class_source::ClassSourceNestedAnnotationFamily::Absent,
@@ -10205,6 +10219,244 @@ fn resolve_class_source_dependency_read_raw(
         return Ok(None);
     }
     Ok(Some((resolved.definition, read)))
+}
+
+/// Add a source-only hint after the physical class and all other source projections have settled.
+/// The selected parent and both complete method tables, rather than a name collision, authorize it.
+fn project_direct_override_annotations(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    report: &mut ClassSourceReport,
+    budget: &mut Budget,
+) -> Result<()> {
+    let Some(declaration) = &report.declaration else {
+        return Ok(());
+    };
+    if !matches!(
+        report.member_family,
+        class_source::ClassSourceMemberFamily::Absent
+    ) || !matches!(
+        report.nested_enum_family,
+        class_source::ClassSourceNestedEnumFamily::Absent
+    ) || !matches!(
+        report.nested_annotation_family,
+        class_source::ClassSourceNestedAnnotationFamily::Absent
+    ) || !matches!(
+        report.anonymous_interface_projection,
+        class_source::ClassSourceAnonymousInterfaceProjection::Absent
+    ) || declaration.item.member_table.is_some()
+        || declaration.item.declaration.access_flags
+            & (ACC_INTERFACE | ACC_ANNOTATION | 0x4000 | 0x8000)
+            != 0
+        || declaration.item.declaration.access_flags & (0x0010 | 0x0400) == (0x0010 | 0x0400)
+    {
+        return Ok(());
+    }
+    let child_name = &declaration.item.declaration.this_class.raw().0;
+    let Some(parent_name) = declaration
+        .item
+        .declaration
+        .super_class
+        .as_ref()
+        .map(|name| &name.raw().0)
+    else {
+        return Ok(());
+    };
+    if parent_name == b"java/lang/Object" || package_bytes(child_name) != package_bytes(parent_name)
+    {
+        return Ok(());
+    }
+    let Some(snapshot) = content
+        .iter()
+        .find(|snapshot| snapshot.id() == report.class.snapshot())
+    else {
+        return Ok(());
+    };
+    let (child_read, _) = read_definition(snapshot, &report.class, budget)?;
+    let child = &child_read.facts;
+    if child.stopped_at.is_some()
+        || child.method_count != child.methods.len() as u64
+        || child.this_class.raw().0 != *child_name
+        || child.attributes.iter().any(is_signature_attribute)
+        || report.methods.len() != child.methods.len()
+    {
+        return Ok(());
+    }
+    let mut execution = ExecutionReport::Complete {
+        usage: budget.usage(),
+    };
+    let selected = resolve_class_source_dependency_read_raw(
+        content,
+        environment,
+        None,
+        parent_name,
+        &mut execution,
+        budget,
+    )?;
+    merge_execution(&mut report.execution, execution.clone());
+    if !matches!(execution, ExecutionReport::Complete { .. }) {
+        return Ok(());
+    }
+    let Some((parent_definition, parent_read)) = selected else {
+        return Ok(());
+    };
+    let parent = &parent_read.facts;
+    if parent_definition == report.class
+        || parent_definition
+            .entry()
+            .zip(report.class.entry())
+            .is_none_or(|(a, b)| a.origin != b.origin)
+        || parent.stopped_at.is_some()
+        || parent.method_count != parent.methods.len() as u64
+        || parent.this_class.raw().0 != *parent_name
+        || parent.access_flags & (ACC_INTERFACE | ACC_ANNOTATION | 0x0010 | 0x4000 | 0x8000) != 0
+        || parent.attributes.iter().any(is_signature_attribute)
+    {
+        return Ok(());
+    }
+    let mut staged = Vec::new();
+    for (index, method) in report.methods.iter().enumerate() {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let Some(child_member) = child.methods.get(index) else {
+            continue;
+        };
+        let name = &method.item.identity.name.0;
+        let descriptor = &method.item.identity.descriptor.0;
+        if method.item.index != u64::try_from(index).unwrap_or(u64::MAX)
+            || child_member.name.raw().0 != *name
+            || child_member.descriptor.raw().0 != *descriptor
+            || child_member.access_flags != method.item.access_flags
+            || !ordinary_override_method(child_member, false)
+            || child_member.attributes.iter().any(is_signature_attribute)
+            || method.declaration.is_none()
+            || method
+                .annotations
+                .uses
+                .iter()
+                .any(|use_line| use_line == "@Override" || use_line == "@java.lang.Override")
+            || method.text.is_empty()
+            || descriptor_facts(descriptor, DescriptorKind::Method).is_err()
+        {
+            continue;
+        }
+        let matches: Vec<_> = parent
+            .methods
+            .iter()
+            .enumerate()
+            .filter(|(_, candidate)| {
+                candidate.name.raw().0 == *name && candidate.descriptor.raw().0 == *descriptor
+            })
+            .collect();
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(parent.methods.len())
+                .unwrap_or(u64::MAX)
+                .saturating_add(u64::try_from(child.methods.len()).unwrap_or(u64::MAX)),
+        )?;
+        if matches.len() != 1
+            || child
+                .methods
+                .iter()
+                .filter(|candidate| {
+                    candidate.name.raw().0 == *name && candidate.descriptor.raw().0 == *descriptor
+                })
+                .count()
+                != 1
+        {
+            continue;
+        }
+        let (_, parent_member) = matches[0];
+        if !ordinary_override_method(parent_member, true)
+            || parent_member.attributes.iter().any(is_signature_attribute)
+            || visibility_rank(child_member.access_flags)
+                < visibility_rank(parent_member.access_flags)
+        {
+            continue;
+        }
+        let Some(offset) = report.text.find(&method.text) else {
+            continue;
+        };
+        if report.text.rfind(&method.text) != Some(offset) {
+            continue;
+        }
+        staged.push((
+            offset,
+            class_source::ClassSourceDirectOverrideProof {
+                child: method.item.identity.clone(),
+                parent: PhysicalMethodId {
+                    owner: parent_definition.clone(),
+                    name: JvmBytes(name.clone()),
+                    descriptor: JvmBytes(descriptor.clone()),
+                },
+            },
+        ));
+    }
+    if staged.is_empty() {
+        return Ok(());
+    }
+    budget.charge(
+        CountedBudgetDimension::OutputBytes,
+        u64::try_from(staged.len())
+            .unwrap_or(u64::MAX)
+            .saturating_mul("    @Override\n".len() as u64),
+    )?;
+    staged.sort_by_key(|(offset, _)| *offset);
+    for (offset, _) in staged.iter().rev() {
+        report.text.insert_str(*offset, "    @Override\n");
+    }
+    report.direct_override_proofs = staged.into_iter().map(|(_, proof)| proof).collect();
+    Ok(())
+}
+
+fn package_bytes(name: &[u8]) -> &[u8] {
+    name.iter()
+        .rposition(|byte| *byte == b'/')
+        .map_or(b"", |index| &name[..index])
+}
+
+fn is_signature_attribute(attribute: &AttributeShell) -> bool {
+    attribute.name.raw().0 == b"Signature"
+}
+
+fn visibility_rank(flags: u16) -> u8 {
+    if flags & 0x0001 != 0 {
+        2
+    } else if flags & 0x0004 != 0 {
+        1
+    } else {
+        0
+    }
+}
+
+fn ordinary_override_method(method: &MemberHeader, parent: bool) -> bool {
+    let flags = method.access_flags;
+    let name = &method.name.raw().0;
+    let access = flags & (0x0001 | 0x0002 | 0x0004);
+    let invalid_abstract = flags & 0x0400 != 0 && flags & (0x0010 | 0x0020 | 0x0100 | 0x0800) != 0;
+    (access == 0 || access == 0x0001 || access == 0x0004)
+        && flags
+            & !(0x0001
+                | 0x0002
+                | 0x0004
+                | 0x0008
+                | 0x0010
+                | 0x0020
+                | 0x0040
+                | 0x0080
+                | 0x0100
+                | 0x0400
+                | 0x0800
+                | 0x1000)
+            == 0
+        && !invalid_abstract
+        && flags & (0x0002 | 0x0008 | 0x0040 | 0x1000) == 0
+        && (!parent || flags & 0x0010 == 0)
+        && name != b"<init>"
+        && name != b"<clinit>"
+        && std::str::from_utf8(name)
+            .ok()
+            .is_some_and(jarde_java::is_java_identifier)
 }
 
 /// Prove the one parent shape admitted by direct class-header projection. The read is selected
