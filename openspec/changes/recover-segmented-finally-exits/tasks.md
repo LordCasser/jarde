@@ -16,5 +16,5 @@
 ## 4. 三方验收与回归
 
 - [x] 4.1 用 fresh CLI 从固定完整类恢复源码，将原 class、pinned JADX 和 Jarde 的完整 Java 8 源码重编、`java -Xverify:all` 跑七条路径，逐字比较效果顺序、次数、catch 类型与结果；对扩围负例必须保留原 class 的重复清理行为或安全拒绝，不采用 JADX 的错误一次清理。
-- [ ] 4.2 跑 Test12、共享 catch-all、普通 finally、TWR/monitor 定向回归及 `cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、`cargo fmt --all -- --check`、`openspec validate recover-segmented-finally-exits --strict` 和 `git diff --check`；清理专用 Cargo target。
+- [x] 4.2 跑 Test12、共享 catch-all、普通 finally、TWR/monitor 定向回归及 `cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、`cargo fmt --all -- --check`、`openspec validate recover-segmented-finally-exits --strict` 和 `git diff --check`；清理专用 Cargo target。
 - [ ] 4.3 root 独立审阅五行证书、Region/Builder ownership、负例和三方运行，在固定输入通过后写验收记录并更新 CF-16 清单；尚未覆盖的 finally 形态继续单列，不把整个单元标为追平。

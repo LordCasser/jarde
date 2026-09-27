@@ -6,4 +6,6 @@
 
 独立 `acceptance/replay.sh` 已核目标方法同 pinned class 的全部 BCI/opcode 与五行表逐项相同，并把原验收 class、pinned JADX 与 fresh Jarde CLI 的完整类用 `javac --release 8` 重编、`java -Xverify:all` 跑七条路径；两组逐字轨迹比较相同。`negatives/replay-neighbors.sh` 在 `JARDE_RANGE_CONTROL_RECOVERED=true` 下核原四个 verifier 有效负例仍拒绝错误归并，未扩围正对照恢复为一个 `finally`，扩围原 class 的二次清理轨迹与冻结文件相同。额外 `external-entry.class` 在 verifier 下有效，Jarde 安全拒绝。
 
-原冻结 probe 的共享 `invoke(int,String)V` 另有 BCI 66 未恢复块，导致其完整类异常路径不能用来验收 Test13；本次没有混入通用修复。见 `acceptance/helper-debt.md`。4.2 的集成后全量检查与专用 target 清理完成时补充最终命令结果，4.3 留给 root 独立审阅。
+原冻结 probe 的共享 `invoke(int,String)V` 另有 BCI 66 未恢复块，导致其完整类异常路径不能用来验收 Test13；本次没有混入通用修复。见 `acceptance/helper-debt.md`。
+
+合入 `origin/main` 的 switch/catch 修复后，`cargo test -p jarde-java --tests --locked` 全绿，覆盖 Test12、共享 catch-all、普通 finally、TWR/monitor 和主线新增的 catch/switch 定向测试；`cargo check --workspace --locked`、`cargo fmt --all -- --check`、`openspec validate recover-segmented-finally-exits --strict`、`git diff --check` 均通过。fresh CLI 在合并后重新构建，三方七路径与负例复放再次通过，输出分别位于 `/tmp/cf16-segmented-acceptance-after-merge` 和 `/tmp/cf16-segmented-negative-after-merge`。`cargo clean --target-dir /tmp/cf16-test13-segmented-agent-target` 移除了本任务专用 target 的 21707 个文件；目录已不存在，未触及共享 target。4.3 留给 root 独立审阅。
