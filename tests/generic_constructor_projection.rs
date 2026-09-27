@@ -251,7 +251,7 @@ fn generic_constructor_projects_atomically_for_debug_and_no_debug_classes() {
 }
 
 #[test]
-fn consuming_or_delegating_constructor_keeps_its_physical_parameter() {
+fn unproved_constructor_body_keeps_its_physical_parameter() {
     for (name, source) in [
         (
             "ConstructorUses",
@@ -265,6 +265,23 @@ fn consuming_or_delegating_constructor_keeps_its_physical_parameter() {
             r#"public class ConstructorDelegates {
                 public <T extends Number> ConstructorDelegates(T value) { this(value, 0); }
                 private ConstructorDelegates(Number value, int ignored) { }
+            }"#,
+        ),
+        (
+            "GenericConstructorExtraInstruction",
+            r#"public class GenericConstructorExtraInstruction {
+                private static void touch() { }
+                public <T extends Number> GenericConstructorExtraInstruction(T value) {
+                    super();
+                    touch();
+                }
+            }"#,
+        ),
+        (
+            "GenericConstructorOtherParent",
+            r#"class GenericConstructorParent { public GenericConstructorParent() { } }
+            public class GenericConstructorOtherParent extends GenericConstructorParent {
+                public <T extends Number> GenericConstructorOtherParent(T value) { super(); }
             }"#,
         ),
     ] {

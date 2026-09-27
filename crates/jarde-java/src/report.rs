@@ -2275,10 +2275,10 @@ fn collect_expression_anchors(expr: &Expr, anchors: &mut std::collections::BTree
     }
 }
 
-/// Capture only a constructor body whose complete AST and SSA state show direct, ordered parameter
-/// forwarding to its selected superclass constructor. The prologue is the decision from which the
-/// selected `InitRecord` is materialized; carrying its BCI here makes this sidecar independent of
-/// the caller's evidence selection.
+/// Capture only an exact constructor prologue: either an Object() call with every declared
+/// parameter unread, or direct, ordered forwarding of every parameter to the selected superclass
+/// constructor. The prologue is the decision from which the selected `InitRecord` is materialized;
+/// carrying its BCI here makes this sidecar independent of the caller's evidence selection.
 fn generic_constructor_candidate(
     program: &build::Program,
     names: &NameTable,
@@ -2308,7 +2308,7 @@ fn generic_constructor_candidate(
         || code.stopped_at.is_some()
         || code.exception_handler_count != 0
         || !code.exception_handlers.is_empty()
-        || code.instructions.len() != parameter_types.len() + 3
+        || (code.instructions.len() != 3 && code.instructions.len() != parameter_types.len() + 3)
         || ssa.blocks().len() != 1
         || !ssa.phis().is_empty()
     {
@@ -2328,7 +2328,8 @@ fn generic_constructor_candidate(
     else {
         no_candidate!("ast");
     };
-    if args.len() != parameter_slots.len()
+    let unused_parameters = !parameter_slots.is_empty() && args.is_empty();
+    if (args.len() != parameter_slots.len() && !unused_parameters)
         || !matches!(program.stmts[1].kind, StmtKind::Return { value: None })
     {
         no_candidate!("init");
@@ -2352,7 +2353,11 @@ fn generic_constructor_candidate(
     if target.kind() != crate::facts::InvokeKind::Special
         || Some(target.owner()) != init.class.as_deref()
         || target.name() != "<init>"
-        || target.descriptor() != constructor_descriptor
+        || if unused_parameters {
+            target.owner() != "java/lang/Object" || target.descriptor() != "()V"
+        } else {
+            target.descriptor() != constructor_descriptor
+        }
         || !constructor_descriptor.ends_with(")V")
         || target.is_interface_reference()
     {
@@ -2361,7 +2366,12 @@ fn generic_constructor_candidate(
 
     let mut expected_opcodes = Vec::with_capacity(parameter_slots.len() + 3);
     expected_opcodes.push(0x2a);
-    expected_opcodes.extend(parameter_slots.iter().map(|slot| {
+    let forwarded_parameter_slots = if unused_parameters {
+        &[][..]
+    } else {
+        parameter_slots.as_slice()
+    };
+    expected_opcodes.extend(forwarded_parameter_slots.iter().map(|slot| {
         let Some(ty) = parameter_types.get(slot) else {
             return 0;
         };
@@ -2425,8 +2435,8 @@ fn generic_constructor_candidate(
         no_candidate!("receiver");
     }
 
-    let mut forwarded_values = Vec::with_capacity(parameter_slots.len());
-    for (index, slot) in parameter_slots.iter().enumerate() {
+    let mut forwarded_values = Vec::with_capacity(forwarded_parameter_slots.len());
+    for (index, slot) in forwarded_parameter_slots.iter().enumerate() {
         let Some(instruction) = instructions.get(index + 1) else {
             no_candidate!("forwarding");
         };
@@ -2441,7 +2451,7 @@ fn generic_constructor_candidate(
         };
         forwarded_values.push(*value);
     }
-    let invoke_index = parameter_slots.len() + 1;
+    let invoke_index = forwarded_parameter_slots.len() + 1;
     let Some(invoke_instruction) = code.instructions.get(invoke_index) else {
         no_candidate!("invoke-ssa");
     };
@@ -2479,7 +2489,7 @@ fn generic_constructor_candidate(
     }
     Ok(Some(GenericConstructorCandidate {
         parameters,
-        forwarded_parameter_slots: parameter_slots,
+        forwarded_parameter_slots: forwarded_parameter_slots.to_vec(),
         init,
     }))
 }
