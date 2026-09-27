@@ -1,0 +1,8 @@
+frewhyh=1:calls=1
+phgafkp=2:calls=1
+ucguedt=0:calls=1
+test=3:calls=1
+test2=3:calls=1
+other=4:calls=1
+unknown=0:calls=1
+null=throws=NullPointerException:calls=1

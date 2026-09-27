@@ -1,0 +1,169 @@
+exit=0
+command=javap -classpath /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf14-kj6ieqc_/StringSwitchAudit/original -c -p -v StringSwitchAudit
+stdout:
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf14-kj6ieqc_/StringSwitchAudit/original/StringSwitchAudit.class
+  Last modified 2026年9月27日; size 672 bytes
+  SHA-256 checksum 2a68e63c71ef5cd456e8ead086978a656f5952d900d98e316ea9ef498b309c17
+public class StringSwitchAudit
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // StringSwitchAudit
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 3, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // StringSwitchAudit.calls:I
+   #8 = Class              #10            // StringSwitchAudit
+   #9 = NameAndType        #11:#12        // calls:I
+  #10 = Utf8               StringSwitchAudit
+  #11 = Utf8               calls
+  #12 = Utf8               I
+  #13 = Methodref          #8.#14         // StringSwitchAudit.read:(Ljava/lang/String;)Ljava/lang/String;
+  #14 = NameAndType        #15:#16        // read:(Ljava/lang/String;)Ljava/lang/String;
+  #15 = Utf8               read
+  #16 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #17 = Methodref          #18.#19        // java/lang/String.hashCode:()I
+  #18 = Class              #20            // java/lang/String
+  #19 = NameAndType        #21:#22        // hashCode:()I
+  #20 = Utf8               java/lang/String
+  #21 = Utf8               hashCode
+  #22 = Utf8               ()I
+  #23 = String             #24            // phgafkp
+  #24 = Utf8               phgafkp
+  #25 = Methodref          #18.#26        // java/lang/String.equals:(Ljava/lang/Object;)Z
+  #26 = NameAndType        #27:#28        // equals:(Ljava/lang/Object;)Z
+  #27 = Utf8               equals
+  #28 = Utf8               (Ljava/lang/Object;)Z
+  #29 = String             #30            // frewhyh
+  #30 = Utf8               frewhyh
+  #31 = String             #32            // test
+  #32 = Utf8               test
+  #33 = String             #34            // test2
+  #34 = Utf8               test2
+  #35 = String             #36            // other
+  #36 = Utf8               other
+  #37 = Utf8               Code
+  #38 = Utf8               choose
+  #39 = Utf8               (Ljava/lang/String;)I
+  #40 = Utf8               StackMapTable
+{
+  static int calls;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  public StringSwitchAudit();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static java.lang.String read(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #7                  // Field calls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field calls:I
+         8: aload_0
+         9: areturn
+
+  public static int choose(java.lang.String);
+    descriptor: (Ljava/lang/String;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=1
+         0: aload_0
+         1: invokestatic  #13                 // Method read:(Ljava/lang/String;)Ljava/lang/String;
+         4: astore_1
+         5: iconst_m1
+         6: istore_2
+         7: aload_1
+         8: invokevirtual #17                 // Method java/lang/String.hashCode:()I
+        11: lookupswitch  { // 4
+              -603257287: 52
+                 3556498: 80
+               106069776: 108
+               110251488: 94
+                 default: 119
+            }
+        52: aload_1
+        53: ldc           #23                 // String phgafkp
+        55: invokevirtual #25                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        58: ifeq          66
+        61: iconst_1
+        62: istore_2
+        63: goto          119
+        66: aload_1
+        67: ldc           #29                 // String frewhyh
+        69: invokevirtual #25                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        72: ifeq          119
+        75: iconst_0
+        76: istore_2
+        77: goto          119
+        80: aload_1
+        81: ldc           #31                 // String test
+        83: invokevirtual #25                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        86: ifeq          119
+        89: iconst_2
+        90: istore_2
+        91: goto          119
+        94: aload_1
+        95: ldc           #33                 // String test2
+        97: invokevirtual #25                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       100: ifeq          119
+       103: iconst_3
+       104: istore_2
+       105: goto          119
+       108: aload_1
+       109: ldc           #35                 // String other
+       111: invokevirtual #25                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       114: ifeq          119
+       117: iconst_4
+       118: istore_2
+       119: iload_2
+       120: tableswitch   { // 0 to 4
+                       0: 156
+                       1: 158
+                       2: 160
+                       3: 160
+                       4: 162
+                 default: 164
+            }
+       156: iconst_1
+       157: ireturn
+       158: iconst_2
+       159: ireturn
+       160: iconst_3
+       161: ireturn
+       162: iconst_4
+       163: ireturn
+       164: iconst_0
+       165: ireturn
+      StackMapTable: number_of_entries = 11
+        frame_type = 253 /* append */
+          offset_delta = 52
+          locals = [ class java/lang/String, int ]
+        frame_type = 13 /* same */
+        frame_type = 13 /* same */
+        frame_type = 13 /* same */
+        frame_type = 13 /* same */
+        frame_type = 10 /* same */
+        frame_type = 36 /* same */
+        frame_type = 1 /* same */
+        frame_type = 1 /* same */
+        frame_type = 1 /* same */
+        frame_type = 1 /* same */
+}
+
+stderr:

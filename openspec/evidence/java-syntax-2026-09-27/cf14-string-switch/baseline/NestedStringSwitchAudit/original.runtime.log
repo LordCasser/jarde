@@ -1,0 +1,10 @@
+exit=0
+command=java -Xverify:all -cp /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf14-kj6ieqc_/NestedStringSwitchAudit/original NestedStringSwitchAuditRunner
+stdout:
+a=1
+b=2
+c=3
+d=4
+null=throws=NullPointerException
+
+stderr:

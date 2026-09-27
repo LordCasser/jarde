@@ -1,0 +1,11 @@
+exit=0
+command=java -Xverify:all -cp /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf14-kj6ieqc_/ExtraHashUse/jarde-classes ExtraHashUseRunner
+stdout:
+Aa:10:calls=1
+BB:20:calls=1
+abc:30:calls=1
+x:40:calls=1
+a:41:calls=1
+null:throws=NullPointerException:calls=1
+
+stderr:

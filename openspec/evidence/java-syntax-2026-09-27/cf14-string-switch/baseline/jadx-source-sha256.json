@@ -1,0 +1,7 @@
+{
+  "jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchOverStrings.java": "ba62fa8193e38a979ec035e43810da0396c923a5d0a57e3b49b4228792aa710f",
+  "jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchOverStrings3.java": "25c43a94fe62cb1a346b033f5a08b8581ce7b8e35099eaca111752d4b9cba521",
+  "jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchOverStrings5.java": "f2a722856a7b9a32c04537461f0fac652902c176eea98b1cd3a48afe151c879c",
+  "jadx-core/src/test/smali/switches/TestSwitchOverStrings5.smali": "dc7863e21badbb919bf57154802a286780dc59ee7bca22fa114ac85cead38efa",
+  "jadx-core/src/main/java/jadx/core/dex/visitors/regions/SwitchOverStringVisitor.java": "10037b32233eafbef5475aa0a6a118aa2ab45efc5d4b29d9f44fd5848bd91913"
+}

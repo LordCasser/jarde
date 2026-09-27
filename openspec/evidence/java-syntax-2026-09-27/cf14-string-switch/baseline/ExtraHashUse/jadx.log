@@ -1,0 +1,10 @@
+exit=0
+command=jadx -d /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf14-kj6ieqc_/ExtraHashUse/jadx /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf14-kj6ieqc_/ExtraHashUse/input.jar
+stdout:
+INFO  - loading ...
+INFO  - processing ...
+INFO  - progress: 0 of 3 (0%)
+
+INFO  - done
+
+stderr:

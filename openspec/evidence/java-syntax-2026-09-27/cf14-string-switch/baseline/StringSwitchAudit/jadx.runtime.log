@@ -1,0 +1,13 @@
+exit=0
+command=java -Xverify:all -cp /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf14-kj6ieqc_/StringSwitchAudit/jadx-classes StringSwitchAuditRunner
+stdout:
+frewhyh=1:calls=1
+phgafkp=2:calls=1
+ucguedt=0:calls=1
+test=3:calls=1
+test2=3:calls=1
+other=4:calls=1
+unknown=0:calls=1
+null=throws=NullPointerException:calls=1
+
+stderr:

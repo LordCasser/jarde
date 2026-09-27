@@ -1,0 +1,5 @@
+exit=0
+command=jar cf /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf14-kj6ieqc_/ExtraHashUse/input.jar -C /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf14-kj6ieqc_/ExtraHashUse/original ExtraHashUse.class
+stdout:
+
+stderr:

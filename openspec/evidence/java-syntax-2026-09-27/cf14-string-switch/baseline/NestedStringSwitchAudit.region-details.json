@@ -1,0 +1,64 @@
+{
+  "quality": "fallback",
+  "outcome": "produced",
+  "fallbacks": [
+    "jre_region_uncovered_blocks"
+  ],
+  "diagnostics": [
+    {
+      "code": "jre_region_uncovered_blocks",
+      "message": "4 live block(s) are reachable only through edges the normal-flow view leaves out: [123, 152, 154, 156]",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_recovery_produced",
+      "message": "2 region(s), 1 statement(s), 1 segment(s), 400 byte(s) written from 14 canonical block(s)",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_declaration",
+      "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+      "provenance": null,
+      "severity": "info"
+    }
+  ],
+  "regions": [
+    {
+      "bci": 0,
+      "blocks": [
+        0,
+        28,
+        37,
+        39,
+        60,
+        62,
+        96,
+        105,
+        111,
+        120
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "switch",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 123,
+      "blocks": [
+        123,
+        152,
+        154,
+        156
+      ],
+      "code": "jre_region_uncovered_blocks",
+      "message": "4 live block(s) are reachable only through edges the normal-flow view leaves out: [123, 152, 154, 156]",
+      "rule": null,
+      "structured": false
+    }
+  ]
+}

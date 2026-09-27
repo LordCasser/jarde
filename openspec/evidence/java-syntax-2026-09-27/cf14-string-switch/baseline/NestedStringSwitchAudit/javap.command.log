@@ -1,0 +1,134 @@
+exit=0
+command=javap -classpath /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf14-kj6ieqc_/NestedStringSwitchAudit/original -c -p -v NestedStringSwitchAudit
+stdout:
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf14-kj6ieqc_/NestedStringSwitchAudit/original/NestedStringSwitchAudit.class
+  Last modified 2026年9月27日; size 514 bytes
+  SHA-256 checksum 3d459c2e5180f7c47790e251ed38fded363897de7c74015894008cb529e632cc
+public class NestedStringSwitchAudit
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #23                         // NestedStringSwitchAudit
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // java/lang/String.hashCode:()I
+   #8 = Class              #10            // java/lang/String
+   #9 = NameAndType        #11:#12        // hashCode:()I
+  #10 = Utf8               java/lang/String
+  #11 = Utf8               hashCode
+  #12 = Utf8               ()I
+  #13 = String             #14            // a
+  #14 = Utf8               a
+  #15 = Methodref          #8.#16         // java/lang/String.equals:(Ljava/lang/Object;)Z
+  #16 = NameAndType        #17:#18        // equals:(Ljava/lang/Object;)Z
+  #17 = Utf8               equals
+  #18 = Utf8               (Ljava/lang/Object;)Z
+  #19 = String             #20            // b
+  #20 = Utf8               b
+  #21 = String             #22            // c
+  #22 = Utf8               c
+  #23 = Class              #24            // NestedStringSwitchAudit
+  #24 = Utf8               NestedStringSwitchAudit
+  #25 = Utf8               Code
+  #26 = Utf8               choose
+  #27 = Utf8               (Ljava/lang/String;)I
+  #28 = Utf8               StackMapTable
+{
+  public NestedStringSwitchAudit();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int choose(java.lang.String);
+    descriptor: (Ljava/lang/String;)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=5, args_size=1
+         0: aload_0
+         1: astore_1
+         2: iconst_m1
+         3: istore_2
+         4: aload_1
+         5: invokevirtual #7                  // Method java/lang/String.hashCode:()I
+         8: lookupswitch  { // 1
+                      97: 28
+                 default: 39
+            }
+        28: aload_1
+        29: ldc           #13                 // String a
+        31: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        34: ifeq          39
+        37: iconst_0
+        38: istore_2
+        39: iload_2
+        40: lookupswitch  { // 1
+                       0: 60
+                 default: 62
+            }
+        60: iconst_1
+        61: ireturn
+        62: aload_0
+        63: astore_3
+        64: iconst_m1
+        65: istore        4
+        67: aload_3
+        68: invokevirtual #7                  // Method java/lang/String.hashCode:()I
+        71: lookupswitch  { // 2
+                      98: 96
+                      99: 111
+                 default: 123
+            }
+        96: aload_3
+        97: ldc           #19                 // String b
+        99: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       102: ifeq          123
+       105: iconst_0
+       106: istore        4
+       108: goto          123
+       111: aload_3
+       112: ldc           #21                 // String c
+       114: invokevirtual #15                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       117: ifeq          123
+       120: iconst_1
+       121: istore        4
+       123: iload         4
+       125: lookupswitch  { // 2
+                       0: 152
+                       1: 154
+                 default: 156
+            }
+       152: iconst_2
+       153: ireturn
+       154: iconst_3
+       155: ireturn
+       156: iconst_4
+       157: ireturn
+      StackMapTable: number_of_entries = 10
+        frame_type = 253 /* append */
+          offset_delta = 28
+          locals = [ class java/lang/String, int ]
+        frame_type = 10 /* same */
+        frame_type = 20 /* same */
+        frame_type = 1 /* same */
+        frame_type = 253 /* append */
+          offset_delta = 33
+          locals = [ class java/lang/String, int ]
+        frame_type = 14 /* same */
+        frame_type = 11 /* same */
+        frame_type = 28 /* same */
+        frame_type = 1 /* same */
+        frame_type = 1 /* same */
+}
+
+stderr:
