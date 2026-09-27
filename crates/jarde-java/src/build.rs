@@ -7220,7 +7220,7 @@ struct SharedFinallyBuild {
     path: RegionPath,
     protected: (u32, u32),
     catch_body: (u32, u32),
-    returns: [(u32, u32); 2],
+    completion: guard::SharedFinallyCompletion,
     normal_cleanup: (u32, u32),
     facts: Vec<u32>,
 }
@@ -12978,7 +12978,7 @@ impl Builder<'_> {
                     guard::Shape::SharedFinally {
                         catch_body,
                         normal_cleanup,
-                        returns,
+                        completion,
                         ..
                     } => {
                         let Some(inner @ Region::Try { catches, .. }) = structured_body.as_deref()
@@ -13014,7 +13014,7 @@ impl Builder<'_> {
                             path: nested_path.clone(),
                             protected: plan.body(),
                             catch_body: *catch_body,
-                            returns: *returns,
+                            completion: completion.clone(),
                             normal_cleanup: *normal_cleanup,
                             facts: plan.facts().to_vec(),
                         });
@@ -13094,7 +13094,10 @@ impl Builder<'_> {
                 let previous_finally = (self.finally_span, self.finally_return);
                 if let Some(shared) = &shared {
                     self.finally_span = Some(shared.protected);
-                    self.finally_return = Some(shared.returns[0]);
+                    self.finally_return = match &shared.completion {
+                        guard::SharedFinallyCompletion::SavedReturns(returns) => Some(returns[0]),
+                        guard::SharedFinallyCompletion::Joined { .. } => None,
+                    };
                 }
                 let walked = self.arm(body, &mut body_statements, &child(path, 0));
                 self.finally_span = previous_finally.0;
@@ -13114,7 +13117,12 @@ impl Builder<'_> {
                     let previous_finally = (self.finally_span, self.finally_return);
                     if let Some(shared) = &shared {
                         self.finally_span = Some(shared.catch_body);
-                        self.finally_return = Some(shared.returns[1]);
+                        self.finally_return = match &shared.completion {
+                            guard::SharedFinallyCompletion::SavedReturns(returns) => {
+                                Some(returns[1])
+                            }
+                            guard::SharedFinallyCompletion::Joined { .. } => None,
+                        };
                     }
                     let walked = self.arm(
                         clause.body(),

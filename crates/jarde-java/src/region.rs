@@ -2266,13 +2266,14 @@ impl Walker<'_> {
                             self.visited.insert(index);
                         }
                     }
+                    let join = plan.join().cloned();
                     return Ok(one(
                         Region::Guard {
                             prefix,
                             plan,
                             body: Some(Box::new(body)),
                         },
-                        None,
+                        join,
                     ));
                 }
                 let reason = FallbackReason::Guard {
@@ -3898,7 +3899,7 @@ impl Walker<'_> {
             catch_handler,
             catch_type,
             catch_parameter,
-            returns,
+            completion,
             ..
         } = plan.shape()
         else {
@@ -3909,7 +3910,10 @@ impl Walker<'_> {
         let try_body = self.bounded_shared_finally_body(
             start,
             plan.body(),
-            returns[0].0,
+            match completion {
+                crate::guard::SharedFinallyCompletion::SavedReturns(returns) => Some(returns[0].0),
+                crate::guard::SharedFinallyCompletion::Joined { .. } => None,
+            },
             try_rows,
             plan,
             outer,
@@ -3922,7 +3926,10 @@ impl Walker<'_> {
         let catch = self.bounded_shared_finally_body(
             catch_handler,
             *catch_body,
-            returns[1].0,
+            match completion {
+                crate::guard::SharedFinallyCompletion::SavedReturns(returns) => Some(returns[1].0),
+                crate::guard::SharedFinallyCompletion::Joined { .. } => None,
+            },
             catch_rows,
             plan,
             outer,
@@ -3962,7 +3969,7 @@ impl Walker<'_> {
         &mut self,
         start: &CanonicalBlockId,
         span: (u32, u32),
-        save: u32,
+        save: Option<u32>,
         rows: ((u32, (u32, u32)), Option<(u32, (u32, u32))>),
         plan: &crate::guard::Plan,
         outer: &Frame,
@@ -4035,7 +4042,7 @@ impl Walker<'_> {
                     names
                         .instructions()
                         .iter()
-                        .any(|instruction| instruction.bci() == save)
+                        .any(|instruction| Some(instruction.bci()) == save)
                 })
             })
             .count();
@@ -4043,7 +4050,7 @@ impl Walker<'_> {
             || !finally_body_supported(&body)
             || actual != expected
             || actual.len() != blocks.len()
-            || save_count != 1
+            || save_count != usize::from(save.is_some())
             || self
                 .visited
                 .difference(&previous)

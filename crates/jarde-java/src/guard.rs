@@ -198,7 +198,7 @@ pub enum Shape {
         row_ordinal: u32,
         structured: bool,
     },
-    /// One named catch and two normal returns sharing a proved catch-all cleanup handler.
+    /// One named catch and two normal completions sharing a proved catch-all cleanup handler.
     SharedFinally {
         rows: [u32; 3],
         catch_body: (u32, u32),
@@ -207,8 +207,14 @@ pub enum Shape {
         catch_parameter: u16,
         normal_cleanup: (u32, u32),
         catch_cleanup: (u32, u32),
-        returns: [(u32, u32); 2],
+        completion: SharedFinallyCompletion,
     },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum SharedFinallyCompletion {
+    SavedReturns([(u32, u32); 2]),
+    Joined { transfers: [u32; 2] },
 }
 
 /// One proved guarded region: the shape, the body it guards, every block it owns, and where the run
@@ -2198,6 +2204,393 @@ fn shared_cleanup_copies(
     Ok(true)
 }
 
+/// A deliberately separate completion contract: the two normal copies end in transfers to one
+/// continuation, not in saved values. The old saved-return certificate is left unchanged.
+fn prove_shared_join_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [named, try_any, catch_any] = facts.handlers else {
+        return Ok(None);
+    };
+    let start = current.bci();
+    if named.ordinal + 1 != try_any.ordinal
+        || try_any.ordinal + 1 != catch_any.ordinal
+        || named.catch_type_index.is_none()
+        || try_any.catch_type_index.is_some()
+        || catch_any.catch_type_index.is_some()
+        || (named.start_bci, named.end_bci) != (try_any.start_bci, try_any.end_bci)
+        || named.handler_bci != catch_any.start_bci
+        || try_any.handler_bci != catch_any.handler_bci
+        || !(start <= named.start_bci
+            && named.start_bci < named.end_bci
+            && named.end_bci < named.handler_bci
+            && named.handler_bci < catch_any.end_bci
+            && catch_any.end_bci < try_any.handler_bci)
+        || !facts
+            .in_block(current)
+            .iter()
+            .any(|instruction| instruction.bci() == named.start_bci)
+    {
+        return Ok(None);
+    }
+    let first = named.end_bci;
+    let second = catch_any.end_bci;
+    let handler = try_any.handler_bci;
+    let Some(third) = facts.next_bci(handler) else {
+        return Ok(None);
+    };
+    let mut copies = [(0, 0); 3];
+    for (index, at) in [first, second, third].into_iter().enumerate() {
+        let (Some(push), Some(write)) = (
+            facts.next_bci(at),
+            facts.next_bci(at).and_then(|bci| facts.next_bci(bci)),
+        ) else {
+            return Ok(None);
+        };
+        copies[index] = (at, write);
+        if facts
+            .step(at)
+            .is_none_or(|step| step.instruction.opcode() != 0x2a)
+            || facts
+                .step(push)
+                .is_none_or(|step| step.instruction.opcode() != 0x04)
+            || facts
+                .step(write)
+                .is_none_or(|step| step.instruction.opcode() != 0xb5)
+        {
+            return Ok(None);
+        }
+    }
+    let Some(Operation::Field {
+        access: crate::facts::FieldAccess::Write,
+        is_static: false,
+        descriptor,
+        ..
+    }) = facts.op(copies[0].1)
+    else {
+        return Ok(None);
+    };
+    if descriptor != "Z"
+        || !copies
+            .iter()
+            .all(|&(_, write)| facts.op(write) == facts.op(copies[0].1))
+    {
+        return Ok(None);
+    }
+    for &(load, write) in &copies {
+        let push = facts.next_bci(load).unwrap();
+        let (Some(receiver), Some(constant), Some(store)) =
+            (facts.step(load), facts.step(push), facts.step(write))
+        else {
+            return Ok(None);
+        };
+        let reads = receiver.instruction.reads();
+        let receiver_outputs: Vec<_> = receiver
+            .instruction
+            .writes()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .collect();
+        let constant_outputs: Vec<_> = constant
+            .instruction
+            .writes()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .collect();
+        let operands = stack_operands(store.instruction);
+        if facts.op(load) != Some(&Operation::Load { slot: 0 })
+            || facts.op(push) != Some(&Operation::Push(crate::facts::ConstantValue::Int(1)))
+            || reads.len() != 1
+            || reads[0].0 != Slot::Local(0)
+            || !matches!(
+                facts.ssa.value(facts.resolve(reads[0].1)).def(),
+                Definition::Entry {
+                    slot: Slot::Local(0),
+                    ..
+                }
+            )
+            || receiver_outputs.len() != 1
+            || constant_outputs.len() != 1
+            || operands.len() != 2
+            || !operands
+                .iter()
+                .any(|(_, value)| facts.same(*value, receiver_outputs[0].1))
+            || !operands
+                .iter()
+                .any(|(_, value)| facts.same(*value, constant_outputs[0].1))
+        {
+            return Ok(None);
+        }
+        for output in [receiver_outputs[0].1, constant_outputs[0].1] {
+            let mut uses = 0;
+            for bci in facts.order.clone() {
+                facts.charge(bci)?;
+                if let Some(step) = facts.step(bci) {
+                    uses += stack_operands(step.instruction)
+                        .iter()
+                        .filter(|(_, value)| facts.same(*value, output))
+                        .count();
+                }
+            }
+            if uses != 1 {
+                return Ok(None);
+            }
+        }
+    }
+    let (Some(first_transfer), Some(second_transfer), Some(primary_load)) = (
+        facts.next_bci(copies[0].1),
+        facts.next_bci(copies[1].1),
+        facts.next_bci(copies[2].1),
+    ) else {
+        return Ok(None);
+    };
+    let Some(rethrow) = facts.next_bci(primary_load) else {
+        return Ok(None);
+    };
+    let handler_end = facts.span_end(rethrow);
+    if facts.op(first_transfer) != Some(&Operation::Transfer)
+        || facts.op(second_transfer) != Some(&Operation::Transfer)
+        || facts.op(rethrow) != Some(&Operation::Throw)
+        || facts.next_bci(first_transfer) != Some(named.handler_bci)
+        || facts.next_bci(second_transfer) != Some(handler)
+        || !matches!(facts.op(named.handler_bci), Some(Operation::Store { .. }))
+        || !matches!(facts.op(handler), Some(Operation::Store { .. }))
+        || !matches!(facts.op(primary_load), Some(Operation::Load { .. }))
+        || !handler_binding(facts, named.handler_bci)
+        || !handler_binding(facts, handler)
+    {
+        return Ok(None);
+    }
+    let (Some(normal_block), Some(catch_block), Some(handler_block)) = (
+        facts.block_of(first).cloned(),
+        facts.block_of(second).cloned(),
+        facts.block_at(handler),
+    ) else {
+        return Ok(None);
+    };
+    if facts
+        .bcis((first, facts.span_end(first_transfer)))
+        .iter()
+        .any(|bci| facts.block_of(*bci) != Some(&normal_block))
+        || facts
+            .bcis((second, facts.span_end(second_transfer)))
+            .iter()
+            .any(|bci| facts.block_of(*bci) != Some(&catch_block))
+        || facts
+            .bcis((handler, handler_end))
+            .iter()
+            .any(|bci| facts.block_of(*bci) != Some(&handler_block))
+        || !facts.view.successor_ids(&handler_block).is_empty()
+    {
+        return Ok(None);
+    }
+    let (first_successors, second_successors) = (
+        facts.view.successor_ids(&normal_block),
+        facts.view.successor_ids(&catch_block),
+    );
+    let ([join], [second_join]) = (first_successors.as_slice(), second_successors.as_slice())
+    else {
+        return Ok(None);
+    };
+    if join != second_join
+        || join.bci() != handler_end
+        || facts.block_at(handler_end).as_ref() != Some(join)
+        || facts
+            .view
+            .predecessors(facts.view.index_of(join).unwrap())
+            .len()
+            != 2
+    {
+        return Ok(None);
+    }
+    let join_instructions = facts.in_block(join);
+    let same_join_field = match (
+        facts.op(copies[0].1),
+        join_instructions
+            .get(1)
+            .and_then(|step| facts.op(step.bci())),
+    ) {
+        (
+            Some(Operation::Field {
+                owner: write_owner,
+                name: write_name,
+                descriptor: write_descriptor,
+                ..
+            }),
+            Some(Operation::Field {
+                access: crate::facts::FieldAccess::Read,
+                is_static: false,
+                owner: read_owner,
+                name: read_name,
+                descriptor: read_descriptor,
+            }),
+        ) => {
+            (write_owner, write_name, write_descriptor) == (read_owner, read_name, read_descriptor)
+        }
+        _ => false,
+    };
+    if join_instructions.len() != 3
+        || join_instructions[0].opcode() != 0x2a
+        || !same_join_field
+        || facts.op(join_instructions[2].bci()) != Some(&Operation::Return)
+    {
+        return Ok(None);
+    }
+    let (receiver, field_read, returned) = (
+        &join_instructions[0],
+        &join_instructions[1],
+        &join_instructions[2],
+    );
+    let receiver_outputs: Vec<_> = receiver
+        .writes()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        .collect();
+    let field_outputs: Vec<_> = field_read
+        .writes()
+        .iter()
+        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        .collect();
+    if facts.op(receiver.bci()) != Some(&Operation::Load { slot: 0 })
+        || receiver.reads().len() != 1
+        || !matches!(
+            facts.ssa.value(facts.resolve(receiver.reads()[0].1)).def(),
+            Definition::Entry {
+                slot: Slot::Local(0),
+                ..
+            }
+        )
+        || receiver_outputs.len() != 1
+        || field_outputs.len() != 1
+        || stack_operands(field_read).len() != 1
+        || !facts.same(stack_operands(field_read)[0].1, receiver_outputs[0].1)
+        || stack_operands(returned).len() != 1
+        || !facts.same(stack_operands(returned)[0].1, field_outputs[0].1)
+    {
+        return Ok(None);
+    }
+    let (Some(store), Some(load), Some(throw)) = (
+        facts.step(handler),
+        facts.step(primary_load),
+        facts.step(rethrow),
+    ) else {
+        return Ok(None);
+    };
+    if !store.instruction.writes().iter().any(|(_, written)| {
+        load.instruction
+            .reads()
+            .iter()
+            .any(|(_, read)| facts.same(*written, *read))
+    }) || !load.instruction.writes().iter().any(|(slot, written)| {
+        matches!(slot, Slot::Stack(_))
+            && stack_operands(throw.instruction)
+                .iter()
+                .any(|(_, read)| facts.same(*written, *read))
+    }) || stack_operands(throw.instruction).len() != 1
+    {
+        return Ok(None);
+    }
+    for bci in facts.bcis((start, handler_end)) {
+        facts.charge(bci)?;
+        let expected = if named.start_bci <= bci && bci < named.end_bci {
+            &[named.ordinal, try_any.ordinal][..]
+        } else if catch_any.start_bci <= bci && bci < catch_any.end_bci {
+            &[catch_any.ordinal][..]
+        } else {
+            &[][..]
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+            || (expected.len() > 0
+                && matches!(facts.op(bci), Some(Operation::Return | Operation::Transfer)))
+        {
+            return Ok(None);
+        }
+    }
+    let protected = facts.blocks_in((named.start_bci, named.end_bci));
+    let catch = facts.blocks_in((catch_any.start_bci, catch_any.end_bci));
+    let Some(named_block) = facts.row_handler(named) else {
+        return Ok(None);
+    };
+    if named_block.bci() != named.handler_bci
+        || facts.row_handler(try_any).as_ref() != Some(&handler_block)
+        || facts.row_handler(catch_any).as_ref() != Some(&handler_block)
+    {
+        return Ok(None);
+    }
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        let from_try = protected.contains(edge.from());
+        let from_catch = catch.contains(edge.from());
+        let valid = match edge.kind() {
+            CanonicalEdgeKind::Exception { handler_ordinal } if from_try => {
+                (handler_ordinal == named.ordinal && edge.to() == &named_block)
+                    || (handler_ordinal == try_any.ordinal && edge.to() == &handler_block)
+            }
+            CanonicalEdgeKind::Exception { handler_ordinal } if from_catch => {
+                handler_ordinal == catch_any.ordinal && edge.to() == &handler_block
+            }
+            CanonicalEdgeKind::Exception { .. } => {
+                edge.to() != &named_block
+                    && edge.to() != &handler_block
+                    && ![&normal_block, &catch_block, &handler_block].contains(&edge.from())
+            }
+            CanonicalEdgeKind::Normal
+                if edge.from() == &normal_block || edge.from() == &catch_block =>
+            {
+                edge.to() == join
+            }
+            CanonicalEdgeKind::Normal if from_try => {
+                protected.contains(edge.to()) || edge.to() == &normal_block
+            }
+            CanonicalEdgeKind::Normal if from_catch => {
+                catch.contains(edge.to()) || edge.to() == &catch_block
+            }
+            CanonicalEdgeKind::Normal => {
+                edge.to() != &normal_block
+                    && edge.to() != &catch_block
+                    && edge.to() != &handler_block
+            }
+            CanonicalEdgeKind::Call { .. } => false,
+            CanonicalEdgeKind::Return { .. } => {
+                ![&normal_block, &catch_block, &handler_block].contains(&edge.from())
+            }
+        };
+        if !valid {
+            return Ok(None);
+        }
+    }
+    let owned = facts.blocks_in((start, handler_end));
+    let origins = facts.bcis((start, handler_end));
+    Ok(Some(Plan {
+        shape: Shape::SharedFinally {
+            rows: [named.ordinal, try_any.ordinal, catch_any.ordinal],
+            catch_body: (catch_any.start_bci, catch_any.end_bci),
+            catch_handler: named_block,
+            catch_type: named.catch_type_index.unwrap(),
+            catch_parameter: match facts.op(named.handler_bci) {
+                Some(Operation::Store { slot }) => *slot,
+                _ => unreachable!(),
+            },
+            normal_cleanup: (first, facts.span_end(copies[0].1)),
+            catch_cleanup: (second, facts.span_end(copies[1].1)),
+            completion: SharedFinallyCompletion::Joined {
+                transfers: [first_transfer, second_transfer],
+            },
+        },
+        lead: (start, named.start_bci),
+        body: (named.start_bci, named.end_bci),
+        owned,
+        join: Some(join.clone()),
+        facts: origins,
+    }))
+}
+
 /// Prove the Java 8 shared-cleanup layout as one unit. The three rows and all three copies are
 /// inseparable: accepting just the try row would put the catch's normal completion outside the
 /// source `finally`, while accepting just the two normal copies would lose exceptional cleanup.
@@ -2510,7 +2903,10 @@ fn prove_shared_finally(
             catch_parameter: *catch_parameter,
             normal_cleanup: (first_start, facts.span_end(first_cleanup.1)),
             catch_cleanup: (second_start, facts.span_end(second_cleanup.1)),
-            returns: [(first_save, first_return), (second_save, second_return)],
+            completion: SharedFinallyCompletion::SavedReturns([
+                (first_save, first_return),
+                (second_save, second_return),
+            ]),
         },
         lead: (start, protected.0),
         body: protected,
@@ -2539,6 +2935,9 @@ pub(crate) fn shared_finally_candidate(
     let sites = Sites::empty();
     let mut facts = Facts::new(canonical, view, ssa, ops, handlers, &sites, budget);
     facts.charge(current.bci())?;
+    if let Some(plan) = prove_shared_join_finally(&mut facts, current)? {
+        return Ok(Some(plan));
+    }
     prove_shared_finally(&mut facts, current)
 }
 
@@ -2688,6 +3087,16 @@ mod finally_copy_tests {
         edit_rows: impl FnOnce(&mut Vec<ExceptionHandlerFact>),
         stop: Option<&str>,
     ) -> Result<Option<Plan>, StopReason> {
+        shared_probe_method(class, b"handled", b"(Z)Ljava/lang/String;", edit_rows, stop)
+    }
+
+    fn shared_probe_method(
+        class: &[u8],
+        name: &[u8],
+        descriptor: &[u8],
+        edit_rows: impl FnOnce(&mut Vec<ExceptionHandlerFact>),
+        stop: Option<&str>,
+    ) -> Result<Option<Plan>, StopReason> {
         let mut budget = Budget::new(limits());
         let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
             .expect("frozen class opens");
@@ -2703,8 +3112,8 @@ mod finally_copy_tests {
         };
         let method = PhysicalMethodId {
             owner: definition,
-            name: JvmBytes(b"handled".to_vec()),
-            descriptor: JvmBytes(b"(Z)Ljava/lang/String;".to_vec()),
+            name: JvmBytes(name.to_vec()),
+            descriptor: JvmBytes(descriptor.to_vec()),
         };
         let domain = LoadDomain {
             loader: LoaderId("app".to_string()),
@@ -2773,6 +3182,85 @@ mod finally_copy_tests {
     );
     const FIELD: &[u8] =
         include_bytes!("../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinally.class");
+    const JOIN: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoin.class"
+    );
+    const JOIN_VALUE_MISMATCH: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoinValueMismatch.class"
+    );
+    const JOIN_ROW: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoinRow.class"
+    );
+    const JOIN_EDGE: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoinEdge.class"
+    );
+
+    #[test]
+    fn shared_join_certificate_owns_copies_and_preserves_continuation() {
+        let plan = shared_probe_method(JOIN, b"test", b"(Ljava/lang/Object;)Z", |_| {}, None)
+            .unwrap()
+            .expect("shared join certificate");
+        let Shape::SharedFinally {
+            rows,
+            catch_body,
+            normal_cleanup,
+            catch_cleanup,
+            completion,
+            ..
+        } = plan.shape()
+        else {
+            panic!("shared finally shape");
+        };
+        assert_eq!(*rows, [0, 1, 2]);
+        assert_eq!(plan.lead(), (0, 5));
+        assert_eq!(plan.body(), (5, 10));
+        assert_eq!(*catch_body, (18, 23));
+        assert_eq!((*normal_cleanup, *catch_cleanup), ((10, 15), (23, 28)));
+        assert_eq!(
+            *completion,
+            SharedFinallyCompletion::Joined {
+                transfers: [15, 28]
+            }
+        );
+        assert_eq!(plan.join().map(CanonicalBlockId::bci), Some(39));
+        assert!(!plan.owned().iter().any(|block| block.bci() == 39));
+        assert_eq!(
+            plan.facts(),
+            &(vec![
+                0, 1, 2, 5, 6, 9, 10, 11, 12, 15, 18, 19, 20, 23, 24, 25, 28, 31, 32, 33, 34, 37,
+                38
+            ])
+        );
+    }
+
+    #[test]
+    fn shared_join_refuses_changed_rows_or_field_value_and_propagates_stops() {
+        let probe = |class, edit_rows: fn(&mut Vec<ExceptionHandlerFact>), stop| {
+            shared_probe_method(class, b"test", b"(Ljava/lang/Object;)Z", edit_rows, stop)
+        };
+        assert!(probe(JOIN_VALUE_MISMATCH, |_| {}, None).unwrap().is_none());
+        assert!(probe(JOIN_ROW, |_| {}, None).unwrap().is_none());
+        assert!(probe(JOIN_EDGE, |_| {}, None).unwrap().is_none());
+        assert!(
+            probe(JOIN, |rows| rows[1].end_bci = 9, None)
+                .unwrap()
+                .is_none()
+        );
+        assert!(probe(JOIN, |rows| rows.swap(0, 1), None).unwrap().is_none());
+        assert!(
+            probe(JOIN, |rows| rows[2].handler_bci = 18, None)
+                .unwrap()
+                .is_none()
+        );
+        assert!(matches!(
+            probe(JOIN, |_| {}, Some("budget")),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            probe(JOIN, |_| {}, Some("cancel")),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
 
     #[test]
     fn shared_call_certificate_owns_three_rows_and_two_returns() {
@@ -2782,7 +3270,7 @@ mod finally_copy_tests {
         let Shape::SharedFinally {
             rows,
             catch_body,
-            returns,
+            completion,
             normal_cleanup,
             catch_cleanup,
             ..
@@ -2793,7 +3281,10 @@ mod finally_copy_tests {
         assert_eq!(*rows, [0, 1, 2]);
         assert_eq!(plan.body(), (4, 21));
         assert_eq!(*catch_body, (26, 30));
-        assert_eq!(*returns, [(20, 25), (29, 34)]);
+        assert_eq!(
+            *completion,
+            SharedFinallyCompletion::SavedReturns([(20, 25), (29, 34)])
+        );
         assert_eq!((*normal_cleanup, *catch_cleanup), ((21, 24), (30, 33)));
         assert!(plan.owned().iter().any(|block| block.bci() == 35));
         assert!(plan.facts().contains(&36) && plan.facts().contains(&40));
@@ -2847,7 +3338,7 @@ mod finally_copy_tests {
         let Shape::SharedFinally {
             rows,
             catch_body,
-            returns,
+            completion,
             normal_cleanup,
             catch_cleanup,
             ..
@@ -2858,7 +3349,10 @@ mod finally_copy_tests {
         assert_eq!(*rows, [0, 1, 2]);
         assert_eq!(plan.body(), (4, 21));
         assert_eq!(*catch_body, (31, 35));
-        assert_eq!(*returns, [(20, 30), (34, 44)]);
+        assert_eq!(
+            *completion,
+            SharedFinallyCompletion::SavedReturns([(20, 30), (34, 44)])
+        );
         assert_eq!((*normal_cleanup, *catch_cleanup), ((21, 29), (35, 43)));
         assert!(plan.owned().iter().any(|block| block.bci() == 45));
         assert!(plan.facts().contains(&46) && plan.facts().contains(&55));
@@ -3412,10 +3906,13 @@ fn guarded(
     if let Some(verdict) = monitor(facts, profile, current)? {
         return Ok(Some(verdict));
     }
-    if FINALLY.admits(profile)
-        && let Some(plan) = prove_shared_finally(facts, current)?
-    {
-        return Ok(Some(Verdict::Claimed(plan)));
+    if FINALLY.admits(profile) {
+        if let Some(plan) = prove_shared_join_finally(facts, current)? {
+            return Ok(Some(Verdict::Claimed(plan)));
+        }
+        if let Some(plan) = prove_shared_finally(facts, current)? {
+            return Ok(Some(Verdict::Claimed(plan)));
+        }
     }
     match resources(facts, profile, current)? {
         Verdict::NotGuarded => Ok(None),
