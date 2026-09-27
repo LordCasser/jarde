@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay isolated DT-18 field, method-signature, and raw controls."""
+"""Replay isolated DT-18 field, method-signature, null-return, and raw controls."""
 from __future__ import annotations
 
 import hashlib
@@ -56,14 +56,17 @@ def verified_run(classes: Path, label: str) -> str:
     return result.stdout
 
 
-if len(sys.argv) != 2 or not Path(sys.argv[1]).is_file() or not JADX.is_file():
-    raise SystemExit("usage: replay.py /absolute/path/to/jarde-cli")
-cli = Path(sys.argv[1])
+if len(sys.argv) != 3 or sys.argv[1] not in ("baseline", "fixed"):
+    raise SystemExit("usage: replay.py baseline|fixed /absolute/path/to/jarde-cli")
+mode, cli_arg = sys.argv[1:]
+cli = Path(cli_arg)
+if not cli.is_file() or not JADX.is_file():
+    raise SystemExit("Jarde CLI or pinned JADX executable is absent")
 head = run("git", "-C", JADX_REPO, "rev-parse", "HEAD")
 status = run("git", "-C", JADX_REPO, "status", "--porcelain")
 if head.returncode or head.stdout.strip() != JADX_HEAD or status.returncode or status.stdout.strip():
     raise SystemExit("JADX checkout must be clean at the frozen commit")
-output = HERE / "outputs"
+output = HERE / "outputs" / ("fixed" if mode == "fixed" else "")
 output.mkdir(exist_ok=True)
 
 with tempfile.TemporaryDirectory(prefix="jarde-dt18-audit-") as temporary:
@@ -104,17 +107,25 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt18-audit-") as temporary:
     compile_sources(jarde_classes, jarde_source, HERE / "Runner.java")
     jarde_run = verified_run(jarde_classes, "Jarde")
     (output / "jarde-run.log").write_text(jarde_run)
-    if jarde_run != BASELINE_JARDE or jarde.stdout.count("generic Signature projection refused") != 1:
-        raise SystemExit("baseline Jarde generic null return/refusal changed")
+    expected_jarde = EXPECTED if mode == "fixed" else BASELINE_JARDE
+    expected_refusals = 0 if mode == "fixed" else 1
+    if (jarde_run != expected_jarde
+            or jarde.stdout.count("generic Signature projection refused") != expected_refusals):
+        raise SystemExit(f"{mode} Jarde generic null return/refusal changed")
 
     results = {
         "jadx_head": JADX_HEAD,
         "javac_version": run("javac", "-version").stdout.strip(),
         "source_sha256": {name: sha(HERE / name) for name in ("GenericSlots.java", "Runner.java")},
         "original_class_sha256": sha(original / "dt18/GenericSlots.class"),
+        "output_sha256": {
+            "jadx_source": sha(output / "jadx-GenericSlots.java.txt"),
+            "jarde_source": sha(output / "jarde-GenericSlots.java.txt"),
+            "jarde_verified_run": sha(output / "jarde-run.log"),
+        },
         "original_verified_run": original_run,
         "jadx_verified_run": jadx_run,
         "jarde_verified_run": jarde_run,
     }
     (output / "results.json").write_text(json.dumps(results, ensure_ascii=False, indent=2) + "\n")
-    print("DT-18 baseline replay complete")
+    print(f"DT-18 {mode} replay complete")

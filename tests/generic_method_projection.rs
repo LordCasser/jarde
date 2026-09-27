@@ -147,6 +147,206 @@ fn exact_generic_instance_null_return_projects_and_preserves_physical_method() {
 }
 
 #[test]
+fn exact_parameterized_list_null_return_projects_with_raw_controls_unchanged() {
+    let original = r#"
+        import java.util.Arrays;
+        import java.util.List;
+        public class ParameterizedNullReturnProbe {
+            public List<String> names;
+            public List raw;
+            public List<String> id(List<String> input) { return input; }
+            public List<String> empty() { return null; }
+            public List raw(List input) { return input; }
+        }
+    "#;
+    let report = compiled_source("ParameterizedNullReturnProbe", original);
+    let empty = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"empty")
+        .expect("the physical empty method remains in the report");
+    assert_eq!(empty.item.descriptor.raw().0, b"()Ljava/util/List;");
+    assert!(empty.declaration.as_deref().is_some_and(|declaration| {
+        declaration.contains("java.util.List<java.lang.String> empty()")
+    }));
+    assert!(empty.text.contains("return null;"));
+    assert!(
+        empty
+            .text
+            .contains("same-run AST/Code/SSA exact null-return")
+    );
+    assert!(
+        report
+            .text
+            .contains("java.util.List<java.lang.String> names;")
+    );
+    assert!(report.text.contains("java.util.List raw;"));
+
+    let runner = r#"
+        import java.lang.reflect.*;
+        import java.util.Arrays;
+        import java.util.List;
+        public class GenericReflectionRunner {
+            public static void main(String[] args) throws Exception {
+                Class<?> type = ParameterizedNullReturnProbe.class;
+                Method id = type.getDeclaredMethod("id", List.class);
+                Method empty = type.getDeclaredMethod("empty");
+                Method raw = type.getDeclaredMethod("raw", List.class);
+                ParameterizedNullReturnProbe probe = new ParameterizedNullReturnProbe();
+                System.out.println(type.getDeclaredField("names").getGenericType());
+                System.out.println(id.getGenericParameterTypes()[0]);
+                System.out.println(id.getGenericReturnType());
+                System.out.println(empty.getGenericReturnType());
+                System.out.println(type.getDeclaredField("raw").getGenericType());
+                System.out.println(raw.getGenericParameterTypes()[0]);
+                System.out.println(raw.getGenericReturnType());
+                System.out.println(probe.id(Arrays.asList("ok")).get(0) + ":" + (probe.empty() == null));
+            }
+        }
+    "#;
+    let output = java_output("ParameterizedNullReturnProbe", original, runner);
+    assert_eq!(
+        output,
+        concat!(
+            "java.util.List<java.lang.String>\n",
+            "java.util.List<java.lang.String>\n",
+            "java.util.List<java.lang.String>\n",
+            "java.util.List<java.lang.String>\n",
+            "interface java.util.List\n",
+            "interface java.util.List\n",
+            "interface java.util.List\n",
+            "ok:true\n",
+        )
+    );
+    assert_eq!(
+        output,
+        java_output("ParameterizedNullReturnProbe", &report.text, runner)
+    );
+}
+
+#[test]
+fn parameterized_null_return_rejects_other_signatures_effects_and_self_calls() {
+    for (name, java) in [
+        (
+            "ParameterizedNullOtherTypeProbe",
+            r#"
+                import java.util.List;
+                public class ParameterizedNullOtherTypeProbe {
+                    public List<Integer> empty() { return null; }
+                }
+            "#,
+        ),
+        (
+            "ParameterizedNullEffectProbe",
+            r#"
+                import java.util.List;
+                public class ParameterizedNullEffectProbe {
+                    static int effects;
+                    public List<String> empty() { effects++; return null; }
+                }
+            "#,
+        ),
+        (
+            "ParameterizedNullBindingProbe",
+            r#"
+                import java.util.List;
+                public class ParameterizedNullBindingProbe {
+                    public List<String> empty() { return null; }
+                    public List<String> caller() { return empty(); }
+                }
+            "#,
+        ),
+    ] {
+        let report = compiled_source(name, java);
+        let method = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"empty")
+            .expect("the physical empty method remains in the report");
+        assert_eq!(method.item.descriptor.raw().0, b"()Ljava/util/List;");
+        assert!(!method.declaration.as_deref().is_some_and(|declaration| {
+            declaration.contains("java.util.List<java.lang.String> empty()")
+        }));
+        assert!(method.text.contains("generic Signature projection refused"));
+    }
+}
+
+#[test]
+fn parameterized_null_return_erasure_budget_and_cancellation_keep_raw_method() {
+    let mut bytes = compile_class_bytes(
+        "ParameterizedNullStopProbe",
+        r#"
+            import java.util.List;
+            public class ParameterizedNullStopProbe {
+                public List<String> empty() { return null; }
+            }
+        "#,
+    );
+    let descriptor = b"()Ljava/util/List;";
+    let wrong_descriptor = b"()Ljava/util/Date;";
+    assert_eq!(descriptor.len(), wrong_descriptor.len());
+    let descriptor_at = bytes
+        .windows(descriptor.len())
+        .position(|window| window == descriptor)
+        .expect("the physical List descriptor is present in the class constant pool");
+    bytes[descriptor_at..descriptor_at + descriptor.len()].copy_from_slice(wrong_descriptor);
+    let mismatch = source(&bytes, "ParameterizedNullStopProbe");
+    let method = mismatch
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"empty")
+        .expect("the physical method remains present after a signature mismatch");
+    assert_eq!(method.item.descriptor.raw().0, wrong_descriptor);
+    assert!(method.text.contains("jvm_signature_erasure_mismatch"));
+    assert!(!method.text.contains("List<java.lang.String> empty()"));
+
+    let bytes = compile_class_bytes(
+        "ParameterizedNullStopProbe",
+        r#"
+            import java.util.List;
+            public class ParameterizedNullStopProbe {
+                public List<String> empty() { return null; }
+            }
+        "#,
+    );
+    let mut output_limited = task_budget(&[BudgetOverride::new("output_bytes", 1).unwrap()])
+        .expect("one output byte is a valid stop boundary");
+    match source_with_budget(&bytes, "ParameterizedNullStopProbe", &mut output_limited) {
+        OperationOutcome::Performed(report) => {
+            assert!(!report.text.contains("List<java.lang.String> empty()"));
+            assert!(matches!(
+                report.execution,
+                jarde_reader::model::ExecutionReport::Partial {
+                    reason: jarde_reader::model::TerminationReason::BudgetExceeded { .. },
+                    ..
+                }
+            ));
+            let method = report
+                .methods
+                .iter()
+                .find(|method| method.item.name.raw().0 == b"empty")
+                .expect("the physical method remains present in the partial report");
+            assert_eq!(method.item.descriptor.raw().0, b"()Ljava/util/List;");
+        }
+        OperationOutcome::Incomplete(report) => assert!(matches!(
+            report.execution,
+            jarde_reader::model::ExecutionReport::Partial {
+                reason: jarde_reader::model::TerminationReason::BudgetExceeded { .. },
+                ..
+            }
+        )),
+        other => panic!("unexpected output-limited outcome: {other:?}"),
+    }
+    let mut cancelled = task_budget(&[]).unwrap();
+    cancelled.cancellation_token().cancel();
+    assert!(matches!(
+        source_with_budget(&bytes, "ParameterizedNullStopProbe", &mut cancelled),
+        OperationOutcome::Incomplete(report)
+            if matches!(report.execution, jarde_reader::model::ExecutionReport::Cancelled { .. })
+    ));
+}
+
+#[test]
 fn generic_instance_null_return_rejects_unproved_signatures_bodies_and_bindings() {
     let cases = [
         (
