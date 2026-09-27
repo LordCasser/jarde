@@ -10422,6 +10422,8 @@ impl Builder<'_> {
             .derived_from(proof.branch_bci);
         let when_true = self.render_value(proof.when_true, proof.consumer_bci, 0)?;
         let when_false = self.render_value(proof.when_false, proof.consumer_bci, 0)?;
+        let (when_true, when_false) =
+            self.narrow_field_conditional_arms(proof, &test, when_true, when_false);
         let boolean_return_values = self
             .instructions
             .get(&proof.consumer_bci)
@@ -10486,6 +10488,59 @@ impl Builder<'_> {
             }
         }
         Ok(Expr::new(expression.kind, origin).presenting(ty))
+    }
+
+    /// A field descriptor and the sole physical call parameter jointly justify the source type
+    /// of a mixed field/constant conditional. The constant itself must fit that field type.
+    fn narrow_field_conditional_arms(
+        &self,
+        proof: &ConditionalValueProof,
+        test: &Expr,
+        when_true: Expr,
+        when_false: Expr,
+    ) -> (Expr, Expr) {
+        let unchanged = || (when_true.clone(), when_false.clone());
+        if test.presented != Some(Type::Boolean) {
+            return unchanged();
+        }
+        let Some(Operation::Invoke(target)) = self.operations.get(proof.consumer_bci) else {
+            return unchanged();
+        };
+        let Some((parameters, _)) = lambda::parse_method(target.descriptor()) else {
+            return unchanged();
+        };
+        let [required] = parameters.as_slice() else {
+            return unchanged();
+        };
+        if !matches!(required, Type::Byte | Type::Short) {
+            return unchanged();
+        }
+        let Some(instruction) = self.instructions.get(&proof.consumer_bci) else {
+            return unchanged();
+        };
+        let operands = stack_operands(instruction);
+        let receiver_count = usize::from(target.kind() != InvokeKind::Static);
+        if operands.len() != receiver_count + 1
+            || operands.last() != Some(&(Slot::Stack(proof.stack_depth), proof.phi))
+        {
+            return unchanged();
+        }
+        let field = |arm: &Expr| {
+            matches!(arm.kind, ExprKind::Field { .. }) && arm.presented.as_ref() == Some(required)
+        };
+        if field(&when_true) && narrowed_constant(&when_false, required) {
+            return (
+                when_true,
+                cast_argument(when_false, required, proof.consumer_bci),
+            );
+        }
+        if field(&when_false) && narrowed_constant(&when_true, required) {
+            return (
+                cast_argument(when_true, required, proof.consumer_bci),
+                when_false,
+            );
+        }
+        unchanged()
     }
 
     /// Builds every condition and leaf into one expression before anything is published.
@@ -17435,12 +17490,14 @@ impl Builder<'_> {
         bci: u32,
         position: &str,
     ) -> Result<Expr, String> {
-        // A B descriptor is not enough to type an int-shaped phi: accept only a conditional whose
-        // own test is boolean and whose two arms independently state byte or are in-range int
+        // A B/S descriptor is not enough to type an int-shaped phi: accept only a conditional whose
+        // own test is boolean and whose two arms independently state the narrow type or are in-range int
         // constants. The added arm casts are source presentation derived from the invocation, not
-        // recovered `i2b` instructions (javac emits none for the constant-arm shape).
-        if required == &Type::Byte && argument.presented != Some(Type::Byte) {
-            if let Some(argument) = byte_conditional_argument(&argument, bci) {
+        // recovered conversion instructions (javac emits none for the constant-arm shape).
+        if matches!(required, Type::Byte | Type::Short)
+            && argument.presented.as_ref() != Some(required)
+        {
+            if let Some(argument) = narrow_numeric_conditional_argument(&argument, required, bci) {
                 return Ok(argument);
             }
         }
@@ -20280,9 +20337,9 @@ fn cast_argument(argument: Expr, required: &Type, bci: u32) -> Expr {
     )
 }
 
-/// States one conditional as byte only when both source arms have local evidence for that spelling.
-/// The invocation's B descriptor selects the requested type, but never supplies the arm proof.
-fn byte_conditional_argument(argument: &Expr, bci: u32) -> Option<Expr> {
+/// States one conditional as byte/short only when both source arms have local evidence.
+/// The invocation's descriptor selects the requested type, but never supplies the arm proof.
+fn narrow_numeric_conditional_argument(argument: &Expr, required: &Type, bci: u32) -> Option<Expr> {
     let ExprKind::Conditional {
         test,
         when_true,
@@ -20294,8 +20351,8 @@ fn byte_conditional_argument(argument: &Expr, bci: u32) -> Option<Expr> {
     if test.presented != Some(Type::Boolean) {
         return None;
     }
-    let when_true = byte_conditional_arm(when_true, bci)?;
-    let when_false = byte_conditional_arm(when_false, bci)?;
+    let when_true = narrow_numeric_conditional_arm(when_true, required, bci)?;
+    let when_false = narrow_numeric_conditional_arm(when_false, required, bci)?;
     Some(Expr::new(
         ExprKind::Conditional {
             test: test.clone(),
@@ -20306,14 +20363,14 @@ fn byte_conditional_argument(argument: &Expr, bci: u32) -> Option<Expr> {
     ))
 }
 
-/// An existing byte expression retains its own type. An int leaf is eligible only when its value
-/// is in byte range; wrap that leaf at the call site so each conditional arm has type byte.
-fn byte_conditional_arm(argument: &Expr, bci: u32) -> Option<Expr> {
-    if argument.presented == Some(Type::Byte) {
+/// An existing narrow expression retains its own type. An int leaf is eligible only when its
+/// value fits the requested range; wrap that leaf so each conditional arm has that source type.
+fn narrow_numeric_conditional_arm(argument: &Expr, required: &Type, bci: u32) -> Option<Expr> {
+    if argument.presented.as_ref() == Some(required) {
         return Some(argument.clone());
     }
-    if narrowed_constant(argument, &Type::Byte) {
-        return Some(cast_argument(argument.clone(), &Type::Byte, bci));
+    if narrowed_constant(argument, required) {
+        return Some(cast_argument(argument.clone(), required, bci));
     }
     None
 }

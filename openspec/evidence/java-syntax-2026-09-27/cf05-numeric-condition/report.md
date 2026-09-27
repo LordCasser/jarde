@@ -20,6 +20,12 @@ python3 openspec/evidence/java-syntax-2026-09-27/cf05-numeric-condition/replay.p
   --out /tmp/jarde-cf05-fixed-replay-20260927-v2
 ```
 
-`--out` 必须为空目录。脚本当前固定原 class、JADX 完整 `ConversionCases` 及三侧完整 `ConversionBasic` 的成功结果，同时保留 Jarde 的四处原子拒绝作为修前事实；待窄 OpenSpec 实现时再提高完整 `ConversionCases` 的修后门槛。
+`--out` 必须为空目录。基线脚本曾固定原 class、JADX 完整 `ConversionCases` 及三侧完整 `ConversionBasic` 的成功结果，同时保留 Jarde 的四处原子拒绝作为修前事实；修后脚本已提高完整 `ConversionCases` 的 Jarde 门槛。
 
 root 将 CF-04 整数条件尾返回合入主线后再次重放，两类三侧源码 SHA-256 均与 `baseline/summary.json` 相同，四处 CF-05 差距仍独立存在。
+
+## CF-05 修后验收
+
+脚本现在将 `ConversionCases` 的 Jarde 完整类源码也列为硬门槛。修后固定重放中，原 class、固定 JADX、Jarde 的 `ConversionCases` 均以 `javac --release 8 -g:none` 重编，`java -Xverify:all` 的 20 行输出完全一致；`ConversionBasic` 三方十行继续一致。Jarde `ConversionCases` 源码 SHA-256 为 `65d2dd14e44052796e41850170b423539be605191e610bf26c346dc7be068225`，`ConversionBasic` 仍为基线的 `b6c8f8138cf019264648073a527a99e1e0d62f2b4b0c170bd0c108f159aa617f`。
+
+定向测试用真实 B/S 字段 descriptor 与范围内常量证明混合臂的类型，并检查新增 cast 的常量 BCI、调用 BCI 来源；错字段/目标 descriptor、byte/short 超范围、非恒定 int、Phi 额外消费和异常边保持引用。预算与取消在窄字段路径上不发表部分文本。三个 Smali 的泛化 boolean 数值转换仍只由固定 JADX 文本路径覆盖，不属于本次 Java class 重编结论。
