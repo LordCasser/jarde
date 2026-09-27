@@ -12,8 +12,8 @@
 
 ## Decisions
 
-1. **复用一轮扫描及关系证明，承载受证的集合。** 在现有 root `InnerClasses` 扫描中保留准确物理顺序、child 名称、flags 和唯一性；只在恰好一条接口与一条抽象类直接 row 的形态下产生私有双成员候选。每个 child 仍由现有选定环境读取并用 `child_relation_agrees` 核自述 row、无 `EnclosingMethod`。不从 `$` 名猜成员、不另扫整 jar、不把一个失败 child 忽略后投影另一个。若现有单 child 家族记录不足以表达二者，可在同一家族报告/准备路径中引入明确集合承载；不要并列一套脱离物理 family 的根声明捷径。
-2. **分别闭合两个声明。** `A` 复用现有 `static_declaration_only_shape` 与无构造站点证书；`I` 要求 Java 8 合法的 public static abstract interface relation、匹配物理 interface/abstract class flags、空字段/Signature/超接口、零构造器及完整无 Code 的 public abstract 方法表。接口方法按 Java 语法写分号声明，绝不补空方法体。根/child 的其它字段、使用点或未知成员使候选拒绝，物理报告仍可查询。
+1. **复用一轮扫描及关系证明，承载受证的集合。** 在现有 root `InnerClasses` 扫描中保留准确物理顺序、child 名称、flags 和唯一性；只在恰好一条接口与一条抽象类直接 row 的形态下产生私有双成员候选。每个 child 仍由现有选定环境读取并用 `child_relation_agrees` 核自述 row、无 `EnclosingMethod`。不从 `$` 名猜成员、不另扫整 jar、不把一个失败 child 忽略后投影另一个。若现有单 child 家族记录不足以表达二者，可在同一家族报告/准备路径中引入明确集合承载；拒绝时在家族报告保留已物理准备的 child，未读或缺失 child 仍可按其物理 identity 独立查询，不伪称已准备。不要并列一套脱离物理 family 的根声明捷径。
+2. **分别闭合两个声明。** `A` 复用现有 `static_declaration_only_shape` 与无构造站点证书；`I` 要求 Java 8 合法的 public static abstract interface relation、匹配物理 interface/abstract class flags、空字段/Signature/超接口、零构造器及完整无 Code 的 public abstract 方法表。接口方法按 Java 语法写分号声明，绝不补空方法体。本固定证书的根仅含无成员使用的默认构造器；根/child 的其它字段、方法、使用点或未知成员使候选拒绝，物理报告仍可查询。
 3. **根源码一次提交。** 在已有 class-source family checkpoint 内先准备两份 child 文本、头、来源、预算，再把两个嵌套声明一次性装入根 text；任何关系、声明、输出预算或取消失败都不发布半组。根声明顺序沿已证 `InnerClasses`/物理顺序，不用名称排序猜词法顺序。由 relation 与物理 method identity 标记派生来源，不复用 child BCI 充当根方法 BCI；单 child 构造型与静态抽象型路径保持行为。
 4. **以完整源码与有效拒绝验收。** 冻结 `Shape` 独立完整类、外部 Runner、原/JADX/Jarde 源码及 class SHA；Java 8 重编、`-Xverify:all` 运行和反射方法数一致。构造 verifier/解析有效的缺 child、冲突 self row、额外直接 child、错误接口方法 Code/flags、额外字段/Signature、根未证使用与预算/取消近邻。拒绝时可保留两份物理 child 报告，但不发布仅 `I` 或仅 `A` 的半份根声明。
 
