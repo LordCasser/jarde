@@ -1,0 +1,104 @@
+exit=0
+stdout:
+public class Grid {
+  public Grid();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static int nestedBreak(int);
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iconst_0
+       3: istore_2
+       4: iload_2
+       5: iload_0
+       6: if_icmpge     42
+       9: iconst_0
+      10: istore_3
+      11: iload_3
+      12: iload_0
+      13: if_icmpge     36
+      16: iload_2
+      17: iload_3
+      18: iadd
+      19: iconst_5
+      20: if_icmple     26
+      23: goto          36
+      26: iload_1
+      27: iconst_1
+      28: iadd
+      29: istore_1
+      30: iinc          3, 1
+      33: goto          11
+      36: iinc          2, 1
+      39: goto          4
+      42: iload_1
+      43: ireturn
+
+  static int labeledContinue(int);
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iconst_0
+       3: istore_2
+       4: iload_2
+       5: iload_0
+       6: if_icmpge     40
+       9: iconst_0
+      10: istore_3
+      11: iload_3
+      12: iload_0
+      13: if_icmpge     34
+      16: iload_3
+      17: iconst_2
+      18: if_icmpne     24
+      21: goto          34
+      24: iload_1
+      25: iconst_1
+      26: iadd
+      27: istore_1
+      28: iinc          3, 1
+      31: goto          11
+      34: iinc          2, 1
+      37: goto          4
+      40: iload_1
+      41: ireturn
+
+  static int labeledBreak(int);
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iconst_0
+       3: istore_2
+       4: iload_2
+       5: iload_0
+       6: if_icmpge     45
+       9: iconst_0
+      10: istore_3
+      11: iload_3
+      12: iload_0
+      13: if_icmpge     34
+      16: iload_3
+      17: iconst_3
+      18: if_icmpne     24
+      21: goto          45
+      24: iload_1
+      25: iconst_1
+      26: iadd
+      27: istore_1
+      28: iinc          3, 1
+      31: goto          11
+      34: iload_1
+      35: bipush        10
+      37: iadd
+      38: istore_1
+      39: iinc          2, 1
+      42: goto          4
+      45: iload_1
+      46: ireturn
+}
+
+stderr:

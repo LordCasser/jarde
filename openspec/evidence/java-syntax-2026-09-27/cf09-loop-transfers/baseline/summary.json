@@ -1,0 +1,76 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestBreakInLoop.java": "1d2723c3e1ab176684610fc3732e01c0007156d22f8a627114ec0ccf472c6cb0",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestContinueInLoop.java": "9013fc2ce9ac89c4e8967ddef39ead5f66dfc8c692f6529583bb75d96c38d8ec",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestBreakWithLabel.java": "fa38d5b302c0bec8a8424312304b260cfb036e0144f147fad1666aaa358b3a69",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestDoWhileBreak.java": "7c8db1024a14626aaafdd977a722665e077f8e17f5751f2249bc7be6e9eba577",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestSequentialLoops.java": "7b9826d70fcd7444773250dbcacbc2a35e41e75c32b002fc8091322132006913",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/LoopRegionMaker.java": "a77bedda10bdb0d36f3979c27c1fc9471da726b36f34ae14d505f6f659c6b13e",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/LoopRegionVisitor.java": "921f09e8934fda33452a00359588b293117f160813477e7068fa1ec3b71e6515",
+    "jadx-core/src/main/java/jadx/core/dex/attributes/nodes/LoopLabelAttr.java": "6671712cc0063fb2c756fb0d61538a41f8f3474a077f4296e02beb0a4a45bf22"
+  },
+  "jarde_cli_sha256": "32bf54586fe54655f3d21e1f94c71548aa280b9b442e3918db36b67cd1d41b3a",
+  "cases": {
+    "Grid": {
+      "input_sha256": "43ea86498212f38d747292767e6d0125f4a1bc9aa569aec11e239a94809e01dc",
+      "runner_sha256": "f1e9b8498fff1a85fd03f75a2e8c2e418b603d5b2f323f7334a27f0463eb96f4",
+      "frozen_class_sha256": "c81221e1a70ee1336d78053b43e843c9afe213f4180b06430b1ff8c8f6e83d46",
+      "jadx_raw_sha256": "bc0bb8be195e1377f3c5a096dc4e8ac3f12266acd8eb0bbf121ecf0046d796d3",
+      "original": {
+        "source_sha256": "43ea86498212f38d747292767e6d0125f4a1bc9aa569aec11e239a94809e01dc",
+        "javac_exit": 0,
+        "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n3 \u4e2a\u8b66\u544a",
+        "runtime_exit": 0,
+        "stdout": "0:0:0:0\n1:1:1:11\n3:9:6:39\n6:21:12:3\n9:21:18:3",
+        "runtime_stderr": ""
+      },
+      "jadx": {
+        "source_sha256": "c74166b9d8d3f6aa46cd88d6dc1577844a5964fb6b577af1c6f3be8d6e8f38f9",
+        "javac_exit": 0,
+        "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n3 \u4e2a\u8b66\u544a",
+        "runtime_exit": 0,
+        "stdout": "0:0:0:0\n1:1:1:11\n3:9:6:39\n6:21:12:3\n9:21:18:3",
+        "runtime_stderr": ""
+      },
+      "jarde": {
+        "source_sha256": "30b28e25ca81ea34b09c546b8d604f078b79b74bba216ca918b933e974343200",
+        "javac_exit": 0,
+        "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n3 \u4e2a\u8b66\u544a",
+        "runtime_exit": 0,
+        "stdout": "0:0:0:0\n1:1:1:11\n3:9:6:39\n6:21:12:3\n9:21:18:3",
+        "runtime_stderr": ""
+      }
+    },
+    "OuterContinue": {
+      "input_sha256": "6e98a1c3622bebad906f285cf4023a26b48d6f978626c022172a549f4744caeb",
+      "runner_sha256": "cc1a4d994cbda4718b6cfbca492bf65a3c03d70fa1f7d22a05d8db80427786c1",
+      "frozen_class_sha256": "b756d4fcebe65bed901ef368d3ae93ed71b16cc122d995f44926d9117d8551b5",
+      "jadx_raw_sha256": "1a634c135071d2340b938c93426c26cfba7b65d27bfe932d80d53adae93830ab",
+      "original": {
+        "source_sha256": "6e98a1c3622bebad906f285cf4023a26b48d6f978626c022172a549f4744caeb",
+        "javac_exit": 0,
+        "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n3 \u4e2a\u8b66\u544a",
+        "runtime_exit": 0,
+        "stdout": "0:0\n1:101\n2:204\n3:6\n5:10",
+        "runtime_stderr": ""
+      },
+      "jadx": {
+        "source_sha256": "7832845fd611552752e28152218dfb705cfc3eabd3d0180aaa960909aaabc9bb",
+        "javac_exit": 0,
+        "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n3 \u4e2a\u8b66\u544a",
+        "runtime_exit": 0,
+        "stdout": "0:0\n1:101\n2:204\n3:6\n5:10",
+        "runtime_stderr": ""
+      },
+      "jarde": {
+        "source_sha256": "b18e3aec7e1c12aadab014c46ac80a58b33fe2e4351d49f4189f1355f375ca95",
+        "javac_exit": 0,
+        "javac_stderr": "\u8b66\u544a: [options] \u6e90\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u76ee\u6807\u503c 8 \u5df2\u8fc7\u65f6\uff0c\u5c06\u5728\u672a\u6765\u53d1\u884c\u7248\u4e2d\u5220\u9664\n\u8b66\u544a: [options] \u8981\u9690\u85cf\u6709\u5173\u5df2\u8fc7\u65f6\u9009\u9879\u7684\u8b66\u544a, \u8bf7\u4f7f\u7528 -Xlint:-options\u3002\n3 \u4e2a\u8b66\u544a",
+        "runtime_exit": 0,
+        "stdout": "0:0\n1:101\n2:204\n3:6\n5:10",
+        "runtime_stderr": ""
+      }
+    }
+  }
+}

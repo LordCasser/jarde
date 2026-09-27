@@ -1,0 +1,38 @@
+exit=0
+stdout:
+final class OuterContinue {
+  OuterContinue();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static int run(int);
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iconst_0
+       3: istore_2
+       4: iload_2
+       5: iload_0
+       6: if_icmpge     42
+       9: iconst_0
+      10: istore_3
+      11: iload_3
+      12: iload_0
+      13: if_icmpge     33
+      16: iload_3
+      17: iconst_2
+      18: if_icmpne     24
+      21: goto          36
+      24: iinc          1, 1
+      27: iinc          3, 1
+      30: goto          11
+      33: iinc          1, 100
+      36: iinc          2, 1
+      39: goto          4
+      42: iload_1
+      43: ireturn
+}
+
+stderr:
