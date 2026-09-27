@@ -1,0 +1,21 @@
+// jarde: presentation of `dt20/Diamond` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt20;
+
+public class Diamond extends java.lang.Object {
+    public Diamond() {
+        // @method <init>()V
+        // @declaration a constructor of `dt20.Diamond`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public java.lang.String test() {
+        // @method test()Ljava/lang/String;
+        // @declaration an instance method of `dt20.Diamond`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        java.util.HashMap local1 = new java.util.HashMap();
+        return (java.lang.String) local1.get((java.lang.Object) "test");
+    }
+}

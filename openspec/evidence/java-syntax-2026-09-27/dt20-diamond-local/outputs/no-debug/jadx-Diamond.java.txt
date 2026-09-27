@@ -1,0 +1,10 @@
+package dt20;
+
+import java.util.HashMap;
+
+/* JADX INFO: loaded from: input.jar:dt20/Diamond.class */
+public class Diamond {
+    public String test() {
+        return (String) new HashMap().get("test");
+    }
+}

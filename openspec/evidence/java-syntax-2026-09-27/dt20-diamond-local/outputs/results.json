@@ -1,0 +1,22 @@
+{
+  "jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "javac_version": "javac 23.0.1",
+  "source_sha256": {
+    "Diamond.java": "f118ababc007b6e8a94b1c2b522a25a41747826a40176d7f1db6bcab14b995f6",
+    "Runner.java": "5b097be690db1d64e7abad2ea029bf264e03d3ee537ced04819d067a0a565c56"
+  },
+  "variants": {
+    "debug": {
+      "original_class_sha256": "79df9c76270ae227694feb6dc3e994e4c96ef456920f101018bc881684610c1b",
+      "original_verified_run": "true\n",
+      "jadx_verified_run": "true\n",
+      "jarde_verified_run": "true\n"
+    },
+    "no-debug": {
+      "original_class_sha256": "cf603ccdd1f355e55ed3973118442fe120618379b2a5caeb47c1a41543b26294",
+      "original_verified_run": "true\n",
+      "jadx_verified_run": "true\n",
+      "jarde_verified_run": "true\n"
+    }
+  }
+}
