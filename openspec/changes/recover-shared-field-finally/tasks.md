@@ -12,4 +12,4 @@
 
 - [x] 3.1 将原/JADX/实时 Jarde **完整 Java 8 类源码**分别 `javac --release 8 -g:none` 与 `java -Xverify:all`；确认 Jarde 与原 class 均为 `normal:1 / caught:1`，固定 JADX 为 `normal:2 / caught:1`，并将结果写入 fixture README。
 - [x] 3.2 复跑 `SharedFinallyCall` 的三方运行及负例、已受证单出口 finally/typed catch、字段更新的预算和取消原子性；`cargo test -p jarde-java --tests --locked`、`cargo fmt --all -- --check`、`cargo check --workspace --locked`、`openspec validate recover-shared-field-finally --strict`、`git diff --check` 全通过并清理专用 Cargo target。
-- [ ] 3.3 root 独立重放三方完整源码、审阅所有权/SSA/来源证书与负例，并记录验收；仅在通过后更新 CF-16 清单，保留 `FinallyOnce.escaping()` 等剩余差距。
+- [x] 3.3 root 独立重放三方完整源码、审阅所有权/SSA/来源证书与负例，并记录[验收](../../evidence/java-syntax-2026-09-27/cf16-finally/shared-field-root-acceptance-2026-09-28.md)；仅在通过后更新 CF-16 清单，保留 `FinallyOnce.escaping()` 等剩余差距。
