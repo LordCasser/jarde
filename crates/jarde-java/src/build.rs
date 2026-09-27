@@ -16069,6 +16069,15 @@ impl Builder<'_> {
         bci: u32,
         position: &str,
     ) -> Result<Expr, String> {
+        // A B descriptor is not enough to type an int-shaped phi: accept only a conditional whose
+        // own test is boolean and whose two arms independently state byte or are in-range int
+        // constants. The added arm casts are source presentation derived from the invocation, not
+        // recovered `i2b` instructions (javac emits none for the constant-arm shape).
+        if required == &Type::Byte && argument.presented != Some(Type::Byte) {
+            if let Some(argument) = byte_conditional_argument(&argument, bci) {
+                return Ok(argument);
+            }
+        }
         if matches!(argument.kind, ExprKind::Null) {
             return match required {
                 Type::Reference(_) => Ok(cast_argument(argument, required, bci)),
@@ -18733,6 +18742,44 @@ fn cast_argument(argument: Expr, required: &Type, bci: u32) -> Expr {
         },
         origin,
     )
+}
+
+/// States one conditional as byte only when both source arms have local evidence for that spelling.
+/// The invocation's B descriptor selects the requested type, but never supplies the arm proof.
+fn byte_conditional_argument(argument: &Expr, bci: u32) -> Option<Expr> {
+    let ExprKind::Conditional {
+        test,
+        when_true,
+        when_false,
+    } = &argument.kind
+    else {
+        return None;
+    };
+    if test.presented != Some(Type::Boolean) {
+        return None;
+    }
+    let when_true = byte_conditional_arm(when_true, bci)?;
+    let when_false = byte_conditional_arm(when_false, bci)?;
+    Some(Expr::new(
+        ExprKind::Conditional {
+            test: test.clone(),
+            when_true: Box::new(when_true),
+            when_false: Box::new(when_false),
+        },
+        argument.origin.clone(),
+    ))
+}
+
+/// An existing byte expression retains its own type. An int leaf is eligible only when its value
+/// is in byte range; wrap that leaf at the call site so each conditional arm has type byte.
+fn byte_conditional_arm(argument: &Expr, bci: u32) -> Option<Expr> {
+    if argument.presented == Some(Type::Byte) {
+        return Some(argument.clone());
+    }
+    if narrowed_constant(argument, &Type::Byte) {
+        return Some(cast_argument(argument.clone(), &Type::Byte, bci));
+    }
+    None
 }
 
 /// Gives a direct LambdaMetafactory expression its Java target type when it is consumed as a call
