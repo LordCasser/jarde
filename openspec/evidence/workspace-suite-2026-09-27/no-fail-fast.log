@@ -1,0 +1,1625 @@
+
+running 139 tests
+....................................................................................... 87/139
+....................................................
+test result: ok. 139 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.20s
+
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.54s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s
+
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 85 tests
+.....................................................................................
+test result: ok. 85 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.39s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 8 tests
+........
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 9 tests
+.........
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 13 tests
+.............
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+iiiii
+test result: ok. 0 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+i....
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.29s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s
+
+
+running 9 tests
+.........
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.65s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.02s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.13s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 16 tests
+................
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.37s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.47s
+
+
+running 13 tests
+.............
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.80s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.16s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 1 test
+i
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+test: jdk25_instruction_boundaries_match_public_bytecode_inspection, ignore_message: requires JDK 25 Class-File API oracle
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+
+
+running 18 tests
+..................
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.42s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 20 tests
+....................
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 14 tests
+..............
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.63s
+
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 14 tests
+..............
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 17 tests
+.................
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+
+running 29 tests
+.............................
+test result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 12 tests
+............
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 23 tests
+.......................
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 12 tests
+............
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 28 tests
+............................
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 28 tests
+............................
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 35 tests
+...................................
+test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 8 tests
+........
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 12 tests
+............
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 10 tests
+..........
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 30 tests
+..............................
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s
+
+
+running 34 tests
+..................................
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 33 tests
+.................................
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 16 tests
+................
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 9 tests
+.........
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+
+running 53 tests
+.....................................................
+test result: ok. 53 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 17 tests
+.................
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 16 tests
+................
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 11 tests
+...........
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 8 tests
+........
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 11 tests
+...........
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.55s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 9 tests
+.........
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+ii...
+test result: ok. 3 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 2 tests
+ii
+test result: ok. 0 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.28s
+
+
+running 13 tests
+.............
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 4 tests
+i...
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+i....
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 10 tests
+..........
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.82s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 10 tests
+..........
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 3 tests
+i..
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 10 tests
+..........
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+iii
+test result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 5 tests
+i....
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 4 tests
+i...
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 13 tests
+.............
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 9 tests
+.........
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 16 tests
+................
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.39s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 7 tests
+i......
+test result: ok. 6 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.55s
+
+
+running 4 tests
+i...
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.58s
+
+
+running 12 tests
+ii..........
+test result: ok. 10 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 5 tests
+ii...
+test result: ok. 3 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 8 tests
+........
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.03s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 4 tests
+.. 2/4
+the_payload_carries_the_tables_of_one_real_run --- FAILED
+.
+failures:
+
+---- the_payload_carries_the_tables_of_one_real_run stdout ----
+
+thread 'the_payload_carries_the_tables_of_one_real_run' (53187184) panicked at tests/p3_method_ir.rs:601:5:
+assertion `left == right` failed: the payload of this body is this structure and nothing else
+  left: Reading { canonical_blocks: 6, canonical_edges: 5, canonical_normal_edges: 0, canonical_call_edges: 2, canonical_return_edges: 2, canonical_throw_sites: 1, canonical_handler_rows: 1, canonical_unreachable: 0, canonical_complete: true, canonical_clones: 2, blocks_with_origin: 6, covered_starts: {0, 8, 11, 15, 17}, instruction_spans: 6, frame_blocks: 6, frame_locals_slots: 5, frame_deepest_stack: 1, entry_locals: 5, entry_stack: 0, entry_inputs: 0, ssa_values: 16, ssa_phis: 0, ssa_blocks: 6, ssa_effect_records: 17, ssa_throwing_effects: 1, ssa_anchored_effects: 1, value_definitions: {"caught", "entry:local0", "entry:local1", "instruction"}, values_with_origin: 14, direct_phi_inputs: 0, itself_phi_inputs: 0, replaced_phis: 0, ssa_instruction_records: 17 }
+ right: Reading { canonical_blocks: 6, canonical_edges: 4, canonical_normal_edges: 0, canonical_call_edges: 2, canonical_return_edges: 2, canonical_throw_sites: 1, canonical_handler_rows: 0, canonical_unreachable: 3, canonical_complete: true, canonical_clones: 2, blocks_with_origin: 6, covered_starts: {0, 8, 11, 15, 17}, instruction_spans: 6, frame_blocks: 3, frame_locals_slots: 5, frame_deepest_stack: 1, entry_locals: 5, entry_stack: 0, entry_inputs: 0, ssa_values: 10, ssa_phis: 0, ssa_blocks: 3, ssa_effect_records: 10, ssa_throwing_effects: 0, ssa_anchored_effects: 0, value_definitions: {"entry:local0", "entry:local1", "instruction"}, values_with_origin: 8, direct_phi_inputs: 0, itself_phi_inputs: 0, replaced_phis: 0, ssa_instruction_records: 10 }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_payload_carries_the_tables_of_one_real_run
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `-p jarde --test p3_method_ir`
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.67s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s
+
+
+running 7 tests
+i......
+test result: ok. 6 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 1 test
+i
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+test: recovered_bcs_array_index_value_order_matches_the_patched_jvm, ignore_message: requires JDK and compares actual recovered B/C/S store ordering against verified patched classes
+
+
+running 4 tests
+i...
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 3 tests
+i..
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 3 tests
+i..
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.88s
+
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 4 tests
+i...
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 7 tests
+i.... 5/7
+call_operands_keep_order_and_the_negative_boolean_merge_stays_quoted --- FAILED
+.
+failures:
+
+---- call_operands_keep_order_and_the_negative_boolean_merge_stays_quoted stdout ----
+
+thread 'call_operands_keep_order_and_the_negative_boolean_merge_stays_quoted' (53188761) panicked at tests/p3_numeric_comparison.rs:437:5:
+assertion `left == right` failed: the converged boolean remains a mixed fallback:
+// @method booleanMerge(DD)Z
+// @declaration a static method of `NumericComparisons`, member flags 0x0009
+// recovered from bytecode; presentation is not claimed to compile
+{
+    return arg0 < arg2;
+}
+
+  left: Java
+ right: Mixed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    call_operands_keep_order_and_the_negative_boolean_merge_stays_quoted
+
+test result: FAILED. 5 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `-p jarde --test p3_numeric_comparison`
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 3 tests
+i..
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 3 tests
+i..
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 4 tests
+. 1/4
+an_unmatched_non_invoke_qualifier_is_refused_with_its_full_source_chain --- FAILED
+..
+failures:
+
+---- an_unmatched_non_invoke_qualifier_is_refused_with_its_full_source_chain stdout ----
+
+thread 'an_unmatched_non_invoke_qualifier_is_refused_with_its_full_source_chain' (53188783) panicked at tests/p3_popped_static_qualifier.rs:169:5:
+the default request does not materialize optional source maps
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    an_unmatched_non_invoke_qualifier_is_refused_with_its_full_source_chain
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `-p jarde --test p3_popped_static_qualifier`
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+
+running 6 tests
+ii....
+test result: ok. 4 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 4 tests
+i...
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 6 tests
+i.....
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 8 tests
+.... 4/8
+the_conversion_costs_no_ir_item_and_no_normalization_clone --- FAILED
+...
+failures:
+
+---- the_conversion_costs_no_ir_item_and_no_normalization_clone stdout ----
+castPart(C): ir_items=165 ir_edges=9 analysis_steps=73 normalization_clones=0 output_bytes=1255 text_bytes=224
+
+thread 'the_conversion_costs_no_ir_item_and_no_normalization_clone' (53188876) panicked at tests/p3_required_conversions.rs:436:5:
+assertion `left == right` failed: the conversion node is not an IR item: this includes the deferred-binding SSA scan
+  left: 165
+ right: 224
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_conversion_costs_no_ir_item_and_no_normalization_clone
+
+test result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+error: test failed, to rerun pass `-p jarde --test p3_required_conversions`
+
+running 12 tests
+............
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 5 tests
+.... 4/5
+shift_recovery_stops_cleanly_at_resource_limits_and_before_work --- FAILED
+
+failures:
+
+---- shift_recovery_stops_cleanly_at_resource_limits_and_before_work stdout ----
+
+thread 'shift_recovery_stops_cleanly_at_resource_limits_and_before_work' (53188894) panicked at tests/p3_shift_expressions.rs:81:10:
+frozen method is present
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    shift_recovery_stops_cleanly_at_resource_limits_and_before_work
+
+test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `-p jarde --test p3_shift_expressions`
+
+running 2 tests
+a_boolean_return_consumer_keeps_the_shift_refusal_at_its_real_bci --- FAILED
+.
+failures:
+
+---- a_boolean_return_consumer_keeps_the_shift_refusal_at_its_real_bci stdout ----
+
+thread 'a_boolean_return_consumer_keeps_the_shift_refusal_at_its_real_bci' (53188897) panicked at tests/p3_shift_negative_boundaries.rs:179:5:
+assertion `left == right` failed:     public static boolean intLeft(int arg0, int arg1) {
+        // @method intLeft(II)Z
+        // @declaration a static method of `ShiftSlice`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (arg0 << arg1) % 2 != 0;
+    }
+
+  left: Java
+ right: Mixed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_boolean_return_consumer_keeps_the_shift_refusal_at_its_real_bci
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+error: test failed, to rerun pass `-p jarde --test p3_shift_negative_boundaries`
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s
+
+
+running 6 tests
+i.....
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 8 tests
+i..... 6/8
+lower_parameter_stack_value_is_not_an_extra_throw_read --- FAILED
+.
+failures:
+
+---- lower_parameter_stack_value_is_not_an_extra_throw_read stdout ----
+
+thread 'lower_parameter_stack_value_is_not_an_extra_throw_read' (53189226) panicked at tests/p3_throw.rs:767:10:
+the lower stack effect remains presented
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    lower_parameter_stack_value_is_not_an_extra_throw_read
+
+test result: FAILED. 6 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+error: test failed, to rerun pass `-p jarde --test p3_throw`
+
+running 2 tests
+a_java_nine_resource_is_declared_from_the_copy_the_compiler_made --- FAILED
+a_copy_whose_proof_fails_leaves_the_row_the_catch_its_table_names --- FAILED
+
+failures:
+
+---- a_java_nine_resource_is_declared_from_the_copy_the_compiler_made stdout ----
+
+thread 'a_java_nine_resource_is_declared_from_the_copy_the_compiler_made' (53189232) panicked at tests/p3_try_local.rs:200:5:
+the copy is declared in the header, the body's read runs between the header and the statement's closing brace, and the return the normal path ends in follows it:
+    static int use(java.io.Reader arg0) throws java.io.IOException {
+        // @method use(Ljava/io/Reader;)I
+        // @declaration a static method of `Held`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        try (java.io.Reader local1 = arg0) {
+            int local2 = arg0.read();
+            return local2;
+        }
+    }
+
+
+---- a_copy_whose_proof_fails_leaves_the_row_the_catch_its_table_names stdout ----
+
+thread 'a_copy_whose_proof_fails_leaves_the_row_the_catch_its_table_names' (53189231) panicked at tests/p3_try_local.rs:115:28:
+the text presents `java.io.Reader local1 = arg0;`:
+    static int use(java.io.Reader arg0) throws java.io.IOException {
+        // jarde: not recovered: the recovery run for `use(Ljava/io/Reader;)I` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method use(Ljava/io/Reader;)I
+        // @declaration a static method of `Held`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 11 15 17 22 29 35
+        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_copy_whose_proof_fails_leaves_the_row_the_catch_its_table_names
+    a_java_nine_resource_is_declared_from_the_copy_the_compiler_made
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+error: test failed, to rerun pass `-p jarde --test p3_try_local`
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.94s
+
+
+running 2 tests
+i.
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 4 tests
+i. 2/4
+static_owners_survive_generated_parameter_and_suffix_names --- FAILED
+.
+failures:
+
+---- static_owners_survive_generated_parameter_and_suffix_names stdout ----
+
+thread 'static_owners_survive_generated_parameter_and_suffix_names' (53189603) panicked at tests/p3_type_qualifier.rs:175:5:
+parameter captured arg0:
+// @method invoke(LShadowOther;)I
+// @declaration a static method of `TypeQualifierProbe`, member flags 0x0009
+// recovered from bytecode; presentation is not claimed to compile
+{
+    return arg0.pick(1) + arg0_2.pick(1);
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    static_owners_survive_generated_parameter_and_suffix_names
+
+test result: FAILED. 2 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `-p jarde --test p3_type_qualifier`
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+
+running 8 tests
+i.......
+test result: ok. 7 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 18 tests
+..................
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 13 tests
+.............
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 8 tests
+........
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 10 tests
+..........
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 20 tests
+i...................
+test result: ok. 19 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.25s
+
+
+running 6 tests
+i. 2/6
+the_fixed_shape_bills_the_counts_the_corpus_pins --- FAILED
+.. 5/6
+the_old_per_method_arms_keep_their_ledger_and_the_same_text --- FAILED
+
+failures:
+
+---- the_fixed_shape_bills_the_counts_the_corpus_pins stdout ----
+--- counted dimensions at the pinned shape (counts, not timings) ---
+flat-mixed                 archive_entries=8 entry_bytes=1813 class_bytes=1813 class_headers=0 method_bodies=17 ir_items=2371 analysis_steps=1334 result_items=37 output_bytes=3657 classes(seen=4 prepared=4 refused=0) methods(declared=18 delivered=18)
+
+thread 'the_fixed_shape_bills_the_counts_the_corpus_pins' (53189957) panicked at tests/p5_bulk_corpus.rs:1269:9:
+assertion `left == right` failed: flat-mixed (one flat archive, four class entries, STORED and DEFLATED alternating) is billed differently than its pinned shape:
+  pinned:   Billing { archive_entries: 8, entry_bytes: 1813, class_bytes: 1813, class_headers: 0, method_bodies: 17, ir_items: 2371, analysis_steps: 1330, result_items: 37, output_bytes: 3657 }
+  measured: Billing { archive_entries: 8, entry_bytes: 1813, class_bytes: 1813, class_headers: 0, method_bodies: 17, ir_items: 2371, analysis_steps: 1334, result_items: 37, output_bytes: 3657 }
+  left: Billing { archive_entries: 8, entry_bytes: 1813, class_bytes: 1813, class_headers: 0, method_bodies: 17, ir_items: 2371, analysis_steps: 1334, result_items: 37, output_bytes: 3657 }
+ right: Billing { archive_entries: 8, entry_bytes: 1813, class_bytes: 1813, class_headers: 0, method_bodies: 17, ir_items: 2371, analysis_steps: 1330, result_items: 37, output_bytes: 3657 }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- the_old_per_method_arms_keep_their_ledger_and_the_same_text stdout ----
+--- the two old arms' ledgers over the whole corpus (counts, not timings) ---
+direct  requests=187 input_bytes=0 archive_entries=1915 entry_bytes=365912 read_bytes=346379 class_bytes=327895 attribute_bytes=179756 code_bytes=2237 result_items=1378 output_bytes=39686 class_headers=191 method_bodies=181 ir_items=33855 ir_edges=2537 analysis_steps=17174 normalization_clones=0
+shared  requests=187 input_bytes=0 archive_entries=57 entry_bytes=18680 read_bytes=16476 class_bytes=10817 attribute_bytes=12124 code_bytes=2237 result_items=26 output_bytes=39686 class_headers=191 method_bodies=181 ir_items=33855 ir_edges=2537 analysis_steps=17174 normalization_clones=0
+store   10 entries / 10 containers / 19 definition reads (14771 bytes), 51706 retained bytes of 1024 entries / 16777216 retained bytes allowed; refused 0 by entry limit, 0 by byte limit
+reuse   container 398/408 hits, directories parsed 10, nested materialized 4 (2473 bytes); definition reads 168/187 hits (19 stored)
+
+thread 'the_old_per_method_arms_keep_their_ledger_and_the_same_text' (53189958) panicked at tests/p5_bulk_corpus.rs:1635:5:
+assertion `left == right` failed: the direct arm is billed differently than the shape it is pinned at
+  left: Billing { archive_entries: 1915, entry_bytes: 365912, class_bytes: 327895, class_headers: 191, method_bodies: 181, ir_items: 33855, analysis_steps: 17174, result_items: 1378, output_bytes: 39686 }
+ right: Billing { archive_entries: 1915, entry_bytes: 365912, class_bytes: 327895, class_headers: 191, method_bodies: 181, ir_items: 33853, analysis_steps: 16774, result_items: 1378, output_bytes: 40113 }
+
+
+failures:
+    the_fixed_shape_bills_the_counts_the_corpus_pins
+    the_old_per_method_arms_keep_their_ledger_and_the_same_text
+
+test result: FAILED. 3 passed; 2 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.25s
+
+error: test failed, to rerun pass `-p jarde --test p5_bulk_corpus`
+
+running 30 tests
+.......i......................
+test result: ok. 29 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 6 tests
+i.... 5/6
+corpus_files_match_the_recorded_fingerprint --- FAILED
+
+failures:
+
+---- corpus_files_match_the_recorded_fingerprint stdout ----
+corpus fingerprint: 879 files
+  tests/fixtures: 863 files
+  fuzz/corpus: 16 files
+  dimension versions (版本): 13 carriers, pinned
+  dimension compiler (编译器): 10 carriers, pinned
+  dimension packaging (打包): 11 carriers, partial
+  dimension identity (身份): 4 carriers, partial
+  dimension bytecode (字节码): 10 carriers, pinned
+  dimension recovery (恢复): 37 carriers, pinned
+  dimension degradation (退化): 10 carriers, pinned
+  dimension adversarial (对抗): 9 carriers, partial
+
+thread 'corpus_files_match_the_recorded_fingerprint' (53189994) panicked at tests/p5_corpus_fingerprint.rs:827:5:
+the corpus moved under the fingerprint (61 file(s)):
+unlisted: tests/fixtures/cf04-nested-int/cf04/Negative.class (448, blake3 19a3c93c93b45b775ba983810383fca13db5aa3cc1e2f5d698d5322b4a3ca90e) is in the corpus but not in the manifest
+unlisted: tests/fixtures/cf04-nested-int/cf04/Negative.java (550, blake3 cdc27072d2f260d6b67d70b1241ef7a92271b4c837172fd3a87f0cefca3adba4) is in the corpus but not in the manifest
+unlisted: tests/fixtures/cf04-nested-int/cf04/TernaryCases.class (973, blake3 29e5d0434f83d0e6655a25890337a1adb04e0086f450c80b74ac8bf41ba75820) is in the corpus but not in the manifest
+unlisted: tests/fixtures/dt22-nested-annotation/Dollar$A.class (197, blake3 665e803b39422f8a8f120e116e9bb95ef28221f09d212ccf3f01b37e1b172cfd) is in the corpus but not in the manifest
+unlisted: tests/fixtures/dt22-nested-annotation/Holder$A.class (247, blake3 b5124066b0d64fba16131c85d593d6dacae00abfd61bebe5ce47b0b57d041fb0) is in the corpus but not in the manifest
+unlisted: tests/fixtures/dt22-nested-annotation/Holder.class (245, blake3 895864be50c88728beb45e7966c63967e30589587a7767490badc57a38adb3ad) is in the corpus but not in the manifest
+unlisted: tests/fixtures/em20-monitor-reuse/LocalScopes.class (649, blake3 814fd5c9afd42261cf7c0efd7c796bb895a02efe6ec2ad40eee756c3a5553a68) is in the corpus but not in the manifest
+unlisted: tests/fixtures/em20-monitor-reuse/NonGuard.class (674, blake3 8805ff8ffc9b68e8349ccf3b1d94e3349b161211372d4ffba65cb24275fca94e) is in the corpus but not in the manifest
+unlisted: tests/fixtures/em20-monitor-reuse/NonGuard.java (1235, blake3 69d04733b4bd9dfba3a6059c7e8c17ac3193e85f9309f99a0c10c59ddc1b2305) is in the corpus but not in the manifest
+unlisted: tests/fixtures/em27-inline-string/Probe.java (1223, blake3 5f6645bc637180c16ad9d659e5b9ef694dedda7930e1f89b5b479e67f3397dda) is in the corpus but not in the manifest
+unlisted: tests/fixtures/em27-inline-string/em27/Probe$Holder.class (196, blake3 d32bfff470165dc90de98782618389c883957395ed3be344b5998d99b3b367bf) is in the corpus but not in the manifest
+unlisted: tests/fixtures/em27-inline-string/em27/Probe.class (952, blake3 17081997ee061ea0593c673f69af4583e4daa9d3640d18e2d8534e4093538148) is in the corpus but not in the manifest
+unlisted: tests/fixtures/p3-conditional-values/narrow-exception/NarrowException.class (363, blake3 cb55db6db98dfefc5dee83f9f9d790050ccc12663f84f5a1a9d794bd08c86343) is in the corpus but not in the manifest
+unlisted: tests/fixtures/p3-conditional-values/narrow-exception/NarrowException.java (268, blake3 0abbec875a81a23d6c1cc44d548a0fc0d62b817388f2753cf0838669b8f86192) is in the corpus but not in the manifest
+unlisted: tests/fixtures/p3-shared-tail/Cf03Ambiguous.class (273, blake3 283784f9ec8ff6a46a03f1e635164cbb0bcae015db0b979d8b7982f56b80d974) is in the corpus but not in the manifest
+unlisted: tests/fixtures/p3-shared-tail/Cf03Ambiguous.java (232, blake3 e68b7af978d33676740503687e0b7998fddf658ccd723e291b79ac46bdaf3b2f) is in the corpus but not in the manifest
+unlisted: tests/fixtures/p3-shared-tail/Cf03Negative.class (269, blake3 09900f355a2ee78a6317e7e1199d26e6a67eab683015567928ee79de192a18dd) is in the corpus but not in the manifest
+unlisted: tests/fixtures/p3-shared-tail/Cf03Negative.java (294, blake3 49cf1fac0314fc2ea51679c6dbe8dde02747e1057da6611fd4f747e16f2b0d6a) is in the corpus but not in the manifest
+unlisted: tests/fixtures/p3-shared-tail/cf03/BranchShapes.class (802, blake3 d18168bc20798f668ee6828b206305ca70f4e0868dfc004cebe994354bf1d8c1) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-inner-this/Inner$1.class (453, blake3 5803b54d1c5a9aa854cfa7a681f478e636c460ec513370a3a0c952157045b228) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-inner-this/Inner.class (664, blake3 42b2aa0523755e6ef73bdec64e109104caf1df035f2c4c36ef997226d5ca2009) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-inner-this/Inner.java (482, blake3 990fe184da62a48319889c00d206d96b707ac752120342bebb92c49812ae3e54) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-inner-this/SHA256SUMS (158, blake3 5b456d6728fe4ba293a1bc2bd45e6d8dbf2f3744b2167d336d3f56cc711fcab5) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-interface-basic/AnonymousInterfaceBasic$1.class (300, blake3 4a3c46255cb8ddc9894ca0e7abeed5c302e6dbbe7b5e202b45df48543320080e) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-interface-basic/AnonymousInterfaceBasic.class (482, blake3 e4147b548a9321d749e4e8aeee12e8c29f34e9354ba4bb9fe4cd887a8c8133b5) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-interface-basic/AnonymousInterfaceBasic.java (227, blake3 ff3a8fa061de0f9a2b855c9728668a0118a8cb19bcbb437a8fb0345a4dee7de4) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-interface-basic/I.class (75, blake3 fc2c309987e8cb628d0bc7e47a766712d13d6f40a4bc8f427d83f726e924f898) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-interface-basic/I.java (37, blake3 741733e148e135a335d4a96175025458f4264795d74c378572f1b9be26b8e90e) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-interface-basic/class-sha256.txt (457, blake3 78ed5351bf267b8da24092976e440149f6f8a005d42a1f37970fbe63cd97258b) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-interface-basic/javap.txt (1319, blake3 11527778c138f740382c1be295ba751f0be33d469c3713ddd7a1549e39136e60) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-super-args/AnonymousSuperArgs$1.class (682, blake3 289c31e8d066293da23b6da1bef00447f8b7a69599d0ae2004e58ccc8542d464) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-super-args/AnonymousSuperArgs.class (1261, blake3 dec2f64abd26ec9435c39927a9e7694207f04abc99d2f0f416da2ce9e93d7d82) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-super-args/AnonymousSuperArgs.java (800, blake3 a7590852385bbe424df5677dc31a417847a41269f3ec28dd69846c84ef5a9080) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-super-args/Base.class (597, blake3 d4aa056b6c0ddf84bf864b4c9475be9d6464143aaedb5e571e47c4441cc835bb) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-super-args/Base.java (263, blake3 d5cdb995fa42d9a0c3ecfaab6b264dcab9d1018dbaa5e150a696ce133fac5b76) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-super-direct/AnonymousSuperDirect$1.class (292, blake3 475323489b1fbe9352e4024e5de4211e4b9398a2a303ca8d562a29a56d012fb6) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-super-direct/AnonymousSuperDirect.class (855, blake3 d6bfe18fe8143dcc9aca754ea48720683b1127f854127cf46b6b2fd99f3d05ee) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-super-direct/AnonymousSuperDirect.java (763, blake3 7b1f7d558dc6119725b9df6ba3c269ad3530853fe977658002b7dbbbd905a613) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-super-direct/Base.class (294, blake3 5bb76a7ba658a846c76048159826542b134e78d0108aa0af323240b9306a1b62) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/anonymous-super-direct/SHA256SUMS (265, blake3 a5098c820cb2e3f4b7a8c4f4cc37ebbfc65ae0c69d3753f1089f4c9d892ff7b8) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/enum-arity/Empty.java (38, blake3 13e47669e064f4c66311540f23f82b6098665f6c869da17b92eaca5bfa7f232e) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/enum-arity/EnumArityRunner.java (349, blake3 f576453d9b51e8511d89278b05940ee2f378493e6124785339e9c8fce411e4d9) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/enum-arity/Four.java (66, blake3 7895c3d65515f8d0cf88d1f6f0b6bbb93378318a7b51d2629b0c558e0f322c2e) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/enum-arity/One.java (42, blake3 61ddb691e8e0c69fa6fab9149d43c52e2ae746fee0cdc1bfd578ac7568352d1b) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/enum-arity/SHA256SUMS (355, blake3 c44eb2c29b03d01d3a29e62f242e006c3a9c4e78e305d4e0ab16fc56afa7cd58) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/enum-arity/v8/probe/Empty.class (654, blake3 fdf07a0bf6060431220c6e9d2bb48c93ae9498f12174456afb321ca3ff028580) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/enum-arity/v8/probe/EnumArityRunner.class (962, blake3 18b0b0358c4a5d5c26bb6f7533455275b63a9fd8a8c27616ba3fc6b077b4d2a4) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/enum-arity/v8/probe/Four.class (859, blake3 85e572783d6e49de6694ce65a5ab9f1d61142f83e424702d8a6a0d05ecb86e04) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/enum-arity/v8/probe/One.class (710, blake3 8e3edeeca101c5d83c4e8079384cd1842bb3d0a33eac4443ead3178c33b73f94) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/package-info-basic/SHA256SUMS (173, blake3 d27db338c565f901a9de344dbbdb43fecbbc4e2e7de8954cc559a8d885b0a577) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/package-info-basic/p/Check.java (236, blake3 6df691336b2acb350c9a15f955c52c507b0dc68269a0641a30253c4506103996) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/package-info-basic/p/package-info.java (23, blake3 94a233de0e14ca55b832942e4379d1a5ba2e1e8ba01d62055881a68520a521f2) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/package-info-basic/v8/p/Check.class (617, blake3 8e26bd2eb180dd694d6a77527156e502bb2c928d357b0dee46ee9f67e8d7534b) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/package-info-basic/v8/p/package-info.class (131, blake3 31eeb8471492157a5716335b6ec9dc0b84294f4b100c1c30fb635cdc790f0ee3) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/static-member-basic/Named$Top.class (166, blake3 844fca766c2739e8c80eb413b899817959958c380fb199b7098c20c99b8a8d81) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/static-member-basic/Named$Top.java (69, blake3 6d3d1f750e1a6bf71acadbdbdef3050432d4da72ced38f2782e3a1bde12a7937) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/static-member-basic/StaticMemberBasic$Leaf.class (241, blake3 48df72b6cee67c47283934f24b2d80b95d146d76eff9deb892c7d41d79e37061) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/static-member-basic/StaticMemberBasic.class (746, blake3 2d5be8ca0ced913d2beb3c108210f0a04f3325df798df9dff4d1e85e91c5b014) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/static-member-basic/StaticMemberBasic.java (300, blake3 7f614415e34a7f94cb5fd32c1c1cd82873b9fc01e01611a8d3c1e1ab6d1c5e29) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/static-member-basic/class-sha256.txt (267, blake3 150f1387f9b7bf41e0dc85d7860bc52ceee5fd020d9e03c6c2f668ad8f043d46) is in the corpus but not in the manifest
+unlisted: tests/fixtures/proved-java-structure/static-member-basic/javap.txt (2346, blake3 01bedf79f7ffa09112b4fc246a0f2979f17cbe10f71322de9ce16e9995030195) is in the corpus but not in the manifest
+
+If the change is intended, rerun `cargo test --test p5_corpus_fingerprint --locked -- --ignored regenerate_corpus_fingerprint` and review the diff. If it is not, the corpus is the thing to fix — do not re-record to make this pass.
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    corpus_files_match_the_recorded_fingerprint
+
+test result: FAILED. 4 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+error: test failed, to rerun pass `-p jarde --test p5_corpus_fingerprint`
+
+running 11 tests
+...........
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 13 tests
+.............
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 15 tests
+i 1/15
+the_three_sink_modes_publish_the_same_result --- FAILED
+.............
+failures:
+
+---- the_three_sink_modes_publish_the_same_result stdout ----
+
+thread 'the_three_sink_modes_publish_the_same_result' (53190036) panicked at tests/p5_optimize_workloads.rs:2774:5:
+the write ablation must use cargo's own test temporary directory, not /tmp: /tmp/jarde-root-integration-target/tmp
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_three_sink_modes_publish_the_same_result
+
+test result: FAILED. 13 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.40s
+
+error: test failed, to rerun pass `-p jarde --test p5_optimize_workloads`
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s
+
+
+running 33 tests
+.................................
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 6 tests
+......
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+
+running 17 tests
+.................
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 11 tests
+...........
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.32s
+
+
+running 16 tests
+................
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 11 tests
+...........
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 16 tests
+ii..............
+test result: ok. 14 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.57s
+
+
+running 231 tests
+....................................................................................... 87/231
+....................................................................................... 174/231
+.........................................................
+test result: ok. 231 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 10 tests
+..........
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 33 tests
+.................................
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 65 tests
+.................................................................
+test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 1 test
+.
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 234 tests
+....................................................................................... 87/234
+....................................................................................... 174/234
+............................................................
+test result: ok. 234 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 178 tests
+....................................................................................... 87/178
+....................................................................................... 174/178
+... 177/178
+classfile::tests::repository_class_fixtures_validate_without_false_target_rejections --- FAILED
+
+failures:
+
+---- classfile::tests::repository_class_fixtures_validate_without_false_target_rejections stdout ----
+
+thread 'classfile::tests::repository_class_fixtures_validate_without_false_target_rejections' (53191418) panicked at crates/jarde-reader/src/classfile.rs:11853:9:
+assertion `left == right` failed: fixture population changed: re-measure these counts
+  left: (364, 1852, 171, 1084, 8)
+ right: (356, 1817, 160, 1004, 8)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    classfile::tests::repository_class_fixtures_validate_without_false_target_rejections
+
+test result: FAILED. 177 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+error: test failed, to rerun pass `-p jarde-reader --lib`
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 7 tests
+.......
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+...
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+....
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: 13 targets failed:
+    `-p jarde --test p3_method_ir`
+    `-p jarde --test p3_numeric_comparison`
+    `-p jarde --test p3_popped_static_qualifier`
+    `-p jarde --test p3_required_conversions`
+    `-p jarde --test p3_shift_expressions`
+    `-p jarde --test p3_shift_negative_boundaries`
+    `-p jarde --test p3_throw`
+    `-p jarde --test p3_try_local`
+    `-p jarde --test p3_type_qualifier`
+    `-p jarde --test p5_bulk_corpus`
+    `-p jarde --test p5_corpus_fingerprint`
+    `-p jarde --test p5_optimize_workloads`
+    `-p jarde-reader --lib`
