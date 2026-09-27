@@ -1,6 +1,6 @@
 ## 1. 固定基线和分包边界
 
-- [ ] 1.1 用当前主线重新回放固定 `combined/inputs/FieldCast.java`、Runner 与三个接口的全部九个物理类，记录原/JADX/Jarde 的 Java 8 重编、`-Xverify:all`、每个失败方法及 BCI；校验固定 JADX revision/源码 hash，并产出可重复脚本和基线报告。
+- [x] 1.1 用当前主线重新回放固定 `combined/inputs/FieldCast.java`、Runner 与三个接口的全部九个物理类，记录原/JADX/Jarde 的 Java 8 重编、`-Xverify:all`、每个失败方法及 BCI；校验固定 JADX revision/源码 hash，并产出可重复脚本和基线报告。
 
 ## 2. P1：跨接收者字段和私有调用
 
