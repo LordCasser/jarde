@@ -24,6 +24,7 @@ use jarde_java::{
     RecoveryContent, RecoveryEvidenceKind, RecoveryEvidenceRequest, RecoveryReport, StopReason,
     type_of_component,
 };
+use std::slice;
 // The artifact binding (change `add-demand-driven-core-results`, D3') crosses the facade here, the
 // way the recovery layer's other product names do: a caller reads it off the report it already
 // holds — `RecoveredMethod::recovery().artifact()` — and hands the same value back as the
@@ -75,6 +76,22 @@ use serde::{Deserialize, Serialize};
 const ACC_INTERFACE: u16 = 0x0200;
 const ACC_ANNOTATION: u16 = 0x2000;
 use std::borrow::Cow;
+
+struct ProvedNestedAnonymousSite<'a> {
+    method: &'a PhysicalMethodId,
+    ast: &'a jarde_java::report::ClassSourceMethodAst,
+    allocation_bci: u32,
+    constructor_bci: u32,
+    allocation_type: String,
+}
+
+struct AnonymousDescendantCaptureXrefs<'a> {
+    definition: &'a PhysicalDefinitionId,
+    parent_name: &'a [u8],
+    parent_method: &'a PhysicalMethodId,
+    field_descriptor: &'a [u8],
+    constructor_descriptor: &'a [u8],
+}
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Engine;
@@ -1676,6 +1693,15 @@ impl Engine {
         if matches!(
             report.member_family,
             class_source::ClassSourceMemberFamily::Absent
+        ) && matches!(
+            report.nested_enum_family,
+            class_source::ClassSourceNestedEnumFamily::Absent
+        ) && matches!(
+            report.nested_annotation_family,
+            class_source::ClassSourceNestedAnnotationFamily::Absent
+        ) && matches!(
+            report.anonymous_interface_projection,
+            class_source::ClassSourceAnonymousInterfaceProjection::Absent
         ) && _anonymous_return_sites.len() == 1
         {
             match self.project_class_source_anonymous_interface(
@@ -1693,6 +1719,10 @@ impl Engine {
                 Ok(()) => {}
                 Err(error) => {
                     merge_execution(&mut report.execution, stop_execution(&error, budget));
+                    report.anonymous_interface_projection =
+                        class_source::ClassSourceAnonymousInterfaceProjection::Refused {
+                            reason: error.to_string(),
+                        };
                     report.diagnostics.push(stop_diagnostic(
                         &error,
                         Some(definition_provenance(&report.class)),
@@ -2806,23 +2836,6 @@ impl Engine {
                 "the child does not provide the selected interface's single Java 8 abstract method",
             ));
         }
-        self.prove_anonymous_owner_xrefs(
-            content,
-            environment,
-            &root.class,
-            &child_definition,
-            root_method,
-            *root_bci,
-            *constructor_bci,
-            child_name.as_bytes(),
-            capture_descriptor.as_deref().unwrap_or_default(),
-            capture_proof.as_ref().map_or(b"()V".as_slice(), |proof| {
-                proof.constructor.descriptor.0.as_slice()
-            }),
-            capture_proof.as_ref(),
-            &mut child_execution,
-            budget,
-        )?;
         let constructors: Vec<_> = child_facts
             .methods
             .iter()
@@ -2864,13 +2877,13 @@ impl Engine {
             true,
             budget,
         )?;
+        let mut child_execution = child.execution.clone();
         if !matches!(child.execution, ExecutionReport::Complete { .. })
             || child.methods.len() != child_facts.methods.len()
             || child_asts.len() != child_facts.methods.len()
-            || child_asts.iter().any(|(_, _, _, scan)| {
-                scan.as_ref()
-                    .is_none_or(|scan| !scan.complete || !scan.allocations.is_empty())
-            })
+            || child_asts
+                .iter()
+                .any(|(_, _, _, scan)| scan.as_ref().is_none_or(|scan| !scan.complete))
             || child.methods.iter().any(|method| {
                 !matches!(
                     method.outcome,
@@ -2884,6 +2897,64 @@ impl Engine {
                 "every child method must have a complete structured body and source declaration",
             ));
         }
+        let nested_site = proved_nested_anonymous_site(
+            &child,
+            &child_asts,
+            &child_facts,
+            &child_definition,
+            budget,
+        )?;
+        if let Some(nested_site) = nested_site {
+            return self.project_class_source_nested_anonymous_interface(
+                content,
+                request,
+                evidence,
+                environment,
+                snapshot,
+                root,
+                root_method,
+                *root_bci,
+                *constructor_bci,
+                allocation_type,
+                root_ast,
+                &root_name,
+                &child_name,
+                &child_definition,
+                &child_facts,
+                &child_nesting,
+                &child,
+                &interface_name,
+                nested_site,
+                budget,
+            );
+        }
+        if child_asts.iter().any(|(_, _, _, scan)| {
+            scan.as_ref()
+                .is_none_or(|scan| !scan.allocations.is_empty())
+        }) {
+            return Err(Error::unsupported(
+                "anonymous_child_additional_allocation",
+                "the selected anonymous child has an allocation outside the one direct-return chain",
+            ));
+        }
+        self.prove_anonymous_owner_xrefs(
+            content,
+            environment,
+            &root.class,
+            &child_definition,
+            root_method,
+            *root_bci,
+            *constructor_bci,
+            child_name.as_bytes(),
+            capture_descriptor.as_deref().unwrap_or_default(),
+            capture_proof.as_ref().map_or(b"()V".as_slice(), |proof| {
+                proof.constructor.descriptor.0.as_slice()
+            }),
+            capture_proof.as_ref(),
+            None,
+            &mut child_execution,
+            budget,
+        )?;
         let constructor_identity = PhysicalMethodId {
             owner: child_definition.clone(),
             name: JvmBytes(b"<init>".to_vec()),
@@ -3091,23 +3162,662 @@ impl Engine {
                 "the selected physical root method is absent from its class report",
             ));
         };
+        let anchors = vec![
+            class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                definition: root.class.clone(),
+            },
+            class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                definition: child_definition.clone(),
+            },
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                method: root_method.clone(),
+                bci: *root_bci,
+            },
+        ];
         let Some(projected_method) =
-            root.methods[method_index].anonymous_return_projection_text(&body)
+            root.methods[method_index].anonymous_return_projection(&body, anchors)
         else {
             return Err(Error::unsupported(
                 "anonymous_root_method_unspellable",
                 "the root method declaration cannot wrap the emitted anonymous expression",
             ));
         };
-        let original_method = &root.methods[method_index].text;
-        if root.text.match_indices(original_method).count() != 1 {
+        let Some((projected_text, derived)) = class_source::source_text_with_method_projections(
+            root,
+            slice::from_ref(&projected_method),
+        ) else {
             return Err(Error::unsupported(
-                "anonymous_root_text_ambiguous",
-                "the root method text does not have one exact source-unit placement",
+                "anonymous_root_writer_rejected",
+                "the class-source writer cannot reproduce the root around this method projection",
+            ));
+        };
+        root.text = projected_text;
+        root.methods[method_index].text = projected_method.text;
+        root.anonymous_interface_projection =
+            class_source::ClassSourceAnonymousInterfaceProjection::Projected { derived };
+        root.usage = budget.usage();
+        Ok(())
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn project_class_source_nested_anonymous_interface(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
+        environment: &ResolutionEnvironment,
+        snapshot: &ArtifactSnapshot,
+        root: &mut ClassSourceReport,
+        root_method: &PhysicalMethodId,
+        root_allocation_bci: u32,
+        root_constructor_bci: u32,
+        root_allocation_type: &str,
+        root_ast: &jarde_java::report::ClassSourceMethodAst,
+        root_name: &[u8],
+        parent_name: &str,
+        parent_definition: &PhysicalDefinitionId,
+        parent_facts: &ClassMemberFacts,
+        parent_nesting: &class_source::ClassSourceAssemblyContext,
+        parent_report: &ClassSourceReport,
+        parent_interface: &[u8],
+        site: ProvedNestedAnonymousSite<'_>,
+        budget: &mut Budget,
+    ) -> Result<()> {
+        if !matches!(
+            root.member_family,
+            class_source::ClassSourceMemberFamily::Absent
+        ) || !matches!(
+            root.nested_enum_family,
+            class_source::ClassSourceNestedEnumFamily::Absent
+        ) || !matches!(
+            root.nested_annotation_family,
+            class_source::ClassSourceNestedAnnotationFamily::Absent
+        ) || parent_facts.interfaces.len() != 1
+            || parent_facts.interfaces[0].raw().0.as_slice() != parent_interface
+            || parent_facts.field_count != 0
+            || !parent_facts.fields.is_empty()
+            || parent_facts.methods.len() != 2
+            || parent_report.fields.len() != 0
+            || parent_report.methods.len() != parent_facts.methods.len()
+            || !matches!(parent_report.execution, ExecutionReport::Complete { .. })
+            || site.method.owner != *parent_definition
+            || !root.methods.iter().any(|method| {
+                method.item.identity == *root_method && method.item.access_flags & 0x0008 != 0
+            })
+        {
+            return Err(Error::unsupported(
+                "anonymous_nested_family_unproved",
+                "the frozen two-level case requires an unprojected static root and a field-free complete parent",
             ));
         }
-        root.text = root.text.replacen(original_method, &projected_method, 1);
-        root.methods[method_index].text = projected_method;
+        let parent_name_bytes = parent_name.as_bytes();
+        let grandchild_name = site.allocation_type.replace('.', "/");
+        let parent_rows: Vec<_> = parent_nesting
+            .resolved_inner_classes
+            .iter()
+            .filter(|row| row.class == grandchild_name.as_bytes())
+            .collect();
+        if parent_rows.len() != 1
+            || parent_rows[0].outer_class.is_some()
+            || parent_rows[0].inner_name.is_some()
+        {
+            return Err(Error::unsupported(
+                "anonymous_nested_typed_nesting_unproved",
+                "the parent does not type a unique anonymous child row for the selected allocation",
+            ));
+        }
+        let root_method_facts = root
+            .methods
+            .iter()
+            .find(|method| method.item.identity == *root_method)
+            .ok_or_else(|| {
+                Error::unsupported("anonymous_root_method_missing", "the root method is absent")
+            })?;
+        if root_method_facts.item.access_flags & 0x0008 == 0
+            || root_method_facts.item.descriptor.raw().0
+                != [b"()L".as_slice(), parent_interface, b";"].concat()
+            || root_allocation_type.replace('.', "/") != parent_name
+        {
+            return Err(Error::unsupported(
+                "anonymous_nested_root_contract_unproved",
+                "the selected root method is not the exact static, zero-argument Factory return",
+            ));
+        }
+        let parent_method_record = parent_report
+            .methods
+            .iter()
+            .find(|method| method.item.identity == *site.method)
+            .ok_or_else(|| {
+                Error::unsupported(
+                    "anonymous_nested_parent_method_missing",
+                    "the selected parent implementation is absent from its physical report",
+                )
+            })?;
+        if parent_method_record.item.access_flags & 0x0001 == 0
+            || parent_method_record.item.access_flags & (0x0008 | 0x0040 | 0x1000) != 0
+            || parent_method_record.item.descriptor.raw().0.get(..3) != Some(b"()L".as_slice())
+            || !parent_method_record.item.descriptor.raw().0.ends_with(b";")
+        {
+            return Err(Error::unsupported(
+                "anonymous_nested_parent_method_contract_unproved",
+                "the selected parent method is not one source implementation of the Factory contract",
+            ));
+        }
+        let interface_method_count = parent_facts
+            .methods
+            .iter()
+            .filter(|method| method.name.raw().0 != b"<init>")
+            .count();
+        if interface_method_count != 1 {
+            return Err(Error::unsupported(
+                "anonymous_nested_parent_method_ambiguous",
+                "the parent class contains another method beside its sole interface implementation",
+            ));
+        }
+
+        let mut nested_execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        let Some((grandchild_definition, grandchild_read)) =
+            resolve_class_source_dependency_read_raw(
+                content,
+                environment,
+                Some(site.method),
+                grandchild_name.as_bytes(),
+                &mut nested_execution,
+                budget,
+            )?
+        else {
+            return Err(Error::unsupported(
+                "anonymous_nested_child_unresolved",
+                "the exact nested allocation does not resolve to one physical child definition",
+            ));
+        };
+        let grandchild_facts = grandchild_read.facts.clone();
+        let pool = class_constant_pool(&grandchild_read.bytes, budget)?;
+        let shells: Vec<_> = grandchild_facts
+            .attributes
+            .iter()
+            .filter(|attribute| {
+                matches!(
+                    attribute.name.raw().0.as_slice(),
+                    b"InnerClasses" | b"EnclosingMethod"
+                )
+            })
+            .cloned()
+            .collect();
+        let grandchild_nesting = class_source::read_class_source_assembly_context(
+            &grandchild_read.bytes,
+            &shells,
+            &pool,
+            budget,
+        )?;
+        let inner_rows: Vec<_> = grandchild_nesting
+            .resolved_inner_classes
+            .iter()
+            .filter(|row| row.class == grandchild_name.as_bytes())
+            .collect();
+        if grandchild_facts.stopped_at.is_some()
+            || grandchild_facts.fields.len() as u64 != grandchild_facts.field_count
+            || grandchild_facts.methods.len() as u64 != grandchild_facts.method_count
+            || grandchild_facts.methods.len() != 2
+            || grandchild_facts.fields.len() != 1
+            || grandchild_facts
+                .super_class
+                .as_ref()
+                .map(|name| name.raw().0.as_slice())
+                != Some(b"java/lang/Object")
+            || grandchild_facts.interfaces.len() != 1
+            || grandchild_facts.access_flags & ACC_INTERFACE != 0
+            || inner_rows.len() != 1
+            || inner_rows[0].outer_class.is_some()
+            || inner_rows[0].inner_name.is_some()
+            || grandchild_nesting
+                .major_version
+                .is_none_or(|version| version > 52)
+            || grandchild_read
+                .bytes
+                .get(6..8)
+                .is_none_or(|version| u16::from_be_bytes([version[0], version[1]]) > 52)
+            || grandchild_nesting
+                .resolved_enclosing_method
+                .as_ref()
+                .is_none_or(|enclosing| {
+                    enclosing.class != parent_name_bytes
+                        || enclosing.method.as_ref()
+                            != Some(&(site.method.name.clone(), site.method.descriptor.clone()))
+                })
+        {
+            return Err(Error::unsupported(
+                "anonymous_nested_child_shape_unproved",
+                "the nested class lacks a complete Java 8 anonymous interface body and exact parent method",
+            ));
+        }
+        let parent_row_flags = parent_rows[0].access_flags;
+        if inner_rows[0].access_flags != parent_row_flags {
+            return Err(Error::unsupported(
+                "anonymous_nested_child_row_mismatch",
+                "the parent and nested class do not agree on the typed anonymous child row",
+            ));
+        }
+        let parent_self_rows: Vec<_> = parent_nesting
+            .resolved_inner_classes
+            .iter()
+            .filter(|row| row.class == parent_name_bytes)
+            .collect();
+        if parent_self_rows.len() != 1
+            || parent_self_rows[0].outer_class.is_some()
+            || parent_self_rows[0].inner_name.is_some()
+            || parent_nesting
+                .resolved_enclosing_method
+                .as_ref()
+                .is_none_or(|enclosing| {
+                    enclosing.class != root_name
+                        || enclosing.method.as_ref()
+                            != Some(&(root_method.name.clone(), root_method.descriptor.clone()))
+                })
+        {
+            return Err(Error::unsupported(
+                "anonymous_nested_parent_enclosing_unproved",
+                "the outer anonymous class does not have the exact root EnclosingMethod relation",
+            ));
+        }
+        let capture_proof = prove_anonymous_capture(
+            content,
+            environment,
+            &grandchild_definition,
+            parent_name_bytes,
+            &grandchild_facts,
+            &mut nested_execution,
+            budget,
+        )?
+        .filter(|proof| proof.reads.is_empty())
+        .ok_or_else(|| {
+            Error::unsupported(
+                "anonymous_nested_capture_unproved",
+                "the nested class does not have one immediate-parent field written once and never read",
+            )
+        })?;
+        if grandchild_facts.methods.iter().any(|method| {
+            method.name.raw().0 == b"<clinit>"
+                || (method.name.raw().0 != b"<init>"
+                    && (method.access_flags & 0x0001 == 0
+                        || method.access_flags & (0x0008 | 0x0040 | 0x1000) != 0))
+        }) || grandchild_facts
+            .methods
+            .iter()
+            .filter(|method| method.name.raw().0 == b"<init>")
+            .count()
+            != 1
+            || grandchild_facts
+                .methods
+                .iter()
+                .filter(|method| method.name.raw().0 != b"<init>")
+                .count()
+                != 1
+        {
+            return Err(Error::unsupported(
+                "anonymous_nested_methods_unproved",
+                "the inner child must contain only one constructor and one source interface implementation",
+            ));
+        }
+        let inner_interface = grandchild_facts.interfaces[0].raw().0.clone();
+        let Some(action_source_name) = std::str::from_utf8(&inner_interface).ok().filter(|name| {
+            !name.contains('$') && name.split('/').all(jarde_java::names::is_java_identifier)
+        }) else {
+            return Err(Error::unsupported(
+                "anonymous_nested_interface_source_type_unproved",
+                "the inner interface has no safe Java 8 source name",
+            ));
+        };
+        if site.method.descriptor.0
+            != [b"()L".as_slice(), inner_interface.as_slice(), b";"].concat()
+        {
+            return Err(Error::unsupported(
+                "anonymous_nested_interface_descriptor_mismatch",
+                "the parent implementation descriptor does not return the inner child interface",
+            ));
+        }
+        let Some((_action_definition, action_read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            Some(site.method),
+            &inner_interface,
+            &mut nested_execution,
+            budget,
+        )?
+        else {
+            return Err(Error::unsupported(
+                "anonymous_nested_interface_unresolved",
+                "the exact inner interface declaration could not be selected",
+            ));
+        };
+        let action_accessible = action_read.facts.access_flags & ACC_INTERFACE != 0
+            && action_read.facts.access_flags & ACC_ANNOTATION == 0
+            && action_read.facts.stopped_at.is_none()
+            && action_read
+                .bytes
+                .get(6..8)
+                .is_some_and(|version| u16::from_be_bytes([version[0], version[1]]) <= 52)
+            && (action_read.facts.access_flags & 0x0001 != 0
+                || internal_package(&inner_interface) == internal_package(root_name));
+        let action_methods: Vec<_> = action_read
+            .facts
+            .methods
+            .iter()
+            .filter(|method| method.name.raw().0 != b"<init>" && method.name.raw().0 != b"<clinit>")
+            .collect();
+        let implementation_methods: Vec<_> = grandchild_facts
+            .methods
+            .iter()
+            .filter(|method| method.name.raw().0 != b"<init>")
+            .collect();
+        let [action_method] = action_methods.as_slice() else {
+            return Err(Error::unsupported(
+                "anonymous_nested_interface_contract_unproved",
+                "the inner interface must expose one physical abstract method",
+            ));
+        };
+        let [implementation_method] = implementation_methods.as_slice() else {
+            unreachable!("the inner method shape was checked above")
+        };
+        if !action_accessible
+            || !action_read.facts.interfaces.is_empty()
+            || action_read.facts.method_count != 1
+            || action_method.access_flags != 0x0401
+            || implementation_method.name.raw().0 != action_method.name.raw().0
+            || implementation_method.descriptor.raw().0 != action_method.descriptor.raw().0
+        {
+            return Err(Error::unsupported(
+                "anonymous_nested_interface_contract_unproved",
+                "the inner physical method does not implement the one source-accessible Java 8 interface method",
+            ));
+        }
+
+        let constructor_descriptor = capture_proof.constructor.descriptor.0.clone();
+        let field_descriptor = [b"L".as_slice(), parent_name_bytes, b";"].concat();
+        let descendant_xrefs = AnonymousDescendantCaptureXrefs {
+            definition: &grandchild_definition,
+            parent_name: parent_name_bytes,
+            parent_method: site.method,
+            field_descriptor: &field_descriptor,
+            constructor_descriptor: &constructor_descriptor,
+        };
+        self.prove_anonymous_owner_xrefs(
+            content,
+            environment,
+            &root.class,
+            parent_definition,
+            root_method,
+            root_allocation_bci,
+            root_constructor_bci,
+            parent_name_bytes,
+            b"",
+            b"()V",
+            None,
+            Some(&descendant_xrefs),
+            &mut nested_execution,
+            budget,
+        )?;
+        self.prove_anonymous_owner_xrefs(
+            content,
+            environment,
+            parent_definition,
+            &grandchild_definition,
+            site.method,
+            site.allocation_bci,
+            site.constructor_bci,
+            grandchild_name.as_bytes(),
+            &field_descriptor,
+            &capture_proof.constructor.descriptor.0,
+            Some(&capture_proof),
+            None,
+            &mut nested_execution,
+            budget,
+        )?;
+
+        let grandchild_item = charge_item(budget).map(|()| grandchild_read.class.clone())?;
+        let grandchild_request = ClassSourceRequest {
+            class: ClassRef::Definition {
+                definition: grandchild_definition.clone(),
+            },
+            environment: request.environment.clone(),
+        };
+        let (grandchild, _, grandchild_asts, _, _, _) = self.prepare_physical_class_source(
+            content,
+            &grandchild_request,
+            evidence,
+            environment,
+            snapshot,
+            root.view.clone(),
+            root.stages.clone(),
+            BoundClass {
+                read: grandchild_read,
+                search_coverage: None,
+                class_item: Some(grandchild_item),
+            },
+            nested_execution,
+            Vec::new(),
+            true,
+            budget,
+        )?;
+        if !matches!(grandchild.execution, ExecutionReport::Complete { .. })
+            || grandchild.fields.len() != 1
+            || grandchild.methods.len() != grandchild_facts.methods.len()
+            || grandchild_asts.len() != grandchild_facts.methods.len()
+            || grandchild_asts.iter().any(|(_, _, _, scan)| {
+                scan.as_ref()
+                    .is_none_or(|scan| !scan.complete || !scan.allocations.is_empty())
+            })
+            || grandchild.methods.iter().any(|method| {
+                !matches!(
+                    method.outcome,
+                    class_source::ClassSourceOutcome::Recovered { .. }
+                ) || !complete_anonymous_method(method)
+                    || method.declaration.is_none()
+            })
+        {
+            return Err(Error::unsupported(
+                "anonymous_nested_methods_incomplete",
+                "the inner physical class does not have a complete source method set",
+            ));
+        }
+        let inner_constructor = &capture_proof.constructor;
+        let mut inner_methods = Vec::new();
+        for method in &grandchild.methods {
+            if method.item.identity == *inner_constructor {
+                continue;
+            }
+            let Some((_, ast, _, _)) = grandchild_asts
+                .iter()
+                .find(|(member, _, _, _)| member == &method.item.identity)
+            else {
+                return Err(Error::unsupported(
+                    "anonymous_nested_method_ast_missing",
+                    "the inner method has no retained same-run AST",
+                ));
+            };
+            let body = jarde_java::report::emit_class_source_method_ast(ast, 6, budget).map_err(
+                |stop| {
+                    enum_projection_stop_error(
+                        stop,
+                        "nested anonymous interface projection",
+                        "anonymous_nested_ir_missing",
+                    )
+                },
+            )?;
+            let Some(method_text) = method.anonymous_projection_text_at(&body, 5) else {
+                return Err(Error::unsupported(
+                    "anonymous_nested_method_unspellable",
+                    "the inner method declaration cannot be placed in the nested anonymous body",
+                ));
+            };
+            inner_methods.push(method_text);
+        }
+        let hidden_parent_argument_bci = Some(
+            jarde_java::report::class_source_anonymous_outer_argument_bci(site.ast).ok_or_else(
+                || {
+                    Error::unsupported(
+                        "anonymous_nested_outer_argument_unproved",
+                        "the inner allocation does not pass exactly its parent receiver as capture",
+                    )
+                },
+            )?,
+        );
+        let Some(inner_body) = jarde_java::report::emit_class_source_anonymous_return_at(
+            site.ast,
+            site.allocation_bci,
+            &site.allocation_type,
+            &action_source_name.replace('/', "."),
+            &inner_methods.concat(),
+            hidden_parent_argument_bci,
+            4,
+            "                ",
+            budget,
+        )
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "nested anonymous interface projection",
+                "anonymous_nested_ir_missing",
+            )
+        })?
+        else {
+            return Err(Error::unsupported(
+                "anonymous_nested_return_emission_unmatched",
+                "the parent AST did not replace the exact nested allocation node",
+            ));
+        };
+        let Some(parent_method_text) =
+            parent_method_record.anonymous_projection_text_at(&inner_body.text, 3)
+        else {
+            return Err(Error::unsupported(
+                "anonymous_nested_parent_method_unspellable",
+                "the parent implementation cannot be placed around its proved inner expression",
+            ));
+        };
+        let parent_constructor = parent_facts
+            .methods
+            .iter()
+            .find(|method| method.name.raw().0 == b"<init>")
+            .ok_or_else(|| {
+                Error::unsupported(
+                    "anonymous_nested_parent_constructor_missing",
+                    "the parent anonymous class has no constructor",
+                )
+            })?;
+        if parent_constructor.descriptor.raw().0 != b"()V" {
+            return Err(Error::unsupported(
+                "anonymous_nested_parent_capture_unproved",
+                "the parent anonymous class constructor has extra capture parameters",
+            ));
+        }
+        let source_parent_interface = std::str::from_utf8(parent_interface)
+            .expect("the validated outer interface name is UTF-8")
+            .replace('/', ".");
+        let Some(root_body) = jarde_java::report::emit_class_source_anonymous_return(
+            root_ast,
+            root_allocation_bci,
+            root_allocation_type,
+            &source_parent_interface,
+            &parent_method_text,
+            None,
+            budget,
+        )
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "nested anonymous interface projection",
+                "anonymous_nested_ir_missing",
+            )
+        })?
+        else {
+            return Err(Error::unsupported(
+                "anonymous_nested_root_emission_unmatched",
+                "the root AST did not replace the exact outer allocation node",
+            ));
+        };
+        let Some(root_index) = root
+            .methods
+            .iter()
+            .position(|method| method.item.identity == *root_method)
+        else {
+            return Err(Error::unsupported(
+                "anonymous_root_method_missing",
+                "the root method report is absent for structured placement",
+            ));
+        };
+        let implementation_identity = PhysicalMethodId {
+            owner: grandchild_definition.clone(),
+            name: implementation_method.name.raw().clone(),
+            descriptor: implementation_method.descriptor.raw().clone(),
+        };
+        let implementation_bci = grandchild_asts
+            .iter()
+            .find(|(method, _, _, _)| method == &implementation_identity)
+            .and_then(|(_, ast, _, _)| {
+                jarde_java::report::class_source_method_first_instruction_bci(ast)
+            })
+            .ok_or_else(|| {
+                Error::unsupported(
+                    "anonymous_nested_method_source_anchor_missing",
+                    "the inner implementation has no exact retained-method instruction anchor",
+                )
+            })?;
+        let anchors = vec![
+            class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                definition: root.class.clone(),
+            },
+            class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                definition: parent_definition.clone(),
+            },
+            class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                definition: grandchild_definition.clone(),
+            },
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                method: root_method.clone(),
+                bci: root_allocation_bci,
+            },
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                method: root_method.clone(),
+                bci: root_constructor_bci,
+            },
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                method: site.method.clone(),
+                bci: site.allocation_bci,
+            },
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                method: site.method.clone(),
+                bci: site.constructor_bci,
+            },
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                method: implementation_identity,
+                bci: implementation_bci,
+            },
+        ];
+        let Some(projected_method) =
+            root.methods[root_index].anonymous_return_projection(&root_body, anchors)
+        else {
+            return Err(Error::unsupported(
+                "anonymous_nested_root_method_unspellable",
+                "the root expression span could not be attached to its physical anchors",
+            ));
+        };
+        let Some((projected_text, derived)) = class_source::source_text_with_method_projections(
+            root,
+            slice::from_ref(&projected_method),
+        ) else {
+            return Err(Error::unsupported(
+                "anonymous_nested_root_writer_rejected",
+                "the class-source writer could not reconstruct the unprojected root atomically",
+            ));
+        };
+        root.text = projected_text;
+        root.methods[root_index].text = projected_method.text;
+        root.anonymous_interface_projection =
+            class_source::ClassSourceAnonymousInterfaceProjection::Projected { derived };
+        merge_execution(&mut root.execution, parent_report.execution.clone());
+        merge_execution(&mut root.execution, grandchild.execution.clone());
         root.usage = budget.usage();
         Ok(())
     }
@@ -3252,6 +3962,7 @@ impl Engine {
                 .find(|m| m.name.raw().0 == b"<init>")
                 .map(|m| m.descriptor.raw().0.as_slice())
                 .unwrap_or_default(),
+            None,
             None,
             &mut child_execution,
             budget,
@@ -3513,7 +4224,8 @@ impl Engine {
                 "the selected root method is absent",
             ));
         };
-        let Some(projected) = root.methods[index].anonymous_return_projection_text(&body) else {
+        let Some(projected) = root.methods[index].anonymous_return_projection_text(&body.text)
+        else {
             return Err(Error::unsupported(
                 "anonymous_root_method_unspellable",
                 "the root method cannot wrap the anonymous expression",
@@ -3545,6 +4257,7 @@ impl Engine {
         capture_descriptor: &[u8],
         constructor_descriptor: &[u8],
         capture: Option<&class_source::MemberCaptureProof>,
+        descendant_capture: Option<&AnonymousDescendantCaptureXrefs<'_>>,
         execution: &mut ExecutionReport,
         budget: &mut Budget,
     ) -> Result<()> {
@@ -3605,6 +4318,10 @@ impl Engine {
         let mut allocation_uses = 0;
         let mut constructor_uses = 0;
         let mut nesting_uses = 0;
+        let mut descendant_field_descriptors = 0;
+        let mut descendant_constructor_descriptors = 0;
+        let mut descendant_enclosing_classes = 0;
+        let mut descendant_enclosing_methods = 0;
         for (snapshot_id, scope) in ranges {
             budget.poll()?;
             let Some(snapshot) = content
@@ -3710,6 +4427,89 @@ impl Engine {
                     }
                     _ => false,
                 };
+                let allowed_descendant_capture = match (
+                    &item.source.location,
+                    &item.target,
+                    item.operation,
+                    item.consumer,
+                ) {
+                    (
+                        Location::ClassOffset { definition, .. },
+                        XrefTarget::Symbol {
+                            value: SymbolRef::Class { owner },
+                        },
+                        XrefOperation::FieldDescriptor,
+                        Some(ConsumerKind::Type),
+                    ) if descendant_capture.is_some_and(|edge| {
+                        definition == edge.definition
+                            && owner.0 == edge.parent_name
+                            && edge.field_descriptor
+                                == [b"L".as_slice(), edge.parent_name, b";"].concat()
+                    }) =>
+                    {
+                        descendant_field_descriptors += 1;
+                        true
+                    }
+                    (
+                        Location::ClassOffset { definition, .. },
+                        XrefTarget::Symbol {
+                            value: SymbolRef::Class { owner },
+                        },
+                        XrefOperation::MethodDescriptor,
+                        Some(ConsumerKind::Type),
+                    ) if descendant_capture.is_some_and(|edge| {
+                        definition == edge.definition
+                            && owner.0 == edge.parent_name
+                            && descriptor_facts(edge.constructor_descriptor, DescriptorKind::Method)
+                                .is_ok_and(|facts| {
+                                    facts.parameters().iter().any(|part| {
+                                        part.bytes(edge.constructor_descriptor)
+                                            == Some(edge.field_descriptor)
+                                    })
+                                })
+                    }) =>
+                    {
+                        descendant_constructor_descriptors += 1;
+                        true
+                    }
+                    (
+                        Location::ClassOffset { definition, .. },
+                        XrefTarget::Symbol {
+                            value: SymbolRef::Class { owner },
+                        },
+                        XrefOperation::EnclosingMethod,
+                        Some(ConsumerKind::InnerNest),
+                    ) if descendant_capture.is_some_and(|edge| {
+                        definition == edge.definition && owner.0 == edge.parent_name
+                    }) =>
+                    {
+                        descendant_enclosing_classes += 1;
+                        true
+                    }
+                    (
+                        Location::ClassOffset { definition, .. },
+                        XrefTarget::Symbol {
+                            value:
+                                SymbolRef::Method {
+                                    owner,
+                                    name,
+                                    descriptor,
+                                },
+                        },
+                        XrefOperation::EnclosingMethod,
+                        Some(ConsumerKind::InnerNest),
+                    ) if descendant_capture.is_some_and(|edge| {
+                        definition == edge.definition
+                            && owner.0 == edge.parent_name
+                            && name.0 == edge.parent_method.name.0
+                            && descriptor.0 == edge.parent_method.descriptor.0
+                    }) =>
+                    {
+                        descendant_enclosing_methods += 1;
+                        true
+                    }
+                    _ => false,
+                };
                 let allowed_nesting = matches!(
                     (&item.source.location, &item.target),
                     (
@@ -3721,11 +4521,24 @@ impl Engine {
                         && owner.0 == child_name
                         && item.operation == XrefOperation::InnerClass
                         && item.consumer == Some(ConsumerKind::InnerNest)
+                ) || matches!(
+                    (&item.source.location, &item.target),
+                    (
+                        Location::ClassOffset { definition, .. },
+                        XrefTarget::Symbol {
+                            value: SymbolRef::Class { owner },
+                        },
+                    ) if descendant_capture.is_some_and(|edge| {
+                        definition == edge.definition && owner.0 == edge.parent_name
+                    }) && item.operation == XrefOperation::InnerClass
+                        && item.consumer == Some(ConsumerKind::InnerNest)
                 );
                 if allowed_nesting {
                     nesting_uses += 1;
                 }
-                if item.certainty != XrefCertainty::Exact || !(allowed_code || allowed_nesting) {
+                if item.certainty != XrefCertainty::Exact
+                    || !(allowed_code || allowed_nesting || allowed_descendant_capture)
+                {
                     let location = match &item.source.location {
                         Location::Code { method, bci } => {
                             format!(
@@ -3746,7 +4559,16 @@ impl Engine {
                 }
             }
         }
-        if allocation_uses != 1 || constructor_uses != 1 || nesting_uses != 2 {
+        let expected_nesting_uses = if descendant_capture.is_some() { 3 } else { 2 };
+        if allocation_uses != 1
+            || constructor_uses != 1
+            || nesting_uses != expected_nesting_uses
+            || (descendant_capture.is_some()
+                && (descendant_field_descriptors != 1
+                    || descendant_constructor_descriptors != 1
+                    || descendant_enclosing_classes != 1
+                    || descendant_enclosing_methods != 1))
+        {
             return Err(Error::unsupported(
                 "anonymous_interface_xref_not_unique",
                 "the selected input does not contain exactly one construction and two typed self rows",
@@ -3828,6 +4650,8 @@ impl Engine {
                     nested_enum_family: class_source::ClassSourceNestedEnumFamily::Absent,
                     nested_annotation_family:
                         class_source::ClassSourceNestedAnnotationFamily::Absent,
+                    anonymous_interface_projection:
+                        class_source::ClassSourceAnonymousInterfaceProjection::Absent,
                     bridge_proofs: Vec::new(),
                     enum_switch_proofs: Vec::new(),
                     initializer_proof: if read.facts.access_flags & ACC_INTERFACE != 0
@@ -6153,6 +6977,8 @@ impl Engine {
                 member_family: class_source::ClassSourceMemberFamily::Absent,
                 nested_enum_family: class_source::ClassSourceNestedEnumFamily::Absent,
                 nested_annotation_family: class_source::ClassSourceNestedAnnotationFamily::Absent,
+                anonymous_interface_projection:
+                    class_source::ClassSourceAnonymousInterfaceProjection::Absent,
                 bridge_proofs,
                 enum_switch_proofs,
                 initializer_proof,
@@ -7329,6 +8155,101 @@ fn unique_anonymous_allocation<'a>(
         return None;
     }
     Some(selected)
+}
+
+fn proved_nested_anonymous_site<'a>(
+    child: &'a ClassSourceReport,
+    child_asts: &'a [(
+        PhysicalMethodId,
+        jarde_java::report::ClassSourceMethodAst,
+        Option<jarde_java::report::GenericConstructorCandidate>,
+        Option<jarde_java::report::AnonymousAllocationScan>,
+    )],
+    facts: &ClassMemberFacts,
+    definition: &PhysicalDefinitionId,
+    budget: &mut Budget,
+) -> Result<Option<ProvedNestedAnonymousSite<'a>>> {
+    if facts.stopped_at.is_some()
+        || child.methods.len() != facts.method_count as usize
+        || child_asts.len() != facts.method_count as usize
+    {
+        return Ok(None);
+    }
+    let implementations: Vec<_> = facts
+        .methods
+        .iter()
+        .enumerate()
+        .filter(|(_, method)| method.name.raw().0 != b"<init>")
+        .collect();
+    let [(_, method)] = implementations.as_slice() else {
+        return Ok(None);
+    };
+    if method.access_flags & 0x0001 == 0
+        || method.access_flags & (0x0008 | 0x0040 | 0x1000) != 0
+        || facts
+            .methods
+            .iter()
+            .filter(|method| method.name.raw().0 == b"<init>")
+            .count()
+            != 1
+    {
+        return Ok(None);
+    }
+    let method_id = PhysicalMethodId {
+        owner: definition.clone(),
+        name: method.name.raw().clone(),
+        descriptor: method.descriptor.raw().clone(),
+    };
+    let Some((retained_id, ast, _, _)) = child_asts
+        .iter()
+        .find(|(member, _, _, _)| member == &method_id)
+    else {
+        return Ok(None);
+    };
+    let Some((origin_bcis, target, argument_bcis)) =
+        jarde_java::report::class_source_anonymous_return_site(ast)
+    else {
+        return Ok(None);
+    };
+    let expected_methods: Vec<_> = facts
+        .methods
+        .iter()
+        .filter(|method| code_shell(method).is_some())
+        .map(|method| PhysicalMethodId {
+            owner: definition.clone(),
+            name: method.name.raw().clone(),
+            descriptor: method.descriptor.raw().clone(),
+        })
+        .collect();
+    let selected_type = target.replace('.', "/");
+    let scans: Vec<_> = child_asts
+        .iter()
+        .map(|(member, _, _, scan)| (member.clone(), scan.clone()))
+        .collect();
+    let Some(allocation) = unique_anonymous_allocation(&scans, &expected_methods, &selected_type)
+    else {
+        return Ok(None);
+    };
+    budget.poll()?;
+    if retained_id != &method_id
+        || allocation.member != method_id
+        || !origin_bcis.contains(&allocation.head_bci)
+        || !allocation
+            .constructor_bci
+            .is_some_and(|bci| origin_bcis.contains(&bci))
+        || allocation.argument_bcis != argument_bcis
+    {
+        return Ok(None);
+    }
+    Ok(Some(ProvedNestedAnonymousSite {
+        method: retained_id,
+        ast,
+        allocation_bci: allocation.head_bci,
+        constructor_bci: allocation
+            .constructor_bci
+            .expect("verified anonymous allocation has a constructor BCI"),
+        allocation_type: target,
+    }))
 }
 
 fn complete_anonymous_method(method: &ClassSourceMethod) -> bool {

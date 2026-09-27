@@ -1313,7 +1313,7 @@ fn test_method_reference(bytes: &[u8], owner: &[u8], name: &[u8], descriptor: &[
                 cursor += 3;
                 index += 1;
             }
-            10 | 11 => {
+            9 | 10 | 11 => {
                 references[index] = Some((
                     test_u16(bytes, cursor + 1) as u16,
                     test_u16(bytes, cursor + 3) as u16,
@@ -1329,8 +1329,8 @@ fn test_method_reference(bytes: &[u8], owner: &[u8], name: &[u8], descriptor: &[
                 cursor += 5;
                 index += 1;
             }
-            3 | 4 | 9 | 17 | 18 => {
-                cursor += if matches!(tag, 3 | 4) { 5 } else { 5 };
+            3 | 4 | 17 | 18 => {
+                cursor += 5;
                 index += 1;
             }
             5 | 6 => {
@@ -1564,6 +1564,366 @@ fn proved_anonymous_interface_projects_from_both_physical_method_asts() {
                 segment.origin().primary().method() == Some(&value.item.identity)
             })
     ));
+}
+
+fn dt07_nested_anonymous_snapshot(
+    scratch: &BridgeProjectionScratch,
+    nested_override: Option<&str>,
+    other_source: Option<&str>,
+    corrupt_parent_descriptor: bool,
+    corrupt_inner_code: bool,
+    corrupt_inner_enclosing: bool,
+    read_inner_capture: bool,
+) -> ArtifactSnapshot {
+    let directory = scratch.child("dt07-nested-input");
+    let source_directory = directory.join("p");
+    fs::create_dir_all(&source_directory).expect("create the frozen Java package directory");
+    for (name, source) in [
+        (
+            "Action.java",
+            include_str!(
+                "../openspec/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Action.java"
+            ),
+        ),
+        (
+            "Factory.java",
+            include_str!(
+                "../openspec/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Factory.java"
+            ),
+        ),
+        (
+            "Nested.java",
+            nested_override.unwrap_or(include_str!(
+                "../openspec/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Nested.java"
+            )),
+        ),
+        (
+            "Runner.java",
+            include_str!(
+                "../openspec/evidence/java-syntax-2026-09-27/dt07-nested-anonymous/input/p/Runner.java"
+            ),
+        ),
+    ] {
+        fs::write(source_directory.join(name), source).expect("write the frozen DT-07 source");
+    }
+    let sources = vec![
+        source_directory.join("Action.java"),
+        source_directory.join("Factory.java"),
+        source_directory.join("Nested.java"),
+        source_directory.join("Runner.java"),
+    ];
+    if let Some(source) = other_source {
+        fs::write(source_directory.join("Other.java"), source)
+            .expect("write the cross-class anonymous-child use");
+    }
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&directory)
+        .args(sources)
+        .output()
+        .expect("JDK javac is available for the fixed DT-07 input");
+    assert!(
+        compile.status.success(),
+        "javac rejected the frozen DT-07 source:\n{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    if other_source.is_some() {
+        let compile_other = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-classpath"])
+            .arg(&directory)
+            .arg("-d")
+            .arg(&directory)
+            .arg(source_directory.join("Other.java"))
+            .output()
+            .expect("JDK javac can compile the separate anonymous-child consumer");
+        assert!(
+            compile_other.status.success(),
+            "javac rejected the cross-class use:\n{}",
+            String::from_utf8_lossy(&compile_other.stderr)
+        );
+    }
+    let mut names = vec![
+        "Action.class",
+        "Factory.class",
+        "Nested.class",
+        "Nested$1.class",
+        "Nested$1$1.class",
+        "Runner.class",
+    ];
+    if other_source.is_some() {
+        names.push("Other.class");
+    }
+    let mut class_bytes: Vec<_> = names
+        .iter()
+        .map(|name| {
+            fs::read(directory.join("p").join(name))
+                .unwrap_or_else(|error| panic!("read compiled class {name}: {error}"))
+        })
+        .collect();
+    if corrupt_parent_descriptor {
+        let descriptor = b"()Lp/Action;";
+        let replacement = b"()Lp/Except;";
+        let position = class_bytes[3]
+            .windows(descriptor.len())
+            .position(|window| window == descriptor)
+            .expect("the parent implementation has the direct Action return descriptor");
+        class_bytes[3][position..position + replacement.len()].copy_from_slice(replacement);
+    }
+    if corrupt_inner_code {
+        let run = test_method_headers(&class_bytes[4])
+            .into_iter()
+            .find(|method| method.name == b"run" && method.descriptor == b"()V")
+            .expect("the inner child implements Action.run()");
+        let code = run
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name == b"Code")
+            .expect("Action.run() has a Code attribute");
+        class_bytes[4][code.data_offset + 8] = 0xcb;
+    }
+    if corrupt_inner_enclosing {
+        class_bytes[4] = patch_enclosing_method(&class_bytes[4], b"<init>", b"()V");
+    }
+    if read_inner_capture {
+        let run = test_method_headers(&class_bytes[4])
+            .into_iter()
+            .find(|method| method.name == b"run" && method.descriptor == b"()V")
+            .expect("the inner child implements Action.run()");
+        let code = run
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name == b"Code")
+            .expect("Action.run() has a Code attribute");
+        let code_start = code.data_offset + 8;
+        let old_length = test_u32(&class_bytes[4], code.data_offset + 4);
+        let field =
+            test_method_reference(&class_bytes[4], b"p/Nested$1$1", b"this$0", b"Lp/Nested$1;");
+        let mut prefix = vec![0x2a, 0xb4];
+        prefix.extend_from_slice(&field.to_be_bytes());
+        prefix.push(0x57);
+        class_bytes[4].splice(code_start..code_start, prefix);
+        test_put_u32(&mut class_bytes[4], code.data_offset + 4, old_length + 5);
+        test_put_u32(&mut class_bytes[4], code.length_offset, code.length + 5);
+    }
+    let entries: Vec<_> = names
+        .iter()
+        .zip(&class_bytes)
+        .map(|(name, bytes)| {
+            let archive_name = format!("p/{name}");
+            (archive_name.into_bytes(), bytes.as_slice())
+        })
+        .collect();
+    let entries: Vec<_> = entries
+        .iter()
+        .map(|(name, bytes)| (name.as_slice(), *bytes))
+        .collect();
+    open(zip_of(&entries))
+}
+
+#[test]
+fn proved_two_level_anonymous_interfaces_project_as_one_nested_root_expression() {
+    let scratch = BridgeProjectionScratch::new();
+    let snapshot = dt07_nested_anonymous_snapshot(&scratch, None, None, false, false, false, false);
+    let root = class_source_of(&snapshot, "p/Nested", EnvironmentPolicy::PlainJar);
+    assert!(
+        matches!(
+            root.anonymous_interface_projection,
+            ClassSourceAnonymousInterfaceProjection::Projected { .. }
+        ),
+        "projection={:#?} diagnostics={:#?}",
+        root.anonymous_interface_projection,
+        root.diagnostics
+    );
+    assert!(root.text.contains("new p.Factory() {"), "{}", root.text);
+    assert!(root.text.contains("new p.Action() {"), "{}", root.text);
+    assert!(!root.text.contains("Nested$1"), "{}", root.text);
+    assert!(root.text.contains("public void run()"), "{}", root.text);
+    let physical_child = class_source_of(&snapshot, "p/Nested$1$1", EnvironmentPolicy::PlainJar);
+    assert!(
+        physical_child.text.contains("class Nested$1$1"),
+        "the physical child remains independently queryable: {}",
+        physical_child.text
+    );
+}
+
+#[test]
+fn nested_anonymous_projection_refuses_duplicate_inner_allocations_and_constructor_effects() {
+    let scratch = BridgeProjectionScratch::new();
+    let variants = [
+        (
+            "duplicate-inner-site",
+            "package p; public final class Nested { public static int trace; public static Factory create() { return new Factory() { public Action make() { if (System.nanoTime() == 0) return new Action() { public void run() { trace++; } }; return new Action() { public void run() { trace++; } }; } }; } }",
+        ),
+        (
+            "inner-constructor-effect",
+            "package p; public final class Nested { public static int trace; public static Factory create() { return new Factory() { public Action make() { return new Action() { { System.nanoTime(); } public void run() { trace++; } }; } }; } }",
+        ),
+        (
+            "parent-field",
+            "package p; public final class Nested { public static int trace; public static Factory create() { return new Factory() { int state; public Action make() { return new Action() { public void run() { trace += state; } }; } }; } }",
+        ),
+    ];
+    for (name, source) in variants {
+        let case = BridgeProjectionScratch(scratch.child(name));
+        let snapshot =
+            dt07_nested_anonymous_snapshot(&case, Some(source), None, false, false, false, false);
+        let root = class_source_of(&snapshot, "p/Nested", EnvironmentPolicy::PlainJar);
+        assert!(
+            !matches!(
+                root.anonymous_interface_projection,
+                ClassSourceAnonymousInterfaceProjection::Projected { .. }
+            ),
+            "{name}: projection was published: {:#?}",
+            root.anonymous_interface_projection
+        );
+        assert!(
+            !root.text.contains("new p.Factory() {"),
+            "{name}: {}",
+            root.text
+        );
+    }
+}
+
+#[test]
+fn nested_anonymous_projection_refuses_mismatched_relations_and_incomplete_leaf() {
+    let scratch = BridgeProjectionScratch::new();
+    for (name, corrupt_descriptor, corrupt_code, corrupt_enclosing, read_capture) in [
+        ("parent-descriptor", true, false, false, false),
+        ("leaf-code", false, true, false, false),
+        ("inner-enclosing-method", false, false, true, false),
+        ("read-immediate-parent-capture", false, false, false, true),
+    ] {
+        let case = BridgeProjectionScratch(scratch.child(name));
+        let snapshot = dt07_nested_anonymous_snapshot(
+            &case,
+            None,
+            None,
+            corrupt_descriptor,
+            corrupt_code,
+            corrupt_enclosing,
+            read_capture,
+        );
+        let root = class_source_of(&snapshot, "p/Nested", EnvironmentPolicy::PlainJar);
+        assert!(
+            !matches!(
+                root.anonymous_interface_projection,
+                ClassSourceAnonymousInterfaceProjection::Projected { .. }
+            ),
+            "{name}: projection was published: {:#?}",
+            root.anonymous_interface_projection
+        );
+        assert!(
+            !root.text.contains("new p.Action() {"),
+            "{name}: {}",
+            root.text
+        );
+    }
+}
+
+#[test]
+fn nested_anonymous_projection_refuses_cross_class_identity_use_of_the_grandchild() {
+    let scratch = BridgeProjectionScratch::new();
+    let snapshot = dt07_nested_anonymous_snapshot(
+        &scratch,
+        None,
+        Some(
+            "package p; final class Other { static Action use() { return new Nested$1$1(null); } }",
+        ),
+        false,
+        false,
+        false,
+        false,
+    );
+    let root = class_source_of(&snapshot, "p/Nested", EnvironmentPolicy::PlainJar);
+    assert!(
+        !matches!(
+            root.anonymous_interface_projection,
+            ClassSourceAnonymousInterfaceProjection::Projected { .. }
+        ),
+        "projection was published: {:#?}",
+        root.anonymous_interface_projection
+    );
+    assert!(!root.text.contains("new p.Action() {"), "{}", root.text);
+}
+
+#[test]
+fn nested_anonymous_projection_budget_and_cancellation_never_publish_partial_text() {
+    let scratch = BridgeProjectionScratch::new();
+    let snapshot = dt07_nested_anonymous_snapshot(&scratch, None, None, false, false, false, false);
+    let request = request(
+        &snapshot,
+        ClassRef::Name {
+            class: ClassNameQuery::internal("p/Nested"),
+        },
+        EnvironmentPolicy::PlainJar,
+    );
+    let engine = Engine::new();
+    let complete = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .expect("the complete nested request is legal"),
+    );
+    assert!(complete.text.contains("new p.Action() {"));
+    let cap = complete.usage.output_bytes.saturating_sub(1);
+    let mut constrained = task_budget(&[
+        BudgetOverride::new("output_bytes", cap).expect("the budget override is valid")
+    ])
+    .expect("the constrained task budget is valid");
+    let stopped = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut constrained,
+            )
+            .expect("a budget stop retains the class report"),
+    );
+    assert!(matches!(
+        stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::OutputBytes
+            },
+            ..
+        }
+    ));
+    assert!(
+        !stopped.text.contains("new p.Action() {"),
+        "{}",
+        stopped.text
+    );
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let limits = task_budget(&[])
+        .expect("default task limits are valid")
+        .limits()
+        .clone();
+    let mut cancelled = Budget::with_cancellation_token(limits, token);
+    let outcome = engine
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut cancelled,
+        )
+        .expect("cancellation is reported as an incomplete operation");
+    match outcome {
+        OperationOutcome::Incomplete(selection) => assert!(matches!(
+            selection.execution,
+            ExecutionReport::Cancelled { .. }
+        )),
+        OperationOutcome::Performed(report) => {
+            assert!(!report.text.contains("new p.Action() {"), "{}", report.text);
+        }
+        OperationOutcome::Ambiguous(_) => panic!("the exact root class is unambiguous"),
+    }
 }
 
 #[test]

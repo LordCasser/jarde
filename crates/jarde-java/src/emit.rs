@@ -189,7 +189,7 @@ pub(crate) fn emit_class_source_anonymous_return(
     hidden_outer_argument_bci: Option<u32>,
     closing_indent: &str,
     budget: &mut Budget,
-) -> Result<(String, bool), StopReason> {
+) -> Result<(String, bool, Option<(usize, usize)>), StopReason> {
     let mut emitter = Emitter::commit(budget, Some(member));
     emitter.anonymous_override = Some(AnonymousOverride {
         allocation_bci,
@@ -202,7 +202,8 @@ pub(crate) fn emit_class_source_anonymous_return(
     match emitter.stmts(statements, indentation) {
         Ok(()) => {
             let matched = emitter.anonymous_override_matched;
-            Ok((emitter.finish().text, matched))
+            let range = emitter.anonymous_override_range;
+            Ok((emitter.finish().text, matched, range))
         }
         Err(Halt::Stop(stop)) => Err(stop),
         Err(Halt::PhaseStopped) => unreachable!("anonymous class-source emission has no phase"),
@@ -349,6 +350,7 @@ struct Emitter<'a> {
     statements: usize,
     anonymous_override: Option<AnonymousOverride<'a>>,
     anonymous_override_matched: bool,
+    anonymous_override_range: Option<(usize, usize)>,
 }
 
 #[derive(Clone, Copy)]
@@ -389,6 +391,7 @@ impl<'a> Emitter<'a> {
             statements: 0,
             anonymous_override: None,
             anonymous_override_matched: false,
+            anonymous_override_range: None,
         }
     }
 
@@ -417,6 +420,7 @@ impl<'a> Emitter<'a> {
             statements: 0,
             anonymous_override: None,
             anonymous_override_matched: false,
+            anonymous_override_range: None,
         }
     }
 
@@ -1007,6 +1011,7 @@ impl<'a> Emitter<'a> {
                             .iter()
                             .any(|origin| origin.bci() == override_.allocation_bci))
                 {
+                    let override_start = emitter.text.len();
                     emitter.put("new ", at)?;
                     emitter.put(override_.source_type, at)?;
                     emitter.put("(", at)?;
@@ -1024,7 +1029,9 @@ impl<'a> Emitter<'a> {
                     emitter.put(override_.methods, at)?;
                     emitter.put(override_.closing_indent, at)?;
                     emitter.anonymous_override_matched = true;
-                    return emitter.put("}", at);
+                    emitter.put("}", at)?;
+                    emitter.anonymous_override_range = Some((override_start, emitter.text.len()));
+                    return Ok(());
                 }
                 if let (Some(qualifier), Some(member_name)) = (qualifier, member_name) {
                     emitter.operand(qualifier, PRIMARY)?;

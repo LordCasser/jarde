@@ -138,7 +138,9 @@ def main():
             raise RuntimeError(f"JADX complete source failed Java 8 compile/run: {jadx}")
 
         jarde_copy = out / "jarde" / "source" / "p"
+        physical_copy = out / "jarde" / "physical" / "p"
         jarde_copy.mkdir(parents=True)
+        physical_copy.mkdir(parents=True)
         class_exits = {}
         for internal_name in CLASSES:
             simple_name = internal_name.rsplit("/", 1)[1]
@@ -149,7 +151,9 @@ def main():
                 out / "jarde" / f"{simple_name}.text.log",
             )
             class_exits[internal_name] = source_result.returncode
-            (jarde_copy / f"{simple_name}.java").write_text(source_result.stdout)
+            (physical_copy / f"{simple_name}.java").write_text(source_result.stdout)
+            if args.mode == "baseline" or internal_name in ("p/Action", "p/Factory", "p/Nested"):
+                (jarde_copy / f"{simple_name}.java").write_text(source_result.stdout)
         root_json = run(
             [args.jarde, "class-source", "--input", jar, "--class", "p/Nested",
              "--policy", "plain-jar", "--release", "8", "--evidence", "essential",
@@ -186,8 +190,16 @@ def main():
             if child_source.index("this.this$0 = arg1;") > child_source.index("super();"):
                 raise RuntimeError("the child source no longer has its constructor write before super")
         else:
-            if "anonymous_interface_child_additional_use" in refusals:
-                raise RuntimeError("fixed Jarde root still rejects the nested child use")
+            projection = report.get("anonymous_interface_projection", {})
+            root_source = (jarde_copy / "Nested.java").read_text()
+            if projection.get("state") != "projected":
+                raise RuntimeError(f"fixed Jarde root did not report a committed projection: {projection}")
+            if "new p.Factory() {" not in root_source or "new p.Action() {" not in root_source:
+                raise RuntimeError("fixed Jarde root source is missing a nested anonymous interface expression")
+            if "Nested$1" in root_source or "Nested$1$1" in root_source:
+                raise RuntimeError("fixed Jarde root source leaked a physical anonymous binary name")
+            if any(class_exits[name] != 0 for name in CLASSES):
+                raise RuntimeError(f"a physical class-source query failed: {class_exits}")
             if jarde["javac_exit"] or jarde["runtime_exit"] or jarde["runtime_stdout"] != EXPECTED:
                 raise RuntimeError(f"fixed Jarde complete source failed Java 8 compile/run: {jarde}")
 

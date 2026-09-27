@@ -1,0 +1,56 @@
+{
+  "fixed_jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "fixed_jadx_test_sha256": {
+    "inner/TestNestedAnonymousClass.java": "f5f2158a5b4ea40b09e17e53c4aed35627884e0beca3d90cb0e3468386d4d25f",
+    "inner/TestAnonymousClass12.java": "a0730f2075a91caf48b8daa0b8499efb653c7625f8bfc9e509783b18c3400f71"
+  },
+  "jarde_cli_sha256": "c87341a955a89d3439eb0cb795b22a424452da3356b4d1462ac43b800856d74e",
+  "mode": "fixed",
+  "input_sha256": {
+    "Action.java": "69075d6235f4e67ef7548db3bddd2bb98c45931e08ef498b68c8698d51878016",
+    "Factory.java": "9052a69ae53c6819c5e3d11e1760f39f0754e59d840415830cdeffaf2a1eb51e",
+    "Nested.java": "bcbc4ceaee81bec0aca6a906e74e88855fee1b8b6191a17c1d5692b5ddd5e2f3",
+    "Runner.java": "4c3b9f6b744fab6852f6fd5249d9de3972f96578cb603d8809175a38e8ff527c"
+  },
+  "original_class_sha256": {
+    "p/Action.class": "ec802812ce403654f79fe0a06c016f37ff406189037027189f55d3f60e1e59d5",
+    "p/Factory.class": "6f2476064f6bca60e29560dbc6b5c53c708f71c10ad7f8143e3a84cd44ce5902",
+    "p/Nested$1$1.class": "c0a1ea56cd5639a9b5c4a8f9c57052befa18dc17cfd9b891a16a23447f3c7639",
+    "p/Nested$1.class": "a92e34f25af304078c5315761651f6811dd35e54bdf520c5e192fe1650290622",
+    "p/Nested.class": "dabbaa7d0ecd9c25b862180ddbf2f67dc8f6c01231f2ca3c2a1394e7d92d6e42",
+    "p/Runner.class": "ad6b58f4fd25776758989f4d50eb7d0a97a6258d8739e8e42814c96c0e8598a2"
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "runtime_stdout": "1"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "runtime_stdout": "1"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "runtime_stdout": "1"
+  },
+  "jarde_class_source_exits": {
+    "p/Action": 0,
+    "p/Factory": 0,
+    "p/Nested": 0,
+    "p/Nested$1": 0,
+    "p/Nested$1$1": 0
+  },
+  "jarde_refusals": [],
+  "jadx_source_sha256": {
+    "Action.java": "67bb0a65a16239b87d02c1dcf99c7d5ffe8f9fa966b0b2ac6cee6c34e841485e",
+    "Factory.java": "b7d77cad25b0b88c6bd7f57bee04d8feaba38232498cfb919df7e4dff1df1977",
+    "Nested.java": "f1244c217d3b9850109602b6ec40152e762b49a11ae9a18d077a533d3b32ab91"
+  },
+  "jarde_source_sha256": {
+    "Action.java": "9cbffdc8948509bdc60f4d60b147f9459a9341e4c41f6474aea94d42f50d9592",
+    "Factory.java": "f159a2a2aab5ae1b20d252746138fd94e757e0eafc506be5b49181f47e0743b5",
+    "Nested.java": "0278125f36709e80a53391e11bf5074463303e7814f2f057d31762367613a03b"
+  }
+}

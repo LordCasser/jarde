@@ -21,4 +21,4 @@ DT-07 的固定 `TestNestedAnonymousClass` 形态把一个匿名接口实现作�
 
 ## Impact
 
-影响 `src/facade.rs` 的类级匿名关系闭合与 `src/class_source.rs` 的结构化文本装配，使用 `jarde-java` 同次 AST/`AnonymousAllocationScan`、reader 的 typed nesting、`jarde-query` 的范围 XRef 和现有预算。保持物理 class/method 身份及单类查询可用；不新增公开 API、全局索引、CLI 协议或依赖。审计证据见 [DT-07 双层匿名接口审计](../../evidence/java-syntax-2026-09-27/dt07-nested-anonymous/analysis.md)。
+影响 `src/facade.rs` 的类级匿名关系闭合与 `src/class_source.rs` 的结构化文本装配，使用 `jarde-java` 同次 AST/`AnonymousAllocationScan`、reader 的 typed nesting、`jarde-query` 的范围 XRef 和现有预算。类源码报告增加匿名接口投影状态及来源范围，供调用方判断闭合证明和拒绝原因；保持物理 class/method 身份及单类查询可用，不新增全局索引、CLI 命令或依赖。审计证据见 [DT-07 双层匿名接口审计](../../evidence/java-syntax-2026-09-27/dt07-nested-anonymous/analysis.md)。

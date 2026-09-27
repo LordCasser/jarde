@@ -516,6 +516,16 @@ pub fn class_source_single_parameter_name(ast: &ClassSourceMethodAst, slot: u16)
         .flatten()
 }
 
+/// The first retained instruction BCI of the AST's own complete physical method.
+#[doc(hidden)]
+pub fn class_source_method_first_instruction_bci(ast: &ClassSourceMethodAst) -> Option<u32> {
+    if ast.projection.complete_code {
+        ast.projection.instruction_bcis.first().copied()
+    } else {
+        None
+    }
+}
+
 /// Emits the retained statements of one selected physical class-source method. The supplied
 /// indentation is an adapter concern; the AST and physical method identity remain this run's.
 #[doc(hidden)]
@@ -931,20 +941,61 @@ pub fn emit_class_source_anonymous_return(
     methods: &str,
     hidden_outer_argument_bci: Option<u32>,
     budget: &mut Budget,
-) -> Result<Option<String>, crate::stop::StopReason> {
-    let (text, matched) = crate::emit::emit_class_source_anonymous_return(
-        &ast.projection.program.stmts,
-        &ast.projection.member,
-        2,
+) -> Result<Option<ClassSourceAnonymousReturn>, crate::stop::StopReason> {
+    emit_class_source_anonymous_return_at(
+        ast,
         allocation_bci,
         allocation_type,
         source_type,
         methods,
         hidden_outer_argument_bci,
+        2,
         "        ",
         budget,
+    )
+}
+
+/// The exact root-method body and expression range emitted for one selected anonymous allocation.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAnonymousReturn {
+    pub text: String,
+    pub expression_range: std::ops::Range<usize>,
+}
+
+/// Nested form of [`emit_class_source_anonymous_return`] with an explicit AST/body indentation.
+#[doc(hidden)]
+pub fn emit_class_source_anonymous_return_at(
+    ast: &ClassSourceMethodAst,
+    allocation_bci: u32,
+    allocation_type: &str,
+    source_type: &str,
+    methods: &str,
+    hidden_outer_argument_bci: Option<u32>,
+    indentation: usize,
+    closing_indent: &str,
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceAnonymousReturn>, crate::stop::StopReason> {
+    let (text, matched, range) = crate::emit::emit_class_source_anonymous_return(
+        &ast.projection.program.stmts,
+        &ast.projection.member,
+        indentation,
+        allocation_bci,
+        allocation_type,
+        source_type,
+        methods,
+        hidden_outer_argument_bci,
+        closing_indent,
+        budget,
     )?;
-    Ok(matched.then_some(text))
+    Ok(if matched {
+        range.map(|(start, end)| ClassSourceAnonymousReturn {
+            text,
+            expression_range: start..end,
+        })
+    } else {
+        None
+    })
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
