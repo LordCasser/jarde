@@ -1,0 +1,8 @@
+normal=body,finally,0
+unsupported=body,finally,0
+null=body,finally,1
+error=body,finally,AssertionError:error
+finally=body,finally,IllegalArgumentException:finally
+unsupported-finally=body,finally,IllegalArgumentException:finally
+null-finally=body,finally,IllegalArgumentException:finally
+error-finally=body,finally,IllegalArgumentException:finally
