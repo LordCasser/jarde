@@ -13,4 +13,4 @@
 
 - [x] 3.1 原/JADX/Jarde **完整 Java 8 类源码**分别 `javac --release 8 -g:none`、`java -Xverify:all`，正常、具名 catch 和 `check()` 逐项与原 class 一致；再用 verifier 有效且保持 `test(Object)` 三行/三副本布局的抛出 `Error` 变体触发 catch-all，核对原异常身份、字段赋值一次及重抛。固定 JADX `--no-finally` 控制模式记录三份源码赋值，不要求 Jarde 提供该开关。
 - [x] 3.2 运行已验收的 `SharedFinallyCall`、`SharedFinally` 静态字段型、单出口 finally 与 typed catch 正反例；验证预算/取消原子性。`cargo test -p jarde-java --tests --locked`、`cargo fmt --all -- --check`、`cargo check --workspace --locked`、`openspec validate recover-shared-join-finally --strict` 与 `git diff --check` 通过，清理专用 Cargo target。
-- [ ] 3.3 root 独立复放完整三方类、负例、来源和旧形态回归，记录验收后再更新 CF-16 清单；未覆盖的 `FinallyOnce` 及其他固定测试保持未追平。
+- [x] 3.3 root 独立复放完整三方类、负例、来源和旧形态回归，记录验收后再更新 CF-16 清单；未覆盖的 `FinallyOnce` 及其他固定测试保持未追平。
