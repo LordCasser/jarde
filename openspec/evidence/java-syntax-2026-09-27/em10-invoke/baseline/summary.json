@@ -1,0 +1,57 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "test/java/jadx/tests/integration/invoke/TestInvoke1.java": "8506d42a27e8ab544c4dcd4237e9dc2080d235dcbb921e62ae6e62ec3a013c4d",
+    "test/java/jadx/tests/integration/invoke/TestInvokeWithWideVars.java": "806c76dd5da29e624fd09c7d70f54f165f4f648112666d6c5822ded71cd27427",
+    "test/java/jadx/tests/integration/invoke/TestInheritedStaticInvoke.java": "dedc9bb580063b696f6551bae8734e2743b8ddc7632fabb2f9d4bf757e8f7c63",
+    "test/java/jadx/tests/integration/invoke/TestInvokeInCatch.java": "209dc0ae630488880ac3a36e2819d612abbc5a995ee4b8a698c22f06dd1d5b70",
+    "main/java/jadx/core/dex/visitors/MethodInvokeVisitor.java": "60ee5bd34ad003d48c85bc622f7ac160f4a197acb894999140fcedf1914129ff",
+    "main/java/jadx/core/codegen/InsnGen.java": "c6308a71dd870d7f13bb8ac7efdb58191966cd6a5254aa11e443c95af6bafed6"
+  },
+  "jarde_cli_sha256": "4f65a3324ead365a4f59754e887407bb507cdcef4e10940716827f0b99e22d9f",
+  "input_sha256": {
+    "InvokeFixture.java": "7d00a1e6388bf89bc5fa4c1f65c9031fb7e562ec7bbe5b0ff5af9060426ed9ac",
+    "InvokeBase.java": "ffef4468c9a07400409381885cff41a2972912c87b1f32ebb06d7e307a4ffb69",
+    "InvokeTools.java": "37dfea139c3791b7896d6c8c42d32d6f9265f17ea20f0ee3b14f40c57f32257e",
+    "InvokeWorker.java": "228efba1e5a3c159bacb9375112de6ed8bf1ad15d4be2428ad3dd2eb027da358"
+  },
+  "original_class_sha256": {
+    "InvokeBase": "d348956267446d4060059947e0c8d89e81d5b7d92b1ced9ff9d399a778abd0f9",
+    "InvokeFixture": "8e28fd5f2f3a6a452afa4db25b173a81e65cee520dde2c50097cacac89b2959e",
+    "InvokeTools": "73f5a721650d7943818afa96b9e6975f6deb3220434cb2453b2d1cf93b06f301",
+    "InvokeWorker": "0def236814a767dde816c9d8d2d0980021ca5cc95db3433be14d46fa3a3c94be"
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "195",
+    "source_sha256": {
+      "InvokeBase.java": "ffef4468c9a07400409381885cff41a2972912c87b1f32ebb06d7e307a4ffb69",
+      "InvokeFixture.java": "7d00a1e6388bf89bc5fa4c1f65c9031fb7e562ec7bbe5b0ff5af9060426ed9ac",
+      "InvokeTools.java": "37dfea139c3791b7896d6c8c42d32d6f9265f17ea20f0ee3b14f40c57f32257e",
+      "InvokeWorker.java": "228efba1e5a3c159bacb9375112de6ed8bf1ad15d4be2428ad3dd2eb027da358"
+    }
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "195",
+    "source_sha256": {
+      "InvokeBase.java": "e27541084307f72b67c90f059a4ec297c4880a17eaef534fe93d1e5ebd6f5603",
+      "InvokeFixture.java": "17771dc88406f2206ad0bc31c473c12f94b7e0fcb2e391762c289be8dc83b80b",
+      "InvokeTools.java": "1cef2d5d1167f25e69ecbccebd3af92687c1dd14c52c37c3a55a7995e65e5890",
+      "InvokeWorker.java": "00b99d7fefd997e43a65f98c16d6b66300d9bc8bf32f94daf4ee59eb2d1d650a"
+    }
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "195",
+    "source_sha256": {
+      "InvokeBase.java": "b7c70818d231deaa16df907ac84f75947b834e8b3d7ca11866e72a0278e9b426",
+      "InvokeFixture.java": "16af5b9a182e11a7eb643a7f434b57c7896176d3b6c0814ed3508e7d88a406ee",
+      "InvokeTools.java": "f36453dd76e7e98c1fb238cd6eb55be2b60f41be5b70a2cb846670abae6305b7",
+      "InvokeWorker.java": "6049be0ee2a7ca75b561ee221aa4b20491422e8af030be92468581c096b29164"
+    }
+  }
+}
