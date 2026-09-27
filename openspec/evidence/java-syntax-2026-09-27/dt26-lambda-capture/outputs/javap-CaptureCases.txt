@@ -1,0 +1,40 @@
+public class dt26.CaptureCases {
+  public dt26.CaptureCases();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public java.util.function.IntUnaryOperator add(int);
+    Code:
+       0: iload_1
+       1: invokedynamic #7,  0              // InvokeDynamic #0:applyAsInt:(I)Ljava/util/function/IntUnaryOperator;
+       6: areturn
+
+  public java.util.function.IntSupplier bound(int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: invokedynamic #11,  0             // InvokeDynamic #1:getAsInt:(Ldt26/CaptureCases;I)Ljava/util/function/IntSupplier;
+       7: areturn
+
+  public int number();
+    Code:
+       0: bipush        -3
+       2: ireturn
+
+  private int lambda$bound$1(int);
+    Code:
+       0: aload_0
+       1: invokevirtual #15                 // Method number:()I
+       4: iload_1
+       5: iadd
+       6: ireturn
+
+  private static int lambda$add$0(int, int);
+    Code:
+       0: iload_1
+       1: iload_0
+       2: iadd
+       3: ireturn
+}

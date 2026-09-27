@@ -1,0 +1,23 @@
+package dt26;
+
+import java.util.function.IntSupplier;
+import java.util.function.IntUnaryOperator;
+
+/* JADX INFO: loaded from: input.jar:dt26/CaptureCases.class */
+public class CaptureCases {
+    public IntUnaryOperator add(int i) {
+        return i2 -> {
+            return i2 + i;
+        };
+    }
+
+    public IntSupplier bound(int i) {
+        return () -> {
+            return number() + i;
+        };
+    }
+
+    public int number() {
+        return -3;
+    }
+}

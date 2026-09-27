@@ -1,0 +1,48 @@
+// jarde: presentation of `dt26/CaptureCases` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt26;
+
+public class CaptureCases extends java.lang.Object {
+    public CaptureCases() {
+        // @method <init>()V
+        // @declaration a constructor of `dt26.CaptureCases`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public java.util.function.IntUnaryOperator add(int arg1) {
+        // @method add(I)Ljava/util/function/IntUnaryOperator;
+        // @declaration an instance method of `dt26.CaptureCases`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return (int p0) -> dt26.CaptureCases.lambda$add$0(arg1, p0);
+    }
+
+    public java.util.function.IntSupplier bound(int arg1) {
+        // @method bound(I)Ljava/util/function/IntSupplier;
+        // @declaration an instance method of `dt26.CaptureCases`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return () -> this.lambda$bound$1(arg1);
+    }
+
+    public int number() {
+        // @method number()I
+        // @declaration an instance method of `dt26.CaptureCases`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return -3;
+    }
+
+    private int lambda$bound$1(int arg1) {
+        // @method lambda$bound$1(I)I
+        // @declaration an instance method of `dt26.CaptureCases`, member flags 0x1002
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.number() + arg1;
+    }
+
+    private static int lambda$add$0(int arg0, int arg1) {
+        // @method lambda$add$0(II)I
+        // @declaration a static method of `dt26.CaptureCases`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1 + arg0;
+    }
+}

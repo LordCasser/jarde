@@ -1,0 +1,7 @@
+original: javac --release 8 PASS; java -Xverify:all Runner PASS; stdout=7,15,42
+jadx: javac --release 8 PASS; java -Xverify:all defpackage.Runner PASS; stdout=7,15,42
+jarde class-source: synthetic helpers retained with flags 0x100a; lambda expressions invoke LambdaFixture.lambda$...
+jarde: javac --release 8 FAIL (javac-exit=1; compiler-synthesized symbol conflicts for lambda$zero$0(), lambda$one$1(int), lambda$two$2(int,int)); runtime not run because Runner.class was not produced
+Fixture: no-capture top-level Java 8 IntSupplier / IntUnaryOperator / IntBinaryOperator; 0/1/2 int SAM parameters
+Reference JADX revision: 2fb1b16386941660fda07e9017285aec40fcb37f
+Jarde CLI SHA-256: 4726f7c997f6a895cc7184a895d8b7371e48a846a35ddcdad24a6eb443a98c0e

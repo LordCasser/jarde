@@ -1,0 +1,22 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+LambdaFixture.java:33: 错误: 生成类 LambdaFixture 时出错
+    private static int lambda$two$2(int arg0, int arg1) {
+                       ^
+  (符号lambda$two$2(int,int)与LambdaFixture中的 compiler-synthesized 符号冲突)
+LambdaFixture.java:40: 错误: 生成类 LambdaFixture 时出错
+    private static int lambda$one$1(int arg0) {
+                       ^
+  (符号lambda$one$1(int)与LambdaFixture中的 compiler-synthesized 符号冲突)
+LambdaFixture.java:47: 错误: 生成类 LambdaFixture 时出错
+    private static int lambda$zero$0() {
+                       ^
+  (符号lambda$zero$0()与LambdaFixture中的 compiler-synthesized 符号冲突)
+LambdaFixture.java:1: 错误: 生成类 LambdaFixture 时出错
+// jarde: presentation of `LambdaFixture` from the class file's own declaration and one recovery run per member.
+^
+  (符号lambda$two$2(int,int)与LambdaFixture中的 compiler-synthesized 符号冲突)
+4 个错误
+3 个警告
+javac-exit=1
