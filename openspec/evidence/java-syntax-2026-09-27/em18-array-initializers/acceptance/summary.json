@@ -1,0 +1,36 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_test_sha256": {
+    "arrays/TestArrayFill.java": "b256b87e7467f17f149193e1e9708ae1fd2d1e6e93303ca6ecd52329812246ce",
+    "arrays/TestArrayFill2.java": "2aa4e56ea67144f2a1fb72048f9e5f430c7f351a1e4b1efe2e9d34ab9f715144",
+    "arrays/TestArrayFillNegative.java": "c1a10209342aba4e3a1fda64e1eee30309b80b613c0e6b3485fa169a595b80a1",
+    "types/TestArrayTypes.java": "8e7ee5ce0e376136a99e29a7fd17039b6906d4bfb2c7f22f0aad91b2f37a14b5"
+  },
+  "jarde_cli_sha256": "8f1f0012324350e4fc65c7fef4b3e3835102e6d4fda00df280b466270c98e727",
+  "input_sha256": {
+    "Arrays.java": "05b14953d7640c0875895e638c6b69bc26c88af86930ef0544dd0361ee8e6397",
+    "Runner.java": "4e439b236ffc9ca83f042e1795ca682609381afbe95c2737c427785eb70d0ccd"
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "[1, 2, 3]\n[1, 3, 2]\n[1, 2, 6]\n[1, 2, 3]\n1",
+    "source_sha256": "05b14953d7640c0875895e638c6b69bc26c88af86930ef0544dd0361ee8e6397"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "[1, 2, 3]\n[1, 3, 2]\n[1, 2, 6]\n[1, 2, 3]\n1",
+    "source_sha256": "0fbd6f06d4ad1569c57cda7eb8ca623cce319da30b0facd8f478a5e4365ec087"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "[1, 2, 3]\n[1, 3, 2]\n[1, 2, 6]\n[1, 2, 3]\n1",
+    "source_sha256": "7591cc36940e9f213af44feba9cf812229a0b9615206507257723947e332ef1a"
+  },
+  "postfix_source": {
+    "jadx": "new int[]{1, i, (i + 1) * 2}",
+    "jarde": "new int[]{1, arg0++, arg0 * 2}"
+  }
+}
