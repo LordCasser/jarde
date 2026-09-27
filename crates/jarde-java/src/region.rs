@@ -3689,16 +3689,9 @@ impl Walker<'_> {
                     let boundary_node = shape.join.as_ref().and_then(|id| self.view.index_of(id));
                     let (tail, _) =
                         self.region_at(&tail_start, &frame.protected(boundary_node, node))?;
-                    let tail = if certified {
-                        sequence_region(tail)
-                    } else {
-                        let (tail, tail_tails) = split(tail);
-                        tails.extend(tail_tails);
-                        tail
-                    };
                     (
                         Region::Sequence {
-                            regions: vec![inner_region, tail],
+                            regions: vec![inner_region, sequence_region(tail)],
                         },
                         shape.join.clone(),
                     )

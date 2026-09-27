@@ -939,10 +939,12 @@ fn declarations(
             continue;
         }
         let crosses_exception = crosses_exception_region(variable_uses, &paths);
-        let store_type_is_proven = matches!(
-            plan.decided.get(variable),
-            Some(Decided::Type(Type::Int | Type::Boolean))
-        );
+        let has_increment = variable_uses.iter().any(|use_| {
+            use_.written.is_some()
+                && matches!(operations.get(use_.bci), Some(Operation::Increment { .. }))
+        });
+        let store_type_is_proven =
+            cross_exception_store_type_is_proven(plan.decided.get(variable), has_increment);
         if crosses_exception
             && (!store_type_is_proven
                 || !all_reads_reach_presented_writes(
@@ -2671,6 +2673,16 @@ fn catch_parameter_stays_in_clause(
     Ok(true)
 }
 
+/// An `iinc` has an int-shaped JVM slot even when Java source would have to call it a boolean.
+/// Hoisting a cross-catch declaration is safe only when the source type can spell the increment.
+fn cross_exception_store_type_is_proven(decided: Option<&Decided>, has_increment: bool) -> bool {
+    match decided {
+        Some(Decided::Type(Type::Int)) => true,
+        Some(Decided::Type(Type::Boolean)) => !has_increment,
+        _ => false,
+    }
+}
+
 /// Proves that each local read's SSA value is made only from stores the region builder can present.
 ///
 /// The frame pass has already merged normal and exception inputs into the SSA phis. Requiring every
@@ -2705,8 +2717,10 @@ fn all_reads_reach_presented_writes(
         if *bci != write.bci {
             return Ok(false);
         }
-        // `iinc` reads and writes the same local at one BCI. The builder presents it as one
-        // statement, so it has no stack producer tree to inline at the write.
+        // `iinc` reads and writes one local at one BCI. The builder presents it as a single
+        // assignment, with no stack expression to move to the write. Require the read and the
+        // write to be the same reuse variable in this exact presented region; the later SSA
+        // read walk still proves the incoming value comes only from presented definitions.
         if let Some(Operation::Increment { slot, .. }) = operations.get(write.bci) {
             let Some(step) = ssa.block(block).and_then(|block| {
                 block
@@ -2716,13 +2730,18 @@ fn all_reads_reach_presented_writes(
             }) else {
                 return Ok(false);
             };
-            if step.reads().len() != 1
+            if write.stored.is_some()
+                || step.reads().len() != 1
                 || step.writes() != &[(Slot::Local(*slot), written)]
                 || step.reads()[0].0 != Slot::Local(*slot)
-                || paths
-                    .paths
-                    .get(block)
-                    .is_none_or(|path| paths.fallbacks.contains(path))
+                || !uses.iter().any(|use_| {
+                    use_.bci == write.bci
+                        && use_.path == write.path
+                        && use_.read == Some(step.reads()[0].1)
+                })
+                || paths.paths.get(block).is_none_or(|path| {
+                    paths.fallbacks.contains(path) || write.path.as_ref() != Some(path)
+                })
             {
                 return Ok(false);
             }
@@ -23696,6 +23715,17 @@ pub(crate) fn spell_reference(descriptor: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn boolean_iinc_cannot_justify_a_cross_catch_java_declaration() {
+        // The verifier accepts `iinc` on a boolean's int-shaped slot, but Java cannot spell
+        // `boolean value = value + 1`. A plain boolean store remains eligible.
+        let boolean = Decided::Type(Type::Boolean);
+        let integer = Decided::Type(Type::Int);
+        assert!(!cross_exception_store_type_is_proven(Some(&boolean), true));
+        assert!(cross_exception_store_type_is_proven(Some(&boolean), false));
+        assert!(cross_exception_store_type_is_proven(Some(&integer), true));
+    }
 
     fn test_definition(name: &str) -> jarde_reader::model::PhysicalDefinitionId {
         use jarde_reader::model::{
