@@ -14920,6 +14920,9 @@ impl Builder<'_> {
         eval_bci: u32,
         return_bci: u32,
     ) -> Result<Expr, ValueRenderFailure> {
+        if let Some(rendered) = self.proved_return_boxing(value, return_bci)? {
+            return Ok(rendered);
+        }
         if matches!(self.return_type, Some(Type::Boolean)) {
             let rendered = self.render_value(value, eval_bci, 0)?;
             if rendered.presented == Some(Type::Boolean)
@@ -14937,6 +14940,132 @@ impl Builder<'_> {
         }
         let rendered = self.render_value(value, eval_bci, 0)?;
         Ok(self.adapt_return(rendered, return_bci)?)
+    }
+
+    /// Presents one exact, identity-safe wrapper `valueOf` as the primitive literal returned.
+    ///
+    /// This proof is intentionally limited to the Java 8 language guarantees which overlap the
+    /// standard wrappers' cache guarantees. Its value must be the invocation's sole output, the
+    /// invocation must have one literal input and one direct return consumer, and the method's
+    /// return descriptor must be the matching wrapper or `Object`. The removed invocation remains
+    /// a derived source origin on the literal; the return statement keeps its own direct origin.
+    fn proved_return_boxing(
+        &mut self,
+        value: ValueId,
+        return_bci: u32,
+    ) -> Result<Option<Expr>, ValueRenderFailure> {
+        let Definition::Instruction { bci: call_bci, .. } = self.ssa.value(value).def() else {
+            return Ok(None);
+        };
+        let call_bci = *call_bci;
+        let Some(Operation::Invoke(target)) = self.operations.get(call_bci) else {
+            return Ok(None);
+        };
+        let Some(instruction) = self.instructions.get(&call_bci).copied() else {
+            return Ok(None);
+        };
+        let (owner, argument_type) = match (
+            target.kind(),
+            target.is_interface_reference(),
+            target.owner(),
+            target.name(),
+            target.descriptor(),
+        ) {
+            (
+                InvokeKind::Static,
+                false,
+                "java/lang/Boolean",
+                "valueOf",
+                "(Z)Ljava/lang/Boolean;",
+            ) => ("java.lang.Boolean", Type::Boolean),
+            (
+                InvokeKind::Static,
+                false,
+                "java/lang/Integer",
+                "valueOf",
+                "(I)Ljava/lang/Integer;",
+            ) => ("java.lang.Integer", Type::Int),
+            (
+                InvokeKind::Static,
+                false,
+                "java/lang/Character",
+                "valueOf",
+                "(C)Ljava/lang/Character;",
+            ) => ("java.lang.Character", Type::Char),
+            _ => return Ok(None),
+        };
+        poll(self.budget, Some(return_bci))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(return_bci),
+        )?;
+        let return_matches = matches!(
+            self.return_type.as_ref(),
+            Some(Type::Reference(name)) if name == owner || name == "java.lang.Object"
+        );
+        if !return_matches || !matches!(self.operations.get(return_bci), Some(Operation::Return)) {
+            return Ok(None);
+        }
+        let Some(return_instruction) = self.instructions.get(&return_bci).copied() else {
+            return Ok(None);
+        };
+        let Some(block) = self.block_of.get(&return_bci) else {
+            return Ok(None);
+        };
+        let Some(call_block) = self.block_of.get(&call_bci) else {
+            return Ok(None);
+        };
+        let sole_return_consumer =
+            single_use_at_with_budget(self.ssa, value, block, return_bci, self.budget)?;
+        if block != call_block
+            || stack_operands(return_instruction).as_slice() != [(Slot::Stack(0), value)]
+            || stack_operands(instruction).len() != 1
+            || one_stack_output(instruction) != Some((0, value))
+            || !sole_return_consumer
+        {
+            return Ok(None);
+        }
+        let arguments = stack_operands(instruction);
+        let [(_, argument)] = arguments.as_slice() else {
+            return Ok(None);
+        };
+        let Definition::Instruction {
+            bci: literal_bci, ..
+        } = self.ssa.value(*argument).def()
+        else {
+            return Ok(None);
+        };
+        let literal_bci = *literal_bci;
+        let Some(Operation::Push(ConstantValue::Int(number))) = self.operations.get(literal_bci)
+        else {
+            return Ok(None);
+        };
+        let sole_argument_consumer =
+            single_use_at_with_budget(self.ssa, *argument, call_block, call_bci, self.budget)?;
+        if !sole_argument_consumer {
+            return Ok(None);
+        }
+        let in_range = match &argument_type {
+            Type::Boolean => matches!(number, 0 | 1),
+            Type::Int => (-128..=127).contains(number),
+            Type::Char => (0..=127).contains(number),
+            _ => false,
+        };
+        if !in_range {
+            return Ok(None);
+        }
+        let mut rendered = Expr::new(
+            literal(&ConstantValue::Int(*number)),
+            OriginSet::new(Origin::direct(literal_bci)).plus_derived(Origin::derived(call_bci)),
+        );
+        rendered = match &argument_type {
+            Type::Boolean => boolean_spelling(rendered).presenting(Type::Boolean),
+            Type::Char => narrowed_literal(rendered, &Type::Char),
+            _ => rendered.presenting(Type::Int),
+        };
+        Ok(Some(rendered))
     }
 
     /// Apply the conversion proved by this method's actual `ireturn`, after the value was
