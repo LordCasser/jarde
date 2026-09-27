@@ -1961,6 +1961,7 @@ pub(crate) fn project_method_signature(
     class_interfaces: &[Vec<u8>],
     class_scope: &[TypeParameterErasure],
     class_signature_present: bool,
+    resolved_inner_classes: &[ResolvedInnerClass],
     budget: &mut Budget,
 ) -> Result<()> {
     let shells = attribute_shells(member, b"Signature");
@@ -2192,6 +2193,8 @@ pub(crate) fn project_method_signature(
                 &parsed,
                 candidate,
                 &erasure.type_parameters,
+                class_internal,
+                resolved_inner_classes,
                 budget,
             )?;
             (
@@ -2270,7 +2273,7 @@ pub(crate) fn project_method_signature(
             )
         } else {
             (
-                generic_method_declaration(record, attributes, &parsed, candidate, false)?,
+                generic_method_declaration(record, attributes, &parsed, candidate, false, None)?,
                 "same-run AST/SSA parameter-return proof",
             )
         };
@@ -3132,7 +3135,7 @@ fn static_method_local_generic_throws_declaration(
     }
     budget.poll()?;
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    generic_method_declaration(record, attributes, parsed, candidate, true)
+    generic_method_declaration(record, attributes, parsed, candidate, true, None)
 }
 
 fn no_body_generic_method_declaration(
@@ -4041,6 +4044,8 @@ fn generic_void_body_declaration(
     parsed: &jarde_reader::signature::MethodSignature,
     candidate: Option<&GenericReturnCandidate>,
     erasures: &[TypeParameterErasure],
+    class_internal: &[u8],
+    resolved_inner_classes: &[ResolvedInnerClass],
     budget: &mut Budget,
 ) -> Result<String> {
     let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
@@ -4081,9 +4086,90 @@ fn generic_void_body_declaration(
             "generic void body must be `<T extends B> void` with physical `(B, boolean)`, exact erasure, and two same-run parameter slots",
         ));
     }
+    let bound_name = if bound.segments[0].binary_name.contains(&b'$') {
+        let expected_erasure = [
+            b"L".as_slice(),
+            bound.segments[0].binary_name.as_slice(),
+            b";",
+        ]
+        .concat();
+        if erasures[0].descriptor != expected_erasure {
+            return Err(refused(
+                "nested bound does not match the proved physical parameter erasure",
+            ));
+        }
+        selected_nested_sibling_bound_spelling(
+            class_internal,
+            &bound.segments[0].binary_name,
+            &physical.parameters[0].0,
+            resolved_inner_classes,
+        )?
+    } else {
+        simple_generic_class_name(&bound.segments[0].binary_name)?
+    };
     budget.poll()?;
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    generic_method_declaration(record, attributes, parsed, candidate, false)
+    generic_method_declaration(
+        record,
+        attributes,
+        parsed,
+        candidate,
+        false,
+        Some(&bound_name),
+    )
+}
+
+/// A `$` class name is source-spellable here only because the already selected physical method
+/// descriptor supplied that exact spelling and the selected class plus the bound prove direct
+/// siblings in one named source family. This deliberately does not canonicalize `$` to `.`.
+fn selected_nested_sibling_bound_spelling(
+    class_internal: &[u8],
+    bound_internal: &[u8],
+    physical_parameter_spelling: &str,
+    resolved_inner_classes: &[ResolvedInnerClass],
+) -> Result<String> {
+    let refused = || {
+        Error::unsupported(
+            "generic_source_shape_unproved",
+            "nested bound lacks an unambiguous spelling in the selected class family",
+        )
+    };
+    let unique = |internal: &[u8]| {
+        let mut matches = resolved_inner_classes
+            .iter()
+            .filter(|entry| entry.class == internal);
+        let entry = matches.next()?;
+        matches.next().is_none().then_some(entry)
+    };
+    let class = unique(class_internal).ok_or_else(refused)?;
+    let bound = unique(bound_internal).ok_or_else(refused)?;
+    let (Some(outer), Some(class_name), Some(bound_name)) = (
+        class.outer_class.as_deref(),
+        class.inner_name.as_ref().map(|name| name.0.as_slice()),
+        bound.inner_name.as_ref().map(|name| name.0.as_slice()),
+    ) else {
+        return Err(refused());
+    };
+    let class_binary = [outer, b"$", class_name].concat();
+    let bound_binary = [outer, b"$", bound_name].concat();
+    let outer_source = std::str::from_utf8(outer).map_err(|_| refused())?;
+    let class_source = std::str::from_utf8(class_name).map_err(|_| refused())?;
+    let inner_source = std::str::from_utf8(bound_name).map_err(|_| refused())?;
+    if !outer_source.split('/').all(is_java_identifier)
+        || !is_java_identifier(class_source)
+        || !is_java_identifier(inner_source)
+    {
+        return Err(refused());
+    }
+    let expected_source_name = format!("{}${inner_source}", outer_source.replace('/', "."));
+    if class_binary != class_internal
+        || bound_binary != bound_internal
+        || outer != bound.outer_class.as_deref().unwrap_or_default()
+        || physical_parameter_spelling != expected_source_name
+    {
+        return Err(refused());
+    }
+    Ok(physical_parameter_spelling.to_owned())
 }
 
 fn generic_method_declaration(
@@ -4092,6 +4178,7 @@ fn generic_method_declaration(
     parsed: &jarde_reader::signature::MethodSignature,
     candidate: Option<&GenericReturnCandidate>,
     method_local_throws_proved: bool,
+    first_bound_spelling: Option<&str>,
 ) -> Result<String> {
     let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
     let candidate = candidate
@@ -4141,7 +4228,11 @@ fn generic_method_declaration(
             if !bound.arguments.is_empty() {
                 return Err(refused("parameterized bounds are unsupported"));
             }
-            bounds.push(simple_generic_class_name(&bound.binary_name)?);
+            bounds.push(if first_bound_spelling.is_some() && variables.is_empty() {
+                first_bound_spelling.expect("checked above").to_owned()
+            } else {
+                simple_generic_class_name(&bound.binary_name)?
+            });
         }
         let variable = std::str::from_utf8(&parameter.name)
             .map_err(|_| refused("type variable name is not source UTF-8"))?;
@@ -4392,7 +4483,7 @@ fn generic_null_instance_method_declaration(
     }
     budget.poll()?;
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    generic_method_declaration(record, attributes, parsed, candidate, false)
+    generic_method_declaration(record, attributes, parsed, candidate, false, None)
 }
 
 fn simple_generic_class_name(raw: &[u8]) -> Result<String> {
@@ -8400,6 +8491,164 @@ mod tests {
             dependency_depth: u64::MAX,
             elapsed_millis: u64::MAX,
         }
+    }
+
+    fn generic_void_probe() -> (
+        ClassSourceMethod,
+        MemberAttributes,
+        jarde_reader::signature::MethodSignature,
+        GenericReturnCandidate,
+        Vec<jarde_reader::signature::TypeParameterErasure>,
+    ) {
+        use jarde_reader::model::{
+            ClassBytesId, Digest, PhysicalClassLocation, PhysicalVariant, SnapshotId,
+        };
+        use jarde_reader::signature::{ClassType, ClassTypeSegment, SignatureType, TypeParameter};
+
+        let owner = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: SnapshotId("void-generic-probe".to_owned()),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest("void-generic-probe".to_owned()),
+                length: 0,
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let descriptor_bytes = b"(Lprobe/Bound;Z)V".to_vec();
+        let jvm_string = |value: &[u8]| {
+            let text = std::str::from_utf8(value).expect("probe strings are ASCII");
+            serde_json::from_value(serde_json::json!({
+                "raw": value,
+                "utf16": value.iter().map(|byte| u16::from(*byte)).collect::<Vec<_>>(),
+                "escaped": text,
+            }))
+            .expect("valid probe JVM string")
+        };
+        let name: JvmString = jvm_string(b"set");
+        let descriptor: JvmString = jvm_string(&descriptor_bytes);
+        let method = MethodItem {
+            index: 0,
+            identity: PhysicalMethodId {
+                owner,
+                name: JvmBytes(b"set".to_vec()),
+                descriptor: JvmBytes(descriptor_bytes.clone()),
+            },
+            name,
+            descriptor,
+            access_flags: ACC_PUBLIC,
+            body: crate::facade::MemberBodyEvidence::CodeAttribute {
+                content_span: jarde_reader::model::ByteSpan::new(0, 0),
+            },
+        };
+        let record = ClassSourceMethod {
+            item: method,
+            no_body_kind: None,
+            declaration: Some("public void set(probe.Bound arg1, boolean arg2)".to_owned()),
+            annotations: MemberAnnotationUses::default(),
+            parameter_annotations: ParameterAnnotationUses::default(),
+            type_annotations: TypeAnnotationUses::default(),
+            text: "    public void set(probe.Bound arg1, boolean arg2) { }\n".to_owned(),
+            markers: Vec::new(),
+            outcome: ClassSourceOutcome::NoBody,
+            same_run_generic_return: None,
+            generic_signature_refused: false,
+            enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
+            enum_constructor_signature_erasure_refused: false,
+        };
+        let attributes = MemberAttributes {
+            default: None,
+            throws: Vec::new(),
+            throws_raw: Vec::new(),
+            parameters: None,
+        };
+        let parsed = jarde_reader::signature::MethodSignature {
+            type_parameters: vec![TypeParameter {
+                name: b"T".to_vec(),
+                class_bound: Some(SignatureType::Class(ClassType {
+                    segments: vec![ClassTypeSegment {
+                        binary_name: b"probe/Bound".to_vec(),
+                        arguments: Vec::new(),
+                    }],
+                })),
+                interface_bounds: Vec::new(),
+            }],
+            parameters: vec![
+                SignatureType::TypeVariable(b"T".to_vec()),
+                SignatureType::Base(b'Z'),
+            ],
+            result: None,
+            throws: Vec::new(),
+        };
+        let candidate = GenericReturnCandidate {
+            parameters: vec![(1, "arg1".to_owned()), (2, "arg2".to_owned())],
+            value: GenericReturnValue::VoidBody,
+        };
+        let erasures = vec![jarde_reader::signature::TypeParameterErasure {
+            name: b"T".to_vec(),
+            descriptor: b"Lprobe/Bound;".to_vec(),
+        }];
+        (record, attributes, parsed, candidate, erasures)
+    }
+
+    #[test]
+    fn void_generic_signature_stops_before_publishing_on_cancel_or_analysis_budget() {
+        let (record, attributes, parsed, candidate, erasures) = generic_void_probe();
+        let before = record.clone();
+        let cancelled = jarde_reader::budget::CancellationToken::new();
+        cancelled.cancel();
+        let mut cancelled_budget =
+            Budget::with_cancellation_token(unlimited_annotation_test_limits(), cancelled);
+        let error = generic_void_body_declaration(
+            &record,
+            &attributes,
+            &parsed,
+            Some(&candidate),
+            &erasures,
+            b"probe/Setter",
+            &[],
+            &mut cancelled_budget,
+        )
+        .expect_err("pre-cancellation stops the void Signature proof");
+        assert!(matches!(error, Error::Cancelled { .. }));
+        assert_eq!(record, before);
+
+        let mut limits = unlimited_annotation_test_limits();
+        limits.analysis_steps = 0;
+        let mut exhausted = Budget::new(limits);
+        let error = generic_void_body_declaration(
+            &record,
+            &attributes,
+            &parsed,
+            Some(&candidate),
+            &erasures,
+            b"probe/Setter",
+            &[],
+            &mut exhausted,
+        )
+        .expect_err("an exhausted analysis budget stops the void Signature proof");
+        assert!(matches!(error, Error::BudgetExceeded { .. }));
+        assert_eq!(record, before);
+    }
+
+    #[test]
+    fn void_generic_header_output_budget_publishes_no_partial_declaration() {
+        let (mut record, _, _, _, _) = generic_void_probe();
+        record.no_body_kind = Some(NoBodyKind::Abstract);
+        let before = record.clone();
+        let mut limits = unlimited_annotation_test_limits();
+        limits.output_bytes = 0;
+        let error = record
+            .project_generic(
+                "public <T extends probe.Bound> void set(T arg1, boolean arg2)".to_owned(),
+                b"<T:Lprobe/Bound;>(TT;Z)V",
+                "same-run AST/SSA void-body proof",
+                &mut Budget::new(limits),
+            )
+            .expect_err("output budget rejects the complete staged projection");
+        assert!(matches!(error, Error::BudgetExceeded { .. }));
+        assert_eq!(record, before);
+        assert!(!record.text.contains("<T extends"));
     }
 
     #[test]
