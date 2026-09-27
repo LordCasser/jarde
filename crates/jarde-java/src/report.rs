@@ -1307,8 +1307,9 @@ pub fn emit_class_source_lambda_helper(
     {
         return Ok(None);
     }
-    let nodes =
-        program_node_count(&helper.program).saturating_add(program_node_count(&caller.program));
+    let helper_nodes = program_node_count(&helper.program);
+    let caller_nodes = program_node_count(&caller.program);
+    let nodes = helper_nodes.saturating_add(caller_nodes);
     crate::stop::charge(
         budget,
         jarde_reader::budget::CountedBudgetDimension::IrItems,
@@ -1316,6 +1317,9 @@ pub fn emit_class_source_lambda_helper(
         Some(candidate.use_site),
     )?;
     crate::stop::poll(budget, Some(candidate.use_site))?;
+    if helper_nodes > MAX_LAMBDA_HELPER_AST_NODES || caller_nodes > MAX_LAMBDA_HELPER_AST_NODES {
+        return Ok(None);
+    }
     let Ok(descriptor) = std::str::from_utf8(&candidate.helper.descriptor.0) else {
         return Ok(None);
     };
@@ -1404,6 +1408,9 @@ pub fn emit_class_source_lambda_helper(
     )?;
     Ok(Some(emitted.text))
 }
+
+/// Recursive anchor collection and arithmetic rewriting stay safely shallow for this proof.
+const MAX_LAMBDA_HELPER_AST_NODES: u64 = 256;
 
 /// A count of AST nodes can coincide with Code instructions while dropping an effect or opcode.
 /// The lambda proof therefore requires exact set equality between physical BCIs and every anchor
