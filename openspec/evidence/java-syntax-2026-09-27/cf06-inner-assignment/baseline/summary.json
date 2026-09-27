@@ -1,0 +1,31 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "jadx-core/src/test/java/jadx/tests/integration/conditions/TestInnerAssign.java": "3c494dcc73675d10b542ea1e8d158f8fb2295e5665e4c89ff3b741373f9c221b",
+    "jadx-core/src/test/java/jadx/tests/integration/conditions/TestInnerAssign2.java": "b10b5e7ac0685b0d8ffe3e2d89cc6bbbe605dab76be8d04ca2e31bb45e5a6629",
+    "jadx-core/src/test/java/jadx/tests/integration/conditions/TestIfElseAndConditionIntermediateInstruction.java": "def959539c2dcb8b9db1892afc07c09dd1dff123e33a6044b0c245472e3e6f02",
+    "jadx-core/src/main/java/jadx/core/dex/regions/conditions/IfCondition.java": "4d80dcce617f8bd799a5ef136dbaca981fd6a08c4d242410809184fdefc3af5e",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/IfRegionVisitor.java": "59cad5ead039f4861ed466c38de2e2eed4ff09fc719b524a9ab1a101bc1cfd4e",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/variables/ProcessVariables.java": "929d20895a6a4130b4a718a8b29fe0011c3a72d0d8f34951387a3e18e497ed8a"
+  },
+  "input_sha256": "ed9f5ce44ad31ce7a7132617a6781acadc6114317aa8cd49545775dc6e0ebba1",
+  "runner_sha256": "ec282bbde19c071bfa64e5ec4109d407cdcb644e60535865664ea34d6dca2afd",
+  "original_class_sha256": "459de3d28d2843c848169f317af5244a7bcbaabf5674804b57091936c09a8b8c",
+  "jarde_cli_sha256": "6f0951dc0d02aa14bdfd1222933b4122a1c1ef90d8be8b76652a7511bc1d30b0",
+  "original": {
+    "source_sha256": "ed9f5ce44ad31ce7a7132617a6781acadc6114317aa8cd49545775dc6e0ebba1",
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "-1\n4\n-1\ntrue\ntrue\nfalse\nfalse"
+  },
+  "jadx": {
+    "source_sha256": "e7aa3fca2c067ef3535e2dde1d06f105ede613eab50a8125984c0a57cdb5ef00",
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "-1\n4\n-1\ntrue\ntrue\nfalse\nfalse"
+  },
+  "jarde": {
+    "source_sha256": "a28dafd9dbc858e8aa30c1d14bcad6b350517bd696b10d21eda701e8f96bdb18",
+    "javac_exit": 1
+  }
+}

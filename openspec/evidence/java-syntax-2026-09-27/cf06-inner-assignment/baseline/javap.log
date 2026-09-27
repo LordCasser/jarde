@@ -1,0 +1,73 @@
+exit=0
+stdout:
+public class cf06.InnerAssignCases {
+  private java.lang.String field;
+
+  private java.lang.String swapField;
+
+  public cf06.InnerAssignCases();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int lengthBranch(java.lang.String);
+    Code:
+       0: aload_0
+       1: invokevirtual #7                  // Method java/lang/String.isEmpty:()Z
+       4: ifne          17
+       7: aload_0
+       8: invokevirtual #13                 // Method java/lang/String.length:()I
+      11: dup
+      12: istore_1
+      13: iconst_5
+      14: if_icmple     19
+      17: iconst_m1
+      18: ireturn
+      19: iload_1
+      20: ireturn
+
+  public boolean assignedAndChecked(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #17                 // Method call:(Ljava/lang/String;)Z
+       5: ifne          24
+       8: aload_0
+       9: getfield      #23                 // Field field:Ljava/lang/String;
+      12: dup
+      13: astore_2
+      14: ifnull        28
+      17: aload_2
+      18: invokevirtual #7                  // Method java/lang/String.isEmpty:()Z
+      21: ifeq          28
+      24: iconst_1
+      25: goto          29
+      28: iconst_0
+      29: ireturn
+
+  private boolean call(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #27                 // Field swapField:Ljava/lang/String;
+       5: putfield      #23                 // Field field:Ljava/lang/String;
+       8: aload_1
+       9: invokevirtual #7                  // Method java/lang/String.isEmpty:()Z
+      12: ireturn
+
+  public boolean run(java.lang.String, java.lang.String);
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: putfield      #23                 // Field field:Ljava/lang/String;
+       5: aload_0
+       6: aload_2
+       7: putfield      #27                 // Field swapField:Ljava/lang/String;
+      10: aload_0
+      11: aload_1
+      12: invokevirtual #30                 // Method assignedAndChecked:(Ljava/lang/String;)Z
+      15: ireturn
+}
+
+stderr:
