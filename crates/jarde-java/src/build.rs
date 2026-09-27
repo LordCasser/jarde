@@ -5056,6 +5056,20 @@ fn prove_short_circuit_value(
             .iter()
             .map(|instruction| (instruction.bci(), instruction))
             .collect();
+        if block_ssa.instructions().iter().any(|instruction| {
+            matches!(
+                operations.get(instruction.bci()),
+                Some(Operation::Duplicate)
+            )
+        }) {
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(block_ssa.instructions().len() + ssa.effects().instructions().len())
+                    .unwrap_or(u64::MAX),
+                Some(*branch_bci),
+            )?;
+        }
         if instruction_index.len() != block_ssa.instructions().len() {
             return Ok(ShortCircuitValueAttempt::Refused(
                 ShortCircuitValueRefusal::Test,
@@ -5675,6 +5689,289 @@ fn short_circuit_array_operands(
 /// A test may inline only its own single-use value tree. Its remaining instructions are checked
 /// by the caller, so an unrelated store, call, allocation or throw cannot disappear.
 #[allow(clippy::too_many_arguments)] // keep the bounded walk's evidence explicit without storing mutable proof state
+#[derive(Clone, Copy, Debug)]
+struct LocalAssignmentShape {
+    duplicate: u32,
+    store: u32,
+    test: u32,
+    source: ValueId,
+    tested: ValueId,
+    slot: u16,
+}
+
+/// The two physical copies have different, unique consumers. The source is immediately before
+/// `dup`, the local store immediately after it, and only literal operands may follow before the
+/// terminal test. No instruction in this slice can enter a handler. A later lexical/type check
+/// decides whether this physical shape may be written as Java.
+fn local_assignment_at(
+    ssa: &SsaTable,
+    operations: &Operations,
+    block: &CanonicalBlockId,
+    duplicate_bci: u32,
+    tested: ValueId,
+    test_bci: u32,
+) -> Option<LocalAssignmentShape> {
+    let names = ssa.block(block)?;
+    let instructions = names.instructions();
+    let duplicate_pos = instructions
+        .iter()
+        .position(|instruction| instruction.bci() == duplicate_bci)?;
+    let source_pos = duplicate_pos.checked_sub(1)?;
+    let [source, duplicate, store] = instructions.get(source_pos..duplicate_pos + 2)? else {
+        return None;
+    };
+    let test_pos = instructions
+        .iter()
+        .position(|instruction| instruction.bci() == test_bci)?;
+    let test = &instructions[test_pos];
+    if test_pos <= duplicate_pos + 1
+        || test_pos + 1 != instructions.len()
+        || duplicate.opcode() != 0x59
+        || !matches!(operations.get(duplicate_bci), Some(Operation::Duplicate))
+        || !matches!(operations.get(store.bci()), Some(Operation::Store { .. }))
+        || operations
+            .get(test_bci)
+            .and_then(Operation::comparison)
+            .is_none()
+        || !instructions[duplicate_pos + 2..test_pos]
+            .iter()
+            .all(|instruction| {
+                matches!(operations.get(instruction.bci()), Some(Operation::Push(_)))
+            })
+    {
+        return None;
+    }
+    let duplicate_inputs = stack_operands(duplicate);
+    let [(_, source_value)] = duplicate_inputs.as_slice() else {
+        return None;
+    };
+    let source_value = *source_value;
+    let duplicate_outputs = stack_outputs(duplicate);
+    let [(_, first_copy), (_, second_copy)] = duplicate_outputs.as_slice() else {
+        return None;
+    };
+    let store_inputs = stack_operands(store);
+    let [(_, stored)] = store_inputs.as_slice() else {
+        return None;
+    };
+    let [(Slot::Local(slot), written)] = store.writes() else {
+        return None;
+    };
+    let store_copy = *stored;
+    let tested_copy = if store_copy == *first_copy && tested == *second_copy {
+        *second_copy
+    } else if store_copy == *second_copy && tested == *first_copy {
+        *first_copy
+    } else {
+        return None;
+    };
+    if first_copy == second_copy
+        || !test
+            .reads()
+            .iter()
+            .any(|(access, value)| matches!(access, Slot::Stack(_)) && *value == tested_copy)
+        || !matches!(ssa.value(source_value).def(), Definition::Instruction { block: origin, bci } if origin == block && *bci == source.bci())
+        || !matches!(ssa.value(tested_copy).def(), Definition::Instruction { block: origin, bci } if origin == block && *bci == duplicate_bci)
+        || !matches!(ssa.value(store_copy).def(), Definition::Instruction { block: origin, bci } if origin == block && *bci == duplicate_bci)
+        || !matches!(ssa.value(*written).def(), Definition::Instruction { block: origin, bci } if origin == block && *bci == store.bci())
+        || [source_value, tested_copy, store_copy, *written]
+            .iter()
+            .any(|value| ssa.value(*value).replaced_by().is_some())
+        || !single_use_at(ssa, source_value, block, duplicate_bci)
+        || !single_use_at(ssa, store_copy, block, store.bci())
+        || !single_use_at(ssa, tested_copy, block, test_bci)
+        || ssa.effects().instructions().iter().any(|effect| {
+            effect.block() == block
+                && source.bci() <= effect.bci()
+                && effect.bci() <= test_bci
+                && !effect.handlers().is_empty()
+        })
+    {
+        return None;
+    }
+    Some(LocalAssignmentShape {
+        duplicate: duplicate_bci,
+        store: store.bci(),
+        test: test_bci,
+        source: source_value,
+        tested,
+        slot: *slot,
+    })
+}
+
+#[derive(Clone, Debug)]
+struct LocalAssignment {
+    shape: LocalAssignmentShape,
+    name: String,
+    ty: Type,
+}
+
+/// Only physical copies whose local is already named and typed by the lexical plan are admitted.
+/// A local whose first write would ordinarily declare it is declared at the same region's start:
+/// the assignment expression itself must not contain a Java declaration.
+fn prove_local_assignments(
+    regions: &[Region],
+    ssa: &SsaTable,
+    operations: &Operations,
+    names: &NameTable,
+    reuse: &reuse::Plan,
+    declarations: &mut Declarations,
+    parameters: u16,
+    budget: &mut Budget,
+) -> Result<BTreeMap<u32, LocalAssignment>, StopReason> {
+    if !operations
+        .iter()
+        .any(|(_, operation)| matches!(operation, Operation::Duplicate))
+    {
+        return Ok(BTreeMap::new());
+    }
+    let mut condition_tests = BTreeSet::new();
+    let mut pending = regions.iter().collect::<Vec<_>>();
+    while let Some(region) = pending.pop() {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, None)?;
+        match region {
+            Region::Loop { .. } => {}
+            Region::Sequence { regions } => pending.extend(regions),
+            Region::If {
+                branch,
+                branch_bci,
+                then_arm,
+                else_arm,
+                ..
+            } => {
+                condition_tests.insert((branch.clone(), *branch_bci));
+                pending.extend([then_arm.as_ref(), else_arm.as_ref()]);
+            }
+            // This proof never enters a loop, protected range, or handler body.
+            Region::Try { .. } | Region::Guard { .. } => {}
+            Region::ShortCircuitValue { tests, .. } => {
+                charge(
+                    budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(tests.len()).unwrap_or(u64::MAX),
+                    tests.first().map(|(_, bci)| *bci),
+                )?;
+                condition_tests.extend(tests.iter().cloned());
+            }
+            Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
+                pending.extend(groups.iter().map(|group| group.arm.as_ref()));
+            }
+            _ => {}
+        }
+    }
+    let paths = region_paths(regions);
+    let mut proved = BTreeMap::new();
+    for (owned_block, test_bci) in condition_tests {
+        let Some(block) = ssa.block(&owned_block) else {
+            continue;
+        };
+        poll(budget, Some(test_bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(block.instructions().len() + 1).unwrap_or(u64::MAX),
+            Some(test_bci),
+        )?;
+        let Some(test) = block.instructions().last() else {
+            continue;
+        };
+        if test.bci() != test_bci
+            || operations
+                .get(test_bci)
+                .and_then(Operation::comparison)
+                .is_none()
+        {
+            continue;
+        }
+        for duplicate in block.instructions().iter().filter(|instruction| {
+            matches!(
+                operations.get(instruction.bci()),
+                Some(Operation::Duplicate)
+            )
+        }) {
+            poll(budget, Some(duplicate.bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(block.instructions().len() + ssa.effects().instructions().len())
+                    .unwrap_or(u64::MAX),
+                Some(duplicate.bci()),
+            )?;
+            let shape = test
+                .reads()
+                .iter()
+                .filter_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+                .find_map(|value| {
+                    local_assignment_at(
+                        ssa,
+                        operations,
+                        block.block(),
+                        duplicate.bci(),
+                        value,
+                        test.bci(),
+                    )
+                });
+            let Some(shape) = shape else { continue };
+            let Some(variable) = reuse.variable_at(shape.slot, shape.store) else {
+                continue;
+            };
+            let Some(name) = names.text(variable) else {
+                continue;
+            };
+            if shape.slot < parameters {
+                continue;
+            }
+            let Some(Decided::Type(ty)) = declarations.decided.get(&variable) else {
+                continue;
+            };
+            if !matches!(ty, Type::Int | Type::Reference(_)) {
+                continue;
+            }
+            let Some(placement) = declarations.placements.get(&variable).cloned() else {
+                continue;
+            };
+            let owner = match &placement {
+                DeclarationPlacement::Local { owner }
+                | DeclarationPlacement::Elevated { owner } => owner.clone(),
+                DeclarationPlacement::Incomplete { .. } => continue,
+            };
+            let Some(block_path) = paths.paths.get(block.block()) else {
+                continue;
+            };
+            if !block_path.starts_with(&owner) {
+                continue;
+            }
+            if matches!(placement, DeclarationPlacement::Local { .. }) {
+                declarations.placements.insert(
+                    variable,
+                    DeclarationPlacement::Elevated {
+                        owner: owner.clone(),
+                    },
+                );
+                declarations
+                    .at_region
+                    .entry(owner)
+                    .or_default()
+                    .push(HoistedDeclaration {
+                        variable,
+                        ty: ty.clone(),
+                        at: shape.store,
+                    });
+            }
+            proved.insert(
+                shape.duplicate,
+                LocalAssignment {
+                    shape,
+                    name: name.to_string(),
+                    ty: ty.clone(),
+                },
+            );
+        }
+    }
+    Ok(proved)
+}
+
 fn short_circuit_test_sources(
     value: ValueId,
     block: &CanonicalBlockId,
@@ -5699,6 +5996,25 @@ fn short_circuit_test_sources(
             ..
         } => true,
         Definition::Instruction { block: origin, bci } if origin == block => {
+            if let Some(assignment) =
+                local_assignment_at(ssa, operations, block, *bci, value, reader_bci)
+            {
+                let complete = dependencies.insert(assignment.duplicate)
+                    && dependencies.insert(assignment.store)
+                    && short_circuit_test_sources(
+                        assignment.source,
+                        block,
+                        instruction_index,
+                        ssa,
+                        operations,
+                        dependencies,
+                        active,
+                        depth + 1,
+                        assignment.duplicate,
+                    );
+                active.remove(&value);
+                return complete;
+            }
             let instruction = instruction_index.get(bci).copied();
             instruction.is_some_and(|instruction| {
                 ssa.value(value).replaced_by().is_none()
@@ -5817,7 +6133,7 @@ pub(crate) fn build(
         &instructions,
         budget,
     )?;
-    let declarations = declarations(
+    let mut declarations = declarations(
         regions,
         canonical,
         ssa,
@@ -5836,6 +6152,16 @@ pub(crate) fn build(
         inputs.debug_locals,
         inputs.code,
         inputs.sites,
+        budget,
+    )?;
+    let local_assignments = prove_local_assignments(
+        regions,
+        ssa,
+        operations,
+        inputs.names,
+        inputs.reuse,
+        &mut declarations,
+        inputs.parameters,
         budget,
     )?;
     let mut builder = Builder {
@@ -5875,6 +6201,7 @@ pub(crate) fn build(
         long_assignment_refused: false,
         postfix: PostfixUpdates::default(),
         array_initializers: inputs.array_initializers,
+        local_assignments,
         instructions,
         block_of,
         budget,
@@ -5960,23 +6287,46 @@ pub(crate) fn build(
             builder.region(region, &path)?;
         }
     }
-    if early_return_tail && builder.ragged {
-        let bcis = canonical
-            .blocks()
-            .iter()
-            .flat_map(|block| block.blocks().iter().copied())
-            .chain(regions.iter().flat_map(unaccounted_region_bcis))
-            .collect::<BTreeSet<_>>()
-            .into_iter()
-            .collect::<Vec<_>>();
+    let unconsumed_local_assignment = if builder.local_assignments.is_empty() {
+        false
+    } else {
+        let published = published_local_assignments(&builder.stmts, builder.budget)?;
+        builder
+            .local_assignments
+            .keys()
+            .any(|duplicate| published.get(duplicate) != Some(&1))
+    };
+    if (early_return_tail || !builder.local_assignments.is_empty())
+        && (builder.ragged || unconsumed_local_assignment)
+    {
+        let bcis = if builder.local_assignments.is_empty() {
+            canonical
+                .blocks()
+                .iter()
+                .flat_map(|block| block.blocks().iter().copied())
+                .chain(regions.iter().flat_map(unaccounted_region_bcis))
+                .collect::<BTreeSet<_>>()
+                .into_iter()
+                .collect::<Vec<_>>()
+        } else {
+            builder
+                .instructions
+                .keys()
+                .copied()
+                .chain(regions.iter().flat_map(unaccounted_region_bcis))
+                .collect::<BTreeSet<_>>()
+                .into_iter()
+                .collect::<Vec<_>>()
+        };
         let at = bcis.first().copied().unwrap_or(0);
         builder.stmts.clear();
         builder.statements = 0;
-        builder.fallback(
-            bcis,
-            "the early-return predicate tail was not completely proved",
-            at,
-        )?;
+        let reason = if early_return_tail {
+            "the early-return predicate tail was not completely proved"
+        } else {
+            "the local assignment condition was not completely proved"
+        };
+        builder.fallback(bcis, reason, at)?;
     }
     let mut field_increments = BTreeMap::new();
     if let Some(plan) = builder.increments.get() {
@@ -6023,6 +6373,192 @@ pub(crate) fn build(
         lambdas_presented: builder.lambdas_presented,
         accessors_presented: builder.accessors_presented,
     })
+}
+
+/// The statement tree, rather than a speculative render, is the final owner of every hidden
+/// physical copy and store. If a Region did not publish the assignment expression, the method
+/// must quote those instructions instead of silently suppressing them.
+fn published_local_assignments(
+    statements: &[Stmt],
+    budget: &mut Budget,
+) -> Result<BTreeMap<u32, usize>, StopReason> {
+    enum Node<'a> {
+        Statement(&'a Stmt),
+        Expression(&'a Expr),
+    }
+    let mut pending = statements.iter().map(Node::Statement).collect::<Vec<_>>();
+    let mut copies: BTreeMap<u32, usize> = BTreeMap::new();
+    while let Some(node) = pending.pop() {
+        let at = match node {
+            Node::Statement(stmt) => stmt.origin.primary().bci(),
+            Node::Expression(expr) => expr.origin.primary().bci(),
+        };
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
+        poll(budget, Some(at))?;
+        match node {
+            Node::Statement(stmt) => match &stmt.kind {
+                StmtKind::Declare { value, .. } | StmtKind::Return { value } => {
+                    pending.extend(value.iter().map(Node::Expression));
+                }
+                StmtKind::Assign { value, .. }
+                | StmtKind::Expr(value)
+                | StmtKind::Throw { value } => pending.push(Node::Expression(value)),
+                StmtKind::FieldAssign {
+                    receiver, value, ..
+                } => {
+                    pending.extend(receiver.iter().map(Node::Expression));
+                    pending.push(Node::Expression(value));
+                }
+                StmtKind::IndexAssign {
+                    array,
+                    index,
+                    value,
+                    ..
+                } => {
+                    pending.extend([
+                        Node::Expression(array),
+                        Node::Expression(index),
+                        Node::Expression(value),
+                    ]);
+                }
+                StmtKind::ConstructorCall { args, .. } => {
+                    pending.extend(args.iter().map(Node::Expression))
+                }
+                StmtKind::If {
+                    cond,
+                    then_body,
+                    else_body,
+                } => {
+                    pending.push(Node::Expression(cond));
+                    pending.extend(then_body.iter().chain(else_body).map(Node::Statement));
+                }
+                StmtKind::While { cond, body, .. } | StmtKind::DoWhile { cond, body, .. } => {
+                    pending.push(Node::Expression(cond));
+                    pending.extend(body.iter().map(Node::Statement));
+                }
+                StmtKind::For {
+                    init,
+                    cond,
+                    update,
+                    body,
+                    ..
+                } => {
+                    pending.extend([
+                        Node::Statement(init),
+                        Node::Expression(cond),
+                        Node::Statement(update),
+                    ]);
+                    pending.extend(body.iter().map(Node::Statement));
+                }
+                StmtKind::ForEach { iterable, body, .. } => {
+                    pending.push(Node::Expression(iterable));
+                    pending.extend(body.iter().map(Node::Statement));
+                }
+                StmtKind::Switch { value, arms } => {
+                    pending.push(Node::Expression(value));
+                    for arm in arms {
+                        pending.extend(arm.body.iter().map(Node::Statement));
+                    }
+                }
+                StmtKind::Try {
+                    resources,
+                    catches,
+                    body,
+                    finally_body,
+                } => {
+                    pending.extend(
+                        resources
+                            .iter()
+                            .map(|resource| Node::Expression(&resource.value)),
+                    );
+                    for clause in catches {
+                        pending.extend(clause.body.iter().map(Node::Statement));
+                    }
+                    pending.extend(body.iter().map(Node::Statement));
+                    if let Some(body) = finally_body {
+                        pending.extend(body.iter().map(Node::Statement));
+                    }
+                }
+                StmtKind::Synchronized { lock, body } => {
+                    pending.push(Node::Expression(lock));
+                    pending.extend(body.iter().map(Node::Statement));
+                }
+                StmtKind::Break { .. } | StmtKind::Continue { .. } | StmtKind::Fallback { .. } => {}
+            },
+            Node::Expression(expr) => match &expr.kind {
+                ExprKind::LocalAssign { value, .. } => {
+                    for origin in expr.origin.derived() {
+                        *copies.entry(origin.bci()).or_default() += 1;
+                    }
+                    pending.push(Node::Expression(value));
+                }
+                ExprKind::Call { receiver, args, .. } => {
+                    pending.extend(receiver.iter().map(|value| Node::Expression(value)));
+                    pending.extend(args.iter().map(Node::Expression));
+                }
+                ExprKind::New {
+                    qualifier, args, ..
+                } => {
+                    pending.extend(qualifier.iter().map(|value| Node::Expression(value)));
+                    pending.extend(args.iter().map(Node::Expression));
+                }
+                ExprKind::NewArray {
+                    lengths,
+                    initializers,
+                    ..
+                } => {
+                    pending.extend(lengths.iter().map(Node::Expression));
+                    pending.extend(initializers.iter().flatten().map(Node::Expression));
+                }
+                ExprKind::Lambda { body, .. }
+                | ExprKind::MethodReference {
+                    qualifier: body, ..
+                }
+                | ExprKind::Field { receiver: body, .. }
+                | ExprKind::PostfixUpdate { target: body, .. }
+                | ExprKind::ArrayLength { array: body }
+                | ExprKind::InstanceOf { value: body, .. }
+                | ExprKind::Cast { value: body, .. }
+                | ExprKind::Not { value: body }
+                | ExprKind::Neg { value: body } => pending.push(Node::Expression(body)),
+                ExprKind::Index { array, index }
+                | ExprKind::Binary {
+                    left: array,
+                    right: index,
+                    ..
+                } => {
+                    pending.extend([Node::Expression(array), Node::Expression(index)]);
+                }
+                ExprKind::Conditional {
+                    test,
+                    when_true,
+                    when_false,
+                } => {
+                    pending.extend([
+                        Node::Expression(test),
+                        Node::Expression(when_true),
+                        Node::Expression(when_false),
+                    ]);
+                }
+                ExprKind::Concat { parts } => {
+                    pending.extend(parts.iter().map(|part| Node::Expression(&part.value)))
+                }
+                ExprKind::Local(_)
+                | ExprKind::Integer(_)
+                | ExprKind::Boolean(_)
+                | ExprKind::Long(_)
+                | ExprKind::Float(_)
+                | ExprKind::Double(_)
+                | ExprKind::Str(_)
+                | ExprKind::Null
+                | ExprKind::ClassLiteral { .. }
+                | ExprKind::Path(_)
+                | ExprKind::QualifiedThis { .. }
+                | ExprKind::Super { .. } => {}
+            },
+        }
+    }
+    Ok(copies)
 }
 
 fn has_early_return_tail(region: &Region) -> bool {
@@ -6333,6 +6869,8 @@ struct Builder<'a> {
     /// Complete, same-block array initializer chains proved from their allocation through their
     /// final consumer. Their copy/index/store scaffolding is hidden only after this pass succeeds.
     array_initializers: ArrayInitializers,
+    /// Exact local assignment expressions proved from one physical copy and one terminal test.
+    local_assignments: BTreeMap<u32, LocalAssignment>,
     instructions: BTreeMap<u32, &'a SsaInstruction>,
     /// The block each instruction belongs to: which block's own entry state and writes state what a
     /// local slot holds where that instruction runs (P3 1.3d).
@@ -14646,6 +15184,14 @@ impl Builder<'_> {
     fn instruction(&mut self, instruction: &SsaInstruction) -> Result<(), StopReason> {
         poll(self.budget, Some(instruction.bci()))?;
         let at = instruction.bci();
+        if self.local_assignments.contains_key(&at)
+            || self
+                .local_assignments
+                .values()
+                .any(|assignment| assignment.shape.store == at)
+        {
+            return Ok(());
+        }
         if self
             .declarations
             .this_aliases
@@ -16564,6 +17110,34 @@ impl Builder<'_> {
                     Operation::NumericComparison { .. } => Err(format!(
                         "the numeric comparison at BCI {bci} is not consumed by its proven zero branch"
                     ).into()),
+                    Operation::Duplicate => {
+                        let assignment = self.local_assignments.get(&bci).cloned().ok_or_else(|| {
+                            format!("the copy at BCI {bci} has no proved local assignment")
+                        })?;
+                        if value != assignment.shape.tested || at != assignment.shape.test {
+                            return Err(format!(
+                                "the copy at BCI {bci} is not used by its proved test at BCI {}",
+                                assignment.shape.test
+                            ).into());
+                        }
+                        let rhs = self.render_value(assignment.shape.source, at, depth + 1)?;
+                        if rhs.presented.as_ref() != Some(&assignment.ty) {
+                            return Err(format!(
+                                "the local assignment at BCI {} has Java type `{}`, but its right-hand value has no matching declared type",
+                                assignment.shape.store,
+                                assignment.ty.spell()
+                            ).into());
+                        }
+                        Ok(Expr::new(
+                            ExprKind::LocalAssign {
+                                name: assignment.name,
+                                value: Box::new(rhs),
+                                ty: assignment.ty,
+                            },
+                            OriginSet::new(Origin::direct(assignment.shape.store))
+                                .plus_derived(Origin::derived(assignment.shape.duplicate)),
+                        ))
+                    }
                     // A load yields the value its slot held *where the load ran*, and that value is
                     // what a reader of it means — not the slot. Writing the slot's name at the use
                     // is the same expression only while the slot still holds it (P3 1.3d); where
@@ -18875,7 +19449,9 @@ impl Builder<'_> {
             // stores that follow it (P3 2c.14). Not being one here would let the call that produced
             // the value write a statement of its own *and* be rendered inside the store — the same
             // effect written twice, which is exactly what the copy's shape exists to avoid.
-            Some(Operation::Duplicate) => self.chained_pair(bci).is_some(),
+            Some(Operation::Duplicate) => {
+                self.chained_pair(bci).is_some() || self.local_assignments.contains_key(&bci)
+            }
             // A field access and an array read are readers exactly where their own rules claimed
             // them (P3 2.3): a claimed access renders the value it reads into its text, and one no
             // rule claimed is quoted and writes nothing.
@@ -21850,6 +22426,10 @@ fn stated_by_expression(expr: &Expr, names: &mut Vec<String>, bcis: &mut Vec<u32
             for part in parts {
                 stated_by_expression(&part.value, names, bcis);
             }
+        }
+        ExprKind::LocalAssign { name, value, .. } => {
+            names.push(name.clone());
+            stated_by_expression(value, names, bcis);
         }
         ExprKind::Cast { value, .. }
         | ExprKind::InstanceOf { value, .. }

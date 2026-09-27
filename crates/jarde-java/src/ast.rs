@@ -143,6 +143,13 @@ pub enum PostfixDirection {
 pub enum ExprKind {
     /// A local or parameter name, already decided by [`crate::names`].
     Local(String),
+    /// A proved local write whose saved value is consumed by the enclosing expression.
+    /// Its type is the lexical declaration's decided type, not the JVM stack category.
+    LocalAssign {
+        name: String,
+        value: Box<Expr>,
+        ty: Type,
+    },
     /// An `int`-shaped literal.
     Integer(i64),
     /// `true`/`false` — a boolean constant.
@@ -509,6 +516,7 @@ impl Expr {
 /// ([`Expr::presenting`]).
 fn presented_of(kind: &ExprKind) -> Option<Type> {
     match kind {
+        ExprKind::LocalAssign { ty, .. } => Some(ty.clone()),
         ExprKind::Integer(_) => Some(Type::Int),
         ExprKind::Long(_) => Some(Type::Long),
         // The leaf's own bits state its type: a float literal is a float, a double literal a

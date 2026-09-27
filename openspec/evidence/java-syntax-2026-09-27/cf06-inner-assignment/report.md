@@ -18,4 +18,12 @@ python3 openspec/evidence/java-syntax-2026-09-27/cf06-inner-assignment/replay.py
   --out /tmp/jarde-cf06-fixed-replay-20260927
 ```
 
-`--out` 必须为空目录。当前脚本固定原 class/JADX 的七行成功结果，保留 Jarde 编译失败作为修前事实；修后再提高三方门槛。
+`--out` 必须为空目录。上述基线记录了修前 Jarde 编译失败；以下后验收使用提高了三方硬门槛的同一脚本。
+
+## 实施后验收（2026-09-27）
+
+[post-local-assignment/summary.json](post-local-assignment/summary.json) 记录三方完整类源码的 SHA-256、`javac --release 8 -g:none` 和 `java -Xverify:all` 结果。原始源码、固定 JADX 和 Jarde 全部重编成功，七行均为 `-1,4,-1,true,true,false,false`。脚本现以此为硬门槛，还检查 `lengthBranch` 仅调用一次 `length()`、`assignedAndChecked` 仅调用一次 `call()` 并读取一次 `field`，两个条件内赋值及后续局部读取均存在；任何 `@bytecode` 或缺失方法都会失败。Jarde 源码 SHA-256 为 `fda8596207c3348174824239d6fc066afce93421628b1f80cc57a7f78b34c59f`。
+
+局部赋值仅认 Region 已拥有的条件测试 BCI。证书要求源值、`dup`、局部 store 和测试在同一 SSA 块内，两份复制各仅有 store 与测试一个消费者；中间只允许常量入栈，且无异常 handler。目标变量的名字、类型与词法声明来自原计划。最终 AST 必须实际发布每个已隐藏的赋值表达式，否则整个方法回退为 BCI quote；低预算或取消不发布部分正文及来源映射。[定向夹具](../../../tests/fixtures/p3-inner-assignment/README.md) 覆盖额外复制消费者、Java 类型不符、交错副作用、异常边，以及带有同块 `dup; store; test` 但未被此证书接管的循环条件。负例均保留 quote，Java 8 负例 class 也通过验证器并运行。Rust 定向测试检查调用次数、来源 BCI、预算和取消；`jarde-java` 全套测试通过。
+
+范围边界：字段/数组赋值左值尚未覆盖；JADX 的 `TestIfElseAndConditionIntermediateInstruction` 仍是允许 warning 的 Smali 弱断言，不能作为完整 Java 8 源码正向证据。循环区域所有权与 Frame 不在本变更内。

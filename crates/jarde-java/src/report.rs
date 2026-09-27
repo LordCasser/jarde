@@ -862,7 +862,8 @@ fn project_captured_expr(
         return Ok(());
     }
     match &mut expr.kind {
-        ExprKind::InstanceOf { value, .. }
+        ExprKind::LocalAssign { value, .. }
+        | ExprKind::InstanceOf { value, .. }
         | ExprKind::PostfixUpdate { target: value, .. }
         | ExprKind::ArrayLength { array: value }
         | ExprKind::Cast { value, .. }
@@ -2882,7 +2883,8 @@ fn generic_return_candidate(
 fn collect_expression_anchors(expr: &Expr, anchors: &mut std::collections::BTreeSet<u32>) {
     anchors.extend(expr.origin.bcis());
     match &expr.kind {
-        ExprKind::InstanceOf { value, .. }
+        ExprKind::LocalAssign { value, .. }
+        | ExprKind::InstanceOf { value, .. }
         | ExprKind::Field {
             receiver: value, ..
         }
@@ -4806,7 +4808,8 @@ fn program_node_count(program: &build::Program) -> u64 {
         count = count.saturating_add(1);
         use ExprKind as K;
         match &expression.kind {
-            K::InstanceOf { value, .. }
+            K::LocalAssign { value, .. }
+            | K::InstanceOf { value, .. }
             | K::PostfixUpdate { target: value, .. }
             | K::ArrayLength { array: value }
             | K::Cast { value, .. }
@@ -5167,7 +5170,10 @@ fn visit_class_initializer_field_reads(
         ExprKind::Lambda { body, .. } => {
             visit_class_initializer_field_reads(body, fields, budget, reads, complete)?;
         }
-        ExprKind::MethodReference { qualifier, .. }
+        ExprKind::LocalAssign {
+            value: qualifier, ..
+        }
+        | ExprKind::MethodReference { qualifier, .. }
         | ExprKind::ArrayLength { array: qualifier }
         | ExprKind::Cast {
             value: qualifier, ..
@@ -5291,7 +5297,10 @@ fn charge_expression_tree_at_depth(
             )?;
             charge_expression_tree_at_depth(body, budget, depth + 1)?;
         }
-        ExprKind::MethodReference { qualifier, .. }
+        ExprKind::LocalAssign {
+            value: qualifier, ..
+        }
+        | ExprKind::MethodReference { qualifier, .. }
         | ExprKind::ArrayLength { array: qualifier }
         | ExprKind::Cast {
             value: qualifier, ..
