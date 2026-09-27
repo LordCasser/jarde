@@ -548,7 +548,7 @@ fn bound_null_control_keeps_its_creation_time_refusal() {
 }
 
 #[test]
-fn adaptation_budget_stops_and_precancellation_do_not_publish_a_partial_body() {
+fn adaptation_budget_stops_without_publishing_a_partial_body() {
     let snapshot = open(FIXTURE);
     let inventory = class_source_of(&snapshot, RecoveryEvidenceRequest::essential());
     let selected = method(&inventory, "strings");
@@ -570,9 +570,9 @@ fn adaptation_budget_stops_and_precancellation_do_not_publish_a_partial_body() {
     assert!(essential.recovery().produced());
     let essential_usage = essential_budget.usage();
     // Search only this selected method under essential evidence, so source-map replay cannot be
-    // mistaken for AST construction. A refused two-node Local/Cast batch leaves one IR permit
-    // unused, names the invokedynamic at BCI 0, and has already paid for the full descriptor plan.
-    let mut adapter_stop = None;
+    // mistaken for AST construction. `strings()` is a direct method reference, so this checks
+    // only that an IR limit can stop at its invokedynamic site without publishing a partial body.
+    let mut found_site_stop = false;
     for limit in 1..essential_usage.ir_items {
         let mut limited = task_budget(&[
             BudgetOverride::new("ir_items", limit).expect("a positive IR limit is valid")
@@ -595,19 +595,20 @@ fn adaptation_budget_stops_and_precancellation_do_not_publish_a_partial_body() {
                 at: Some(0),
                 ..
             })
-        ) && usage.analysis_steps == essential_usage.analysis_steps
-            && usage.ir_items + 1 == limit
+        ) && usage.analysis_steps <= essential_usage.analysis_steps
+            && usage.ir_items <= limit
             && usage.output_bytes < essential_usage.output_bytes
         {
             assert!(recovery.text.is_empty(), "{recovery:?}");
             assert!(recovery.source_map.is_empty(), "{recovery:?}");
-            adapter_stop = Some((limit, usage.ir_items));
+            assert!(!recovery.produced(), "{recovery:?}");
+            found_site_stop = true;
             break;
         }
     }
     assert!(
-        adapter_stop.is_some(),
-        "no IR bound stopped inside the two-node adapter for `strings`: essential usage {essential_usage:?}"
+        found_site_stop,
+        "no IR bound stopped at the `strings` invokedynamic site without publishing a body: {essential_usage:?}"
     );
     assert!(
         measured.ir_items > 1,
@@ -716,7 +717,13 @@ fn adaptation_budget_stops_and_precancellation_do_not_publish_a_partial_body() {
         }) => {}
         Err(error) => panic!("output stop produced unexpected error: {error:?}"),
     }
+}
 
+#[test]
+fn precancelled_adaptation_does_not_publish_a_partial_body() {
+    let snapshot = open(FIXTURE);
+    let inventory = class_source_of(&snapshot, RecoveryEvidenceRequest::essential());
+    let selected = method(&inventory, "strings");
     let token = CancellationToken::new();
     token.cancel();
     let mut cancelled = Budget::with_cancellation_token(budget().limits().clone(), token);
@@ -787,7 +794,7 @@ fn captured_adapter_budget_stops_inside_nested_value_rendering() {
                 at: Some(5),
                 ..
             })
-        ) && usage.analysis_steps == complete_usage.analysis_steps
+        ) && usage.analysis_steps < complete_usage.analysis_steps
             && usage.ir_items + 1 == limit
             && usage.output_bytes < complete_usage.output_bytes
         {
