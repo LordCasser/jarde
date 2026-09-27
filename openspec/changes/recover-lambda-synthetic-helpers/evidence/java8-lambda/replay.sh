@@ -29,6 +29,18 @@ cp "$JADX_SOURCE" "$HERE/jadx-LambdaFixture.java"
   java -Xverify:all -cp classes defpackage.Runner > "$HERE/jadx-run.txt"
 )
 "$JARDE" class-source --input "$TMP/original/LambdaFixture.class" --class LambdaFixture --policy single-class --release 8 --format text > "$HERE/jarde-class-source.txt" 2> "$HERE/jarde-bookkeeping.txt"
+python3 - "$HERE/jarde-bookkeeping.txt" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+lines = path.read_text().splitlines()
+path.write_text("\n".join(
+    line.split(" = ")[0] + " = <elapsed>"
+    if "usage.elapsed_millis = " in line else line
+    for line in lines
+) + "\n")
+PY
 cp "$HERE/Runner.java" "$TMP/jarde/"
 cp "$HERE/jarde-class-source.txt" "$TMP/jarde/LambdaFixture.java"
 (
