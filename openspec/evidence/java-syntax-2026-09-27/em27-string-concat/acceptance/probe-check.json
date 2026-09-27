@@ -1,0 +1,57 @@
+{
+  "fixture_class_sha256": "630892b11ab219ebc8433d01275719145108c584535ff78a72a4a72bb3b8cc07",
+  "direct_source_bcis": [
+    0,
+    3,
+    4,
+    5,
+    7,
+    8,
+    9,
+    11,
+    12,
+    13,
+    14,
+    16,
+    17,
+    18,
+    19,
+    21,
+    22,
+    25
+  ],
+  "negative": {
+    "wrongDescriptor": {
+      "quality": "fallback",
+      "refusal_codes": [
+        "jre_new_interleaved_effect",
+        "jre_new_sites"
+      ],
+      "physical_bci_anchors_present": true
+    },
+    "wrongOwner": {
+      "quality": "fallback",
+      "refusal_codes": [
+        "jre_new_interleaved_effect",
+        "jre_new_sites"
+      ],
+      "physical_bci_anchors_present": true
+    },
+    "effectful": {
+      "quality": "fallback",
+      "refusal_codes": [
+        "jre_new_interleaved_effect",
+        "jre_new_sites"
+      ],
+      "physical_bci_anchors_present": true
+    },
+    "extraReader": {
+      "quality": "fallback",
+      "refusal_codes": [
+        "jre_new_interleaved_effect",
+        "jre_new_sites"
+      ],
+      "physical_bci_anchors_present": true
+    }
+  }
+}

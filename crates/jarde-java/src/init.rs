@@ -113,6 +113,8 @@ struct ConstructionFacts<'a> {
     operations: &'a Operations,
     chains: &'a crate::concat::Plan,
     fields: &'a field::Plan,
+    arrays: &'a crate::build::ArrayInitializers,
+    java_release: u16,
     member_targets: &'a [ProvedMemberInnerTarget],
     method: Option<&'a crate::facts::MethodFacts>,
     code: &'a MethodCodeFacts,
@@ -294,6 +296,8 @@ pub(crate) fn sites(
     chains: &crate::concat::Plan,
     reserved: &BTreeSet<u32>,
     fields: &field::Plan,
+    arrays: &crate::build::ArrayInitializers,
+    java_release: u16,
     member_targets: &[ProvedMemberInnerTarget],
     method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
@@ -303,6 +307,8 @@ pub(crate) fn sites(
         operations,
         chains,
         fields,
+        arrays,
+        java_release,
         member_targets,
         method: Some(method),
         code,
@@ -380,6 +386,8 @@ fn verify(
         operations,
         chains,
         fields,
+        arrays,
+        java_release,
         member_targets,
         ..
     } = *facts;
@@ -433,6 +441,7 @@ fn verify(
         .map(|target| verify_member(index, block, constructor, &operands, facts, target))
         .transpose()?;
     let mut embedded_concat = false;
+    let mut embedded_array = BTreeSet::new();
     let arguments = if let Some(member) = &member {
         member.arguments.clone()
     } else {
@@ -460,6 +469,15 @@ fn verify(
         // reached at all.
         let argument_dependencies =
             value_dependency_bcis(ssa, block, operands.iter().skip(1).map(|(_, value)| *value));
+        if java_release == 8
+            && ty == "java/lang/String"
+            && matches!(operations.get(at), Some(Operation::Invoke(call)) if call.descriptor() == "([C)V")
+            && operands.len() == 2
+        {
+            embedded_array = arrays
+                .inline_char_argument_bcis(ssa, operations, block, operands[1].1, dup.bci(), at)
+                .unwrap_or_default();
+        }
         let nested_concat = verify_concat_arguments(
             head,
             dup.bci(),
@@ -479,6 +497,7 @@ fn verify(
             }
             match operations.get(instruction.bci()) {
                 Some(_) if nested_concat.contains(&instruction.bci()) => {}
+                Some(_) if embedded_array.contains(&instruction.bci()) => {}
                 Some(
                     Operation::Push(_)
                     | Operation::Load { .. }
@@ -571,7 +590,18 @@ fn verify(
         .iter()
         .position(|instruction| instruction.bci() == at)
         .expect("the selected constructor belongs to this block");
-    if embedded_concat {
+    if !embedded_array.is_empty()
+        && (block.get(constructor_index + 1).map(SsaInstruction::bci) != Some(written[0])
+            || !matches!(operations.get(written[0]), Some(Operation::Return { .. })))
+    {
+        return Err(Refusal::shape(
+            "jre_new_inline_char_array_return",
+            format!(
+                "the String(char[]) construction at BCI {head} does not directly return its sole constructed value"
+            ),
+        ));
+    }
+    if embedded_concat || !embedded_array.is_empty() {
         // A Java expression runs under one exception region. Moving a proved inner chain into the
         // outer construction is sound only when every instruction in the construction and its
         // sole consumer has the same handler coverage as the outer allocation.
@@ -591,10 +621,18 @@ fn verify(
             .any(|instruction| coverage(instruction.bci()) != expected)
             || coverage(consumer) != expected
         {
+            let (code, argument) = if embedded_concat {
+                ("jre_new_concat_exception_boundary", "concatenation")
+            } else {
+                (
+                    "jre_new_inline_char_array_exception_boundary",
+                    "inline char[]",
+                )
+            };
             return Err(Refusal::shape(
-                "jre_new_concat_exception_boundary",
+                code,
                 format!(
-                    "the concatenation argument of the construction at BCI {head} crosses an exception-handler boundary before its constructor or sole consumer at BCI {consumer}"
+                    "the {argument} argument of the construction at BCI {head} crosses an exception-handler boundary before its constructor or sole consumer at BCI {consumer}"
                 ),
             ));
         }
@@ -1534,6 +1572,176 @@ mod tests {
     const CONCAT_CONSTRUCTOR: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-26/exception-constructor-concat/original-classes/Probe.class"
     );
+    const INLINE_CHAR_ARRAY: &[u8] =
+        include_bytes!("../../../tests/fixtures/em27-inline-string/em27/Probe.class");
+
+    fn inline_char_sites(
+        name: &str,
+        descriptor: &str,
+        java_release: u16,
+        handler_range: Option<(u32, u32)>,
+    ) -> Sites {
+        let (analysis, _) = analyzed_caller(INLINE_CHAR_ARRAY, name, descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let mut code = ir.code().expect("code").clone();
+        if let Some((start_bci, end_bci)) = handler_range {
+            code.exception_handlers
+                .push(jarde_reader::classfile::ExceptionHandlerFact {
+                    ordinal: 0,
+                    start_bci,
+                    end_bci,
+                    handler_bci: 0,
+                    catch_type_index: None,
+                });
+        }
+        let operations = Operations::of(&code, ir.constant_pool());
+        let fields = field::Plan::empty();
+        let mut budget = proof_budget();
+        let arrays = crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut budget)
+            .expect("array proof completes");
+        let chains = crate::concat::Plan::empty();
+        let method_facts = crate::facts::MethodFacts::new(name, descriptor, 0);
+        sites(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &arrays,
+            java_release,
+            &[],
+            &method_facts,
+            &code,
+        )
+    }
+
+    #[test]
+    fn only_the_complete_direct_java8_string_char_array_is_embedded() {
+        let direct = inline_char_sites("direct", "()Ljava/lang/String;", 8, None);
+        let site = direct.site_at_head(0).expect("direct char[] String site");
+        assert_eq!((site.head, site.dup, site.constructor), (0, 3, 22));
+        assert_eq!(site.arguments, [17]);
+        assert_eq!(site.expression.iter().copied().min(), Some(0));
+        assert_eq!(site.expression.iter().copied().max(), Some(22));
+        assert!(site.expression.contains(&5) && site.expression.contains(&21));
+        assert!(site.owned.contains(&0) && site.owned.contains(&3) && site.owned.contains(&22));
+
+        let stored = inline_char_sites("stored", "()Ljava/lang/String;", 8, None);
+        assert_eq!(
+            stored
+                .site_at_head(19)
+                .expect("stored array control")
+                .constructor,
+            24
+        );
+        let written = inline_char_sites("extraWrite", "()Ljava/lang/String;", 8, None);
+        assert_eq!(
+            written
+                .site_at_head(24)
+                .expect("separate mutation control")
+                .constructor,
+            29
+        );
+        let read = inline_char_sites("secondConsumer", "()Ljava/lang/String;", 8, None);
+        assert_eq!(
+            read.site_at_head(23)
+                .expect("separate read control")
+                .constructor,
+            28
+        );
+
+        for (name, descriptor) in [
+            ("wrongDescriptor", "()Ljava/lang/String;"),
+            ("wrongOwner", "()Lem27/Probe$Holder;"),
+            ("effectful", "()Ljava/lang/String;"),
+            ("extraReader", "()Ljava/lang/String;"),
+        ] {
+            let refused = inline_char_sites(name, descriptor, 8, None);
+            assert!(refused.site_at_head(0).is_none(), "{name} must not embed");
+            assert_eq!(
+                refused.refusals().next().expect("physical refusal").code(),
+                "jre_new_interleaved_effect",
+                "{name}"
+            );
+        }
+        let old_profile = inline_char_sites("direct", "()Ljava/lang/String;", 7, None);
+        assert!(old_profile.site_at_head(0).is_none());
+        let crossed = inline_char_sites("direct", "()Ljava/lang/String;", 8, Some((5, 22)));
+        assert!(crossed.site_at_head(0).is_none());
+        assert_eq!(
+            crossed.refusals().next().expect("handler refusal").code(),
+            "jre_new_inline_char_array_exception_boundary"
+        );
+    }
+
+    #[test]
+    fn inline_char_array_proof_obeys_shared_budget_and_cancellation() {
+        let (analysis, _) = analyzed_caller(INLINE_CHAR_ARRAY, "direct", "()Ljava/lang/String;");
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let fields = field::Plan::empty();
+
+        let mut limits = proof_budget().limits().clone();
+        limits.ir_items = 1;
+        let mut limited = Budget::new(limits);
+        let stop = crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut limited)
+            .err()
+            .expect("array proof must stop before publishing a partial certificate");
+        assert!(matches!(
+            stop,
+            crate::stop::StopReason::Budget { at: Some(_), .. }
+        ));
+
+        let mut cancelled = proof_budget();
+        cancelled.cancellation_token().cancel();
+        let stop =
+            crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut cancelled)
+                .err()
+                .expect("cancelled array proof publishes no certificate");
+        assert!(matches!(
+            stop,
+            crate::stop::StopReason::Cancelled { at: Some(_) }
+        ));
+    }
+
+    #[test]
+    fn inline_char_certificate_requires_the_exact_parent_interval_and_consumer() {
+        let (analysis, _) = analyzed_caller(INLINE_CHAR_ARRAY, "direct", "()Ljava/lang/String;");
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let operations = Operations::of(ir.code().expect("code"), ir.constant_pool());
+        let arrays = crate::build::ArrayInitializers::prove(
+            ssa,
+            &operations,
+            &field::Plan::empty(),
+            &mut proof_budget(),
+        )
+        .expect("complete array certificate");
+        let block = ssa.blocks()[0].instructions();
+        let constructor = block
+            .iter()
+            .find(|instruction| instruction.bci() == 22)
+            .expect("constructor");
+        let argument = stack_operands(constructor)[1].1;
+        assert!(
+            arrays
+                .inline_char_argument_bcis(ssa, &operations, block, argument, 3, 22)
+                .is_some()
+        );
+        assert!(
+            arrays
+                .inline_char_argument_bcis(ssa, &operations, block, argument, 5, 22)
+                .is_none()
+        );
+        assert!(
+            arrays
+                .inline_char_argument_bcis(ssa, &operations, block, argument, 3, 25)
+                .is_none()
+        );
+    }
 
     fn proof_budget() -> Budget {
         Budget::new(Limits {
@@ -1683,11 +1891,14 @@ mod tests {
             targets.push(fact);
         }
         let fields = field::Plan::empty();
+        let arrays = crate::build::ArrayInitializers::default();
         let facts = ConstructionFacts {
             ssa,
             operations: &operations,
             chains: &crate::concat::Plan::empty(),
             fields: &fields,
+            arrays: &arrays,
+            java_release: 8,
             member_targets: &targets,
             method: None,
             code: &code,
@@ -1809,6 +2020,7 @@ mod tests {
             let operations = Operations::of(code, ir.constant_pool());
             let chains = crate::concat::plan(ssa, &operations);
             let fields = field::Plan::empty();
+            let arrays = crate::build::ArrayInitializers::default();
             let method_facts = crate::facts::MethodFacts::new(name, descriptor, 0);
             let no_chain_proof = crate::concat::Plan::empty();
             let reserved_only = sites(
@@ -1817,6 +2029,8 @@ mod tests {
                 &no_chain_proof,
                 chains.owned(),
                 &fields,
+                &arrays,
+                8,
                 &[],
                 &method_facts,
                 code,
@@ -1832,6 +2046,8 @@ mod tests {
                 &chains,
                 chains.owned(),
                 &fields,
+                &arrays,
+                8,
                 &[],
                 &method_facts,
                 code,
@@ -1937,6 +2153,8 @@ mod tests {
                 operations: &operations,
                 chains: &chains,
                 fields: &fields,
+                arrays: &arrays,
+                java_release: 8,
                 member_targets: &[],
                 method: None,
                 code: &boundary_code,

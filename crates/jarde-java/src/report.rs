@@ -3591,12 +3591,19 @@ fn recover_inner(
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
     let chains = concat::plan(ssa, &operations);
+    let array_initializers =
+        match build::ArrayInitializers::prove(ssa, &operations, &fields, budget) {
+            Ok(arrays) => arrays,
+            Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+        };
     let sites = init::sites(
         ssa,
         &operations,
         &chains,
         chains.owned(),
         &fields,
+        &array_initializers,
+        request.profile.java_release,
         request.member_inner_targets,
         request.facts.method(),
         code,
@@ -3826,6 +3833,7 @@ fn recover_inner(
             sites: &sites,
             prologues: &prologues,
             fields: &fields,
+            array_initializers,
             enums: &enums,
             allow_array_constructor_method_references,
         },

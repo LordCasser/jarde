@@ -1,0 +1,35 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_test_sha256": {
+    "others/TestConstStringConcat.java": "27e33208d33e2e280ce0bf92cf0f630b68f4d3adf5a8aa11b19097748a5d5e95",
+    "others/TestStringBuilderElimination.java": "228824ae3c14a5655782c89778011242a9f060fd260060c0adb66272ee5d4f2f",
+    "others/TestStringBuilderElimination4Neg.java": "a3c1294133a9b6cea744d47dc7cd077fcad1768c6522786bb78b08914793a42d",
+    "others/TestStringConcatJava11.java": "e6e6b1e81df42f59a7f58ccaea2945f1e3d6047f92790bd930d6629c3a21d7bc",
+    "others/TestStringConcatWithoutResult.java": "c959f32583c65cdcaf74a4f7d1f769aaecae2e8875d5fd891826e43459eabb80",
+    "others/TestStringConstructor.java": "6be750f5fb0311c92eafd17be5bce7bdff56d1d8ec2979fb226218d34d0b7a22",
+    "others/TestIssue13a.java": "28bfa600c96bdd85113fd9b760460d471d13ac256f7885b6ee0c7e50aaafbdf1"
+  },
+  "jarde_cli_sha256": "70b59c36303ab0e73ce8da9d568c4a8364a3c59ff750f24115cf6a8b79e62dcd",
+  "input_sha256": {
+    "Concat.java": "265a7dfe9ca873aeb8093b056a4096d3a68c9d0442911d36760d0adf4c218c0f",
+    "Runner.java": "e5dc841ee5bcc2e076ee937d795543e0b1028a30d19db898694d5016a506849c"
+  },
+  "original": {
+    "javac_exit": 0,
+    "source_sha256": "265a7dfe9ca873aeb8093b056a4096d3a68c9d0442911d36760d0adf4c218c0f",
+    "runtime_exit": 0,
+    "stdout": "Value equals 7\nApp version: 1.2\nABA=B\nnull=null\n1name, e: 2\nabc\nfalse\nfalse"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "source_sha256": "84fe9183c03d378135443211cc7b66cb7456118a4635c7b3c0d3d249f984a174",
+    "runtime_exit": 0,
+    "stdout": "Value equals 7\nApp version: 1.2\nABA=B\nnull=null\n1name, e: 2\nabc\ntrue\ntrue"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "source_sha256": "def68feb60f176b877de04bfbfef0ce3d5a4990430bf4d309b50c77153943aeb",
+    "runtime_exit": 0,
+    "stdout": "Value equals 7\nApp version: 1.2\nABA=B\nnull=null\n1name, e: 2\nabc\nfalse\nfalse"
+  }
+}

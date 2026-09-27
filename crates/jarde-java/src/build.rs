@@ -371,6 +371,8 @@ pub(crate) struct Inputs<'a> {
     pub(crate) prologues: &'a init::Prologues,
     /// The field accesses this body's instructions were verified to be (P3 2.3, `field@1`).
     pub(crate) fields: &'a field::Plan,
+    /// The same array proof already consulted by construction-site verification.
+    pub(crate) array_initializers: ArrayInitializers,
     /// The dispatch-table reads this body performs (P3 2.3, `enumswitch@1`).
     pub(crate) enums: &'a enumswitch::Plan,
     /// Whether this presentation may omit a proved array helper and write `T[]::new`. The
@@ -5755,7 +5757,6 @@ pub(crate) fn build(
         inputs.has_receiver,
         budget,
     )?;
-    let array_initializers = ArrayInitializers::prove(ssa, operations, inputs.fields, budget)?;
     let long_assignment_result = LongAssignmentResult::prove(
         canonical,
         ssa,
@@ -5845,7 +5846,7 @@ pub(crate) fn build(
         long_assignment_result,
         long_assignment_refused: false,
         postfix: PostfixUpdates::default(),
-        array_initializers,
+        array_initializers: inputs.array_initializers,
         instructions,
         block_of,
         budget,
@@ -7319,7 +7320,7 @@ struct LocalPostfixElement {
 }
 
 #[derive(Default)]
-struct ArrayInitializers {
+pub(crate) struct ArrayInitializers {
     allocations: BTreeMap<u32, ArrayInitializer>,
     aliases: BTreeMap<ValueId, ValueId>,
     owned: BTreeSet<u32>,
@@ -7327,6 +7328,56 @@ struct ArrayInitializers {
 }
 
 impl ArrayInitializers {
+    /// The complete physical interval of a proved inline `char[]` argument. This deliberately
+    /// accepts only constant element producers and the exact sole constructor consumer; general
+    /// array initializers remain the builder's concern.
+    pub(crate) fn inline_char_argument_bcis(
+        &self,
+        ssa: &SsaTable,
+        operations: &Operations,
+        block: &[SsaInstruction],
+        value: ValueId,
+        dup: u32,
+        constructor: u32,
+    ) -> Option<BTreeSet<u32>> {
+        let allocation = match ssa.value(*self.aliases.get(&value)?).def() {
+            Definition::Instruction { bci, .. } => *bci,
+            _ => return None,
+        };
+        let initializer = self.allocations.get(&allocation)?;
+        if initializer.final_value != value
+            || initializer.consumer != constructor
+            || !matches!(
+                operations.get(allocation),
+                Some(Operation::NewArray {
+                    element: Type::Char,
+                    dimensions: 1,
+                    total_dimensions: 1,
+                })
+            )
+            || !initializer.children.is_empty()
+            || !initializer.local_postfix.is_empty()
+            || initializer
+                .element_sources
+                .iter()
+                .any(|bci| !matches!(operations.get(*bci), Some(Operation::Push(_))))
+        {
+            return None;
+        }
+        let members: BTreeSet<u32> = block
+            .iter()
+            .filter(|instruction| dup < instruction.bci() && instruction.bci() < constructor)
+            .map(SsaInstruction::bci)
+            .collect();
+        let sources: BTreeSet<u32> = initializer
+            .sources
+            .iter()
+            .copied()
+            .filter(|bci| *bci != constructor)
+            .collect();
+        (sources == members && sources.contains(&allocation)).then_some(members)
+    }
+
     fn owns(&self, at: u32) -> bool {
         self.owned.contains(&at)
     }
@@ -7343,7 +7394,7 @@ impl ArrayInitializers {
         self.owns(at) || self.element_sources.contains(&at)
     }
 
-    fn prove(
+    pub(crate) fn prove(
         ssa: &SsaTable,
         operations: &Operations,
         fields: &field::Plan,
