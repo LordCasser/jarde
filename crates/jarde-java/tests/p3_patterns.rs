@@ -4725,6 +4725,140 @@ fn structured_finally_keeps_the_saved_return_inside_its_branch() {
 }
 
 #[test]
+fn nested_string_switch_keeps_its_final_dispatch_inside_the_outer_default() {
+    let class = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/NestedStringSwitchAudit.original.class"
+    );
+    let mut budget = Budget::new(limits());
+    let recovery = recover_class_source_exact(
+        class,
+        b"choose",
+        b"(Ljava/lang/String;)I",
+        1,
+        jarde_java::RecoveryEvidenceRequest::all(),
+        &mut budget,
+    );
+    let report = &recovery.report;
+    assert!(report.produced(), "{}", report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(
+        report.text.matches("switch (").count(),
+        2,
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("break;"), "{}", report.text);
+    for bci in [62, 96, 105, 111, 120, 123, 152, 154, 156] {
+        assert_eq!(
+            report
+                .regions
+                .iter()
+                .filter(|region| region.blocks.contains(&bci))
+                .count(),
+            1,
+            "BCI {bci} must have one Region owner: {:?}",
+            report.regions
+        );
+    }
+    for bci in [62, 71, 96, 105, 111, 120, 123, 125, 152, 154, 156] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci} has no source: {}",
+            report.text
+        );
+    }
+
+    let mut small = limits();
+    small.analysis_steps = budget.usage().analysis_steps.saturating_sub(1);
+    let mut limited_budget = Budget::new(small);
+    let limited = recover_class_source_exact(
+        class,
+        b"choose",
+        b"(Ljava/lang/String;)I",
+        1,
+        jarde_java::RecoveryEvidenceRequest::all(),
+        &mut limited_budget,
+    );
+    assert!(!limited.report.produced());
+    assert!(limited.report.text.is_empty());
+    assert!(limited.report.source_map.is_empty());
+
+    let token = jarde_reader::budget::CancellationToken::new();
+    token.cancel();
+    let mut cancelled_budget = Budget::with_cancellation_token(limits(), token);
+    let cancelled = recover_class_source_exact(
+        class,
+        b"choose",
+        b"(Ljava/lang/String;)I",
+        1,
+        jarde_java::RecoveryEvidenceRequest::all(),
+        &mut cancelled_budget,
+    );
+    assert!(!cancelled.report.produced());
+    assert!(cancelled.report.text.is_empty());
+    assert!(cancelled.report.source_map.is_empty());
+}
+
+#[test]
+fn nested_string_switch_cross_case_exit_is_refused() {
+    let mut class = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/NestedStringSwitchAudit.original.class"
+    )
+    .to_vec();
+    // The verified fixture's BCI 108 `goto 123` becomes `goto 60`: the inner "b"
+    // case now enters the outer "a" return. This is a valid JVM transfer, but no
+    // longer one Java case arm the nested String-switch projection may claim.
+    let route = [0xa7, 0x00, 0x0f];
+    let matches: Vec<_> = class
+        .windows(route.len())
+        .enumerate()
+        .filter_map(|(index, window)| (window == route).then_some(index))
+        .collect();
+    assert_eq!(matches.len(), 1);
+    class[matches[0] + 1..matches[0] + 3].copy_from_slice(&[0xff, 0xd0]);
+    let mut budget = Budget::new(limits());
+    let recovery = recover_class_source_exact(
+        &class,
+        b"choose",
+        b"(Ljava/lang/String;)I",
+        1,
+        jarde_java::RecoveryEvidenceRequest::all(),
+        &mut budget,
+    );
+    assert!(
+        recovery.report.text.contains("@bytecode"),
+        "{}",
+        recovery.report.text
+    );
+    assert!(
+        !recovery.report.text.contains("case \"b\":"),
+        "{}",
+        recovery.report.text
+    );
+}
+
+#[test]
+fn independent_hash_use_keeps_both_physical_switches() {
+    let class = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/ExtraHashUse.original.class"
+    );
+    let mut budget = Budget::new(limits());
+    let recovery = recover_class_source_exact(
+        class,
+        b"choose",
+        b"(Ljava/lang/String;)I",
+        1,
+        jarde_java::RecoveryEvidenceRequest::all(),
+        &mut budget,
+    );
+    let text = &recovery.report.text;
+    assert!(recovery.report.produced(), "{text}");
+    assert!(text.contains("hashCode()"), "{text}");
+    assert_eq!(text.matches("switch (").count(), 2, "{text}");
+    assert!(!text.contains("case \"Aa\":"), "{text}");
+}
+
+#[test]
 fn straight_finally_reuses_its_guard_verdict_with_a_tight_budget() {
     let class = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-24/finally-straight-cleanup-throws/FinallyStraightThrow.class"
