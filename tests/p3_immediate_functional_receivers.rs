@@ -6,6 +6,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::slice;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const DIRECT_ARRAY: &[u8] = include_bytes!(
@@ -398,13 +399,15 @@ struct Scratch(PathBuf);
 
 impl Scratch {
     fn new() -> Self {
+        static NEXT_ID: AtomicU64 = AtomicU64::new(0);
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .expect("the clock is after the epoch")
             .as_nanos();
+        let id = NEXT_ID.fetch_add(1, Ordering::Relaxed);
         let path = std::env::temp_dir().join(format!(
-            "jarde-p3-immediate-receiver-{}-{nonce}",
-            std::process::id()
+            "jarde-p3-immediate-receiver-{}-{nonce}-{id}",
+            std::process::id(),
         ));
         fs::create_dir_all(&path).expect("create a JDK comparison directory");
         Self(path)
