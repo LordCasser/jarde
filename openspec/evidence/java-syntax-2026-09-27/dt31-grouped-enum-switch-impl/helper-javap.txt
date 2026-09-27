@@ -1,0 +1,51 @@
+class grouped.Subject$1 {
+  static final int[] $SwitchMap$grouped$Count;
+
+  static final int[] $SwitchMap$grouped$Animal;
+
+  static {};
+    Code:
+       0: invokestatic  #1                  // Method grouped/Animal.values:()[Lgrouped/Animal;
+       3: arraylength
+       4: newarray       int
+       6: putstatic     #7                  // Field $SwitchMap$grouped$Animal:[I
+       9: getstatic     #7                  // Field $SwitchMap$grouped$Animal:[I
+      12: getstatic     #13                 // Field grouped/Animal.CAT:Lgrouped/Animal;
+      15: invokevirtual #17                 // Method grouped/Animal.ordinal:()I
+      18: iconst_1
+      19: iastore
+      20: goto          24
+      23: astore_0
+      24: getstatic     #7                  // Field $SwitchMap$grouped$Animal:[I
+      27: getstatic     #23                 // Field grouped/Animal.DOG:Lgrouped/Animal;
+      30: invokevirtual #17                 // Method grouped/Animal.ordinal:()I
+      33: iconst_2
+      34: iastore
+      35: goto          39
+      38: astore_0
+      39: invokestatic  #26                 // Method grouped/Count.values:()[Lgrouped/Count;
+      42: arraylength
+      43: newarray       int
+      45: putstatic     #31                 // Field $SwitchMap$grouped$Count:[I
+      48: getstatic     #31                 // Field $SwitchMap$grouped$Count:[I
+      51: getstatic     #34                 // Field grouped/Count.ONE:Lgrouped/Count;
+      54: invokevirtual #38                 // Method grouped/Count.ordinal:()I
+      57: iconst_1
+      58: iastore
+      59: goto          63
+      62: astore_0
+      63: getstatic     #31                 // Field $SwitchMap$grouped$Count:[I
+      66: getstatic     #39                 // Field grouped/Count.TWO:Lgrouped/Count;
+      69: invokevirtual #38                 // Method grouped/Count.ordinal:()I
+      72: iconst_2
+      73: iastore
+      74: goto          78
+      77: astore_0
+      78: return
+    Exception table:
+       from    to  target type
+           9    20    23   Class java/lang/NoSuchFieldError
+          24    35    38   Class java/lang/NoSuchFieldError
+          48    59    62   Class java/lang/NoSuchFieldError
+          63    74    77   Class java/lang/NoSuchFieldError
+}

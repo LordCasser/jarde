@@ -1,0 +1,8 @@
+one-cat=514:trace=14
+one-dog=615:trace=15
+two-cat=624:trace=24
+two-dog=725:trace=25
+three-cat=734:trace=34
+three-dog=835:trace=35
+null-count=NPE:trace=0
+null-animal=NPE:trace=1

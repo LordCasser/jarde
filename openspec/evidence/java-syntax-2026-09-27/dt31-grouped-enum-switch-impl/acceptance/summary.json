@@ -1,0 +1,677 @@
+{
+  "jarde_sha256": "009a23c4f7b5bd13563f5cc561203e234b3c9a29a79df452737fe9fc8759f5d0",
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "positive_jar_sha256": "8df2088c16499b1086ad9e65f516d166603be26d67c229083f5bbefd87fd3ea5",
+  "negative_jar_sha256": "949fb81a621fcf57f2ccc2e2e564fb97793f3d87e9bd50de4abbff9ef1dce4c5",
+  "expected": "one-cat=514:trace=14\none-dog=615:trace=15\ntwo-cat=624:trace=24\ntwo-dog=725:trace=25\nthree-cat=734:trace=34\nthree-dog=835:trace=35\nnull-count=NPE:trace=0\nnull-animal=NPE:trace=1",
+  "cases": {
+    "grouped": {
+      "source_sha256": {
+        "input": {
+          "input/Runner.java": "bd094c49a56953392c711074acbcab5a25704d8d5999d37762467b9ff1ea2914",
+          "input/grouped/Animal.java": "e505279c5494f67f8b7f25434fddaf2811c542396175cfad434aad286933f873",
+          "input/grouped/Count.java": "c29bcf10c89f55f34252931970c735cf9b5bb68022c66d84ad2d080044161df5",
+          "input/grouped/Subject.java": "893e8b1ea5a81d2e289b5267b4212281346e8736decc0c50a433e009ccba64a4"
+        },
+        "jadx": {
+          "grouped/Animal.java": "e0aa235f75b2fe6843eaa3ed515d8f64d511b3911fa3ffc37fa2ae32685eeb1c",
+          "grouped/Count.java": "1163d5db5ce8a88d4ca430273ca37278fa9bbd98ac6de3d6036fd58e09f72b65",
+          "grouped/Subject.java": "cc0892f3a00bb6f07f3e3769de21c7bab91d9ab3fe52ed7b5e6f4063fc887efb"
+        },
+        "jarde": {
+          "grouped/Animal.java": "1d63c1e669f4848d53a27f71ded4605519564f92239185c94082fc98903c6e32",
+          "grouped/Count.java": "35d3530a353f0e3d62cf3aa065257eb4506e862fe127ee77c3eb2f8cd5ba7e82",
+          "grouped/Subject$1.java": "090c4fa269ab261c2bc50456e329acae315eab4cf612d1d92e2ce9560d834675",
+          "grouped/Subject.java": "710cc6a6cf64e00832948fc6e3d87a113eadd71da865dc60246536f62f58083b"
+        }
+      },
+      "original_javac_exit": 0,
+      "original": {
+        "exit": 0,
+        "stdout": "one-cat=514:trace=14\none-dog=615:trace=15\ntwo-cat=624:trace=24\ntwo-dog=725:trace=25\nthree-cat=734:trace=34\nthree-dog=835:trace=35\nnull-count=NPE:trace=0\nnull-animal=NPE:trace=1"
+      },
+      "jadx_javac_exit": 0,
+      "jadx": {
+        "exit": 0,
+        "stdout": "one-cat=514:trace=14\none-dog=615:trace=15\ntwo-cat=624:trace=24\ntwo-dog=725:trace=25\nthree-cat=734:trace=34\nthree-dog=835:trace=35\nnull-count=NPE:trace=0\nnull-animal=NPE:trace=1"
+      },
+      "jarde_javac_exit": 0,
+      "jarde": {
+        "exit": 0,
+        "stdout": "one-cat=514:trace=14\none-dog=615:trace=15\ntwo-cat=624:trace=24\ntwo-dog=725:trace=25\nthree-cat=734:trace=34\nthree-dog=835:trace=35\nnull-count=NPE:trace=0\nnull-animal=NPE:trace=1"
+      },
+      "proofs": [
+        {
+          "entries": [
+            {
+              "constant": [
+                79,
+                78,
+                69
+              ],
+              "constant_field_bci": 51,
+              "handler_bci": 62,
+              "handler_ordinal": 2,
+              "key": 1,
+              "ordinal_bci": 54,
+              "store_bci": 58,
+              "table_read_bci": 48
+            },
+            {
+              "constant": [
+                84,
+                87,
+                79
+              ],
+              "constant_field_bci": 66,
+              "handler_bci": 77,
+              "handler_ordinal": 3,
+              "key": 2,
+              "ordinal_bci": 69,
+              "store_bci": 73,
+              "table_read_bci": 63
+            }
+          ],
+          "enum_definition": {
+            "class_bytes": {
+              "digest": "df3dd61978cb46c2501e17524d2d7f43d9ce8327e3f12c11adbb299e648831fc",
+              "length": 827
+            },
+            "location": {
+              "entry": {
+                "ordinal": 4,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "1559a857c84244e62f1f62fbb659f33aa9943ba39e9bef96d162654afb79c918",
+                  "steps": []
+                },
+                "raw_name": [
+                  103,
+                  114,
+                  111,
+                  117,
+                  112,
+                  101,
+                  100,
+                  47,
+                  67,
+                  111,
+                  117,
+                  110,
+                  116,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          },
+          "helper": {
+            "class_bytes": {
+              "digest": "b9f8e852bb3fe86c70f0fc93acb7a5f15c72917d01e71b4d361bd85c9b610173",
+              "length": 725
+            },
+            "location": {
+              "entry": {
+                "ordinal": 5,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "1559a857c84244e62f1f62fbb659f33aa9943ba39e9bef96d162654afb79c918",
+                  "steps": []
+                },
+                "raw_name": [
+                  103,
+                  114,
+                  111,
+                  117,
+                  112,
+                  101,
+                  100,
+                  47,
+                  83,
+                  117,
+                  98,
+                  106,
+                  101,
+                  99,
+                  116,
+                  36,
+                  49,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          },
+          "member": {
+            "descriptor": [
+              40,
+              76,
+              103,
+              114,
+              111,
+              117,
+              112,
+              101,
+              100,
+              47,
+              67,
+              111,
+              117,
+              110,
+              116,
+              59,
+              76,
+              103,
+              114,
+              111,
+              117,
+              112,
+              101,
+              100,
+              47,
+              65,
+              110,
+              105,
+              109,
+              97,
+              108,
+              59,
+              41,
+              73
+            ],
+            "name": [
+              115,
+              101,
+              108,
+              101,
+              99,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "033eda9d9de9e086a07798208f48fc74a03609427134a88919e842f44fce1d95",
+                "length": 663
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 6,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "1559a857c84244e62f1f62fbb659f33aa9943ba39e9bef96d162654afb79c918",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    103,
+                    114,
+                    111,
+                    117,
+                    112,
+                    101,
+                    100,
+                    47,
+                    83,
+                    117,
+                    98,
+                    106,
+                    101,
+                    99,
+                    116,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "projected": true,
+          "read_bci": 7,
+          "refusal": null,
+          "switch_bci": 8,
+          "table_name": "$SwitchMap$grouped$Count",
+          "table_owner": "grouped/Subject$1"
+        },
+        {
+          "entries": [
+            {
+              "constant": [
+                67,
+                65,
+                84
+              ],
+              "constant_field_bci": 12,
+              "handler_bci": 23,
+              "handler_ordinal": 0,
+              "key": 1,
+              "ordinal_bci": 15,
+              "store_bci": 19,
+              "table_read_bci": 9
+            },
+            {
+              "constant": [
+                68,
+                79,
+                71
+              ],
+              "constant_field_bci": 27,
+              "handler_bci": 38,
+              "handler_ordinal": 1,
+              "key": 2,
+              "ordinal_bci": 30,
+              "store_bci": 34,
+              "table_read_bci": 24
+            }
+          ],
+          "enum_definition": {
+            "class_bytes": {
+              "digest": "145a845f5abf358bef6f10ea3728679a61498f3e22f8e3fd86fdb896f9bc50fd",
+              "length": 785
+            },
+            "location": {
+              "entry": {
+                "ordinal": 3,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "1559a857c84244e62f1f62fbb659f33aa9943ba39e9bef96d162654afb79c918",
+                  "steps": []
+                },
+                "raw_name": [
+                  103,
+                  114,
+                  111,
+                  117,
+                  112,
+                  101,
+                  100,
+                  47,
+                  65,
+                  110,
+                  105,
+                  109,
+                  97,
+                  108,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          },
+          "helper": {
+            "class_bytes": {
+              "digest": "b9f8e852bb3fe86c70f0fc93acb7a5f15c72917d01e71b4d361bd85c9b610173",
+              "length": 725
+            },
+            "location": {
+              "entry": {
+                "ordinal": 5,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "1559a857c84244e62f1f62fbb659f33aa9943ba39e9bef96d162654afb79c918",
+                  "steps": []
+                },
+                "raw_name": [
+                  103,
+                  114,
+                  111,
+                  117,
+                  112,
+                  101,
+                  100,
+                  47,
+                  83,
+                  117,
+                  98,
+                  106,
+                  101,
+                  99,
+                  116,
+                  36,
+                  49,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          },
+          "member": {
+            "descriptor": [
+              40,
+              76,
+              103,
+              114,
+              111,
+              117,
+              112,
+              101,
+              100,
+              47,
+              67,
+              111,
+              117,
+              110,
+              116,
+              59,
+              76,
+              103,
+              114,
+              111,
+              117,
+              112,
+              101,
+              100,
+              47,
+              65,
+              110,
+              105,
+              109,
+              97,
+              108,
+              59,
+              41,
+              73
+            ],
+            "name": [
+              115,
+              101,
+              108,
+              101,
+              99,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "033eda9d9de9e086a07798208f48fc74a03609427134a88919e842f44fce1d95",
+                "length": 663
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 6,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "1559a857c84244e62f1f62fbb659f33aa9943ba39e9bef96d162654afb79c918",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    103,
+                    114,
+                    111,
+                    117,
+                    112,
+                    101,
+                    100,
+                    47,
+                    83,
+                    117,
+                    98,
+                    106,
+                    101,
+                    99,
+                    116,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "projected": true,
+          "read_bci": 64,
+          "refusal": null,
+          "switch_bci": 65,
+          "table_name": "$SwitchMap$grouped$Animal",
+          "table_owner": "grouped/Subject$1"
+        }
+      ],
+      "negative_proofs": [
+        {
+          "entries": [],
+          "enum_definition": null,
+          "helper": null,
+          "member": {
+            "descriptor": [
+              40,
+              76,
+              103,
+              114,
+              111,
+              117,
+              112,
+              101,
+              100,
+              47,
+              67,
+              111,
+              117,
+              110,
+              116,
+              59,
+              76,
+              103,
+              114,
+              111,
+              117,
+              112,
+              101,
+              100,
+              47,
+              65,
+              110,
+              105,
+              109,
+              97,
+              108,
+              59,
+              41,
+              73
+            ],
+            "name": [
+              115,
+              101,
+              108,
+              101,
+              99,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "033eda9d9de9e086a07798208f48fc74a03609427134a88919e842f44fce1d95",
+                "length": 663
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 6,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "8663ba8e4162cd4d276d8b3ef6a32506ba870fba4a856259a699692dfca3c497",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    103,
+                    114,
+                    111,
+                    117,
+                    112,
+                    101,
+                    100,
+                    47,
+                    83,
+                    117,
+                    98,
+                    106,
+                    101,
+                    99,
+                    116,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "projected": false,
+          "read_bci": 7,
+          "refusal": "grouped map proof withheld because selected table `$SwitchMap$grouped$Animal` was rejected: selected table `$SwitchMap$grouped$Animal` repeats a key, enum constant, or key producer",
+          "switch_bci": 8,
+          "table_name": "$SwitchMap$grouped$Count",
+          "table_owner": "grouped/Subject$1"
+        },
+        {
+          "entries": [],
+          "enum_definition": null,
+          "helper": null,
+          "member": {
+            "descriptor": [
+              40,
+              76,
+              103,
+              114,
+              111,
+              117,
+              112,
+              101,
+              100,
+              47,
+              67,
+              111,
+              117,
+              110,
+              116,
+              59,
+              76,
+              103,
+              114,
+              111,
+              117,
+              112,
+              101,
+              100,
+              47,
+              65,
+              110,
+              105,
+              109,
+              97,
+              108,
+              59,
+              41,
+              73
+            ],
+            "name": [
+              115,
+              101,
+              108,
+              101,
+              99,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "033eda9d9de9e086a07798208f48fc74a03609427134a88919e842f44fce1d95",
+                "length": 663
+              },
+              "location": {
+                "entry": {
+                  "ordinal": 6,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "8663ba8e4162cd4d276d8b3ef6a32506ba870fba4a856259a699692dfca3c497",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    103,
+                    114,
+                    111,
+                    117,
+                    112,
+                    101,
+                    100,
+                    47,
+                    83,
+                    117,
+                    98,
+                    106,
+                    101,
+                    99,
+                    116,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "kind": "archive_entry"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "projected": false,
+          "read_bci": 64,
+          "refusal": "selected table `$SwitchMap$grouped$Animal` repeats a key, enum constant, or key producer",
+          "switch_bci": 65,
+          "table_name": "$SwitchMap$grouped$Animal",
+          "table_owner": "grouped/Subject$1"
+        }
+      ]
+    }
+  },
+  "single_site_byte_stable": true
+}

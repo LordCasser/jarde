@@ -1426,6 +1426,148 @@ pub fn emit_class_source_enum_switch(
     Ok(Some(emitted.text))
 }
 
+/// Re-emits one same-run method AST after replacing every independently proved enum switch site.
+#[doc(hidden)]
+pub fn emit_class_source_enum_switch_group(
+    candidates: &[(
+        &ClassSourceEnumSwitchCandidate,
+        &std::collections::BTreeMap<i64, String>,
+    )],
+    budget: &mut Budget,
+) -> Result<Option<String>, crate::stop::StopReason> {
+    use crate::ast::{ExprKind, StmtKind};
+    use std::collections::{BTreeMap, BTreeSet};
+    use std::sync::Arc;
+
+    let Some((first, _)) = candidates.first() else {
+        return Ok(None);
+    };
+    let Some(source) = first.projection.as_ref() else {
+        return Ok(None);
+    };
+    let mut targets = BTreeMap::new();
+    for (candidate, labels) in candidates {
+        let Some(candidate_source) = candidate.projection.as_ref() else {
+            return Ok(None);
+        };
+        if candidate.member != first.member
+            || !Arc::ptr_eq(source, candidate_source)
+            || targets.insert(candidate.switch_bci, *labels).is_some()
+        {
+            return Ok(None);
+        }
+    }
+
+    fn visit(
+        statements: &mut [crate::ast::Stmt],
+        targets: &BTreeMap<u32, &std::collections::BTreeMap<i64, String>>,
+        matched: &mut BTreeSet<u32>,
+        budget: &mut Budget,
+    ) -> Result<bool, crate::stop::StopReason> {
+        for statement in statements {
+            match &mut statement.kind {
+                StmtKind::If {
+                    then_body,
+                    else_body,
+                    ..
+                } => {
+                    if !visit(then_body, targets, matched, budget)?
+                        || !visit(else_body, targets, matched, budget)?
+                    {
+                        return Ok(false);
+                    }
+                }
+                StmtKind::While { body, .. }
+                | StmtKind::For { body, .. }
+                | StmtKind::DoWhile { body, .. }
+                | StmtKind::Synchronized { body, .. } => {
+                    if !visit(body, targets, matched, budget)? {
+                        return Ok(false);
+                    }
+                }
+                StmtKind::Try {
+                    body,
+                    catches,
+                    finally_body,
+                    ..
+                } => {
+                    if !visit(body, targets, matched, budget)? {
+                        return Ok(false);
+                    }
+                    for catch in catches {
+                        if !visit(&mut catch.body, targets, matched, budget)? {
+                            return Ok(false);
+                        }
+                    }
+                    if let Some(finally_body) = finally_body
+                        && !visit(finally_body, targets, matched, budget)?
+                    {
+                        return Ok(false);
+                    }
+                }
+                StmtKind::Switch { value, arms } => {
+                    let bci = statement.origin.primary().bci();
+                    if let Some(labels) = targets.get(&bci) {
+                        if !matched.insert(bci) {
+                            return Ok(false);
+                        }
+                        crate::stop::poll(budget, Some(bci))?;
+                        let receiver = match &value.kind {
+                            ExprKind::Index { index, .. } => match &index.kind {
+                                ExprKind::Call {
+                                    receiver: Some(receiver),
+                                    name,
+                                    args,
+                                } if name == "ordinal" && args.is_empty() => {
+                                    Some((**receiver).clone())
+                                }
+                                _ => None,
+                            },
+                            _ => None,
+                        };
+                        let Some(receiver) = receiver else {
+                            return Ok(false);
+                        };
+                        for arm in arms.iter_mut() {
+                            let mut projected = Vec::with_capacity(arm.keys.len());
+                            for key in &arm.keys {
+                                let Some(label) = labels.get(key) else {
+                                    return Ok(false);
+                                };
+                                projected.push(label.clone());
+                            }
+                            arm.labels = Some(crate::ast::SwitchLabels::Enum(projected));
+                        }
+                        *value = receiver;
+                    }
+                    for arm in arms.iter_mut() {
+                        if !visit(&mut arm.body, targets, matched, budget)? {
+                            return Ok(false);
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+        Ok(true)
+    }
+
+    let mut program = source.program.clone();
+    let mut matched = BTreeSet::new();
+    if !visit(&mut program.stmts, &targets, &mut matched, budget)? || matched.len() != targets.len()
+    {
+        return Ok(None);
+    }
+    let emitted = emit(
+        &program.stmts,
+        &source.facts,
+        source.declaration.as_ref(),
+        source.member.as_ref(),
+        budget,
+    )?;
+    Ok(Some(emitted.text))
+}
+
 /// Re-emits the same-run typed body after replacing only the array-constructor sites selected by
 /// the class-wide proof. The AST, not previously rendered text, is the input to this projection.
 pub fn emit_class_source_array_constructors(

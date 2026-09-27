@@ -6223,7 +6223,12 @@ impl ClassSourceMethod {
     }
 
     /// Atomically replaces only the rendered body with a re-emission of the same-run AST.
-    pub(crate) fn project_enum_switch(&mut self, recovery_text: &str, marker: String) -> bool {
+    /// Atomically replaces the rendered body once and appends all markers proved for that body.
+    pub(crate) fn project_enum_switch_group(
+        &mut self,
+        recovery_text: &str,
+        markers_to_add: Vec<String>,
+    ) -> bool {
         let Some(declaration) = self.declaration.as_ref() else {
             return false;
         };
@@ -6231,7 +6236,7 @@ impl ClassSourceMethod {
             return false;
         };
         let mut markers = self.markers.clone();
-        markers.push(marker);
+        markers.extend(markers_to_add);
         let text = block_member(declaration, Placed::Block(artifact), &markers);
         self.text = prefix_method_annotations(text, &self.annotations);
         self.markers = markers;

@@ -104,6 +104,12 @@ const ENUM_SWITCH_FACTORY_NULL_ELEMENT_JAR: &[u8] = include_bytes!(
 const ENUM_SWITCH_VALUES_RETURNS_NULL_JAR: &[u8] = include_bytes!(
     "../openspec/evidence/java-syntax-2026-09-24/enum-switch-labels/negative/enum-values-array/values-returns-null.jar"
 );
+const DT31_GROUPED_ENUM_SWITCH_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-27/dt31-grouped-enum-switch-impl/grouped-input.jar"
+);
+const DT31_GROUPED_ENUM_SWITCH_NEGATIVE_JAR: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-27/dt31-grouped-enum-switch-impl/negative-input.jar"
+);
 const ANONYMOUS_INTERFACE_ROOT: &[u8] = include_bytes!(
     "fixtures/proved-java-structure/anonymous-interface-basic/AnonymousInterfaceBasic.class"
 );
@@ -209,6 +215,181 @@ fn enum_switch_projection_follows_proved_mapping_and_refuses_aliased_enum_fields
         aliased.enum_switch_proofs[0]
     );
     assert!(aliased.text.contains("$SwitchMap$Hue[arg0.ordinal()]"));
+}
+
+#[test]
+fn enum_switch_projection_groups_distinct_tables_atomically() {
+    let snapshot = open(DT31_GROUPED_ENUM_SWITCH_JAR.to_vec());
+    let engine = Engine::new();
+    let request = request(
+        &snapshot,
+        ClassRef::Name {
+            class: ClassNameQuery::internal("grouped/Subject"),
+        },
+        EnvironmentPolicy::PlainJar,
+    );
+    let all = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .expect("the grouped enum class-source request is legal"),
+    );
+    let essential = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::essential(),
+                &mut budget(),
+            )
+            .expect("the essential grouped enum class-source request is legal"),
+    );
+    assert_eq!(all.text, essential.text);
+    assert_eq!(
+        all.enum_switch_proofs.len(),
+        2,
+        "{:#?}",
+        all.enum_switch_proofs
+    );
+    assert!(
+        all.enum_switch_proofs.iter().all(|proof| proof.projected),
+        "{:#?}",
+        all.enum_switch_proofs
+    );
+    assert!(all.text.contains("switch (arg0)"));
+    assert!(all.text.contains("switch (arg1)"));
+    assert!(all.text.contains("case ONE:"));
+    assert!(all.text.contains("case CAT:"));
+    assert_eq!(
+        all.text
+            .matches("jarde: enum switch projected at BCI")
+            .count(),
+        2
+    );
+
+    let method = all
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"select")
+        .expect("the physical selector method is present");
+    let standalone = Engine::new()
+        .recover_method(
+            slice::from_ref(&snapshot),
+            &MethodAnalysisRequest {
+                environment: request
+                    .environment
+                    .build(slice::from_ref(&snapshot))
+                    .expect("the physical class-source environment builds"),
+                method: method.item.identity.clone(),
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut budget(),
+        )
+        .expect("independent method recovery remains available");
+    assert!(
+        standalone
+            .recovery()
+            .text
+            .contains("$SwitchMap$grouped$Count")
+    );
+    assert!(standalone.recovery().text.contains("case 1:"));
+    assert!(!standalone.recovery().text.contains("case ONE:"));
+
+    let cap = all.usage.output_bytes.saturating_sub(1);
+    let mut constrained =
+        task_budget(&[BudgetOverride::new("output_bytes", cap).expect("valid output cap")])
+            .expect("the constrained output budget is valid");
+    let stopped = performed(
+        engine
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut constrained,
+            )
+            .expect("an output stop retains its class-source report"),
+    );
+    assert!(matches!(
+        stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::OutputBytes
+            },
+            ..
+        }
+    ));
+    assert!(
+        stopped
+            .enum_switch_proofs
+            .iter()
+            .all(|proof| !proof.projected)
+    );
+    assert!(
+        stopped
+            .text
+            .contains("$SwitchMap$grouped$Count[arg0.ordinal()]")
+    );
+    assert!(
+        stopped
+            .text
+            .contains("$SwitchMap$grouped$Animal[arg1.ordinal()]")
+    );
+}
+
+#[test]
+fn enum_switch_projection_withholds_sibling_when_one_shared_table_proof_fails() {
+    let snapshot = open(DT31_GROUPED_ENUM_SWITCH_NEGATIVE_JAR.to_vec());
+    let report = class_source_of(&snapshot, "grouped/Subject", EnvironmentPolicy::PlainJar);
+    assert_eq!(
+        report.enum_switch_proofs.len(),
+        2,
+        "{:#?}",
+        report.enum_switch_proofs
+    );
+    assert!(
+        report
+            .enum_switch_proofs
+            .iter()
+            .all(|proof| !proof.projected)
+    );
+    assert!(
+        report
+            .text
+            .contains("$SwitchMap$grouped$Count[arg0.ordinal()]")
+    );
+    assert!(
+        report
+            .text
+            .contains("$SwitchMap$grouped$Animal[arg1.ordinal()]")
+    );
+    let failed = report
+        .enum_switch_proofs
+        .iter()
+        .find(|proof| proof.table_name.contains("Animal"))
+        .expect("the corrupted Animal map has a proof record");
+    assert!(
+        failed
+            .refusal
+            .as_deref()
+            .is_some_and(|reason| reason.contains("selected table `$SwitchMap$grouped$Animal`")),
+        "{failed:#?}"
+    );
+    let sibling = report
+        .enum_switch_proofs
+        .iter()
+        .find(|proof| proof.table_name.contains("Count"))
+        .expect("the Count sibling has a proof record");
+    assert!(
+        sibling
+            .refusal
+            .as_deref()
+            .is_some_and(|reason| reason.contains("Animal") && reason.contains("withheld")),
+        "{sibling:#?}"
+    );
 }
 
 #[test]

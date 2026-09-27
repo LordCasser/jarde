@@ -4549,7 +4549,7 @@ impl Engine {
                                 if matches!(&analysis.execution, ExecutionReport::Complete { .. })
                         )
                 });
-        let mut staged_enum_projections: Vec<(usize, String, String, usize)> = Vec::new();
+        let mut staged_enum_projections: Vec<(usize, String, Vec<String>, Vec<usize>)> = Vec::new();
         let mut enum_projection_stopped = false;
         if enum_projection_complete && !enum_switch_candidate_runs.is_empty() {
             let mut by_method: Vec<(
@@ -4568,27 +4568,6 @@ impl Engine {
                 }
             }
             for (member, candidates) in by_method {
-                // Until the emitter can stage several switch sites in one copied AST, a method
-                // with multiple candidates stays entirely on its original integer path.
-                if candidates.len() != 1 {
-                    for candidate in candidates {
-                        if let Some(member) = candidate.member.clone() {
-                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
-                                member,
-                                switch_bci: candidate.switch_bci,
-                                read_bci: candidate.read_bci,
-                                table_owner: candidate.table.owner,
-                                table_name: candidate.table.name,
-                                helper: None,
-                                enum_definition: None,
-                                entries: Vec::new(),
-                                projected: false,
-                                refusal: Some("the method has multiple enum switch sites and grouped AST projection is not available".to_owned()),
-                            });
-                        }
-                    }
-                    continue;
-                }
                 let Some(method_index) = methods
                     .iter()
                     .position(|method| method.item.identity == member)
@@ -4605,82 +4584,89 @@ impl Engine {
                             && matches!(&analysis.execution, ExecutionReport::Complete { .. })
                 );
                 if !method_complete {
-                    let candidate = &candidates[0];
-                    enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
-                        member: member.clone(),
-                        switch_bci: candidate.switch_bci,
-                        read_bci: candidate.read_bci,
-                        table_owner: candidate.table.owner.clone(),
-                        table_name: candidate.table.name.clone(),
-                        helper: None,
-                        enum_definition: None,
-                        entries: Vec::new(),
-                        projected: false,
-                        refusal: Some(
-                            "the candidate method did not recover completely as structured Java"
-                                .to_owned(),
-                        ),
-                    });
+                    for candidate in &candidates {
+                        enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                            member: member.clone(),
+                            switch_bci: candidate.switch_bci,
+                            read_bci: candidate.read_bci,
+                            table_owner: candidate.table.owner.clone(),
+                            table_name: candidate.table.name.clone(),
+                            helper: None,
+                            enum_definition: None,
+                            entries: Vec::new(),
+                            projected: false,
+                            refusal: Some(
+                                "the candidate method did not recover completely as structured Java"
+                                    .to_owned(),
+                            ),
+                        });
+                    }
                     continue;
                 }
-                let candidate = &candidates[0];
-                let extra_table_use = enum_switch_field_use_runs.iter().find(|use_site| {
-                    use_site.owner == candidate.table.owner
-                        && use_site.name == candidate.table.name
-                        && use_site.descriptor == candidate.table.descriptor
-                        && !(use_site.member.as_ref() == Some(&member)
-                            && use_site.bci == candidate.table.bci
-                            && use_site.is_static
-                            && !use_site.write)
-                });
-                if let Some(use_site) = extra_table_use {
-                    enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
-                        member: member.clone(),
-                        switch_bci: candidate.switch_bci,
-                        read_bci: candidate.read_bci,
-                        table_owner: candidate.table.owner.clone(),
-                        table_name: candidate.table.name.clone(),
-                        helper: None,
-                        enum_definition: None,
-                        entries: Vec::new(),
-                        projected: false,
-                        refusal: Some(format!(
-                            "visible method writes or reads the selected table outside the proved candidate at BCI {}",
-                            use_site.bci,
-                        )),
-                    });
-                    continue;
+                let extra_table_uses = candidates
+                    .iter()
+                    .map(|candidate| {
+                        enum_switch_field_use_runs.iter().find(|use_site| {
+                            use_site.owner == candidate.table.owner
+                                && use_site.name == candidate.table.name
+                                && use_site.descriptor == candidate.table.descriptor
+                                && !candidates.iter().any(|owned| {
+                                    owned.member.as_ref() == Some(&member)
+                                        && owned.table.owner == use_site.owner
+                                        && owned.table.name == use_site.name
+                                        && owned.table.descriptor == use_site.descriptor
+                                        && owned.table.bci == use_site.bci
+                                        && use_site.member.as_ref() == Some(&member)
+                                        && use_site.is_static
+                                        && !use_site.write
+                                })
+                        })
+                    })
+                    .collect::<Vec<_>>();
+                let mut rejected = false;
+                for (candidate, extra_use) in candidates.iter().zip(&extra_table_uses) {
+                    if let Some(use_site) = extra_use {
+                        enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
+                            member: member.clone(),
+                            switch_bci: candidate.switch_bci,
+                            read_bci: candidate.read_bci,
+                            table_owner: candidate.table.owner.clone(),
+                            table_name: candidate.table.name.clone(),
+                            helper: None,
+                            enum_definition: None,
+                            entries: Vec::new(),
+                            projected: false,
+                            refusal: Some(format!(
+                                "visible method writes or reads the selected table outside the proved candidate at BCI {}",
+                                use_site.bci,
+                            )),
+                        });
+                        rejected = true;
+                    }
                 }
-                let mut method_staged = Vec::new();
-                let mut method_proved = true;
-                for candidate in &candidates {
-                    let map = match prove_class_source_enum_switch(
-                        content,
-                        &environment,
-                        &request.environment.policy,
-                        &definition,
-                        candidate,
-                        &mut execution,
-                        budget,
-                    ) {
-                        Ok(Ok(map)) => map,
-                        Ok(Err(reason)) => {
-                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
-                                member: member.clone(),
-                                switch_bci: candidate.switch_bci,
-                                read_bci: candidate.read_bci,
-                                table_owner: candidate.table.owner.clone(),
-                                table_name: candidate.table.name.clone(),
-                                helper: None,
-                                enum_definition: None,
-                                entries: Vec::new(),
-                                projected: false,
-                                refusal: Some(reason),
-                            });
-                            method_proved = false;
-                            break;
-                        }
-                        Err(error) => {
+                let mut method_staged: Vec<(
+                    &jarde_java::enumswitch::ClassSourceEnumSwitchCandidate,
+                    std::collections::BTreeMap<i64, String>,
+                    String,
+                    usize,
+                )> = Vec::new();
+                let map_results = match prove_class_source_enum_switch_group(
+                    content,
+                    &environment,
+                    &request.environment.policy,
+                    &definition,
+                    &candidates,
+                    &mut execution,
+                    budget,
+                ) {
+                    Ok(results) => results,
+                    Err(error) => {
+                        for candidate in &candidates {
+                            if enum_switch_proofs.iter().any(|proof| {
+                                proof.member == member && proof.switch_bci == candidate.switch_bci
+                            }) {
+                                continue;
+                            }
                             enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
                                 member: member.clone(),
                                 switch_bci: candidate.switch_bci,
@@ -4693,55 +4679,39 @@ impl Engine {
                                 projected: false,
                                 refusal: Some(format!("cross-class proof stopped: {error}")),
                             });
-                            let stop = stop_execution(&error, budget);
-                            merge_execution(&mut execution, stop);
-                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            enum_projection_stopped = true;
-                            method_proved = false;
-                            break;
                         }
-                    };
-                    let recovery_text = match jarde_java::report::emit_class_source_enum_switch(
-                        candidate,
-                        &map.labels,
-                        budget,
-                    ) {
-                        Ok(Some(text)) => text,
-                        Ok(None) => {
-                            enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
-                                member: member.clone(), switch_bci: candidate.switch_bci,
-                                read_bci: candidate.read_bci, table_owner: candidate.table.owner.clone(),
-                                table_name: candidate.table.name.clone(), helper: Some(map.helper.clone()),
-                                enum_definition: Some(map.enum_definition.clone()), entries: Vec::new(),
-                                projected: false, refusal: Some("the same-run AST did not contain the matching enum switch shape".to_owned()),
-                            });
-                            method_proved = false;
-                            break;
-                        }
-                        Err(stop) => {
-                            let error = enum_projection_stop_error(
-                                stop,
-                                "enum switch projection",
-                                "enum_switch_ir_missing",
-                            );
+                        let stop = stop_execution(&error, budget);
+                        merge_execution(&mut execution, stop);
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        enum_projection_stopped = true;
+                        break;
+                    }
+                };
+                for (candidate, map_result) in candidates.iter().zip(map_results) {
+                    if enum_switch_proofs.iter().any(|proof| {
+                        proof.member == member
+                            && proof.switch_bci == candidate.switch_bci
+                            && proof.refusal.is_some()
+                    }) {
+                        continue;
+                    }
+                    let map = match map_result {
+                        Ok(map) => map,
+                        Err(reason) => {
                             enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
                                 member: member.clone(),
                                 switch_bci: candidate.switch_bci,
                                 read_bci: candidate.read_bci,
                                 table_owner: candidate.table.owner.clone(),
                                 table_name: candidate.table.name.clone(),
-                                helper: Some(map.helper.clone()),
-                                enum_definition: Some(map.enum_definition.clone()),
+                                helper: None,
+                                enum_definition: None,
                                 entries: Vec::new(),
                                 projected: false,
-                                refusal: Some(format!("projection emission stopped: {error}")),
+                                refusal: Some(reason),
                             });
-                            let execution_stop = stop_execution(&error, budget);
-                            merge_execution(&mut execution, execution_stop);
-                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                            enum_projection_stopped = true;
-                            method_proved = false;
-                            break;
+                            rejected = true;
+                            continue;
                         }
                     };
                     let map_text = map
@@ -4770,29 +4740,6 @@ impl Engine {
                         map.enum_definition,
                         map_text,
                     );
-                    if let Err(error) = budget.charge(
-                        CountedBudgetDimension::OutputBytes,
-                        u64::try_from(marker.len()).unwrap_or(u64::MAX),
-                    ) {
-                        let stop = stop_execution(&error, budget);
-                        enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
-                            member: member.clone(),
-                            switch_bci: candidate.switch_bci,
-                            read_bci: candidate.read_bci,
-                            table_owner: candidate.table.owner.clone(),
-                            table_name: candidate.table.name.clone(),
-                            helper: Some(map.helper.clone()),
-                            enum_definition: Some(map.enum_definition.clone()),
-                            entries: Vec::new(),
-                            projected: false,
-                            refusal: Some(format!("projection marker output was stopped: {error}")),
-                        });
-                        merge_execution(&mut execution, stop);
-                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
-                        enum_projection_stopped = true;
-                        method_proved = false;
-                        break;
-                    }
                     let proof_index = enum_switch_proofs.len();
                     enum_switch_proofs.push(class_source::ClassSourceEnumSwitchProof {
                         member: member.clone(),
@@ -4819,36 +4766,117 @@ impl Engine {
                         projected: false,
                         refusal: None,
                     });
-                    method_staged.push((recovery_text, marker, proof_index));
+                    method_staged.push((candidate, map.labels, marker, proof_index));
                 }
-                if method_proved {
-                    for (recovery_text, marker, proof_index) in method_staged {
-                        staged_enum_projections.push((
-                            method_index,
-                            recovery_text,
-                            marker,
-                            proof_index,
+                if rejected {
+                    for (_, _, _, proof_index) in method_staged {
+                        enum_switch_proofs[proof_index].refusal = Some(
+                            "group projection withheld because another site in this method was not proved"
+                                .to_owned(),
+                        );
+                    }
+                    if enum_projection_stopped {
+                        break;
+                    }
+                    continue;
+                }
+                let mut marker_stopped = false;
+                for (candidate, _, marker, proof_index) in &method_staged {
+                    if let Err(error) = budget.charge(
+                        CountedBudgetDimension::OutputBytes,
+                        u64::try_from(marker.len()).unwrap_or(u64::MAX),
+                    ) {
+                        let stop = stop_execution(&error, budget);
+                        enum_switch_proofs[*proof_index].refusal = Some(format!(
+                            "projection marker output for BCI {} was stopped: {error}",
+                            candidate.switch_bci,
                         ));
+                        for (_, _, _, sibling_index) in &method_staged {
+                            if *sibling_index != *proof_index {
+                                enum_switch_proofs[*sibling_index].refusal = Some(
+                                    "group projection withheld because another site's marker exceeded the output budget"
+                                        .to_owned(),
+                                );
+                            }
+                        }
+                        merge_execution(&mut execution, stop);
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        enum_projection_stopped = true;
+                        marker_stopped = true;
+                        break;
                     }
                 }
-                if enum_projection_stopped {
+                if marker_stopped {
                     break;
                 }
+                let emitter_candidates = method_staged
+                    .iter()
+                    .map(|(candidate, labels, _, _)| (*candidate, labels))
+                    .collect::<Vec<_>>();
+                let recovery_text = match jarde_java::report::emit_class_source_enum_switch_group(
+                    &emitter_candidates,
+                    budget,
+                ) {
+                    Ok(Some(text)) => text,
+                    Ok(None) => {
+                        for (candidate, _, _, proof_index) in &method_staged {
+                            enum_switch_proofs[*proof_index].refusal = Some(format!(
+                                "the same-run AST did not contain the matching enum switch shape at BCI {}",
+                                candidate.switch_bci,
+                            ));
+                        }
+                        continue;
+                    }
+                    Err(stop) => {
+                        let error = enum_projection_stop_error(
+                            stop,
+                            "grouped enum switch projection",
+                            "enum_switch_ir_missing",
+                        );
+                        for (candidate, _, _, proof_index) in &method_staged {
+                            enum_switch_proofs[*proof_index].refusal = Some(format!(
+                                "grouped projection emission stopped at BCI {}: {error}",
+                                candidate.switch_bci,
+                            ));
+                        }
+                        let execution_stop = stop_execution(&error, budget);
+                        merge_execution(&mut execution, execution_stop);
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        enum_projection_stopped = true;
+                        break;
+                    }
+                };
+                staged_enum_projections.push((
+                    method_index,
+                    recovery_text,
+                    method_staged
+                        .iter()
+                        .map(|(_, _, marker, _)| marker.clone())
+                        .collect(),
+                    method_staged
+                        .iter()
+                        .map(|(_, _, _, proof_index)| *proof_index)
+                        .collect(),
+                ));
             }
         }
         if !enum_projection_stopped {
             let mut projected_methods = methods.clone();
             let mut projected_proof_indices = Vec::new();
-            for (method_index, recovery_text, marker, proof_index) in staged_enum_projections {
-                if !projected_methods[method_index].project_enum_switch(&recovery_text, marker) {
+            for (method_index, recovery_text, markers, proof_indices) in staged_enum_projections {
+                if !projected_methods[method_index]
+                    .project_enum_switch_group(&recovery_text, markers)
+                {
                     enum_projection_stopped = true;
-                    enum_switch_proofs[proof_index].refusal = Some(
-                        "the emitted method could not be atomically placed in its physical member"
-                            .to_owned(),
-                    );
+                    for proof_index in proof_indices {
+                        enum_switch_proofs[proof_index].refusal = Some(
+                            "the emitted method could not be atomically placed in its physical member"
+                                .to_owned(),
+                        );
+                    }
                     break;
                 }
-                projected_proof_indices.push(proof_index);
+                projected_proof_indices.extend(proof_indices);
             }
             if !enum_projection_stopped {
                 methods = projected_methods;
@@ -8293,11 +8321,23 @@ fn class_source_coverage(
     coverage
 }
 
+#[derive(Clone)]
 struct ProvedEnumSwitchMap {
     labels: std::collections::BTreeMap<i64, String>,
     stores: Vec<jarde_java::enumswitch::EnumSwitchMapEntry>,
     helper: PhysicalDefinitionId,
     enum_definition: PhysicalDefinitionId,
+}
+
+#[derive(Clone)]
+struct PreparedEnumSwitchMap {
+    helper: PhysicalDefinitionId,
+    helper_table_names: Vec<Vec<u8>>,
+    enum_definition: PhysicalDefinitionId,
+    enum_owner: String,
+    constants: Vec<Vec<u8>>,
+    table_name: String,
+    keys: Vec<i64>,
 }
 
 fn enum_projection_stop_error(
@@ -8333,7 +8373,7 @@ fn enum_projection_stop_error(
     }
 }
 
-fn prove_class_source_enum_switch(
+fn prepare_class_source_enum_switch(
     content: &[ArtifactSnapshot],
     environment: &ResolutionEnvironment,
     policy: &EnvironmentPolicy,
@@ -8341,9 +8381,7 @@ fn prove_class_source_enum_switch(
     candidate: &jarde_java::enumswitch::ClassSourceEnumSwitchCandidate,
     execution: &mut ExecutionReport,
     budget: &mut Budget,
-) -> Result<std::result::Result<ProvedEnumSwitchMap, String>> {
-    use std::collections::BTreeMap;
-
+) -> Result<std::result::Result<PreparedEnumSwitchMap, String>> {
     if matches!(policy, EnvironmentPolicy::SingleClass) {
         return Ok(Err(
             "the SingleClass environment does not provide the helper and enum dependencies"
@@ -8722,98 +8760,281 @@ fn prove_class_source_enum_switch(
         }
     }
 
-    let initializer = PhysicalMethodId {
-        owner: helper_definition.clone(),
-        name: JvmBytes(b"<clinit>".to_vec()),
-        descriptor: JvmBytes(b"()V".to_vec()),
-    };
-    let analysis = jarde_jvm::analyze_method_ir(
-        content,
-        &crate::ir::MethodAnalysisRequest {
-            environment: environment.clone(),
-            method: initializer.clone(),
-            stages: MethodOperation::Analysis.stages().to_vec(),
-        },
-        budget,
-    )?;
-    if analysis.report().method != initializer
-        || !matches!(
-            analysis.report().execution,
-            ExecutionReport::Complete { .. }
-        )
-    {
-        return Ok(Err(
-            "the helper <clinit> IR did not complete for the selected physical method".to_owned(),
-        ));
-    }
-    let proof = match jarde_java::enumswitch::prove_enum_switch_map_initializer(
-        analysis.ir(),
-        &candidate.table.owner,
-        &candidate.table.name,
-        enum_owner_text,
-        &constants,
-        &candidate.keys,
-        budget,
-    ) {
-        Ok(Ok(proof)) => proof,
-        Ok(Err(reason)) => return Ok(Err(reason)),
-        Err(stop) => {
-            return Err(match stop {
-                jarde_java::StopReason::Budget {
-                    dimension, limit, ..
-                } => Error::BudgetExceeded {
-                    dimension: dimension.into(),
-                    limit,
-                    consumed: budget.usage().counted_usage(dimension),
-                    requested: 1,
-                },
-                jarde_java::StopReason::Cancelled { .. } => Error::Cancelled {
-                    reason: "enum switch proof was cancelled".to_owned(),
-                },
-                jarde_java::StopReason::Interrupted { code, .. } => {
-                    Error::unsupported(code, "enum switch proof was interrupted")
-                }
-                jarde_java::StopReason::IrTableMissing { table } => Error::unsupported(
-                    "enum_switch_ir_missing",
-                    format!("required IR table `{table}` is missing"),
-                ),
-                jarde_java::StopReason::EvidenceRefused { code, message, .. } => {
-                    Error::unsupported(code, message)
-                }
-            });
+    Ok(Ok(PreparedEnumSwitchMap {
+        helper: helper_definition,
+        helper_table_names: helper_facts
+            .fields
+            .iter()
+            .filter(|field| {
+                field.descriptor.raw().0.as_slice() == b"[I"
+                    && field.access_flags & (0x0008 | 0x0010 | 0x1000) == (0x0008 | 0x0010 | 0x1000)
+            })
+            .map(|field| field.name.raw().0.clone())
+            .collect(),
+        enum_definition,
+        enum_owner: enum_owner_text.to_owned(),
+        constants,
+        table_name: candidate.table.name.clone(),
+        keys: candidate.keys.clone(),
+    }))
+}
+
+fn prove_class_source_enum_switch_group(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    policy: &EnvironmentPolicy,
+    target: &PhysicalDefinitionId,
+    candidates: &[jarde_java::enumswitch::ClassSourceEnumSwitchCandidate],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<Vec<std::result::Result<ProvedEnumSwitchMap, String>>> {
+    let mut prepared = Vec::with_capacity(candidates.len());
+    let mut results: Vec<Option<std::result::Result<ProvedEnumSwitchMap, String>>> =
+        (0..candidates.len()).map(|_| None).collect();
+    for (index, candidate) in candidates.iter().enumerate() {
+        match prepare_class_source_enum_switch(
+            content,
+            environment,
+            policy,
+            target,
+            candidate,
+            execution,
+            budget,
+        )? {
+            Ok(proof_input) => prepared.push((index, proof_input)),
+            Err(reason) => results[index] = Some(Err(reason)),
         }
-    };
-    if proof.initializer.as_ref() != Some(&initializer) {
-        return Ok(Err(
-            "initializer proof identity differs from the selected physical <clinit>".to_owned(),
-        ));
     }
-    let mut labels = BTreeMap::new();
+
+    let mut groups: Vec<(PhysicalDefinitionId, Vec<(usize, PreparedEnumSwitchMap)>)> = Vec::new();
+    for (index, proof_input) in prepared {
+        if let Some((_, members)) = groups
+            .iter_mut()
+            .find(|(helper, _)| *helper == proof_input.helper)
+        {
+            members.push((index, proof_input));
+        } else {
+            groups.push((proof_input.helper.clone(), vec![(index, proof_input)]));
+        }
+    }
+
+    for (helper, members) in groups {
+        if members.len() > 1 {
+            let mut selected: Vec<_> = members
+                .iter()
+                .map(|(_, input)| input.table_name.as_bytes().to_vec())
+                .collect();
+            selected.sort();
+            selected.dedup();
+            let mut declared = members[0].1.helper_table_names.clone();
+            declared.sort();
+            declared.dedup();
+            if selected != declared {
+                let reason =
+                    "the selected candidates do not form the helper's closed int[] table set"
+                        .to_owned();
+                for (index, _) in members {
+                    results[index] = Some(Err(reason.clone()));
+                }
+                continue;
+            }
+        }
+        let initializer = PhysicalMethodId {
+            owner: helper.clone(),
+            name: JvmBytes(b"<clinit>".to_vec()),
+            descriptor: JvmBytes(b"()V".to_vec()),
+        };
+        let analysis = jarde_jvm::analyze_method_ir(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: initializer.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            budget,
+        )?;
+        if analysis.report().method != initializer
+            || !matches!(
+                analysis.report().execution,
+                ExecutionReport::Complete { .. }
+            )
+        {
+            let reason = "the helper <clinit> IR did not complete for the selected physical method"
+                .to_owned();
+            for (index, _) in members {
+                results[index] = Some(Err(reason.clone()));
+            }
+            continue;
+        }
+
+        let mut table_groups: Vec<(PreparedEnumSwitchMap, Vec<usize>)> = Vec::new();
+        let mut conflicting_table = false;
+        for (index, input) in &members {
+            if let Some((known, indices)) = table_groups
+                .iter_mut()
+                .find(|(known, _)| known.table_name == input.table_name)
+            {
+                if known.enum_owner != input.enum_owner
+                    || known.enum_definition != input.enum_definition
+                    || known.constants != input.constants
+                {
+                    conflicting_table = true;
+                    break;
+                }
+                known.keys.extend(input.keys.iter().copied());
+                known.keys.sort_unstable();
+                known.keys.dedup();
+                indices.push(*index);
+            } else {
+                table_groups.push((input.clone(), vec![*index]));
+            }
+        }
+        if conflicting_table {
+            let reason =
+                "one selected helper table is associated with conflicting enum definitions"
+                    .to_owned();
+            for (index, _) in members {
+                results[index] = Some(Err(reason.clone()));
+            }
+            continue;
+        }
+
+        if table_groups.len() == 1 {
+            let (input, indices) = &table_groups[0];
+            let proof = jarde_java::enumswitch::prove_enum_switch_map_initializer(
+                analysis.ir(),
+                &candidates[indices[0]].table.owner,
+                &input.table_name,
+                &input.enum_owner,
+                &input.constants,
+                &input.keys,
+                budget,
+            );
+            let result = match proof {
+                Ok(Ok(proof)) if proof.initializer.as_ref() == Some(&initializer) => {
+                    materialize_proved_enum_switch_map(proof, input)
+                }
+                Ok(Ok(_)) => Err(
+                    "initializer proof identity differs from the selected physical <clinit>"
+                        .to_owned(),
+                ),
+                Ok(Err(reason)) => Err(reason),
+                Err(stop) => {
+                    return Err(enum_projection_stop_error(
+                        stop,
+                        "enum switch proof",
+                        "enum_switch_ir_missing",
+                    ));
+                }
+            };
+            for index in indices {
+                results[*index] = Some(result.clone());
+            }
+            continue;
+        }
+
+        let requests = table_groups
+            .iter()
+            .map(|(input, _)| jarde_java::enumswitch::EnumSwitchMapRequest {
+                table_name: input.table_name.clone(),
+                enum_owner: input.enum_owner.clone(),
+                enum_constants: input.constants.clone(),
+                switch_keys: input.keys.clone(),
+            })
+            .collect::<Vec<_>>();
+        let proofs = jarde_java::enumswitch::prove_enum_switch_map_initializer_group(
+            analysis.ir(),
+            &candidates[members[0].0].table.owner,
+            &requests,
+            budget,
+        );
+        match proofs {
+            Ok(Ok(proofs)) if proofs.len() == table_groups.len() => {
+                for ((input, indices), proof) in table_groups.into_iter().zip(proofs) {
+                    let result = if proof.initializer.as_ref() == Some(&initializer) {
+                        materialize_proved_enum_switch_map(proof, &input)
+                    } else {
+                        Err("initializer proof identity differs from the selected physical <clinit>".to_owned())
+                    };
+                    for index in indices {
+                        results[index] = Some(result.clone());
+                    }
+                }
+            }
+            Ok(Ok(_)) => {
+                let reason =
+                    "the shared helper proof did not return one map for every selected table"
+                        .to_owned();
+                for (index, _) in &members {
+                    results[*index] = Some(Err(reason.clone()));
+                }
+            }
+            Ok(Err(reason)) => {
+                let failed_table = reason
+                    .strip_prefix("selected table `")
+                    .and_then(|tail| tail.split_once('`'))
+                    .map(|(name, _)| name);
+                for (input, indices) in &table_groups {
+                    let site_reason = if failed_table == Some(input.table_name.as_str()) {
+                        reason.clone()
+                    } else if let Some(failed_table) = failed_table {
+                        format!(
+                            "grouped map proof withheld because selected table `{failed_table}` was rejected: {reason}"
+                        )
+                    } else {
+                        reason.clone()
+                    };
+                    for index in indices {
+                        results[*index] = Some(Err(site_reason.clone()));
+                    }
+                }
+            }
+            Err(stop) => {
+                return Err(enum_projection_stop_error(
+                    stop,
+                    "shared enum switch proof",
+                    "enum_switch_ir_missing",
+                ));
+            }
+        }
+    }
+
+    Ok(results
+        .into_iter()
+        .map(|result| {
+            result.unwrap_or_else(|| Err("the enum map proof was not attempted".to_owned()))
+        })
+        .collect())
+}
+
+fn materialize_proved_enum_switch_map(
+    proof: jarde_java::enumswitch::EnumSwitchMapProof,
+    input: &PreparedEnumSwitchMap,
+) -> std::result::Result<ProvedEnumSwitchMap, String> {
+    let mut labels = std::collections::BTreeMap::new();
     let mut stores = Vec::new();
     for entry in proof.entries {
         let Ok(label) = std::str::from_utf8(&entry.constant) else {
-            return Ok(Err("an enum constant name is not UTF-8".to_owned()));
+            return Err("an enum constant name is not UTF-8".to_owned());
         };
         if !jarde_java::names::is_java_identifier(label)
             || labels.insert(entry.key, label.to_owned()).is_some()
         {
-            return Ok(Err(
-                "the proven enum map has an invalid or repeated key/label".to_owned(),
-            ));
+            return Err("the proven enum map has an invalid or repeated key/label".to_owned());
         }
         stores.push(entry);
     }
-    if candidate.keys.iter().any(|key| !labels.contains_key(key)) {
-        return Ok(Err(
+    if input.keys.iter().any(|key| !labels.contains_key(key)) {
+        return Err(
             "the proven initializer map does not cover every switch integer key".to_owned(),
-        ));
+        );
     }
-    Ok(Ok(ProvedEnumSwitchMap {
+    Ok(ProvedEnumSwitchMap {
         labels,
         stores,
-        helper: helper_definition,
-        enum_definition,
-    }))
+        helper: input.helper.clone(),
+        enum_definition: input.enum_definition.clone(),
+    })
 }
 
 fn resolve_class_source_dependency(
