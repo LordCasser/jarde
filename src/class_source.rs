@@ -1858,6 +1858,33 @@ pub(crate) fn project_method_signature(
                 parameters,
                 value: GenericReturnValue::NullLiteral,
             }) if parameters.is_empty());
+        let body_ordinary_parameterized_null_return = matches!(
+            record.outcome,
+            ClassSourceOutcome::Recovered { .. }
+        ) && parsed.type_parameters.is_empty()
+            && shells.len() == 1
+            && parsed.parameters.is_empty()
+            && parsed.throws.is_empty()
+            && attributes.throws_raw.is_empty()
+            && member.descriptor.raw().0.as_slice() == b"()Ljava/util/List;"
+            && member.access_flags & (ACC_PUBLIC | ACC_STATIC) == ACC_PUBLIC
+            && !class_internal.contains(&b'$')
+            && class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) == 0
+            && class_superclass == Some(b"java/lang/Object".as_slice())
+            && class_interfaces.is_empty()
+            && class_scope.is_empty()
+            && !class_signature_present
+            && matches!(parsed.result.as_ref(), Some(SignatureType::Class(class))
+                    if matches!(class.segments.as_slice(), [segment]
+                        if segment.binary_name.as_slice() == b"java/util/List"
+                            && matches!(segment.arguments.as_slice(), [TypeArgument::Exact(SignatureType::Class(string))]
+                                if matches!(string.segments.as_slice(), [string]
+                                    if string.binary_name.as_slice() == b"java/lang/String"
+                                        && string.arguments.is_empty()))))
+            && matches!(candidate, Some(GenericReturnCandidate {
+                    parameters,
+                    value: GenericReturnValue::NullLiteral,
+                }) if parameters.is_empty());
         budget.charge(
             CountedBudgetDimension::AnalysisSteps,
             u64::try_from(pool.len()).unwrap_or(u64::MAX),
@@ -1931,6 +1958,24 @@ pub(crate) fn project_method_signature(
                 declaration,
                 "same-run AST/Code/SSA exact null-return and method-local Signature scope/erasure proof",
             )
+        } else if body_ordinary_parameterized_null_return {
+            let declaration = ordinary_parameterized_declaration(
+                record,
+                attributes,
+                &parsed,
+                candidate,
+                class_flags,
+                class_internal,
+                class_superclass,
+                class_interfaces,
+                class_scope,
+                true,
+                budget,
+            )?;
+            (
+                declaration,
+                "same-run AST/Code/SSA exact null-return and parameterized method Signature erasure proof",
+            )
         } else if static_method_local_generic_throws {
             let declaration = static_method_local_generic_throws_declaration(
                 record,
@@ -1960,6 +2005,7 @@ pub(crate) fn project_method_signature(
                 class_superclass,
                 class_interfaces,
                 class_scope,
+                false,
                 budget,
             )?;
             (
@@ -2907,6 +2953,7 @@ fn ordinary_parameterized_declaration(
     class_superclass: Option<&[u8]>,
     class_interfaces: &[Vec<u8>],
     class_scope: &[TypeParameterErasure],
+    allow_null_return: bool,
     budget: &mut Budget,
 ) -> Result<String> {
     let refused = |why| Error::unsupported("ordinary_generic_source_unproved", why);
@@ -3084,6 +3131,7 @@ fn ordinary_parameterized_declaration(
                 Some(Vec::new())
             }
             GenericReturnValue::EmptyVoid => None,
+            GenericReturnValue::NullLiteral if allow_null_return => Some(Vec::new()),
             GenericReturnValue::NullLiteral => None,
             GenericReturnValue::Parameter(slot) => signature
                 .parameters
