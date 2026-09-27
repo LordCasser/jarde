@@ -903,6 +903,48 @@ fn a_reused_array_length_value_keeps_the_loop_test_quoted() {
 }
 
 #[test]
+fn an_array_length_duplicate_carried_out_of_the_test_keeps_the_loop_quoted() {
+    // The condition consumes one duplicated length while the fall-through body receives the
+    // other copy on its operand stack. `dup` is not an expression producer, so the same-block
+    // condition walk refuses it before a loop can claim either successor's stack state.
+    const CARRIED_LENGTH: &[u8] = &[
+        0x03, // 0: iconst_0 (the one-int stack state at the loop header)
+        0xa7, 0x00, 0x03, // 1: goto 4
+        0x01, // 4: aconst_null (the loop header)
+        0xbe, // 5: arraylength
+        0x59, // 6: dup; one copy goes to the branch, the other to each successor
+        0x03, // 7: iconst_0
+        0xa2, 0x00, 0x09, // 8: if_icmpge 17
+        0x57, // 11: pop the carried array length in the loop body
+        0x57, // 12: pop the carried header value
+        0x03, // 13: iconst_0 (restore the header stack shape)
+        0xa7, 0xff, 0xf6, // 14: goto 4
+        0x57, // 17: pop the carried array length at the exit
+        0x57, // 18: pop the carried header value
+        0xb1, // 19: return
+    ];
+    let class = test_class::single_method(52, 4, 1, CARRIED_LENGTH);
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(!report.text.contains("while"), "{}", report.text);
+    assert!(report.text.contains("@bytecode"), "{}", report.text);
+    assert!(
+        report.regions.iter().any(|region| {
+            region.code == Some("jre_region_unmet_precondition")
+                && region
+                    .message
+                    .as_deref()
+                    .is_some_and(|message| message.contains("BCI 6"))
+        }),
+        "the stack-copy operation blocks condition projection: {:?}",
+        report.regions
+    );
+}
+
+#[test]
 fn an_array_length_with_an_extra_test_effect_keeps_the_loop_quoted() {
     // `iinc` shares the terminal test block with `arraylength`; presenting the latter in the
     // condition cannot preserve the former's once-per-test position.
