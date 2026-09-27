@@ -31,6 +31,15 @@ const SEGMENTED_TEST13_FIXED: &[u8] = include_bytes!(
 const SEGMENTED_TEST13_ACCEPTANCE: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/acceptance/TestTryCatchFinally13$TestCls.class"
 );
+const CONCAT_SAVED: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-concat-saved-finally/v8/FinallyOnce.class");
+const CONCAT_SAVED_NEGATIVES: [&[u8]; 3] = [
+    include_bytes!("../../../tests/fixtures/p3-concat-saved-finally/negatives/non-concat.class"),
+    include_bytes!(
+        "../../../tests/fixtures/p3-concat-saved-finally/negatives/extra-consumer.class"
+    ),
+    include_bytes!("../../../tests/fixtures/p3-concat-saved-finally/negatives/range-shrunk.class"),
+];
 const SEGMENTED_TEST13_NEGATIVES: [&[u8]; 5] = [
     include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/cleanup-target.class"
@@ -626,6 +635,103 @@ fn segmented_test13_neighbors_and_stops_publish_no_partial_finally() {
             "(I)V",
             "jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls",
             0x0001,
+            Some(budget),
+        );
+        assert!(report.text.is_empty() && report.source_map.is_empty());
+        assert!(report.stop().is_some());
+    }
+}
+
+#[test]
+fn concat_saved_return_has_one_finally_and_complete_physical_origins() {
+    let report = recover_method(
+        CONCAT_SAVED,
+        "handled",
+        "(Z)Ljava/lang/String;",
+        "FinallyOnce",
+        0x0009,
+        None,
+    );
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(
+        report.text.matches("finally {").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("return \"caught:\"").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("cleanupCount =").count(),
+        2,
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("return \"normal\";"),
+        "{}",
+        report.text
+    );
+    let blocks: Vec<_> = report
+        .regions
+        .iter()
+        .flat_map(|region| &region.blocks)
+        .copied()
+        .collect();
+    assert_eq!(blocks.len(), blocks.iter().collect::<BTreeSet<_>>().len());
+    for bci in [
+        0, 1, 4, 5, 8, 11, 12, 14, 17, 18, 20, 21, 24, 25, 26, 29, 30, 31, 32, 35, 36, 39, 41, 44,
+        45, 48, 51, 54, 55, 58, 59, 60, 63, 64, 65, 66, 69, 70, 71, 74, 75,
+    ] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci} has no origin"
+        );
+    }
+}
+
+#[test]
+fn concat_saved_return_neighbors_and_stops_refuse_atomically() {
+    for class in CONCAT_SAVED_NEGATIVES {
+        let report = recover_method(
+            class,
+            "handled",
+            "(Z)Ljava/lang/String;",
+            "FinallyOnce",
+            0x0009,
+            None,
+        );
+        assert!(!report.text.contains("finally {"), "{}", report.text);
+        assert!(report.text.contains("@bytecode"), "{}", report.text);
+    }
+    for budget in [
+        {
+            let mut tiny = limits();
+            tiny.ir_items = 1;
+            Budget::new(tiny)
+        },
+        {
+            let mut tiny = limits();
+            tiny.output_bytes = 1;
+            Budget::new(tiny)
+        },
+        {
+            let token = CancellationToken::new();
+            token.cancel();
+            Budget::with_cancellation_token(limits(), token)
+        },
+    ] {
+        let report = recover_method(
+            CONCAT_SAVED,
+            "handled",
+            "(Z)Ljava/lang/String;",
+            "FinallyOnce",
+            0x0009,
             Some(budget),
         );
         assert!(report.text.is_empty() && report.source_map.is_empty());
