@@ -42,6 +42,32 @@ const EMPTY_CATCH_TEST16_NEIGHBORS: [&[u8]; 5] = [
         "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/external-cleanup-entry.class"
     ),
 ];
+const TWO_CATCH_TEST17: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/Test17.class"
+);
+const TWO_CATCH_TEST17_NEIGHBORS: [&[u8]; 7] = [
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/different-target.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/cleanup-covered.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/cleanup-self-protected.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/rows-swapped.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/saved-return-rewritten.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/throwable-rewritten.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/external-cleanup-entry.class"
+    ),
+];
 const NESTED_TEST_CLS: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class"
 );
@@ -420,6 +446,84 @@ fn empty_catch_test16_has_one_finally_and_two_real_rows() {
     token.cancel();
     let cancelled = recover(
         EMPTY_CATCH_TEST16,
+        Some(Budget::with_cancellation_token(limits(), token)),
+    );
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+}
+
+#[test]
+fn two_catch_test17_has_one_finally_and_all_physical_origins() {
+    let recover = |class, budget| {
+        recover_method(
+            class,
+            "test",
+            "()I",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally17$TestCls",
+            0x0001,
+            budget,
+        )
+    };
+    let report = recover(TWO_CATCH_TEST17, None);
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert_eq!(
+        report.text.matches("finally {").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("doFinally();").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(report.text.matches("catch (").count(), 2, "{}", report.text);
+    assert!(report.text.contains("return 1;"), "{}", report.text);
+    assert!(report.text.contains("return 0;"), "{}", report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    let blocks: Vec<_> = report
+        .regions
+        .iter()
+        .flat_map(|region| &region.blocks)
+        .copied()
+        .collect();
+    assert_eq!(
+        blocks.iter().copied().collect::<BTreeSet<_>>(),
+        BTreeSet::from([0, 9, 16, 24, 30])
+    );
+    assert_eq!(blocks.len(), 5);
+    for bci in [
+        0, 3, 6, 9, 10, 13, 16, 17, 18, 19, 22, 23, 24, 25, 28, 29, 30, 31,
+    ] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "missing BCI {bci}"
+        );
+    }
+    for neighbor in TWO_CATCH_TEST17_NEIGHBORS {
+        let refused = recover(neighbor, None);
+        assert!(!refused.text.contains("finally {"), "{}", refused.text);
+        assert!(refused.text.contains("@bytecode"), "{}", refused.text);
+    }
+    let full = recover(TWO_CATCH_TEST17, Some(Budget::new(limits())));
+    let ExecutionReport::Complete { usage } = full.execution else {
+        panic!("complete run")
+    };
+    let mut late = limits();
+    late.analysis_steps = usage.analysis_steps - 1;
+    let stopped = recover(TWO_CATCH_TEST17, Some(Budget::new(late)));
+    assert!(stopped.stop().is_some());
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    let mut output = limits();
+    output.output_bytes = 1;
+    let stopped = recover(TWO_CATCH_TEST17, Some(Budget::new(output)));
+    assert!(stopped.stop().is_some());
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover(
+        TWO_CATCH_TEST17,
         Some(Budget::with_cancellation_token(limits(), token)),
     );
     assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));

@@ -7272,11 +7272,12 @@ struct SharedFinallyBuild {
     path: RegionPath,
     protected: (u32, u32),
     catch_body: (u32, u32),
-    completion: guard::SharedFinallyCompletion,
+    completion: Option<guard::SharedFinallyCompletion>,
     normal_cleanup: (u32, u32),
     facts: Vec<u32>,
     segmented: Option<((u32, u32), u32)>,
     empty_catch: bool,
+    two_catch: Option<((u32, u32), (u32, u32))>,
 }
 
 /// State that a speculative structured finally body may change before its enclosing Try exists.
@@ -13271,13 +13272,14 @@ impl Builder<'_> {
                             path: nested_path.clone(),
                             protected: plan.body(),
                             catch_body: *catch_body,
-                            completion: guard::SharedFinallyCompletion::Joined {
+                            completion: Some(guard::SharedFinallyCompletion::Joined {
                                 transfers: *transfers,
-                            },
+                            }),
                             normal_cleanup: cleanup[1],
                             facts: plan.facts().to_vec(),
                             segmented: Some((cleanup[0], *early_return)),
                             empty_catch: false,
+                            two_catch: None,
                         });
                         let built = self.region(inner, &nested_path);
                         self.shared_finally = None;
@@ -13306,6 +13308,93 @@ impl Builder<'_> {
                             return self.fallback(
                                 bcis,
                                 "the segmented finally has an unpresented body, declaration, or cleanup",
+                                plan.body().0,
+                            );
+                        }
+                        Ok(())
+                    }
+                    guard::Shape::TwoCatchReturnFinally {
+                        catches,
+                        cleanup,
+                        saved_return,
+                        ..
+                    } => {
+                        let Some(
+                            inner @ Region::Try {
+                                catches: regions, ..
+                            },
+                        ) = structured_body.as_deref()
+                        else {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("two-catch finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the two-catch finally has no bounded try",
+                                plan.body().0,
+                            );
+                        };
+                        if regions.len() != 2 {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("two-catch finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the two-catch finally has no two named catches",
+                                plan.body().0,
+                            );
+                        }
+                        let nested_path = child(path, 0);
+                        let mark = self.stmts.len();
+                        self.shared_finally = Some(SharedFinallyBuild {
+                            path: nested_path.clone(),
+                            protected: plan.body(),
+                            catch_body: (catches[1].0.bci(), cleanup[2].0),
+                            completion: None,
+                            normal_cleanup: cleanup[0],
+                            facts: plan.facts().to_vec(),
+                            segmented: None,
+                            empty_catch: false,
+                            two_catch: Some((
+                                (catches[0].0.bci(), catches[0].0.bci()),
+                                *saved_return,
+                            )),
+                        });
+                        let built = self.region(inner, &nested_path);
+                        self.shared_finally = None;
+                        if let Err(stop) = built {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("two-catch finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                        let complete = self.stmts[mark..].iter().all(|statement| {
+                            !statement_has_fallback(statement)
+                                && undeclared_local(statement, &self.undeclared).is_none()
+                        }) && self.stmts[mark..].iter().any(|statement| {
+                            matches!(&statement.kind, StmtKind::Try { finally_body: Some(body), catches, .. }
+                                if body.len() == 1 && catches.len() == 2
+                                    && catches[0].body.is_empty()
+                                    && matches!(catches[1].body.as_slice(), [Stmt { kind: StmtKind::Return { .. }, .. }]))
+                        });
+                        if !complete {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("two-catch finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the two-catch finally has an unpresented body or cleanup",
                                 plan.body().0,
                             );
                         }
@@ -13369,11 +13458,12 @@ impl Builder<'_> {
                             path: nested_path.clone(),
                             protected: plan.body(),
                             catch_body,
-                            completion,
+                            completion: Some(completion),
                             normal_cleanup,
                             facts: plan.facts().to_vec(),
                             segmented: None,
                             empty_catch,
+                            two_catch: None,
                         });
                         let built = self.region(inner, &nested_path);
                         self.shared_finally = None;
@@ -13452,8 +13542,10 @@ impl Builder<'_> {
                 if let Some(shared) = &shared {
                     self.finally_span = Some(shared.protected);
                     self.finally_return = match &shared.completion {
-                        guard::SharedFinallyCompletion::SavedReturns(returns) => Some(returns[0]),
-                        guard::SharedFinallyCompletion::Joined { .. } => None,
+                        Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
+                            Some(returns[0])
+                        }
+                        Some(guard::SharedFinallyCompletion::Joined { .. }) | None => None,
                     };
                 }
                 let walked = self.arm(body, &mut body_statements, &child(path, 0));
@@ -13473,15 +13565,24 @@ impl Builder<'_> {
                     let mut handler = Vec::new();
                     let previous_finally = (self.finally_span, self.finally_return);
                     if let Some(shared) = &shared {
-                        self.finally_span = Some(shared.catch_body);
-                        self.finally_return = match &shared.completion {
-                            guard::SharedFinallyCompletion::SavedReturns(returns) => {
-                                Some(returns[1])
-                            }
-                            guard::SharedFinallyCompletion::Joined { .. } => None,
-                        };
+                        if let Some((empty, saved)) = shared.two_catch {
+                            self.finally_span =
+                                Some(if index == 0 { empty } else { shared.catch_body });
+                            self.finally_return = (index == 1).then_some(saved);
+                        } else {
+                            self.finally_span = Some(shared.catch_body);
+                            self.finally_return = match &shared.completion {
+                                Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
+                                    Some(returns[1])
+                                }
+                                Some(guard::SharedFinallyCompletion::Joined { .. }) | None => None,
+                            };
+                        }
                     }
-                    let walked = if shared.as_ref().is_some_and(|shared| shared.empty_catch) {
+                    let empty_catch = shared.as_ref().is_some_and(|shared| {
+                        shared.empty_catch || (shared.two_catch.is_some() && index == 0)
+                    });
+                    let walked = if empty_catch {
                         Ok(())
                     } else {
                         self.arm(
@@ -13501,7 +13602,7 @@ impl Builder<'_> {
                     // would state a handler that runs nothing, and the dropped statements would
                     // be named nowhere.
                     if handler.is_empty()
-                        && !shared.as_ref().is_some_and(|shared| shared.empty_catch)
+                        && !empty_catch
                         && let Some((reason, bcis)) =
                             self.unpresented_clause_body(clause.body(), clause.handler().bci())?
                     {
