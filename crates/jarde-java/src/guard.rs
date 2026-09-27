@@ -4971,13 +4971,13 @@ fn guarded(
 /// One `catch` clause of a `try` the walk presents.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct CatchSite {
-    /// Constant-pool indexes of the `catch` types this clause names, in exception-table order.
+    /// Types proved for this clause, distinct from a catch-all row without a certificate.
     ///
-    /// One entry is an ordinary clause. Several entries are the **multi-catch** the table states:
+    /// One named entry is an ordinary clause. Several named entries are the **multi-catch** the table states:
     /// consecutive rows that name different classes and reach the *same* handler are one clause, and
     /// the compiler writes them `catch (A | B n)`. Reading them as one clause is what keeps the
     /// handler's body from being walked — and written — once per row.
-    pub(crate) type_indices: Vec<u16>,
+    pub(crate) types: CatchTypes,
     /// The canonical block the rows' handler entry maps to.
     pub(crate) handler: CanonicalBlockId,
     /// The local slot the handler's own first instruction stores the caught exception into: the
@@ -4985,11 +4985,19 @@ pub(crate) struct CatchSite {
     pub(crate) parameter: u16,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum CatchTypes {
+    /// Constant-pool class indexes in exception-table order.
+    Named(Vec<u16>),
+    /// A single catch-all whose closed exceptional-only path was proved below.
+    ProvenThrowable,
+}
+
 /// One `try`/`catch` statement: where its clauses are and where the code after it begins.
 ///
-/// This is not a guarded shape a rule of P3 2.4 proves: a `try` whose rows name their `catch` types
-/// is presented as the structure the table states, and the walk recovers both the protected range and
-/// every handler body as ordinary regions ([`crate::region`]).
+/// This is not a guarded shape a rule of P3 2.4 proves: named rows and the certified single
+/// catch-all are presented through the same structure, and the walk recovers both the protected
+/// range and every handler body as ordinary regions ([`crate::region`]).
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Catches {
     /// One site per clause (per handler entry), in exception-table order.
@@ -5019,8 +5027,8 @@ pub(crate) struct Catches {
     pub(crate) inner: Option<Box<Catches>>,
 }
 
-/// Examines one block as the `try` of a `try`/`catch`: the rows that name `catch` types and protect
-/// a range beginning in it.
+/// Examines one block as the `try` of a `try`/`catch`: named rows, or the certified single
+/// catch-all, protecting a range beginning in it.
 ///
 /// `None` is the answer for everything this shape is not, and every one of them is a *reason the
 /// shape was refused*, not a silent skip:
@@ -5067,6 +5075,23 @@ pub(crate) fn catches(
         .block(current)
         .and_then(|block| block.instructions().last())
         .map(|instruction| instruction.bci());
+    if handlers.len() == 1
+        && handlers[0].catch_type_index.is_none()
+        && handlers[0].start_bci >= current.bci()
+        && last.is_some_and(|last| handlers[0].start_bci <= last)
+    {
+        let sites = Sites::empty();
+        let mut facts = Facts::new(canonical, view, ssa, ops, handlers, &sites, budget);
+        if let Some(site) = exception_only_catch(&mut facts, &handlers[0])? {
+            return Ok(Some(Catches {
+                sites: vec![site],
+                join: None,
+                protected_end: handlers[0].end_bci,
+                lead: (current.bci(), handlers[0].start_bci),
+                inner: None,
+            }));
+        }
+    }
     let rows_here: Vec<&ExceptionHandlerFact> = handlers
         .iter()
         .filter(|row| {
@@ -5231,6 +5256,232 @@ pub(crate) fn catches(
     }
 }
 
+/// A catch-all may be spelled `Throwable` only for a closed, exception-only method tail.
+/// The exceptional entry store is the sole harmless instruction shared with the row's range.
+fn exception_only_catch(
+    facts: &mut Facts<'_>,
+    row: &ExceptionHandlerFact,
+) -> Result<Option<CatchSite>, StopReason> {
+    let Some(handler) = facts.row_handler(row) else {
+        return Ok(None);
+    };
+    let body = facts.bcis((row.start_bci, row.handler_bci));
+    let tail = facts.bcis((row.handler_bci, u32::MAX));
+    let ([store, cleanup @ .., load, rethrow], Some(&body_throw)) = (tail.as_slice(), body.last())
+    else {
+        return Ok(None);
+    };
+    let (store, load, rethrow) = (*store, *load, *rethrow);
+    let Some(body_block) = facts.block_of(row.start_bci).cloned() else {
+        return Ok(None);
+    };
+    if cleanup.is_empty()
+        || handler.bci() != store
+        || row.end_bci != facts.span_end(store)
+        || !matches!(facts.op(store), Some(Operation::Store { .. }))
+        || facts.op(body_throw) != Some(&Operation::Throw)
+        || facts.op(rethrow) != Some(&Operation::Throw)
+        || !matches!(facts.op(load), Some(Operation::Load { .. }))
+        || body
+            .iter()
+            .any(|bci| facts.block_of(*bci) != Some(&body_block))
+        || tail
+            .iter()
+            .any(|bci| facts.block_of(*bci) != Some(&handler))
+        || facts.in_block(&handler).first().map(SsaInstruction::bci) != Some(store)
+        || !facts.view.successor_ids(&handler).is_empty()
+    {
+        return Ok(None);
+    }
+    let (Some(Operation::Store { slot: parameter }), Some(Operation::Load { slot: loaded })) =
+        (facts.op(store), facts.op(load))
+    else {
+        return Ok(None);
+    };
+    if parameter != loaded || !handler_binding(facts, store) {
+        return Ok(None);
+    }
+    for bci in body.iter().chain(&tail) {
+        facts.charge(*bci)?;
+    }
+    // The try boundary must not cut through a pending stack expression. A narrowed row
+    // beginning after `new`, for example, cannot present construction inside the try.
+    if body.iter().any(|bci| {
+        facts.step(*bci).is_none_or(|step| {
+            stack_operands(step.instruction).iter().any(|(_, value)| {
+                !matches!(facts.ssa.value(facts.resolve(*value)).def(),
+                    Definition::Instruction { bci: producer, .. }
+                        if row.start_bci <= *producer && *producer < row.handler_bci)
+            })
+        })
+    }) {
+        return Ok(None);
+    }
+    // No branch, normal completion, or hidden effect can escape the protected straight run.
+    if body[..body.len() - 1].iter().any(|bci| {
+        matches!(
+            facts.op(*bci),
+            Some(Operation::Return | Operation::Throw | Operation::Transfer)
+        )
+    }) || tail[..tail.len() - 1].iter().any(|bci| {
+        matches!(
+            facts.op(*bci),
+            Some(Operation::Return | Operation::Throw | Operation::Transfer)
+        )
+    }) || !exception_only_cleanup(facts, cleanup)?
+    {
+        return Ok(None);
+    }
+    let (Some(stored), Some(reloaded), Some(thrown)) =
+        (facts.step(store), facts.step(load), facts.step(rethrow))
+    else {
+        return Ok(None);
+    };
+    if !stored.instruction.writes().iter().any(|(_, value)| {
+        reloaded
+            .instruction
+            .reads()
+            .iter()
+            .any(|(_, read)| facts.same(*value, *read))
+    }) || !reloaded.instruction.writes().iter().any(|(_, value)| {
+        stack_operands(thrown.instruction)
+            .iter()
+            .any(|(_, read)| facts.same(*value, *read))
+    }) {
+        return Ok(None);
+    }
+    let mut body_throw_sites = 0;
+    for site in facts.canonical.throw_sites() {
+        facts.charge(site.bci())?;
+        if row.start_bci <= site.bci() && site.bci() < row.handler_bci {
+            if site.block() != &body_block || site.handlers() != [row.ordinal] {
+                return Ok(None);
+            }
+            body_throw_sites += 1;
+        } else if site.bci() >= row.handler_bci && site.handlers().contains(&row.ordinal) {
+            return Ok(None);
+        }
+    }
+    if body_throw_sites == 0 {
+        return Ok(None);
+    }
+    let mut row_edges = 0;
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        match edge.kind() {
+            CanonicalEdgeKind::Exception { handler_ordinal }
+                if edge.from() == &body_block
+                    && edge.to() == &handler
+                    && handler_ordinal == row.ordinal =>
+            {
+                row_edges += 1
+            }
+            CanonicalEdgeKind::Exception { .. }
+                if edge.from() == &body_block || edge.to() == &handler =>
+            {
+                return Ok(None);
+            }
+            CanonicalEdgeKind::Normal if edge.to() == &handler || edge.from() == &handler => {
+                return Ok(None);
+            }
+            CanonicalEdgeKind::Normal if edge.from() == &body_block => return Ok(None),
+            CanonicalEdgeKind::Return { .. }
+                if edge.from() == &body_block || edge.from() == &handler =>
+            {
+                return Ok(None);
+            }
+            CanonicalEdgeKind::Call { .. }
+                if edge.from() == &body_block || edge.from() == &handler =>
+            {
+                return Ok(None);
+            }
+            _ => {}
+        }
+    }
+    if row_edges != 1 {
+        return Ok(None);
+    }
+    Ok(Some(CatchSite {
+        types: CatchTypes::ProvenThrowable,
+        handler,
+        parameter: *parameter,
+    }))
+}
+
+/// The presently presentable cleanup is one complete static integer increment. All three
+/// stack values have exactly one consumer, so moving it into the catch cannot duplicate a read.
+fn exception_only_cleanup(facts: &mut Facts<'_>, cleanup: &[u32]) -> Result<bool, StopReason> {
+    let [read, push, add, write] = cleanup else {
+        return Ok(false);
+    };
+    let Some(Operation::Field {
+        access: crate::facts::FieldAccess::Read,
+        is_static: true,
+        owner,
+        name,
+        descriptor,
+    }) = facts.op(*read)
+    else {
+        return Ok(false);
+    };
+    if descriptor != "I"
+        || !matches!(
+            facts.op(*push),
+            Some(Operation::Push(crate::facts::ConstantValue::Int(_)))
+        )
+        || facts.op(*add)
+            != Some(&Operation::Arithmetic {
+                op: crate::facts::ArithmeticOp::Add,
+            })
+        || facts
+            .step(*add)
+            .is_none_or(|step| step.instruction.opcode() != 0x60)
+        || facts.op(*write)
+            != Some(&Operation::Field {
+                access: crate::facts::FieldAccess::Write,
+                is_static: true,
+                owner: owner.clone(),
+                name: name.clone(),
+                descriptor: descriptor.clone(),
+            })
+    {
+        return Ok(false);
+    }
+    for (producer, consumer) in [(*read, *add), (*push, *add), (*add, *write)] {
+        let (Some(produced), Some(consumed)) = (facts.step(producer), facts.step(consumer)) else {
+            return Ok(false);
+        };
+        let outputs: Vec<_> = produced
+            .instruction
+            .writes()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .collect();
+        if outputs.len() != 1
+            || stack_operands(consumed.instruction)
+                .iter()
+                .filter(|(_, value)| facts.same(outputs[0].1, *value))
+                .count()
+                != 1
+        {
+            return Ok(false);
+        }
+        for bci in facts.order.clone() {
+            facts.charge(bci)?;
+            if bci != consumer
+                && facts.step(bci).is_some_and(|step| {
+                    stack_operands(step.instruction)
+                        .iter()
+                        .any(|(_, value)| facts.same(outputs[0].1, *value))
+                })
+            {
+                return Ok(false);
+            }
+        }
+    }
+    Ok(true)
+}
+
 /// Whether two protected ranges that begin at one instruction are one `try`'s nesting.
 ///
 /// The table states the pair, and this is what has to be read off it for the nesting to be the
@@ -5294,11 +5545,16 @@ fn clause_sites(facts: &Facts<'_>, rows: &[&ExceptionHandlerFact]) -> Option<Vec
         // so does a handler that came back after another one — the table's order is the priority the
         // clauses state, and merging across it would hand an exception to the wrong body.
         match sites.last_mut() {
-            Some(site) if site.handler == handler && !site.type_indices.contains(&type_index) => {
-                site.type_indices.push(type_index);
+            Some(site)
+                if site.handler == handler
+                    && matches!(&site.types, CatchTypes::Named(indices) if !indices.contains(&type_index)) =>
+            {
+                if let CatchTypes::Named(indices) = &mut site.types {
+                    indices.push(type_index);
+                }
             }
             _ => sites.push(CatchSite {
-                type_indices: vec![type_index],
+                types: CatchTypes::Named(vec![type_index]),
                 handler,
                 parameter: *slot,
             }),
