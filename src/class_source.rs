@@ -5144,6 +5144,7 @@ impl ClassSourceDeclaration {
         shells: &[AttributeShell],
         pool: &[CpEntryFacts],
         budget: &mut Budget,
+        mut prove_direct_parent: impl FnMut(&[u8], &mut Budget) -> Result<bool>,
     ) -> Result<Option<ClassSignatureErasureProof>> {
         let signatures: Vec<_> = shells
             .iter()
@@ -5163,7 +5164,18 @@ impl ClassSourceDeclaration {
                     )
                 })?;
             let parsed = parse_class_signature(&raw.0, budget)?;
-            if parsed.type_parameters.is_empty() {
+            let parameterized_superclass = parsed.type_parameters.is_empty()
+                && parsed
+                    .superclass
+                    .segments
+                    .iter()
+                    .any(|segment| !segment.arguments.is_empty());
+            let direct_parent_candidate = parsed.type_parameters.is_empty()
+                && matches!(parsed.superclass.segments.as_slice(), [segment]
+                    if matches!(segment.arguments.as_slice(), [TypeArgument::Exact(SignatureType::Class(class))]
+                        if matches!(class.segments.as_slice(), [string]
+                            if string.binary_name == b"java/lang/String" && string.arguments.is_empty())));
+            if parsed.type_parameters.is_empty() && !parameterized_superclass {
                 return Ok(None);
             }
             self.generic_signature = Some(raw.clone());
@@ -5208,7 +5220,28 @@ impl ClassSourceDeclaration {
                 &physical_interfaces,
                 budget,
             )?;
-            if !matches!(parsed.superclass.segments.as_slice(), [segment] if segment.arguments.is_empty())
+            if direct_parent_candidate {
+                if !parsed.interfaces.is_empty() || !physical_interfaces.is_empty() {
+                    return Err(Error::unsupported(
+                        "class_generic_source_unproved",
+                        "direct parameterized superclass projection does not include interfaces",
+                    ));
+                }
+                let [parent] = parsed.superclass.segments.as_slice() else {
+                    unreachable!("direct parent candidate has exactly one segment")
+                };
+                if parent.binary_name.contains(&b'$') || !prove_direct_parent(&parent.binary_name, budget)? {
+                    return Err(Error::unsupported(
+                        "class_generic_source_unproved",
+                        "direct superclass does not resolve to one proved single-parameter parent definition",
+                    ));
+                }
+            } else if parameterized_superclass {
+                return Err(Error::unsupported(
+                    "class_generic_source_unproved",
+                    "only a single direct Parent<String> superclass is supported for a class without type parameters",
+                ));
+            } else if !matches!(parsed.superclass.segments.as_slice(), [segment] if segment.arguments.is_empty())
                 || parsed.interfaces.iter().any(|interface| {
                     !matches!(interface.segments.as_slice(), [segment] if segment.arguments.is_empty())
                 })
@@ -5278,10 +5311,11 @@ impl ClassSourceDeclaration {
                     0,
                 )?);
             }
+            let type_parameters = (!parameters.is_empty()).then(|| parameters.join(", "));
             let declaration = class_declaration_with_types(
                 &self.name,
                 facts,
-                Some(&parameters.join(", ")),
+                type_parameters.as_deref(),
                 Some(&superclass),
                 Some(&interfaces),
             );
@@ -5297,7 +5331,10 @@ impl ClassSourceDeclaration {
                 Ok(Some(proof))
             }
             Ok(None) => Ok(None),
-            Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => Err(error),
+            Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                self.generic_refusal = Some(format!("projection stopped: {error}"));
+                Err(error)
+            }
             Err(error) => {
                 self.generic_refusal = Some(error.to_string());
                 Ok(None)
