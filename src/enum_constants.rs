@@ -68,6 +68,8 @@ pub(crate) struct EnumCodeInstruction {
     pub(crate) opcode: u8,
     pub(crate) immediate: Option<ImmediateValue>,
     pub(crate) local: Option<u16>,
+    pub(crate) increment: Option<i32>,
+    pub(crate) interface_count: Option<u8>,
     pub(crate) reference: Option<EnumCodeReference>,
     /// Target derived from this instruction's Code operand; accepted proofs match it to a BCI.
     pub(crate) branch_target_bci: Option<u32>,
@@ -707,6 +709,451 @@ pub(crate) fn prove_static_assignment_suffix(
     }))
 }
 
+/// The single javac array loop admitted after a complete ordinary enum prefix.
+/// The statements are selected from the same `<clinit>` recovery, never parsed from fallback text.
+pub(crate) struct ProvedEnumMapSuffix {
+    pub(crate) field_index: u64,
+    pub(crate) initializer_member: PhysicalMethodId,
+    pub(crate) statements: Vec<jarde_java::ast::Stmt>,
+}
+
+pub(crate) fn prove_map_initializer_suffix(
+    input: EnumStaticAssignmentInput<'_>,
+) -> Result<Option<ProvedEnumMapSuffix>> {
+    use jarde_java::ast::{AssignOp, BinaryOp, Expr, ExprKind, StmtKind, Type};
+    use jarde_java::report::{ClassInitializerStatementKind as Kind, ClassInitializerStep as Step};
+
+    let EnumStaticAssignmentInput {
+        group,
+        owner,
+        field_headers,
+        source_fields,
+        method_headers,
+        source_methods,
+        code_candidates,
+        initializer_candidates,
+        budget,
+    } = input;
+    if group.constants.len() != 2
+        || group.initializer_prefix_statement_count != 3
+        || field_headers.len() != 4
+        || field_headers.len() != source_fields.len()
+        || method_headers.len() != source_methods.len()
+    {
+        return Ok(None);
+    }
+    let work = field_headers
+        .len()
+        .saturating_add(method_headers.len())
+        .saturating_add(code_candidates.len())
+        .saturating_add(initializer_candidates.len());
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(work).unwrap_or(u64::MAX),
+    )?;
+    budget.poll()?;
+    let Some(initializer_index) = usize::try_from(group.initializer_method_index).ok() else {
+        return Ok(None);
+    };
+    let (Some(header), Some(method)) = (
+        method_headers.get(initializer_index),
+        source_methods.get(initializer_index),
+    ) else {
+        return Ok(None);
+    };
+    if header.name.raw().0 != b"<clinit>"
+        || header.descriptor.raw().0 != b"()V"
+        || header.access_flags != ACC_STATIC
+        || method.item.index != group.initializer_method_index
+    {
+        return Ok(None);
+    }
+    let crate::class_source::ClassSourceOutcome::Recovered { report, analysis } = &method.outcome
+    else {
+        return Ok(None);
+    };
+    if !report.produced()
+        || !matches!(report.execution, ExecutionReport::Complete { .. })
+        || !matches!(analysis.execution, ExecutionReport::Complete { .. })
+        || report.quality != jarde_jvm::ir::Quality::Structured
+        || !report.fallbacks.is_empty()
+    {
+        return Ok(None);
+    }
+    let codes: Vec<_> = code_candidates
+        .iter()
+        .filter(|candidate| candidate.table_index == group.initializer_method_index)
+        .collect();
+    let [code] = codes.as_slice() else {
+        return Ok(None);
+    };
+    if code.member.as_ref() != Some(&method.item.identity)
+        || !code.complete
+        || code.exception_handler_count != 0
+    {
+        return Ok(None);
+    }
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(
+            code.instructions
+                .len()
+                .saturating_add(code.member_uses.len()),
+        )
+        .unwrap_or(u64::MAX),
+    )?;
+    budget.poll()?;
+    let suffix: Vec<_> = code
+        .instructions
+        .iter()
+        .filter(|instruction| instruction.bci >= group.initializer_prefix_end_bci)
+        .collect();
+    let Ok(suffix): std::result::Result<&[&EnumCodeInstruction; 27], _> =
+        suffix.as_slice().try_into()
+    else {
+        return Ok(None);
+    };
+    if suffix[0].bci != group.initializer_prefix_end_bci
+        || !suffix
+            .windows(2)
+            .all(|pair| pair[0].bci.checked_add(pair[0].width) == Some(pair[1].bci))
+    {
+        return Ok(None);
+    }
+    let Some(EnumCodeReference::Field {
+        owner: field_owner,
+        name: field_name,
+        descriptor,
+    }) = &suffix[3].reference
+    else {
+        return Ok(None);
+    };
+    if field_owner != owner
+        || descriptor != b"Ljava/util/Map;"
+        || suffix[3].opcode != 0xb3
+        || suffix[18].reference != suffix[3].reference
+    {
+        return Ok(None);
+    }
+    let matching_fields: Vec<_> = field_headers
+        .iter()
+        .enumerate()
+        .filter(|(_, field)| {
+            field.name.raw().0 == *field_name && field.descriptor.raw().0 == *descriptor
+        })
+        .collect();
+    let [(field_index, field)] = matching_fields.as_slice() else {
+        return Ok(None);
+    };
+    let source_field = &source_fields[*field_index];
+    let Ok(field_name_text) = std::str::from_utf8(field_name) else {
+        return Ok(None);
+    };
+    if field.access_flags != (ACC_PUBLIC | ACC_STATIC | ACC_FINAL)
+        || field
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"ConstantValue")
+        || source_field.item.index != u64::try_from(*field_index).unwrap_or(u64::MAX)
+        || source_field.item.identity.owner != method.item.identity.owner
+        || source_field
+            .declaration
+            .as_deref()
+            .and_then(|declaration| declaration.strip_prefix("public static final java.util.Map "))
+            != Some(field_name_text)
+        || source_field
+            .markers
+            .iter()
+            .any(|marker| !marker.contains("field_generic_source_unproved"))
+        || !source_field.annotations.refusals.is_empty()
+        || !source_field.type_annotations.refusals.is_empty()
+    {
+        return Ok(None);
+    }
+    let expected_references = [
+        (
+            2,
+            EnumCodeReference::Method {
+                owner: b"java/util/HashMap".to_vec(),
+                name: b"<init>".to_vec(),
+                descriptor: b"()V".to_vec(),
+                interface: false,
+            },
+        ),
+        (3, suffix[3].reference.clone().unwrap()),
+        (
+            4,
+            EnumCodeReference::Method {
+                owner: owner.to_vec(),
+                name: b"values".to_vec(),
+                descriptor: values_descriptor(owner),
+                interface: false,
+            },
+        ),
+        (18, suffix[3].reference.clone().unwrap()),
+        (
+            20,
+            EnumCodeReference::Method {
+                owner: owner.to_vec(),
+                name: b"name".to_vec(),
+                descriptor: b"()Ljava/lang/String;".to_vec(),
+                interface: false,
+            },
+        ),
+        (
+            22,
+            EnumCodeReference::Method {
+                owner: b"java/util/Map".to_vec(),
+                name: b"put".to_vec(),
+                descriptor: b"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".to_vec(),
+                interface: true,
+            },
+        ),
+    ];
+    let hash_map_reference = EnumCodeReference::Class(b"java/util/HashMap".to_vec());
+    let opcodes = [
+        0xbb, 0x59, 0xb7, 0xb3, 0xb8, 0x4b, 0x2a, 0xbe, 0x3c, 0x03, 0x3d, 0x1c, 0x1b, 0xa2, 0x2a,
+        0x1c, 0x32, 0x4e, 0xb2, 0x2d, 0xb6, 0x2d, 0xb9, 0x57, 0x84, 0xa7, 0xb1,
+    ];
+    for (index, instruction) in suffix.iter().enumerate() {
+        budget.poll()?;
+        if instruction.opcode != opcodes[index]
+            || instruction.reference.as_ref()
+                != (if index == 0 {
+                    Some(&hash_map_reference)
+                } else {
+                    expected_references
+                        .iter()
+                        .find(|(position, _)| *position == index)
+                        .map(|(_, reference)| reference)
+                })
+            || instruction.immediate != (index == 9).then_some(ImmediateValue::Int(0))
+            || instruction.local
+                != (match index {
+                    5 | 6 | 14 => Some(0),
+                    8 | 12 => Some(1),
+                    10 | 11 | 15 | 24 => Some(2),
+                    17 | 19 | 21 => Some(3),
+                    _ => None,
+                })
+            || instruction.increment != (index == 24).then_some(1)
+            || instruction.interface_count != (index == 22).then_some(3)
+            || instruction.branch_target_bci
+                != (match index {
+                    13 => Some(suffix[26].bci),
+                    25 => Some(suffix[11].bci),
+                    _ => None,
+                })
+        {
+            return Ok(None);
+        }
+    }
+    if suffix[0].width != 3
+        || suffix[2].width != 3
+        || suffix[3].width != 3
+        || suffix[4].width != 3
+        || suffix[13].width != 3
+        || suffix[18].width != 3
+        || suffix[20].width != 3
+        || suffix[22].width != 5
+        || suffix[24].width != 3
+        || suffix[25].width != 3
+        || suffix.iter().enumerate().any(|(index, instruction)| {
+            !matches!(index, 0 | 2 | 3 | 4 | 13 | 18 | 20 | 22 | 24 | 25) && instruction.width != 1
+        })
+        || suffix[9].opcode != 0x03
+        || suffix[16].opcode != 0x32
+    {
+        return Ok(None);
+    }
+    let suffix_uses: Vec<_> = code
+        .member_uses
+        .iter()
+        .filter(|use_site| use_site.bci >= group.initializer_prefix_end_bci)
+        .collect();
+    if suffix_uses.len() != expected_references.len()
+        || suffix_uses
+            .iter()
+            .zip(expected_references.iter())
+            .any(|(actual, (index, reference))| {
+                actual.bci != suffix[*index].bci || &actual.reference != reference
+            })
+    {
+        return Ok(None);
+    }
+    let candidates: Vec<_> = initializer_candidates
+        .iter()
+        .filter(|candidate| candidate.member.as_ref() == Some(&method.item.identity))
+        .collect();
+    let [candidate] = candidates.as_slice() else {
+        return Ok(None);
+    };
+    let steps = &candidate.steps;
+    let statements = &candidate.statements;
+    if candidate.has_exception_handlers || steps.len() != 11 || statements.len() != steps.len() {
+        return Ok(None);
+    }
+    for (position, (step, statement)) in steps.iter().zip(statements).enumerate() {
+        budget.poll()?;
+        let (order, bci) = match step {
+            Step::FieldWrite(write) => (write.order, write.bci),
+            Step::Other { order, bci, .. } => (*order, *bci),
+        };
+        if order != position || bci != statement.origin.primary().bci() {
+            return Ok(None);
+        }
+    }
+    if !matches!(
+        &steps[..],
+        [
+            Step::Other {
+                kind: Kind::Declaration,
+                ..
+            },
+            Step::Other {
+                kind: Kind::Declaration,
+                ..
+            },
+            Step::Other {
+                kind: Kind::Declaration,
+                ..
+            },
+            Step::FieldWrite(_),
+            Step::FieldWrite(_),
+            Step::FieldWrite(_),
+            Step::FieldWrite(_),
+            Step::Other {
+                kind: Kind::LocalAssignment,
+                ..
+            },
+            Step::Other {
+                kind: Kind::LocalAssignment,
+                ..
+            },
+            Step::Other {
+                kind: Kind::Loop,
+                ..
+            },
+            Step::Other {
+                kind: Kind::Return,
+                ..
+            }
+        ]
+    ) {
+        return Ok(None);
+    }
+    for (position, expected_bci) in [
+        group.constants[0].field_write_bci,
+        group.constants[1].field_write_bci,
+        group.initializer_prefix_end_bci - 3,
+    ]
+    .iter()
+    .enumerate()
+    {
+        let Step::FieldWrite(write) = &steps[position + 3] else {
+            return Ok(None);
+        };
+        if write.bci != *expected_bci {
+            return Ok(None);
+        }
+    }
+    let Step::FieldWrite(map_write) = &steps[6] else {
+        return Ok(None);
+    };
+    if map_write.bci != suffix[3].bci
+        || map_write.owner.as_bytes() != owner
+        || map_write.name != field_name_text
+        || !map_write.is_static
+        || map_write.op != AssignOp::Assign
+        || !matches!(&map_write.value.kind, ExprKind::New { ty, qualifier: None, member_name: None, diamond: false, args } if ty == "java.util.HashMap" && args.is_empty())
+    {
+        return Ok(None);
+    }
+    if [steps[0].clone(), steps[1].clone(), steps[2].clone()]
+        .iter()
+        .zip([suffix[5].bci, suffix[8].bci, suffix[10].bci])
+        .any(|(step, bci)| !matches!(step, Step::Other { bci: actual, .. } if *actual == bci))
+        || !matches!(&steps[7], Step::Other { bci, .. } if *bci == suffix[5].bci)
+        || !matches!(&steps[8], Step::Other { bci, .. } if *bci == suffix[8].bci)
+        || !matches!(&steps[9], Step::Other { bci, .. } if *bci == suffix[13].bci)
+        || !matches!(&steps[10], Step::Other { bci, kind: Kind::Return, .. } if *bci == suffix[26].bci)
+    {
+        return Ok(None);
+    }
+    let Ok(owner_text) = std::str::from_utf8(owner) else {
+        return Ok(None);
+    };
+    let source_owner = owner_text.replace('/', ".");
+    let is_local = |expression: &Expr, expected: &str| matches!(&expression.kind, ExprKind::Local(name) if name == expected);
+    if !matches!(&statements[0].kind, StmtKind::Declare { ty: Type::Reference(ty), name, value: None, .. } if ty == &format!("{source_owner}[]") && name == "local0")
+        || !matches!(&statements[1].kind, StmtKind::Declare { ty: Type::Int, name, value: None, .. } if name == "local1")
+        || !matches!(&statements[2].kind, StmtKind::Declare { ty: Type::Int, name, value: None, .. } if name == "local2")
+        || !matches!(&statements[7].kind, StmtKind::Assign { name, value } if name == "local0" && matches!(&value.kind, ExprKind::Call { receiver: None, name, args } if name == "values" && args.is_empty()) && value.origin.primary().bci() == suffix[4].bci)
+        || !matches!(&statements[8].kind, StmtKind::Assign { name, value } if name == "local1" && matches!(&value.kind, ExprKind::ArrayLength { array } if is_local(array, "local0")) && value.origin.primary().bci() == suffix[7].bci)
+    {
+        return Ok(None);
+    }
+    let StmtKind::For {
+        label: None,
+        init,
+        cond,
+        update,
+        body,
+    } = &statements[9].kind
+    else {
+        return Ok(None);
+    };
+    if !matches!(&init.kind, StmtKind::Assign { name, value } if name == "local2" && matches!(&value.kind, ExprKind::Integer(0)))
+        || !matches!(&cond.kind, ExprKind::Binary { op: BinaryOp::Less, left, right } if is_local(left, "local2") && is_local(right, "local1"))
+        || !matches!(&update.kind, StmtKind::Assign { name, value } if name == "local2" && matches!(&value.kind, ExprKind::Binary { op: BinaryOp::Add, left, right } if is_local(left, "local2") && matches!(&right.kind, ExprKind::Integer(1))))
+    {
+        return Ok(None);
+    }
+    if body.len() != 2
+        || body[0].origin.primary().bci() != suffix[17].bci
+        || body[1].origin.primary().bci() != suffix[22].bci
+    {
+        return Ok(None);
+    }
+    let StmtKind::Declare {
+        ty: Type::Reference(local_type),
+        name,
+        value: Some(value),
+        ..
+    } = &body[0].kind
+    else {
+        return Ok(None);
+    };
+    if local_type != "Object"
+        || name != "local3"
+        || !matches!(&value.kind, ExprKind::Index { array, index } if is_local(array, "local0") && is_local(index, "local2") && value.origin.primary().bci() == suffix[16].bci)
+        || !matches!(&body[1].kind, StmtKind::Expr(expression) if matches!(&expression.kind, ExprKind::Call { receiver: Some(receiver), name, args } if name == "put" && matches!(&receiver.kind, ExprKind::Field { receiver: owner_expr, name } if matches!(&owner_expr.kind, ExprKind::Path(path) if path == &source_owner) && name == field_name_text) && matches!(args.as_slice(), [first, second] if matches!(&first.kind, ExprKind::Cast { ty: Type::Reference(ty), value } if ty == "java.lang.Object" && matches!(&value.kind, ExprKind::Call { receiver: Some(receiver), name, args } if is_local(receiver, "local3") && name == "name" && args.is_empty())) && matches!(&second.kind, ExprKind::Cast { ty: Type::Reference(ty), value } if ty == "java.lang.Object" && is_local(value, "local3")))) && expression.origin.primary().bci() == suffix[22].bci)
+    {
+        return Ok(None);
+    }
+    let mut selected = statements[0..3].to_vec();
+    selected.extend_from_slice(&statements[6..10]);
+    let StmtKind::FieldAssign { receiver, name, .. } = &mut selected[3].kind else {
+        unreachable!()
+    };
+    if name != field_name_text {
+        return Ok(None);
+    }
+    *receiver = None;
+    let StmtKind::For { body, .. } = &mut selected[6].kind else {
+        unreachable!()
+    };
+    let StmtKind::Declare { ty, .. } = &mut body[0].kind else {
+        unreachable!()
+    };
+    *ty = Type::Reference(source_owner);
+    Ok(Some(ProvedEnumMapSuffix {
+        field_index: u64::try_from(*field_index).unwrap_or(u64::MAX),
+        initializer_member: method.item.identity.clone(),
+        statements: selected,
+    }))
+}
+
 /// Copy a candidate body's bounded structural facts from the same method run.
 ///
 /// Candidate names only select which full bodies need to be retained. Every enum method still
@@ -864,6 +1311,8 @@ fn enum_instruction(
         local: operands
             .and_then(|operands| operands.local)
             .map(|local| local.index),
+        increment: operands.and_then(|operands| operands.increment),
+        interface_count: operands.and_then(|operands| operands.interface_count),
         reference,
         branch_target_bci,
     }
@@ -3479,6 +3928,11 @@ mod tests {
     const MEASURE_JADX_RUNNER: &str = include_str!(
         "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/jadx/sources/defpackage/MeasureRunner.java"
     );
+    const CUSTOM_INIT_SOURCE: &str =
+        include_str!("../openspec/evidence/java-syntax-2026-09-27/dt14-enum-init/CustomInit.java");
+    const CUSTOM_INIT_RUNNER: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-27/dt14-enum-init/CustomInitRunner.java"
+    );
     const OP_SOURCE: &str = include_str!(
         "../openspec/evidence/java-syntax-2026-09-25/enum-constant-specific-body/Op.java"
     );
@@ -5044,6 +5498,219 @@ public final class PackageArgsRunner {
     }
 
     #[test]
+    fn custom_map_suffix_recompiles_and_preserves_singleton_identity() {
+        let bytes = compile_java_sources(
+            "custom-map-input",
+            &[("dt14/CustomInit", CUSTOM_INIT_SOURCE)],
+        )
+        .remove(0);
+        let report = enum_report(&bytes, "dt14/CustomInit", &mut test_budget());
+        assert!(report.text.contains("RED,\n    BLUE;"), "{}", report.text);
+        assert!(report.text.contains("static {\n"), "{}", report.text);
+        assert!(
+            !report
+                .text
+                .contains("public static final dt14.CustomInit RED;")
+        );
+        let output = compile_and_run_sources(
+            "custom-map-projected",
+            &[
+                ("dt14/CustomInit.java", &report.text),
+                ("dt14/CustomInitRunner.java", CUSTOM_INIT_RUNNER),
+            ],
+            false,
+            "dt14.CustomInitRunner",
+        );
+        assert_eq!(output, "map=2:true:true\n");
+        assert_eq!(report.fields.len(), 4);
+        assert!(
+            report
+                .methods
+                .iter()
+                .any(|method| method.item.name.raw().0 == b"<clinit>")
+        );
+        assert!(matches!(
+            report.enum_constant_proof,
+            ClassSourceEnumConstantProof::Proved(_)
+        ));
+        let initializer = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"<clinit>")
+            .expect("the physical initializer remains indexed");
+        let ClassSourceOutcome::Recovered {
+            report: recovered, ..
+        } = &initializer.outcome
+        else {
+            panic!("the original initializer recovery remains available");
+        };
+        assert!(
+            recovered
+                .text_of_bci(39)
+                .iter()
+                .any(|text| text.contains("BY_NAME"))
+        );
+        assert!(
+            recovered
+                .text_of_bci(53)
+                .iter()
+                .any(|text| text.contains("for ("))
+        );
+        assert!(
+            recovered
+                .text_of_bci(68)
+                .iter()
+                .any(|text| text.contains("put("))
+        );
+    }
+
+    #[test]
+    fn custom_map_suffix_rejects_changed_loop_increment() {
+        let mut bytes = compile_java_sources(
+            "custom-map-increment",
+            &[("dt14/CustomInit", CUSTOM_INIT_SOURCE)],
+        )
+        .remove(0);
+        let pattern = [0x84, 0x02, 0x01, 0xa7, 0xff, 0xe6];
+        let locations: Vec<_> = bytes
+            .windows(pattern.len())
+            .enumerate()
+            .filter_map(|(index, window)| (window == pattern).then_some(index))
+            .collect();
+        let [location] = locations.as_slice() else {
+            panic!("the javac loop increment has one exact byte sequence")
+        };
+        bytes[*location + 2] = 2;
+        let report = enum_report(&bytes, "dt14/CustomInit", &mut test_budget());
+        assert!(
+            report
+                .text
+                .contains("public static final dt14.CustomInit RED;")
+        );
+        assert!(!report.text.contains("    RED,\n"));
+        assert!(
+            report
+                .methods
+                .iter()
+                .any(|method| method.item.name.raw().0 == b"<clinit>")
+        );
+    }
+
+    #[test]
+    fn custom_map_suffix_refuses_unproved_effects_and_loop_shapes_atomically() {
+        let variants = [
+            ("extra-map-write", CUSTOM_INIT_SOURCE.replace(
+                "BY_NAME.put(value.name(), value);",
+                "BY_NAME.put(value.name(), value); BY_NAME.put(\"other\", RED);",
+            )),
+            ("extra-call", CUSTOM_INIT_SOURCE.replace(
+                "BY_NAME.put(value.name(), value);",
+                "BY_NAME.put(value.name(), value); System.nanoTime();",
+            )),
+            ("exception-edge", CUSTOM_INIT_SOURCE.replace(
+                "for (CustomInit value : values()) {\n            BY_NAME.put(value.name(), value);\n        }",
+                "try { for (CustomInit value : values()) { BY_NAME.put(value.name(), value); } } catch (RuntimeException ignored) { }",
+            )),
+            ("unknown-array", CUSTOM_INIT_SOURCE.replace(
+                "for (CustomInit value : values())",
+                "for (CustomInit value : new CustomInit[]{RED, BLUE})",
+            )),
+        ];
+        for (label, source) in variants {
+            assert_ne!(
+                source, CUSTOM_INIT_SOURCE,
+                "fixture replacement must apply: {label}"
+            );
+            let bytes = compile_java_sources(label, &[("dt14/CustomInit", &source)]).remove(0);
+            let report = enum_report(&bytes, "dt14/CustomInit", &mut test_budget());
+            assert!(
+                report
+                    .text
+                    .contains("public static final dt14.CustomInit RED;"),
+                "{label}: {}",
+                report.text
+            );
+            assert!(
+                report
+                    .text
+                    .contains("private static final dt14.CustomInit[] $VALUES;"),
+                "{label}: {}",
+                report.text
+            );
+            assert!(
+                report
+                    .text
+                    .contains("public static final java.util.Map BY_NAME;"),
+                "{label}: {}",
+                report.text
+            );
+            assert!(
+                !report.text.contains("    RED,\n"),
+                "{label}: {}",
+                report.text
+            );
+            assert!(
+                report
+                    .methods
+                    .iter()
+                    .any(|method| method.item.name.raw().0 == b"<clinit>"),
+                "{label}"
+            );
+            assert!(
+                report
+                    .text
+                    .contains("dt14.CustomInit.BY_NAME = new java.util.HashMap();")
+                    || report.text.contains("@bytecode"),
+                "{label}: {}",
+                report.text
+            );
+        }
+    }
+
+    #[test]
+    fn custom_map_suffix_output_stop_and_cancellation_leave_no_partial_projection() {
+        let bytes = compile_java_sources(
+            "custom-map-budget-input",
+            &[("dt14/CustomInit", CUSTOM_INIT_SOURCE)],
+        )
+        .remove(0);
+        let complete = enum_report(&bytes, "dt14/CustomInit", &mut test_budget());
+        assert!(complete.text.contains("    RED,\n    BLUE;"));
+        let mut limits = test_budget().limits().clone();
+        limits.output_bytes = complete.usage.output_bytes - 1;
+        let stopped = enum_report(&bytes, "dt14/CustomInit", &mut Budget::new(limits));
+        assert!(matches!(
+            stopped.enum_constant_proof,
+            ClassSourceEnumConstantProof::Stopped { .. }
+        ));
+        assert!(
+            stopped
+                .text
+                .contains("public static final dt14.CustomInit RED;")
+        );
+        assert!(!stopped.text.contains("    RED,\n"));
+        assert!(
+            stopped
+                .methods
+                .iter()
+                .any(|method| method.item.name.raw().0 == b"<clinit>")
+        );
+
+        let engine = crate::Engine::new();
+        let snapshot = engine
+            .open(crate::ArtifactInput::bytes(bytes), &mut test_budget())
+            .expect("the custom enum opens");
+        let request = enum_request(&snapshot, "dt14/CustomInit");
+        let token = crate::CancellationToken::new();
+        token.cancel();
+        let mut budget = Budget::with_cancellation_token(test_budget().limits().clone(), token);
+        let outcome = engine
+            .class_source(std::slice::from_ref(&snapshot), &request, &mut budget)
+            .expect("cancellation remains in the operation plane");
+        assert!(matches!(outcome, crate::OperationOutcome::Incomplete(_)));
+    }
+
+    #[test]
     fn measure_projection_text_is_equal_for_default_and_all_evidence_with_physical_members_intact()
     {
         let snapshot = crate::Engine::new()
@@ -6070,6 +6737,8 @@ public final class PackageArgsRunner {
                 opcode: 0x1d,
                 immediate: None,
                 local: None,
+                increment: None,
+                interface_count: None,
                 reference: None,
                 branch_target_bci: None,
             },
@@ -6082,6 +6751,8 @@ public final class PackageArgsRunner {
                 opcode: 0xb8,
                 immediate: None,
                 local: None,
+                increment: None,
+                interface_count: None,
                 reference: Some(EnumCodeReference::Method {
                     owner: b"ConstructorEffects".to_vec(),
                     name: b"audit".to_vec(),
@@ -6230,6 +6901,8 @@ public final class PackageArgsRunner {
             opcode: 0xb8,
             immediate: None,
             local: None,
+            increment: None,
+            interface_count: None,
             reference: Some(EnumCodeReference::Method {
                 owner: b"ConstructorEffects".to_vec(),
                 name: b"record".to_vec(),

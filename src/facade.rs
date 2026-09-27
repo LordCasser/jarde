@@ -6824,7 +6824,62 @@ impl Engine {
                             }
                         }
                     }
-                    Ok(None) => {}
+                    Ok(None) => {
+                        match crate::enum_constants::prove_map_initializer_suffix(
+                            crate::enum_constants::EnumStaticAssignmentInput {
+                                group,
+                                owner: &declaration.item.declaration.this_class.raw().0,
+                                field_headers: &read.facts.fields,
+                                source_fields: &fields,
+                                method_headers: &read.facts.methods,
+                                source_methods: &methods,
+                                code_candidates: &enum_code_candidates,
+                                initializer_candidates: &initializer_candidate_runs,
+                                budget,
+                            },
+                        ) {
+                            Ok(Some(suffix)) => {
+                                match jarde_java::report::emit_class_enum_initializer_statements(
+                                    &suffix.statements,
+                                    &suffix.initializer_member,
+                                    budget,
+                                ) {
+                                    Ok(statements) => {
+                                        let initializer_text =
+                                            format!("    static {{\n{statements}    }}\n");
+                                        projection_tail = Some((
+                                            group.clone(),
+                                            Some((suffix.field_index, initializer_text)),
+                                        ));
+                                    }
+                                    Err(stop) => {
+                                        let (stop_execution_report, diagnostic) =
+                                            initializer_projection_stop(
+                                                &stop,
+                                                budget,
+                                                class_provenance.clone(),
+                                            );
+                                        merge_execution(&mut execution, stop_execution_report);
+                                        diagnostics.push(diagnostic);
+                                        enum_constant_proof =
+                                            crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                                reason: format!("enum map suffix emission stopped: {stop:?}"),
+                                            };
+                                    }
+                                }
+                            }
+                            Ok(None) => {}
+                            Err(error) => {
+                                let stop = stop_execution(&error, budget);
+                                merge_execution(&mut execution, stop);
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                enum_constant_proof =
+                                    crate::enum_constants::ClassSourceEnumConstantProof::Stopped {
+                                        reason: format!("enum map suffix proof stopped: {error}"),
+                                    };
+                            }
+                        }
+                    }
                     Err(error) => {
                         let stop = stop_execution(&error, budget);
                         merge_execution(&mut execution, stop);
@@ -11442,6 +11497,8 @@ fn prove_enum_physical_constructor(
             opcode: instruction.opcode,
             immediate: operands.immediate,
             local: operands.local.map(|local| local.index),
+            increment: operands.increment,
+            interface_count: operands.interface_count,
             reference,
             branch_target_bci: None,
         });
@@ -22342,6 +22399,8 @@ public class Probe {
             opcode,
             immediate: None,
             local: None,
+            increment: None,
+            interface_count: None,
             reference,
             branch_target_bci: None,
         };

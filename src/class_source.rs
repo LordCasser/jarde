@@ -7025,12 +7025,19 @@ pub(crate) fn prepare_enum_constant_source_projection(
             let Some(target) = target else {
                 return Ok(None);
             };
-            if target.item.name.raw().0 != b"totalUnits"
-                || target.item.descriptor.raw().0 != b"I"
-                || target.item.access_flags != 0x0008
+            if !((target.item.name.raw().0 == b"totalUnits"
+                && target.item.descriptor.raw().0 == b"I"
+                && target.item.access_flags == 0x0008)
+                || (target.item.descriptor.raw().0 == b"Ljava/util/Map;"
+                    && target.item.access_flags == 0x0019))
                 || target.item.identity.owner != constructor.item.identity.owner
                 || target.declaration.is_none()
-                || !target.markers.is_empty()
+                || (target.item.descriptor.raw().0 == b"I" && !target.markers.is_empty())
+                || (target.item.descriptor.raw().0 == b"Ljava/util/Map;"
+                    && target
+                        .markers
+                        .iter()
+                        .any(|marker| !marker.contains("field_generic_source_unproved")))
             {
                 return Ok(None);
             }

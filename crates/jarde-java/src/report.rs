@@ -376,6 +376,8 @@ pub struct ClassInitializerCandidates {
     pub has_exception_handlers: bool,
     /// Every top-level statement in original recovery order.
     pub steps: Vec<ClassInitializerStep>,
+    /// Same-run AST nodes retained for an exact, bounded enum suffix projection.
+    pub statements: Vec<crate::ast::Stmt>,
 }
 
 /// The minimal ordered AST handoff for one enum constructor recovered in this class-source run.
@@ -1622,6 +1624,16 @@ pub fn emit_class_initializer_value(
     budget: &mut Budget,
 ) -> Result<String, StopReason> {
     emit_initializer_value(value, member, budget)
+}
+
+/// Emits only statement nodes selected by a completed enum suffix certificate.
+#[doc(hidden)]
+pub fn emit_class_enum_initializer_statements(
+    statements: &[crate::ast::Stmt],
+    member: &PhysicalMethodId,
+    budget: &mut Budget,
+) -> Result<String, StopReason> {
+    crate::emit::emit_class_source_statements(statements, member, 2, budget)
 }
 
 /// Re-emits the two user statements of a proved enum terminal constructor after mapping the
@@ -5216,10 +5228,28 @@ fn class_initializer_candidates(
         };
         steps.push(step);
     }
+    let enum_statements = if request
+        .facts
+        .method()
+        .declaring_class()
+        .is_some_and(|class| class.access_flags() & ACC_ENUM != 0)
+    {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(program.statements).unwrap_or(u64::MAX),
+            None,
+        )?;
+        crate::stop::poll(budget, None)?;
+        program.stmts.clone()
+    } else {
+        Vec::new()
+    };
     Ok(ClassInitializerCandidates {
         member,
         has_exception_handlers,
         steps,
+        statements: enum_statements,
     })
 }
 

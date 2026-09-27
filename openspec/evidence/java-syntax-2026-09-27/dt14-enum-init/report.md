@@ -58,3 +58,13 @@ StringTernaryInit.java:6: error: enum constant expected here
 `recover-ternary-enum-arguments` 实现后，执行 `python3 openspec/evidence/java-syntax-2026-09-27/dt14-enum-init/replay.py fixed-ternary`。原始、固定 JADX `2fb1b16386941660fda07e9017285aec40fcb37f` 和 Jarde 的 int ternary 全源码均以 Java 8 编译并通过 `java -Xverify:all`，输出一致为 `ternary=1:20:1:3`。literal 与 plain enum 控制继续一致通过。String ternary 仍被拒绝并保持原有重编失败，用来记录 DT-11 边界；Map suffix 也仍被拒绝，属于另一个提案。
 
 生产证明仅接收直接的同类 `invokestatic ()Z`、`ifeq` 或 `ifne`、两个 int literal arm、一个 `goto` 及唯一 constructor join。branch target 与 join target 均逐一匹配真实指令 BCI，`if` polarity 决定源 true/false arm；条件方法体不被额外读取。单元测试另外用可由 Java 8 编译且经 `-Xverify:all` 检查的带调用 arm、带字段写 arm和嵌套 diamond 验证原子拒绝及 `<clinit>` 物理 origin 保留；还用反转 predicate 和交替调用计数验证 arm 次序、执行位置、次数与顺序。逐案例源码、javap、运行状态保存在 `fixed-ternary/`。
+
+## Map suffix 实现验收（当前本地 main 基线）
+
+本次实现以本地 `main` 的 `52133837` 为基线；它已包含前述 int ternary 修复。因此 `fixed-custom` 只适用于尚未修复 ternary 的旧基线：本次在该模式运行到 `ternary-init` 时，脚本预期 Jarde 编译失败，实际 Jarde 已成功编译并以 `-Xverify:all` 输出 `ternary=1:20:1:3`，脚本据此按设计退出。当前基线使用 `python3 openspec/evidence/java-syntax-2026-09-27/dt14-enum-init/replay.py fixed-both` 验收；完整结果及每组源码、`javap` 在 [`fixed-both/results.json`](fixed-both/results.json)。脚本的临时 Cargo target 与 Java/JADX 目录随 `TemporaryDirectory` 自动清理。
+
+`fixed-both` 的 `CustomInit` 原 class、固定 JADX 和 Jarde 完整源码都通过 `javac 23.0.1 --release 8`、`java -Xverify:all`，输出逐字节相同：`map=2:true:true`。普通 enum、int literal 和已修复的 int ternary 控制也全部三方一致；String ternary 仍保持原有拒绝/Java 8 编译失败边界。
+
+生产证明在标准 enum 前缀结束 BCI 32 后，只接受同次完整 Code 中的一条固定顺序：32/36 无参 `HashMap` 构造，39 写唯一 `Map` 字段，42 `values()`，45–50 保存数组、长度和零起始下标，51/53 唯一循环头与到 80 的出口，56–59 取当前 enum，60/64/68 按 `getstatic Map`、`name()`、`put(name,current)` 顺序执行，73 丢弃返回值，74 将下标加一，77 回到 51，80 返回。每条指令的 BCI、宽度、操作码、local、常量池成员引用、接口调用实参槽数与分支目标都被核对；同次结构候选须提供完整的字段写、局部赋值和 `For` 节点。只有全部成立才由现有 AST statement emitter 写出 static block；已证明的 enum 数组元素类型用于修正局部元素的 `Object` 呈现，空接收者拼写允许 Java 对本类 blank `static final` 字段赋值。
+
+回归测试验证额外 Map 写、额外调用、异常处理边、不同数组来源和将 `iinc` 从 1 改为 2 时整组拒绝，物理字段与 `<clinit>` 仍可查；输出预算停止及取消没有发布部分投影。正例的物理 `<clinit>` source map 仍能按 BCI 39、53、68 查到 Map 写、循环及 `put`。既有 enum 测试 52 项通过，包含 `Measure` 单赋值后缀和无用户后缀控制；OpenSpec strict 验证通过。
