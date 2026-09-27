@@ -57,7 +57,7 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 
 当前有 **20 个冻结差距已修复但待扩验的单元、3 个已证差距（DT-14 自定义静态后缀；DT-25 无捕获 lambda helper；DT-26 捕获 lambda helper）、42 个未测的正向候选、5 个部分已测但仍待扩验单元（CF-01、DT-15、DT-23、DT-24、DT-27）、1 个 JADX 未完成单元**。CF-19、DT-02、DT-04、DT-05、DT-06、DT-10、DT-11、DT-12、DT-13、DT-16、DT-17、DT-18、DT-19、DT-20、DT-21、DT-22 与 EM-04 的窄切片，以及先前 DT-01/03、EM-13 均已通过 root 独立验收；这不自动把各单元全部变体标为“已追平”。DT-12、DT-13、DT-14、DT-16、DT-17、DT-18、DT-19、DT-20、DT-21、DT-22、DT-25、DT-26 均已写独立 OpenSpec；DT-13 的两层普通嵌套 enum 和接口声明子形态在固定样例上通过，但不代表 `TestInnerEnums` 的全部构造实参或 `TestEnumsInterface` 的常量专属匿名体追平。任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
 
-独立回归债务：[具名成员类 `Outer.super` 桥测试与基线投影不一致](outer-super-bridge-baseline-debt.md)，在未修改的 `36b57495` 已可复现；归入 EM-12/DT-03 后续核验，不混入 DT-02 静态成员类实现。
+独立回归债务：[具名成员类 `Outer.super` 桥测试与基线投影不一致](outer-super-bridge-baseline-debt.md)，在未修改的 `36b57495` 已可复现；归入 EM-12/DT-03 后续核验，不混入 DT-02 静态成员类实现。[枚举 class Signature 的多余拒绝标记](enum-signature-marker-debt.md)在 DT-13 三方重放时不影响编译运行，作为报告质量问题单独核验。
 
 ## 顺序与验收门槛
 
