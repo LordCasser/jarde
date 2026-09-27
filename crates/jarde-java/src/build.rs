@@ -3756,10 +3756,20 @@ pub(crate) fn prove_intermediate_join_value(
     else {
         return Ok(IntermediateJoinAttempt::NotCandidate);
     };
+    // The value certificate below requires two straight child producers. A loop child is an
+    // ordinary statement arm; treating it as a failed value candidate would quote that arm.
     let has_bridge = |arm: &Region| {
         matches!(arm,
         Region::Sequence { regions } if matches!(regions.as_slice(),
-            [Region::If { prefix, .. }, Region::Straight { .. }] if prefix.is_empty()))
+            [Region::If {
+                prefix,
+                then_arm,
+                else_arm,
+                ..
+            }, Region::Straight { .. }]
+                if prefix.is_empty()
+                    && matches!(then_arm.as_ref(), Region::Straight { .. })
+                    && matches!(else_arm.as_ref(), Region::Straight { .. })))
     };
     // A prefix is emitted before the branch plan is consulted. Keep this first slice to a
     // branch-only root, so a refused whole-arm quote cannot claim an already emitted prefix.
