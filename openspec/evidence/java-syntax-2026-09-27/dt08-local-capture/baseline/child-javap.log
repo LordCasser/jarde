@@ -1,0 +1,20 @@
+class p.Capture$1 implements java.lang.Runnable {
+  final double val$d;
+
+  p.Capture$1();
+    Code:
+       0: aload_0
+       1: dload_1
+       2: putfield      #1                  // Field val$d:D
+       5: aload_0
+       6: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       9: return
+
+  public void run();
+    Code:
+       0: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: aload_0
+       4: getfield      #1                  // Field val$d:D
+       7: invokevirtual #19                 // Method java/io/PrintStream.println:(D)V
+      10: return
+}
