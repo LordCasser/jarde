@@ -2312,12 +2312,15 @@ mod finally_copy_tests {
             (BTreeSet::from([10]), [Some(((0, 10), 0)), None]),
         ] {
             let fields = crate::field::Plan::empty();
+            let arrays = crate::build::ArrayInitializers::default();
             let sites = crate::init::sites(
                 ssa,
                 &ops,
                 &chains,
                 &reserved,
                 &fields,
+                &arrays,
+                8,
                 &[],
                 &crate::facts::MethodFacts::new("run", "()V", 0),
                 code,
@@ -2357,12 +2360,15 @@ mod finally_copy_tests {
             Err((Unproven::ResourceInit, 19))
         );
 
+        let arrays = crate::build::ArrayInitializers::default();
         let sites = crate::init::sites(
             ssa,
             &ops,
             &chains,
             &BTreeSet::new(),
             &crate::field::Plan::empty(),
+            &arrays,
+            8,
             &[],
             &crate::facts::MethodFacts::new("run", "()V", 0),
             code,
