@@ -5019,8 +5019,7 @@ impl Engine {
             .iter()
             .filter(|member| {
                 member.name.raw().0.starts_with(b"lambda$")
-                    && member.access_flags & (0x0002 | 0x0008 | 0x1000)
-                        == (0x0002 | 0x0008 | 0x1000)
+                    && member.access_flags & 0x1000 != 0
                     && member.descriptor.raw().0.ends_with(b")I")
                     && code_shell(member).is_some()
             })
@@ -5033,6 +5032,11 @@ impl Engine {
                         && relevant_lambda_headers.iter().any(|header| {
                             candidate.helper.name == *header.name.raw()
                                 && candidate.helper.descriptor == *header.descriptor.raw()
+                                && header.access_flags & (0x0002 | 0x1000) == (0x0002 | 0x1000)
+                                && ((candidate.implementation_kind() == 6
+                                    && header.access_flags & 0x0008 != 0)
+                                    || (candidate.implementation_kind() == 7
+                                        && header.access_flags & 0x0008 == 0))
                         })
                 })
                 .cloned()
@@ -5042,18 +5046,38 @@ impl Engine {
                     candidate.helper_owner == read.facts.this_class.raw().clone()
                         && candidate.helper.name == *header.name.raw()
                         && candidate.helper.descriptor == *header.descriptor.raw()
+                        && header.access_flags & (0x0002 | 0x1000) == (0x0002 | 0x1000)
+                        && ((candidate.implementation_kind() == 6
+                            && header.access_flags & 0x0008 != 0)
+                            || (candidate.implementation_kind() == 7
+                                && header.access_flags & 0x0008 == 0))
                 })
             });
             if !all_owned {
                 for header in &relevant_lambda_headers {
-                    if !owned_candidates.iter().any(|candidate| {
+                    let has_exact_handle = owned_candidates.iter().any(|candidate| {
                         candidate.helper.name == *header.name.raw()
                             && candidate.helper.descriptor == *header.descriptor.raw()
-                    }) {
+                            && header.access_flags & (0x0002 | 0x1000) == (0x0002 | 0x1000)
+                            && ((candidate.implementation_kind() == 6
+                                && header.access_flags & 0x0008 != 0)
+                                || (candidate.implementation_kind() == 7
+                                    && header.access_flags & 0x0008 == 0))
+                    });
+                    if !has_exact_handle {
+                        let flags_mismatch = lambda_helper_candidate_runs.iter().any(|candidate| {
+                            candidate.helper_owner == read.facts.this_class.raw().clone()
+                                && candidate.helper.name == *header.name.raw()
+                                && candidate.helper.descriptor == *header.descriptor.raw()
+                        });
                         diagnostics.push(lambda_helper_refusal_diagnostic(
                             &String::from_utf8_lossy(&header.name.raw().0),
                             None,
-                            "synthetic helper has no exact supported owned LambdaMetafactory site",
+                            if flags_mismatch {
+                                "synthetic helper access flags disagree with private/synthetic status or exact implementation handle kind"
+                            } else {
+                                "synthetic helper has no exact supported owned LambdaMetafactory site"
+                            },
                             class_provenance.clone(),
                         ));
                     }
@@ -5078,6 +5102,19 @@ impl Engine {
                 let mut whole_set_accepted = true;
                 for (helper, candidates) in by_helper {
                     if lambda_projection_stopped {
+                        break;
+                    }
+                    if let Some(reason) = candidates
+                        .iter()
+                        .find_map(|candidate| candidate.capture_refusal())
+                    {
+                        diagnostics.push(lambda_helper_refusal_diagnostic(
+                            &String::from_utf8_lossy(&helper.name.0),
+                            candidates.first().map(|candidate| candidate.use_site),
+                            reason,
+                            class_provenance.clone(),
+                        ));
+                        whole_set_accepted = false;
                         break;
                     }
                     let census_sites = candidates
@@ -5183,7 +5220,7 @@ impl Engine {
                             }
                         };
                         let marker = format!(
-                            "// jarde: inlined exact no-capture primitive lambda helper {:?} at invokedynamic@{}",
+                            "// jarde: inlined exact primitive lambda helper {:?} at invokedynamic@{}",
                             helper.name, candidate.use_site
                         );
                         let Some(full_text) = method.array_projection_text(&projected, marker)

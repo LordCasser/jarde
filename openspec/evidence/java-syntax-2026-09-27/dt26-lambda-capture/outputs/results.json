@@ -1,12 +1,12 @@
 {
   "assertions": {
-    "jarde_captured_lambda_helpers_collide_on_java8_recompile": true,
+    "jarde_captured_lambda_helpers_are_inlined_and_java8_recompile_verifies": true,
     "original_and_jadx_complete_java8_sources_verify_equally": true
   },
   "class_sha256": "138f9607d2dbeb383026fa60f49450d6b375e70cea26e16e0fedcbee8bdebde7",
   "decompiled_sha256": {
     "jadx": "0905147e019592443959eaab55d5ffd01966ee44417919a6283adfff3addcfa8",
-    "jarde": "f7254450b671b97d6f293f661fba7d4fa55be1a4713bf07ee3b57a46b1329b7d"
+    "jarde": "db7bb4173f4515ca04a56ee8f84693173c2aa1a12f310bbd94a93728d82d3a7c"
   },
   "jadx": {
     "compile_exit": 0,
@@ -16,8 +16,10 @@
   },
   "jadx_commit": "2fb1b16386941660fda07e9017285aec40fcb37f",
   "jarde": {
-    "compile_exit": 1,
-    "compile_stderr": "<WORK>/jarde-src/dt26/CaptureCases.java:35: error: error while generating class CaptureCases\n    private int lambda$bound$1(int arg1) {\n                ^\n  (the symbol lambda$bound$1(int) conflicts with a compiler-synthesized symbol in CaptureCases)\n<WORK>/jarde-src/dt26/CaptureCases.java:42: error: error while generating class CaptureCases\n    private static int lambda$add$0(int arg0, int arg1) {\n                       ^\n  (the symbol lambda$add$0(int,int) conflicts with a compiler-synthesized symbol in CaptureCases)\n<WORK>/jarde-src/dt26/CaptureCases.java:1: error: error while generating class CaptureCases\n// jarde: presentation of `dt26/CaptureCases` from the class file's own declaration and one recovery run per member.\n^\n  (the symbol lambda$bound$1(int) conflicts with a compiler-synthesized symbol in CaptureCases)\n3 errors\n"
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "run_stdout": "7:-1\n"
   },
   "original": {
     "compile_exit": 0,

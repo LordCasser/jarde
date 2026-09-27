@@ -80,11 +80,9 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt26-capture-") as raw:
     jarde_file = work / "jarde-src/dt26/CaptureCases.java"
     jarde_file.parent.mkdir(parents=True)
     jarde_file.write_text(jarde_text)
-    jarde, _ = compile_source("jarde", [jarde_file, HERE / "Runner.java"], work, False)
-    require("lambda$" not in jadx_text and
-            "lambda$add$0" in jarde_text and "lambda$bound$1" in jarde_text and
-            "compiler-synthesized" in jarde["compile_stderr"],
-            "captured-lambda helper/collision boundary changed")
+    jarde, _ = compile_source("jarde", [jarde_file, HERE / "Runner.java"], work, True)
+    require("lambda$" not in jarde_text,
+            "Jarde source still declares or calls a compiler-synthetic helper")
 
     result = {
         "jadx_commit": JADX_HEAD,
@@ -98,7 +96,7 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt26-capture-") as raw:
         "original": original, "jadx": jadx, "jarde": jarde,
         "assertions": {
             "original_and_jadx_complete_java8_sources_verify_equally": True,
-            "jarde_captured_lambda_helpers_collide_on_java8_recompile": True,
+            "jarde_captured_lambda_helpers_are_inlined_and_java8_recompile_verifies": True,
         },
     }
     (OUT / "results.json").write_text(json.dumps(result, ensure_ascii=False,
