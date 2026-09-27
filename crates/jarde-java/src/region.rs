@@ -1717,9 +1717,10 @@ struct Frame {
     /// The node the region ends at: arriving there (as a successor) ends the run, and the block
     /// itself belongs to the structure that follows.
     boundary: Option<usize>,
-    /// Direct entry of one conditional arm, with its owning branch. Descending into another arm
-    /// clears this certificate: the effectful loop below accepts exactly one enclosing `if`.
-    if_arm: Option<(usize, usize)>,
+    /// Direct entry of one conditional arm, with its owning branch. The optional third node is
+    /// the boundary of one enclosing candidate arm; both joins are checked before publication.
+    /// No deeper arm inherits this candidate.
+    if_arm: Option<(usize, usize, Option<usize>)>,
     /// A proved shared tail of an enclosing branch. Nested local joins may change `boundary`,
     /// but no descendant may claim this block before the enclosing continuation does.
     shared_tail: Option<usize>,
@@ -2782,18 +2783,22 @@ impl Walker<'_> {
                     let before_arms = self.visited.clone();
                     let mut then_frame = arm_frame.clone();
                     let mut else_frame = arm_frame.clone();
-                    if frame.boundary.is_none()
+                    let direct_arm = frame.boundary.is_none() && frame.if_arm.is_none();
+                    let second_level = frame.if_arm.is_some_and(|(_, _, outer)| outer.is_none())
+                        && frame.boundary.is_some();
+                    if (direct_arm || second_level)
                         && frame.scope.is_none()
                         && frame.loop_targets.is_empty()
                         && frame.own_try.is_none()
                         && frame.own_finally.is_none()
                         && frame.case_entries.is_none()
                     {
+                        let outer = if second_level { frame.boundary } else { None };
                         if let Some(entry) = then_node {
-                            then_frame.if_arm = Some((node, entry));
+                            then_frame.if_arm = Some((node, entry, outer));
                         }
                         if let Some(entry) = else_node {
-                            else_frame.if_arm = Some((node, entry));
+                            else_frame.if_arm = Some((node, entry, outer));
                         }
                     }
                     let (mut then_run, mut then_next) =
@@ -3144,7 +3149,7 @@ impl Walker<'_> {
         next: &mut Option<CanonicalBlockId>,
         frame: &Frame,
     ) -> Result<bool, StopReason> {
-        let (Some((_, entry)), Some(header), Some(boundary)) =
+        let (Some((_, entry, outer_boundary)), Some(header), Some(boundary)) =
             (frame.if_arm, next.as_ref(), frame.boundary)
         else {
             return Ok(true);
@@ -3194,6 +3199,12 @@ impl Walker<'_> {
         };
         if loop_next.as_ref() != Some(join) {
             return Ok(false);
+        }
+        if outer_boundary.is_some() && self.view.index_of(join) == Some(boundary) {
+            let join = join.clone();
+            run.extend(loop_run);
+            *next = Some(join);
+            return Ok(true);
         }
         let (tail, tail_next) = self.region_at(join, frame)?;
         let [
@@ -3252,21 +3263,43 @@ impl Walker<'_> {
             Region::Straight { blocks } => blocks.last().cloned(),
             _ => None,
         };
-        let (then_end, else_end) = match (then_arm.as_ref(), else_arm.as_ref()) {
+        let sources = match (then_arm.as_ref(), else_arm.as_ref()) {
             (Region::Straight { .. }, Region::Straight { .. }) => {
-                (straight_end(then_arm), straight_end(else_arm))
+                vec![straight_end(then_arm), straight_end(else_arm)]
             }
-            (Region::Loop { .. }, Region::Straight { .. }) => (
+            (Region::Loop { .. }, Region::Straight { .. }) => vec![
                 self.loop_arm_join_source(then_arm, branch, next, frame)?,
                 straight_end(else_arm),
-            ),
-            (Region::Straight { .. }, Region::Loop { .. }) => (
+            ],
+            (Region::Straight { .. }, Region::Loop { .. }) => vec![
                 straight_end(then_arm),
                 self.loop_arm_join_source(else_arm, branch, next, frame)?,
-            ),
+            ],
+            (Region::Sequence { .. }, Region::Straight { .. }) => {
+                let Some(sources) = self.two_level_loop_join_sources(then_arm, branch, next)?
+                else {
+                    return Ok(false);
+                };
+                sources
+                    .into_iter()
+                    .map(Some)
+                    .chain([straight_end(else_arm)])
+                    .collect()
+            }
+            (Region::Straight { .. }, Region::Sequence { .. }) => {
+                let Some(sources) = self.two_level_loop_join_sources(else_arm, branch, next)?
+                else {
+                    return Ok(false);
+                };
+                sources
+                    .into_iter()
+                    .map(Some)
+                    .chain([straight_end(then_arm)])
+                    .collect()
+            }
             _ => return Ok(false),
         };
-        let (Some(then_end), Some(else_end)) = (then_end, else_end) else {
+        let Some(sources) = sources.into_iter().collect::<Option<Vec<_>>>() else {
             return Ok(false);
         };
         let Some(next_node) = self.view.index_of(next) else {
@@ -3341,7 +3374,7 @@ impl Walker<'_> {
         for (index, block) in blocks.iter().enumerate() {
             poll(self.budget, Some(block.bci()))?;
             let expected_in: Vec<_> = if index == 0 {
-                vec![then_end.clone(), else_end.clone()]
+                sources.clone()
             } else {
                 vec![blocks[index - 1].clone()]
             };
@@ -3359,6 +3392,98 @@ impl Walker<'_> {
         }
         run.extend(tail);
         Ok(true)
+    }
+
+    /// The only three-input continuation admitted here is a proved effectful two-exit loop
+    /// preceded by its single direct `if`-arm entry. Its two physical exit blocks and the sibling
+    /// arm, checked by the caller, meet at the inner join; the join belongs to neither loop arm.
+    fn two_level_loop_join_sources(
+        &mut self,
+        arm: &Region,
+        branch: &CanonicalBlockId,
+        join: &CanonicalBlockId,
+    ) -> Result<Option<Vec<CanonicalBlockId>>, StopReason> {
+        let Region::Sequence { regions } = arm else {
+            return Ok(None);
+        };
+        let [
+            Region::Straight { blocks: entry },
+            Region::Loop {
+                header,
+                tests,
+                form: LoopForm::Endless,
+                body,
+                exit: Some(exit),
+                gateway_origins,
+                ..
+            },
+        ] = regions.as_slice()
+        else {
+            return Ok(None);
+        };
+        let [entry] = entry.as_slice() else {
+            return Ok(None);
+        };
+        if exit != join
+            || !tests.is_empty()
+            || gateway_origins.len() != 1
+            || !body.iter().all(Region::is_structured)
+        {
+            return Ok(None);
+        }
+        let (Some(branch_node), Some(entry_node), Some(header_node), Some(join_node)) = (
+            self.view.index_of(branch),
+            self.view.index_of(entry),
+            self.view.index_of(header),
+            self.view.index_of(join),
+        ) else {
+            return Ok(None);
+        };
+        let Some(natural) = self.view.loop_entered_at(header_node) else {
+            return Ok(None);
+        };
+        if natural.blocks().len() != 3
+            || !self.view.successors(branch_node).contains(&entry_node)
+            || self.view.successors(entry_node) != [header_node]
+            || self.view.immediate_post_dominator(branch_node) != Some(join_node)
+        {
+            return Ok(None);
+        }
+        let exits = self.loop_exit_nodes(natural.blocks());
+        if exits.len() != 2
+            || exits
+                .iter()
+                .any(|node| self.view.successors(*node) != [join_node])
+        {
+            return Ok(None);
+        }
+        let owners: Vec<_> = regions[1].blocks().into_iter().cloned().collect();
+        let owned_nodes: BTreeSet<_> = owners
+            .iter()
+            .filter_map(|id| self.view.index_of(id))
+            .collect();
+        if owners.len() != owned_nodes.len()
+            || owned_nodes != natural.blocks().union(&exits).copied().collect()
+            || owners.iter().any(|id| {
+                self.view
+                    .index_of(id)
+                    .is_none_or(|node| !self.visited.contains(&node))
+            })
+        {
+            return Ok(None);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len().saturating_add(owners.len()))
+                .unwrap_or(u64::MAX),
+            Some(header.bci()),
+        )?;
+        let sources = exits
+            .into_iter()
+            .filter_map(|node| self.view.id_of(node).cloned())
+            .collect::<Vec<_>>();
+        Ok((sources.len() == 2).then_some(sources))
     }
 
     /// A join the walk may continue at after a gap: the one the gap proved, when no region has
@@ -5648,7 +5773,9 @@ impl Walker<'_> {
         let blocks = loop_of.blocks();
         let nested_arm = match (frame.boundary, frame.if_arm) {
             (None, None) => None,
-            (Some(boundary), Some((parent, entry))) => Some((parent, entry, boundary)),
+            (Some(boundary), Some((parent, entry, outer))) => {
+                Some((parent, entry, boundary, outer))
+            }
             _ => return Ok(None),
         };
         if frame.scope.is_some()
@@ -5771,7 +5898,10 @@ impl Walker<'_> {
                 .map(|edge| (edge.kind(), edge.to().clone()))
                 .collect::<Vec<_>>()
         };
-        if let Some((parent, entry, boundary)) = nested_arm {
+        let three_way =
+            nested_arm.is_some_and(|(_, _, boundary, outer)| outer.is_some() && boundary == join);
+        let mut empty_id = None;
+        if let Some((parent, entry, boundary, outer)) = nested_arm {
             let (Some(parent_id), Some(entry_id), Some(boundary_id)) = (
                 self.view.id_of(parent),
                 self.view.id_of(entry),
@@ -5793,29 +5923,43 @@ impl Walker<'_> {
             let Some(other_id) = self.view.id_of(other) else {
                 return Ok(None);
             };
-            // The loop enters from this arm alone. Its two exits join inside the arm, and that
-            // join is the sole straight tail into the parent's boundary. The other arm reaches
-            // the boundary independently; no block here can acquire a third normal owner.
+            // The second-level form has no loop-private tail: the empty sibling joins the two
+            // exits at the inner boundary, which then continues to the outer boundary once.
+            // The original one-level form retains its separate two-input loop join.
             if parent == entry
                 || entry == boundary
                 || other == boundary
-                || join == boundary
+                || (outer.is_some() != (join == boundary))
                 || blocks.contains(&entry)
                 || blocks.contains(&other)
                 || self.view.immediate_post_dominator(parent) != Some(boundary)
                 || !self.view.dominates(parent, header_node)
                 || !self.view.dominates(entry, header_node)
-                || !self.view.dominates(entry, join)
+                || (!three_way && !self.view.dominates(entry, join))
                 || self.view.successors(entry) != [header_node]
-                || self.view.successors(join) != [boundary]
+                || (three_way && outer.is_none_or(|outer| self.view.successors(join) != [outer]))
+                || (!three_way && self.view.successors(join) != [boundary])
                 || self.view.successors(other) != [boundary]
                 || !exact_normal_predecessors(&incoming(entry_id), &[parent_id.clone()])
                 || !exact_normal_predecessors(&incoming(other_id), &[parent_id.clone()])
-                || !exact_normal_predecessors(
-                    &incoming(boundary_id),
-                    &[join_id.clone(), other_id.clone()],
-                )
-                || !exact_normal_predecessors(&outgoing(&join_id), &[boundary_id.clone()])
+                || (!three_way
+                    && !exact_normal_predecessors(
+                        &incoming(boundary_id),
+                        &[join_id.clone(), other_id.clone()],
+                    ))
+                || (three_way
+                    && !exact_normal_predecessors(
+                        &incoming(boundary_id),
+                        &[effect_id.clone(), bridge_id.clone(), other_id.clone()],
+                    ))
+                || (!three_way
+                    && !exact_normal_predecessors(&outgoing(&join_id), &[boundary_id.clone()]))
+                || (three_way
+                    && outer.is_none_or(|outer| {
+                        self.view.id_of(outer).is_none_or(|outer_id| {
+                            !exact_normal_predecessors(&outgoing(&join_id), &[outer_id.clone()])
+                        })
+                    }))
                 || !exact_normal_predecessors(&outgoing(other_id), &[boundary_id.clone()])
                 || self.leaving_edge(parent_id).is_some()
                 || self.leaving_edge(entry_id).is_some()
@@ -5824,10 +5968,13 @@ impl Walker<'_> {
             {
                 return Ok(None);
             }
+            if three_way {
+                empty_id = Some(other_id.clone());
+            }
         }
         let header_in = incoming(header);
         if header_in.len() != 2
-            || nested_arm.is_some_and(|(_, entry, _)| {
+            || nested_arm.is_some_and(|(_, entry, _, _)| {
                 self.view
                     .id_of(entry)
                     .is_none_or(|entry_id| !header_in.iter().any(|(_, source)| source == entry_id))
@@ -5854,7 +6001,11 @@ impl Walker<'_> {
             || !exact_normal_predecessors(&incoming(&latch_id), &[body_id.clone()])
             || !exact_normal_predecessors(
                 &incoming(&join_id),
-                &[effect_id.clone(), bridge_id.clone()],
+                &if let Some(empty_id) = &empty_id {
+                    vec![effect_id.clone(), bridge_id.clone(), empty_id.clone()]
+                } else {
+                    vec![effect_id.clone(), bridge_id.clone()]
+                },
             )
             || !exact_normal_predecessors(&outgoing(header), &[body_id.clone(), effect_id.clone()])
             || !exact_normal_predecessors(
@@ -5879,9 +6030,18 @@ impl Walker<'_> {
         {
             return Ok(None);
         }
-        let selected = [
-            header, &body_id, &effect_id, &bridge_id, &latch_id, &join_id,
-        ];
+        let selected: Vec<_> = [
+            Some(header),
+            Some(&body_id),
+            Some(&effect_id),
+            Some(&bridge_id),
+            Some(&latch_id),
+            Some(&join_id),
+            empty_id.as_ref(),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
         for id in selected {
             let Some(block) = self
                 .canonical
@@ -5946,6 +6106,36 @@ impl Walker<'_> {
         };
         let Some((Slot::Local(slot), effect_value)) = store.writes().first().copied() else {
             return Ok(None);
+        };
+        let empty_value = if let Some(empty_id) = &empty_id {
+            let Some(empty_names) = self.ssa.block(empty_id) else {
+                return Ok(None);
+            };
+            let [push, empty_store, transfer] = empty_names.instructions() else {
+                return Ok(None);
+            };
+            let Some((Slot::Local(written), value)) = empty_store.writes().first().copied() else {
+                return Ok(None);
+            };
+            if written != slot
+                || !matches!(self.operations.get(push.bci()), Some(Operation::Push(_)))
+                || !matches!(self.operations.get(empty_store.bci()), Some(Operation::Store { slot: written }) if *written == slot)
+                || !matches!(
+                    self.operations.get(transfer.bci()),
+                    Some(Operation::Transfer)
+                )
+                || !matches!(transfer.opcode(), 0xa7 | 0xc8)
+                || empty_store.writes() != [(Slot::Local(slot), value)]
+                || empty_store.reads() != push.writes()
+                || self.ssa.value(value).uses().len() != 1
+                || self.ssa.value(value).uses()[0].block() != &join_id
+                || self.ssa.value(value).uses()[0].bci().is_some()
+            {
+                return Ok(None);
+            }
+            Some(value)
+        } else {
+            None
         };
         let Some(body_store) = body_names.instructions().iter().find(|instruction| {
             matches!(self.operations.get(instruction.bci()), Some(Operation::Store { slot: written }) if *written == slot)
@@ -6035,9 +6225,10 @@ impl Walker<'_> {
         let [phi] = phis.as_slice() else {
             return Ok(None);
         };
-        if phi.inputs().len() != 2
+        if phi.inputs().len() != 2 + usize::from(empty_value.is_some())
             || !phi.inputs().contains(&PhiInput::Value(effect_value))
             || !phi.inputs().contains(&PhiInput::Value(body_value))
+            || empty_value.is_some_and(|value| !phi.inputs().contains(&PhiInput::Value(value)))
             || self.ssa.value(phi.value()).replaced_by().is_some()
             || join_names
                 .entry()

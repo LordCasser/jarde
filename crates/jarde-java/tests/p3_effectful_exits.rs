@@ -31,6 +31,12 @@ const NESTED: &[u8] = include_bytes!(
 const NESTED_NEGATIVES: &[u8] = include_bytes!(
     "../../../tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectfulNegatives.class"
 );
+const TWO_LEVEL: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/two-level-if-baseline/baseline/classes/cf08twolvl/TwoLevelIf.class"
+);
+const TWO_LEVEL_NEGATIVES: &[u8] = include_bytes!(
+    "../../../tests/fixtures/cf08-two-level-effectful/cf08twolvl/TwoLevelIfNegatives.class"
+);
 
 fn limits() -> Limits {
     Limits {
@@ -167,6 +173,34 @@ fn recover_class_method_with_budget(
         assert_eq!(ssa.value(phi.value()).uses().len(), 1);
         assert_eq!(ssa.value(phi.value()).uses()[0].bci(), Some(35));
     }
+    if class == TWO_LEVEL && name == "pick" {
+        let ssa = analysis.ir().ssa().expect("two-level fixture has SSA");
+        let phi = ssa
+            .phis()
+            .iter()
+            .find(|phi| phi.block().bci() == 55 && phi.slot() == Slot::Local(1))
+            .expect("BCI 55 joins three result sources");
+        assert_eq!(phi.inputs().len(), 3);
+        let producers: Vec<_> = phi
+            .inputs()
+            .iter()
+            .map(|input| match input {
+                PhiInput::Value(value) => match ssa.value(*value).def() {
+                    Definition::Instruction { bci, .. } => *bci,
+                    other => panic!("result input has a physical store: {other:?}"),
+                },
+                PhiInput::Itself => panic!("result phi cannot be cyclic"),
+            })
+            .collect();
+        assert_eq!(
+            producers
+                .into_iter()
+                .collect::<std::collections::BTreeSet<_>>(),
+            [17, 33, 40].into()
+        );
+        assert_eq!(ssa.value(phi.value()).uses().len(), 1);
+        assert_eq!(ssa.value(phi.value()).uses()[0].bci(), Some(55));
+    }
     let facts = RecoveryFacts::new(
         MethodFacts::new(name, descriptor, 1)
             .with_access_flags(0x0008)
@@ -248,6 +282,146 @@ fn nested_effectful_exits_keep_the_inner_tail_in_its_if_arm() {
             .count(),
         1
     );
+}
+
+#[test]
+fn two_level_effectful_exits_share_only_the_inner_join() {
+    let report = recover_class_method_with_budget(
+        TWO_LEVEL,
+        "cf08twolvl/TwoLevelIf",
+        "pick",
+        "([I)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        report.fallbacks.is_empty() && !report.text.contains("@bytecode"),
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("while (true)").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(report.text.matches("break;").count(), 2, "{}", report.text);
+    assert_eq!(report.text.matches("cost(7)").count(), 1, "{}", report.text);
+    assert_eq!(
+        report.text.matches("local1 = local1 +").count(),
+        1,
+        "{}",
+        report.text
+    );
+    for bci in [
+        0, 9, 16, 17, 21, 23, 25, 28, 30, 33, 34, 37, 39, 40, 43, 46, 49, 52, 55, 56, 59, 60, 61,
+        62,
+    ] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "missing BCI {bci}: {}",
+            report.text
+        );
+    }
+    for bci in [0, 4, 9, 16, 21, 23, 28, 37, 46, 49, 55, 61] {
+        assert_eq!(
+            report
+                .regions
+                .iter()
+                .filter(|region| region.blocks.contains(&bci))
+                .count(),
+            1,
+            "BCI {bci} needs one owner"
+        );
+    }
+    assert!(report.regions[0].blocks.contains(&55));
+    assert!(!report.regions[1].blocks.contains(&55));
+}
+
+#[test]
+fn two_level_effectful_exits_reject_unproved_edges_and_values() {
+    for (name, header) in [
+        ("extraEntry", 36),
+        ("differentTarget", 23),
+        ("bypassJoin", 23),
+        ("fourthJoinInput", 36),
+        ("doubleCall", 23),
+        ("withHandler", 23),
+        ("extraConsumer", 23),
+    ] {
+        let report = recover_class_method_with_budget(
+            TWO_LEVEL_NEGATIVES,
+            "cf08twolvl/TwoLevelIfNegatives",
+            name,
+            "([I)I",
+            RecoveryEvidenceRequest::all(),
+            None,
+        );
+        assert!(report.produced(), "{name}: {:?}", report.outcome);
+        assert!(
+            !report.text.contains("while (true)"),
+            "{name}: {}",
+            report.text
+        );
+        assert!(report.text.contains("@bytecode"), "{name}: {}", report.text);
+        assert!(
+            report
+                .regions
+                .iter()
+                .any(|region| region.blocks.contains(&header)),
+            "{name}: physical loop BCI {header} missing: {:?}",
+            report.regions
+        );
+    }
+}
+
+#[test]
+fn two_level_effectful_certificate_stops_atomically() {
+    use jarde_java::StopReason;
+    let full = recover_class_method_with_budget(
+        TWO_LEVEL,
+        "cf08twolvl/TwoLevelIf",
+        "pick",
+        "([I)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::new(limits())),
+    );
+    let ExecutionReport::Complete { usage } = full.execution else {
+        panic!("full candidate did not complete: {:?}", full.outcome);
+    };
+    let mut late = limits();
+    late.analysis_steps = usage.analysis_steps - 1;
+    let stopped = recover_class_method_with_budget(
+        TWO_LEVEL,
+        "cf08twolvl/TwoLevelIf",
+        "pick",
+        "([I)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::new(late)),
+    );
+    assert!(!stopped.produced());
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    assert!(matches!(
+        stopped.stop(),
+        Some(StopReason::Budget {
+            dimension: CountedBudgetDimension::AnalysisSteps,
+            ..
+        })
+    ));
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover_class_method_with_budget(
+        TWO_LEVEL,
+        "cf08twolvl/TwoLevelIf",
+        "pick",
+        "([I)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::with_cancellation_token(limits(), token)),
+    );
+    assert!(!cancelled.produced());
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
 }
 
 #[test]
