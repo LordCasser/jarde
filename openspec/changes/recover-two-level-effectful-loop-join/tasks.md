@@ -18,4 +18,4 @@
 ## 4. 完整类集成验收
 
 - [x] 4.1 `two-level-if-baseline/replay.py --require-jarde` 的原/JADX/Jarde 完整 Java 8 类各自重编和 `java -Xverify:all` 四行一致；固定 `TestNotIndexedLoop` 继续红，不把首片记作 CF-08 整体追平。
-- [ ] 4.2 通过 `cargo test -p jarde-java --tests --locked`、`cargo fmt --all -- --check`、`cargo check --workspace --locked`、`git diff --check` 和 `openspec validate recover-two-level-effectful-loop-join --strict`；清理专用 Cargo target，root 独立审阅并记录验收。
+- [x] 4.2 通过 `cargo test -p jarde-java --tests --locked`、`cargo fmt --all -- --check`、`cargo check --workspace --locked`、`git diff --check` 和 `openspec validate recover-two-level-effectful-loop-join --strict`；清理专用 Cargo target，root 独立审阅并记录验收。
