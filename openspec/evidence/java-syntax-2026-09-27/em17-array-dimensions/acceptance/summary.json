@@ -1,0 +1,32 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_test_sha256": {
+    "TestNewArrayOfArrays.java": "0e6328792cc178aab5dc223fe0675a0a6f3bfbe7aedfaea94ca64e661bbe7676",
+    "TestMultiDimArrayFill.java": "1c90d26dcecf1db798deb0fbab61cf84a9ee0bf704caf3152af64e6aef6d0b35",
+    "TestArrays3.java": "3ebb5aa6d4dea2c67eb49db29611021583273637c905880f6779e504419d6b4b",
+    "TestArrays4.java": "daa5acb3dc6bcdfdcb9283f8717a34e61243090bd5c99509f41d6221735add67"
+  },
+  "jarde_cli_sha256": "8f1f0012324350e4fc65c7fef4b3e3835102e6d4fda00df280b466270c98e727",
+  "input_sha256": {
+    "Runner.java": "daf709ddfeb9b34e73c675abb85ddb7572b334816d2642733d16706b0d95135a",
+    "Shapes.java": "fa0794092fff0cbdd59ffc5c92d05382ebbd0c2fc37cf2c72b6976429015ba7f"
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "2:true\n3:true\n4:true\n2:3\n[[1], [4, 5], []]\ntrue\n2",
+    "source_sha256": "fa0794092fff0cbdd59ffc5c92d05382ebbd0c2fc37cf2c72b6976429015ba7f"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "2:true\n3:true\n4:true\n2:3\n[[1], [4, 5], []]\ntrue\n2",
+    "source_sha256": "74b87f68687a66a5237abb9f73338081c642704e1d2e342d3f0df7adb1915620"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "2:true\n3:true\n4:true\n2:3\n[[1], [4, 5], []]\ntrue\n2",
+    "source_sha256": "eee4967447cdecb624a4d8f2c4e8be693153dda26da0c2feaccc5ebeaeb7e2cc"
+  }
+}
