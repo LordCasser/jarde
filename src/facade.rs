@@ -2485,6 +2485,9 @@ impl Engine {
                 Some(target) => class_source::ClassSourceMemberCapture::StaticNoCapture {
                     target: Box::new(target.clone()),
                 },
+                None if generic_static_member_shape(candidate, &child_facts, &child) => {
+                    class_source::ClassSourceMemberCapture::StaticDeclaration
+                }
                 None => class_source::ClassSourceMemberCapture::Refused {
                     reason: "static no-capture target was not proved from the class-level relation"
                         .to_owned(),
@@ -2544,6 +2547,11 @@ impl Engine {
                         }
                     }
                 }
+            }
+            (Ok(true), class_source::ClassSourceMemberCapture::StaticDeclaration)
+                if physically_complete =>
+            {
+                class_source::ClassSourceMemberCalls::StaticDeclarationOnly
             }
             (Ok(true), class_source::ClassSourceMemberCapture::Proved { proof })
                 if physically_complete =>
@@ -15222,6 +15230,25 @@ fn static_declaration_only_shape(
         })
 }
 
+fn generic_static_member_shape(
+    candidate: &crate::member_inner::FamilyRootCandidate,
+    facts: &jarde_reader::classfile::ClassMemberFacts,
+    child: &class_source::ClassSourceReport,
+) -> bool {
+    candidate.access_flags == 0x0409
+        && facts.access_flags == 0x0421
+        && facts.fields.len() == 1
+        && facts.methods.len() == 3
+        && child.fields.len() == 1
+        && child.methods.len() == 3
+        && facts
+            .attributes
+            .iter()
+            .filter(|attribute| attribute.name.raw().0 == b"Signature")
+            .count()
+            == 1
+}
+
 fn interface_declaration_only_shape(
     candidate: &crate::member_inner::FamilyRootCandidate,
     facts: &jarde_reader::classfile::ClassMemberFacts,
@@ -15547,6 +15574,7 @@ fn project_class_source_static_member_family(
         child,
         capture: None,
         static_target: Some(target),
+        generic_static: None,
         root_methods: &root_methods,
         child_methods: &child_methods,
         outer_super_bridges: &[],
@@ -15584,6 +15612,559 @@ fn project_class_source_static_member_family(
     budget.charge(CountedBudgetDimension::OutputBytes, text.len() as u64)?;
     let _ = execution;
     Ok(Ok((text, derived)))
+}
+
+#[allow(clippy::too_many_arguments)]
+fn project_class_source_generic_static_member_family(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    root: &ClassSourceReport,
+    relation: &class_source::ClassSourceMemberRelation,
+    child: &ClassSourceReport,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<(String, Vec<class_source::MemberFamilyDerivedProjection>), String>>
+{
+    use jarde_reader::classfile::cp_entry;
+    use jarde_reader::signature::{
+        SignatureType, TypeArgument, parse_class_signature, parse_field_signature,
+        parse_method_signature, prove_class_signature_erasure,
+        prove_field_signature_erasure_with_class_scope,
+        prove_method_signature_erasure_with_class_scope,
+    };
+    let prove = (|| -> Result<(String, Vec<class_source::MemberFamilyDerivedProjection>)> {
+        let refused = |why| Error::unsupported("generic_static_member_unproved", why);
+        if root.class != relation.root
+            || child.class != relation.child
+            || !matches!(root.execution, ExecutionReport::Complete { .. })
+            || !matches!(child.execution, ExecutionReport::Complete { .. })
+            || root.declaration.is_none()
+            || child.declaration.is_none()
+            || relation.access_flags != 0x0409
+        {
+            return Err(refused(
+                "selected relation or physical family is incomplete",
+            ));
+        }
+        let root_name = &root
+            .declaration
+            .as_ref()
+            .unwrap()
+            .item
+            .declaration
+            .this_class
+            .raw()
+            .0;
+        let child_name = &child
+            .declaration
+            .as_ref()
+            .unwrap()
+            .item
+            .declaration
+            .this_class
+            .raw()
+            .0;
+        if child_name != &[&root_name[..], b"$", relation.simple_name.as_bytes()].concat() {
+            return Err(refused(
+                "selected lexical member name differs from the physical child",
+            ));
+        }
+        if root.fields.iter().any(|field| {
+            field.declaration.is_none()
+                || !field.markers.is_empty()
+                || field
+                    .item
+                    .descriptor
+                    .raw()
+                    .0
+                    .windows(child_name.len())
+                    .any(|window| window == child_name)
+        }) || root.methods.iter().any(|method| {
+            method.declaration.is_none()
+                || method
+                    .item
+                    .descriptor
+                    .raw()
+                    .0
+                    .windows(child_name.len())
+                    .any(|window| window == child_name)
+                || !matches!(&method.outcome, class_source::ClassSourceOutcome::Recovered { report, analysis }
+                    if matches!(report.execution, ExecutionReport::Complete { .. })
+                        && matches!(analysis.execution, ExecutionReport::Complete { .. })
+                        && report.produced() && report.quality == Quality::Structured
+                        && report.fallbacks.is_empty())
+        }) {
+            return Err(refused(
+                "root has an unspelled member or a physical child use outside the declaration relation",
+            ));
+        }
+        // A declaration-only projection has no rewritten root use. Inspect every complete root
+        // body, rather than treating the absence of a constructor candidate as a use census.
+        for method in &root.methods {
+            budget.poll()?;
+            let analyzed = jarde_jvm::analyze_method_ir(
+                content,
+                &crate::ir::MethodAnalysisRequest {
+                    environment: environment.clone(),
+                    method: method.item.identity.clone(),
+                    stages: MethodOperation::Analysis.stages().to_vec(),
+                },
+                budget,
+            )?;
+            merge_execution(execution, analyzed.report().execution.clone());
+            if !matches!(
+                analyzed.report().execution,
+                ExecutionReport::Complete { .. }
+            ) {
+                return Err(refused("root use scan did not complete"));
+            }
+            if let Some(code) = analyzed.ir().code() {
+                for instruction in &code.instructions {
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if let Some(index) = instruction.constant_pool_index {
+                        let entry = cp_entry(analyzed.ir().constant_pool(), index)?;
+                        let names_child = match &entry.kind {
+                            CpEntryKind::Class { name, .. } => name.0 == *child_name,
+                            CpEntryKind::FieldRef { owner, .. }
+                            | CpEntryKind::MethodRef { owner, .. }
+                            | CpEntryKind::InterfaceMethodRef { owner, .. } => {
+                                owner.0 == *child_name
+                            }
+                            _ => false,
+                        };
+                        if names_child {
+                            return Err(refused(
+                                "root bytecode uses the child outside the declaration relation",
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+        let Some((selected, read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            None,
+            child_name,
+            execution,
+            budget,
+        )?
+        else {
+            return Err(refused("selected child cannot be reread"));
+        };
+        if selected != child.class
+            || read.facts.access_flags != 0x0421
+            || read.facts.fields.len() != 1
+            || read.facts.methods.len() != 3
+            || read.facts.interfaces.len() != 1
+            || read.facts.attributes.len() != 2
+            || child.declaration.as_ref().unwrap().annotation_uses.len() != 0
+            || child
+                .declaration
+                .as_ref()
+                .unwrap()
+                .annotation_refusals
+                .len()
+                != 0
+            || read
+                .facts
+                .super_class
+                .as_ref()
+                .is_none_or(|name| name.raw().0 != b"java/lang/Object")
+        {
+            return Err(refused(
+                "child class table differs from the static generic member slice",
+            ));
+        }
+        let pool = class_constant_pool(&read.bytes, budget)?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, pool.len() as u64)?;
+        if pool.iter().any(|entry| {
+            matches!(&entry.kind,
+            CpEntryKind::FieldRef { owner, name, descriptor, .. }
+                if owner.0 == *child_name && name.0 == b"value"
+                    && descriptor.0 == b"Ljava/lang/Object;")
+        }) {
+            return Err(refused(
+                "child field has a physical use whose T source binding is unproved",
+            ));
+        }
+        let signature = |shells: &[AttributeShell], budget: &mut Budget| -> Result<Vec<u8>> {
+            if shells.len() != 1 || shells[0].name.raw().0 != b"Signature" {
+                return Err(refused("exactly one Signature attribute is required"));
+            }
+            Ok(attribute_facts(&read.bytes, shells, &pool, budget)?
+                .signature
+                .ok_or_else(|| refused("Signature attribute has no value"))?
+                .0)
+        };
+        let class_shells: Vec<_> = read
+            .facts
+            .attributes
+            .iter()
+            .filter(|a| a.name.raw().0 == b"Signature")
+            .cloned()
+            .collect();
+        let class_raw = signature(&class_shells, budget)?;
+        let parsed = parse_class_signature(&class_raw, budget)?;
+        let interfaces: Vec<Vec<u8>> = read
+            .facts
+            .interfaces
+            .iter()
+            .map(|name| name.raw().0.clone())
+            .collect();
+        let scope =
+            prove_class_signature_erasure(&parsed, b"java/lang/Object", &interfaces, budget)?;
+        if parsed.type_parameters.len() != 1
+            || parsed.type_parameters[0].name != b"T"
+            || parsed.type_parameters[0].class_bound
+                != Some(SignatureType::Class(jarde_reader::signature::ClassType {
+                    segments: vec![jarde_reader::signature::ClassTypeSegment {
+                        binary_name: b"java/lang/Object".to_vec(),
+                        arguments: vec![],
+                    }],
+                }))
+            || !parsed.type_parameters[0].interface_bounds.is_empty()
+            || scope.type_parameters.len() != 1
+            || scope.type_parameters[0].descriptor != b"Ljava/lang/Object;"
+            || parsed.superclass.segments.len() != 1
+            || parsed.superclass.segments[0].binary_name != b"java/lang/Object"
+            || !parsed.superclass.segments[0].arguments.is_empty()
+            || parsed.interfaces.len() != 1
+            || parsed.interfaces[0].segments.len() != 1
+            || parsed.interfaces[0].segments[0].binary_name != b"java/lang/Comparable"
+            || parsed.interfaces[0].segments[0].arguments
+                != [TypeArgument::Exact(SignatureType::Class(
+                    jarde_reader::signature::ClassType {
+                        segments: vec![jarde_reader::signature::ClassTypeSegment {
+                            binary_name: child_name.clone(),
+                            arguments: vec![TypeArgument::Exact(SignatureType::TypeVariable(
+                                b"T".to_vec(),
+                            ))],
+                        }],
+                    },
+                ))]
+        {
+            return Err(refused(
+                "class Signature is not Comparable<A<T>> in the selected lexical scope",
+            ));
+        }
+        let [field] = read.facts.fields.as_slice() else {
+            unreachable!()
+        };
+        let field_report = child
+            .fields
+            .iter()
+            .find(|record| record.item.index == 0)
+            .ok_or_else(|| refused("physical field report is absent"))?;
+        let field_raw = signature(
+            &field
+                .attributes
+                .iter()
+                .filter(|a| a.name.raw().0 == b"Signature")
+                .cloned()
+                .collect::<Vec<_>>(),
+            budget,
+        )?;
+        let parsed_field = parse_field_signature(&field_raw, budget)?;
+        prove_field_signature_erasure_with_class_scope(
+            &parsed_field,
+            &field.descriptor.raw().0,
+            &scope.type_parameters,
+            budget,
+        )?;
+        if field.name.raw().0 != b"value"
+            || field.descriptor.raw().0 != b"Ljava/lang/Object;"
+            || field.access_flags != 0
+            || field.attributes.len() != 1
+            || parsed_field.ty != SignatureType::TypeVariable(b"T".to_vec())
+            || field_report.declaration.is_none()
+            || field_report.markers.len() != 1
+            || field_report.annotations.attributes.len() != 0
+            || field_report.type_annotations.attributes.len() != 0
+        {
+            return Err(refused(
+                "field Signature or physical declaration differs from T value",
+            ));
+        }
+        let typed = read
+            .facts
+            .methods
+            .iter()
+            .find(|method| {
+                method.name.raw().0 == b"compareTo"
+                    && method.descriptor.raw().0 == [b"(L".as_slice(), child_name, b";)I"].concat()
+            })
+            .ok_or_else(|| refused("typed compareTo declaration is absent"))?;
+        let typed_raw = signature(
+            &typed
+                .attributes
+                .iter()
+                .filter(|a| a.name.raw().0 == b"Signature")
+                .cloned()
+                .collect::<Vec<_>>(),
+            budget,
+        )?;
+        let parsed_method = parse_method_signature(&typed_raw, budget)?;
+        prove_method_signature_erasure_with_class_scope(
+            &parsed_method,
+            &typed.descriptor.raw().0,
+            &[],
+            &scope.type_parameters,
+            budget,
+        )?;
+        if typed.access_flags != 0x0001
+            || typed.attributes.len() != 2
+            || parsed_method.type_parameters.len() != 0
+            || parsed_method.parameters.len() != 1
+            || parsed_method.result != Some(SignatureType::Base(b'I'))
+            || !parsed_method.throws.is_empty()
+            || parsed_method.parameters[0]
+                != SignatureType::Class(jarde_reader::signature::ClassType {
+                    segments: vec![jarde_reader::signature::ClassTypeSegment {
+                        binary_name: child_name.clone(),
+                        arguments: vec![TypeArgument::Exact(SignatureType::TypeVariable(
+                            b"T".to_vec(),
+                        ))],
+                    }],
+                })
+        {
+            return Err(refused(
+                "typed compareTo Signature is outside the A<T> slice",
+            ));
+        }
+        let constructor = read
+            .facts
+            .methods
+            .iter()
+            .find(|method| method.name.raw().0 == b"<init>")
+            .ok_or_else(|| refused("constructor is absent"))?;
+        if constructor.descriptor.raw().0 != b"()V"
+            || constructor.access_flags != 0x0001
+            || constructor.attributes.len() != 1
+            || constructor.attributes[0].name.raw().0 != b"Code"
+        {
+            return Err(refused(
+                "constructor differs from the no-arg physical declaration",
+            ));
+        }
+        let bridge = read
+            .facts
+            .methods
+            .iter()
+            .find(|method| {
+                method.name.raw().0 == b"compareTo"
+                    && method.descriptor.raw().0 == b"(Ljava/lang/Object;)I"
+            })
+            .ok_or_else(|| refused("erased bridge declaration is absent"))?;
+        let bridge_parameters = bridge
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0 == b"MethodParameters");
+        let bridge_code = bridge
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.raw().0 == b"Code");
+        if bridge.access_flags != 0x1041
+            || bridge.attributes.len() != 2
+            || bridge_code.is_none()
+            || bridge_parameters.is_none_or(|attribute| {
+                let Ok(start) = usize::try_from(attribute.content_span.start) else {
+                    return true;
+                };
+                read.bytes.get(start..start + 5) != Some([1, 0, 0, 0x10, 0].as_slice())
+                    || attribute.content_span.length != 5
+            })
+        {
+            return Err(refused(
+                "bridge flags or method attributes differ from javac's bridge",
+            ));
+        }
+        let bridge_id = child
+            .methods
+            .iter()
+            .find(|method| {
+                method.item.identity.name.0 == b"compareTo"
+                    && method.item.identity.descriptor.0 == b"(Ljava/lang/Object;)I"
+            })
+            .ok_or_else(|| refused("bridge physical report is absent"))?
+            .item
+            .identity
+            .clone();
+        let analyzed = jarde_jvm::analyze_method_ir(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: bridge_id.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            budget,
+        )?;
+        merge_execution(execution, analyzed.report().execution.clone());
+        let code = analyzed
+            .ir()
+            .code()
+            .ok_or_else(|| refused("bridge Code is absent"))?;
+        if !matches!(
+            analyzed.report().execution,
+            ExecutionReport::Complete { .. }
+        ) || code.max_stack != 2
+            || code.max_locals != 2
+            || code.exception_handler_count != 0
+            || !code.exception_handlers.is_empty()
+            || code.instructions.len() != 5
+            || code
+                .instructions
+                .iter()
+                .map(|instruction| instruction.opcode)
+                .collect::<Vec<_>>()
+                != [0x2a, 0x2b, 0xc0, 0xb6, 0xac]
+            || bridge_code.unwrap().content_span.start + bridge_code.unwrap().content_span.length
+                != code.code_span.start + code.code_span.length + 4
+        {
+            return Err(refused(
+                "bridge Code has an effect, handler, or attribute beyond the single typed forward",
+            ));
+        }
+        let cast = cp_entry(
+            analyzed.ir().constant_pool(),
+            code.instructions[2]
+                .constant_pool_index
+                .ok_or_else(|| refused("bridge checkcast has no class operand"))?,
+        )?;
+        let call = cp_entry(
+            analyzed.ir().constant_pool(),
+            code.instructions[3]
+                .constant_pool_index
+                .ok_or_else(|| refused("bridge invokevirtual has no method operand"))?,
+        )?;
+        if !matches!(&cast.kind, CpEntryKind::Class { name, .. } if name.0 == *child_name)
+            || !matches!(&call.kind, CpEntryKind::MethodRef { owner, name, descriptor, .. }
+                if owner.0 == *child_name && name.0 == b"compareTo" && descriptor.0 == typed.descriptor.raw().0)
+        {
+            return Err(refused(
+                "bridge cast or call target differs from typed compareTo",
+            ));
+        }
+        let typed_report = child
+            .methods
+            .iter()
+            .find(|method| {
+                method.item.identity.descriptor.0 == typed.descriptor.raw().0
+                    && method.item.identity.name.0 == b"compareTo"
+            })
+            .ok_or_else(|| refused("typed method physical report is absent"))?;
+        if !matches!(&typed_report.outcome, class_source::ClassSourceOutcome::Recovered { report, analysis }
+            if matches!(report.execution, ExecutionReport::Complete { .. })
+                && matches!(analysis.execution, ExecutionReport::Complete { .. })
+                && report.produced() && report.quality == Quality::Structured && report.fallbacks.is_empty())
+            || typed_report.declaration.is_none()
+            || typed_report.annotations.attributes.len() != 0
+            || typed_report.markers.len() != 1
+            || typed_report.parameter_annotations.attributes.len() != 0
+            || typed_report.type_annotations.attributes.len() != 0
+        {
+            return Err(refused(
+                "typed compareTo physical body or declaration is incomplete",
+            ));
+        }
+        let physical_type = String::from_utf8_lossy(child_name).replace('/', ".");
+        let old_declaration = typed_report.declaration.as_ref().unwrap();
+        let new_declaration =
+            old_declaration.replace(&physical_type, &format!("{}<T>", relation.simple_name));
+        if new_declaration == *old_declaration || !new_declaration.contains("compareTo(A<T> ") {
+            return Err(refused(
+                "typed compareTo declaration has no unique lexical type position",
+            ));
+        }
+        let mut method_text = typed_report.text.clone();
+        let marker = typed_report
+            .markers
+            .iter()
+            .find(|line| line.starts_with("// jarde: generic Signature projection refused"))
+            .ok_or_else(|| refused("typed method does not retain physical Signature refusal"))?;
+        method_text = method_text.replacen(&format!("    {marker}\n"), "", 1);
+        if method_text.matches(old_declaration).count() != 1 {
+            return Err(refused("typed compareTo source declaration is ambiguous"));
+        }
+        method_text = method_text.replacen(old_declaration, &new_declaration, 1);
+        let start = method_text.find(&new_declaration).unwrap();
+        let method_projection = class_source::MemberFamilyMethodText {
+            index: typed_report.item.index,
+            text: method_text,
+            derived: vec![class_source::MemberFamilyDerivedProjection {
+                kind: class_source::MemberFamilyDerivedKind::MemberGenericSignature,
+                start,
+                end: start + new_declaration.len(),
+                anchors: vec![class_source::MemberFamilyPhysicalAnchor::MethodSignature {
+                    method: typed_report.item.identity.clone(),
+                }],
+            }],
+        };
+        let constructor_report = child
+            .methods
+            .iter()
+            .find(|method| method.item.identity.name.0 == b"<init>")
+            .ok_or_else(|| refused("constructor physical report is absent"))?;
+        if !matches!(&constructor_report.outcome, class_source::ClassSourceOutcome::Recovered { report, analysis }
+            if matches!(report.execution, ExecutionReport::Complete { .. })
+                && matches!(analysis.execution, ExecutionReport::Complete { .. })
+                && report.produced() && report.quality == Quality::Structured && report.fallbacks.is_empty())
+        {
+            return Err(refused("constructor body is incomplete"));
+        }
+        let constructor_projection = class_source::MemberFamilyMethodText {
+            index: constructor_report.item.index,
+            text: constructor_report.text.clone(),
+            derived: Vec::new(),
+        };
+        let generic = class_source::GenericStaticMemberText {
+            header: format!(
+                "public abstract class {}<T> implements java.lang.Comparable<{}<T>>",
+                relation.simple_name, relation.simple_name
+            ),
+            field_index: field_report.item.index,
+            field_declaration: "T value".to_owned(),
+            bridge: bridge_id,
+            bridge_invoke_bci: code.instructions[3].bci,
+        };
+        let member = class_source::MemberFamilyTextProjection {
+            relation,
+            child,
+            capture: None,
+            static_target: None,
+            generic_static: Some(&generic),
+            root_methods: &[],
+            child_methods: &[constructor_projection, method_projection],
+            outer_super_bridges: &[],
+        };
+        let (text, derived) =
+            class_source::member_family_source_text(root, &member).ok_or_else(|| {
+                refused("generic static member writer could not emit the complete source unit")
+            })?;
+        let physical_token = child_name
+            .rsplit(|byte| *byte == b'/')
+            .next()
+            .ok_or_else(|| refused("child has no source type token"))?;
+        let physical_token = std::str::from_utf8(physical_token)
+            .map_err(|_| refused("child has no UTF-8 source type token"))?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, text.len() as u64)?;
+        if text
+            .lines()
+            .filter(|line| !line.trim_start().starts_with("//"))
+            .any(|line| line.contains(physical_token))
+        {
+            return Err(refused(
+                "root source retains an unproved physical child type spelling",
+            ));
+        }
+        budget.charge(CountedBudgetDimension::OutputBytes, text.len() as u64)?;
+        Ok((text, derived))
+    })();
+    match prove {
+        Ok(projection) => Ok(Ok(projection)),
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => Err(error),
+        Err(error) => Ok(Err(error.to_string())),
+    }
 }
 
 fn project_class_source_declaration_pair(
@@ -15710,6 +16291,19 @@ fn project_class_source_member_family(
             }
             _ => {}
         }
+    }
+    if matches!(capture, ClassSourceMemberCapture::StaticDeclaration)
+        && matches!(calls, ClassSourceMemberCalls::StaticDeclarationOnly)
+    {
+        return project_class_source_generic_static_member_family(
+            content,
+            environment,
+            root,
+            relation,
+            child,
+            execution,
+            budget,
+        );
     }
     let ClassSourceMemberCapture::Proved { proof } = capture else {
         return Ok(Err("capture proof is incomplete".to_owned()));
@@ -16504,6 +17098,7 @@ fn project_class_source_member_family(
         child,
         capture: Some(proof),
         static_target: None,
+        generic_static: None,
         root_methods: &root_methods,
         child_methods: &child_methods,
         outer_super_bridges: &outer_super_bridges,
