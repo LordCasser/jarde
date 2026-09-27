@@ -28,7 +28,7 @@
 
 ## 嵌套样本的首个拒绝点与 BCI 归属
 
-`NestedStringSwitchAudit.run(String)` 的外层 String lowering：BCI 0 加载参数；BCI 5 调用 `String.hashCode()`；外层 hash `lookupswitch` 位于 BCI 8，key 97 分支到 BCI 28（`equals("a")` 后写 slot 4），default 到 BCI 39。外层判别 `lookupswitch` 位于 BCI 39：key 0 到 BCI 60 返回 1，default 到 BCI 62。BCI 62 是 Java 外层 `default` arm，随后初始化内层判别 slot 4（BCI 64–65），内层 hash 调用在 BCI 68，内层 hash `lookupswitch` 在 BCI 71：key 98 到 BCI 96，key 99 到 BCI 111，default 到 BCI 123。`b` 分支在 BCI 105–106 写内层判别 slot 4 为 0；`c` 分支在 BCI 120–121 写为 1。
+`NestedStringSwitchAudit.choose(String)` 的外层 String lowering：BCI 0 加载参数；BCI 5 调用 `String.hashCode()`；外层 hash `lookupswitch` 位于 BCI 8，key 97 分支到 BCI 28（`equals("a")` 后写 slot 4），default 到 BCI 39。外层判别 `lookupswitch` 位于 BCI 39：key 0 到 BCI 60 返回 1，default 到 BCI 62。BCI 62 是 Java 外层 `default` arm，随后初始化内层判别 slot 4（BCI 64–65），内层 hash 调用在 BCI 68，内层 hash `lookupswitch` 在 BCI 71：key 98 到 BCI 96，key 99 到 BCI 111，default 到 BCI 123。`b` 分支在 BCI 105–106 写内层判别 slot 4 为 0；`c` 分支在 BCI 120–121 写为 1。
 
 内层最后一级判别 switch 本身位于 BCI 125（BCI 123 加载 slot 4）；其 0、1、default 目标分别是 BCI 152、154、156，对应返回 2、3、4。区域详情文件 `baseline/NestedStringSwitchAudit.region-details.json` 给出实际所有权：从 BCI 0 开始的结构化 `switch` region 拥有 `[0,28,37,39,60,62,96,105,111,120]`；另一个 `jre_region_uncovered_blocks` fallback region 从 BCI 123 开始并拥有 `[123,152,154,156]`。因而内层 case 写入留在结构化 region，而最终 dispatcher 与返回目标被切到外侧 fallback；Jarde 生成的 Java 只有该方法的 bytecode 注释和拒绝说明，没有可编译方法体。
 
