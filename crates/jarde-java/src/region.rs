@@ -1231,6 +1231,7 @@ pub(crate) fn recover(
         excluded_edge_nodes,
         visited: BTreeSet::new(),
         depth: 0,
+        unclosed_tail_at: None,
     };
     let mut regions = Vec::new();
     // The canonical graph publishes the method entry first: the normalization creates a node for
@@ -1250,6 +1251,13 @@ pub(crate) fn recover(
         let (run, next) = walker.region_at(&node, &Frame::default())?;
         regions.extend(run);
         current = next;
+    }
+    if let Some(block_bci) = walker.unclosed_tail_at {
+        return Ok(quoted_whole(
+            live,
+            FallbackReason::ArmsDoNotMeet { block_bci },
+            canonical,
+        ));
     }
     if std::env::var_os("JRE_PREFIX_PROBE").is_some() {
         eprintln!(
@@ -1885,6 +1893,9 @@ struct Walker<'a> {
     /// not rescan the whole canonical edge table.
     excluded_edge_nodes: BTreeSet<CanonicalBlockId>,
     visited: BTreeSet<usize>,
+    /// A reachable arm successor that could not be owned. Refuse the whole method so a later
+    /// unconditional return cannot turn an incomplete quote into executable wrong behavior.
+    unclosed_tail_at: Option<u32>,
     /// How many [`Walker::region_at`] calls are on the stack: the region walk's own recursion
     /// depth, checked against [`MAX_REGION_DEPTH`] before the walk descends.
     depth: usize,
@@ -2554,8 +2565,18 @@ impl Walker<'_> {
                             let next = self.unclaimed_join(join.as_ref());
                             return Ok(gap(prefix, vec![branch], reason, next));
                         }
-                        let (arm_run, _) =
-                            self.region_at(walk, &frame.arm(Some(join_node), Some(branch_bci)))?;
+                        let arm_frame = frame.arm(Some(join_node), Some(branch_bci));
+                        let (mut arm_run, arm_next) = self.region_at(walk, &arm_frame)?;
+                        if let Some(next) = arm_next.as_ref()
+                            && self.view.index_of(next) != Some(join_node)
+                            && !self.continue_early_return_arm(&mut arm_run, next, &arm_frame)?
+                        {
+                            self.unclosed_tail_at.get_or_insert(branch.bci());
+                            let reason = FallbackReason::ArmsDoNotMeet {
+                                block_bci: branch.bci(),
+                            };
+                            return Ok(gap(prefix, vec![branch], reason, None));
+                        }
                         let arm = sequence_region(arm_run);
                         // A one-armed `if` normally has an empty arm because that edge is the
                         // branch's join. Inside a loop, the join can instead be the exact exit of
@@ -2730,6 +2751,98 @@ impl Walker<'_> {
                 }
             }
         }
+    }
+
+    /// A nested boolean diamond may finish at its own `ireturn` after the enclosing guard's
+    /// early-return join. Admit only that single, closed return block: both producer arms must be
+    /// its exact normal predecessors, and the recursive walk must claim precisely that block.
+    fn continue_early_return_arm(
+        &mut self,
+        run: &mut Vec<Region>,
+        next: &CanonicalBlockId,
+        frame: &Frame,
+    ) -> Result<bool, StopReason> {
+        let [
+            Region::If {
+                branch,
+                then_arm,
+                else_arm,
+                join: Some(inner_join),
+                ..
+            },
+        ] = run.as_slice()
+        else {
+            return Ok(false);
+        };
+        let (
+            Region::Straight {
+                blocks: then_blocks,
+            },
+            Region::Straight {
+                blocks: else_blocks,
+            },
+        ) = (then_arm.as_ref(), else_arm.as_ref())
+        else {
+            return Ok(false);
+        };
+        let (Some(then_end), Some(else_end), Some(node)) = (
+            then_blocks.last(),
+            else_blocks.last(),
+            self.view.index_of(next),
+        ) else {
+            return Ok(false);
+        };
+        if inner_join != next
+            || next.path() != branch.path()
+            || next.bci() <= branch.bci()
+            || !self.return_is_boolean
+            || self.visited.contains(&node)
+            || frame.stops_at(node)
+            || !self.view.successors(node).is_empty()
+            || self.leaving_edge(next).is_some()
+            || !self.ssa.block(next).is_some_and(|block| {
+                block.instructions().last().is_some_and(|instruction| {
+                    instruction.opcode() == 0xac
+                        && matches!(
+                            self.operations.get(instruction.bci()),
+                            Some(Operation::Return)
+                        )
+                })
+            })
+        {
+            return Ok(false);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+            Some(next.bci()),
+        )?;
+        let incoming = self
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.to() == next)
+            .map(|edge| (edge.kind(), edge.from().clone()))
+            .collect::<Vec<_>>();
+        if !exact_normal_predecessors(&incoming, &[then_end.clone(), else_end.clone()]) {
+            return Ok(false);
+        }
+        let before = self.visited.clone();
+        let (tail, tail_next) = self.region_at(next, frame)?;
+        let newly_visited = self
+            .visited
+            .difference(&before)
+            .filter_map(|node| self.view.id_of(*node).cloned())
+            .collect::<BTreeSet<_>>();
+        if tail_next.is_some()
+            || !matches!(tail.as_slice(), [Region::Straight { blocks }] if blocks == &[next.clone()])
+            || !continuation_claims_are_exact(&[next.clone()], &newly_visited)
+        {
+            return Ok(false);
+        }
+        run.extend(tail);
+        Ok(true)
     }
 
     /// Continue one nested `If`'s unclaimed forward join inside its enclosing arm. The only
@@ -6725,28 +6838,30 @@ mod tests {
     use super::*;
 
     #[test]
-    fn intermediate_join_requires_both_distinct_normal_predecessors() {
-        let expected = [9_u32, 15];
+    fn cf02_tail_requires_both_distinct_normal_predecessors() {
+        // CF-02's inner value joins at BCI 28 after producers 23 and 27. A path from
+        // the outer early-return join (11) would make that tail ambiguous.
+        let expected = [23_u32, 27];
         assert!(exact_normal_predecessors(
             &[
-                (CanonicalEdgeKind::Normal, 9),
-                (CanonicalEdgeKind::Normal, 15),
+                (CanonicalEdgeKind::Normal, 23),
+                (CanonicalEdgeKind::Normal, 27),
             ],
             &expected,
         ));
         assert!(!exact_normal_predecessors(
             &[
-                (CanonicalEdgeKind::Normal, 9),
-                (CanonicalEdgeKind::Normal, 9),
+                (CanonicalEdgeKind::Normal, 23),
+                (CanonicalEdgeKind::Normal, 23),
             ],
             &expected,
         ));
         assert!(!exact_normal_predecessors(
             &[
-                (CanonicalEdgeKind::Normal, 9),
-                (CanonicalEdgeKind::Normal, 9),
+                (CanonicalEdgeKind::Normal, 23),
+                (CanonicalEdgeKind::Normal, 23),
             ],
-            &[9, 9],
+            &[23, 23],
         ));
         for kind in [
             CanonicalEdgeKind::Call { call_site: 12 },
@@ -6754,15 +6869,15 @@ mod tests {
             CanonicalEdgeKind::Return { call_site: 12 },
         ] {
             assert!(!exact_normal_predecessors(
-                &[(CanonicalEdgeKind::Normal, 9), (kind, 15)],
+                &[(CanonicalEdgeKind::Normal, 23), (kind, 27)],
                 &expected,
             ));
         }
         assert!(!exact_normal_predecessors(
             &[
-                (CanonicalEdgeKind::Normal, 9),
-                (CanonicalEdgeKind::Normal, 15),
                 (CanonicalEdgeKind::Normal, 23),
+                (CanonicalEdgeKind::Normal, 27),
+                (CanonicalEdgeKind::Normal, 11),
             ],
             &expected,
         ));
