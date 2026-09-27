@@ -1,0 +1,13 @@
+package dt21;
+
+/* JADX INFO: loaded from: input.jar:dt21/Hierarchy.class */
+public class Hierarchy extends C3<String> {
+    public String test() {
+        return (String) call();
+    }
+
+    @Override // dt21.C2
+    public /* bridge */ /* synthetic */ Object call() {
+        return super.call();
+    }
+}

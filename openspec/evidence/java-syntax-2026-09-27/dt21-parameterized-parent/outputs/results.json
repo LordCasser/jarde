@@ -1,0 +1,34 @@
+{
+  "assertions": {
+    "jarde_complete_source_compiles_but_erases_parent_type": true,
+    "original_and_jadx_complete_java8_sources_verify_and_preserve_parent_type": true
+  },
+  "class_sha256": {
+    "Child.class": "51ec7dfb18f7fc1af79dbd079126f0b4d99d6b9286be24ab1f3da2540ce30237",
+    "Parent.class": "28e4090d31af9b0a4a7b7cdd902171b9fffec1abcb52a4d44935088a16bc174e"
+  },
+  "jadx": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "dt21parent.Parent<java.lang.String>\n"
+  },
+  "jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jarde": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "class dt21parent.Parent\n"
+  },
+  "javac": "javac 23.0.1",
+  "original": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "dt21parent.Parent<java.lang.String>\n"
+  },
+  "source_sha256": {
+    "Child.java": "ecfd99ed38caa22fedf38b1df6d03faa8e39ffd65cf839d66856ba15a4c153ba",
+    "Runner.java": "fd1beed3fea7932338fb787e0157d35cb4b2917979aa614992ad1927699e903e"
+  }
+}

@@ -1,0 +1,28 @@
+// jarde: presentation of `dt21/Hierarchy` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt21;
+
+public class Hierarchy extends dt21.C3 {
+    public Hierarchy() {
+        // @method <init>()V
+        // @declaration a constructor of `dt21.Hierarchy`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public java.lang.String test() {
+        // @method test()Ljava/lang/String;
+        // @declaration an instance method of `dt21.Hierarchy`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.String local1 = (java.lang.String) this.call();
+        return local1;
+    }
+
+    public java.lang.Object call() {
+        // @method call()Ljava/lang/Object;
+        // @declaration an instance method of `dt21.Hierarchy`, member flags 0x1041
+        // recovered from bytecode; presentation is not claimed to compile
+        return super.call();
+    }
+}

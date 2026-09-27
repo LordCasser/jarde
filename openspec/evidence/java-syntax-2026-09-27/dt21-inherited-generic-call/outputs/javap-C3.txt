@@ -1,0 +1,33 @@
+Classfile <TMP>/original-classes/dt21/C3.class
+  Last modified <NORMALIZED>; size 172 bytes
+  SHA-256 checksum 72b0d262ffd3fc04febc8f822f5167c036514c40e751e38718aba23ed49debfa
+class dt21.C3<C extends java.lang.Object> extends dt21.C2<C>
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #7                          // dt21/C3
+  super_class: #2                         // dt21/C2
+  interfaces: 0, fields: 0, methods: 1, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // dt21/C2."<init>":()V
+   #2 = Class              #4             // dt21/C2
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               dt21/C2
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // dt21/C3
+   #8 = Utf8               dt21/C3
+   #9 = Utf8               Code
+  #10 = Utf8               Signature
+  #11 = Utf8               <C:Ljava/lang/Object;>Ldt21/C2<TC;>;
+{
+  dt21.C3();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method dt21/C2."<init>":()V
+         4: return
+}
+Signature: #11                          // <C:Ljava/lang/Object;>Ldt21/C2<TC;>;

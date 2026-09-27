@@ -1,0 +1,7 @@
+package dt21parent;
+
+/* JADX INFO: loaded from: input.jar:dt21parent/Parent.class */
+class Parent<T> {
+    Parent() {
+    }
+}

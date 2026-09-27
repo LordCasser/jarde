@@ -1,0 +1,11 @@
+package dt21;
+
+/* JADX INFO: loaded from: input.jar:dt21/C2.class */
+class C2<B> extends C1<B> {
+    C2() {
+    }
+
+    public B call() {
+        return null;
+    }
+}

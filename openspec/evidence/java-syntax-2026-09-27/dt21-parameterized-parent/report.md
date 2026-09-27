@@ -1,0 +1,5 @@
+# DT-21 首片：直接参数化父类声明
+
+[Child.java](Child.java) 只包含 `Parent<T>` 与 `Child extends Parent<String>`，排除了继承调用、override 和 bridge；[Runner.java](Runner.java) 只观察 `Child.class.getGenericSuperclass()`。固定 [replay.py](replay.py) 以 Java 8 `-g:none` 编译原始两个物理类，交给固定 JADX `2fb1b16386941660fda07e9017285aec40fcb37f` 与 Jarde，随后让三套完整源码各自重编并在 `-Xverify:all` 下运行。原始及 JADX 均输出 `dt21parent.Parent<java.lang.String>`；Jarde 源码能重编，但声明是 raw `extends dt21parent.Parent`，输出 `class dt21parent.Parent`。`javap` 明示 child 真实 `Signature` 为 `Ldt21parent/Parent<Ljava/lang/String;>;`，物理父类是同一 `dt21parent/Parent`；Jarde 的 `Parent<T>` 头已能单独投影。这一差距比多层继承 [审计](../dt21-inherited-generic-call/report.md)更窄，也不涉及 JADX 在 bridge 上的重编失败。
+
+首片无需通用类型推断：reader 已有完整 class `Signature` 解析及擦除校验，类声明 writer 已能写类型实参，选定环境可解析唯一物理父定义。需要在 class 头提交前证明 parent Signature 的唯一段准确绑定这个父定义的一个 `T` 形参，且 child 的物理 `super_class`、构造 `invokespecial` 和源码 `extends Parent<String>` 一致。无 Signature、坏擦除、原始父类、错 arity/错目标或预算停止应保留当前物理头。更复杂的 `C2<B> extends C1<B>`、多层代换、方法返回和 bridge 独立处理；不能凭这个首片把整个 DT-21 标成追平。

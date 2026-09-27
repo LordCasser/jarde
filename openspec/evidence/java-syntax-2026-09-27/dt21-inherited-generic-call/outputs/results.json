@@ -1,0 +1,35 @@
+{
+  "assertions": {
+    "jarde_source_compiles_but_erases_parameterized_parent": true,
+    "original_complete_java8_sources_verify_and_retain_generic_parent": true,
+    "pinned_jadx_bridge_source_fails_java8_recompilation": true
+  },
+  "class_sha256": {
+    "C1.class": "f9457617b58bc17215e5614c90505372683a9494ff266d2185d432be52df37af",
+    "C2.class": "82fe82abd09e6ee89a05a1a8e3b9d85f41d8ef6d6df09a73a12134f6c653f7d1",
+    "C3.class": "72b0d262ffd3fc04febc8f822f5167c036514c40e751e38718aba23ed49debfa",
+    "Hierarchy.class": "05f75e843a3a0f298fdc1d83ee0e0c98ae77b9c5de5169d9f5e5960de934815b"
+  },
+  "jadx": {
+    "compile_exit": 1,
+    "compile_stderr": "<TMP>/jadx/sources/dt21/Hierarchy.java:10: error: call() in Hierarchy cannot override call() in C2\n    public /* bridge */ /* synthetic */ Object call() {\n                                               ^\n  return type Object is not compatible with String\n  where B is a type-variable:\n    B extends Object declared in class C2\n<TMP>/jadx/sources/dt21/Hierarchy.java:9: error: method does not override or implement a method from a supertype\n    @Override // dt21.C2\n    ^\n2 errors\n"
+  },
+  "jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jarde": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "true\nclass dt21.C3\n"
+  },
+  "javac": "javac 23.0.1",
+  "original": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "true\ndt21.C3<java.lang.String>\n"
+  },
+  "source_sha256": {
+    "Hierarchy.java": "55e9069f53754748cd7a2a7d60b7d59f9cea83ef5648e2a964666a232af991e3",
+    "Runner.java": "03c6404ca0ebb3dd4b10c3f01cec0efbfa8edb07493162b665964dcb15c656a8"
+  }
+}

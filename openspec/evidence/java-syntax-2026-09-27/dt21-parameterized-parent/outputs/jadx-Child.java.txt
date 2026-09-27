@@ -1,0 +1,5 @@
+package dt21parent;
+
+/* JADX INFO: loaded from: input.jar:dt21parent/Child.class */
+public class Child extends Parent<String> {
+}

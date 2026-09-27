@@ -1,0 +1,23 @@
+// jarde: presentation of `dt21/C2` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt21;
+
+// jarde: class Signature `<B:Ljava/lang/Object;>Ldt21/C1<TB;>;` not projected
+// jarde: class Signature projection refused: unsupported (class_generic_source_unproved): parameterized or nested parent needs a separate inherited-member proof
+class C2 extends dt21.C1 {
+    C2() {
+        // @method <init>()V
+        // @declaration a constructor of `dt21.C2`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `call()Ljava/lang/Object;`: unsupported (jvm_signature_scope_unproved): type variable `B` is not declared in the available Signature scope
+    public java.lang.Object call() {
+        // @method call()Ljava/lang/Object;
+        // @declaration an instance method of `dt21.C2`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return null;
+    }
+}
