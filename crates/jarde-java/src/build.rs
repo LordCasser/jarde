@@ -342,6 +342,7 @@ pub(crate) struct Inputs<'a> {
     pub(crate) member_inner_targets: &'a [crate::report::ProvedMemberInnerTarget],
     /// The exact interface-special targets whose Java source binding the facade proved.
     pub(crate) interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
+    pub(crate) reference_overload_calls: &'a [crate::report::ProvedReferenceOverloadCall],
     pub(crate) captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
     pub(crate) outer_super_calls: &'a [crate::report::ProvedOuterSuperCall],
     pub(crate) physical_method: Option<&'a jarde_reader::model::PhysicalMethodId>,
@@ -5829,6 +5830,7 @@ pub(crate) fn build(
         members: inputs.members,
         member_inner_targets: inputs.member_inner_targets,
         interface_super_calls: inputs.interface_super_calls,
+        reference_overload_calls: inputs.reference_overload_calls,
         captured_outer_reads: inputs.captured_outer_reads,
         outer_super_calls: inputs.outer_super_calls,
         declaring_class: inputs.declaring_class,
@@ -6214,6 +6216,7 @@ struct Builder<'a> {
     members: Option<&'a ClassMembers>,
     member_inner_targets: &'a [crate::report::ProvedMemberInnerTarget],
     interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
+    reference_overload_calls: &'a [crate::report::ProvedReferenceOverloadCall],
     captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
     outer_super_calls: &'a [crate::report::ProvedOuterSuperCall],
     /// The class this body belongs to, in internal form, when the run's own member declaration
@@ -17432,6 +17435,13 @@ impl Builder<'_> {
                     // source so overload resolution cannot retarget this call to a more specific
                     // overload. Javac may emit a redundant checkcast for the source cast, but
                     // the proved widening means that check cannot fail for this operand.
+                    return Ok(cast_argument(argument, required, bci));
+                }
+                if self.reference_overload_calls.iter().any(|proof| {
+                    proof.bci == bci
+                        && proof.source == presented_name
+                        && proof.target == *required_name
+                }) {
                     return Ok(cast_argument(argument, required, bci));
                 }
                 Err(format!(
