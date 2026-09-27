@@ -45,6 +45,7 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 | 冻结差距已修复，单元待扩验 | DT-22 | [唯一直接成员注解验收](../java-syntax-2026-09-27/dt22-nested-annotation/report.md)：双方 `InnerClasses`、唯一物理 child 与完整 float default 获证后，Jarde 在根级输出 `Holder.A`；原/JADX/Jarde 完整 Java 8 源码和原 API consumer 重编、验证运行与反射输出一致。物理 `Holder$A` 独立可查；多 child、其它元素及注解使用组合仍待扩验。 |
 | 已证差距，已写独立 OpenSpec | DT-25 | [无捕获 lambda helper 对照](../java-syntax-2026-09-27/dt25-lambda-helper/report.md)：原/JADX 完整源码重编与验证运行一致，Jarde 的私有 synthetic `lambda$...` 成员及调用导致 javac helper 符号冲突；首片 OpenSpec 限定无捕获 primitive 0/1/2 参数。 |
 | 已证差距，已写独立 OpenSpec | DT-26 | [参数值与 `this` 捕获对照](../java-syntax-2026-09-27/dt26-lambda-capture/report.md)：原/JADX 完整源码 Java 8 重编、验证运行输出 `7:-1`；Jarde 保留合成 helper，重编时与 javac 的 helper 同名冲突。[后继 OpenSpec](../../changes/recover-proved-captured-lambda-bodies/)要求复用 DT-25 的类级证书，并单独证明捕获创建时求值。 |
+| 已证差距，已写独立 OpenSpec | DT-28 | [primitive 转换与 byte 条件实参对照](../java-syntax-2026-09-27/dt28-cast-audit/report.md)：直接转换、移位与条件返回的固定首片三方完整 Java 8 源码重编验证一致；`byte` 条件值作为 `byte` 调用实参时原/JADX 输出 `1:0`，Jarde 拒绝实参转换、完整源码缺 return。[窄 OpenSpec](../../changes/recover-proved-byte-conditional-invocation/)只处理两臂可无损按 byte 呈现的调用上下文。 |
 | JADX 未完成 | CF-17 | `TestTryWithResources` 的唯一目标标为 `@NotYetImplemented` |
 | 部分已测、仍待扩验 | CF-01 | [真实短路 CFG 与否定组合](../java-syntax-2026-09-27/cf01-short-circuit/report.md)已证明固定小形态原/JADX/Jarde 完整 Java 8 源码重编及 `-Xverify:all` 运行一致；账本其余形态仍待测。[eager 反例](../java-syntax-2026-09-27/cf01-eager-boolean/report.md)单独记录 JADX 将布尔 `&` / `|` 错写成 `&&` / `||` 的副作用差异，Jarde 保留 eager 次数 |
 | 部分已测、仍待扩验 | DT-15 | [顶级类与接口泛型上界](../java-syntax-2026-09-27/dt15-generic-class-bounds/report.md)：原/JADX/Jarde 的完整类型源码与同一 API consumer 均以 Java 8 重编，`-Xverify:all` 的泛型反射上界结果逐字一致；成员泛型类型及参数化父接口/父类未由此通过。两个对应 JADX 测试只直接断言方法头。 |
@@ -52,10 +53,10 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 | 部分已测、仍待扩验 | DT-24 | [顶级复杂注解值隔离对照](../java-syntax-2026-09-27/dt24-annotation-values/report.md)：标量、浮点数组、类字面量、enum、嵌套注解和整数数组在原/JADX/Jarde 完整 Java 8 重编、验证运行与反射中相同；嵌套类型布局与整数常量源名仍待独立证明。 |
 | 部分已测、仍待扩验 | DT-27 | [静态、绑定实例与构造器引用隔离对照](../java-syntax-2026-09-27/dt27-method-ref-audit/report.md)：三个无泛型首片在原/JADX/Jarde 完整源码 Java 8 重编、验证运行均输出 `2:-3:RuntimeException`，三种 `::` 拼写保留且无合成 helper；泛型目标、重载和适配仍待扩验。 |
 | 未测 | CF-02～16、CF-18、CF-20 | 17 个正向测试候选，见控制流账本 |
-| 未测 | DT-07～09、DT-28～29、DT-31 | 6 个候选，见声明/类型账本 |
+| 未测 | DT-07～09、DT-29、DT-31 | 5 个候选，见声明/类型账本 |
 | 未测 | EM-01～03、EM-05～07、EM-10～12、EM-17～25、EM-27 | 19 个候选，见表达式/杂项账本 |
 
-当前有 **20 个冻结差距已修复但待扩验的单元、3 个已证差距（DT-14 自定义静态后缀；DT-25 无捕获 lambda helper；DT-26 捕获 lambda helper）、42 个未测的正向候选、5 个部分已测但仍待扩验单元（CF-01、DT-15、DT-23、DT-24、DT-27）、1 个 JADX 未完成单元**。CF-19、DT-02、DT-04、DT-05、DT-06、DT-10、DT-11、DT-12、DT-13、DT-16、DT-17、DT-18、DT-19、DT-20、DT-21、DT-22 与 EM-04 的窄切片，以及先前 DT-01/03、EM-13 均已通过 root 独立验收；这不自动把各单元全部变体标为“已追平”。DT-12、DT-13、DT-14、DT-16、DT-17、DT-18、DT-19、DT-20、DT-21、DT-22、DT-25、DT-26 均已写独立 OpenSpec；DT-13 的两层普通嵌套 enum 和接口声明子形态在固定样例上通过，但不代表 `TestInnerEnums` 的全部构造实参或 `TestEnumsInterface` 的常量专属匿名体追平。任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
+当前有 **20 个冻结差距已修复但待扩验的单元、4 个已证差距（DT-14 自定义静态后缀；DT-25 无捕获 lambda helper；DT-26 捕获 lambda helper；DT-28 byte 条件实参）、41 个未测的正向候选、5 个部分已测但仍待扩验单元（CF-01、DT-15、DT-23、DT-24、DT-27）、1 个 JADX 未完成单元**。CF-19、DT-02、DT-04、DT-05、DT-06、DT-10、DT-11、DT-12、DT-13、DT-16、DT-17、DT-18、DT-19、DT-20、DT-21、DT-22 与 EM-04 的窄切片，以及先前 DT-01/03、EM-13 均已通过 root 独立验收；这不自动把各单元全部变体标为“已追平”。DT-12、DT-13、DT-14、DT-16、DT-17、DT-18、DT-19、DT-20、DT-21、DT-22、DT-25、DT-26、DT-28 均已写独立 OpenSpec；DT-13 的两层普通嵌套 enum 和接口声明子形态在固定样例上通过，但不代表 `TestInnerEnums` 的全部构造实参或 `TestEnumsInterface` 的常量专属匿名体追平。任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
 
 独立回归债务：[具名成员类 `Outer.super` 桥测试与基线投影不一致](outer-super-bridge-baseline-debt.md)，在未修改的 `36b57495` 已可复现；归入 EM-12/DT-03 后续核验，不混入 DT-02 静态成员类实现。[枚举 class Signature 的多余拒绝标记](enum-signature-marker-debt.md)在 DT-13 三方重放时不影响编译运行，作为报告质量问题单独核验。
 
