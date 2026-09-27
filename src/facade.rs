@@ -4442,7 +4442,7 @@ impl Engine {
                         ) {
                             Ok(Some(text)) => text,
                             Ok(None) => {
-                                diagnostics.push(lambda_helper_refusal_diagnostic(&String::from_utf8_lossy(&helper.name.0), Some(candidate.use_site), "helper or caller AST is outside the straight-line primitive proof", class_provenance.clone()));
+                                diagnostics.push(lambda_helper_refusal_diagnostic(&String::from_utf8_lossy(&helper.name.0), Some(candidate.use_site), "helper or caller AST is outside the bounded straight-line primitive proof", class_provenance.clone()));
                                 accepted = false;
                                 break;
                             }
