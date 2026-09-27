@@ -14,12 +14,19 @@ if [[ "$(git -C "$JADX_ROOT" rev-parse HEAD)" != "$EXPECTED_JADX" ]]; then
 	echo "wrong JADX checkout; expected $EXPECTED_JADX" >&2
 	exit 1
 fi
+if [[ "$(shasum -a 256 "$JADX_ROOT/jadx-core/src/test/java/jadx/tests/integration/trycatch/TestTryCatchFinally10.java" | cut -d ' ' -f 1)" != 191f1041e514124eea94670afed560745d8ddac8ae3e1fd7baee549636e81b25 ]] ||
+   [[ "$(shasum -a 256 "$SMALI" | cut -d ' ' -f 1)" != 5ca0f91a19ddbb97ab7432638f77192068ca84686fed19fa079179488fa2b1be ]]; then
+	echo "pinned Test10 source or smali changed" >&2
+	exit 1
+fi
 if [[ ! -x "$JADX_BIN" || ! -x "$JARDE" || ! -f "$SMALI" ]]; then
 	echo "pinned JADX, smali input, and Jarde CLI are required" >&2
 	exit 2
 fi
 
 mkdir -p "$OUTPUT"
+: > "$OUTPUT/original-run.txt"
+: > "$OUTPUT/jadx-run.txt"
 RUN="$(mktemp -d "${TMPDIR:-/tmp}/cf16-test10.XXXXXX")"
 cleanup() {
 	python3 - "$RUN" <<'PY'
@@ -63,9 +70,11 @@ for mode in ok empty open-throw close-io close-runtime logger-runtime; do
 	java -Xverify:all -cp "$JADX_CLASSES" trycatch.Runner "$mode" >> "$OUTPUT/jadx-run.txt"
 done
 diff -u "$OUTPUT/original-run.txt" "$OUTPUT/jadx-run.txt"
+cmp "$HERE/original-run.txt" "$OUTPUT/original-run.txt"
 
 "$JARDE" class-source --input "$ORIGINAL_CLASSES/trycatch/TestTryCatchFinally10.class" \
 	--class trycatch.TestTryCatchFinally10 --policy single-class --release 8 --format text \
 	> "$OUTPUT/jarde-source.txt" 2> "$OUTPUT/jarde-structured-report.txt"
+grep -Fq 'explanation only' "$OUTPUT/jarde-source.txt"
 
 echo "Java 8 original and JADX adapter runs match; Jarde source/report saved under $OUTPUT"
