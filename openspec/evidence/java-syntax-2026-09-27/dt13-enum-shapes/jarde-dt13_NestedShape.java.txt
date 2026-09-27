@@ -1,0 +1,20 @@
+// jarde: presentation of `dt13/NestedShape` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt13;
+
+public final class NestedShape extends java.lang.Object {
+    public NestedShape() {
+        // @method <init>()V
+        // @declaration a constructor of `dt13.NestedShape`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.String observe() {
+        // @method observe()Ljava/lang/String;
+        // @declaration a static method of `dt13.NestedShape`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.lang.StringBuilder().append((java.lang.Object) dt13.NestedShape$Major.FIRST).append(":").append((java.lang.Object) dt13.NestedShape$Major$Minor.LEFT).toString();
+    }
+}

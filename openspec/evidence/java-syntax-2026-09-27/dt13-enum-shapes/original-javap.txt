@@ -1,0 +1,932 @@
+Classfile <TMP>/original-classes/dt13/InterfaceShape.class
+  Last modified <NORMALIZED>; size 852 bytes
+  SHA-256 checksum 3aa8da476b70f27bf977bd08f66544cda5313511cc3faa9addad54d195f59077
+public final class dt13.InterfaceShape extends java.lang.Enum<dt13.InterfaceShape> implements dt13.Marker
+  minor version: 0
+  major version: 52
+  flags: (0x4031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_ENUM
+  this_class: #1                          // dt13/InterfaceShape
+  super_class: #20                        // java/lang/Enum
+  interfaces: 1, fields: 3, methods: 5, attributes: 1
+Constant pool:
+   #1 = Class              #2             // dt13/InterfaceShape
+   #2 = Utf8               dt13/InterfaceShape
+   #3 = Fieldref           #1.#4          // dt13/InterfaceShape.FIRST:Ldt13/InterfaceShape;
+   #4 = NameAndType        #5:#6          // FIRST:Ldt13/InterfaceShape;
+   #5 = Utf8               FIRST
+   #6 = Utf8               Ldt13/InterfaceShape;
+   #7 = Fieldref           #1.#8          // dt13/InterfaceShape.SECOND:Ldt13/InterfaceShape;
+   #8 = NameAndType        #9:#6          // SECOND:Ldt13/InterfaceShape;
+   #9 = Utf8               SECOND
+  #10 = Fieldref           #1.#11         // dt13/InterfaceShape.$VALUES:[Ldt13/InterfaceShape;
+  #11 = NameAndType        #12:#13        // $VALUES:[Ldt13/InterfaceShape;
+  #12 = Utf8               $VALUES
+  #13 = Utf8               [Ldt13/InterfaceShape;
+  #14 = Methodref          #15.#16        // "[Ldt13/InterfaceShape;".clone:()Ljava/lang/Object;
+  #15 = Class              #13            // "[Ldt13/InterfaceShape;"
+  #16 = NameAndType        #17:#18        // clone:()Ljava/lang/Object;
+  #17 = Utf8               clone
+  #18 = Utf8               ()Ljava/lang/Object;
+  #19 = Methodref          #20.#21        // java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #20 = Class              #22            // java/lang/Enum
+  #21 = NameAndType        #23:#24        // valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #22 = Utf8               java/lang/Enum
+  #23 = Utf8               valueOf
+  #24 = Utf8               (Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #25 = Methodref          #20.#26        // java/lang/Enum."<init>":(Ljava/lang/String;I)V
+  #26 = NameAndType        #27:#28        // "<init>":(Ljava/lang/String;I)V
+  #27 = Utf8               <init>
+  #28 = Utf8               (Ljava/lang/String;I)V
+  #29 = String             #5             // FIRST
+  #30 = Methodref          #1.#26         // dt13/InterfaceShape."<init>":(Ljava/lang/String;I)V
+  #31 = String             #9             // SECOND
+  #32 = Methodref          #1.#33         // dt13/InterfaceShape.$values:()[Ldt13/InterfaceShape;
+  #33 = NameAndType        #34:#35        // $values:()[Ldt13/InterfaceShape;
+  #34 = Utf8               $values
+  #35 = Utf8               ()[Ldt13/InterfaceShape;
+  #36 = Class              #37            // dt13/Marker
+  #37 = Utf8               dt13/Marker
+  #38 = Utf8               values
+  #39 = Utf8               Code
+  #40 = Utf8               (Ljava/lang/String;)Ldt13/InterfaceShape;
+  #41 = Utf8               MethodParameters
+  #42 = Utf8               Signature
+  #43 = Utf8               ()V
+  #44 = Utf8               <clinit>
+  #45 = Utf8               Ljava/lang/Enum<Ldt13/InterfaceShape;>;Ldt13/Marker;
+{
+  public static final dt13.InterfaceShape FIRST;
+    descriptor: Ldt13/InterfaceShape;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final dt13.InterfaceShape SECOND;
+    descriptor: Ldt13/InterfaceShape;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  private static final dt13.InterfaceShape[] $VALUES;
+    descriptor: [Ldt13/InterfaceShape;
+    flags: (0x101a) ACC_PRIVATE, ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public static dt13.InterfaceShape[] values();
+    descriptor: ()[Ldt13/InterfaceShape;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #10                 // Field $VALUES:[Ldt13/InterfaceShape;
+         3: invokevirtual #14                 // Method "[Ldt13/InterfaceShape;".clone:()Ljava/lang/Object;
+         6: checkcast     #15                 // class "[Ldt13/InterfaceShape;"
+         9: areturn
+
+  public static dt13.InterfaceShape valueOf(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ldt13/InterfaceShape;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: ldc           #1                  // class dt13/InterfaceShape
+         2: aload_0
+         3: invokestatic  #19                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+         6: checkcast     #1                  // class dt13/InterfaceShape
+         9: areturn
+    MethodParameters:
+      Name                           Flags
+      <no name>                      mandated
+
+  private dt13.InterfaceShape();
+    descriptor: (Ljava/lang/String;I)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: invokespecial #25                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+         6: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+    Signature: #43                          // ()V
+
+  private static dt13.InterfaceShape[] $values();
+    descriptor: ()[Ldt13/InterfaceShape;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_2
+         1: anewarray     #1                  // class dt13/InterfaceShape
+         4: dup
+         5: iconst_0
+         6: getstatic     #3                  // Field FIRST:Ldt13/InterfaceShape;
+         9: aastore
+        10: dup
+        11: iconst_1
+        12: getstatic     #7                  // Field SECOND:Ldt13/InterfaceShape;
+        15: aastore
+        16: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: new           #1                  // class dt13/InterfaceShape
+         3: dup
+         4: ldc           #29                 // String FIRST
+         6: iconst_0
+         7: invokespecial #30                 // Method "<init>":(Ljava/lang/String;I)V
+        10: putstatic     #3                  // Field FIRST:Ldt13/InterfaceShape;
+        13: new           #1                  // class dt13/InterfaceShape
+        16: dup
+        17: ldc           #31                 // String SECOND
+        19: iconst_1
+        20: invokespecial #30                 // Method "<init>":(Ljava/lang/String;I)V
+        23: putstatic     #7                  // Field SECOND:Ldt13/InterfaceShape;
+        26: invokestatic  #32                 // Method $values:()[Ldt13/InterfaceShape;
+        29: putstatic     #10                 // Field $VALUES:[Ldt13/InterfaceShape;
+        32: return
+}
+Signature: #45                          // Ljava/lang/Enum<Ldt13/InterfaceShape;>;Ldt13/Marker;
+
+
+Classfile <TMP>/original-classes/dt13/Marker.class
+  Last modified <NORMALIZED>; size 63 bytes
+  SHA-256 checksum fcc6bf597dd3ee6a7ccfbb04affd1791098d4a281c28c7918e6156d550aafbf0
+interface dt13.Marker
+  minor version: 0
+  major version: 52
+  flags: (0x0600) ACC_INTERFACE, ACC_ABSTRACT
+  this_class: #1                          // dt13/Marker
+  super_class: #3                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 0, attributes: 0
+Constant pool:
+  #1 = Class              #2              // dt13/Marker
+  #2 = Utf8               dt13/Marker
+  #3 = Class              #4              // java/lang/Object
+  #4 = Utf8               java/lang/Object
+{
+}
+
+
+Classfile <TMP>/original-classes/dt13/NestedShape$Major$Minor.class
+  Last modified <NORMALIZED>; size 977 bytes
+  SHA-256 checksum 5450827d6859f7a804d1c1da1a38f3d8b06aef3e6d6448435ef95dd0b4dd0e7f
+public final class dt13.NestedShape$Major$Minor extends java.lang.Enum<dt13.NestedShape$Major$Minor>
+  minor version: 0
+  major version: 52
+  flags: (0x4031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_ENUM
+  this_class: #1                          // dt13/NestedShape$Major$Minor
+  super_class: #20                        // java/lang/Enum
+  interfaces: 0, fields: 3, methods: 5, attributes: 2
+Constant pool:
+   #1 = Class              #2             // dt13/NestedShape$Major$Minor
+   #2 = Utf8               dt13/NestedShape$Major$Minor
+   #3 = Fieldref           #1.#4          // dt13/NestedShape$Major$Minor.LEFT:Ldt13/NestedShape$Major$Minor;
+   #4 = NameAndType        #5:#6          // LEFT:Ldt13/NestedShape$Major$Minor;
+   #5 = Utf8               LEFT
+   #6 = Utf8               Ldt13/NestedShape$Major$Minor;
+   #7 = Fieldref           #1.#8          // dt13/NestedShape$Major$Minor.RIGHT:Ldt13/NestedShape$Major$Minor;
+   #8 = NameAndType        #9:#6          // RIGHT:Ldt13/NestedShape$Major$Minor;
+   #9 = Utf8               RIGHT
+  #10 = Fieldref           #1.#11         // dt13/NestedShape$Major$Minor.$VALUES:[Ldt13/NestedShape$Major$Minor;
+  #11 = NameAndType        #12:#13        // $VALUES:[Ldt13/NestedShape$Major$Minor;
+  #12 = Utf8               $VALUES
+  #13 = Utf8               [Ldt13/NestedShape$Major$Minor;
+  #14 = Methodref          #15.#16        // "[Ldt13/NestedShape$Major$Minor;".clone:()Ljava/lang/Object;
+  #15 = Class              #13            // "[Ldt13/NestedShape$Major$Minor;"
+  #16 = NameAndType        #17:#18        // clone:()Ljava/lang/Object;
+  #17 = Utf8               clone
+  #18 = Utf8               ()Ljava/lang/Object;
+  #19 = Methodref          #20.#21        // java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #20 = Class              #22            // java/lang/Enum
+  #21 = NameAndType        #23:#24        // valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #22 = Utf8               java/lang/Enum
+  #23 = Utf8               valueOf
+  #24 = Utf8               (Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #25 = Methodref          #20.#26        // java/lang/Enum."<init>":(Ljava/lang/String;I)V
+  #26 = NameAndType        #27:#28        // "<init>":(Ljava/lang/String;I)V
+  #27 = Utf8               <init>
+  #28 = Utf8               (Ljava/lang/String;I)V
+  #29 = String             #5             // LEFT
+  #30 = Methodref          #1.#26         // dt13/NestedShape$Major$Minor."<init>":(Ljava/lang/String;I)V
+  #31 = String             #9             // RIGHT
+  #32 = Methodref          #1.#33         // dt13/NestedShape$Major$Minor.$values:()[Ldt13/NestedShape$Major$Minor;
+  #33 = NameAndType        #34:#35        // $values:()[Ldt13/NestedShape$Major$Minor;
+  #34 = Utf8               $values
+  #35 = Utf8               ()[Ldt13/NestedShape$Major$Minor;
+  #36 = Utf8               values
+  #37 = Utf8               Code
+  #38 = Utf8               (Ljava/lang/String;)Ldt13/NestedShape$Major$Minor;
+  #39 = Utf8               MethodParameters
+  #40 = Utf8               Signature
+  #41 = Utf8               ()V
+  #42 = Utf8               <clinit>
+  #43 = Utf8               Ljava/lang/Enum<Ldt13/NestedShape$Major$Minor;>;
+  #44 = Utf8               InnerClasses
+  #45 = Class              #46            // dt13/NestedShape$Major
+  #46 = Utf8               dt13/NestedShape$Major
+  #47 = Class              #48            // dt13/NestedShape
+  #48 = Utf8               dt13/NestedShape
+  #49 = Utf8               Major
+  #50 = Utf8               Minor
+{
+  public static final dt13.NestedShape$Major$Minor LEFT;
+    descriptor: Ldt13/NestedShape$Major$Minor;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final dt13.NestedShape$Major$Minor RIGHT;
+    descriptor: Ldt13/NestedShape$Major$Minor;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  private static final dt13.NestedShape$Major$Minor[] $VALUES;
+    descriptor: [Ldt13/NestedShape$Major$Minor;
+    flags: (0x101a) ACC_PRIVATE, ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public static dt13.NestedShape$Major$Minor[] values();
+    descriptor: ()[Ldt13/NestedShape$Major$Minor;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #10                 // Field $VALUES:[Ldt13/NestedShape$Major$Minor;
+         3: invokevirtual #14                 // Method "[Ldt13/NestedShape$Major$Minor;".clone:()Ljava/lang/Object;
+         6: checkcast     #15                 // class "[Ldt13/NestedShape$Major$Minor;"
+         9: areturn
+
+  public static dt13.NestedShape$Major$Minor valueOf(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ldt13/NestedShape$Major$Minor;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: ldc           #1                  // class dt13/NestedShape$Major$Minor
+         2: aload_0
+         3: invokestatic  #19                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+         6: checkcast     #1                  // class dt13/NestedShape$Major$Minor
+         9: areturn
+    MethodParameters:
+      Name                           Flags
+      <no name>                      mandated
+
+  private dt13.NestedShape$Major$Minor();
+    descriptor: (Ljava/lang/String;I)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: invokespecial #25                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+         6: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+    Signature: #41                          // ()V
+
+  private static dt13.NestedShape$Major$Minor[] $values();
+    descriptor: ()[Ldt13/NestedShape$Major$Minor;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_2
+         1: anewarray     #1                  // class dt13/NestedShape$Major$Minor
+         4: dup
+         5: iconst_0
+         6: getstatic     #3                  // Field LEFT:Ldt13/NestedShape$Major$Minor;
+         9: aastore
+        10: dup
+        11: iconst_1
+        12: getstatic     #7                  // Field RIGHT:Ldt13/NestedShape$Major$Minor;
+        15: aastore
+        16: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: new           #1                  // class dt13/NestedShape$Major$Minor
+         3: dup
+         4: ldc           #29                 // String LEFT
+         6: iconst_0
+         7: invokespecial #30                 // Method "<init>":(Ljava/lang/String;I)V
+        10: putstatic     #3                  // Field LEFT:Ldt13/NestedShape$Major$Minor;
+        13: new           #1                  // class dt13/NestedShape$Major$Minor
+        16: dup
+        17: ldc           #31                 // String RIGHT
+        19: iconst_1
+        20: invokespecial #30                 // Method "<init>":(Ljava/lang/String;I)V
+        23: putstatic     #7                  // Field RIGHT:Ldt13/NestedShape$Major$Minor;
+        26: invokestatic  #32                 // Method $values:()[Ldt13/NestedShape$Major$Minor;
+        29: putstatic     #10                 // Field $VALUES:[Ldt13/NestedShape$Major$Minor;
+        32: return
+}
+Signature: #43                          // Ljava/lang/Enum<Ldt13/NestedShape$Major$Minor;>;
+InnerClasses:
+  public static final #49= #45 of #47;    // Major=class dt13/NestedShape$Major of class dt13/NestedShape
+  public static final #50= #1 of #45;     // Minor=class dt13/NestedShape$Major$Minor of class dt13/NestedShape$Major
+
+
+Classfile <TMP>/original-classes/dt13/NestedShape$Major.class
+  Last modified <NORMALIZED>; size 949 bytes
+  SHA-256 checksum 0f0a869e4319028e3b357f1071ffd8cbbf5b85055f991425312395f5251fc88b
+public final class dt13.NestedShape$Major extends java.lang.Enum<dt13.NestedShape$Major>
+  minor version: 0
+  major version: 52
+  flags: (0x4031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_ENUM
+  this_class: #1                          // dt13/NestedShape$Major
+  super_class: #20                        // java/lang/Enum
+  interfaces: 0, fields: 3, methods: 5, attributes: 2
+Constant pool:
+   #1 = Class              #2             // dt13/NestedShape$Major
+   #2 = Utf8               dt13/NestedShape$Major
+   #3 = Fieldref           #1.#4          // dt13/NestedShape$Major.FIRST:Ldt13/NestedShape$Major;
+   #4 = NameAndType        #5:#6          // FIRST:Ldt13/NestedShape$Major;
+   #5 = Utf8               FIRST
+   #6 = Utf8               Ldt13/NestedShape$Major;
+   #7 = Fieldref           #1.#8          // dt13/NestedShape$Major.SECOND:Ldt13/NestedShape$Major;
+   #8 = NameAndType        #9:#6          // SECOND:Ldt13/NestedShape$Major;
+   #9 = Utf8               SECOND
+  #10 = Fieldref           #1.#11         // dt13/NestedShape$Major.$VALUES:[Ldt13/NestedShape$Major;
+  #11 = NameAndType        #12:#13        // $VALUES:[Ldt13/NestedShape$Major;
+  #12 = Utf8               $VALUES
+  #13 = Utf8               [Ldt13/NestedShape$Major;
+  #14 = Methodref          #15.#16        // "[Ldt13/NestedShape$Major;".clone:()Ljava/lang/Object;
+  #15 = Class              #13            // "[Ldt13/NestedShape$Major;"
+  #16 = NameAndType        #17:#18        // clone:()Ljava/lang/Object;
+  #17 = Utf8               clone
+  #18 = Utf8               ()Ljava/lang/Object;
+  #19 = Methodref          #20.#21        // java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #20 = Class              #22            // java/lang/Enum
+  #21 = NameAndType        #23:#24        // valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #22 = Utf8               java/lang/Enum
+  #23 = Utf8               valueOf
+  #24 = Utf8               (Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #25 = Methodref          #20.#26        // java/lang/Enum."<init>":(Ljava/lang/String;I)V
+  #26 = NameAndType        #27:#28        // "<init>":(Ljava/lang/String;I)V
+  #27 = Utf8               <init>
+  #28 = Utf8               (Ljava/lang/String;I)V
+  #29 = String             #5             // FIRST
+  #30 = Methodref          #1.#26         // dt13/NestedShape$Major."<init>":(Ljava/lang/String;I)V
+  #31 = String             #9             // SECOND
+  #32 = Methodref          #1.#33         // dt13/NestedShape$Major.$values:()[Ldt13/NestedShape$Major;
+  #33 = NameAndType        #34:#35        // $values:()[Ldt13/NestedShape$Major;
+  #34 = Utf8               $values
+  #35 = Utf8               ()[Ldt13/NestedShape$Major;
+  #36 = Utf8               values
+  #37 = Utf8               Code
+  #38 = Utf8               (Ljava/lang/String;)Ldt13/NestedShape$Major;
+  #39 = Utf8               MethodParameters
+  #40 = Utf8               Signature
+  #41 = Utf8               ()V
+  #42 = Utf8               <clinit>
+  #43 = Utf8               Ljava/lang/Enum<Ldt13/NestedShape$Major;>;
+  #44 = Utf8               InnerClasses
+  #45 = Class              #46            // dt13/NestedShape
+  #46 = Utf8               dt13/NestedShape
+  #47 = Utf8               Major
+  #48 = Class              #49            // dt13/NestedShape$Major$Minor
+  #49 = Utf8               dt13/NestedShape$Major$Minor
+  #50 = Utf8               Minor
+{
+  public static final dt13.NestedShape$Major FIRST;
+    descriptor: Ldt13/NestedShape$Major;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final dt13.NestedShape$Major SECOND;
+    descriptor: Ldt13/NestedShape$Major;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  private static final dt13.NestedShape$Major[] $VALUES;
+    descriptor: [Ldt13/NestedShape$Major;
+    flags: (0x101a) ACC_PRIVATE, ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public static dt13.NestedShape$Major[] values();
+    descriptor: ()[Ldt13/NestedShape$Major;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #10                 // Field $VALUES:[Ldt13/NestedShape$Major;
+         3: invokevirtual #14                 // Method "[Ldt13/NestedShape$Major;".clone:()Ljava/lang/Object;
+         6: checkcast     #15                 // class "[Ldt13/NestedShape$Major;"
+         9: areturn
+
+  public static dt13.NestedShape$Major valueOf(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ldt13/NestedShape$Major;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: ldc           #1                  // class dt13/NestedShape$Major
+         2: aload_0
+         3: invokestatic  #19                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+         6: checkcast     #1                  // class dt13/NestedShape$Major
+         9: areturn
+    MethodParameters:
+      Name                           Flags
+      <no name>                      mandated
+
+  private dt13.NestedShape$Major();
+    descriptor: (Ljava/lang/String;I)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: invokespecial #25                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+         6: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+    Signature: #41                          // ()V
+
+  private static dt13.NestedShape$Major[] $values();
+    descriptor: ()[Ldt13/NestedShape$Major;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_2
+         1: anewarray     #1                  // class dt13/NestedShape$Major
+         4: dup
+         5: iconst_0
+         6: getstatic     #3                  // Field FIRST:Ldt13/NestedShape$Major;
+         9: aastore
+        10: dup
+        11: iconst_1
+        12: getstatic     #7                  // Field SECOND:Ldt13/NestedShape$Major;
+        15: aastore
+        16: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: new           #1                  // class dt13/NestedShape$Major
+         3: dup
+         4: ldc           #29                 // String FIRST
+         6: iconst_0
+         7: invokespecial #30                 // Method "<init>":(Ljava/lang/String;I)V
+        10: putstatic     #3                  // Field FIRST:Ldt13/NestedShape$Major;
+        13: new           #1                  // class dt13/NestedShape$Major
+        16: dup
+        17: ldc           #31                 // String SECOND
+        19: iconst_1
+        20: invokespecial #30                 // Method "<init>":(Ljava/lang/String;I)V
+        23: putstatic     #7                  // Field SECOND:Ldt13/NestedShape$Major;
+        26: invokestatic  #32                 // Method $values:()[Ldt13/NestedShape$Major;
+        29: putstatic     #10                 // Field $VALUES:[Ldt13/NestedShape$Major;
+        32: return
+}
+Signature: #43                          // Ljava/lang/Enum<Ldt13/NestedShape$Major;>;
+InnerClasses:
+  public static final #47= #1 of #45;     // Major=class dt13/NestedShape$Major of class dt13/NestedShape
+  public static final #50= #48 of #1;     // Minor=class dt13/NestedShape$Major$Minor of class dt13/NestedShape$Major
+
+
+Classfile <TMP>/original-classes/dt13/NestedShape.class
+  Last modified <NORMALIZED>; size 617 bytes
+  SHA-256 checksum 34fb96b3d03b5f9920264864e5dde24d2303ee4aa2980852f27f3796d1dcd89d
+public final class dt13.NestedShape
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #35                         // dt13/NestedShape
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // java/lang/StringBuilder
+   #8 = Utf8               java/lang/StringBuilder
+   #9 = Methodref          #7.#3          // java/lang/StringBuilder."<init>":()V
+  #10 = Fieldref           #11.#12        // dt13/NestedShape$Major.FIRST:Ldt13/NestedShape$Major;
+  #11 = Class              #13            // dt13/NestedShape$Major
+  #12 = NameAndType        #14:#15        // FIRST:Ldt13/NestedShape$Major;
+  #13 = Utf8               dt13/NestedShape$Major
+  #14 = Utf8               FIRST
+  #15 = Utf8               Ldt13/NestedShape$Major;
+  #16 = Methodref          #7.#17         // java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #17 = NameAndType        #18:#19        // append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #18 = Utf8               append
+  #19 = Utf8               (Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #20 = String             #21            // :
+  #21 = Utf8               :
+  #22 = Methodref          #7.#23         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #23 = NameAndType        #18:#24        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #24 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #25 = Fieldref           #26.#27        // dt13/NestedShape$Major$Minor.LEFT:Ldt13/NestedShape$Major$Minor;
+  #26 = Class              #28            // dt13/NestedShape$Major$Minor
+  #27 = NameAndType        #29:#30        // LEFT:Ldt13/NestedShape$Major$Minor;
+  #28 = Utf8               dt13/NestedShape$Major$Minor
+  #29 = Utf8               LEFT
+  #30 = Utf8               Ldt13/NestedShape$Major$Minor;
+  #31 = Methodref          #7.#32         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #32 = NameAndType        #33:#34        // toString:()Ljava/lang/String;
+  #33 = Utf8               toString
+  #34 = Utf8               ()Ljava/lang/String;
+  #35 = Class              #36            // dt13/NestedShape
+  #36 = Utf8               dt13/NestedShape
+  #37 = Utf8               Code
+  #38 = Utf8               observe
+  #39 = Utf8               InnerClasses
+  #40 = Utf8               Major
+  #41 = Utf8               Minor
+{
+  public dt13.NestedShape();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static java.lang.String observe();
+    descriptor: ()Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #7                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #10                 // Field dt13/NestedShape$Major.FIRST:Ldt13/NestedShape$Major;
+        10: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        13: ldc           #20                 // String :
+        15: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: getstatic     #25                 // Field dt13/NestedShape$Major$Minor.LEFT:Ldt13/NestedShape$Major$Minor;
+        21: invokevirtual #16                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        24: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        27: areturn
+}
+InnerClasses:
+  public static final #40= #11 of #35;    // Major=class dt13/NestedShape$Major of class dt13/NestedShape
+  public static final #41= #26 of #11;    // Minor=class dt13/NestedShape$Major$Minor of class dt13/NestedShape$Major
+
+
+Classfile <TMP>/original-classes/dt13/PlainImpl.class
+  Last modified <NORMALIZED>; size 148 bytes
+  SHA-256 checksum 0abb34ef5551cc05910b0003afe2620ed7c00e74d7ab2e14a082825694e50dbc
+final class dt13.PlainImpl implements dt13.Marker
+  minor version: 0
+  major version: 52
+  flags: (0x0030) ACC_FINAL, ACC_SUPER
+  this_class: #7                          // dt13/PlainImpl
+  super_class: #2                         // java/lang/Object
+  interfaces: 1, fields: 0, methods: 1, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // dt13/PlainImpl
+   #8 = Utf8               dt13/PlainImpl
+   #9 = Class              #10            // dt13/Marker
+  #10 = Utf8               dt13/Marker
+  #11 = Utf8               Code
+{
+  dt13.PlainImpl();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+}
+
+
+Classfile <TMP>/original-classes/dt13/PlainShape.class
+  Last modified <NORMALIZED>; size 796 bytes
+  SHA-256 checksum 12ca4d24b4fe9834f9897ab1b839d0fc8724cfd20c91c07b85703faccf8b9d98
+public final class dt13.PlainShape extends java.lang.Enum<dt13.PlainShape>
+  minor version: 0
+  major version: 52
+  flags: (0x4031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER, ACC_ENUM
+  this_class: #1                          // dt13/PlainShape
+  super_class: #20                        // java/lang/Enum
+  interfaces: 0, fields: 3, methods: 5, attributes: 1
+Constant pool:
+   #1 = Class              #2             // dt13/PlainShape
+   #2 = Utf8               dt13/PlainShape
+   #3 = Fieldref           #1.#4          // dt13/PlainShape.FIRST:Ldt13/PlainShape;
+   #4 = NameAndType        #5:#6          // FIRST:Ldt13/PlainShape;
+   #5 = Utf8               FIRST
+   #6 = Utf8               Ldt13/PlainShape;
+   #7 = Fieldref           #1.#8          // dt13/PlainShape.SECOND:Ldt13/PlainShape;
+   #8 = NameAndType        #9:#6          // SECOND:Ldt13/PlainShape;
+   #9 = Utf8               SECOND
+  #10 = Fieldref           #1.#11         // dt13/PlainShape.$VALUES:[Ldt13/PlainShape;
+  #11 = NameAndType        #12:#13        // $VALUES:[Ldt13/PlainShape;
+  #12 = Utf8               $VALUES
+  #13 = Utf8               [Ldt13/PlainShape;
+  #14 = Methodref          #15.#16        // "[Ldt13/PlainShape;".clone:()Ljava/lang/Object;
+  #15 = Class              #13            // "[Ldt13/PlainShape;"
+  #16 = NameAndType        #17:#18        // clone:()Ljava/lang/Object;
+  #17 = Utf8               clone
+  #18 = Utf8               ()Ljava/lang/Object;
+  #19 = Methodref          #20.#21        // java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #20 = Class              #22            // java/lang/Enum
+  #21 = NameAndType        #23:#24        // valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #22 = Utf8               java/lang/Enum
+  #23 = Utf8               valueOf
+  #24 = Utf8               (Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+  #25 = Methodref          #20.#26        // java/lang/Enum."<init>":(Ljava/lang/String;I)V
+  #26 = NameAndType        #27:#28        // "<init>":(Ljava/lang/String;I)V
+  #27 = Utf8               <init>
+  #28 = Utf8               (Ljava/lang/String;I)V
+  #29 = String             #5             // FIRST
+  #30 = Methodref          #1.#26         // dt13/PlainShape."<init>":(Ljava/lang/String;I)V
+  #31 = String             #9             // SECOND
+  #32 = Methodref          #1.#33         // dt13/PlainShape.$values:()[Ldt13/PlainShape;
+  #33 = NameAndType        #34:#35        // $values:()[Ldt13/PlainShape;
+  #34 = Utf8               $values
+  #35 = Utf8               ()[Ldt13/PlainShape;
+  #36 = Utf8               values
+  #37 = Utf8               Code
+  #38 = Utf8               (Ljava/lang/String;)Ldt13/PlainShape;
+  #39 = Utf8               MethodParameters
+  #40 = Utf8               Signature
+  #41 = Utf8               ()V
+  #42 = Utf8               <clinit>
+  #43 = Utf8               Ljava/lang/Enum<Ldt13/PlainShape;>;
+{
+  public static final dt13.PlainShape FIRST;
+    descriptor: Ldt13/PlainShape;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  public static final dt13.PlainShape SECOND;
+    descriptor: Ldt13/PlainShape;
+    flags: (0x4019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL, ACC_ENUM
+
+  private static final dt13.PlainShape[] $VALUES;
+    descriptor: [Ldt13/PlainShape;
+    flags: (0x101a) ACC_PRIVATE, ACC_STATIC, ACC_FINAL, ACC_SYNTHETIC
+
+  public static dt13.PlainShape[] values();
+    descriptor: ()[Ldt13/PlainShape;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #10                 // Field $VALUES:[Ldt13/PlainShape;
+         3: invokevirtual #14                 // Method "[Ldt13/PlainShape;".clone:()Ljava/lang/Object;
+         6: checkcast     #15                 // class "[Ldt13/PlainShape;"
+         9: areturn
+
+  public static dt13.PlainShape valueOf(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ldt13/PlainShape;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: ldc           #1                  // class dt13/PlainShape
+         2: aload_0
+         3: invokestatic  #19                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+         6: checkcast     #1                  // class dt13/PlainShape
+         9: areturn
+    MethodParameters:
+      Name                           Flags
+      <no name>                      mandated
+
+  private dt13.PlainShape();
+    descriptor: (Ljava/lang/String;I)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_0
+         1: aload_1
+         2: iload_2
+         3: invokespecial #25                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+         6: return
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+      <no name>                      synthetic
+    Signature: #41                          // ()V
+
+  private static dt13.PlainShape[] $values();
+    descriptor: ()[Ldt13/PlainShape;
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_2
+         1: anewarray     #1                  // class dt13/PlainShape
+         4: dup
+         5: iconst_0
+         6: getstatic     #3                  // Field FIRST:Ldt13/PlainShape;
+         9: aastore
+        10: dup
+        11: iconst_1
+        12: getstatic     #7                  // Field SECOND:Ldt13/PlainShape;
+        15: aastore
+        16: areturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: new           #1                  // class dt13/PlainShape
+         3: dup
+         4: ldc           #29                 // String FIRST
+         6: iconst_0
+         7: invokespecial #30                 // Method "<init>":(Ljava/lang/String;I)V
+        10: putstatic     #3                  // Field FIRST:Ldt13/PlainShape;
+        13: new           #1                  // class dt13/PlainShape
+        16: dup
+        17: ldc           #31                 // String SECOND
+        19: iconst_1
+        20: invokespecial #30                 // Method "<init>":(Ljava/lang/String;I)V
+        23: putstatic     #7                  // Field SECOND:Ldt13/PlainShape;
+        26: invokestatic  #32                 // Method $values:()[Ldt13/PlainShape;
+        29: putstatic     #10                 // Field $VALUES:[Ldt13/PlainShape;
+        32: return
+}
+Signature: #43                          // Ljava/lang/Enum<Ldt13/PlainShape;>;
+
+
+Classfile <TMP>/original-classes/dt13/Runner.class
+  Last modified <NORMALIZED>; size 1195 bytes
+  SHA-256 checksum 41fcfe1f0a3c30828e18f0024e086a8bba9eb05c385e96e86cf15c80e399e98b
+public final class dt13.Runner
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #78                         // dt13/Runner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // dt13/NestedShape$Major.FIRST:Ldt13/NestedShape$Major;
+   #8 = Class              #10            // dt13/NestedShape$Major
+   #9 = NameAndType        #11:#12        // FIRST:Ldt13/NestedShape$Major;
+  #10 = Utf8               dt13/NestedShape$Major
+  #11 = Utf8               FIRST
+  #12 = Utf8               Ldt13/NestedShape$Major;
+  #13 = Fieldref           #14.#15        // dt13/NestedShape$Major$Minor.LEFT:Ldt13/NestedShape$Major$Minor;
+  #14 = Class              #16            // dt13/NestedShape$Major$Minor
+  #15 = NameAndType        #17:#18        // LEFT:Ldt13/NestedShape$Major$Minor;
+  #16 = Utf8               dt13/NestedShape$Major$Minor
+  #17 = Utf8               LEFT
+  #18 = Utf8               Ldt13/NestedShape$Major$Minor;
+  #19 = Fieldref           #20.#21        // java/lang/System.out:Ljava/io/PrintStream;
+  #20 = Class              #22            // java/lang/System
+  #21 = NameAndType        #23:#24        // out:Ljava/io/PrintStream;
+  #22 = Utf8               java/lang/System
+  #23 = Utf8               out
+  #24 = Utf8               Ljava/io/PrintStream;
+  #25 = Class              #26            // java/lang/StringBuilder
+  #26 = Utf8               java/lang/StringBuilder
+  #27 = Methodref          #25.#3         // java/lang/StringBuilder."<init>":()V
+  #28 = String             #29            // nested=
+  #29 = Utf8               nested=
+  #30 = Methodref          #25.#31        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #31 = NameAndType        #32:#33        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #32 = Utf8               append
+  #33 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #34 = Methodref          #25.#35        // java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #35 = NameAndType        #32:#36        // append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #36 = Utf8               (Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #37 = String             #38            // :
+  #38 = Utf8               :
+  #39 = Methodref          #40.#41        // dt13/NestedShape.observe:()Ljava/lang/String;
+  #40 = Class              #42            // dt13/NestedShape
+  #41 = NameAndType        #43:#44        // observe:()Ljava/lang/String;
+  #42 = Utf8               dt13/NestedShape
+  #43 = Utf8               observe
+  #44 = Utf8               ()Ljava/lang/String;
+  #45 = Methodref          #25.#46        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #46 = NameAndType        #47:#44        // toString:()Ljava/lang/String;
+  #47 = Utf8               toString
+  #48 = Methodref          #49.#50        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #49 = Class              #51            // java/io/PrintStream
+  #50 = NameAndType        #52:#53        // println:(Ljava/lang/String;)V
+  #51 = Utf8               java/io/PrintStream
+  #52 = Utf8               println
+  #53 = Utf8               (Ljava/lang/String;)V
+  #54 = String             #55            // interface=
+  #55 = Utf8               interface=
+  #56 = Fieldref           #57.#58        // dt13/InterfaceShape.FIRST:Ldt13/InterfaceShape;
+  #57 = Class              #59            // dt13/InterfaceShape
+  #58 = NameAndType        #11:#60        // FIRST:Ldt13/InterfaceShape;
+  #59 = Utf8               dt13/InterfaceShape
+  #60 = Utf8               Ldt13/InterfaceShape;
+  #61 = Class              #62            // dt13/Marker
+  #62 = Utf8               dt13/Marker
+  #63 = Methodref          #25.#64        // java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+  #64 = NameAndType        #32:#65        // append:(Z)Ljava/lang/StringBuilder;
+  #65 = Utf8               (Z)Ljava/lang/StringBuilder;
+  #66 = String             #67            // plain=
+  #67 = Utf8               plain=
+  #68 = Fieldref           #69.#70        // dt13/PlainShape.FIRST:Ldt13/PlainShape;
+  #69 = Class              #71            // dt13/PlainShape
+  #70 = NameAndType        #11:#72        // FIRST:Ldt13/PlainShape;
+  #71 = Utf8               dt13/PlainShape
+  #72 = Utf8               Ldt13/PlainShape;
+  #73 = String             #74            // class=
+  #74 = Utf8               class=
+  #75 = Class              #76            // dt13/PlainImpl
+  #76 = Utf8               dt13/PlainImpl
+  #77 = Methodref          #75.#3         // dt13/PlainImpl."<init>":()V
+  #78 = Class              #79            // dt13/Runner
+  #79 = Utf8               dt13/Runner
+  #80 = Utf8               Code
+  #81 = Utf8               main
+  #82 = Utf8               ([Ljava/lang/String;)V
+  #83 = Utf8               InnerClasses
+  #84 = Utf8               Major
+  #85 = Utf8               Minor
+{
+  public dt13.Runner();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=3, args_size=1
+         0: getstatic     #7                  // Field dt13/NestedShape$Major.FIRST:Ldt13/NestedShape$Major;
+         3: astore_1
+         4: getstatic     #13                 // Field dt13/NestedShape$Major$Minor.LEFT:Ldt13/NestedShape$Major$Minor;
+         7: astore_2
+         8: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: new           #25                 // class java/lang/StringBuilder
+        14: dup
+        15: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+        18: ldc           #28                 // String nested=
+        20: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        23: aload_1
+        24: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        27: ldc           #37                 // String :
+        29: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        32: aload_2
+        33: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        36: ldc           #37                 // String :
+        38: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        41: invokestatic  #39                 // Method dt13/NestedShape.observe:()Ljava/lang/String;
+        44: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        47: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        50: invokevirtual #48                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        53: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        56: new           #25                 // class java/lang/StringBuilder
+        59: dup
+        60: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+        63: ldc           #54                 // String interface=
+        65: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        68: getstatic     #56                 // Field dt13/InterfaceShape.FIRST:Ldt13/InterfaceShape;
+        71: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        74: ldc           #37                 // String :
+        76: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        79: getstatic     #56                 // Field dt13/InterfaceShape.FIRST:Ldt13/InterfaceShape;
+        82: instanceof    #61                 // class dt13/Marker
+        85: invokevirtual #63                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+        88: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        91: invokevirtual #48                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        94: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        97: new           #25                 // class java/lang/StringBuilder
+       100: dup
+       101: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+       104: ldc           #66                 // String plain=
+       106: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       109: getstatic     #68                 // Field dt13/PlainShape.FIRST:Ldt13/PlainShape;
+       112: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+       115: ldc           #37                 // String :
+       117: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       120: getstatic     #68                 // Field dt13/PlainShape.FIRST:Ldt13/PlainShape;
+       123: instanceof    #61                 // class dt13/Marker
+       126: invokevirtual #63                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+       129: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       132: invokevirtual #48                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       135: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       138: new           #25                 // class java/lang/StringBuilder
+       141: dup
+       142: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+       145: ldc           #73                 // String class=
+       147: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       150: new           #75                 // class dt13/PlainImpl
+       153: dup
+       154: invokespecial #77                 // Method dt13/PlainImpl."<init>":()V
+       157: instanceof    #61                 // class dt13/Marker
+       160: invokevirtual #63                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+       163: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       166: invokevirtual #48                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       169: return
+}
+InnerClasses:
+  public static final #84= #8 of #40;     // Major=class dt13/NestedShape$Major of class dt13/NestedShape
+  public static final #85= #14 of #8;     // Minor=class dt13/NestedShape$Major$Minor of class dt13/NestedShape$Major
