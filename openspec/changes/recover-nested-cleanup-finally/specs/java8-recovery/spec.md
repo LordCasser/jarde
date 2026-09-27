@@ -12,7 +12,7 @@
 #### Scenario: 正文或清理异常
 
 - **WHEN** 同源级嵌套结构的可注入 control 遇到正文 `IOException`、清理 `IOException` 或清理 `RuntimeException`
-- **THEN** 三方 SHALL 保持相同事件顺序和终局异常：正文异常在清理成功或受检异常被吞掉后继续传播，清理未检异常覆盖先前异常；control MUST 明示其字节码不同，不得据此宣称固定目标的异常路径已动态触发
+- **THEN** 原始 control 与固定 JADX 的重编源码 SHALL 保持相同事件顺序和终局异常：正文异常在清理成功或受检异常被吞掉后继续传播，清理未检异常覆盖先前异常；control MUST 明示其三行字节码不同，Jarde 可安全拒绝它，不得据此宣称固定四行目标的异常路径已动态触发
 
 #### Scenario: 异常表或副本不等价
 
