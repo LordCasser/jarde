@@ -2017,6 +2017,7 @@ type OwnedTry = (
     Vec<CatchClause>,
     Option<CanonicalBlockId>,
     Vec<Region>,
+    Option<u32>,
 );
 
 /// What one call of the walk proved, in the order the text writes it, and where the run continues.
@@ -2089,6 +2090,33 @@ fn split(run: Vec<Region>) -> (Region, Vec<Region>) {
         .next()
         .expect("every walk run holds at least one region");
     (head, run.collect())
+}
+
+/// Every physical edge touching a lexical transfer must agree with the protected body's sole
+/// normal exit. In particular, the normal-flow projection alone cannot detect a competing
+/// exception or subroutine entry because it deliberately excludes those edges.
+fn closed_transfer_edges<Id: Ord>(
+    edges: impl IntoIterator<Item = (CanonicalEdgeKind, Id, Id)>,
+    bridge: &Id,
+    join: &Id,
+    owned: &BTreeSet<Id>,
+) -> bool {
+    let (mut incoming, mut outgoing) = (0usize, 0usize);
+    for (kind, from, to) in edges {
+        if &to == bridge {
+            if kind != CanonicalEdgeKind::Normal || !owned.contains(&from) {
+                return false;
+            }
+            incoming += 1;
+        }
+        if &from == bridge {
+            if kind != CanonicalEdgeKind::Normal || &to != join {
+                return false;
+            }
+            outgoing += 1;
+        }
+    }
+    incoming > 0 && outgoing == 1
 }
 
 /// A run of one region: the ordinary case, said once.
@@ -2314,7 +2342,7 @@ impl Walker<'_> {
             if frame.own_try != Some(node)
                 && (frame.own_finally.is_none() || frame.nested_finally_row.is_some())
                 && self.starts_catch(&current)
-                && let Some((body, lead, catches, join, tails)) =
+                && let Some((body, lead, catches, join, tails, exit_bci)) =
                     self.try_region(&current, node, frame)?
             {
                 let mut run = vec![Region::Try {
@@ -2322,10 +2350,12 @@ impl Walker<'_> {
                     lead,
                     body,
                     catches,
-                    normal_exit_bci: self.fragmented.as_ref().and_then(|proof| {
-                        (proof.outer_start != proof.inner_start
-                            && current.bci() == proof.inner_start)
-                            .then_some(proof.inner_exit_bci)
+                    normal_exit_bci: exit_bci.or_else(|| {
+                        self.fragmented.as_ref().and_then(|proof| {
+                            (proof.outer_start != proof.inner_start
+                                && current.bci() == proof.inner_start)
+                                .then_some(proof.inner_exit_bci)
+                        })
                     }),
                 }];
                 run.extend(tails);
@@ -3656,8 +3686,15 @@ impl Walker<'_> {
         else {
             return Ok(None);
         };
-        let (body, catches, join, tails) = self.try_level(start, node, frame, &shape)?;
-        Ok(Some((Box::new(body), shape.lead, catches, join, tails)))
+        let (body, catches, join, tails, exit_bci) = self.try_level(start, node, frame, &shape)?;
+        Ok(Some((
+            Box::new(body),
+            shape.lead,
+            catches,
+            join,
+            tails,
+            exit_bci,
+        )))
     }
 
     /// One level of a `try`/`catch` statement: its body, its clauses, the block the code after the
@@ -3685,6 +3722,7 @@ impl Walker<'_> {
             Vec<CatchClause>,
             Option<CanonicalBlockId>,
             Vec<Region>,
+            Option<u32>,
         ),
         StopReason,
     > {
@@ -3693,6 +3731,7 @@ impl Walker<'_> {
         // slot holds is one region, and the sibling quote is written after the `try` in the same
         // method, where the bytecode it names still runs.
         let mut tails: Vec<Region> = Vec::new();
+        let mut exit_bci = None;
         let certified = self.fragmented.as_ref().is_some_and(|proof| {
             start.bci() == proof.outer_start || start.bci() == proof.inner_start
         });
@@ -3708,7 +3747,7 @@ impl Walker<'_> {
                 } else {
                     frame.clone()
                 };
-                let (body, catches, join, inner_tails) =
+                let (body, catches, join, inner_tails, _) =
                     self.try_level(start, node, &outer_frame, inner)?;
                 let inner_region = Region::Try {
                     prefix: Vec::new(),
@@ -3743,7 +3782,15 @@ impl Walker<'_> {
                 let boundary_node = boundary
                     .as_ref()
                     .and_then(|block| self.view.index_of(block));
-                let (body, _) = self.region_at(start, &frame.protected(boundary_node, node))?;
+                let protected_frame = frame.protected(boundary_node, node);
+                let (mut body, body_next) = self.region_at(start, &protected_frame)?;
+                if let Some(bridge) = body_next
+                    && self.certified_try_exit(&bridge, &body, shape, &protected_frame)?
+                {
+                    let (bridge_run, _) = self.region_at(&bridge, &protected_frame)?;
+                    body.extend(bridge_run);
+                    exit_bci = Some(bridge.bci());
+                }
                 let body = if certified {
                     sequence_region(body)
                 } else {
@@ -3774,7 +3821,127 @@ impl Walker<'_> {
                 body: Box::new(handler),
             });
         }
-        Ok((body, catches, shape.join.clone(), tails))
+        Ok((body, catches, shape.join.clone(), tails, exit_bci))
+    }
+
+    /// The range-end goto belongs after the `try` only when the complete protected switch reaches
+    /// it and it has no other entry or effect. The lexical continuation then states its transfer;
+    /// the sibling owns the block while the `try` records its derived source BCI.
+    fn certified_try_exit(
+        &mut self,
+        bridge: &CanonicalBlockId,
+        body: &[Region],
+        shape: &crate::guard::Catches,
+        frame: &Frame,
+    ) -> Result<bool, StopReason> {
+        poll(self.budget, Some(bridge.bci()))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(
+                self.handlers.len()
+                    + self.canonical.edges().len()
+                    + self.code.instructions.len()
+                    + body
+                        .iter()
+                        .map(|region| region.blocks().len())
+                        .sum::<usize>(),
+            )
+            .unwrap_or(u64::MAX),
+            Some(bridge.bci()),
+        )?;
+        let [Region::Switch { .. }] = body else {
+            return Ok(false);
+        };
+        let Some(join) = &shape.join else {
+            return Ok(false);
+        };
+        if bridge.bci() != shape.protected_end
+            || self.handlers.iter().any(|row| {
+                (row.start_bci <= bridge.bci() && bridge.bci() < row.end_bci)
+                    || row.handler_bci == bridge.bci()
+            })
+        {
+            return Ok(false);
+        }
+        let Some(block) = self
+            .canonical
+            .blocks()
+            .iter()
+            .find(|block| block.id() == bridge)
+        else {
+            return Ok(false);
+        };
+        let Some(instructions) = self.ssa.block(bridge).map(|block| block.instructions()) else {
+            return Ok(false);
+        };
+        let [only] = instructions else {
+            return Ok(false);
+        };
+        if only.bci() != shape.protected_end
+            || block.end_bci()
+                != self
+                    .code
+                    .instructions
+                    .iter()
+                    .find(|instruction| instruction.bci == only.bci())
+                    .map(|instruction| instruction.bci + u32::from(instruction.width))
+                    .unwrap_or(0)
+            || !matches!(self.operations.get(only.bci()), Some(Operation::Transfer))
+            || self.view.successor_ids(bridge).as_slice() != [join.clone()]
+        {
+            return Ok(false);
+        }
+        let owned: BTreeSet<_> = body.iter().flat_map(Region::blocks).cloned().collect();
+        if owned.is_empty()
+            || owned.contains(bridge)
+            || self
+                .visited
+                .contains(&self.view.index_of(bridge).unwrap_or(usize::MAX))
+        {
+            return Ok(false);
+        }
+        // A fused lead may precede the exception range, but every other bytecode instruction
+        // claimed by the switch must lie in the named protected range.
+        if owned.iter().any(|id| {
+            self.ssa.block(id).is_none_or(|block| {
+                block.instructions().iter().any(|instruction| {
+                    let bci = instruction.bci();
+                    bci >= shape.protected_end || (bci < shape.lead.1 && id.bci() != shape.lead.0)
+                })
+            })
+        }) {
+            return Ok(false);
+        }
+        let Some(node) = self.view.index_of(bridge) else {
+            return Ok(false);
+        };
+        if frame.stops_at(node)
+            || frame.stops_at_switch_boundary(node)
+            || self.view.is_loop_header(node)
+            || frame
+                .loop_targets
+                .iter()
+                .any(|target| target.break_target == Some(node) || target.continue_target == node)
+        {
+            return Ok(false);
+        }
+        let predecessors = self.view.predecessors(node);
+        Ok(!predecessors.is_empty()
+            && predecessors.iter().all(|predecessor| {
+                self.view
+                    .id_of(*predecessor)
+                    .is_some_and(|id| owned.contains(id))
+            })
+            && closed_transfer_edges(
+                self.canonical
+                    .edges()
+                    .iter()
+                    .map(|edge| (edge.kind(), edge.from().clone(), edge.to().clone())),
+                bridge,
+                join,
+                &owned,
+            ))
     }
 
     /// The block the code after one `try` begins at: `join` itself, or the target of the transfer
@@ -9429,6 +9596,30 @@ fn continuation_claims_are_exact<T: Ord + Clone>(blocks: &[T], visited: &BTreeSe
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn range_end_transfer_rejects_competing_entries_and_exits() {
+        let owned = BTreeSet::from([0_u32, 40, 48, 56]);
+        let ordinary = vec![
+            (CanonicalEdgeKind::Normal, 0, 61),
+            (CanonicalEdgeKind::Normal, 40, 61),
+            (CanonicalEdgeKind::Normal, 48, 61),
+            (CanonicalEdgeKind::Normal, 56, 61),
+            (CanonicalEdgeKind::Normal, 61, 79),
+        ];
+        assert!(closed_transfer_edges(ordinary.clone(), &61, &79, &owned));
+        for extra in [
+            (CanonicalEdgeKind::Normal, 90, 61),
+            (CanonicalEdgeKind::Exception { handler_ordinal: 1 }, 90, 61),
+            (CanonicalEdgeKind::Normal, 61, 90),
+            (CanonicalEdgeKind::Normal, 61, 79),
+            (CanonicalEdgeKind::Call { call_site: 90 }, 61, 79),
+        ] {
+            let mut changed = ordinary.clone();
+            changed.push(extra);
+            assert!(!closed_transfer_edges(changed, &61, &79, &owned));
+        }
+    }
 
     #[test]
     fn shared_tail_needs_one_comparable_first_common_block() {

@@ -12401,10 +12401,48 @@ impl Builder<'_> {
                     // own instruction — is what the bytecode holds.
                     self.settled.insert(join_bci);
                 }
-                self.push(Stmt::new(
-                    StmtKind::Switch { value, arms },
-                    OriginSet::new(Origin::direct(*branch_bci)),
-                ))
+                let mut origin = OriginSet::new(Origin::direct(*branch_bci));
+                // A straight case's final goto to this switch's join becomes the case's Java
+                // break. Only that eliminated transfer is source evidence of this switch.
+                for group in groups {
+                    let (Some(join), Region::Straight { blocks }) =
+                        (join.as_ref(), group.arm.as_ref())
+                    else {
+                        continue;
+                    };
+                    let Some(block) = blocks.last() else {
+                        continue;
+                    };
+                    let Some(instruction) = self
+                        .ssa
+                        .block(block)
+                        .and_then(|block| block.instructions().last())
+                    else {
+                        continue;
+                    };
+                    if group.fall_through
+                        || !matches!(
+                            self.operations.get(instruction.bci()),
+                            Some(Operation::Transfer)
+                        )
+                    {
+                        continue;
+                    }
+                    charge(
+                        self.budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+                        Some(instruction.bci()),
+                    )?;
+                    if self.canonical.edges().iter().any(|edge| {
+                        edge.from() == block
+                            && edge.to() == join
+                            && edge.kind() == CanonicalEdgeKind::Normal
+                    }) {
+                        origin = origin.plus_derived(Origin::derived(instruction.bci()));
+                    }
+                }
+                self.push(Stmt::new(StmtKind::Switch { value, arms }, origin))
             }
             Region::Loop {
                 header,

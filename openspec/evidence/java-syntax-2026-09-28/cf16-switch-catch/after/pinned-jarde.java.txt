@@ -1,0 +1,118 @@
+// jarde: presentation of `jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package jadx.tests.integration.trycatch;
+
+public class TestTryCatchFinally12$TestCls extends java.lang.Object {
+    private java.lang.StringBuilder sb;
+
+    public TestTryCatchFinally12$TestCls() {
+        // @method <init>()V
+        // @declaration a constructor of `jadx.tests.integration.trycatch.TestTryCatchFinally12$TestCls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void test1(int arg1) {
+        // @method test1(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally12$TestCls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            try {
+                this.call(arg1);
+            } catch (java.lang.NullPointerException local2) {
+                this.sb.append("-catch");
+            }
+            this.sb.append("-out");
+        } finally {
+            this.sb.append("-finally");
+        }
+        return;
+    }
+
+    public void test2(int arg1) {
+        // @method test2(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally12$TestCls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            try {
+                this.call(arg1);
+            } catch (java.lang.NullPointerException local2) {
+                this.sb.append("-catch");
+            }
+        } finally {
+            this.sb.append("-finally");
+        }
+        return;
+    }
+
+    public void test3(int arg1) {
+        // @method test3(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally12$TestCls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            this.call(arg1);
+        } catch (java.lang.NullPointerException local2) {
+            this.sb.append("-catch");
+        } finally {
+            this.sb.append("-finally");
+        }
+        return;
+    }
+
+    public void call(int arg1) {
+        // @method call(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally12$TestCls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.sb.append("call");
+        switch (arg1) {
+            case 1:
+                this.sb.append("-npe");
+                throw new java.lang.NullPointerException();
+            case 2:
+                this.sb.append("-iae");
+                throw new java.lang.IllegalArgumentException();
+            default:
+                return;
+        }
+    }
+
+    public java.lang.String runTest(int arg1, int arg2) {
+        // @method runTest(II)Ljava/lang/String;
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally12$TestCls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.sb = new java.lang.StringBuilder();
+        try {
+            switch (arg1) {
+                case 1:
+                    this.test1(arg2);
+                    break;
+                case 2:
+                    this.test2(arg2);
+                    break;
+                case 3:
+                    this.test3(arg2);
+                    break;
+            }
+        } catch (java.lang.IllegalArgumentException local3) {
+            jadx.tests.api.utils.assertj.JadxAssertions.assertThat((java.lang.Object) java.lang.Integer.valueOf(arg2)).isEqualTo((java.lang.Object) java.lang.Integer.valueOf(2));
+        }
+        return this.sb.toString();
+    }
+
+    public void check() {
+        // @method check()V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally12$TestCls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        jadx.tests.api.utils.assertj.JadxAssertions.assertThat((java.lang.Object) this.runTest(1, 0)).isEqualTo((java.lang.Object) "call-out-finally");
+        jadx.tests.api.utils.assertj.JadxAssertions.assertThat((java.lang.Object) this.runTest(1, 1)).isEqualTo((java.lang.Object) "call-npe-catch-out-finally");
+        jadx.tests.api.utils.assertj.JadxAssertions.assertThat((java.lang.Object) this.runTest(1, 2)).isEqualTo((java.lang.Object) "call-iae-finally");
+        jadx.tests.api.utils.assertj.JadxAssertions.assertThat((java.lang.Object) this.runTest(2, 0)).isEqualTo((java.lang.Object) "call-finally");
+        jadx.tests.api.utils.assertj.JadxAssertions.assertThat((java.lang.Object) this.runTest(2, 1)).isEqualTo((java.lang.Object) "call-npe-catch-finally");
+        jadx.tests.api.utils.assertj.JadxAssertions.assertThat((java.lang.Object) this.runTest(2, 2)).isEqualTo((java.lang.Object) "call-iae-finally");
+        jadx.tests.api.utils.assertj.JadxAssertions.assertThat((java.lang.Object) this.runTest(3, 0)).isEqualTo((java.lang.Object) "call-finally");
+        jadx.tests.api.utils.assertj.JadxAssertions.assertThat((java.lang.Object) this.runTest(3, 1)).isEqualTo((java.lang.Object) "call-npe-catch-finally");
+        jadx.tests.api.utils.assertj.JadxAssertions.assertThat((java.lang.Object) this.runTest(3, 2)).isEqualTo((java.lang.Object) "call-iae-finally");
+        return;
+    }
+}

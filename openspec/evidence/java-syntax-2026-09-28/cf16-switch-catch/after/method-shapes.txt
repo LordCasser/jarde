@@ -1,0 +1,8 @@
+test1: bci_opcode_exception_table_equal=true
+test2: bci_opcode_exception_table_equal=true
+test3: bci_opcode_exception_table_equal=true
+runTest: bci_opcode_exception_table_equal=true
+fixed_runTest_bytecode_shape_equal=true
+runTest_exact_expected_shape=true
+exception_row=[(11, 61, 64, 'Class java/lang/IllegalArgumentException')]
+required_bci: switch=12 join=61 transfer=goto_79 return=79

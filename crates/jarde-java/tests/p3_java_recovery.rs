@@ -415,6 +415,196 @@ fn cf18_fixed_methods_preserve_rows_dispatch_and_presented_origins() {
 }
 
 #[test]
+fn cf16_named_catch_owns_complete_switch_and_range_end_transfer() {
+    let class = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/TestTryCatchFinally12$TestCls.class"
+    );
+    let payload = analyze(class, b"runTest", b"(II)Ljava/lang/String;");
+    let ir = payload.analysis.ir();
+    let code = ir.code().unwrap();
+    let canonical = ir.canonical().unwrap();
+    use jarde_jvm::method_ir::CanonicalEdgeKind as Edge;
+    assert_eq!(
+        canonical
+            .edges()
+            .iter()
+            .map(|edge| (edge.from().bci(), edge.kind(), edge.to().bci()))
+            .collect::<Vec<_>>(),
+        vec![
+            (0, Edge::Normal, 40),
+            (0, Edge::Normal, 48),
+            (0, Edge::Normal, 56),
+            (0, Edge::Normal, 61),
+            (40, Edge::Normal, 61),
+            (40, Edge::Exception { handler_ordinal: 0 }, 64),
+            (48, Edge::Normal, 61),
+            (48, Edge::Exception { handler_ordinal: 0 }, 64),
+            (56, Edge::Normal, 61),
+            (56, Edge::Exception { handler_ordinal: 0 }, 64),
+            (61, Edge::Normal, 79),
+            (64, Edge::Normal, 79),
+        ]
+    );
+    assert_eq!(
+        code.exception_handlers
+            .iter()
+            .map(|row| (row.start_bci, row.end_bci, row.handler_bci))
+            .collect::<Vec<_>>(),
+        vec![(11, 61, 64)]
+    );
+    let facts = facts_of(class, b"runTest", 3, vec![]);
+    let report = recover_body(&payload, &facts, &mut Budget::new(limits()));
+    assert_eq!(report.quality, Quality::Structured, "{}", report.text);
+    assert!(report.fallbacks.is_empty(), "{}", report.text);
+    assert!(
+        report
+            .text
+            .contains("arg0.sb = new java.lang.StringBuilder();"),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("try {\n        switch ("),
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report
+            .text
+            .matches("catch (java.lang.IllegalArgumentException")
+            .count(),
+        1
+    );
+    for call in ["arg0.test1(", "arg0.test2(", "arg0.test3("] {
+        assert_eq!(report.text.matches(call).count(), 1);
+    }
+    assert!(report.text.contains("return arg0.sb.toString();"));
+    let mut owned = std::collections::BTreeSet::new();
+    for region in &report.regions {
+        assert!(region.structured, "{region:?}");
+        for bci in &region.blocks {
+            assert!(owned.insert(*bci), "BCI {bci} has two owners");
+        }
+    }
+    assert_eq!(
+        owned,
+        canonical
+            .blocks()
+            .iter()
+            .map(|block| block.id().bci())
+            .collect()
+    );
+    assert_eq!(
+        report
+            .regions
+            .iter()
+            .map(|region| region.blocks.clone())
+            .collect::<Vec<_>>(),
+        vec![vec![0, 40, 48, 56, 64], vec![61], vec![79]]
+    );
+    assert_eq!(
+        report
+            .regions
+            .iter()
+            .filter(|region| region.blocks.contains(&61))
+            .count(),
+        1
+    );
+    assert_eq!(
+        report
+            .regions
+            .iter()
+            .filter(|region| region.blocks.contains(&79))
+            .count(),
+        1
+    );
+    assert!(!report.source_map.derived_of_bci(61).is_empty());
+    assert!(report.source_map.direct_of_bci(61).is_empty());
+    for case_exit in [45, 53] {
+        assert!(!report.source_map.derived_of_bci(case_exit).is_empty());
+    }
+    let physical: std::collections::BTreeSet<_> = code
+        .instructions
+        .iter()
+        .map(|instruction| instruction.bci)
+        .collect();
+    let mapped: std::collections::BTreeSet<_> = report
+        .source_map
+        .segments()
+        .iter()
+        .flat_map(|segment| segment.origin().bcis())
+        .collect();
+    assert_eq!(
+        mapped, physical,
+        "all physical instructions need a source anchor"
+    );
+}
+
+#[test]
+fn cf16_partial_case_ranges_and_real_resource_keep_their_boundaries() {
+    for class in [
+        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/PartialSwitchCatch1.class").as_slice(),
+        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/PartialSwitchCatch2.class").as_slice(),
+        include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/PartialSwitchCatch3.class").as_slice(),
+    ] {
+        let payload = analyze(class, b"runTest", b"(II)Ljava/lang/String;");
+        let report = recover_body(
+            &payload,
+            &facts_of(class, b"runTest", 3, vec![]),
+            &mut Budget::new(limits()),
+        );
+        assert!(!report.text.contains("try {\n        switch (arg1)"), "{}", report.text);
+        assert_eq!(report.text.matches("catch (java.lang.IllegalArgumentException").count(), 1);
+    }
+    let resource = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/TwrSwitchCatch.class"
+    );
+    let payload = analyze(resource, b"runTest", b"(II)Ljava/lang/String;");
+    let report = recover_body(
+        &payload,
+        &facts_of(resource, b"runTest", 3, vec![]),
+        &mut Budget::new(limits()),
+    );
+    assert!(
+        report.fallbacks.contains(&"jre_guard_resource_init"),
+        "{}",
+        report.text
+    );
+}
+
+#[test]
+fn cf16_stopped_runs_do_not_publish_a_partial_try() {
+    let class = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/TestTryCatchFinally12$TestCls.class"
+    );
+    let payload = analyze(class, b"runTest", b"(II)Ljava/lang/String;");
+    let facts = facts_of(class, b"runTest", 3, vec![]);
+    let complete = recover_body(&payload, &facts, &mut Budget::new(limits()));
+    assert!(complete.produced());
+    let stopped = recover_body(
+        &payload,
+        &facts,
+        &mut Budget::new(Limits {
+            output_bytes: complete.text.len() as u64 - 1,
+            ..limits()
+        }),
+    );
+    assert!(!stopped.produced());
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    assert!(matches!(stopped.stop(), Some(StopReason::Budget { .. })));
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover_body(
+        &payload,
+        &facts,
+        &mut Budget::with_cancellation_token(limits(), token),
+    );
+    assert!(!cancelled.produced());
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+}
+
+#[test]
 fn cf18_verifier_valid_near_misses_refuse_the_whole_method() {
     for class in [
         include_bytes!("../../../openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/negatives/wrong-type/ExceptionRegionsAudit.class").as_slice(),
