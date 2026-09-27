@@ -1,0 +1,32 @@
+public class dt18.GenericSlots {
+  public java.util.List<java.lang.String> names;
+    descriptor: Ljava/util/List;
+
+  public java.util.List raw;
+    descriptor: Ljava/util/List;
+
+  public dt18.GenericSlots();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public java.util.List<java.lang.String> id(java.util.List<java.lang.String>);
+    descriptor: (Ljava/util/List;)Ljava/util/List;
+    Code:
+       0: aload_1
+       1: areturn
+
+  public java.util.List<java.lang.String> empty();
+    descriptor: ()Ljava/util/List;
+    Code:
+       0: aconst_null
+       1: areturn
+
+  public java.util.List raw(java.util.List);
+    descriptor: (Ljava/util/List;)Ljava/util/List;
+    Code:
+       0: aload_1
+       1: areturn
+}

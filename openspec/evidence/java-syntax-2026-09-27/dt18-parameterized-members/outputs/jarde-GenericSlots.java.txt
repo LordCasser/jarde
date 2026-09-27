@@ -1,0 +1,41 @@
+// jarde: presentation of `dt18/GenericSlots` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt18;
+
+public class GenericSlots extends java.lang.Object {
+    // jarde: field Signature `Ljava/util/List<Ljava/lang/String;>;` projected after descriptor erasure and no same-class Fieldref
+    public java.util.List<java.lang.String> names;
+
+    public java.util.List raw;
+
+    public GenericSlots() {
+        // @method <init>()V
+        // @declaration a constructor of `dt18.GenericSlots`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public java.util.List<java.lang.String> id(java.util.List<java.lang.String> arg1) {
+        // jarde: generic Signature `(Ljava/util/List<Ljava/lang/String;>;)Ljava/util/List<Ljava/lang/String;>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof
+        // @method id(Ljava/util/List;)Ljava/util/List;
+        // @declaration an instance method of `dt18.GenericSlots`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1;
+    }
+
+    // jarde: generic Signature projection refused for `empty()Ljava/util/List;`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
+    public java.util.List empty() {
+        // @method empty()Ljava/util/List;
+        // @declaration an instance method of `dt18.GenericSlots`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return null;
+    }
+
+    public java.util.List raw(java.util.List arg1) {
+        // @method raw(Ljava/util/List;)Ljava/util/List;
+        // @declaration an instance method of `dt18.GenericSlots`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1;
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "javac_version": "javac 23.0.1",
+  "source_sha256": {
+    "GenericSlots.java": "5eefcde125f3bdce4854c816d0f4af7e66722dfa5974be5c7ecbe79b864cbebc",
+    "Runner.java": "f087ccc6d0f44e51baab13ac0d199b3468b4fed0c5a6e50e94a55f7dc51807a1"
+  },
+  "original_class_sha256": "3bd65a907d02945650c2779f9fe192532f64634f74053b2c53c225aea0247e10",
+  "original_verified_run": "field=java.util.List<java.lang.String>\nid-param=java.util.List<java.lang.String>\nid-return=java.util.List<java.lang.String>\nempty-return=java.util.List<java.lang.String>\nraw-field=interface java.util.List\nraw-param=interface java.util.List\nraw-return=interface java.util.List\nvalues=ok:true\n",
+  "jadx_verified_run": "field=java.util.List<java.lang.String>\nid-param=java.util.List<java.lang.String>\nid-return=java.util.List<java.lang.String>\nempty-return=java.util.List<java.lang.String>\nraw-field=interface java.util.List\nraw-param=interface java.util.List\nraw-return=interface java.util.List\nvalues=ok:true\n",
+  "jarde_verified_run": "field=java.util.List<java.lang.String>\nid-param=java.util.List<java.lang.String>\nid-return=java.util.List<java.lang.String>\nempty-return=interface java.util.List\nraw-field=interface java.util.List\nraw-param=interface java.util.List\nraw-return=interface java.util.List\nvalues=ok:true\n"
+}

@@ -1,0 +1,21 @@
+package dt18;
+
+import java.util.List;
+
+/* JADX INFO: loaded from: input.jar:dt18/GenericSlots.class */
+public class GenericSlots {
+    public List<String> names;
+    public List raw;
+
+    public List<String> id(List<String> list) {
+        return list;
+    }
+
+    public List<String> empty() {
+        return null;
+    }
+
+    public List raw(List list) {
+        return list;
+    }
+}

@@ -1,0 +1,8 @@
+field=java.util.List<java.lang.String>
+id-param=java.util.List<java.lang.String>
+id-return=java.util.List<java.lang.String>
+empty-return=interface java.util.List
+raw-field=interface java.util.List
+raw-param=interface java.util.List
+raw-return=interface java.util.List
+values=ok:true
