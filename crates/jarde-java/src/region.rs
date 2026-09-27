@@ -6095,8 +6095,85 @@ impl Walker<'_> {
         else {
             return Ok(None);
         };
-        let [push, call, store, transfer] = effect_names.instructions() else {
-            return Ok(None);
+        let single_use_at_block =
+            |ssa: &SsaTable, value: ValueId, block: &CanonicalBlockId, bci| {
+                let [use_] = ssa.value(value).uses() else {
+                    return false;
+                };
+                use_.block() == block && use_.bci() == Some(bci)
+            };
+        let effect_instructions = effect_names.instructions();
+        let (store, transfer, constructor_exit) = match effect_instructions {
+            [push, call, store, transfer]
+                if matches!(self.operations.get(push.bci()), Some(Operation::Push(_)))
+                    && matches!(self.operations.get(call.bci()), Some(Operation::Invoke(_)))
+                    && call.writes().len() == 1
+                    && matches!(call.writes()[0].0, Slot::Stack(_))
+                    && store.reads() == call.writes()
+                    && push.writes().len() == 1
+                    && call.reads().contains(&push.writes()[0]) =>
+            {
+                (store, transfer, false)
+            }
+            [allocate, duplicate, argument, call, store, transfer] => {
+                let (
+                    Some(Operation::Allocate { ty }),
+                    Some(Operation::Duplicate),
+                    Some(Operation::Push(ConstantValue::String(_))),
+                    Some(Operation::Invoke(target)),
+                ) = (
+                    self.operations.get(allocate.bci()),
+                    self.operations.get(duplicate.bci()),
+                    self.operations.get(argument.bci()),
+                    self.operations.get(call.bci()),
+                )
+                else {
+                    return Ok(None);
+                };
+                let [(Slot::Stack(0), allocated)] = allocate.writes() else {
+                    return Ok(None);
+                };
+                let [(Slot::Stack(0), first), (Slot::Stack(1), receiver)] = duplicate.writes()
+                else {
+                    return Ok(None);
+                };
+                let [(Slot::Stack(2), parameter)] = argument.writes() else {
+                    return Ok(None);
+                };
+                let [(Slot::Stack(0), initialized)] = call.writes() else {
+                    return Ok(None);
+                };
+                if ty != "java/io/File"
+                    || target.kind() != crate::facts::InvokeKind::Special
+                    || target.owner() != ty
+                    || target.name() != "<init>"
+                    || target.descriptor() != "(Ljava/lang/String;)V"
+                    || allocate.opcode() != 0xbb
+                    || duplicate.opcode() != 0x59
+                    || !matches!(argument.opcode(), 0x12 | 0x13)
+                    || call.opcode() != 0xb7
+                    || allocate.reads() != []
+                    || duplicate.reads() != [(Slot::Stack(0), *allocated)]
+                    || argument.reads() != []
+                    || call.reads() != [(Slot::Stack(2), *parameter), (Slot::Stack(1), *receiver)]
+                    || store.reads() != [(Slot::Stack(0), *initialized)]
+                    || !self.ssa.value(*first).uses().is_empty()
+                    || !single_use_at_block(self.ssa, *allocated, &effect_id, duplicate.bci())
+                    || !single_use_at_block(self.ssa, *receiver, &effect_id, call.bci())
+                    || !single_use_at_block(self.ssa, *parameter, &effect_id, call.bci())
+                    || !single_use_at_block(self.ssa, *initialized, &effect_id, store.bci())
+                    || [(*allocated, allocate.bci()), (*first, duplicate.bci()),
+                        (*receiver, duplicate.bci()), (*parameter, argument.bci()),
+                        (*initialized, call.bci())].iter().any(|(value, bci)| {
+                        self.ssa.value(*value).replaced_by().is_some()
+                            || !matches!(self.ssa.value(*value).def(), Definition::Instruction { block, bci: at } if block == &effect_id && at == bci)
+                    })
+                {
+                    return Ok(None);
+                }
+                (store, transfer, true)
+            }
+            _ => return Ok(None),
         };
         let [bridge_transfer] = bridge_names.instructions() else {
             return Ok(None);
@@ -6145,9 +6222,7 @@ impl Walker<'_> {
         let Some((Slot::Local(_), body_value)) = body_store.writes().first().copied() else {
             return Ok(None);
         };
-        if !matches!(self.operations.get(push.bci()), Some(Operation::Push(_)))
-            || !matches!(self.operations.get(call.bci()), Some(Operation::Invoke(_)))
-            || !matches!(self.operations.get(store.bci()), Some(Operation::Store { slot: written }) if *written == slot)
+        if !matches!(self.operations.get(store.bci()), Some(Operation::Store { slot: written }) if *written == slot)
             || !matches!(
                 self.operations.get(transfer.bci()),
                 Some(Operation::Transfer)
@@ -6182,24 +6257,115 @@ impl Walker<'_> {
                 })
                 .count()
                 != 1
-            || body_names.instructions().iter().any(|instruction| {
+            || (body_names.instructions().iter().any(|instruction| {
                 matches!(
                     self.operations.get(instruction.bci()),
                     Some(Operation::Invoke(_) | Operation::InvokeDynamic(_))
                 )
-            })
+            }) && !constructor_exit)
             || store.writes() != [(Slot::Local(slot), effect_value)]
             || body_store.writes() != [(Slot::Local(slot), body_value)]
-            || call.writes().len() != 1
-            || !matches!(call.writes()[0].0, Slot::Stack(_))
-            || store.reads() != call.writes()
-            || push.writes().len() != 1
-            || !call.reads().contains(&push.writes()[0])
             || self.ssa.value(effect_value).uses().len() != 1
             || self.ssa.value(effect_value).uses()[0].block() != &join_id
             || self.ssa.value(effect_value).uses()[0].bci().is_some()
         {
             return Ok(None);
+        }
+        if constructor_exit {
+            let [
+                array,
+                index,
+                element,
+                saved,
+                reload,
+                name,
+                literal,
+                equals,
+                test,
+            ] = body_names.instructions()
+            else {
+                return Ok(None);
+            };
+            let (
+                [(Slot::Stack(0), array_value)],
+                [(Slot::Stack(1), index_value)],
+                [(Slot::Stack(0), element_value)],
+                [(Slot::Stack(0), reload_value)],
+                [(Slot::Stack(0), name_value)],
+                [(Slot::Stack(1), literal_value)],
+                [(Slot::Stack(0), result_value)],
+            ) = (
+                array.writes(),
+                index.writes(),
+                element.writes(),
+                reload.writes(),
+                name.writes(),
+                literal.writes(),
+                equals.writes(),
+            )
+            else {
+                return Ok(None);
+            };
+            if !matches!(
+                self.operations.get(array.bci()),
+                Some(Operation::Load { slot: 1 })
+            ) || !matches!(
+                self.operations.get(index.bci()),
+                Some(Operation::Load { .. })
+            ) || !matches!(
+                self.operations.get(element.bci()),
+                Some(Operation::ArrayElementLoad { .. })
+            ) || saved.bci() != body_store.bci()
+                || !matches!(self.operations.get(reload.bci()), Some(Operation::Load { slot: read }) if *read == slot)
+                || !matches!(self.operations.get(name.bci()), Some(Operation::Invoke(target))
+                    if target.kind() == crate::facts::InvokeKind::Virtual
+                        && target.owner() == "java/io/File" && target.name() == "getName"
+                        && target.descriptor() == "()Ljava/lang/String;")
+                || !matches!(
+                    self.operations.get(literal.bci()),
+                    Some(Operation::Push(ConstantValue::String(_)))
+                )
+                || !matches!(self.operations.get(equals.bci()), Some(Operation::Invoke(target))
+                    if target.kind() == crate::facts::InvokeKind::Virtual
+                        && target.owner() == "java/lang/String" && target.name() == "equals"
+                        && target.descriptor() == "(Ljava/lang/Object;)Z")
+                || test.bci() != body_test
+                || array.opcode() != 0x2b
+                || index.opcode() != 0x15
+                || element.opcode() != 0x32
+                || reload.opcode() != 0x2c
+                || name.opcode() != 0xb6
+                || !matches!(literal.opcode(), 0x12 | 0x13)
+                || equals.opcode() != 0xb6
+                || test.opcode() != 0x99
+                || element.reads()
+                    != [
+                        (Slot::Stack(1), *index_value),
+                        (Slot::Stack(0), *array_value),
+                    ]
+                || saved.reads() != [(Slot::Stack(0), *element_value)]
+                || reload.reads() != [(Slot::Local(slot), body_value)]
+                || name.reads() != [(Slot::Stack(0), *reload_value)]
+                || equals.reads()
+                    != [
+                        (Slot::Stack(1), *literal_value),
+                        (Slot::Stack(0), *name_value),
+                    ]
+                || test.reads() != [(Slot::Stack(0), *result_value)]
+                || [
+                    (*array_value, element.bci()),
+                    (*index_value, element.bci()),
+                    (*element_value, saved.bci()),
+                    (*reload_value, name.bci()),
+                    (*name_value, equals.bci()),
+                    (*literal_value, equals.bci()),
+                    (*result_value, test.bci()),
+                ]
+                .iter()
+                .any(|(value, bci)| !single_use_at_block(self.ssa, *value, &body_id, *bci))
+            {
+                return Ok(None);
+            }
         }
         let body_value_uses = self.ssa.value(body_value).uses();
         if body_value_uses.len() != 2
@@ -6245,14 +6411,161 @@ impl Walker<'_> {
         let [use_] = self.ssa.value(phi.value()).uses() else {
             return Ok(None);
         };
-        if use_.block() != &join_id
-            || !join_names.instructions().iter().any(|instruction| {
-                use_.bci() == Some(instruction.bci())
-                    && instruction.reads().contains(&(Slot::Local(slot), phi.value()))
-                    && matches!(self.operations.get(instruction.bci()), Some(Operation::Load { slot: read }) if *read == slot)
-            })
-            || !self.loop_exit_bridge(body, bridge, &join_id, blocks)
-        {
+        let join_value_closed = if constructor_exit {
+            let Some((_, _, _, Some(outer))) = nested_arm else {
+                return Ok(None);
+            };
+            let Some(outer_id) = self.view.id_of(outer) else {
+                return Ok(None);
+            };
+            let [join_transfer] = join_names.instructions() else {
+                return Ok(None);
+            };
+            let outer_inputs = incoming(outer_id);
+            let [(_, first), (_, second)] = outer_inputs.as_slice() else {
+                return Ok(None);
+            };
+            let empty_outer = if first == &join_id {
+                second
+            } else if second == &join_id {
+                first
+            } else {
+                return Ok(None);
+            };
+            let (Some(empty_names), Some(outer_names)) =
+                (self.ssa.block(empty_outer), self.ssa.block(outer_id))
+            else {
+                return Ok(None);
+            };
+            let [null, null_store] = empty_names.instructions() else {
+                return Ok(None);
+            };
+            let [(Slot::Local(written), outer_null)] = null_store.writes() else {
+                return Ok(None);
+            };
+            let outer_phis: Vec<_> = self
+                .ssa
+                .phis()
+                .iter()
+                .filter(|candidate| {
+                    candidate.block() == outer_id && candidate.slot() == Slot::Local(slot)
+                })
+                .collect();
+            let [outer_phi] = outer_phis.as_slice() else {
+                return Ok(None);
+            };
+            let [check_load, check] = outer_names.instructions() else {
+                return Ok(None);
+            };
+            let Some([call_node, return_node]) = (|| {
+                let successors = self.view.successors(outer);
+                let [first, second] = successors.as_slice() else {
+                    return None;
+                };
+                let (call, returned) = if self.view.successors(*first) == [*second] {
+                    (*first, *second)
+                } else if self.view.successors(*second) == [*first] {
+                    (*second, *first)
+                } else {
+                    return None;
+                };
+                Some([call, returned])
+            })() else {
+                return Ok(None);
+            };
+            let (Some(call_id), Some(return_id)) =
+                (self.view.id_of(call_node), self.view.id_of(return_node))
+            else {
+                return Ok(None);
+            };
+            let (Some(call_names), Some(return_names)) =
+                (self.ssa.block(call_id), self.ssa.block(return_id))
+            else {
+                return Ok(None);
+            };
+            let [call_load, delete] = call_names.instructions() else {
+                return Ok(None);
+            };
+            let [return_load, returned] = return_names.instructions() else {
+                return Ok(None);
+            };
+            let outer_value = outer_phi.value();
+            let direct_uses: BTreeSet<_> = self
+                .ssa
+                .value(outer_value)
+                .uses()
+                .iter()
+                .filter_map(|usage| usage.bci())
+                .collect();
+            join_transfer.opcode() == 0xa7
+                && matches!(
+                    self.operations.get(join_transfer.bci()),
+                    Some(Operation::Transfer)
+                )
+                && join_transfer.reads().is_empty()
+                && join_transfer.writes().is_empty()
+                && self.view.successors(join) == [outer]
+                && outer_inputs
+                    .iter()
+                    .all(|(kind, _)| *kind == CanonicalEdgeKind::Normal)
+                && *written == slot
+                && matches!(
+                    self.operations.get(null.bci()),
+                    Some(Operation::Push(ConstantValue::Null))
+                )
+                && matches!(self.operations.get(null_store.bci()), Some(Operation::Store { slot: written }) if *written == slot)
+                && null_store.reads() == null.writes()
+                && outer_phi.inputs().len() == 2
+                && outer_phi.inputs().contains(&PhiInput::Value(phi.value()))
+                && outer_phi.inputs().contains(&PhiInput::Value(*outer_null))
+                && self.ssa.value(outer_value).replaced_by().is_none()
+                && outer_names
+                    .entry()
+                    .contains(&(Slot::Local(slot), outer_value))
+                && self.ssa.value(*outer_null).uses().len() == 1
+                && self.ssa.value(*outer_null).uses()[0].block() == outer_id
+                && self.ssa.value(*outer_null).uses()[0].bci().is_none()
+                && use_.block() == outer_id
+                && use_.bci().is_none()
+                && matches!(self.operations.get(check_load.bci()), Some(Operation::Load { slot: read }) if *read == slot)
+                && matches!(
+                    self.operations.get(check.bci()),
+                    Some(Operation::Comparison { .. })
+                )
+                && check_load.reads() == [(Slot::Local(slot), outer_value)]
+                && check.reads() == check_load.writes()
+                && matches!(self.operations.get(call_load.bci()), Some(Operation::Load { slot: read }) if *read == slot)
+                && call_load.reads() == [(Slot::Local(slot), outer_value)]
+                && matches!(self.operations.get(delete.bci()), Some(Operation::Invoke(target))
+                    if target.kind() == crate::facts::InvokeKind::Virtual
+                        && target.owner() == "java/io/File" && target.name() == "deleteOnExit"
+                        && target.descriptor() == "()V")
+                && delete.reads() == call_load.writes()
+                && delete.writes().is_empty()
+                && matches!(self.operations.get(return_load.bci()), Some(Operation::Load { slot: read }) if *read == slot)
+                && return_load.reads() == [(Slot::Local(slot), outer_value)]
+                && matches!(self.operations.get(returned.bci()), Some(Operation::Return))
+                && returned.reads() == return_load.writes()
+                && direct_uses
+                    == BTreeSet::from([check_load.bci(), call_load.bci(), return_load.bci()])
+                && self.ssa.value(outer_value).uses().len() == 5
+                && self
+                    .ssa
+                    .value(outer_value)
+                    .uses()
+                    .iter()
+                    .filter(|usage| usage.bci().is_none() && usage.block() == return_id)
+                    .count()
+                    == 2
+        } else {
+            use_.block() == &join_id
+                && join_names.instructions().iter().any(|instruction| {
+                    use_.bci() == Some(instruction.bci())
+                        && instruction.reads().contains(&(Slot::Local(slot), phi.value()))
+                        && matches!(self.operations.get(instruction.bci()), Some(Operation::Load { slot: read }) if *read == slot)
+                })
+        };
+        if !join_value_closed || !self.loop_exit_bridge(body, bridge, &join_id, blocks) {
             return Ok(None);
         }
         let mut scope = blocks.clone();

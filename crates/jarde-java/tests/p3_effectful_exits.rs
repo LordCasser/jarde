@@ -37,6 +37,11 @@ const TWO_LEVEL: &[u8] = include_bytes!(
 const TWO_LEVEL_NEGATIVES: &[u8] = include_bytes!(
     "../../../tests/fixtures/cf08-two-level-effectful/cf08twolvl/TwoLevelIfNegatives.class"
 );
+const CONSTRUCTOR_PREDICATE: &[u8] =
+    include_bytes!("../../../tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoop.class");
+const CONSTRUCTOR_PREDICATE_NEGATIVES: &[u8] = include_bytes!(
+    "../../../tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoopNegatives.class"
+);
 
 fn limits() -> Limits {
     Limits {
@@ -201,6 +206,79 @@ fn recover_class_method_with_budget(
         assert_eq!(ssa.value(phi.value()).uses().len(), 1);
         assert_eq!(ssa.value(phi.value()).uses()[0].bci(), Some(55));
     }
+    if class == CONSTRUCTOR_PREDICATE && name == "test" {
+        let ssa = analysis.ir().ssa().expect("fixed class has SSA");
+        let at = |bci| {
+            ssa.blocks()
+                .iter()
+                .flat_map(|block| block.instructions())
+                .find(|instruction| instruction.bci() == bci)
+                .expect("physical instruction")
+        };
+        let allocated = at(25).writes()[0].1;
+        let first_copy = at(28).writes()[0].1;
+        let receiver = at(28).writes()[1].1;
+        let parameter = at(29).writes()[0].1;
+        let initialized = at(31).writes()[0].1;
+        let constructed = at(34).writes()[0].1;
+        assert_eq!(at(28).reads(), &[(Slot::Stack(0), allocated)]);
+        assert!(ssa.value(first_copy).uses().is_empty());
+        assert_eq!(
+            at(31).reads(),
+            &[(Slot::Stack(2), parameter), (Slot::Stack(1), receiver)]
+        );
+        assert_eq!(at(34).reads(), &[(Slot::Stack(0), initialized)]);
+        assert_eq!(ssa.value(constructed).uses()[0].block().bci(), 64);
+        let element = at(41).writes()[0].1;
+        let saved = at(42).writes()[0].1;
+        let reload = at(43).writes()[0].1;
+        let name = at(44).writes()[0].1;
+        let literal = at(47).writes()[0].1;
+        let predicate = at(49).writes()[0].1;
+        assert_eq!(at(42).reads(), &[(Slot::Stack(0), element)]);
+        assert_eq!(at(43).reads(), &[(Slot::Local(2), saved)]);
+        assert_eq!(at(44).reads(), &[(Slot::Stack(0), reload)]);
+        assert_eq!(
+            at(49).reads(),
+            &[(Slot::Stack(1), literal), (Slot::Stack(0), name)]
+        );
+        assert_eq!(at(52).reads(), &[(Slot::Stack(0), predicate)]);
+        let phi64 = ssa
+            .phis()
+            .iter()
+            .find(|phi| phi.block().bci() == 64 && phi.slot() == Slot::Local(2))
+            .unwrap();
+        let phi69 = ssa
+            .phis()
+            .iter()
+            .find(|phi| phi.block().bci() == 69 && phi.slot() == Slot::Local(2))
+            .unwrap();
+        let inner_stores: std::collections::BTreeSet<_> = phi64
+            .inputs()
+            .iter()
+            .map(|input| match input {
+                PhiInput::Value(value) => match ssa.value(*value).def() {
+                    Definition::Instruction { bci, .. } => *bci,
+                    other => panic!("inner result input has no store: {other:?}"),
+                },
+                PhiInput::Itself => panic!("inner result cannot be cyclic"),
+            })
+            .collect();
+        assert_eq!(inner_stores, [12, 34, 42].into());
+        assert_eq!(ssa.value(phi64.value()).uses().len(), 1);
+        assert_eq!(ssa.value(phi64.value()).uses()[0].block().bci(), 69);
+        assert_eq!(ssa.value(phi64.value()).uses()[0].bci(), None);
+        assert_eq!(phi69.inputs().len(), 2);
+        assert!(phi69.inputs().contains(&PhiInput::Value(phi64.value())));
+        assert!(
+            phi69
+                .inputs()
+                .contains(&PhiInput::Value(at(68).writes()[0].1))
+        );
+        for bci in [69, 73, 77] {
+            assert_eq!(at(bci).reads(), &[(Slot::Local(2), phi69.value())]);
+        }
+    }
     let facts = RecoveryFacts::new(
         MethodFacts::new(name, descriptor, 1)
             .with_access_flags(0x0008)
@@ -211,6 +289,148 @@ fn recover_class_method_with_budget(
         &RecoveryRequest::new(analysis.ir(), &facts, JAVA_8).with_evidence(evidence),
         &mut budget,
     )
+}
+
+#[test]
+fn constructor_predicate_complete_method_and_sources() {
+    let report = recover_class_method_with_budget(
+        CONSTRUCTOR_PREDICATE,
+        "cf08/NotIndexedLoop",
+        "test",
+        "([Ljava/io/File;)Ljava/io/File;",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        report.fallbacks.is_empty() && !report.text.contains("@bytecode"),
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("while (true)").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("for ("), "{}", report.text);
+    assert_eq!(report.text.matches("break;").count(), 2, "{}", report.text);
+    for effect in [
+        "new java.io.File(\"h\")",
+        "getName()",
+        "equals(",
+        "deleteOnExit()",
+    ] {
+        assert_eq!(
+            report.text.matches(effect).count(),
+            1,
+            "{effect}: {}",
+            report.text
+        );
+    }
+    let missing: Vec<_> = [
+        0, 1, 4, 5, 6, 7, 8, 11, 12, 16, 17, 19, 21, 22, 25, 28, 29, 31, 34, 35, 38, 39, 41, 42,
+        43, 44, 47, 49, 52, 55, 58, 61, 67, 68, 69, 70, 73, 74, 77, 78,
+    ]
+    .into_iter()
+    .filter(|bci| report.source_map.of_bci(*bci).is_empty())
+    .collect();
+    assert!(
+        missing.is_empty(),
+        "missing BCI {missing:?}: {}",
+        report.text
+    );
+    for bci in [0, 4, 11, 16, 19, 25, 38, 55, 58, 64, 67, 69, 73, 77] {
+        assert_eq!(
+            report
+                .regions
+                .iter()
+                .filter(|region| region.blocks.contains(&bci))
+                .count(),
+            1,
+            "BCI {bci} has no unique structural owner: {:?}",
+            report.regions
+        );
+    }
+}
+
+#[test]
+fn constructor_predicate_rejects_unproved_producers_and_joins() {
+    for name in [
+        "constructorAliasStore",
+        "constructorExtraConsumer",
+        "constructorEffectArgument",
+        "predicateExtraCall",
+        "predicateOtherReceiver",
+        "predicateExtraEffect",
+        "extraInnerExit",
+        "innerJoinEffect",
+        "outerNullObject",
+    ] {
+        let report = recover_class_method_with_budget(
+            CONSTRUCTOR_PREDICATE_NEGATIVES,
+            "cf08/NotIndexedLoopNegatives",
+            name,
+            "([Ljava/io/File;)Ljava/io/File;",
+            RecoveryEvidenceRequest::all(),
+            None,
+        );
+        assert!(report.produced(), "{name}: {:?}", report.outcome);
+        assert!(
+            !report.text.contains("while (true)"),
+            "{name}: {}",
+            report.text
+        );
+        assert!(report.text.contains("@bytecode"), "{name}: {}", report.text);
+    }
+}
+
+#[test]
+fn constructor_predicate_stops_atomically() {
+    use jarde_java::StopReason;
+    let full = recover_class_method_with_budget(
+        CONSTRUCTOR_PREDICATE,
+        "cf08/NotIndexedLoop",
+        "test",
+        "([Ljava/io/File;)Ljava/io/File;",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::new(limits())),
+    );
+    let ExecutionReport::Complete { usage } = full.execution else {
+        panic!("fixed candidate did not complete: {:?}", full.outcome);
+    };
+    let mut late = limits();
+    late.analysis_steps = usage.analysis_steps - 1;
+    let stopped = recover_class_method_with_budget(
+        CONSTRUCTOR_PREDICATE,
+        "cf08/NotIndexedLoop",
+        "test",
+        "([Ljava/io/File;)Ljava/io/File;",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::new(late)),
+    );
+    assert!(!stopped.produced());
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    assert!(matches!(
+        stopped.stop(),
+        Some(StopReason::Budget {
+            dimension: CountedBudgetDimension::AnalysisSteps,
+            ..
+        })
+    ));
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover_class_method_with_budget(
+        CONSTRUCTOR_PREDICATE,
+        "cf08/NotIndexedLoop",
+        "test",
+        "([Ljava/io/File;)Ljava/io/File;",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::with_cancellation_token(limits(), token)),
+    );
+    assert!(!cancelled.produced());
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
 }
 
 #[test]
