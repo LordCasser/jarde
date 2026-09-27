@@ -1,0 +1,43 @@
+{
+  "fixed_jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jarde_cli_sha256": "147dbc6ec918b7eea1dcf0b61c77531f9bbbd2e2dfa69bc9f63970c90298b4f8",
+  "input_sha256": {
+    "Capture.java": "ee99ea54d711d6a26d622ba0647ae74ecfc6c5ad48577f8ddd434ffecae4ea37",
+    "Runner.java": "10a2923bba6f17326cab8e92529570d7102673c2f0872fd9435dcc82d989b896"
+  },
+  "source_sha256": {
+    "jadx": "c1c51d607ab96588ba700cc579c5c6d92c770d131ad818f98483bf8c137646da",
+    "jarde": {
+      "Capture$1.java": "b8870195a933ab3ecfb15cff7f911522b186a467a28112bec455189b3ca5a43f",
+      "Capture.java": "441defd706b39cdd21fabf4788551e2b7c6022c8a15d6b230bd0de89eb5530c7"
+    }
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime": {
+      "exit": 0,
+      "stdout": "2.5\n-0.0"
+    }
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime": {
+      "exit": 0,
+      "stdout": "2.5\n-0.0"
+    }
+  },
+  "jarde": {
+    "class_source_exits": {
+      "p.Capture": 0,
+      "p.Capture$1": 0
+    },
+    "complete_source_javac_exit": 0,
+    "runtime": {
+      "exit": 0,
+      "stdout": "2.5\n-0.0"
+    },
+    "root_is_anonymous": true,
+    "physical_child_queryable": true
+  },
+  "frozen_jarde_baseline": "javac_exit=1; refusal=anonymous_child_shape_unproved"
+}

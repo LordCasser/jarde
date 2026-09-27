@@ -138,6 +138,12 @@ const ANONYMOUS_SUPER_CROSS_BASE: &[u8] =
     include_bytes!("fixtures/proved-java-structure/anonymous-cross-class-use/Base.class");
 const ANONYMOUS_SUPER_CROSS_OTHER: &[u8] =
     include_bytes!("fixtures/proved-java-structure/anonymous-cross-class-use/Other.class");
+const DT08_CAPTURE_SOURCE: &str = include_str!(
+    "../openspec/evidence/java-syntax-2026-09-27/dt08-local-capture/input/p/Capture.java"
+);
+const DT08_RUNNER_SOURCE: &str = include_str!(
+    "../openspec/evidence/java-syntax-2026-09-27/dt08-local-capture/input/p/Runner.java"
+);
 
 // ---------------------------------------------------------------------------------------------
 // Fixtures: one class-file builder and one stored-only archive writer
@@ -819,6 +825,326 @@ fn test_pool(bytes: &[u8]) -> (usize, Vec<Vec<u8>>) {
     (cursor, entries)
 }
 
+fn patch_one_byte_utf8(bytes: &[u8], original: u8, replacement: u8) -> Vec<u8> {
+    let mut patched = bytes.to_vec();
+    let count = test_u16(bytes, 8);
+    let mut cursor = 10;
+    let mut index = 1;
+    let mut found = 0;
+    while index < count {
+        let tag = bytes[cursor];
+        cursor += 1;
+        match tag {
+            1 => {
+                let length = test_u16(bytes, cursor);
+                if length == 1 && bytes[cursor + 2] == original {
+                    patched[cursor + 2] = replacement;
+                    found += 1;
+                }
+                cursor += 2 + length;
+                index += 1;
+            }
+            3 | 4 | 9 | 10 | 11 | 12 | 17 | 18 => {
+                cursor += if matches!(tag, 3 | 4) { 4 } else { 4 };
+                index += 1;
+            }
+            5 | 6 => {
+                cursor += 8;
+                index += 2;
+            }
+            7 | 8 | 16 | 19 | 20 => {
+                cursor += 2;
+                index += 1;
+            }
+            15 => {
+                cursor += 3;
+                index += 1;
+            }
+            other => panic!("unexpected constant-pool tag {other}"),
+        }
+    }
+    assert_eq!(
+        found, 1,
+        "the one-byte descriptor is unique in this fixture"
+    );
+    patched
+}
+
+fn test_field_reference_index(bytes: &[u8], owner: &[u8], name: &[u8], descriptor: &[u8]) -> u16 {
+    let count = test_u16(bytes, 8);
+    let mut utf8 = vec![Vec::new(); count];
+    let mut classes = vec![None; count];
+    let mut name_and_types = vec![None; count];
+    let mut fields = vec![None; count];
+    let mut cursor = 10;
+    let mut index = 1;
+    while index < count {
+        let tag = bytes[cursor];
+        cursor += 1;
+        match tag {
+            1 => {
+                let length = test_u16(bytes, cursor);
+                utf8[index] = bytes[cursor + 2..cursor + 2 + length].to_vec();
+                cursor += 2 + length;
+                index += 1;
+            }
+            7 => {
+                classes[index] = Some(test_u16(bytes, cursor));
+                cursor += 2;
+                index += 1;
+            }
+            9 => {
+                fields[index] = Some((test_u16(bytes, cursor), test_u16(bytes, cursor + 2)));
+                cursor += 4;
+                index += 1;
+            }
+            12 => {
+                name_and_types[index] =
+                    Some((test_u16(bytes, cursor), test_u16(bytes, cursor + 2)));
+                cursor += 4;
+                index += 1;
+            }
+            3 | 4 => {
+                cursor += 4;
+                index += 1;
+            }
+            5 | 6 => {
+                cursor += 8;
+                index += 2;
+            }
+            8 | 16 | 19 | 20 => {
+                cursor += 2;
+                index += 1;
+            }
+            10 | 11 | 17 | 18 => {
+                cursor += 4;
+                index += 1;
+            }
+            15 => {
+                cursor += 3;
+                index += 1;
+            }
+            other => panic!("unexpected constant-pool tag {other}"),
+        }
+    }
+    let class_index = (1..count)
+        .find(|candidate| classes[*candidate].is_some_and(|name| utf8[name] == owner))
+        .expect("the field owner class exists");
+    let name_and_type = (1..count)
+        .find(|candidate| {
+            name_and_types[*candidate]
+                .is_some_and(|(n, d)| utf8[n] == name && utf8[d] == descriptor)
+        })
+        .expect("the field name and descriptor exist");
+    (1..count)
+        .find(|candidate| fields[*candidate] == Some((class_index, name_and_type)))
+        .and_then(|candidate| u16::try_from(candidate).ok())
+        .expect("the exact Fieldref exists")
+}
+
+fn test_class_index(bytes: &[u8], owner: &[u8]) -> u16 {
+    let count = test_u16(bytes, 8);
+    let mut utf8 = vec![Vec::new(); count];
+    let mut classes = vec![None; count];
+    let mut cursor = 10;
+    let mut index = 1;
+    while index < count {
+        let tag = bytes[cursor];
+        cursor += 1;
+        match tag {
+            1 => {
+                let length = test_u16(bytes, cursor);
+                utf8[index] = bytes[cursor + 2..cursor + 2 + length].to_vec();
+                cursor += 2 + length;
+                index += 1;
+            }
+            7 => {
+                classes[index] = Some(test_u16(bytes, cursor));
+                cursor += 2;
+                index += 1;
+            }
+            3 | 4 => {
+                cursor += 4;
+                index += 1;
+            }
+            5 | 6 => {
+                cursor += 8;
+                index += 2;
+            }
+            8 | 16 | 19 | 20 => {
+                cursor += 2;
+                index += 1;
+            }
+            9 | 10 | 11 | 12 | 17 | 18 => {
+                cursor += 4;
+                index += 1;
+            }
+            15 => {
+                cursor += 3;
+                index += 1;
+            }
+            other => panic!("unexpected constant-pool tag {other}"),
+        }
+    }
+    (1..count)
+        .find(|candidate| classes[*candidate].is_some_and(|name| utf8[name] == owner))
+        .and_then(|candidate| u16::try_from(candidate).ok())
+        .expect("the replacement owner class exists")
+}
+
+fn test_cp_entry_offset(bytes: &[u8], wanted: u16) -> usize {
+    let count = test_u16(bytes, 8);
+    let mut cursor = 10;
+    let mut index = 1;
+    while index < count {
+        if index == usize::from(wanted) {
+            return cursor;
+        }
+        let tag = bytes[cursor];
+        cursor += match tag {
+            1 => 3 + test_u16(bytes, cursor + 1),
+            3 | 4 => 5,
+            5 | 6 => 9,
+            7 | 8 | 16 | 19 | 20 => 3,
+            9 | 10 | 11 | 12 | 17 | 18 => 5,
+            15 => 4,
+            other => panic!("unexpected constant-pool tag {other}"),
+        };
+        index += if matches!(tag, 5 | 6) { 2 } else { 1 };
+    }
+    panic!("constant-pool index {wanted} is absent");
+}
+
+fn patch_capture_field_owner(bytes: &[u8], owner: &[u8]) -> Vec<u8> {
+    let fieldref = test_field_reference_index(bytes, b"p/Capture$1", b"val$d", b"D");
+    let class_index = test_class_index(bytes, owner);
+    let mut patched = bytes.to_vec();
+    let offset = test_cp_entry_offset(bytes, fieldref);
+    test_put_u16(&mut patched, offset + 1, usize::from(class_index));
+    patched
+}
+
+fn patch_capture_constructor_extra_write(bytes: &[u8]) -> Vec<u8> {
+    let fieldref = test_field_reference_index(bytes, b"p/Capture$1", b"val$d", b"D");
+    let method = test_method_headers(bytes)
+        .into_iter()
+        .find(|method| method.name == b"<init>" && method.descriptor == b"(D)V")
+        .expect("the capture constructor exists");
+    let code = method
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("the capture constructor has Code");
+    let old_length = test_u32(bytes, code.data_offset + 4);
+    let return_at = code.data_offset + 8 + old_length - 1;
+    let fieldref = fieldref.to_be_bytes();
+    let extra_write = [0x2a, 0x27, 0xb5, fieldref[0], fieldref[1]];
+    let mut patched = bytes.to_vec();
+    patched.splice(return_at..return_at, extra_write);
+    test_put_u32(&mut patched, code.data_offset + 4, old_length + 5);
+    test_put_u32(&mut patched, code.length_offset, code.length + 5);
+    patched
+}
+
+fn patch_capture_constructor_exception_range(bytes: &[u8]) -> Vec<u8> {
+    let method = test_method_headers(bytes)
+        .into_iter()
+        .find(|method| method.name == b"<init>" && method.descriptor == b"(D)V")
+        .expect("the capture constructor exists");
+    let code = method
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("the capture constructor has Code");
+    let code_length = test_u32(bytes, code.data_offset + 4);
+    let exception_count = code.data_offset + 8 + code_length;
+    assert_eq!(test_u16(bytes, exception_count), 0);
+    let mut patched = bytes.to_vec();
+    test_put_u16(&mut patched, exception_count, 1);
+    // A valid catch-all range spanning the capture write and ending at the return BCI.
+    patched.splice(
+        exception_count + 2..exception_count + 2,
+        [
+            0, 0, 0, 9, // start_pc=0, end_pc=9
+            0, 9, 0, 0, // handler_pc=9, catch_type=0
+        ],
+    );
+    test_put_u32(&mut patched, code.length_offset, code.length + 8);
+    patched
+}
+
+fn patch_capture_root_parameter_slot_reuse(bytes: &[u8]) -> Vec<u8> {
+    let method = test_method_headers(bytes)
+        .into_iter()
+        .find(|method| method.name == b"create" && method.descriptor == b"(D)Ljava/lang/Runnable;")
+        .expect("the capture factory exists");
+    let code = method
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("the capture factory has Code");
+    let insertion = code.data_offset + 8 + 5;
+    let mut patched = bytes.to_vec();
+    // Reload the same entry slot and consume it before invokespecial; this makes the captured
+    // parameter slot have an additional use while preserving the allocation's operand stack.
+    patched.splice(insertion..insertion, [0x26, 0x58]); // dload_0; pop2
+    test_put_u16(&mut patched, code.data_offset, 6);
+    test_put_u32(
+        &mut patched,
+        code.data_offset + 4,
+        test_u32(bytes, code.data_offset + 4) + 2,
+    );
+    test_put_u32(&mut patched, code.length_offset, code.length + 2);
+    patched
+}
+
+fn append_capture_field_method_handle(bytes: &[u8]) -> Vec<u8> {
+    let fieldref = test_field_reference_index(bytes, b"p/Capture$1", b"val$d", b"D");
+    let (pool_end, _) = test_pool(bytes);
+    let count = test_u16(bytes, 8);
+    let fieldref = fieldref.to_be_bytes();
+    let method_handle = [15, 1, fieldref[0], fieldref[1]]; // REF_getField
+    let mut patched = bytes.to_vec();
+    test_put_u16(&mut patched, 8, count + 1);
+    patched.splice(pool_end..pool_end, method_handle);
+    patched
+}
+
+fn patch_capture_read_field_owner(bytes: &[u8], owner: &[u8]) -> Vec<u8> {
+    let owner_index = test_class_index(bytes, owner);
+    let name_and_type = test_name_and_type_index(bytes, b"val$d", b"D");
+    let (pool_end, _) = test_pool(bytes);
+    let count = test_u16(bytes, 8);
+    let owner_index = owner_index.to_be_bytes();
+    let name_and_type = name_and_type.to_be_bytes();
+    let fieldref = [
+        9,
+        owner_index[0],
+        owner_index[1],
+        name_and_type[0],
+        name_and_type[1],
+    ];
+    let mut patched = bytes.to_vec();
+    test_put_u16(&mut patched, 8, count + 1);
+    patched.splice(pool_end..pool_end, fieldref);
+    let run = test_method_headers(&patched)
+        .into_iter()
+        .find(|method| method.name == b"run" && method.descriptor == b"()V")
+        .expect("the capture run method exists");
+    let code = run
+        .attributes
+        .iter()
+        .find(|attribute| attribute.name == b"Code")
+        .expect("the capture run method has Code");
+    let length = test_u32(&patched, code.data_offset + 4);
+    let code_start = code.data_offset + 8;
+    let getfield_bci = (0..length)
+        .find(|bci| patched[code_start + bci] == 0xb4)
+        .expect("run contains a field read");
+    test_put_u16(&mut patched, code_start + getfield_bci + 1, count);
+    patched
+}
+
 fn test_method_headers(bytes: &[u8]) -> Vec<TestMethodHeader> {
     let (pool_end, pool) = test_pool(bytes);
     let mut cursor = pool_end + 6;
@@ -1238,6 +1564,325 @@ fn proved_anonymous_interface_projects_from_both_physical_method_asts() {
                 segment.origin().primary().method() == Some(&value.item.identity)
             })
     ));
+}
+
+#[test]
+fn anonymous_interface_projects_a_proved_root_double_capture_and_recompiles() {
+    let scratch = BridgeProjectionScratch::new();
+    let original = scratch.child("dt08-original");
+    let package = original.join("p");
+    fs::create_dir_all(&package).expect("create source package");
+    fs::write(package.join("Capture.java"), DT08_CAPTURE_SOURCE).expect("write Capture.java");
+    fs::write(package.join("Runner.java"), DT08_RUNNER_SOURCE).expect("write Runner.java");
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(package.join("Capture.java"))
+        .arg(package.join("Runner.java"))
+        .output()
+        .expect("javac is available for the Java 8 capture regression");
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let root_bytes = fs::read(original.join("p/Capture.class")).expect("read compiled root");
+    let child_bytes = fs::read(original.join("p/Capture$1.class")).expect("read compiled child");
+    let snapshot = open(zip_of(&[
+        (b"p/Capture.class", &root_bytes),
+        (b"p/Capture$1.class", &child_bytes),
+    ]));
+    let root = class_source_of(&snapshot, "p/Capture", EnvironmentPolicy::PlainJar);
+    assert!(
+        root.text.contains("return new java.lang.Runnable() {"),
+        "text={} diagnostics={:?}",
+        root.text,
+        root.diagnostics
+    );
+    assert!(root.text.contains("println(arg0)"), "{}", root.text);
+    assert!(!root.text.contains("Capture$1"), "{}", root.text);
+
+    let child = class_source_of(&snapshot, "p/Capture$1", EnvironmentPolicy::PlainJar);
+    assert!(child.text.contains("val$d"), "{}", child.text);
+    assert!(child.text.contains("this.val$d = arg1"), "{}", child.text);
+
+    let class_request = request(
+        &snapshot,
+        ClassRef::Name {
+            class: ClassNameQuery::internal("p/Capture"),
+        },
+        EnvironmentPolicy::PlainJar,
+    );
+    let complete = performed(
+        Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &class_request,
+                &RecoveryEvidenceRequest::all(),
+                &mut budget(),
+            )
+            .expect("the complete capture report is available"),
+    );
+    let mut constrained = task_budget(&[BudgetOverride::new(
+        "analysis_steps",
+        complete.usage.analysis_steps.saturating_sub(1),
+    )
+    .expect("the analysis-step override is valid")])
+    .expect("the constrained capture budget is valid");
+    let stopped = performed(
+        Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &class_request,
+                &RecoveryEvidenceRequest::all(),
+                &mut constrained,
+            )
+            .expect("the budget stop remains a class report"),
+    );
+    assert!(
+        !stopped.text.contains("new java.lang.Runnable() {"),
+        "{}",
+        stopped.text
+    );
+    assert!(
+        stopped.text.contains("new p.Capture$1(arg0)"),
+        "{}",
+        stopped.text
+    );
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let limits = task_budget(&[])
+        .expect("default task limits are valid")
+        .limits()
+        .clone();
+    let mut cancelled = Budget::with_cancellation_token(limits, token);
+    let cancelled = Engine::new()
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &class_request,
+            &RecoveryEvidenceRequest::all(),
+            &mut cancelled,
+        )
+        .expect("cancellation remains an operation outcome");
+    match cancelled {
+        OperationOutcome::Performed(report) => {
+            assert!(
+                !report.text.contains("new java.lang.Runnable() {"),
+                "{}",
+                report.text
+            );
+        }
+        OperationOutcome::Incomplete(selection) => assert!(matches!(
+            selection.execution,
+            ExecutionReport::Cancelled { .. }
+        )),
+        OperationOutcome::Ambiguous(_) => panic!("one fixed capture class binds uniquely"),
+    }
+
+    let recompilation = scratch.child("dt08-recompiled");
+    let package = recompilation.join("p");
+    fs::create_dir_all(&package).expect("create recompile package");
+    fs::write(package.join("Capture.java"), &root.text).expect("write recovered root");
+    fs::write(package.join("Runner.java"), DT08_RUNNER_SOURCE).expect("write runner");
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&recompilation)
+        .arg(package.join("Capture.java"))
+        .arg(package.join("Runner.java"))
+        .output()
+        .expect("javac is available for the recovered source");
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-cp"])
+        .arg(&recompilation)
+        .arg("p.Runner")
+        .output()
+        .expect("java is available for the verified capture run");
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(String::from_utf8_lossy(&run.stdout), "2.5\n-0.0\n");
+}
+
+#[test]
+fn anonymous_double_capture_refuses_a_changed_slot_descriptor_and_cross_class_use() {
+    let scratch = BridgeProjectionScratch::new();
+    let cases = [
+        (
+            "changed-slot",
+            DT08_CAPTURE_SOURCE.to_owned(),
+            None,
+            "anonymous_capture_argument_unproved",
+        ),
+        (
+            "reused-parameter-slot",
+            DT08_CAPTURE_SOURCE.to_owned(),
+            None,
+            "anonymous_capture_argument_unproved",
+        ),
+        (
+            "changed-descriptor",
+            DT08_CAPTURE_SOURCE.to_owned(),
+            None,
+            "anonymous_child_shape_unproved",
+        ),
+        (
+            "wrong-field-owner",
+            DT08_CAPTURE_SOURCE.to_owned(),
+            None,
+            "anonymous_child_shape_unproved",
+        ),
+        (
+            "wrong-read-field-owner",
+            DT08_CAPTURE_SOURCE.to_owned(),
+            None,
+            "anonymous_child_shape_unproved",
+        ),
+        (
+            "extra-write",
+            DT08_CAPTURE_SOURCE.to_owned(),
+            None,
+            "anonymous_child_shape_unproved",
+        ),
+        (
+            "exception-range",
+            DT08_CAPTURE_SOURCE.to_owned(),
+            None,
+            "anonymous_child_shape_unproved",
+        ),
+        (
+            "method-handle-use",
+            DT08_CAPTURE_SOURCE.to_owned(),
+            None,
+            "anonymous_child_shape_unproved",
+        ),
+        (
+            "cross-class-use",
+            DT08_CAPTURE_SOURCE.to_owned(),
+            Some(
+                "package p; final class Other { static Runnable extra() { return new Capture$1(); } }\n",
+            ),
+            "anonymous_interface_child_additional_use",
+        ),
+    ];
+    for (name, source, other, refusal) in cases {
+        let directory = scratch.child(name);
+        let package = directory.join("p");
+        fs::create_dir_all(&package).expect("create source package");
+        fs::write(package.join("Capture.java"), source).expect("write capture source");
+        let compile = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-d"])
+            .arg(&directory)
+            .arg(package.join("Capture.java"))
+            .output()
+            .expect("javac is available for capture boundaries");
+        assert!(
+            compile.status.success(),
+            "{}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        if let Some(other) = other {
+            fs::write(package.join("Other.java"), other).expect("write cross-class user");
+            let compile = Command::new("javac")
+                .args(["--release", "8", "-g:none", "-classpath"])
+                .arg(&directory)
+                .args(["-d"])
+                .arg(&directory)
+                .arg(package.join("Other.java"))
+                .output()
+                .expect("javac is available for the cross-class use");
+            assert!(
+                compile.status.success(),
+                "{}",
+                String::from_utf8_lossy(&compile.stderr)
+            );
+        }
+        let root_bytes = fs::read(package.join("Capture.class")).expect("read root class");
+        let root_bytes = if name == "changed-slot" {
+            let mut patched = root_bytes;
+            let method = test_method_headers(&patched)
+                .into_iter()
+                .find(|method| {
+                    method.name == b"create" && method.descriptor == b"(D)Ljava/lang/Runnable;"
+                })
+                .expect("the fixed create method exists");
+            let code = method
+                .attributes
+                .iter()
+                .find(|attribute| attribute.name == b"Code")
+                .expect("create has Code");
+            assert_eq!(
+                patched[code.data_offset + 8 + 4],
+                0x26,
+                "BCI 4 is the sole dload argument"
+            );
+            patched[code.data_offset + 8 + 4] = 0x0e; // dconst_0: same constructor slot, wrong value
+            patched
+        } else if name == "reused-parameter-slot" {
+            patch_capture_root_parameter_slot_reuse(&root_bytes)
+        } else {
+            root_bytes
+        };
+        let child_bytes = fs::read(package.join("Capture$1.class")).expect("read child class");
+        let child_bytes = if name == "changed-descriptor" {
+            patch_one_byte_utf8(&child_bytes, b'D', b'I')
+        } else if name == "wrong-field-owner" {
+            patch_capture_field_owner(&child_bytes, b"java/lang/Object")
+        } else if name == "wrong-read-field-owner" {
+            patch_capture_read_field_owner(&child_bytes, b"java/lang/Object")
+        } else if name == "extra-write" {
+            patch_capture_constructor_extra_write(&child_bytes)
+        } else if name == "exception-range" {
+            patch_capture_constructor_exception_range(&child_bytes)
+        } else if name == "method-handle-use" {
+            append_capture_field_method_handle(&child_bytes)
+        } else {
+            child_bytes
+        };
+        let mut entries = vec![
+            (b"p/Capture.class".as_slice(), root_bytes.as_slice()),
+            (b"p/Capture$1.class".as_slice(), child_bytes.as_slice()),
+        ];
+        let other_bytes =
+            other.map(|_| fs::read(package.join("Other.class")).expect("read user class"));
+        if let Some(bytes) = other_bytes.as_ref() {
+            entries.push((b"p/Other.class".as_slice(), bytes.as_slice()));
+        }
+        let snapshot = open(zip_of(&entries));
+        let root = class_source_of(&snapshot, "p/Capture", EnvironmentPolicy::PlainJar);
+        if name == "reused-parameter-slot" {
+            assert!(root.text.contains("not recovered"), "{}", root.text);
+        } else {
+            assert!(
+                root.text.contains("new p.Capture$1("),
+                "{name}: {}",
+                root.text
+            );
+        }
+        assert!(
+            !root.text.contains("new java.lang.Runnable() {"),
+            "{name}: {}",
+            root.text
+        );
+        if name != "reused-parameter-slot" {
+            assert!(
+                root.diagnostics
+                    .iter()
+                    .any(|diagnostic| diagnostic.code == refusal),
+                "{name}: {:?}",
+                root.diagnostics
+            );
+        }
+        let child = class_source_of(&snapshot, "p/Capture$1", EnvironmentPolicy::PlainJar);
+        assert!(child.text.contains("val$"), "{name}: {}", child.text);
+    }
 }
 
 #[test]

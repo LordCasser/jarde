@@ -299,6 +299,7 @@ pub(crate) fn prove_family_capture(
             &child.this_class.raw().0,
             &field.name.raw().0,
             &outer_descriptor,
+            2,
             budget,
         )? {
             Ok(method_reads) => reads.extend(method_reads),
@@ -317,6 +318,142 @@ pub(crate) fn prove_family_capture(
     }))
 }
 
+/// Proves the one javac Java 8 local-`double` capture shape used by anonymous interfaces. The
+/// caller separately closes the root allocation argument and whole-input owner census; this
+/// certificate covers only the child's physical field, constructor, SSA reads, and field uses.
+pub(crate) fn prove_anonymous_double_capture(
+    child: &ClassMemberFacts,
+    methods: &[(PhysicalMethodId, &MethodIr)],
+    budget: &mut Budget,
+) -> Result<std::result::Result<MemberCaptureProof, String>> {
+    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    if child.stopped_at.is_some()
+        || child.fields.len() as u64 != child.field_count
+        || child.methods.len() as u64 != child.method_count
+        || child.field_count != 1
+    {
+        return refuse("anonymous double capture requires complete tables with one field");
+    }
+    if child.methods.iter().any(|method| {
+        !method
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Code")
+    }) {
+        return refuse("anonymous method without bytecode has unknown capture uses");
+    }
+    let [field] = child.fields.as_slice() else {
+        return refuse("anonymous double capture requires one physical field");
+    };
+    if field.descriptor.raw().0 != b"D" || field.access_flags & (0x1000 | 0x0010 | 0x0008) != 0x1010
+    {
+        return refuse("capture requires one synthetic final instance double field");
+    }
+    let constructors: Vec<_> = child
+        .methods
+        .iter()
+        .filter(|method| method.name.raw().0 == b"<init>")
+        .collect();
+    let [constructor] = constructors.as_slice() else {
+        return refuse("capture requires one physical constructor");
+    };
+    if constructor.descriptor.raw().0 != b"(D)V" {
+        return refuse("capture constructor is not exactly (D)V");
+    }
+    let Some((constructor_id, constructor_ir)) = methods
+        .iter()
+        .find(|(id, _)| id.name.0 == b"<init>" && id.descriptor.0 == b"(D)V")
+    else {
+        return refuse("constructor SSA is unavailable");
+    };
+    let (Some(code), Some(ssa)) = (constructor_ir.code(), constructor_ir.ssa()) else {
+        return refuse("constructor code or SSA is unavailable");
+    };
+    if !anonymous_double_constructor_shape(code) {
+        return refuse(
+            "constructor capture prologue or exception range is outside the proved shape",
+        );
+    }
+    let owner = &child.this_class.raw().0;
+    let name = &field.name.raw().0;
+    let pool = constructor_ir.constant_pool();
+    for entry in pool {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if let CpEntryKind::MethodHandle {
+            reference_index, ..
+        } = entry.kind
+            && field_reference_matches(pool, Some(reference_index), owner, name, b"D")
+        {
+            return refuse("capture field has a method-handle use outside direct SSA reads");
+        }
+    }
+    if !field_reference_matches(
+        pool,
+        code.instructions[2].constant_pool_index,
+        owner,
+        name,
+        b"D",
+    ) || !matches!(cp_entry(pool, code.instructions[4].constant_pool_index.unwrap_or(0)).ok().map(|entry| &entry.kind),
+            Some(CpEntryKind::MethodRef { owner, name, descriptor, .. })
+                if child.super_class.as_ref().is_some_and(|superclass| owner.0 == superclass.raw().0)
+                    && name.0 == b"<init>" && descriptor.0 == b"()V")
+    {
+        return refuse(
+            "constructor prologue writes a different field or calls a different superclass",
+        );
+    }
+    let Some(write) = ssa_instruction(ssa, 2) else {
+        return refuse("capture write has no SSA instruction");
+    };
+    if write.reads().len() != 2
+        || !write
+            .reads()
+            .iter()
+            .any(|(_, value)| value_from_this_load(ssa, *value))
+        || !write
+            .reads()
+            .iter()
+            .any(|(_, value)| value_from_entry_load(ssa, *value, Slot::Local(1), 1))
+    {
+        return refuse("capture write does not consume this and the double entry parameter");
+    }
+    let mut reads = Vec::new();
+    for (method_id, ir) in methods {
+        budget.poll()?;
+        let (Some(code), Some(ssa)) = (ir.code(), ir.ssa()) else {
+            return refuse("anonymous method code or SSA is unavailable");
+        };
+        match scan_capture_method_uses(
+            method_id,
+            ir,
+            code,
+            ssa,
+            constructor_id,
+            owner,
+            name,
+            b"D",
+            2,
+            budget,
+        )? {
+            Ok(method_reads) => reads.extend(method_reads),
+            Err(reason) => return Ok(Err(reason)),
+        }
+    }
+    if reads.is_empty() {
+        return refuse("capture field has no proved child read");
+    }
+    let Some(field_name) = std::str::from_utf8(name).ok() else {
+        return refuse("capture field name is not UTF-8");
+    };
+    Ok(Ok(MemberCaptureProof {
+        field_index: 0,
+        field_name: field_name.to_owned(),
+        constructor: constructor_id.clone(),
+        write_bci: 2,
+        reads,
+    }))
+}
+
 #[allow(clippy::too_many_arguments)]
 fn scan_capture_method_uses(
     method: &PhysicalMethodId,
@@ -327,6 +464,7 @@ fn scan_capture_method_uses(
     owner: &[u8],
     name: &[u8],
     descriptor: &[u8],
+    write_bci: u32,
     budget: &mut Budget,
 ) -> Result<std::result::Result<Vec<MemberCaptureRead>, String>> {
     let refuse = |reason: &str| Ok(Err(reason.to_owned()));
@@ -349,7 +487,7 @@ fn scan_capture_method_uses(
             return refuse("capture field has a non-instance or unknown bytecode use");
         }
         if instruction.opcode == 0xb5 {
-            if !capture_write_is_unique_site(method, instruction.bci, constructor) {
+            if !capture_write_is_unique_site(method, instruction.bci, constructor, write_bci) {
                 return refuse("capture field has an extra write");
             }
             continue;
@@ -392,8 +530,29 @@ fn capture_write_is_unique_site(
     method: &PhysicalMethodId,
     bci: u32,
     constructor: &PhysicalMethodId,
+    write_bci: u32,
 ) -> bool {
-    method == constructor && bci == 2
+    method == constructor && bci == write_bci
+}
+
+fn anonymous_double_constructor_shape(code: &MethodCodeFacts) -> bool {
+    let instructions = &code.instructions;
+    code.stopped_at.is_none()
+        && code.exception_handler_count == 0
+        && instructions.len() == 6
+        && instructions[0].bci == 0
+        && instructions[0].opcode == 0x2a
+        && instructions[1].bci == 1
+        && instructions[1].opcode == 0x27
+        && instructions[2].bci == 2
+        && instructions[2].opcode == 0xb5
+        && instructions[3].bci == 5
+        && instructions[3].opcode == 0x2a
+        && instructions[4].bci == 6
+        && instructions[4].opcode == 0xb7
+        && instructions[5].bci == 9
+        && instructions[5].opcode == 0xb1
+        && code.exception_handlers.is_empty()
 }
 
 fn capture_constructor_shape(code: &MethodCodeFacts) -> bool {

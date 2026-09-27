@@ -2650,6 +2650,9 @@ impl Engine {
         } else {
             None
         };
+        let capture_descriptor = capture_proof
+            .as_ref()
+            .map(|_| child_facts.fields[0].descriptor.raw().0.clone());
         if child_facts.stopped_at.is_some()
             || child_read
                 .bytes
@@ -2677,8 +2680,68 @@ impl Engine {
             ));
         }
         let interface_name = child_facts.interfaces[0].raw().0.clone();
+        let captured_root_parameter = if capture_descriptor.as_deref() == Some(b"D".as_slice()) {
+            let expected_descriptor =
+                [b"(D)L".as_slice(), interface_name.as_slice(), b";"].concat();
+            let method_record = root
+                .methods
+                .iter()
+                .find(|method| method.item.identity == *root_method);
+            let returned = jarde_java::report::class_source_anonymous_return_site(root_ast);
+            let allocation_argument_bcis = returned
+                .as_ref()
+                .map(|(_, _, arguments)| arguments.as_slice());
+            let matching_scan = root_asts
+                .iter()
+                .find(|(method, _, _, _)| method == root_method)
+                .and_then(|(_, _, _, scan)| scan.as_ref());
+            let matching_sites: Vec<_> = matching_scan
+                .into_iter()
+                .flat_map(|scan| scan.allocations.iter())
+                .filter(|site| {
+                    site.member == *root_method
+                        && site.head_bci == *root_bci
+                        && site.class == child_name
+                        && site.constructor_bci == Some(*constructor_bci)
+                })
+                .collect();
+            let [site] = matching_sites.as_slice() else {
+                return Err(Error::unsupported(
+                    "anonymous_capture_argument_unproved",
+                    "the double capture allocation has no unique same-run constructor argument proof",
+                ));
+            };
+            let parameter_name =
+                jarde_java::report::class_source_single_parameter_name(root_ast, 0);
+            if root_method.descriptor.0 != expected_descriptor
+                || method_record.is_none_or(|method| method.item.access_flags & 0x0008 == 0)
+                || matching_scan.is_none_or(|scan| !scan.complete)
+                || !site.verified
+                || site.argument_bcis.len() != 1
+                || site.argument_parameter_slots.as_slice() != [Some(0)]
+                || allocation_argument_bcis != Some(site.argument_bcis.as_slice())
+                || parameter_name.is_none()
+            {
+                return Err(Error::unsupported(
+                    "anonymous_capture_argument_unproved",
+                    "the unique constructor argument is not the unmodified root double parameter",
+                ));
+            }
+            Some((
+                0,
+                parameter_name.expect("the source parameter name was checked"),
+            ))
+        } else {
+            None
+        };
         let expected_return = [b"()L".as_slice(), interface_name.as_slice(), b";"].concat();
-        if root_method.descriptor.0 != expected_return
+        let return_matches = if captured_root_parameter.is_some() {
+            root_method.descriptor.0
+                == [b"(D)L".as_slice(), interface_name.as_slice(), b";"].concat()
+        } else {
+            root_method.descriptor.0 == expected_return
+        };
+        if !return_matches
             || !std::str::from_utf8(&interface_name).is_ok_and(|name| {
                 !name.contains('$') && name.split('/').all(jarde_java::names::is_java_identifier)
             })
@@ -2752,7 +2815,7 @@ impl Engine {
             *root_bci,
             *constructor_bci,
             child_name.as_bytes(),
-            &root_name,
+            capture_descriptor.as_deref().unwrap_or_default(),
             capture_proof.as_ref().map_or(b"()V".as_slice(), |proof| {
                 proof.constructor.descriptor.0.as_slice()
             }),
@@ -2852,11 +2915,12 @@ impl Engine {
             if method.item.identity == constructor_identity {
                 continue;
             }
-            let captured: Vec<_> = capture_proof
+            let captured_outer: Vec<_> = capture_proof
                 .as_ref()
                 .into_iter()
                 .flat_map(|proof| proof.reads.iter())
                 .filter(|read| read.method == method.item.identity)
+                .filter(|_| capture_descriptor.as_deref() != Some(b"D".as_slice()))
                 .map(|read| jarde_java::report::ProvedCapturedOuterRead {
                     method: method.item.identity.clone(),
                     read_bci: read.bci,
@@ -2880,6 +2944,40 @@ impl Engine {
                         .write_bci,
                 })
                 .collect();
+            let captured_parameter: Vec<_> = capture_proof
+                .as_ref()
+                .into_iter()
+                .flat_map(|proof| proof.reads.iter())
+                .filter(|read| read.method == method.item.identity)
+                .filter(|_| capture_descriptor.as_deref() == Some(b"D".as_slice()))
+                .map(|read| {
+                    let (parameter_slot, parameter_name) = captured_root_parameter
+                        .as_ref()
+                        .expect("the root parameter capture was proved");
+                    jarde_java::report::ProvedCapturedParameterRead {
+                        method: method.item.identity.clone(),
+                        read_bci: read.bci,
+                        field_owner: child_name.clone(),
+                        field_name: capture_proof
+                            .as_ref()
+                            .expect("a captured read has a capture proof")
+                            .field_name
+                            .clone(),
+                        field_descriptor: "D".to_owned(),
+                        parameter_slot: *parameter_slot,
+                        parameter_name: parameter_name.clone(),
+                        constructor: capture_proof
+                            .as_ref()
+                            .expect("a captured read has a capture proof")
+                            .constructor
+                            .clone(),
+                        constructor_write_bci: capture_proof
+                            .as_ref()
+                            .expect("a captured read has a capture proof")
+                            .write_bci,
+                    }
+                })
+                .collect();
             let ast = child_asts
                 .iter()
                 .find(|(member, _, _, _)| member == &method.item.identity)
@@ -2890,12 +2988,29 @@ impl Engine {
                     "a presented child method has no same-run AST",
                 ));
             };
-            let projected_ast = if captured.is_empty() {
+            let projected_ast = if captured_outer.is_empty() && captured_parameter.is_empty() {
                 ast.clone()
+            } else if !captured_parameter.is_empty() {
+                jarde_java::report::project_class_source_captured_parameter_reads(
+                    ast,
+                    &captured_parameter,
+                    budget,
+                )
+                .map_err(|stop| {
+                    enum_projection_stop_error(
+                        stop,
+                        "anonymous interface capture projection",
+                        "anonymous_interface_ir_missing",
+                    )
+                })?
+                .ok_or_else(|| Error::unsupported(
+                    "anonymous_child_capture_ast_mismatch",
+                    "each proved parameter capture read must map to exactly one matching field expression in the same-run AST",
+                ))?
             } else {
                 jarde_java::report::project_class_source_captured_outer_reads(
                     ast,
-                    &captured,
+                    &captured_outer,
                     budget,
                 )
                 .map_err(|stop| {
@@ -2929,10 +3044,14 @@ impl Engine {
         let methods = child_method_texts.concat();
         let hidden_outer_argument_bci = if capture_proof.is_some() {
             Some(
-                jarde_java::report::class_source_anonymous_outer_argument_bci(root_ast)
+                if capture_descriptor.as_deref() == Some(b"D".as_slice()) {
+                    jarde_java::report::class_source_anonymous_single_argument_bci(root_ast)
+                } else {
+                    jarde_java::report::class_source_anonymous_outer_argument_bci(root_ast)
+                }
                     .ok_or_else(|| Error::unsupported(
                         "anonymous_outer_argument_unproved",
-                        "the captured anonymous allocation does not pass exactly its receiver as the sole source argument",
+                        "the captured anonymous allocation does not pass exactly its proved value as the sole source argument",
                     ))?,
             )
         } else {
@@ -3126,7 +3245,7 @@ impl Engine {
             allocation_bci,
             constructor_bci,
             child_name.as_bytes(),
-            &root_name,
+            &[b"L".as_slice(), root_name.as_slice(), b";"].concat(),
             child_facts
                 .methods
                 .iter()
@@ -3423,7 +3542,7 @@ impl Engine {
         allocation_bci: u32,
         constructor_bci: u32,
         child_name: &[u8],
-        outer_name: &[u8],
+        capture_descriptor: &[u8],
         constructor_descriptor: &[u8],
         capture: Option<&class_source::MemberCaptureProof>,
         execution: &mut ExecutionReport,
@@ -3432,8 +3551,6 @@ impl Engine {
         use jarde_query::query::{XrefCertainty, XrefOperation, XrefTarget};
         use jarde_query::xref::{CandidateFilter, scan_candidates};
         use jarde_reader::model::SymbolRef;
-
-        let capture_descriptor = [b"L".as_slice(), outer_name, b";"].concat();
 
         let consumers = ConsumerSchema::new(
             1,
@@ -7300,6 +7417,7 @@ mod anonymous_allocation_uniqueness_tests {
             verified: true,
             constructor_bci: Some(bci + 3),
             argument_bcis: Vec::new(),
+            argument_parameter_slots: Vec::new(),
         }
     }
 
@@ -12344,10 +12462,9 @@ fn prove_class_source_member_capture(
     }
 }
 
-/// Reuse the physical member-capture certificate for the one anonymous enclosing-instance field.
-/// The caller has already proved the anonymous owner and exact EnclosingMethod identity; this
-/// function proves only the field/constructor/SSA chain and never authorizes source projection by
-/// itself.
+/// Prove one supported anonymous capture field. The caller has already proved owner and
+/// `EnclosingMethod` identity; this function proves only the field/constructor/SSA chain and never
+/// authorizes source projection by itself.
 fn prove_anonymous_capture(
     content: &[ArtifactSnapshot],
     environment: &ResolutionEnvironment,
@@ -12402,7 +12519,12 @@ fn prove_anonymous_capture(
         .iter()
         .map(|(id, analyzed)| (id.clone(), analyzed.ir()))
         .collect();
-    match crate::member_inner::prove_family_capture(outer_name, child, &irs, budget)? {
+    let result = if child.fields[0].descriptor.raw().0 == b"D" {
+        crate::member_inner::prove_anonymous_double_capture(child, &irs, budget)?
+    } else {
+        crate::member_inner::prove_family_capture(outer_name, child, &irs, budget)?
+    };
+    match result {
         Ok(proof) => Ok(Some(proof)),
         Err(_) => Ok(None),
     }
