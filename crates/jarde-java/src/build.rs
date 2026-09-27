@@ -18354,6 +18354,13 @@ impl Builder<'_> {
                 }) {
                     return Ok(cast_argument(argument, required, bci));
                 }
+                if platform_reference_argument_widens(
+                    self.profile.java_release,
+                    &presented_name,
+                    required_name,
+                ) {
+                    return Ok(cast_argument(argument, required, bci));
+                }
                 Err(format!(
                     "{position} presents `{presented_name}` but the invocation requires `{required_name}` and this layer has no safe reference conversion evidence"
                 ))
@@ -21529,6 +21536,13 @@ fn array_reference_widens(presented: &str, required: &str) -> bool {
     }
 }
 
+/// The one Java 8 platform class relation proved for invocation arguments without reading a
+/// runtime classpath. Keep this exact: a descriptor or a similar-looking type name is not a general
+/// class-hierarchy proof.
+fn platform_reference_argument_widens(java_release: u16, presented: &str, required: &str) -> bool {
+    java_release == 8 && presented == "java.util.List" && required == "java.lang.Iterable"
+}
+
 /// The type one method descriptor's **result** states, when this layer can spell it (`V` is `None`).
 ///
 /// The member's own descriptor is the requirement every `return` of its body is written under, and a
@@ -23919,6 +23933,30 @@ mod tests {
         assert!(array_reference_widens(&rank_255, "java.lang.Object[]"));
         assert!(!array_reference_widens(&rank_256, "java.lang.Object[]"));
         assert!(!array_reference_widens(&rank_255, &rank_256));
+    }
+
+    #[test]
+    fn platform_reference_argument_widening_is_one_java_8_relation() {
+        assert!(platform_reference_argument_widens(
+            8,
+            "java.util.List",
+            "java.lang.Iterable"
+        ));
+        for (release, presented, required) in [
+            (7, "java.util.List", "java.lang.Iterable"),
+            (9, "java.util.List", "java.lang.Iterable"),
+            (8, "java.util.ArrayList", "java.lang.Iterable"),
+            (8, "java.util.Collection", "java.lang.Iterable"),
+            (8, "java.util.List<String>", "java.lang.Iterable"),
+            (8, "java.util.List", "java.lang.Object"),
+            (8, "java.lang.Iterable", "java.util.List"),
+            (8, "example.List", "java.lang.Iterable"),
+        ] {
+            assert!(
+                !platform_reference_argument_widens(release, presented, required),
+                "release {release}: {presented} must not widen to {required} from this proof"
+            );
+        }
     }
 
     fn functional_receiver(kind: ExprKind, presented: Option<Type>, bci: u32) -> Expr {

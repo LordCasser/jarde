@@ -21,8 +21,7 @@ public class ListToIterable extends java.lang.Object {
         // @method main([Ljava/lang/String;)V
         // @declaration a static method of `ListToIterable`, member flags 0x0009
         // recovered from bytecode; presentation is not claimed to compile
-        // @bytecode 22 19 1 0 4 5 6 8 9 10 11 13 14 15 16 18
-        // the parameter 0 of the invocation at BCI 22 is declared `java.lang.Iterable` presents `java.util.List` but the invocation requires `java.lang.Iterable` and this layer has no safe reference conversion evidence
+        consume((java.lang.Iterable) java.util.Arrays.asList((java.lang.Object[]) new java.lang.String[]{"a", "b", "c"}));
         return;
     }
 }
