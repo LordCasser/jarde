@@ -17,3 +17,9 @@ python3 openspec/evidence/java-syntax-2026-09-27/cf03-branches/replay.py \
 ```
 
 `--out` 必须为空目录。脚本保留修前 `BranchShapes` 编译失败作为账本事实；修后若区域共享尾闭合，再改三侧运行验收预期。Jar 与编译物在临时目录自动清理，仓库只保存源码、摘要、诊断和 `javap` 文本。
+
+## else-if emitter 修后重放
+
+`post-else-if-chain/summary.json` 是 CF-03 else-if 拼写改动后的固定脚本结果，完整日志和三侧生成源码也保存在该目录。`ChainOnly` 原 class、JADX、Jarde 完整类源码均通过 `javac --release 8 -g:none` 和 `java -Xverify:all`；五行输出逐字相同：`10:1`、`20:2`、`30:3`、`40:4`、`10:14`。Jarde 输出三个 `else if`，与 JADX 数量相同；Jarde 源码 SHA-256 为 `07d19e0854e8842832d9e8c078d1988751744d6c589448eba1cc0900703e4b8a`。
+
+同次完整 `BranchShapes` 重放中，原 class 与固定 JADX 仍通过 Java 8 编译和验证运行，15 行结果相同。Jarde 完整类源码仍在 `nested` 缺少返回语句而编译失败；`post-else-if-chain/jarde/javac.log` 记录该结果。else-if 呈现没有改变 AST，也没有修复或掩盖 BCI 24 的共享尾区域归属差距，后者仍需 CF-02 区域修复集成后重验。

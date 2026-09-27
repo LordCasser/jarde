@@ -581,8 +581,24 @@ impl<'a> Emitter<'a> {
 
     /// Appends one statement.
     fn stmt(&mut self, stmt: &Stmt, indent: usize) -> Result<(), Halt> {
+        self.stmt_with_indent(stmt, indent, true)
+    }
+
+    /// Writes one statement, optionally omitting its own leading indentation. The only caller that
+    /// omits it is the single-child `else if` path: that child still enters through `node`, and its
+    /// nested bodies keep the same absolute indentation as before.
+    fn stmt_with_indent(
+        &mut self,
+        stmt: &Stmt,
+        indent: usize,
+        write_indent: bool,
+    ) -> Result<(), Halt> {
         let at = Some(stmt.origin.primary().bci());
-        let pad = indent_text(indent);
+        let pad = if write_indent {
+            indent_text(indent)
+        } else {
+            String::new()
+        };
         // What a statement is, stated where statements are written: a fallback writes the reason and
         // the bytecode it could not present, so it is not one. Everything else this emitter spells —
         // a declaration, an assignment, a call, a constructor call, `return`, `throw` and the control-flow
@@ -722,6 +738,17 @@ impl<'a> Emitter<'a> {
                 self.put("}", at)?;
                 if else_body.is_empty() {
                     self.put("\n", at)
+                } else if let [
+                    else_if @ Stmt {
+                        kind: StmtKind::If { .. },
+                        ..
+                    },
+                ] = else_body.as_slice()
+                {
+                    self.put(" else ", at)?;
+                    self.node(&else_if.origin, |emitter| {
+                        emitter.stmt_with_indent(else_if, indent, false)
+                    })
                 } else {
                     self.put(" else {\n", at)?;
                     self.stmts(else_body, indent + 1)?;
@@ -1648,7 +1675,7 @@ mod tests {
     use crate::declaration::{Declaration, DeclarationForm};
     use crate::facts::{MethodFacts, RecoveryFacts};
     use crate::source_map::Origin;
-    use jarde_reader::budget::Limits;
+    use jarde_reader::budget::{CancellationToken, Limits};
 
     fn budget_with(output_bytes: u64) -> Budget {
         Budget::new(Limits {
@@ -1809,6 +1836,157 @@ mod tests {
         assert_eq!(emitted.statements, 2, "{}", emitted.text);
         assert_eq!(map.text_of_bci(&emitted.text, 2), vec!["        return;\n"]);
         assert_eq!(map.text_of_bci(&emitted.text, 8), vec!["}\n"]);
+    }
+
+    fn assignment(name: &str, value: i64, bci: u32) -> Stmt {
+        Stmt::new(
+            StmtKind::Assign {
+                name: name.to_owned(),
+                value: Expr::direct(ExprKind::Integer(value), bci),
+            },
+            OriginSet::new(Origin::direct(bci)),
+        )
+    }
+
+    fn conditional(name: &str, bci: u32, then_body: Vec<Stmt>, else_body: Vec<Stmt>) -> Stmt {
+        Stmt::new(
+            StmtKind::If {
+                cond: Expr::direct(ExprKind::Local(name.to_owned()), bci),
+                then_body,
+                else_body,
+            },
+            OriginSet::new(Origin::direct(bci)),
+        )
+    }
+
+    #[test]
+    fn a_single_if_else_child_is_spelled_as_a_chain_and_keeps_each_node() {
+        let stmts = vec![conditional(
+            "first",
+            10,
+            vec![assignment("value", 1, 11)],
+            vec![conditional(
+                "second",
+                20,
+                vec![assignment("value", 2, 21)],
+                vec![conditional(
+                    "third",
+                    30,
+                    vec![assignment("value", 3, 31)],
+                    vec![assignment("value", 4, 32)],
+                )],
+            )],
+        )];
+        let mut budget = budget_with(1 << 20);
+        let (emitted, map) = artifact(
+            &stmts,
+            &facts(),
+            None,
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        );
+
+        assert_eq!(
+            emitted.text.matches("else if").count(),
+            2,
+            "{}",
+            emitted.text
+        );
+        assert!(
+            emitted.text.contains("} else if (second) {"),
+            "{}",
+            emitted.text
+        );
+        assert!(
+            emitted.text.contains("} else if (third) {"),
+            "{}",
+            emitted.text
+        );
+        assert_eq!(emitted.statements, 7, "{}", emitted.text);
+        assert!(
+            map.text_of_bci(&emitted.text, 20)
+                .iter()
+                .any(|text| text.contains("if (second)"))
+        );
+        assert!(
+            map.text_of_bci(&emitted.text, 30)
+                .iter()
+                .any(|text| text.contains("if (third)"))
+        );
+    }
+
+    #[test]
+    fn multi_statement_and_non_if_else_bodies_keep_their_block_spelling() {
+        let cases = [
+            conditional(
+                "multi",
+                40,
+                vec![assignment("value", 1, 41)],
+                vec![assignment("value", 2, 42), assignment("value", 3, 43)],
+            ),
+            conditional(
+                "fallback",
+                50,
+                vec![assignment("value", 1, 51)],
+                vec![Stmt::new(
+                    StmtKind::Fallback {
+                        reason: "unknown else".to_owned(),
+                        bcis: vec![52],
+                    },
+                    OriginSet::new(Origin::direct(52)),
+                )],
+            ),
+        ];
+
+        for stmt in cases {
+            let mut budget = budget_with(1 << 20);
+            let (emitted, map) = artifact(
+                &[stmt],
+                &facts(),
+                None,
+                None,
+                SegmentPublication::Whole,
+                &mut budget,
+            );
+            assert!(!emitted.text.contains("else if"), "{}", emitted.text);
+            assert!(emitted.text.contains("} else {\n"), "{}", emitted.text);
+            assert!(!map.segments().is_empty());
+        }
+    }
+
+    #[test]
+    fn an_else_if_chain_obeys_output_budget_and_cancellation() {
+        let stmts = vec![conditional(
+            "first",
+            60,
+            vec![assignment("value", 1, 61)],
+            vec![conditional(
+                "second",
+                62,
+                vec![assignment("value", 2, 63)],
+                Vec::new(),
+            )],
+        )];
+        let exact = {
+            let mut budget = budget_with(1 << 20);
+            emit(&stmts, &facts(), None, None, &mut budget)
+                .expect("ample budget emits the complete chain")
+                .written
+        };
+        let mut short = budget_with(exact - 1);
+        assert!(matches!(
+            emit(&stmts, &facts(), None, None, &mut short),
+            Err(StopReason::Budget { .. })
+        ));
+
+        let token = CancellationToken::new();
+        token.cancel();
+        let mut cancelled = Budget::with_cancellation_token(Limits::default(), token);
+        assert!(matches!(
+            emit(&stmts, &facts(), None, None, &mut cancelled),
+            Err(StopReason::Cancelled { .. })
+        ));
     }
 
     #[test]
