@@ -1,0 +1,41 @@
+{
+  "fixed_jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jarde_cli_sha256": "5a35ac153bed5434d15b81d45aa6cd508c354444ea7d4888bf91e5720f1a5c73",
+  "input_sha256": {
+    "Base.java": "3ee16b6d0e782079bf965de8d37556d931f0f02d9e86d3ffed97d93b3ffe6cf9",
+    "Runner.java": "d7d3eb33876e43202e2980d4bf5de86dec59070810536dd3a18ffd5c837e4f13",
+    "Subject.java": "241e5b805e329e4fb213d635a60acca0280cbb5ab5443b3b3d776e089ed91c4b"
+  },
+  "source_sha256": {
+    "jadx": {
+      "Base.java": "bd4484cff56b65e9c915f345b84df677a621c8517d32e06f315c825c607e3dd6",
+      "Subject.java": "090486dd081c3ceff27b1ae1c65098ddfb3814df25caf300f40c86ef28ab9283"
+    },
+    "jarde": {
+      "Base.java": "23ab84989bede20c714d5dbcd350ef8193b26c3999ff6eaf232bcf58ed0b8c30",
+      "Subject$1.java": "106a14b8a127b2881ca32af2f5bc6d92cbbb5b9e1264a1edcc88249affb330a0",
+      "Subject.java": "d295b2eb1a861cafe3919e79df801691f1ea25588ff14a9e3e74037bad112c56"
+    }
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "runtime_stdout": "1\n8"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "runtime_stdout": "1\n8"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "runtime_stdout": "1\n8"
+  },
+  "jarde_class_source_exits": {
+    "p.Base": 0,
+    "p.Subject": 0,
+    "p.Subject$1": 0
+  },
+  "jarde_refusals": []
+}

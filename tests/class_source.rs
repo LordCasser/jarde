@@ -1796,6 +1796,183 @@ fn anonymous_superclass_refuses_captures_fields_and_constructor_effects() {
 }
 
 #[test]
+fn anonymous_superclass_recovers_one_proved_static_int_initializer_block() {
+    let scratch = BridgeProjectionScratch::new();
+    let directory = scratch.child("static-int-initializer");
+    fs::write(
+        directory.join("AnonymousInit.java"),
+        "public class AnonymousInit { static int value; static Base make() { return new Base() { { value = 1; } public void run() { value += 7; } }; } }\nclass Base { public void run() {} }\n",
+    ).expect("write initializer source");
+    compile_java_8(&directory, "AnonymousInit.java", &directory);
+    let root = fs::read(directory.join("AnonymousInit.class")).expect("read root");
+    let child = fs::read(directory.join("AnonymousInit$1.class")).expect("read child");
+    let base = fs::read(directory.join("Base.class")).expect("read Base");
+    let snapshot = open(zip_of(&[
+        (b"AnonymousInit.class", &root),
+        (b"AnonymousInit$1.class", &child),
+        (b"Base.class", &base),
+    ]));
+    let report = class_source_of(&snapshot, "AnonymousInit", EnvironmentPolicy::PlainJar);
+    let initializer = report
+        .text
+        .find("AnonymousInit.value = 1;")
+        .expect("initializer statement is projected");
+    let method = report
+        .text
+        .find("public void run()")
+        .expect("override is projected");
+    assert!(initializer < method, "{}", report.text);
+    assert!(
+        !report.text.contains("new AnonymousInit$1"),
+        "{}",
+        report.text
+    );
+    let request = request(
+        &snapshot,
+        ClassRef::Name {
+            class: ClassNameQuery::internal("AnonymousInit"),
+        },
+        EnvironmentPolicy::PlainJar,
+    );
+    let mut constrained = task_budget(&[BudgetOverride::new(
+        "output_bytes",
+        report.usage.output_bytes.saturating_sub(1),
+    )
+    .expect("valid output budget")])
+    .expect("valid constrained budget");
+    let stopped = performed(
+        Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request,
+                &RecoveryEvidenceRequest::all(),
+                &mut constrained,
+            )
+            .expect("budget stop returns a class report"),
+    );
+    assert!(
+        stopped.text.contains("new AnonymousInit$1()"),
+        "{}",
+        stopped.text
+    );
+    assert!(
+        !stopped.text.contains("AnonymousInit.value = 1;"),
+        "{}",
+        stopped.text
+    );
+    let token = CancellationToken::new();
+    token.cancel();
+    let limits = task_budget(&[]).expect("default limits").limits().clone();
+    let mut cancelled = Budget::with_cancellation_token(limits, token);
+    match Engine::new()
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut cancelled,
+        )
+        .expect("cancellation returns a class report")
+    {
+        OperationOutcome::Incomplete(selection) => assert!(matches!(
+            selection.execution,
+            ExecutionReport::Cancelled { .. }
+        )),
+        OperationOutcome::Performed(report) => {
+            assert!(matches!(
+                report.execution,
+                ExecutionReport::Cancelled { .. }
+            ));
+            assert!(
+                !report.text.contains("AnonymousInit.value = 1;"),
+                "{}",
+                report.text
+            );
+            assert!(
+                report.text.contains("new AnonymousInit$1()"),
+                "{}",
+                report.text
+            );
+        }
+        OperationOutcome::Ambiguous(_) => panic!("fixed class identity cannot be ambiguous"),
+    }
+    let physical_child = class_source_of(&snapshot, "AnonymousInit$1", EnvironmentPolicy::PlainJar);
+    assert!(physical_child.text.contains("AnonymousInit$1()"));
+
+    let negative_dir = scratch.child("multiple-initializer-effects");
+    fs::write(
+        negative_dir.join("AnonymousInit.java"),
+        "public class AnonymousInit { static int value; static int other; static Base make() { return new Base() { { value = 1; other = 2; } public void run() {} }; } }\nclass Base { public void run() {} }\n",
+    ).expect("write multi-effect source");
+    compile_java_8(&negative_dir, "AnonymousInit.java", &negative_dir);
+    let root = fs::read(negative_dir.join("AnonymousInit.class")).expect("read negative root");
+    let child = fs::read(negative_dir.join("AnonymousInit$1.class")).expect("read negative child");
+    let base = fs::read(negative_dir.join("Base.class")).expect("read negative Base");
+    let snapshot = open(zip_of(&[
+        (b"AnonymousInit.class", &root),
+        (b"AnonymousInit$1.class", &child),
+        (b"Base.class", &base),
+    ]));
+    let report = class_source_of(&snapshot, "AnonymousInit", EnvironmentPolicy::PlainJar);
+    assert!(
+        report.text.contains("new AnonymousInit$1()"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("new Base() {"), "{}", report.text);
+}
+
+#[test]
+fn anonymous_constructor_initializer_rejects_wrong_field_owner_descriptor_and_handlers() {
+    let scratch = BridgeProjectionScratch::new();
+    let variants = [
+        (
+            "wrong-owner",
+            "public class AnonymousInit { static Base make() { return new Base() { { Holder.value = 1; } public void run() {} }; } }\nclass Holder { static int value; }\nclass Base { public void run() {} }\n",
+        ),
+        (
+            "wrong-descriptor",
+            "public class AnonymousInit { static long value; static Base make() { return new Base() { { value = 1; } public void run() {} }; } }\nclass Base { public void run() {} }\n",
+        ),
+        (
+            "exception-handler",
+            "public class AnonymousInit { static int value; static Base make() { return new Base() { { try { value = 1; } catch (RuntimeException ignored) {} } public void run() {} }; } }\nclass Base { public void run() {} }\n",
+        ),
+    ];
+    for (label, source) in variants {
+        let directory = scratch.child(label);
+        fs::write(directory.join("AnonymousInit.java"), source).expect("write negative source");
+        compile_java_8(&directory, "AnonymousInit.java", &directory);
+        let root = fs::read(directory.join("AnonymousInit.class")).expect("read root");
+        let child = fs::read(directory.join("AnonymousInit$1.class")).expect("read child");
+        let base = fs::read(directory.join("Base.class")).expect("read Base");
+        let mut entries = vec![
+            (b"AnonymousInit.class".as_slice(), root.as_slice()),
+            (b"AnonymousInit$1.class".as_slice(), child.as_slice()),
+            (b"Base.class".as_slice(), base.as_slice()),
+        ];
+        let holder = directory.join("Holder.class");
+        let holder_bytes = holder
+            .exists()
+            .then(|| fs::read(holder).expect("read Holder"));
+        if let Some(bytes) = holder_bytes.as_ref() {
+            entries.push((b"Holder.class", bytes));
+        }
+        let snapshot = open(zip_of(&entries));
+        let report = class_source_of(&snapshot, "AnonymousInit", EnvironmentPolicy::PlainJar);
+        assert!(
+            report.text.contains("new AnonymousInit$1()"),
+            "{label}: {}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("new Base() {"),
+            "{label}: {}",
+            report.text
+        );
+    }
+}
+
+#[test]
 fn anonymous_superclass_refuses_nested_parent_source_names_without_a_type_certificate() {
     let scratch = BridgeProjectionScratch::new();
     let directory = scratch.child("nested-parent-name");

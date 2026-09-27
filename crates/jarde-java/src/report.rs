@@ -445,6 +445,16 @@ pub struct ClassSourceMethodAst {
     pub(crate) projection: std::sync::Arc<ClassSourceMethodAstSource>,
 }
 
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceAnonymousConstructorInitializer {
+    pub bci: u32,
+    pub super_owner: String,
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
+}
+
 /// The exact direct-return allocation retained from one class-source recovery run, when present.
 #[doc(hidden)]
 pub fn class_source_anonymous_return_site(
@@ -484,6 +494,43 @@ pub fn emit_class_source_method_ast(
         indentation,
         budget,
     )
+}
+
+/// The BCI of the one statically proved field write in the narrow anonymous constructor shape.
+#[doc(hidden)]
+pub fn class_source_anonymous_constructor_initializer_bci(
+    ast: &ClassSourceMethodAst,
+) -> Option<ClassSourceAnonymousConstructorInitializer> {
+    ast.projection.anonymous_constructor_initializer_bci.clone()
+}
+
+/// Emits only the initializer statement selected by the same-run constructor proof.
+#[doc(hidden)]
+pub fn emit_class_source_anonymous_constructor_initializer(
+    ast: &ClassSourceMethodAst,
+    bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<String>, crate::stop::StopReason> {
+    let Some(statement) = ast.projection.program.stmts.iter().find(|statement| {
+        statement.origin.primary().bci() == bci
+            && matches!(statement.kind, crate::ast::StmtKind::FieldAssign { .. })
+    }) else {
+        return Ok(None);
+    };
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        1,
+        Some(bci),
+    )?;
+    crate::stop::poll(budget, Some(bci))?;
+    crate::emit::emit_class_source_statements(
+        std::slice::from_ref(statement),
+        &ast.projection.member,
+        4,
+        budget,
+    )
+    .map(Some)
 }
 
 /// Projects only the exact field-read expressions certified by a class-source capture proof.
@@ -819,6 +866,8 @@ pub(crate) struct ClassSourceMethodAstSource {
     pub(crate) instruction_bcis: Vec<u32>,
     /// Decoded invocation targets, tied to their physical instruction BCIs.
     pub(crate) call_targets: Vec<(u32, crate::facts::CallTarget)>,
+    pub(crate) anonymous_constructor_initializer_bci:
+        Option<ClassSourceAnonymousConstructorInitializer>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -2788,6 +2837,162 @@ fn generic_constructor_candidate(
     }))
 }
 
+fn anonymous_constructor_initializer_bci(
+    program: &build::Program,
+    ssa: &SsaTable,
+    operations: &Operations,
+    code: &jarde_reader::classfile::MethodCodeFacts,
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceAnonymousConstructorInitializer>, StopReason> {
+    crate::stop::poll(budget, None)?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        4,
+        None,
+    )?;
+    if program.ragged
+        || program.stmts.len() != 3
+        || program.statements != 3
+        || code.stopped_at.is_some()
+        || code.exception_handler_count != 0
+        || !code.exception_handlers.is_empty()
+        || code.instructions.len() != 5
+        || ssa.blocks().len() != 1
+        || !ssa.phis().is_empty()
+        || operations.iter().count() != 5
+    {
+        return Ok(None);
+    }
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        12,
+        None,
+    )?;
+    let [
+        crate::ast::Stmt {
+            kind:
+                StmtKind::ConstructorCall {
+                    target: ConstructorTarget::Super,
+                    args,
+                },
+            origin: super_origin,
+        },
+        crate::ast::Stmt {
+            kind:
+                StmtKind::FieldAssign {
+                    receiver: Some(receiver),
+                    name,
+                    op: AssignOp::Assign,
+                    value,
+                },
+            origin: write_origin,
+        },
+        crate::ast::Stmt {
+            kind: StmtKind::Return { value: None },
+            ..
+        },
+    ] = program.stmts.as_slice()
+    else {
+        return Ok(None);
+    };
+    if !args.is_empty()
+        || super_origin.primary().bci() != code.instructions[1].bci
+        || write_origin.primary().bci() != code.instructions[3].bci
+        || !matches!(value.kind, ExprKind::Integer(1))
+        || value.origin.primary().bci() != code.instructions[2].bci
+        || !matches!(receiver.kind, ExprKind::Path(_))
+    {
+        return Ok(None);
+    }
+    let expected = [0x2a, 0xb7, 0x04, 0xb3, 0xb1];
+    let physical = &code.instructions;
+    let ssa_instructions = ssa.blocks()[0].instructions();
+    let effects = ssa.effects().instructions();
+    if physical.len() != expected.len()
+        || ssa_instructions.len() != physical.len()
+        || effects.len() != physical.len()
+        || physical
+            .iter()
+            .zip(ssa_instructions)
+            .any(|(raw, instruction)| {
+                raw.bci != instruction.bci() || raw.opcode != instruction.opcode()
+            })
+        || physical.iter().zip(effects).any(|(raw, effect)| {
+            raw.bci != effect.bci()
+                || raw.opcode != effect.opcode()
+                || !effect.handlers().is_empty()
+        })
+        || physical
+            .iter()
+            .zip(expected)
+            .any(|(instruction, opcode)| instruction.opcode != opcode)
+    {
+        return Ok(None);
+    }
+    let [
+        Operation::Load { slot: 0 },
+        Operation::Invoke(target),
+        Operation::Push(ConstantValue::Int(1)),
+        Operation::Field {
+            access: FieldAccess::Write,
+            is_static: true,
+            owner,
+            name: field_name,
+            descriptor,
+        },
+        Operation::Return,
+    ] = code
+        .instructions
+        .iter()
+        .map(|instruction| operations.get(instruction.bci))
+        .collect::<Option<Vec<_>>>()
+        .unwrap_or_default()
+        .as_slice()
+    else {
+        return Ok(None);
+    };
+    if target.kind() != crate::facts::InvokeKind::Special
+        || target.name() != "<init>"
+        || target.descriptor() != "()V"
+        || target.owner() == "java/lang/Object"
+        || target.is_interface_reference()
+        || descriptor != "I"
+        || name != field_name
+        || receiver_text(receiver).as_deref() != Some(owner.replace('/', ".").as_str())
+    {
+        return Ok(None);
+    }
+    let instructions = ssa.blocks()[0].instructions();
+    if !matches!(instructions[0].reads(), [(Slot::Local(0), _)])
+        || !matches!(instructions[0].writes(), [(Slot::Stack(0), _)])
+        || !matches!(instructions[1].reads(), [(Slot::Stack(0), _)])
+        || !matches!(instructions[2].reads(), [])
+        || !matches!(instructions[2].writes(), [(Slot::Stack(0), _)])
+        || !matches!(instructions[3].reads(), [(Slot::Stack(0), _)])
+        || !instructions[3].writes().is_empty()
+        || !instructions[4].reads().is_empty()
+        || !instructions[4].writes().is_empty()
+    {
+        return Ok(None);
+    }
+    Ok(Some(ClassSourceAnonymousConstructorInitializer {
+        bci: code.instructions[3].bci,
+        super_owner: target.owner().to_owned(),
+        owner: owner.clone(),
+        name: field_name.clone(),
+        descriptor: descriptor.clone(),
+    }))
+}
+
+fn receiver_text(expression: &Expr) -> Option<String> {
+    match &expression.kind {
+        ExprKind::Path(path) => Some(path.clone()),
+        _ => None,
+    }
+}
+
 /// The same recovery for the class-source assembler, with same-run class-source sidecars.
 ///
 /// The ordinary report follows exactly the same path as [`recover`]. Sidecars are available only
@@ -3361,6 +3566,16 @@ fn recover_inner(
         ) {
             return stopped(method, profile.clone(), &selection, stop, budget);
         }
+        let anonymous_constructor_initializer_bci = if retain_all_method_asts
+            && request.facts.method().name() == "<init>"
+        {
+            match anonymous_constructor_initializer_bci(&program, ssa, &operations, code, budget) {
+                Ok(candidate) => candidate,
+                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+            }
+        } else {
+            None
+        };
         *slot = Some(ClassSourceMethodAst {
             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
                 program: program.clone(),
@@ -3376,6 +3591,7 @@ fn recover_inner(
                 instruction_count: request.ir.code().map_or(0, |code| code.instructions.len()),
                 instruction_bcis,
                 call_targets,
+                anonymous_constructor_initializer_bci,
             }),
         });
     }
@@ -5266,6 +5482,7 @@ mod lambda_helper_instruction_coverage_tests {
             instruction_count: instruction_bcis.len(),
             instruction_bcis,
             call_targets: Vec::new(),
+            anonymous_constructor_initializer_bci: None,
         }
     }
 
@@ -5353,6 +5570,7 @@ mod anonymous_capture_projection_tests {
                 instruction_count: 0,
                 instruction_bcis: Vec::new(),
                 call_targets: Vec::new(),
+                anonymous_constructor_initializer_bci: None,
             }),
         }
     }
