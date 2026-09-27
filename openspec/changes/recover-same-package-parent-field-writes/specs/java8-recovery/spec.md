@@ -9,7 +9,7 @@
 - **THEN** Jarde 完整源码经 Java 8 重编和验证运行后，反射读取 `A` 的两个字段均为 true、`B` 的两个字段均为 false，且与原 class 和固定 JADX 的运行结果一致
 
 #### Scenario: 字段身份或可访问性不成立
-- **WHEN** CP owner 不是选中直接父类、name/descriptor 不匹配或声明不唯一，字段为 private/static/final，父子类不同包，或实际 SSA 接收者不是当前子类类型
+- **WHEN** 目标 `protected`/包可见字段的 CP owner 不是选中直接父类、name/descriptor 不匹配或声明不唯一，字段还带 static/final 标志，父子类不同包，或实际 SSA 接收者不是当前子类类型；private 字段亦不属于本项证书
 - **THEN** 系统 MUST 不发出本项父字段写入证书，保留该字段指令的拒绝与 BCI 来源
 
 #### Scenario: 既有公开字段和 private accessor 路径不回归
