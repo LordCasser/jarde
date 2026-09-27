@@ -932,6 +932,242 @@ fn declaration_only_static_abstract_member_projects_once_with_physical_anchors()
 }
 
 #[test]
+fn declaration_pair_projects_both_physical_members_and_origins_once() {
+    const ROOT: &[u8] = include_bytes!("fixtures/em01-member-pair/Shape.class");
+    const ABSTRACT: &[u8] = include_bytes!("fixtures/em01-member-pair/Shape$A.class");
+    const INTERFACE: &[u8] = include_bytes!("fixtures/em01-member-pair/Shape$I.class");
+    let jar = jar_of(&[
+        (b"em01/Shape.class", ROOT),
+        (b"em01/Shape$A.class", ABSTRACT),
+        (b"em01/Shape$I.class", INTERFACE),
+    ]);
+    let report = report_from_named(jar.clone(), "em01/Shape", task_limits(&[]).unwrap());
+    let ClassSourceMemberFamily::PreparedPair {
+        members,
+        projection: ClassSourceMemberProjection::Projected { derived },
+    } = &report.member_family
+    else {
+        panic!("pair not projected: {:?}", report.member_family);
+    };
+    assert_eq!(members[0].relation.simple_name, "A");
+    assert_eq!(members[1].relation.simple_name, "I");
+    assert_eq!(report.text.matches("class A extends").count(), 1);
+    assert_eq!(report.text.matches("interface I {").count(), 1);
+    assert!(
+        report.text.find("class A extends").unwrap() < report.text.find("interface I {").unwrap()
+    );
+    assert!(report.text.contains("public A() {"), "{}", report.text);
+    assert!(!report.text.contains("Shape$A()"), "{}", report.text);
+    assert!(report.text.contains("abstract int test2();"));
+    assert!(report.text.contains("abstract int test();"));
+    assert!(report.text.contains("abstract int test3();"));
+    assert_eq!(derived.len(), 6);
+    assert_eq!(
+        derived
+            .iter()
+            .filter(|item| item.kind == MemberFamilyDerivedKind::MemberClassDeclaration)
+            .count(),
+        2
+    );
+    assert_eq!(
+        derived
+            .iter()
+            .filter(|item| item.kind == MemberFamilyDerivedKind::MemberMethodDeclaration)
+            .count(),
+        3
+    );
+    for item in derived {
+        assert!(item.start < item.end && item.end <= report.text.len());
+        assert!(!report.text[item.start..item.end].is_empty());
+        assert!(!item.anchors.is_empty());
+    }
+    for member in members {
+        let headers: Vec<_> = derived.iter().filter(|item| item.kind == MemberFamilyDerivedKind::MemberClassDeclaration
+            && item.anchors.iter().any(|anchor| matches!(anchor,
+                MemberFamilyPhysicalAnchor::ClassDefinition { definition } if definition == &member.child.class))).collect();
+        assert_eq!(headers.len(), 1);
+        assert!(
+            report.text[headers[0].start..headers[0].end].contains(&member.relation.simple_name)
+        );
+        let methods = member
+            .child
+            .methods
+            .iter()
+            .filter(|method| method.item.identity.name.0 != b"<init>")
+            .count();
+        let signatures: Vec<_> = derived.iter().filter(|item| item.kind == MemberFamilyDerivedKind::MemberMethodDeclaration
+            && item.anchors.iter().any(|anchor| matches!(anchor,
+                MemberFamilyPhysicalAnchor::MethodSignature { method } if method.owner == member.child.class))).collect();
+        assert_eq!(signatures.len(), methods);
+        for signature in signatures {
+            let span = &report.text[signature.start..signature.end];
+            assert!(
+                span.starts_with("public abstract int ") && span.ends_with("()"),
+                "{span}"
+            );
+        }
+    }
+    let constructors: Vec<_> = derived
+        .iter()
+        .filter(|item| item.kind == MemberFamilyDerivedKind::MemberConstructorName)
+        .collect();
+    assert_eq!(constructors.len(), 1);
+    assert_eq!(
+        &report.text[constructors[0].start..constructors[0].end],
+        "A"
+    );
+    assert!(constructors[0].anchors.iter().any(|anchor| matches!(anchor,
+        MemberFamilyPhysicalAnchor::MethodPoint { method, bci } if method.owner == members[0].child.class && *bci == 0)));
+    for member in members {
+        let physical = report_from_named(
+            jar.clone(),
+            &format!("em01/Shape${}", member.relation.simple_name),
+            task_limits(&[]).unwrap(),
+        );
+        assert_eq!(physical.class, member.child.class);
+        assert!(matches!(
+            physical.execution,
+            ExecutionReport::Complete { .. }
+        ));
+    }
+}
+
+#[test]
+fn declaration_pair_near_misses_never_publish_half_a_root() {
+    const ROOT: &[u8] = include_bytes!("fixtures/em01-member-pair/Shape.class");
+    const ABSTRACT: &[u8] = include_bytes!("fixtures/em01-member-pair/Shape$A.class");
+    const INTERFACE: &[u8] = include_bytes!("fixtures/em01-member-pair/Shape$I.class");
+    let variants: [(&[u8], &[u8], &[u8]); 7] = [
+        (
+            ROOT,
+            ABSTRACT,
+            include_bytes!("fixtures/em01-member-pair/Shape-I-wrong-self.class"),
+        ),
+        (
+            ROOT,
+            ABSTRACT,
+            include_bytes!("fixtures/em01-member-pair/Shape-I-interface-default.class"),
+        ),
+        (
+            ROOT,
+            ABSTRACT,
+            include_bytes!("fixtures/em01-member-pair/Shape-I-interface-static.class"),
+        ),
+        (
+            ROOT,
+            ABSTRACT,
+            include_bytes!("fixtures/em01-member-pair/Shape-I-field.class"),
+        ),
+        (
+            ROOT,
+            ABSTRACT,
+            include_bytes!("fixtures/em01-member-pair/Shape-I-signature.class"),
+        ),
+        (
+            include_bytes!("fixtures/em01-member-pair/Shape-third-child.class"),
+            ABSTRACT,
+            INTERFACE,
+        ),
+        (
+            include_bytes!("fixtures/em01-member-pair/Shape-root-use.class"),
+            ABSTRACT,
+            INTERFACE,
+        ),
+    ];
+    let missing = report_from_named(
+        jar_of(&[
+            (b"em01/Shape.class", ROOT),
+            (b"em01/Shape$A.class", ABSTRACT),
+        ]),
+        "em01/Shape",
+        task_limits(&[]).unwrap(),
+    );
+    assert!(!missing.text.contains("class A extends"));
+    assert!(!missing.text.contains("interface I {"));
+    assert!(matches!(&missing.member_family,
+        ClassSourceMemberFamily::RefusedPair { children, .. }
+            if children.len() == 1 && children[0].class != missing.class));
+    for (index, (root, abstract_child, interface_child)) in variants.into_iter().enumerate() {
+        let report = report_from_named(
+            jar_of(&[
+                (b"em01/Shape.class", root),
+                (b"em01/Shape$A.class", abstract_child),
+                (b"em01/Shape$I.class", interface_child),
+            ]),
+            "em01/Shape",
+            task_limits(&[]).unwrap(),
+        );
+        assert!(!report.text.contains("class A extends"), "{}", report.text);
+        assert!(!report.text.contains("interface I {"), "{}", report.text);
+        match index {
+            0..=4 => assert!(matches!(&report.member_family,
+                ClassSourceMemberFamily::RefusedPair { children, .. } if children.len() == 2)),
+            5 => assert!(matches!(
+                report.member_family,
+                ClassSourceMemberFamily::Refused { .. }
+            )),
+            6 => assert!(matches!(
+                report.member_family,
+                ClassSourceMemberFamily::PreparedPair {
+                    projection: ClassSourceMemberProjection::Refused { .. },
+                    ..
+                }
+            )),
+            _ => unreachable!(),
+        }
+    }
+    let jar = jar_of(&[
+        (b"em01/Shape.class", ROOT),
+        (b"em01/Shape$A.class", ABSTRACT),
+        (b"em01/Shape$I.class", INTERFACE),
+    ]);
+    let complete = report_from_named(jar.clone(), "em01/Shape", task_limits(&[]).unwrap());
+    let mut low = task_limits(&[]).unwrap();
+    low.output_bytes = complete.usage.output_bytes.saturating_sub(1);
+    let stopped = report_from_named(jar.clone(), "em01/Shape", low);
+    assert!(!stopped.text.contains("class A extends"));
+    assert!(!stopped.text.contains("interface I {"));
+    assert!(matches!(stopped.execution, ExecutionReport::Partial { .. }));
+    assert!(matches!(
+        stopped.member_family,
+        ClassSourceMemberFamily::PreparedPair {
+            projection: ClassSourceMemberProjection::Refused { .. },
+            ..
+        }
+    ));
+    let engine = Engine::new();
+    let mut open_budget = Budget::new(task_limits(&[]).unwrap());
+    let snapshot = engine
+        .open(ArtifactInput::bytes(jar), &mut open_budget)
+        .unwrap();
+    let request = ClassSourceRequest {
+        class: ClassRef::Name {
+            class: ClassNameQuery::internal("em01/Shape"),
+        },
+        environment: EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        },
+    };
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut cancelled = Budget::with_cancellation_token(task_limits(&[]).unwrap(), token);
+    assert!(matches!(
+        engine
+            .class_source(&[snapshot], &request, &mut cancelled)
+            .unwrap(),
+        OperationOutcome::Incomplete(_)
+    ));
+}
+
+#[test]
 fn static_member_incomplete_targets_never_publish_partial_nested_source() {
     let compile = |name: &str, source: &str, children: &[&str], top_level: &[&str]| {
         let temp = TestDirectory::new();
