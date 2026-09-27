@@ -46,11 +46,12 @@ use jarde_jvm::method_ir::{
     CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, Definition, PhiInput, RefType, Slot,
     SsaInstruction, SsaTable, SsaValue, Value, ValueId,
 };
-use jarde_reader::budget::{Budget, CountedBudgetDimension};
+use jarde_reader::budget::{Budget, BudgetDimension, CountedBudgetDimension};
 use jarde_reader::classfile::{
     BootstrapMethodFacts, CpEntryFacts, DescriptorKind, MethodCodeFacts, cp_class_name,
     descriptor_facts,
 };
+use jarde_reader::error::Error as ReaderError;
 
 use crate::accessor::{self, AccessorRecord, AccessorRefusal, AccessorShape};
 use crate::ast::{
@@ -73,7 +74,7 @@ use crate::init;
 use crate::lambda::{
     self, LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, Reach, Refusal, TypeConversion,
 };
-use crate::names::{LocalVariable, NameTable, RenderedName, is_java_identifier};
+use crate::names::{DebugLocal, LocalVariable, NameTable, RenderedName, is_java_identifier};
 use crate::pass::{LAMBDA, Precondition, RecoveryProfile};
 use crate::refusal::Gap;
 use crate::region::{
@@ -322,6 +323,8 @@ pub(crate) struct Inputs<'a> {
     /// [`Self::parameter_types`], so that a builder handed this run's facts never reads a second
     /// opinion out of a descriptor itself.
     pub(crate) return_type: Option<Type>,
+    /// The run's same-Code local names and any uniquely matched LVTT signatures.
+    pub(crate) debug_locals: &'a [DebugLocal],
     /// The names the presentation decided, in slot order.
     pub(crate) names: &'a NameTable,
     /// The variables each local slot holds (P3 3.4): one per slot unless either disjoint debug
@@ -428,6 +431,14 @@ struct Declarations {
     /// The smallest region that contains a cross-region local whose definition/use proof was
     /// incomplete. An empty path means the method body itself is the only safe refusal boundary.
     incomplete: BTreeMap<RegionPath, String>,
+    /// One atomic local declaration/construction projection, keyed by the existing local identity.
+    generic_locals: BTreeMap<LocalVariable, GenericLocalProjection>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct GenericLocalProjection {
+    source_type: String,
+    allocation_bci: u32,
 }
 
 /// The lexical declaration decision made before the AST exists.
@@ -670,6 +681,9 @@ fn declarations(
     parameter_types: &BTreeMap<u16, Type>,
     return_type: Option<&Type>,
     fields: &field::Plan,
+    debug_locals: &[DebugLocal],
+    code: &MethodCodeFacts,
+    sites: &init::Sites,
     budget: &mut Budget,
 ) -> Result<Declarations, StopReason> {
     let paths = region_paths(regions);
@@ -693,18 +707,33 @@ fn declarations(
         &paths,
         budget,
     )?;
+    let decided = decide_types(
+        &uses,
+        ssa,
+        operations,
+        reuse,
+        parameters,
+        parameter_types,
+        fields,
+        &short_circuit_booleans,
+        budget,
+    )?;
+    let generic_locals = prove_debug_generic_locals(
+        debug_locals,
+        &uses,
+        &decided,
+        code,
+        ssa,
+        operations,
+        reuse,
+        names,
+        canonical,
+        sites,
+        budget,
+    )?;
     let mut plan = Declarations {
-        decided: decide_types(
-            &uses,
-            ssa,
-            operations,
-            reuse,
-            parameters,
-            parameter_types,
-            fields,
-            &short_circuit_booleans,
-            budget,
-        )?,
+        decided,
+        generic_locals,
         ..Declarations::default()
     };
     // The slots a guarded statement declares **in its own header** (P3 2.4): a `try (T n = …)`
@@ -941,7 +970,235 @@ fn declarations(
             )
         });
     }
+    plan.generic_locals.retain(|variable, _| {
+        matches!(
+            plan.placements.get(variable),
+            Some(DeclarationPlacement::Local { .. })
+        )
+    });
     Ok(plan)
+}
+
+/// Proves the single supported LVTT local before either its declaration or its allocation AST is
+/// built. Its semantic frame type stays erased; the returned source spelling and allocation BCI are
+/// one atomic presentation decision keyed by the existing local identity.
+#[allow(clippy::too_many_arguments)]
+fn prove_debug_generic_locals(
+    debug_locals: &[DebugLocal],
+    uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
+    decided: &BTreeMap<LocalVariable, Decided>,
+    code: &MethodCodeFacts,
+    ssa: &SsaTable,
+    operations: &Operations,
+    reuse: &reuse::Plan,
+    names: &NameTable,
+    canonical: &CanonicalCfg,
+    sites: &init::Sites,
+    budget: &mut Budget,
+) -> Result<BTreeMap<LocalVariable, GenericLocalProjection>, StopReason> {
+    let mut projections = BTreeMap::new();
+    if code.stopped_at.is_some()
+        || !code.exception_handlers.is_empty()
+        || canonical.blocks().len() != 1
+        || ssa.blocks().len() != 1
+        || !ssa.phis().is_empty()
+    {
+        return Ok(projections);
+    }
+    for local in debug_locals {
+        let Some(signature) = local.generic_signature() else {
+            continue;
+        };
+        let Some(descriptor) = local.descriptor() else {
+            continue;
+        };
+        let Some((start, end)) = local.range() else {
+            continue;
+        };
+        poll(budget, Some(start))?;
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(start))?;
+        if descriptor != b"Ljava/util/Map;"
+            || debug_locals
+                .iter()
+                .filter(|record| record.slot() == local.slot())
+                .count()
+                != 1
+        {
+            continue;
+        }
+        let parsed = match jarde_reader::signature::parse_field_signature(signature, budget) {
+            Ok(signature) => signature,
+            Err(error) => match signature_parse_stop(error, start) {
+                Some(stop) => return Err(stop),
+                None => continue,
+            },
+        };
+        if !is_map_of_strings(&parsed.ty) {
+            continue;
+        }
+        let Some(variable) = reuse.variable_at(local.slot(), start) else {
+            continue;
+        };
+        if names.text(variable) != Some(local.name())
+            || !matches!(
+                decided.get(&variable),
+                Some(Decided::Type(Type::Reference(name))) if name == "java.util.HashMap"
+            )
+        {
+            continue;
+        }
+        let Some(variable_uses) = uses.get(&variable) else {
+            continue;
+        };
+        let mut writes = variable_uses.iter().filter(|use_| use_.written.is_some());
+        let Some(write) = writes.next() else {
+            continue;
+        };
+        if writes.next().is_some()
+            || variable_uses
+                .iter()
+                .filter(|use_| use_.read.is_some())
+                .count()
+                != 1
+            || variable_uses.iter().any(|use_| {
+                (use_.bci < start && (use_.written.is_none() || use_.bci != write.bci))
+                    || use_.bci >= end
+            })
+        {
+            continue;
+        }
+        let Some(stored) = write.stored else {
+            continue;
+        };
+        let Some(store) = code.instructions.iter().find(|fact| fact.bci == write.bci) else {
+            continue;
+        };
+        if write.bci.checked_add(u32::from(store.width)) != Some(start)
+            || !matches!(operations.get(write.bci), Some(Operation::Store { slot }) if *slot == variable.slot())
+        {
+            continue;
+        }
+        let Some(site) = sites.site_producing(ssa, stored) else {
+            continue;
+        };
+        if site.class != "java/util/HashMap"
+            || !site.arguments.is_empty()
+            || !matches!(operations.get(site.head), Some(Operation::Allocate { ty }) if ty == "java/util/HashMap")
+            || !matches!(
+                operations.get(site.constructor),
+                Some(Operation::Invoke(target))
+                    if target.kind() == InvokeKind::Special
+                        && target.owner() == "java/util/HashMap"
+                        && target.name() == "<init>"
+                        && target.descriptor() == "()V"
+            )
+        {
+            continue;
+        }
+        let Some(read) = variable_uses.iter().find(|use_| use_.read.is_some()) else {
+            continue;
+        };
+        let Some(load) = ssa
+            .blocks()
+            .iter()
+            .flat_map(|block| block.instructions())
+            .find(|instruction| instruction.bci() == read.bci)
+        else {
+            continue;
+        };
+        if !matches!(operations.get(read.bci), Some(Operation::Load { slot }) if *slot == variable.slot())
+        {
+            continue;
+        }
+        let Some(loaded) = load
+            .writes()
+            .iter()
+            .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+        else {
+            continue;
+        };
+        let [loaded_use] = ssa.value(loaded).uses() else {
+            continue;
+        };
+        let Some(consumer) = loaded_use.bci() else {
+            continue;
+        };
+        if !matches!(
+            operations.get(consumer),
+            Some(Operation::Invoke(target))
+                if target.kind() == InvokeKind::Interface
+                    && target.is_interface_reference()
+                    && target.owner() == "java/util/Map"
+                    && target.name() == "get"
+                    && target.descriptor() == "(Ljava/lang/Object;)Ljava/lang/Object;"
+        ) || ssa
+            .value(stored)
+            .uses()
+            .iter()
+            .any(|usage| usage.bci() != Some(write.bci))
+        {
+            continue;
+        }
+        projections.insert(
+            variable,
+            GenericLocalProjection {
+                source_type: "java.util.Map<java.lang.String, java.lang.String>".to_owned(),
+                allocation_bci: site.head,
+            },
+        );
+    }
+    Ok(projections)
+}
+
+fn is_map_of_strings(signature: &jarde_reader::signature::SignatureType) -> bool {
+    use jarde_reader::signature::{ClassTypeSegment, SignatureType, TypeArgument};
+    let SignatureType::Class(class) = signature else {
+        return false;
+    };
+    let [
+        ClassTypeSegment {
+            binary_name,
+            arguments,
+        },
+    ] = class.segments.as_slice()
+    else {
+        return false;
+    };
+    binary_name == b"java/util/Map"
+        && matches!(arguments.as_slice(), [TypeArgument::Exact(first), TypeArgument::Exact(second)]
+            if is_plain_string(first) && is_plain_string(second))
+}
+
+fn is_plain_string(signature: &jarde_reader::signature::SignatureType) -> bool {
+    use jarde_reader::signature::{ClassTypeSegment, SignatureType};
+    let SignatureType::Class(class) = signature else {
+        return false;
+    };
+    matches!(class.segments.as_slice(), [ClassTypeSegment { binary_name, arguments }] if binary_name == b"java/lang/String" && arguments.is_empty())
+}
+
+fn signature_parse_stop(error: ReaderError, at: u32) -> Option<StopReason> {
+    match error {
+        ReaderError::Cancelled { .. } => Some(StopReason::Cancelled { at: Some(at) }),
+        ReaderError::BudgetExceeded {
+            dimension: BudgetDimension::AnalysisSteps,
+            limit,
+            ..
+        } => Some(StopReason::Budget {
+            dimension: CountedBudgetDimension::AnalysisSteps,
+            written: 0,
+            limit,
+            at: Some(at),
+        }),
+        ReaderError::BudgetExceeded {
+            dimension: BudgetDimension::ElapsedMillis,
+            ..
+        } => Some(StopReason::Interrupted {
+            code: crate::stop::BUDGET_INTERRUPTED_CODE,
+            at: Some(at),
+        }),
+        _ => None,
+    }
 }
 
 /// Checks the decisions the planner made against the exact access paths it consumed.
@@ -5142,6 +5399,9 @@ pub(crate) fn build(
         inputs.parameter_types,
         inputs.return_type.as_ref(),
         inputs.fields,
+        inputs.debug_locals,
+        inputs.code,
+        inputs.sites,
         budget,
     )?;
     let mut builder = Builder {
@@ -8812,7 +9072,7 @@ impl Builder<'_> {
                 let kind = match self.declarations.placements.get(&variable) {
                     Some(DeclarationPlacement::Local { .. }) => StmtKind::Declare {
                         ty: Type::Boolean,
-                        source_type_name: None,
+                        source_type_name: self.local_source_type_name(variable, &Type::Boolean),
                         name: name.to_string(),
                         value: Some(value.clone()),
                     },
@@ -12256,7 +12516,7 @@ impl Builder<'_> {
             };
             self.declared.insert(declaration.variable);
             let source_type_name =
-                local_declaration_source_type_name(&declaration.ty, self.member_inner_targets);
+                self.local_source_type_name(declaration.variable, &declaration.ty);
             self.push(Stmt::new(
                 StmtKind::Declare {
                     ty: declaration.ty,
@@ -14325,8 +14585,7 @@ impl Builder<'_> {
                 } else {
                     value
                 };
-                let source_type_name =
-                    local_declaration_source_type_name(&ty, self.member_inner_targets);
+                let source_type_name = self.local_source_type_name(variable, &ty);
                 self.push(Stmt::new(
                     StmtKind::Declare {
                         ty,
@@ -14589,6 +14848,15 @@ impl Builder<'_> {
     /// [`crate::facts::MethodFacts::parameter_types`] states what it holds (and is the only fact
     /// that can tell a `char`, a `byte` and a `short` from an `int`, since the frames state one
     /// shape for all four).
+    fn local_source_type_name(&self, variable: LocalVariable, ty: &Type) -> Option<String> {
+        self.declarations
+            .generic_locals
+            .get(&variable)
+            .filter(|_| matches!(ty, Type::Reference(name) if name == "java.util.HashMap"))
+            .map(|projection| projection.source_type.clone())
+            .or_else(|| local_declaration_source_type_name(ty, self.member_inner_targets))
+    }
+
     fn decided_type(&self, variable: LocalVariable) -> Option<Type> {
         if variable.slot() == 0
             && self.has_receiver
@@ -16206,7 +16474,12 @@ impl Builder<'_> {
                 })?,
                 qualifier,
                 member_name: member.map(|member| member.simple_name.clone()),
-                diamond: member.is_some_and(|member| member.generic_diamond),
+                diamond: member.is_some_and(|member| member.generic_diamond)
+                    || self
+                        .declarations
+                        .generic_locals
+                        .values()
+                        .any(|projection| projection.allocation_bci == site.head),
                 args,
             },
             origin,

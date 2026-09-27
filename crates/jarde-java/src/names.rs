@@ -175,6 +175,8 @@ pub struct DebugLocal {
     slot: u16,
     name: String,
     range: Option<(u32, u32)>,
+    descriptor: Option<Vec<u8>>,
+    generic_signature: Option<Vec<u8>>,
 }
 
 impl DebugLocal {
@@ -184,6 +186,8 @@ impl DebugLocal {
             slot,
             name: name.into(),
             range: Some((start_bci, end_bci)),
+            descriptor: None,
+            generic_signature: None,
         }
     }
 
@@ -194,7 +198,20 @@ impl DebugLocal {
             slot,
             name: name.into(),
             range: None,
+            descriptor: None,
+            generic_signature: None,
         }
+    }
+
+    /// Adds the exact LVT erasure and uniquely matched LVTT signature from one reader run.
+    pub fn with_type_metadata(
+        mut self,
+        descriptor: impl Into<Vec<u8>>,
+        generic_signature: impl Into<Vec<u8>>,
+    ) -> Self {
+        self.descriptor = Some(descriptor.into());
+        self.generic_signature = Some(generic_signature.into());
+        self
     }
 
     /// The slot the record names.
@@ -210,6 +227,16 @@ impl DebugLocal {
     /// The bytecode range the record covers, when it states one.
     pub fn range(&self) -> Option<(u32, u32)> {
         self.range
+    }
+
+    /// The LVT descriptor bytes when this record has a unique matched generic signature.
+    pub fn descriptor(&self) -> Option<&[u8]> {
+        self.descriptor.as_deref()
+    }
+
+    /// The raw LVTT Signature bytes when this record has a unique exact LVT match.
+    pub fn generic_signature(&self) -> Option<&[u8]> {
+        self.generic_signature.as_deref()
     }
 }
 

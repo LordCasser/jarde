@@ -4052,6 +4052,8 @@ pub struct MethodCodeFacts {
     /// has not billed — that is a reader-contract decision with its own accounting, not something to
     /// slip in beside a body read.
     debug: LocalDebugTable,
+    /// Generic local signatures from the same `Code` attribute (DT-20).
+    generic_debug: LocalDebugTypeTable,
 }
 
 /// The debug names one method body's `Code` attribute states (P3 3.1).
@@ -4089,6 +4091,36 @@ pub struct LocalDebugName {
     /// The name, exactly as the class file's own constant spells it (JVM bytes, never text-decoded
     /// here).
     pub name: JvmBytes,
+    /// The erased field descriptor stated beside the name.
+    pub descriptor: JvmBytes,
+}
+
+/// Generic local signatures a method body's `Code` attribute states.
+#[allow(dead_code)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum LocalDebugTypeTable {
+    /// No `LocalVariableTypeTable` was declared.
+    Absent,
+    /// Records from the one decoded table, in declaration order.
+    Read(Vec<LocalDebugType>),
+    /// The table was duplicated, malformed, or could not be resolved completely.
+    Unstated,
+}
+
+/// One raw `LocalVariableTypeTable` entry (JVMS 4.7.14).
+#[allow(dead_code)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LocalDebugType {
+    /// The local slot this record describes.
+    pub slot: u16,
+    /// The first bytecode index the record covers.
+    pub start_bci: u32,
+    /// One past the last bytecode index the record covers.
+    pub end_bci: u32,
+    /// The local name as raw JVM bytes.
+    pub name: JvmBytes,
+    /// The Signature payload as raw JVM bytes.
+    pub signature: JvmBytes,
 }
 
 impl LocalDebugName {
@@ -4121,6 +4153,11 @@ impl MethodCodeFacts {
     /// came from, and no additional dimension is billed for them.
     pub fn debug(&self) -> &LocalDebugTable {
         &self.debug
+    }
+
+    /// The body's generic local signatures, read from the same `Code` attribute.
+    pub fn generic_debug(&self) -> &LocalDebugTypeTable {
+        &self.generic_debug
     }
 
     /// Assembles a body from parts a test names, without a decode; test support only.
@@ -4164,6 +4201,7 @@ impl MethodCodeFacts {
             execution,
             stopped_at,
             debug,
+            generic_debug: LocalDebugTypeTable::Unstated,
         }
     }
 }
@@ -5192,11 +5230,9 @@ pub(crate) fn decode_method_code<'a>(
         noak::reader::AttributeContent::Code(code) => code,
         _ => unreachable!("raw Code name selected"),
     };
-    // The body's own debug names, from the `LocalVariableTable` this same `Code` entry may carry
-    // (P3 3.1). The nested bytes are inside the entry this read already charged for, so the walk costs
-    // no dimension and reads nothing twice; a table whose content does not decode states no name
-    // instead of failing a body whose instructions decoded.
-    let debug = local_debug_table(&code, pool);
+    // The body's own LVT and LVTT records come from this same `Code` entry. Malformed debug
+    // metadata states no name or generic type; it does not change the instruction read's outcome.
+    let (debug, generic_debug) = local_debug_tables(&code, pool);
 
     let exception_handler_count =
         u32::try_from(code.exception_handlers().count()).map_err(|_| {
@@ -5410,64 +5446,105 @@ pub(crate) fn decode_method_code<'a>(
         },
         stopped_at: None,
         debug,
+        generic_debug,
     })
 }
 
-/// Reads the `LocalVariableTable` nested inside one already-decoded `Code` attribute.
+/// Reads the LVT and LVTT nested inside one already-decoded `Code` attribute.
 ///
-/// The nested attribute list is walked from the `Code` content the caller already decoded and charged
-/// for, so nothing is sliced, billed or decoded a second time: the loop runs only because this
-/// function is called, and it decodes exactly one nested attribute — the table that names slots. Every
-/// other nested attribute (`LineNumberTable`, `StackMapTable`, type annotations) is skipped by name
-/// without reading its content.
-///
-/// A table the bytes cannot hold, or a name index that does not resolve, is [`LocalDebugTable::Unstated`]
-/// rather than an error: a body's instructions decoded, and an attribute that only *names* things must
-/// not turn that body into a failure. What it must not do either is invent a name, and it does not: no
-/// name is stated.
-fn local_debug_table(
+/// Both tables are read during one walk over bytes already charged with the `Code` entry. A bad
+/// debug table only withholds its own evidence; it never changes whether the body's instructions
+/// decoded. Multiple LVTT attributes are ambiguous and therefore state no generic types.
+fn local_debug_tables(
     code: &Code<'_>,
     pool: &noak::reader::cpool::ConstantPool<'_>,
-) -> LocalDebugTable {
+) -> (LocalDebugTable, LocalDebugTypeTable) {
     let mut names = Vec::new();
+    let mut local_types = Vec::new();
+    let mut local_type_tables = 0usize;
+    let mut generic_unstated = false;
     for attribute in code.attributes() {
         let Ok(attribute) = attribute else {
-            return LocalDebugTable::Unstated;
+            return (LocalDebugTable::Unstated, LocalDebugTypeTable::Unstated);
         };
         let Ok(name) = pool.get(attribute.name()) else {
-            return LocalDebugTable::Unstated;
+            return (LocalDebugTable::Unstated, LocalDebugTypeTable::Unstated);
         };
-        if name.content.as_bytes() != b"LocalVariableTable" {
-            continue;
-        }
-        let Ok(noak::reader::AttributeContent::LocalVariableTable(table)) =
-            attribute.read_content(pool)
-        else {
-            return LocalDebugTable::Unstated;
-        };
-        for variable in table.locals() {
-            let Ok(variable) = variable else {
-                return LocalDebugTable::Unstated;
-            };
-            let Ok(entry) = pool.get(variable.name()) else {
-                return LocalDebugTable::Unstated;
-            };
-            let range = variable.range();
-            names.push(LocalDebugName {
-                slot: variable.index(),
-                start_bci: range.start.as_u32(),
-                end_bci: range.end.as_u32(),
-                name: JvmBytes(entry.content.as_bytes().to_vec()),
-            });
+        match name.content.as_bytes() {
+            b"LocalVariableTable" => {
+                let Ok(noak::reader::AttributeContent::LocalVariableTable(table)) =
+                    attribute.read_content(pool)
+                else {
+                    return (LocalDebugTable::Unstated, LocalDebugTypeTable::Unstated);
+                };
+                for variable in table.locals() {
+                    let Ok(variable) = variable else {
+                        return (LocalDebugTable::Unstated, LocalDebugTypeTable::Unstated);
+                    };
+                    let (Ok(name), Ok(descriptor)) =
+                        (pool.get(variable.name()), pool.get(variable.descriptor()))
+                    else {
+                        return (LocalDebugTable::Unstated, LocalDebugTypeTable::Unstated);
+                    };
+                    let range = variable.range();
+                    names.push(LocalDebugName {
+                        slot: variable.index(),
+                        start_bci: range.start.as_u32(),
+                        end_bci: range.end.as_u32(),
+                        name: JvmBytes(name.content.as_bytes().to_vec()),
+                        descriptor: JvmBytes(descriptor.content.as_bytes().to_vec()),
+                    });
+                }
+            }
+            b"LocalVariableTypeTable" => {
+                local_type_tables += 1;
+                if local_type_tables > 1 {
+                    generic_unstated = true;
+                    continue;
+                }
+                let Ok(noak::reader::AttributeContent::LocalVariableTypeTable(table)) =
+                    attribute.read_content(pool)
+                else {
+                    generic_unstated = true;
+                    continue;
+                };
+                for variable in table.locals() {
+                    let Ok(variable) = variable else {
+                        generic_unstated = true;
+                        break;
+                    };
+                    let (Ok(name), Ok(signature)) =
+                        (pool.get(variable.name()), pool.get(variable.signature()))
+                    else {
+                        generic_unstated = true;
+                        break;
+                    };
+                    let range = variable.range();
+                    local_types.push(LocalDebugType {
+                        slot: variable.index(),
+                        start_bci: range.start.as_u32(),
+                        end_bci: range.end.as_u32(),
+                        name: JvmBytes(name.content.as_bytes().to_vec()),
+                        signature: JvmBytes(signature.content.as_bytes().to_vec()),
+                    });
+                }
+            }
+            _ => {}
         }
     }
-    if names.is_empty() {
-        // No table at all, or one that declares no record: both state no name, and the difference is
-        // an empty list either way.
+    let names = if names.is_empty() {
         LocalDebugTable::Absent
     } else {
         LocalDebugTable::Read(names)
-    }
+    };
+    let generic = if generic_unstated {
+        LocalDebugTypeTable::Unstated
+    } else if local_type_tables == 0 {
+        LocalDebugTypeTable::Absent
+    } else {
+        LocalDebugTypeTable::Read(local_types)
+    };
+    (names, generic)
 }
 
 /// Whether one of the header's shells describes the located `Code` content.
@@ -5560,6 +5637,7 @@ fn stopped_code_facts(
         // The body stopped before the nested attributes were walked: this read states no debug name,
         // which is what "no name" means for a record that did not reach them (P3 3.1).
         debug: LocalDebugTable::Unstated,
+        generic_debug: LocalDebugTypeTable::Unstated,
     })
 }
 
