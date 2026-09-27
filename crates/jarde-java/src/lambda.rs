@@ -180,6 +180,21 @@ pub struct ArrayHelperCandidate {
     pub descriptor: JvmBytes,
 }
 
+/// One same-run LambdaMetafactory reference to an unbound, same-class int lambda body.
+///
+/// This identifies a method that may be considered by class-source projection. The complete
+/// member declaration, body and class-wide use census remain separate proof obligations.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SyntheticLambdaHelperCandidate {
+    pub call_site: u32,
+    pub site_cp: u16,
+    pub bootstrap_index: u16,
+    pub implementation_index: u16,
+    pub owner: JvmBytes,
+    pub name: JvmBytes,
+    pub descriptor: JvmBytes,
+}
+
 /// The implementation handle of one verified site, resolved.
 pub(crate) struct Member {
     kind: u8,
@@ -1121,6 +1136,106 @@ pub fn array_helper_candidates(ir: &jarde_jvm::method_ir::MethodIr) -> Vec<Array
             continue;
         }
         candidates.push(ArrayHelperCandidate {
+            call_site: instruction.bci,
+            site_cp: site.cp(),
+            bootstrap_index: site.bootstrap_index(),
+            implementation_index,
+            owner: implementation_owner.clone(),
+            name: implementation_name.clone(),
+            descriptor: descriptor.clone(),
+        });
+    }
+    candidates
+}
+
+/// Finds unbound same-class `lambda$` implementations for primitive int SAMs with zero, one or
+/// two parameters. These are candidates only: class-source still proves their declaration, body,
+/// and every class-wide use before changing any output.
+pub fn synthetic_lambda_helper_candidates(
+    ir: &jarde_jvm::method_ir::MethodIr,
+) -> Vec<SyntheticLambdaHelperCandidate> {
+    let (Some(code), Some(declaration)) = (ir.code(), ir.declaration()) else {
+        return Vec::new();
+    };
+    let pool = ir.constant_pool();
+    let owner = declaration.class_name();
+    let operations = Operations::of(code, pool);
+    let mut candidates = Vec::new();
+    for instruction in &code.instructions {
+        let Some(Operation::InvokeDynamic(site)) = operations.get(instruction.bci) else {
+            continue;
+        };
+        let Some(entry) = ir
+            .bootstrap_methods()
+            .get(usize::from(site.bootstrap_index()))
+        else {
+            continue;
+        };
+        let Some((factory_kind, factory_owner, factory_name, _)) =
+            method_handle_member(pool, entry.method_ref)
+        else {
+            continue;
+        };
+        if factory_kind != REF_INVOKE_STATIC
+            || factory_owner.0.as_slice() != FACTORY_OWNER.as_bytes()
+            || !FACTORY_METHODS
+                .iter()
+                .any(|name| factory_name.0.as_slice() == name.as_bytes())
+        {
+            continue;
+        }
+        let Ok((sam_index, implementation_index, instantiated_index)) = arguments_of(entry, pool)
+        else {
+            continue;
+        };
+        let Some((implementation_kind, implementation_owner, implementation_name, descriptor)) =
+            method_handle_member(pool, implementation_index)
+        else {
+            continue;
+        };
+        if implementation_kind != REF_INVOKE_STATIC
+            || implementation_owner != owner
+            || !implementation_name.0.starts_with(BODY_MARKER.as_bytes())
+        {
+            continue;
+        }
+        let Ok(descriptor_text) = std::str::from_utf8(&descriptor.0) else {
+            continue;
+        };
+        let Some((parameters, Some(Type::Int))) = parse_method(descriptor_text) else {
+            continue;
+        };
+        if !(parameters.is_empty()
+            || parameters.as_slice() == [Type::Int]
+            || parameters.as_slice() == [Type::Int, Type::Int])
+        {
+            continue;
+        }
+        let Some((site_parameters, Some(Type::Reference(_)))) = parse_method(site.descriptor())
+        else {
+            continue;
+        };
+        if !site_parameters.is_empty() {
+            continue;
+        }
+        let method_type = |index: u16| -> Option<(Vec<Type>, Option<Type>)> {
+            let Ok(CpEntryKind::MethodType { descriptor, .. }) =
+                cp_entry(pool, index).map(|entry| &entry.kind)
+            else {
+                return None;
+            };
+            let text = std::str::from_utf8(&descriptor.0).ok()?;
+            parse_method(text)
+        };
+        let (Some((sam_parameters, Some(Type::Int))), Some((inst_parameters, Some(Type::Int)))) =
+            (method_type(sam_index), method_type(instantiated_index))
+        else {
+            continue;
+        };
+        if sam_parameters != parameters || inst_parameters != parameters {
+            continue;
+        }
+        candidates.push(SyntheticLambdaHelperCandidate {
             call_site: instruction.bci,
             site_cp: site.cp(),
             bootstrap_index: site.bootstrap_index(),

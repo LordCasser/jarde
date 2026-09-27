@@ -1,0 +1,44 @@
+Compiled from "LambdaFixture.java"
+public final class LambdaFixture {
+  public LambdaFixture();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static java.util.function.IntSupplier zero();
+    Code:
+       0: invokedynamic #7,  0              // InvokeDynamic #0:getAsInt:()Ljava/util/function/IntSupplier;
+       5: areturn
+
+  public static java.util.function.IntUnaryOperator one();
+    Code:
+       0: invokedynamic #11,  0             // InvokeDynamic #1:applyAsInt:()Ljava/util/function/IntUnaryOperator;
+       5: areturn
+
+  public static java.util.function.IntBinaryOperator two();
+    Code:
+       0: invokedynamic #15,  0             // InvokeDynamic #2:applyAsInt:()Ljava/util/function/IntBinaryOperator;
+       5: areturn
+
+  private static int lambda$two$2(int, int);
+    Code:
+       0: iload_0
+       1: bipush        10
+       3: imul
+       4: iload_1
+       5: iadd
+       6: ireturn
+
+  private static int lambda$one$1(int);
+    Code:
+       0: iload_0
+       1: bipush        10
+       3: iadd
+       4: ireturn
+
+  private static int lambda$zero$0();
+    Code:
+       0: bipush        7
+       2: ireturn
+}
