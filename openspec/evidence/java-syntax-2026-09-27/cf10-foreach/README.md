@@ -31,14 +31,14 @@ abc
 4
 ```
 
-JADX retains the stride loop as indexed `for (int i = 0; i < values.length; i += 2)`; it does not rewrite it as foreach. Jarde recovers `sum` as `for (int value : local2)` and `join` as `for (java.lang.Object iteratorElement25 : values)` with the String cast inside. It does not rewrite `everyOther` as foreach, but declines its method body with `local 1 crosses a quoted fallback region`; this alone makes the assembled Jarde class fail `javac --release 8` with a missing return. The same assembled source **also** quotes part of `main`: the invocation of `join(Iterable)` receives a `List` from `Arrays.asList`, and reference-conversion evidence is unavailable at that layer. The two diagnostics identify distinct remaining coverage gaps; this audit did not trace either to an internal root cause or establish that the counted-loop failure shares CF-08's cause.
+JADX retains the stride loop as indexed `for (int i = 0; i < values.length; i += 2)`; it does not rewrite it as foreach. Jarde recovers `sum` as `for (int value : local2)` and `join` as `for (java.lang.Object iteratorElement25 : values)` with the String cast inside. It does not rewrite `everyOther` as foreach, but declines its method body with `local 1 crosses a quoted fallback region`; this alone makes the assembled Jarde class fail `javac --release 8` with a missing return. The same assembled source **also** quotes part of `main`: the invocation of `join(Iterable)` receives a `List` from `Arrays.asList`, and `invocation_argument` has no safe reference-conversion evidence. Separate complete classes isolate these as (a) a stride-index method's local definition/use presentation across a quoted region and (b) a `List → Iterable` call-argument typing gap without any foreach or overload. Full details, replay commands, and exact hashes are in the [failure-isolation report](isolation/README.md). The local Region failure's internal path remains untraced; neither result establishes that the counted-loop failure shares CF-08's cause.
 
 Artifacts in this directory preserve the input, original compiled class, JADX source/classes, Jarde assembled source, and run outputs. Reproduction commands:
 
 ```sh
 javac --release 8 -g -Xlint:-options -d original input/ForeachCases.java
 jadx -d jadx original/ForeachCases.class
-cargo run -q -p jarde-cli -- class-source --input original/ForeachCases.class --class ForeachCases --policy single-class --release 8 --format text > jarde/ForeachCases.java
+cargo run -q -p jarde-cli -- class-source --input original/ForeachCases.class --class ForeachCases --policy single-class --release 8 --format text > jarde/ForeachCases.java 2> jarde/report
 javac --release 8 -g -Xlint:-options -d jadx-classes jadx/sources/defpackage/ForeachCases.java
 java -Xverify:all -cp original ForeachCases
 java -Xverify:all -cp jadx-classes defpackage.ForeachCases
