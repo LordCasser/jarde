@@ -49,3 +49,28 @@ Jarde 的 `handled` 当前整体拒绝：`local 1 crosses a quoted fallback regi
 下一次可拆的**最小内部合同**是：私有 Guard 证书把 ordinal `[0,1,2]`、`[4,21)` 与 `[31,35)`、唯一 handler 45、两组 `(save, cleanup, load, return)` 及 `(45, cleanup, 54,55)` 同异常重抛作为一个不可分割的结果；清理的 `iadd` 只能在三个副本的 SSA 操作/值/字段目标与效果顺序全部相等后纳入该证书，不能单独放宽通用 `cleanup_sequence`。Region 必须先分别恢复恰好覆盖 `[4,21)` 和 `[31,35)` 的子正文，且逐条匹配 ordinal 0 的优先级和 ordinal 1/2 的异常边；每个子正文的物理块集与证书 `owned` 不交叠、并集完整。Builder 应在同一 checkpoint 下给两个 saved return 各安放其原值，只将一份清理放进既有 `StmtKind::Try` 的 `finally_body`，将 catch 参数与正文放进 `catches`。所有权、声明、来源或预算/取消任一步失败都回滚整个候选，原物理 BCI 和三条异常行保持可追溯拒绝。上述合同成立后才可运行 Jarde 完整源码与原 class 的行为对照。
 
 此门槛提交未改 Rust 恢复代码。基线复放：`jarde-java` 的 `finally_copy_tests` 10/10、`p3_finally_straight` 5/5、`p3_typed_catch` 6/6；`cargo fmt --all -- --check`、`cargo check --workspace --locked`、`openspec validate recover-shared-catchall-finally --strict`、`git diff --check` 均通过。Rust 使用专用 `/tmp/jarde-cf16-target` 编译目录，并在提交前执行 `cargo clean`。
+
+## 调用型三副本切片的实现验收
+
+本次只恢复 `SharedFinallyCall.handled` 的无参静态 void 调用家族。Guard 要求三行 ordinal 连续、两段受保护区间及 handler 严格对应，三份 `invokestatic` 目标和 `()V` 描述符相同，两份返回的字面量生产者经 SSA 直接连接到各自 save 且仅由它消费，handler 保存的原异常经 load 到 `athrow`。正常完成只允许两处已证明的返回；额外出口、额外入口、不同调用目标、异常行改变均拒绝。Region 将 `[4,21)` 和 `[26,30)` 作为互不重叠的有界正文原子认领，Builder 在一个 checkpoint 内输出一处具名 catch 和一处 finally。清理方法名没有语义门槛。原有 `cleanupCount++` 与 `FinallyOnce.escaping` 仍是独立切片。
+
+冻结的完整源码在 `SharedFinallyCall.java`、`jadx-call/sources/defpackage/SharedFinallyCall.java`、`jarde-call-after/SharedFinallyCall.java`。后两者分别配 `jadx-call/JadxCallRunner.java` 与原 `SharedFinallyCallRunner.java`。固定 JADX checkout HEAD 仍为 `2fb1b16386941660fda07e9017285aec40fcb37f`。三方分别执行 `javac --release 8 -g:none -Xlint:-options` 编译**完整类与 Runner**，然后 `java -Xverify:all`：
+
+| 来源 | normal | caught | 编译/验证 |
+| --- | --- | --- | --- |
+| 原 Java 8 class（SHA-256 `644c0da948fcb64673898bff8f5509d9cefac7ecd7f58399e0f18b0491f2f325`） | `normal:1` | `caught:1` | 通过 |
+| 固定 JADX 完整源码 | `normal:2` | `caught:1` | 通过，但正常路径重复清理 |
+| 本次 Jarde 完整源码 | `normal:1` | `caught:1` | 通过 |
+
+可重放命令（在仓库根目录）：
+
+```sh
+javac --release 8 -g:none -Xlint:-options -d /tmp/jarde-cf16-original-final tests/fixtures/p3-shared-catchall-finally/SharedFinallyCall.java tests/fixtures/p3-shared-catchall-finally/SharedFinallyCallRunner.java
+java -Xverify:all -cp /tmp/jarde-cf16-original-final SharedFinallyCallRunner
+javac --release 8 -g:none -Xlint:-options -d /tmp/jarde-cf16-jadx-final tests/fixtures/p3-shared-catchall-finally/jadx-call/sources/defpackage/SharedFinallyCall.java tests/fixtures/p3-shared-catchall-finally/jadx-call/JadxCallRunner.java
+java -Xverify:all -cp /tmp/jarde-cf16-jadx-final defpackage.JadxCallRunner
+javac --release 8 -g:none -Xlint:-options -d /tmp/jarde-cf16-jarde-final tests/fixtures/p3-shared-catchall-finally/jarde-call-after/SharedFinallyCall.java tests/fixtures/p3-shared-catchall-finally/SharedFinallyCallRunner.java
+java -Xverify:all -cp /tmp/jarde-cf16-jarde-final SharedFinallyCallRunner
+```
+
+`p3_shared_catchall_finally` 定向测试还检查完整输出含两个字面量 return、唯一具名 catch/cleanup、无 bytecode fallback，且 source map 覆盖 `handled` 全部 24 个物理 BCI：`0,1,4,5,8,11,12,14,17,18,20,21,24,25,26,27,29,30,33,34,35,36,39,40`。同一测试把异常行交换、把 try 的 catch-all 保护终点扩至 24，并把一份清理调用改指向另一个真实 `static void other()`；均拒绝 finally 恢复。另一个 Java 8 样本 `SharedFinallyExtraReturn` 在 try 内加入提前返回，也被拒绝。额外返回样本经 `java -Xverify:all` 输出 `early:1 / normal:1 / caught:1`。`other()` 目标样本先由源码编译，再把 catch 副本的 `invokestatic #25 cleanup:()V` 改为 `#13 other:()V`；修改后的 class 经 `java -Xverify:all` 输出 `normal:1 / caught:2`。交换行与扩围行的字节码也分别通过 `-Xverify:all`，拒绝属于恢复证书而非验证器失败。Guard 单测另覆盖缺行/handler 变化、预算耗尽与取消传播。
