@@ -1,0 +1,7 @@
+# Design
+
+The class-source enum candidate scan already groups sites by physical method. The current early `candidates.len() != 1` branch records a refusal before the later per-candidate proof loop. That loop already accumulates proof outcomes in a method-local staging buffer, but `emit_class_source_enum_switch` clones and renders the original AST for one candidate at a time. Replacing the staged whole-method body repeatedly cannot retain more than one edit.
+
+Keep discovery, table proofs, map labels, environment selection and budgets unchanged. Add a grouped emitter that clones the one prepared AST once, locates each candidate by its switch BCI, validates the same `ordinal()` selector shape and labels for every site, replaces all targets, then renders one complete method body. Stage that one body and all proof markers only after every candidate succeeds. A failed match, incomplete method, proof refusal, budget stop or cancellation leaves every switch in the method on its existing integer path and reports per-site outcomes.
+
+The candidate identities remain physical method identity plus switch/read BCI and selected table identity. Do not bind labels by table field name, parameter order, enum declaration order, or candidate ordering. The regression fixture uses two different enum types and two distinct helper tables, and compares complete source compilation and `-Xverify:all` execution across original, fixed JADX and Jarde. A second fixture changes one site's proof precondition and checks that no sibling site is partially projected.
