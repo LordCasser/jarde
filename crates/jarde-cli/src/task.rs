@@ -1084,9 +1084,20 @@ fn class_source(args: ClassSource) -> Result<(Answer, Session), Failure> {
         // content binding this adapter makes; the policy, the profile and the loader are the caller's.
         environment: declaration.bind(&session.snapshot, &session.scope),
     };
-    let evidence = evidence.selection()?;
+    // A default class-source query publishes provenance-backed derived ranges, so it requests the
+    // source map those ranges need. An explicit `essential` selection remains exactly essential.
+    let default_evidence = evidence.evidence.is_empty();
+    let mut selected_evidence = evidence.selection()?;
+    if default_evidence {
+        selected_evidence = selected_evidence.with_kind(RecoveryEvidenceKind::SourceMap);
+    }
     let outcome = session.call(|engine, snapshot, budget| {
-        engine.class_source_with_evidence(slice::from_ref(snapshot), &request, &evidence, budget)
+        engine.class_source_with_evidence(
+            slice::from_ref(snapshot),
+            &request,
+            &selected_evidence,
+            budget,
+        )
     })?;
     let mut answer = Answer::outcome(&outcome, class_source_plane)?;
     answer.body = Some(CLASS_SOURCE_TEXT);

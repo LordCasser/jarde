@@ -1170,15 +1170,10 @@ fn a_class_parameter_that_is_not_a_definition_is_a_usage_error() {
     );
 }
 
-/// An invocation that states no evidence asks for the ordinary recovery: the necessary results and
-/// no optional record, on both sides of the adapter.
-///
-/// This is the adapter's half of "an ordinary recovery defaults to Essential": the CLI invents no
-/// default of its own — the selection it passes is the one it read — so the document it writes and
-/// the library report of the same request agree about every category being `NotRequested` and
-/// about the segment table being absent (change `add-demand-driven-core-results`, D1).
+/// Class-source needs method source maps to publish exact derived source ranges. With no explicit
+/// evidence selection, it requests that one category while other optional categories stay absent.
 #[test]
-fn an_invocation_that_states_no_evidence_asks_for_none() {
+fn class_source_defaults_to_the_source_map_needed_by_derived_ranges() {
     let bytes = probe_class();
     let directory = TempDir::new();
     let fixture = directory.write("Probe.class", &bytes);
@@ -1207,26 +1202,38 @@ fn an_invocation_that_states_no_evidence_asks_for_none() {
             continue;
         }
         recovered += 1;
-        assert!(
-            report["source_map"]["segments"]
-                .as_array()
-                .is_some_and(|segments| segments.is_empty()),
-            "no segment table was asked for: {report}"
-        );
+        let map_state = if report["content"] == "not_produced" {
+            "not_performed"
+        } else {
+            "complete"
+        };
+        if map_state == "complete" {
+            assert!(
+                report["source_map"]["segments"]
+                    .as_array()
+                    .is_some_and(|segments| !segments.is_empty()),
+                "class-source default materializes its method source map: {report}"
+            );
+        }
         let categories = report["evidence"]["categories"]
             .as_array()
             .expect("the status list is fixed-size");
         assert_eq!(categories.len(), 5, "one entry per category: {report}");
         for category in categories {
+            let expected = if category["kind"] == "source_map" {
+                map_state
+            } else {
+                "not_requested"
+            };
             assert_eq!(
-                category["state"]["state"], "not_requested",
-                "an unstated category is not requested: {report}"
+                category["state"]["state"], expected,
+                "only provenance needed by derived ranges is requested: {report}"
             );
         }
         assert_eq!(
             report["evidence"]["requested"]["kinds"],
-            json!([]),
-            "and the report echoes the empty selection"
+            json!(["source_map"]),
+            "and the report echoes the class-source default selection"
         );
     }
     assert!(

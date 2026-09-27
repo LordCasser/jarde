@@ -866,6 +866,81 @@ pub(crate) enum FamilyRootScan {
     Candidate(FamilyRootCandidate),
 }
 
+/// Find the one Java 8 nested enum slice this class-source writer supports. The typed row supplies
+/// the identity candidate; `$` is checked only as a consistency constraint after that evidence.
+pub(crate) fn scan_nested_enum_root(
+    root: &[u8],
+    nesting: &ClassSourceAssemblyContext,
+    budget: &mut Budget,
+) -> Result<FamilyRootScan> {
+    if nesting.major_version != Some(52) {
+        return Ok(FamilyRootScan::Absent);
+    }
+    const ACC_ENUM: u16 = 0x4000;
+    const ACC_STATIC: u16 = 0x0008;
+    const VISIBILITY: u16 = 0x0001 | 0x0002 | 0x0004;
+    let mut candidate = None;
+    for row in &nesting.resolved_inner_classes {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if row.outer_class.as_deref() != Some(root) || row.access_flags & ACC_ENUM == 0 {
+            continue;
+        }
+        if candidate.is_some() {
+            return Ok(FamilyRootScan::Refused(
+                "owner has multiple direct nested enum rows outside the two-level subset"
+                    .to_owned(),
+            ));
+        }
+        let Some(simple_name) = row
+            .inner_name
+            .as_ref()
+            .and_then(|name| std::str::from_utf8(&name.0).ok())
+        else {
+            return Ok(FamilyRootScan::Refused(
+                "nested enum row has no UTF-8 source name".to_owned(),
+            ));
+        };
+        if !jarde_java::names::is_java_identifier(simple_name)
+            || row.access_flags & ACC_STATIC == 0
+            || (row.access_flags & VISIBILITY).count_ones() > 1
+            || row.class != [root, b"$", simple_name.as_bytes()].concat()
+        {
+            return Ok(FamilyRootScan::Refused(
+                "nested enum row is not a source-spellable static member".to_owned(),
+            ));
+        }
+        candidate = Some(FamilyRootCandidate {
+            child_name: row.class.clone(),
+            simple_name: simple_name.to_owned(),
+            access_flags: row.access_flags,
+        });
+    }
+    if let Some(selected) = &candidate {
+        let mut matching_rows = 0usize;
+        for row in &nesting.resolved_inner_classes {
+            budget.poll()?;
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if row.outer_class.as_deref() == Some(root)
+                && (row.class == selected.child_name
+                    || row
+                        .inner_name
+                        .as_ref()
+                        .is_some_and(|name| name.0.as_slice() == selected.simple_name.as_bytes()))
+            {
+                matching_rows += 1;
+                if matching_rows > 1 {
+                    return Ok(FamilyRootScan::Refused(
+                        "nested enum owner row is duplicated or conflicts with another member row"
+                            .to_owned(),
+                    ));
+                }
+            }
+        }
+    }
+    Ok(candidate.map_or(FamilyRootScan::Absent, FamilyRootScan::Candidate))
+}
+
 const FAMILY_FORBIDDEN_FLAGS: u16 = 0x0200 | 0x2000 | 0x4000;
 const FAMILY_VISIBILITY_FLAGS: u16 = 0x0001 | 0x0002 | 0x0004;
 
@@ -897,6 +972,12 @@ pub(crate) fn scan_family_root(
             ));
         }
         if row.outer_class_index == 0 {
+            continue;
+        }
+        // Enum member rows are consumed by the class-source enum-family proof. They are outside
+        // this ordinary construction/capture family and must not be admitted or reported as a
+        // malformed ordinary member candidate.
+        if row.access_flags & 0x4000 != 0 {
             continue;
         }
         let Ok(outer) = cp_class_name(pool, row.outer_class_index) else {
@@ -2524,6 +2605,107 @@ mod tests {
             )
             .unwrap()
         );
+    }
+
+    #[test]
+    fn nested_enum_root_scan_requires_exact_rows_and_never_guesses_dollar_names() {
+        let row = crate::class_source::ResolvedInnerClass {
+            class: b"p/Outer$Inner".to_vec(),
+            outer_class: Some(b"p/Outer".to_vec()),
+            inner_name: Some(jarde_reader::model::JvmBytes(b"Inner".to_vec())),
+            access_flags: 0x4019,
+        };
+        let context =
+            |rows: Vec<crate::class_source::ResolvedInnerClass>| ClassSourceAssemblyContext {
+                major_version: Some(52),
+                resolved_inner_classes: rows,
+                ..ClassSourceAssemblyContext::default()
+            };
+        let mut limits = budget();
+        assert!(matches!(
+            scan_nested_enum_root(b"p/Outer", &context(vec![row.clone()]), &mut limits).unwrap(),
+            FamilyRootScan::Candidate(candidate)
+                if candidate.child_name == b"p/Outer$Inner" && candidate.simple_name == "Inner"
+        ));
+        assert_eq!(
+            scan_nested_enum_root(b"p/Outer", &context(Vec::new()), &mut limits).unwrap(),
+            FamilyRootScan::Absent
+        );
+        assert_eq!(
+            scan_nested_enum_root(b"p/Outer$TopLevel", &context(Vec::new()), &mut limits).unwrap(),
+            FamilyRootScan::Absent
+        );
+        assert!(matches!(
+            scan_nested_enum_root(
+                b"p/Outer",
+                &context(vec![row.clone(), row.clone()]),
+                &mut limits
+            )
+            .unwrap(),
+            FamilyRootScan::Refused(_)
+        ));
+        let mut conflict = row.clone();
+        conflict.access_flags ^= 0x0001;
+        assert!(matches!(
+            scan_nested_enum_root(b"p/Outer", &context(vec![row, conflict]), &mut limits).unwrap(),
+            FamilyRootScan::Refused(_)
+        ));
+        let enum_row = crate::class_source::ResolvedInnerClass {
+            class: b"p/Outer$Conflict".to_vec(),
+            outer_class: Some(b"p/Outer".to_vec()),
+            inner_name: Some(jarde_reader::model::JvmBytes(b"Conflict".to_vec())),
+            access_flags: 0x4019,
+        };
+        let mut non_enum_conflict = enum_row.clone();
+        non_enum_conflict.access_flags &= !0x4000;
+        assert!(matches!(
+            scan_nested_enum_root(
+                b"p/Outer",
+                &context(vec![enum_row, non_enum_conflict]),
+                &mut limits
+            )
+            .unwrap(),
+            FamilyRootScan::Refused(_)
+        ));
+        let wrong_owner = crate::class_source::ResolvedInnerClass {
+            class: b"p/Elsewhere$Inner".to_vec(),
+            outer_class: Some(b"p/Elsewhere".to_vec()),
+            inner_name: Some(jarde_reader::model::JvmBytes(b"Inner".to_vec())),
+            access_flags: 0x4019,
+        };
+        assert_eq!(
+            scan_nested_enum_root(b"p/Outer", &context(vec![wrong_owner]), &mut limits).unwrap(),
+            FamilyRootScan::Absent
+        );
+    }
+
+    #[test]
+    fn nested_enum_root_scan_reports_budget_and_cancellation_stops() {
+        let context = ClassSourceAssemblyContext {
+            major_version: Some(52),
+            resolved_inner_classes: vec![crate::class_source::ResolvedInnerClass {
+                class: b"p/Outer$Inner".to_vec(),
+                outer_class: Some(b"p/Outer".to_vec()),
+                inner_name: Some(jarde_reader::model::JvmBytes(b"Inner".to_vec())),
+                access_flags: 0x4019,
+            }],
+            ..ClassSourceAssemblyContext::default()
+        };
+        let mut limited = Budget::new(Limits {
+            analysis_steps: 0,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            scan_nested_enum_root(b"p/Outer", &context, &mut limited),
+            Err(Error::BudgetExceeded { .. })
+        ));
+        let cancellation = CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled = Budget::with_cancellation_token(Limits::default(), cancellation);
+        assert!(matches!(
+            scan_nested_enum_root(b"p/Outer", &context, &mut cancelled),
+            Err(Error::Cancelled { .. })
+        ));
     }
 
     #[test]
