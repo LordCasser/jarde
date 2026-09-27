@@ -1,4 +1,7 @@
 {
+  "anonymous_interface_projection": {
+    "state": "absent"
+  },
   "bridge_proofs": [],
   "class": {
     "class_bytes": {
@@ -235,11 +238,12 @@
     "name": "InterfaceCast"
   },
   "diagnostics": [],
+  "direct_override_proofs": [],
   "enum_switch_proofs": [],
   "execution": {
     "status": "complete",
     "usage": {
-      "analysis_steps": 173,
+      "analysis_steps": 215,
       "archive_entries": 9,
       "attribute_bytes": 342,
       "class_bytes": 974,
@@ -263,6 +267,7 @@
   "initializer_proof": {
     "kind": "not_applicable"
   },
+  "integer_constant_projections": [],
   "limits": {
     "analysis_steps": 4194304,
     "archive_entries": 65536,
@@ -651,7 +656,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 36,
+              "analysis_steps": 45,
               "archive_entries": 9,
               "attribute_bytes": 251,
               "class_bytes": 974,
@@ -1173,7 +1178,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 57,
+              "analysis_steps": 66,
               "archive_entries": 9,
               "attribute_bytes": 274,
               "class_bytes": 974,
@@ -1454,7 +1459,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 72,
+              "analysis_steps": 90,
               "archive_entries": 9,
               "attribute_bytes": 274,
               "class_bytes": 974,
@@ -2094,7 +2099,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 89,
+              "analysis_steps": 107,
               "archive_entries": 9,
               "attribute_bytes": 295,
               "class_bytes": 974,
@@ -2369,7 +2374,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 101,
+              "analysis_steps": 125,
               "archive_entries": 9,
               "attribute_bytes": 295,
               "class_bytes": 974,
@@ -2885,7 +2890,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 118,
+              "analysis_steps": 142,
               "archive_entries": 9,
               "attribute_bytes": 316,
               "class_bytes": 974,
@@ -3161,7 +3166,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 130,
+              "analysis_steps": 160,
               "archive_entries": 9,
               "attribute_bytes": 316,
               "class_bytes": 974,
@@ -3700,7 +3705,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 156,
+              "analysis_steps": 186,
               "archive_entries": 9,
               "attribute_bytes": 342,
               "class_bytes": 974,
@@ -3983,7 +3988,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 173,
+              "analysis_steps": 215,
               "archive_entries": 9,
               "attribute_bytes": 342,
               "class_bytes": 974,
@@ -4537,7 +4542,7 @@
   ],
   "text": "// jarde: presentation of `dt29/InterfaceCast` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\npackage dt29;\n\npublic class InterfaceCast extends java.lang.Object {\n    public InterfaceCast() {\n        // @method <init>()V\n        // @declaration a constructor of `dt29.InterfaceCast`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n\n    public static java.lang.Runnable asRunnable(java.io.Closeable arg0) {\n        // @method asRunnable(Ljava/io/Closeable;)Ljava/lang/Runnable;\n        // @declaration a static method of `dt29.InterfaceCast`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        return (java.lang.Runnable) arg0;\n    }\n\n    public static java.lang.String choose(java.io.Closeable arg0) {\n        // @method choose(Ljava/io/Closeable;)Ljava/lang/String;\n        // @declaration a static method of `dt29.InterfaceCast`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        return \"closeable\";\n    }\n\n    public static java.lang.String choose(java.lang.Runnable arg0) {\n        // @method choose(Ljava/lang/Runnable;)Ljava/lang/String;\n        // @declaration a static method of `dt29.InterfaceCast`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        return \"runnable\";\n    }\n\n    public static java.lang.String chooseRunnable(java.io.Closeable arg0) {\n        // @method chooseRunnable(Ljava/io/Closeable;)Ljava/lang/String;\n        // @declaration a static method of `dt29.InterfaceCast`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        return choose((java.lang.Runnable) arg0);\n    }\n}\n",
   "usage": {
-    "analysis_steps": 173,
+    "analysis_steps": 215,
     "archive_entries": 9,
     "attribute_bytes": 342,
     "class_bytes": 974,

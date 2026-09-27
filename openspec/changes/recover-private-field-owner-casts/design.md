@@ -13,7 +13,7 @@ Javac 对 `A.visible` 生成 owner 为 `A` 的直接 `putfield`；Jarde 的 fiel
 ## Decisions
 
 1. 保留字段指令声明的确切 owner `A`，只在完整选中类定义证明 `B extends A`、`A` 声明该 name/descriptor，且当前写入 BCI 的 receiver 确为 `B` 时允许该写入。源码应显式通过 `A` 类型接收者（例如 `((A) this).visible`）选择原字段；裸 `this.visible` 在 `B` 隐藏同名字段时会误选。现有 `field@1` 的严格 receiver==owner 门仍适用于没有这组逐 BCI 证明的其它指令。
-2. 对私有写入只认领精确的 accessor 调用链：唯一调用目标、receiver 的已证明父类转换、一个目标 private field store、与原描述符一致的返回值，以及调用点对 accessor 结果的丢弃。优先完整呈现原物理 helper 和调用，不为达成此闭环引入跨类 accessor 内联；若采用内联也必须证明类族中 helper 可安全省略。条件任一不符即拒绝折叠或 helper 的结构化恢复。
+2. 私有写入分成两个独立且原子验收的位置。`B.set` 仅在完整选中类头证明直接父类关系、调用 CP 精确指向 `A` 中唯一的 static synthetic `(LA;Z)Z` 方法、且下一条物理指令丢弃返回值时，呈现原物理调用与 `B→A` 实参 cast；调用方不读取或内联另一类的 helper Code。`A.access$002` 在自身的恢复中，仅凭五条完整 Code、单个目标 private field store、`dup_x1` 三个复制值各自唯一的消费者与一致的返回值，原子呈现字段赋值及返回。任一位置证明失败时保留该位置的拒绝来源；整个类族只有两处都完整才进入编译验收。
 3. `B.set` 要么呈现 public store 与 private accessor 的完整合法调用，要么沿现有来源协议保留未恢复区域。不得静默丢弃 `putfield`、在 access$ 方法中留下缺 `return` 的文本，或将拒绝结果写成完整源码。
 4. 复用现有 class relation、field reference、invoke 与 producer-consumer 来源事实。无需添加通用类型闭包、名字启发式或新的分析 pass。
 5. 反例验证至少包含 owner 错配/父类关系缺失、多个候选 accessor、accessor 额外字段写入；隐藏同名字段是保留 owner 的正向判据，它不能被输出为裸 `B.visible`。

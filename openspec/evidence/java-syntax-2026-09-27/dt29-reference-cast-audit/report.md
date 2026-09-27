@@ -47,4 +47,12 @@ CARGO_TARGET_DIR=/tmp/jarde-dt29-audit-target cargo build -p jarde-cli --bin jar
 JARDE_CLI=/tmp/jarde-dt29-audit-target/debug/jarde-cli python3 openspec/evidence/java-syntax-2026-09-27/dt29-reference-cast-audit/replay.py
 ```
 
-只有隔离后的 private-field 闭环进入 [recover-private-field-owner-casts](../../../changes/recover-private-field-owner-casts/proposal.md)；本轮未改生产代码。复杂 `TestFieldCast` 的全类族组合仍待扩验。
+只有隔离后的 private-field 闭环进入 [recover-private-field-owner-casts](../../../changes/recover-private-field-owner-casts/proposal.md)；这次基线审计未改生产代码。复杂 `TestFieldCast` 的全类族组合仍待扩验。
+
+## 字段恢复实施后回放
+
+在 `recover-private-field-owner-casts` 的实施分支上，夹具给 `B` 增加同名 `visible` 字段；反射 Runner 除检查 `A.visible == true`、`A.hidden == false`，还检查 `B.visible == false`。Jarde 的 `B.set` 保留物理 `A.access$002((A) this, arg2)` 调用，并通过显式 `((A) this).visible` 写入父字段。`A.access$002` 的独立 Code 证明把 `dup_x1` 的三个值分别绑定到一次 `putfield` 的接收者和值及一次 `ireturn`，完整呈现 `arg0.hidden = arg1; return arg1;`；没有跨类内联。
+
+同一 `replay.py` 对原始、固定 JADX、Jarde 三组完整 private-field class source 执行 `javac --release 8` 和 `java -Xverify:all`，三组均打印 `true:false`；接口三组仍打印 `runnable:ClassCastException`。回放还将 B 的父类 owner 改为未选中的 `X`、用 `visible:I` 的 A 替换原 `visible:Z` 声明、用含两个同名 accessor 的 A 替换唯一目标，以及用含额外字段写入的 synthetic helper 替换原 helper：前两项拒绝 BCI 2，owner/调用关系错配与 accessor 歧义拒绝 BCI 7，额外写入拒绝 helper 正文。`method_bodies=1` 停止时 helper 没有部分源码。
+
+这些负例是拒绝恢复的判据，不是可运行 Java 程序。固定 `combined/TestFieldCast` 仍只作为复杂组合的后续集成证据。

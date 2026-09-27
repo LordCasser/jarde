@@ -9,12 +9,10 @@
 //! * the instruction itself states the member: the class's own pool names the owner, the field and
 //!   its descriptor ([`crate::decode`], rule `field@1`'s IR precondition), and nothing here invents a
 //!   spelling from anything else;
-//! * for an **instance** access the receiver's static type has to be exactly the member's owner. That
-//!   is the one proof that keeps the written text meaning the same field: `a.f` and `b.f` are
-//!   different fields when `B extends A` declares its own `f`, so a receiver whose type is merely a
-//!   *subtype* would make `receiver.f` name a field this instruction did not read. The frames state
-//!   the receiver's type, and the rule compares it with the pool's owner in the class file's own
-//!   internal form;
+//! * for an **instance** access the receiver's static type has to be exactly the member's owner.
+//!   A class-source run may also supply one exact, selected parent declaration proof for a write;
+//!   this plan rechecks its BCI, member identity and receiver type, then spells an explicit owner
+//!   cast. A subtype's bare `receiver.f` could instead name a shadowing field;
 //! * for a **static** access there is no receiver and no shadowing question: the owner type and the
 //!   field name are the member, and the text spells them.
 //!
@@ -517,6 +515,8 @@ pub(crate) struct Shape {
     pub(crate) value: Option<ValueId>,
     /// Whether this claimed write has the same-class blank static-final declaration proof.
     simple_static_final: bool,
+    /// The selected parent field must be spelled through its symbolic owner.
+    pub(crate) owner_cast: bool,
 }
 
 impl Shape {
@@ -542,6 +542,7 @@ pub(crate) fn plan(
     method_name: &str,
     method_descriptor: &str,
     class_fields: Option<&[MemberHeader]>,
+    superclass_writes: &[crate::report::ProvedSuperclassFieldWrite],
     budget: &mut Budget,
 ) -> Result<Plan, StopReason> {
     let mut plan = Plan::empty();
@@ -565,7 +566,13 @@ pub(crate) fn plan(
             name: name.clone(),
             descriptor: descriptor.clone(),
         };
-        match verify(instruction, &evidence, ssa, declaring) {
+        stop::charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(superclass_writes.len()).unwrap_or(u64::MAX),
+            Some(at),
+        )?;
+        match verify(instruction, &evidence, ssa, declaring, superclass_writes) {
             Ok(shape) => {
                 plan.claimed.insert(at, (evidence, shape));
             }
@@ -676,6 +683,7 @@ fn verify(
     evidence: &Evidence,
     ssa: &SsaTable,
     declaring: Option<&DeclaringClass>,
+    superclass_writes: &[crate::report::ProvedSuperclassFieldWrite],
 ) -> Result<Shape, Refusal> {
     let at = evidence.bci;
     let operands = stack_operands(instruction);
@@ -698,6 +706,7 @@ fn verify(
             receiver: None,
             value,
             simple_static_final: false,
+            owner_cast: false,
         });
     }
     let Some((_, receiver)) = operands.first().copied() else {
@@ -705,9 +714,20 @@ fn verify(
             "the field access at BCI {at} reads no receiver this run states"
         )));
     };
-    match stated_type(ssa, receiver) {
+    let receiver_type = stated_type(ssa, receiver);
+    let owner_cast = superclass_writes.iter().any(|proof| {
+        proof.bci == at
+            && evidence.access == FieldAccess::Write
+            && receiver_type.as_deref() == Some(proof.source.as_str())
+            && proof.source != proof.owner
+            && proof.owner == evidence.owner
+            && proof.name == evidence.name
+            && proof.descriptor == evidence.descriptor
+    });
+    match receiver_type {
         // The receiver's own type is the member's owner: `receiver.f` names this field and no other.
         Some(stated) if stated == evidence.owner => {}
+        Some(_) if owner_cast => {}
         // The uninitialized `this` of an instance initializer, before its constructor call: the one
         // receiver whose type is not a class name, and which JVMS 4.10.1.9 lets through only a
         // `Fieldref` naming the class being constructed.
@@ -755,6 +775,7 @@ fn verify(
         receiver: Some(receiver),
         value,
         simple_static_final: false,
+        owner_cast,
     })
 }
 
@@ -903,6 +924,7 @@ mod tests {
                     receiver: None,
                     value: None,
                     simple_static_final: false,
+                    owner_cast: false,
                 },
             ),
         );
@@ -933,6 +955,7 @@ mod tests {
                     receiver: None,
                     value: None,
                     simple_static_final: false,
+                    owner_cast: false,
                 },
             ),
         );
@@ -1023,6 +1046,7 @@ mod tests {
                     receiver: None,
                     value: None,
                     simple_static_final: false,
+                    owner_cast: false,
                 },
             ),
         );

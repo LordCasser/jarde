@@ -323,6 +323,7 @@ pub(crate) struct Inputs<'a> {
     /// [`Self::parameter_types`], so that a builder handed this run's facts never reads a second
     /// opinion out of a descriptor itself.
     pub(crate) return_type: Option<Type>,
+    pub(crate) method_access_flags: Option<u16>,
     /// The run's same-Code local names and any uniquely matched LVTT signatures.
     pub(crate) debug_locals: &'a [DebugLocal],
     /// The names the presentation decided, in slot order.
@@ -6124,6 +6125,22 @@ pub(crate) fn build(
         inputs.return_type.as_ref(),
         budget,
     )?;
+    let boolean_accessor_assignment = BooleanAccessorAssignment::prove(
+        canonical,
+        ssa,
+        operations,
+        inputs.code,
+        inputs.fields,
+        inputs.class_fields,
+        inputs.declaring_class,
+        inputs.physical_method,
+        inputs.method_access_flags,
+        inputs.has_receiver,
+        inputs.parameters,
+        inputs.parameter_types,
+        inputs.return_type.as_ref(),
+        budget,
+    )?;
     validate_captured_outer_reads(
         inputs.captured_outer_reads,
         inputs.physical_method,
@@ -6208,7 +6225,8 @@ pub(crate) fn build(
         compounds,
         unit_field_updates,
         long_assignment_result,
-        long_assignment_refused: false,
+        boolean_accessor_assignment,
+        assignment_result_refused: false,
         postfix: PostfixUpdates::default(),
         array_initializers: inputs.array_initializers,
         local_assignments,
@@ -6873,8 +6891,9 @@ struct Builder<'a> {
     unit_field_updates: UnitFieldUpdates,
     /// The one closed category-2 assignment-result shape, if this body proves it completely.
     long_assignment_result: Option<LongAssignmentResult>,
+    boolean_accessor_assignment: Option<BooleanAccessorAssignment>,
     /// The closed field/return pair is quoted as one unit if its prepared rendering cannot commit.
-    long_assignment_refused: bool,
+    assignment_result_refused: bool,
     /// Complete postfix old-value returns, owned only after the SSA and evaluation-order proof.
     postfix: PostfixUpdates,
     /// Complete, same-block array initializer chains proved from their allocation through their
@@ -7331,6 +7350,182 @@ impl LongAssignmentResult {
 
     fn owns(&self, bci: u32) -> bool {
         bci == self.store_bci || bci == self.return_bci || self.anchors.contains(&bci)
+    }
+}
+
+/// The Java 8 private boolean setter helper's complete physical body. Its `dup_x1` has exactly
+/// three consumers: the receiver and value of one `putfield`, and the returned copy of that value.
+/// The two source statements below are committed together only after this closed proof succeeds.
+#[derive(Clone)]
+struct BooleanAccessorAssignment(LongAssignmentResult);
+
+impl BooleanAccessorAssignment {
+    #[allow(clippy::too_many_arguments)]
+    fn prove(
+        canonical: &CanonicalCfg,
+        ssa: &SsaTable,
+        operations: &Operations,
+        code: &MethodCodeFacts,
+        fields: &field::Plan,
+        class_fields: Option<&[jarde_reader::classfile::MemberHeader]>,
+        declaring_class: Option<&str>,
+        method: Option<&jarde_reader::model::PhysicalMethodId>,
+        flags: Option<u16>,
+        has_receiver: bool,
+        parameters: u16,
+        parameter_types: &BTreeMap<u16, Type>,
+        return_type: Option<&Type>,
+        budget: &mut Budget,
+    ) -> Result<Option<Self>, StopReason> {
+        let Some(owner) = declaring_class else {
+            return Ok(None);
+        };
+        if !method.is_some_and(|method| method.name.0.starts_with(b"access$"))
+            || !flags.is_some_and(|flags| flags & (0x1000 | 0x0008) == (0x1000 | 0x0008))
+            || has_receiver
+            || parameters != 2
+            || parameter_types.len() != 2
+            || parameter_types.get(&0) != Some(&Type::Reference(owner.replace('/', ".")))
+            || parameter_types.get(&1) != Some(&Type::Boolean)
+            || return_type != Some(&Type::Boolean)
+            || !canonical.completeness().is_complete()
+            || !canonical.unreachable().is_empty()
+            || canonical.blocks().len() != 1
+            || !canonical.edges().is_empty()
+            || canonical.blocks().iter().any(|block| block.id().is_clone())
+            || ssa.blocks().len() != 1
+            || !code.exception_handlers.is_empty()
+            || code.max_locals < 2
+            || code.max_stack < 3
+        {
+            return Ok(None);
+        }
+        let descriptor = format!("(L{owner};Z)Z");
+        if method.is_none_or(|method| method.descriptor.0 != descriptor.as_bytes()) {
+            return Ok(None);
+        }
+        let [load_receiver, load_value, duplicate, store, returns] = code.instructions.as_slice()
+        else {
+            return Ok(None);
+        };
+        if [
+            load_receiver.bci,
+            load_value.bci,
+            duplicate.bci,
+            store.bci,
+            returns.bci,
+        ] != [0, 1, 2, 3, 6]
+            || [
+                load_receiver.opcode,
+                load_value.opcode,
+                duplicate.opcode,
+                store.opcode,
+                returns.opcode,
+            ] != [0x2a, 0x1b, 0x5a, 0xb5, 0xac]
+            || !matches!(operations.get(0), Some(Operation::Load { slot: 0 }))
+            || !matches!(operations.get(1), Some(Operation::Load { slot: 1 }))
+            || !matches!(operations.get(2), Some(Operation::Other))
+            || !matches!(
+                operations.get(3),
+                Some(Operation::Field {
+                    access: FieldAccess::Write,
+                    is_static: false,
+                    ..
+                })
+            )
+            || !matches!(operations.get(6), Some(Operation::Return))
+        {
+            return Ok(None);
+        }
+        let [receiver_load, value_load, duplicate, _store, returns] =
+            ssa.blocks()[0].instructions()
+        else {
+            return Ok(None);
+        };
+        if duplicate.opcode() != 0x5a {
+            return Ok(None);
+        }
+        poll(budget, Some(2))?;
+        charge(budget, CountedBudgetDimension::IrItems, 5, Some(2))?;
+        let Some((field, shape)) = fields.claim(3) else {
+            return Ok(None);
+        };
+        if field.owner != owner
+            || field.descriptor != "Z"
+            || field.access != FieldAccess::Write
+            || field.is_static
+        {
+            return Ok(None);
+        }
+        let Some(class_fields) = class_fields else {
+            return Ok(None);
+        };
+        charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            u64::try_from(class_fields.len()).unwrap_or(u64::MAX),
+            Some(3),
+        )?;
+        let matching: Vec<_> = class_fields
+            .iter()
+            .filter(|candidate| candidate.name.raw().0 == field.name.as_bytes())
+            .collect();
+        if matching.len() != 1
+            || matching[0].descriptor.raw().0 != b"Z"
+            || matching[0].access_flags & (0x0002 | 0x0008) != 0x0002
+        {
+            return Ok(None);
+        }
+        let duplicate_inputs = stack_operands(duplicate);
+        let [(_, receiver_source), (_, value_source)] = duplicate_inputs.as_slice() else {
+            return Ok(None);
+        };
+        let (Some((_, receiver_loaded)), Some((_, value_loaded)), Some((_, return_copy))) = (
+            stack_writes(receiver_load).first().copied(),
+            stack_writes(value_load).first().copied(),
+            stack_operands(returns).first().copied(),
+        ) else {
+            return Ok(None);
+        };
+        let (Some(receiver_copy), Some(field_copy)) = (shape.receiver, shape.value) else {
+            return Ok(None);
+        };
+        let outputs = stack_writes(duplicate);
+        if outputs.len() != 3
+            || receiver_source != &receiver_loaded
+            || value_source != &value_loaded
+            || ssa.value(value_loaded).ty() != &Value::Int
+            || ssa.value(field_copy).ty() != &Value::Int
+            || ssa.value(return_copy).ty() != &Value::Int
+            || duplicate
+                .reads()
+                .iter()
+                .any(|(slot, _)| matches!(slot, Slot::Local(_)))
+            || [receiver_copy, field_copy, return_copy]
+                .iter()
+                .collect::<BTreeSet<_>>()
+                .len()
+                != 3
+            || ![receiver_copy, field_copy, return_copy]
+                .iter()
+                .all(|id| outputs.iter().any(|(_, output)| output == id) && comes_from(ssa, *id, 2))
+            || !only_use_at(ssa, receiver_loaded, 2)
+            || !only_use_at(ssa, value_loaded, 2)
+            || !only_use_at(ssa, receiver_copy, 3)
+            || !only_use_at(ssa, field_copy, 3)
+            || !only_use_at(ssa, return_copy, 6)
+        {
+            return Ok(None);
+        }
+        Ok(Some(Self(LongAssignmentResult {
+            receiver_source: receiver_loaded,
+            parameter_source: value_loaded,
+            receiver_copy,
+            field_copy,
+            store_bci: 3,
+            return_bci: 6,
+            anchors: [0, 1, 2],
+        })))
     }
 }
 
@@ -15232,10 +15427,21 @@ impl Builder<'_> {
             .clone()
             .filter(|result| result.owns(at))
         {
-            if self.long_assignment_refused || at != result.store_bci {
+            if self.assignment_result_refused || at != result.store_bci {
                 return Ok(());
             }
-            return self.long_assignment_result_statement(&result);
+            return self.assignment_result_statement(&result, false);
+        }
+        if let Some(result) = self
+            .boolean_accessor_assignment
+            .as_ref()
+            .map(|shape| shape.0.clone())
+            .filter(|result| result.owns(at))
+        {
+            if self.assignment_result_refused || at != result.store_bci {
+                return Ok(());
+            }
+            return self.assignment_result_statement(&result, true);
         }
         if let Some(update) = self.unit_field_updates.statement_at(at).cloned() {
             return self.unit_field_update_statement(&update);
@@ -19164,6 +19370,19 @@ impl Builder<'_> {
         } else {
             Some(match shape.receiver {
                 Some(value) => match self.render_value(value, at, 0) {
+                    Ok(receiver) if shape.owner_cast => {
+                        let Some(owner) = spell_reference(&evidence.owner) else {
+                            return self.fallback(
+                                self.quoted_bcis(at),
+                                format!(
+                                    "the proved field owner `{}` cannot be spelled",
+                                    evidence.owner
+                                ),
+                                at,
+                            );
+                        };
+                        cast_argument(receiver, &Type::Reference(owner), at)
+                    }
                     Ok(receiver) => receiver,
                     Err(reason) => {
                         let bcis = self.quoted_bcis(at);
@@ -19220,12 +19439,13 @@ impl Builder<'_> {
         ))
     }
 
-    /// Publishes the proved `putfield` and `lreturn` as one prepared pair. The category-2 copy is
-    /// never rendered: both statements read the same side-effect-free parameter load only after
-    /// the proof established the two distinct SSA consumers.
-    fn long_assignment_result_statement(
+    /// Publishes a proved field store and return as one prepared pair. The stack copy is never
+    /// rendered: both statements read the same side-effect-free parameter load only after the
+    /// proof established the distinct SSA consumers.
+    fn assignment_result_statement(
         &mut self,
         result: &LongAssignmentResult,
+        boolean_accessor: bool,
     ) -> Result<(), StopReason> {
         let bcis = [
             result.anchors[0],
@@ -19236,7 +19456,7 @@ impl Builder<'_> {
         ]
         .to_vec();
         let Some((evidence, shape)) = self.fields.claim(result.store_bci) else {
-            self.long_assignment_refused = true;
+            self.assignment_result_refused = true;
             return self.fallback(
                 bcis,
                 "the proved long assignment lost its field claim before emission",
@@ -19245,11 +19465,11 @@ impl Builder<'_> {
         };
         if evidence.access != FieldAccess::Write
             || evidence.is_static
-            || evidence.descriptor != "J"
+            || evidence.descriptor != if boolean_accessor { "Z" } else { "J" }
             || shape.receiver != Some(result.receiver_copy)
             || shape.value != Some(result.field_copy)
         {
-            self.long_assignment_refused = true;
+            self.assignment_result_refused = true;
             return self.fallback(
                 bcis,
                 "the proved long assignment no longer matches its physical field write",
@@ -19265,7 +19485,7 @@ impl Builder<'_> {
         let (receiver, value) = match rendered {
             Ok(rendered) => rendered,
             Err(reason) => {
-                self.long_assignment_refused = true;
+                self.assignment_result_refused = true;
                 return self.fallback(bcis, &reason, result.store_bci);
             }
         };
@@ -19277,7 +19497,7 @@ impl Builder<'_> {
         ) {
             Ok(value) => value,
             Err(reason) => {
-                self.long_assignment_refused = true;
+                self.assignment_result_refused = true;
                 return self.fallback(bcis, &reason, result.store_bci);
             }
         };
@@ -19288,7 +19508,7 @@ impl Builder<'_> {
         ) {
             Ok(value) => value,
             Err(reason) => {
-                self.long_assignment_refused = true;
+                self.assignment_result_refused = true;
                 return self.fallback(bcis, &reason, result.return_bci);
             }
         };
@@ -19311,7 +19531,7 @@ impl Builder<'_> {
             },
             OriginSet::new(Origin::direct(result.return_bci)),
         );
-        // One category-2 copy has two consumers. Publish both source statements only after the
+        // One physical copy has two consumers. Publish both source statements only after the
         // budget can fund both; a one-statement allowance must not leave a field write without
         // its proved return (or the converse).
         poll(self.budget, Some(result.store_bci))?;

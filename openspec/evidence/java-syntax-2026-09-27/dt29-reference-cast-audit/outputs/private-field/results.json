@@ -3,7 +3,7 @@
   "input_class_sha256": {
     "dt29/PrivateFieldFamily": "abfa0b8c36f7120efce4e013c024878a109596020c59edfe2d76fdfdbacdaa6d",
     "dt29/PrivateFieldFamily$A": "3805172d6bcc7f9a1719c602597bcdaa8ac8bd0d58ae1a4079e37969996b8ce0",
-    "dt29/PrivateFieldFamily$B": "aba40da881cf51281bfc37aee8eaf9a11e9c5a9b5bfcf61c1fae3b46142a247e"
+    "dt29/PrivateFieldFamily$B": "9d7cdcee6d1ef19df862539a5dde180bd278ee3696aa718723283edc22a825d5"
   },
   "input_classes": [
     "dt29/PrivateFieldFamily$A",
@@ -18,8 +18,11 @@
     "run_stdout": "true:false\n"
   },
   "jarde": {
-    "compile_exit": 1,
-    "compile_stderr": "<TMP>/private-field-jarde-src/dt29/PrivateFieldFamily$A.java:29: error: missing return statement\n    }\n    ^\n1 error\n"
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "true:false\n"
   },
   "jarde_report_classes": [
     "dt29/PrivateFieldFamily",

@@ -1,4 +1,7 @@
 {
+  "anonymous_interface_projection": {
+    "state": "absent"
+  },
   "bridge_proofs": [],
   "class": {
     "class_bytes": {
@@ -284,11 +287,12 @@
     "name": "Both"
   },
   "diagnostics": [],
+  "direct_override_proofs": [],
   "enum_switch_proofs": [],
   "execution": {
     "status": "complete",
     "usage": {
-      "analysis_steps": 80,
+      "analysis_steps": 95,
       "archive_entries": 7,
       "attribute_bytes": 213,
       "class_bytes": 582,
@@ -312,6 +316,7 @@
   "initializer_proof": {
     "kind": "not_applicable"
   },
+  "integer_constant_projections": [],
   "limits": {
     "analysis_steps": 4194304,
     "archive_entries": 65536,
@@ -682,7 +687,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 36,
+              "analysis_steps": 45,
               "archive_entries": 7,
               "attribute_bytes": 165,
               "class_bytes": 582,
@@ -1039,7 +1044,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 48,
+              "analysis_steps": 57,
               "archive_entries": 7,
               "attribute_bytes": 194,
               "class_bytes": 582,
@@ -1268,7 +1273,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 58,
+              "analysis_steps": 70,
               "archive_entries": 7,
               "attribute_bytes": 194,
               "class_bytes": 582,
@@ -1496,7 +1501,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 70,
+              "analysis_steps": 82,
               "archive_entries": 7,
               "attribute_bytes": 213,
               "class_bytes": 582,
@@ -1723,7 +1728,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 80,
+              "analysis_steps": 95,
               "archive_entries": 7,
               "attribute_bytes": 213,
               "class_bytes": 582,
@@ -1866,7 +1871,7 @@
   ],
   "text": "// jarde: presentation of `dt29/Both` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\npackage dt29;\n\npublic class Both extends java.lang.Object implements java.io.Closeable, java.lang.Runnable {\n    public Both() {\n        // @method <init>()V\n        // @declaration a constructor of `dt29.Both`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n\n    public void close() throws java.io.IOException {\n        // @method close()V\n        // @declaration an instance method of `dt29.Both`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        return;\n    }\n\n    public void run() {\n        // @method run()V\n        // @declaration an instance method of `dt29.Both`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        return;\n    }\n}\n",
   "usage": {
-    "analysis_steps": 80,
+    "analysis_steps": 95,
     "archive_entries": 7,
     "attribute_bytes": 213,
     "class_bytes": 582,

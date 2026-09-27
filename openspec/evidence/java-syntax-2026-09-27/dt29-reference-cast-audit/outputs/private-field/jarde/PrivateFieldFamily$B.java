@@ -3,6 +3,8 @@
 package dt29;
 
 public class PrivateFieldFamily$B extends dt29.PrivateFieldFamily$A {
+    public boolean visible;
+
     public PrivateFieldFamily$B() {
         // @method <init>()V
         // @declaration a constructor of `dt29.PrivateFieldFamily$B`, member flags 0x0001
@@ -15,10 +17,8 @@ public class PrivateFieldFamily$B extends dt29.PrivateFieldFamily$A {
         // @method set(ZZ)V
         // @declaration an instance method of `dt29.PrivateFieldFamily$B`, member flags 0x0001
         // recovered from bytecode; presentation is not claimed to compile
-        // @bytecode 2
-        // the field access at BCI 2 is not one this run proved names the member its own receiver's type declares, and a field instruction is presented only where the member it names is proven
-        // @bytecode 7 10 5 6
-        // the parameter 0 of the invocation at BCI 7 is declared `dt29.PrivateFieldFamily$A` presents `dt29.PrivateFieldFamily$B` but the invocation requires `dt29.PrivateFieldFamily$A` and this layer has no safe reference conversion evidence
+        ((dt29.PrivateFieldFamily$A) this).visible = arg1;
+        dt29.PrivateFieldFamily$A.access$002((dt29.PrivateFieldFamily$A) this, arg2);
         return;
     }
 }

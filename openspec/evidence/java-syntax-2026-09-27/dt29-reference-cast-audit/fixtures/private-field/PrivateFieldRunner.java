@@ -12,12 +12,14 @@ public class PrivateFieldRunner {
 		Object value = constructor.newInstance();
 		Method set = bType.getMethod("set", boolean.class, boolean.class);
 		Field visible = aType.getField("visible");
+		Field shadow = bType.getField("visible");
 		Field hidden = aType.getDeclaredField("hidden");
 		hidden.setAccessible(true);
 		set.invoke(value, true, false);
 		boolean actualVisible = visible.getBoolean(value);
+		boolean actualShadow = shadow.getBoolean(value);
 		boolean actualHidden = hidden.getBoolean(value);
-		if (!actualVisible || actualHidden) {
+		if (!actualVisible || actualHidden || actualShadow) {
 			throw new AssertionError(actualVisible + ":" + actualHidden);
 		}
 		System.out.println(actualVisible + ":" + actualHidden);

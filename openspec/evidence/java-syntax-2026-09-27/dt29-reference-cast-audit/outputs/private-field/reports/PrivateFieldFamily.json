@@ -1,4 +1,7 @@
 {
+  "anonymous_interface_projection": {
+    "state": "absent"
+  },
   "bridge_proofs": [],
   "class": {
     "class_bytes": {
@@ -10,7 +13,7 @@
         "ordinal": 2,
         "origin": {
           "root_container": "root",
-          "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+          "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
           "steps": []
         },
         "raw_name": [
@@ -209,7 +212,7 @@
             "ordinal": 2,
             "origin": {
               "root_container": "root",
-              "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
               "steps": []
             },
             "raw_name": [
@@ -255,11 +258,12 @@
     "name": "PrivateFieldFamily"
   },
   "diagnostics": [],
+  "direct_override_proofs": [],
   "enum_switch_proofs": [],
   "execution": {
     "status": "complete",
     "usage": {
-      "analysis_steps": 44,
+      "analysis_steps": 53,
       "archive_entries": 9,
       "attribute_bytes": 141,
       "class_bytes": 494,
@@ -268,7 +272,7 @@
       "dependency_depth": 0,
       "elapsed_millis": "<elapsed>",
       "entry_bytes": 247,
-      "input_bytes": 1104,
+      "input_bytes": 1107,
       "ir_edges": 2,
       "ir_items": 65,
       "method_bodies": 1,
@@ -283,6 +287,7 @@
   "initializer_proof": {
     "kind": "not_applicable"
   },
+  "integer_constant_projections": [],
   "limits": {
     "analysis_steps": 4194304,
     "archive_entries": 65536,
@@ -362,7 +367,7 @@
                 "ordinal": 2,
                 "origin": {
                   "root_container": "root",
-                  "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                  "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                   "steps": []
                 },
                 "raw_name": [
@@ -442,7 +447,7 @@
               "dependency_depth": 0,
               "elapsed_millis": "<elapsed>",
               "entry_bytes": 247,
-              "input_bytes": 1104,
+              "input_bytes": 1107,
               "ir_edges": 2,
               "ir_items": 48,
               "method_bodies": 1,
@@ -466,7 +471,7 @@
               "engine": "0.1.0",
               "environment": {
                 "content": [
-                  "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee"
+                  "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b"
                 ],
                 "domain_loaders": [
                   "app"
@@ -488,7 +493,7 @@
                         "kind": "container",
                         "origin": {
                           "root_container": "root",
-                          "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                          "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                           "steps": []
                         },
                         "prefix": []
@@ -500,7 +505,7 @@
                     "scope": {
                       "kind": "snapshot_all"
                     },
-                    "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee"
+                    "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b"
                   },
                   "profile": {
                     "java_release": 8,
@@ -538,7 +543,7 @@
                       "ordinal": 2,
                       "origin": {
                         "root_container": "root",
-                        "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                        "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                         "steps": []
                       },
                       "raw_name": [
@@ -683,7 +688,7 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 40,
+              "analysis_steps": 49,
               "archive_entries": 9,
               "attribute_bytes": 141,
               "class_bytes": 494,
@@ -692,7 +697,7 @@
               "dependency_depth": 0,
               "elapsed_millis": "<elapsed>",
               "entry_bytes": 247,
-              "input_bytes": 1104,
+              "input_bytes": 1107,
               "ir_edges": 2,
               "ir_items": 65,
               "method_bodies": 1,
@@ -757,7 +762,7 @@
                               "ordinal": 2,
                               "origin": {
                                 "root_container": "root",
-                                "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                                "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                                 "steps": []
                               },
                               "raw_name": [
@@ -829,7 +834,7 @@
                             "ordinal": 2,
                             "origin": {
                               "root_container": "root",
-                              "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                               "steps": []
                             },
                             "raw_name": [
@@ -907,7 +912,7 @@
                             "ordinal": 2,
                             "origin": {
                               "root_container": "root",
-                              "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                               "steps": []
                             },
                             "raw_name": [
@@ -993,7 +998,7 @@
   ],
   "text": "// jarde: presentation of `dt29/PrivateFieldFamily` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\npackage dt29;\n\npublic class PrivateFieldFamily extends java.lang.Object {\n    public PrivateFieldFamily() {\n        // @method <init>()V\n        // @declaration a constructor of `dt29.PrivateFieldFamily`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n}\n",
   "usage": {
-    "analysis_steps": 44,
+    "analysis_steps": 53,
     "archive_entries": 9,
     "attribute_bytes": 141,
     "class_bytes": 494,
@@ -1002,7 +1007,7 @@
     "dependency_depth": 0,
     "elapsed_millis": "<elapsed>",
     "entry_bytes": 247,
-    "input_bytes": 1104,
+    "input_bytes": 1107,
     "ir_edges": 2,
     "ir_items": 65,
     "method_bodies": 1,
@@ -1016,6 +1021,6 @@
     "scope": {
       "kind": "snapshot_all"
     },
-    "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee"
+    "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b"
   }
 }

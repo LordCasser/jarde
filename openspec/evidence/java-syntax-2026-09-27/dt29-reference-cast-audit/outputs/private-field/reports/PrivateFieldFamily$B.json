@@ -1,16 +1,19 @@
 {
+  "anonymous_interface_projection": {
+    "state": "absent"
+  },
   "bridge_proofs": [],
   "class": {
     "class_bytes": {
-      "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-      "length": 358
+      "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+      "length": 366
     },
     "location": {
       "entry": {
         "ordinal": 1,
         "origin": {
           "root_container": "root",
-          "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+          "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
           "steps": []
         },
         "raw_name": [
@@ -64,6 +67,11 @@
         {
           "end": 1,
           "label": "navigation_candidates",
+          "start": 0
+        },
+        {
+          "end": 1,
+          "label": "class_fields",
           "start": 0
         },
         {
@@ -225,15 +233,15 @@
       },
       "definition": {
         "class_bytes": {
-          "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-          "length": 358
+          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+          "length": 366
         },
         "location": {
           "entry": {
             "ordinal": 1,
             "origin": {
               "root_container": "root",
-              "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
               "steps": []
             },
             "raw_name": [
@@ -281,34 +289,157 @@
     "name": "PrivateFieldFamily$B"
   },
   "diagnostics": [],
+  "direct_override_proofs": [],
   "enum_switch_proofs": [],
   "execution": {
     "status": "complete",
     "usage": {
-      "analysis_steps": 109,
-      "archive_entries": 8,
-      "attribute_bytes": 231,
-      "class_bytes": 716,
-      "class_headers": 1,
+      "analysis_steps": 161,
+      "archive_entries": 12,
+      "attribute_bytes": 487,
+      "class_bytes": 2064,
+      "class_headers": 3,
       "code_bytes": 17,
       "dependency_depth": 0,
       "elapsed_millis": "<elapsed>",
-      "entry_bytes": 358,
-      "input_bytes": 1104,
+      "entry_bytes": 1698,
+      "input_bytes": 1107,
       "ir_edges": 11,
-      "ir_items": 234,
+      "ir_items": 252,
       "method_bodies": 2,
       "nested_depth": 0,
       "normalization_clones": 0,
-      "output_bytes": 863,
-      "read_bytes": 248,
-      "result_items": 14
+      "output_bytes": 526,
+      "read_bytes": 1235,
+      "result_items": 30
     }
   },
-  "fields": [],
+  "fields": [
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "public boolean visible",
+      "item": {
+        "access_flags": 1,
+        "descriptor": {
+          "escaped": "Z",
+          "raw": [
+            90
+          ],
+          "utf16": [
+            90
+          ]
+        },
+        "identity": {
+          "member": {
+            "descriptor": [
+              90
+            ],
+            "kind": "field",
+            "name": [
+              118,
+              105,
+              115,
+              105,
+              98,
+              108,
+              101
+            ]
+          },
+          "owner": {
+            "class_bytes": {
+              "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+              "length": 366
+            },
+            "location": {
+              "entry": {
+                "ordinal": 1,
+                "origin": {
+                  "root_container": "root",
+                  "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
+                  "steps": []
+                },
+                "raw_name": [
+                  100,
+                  116,
+                  50,
+                  57,
+                  47,
+                  80,
+                  114,
+                  105,
+                  118,
+                  97,
+                  116,
+                  101,
+                  70,
+                  105,
+                  101,
+                  108,
+                  100,
+                  70,
+                  97,
+                  109,
+                  105,
+                  108,
+                  121,
+                  36,
+                  66,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ]
+              },
+              "kind": "archive_entry"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 0,
+        "name": {
+          "escaped": "visible",
+          "raw": [
+            118,
+            105,
+            115,
+            105,
+            98,
+            108,
+            101
+          ],
+          "utf16": [
+            118,
+            105,
+            115,
+            105,
+            98,
+            108,
+            101
+          ]
+        }
+      },
+      "markers": [],
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [],
+        "refusals": [],
+        "return_uses": []
+      }
+    }
+  ],
   "initializer_proof": {
     "kind": "not_applicable"
   },
+  "integer_constant_projections": [],
   "limits": {
     "analysis_steps": 4194304,
     "archive_entries": 65536,
@@ -347,7 +478,7 @@
         "body": {
           "content_span": {
             "length": 17,
-            "start": 277
+            "start": 285
           },
           "kind": "code_attribute"
         },
@@ -380,15 +511,15 @@
           ],
           "owner": {
             "class_bytes": {
-              "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-              "length": 358
+              "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+              "length": 366
             },
             "location": {
               "entry": {
                 "ordinal": 1,
                 "origin": {
                   "root_container": "root",
-                  "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                  "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                   "steps": []
                 },
                 "raw_name": [
@@ -464,21 +595,21 @@
               "analysis_steps": 25,
               "archive_entries": 8,
               "attribute_bytes": 201,
-              "class_bytes": 716,
+              "class_bytes": 732,
               "class_headers": 1,
               "code_bytes": 5,
               "dependency_depth": 0,
               "elapsed_millis": "<elapsed>",
-              "entry_bytes": 358,
-              "input_bytes": 1104,
+              "entry_bytes": 366,
+              "input_bytes": 1107,
               "ir_edges": 2,
               "ir_items": 48,
               "method_bodies": 1,
               "nested_depth": 0,
               "normalization_clones": 0,
               "output_bytes": 0,
-              "read_bytes": 248,
-              "result_items": 12
+              "read_bytes": 251,
+              "result_items": 14
             }
           }
         },
@@ -494,7 +625,7 @@
               "engine": "0.1.0",
               "environment": {
                 "content": [
-                  "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee"
+                  "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b"
                 ],
                 "domain_loaders": [
                   "app"
@@ -516,7 +647,7 @@
                         "kind": "container",
                         "origin": {
                           "root_container": "root",
-                          "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                          "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                           "steps": []
                         },
                         "prefix": []
@@ -528,7 +659,7 @@
                     "scope": {
                       "kind": "snapshot_all"
                     },
-                    "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee"
+                    "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b"
                   },
                   "profile": {
                     "java_release": 8,
@@ -558,15 +689,15 @@
                 ],
                 "owner": {
                   "class_bytes": {
-                    "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-                    "length": 358
+                    "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                    "length": 366
                   },
                   "location": {
                     "entry": {
                       "ordinal": 1,
                       "origin": {
                         "root_container": "root",
-                        "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                        "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                         "steps": []
                       },
                       "raw_name": [
@@ -713,24 +844,24 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 40,
+              "analysis_steps": 49,
               "archive_entries": 8,
               "attribute_bytes": 201,
-              "class_bytes": 716,
+              "class_bytes": 732,
               "class_headers": 1,
               "code_bytes": 5,
               "dependency_depth": 0,
               "elapsed_millis": "<elapsed>",
-              "entry_bytes": 358,
-              "input_bytes": 1104,
+              "entry_bytes": 366,
+              "input_bytes": 1107,
               "ir_edges": 2,
               "ir_items": 65,
               "method_bodies": 1,
               "nested_depth": 0,
               "normalization_clones": 0,
               "output_bytes": 199,
-              "read_bytes": 248,
-              "result_items": 12
+              "read_bytes": 251,
+              "result_items": 14
             }
           },
           "fallbacks": [],
@@ -779,15 +910,15 @@
                         ],
                         "owner": {
                           "class_bytes": {
-                            "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-                            "length": 358
+                            "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                            "length": 366
                           },
                           "location": {
                             "entry": {
                               "ordinal": 1,
                               "origin": {
                                 "root_container": "root",
-                                "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                                "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                                 "steps": []
                               },
                               "raw_name": [
@@ -853,15 +984,15 @@
                       ],
                       "owner": {
                         "class_bytes": {
-                          "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-                          "length": 358
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
                         },
                         "location": {
                           "entry": {
                             "ordinal": 1,
                             "origin": {
                               "root_container": "root",
-                              "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                               "steps": []
                             },
                             "raw_name": [
@@ -933,15 +1064,15 @@
                       ],
                       "owner": {
                         "class_bytes": {
-                          "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-                          "length": 358
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
                         },
                         "location": {
                           "entry": {
                             "ordinal": 1,
                             "origin": {
                               "root_container": "root",
-                              "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                               "steps": []
                             },
                             "raw_name": [
@@ -1023,7 +1154,7 @@
         "body": {
           "content_span": {
             "length": 24,
-            "start": 308
+            "start": 316
           },
           "kind": "code_attribute"
         },
@@ -1059,15 +1190,15 @@
           ],
           "owner": {
             "class_bytes": {
-              "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-              "length": 358
+              "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+              "length": 366
             },
             "location": {
               "entry": {
                 "ordinal": 1,
                 "origin": {
                   "root_container": "root",
-                  "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                  "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                   "steps": []
                 },
                 "raw_name": [
@@ -1134,24 +1265,24 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 82,
+              "analysis_steps": 91,
               "archive_entries": 8,
               "attribute_bytes": 231,
-              "class_bytes": 716,
+              "class_bytes": 732,
               "class_headers": 1,
               "code_bytes": 17,
               "dependency_depth": 0,
               "elapsed_millis": "<elapsed>",
-              "entry_bytes": 358,
-              "input_bytes": 1104,
+              "entry_bytes": 366,
+              "input_bytes": 1107,
               "ir_edges": 11,
               "ir_items": 191,
               "method_bodies": 2,
               "nested_depth": 0,
               "normalization_clones": 0,
               "output_bytes": 199,
-              "read_bytes": 248,
-              "result_items": 13
+              "read_bytes": 251,
+              "result_items": 15
             }
           }
         },
@@ -1167,7 +1298,7 @@
               "engine": "0.1.0",
               "environment": {
                 "content": [
-                  "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee"
+                  "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b"
                 ],
                 "domain_loaders": [
                   "app"
@@ -1189,7 +1320,7 @@
                         "kind": "container",
                         "origin": {
                           "root_container": "root",
-                          "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                          "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                           "steps": []
                         },
                         "prefix": []
@@ -1201,7 +1332,7 @@
                     "scope": {
                       "kind": "snapshot_all"
                     },
-                    "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee"
+                    "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b"
                   },
                   "profile": {
                     "java_release": 8,
@@ -1230,15 +1361,15 @@
                 ],
                 "owner": {
                   "class_bytes": {
-                    "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-                    "length": 358
+                    "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                    "length": 366
                   },
                   "location": {
                     "entry": {
                       "ordinal": 1,
                       "origin": {
                         "root_container": "root",
-                        "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                        "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                         "steps": []
                       },
                       "raw_name": [
@@ -1311,8 +1442,8 @@
                 "finally@1"
               ],
               "schema": 1,
-              "text_bytes": 664,
-              "text_digest": "1dbf360ca5f02876a216cc8f8fd17ac2"
+              "text_bytes": 327,
+              "text_digest": "42e142d83cbddc4bf0f6658f100614fe"
             }
           },
           "bridges": [],
@@ -1323,7 +1454,7 @@
           "diagnostics": [
             {
               "code": "jre_recovery_produced",
-              "message": "1 region(s), 3 statement(s), 3 segment(s), 664 byte(s) written from 1 canonical block(s)",
+              "message": "1 region(s), 3 statement(s), 11 segment(s), 327 byte(s) written from 1 canonical block(s)",
               "provenance": null,
               "severity": "info"
             },
@@ -1340,14 +1471,8 @@
               "severity": "info"
             },
             {
-              "code": "jre_field_shape",
-              "message": "the field access at BCI 2 was not presented: the receiver of the field access at BCI 2 has the type dt29/PrivateFieldFamily$B, and the member the pool states is a field of `dt29/PrivateFieldFamily$A`: writing `receiver.visible` would name whichever field the receiver's own type declares, which is not the member this instruction reads",
-              "provenance": null,
-              "severity": "warning"
-            },
-            {
               "code": "jre_field_accesses",
-              "message": "1 field instruction(s) read under field@1: 0 presented, 1 refused",
+              "message": "1 field instruction(s) read under field@1: 1 presented, 0 refused",
               "provenance": null,
               "severity": "info"
             },
@@ -1403,24 +1528,24 @@
           "execution": {
             "status": "complete",
             "usage": {
-              "analysis_steps": 105,
-              "archive_entries": 8,
-              "attribute_bytes": 231,
-              "class_bytes": 716,
-              "class_headers": 1,
+              "analysis_steps": 157,
+              "archive_entries": 12,
+              "attribute_bytes": 487,
+              "class_bytes": 2064,
+              "class_headers": 3,
               "code_bytes": 17,
               "dependency_depth": 0,
               "elapsed_millis": "<elapsed>",
-              "entry_bytes": 358,
-              "input_bytes": 1104,
+              "entry_bytes": 1698,
+              "input_bytes": 1107,
               "ir_edges": 11,
-              "ir_items": 234,
+              "ir_items": 251,
               "method_bodies": 2,
               "nested_depth": 0,
               "normalization_clones": 0,
-              "output_bytes": 863,
-              "read_bytes": 248,
-              "result_items": 13
+              "output_bytes": 526,
+              "read_bytes": 1235,
+              "result_items": 29
             }
           },
           "fallbacks": [],
@@ -1439,15 +1564,325 @@
               "kind": "disabled"
             }
           },
-          "quality": "fallback",
+          "quality": "structured",
           "regions": [],
-          "representation": "mixed",
+          "representation": "java",
           "rules": [],
           "semantic_validation": "unproven",
           "source_map": {
             "segments": [
               {
-                "end": 384,
+                "end": 213,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 0,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        90,
+                        90,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        115,
+                        101,
+                        116
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 1,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              80,
+                              114,
+                              105,
+                              118,
+                              97,
+                              116,
+                              101,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              70,
+                              97,
+                              109,
+                              105,
+                              108,
+                              121,
+                              36,
+                              66,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 209
+              },
+              {
+                "end": 213,
+                "origin": {
+                  "derived": [
+                    {
+                      "bci": 2,
+                      "cp": null,
+                      "method": {
+                        "descriptor": [
+                          40,
+                          90,
+                          90,
+                          41,
+                          86
+                        ],
+                        "name": [
+                          115,
+                          101,
+                          116
+                        ],
+                        "owner": {
+                          "class_bytes": {
+                            "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                            "length": 366
+                          },
+                          "location": {
+                            "entry": {
+                              "ordinal": 1,
+                              "origin": {
+                                "root_container": "root",
+                                "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
+                                "steps": []
+                              },
+                              "raw_name": [
+                                100,
+                                116,
+                                50,
+                                57,
+                                47,
+                                80,
+                                114,
+                                105,
+                                118,
+                                97,
+                                116,
+                                101,
+                                70,
+                                105,
+                                101,
+                                108,
+                                100,
+                                70,
+                                97,
+                                109,
+                                105,
+                                108,
+                                121,
+                                36,
+                                66,
+                                46,
+                                99,
+                                108,
+                                97,
+                                115,
+                                115
+                              ]
+                            },
+                            "kind": "archive_entry"
+                          },
+                          "variant": {
+                            "kind": "base"
+                          }
+                        }
+                      },
+                      "provenance": "Derived"
+                    }
+                  ],
+                  "primary": {
+                    "bci": 0,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        90,
+                        90,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        115,
+                        101,
+                        116
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 1,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              80,
+                              114,
+                              105,
+                              118,
+                              97,
+                              116,
+                              101,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              70,
+                              97,
+                              109,
+                              105,
+                              108,
+                              121,
+                              36,
+                              66,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 181
+              },
+              {
+                "end": 229,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 1,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        90,
+                        90,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        115,
+                        101,
+                        116
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 1,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              80,
+                              114,
+                              105,
+                              118,
+                              97,
+                              116,
+                              101,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              70,
+                              97,
+                              109,
+                              105,
+                              108,
+                              121,
+                              36,
+                              66,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 225
+              },
+              {
+                "end": 231,
                 "origin": {
                   "derived": [],
                   "primary": {
@@ -1468,15 +1903,15 @@
                       ],
                       "owner": {
                         "class_bytes": {
-                          "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-                          "length": 358
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
                         },
                         "location": {
                           "entry": {
                             "ordinal": 1,
                             "origin": {
                               "root_container": "root",
-                              "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                               "steps": []
                             },
                             "raw_name": [
@@ -1526,11 +1961,169 @@
                 "start": 176
               },
               {
-                "end": 650,
+                "end": 260,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 7,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        90,
+                        90,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        115,
+                        101,
+                        116
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 1,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              80,
+                              114,
+                              105,
+                              118,
+                              97,
+                              116,
+                              101,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              70,
+                              97,
+                              109,
+                              105,
+                              108,
+                              121,
+                              36,
+                              66,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 235
+              },
+              {
+                "end": 304,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 5,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        90,
+                        90,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        115,
+                        101,
+                        116
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 1,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              80,
+                              114,
+                              105,
+                              118,
+                              97,
+                              116,
+                              101,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              70,
+                              97,
+                              109,
+                              105,
+                              108,
+                              121,
+                              36,
+                              66,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 300
+              },
+              {
+                "end": 304,
                 "origin": {
                   "derived": [
                     {
-                      "bci": 10,
+                      "bci": 7,
                       "cp": null,
                       "method": {
                         "descriptor": [
@@ -1547,159 +2140,15 @@
                         ],
                         "owner": {
                           "class_bytes": {
-                            "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-                            "length": 358
+                            "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                            "length": 366
                           },
                           "location": {
                             "entry": {
                               "ordinal": 1,
                               "origin": {
                                 "root_container": "root",
-                                "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
-                                "steps": []
-                              },
-                              "raw_name": [
-                                100,
-                                116,
-                                50,
-                                57,
-                                47,
-                                80,
-                                114,
-                                105,
-                                118,
-                                97,
-                                116,
-                                101,
-                                70,
-                                105,
-                                101,
-                                108,
-                                100,
-                                70,
-                                97,
-                                109,
-                                105,
-                                108,
-                                121,
-                                36,
-                                66,
-                                46,
-                                99,
-                                108,
-                                97,
-                                115,
-                                115
-                              ]
-                            },
-                            "kind": "archive_entry"
-                          },
-                          "variant": {
-                            "kind": "base"
-                          }
-                        }
-                      },
-                      "provenance": "Derived"
-                    },
-                    {
-                      "bci": 5,
-                      "cp": null,
-                      "method": {
-                        "descriptor": [
-                          40,
-                          90,
-                          90,
-                          41,
-                          86
-                        ],
-                        "name": [
-                          115,
-                          101,
-                          116
-                        ],
-                        "owner": {
-                          "class_bytes": {
-                            "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-                            "length": 358
-                          },
-                          "location": {
-                            "entry": {
-                              "ordinal": 1,
-                              "origin": {
-                                "root_container": "root",
-                                "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
-                                "steps": []
-                              },
-                              "raw_name": [
-                                100,
-                                116,
-                                50,
-                                57,
-                                47,
-                                80,
-                                114,
-                                105,
-                                118,
-                                97,
-                                116,
-                                101,
-                                70,
-                                105,
-                                101,
-                                108,
-                                100,
-                                70,
-                                97,
-                                109,
-                                105,
-                                108,
-                                121,
-                                36,
-                                66,
-                                46,
-                                99,
-                                108,
-                                97,
-                                115,
-                                115
-                              ]
-                            },
-                            "kind": "archive_entry"
-                          },
-                          "variant": {
-                            "kind": "base"
-                          }
-                        }
-                      },
-                      "provenance": "Derived"
-                    },
-                    {
-                      "bci": 6,
-                      "cp": null,
-                      "method": {
-                        "descriptor": [
-                          40,
-                          90,
-                          90,
-                          41,
-                          86
-                        ],
-                        "name": [
-                          115,
-                          101,
-                          116
-                        ],
-                        "owner": {
-                          "class_bytes": {
-                            "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-                            "length": 358
-                          },
-                          "location": {
-                            "entry": {
-                              "ordinal": 1,
-                              "origin": {
-                                "root_container": "root",
-                                "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                                "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                                 "steps": []
                               },
                               "raw_name": [
@@ -1747,7 +2196,7 @@
                     }
                   ],
                   "primary": {
-                    "bci": 7,
+                    "bci": 5,
                     "cp": null,
                     "method": {
                       "descriptor": [
@@ -1764,15 +2213,15 @@
                       ],
                       "owner": {
                         "class_bytes": {
-                          "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-                          "length": 358
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
                         },
                         "location": {
                           "entry": {
                             "ordinal": 1,
                             "origin": {
                               "root_container": "root",
-                              "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                               "steps": []
                             },
                             "raw_name": [
@@ -1819,10 +2268,247 @@
                     "provenance": "Direct"
                   }
                 },
-                "start": 384
+                "start": 272
               },
               {
-                "end": 662,
+                "end": 310,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 6,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        90,
+                        90,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        115,
+                        101,
+                        116
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 1,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              80,
+                              114,
+                              105,
+                              118,
+                              97,
+                              116,
+                              101,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              70,
+                              97,
+                              109,
+                              105,
+                              108,
+                              121,
+                              36,
+                              66,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 306
+              },
+              {
+                "end": 311,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 7,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        90,
+                        90,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        115,
+                        101,
+                        116
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 1,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              80,
+                              114,
+                              105,
+                              118,
+                              97,
+                              116,
+                              101,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              70,
+                              97,
+                              109,
+                              105,
+                              108,
+                              121,
+                              36,
+                              66,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 235
+              },
+              {
+                "end": 313,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 7,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        90,
+                        90,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        115,
+                        101,
+                        116
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
+                        },
+                        "location": {
+                          "entry": {
+                            "ordinal": 1,
+                            "origin": {
+                              "root_container": "root",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
+                              "steps": []
+                            },
+                            "raw_name": [
+                              100,
+                              116,
+                              50,
+                              57,
+                              47,
+                              80,
+                              114,
+                              105,
+                              118,
+                              97,
+                              116,
+                              101,
+                              70,
+                              105,
+                              101,
+                              108,
+                              100,
+                              70,
+                              97,
+                              109,
+                              105,
+                              108,
+                              121,
+                              36,
+                              66,
+                              46,
+                              99,
+                              108,
+                              97,
+                              115,
+                              115
+                            ]
+                          },
+                          "kind": "archive_entry"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 231
+              },
+              {
+                "end": 325,
                 "origin": {
                   "derived": [],
                   "primary": {
@@ -1843,15 +2529,15 @@
                       ],
                       "owner": {
                         "class_bytes": {
-                          "digest": "92d1cd8ab1da71eeb0da9096b287315c4d1c1c9e357563febcd8ac8a1de43b72",
-                          "length": 358
+                          "digest": "6717ebad416574fe4edf25734958dfabd2982c94790ca4f936d273a2c07b6b9e",
+                          "length": 366
                         },
                         "location": {
                           "entry": {
                             "ordinal": 1,
                             "origin": {
                               "root_container": "root",
-                              "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee",
+                              "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b",
                               "steps": []
                             },
                             "raw_name": [
@@ -1898,12 +2584,12 @@
                     "provenance": "Direct"
                   }
                 },
-                "start": 650
+                "start": 313
               }
             ]
           },
-          "syntax_status": "not_java",
-          "text": "// @method set(ZZ)V\n// @declaration an instance method of `dt29.PrivateFieldFamily$B`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 2\n    // the field access at BCI 2 is not one this run proved names the member its own receiver's type declares, and a field instruction is presented only where the member it names is proven\n    // @bytecode 7 10 5 6\n    // the parameter 0 of the invocation at BCI 7 is declared `dt29.PrivateFieldFamily$A` presents `dt29.PrivateFieldFamily$B` but the invocation requires `dt29.PrivateFieldFamily$A` and this layer has no safe reference conversion evidence\n    return;\n}\n",
+          "syntax_status": "unchecked",
+          "text": "// @method set(ZZ)V\n// @declaration an instance method of `dt29.PrivateFieldFamily$B`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    ((dt29.PrivateFieldFamily$A) this).visible = arg1;\n    dt29.PrivateFieldFamily$A.access$002((dt29.PrivateFieldFamily$A) this, arg2);\n    return;\n}\n",
           "verification": "not_performed"
         }
       },
@@ -1915,7 +2601,7 @@
           []
         ]
       },
-      "text": "    public void set(boolean arg1, boolean arg2) {\n        // @method set(ZZ)V\n        // @declaration an instance method of `dt29.PrivateFieldFamily$B`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 2\n        // the field access at BCI 2 is not one this run proved names the member its own receiver's type declares, and a field instruction is presented only where the member it names is proven\n        // @bytecode 7 10 5 6\n        // the parameter 0 of the invocation at BCI 7 is declared `dt29.PrivateFieldFamily$A` presents `dt29.PrivateFieldFamily$B` but the invocation requires `dt29.PrivateFieldFamily$A` and this layer has no safe reference conversion evidence\n        return;\n    }\n",
+      "text": "    public void set(boolean arg1, boolean arg2) {\n        // @method set(ZZ)V\n        // @declaration an instance method of `dt29.PrivateFieldFamily$B`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        ((dt29.PrivateFieldFamily$A) this).visible = arg1;\n        dt29.PrivateFieldFamily$A.access$002((dt29.PrivateFieldFamily$A) this, arg2);\n        return;\n    }\n",
       "type_annotations": {
         "attributes": [],
         "field_uses": [],
@@ -1943,31 +2629,31 @@
     "frame",
     "ssa"
   ],
-  "text": "// jarde: presentation of `dt29/PrivateFieldFamily$B` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\npackage dt29;\n\npublic class PrivateFieldFamily$B extends dt29.PrivateFieldFamily$A {\n    public PrivateFieldFamily$B() {\n        // @method <init>()V\n        // @declaration a constructor of `dt29.PrivateFieldFamily$B`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n\n    public void set(boolean arg1, boolean arg2) {\n        // @method set(ZZ)V\n        // @declaration an instance method of `dt29.PrivateFieldFamily$B`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        // @bytecode 2\n        // the field access at BCI 2 is not one this run proved names the member its own receiver's type declares, and a field instruction is presented only where the member it names is proven\n        // @bytecode 7 10 5 6\n        // the parameter 0 of the invocation at BCI 7 is declared `dt29.PrivateFieldFamily$A` presents `dt29.PrivateFieldFamily$B` but the invocation requires `dt29.PrivateFieldFamily$A` and this layer has no safe reference conversion evidence\n        return;\n    }\n}\n",
+  "text": "// jarde: presentation of `dt29/PrivateFieldFamily$B` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\npackage dt29;\n\npublic class PrivateFieldFamily$B extends dt29.PrivateFieldFamily$A {\n    public boolean visible;\n\n    public PrivateFieldFamily$B() {\n        // @method <init>()V\n        // @declaration a constructor of `dt29.PrivateFieldFamily$B`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n\n    public void set(boolean arg1, boolean arg2) {\n        // @method set(ZZ)V\n        // @declaration an instance method of `dt29.PrivateFieldFamily$B`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        ((dt29.PrivateFieldFamily$A) this).visible = arg1;\n        dt29.PrivateFieldFamily$A.access$002((dt29.PrivateFieldFamily$A) this, arg2);\n        return;\n    }\n}\n",
   "usage": {
-    "analysis_steps": 109,
-    "archive_entries": 8,
-    "attribute_bytes": 231,
-    "class_bytes": 716,
-    "class_headers": 1,
+    "analysis_steps": 161,
+    "archive_entries": 12,
+    "attribute_bytes": 487,
+    "class_bytes": 2064,
+    "class_headers": 3,
     "code_bytes": 17,
     "dependency_depth": 0,
     "elapsed_millis": "<elapsed>",
-    "entry_bytes": 358,
-    "input_bytes": 1104,
+    "entry_bytes": 1698,
+    "input_bytes": 1107,
     "ir_edges": 11,
-    "ir_items": 234,
+    "ir_items": 252,
     "method_bodies": 2,
     "nested_depth": 0,
     "normalization_clones": 0,
-    "output_bytes": 863,
-    "read_bytes": 248,
-    "result_items": 14
+    "output_bytes": 526,
+    "read_bytes": 1235,
+    "result_items": 30
   },
   "view": {
     "scope": {
       "kind": "snapshot_all"
     },
-    "snapshot": "f9b5580aa0afff52eb0e6181f1604d94ba0b93cb76e1287cfffc999d818828ee"
+    "snapshot": "0426d56e73c05d5294160b4d36d88a9a699eb33bdc33f676c07427e622609e4b"
   }
 }
