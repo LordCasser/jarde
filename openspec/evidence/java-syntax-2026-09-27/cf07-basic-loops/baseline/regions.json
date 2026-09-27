@@ -1,0 +1,53 @@
+[
+  {
+    "bci": 0,
+    "blocks": [
+      0
+    ],
+    "code": null,
+    "message": null,
+    "rule": {
+      "rule": "straight",
+      "version": "1"
+    },
+    "structured": true
+  },
+  {
+    "bci": 5,
+    "blocks": [
+      5,
+      11,
+      22
+    ],
+    "code": null,
+    "message": null,
+    "rule": {
+      "rule": "loop",
+      "version": "1"
+    },
+    "structured": true
+  },
+  {
+    "bci": 28,
+    "blocks": [
+      28
+    ],
+    "code": null,
+    "message": null,
+    "rule": {
+      "rule": "straight",
+      "version": "1"
+    },
+    "structured": true
+  },
+  {
+    "bci": 19,
+    "blocks": [
+      19
+    ],
+    "code": "jre_region_uncovered_blocks",
+    "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [19]",
+    "rule": null,
+    "structured": false
+  }
+]
