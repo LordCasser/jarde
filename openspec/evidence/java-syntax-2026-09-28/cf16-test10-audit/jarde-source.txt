@@ -1,0 +1,24 @@
+// jarde: presentation of `trycatch/TestTryCatchFinally10` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package trycatch;
+
+public class TestTryCatchFinally10 extends java.lang.Object {
+    static final log.DebugLogger l = new log.DebugLogger();
+
+    public TestTryCatchFinally10() {
+        // @method <init>()V
+        // @declaration a constructor of `trycatch.TestTryCatchFinally10`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.String test(android.content.Context arg0, int arg1) {
+        // jarde: not recovered: the recovery run for `test(Landroid/content/Context;I)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method test(Landroid/content/Context;I)Ljava/lang/String;
+        // @declaration a static method of `trycatch.TestTryCatchFinally10`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 36 43 45 51 58 71 74 80 87 100
+        // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+}

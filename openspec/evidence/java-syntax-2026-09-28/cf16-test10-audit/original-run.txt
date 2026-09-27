@@ -1,0 +1,6 @@
+ok:return:payload:open;close;
+empty:return::open;close;
+open-throw:throw:IllegalStateException:open:open;
+close-io:return:payload:open;close;log;
+close-runtime:throw:IllegalStateException:close:open;close;
+logger-runtime:throw:IllegalStateException:log:open;close;log;

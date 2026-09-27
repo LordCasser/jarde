@@ -1,0 +1,201 @@
+Classfile /Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/openspec/evidence/java-syntax-2026-09-28/cf16-test10-audit/classes/original/trycatch/TestTryCatchFinally10.class
+  Last modified 2026年9月28日; size 1360 bytes
+  SHA-256 checksum 057e4fd522c67f3fdbf51d8abfd350a1eb11fdd3079f903a869a599b580317a7
+public class trycatch.TestTryCatchFinally10
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #54                         // trycatch/TestTryCatchFinally10
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 3, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // trycatch/CommonContracts.requireNonNull:(Ljava/lang/Object;)V
+   #8 = Class              #10            // trycatch/CommonContracts
+   #9 = NameAndType        #11:#12        // requireNonNull:(Ljava/lang/Object;)V
+  #10 = Utf8               trycatch/CommonContracts
+  #11 = Utf8               requireNonNull
+  #12 = Utf8               (Ljava/lang/Object;)V
+  #13 = Methodref          #14.#15        // android/content/Context.getResources:()Landroid/content/res/Resources;
+  #14 = Class              #16            // android/content/Context
+  #15 = NameAndType        #17:#18        // getResources:()Landroid/content/res/Resources;
+  #16 = Utf8               android/content/Context
+  #17 = Utf8               getResources
+  #18 = Utf8               ()Landroid/content/res/Resources;
+  #19 = Methodref          #20.#21        // android/content/res/Resources.openRawResource:(I)Ljava/io/InputStream;
+  #20 = Class              #22            // android/content/res/Resources
+  #21 = NameAndType        #23:#24        // openRawResource:(I)Ljava/io/InputStream;
+  #22 = Utf8               android/content/res/Resources
+  #23 = Utf8               openRawResource
+  #24 = Utf8               (I)Ljava/io/InputStream;
+  #25 = Class              #26            // java/util/Scanner
+  #26 = Utf8               java/util/Scanner
+  #27 = Methodref          #25.#28        // java/util/Scanner."<init>":(Ljava/io/InputStream;)V
+  #28 = NameAndType        #5:#29         // "<init>":(Ljava/io/InputStream;)V
+  #29 = Utf8               (Ljava/io/InputStream;)V
+  #30 = String             #31            // \\A
+  #31 = Utf8               \\A
+  #32 = Methodref          #25.#33        // java/util/Scanner.useDelimiter:(Ljava/lang/String;)Ljava/util/Scanner;
+  #33 = NameAndType        #34:#35        // useDelimiter:(Ljava/lang/String;)Ljava/util/Scanner;
+  #34 = Utf8               useDelimiter
+  #35 = Utf8               (Ljava/lang/String;)Ljava/util/Scanner;
+  #36 = Methodref          #25.#37        // java/util/Scanner.hasNext:()Z
+  #37 = NameAndType        #38:#39        // hasNext:()Z
+  #38 = Utf8               hasNext
+  #39 = Utf8               ()Z
+  #40 = Methodref          #25.#41        // java/util/Scanner.next:()Ljava/lang/String;
+  #41 = NameAndType        #42:#43        // next:()Ljava/lang/String;
+  #42 = Utf8               next
+  #43 = Utf8               ()Ljava/lang/String;
+  #44 = String             #45            //
+  #45 = Utf8
+  #46 = Methodref          #47.#48        // java/io/InputStream.close:()V
+  #47 = Class              #49            // java/io/InputStream
+  #48 = NameAndType        #50:#6         // close:()V
+  #49 = Utf8               java/io/InputStream
+  #50 = Utf8               close
+  #51 = Class              #52            // java/io/IOException
+  #52 = Utf8               java/io/IOException
+  #53 = Fieldref           #54.#55        // trycatch/TestTryCatchFinally10.l:Llog/DebugLogger;
+  #54 = Class              #56            // trycatch/TestTryCatchFinally10
+  #55 = NameAndType        #57:#58        // l:Llog/DebugLogger;
+  #56 = Utf8               trycatch/TestTryCatchFinally10
+  #57 = Utf8               l
+  #58 = Utf8               Llog/DebugLogger;
+  #59 = Fieldref           #60.#61        // log/DebugLogger$LogLevel.ERROR:Llog/DebugLogger$LogLevel;
+  #60 = Class              #62            // log/DebugLogger$LogLevel
+  #61 = NameAndType        #63:#64        // ERROR:Llog/DebugLogger$LogLevel;
+  #62 = Utf8               log/DebugLogger$LogLevel
+  #63 = Utf8               ERROR
+  #64 = Utf8               Llog/DebugLogger$LogLevel;
+  #65 = Methodref          #66.#67        // log/DebugLogger.logException:(Llog/DebugLogger$LogLevel;Ljava/io/IOException;)V
+  #66 = Class              #68            // log/DebugLogger
+  #67 = NameAndType        #69:#70        // logException:(Llog/DebugLogger$LogLevel;Ljava/io/IOException;)V
+  #68 = Utf8               log/DebugLogger
+  #69 = Utf8               logException
+  #70 = Utf8               (Llog/DebugLogger$LogLevel;Ljava/io/IOException;)V
+  #71 = Methodref          #66.#3         // log/DebugLogger."<init>":()V
+  #72 = Utf8               Code
+  #73 = Utf8               test
+  #74 = Utf8               (Landroid/content/Context;I)Ljava/lang/String;
+  #75 = Utf8               StackMapTable
+  #76 = Class              #77            // java/lang/String
+  #77 = Utf8               java/lang/String
+  #78 = Class              #79            // java/lang/Throwable
+  #79 = Utf8               java/lang/Throwable
+  #80 = Utf8               <clinit>
+  #81 = Utf8               InnerClasses
+  #82 = Utf8               LogLevel
+{
+  static final log.DebugLogger l;
+    descriptor: Llog/DebugLogger;
+    flags: (0x0018) ACC_STATIC, ACC_FINAL
+
+  public trycatch.TestTryCatchFinally10();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static java.lang.String test(android.content.Context, int);
+    descriptor: (Landroid/content/Context;I)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=8, args_size=2
+         0: aload_0
+         1: invokestatic  #7                  // Method trycatch/CommonContracts.requireNonNull:(Ljava/lang/Object;)V
+         4: aconst_null
+         5: astore_2
+         6: aload_0
+         7: invokevirtual #13                 // Method android/content/Context.getResources:()Landroid/content/res/Resources;
+        10: iload_1
+        11: invokevirtual #19                 // Method android/content/res/Resources.openRawResource:(I)Ljava/io/InputStream;
+        14: astore_2
+        15: new           #25                 // class java/util/Scanner
+        18: dup
+        19: aload_2
+        20: invokespecial #27                 // Method java/util/Scanner."<init>":(Ljava/io/InputStream;)V
+        23: ldc           #30                 // String \\A
+        25: invokevirtual #32                 // Method java/util/Scanner.useDelimiter:(Ljava/lang/String;)Ljava/util/Scanner;
+        28: astore_3
+        29: aload_3
+        30: invokevirtual #36                 // Method java/util/Scanner.hasNext:()Z
+        33: ifeq          43
+        36: aload_3
+        37: invokevirtual #40                 // Method java/util/Scanner.next:()Ljava/lang/String;
+        40: goto          45
+        43: ldc           #44                 // String
+        45: astore        4
+        47: aload_2
+        48: ifnull        71
+        51: aload_2
+        52: invokevirtual #46                 // Method java/io/InputStream.close:()V
+        55: goto          71
+        58: astore        5
+        60: getstatic     #53                 // Field l:Llog/DebugLogger;
+        63: getstatic     #59                 // Field log/DebugLogger$LogLevel.ERROR:Llog/DebugLogger$LogLevel;
+        66: aload         5
+        68: invokevirtual #65                 // Method log/DebugLogger.logException:(Llog/DebugLogger$LogLevel;Ljava/io/IOException;)V
+        71: aload         4
+        73: areturn
+        74: astore        6
+        76: aload_2
+        77: ifnull        100
+        80: aload_2
+        81: invokevirtual #46                 // Method java/io/InputStream.close:()V
+        84: goto          100
+        87: astore        7
+        89: getstatic     #53                 // Field l:Llog/DebugLogger;
+        92: getstatic     #59                 // Field log/DebugLogger$LogLevel.ERROR:Llog/DebugLogger$LogLevel;
+        95: aload         7
+        97: invokevirtual #65                 // Method log/DebugLogger.logException:(Llog/DebugLogger$LogLevel;Ljava/io/IOException;)V
+       100: aload         6
+       102: athrow
+      Exception table:
+         from    to  target type
+            51    55    58   Class java/io/IOException
+             6    47    74   any
+            80    84    87   Class java/io/IOException
+            74    76    74   any
+      StackMapTable: number_of_entries = 7
+        frame_type = 253 /* append */
+          offset_delta = 43
+          locals = [ class java/io/InputStream, class java/util/Scanner ]
+        frame_type = 65 /* same_locals_1_stack_item */
+          stack = [ class java/lang/String ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 12
+          locals = [ class android/content/Context, int, class java/io/InputStream, class java/util/Scanner, class java/lang/String ]
+          stack = [ class java/io/IOException ]
+        frame_type = 12 /* same */
+        frame_type = 255 /* full_frame */
+          offset_delta = 2
+          locals = [ class android/content/Context, int, class java/io/InputStream ]
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 12
+          locals = [ class android/content/Context, int, class java/io/InputStream, top, top, top, class java/lang/Throwable ]
+          stack = [ class java/io/IOException ]
+        frame_type = 12 /* same */
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #66                 // class log/DebugLogger
+         3: dup
+         4: invokespecial #71                 // Method log/DebugLogger."<init>":()V
+         7: putstatic     #53                 // Field l:Llog/DebugLogger;
+        10: return
+}
+InnerClasses:
+  public static final #82= #60 of #66;    // LogLevel=class log/DebugLogger$LogLevel of class log/DebugLogger
