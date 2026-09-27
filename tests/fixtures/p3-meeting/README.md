@@ -35,8 +35,8 @@ exists, the table below states what the text does with it.
 | `viaStore(C)I` | `iload_0; istore_1; iload_1; ireturn` | `int local1 = (int) arg0;` | `int local1 = arg0;` — the declaration's type widens it (P3 2c.29) |
 | `fieldArg(Ljava/lang/String;)I` | `aload_0; iconst_0; invokevirtual charAt:(I)C; invokestatic pass:(I)I; ireturn` | `return pass((int) arg0.charAt(0));` | `return pass(arg0.charAt(0));` — the callee's `int` parameter widens it (P3 2c.29) |
 | `pass(I)I` | `iload_0; ireturn` | `return arg0;` | unchanged — the callee `fieldArg` reaches, and the control that must not gain a conversion |
-| `viaStoreLong(I)J` | `iload_0; i2l; lstore_1; lload_1; lreturn` | refused: BCI 1 is `Other` and BCI 2 comes from it | unchanged — the widening here has a **real** instruction, so it is P3 2c.8's, which has not landed |
-| `trunc(I)B` | `iload_0; i2b; istore_1; iload_1; ireturn` | refused: BCI 1 is `Other`, BCI 3 is an `int` in a `byte` position | unchanged — the narrowing `i2b` is no conversion this layer writes |
+| `viaStoreLong(I)J` | `iload_0; i2l; lstore_1; lload_1; lreturn` | `long local1 = (long) arg0; return local1;` | the explicit cast preserves the real widening at BCI 1; its source-map span points to that `i2l` (P3 2c.8) |
+| `trunc(I)B` | `iload_0; i2b; istore_1; iload_1; ireturn` | `int local1 = (byte) arg0; return (byte) local1;` | the explicit narrowing cast is mapped to `i2b` at BCI 1; the return position states `byte` |
 | `grade(I)C` | `lookupswitch {80→39, 90→36, 95→36, default→42}` and `bipush 65/66/67; ireturn` | `return 65;` / `return 66;` / `return 67;` | `return 'A';` / `return 'B';` / `return 'C';` — a `char` return spells the code unit (P3 2c.30) |
 | `stat()I` | `bipush 7; ireturn` | `return 7;` | unchanged — the control: an `int` position keeps the number |
 | `viaRef(LMeet;)I` | `aload_0; pop; invokestatic Meet.stat:()I; ireturn` | `pop` quoted at BCI 1, body `return stat();` | `return arg0.stat();` — the popped evaluation is the call's qualifier (P3 2c.31a) |
@@ -49,9 +49,10 @@ exists, the table below states what the text does with it.
 * **P3 2c.29 — a widening a position performs is not written.** `at`, `viaStore` and `fieldArg` are
   one conversion each: `char` → `int`, with no instruction in the body. Java performs it at the
   assignment, the invocation argument and the `return`, so the value's own text is the same program
-  and `(int) arg0` is a cast the source does not have. The two controls keep the other direction
-  honest: `trunc` (a `byte` return whose value the frames present as `int`) and `viaStoreLong` (a
-  `long` local whose value an `i2l` really produced) are refused exactly as they were.
+  and `(int) arg0` is a cast the source does not have. `viaStoreLong` and `trunc` compare real
+  conversion instructions: `i2l` is preserved as `(long) arg0`, and `i2b` as `(byte) arg0`, each
+  mapped to BCI 1. The `byte` return position in `trunc` also states its required cast. The separate
+  `pop2Control` refusal remains the negative control for P3 2c.31.
 * **P3 2c.30 — a `char` position spells the code unit.** `grade` returns `'A'`/`'B'`/`'C'` from the
   `bipush 65/66/67` javac writes for a `char` return: the constant is in `char`'s range, the
   descriptor says the position is a `char`, and the character that code unit stands for is what the

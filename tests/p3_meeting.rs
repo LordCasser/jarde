@@ -8,7 +8,7 @@
 //!   performs the conversion: `return arg0.charAt(arg1);`, `int local1 = arg0;` and
 //!   `pass(arg0.charAt(0))` are the same programs the bytecode ran, where the `(int)` this layer
 //!   used to invent is a cast the source does not have. A conversion with a **real** instruction
-//!   (`i2l`, `i2b`) is that instruction's own and stays refused until P3 2c.8 writes it.
+//!   (`i2l`, `i2b`) is written as its explicit cast when the conversion is proved.
 //! * **P3 2c.30** — a member whose descriptor returns `char` and whose `return` reads an in-range
 //!   `int` constant writes the **character** that code unit stands for (`bipush 65; ireturn` is
 //!   `return 'A';`), spelled by the emitter's escape table — the one a `char` `switch` key is
@@ -22,8 +22,8 @@
 //!
 //! The texts below pin the shape over the class bytes committed in `tests/fixtures/p3-meeting/`
 //! (see its `README.md` for the command, the version, the 940 bytes and the digest). Every member is
-//! one spelling question or one control: the controls are the two refusals `viaStoreLong` and
-//! `trunc`, the `int` return of `stat`, the `pass` call `fieldArg` reaches, and the `pop2` of
+//! one spelling question or one control: `viaStoreLong` and `trunc` prove explicit conversion casts,
+//! alongside the `int` return of `stat`, the `pass` call `fieldArg` reaches, and the `pop2` refusal of
 //! `pop2Control`.
 
 use jarde::*;
@@ -181,33 +181,41 @@ fn a_position_performs_its_own_widening() {
     }
 }
 
-/// The controls of the same rule: a conversion the bytecode really performed is that instruction's
-/// own, and a narrowing this layer cannot prove is no conversion at all. Both keep the refusal and
-/// the quoted bytecode they had.
+/// The real widening and narrowing instructions are written as casts anchored at their BCIs.
 #[test]
-fn a_conversion_with_a_real_instruction_is_still_refused() {
+fn real_primitive_conversions_are_spelled_from_their_instructions() {
     let sample = open(SAMPLE);
     let report = class_source_of(&sample, "Meet");
 
-    // `viaStoreLong(I)J` is `iload_0; i2l; lstore_1; …`: the `i2l` at BCI 1 is the conversion, and
-    // presenting the slot without it would write a `long` the body never held. It is P3 2c.8's to
-    // write and stays refused until that rule lands.
-    let via_store_long = refused(&report, "viaStoreLong");
+    // `viaStoreLong(I)J` is `iload_0; i2l; lstore_1; …`: the `i2l` at BCI 1 is preserved as the
+    // explicit cast. The source map ties that cast to the physical conversion instruction.
+    let via_store_long = presented(&report, "viaStoreLong");
     assert!(
-        via_store_long.contains("// @bytecode 1"),
-        "the `i2l` itself is what the quote names:\n{via_store_long}"
+        via_store_long.contains("long local1 = (long) arg0;"),
+        "the `i2l` is written as an explicit Java cast:\n{via_store_long}"
+    );
+    let run = run_of(&report, "viaStoreLong");
+    let cast = "(long) arg0";
+    assert!(
+        run.source_map.segments().iter().any(|segment| {
+            segment.text(&run.text) == cast && segment.origin().primary().bci() == 1
+        }),
+        "the explicit cast is mapped to the physical `i2l` at BCI 1: {run:?}"
     );
 
-    // `trunc(I)B` is `iload_0; i2b; istore_1; …`: the narrowing `i2b` is no conversion this layer
-    // writes, and the `int` value in the `byte` return position is refused too.
-    let trunc = refused(&report, "trunc");
+    // `trunc(I)B` is `iload_0; i2b; istore_1; …`: `i2b` is written as a byte cast, and the
+    // descriptor's `byte` return position states the second cast.
+    let trunc = presented(&report, "trunc");
     assert!(
-        trunc.contains("// @bytecode 1") && trunc.contains("// @bytecode 4"),
-        "both the `i2b` and the `byte` return position are named:\n{trunc}"
+        trunc.contains("int local1 = (byte) arg0;") && trunc.contains("return (byte) local1;"),
+        "the `i2b` and the `byte` return position are explicit casts:\n{trunc}"
     );
+    let run = run_of(&report, "trunc");
     assert!(
-        trunc.contains("`byte`") && trunc.contains("no conversion"),
-        "the refusal states the position that required the type:\n{trunc}"
+        run.source_map.segments().iter().any(|segment| {
+            segment.text(&run.text) == "(byte) arg0" && segment.origin().primary().bci() == 1
+        }),
+        "the byte cast is mapped to the physical `i2b` at BCI 1: {run:?}"
     );
 }
 
