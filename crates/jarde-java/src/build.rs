@@ -1896,6 +1896,7 @@ fn short_circuit_local_booleans(
             } => pending.push(body),
             Region::Straight { .. }
             | Region::TwoExitReturn { .. }
+            | Region::SharedTailEarlyReturn { .. }
             | Region::Fallback { .. }
             | Region::Guard { body: None, .. }
             | Region::LoopBreak { .. }
@@ -2248,7 +2249,9 @@ fn collect_guards(region: &Region, visit: &mut impl FnMut(&Region)) {
         Region::Guard {
             body: Some(body), ..
         } => collect_guards(body, visit),
-        Region::ShortCircuitValue { .. } | Region::TwoExitReturn { .. } => {}
+        Region::ShortCircuitValue { .. }
+        | Region::TwoExitReturn { .. }
+        | Region::SharedTailEarlyReturn { .. } => {}
         Region::Guard { body: None, .. }
         | Region::Straight { .. }
         | Region::Fallback { .. }
@@ -2334,6 +2337,7 @@ fn guard_return_ownership(
             }
             Region::Straight { .. }
             | Region::TwoExitReturn { .. }
+            | Region::SharedTailEarlyReturn { .. }
             | Region::Fallback { .. }
             | Region::ShortCircuitValue { .. }
             | Region::LoopBreak { .. }
@@ -2871,6 +2875,7 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
         }
         Region::Straight { .. }
         | Region::TwoExitReturn { .. }
+        | Region::SharedTailEarlyReturn { .. }
         | Region::Fallback { .. }
         | Region::ShortCircuitValue { .. }
         | Region::Guard { body: None, .. }
@@ -3003,7 +3008,9 @@ fn own_blocks(region: &Region) -> Vec<CanonicalBlockId> {
             }
             blocks
         }
-        Region::TwoExitReturn { .. } => region.blocks().into_iter().cloned().collect(),
+        Region::TwoExitReturn { .. } | Region::SharedTailEarlyReturn { .. } => {
+            region.blocks().into_iter().cloned().collect()
+        }
         // A guarded statement writes its own header and the blocks of its body; every other block it
         // claims — the closes, the handlers, the later resources' initialisations — produces no
         // statement of its own, which is exactly what keeps a close from running twice.
@@ -3066,7 +3073,9 @@ fn unaccounted_region_bcis(region: &Region) -> Vec<u32> {
             body: Some(body), ..
         } => bcis.extend(unaccounted_region_bcis(body)),
         Region::Fallback { reason, .. } => bcis.extend_from_slice(reason.unaccounted()),
-        Region::ShortCircuitValue { .. } | Region::TwoExitReturn { .. } => {}
+        Region::ShortCircuitValue { .. }
+        | Region::TwoExitReturn { .. }
+        | Region::SharedTailEarlyReturn { .. } => {}
         Region::Straight { .. }
         | Region::Guard { body: None, .. }
         | Region::LoopBreak { .. }
@@ -9153,6 +9162,148 @@ impl Builder<'_> {
         self.finally_return = None;
     }
 
+    /// Build the two-test early return as one statement. The separate tail remains owned by the
+    /// enclosing continuation; neither its field write nor its return is evaluated here.
+    fn build_shared_tail_early_return(
+        &mut self,
+        region: &Region,
+    ) -> Result<Stmt, ConditionalValueBuildError> {
+        let Region::SharedTailEarlyReturn {
+            tests,
+            test_edges,
+            return_block,
+            join,
+            ..
+        } = region
+        else {
+            unreachable!("shared-tail builder needs its region")
+        };
+        if self.return_type != Some(Type::Boolean) {
+            return Err(ConditionalValueBuildError::Refused(
+                "shared-tail return requires a boolean method descriptor".into(),
+            ));
+        }
+        let [
+            ((outer, outer_bci), outer_edges),
+            ((inner, inner_bci), inner_edges),
+        ] = [(&tests[0], &test_edges[0]), (&tests[1], &test_edges[1])];
+        let outer_return_taken = if outer_edges.0 == *inner && outer_edges.1 == *return_block {
+            true
+        } else if outer_edges.1 == *inner && outer_edges.0 == *return_block {
+            false
+        } else {
+            return Err(ConditionalValueBuildError::Refused(
+                "outer test changed edges".into(),
+            ));
+        };
+        let inner_return_taken = if inner_edges.0 == *join && inner_edges.1 == *return_block {
+            true
+        } else if inner_edges.1 == *join && inner_edges.0 == *return_block {
+            false
+        } else {
+            return Err(ConditionalValueBuildError::Refused(
+                "inner test changed edges".into(),
+            ));
+        };
+        let mut conditions = Vec::new();
+        for (block, bci, taken) in [
+            (outer, outer_bci, outer_return_taken),
+            (inner, inner_bci, inner_return_taken),
+        ] {
+            poll(self.budget, Some(*bci)).map_err(ConditionalValueBuildError::Stop)?;
+            let names = self.ssa.block(block).ok_or_else(|| {
+                ConditionalValueBuildError::Refused(format!("test BCI {bci} has no SSA block"))
+            })?;
+            let branch = names
+                .instructions()
+                .last()
+                .filter(|instruction| instruction.bci() == *bci)
+                .ok_or_else(|| {
+                    ConditionalValueBuildError::Refused(format!(
+                        "test BCI {bci} has no terminal branch"
+                    ))
+                })?;
+            let mut dependencies = BTreeSet::new();
+            for (_, operand) in stack_operands(branch) {
+                self.conditional_dependencies(operand, &mut dependencies, &mut BTreeSet::new(), 0)?;
+            }
+            if dependencies
+                .iter()
+                .any(|source| self.block_of.get(source) != Some(block))
+                || names.instructions().iter().any(|instruction| {
+                    instruction.bci() != *bci && !dependencies.contains(&instruction.bci())
+                })
+            {
+                return Err(ConditionalValueBuildError::Refused(format!(
+                    "test BCI {bci} contains an independent effect or escaped producer"
+                )));
+            }
+            charge(
+                self.budget,
+                CountedBudgetDimension::IrItems,
+                u64::try_from(names.instructions().len()).unwrap_or(u64::MAX),
+                Some(*bci),
+            )
+            .map_err(ConditionalValueBuildError::Stop)?;
+            let condition = self.test_expr(*bci, taken)?.derived_from(*bci);
+            if condition.presented != Some(Type::Boolean) {
+                return Err(ConditionalValueBuildError::Refused(format!(
+                    "test BCI {bci} has no Java boolean expression"
+                )));
+            }
+            conditions.push(condition);
+        }
+        let names = self.ssa.block(return_block).ok_or_else(|| {
+            ConditionalValueBuildError::Refused("early return has no SSA block".into())
+        })?;
+        let [push, returned] = names.instructions() else {
+            return Err(ConditionalValueBuildError::Refused(
+                "early return is not an exact constant return".into(),
+            ));
+        };
+        if push.opcode() != 0x03
+            || returned.opcode() != 0xac
+            || !matches!(
+                self.operations.get(push.bci()),
+                Some(Operation::Push(ConstantValue::Int(0)))
+            )
+            || !matches!(self.operations.get(returned.bci()), Some(Operation::Return))
+            || !push.reads().is_empty()
+            || push.writes().len() != 1
+            || returned.reads() != push.writes()
+            || !returned.writes().is_empty()
+            || self.ssa.value(push.writes()[0].1).uses().len() != 1
+        {
+            return Err(ConditionalValueBuildError::Refused(format!(
+                "return block at BCI {} is not an exact boolean false return",
+                return_block.bci()
+            )));
+        }
+        let cond = logical_expression(
+            BinaryOp::LogicalOr,
+            conditions.remove(0),
+            conditions.remove(0),
+            OriginSet::new(Origin::direct(*outer_bci)).plus_derived(Origin::derived(*inner_bci)),
+        );
+        let returned_value =
+            Expr::direct(ExprKind::Boolean(false), push.bci()).derived_from(returned.bci());
+        let returned_stmt = Stmt::new(
+            StmtKind::Return {
+                value: Some(returned_value),
+            },
+            OriginSet::new(Origin::direct(returned.bci()))
+                .plus_derived(Origin::derived(push.bci())),
+        );
+        Ok(Stmt::new(
+            StmtKind::If {
+                cond,
+                then_body: vec![returned_stmt],
+                else_body: Vec::new(),
+            },
+            OriginSet::new(Origin::direct(*outer_bci)).plus_derived(Origin::derived(*inner_bci)),
+        ))
+    }
+
     /// Build the entire two-return statement before any of its blocks are suppressed.
     fn build_two_exit_return(
         &mut self,
@@ -9736,6 +9887,15 @@ impl Builder<'_> {
                 Err(ConditionalValueBuildError::Refused(_)) => {}
                 Err(ConditionalValueBuildError::Stop(stop)) => return Err(stop),
             },
+            Region::SharedTailEarlyReturn { tests, .. } => {
+                match self.build_shared_tail_early_return(region) {
+                    Ok(statement) => {
+                        self.two_exit_returns.insert(tests[0].0.clone(), statement);
+                    }
+                    Err(ConditionalValueBuildError::Refused(_)) => {}
+                    Err(ConditionalValueBuildError::Stop(stop)) => return Err(stop),
+                }
+            }
             Region::Straight { .. }
             | Region::Fallback { .. }
             | Region::Guard { body: None, .. }
@@ -10822,6 +10982,34 @@ impl Builder<'_> {
 
     /// Appends the statements of one region, with the region's own declarations first.
     fn region(&mut self, region: &Region, path: &RegionPath) -> Result<(), StopReason> {
+        if let Region::SharedTailEarlyReturn { prefix, tests, .. } = region {
+            let (outer, at) = &tests[0];
+            if let Some(incomplete) = self.declarations.incomplete.get(path).cloned() {
+                let bcis = self.two_exit_return_quote(region, *at)?;
+                return self.fallback(bcis, &incomplete, *at);
+            }
+            let Some(statement) = self.two_exit_returns.get(outer).cloned() else {
+                let bcis = self.two_exit_return_quote(region, *at)?;
+                return self.fallback(
+                    bcis,
+                    "the shared-tail early return is not completely proved",
+                    *at,
+                );
+            };
+            if undeclared_local(&statement, &self.undeclared).is_some() {
+                let bcis = self.two_exit_return_quote(region, *at)?;
+                return self.fallback(
+                    bcis,
+                    "the shared-tail early return reads an undeclared local",
+                    *at,
+                );
+            }
+            self.declare_at(path)?;
+            for block in prefix {
+                self.block(block)?;
+            }
+            return self.push(statement);
+        }
         if let Region::TwoExitReturn { prefix, tests, .. } = region {
             let (outer, at) = &tests[0];
             if let Some(incomplete) = self.declarations.incomplete.get(path).cloned() {
@@ -11901,6 +12089,9 @@ impl Builder<'_> {
             }
             Region::TwoExitReturn { .. } => {
                 unreachable!("two-exit regions use the whole-source fallback path above")
+            }
+            Region::SharedTailEarlyReturn { .. } => {
+                unreachable!("shared-tail return regions use the whole-source fallback path above")
             }
             Region::Fallback { blocks, reason } => {
                 let mut bcis = Vec::new();

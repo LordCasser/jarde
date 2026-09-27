@@ -1,0 +1,56 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "jadx-core/src/test/java/jadx/tests/integration/conditions/TestElseIf.java": "1b686d980ef7dbbf1749148ba0389c9484b9aafedb82a9c4e4144e12b8e01c12",
+    "jadx-core/src/test/java/jadx/tests/integration/conditions/TestNestedIf.java": "0968ba1c4651e74ba824ecc043c168388adb56bb2ae653fdfca3565b2bb48223",
+    "jadx-core/src/test/java/jadx/tests/integration/conditions/TestConditions3.java": "170cf44c634c98d0ca8978a06dacda5c4428a8047db84bc572714f8427fc0baf",
+    "jadx-core/src/test/java/jadx/tests/integration/conditions/TestOutBlock.java": "50c1977b1b130e28ed8ac5b8411b87da159a6b6944fa8b5aff5f0900660b457e",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/IfRegionMaker.java": "3d3d4c2238a21368e5970db5d5cffb2e63a625e411e8cf64461bd6e604d74760",
+    "jadx-core/src/main/java/jadx/core/dex/regions/conditions/IfCondition.java": "4d80dcce617f8bd799a5ef136dbaca981fd6a08c4d242410809184fdefc3af5e",
+    "jadx-core/src/main/java/jadx/core/codegen/RegionGen.java": "8b80ef618487e38cb09a2bbd81b70de0dd096996a321a0c9dcf55e1dc011d4ee"
+  },
+  "input_sha256": "050e8b3edac03cb9b32c632477be2a454b71d50e92c9b2d645107f09288d98ec",
+  "runner_sha256": "33c9cc7ea79c47682fc92a409a034952e06d8d4d83a708defdab30d4da436453",
+  "original_class_sha256": "c970900d817ae0a6f77cebb06887868e8d89864a5a9fbe00541b514312c998bf",
+  "jarde_cli_sha256": "5d14ece13f98dfe78a899e65e4e3c9141adc834bcd386fd69322b57f384f803d",
+  "original": {
+    "source_sha256": "050e8b3edac03cb9b32c632477be2a454b71d50e92c9b2d645107f09288d98ec",
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "10:1\n20:2\n30:3\n40:4\n10:14\nfalse:0\ntrue:1\nfalse:0\ntrue:1\n-1\n-2\n1\n2\n0\n-2"
+  },
+  "jadx": {
+    "source_sha256": "29e99786af6e554dc4d677c92dc0897431953fe0fc154afb9524e73b0db5fcea",
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "10:1\n20:2\n30:3\n40:4\n10:14\nfalse:0\ntrue:1\nfalse:0\ntrue:1\n-1\n-2\n1\n2\n0\n-2"
+  },
+  "jarde": {
+    "source_sha256": "6009338fb92cf9a83fb43e9029eb56b7fd675cba7dd1113134d553861dc24b9b",
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "10:1\n20:2\n30:3\n40:4\n10:14\nfalse:0\ntrue:1\nfalse:0\ntrue:1\n-1\n-2\n1\n2\n0\n-2"
+  },
+  "chain": {
+    "original": {
+      "source_sha256": "6b26f6c59ad6cf2c1de3fc43a8c52b9edd471d84d326b78312672d3044eb18ff",
+      "javac_exit": 0,
+      "runtime_exit": 0,
+      "stdout": "10:1\n20:2\n30:3\n40:4\n10:14"
+    },
+    "jadx": {
+      "source_sha256": "794bca02e2978268bf288cba86c873b4f932f4b699027d2200d9848bb0a62efb",
+      "javac_exit": 0,
+      "runtime_exit": 0,
+      "stdout": "10:1\n20:2\n30:3\n40:4\n10:14"
+    },
+    "jarde": {
+      "source_sha256": "07d19e0854e8842832d9e8c078d1988751744d6c589448eba1cc0900703e4b8a",
+      "javac_exit": 0,
+      "runtime_exit": 0,
+      "stdout": "10:1\n20:2\n30:3\n40:4\n10:14"
+    },
+    "jadx_else_if_count": 3,
+    "jarde_else_if_count": 3
+  }
+}

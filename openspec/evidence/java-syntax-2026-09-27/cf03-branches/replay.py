@@ -162,6 +162,18 @@ def main():
         }
         (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         print(json.dumps(summary, indent=2))
+        for label in ("original", "jadx", "jarde"):
+            result = summary[label]
+            if result.get("javac_exit") != 0 or result.get("runtime_exit") != 0 or result.get("stdout") != EXPECTED:
+                raise RuntimeError(f"{label} complete BranchShapes Java 8 source did not match 15 lines")
+            chain = summary["chain"][label]
+            if chain.get("javac_exit") != 0 or chain.get("runtime_exit") != 0 or chain.get("stdout") != "\n".join(EXPECTED.splitlines()[:5]):
+                raise RuntimeError(f"{label} complete ChainOnly Java 8 source did not match five lines")
+        if summary["chain"]["jarde_else_if_count"] != 3 or summary["chain"]["jadx_else_if_count"] != 3:
+            raise RuntimeError("the three proved else-if branches changed")
+        nested = jarde_source.read_text().split("public static boolean nested", 1)[1].split("public static int guards", 1)[0]
+        if "@bytecode" in nested or nested.count("BranchShapes.hits =") != 1 or nested.count("return true;") != 1:
+            raise RuntimeError("Jarde nested does not own one observable shared tail")
 
 
 if __name__ == "__main__":

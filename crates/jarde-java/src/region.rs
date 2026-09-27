@@ -455,6 +455,15 @@ pub enum Region {
         true_return: CanonicalBlockId,
         false_return: CanonicalBlockId,
     },
+    /// Two pure tests share one early return; their other path reaches the enclosing branch's
+    /// proved tail. The tail is deliberately absent from this region's owners.
+    SharedTailEarlyReturn {
+        prefix: Vec<CanonicalBlockId>,
+        tests: [(CanonicalBlockId, u32); 2],
+        test_edges: [(CanonicalBlockId, CanonicalBlockId); 2],
+        return_block: CanonicalBlockId,
+        join: CanonicalBlockId,
+    },
     /// A prefix ending in a `tableswitch`/`lookupswitch`, with one arm per distinct target.
     ///
     /// `groups` holds one arm per distinct target. It retains decode order unless a proven
@@ -634,6 +643,7 @@ impl Region {
             Self::Straight { .. }
             | Self::ShortCircuitValue { .. }
             | Self::TwoExitReturn { .. }
+            | Self::SharedTailEarlyReturn { .. }
             | Self::LoopBreak { .. }
             | Self::LoopContinue { .. }
             | Self::Fallback { .. } => {}
@@ -697,6 +707,17 @@ impl Region {
                 blocks.extend(tests.iter().map(|(block, _)| block));
                 blocks.extend(gateways.iter().map(|(block, _)| block));
                 blocks.extend([true_return, false_return]);
+                blocks
+            }
+            Self::SharedTailEarlyReturn {
+                prefix,
+                tests,
+                return_block,
+                ..
+            } => {
+                let mut blocks = prefix.iter().collect::<Vec<_>>();
+                blocks.extend(tests.iter().map(|(block, _)| block));
+                blocks.push(return_block);
                 blocks
             }
             Self::Switch {
@@ -789,6 +810,7 @@ impl Region {
                 !matches!(reason, FallbackReason::ExceptionEdge { .. })
             }
             Self::TwoExitReturn { .. } => true,
+            Self::SharedTailEarlyReturn { .. } => true,
             Self::Switch { groups, .. } | Self::StringSwitch { groups, .. } => {
                 groups.iter().all(|group| group.arm.is_structured())
             }
@@ -826,6 +848,7 @@ impl Region {
                 _ => Vec::new(),
             },
             Self::TwoExitReturn { .. } => Vec::new(),
+            Self::SharedTailEarlyReturn { .. } => Vec::new(),
             Self::Switch { groups, .. } | Self::StringSwitch { groups, .. } => groups
                 .iter()
                 .flat_map(|group| group.arm.fallbacks())
@@ -858,6 +881,7 @@ impl Region {
             Self::If { .. } => Some(crate::pass::IF.rule()),
             Self::ShortCircuitValue { .. } => None,
             Self::TwoExitReturn { .. } => None,
+            Self::SharedTailEarlyReturn { .. } => None,
             Self::Switch { .. } | Self::StringSwitch { .. } => Some(crate::pass::SWITCH.rule()),
             Self::Loop { .. } => Some(crate::pass::LOOP.rule()),
             Self::LoopBreak { .. } => Some(crate::pass::LOOP.rule()),
@@ -956,7 +980,9 @@ pub(crate) fn project_string_switches(
             Region::Guard {
                 body: Some(body), ..
             } => visit(body, ir, budget)?,
-            Region::ShortCircuitValue { .. } | Region::TwoExitReturn { .. } => {}
+            Region::ShortCircuitValue { .. }
+            | Region::TwoExitReturn { .. }
+            | Region::SharedTailEarlyReturn { .. } => {}
             Region::Straight { .. }
             | Region::Fallback { .. }
             | Region::Guard { body: None, .. }
@@ -1685,6 +1711,9 @@ struct Frame {
     /// The node the region ends at: arriving there (as a successor) ends the run, and the block
     /// itself belongs to the structure that follows.
     boundary: Option<usize>,
+    /// A proved shared tail of an enclosing branch. Nested local joins may change `boundary`,
+    /// but no descendant may claim this block before the enclosing continuation does.
+    shared_tail: Option<usize>,
     /// The nodes the region may claim, when it is a loop's body. A node outside the scope ends the
     /// run exactly like the boundary does — it is the code after the loop.
     scope: Option<BTreeSet<usize>>,
@@ -1754,6 +1783,7 @@ impl Frame {
         scope.extend(transfer_sources.iter().copied());
         Self {
             boundary: Some(boundary),
+            shared_tail: self.shared_tail,
             scope: Some(scope),
             own_loop: Some(header),
             allow_own_loop_entry: false,
@@ -1786,6 +1816,7 @@ impl Frame {
             // needed when one arm exits through a caught exception and the other reaches the try's
             // join: the normal-flow graph alone has no post-dominator for that branch.
             boundary: join.or(self.boundary),
+            shared_tail: self.shared_tail,
             scope: self.scope.clone(),
             own_loop: None,
             allow_own_loop_entry: false,
@@ -1807,6 +1838,7 @@ impl Frame {
         case_entries.extend(entries.iter().copied());
         Self {
             boundary: join.or(self.boundary),
+            shared_tail: self.shared_tail,
             scope: self.scope.clone(),
             own_loop: None,
             allow_own_loop_entry: false,
@@ -1829,6 +1861,7 @@ impl Frame {
     fn protected(&self, join: Option<usize>, start: usize) -> Self {
         Self {
             boundary: join,
+            shared_tail: self.shared_tail,
             scope: self.scope.clone(),
             own_loop: None,
             allow_own_loop_entry: false,
@@ -1845,6 +1878,7 @@ impl Frame {
     /// Whether a walk must stop at one node: the node it ends at, or one the scope does not hold.
     fn stops_at(&self, node: usize) -> bool {
         self.boundary == Some(node)
+            || self.shared_tail == Some(node)
             || self
                 .case_entries
                 .as_ref()
@@ -2339,6 +2373,7 @@ impl Walker<'_> {
                 .filter(|successor| {
                     self.view.index_of(successor).is_some_and(|node| {
                         frame.boundary == Some(node)
+                            || frame.shared_tail == Some(node)
                             || frame.loop_exit == Some(node)
                             || frame
                                 .loop_targets
@@ -2436,6 +2471,14 @@ impl Walker<'_> {
                         let reason = FallbackReason::UnrenderableOperand { bci: branch_bci };
                         return Ok(gap(prefix, vec![branch], reason, None));
                     };
+                    if let Some(region) =
+                        self.shared_tail_early_return(&prefix, &branch, branch_bci, frame)?
+                    {
+                        let next = frame
+                            .shared_tail
+                            .and_then(|tail| self.view.id_of(tail).cloned());
+                        return Ok(one(region, next));
+                    }
                     if let Some((region, next)) =
                         self.short_circuit_value(&prefix, &branch, branch_bci, frame)?
                     {
@@ -2497,6 +2540,26 @@ impl Walker<'_> {
                     } else {
                         post_join
                     };
+                    let shared_join = if join_node.is_none() {
+                        if self.return_is_boolean
+                            && frame.shared_tail.is_none()
+                            && frame.boundary.is_none()
+                            && frame.scope.is_none()
+                            && frame.case_entries.is_none()
+                            && frame.own_try.is_none()
+                            && frame.own_finally.is_none()
+                            && frame.loop_exit.is_none()
+                            && frame.switch_join.is_none()
+                            && frame.loop_targets.is_empty()
+                        {
+                            self.shared_forward_join(node, then_node, else_node, branch_bci)?
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    };
+                    let join_node = join_node.or(shared_join);
                     // A successor that *is* the join is the whole arm: the branch arrives at the
                     // place its structure ends at directly, so that arm holds no block of its own —
                     // the block starting there belongs to whatever follows the `if` — and the other
@@ -2514,8 +2577,10 @@ impl Walker<'_> {
                     //
                     // A branch whose **two** successors are both the join states no arm at all and
                     // keeps the refusal below.
-                    let forward_then = self.forward_join(node, then_node, else_node, frame);
-                    let forward_else = self.forward_join(node, else_node, then_node, frame);
+                    let forward_then = shared_join.is_none()
+                        && self.forward_join(node, then_node, else_node, frame);
+                    let forward_else = shared_join.is_none()
+                        && self.forward_join(node, else_node, then_node, frame);
                     if std::env::var_os("JRE_JOIN_PROBE").is_some() {
                         eprintln!(
                             "P3JOIN branch={} ipdom={:?} then={:?} else={:?} ft={forward_then} fe={forward_else} frame_boundary={:?}",
@@ -2565,7 +2630,10 @@ impl Walker<'_> {
                             let next = self.unclaimed_join(join.as_ref());
                             return Ok(gap(prefix, vec![branch], reason, next));
                         }
-                        let arm_frame = frame.arm(Some(join_node), Some(branch_bci));
+                        let mut arm_frame = frame.arm(Some(join_node), Some(branch_bci));
+                        if shared_join.is_some() && frame.shared_tail.is_none() {
+                            arm_frame.shared_tail = Some(join_node);
+                        }
                         let (mut arm_run, arm_next) = self.region_at(walk, &arm_frame)?;
                         if let Some(next) = arm_next.as_ref()
                             && self.view.index_of(next) != Some(join_node)
@@ -2627,7 +2695,10 @@ impl Walker<'_> {
                         let next = self.unclaimed_join(join.as_ref());
                         return Ok(gap(prefix, vec![branch], reason, next));
                     }
-                    let arm_frame = frame.arm(join_node, Some(branch_bci));
+                    let mut arm_frame = frame.arm(join_node, Some(branch_bci));
+                    if let Some(tail) = shared_join.filter(|_| frame.shared_tail.is_none()) {
+                        arm_frame.shared_tail = Some(tail);
+                    }
                     let before_arms = self.visited.clone();
                     let (mut then_run, then_next) = self.region_at(&fall_through, &arm_frame)?;
                     let (mut else_run, else_next) = self.region_at(&taken, &arm_frame)?;
@@ -4553,6 +4624,334 @@ impl Walker<'_> {
             },
             next,
         )))
+    }
+
+    /// Claim one two-test arm whose paths end either at its one return or the enclosing shared
+    /// tail. The return is a single physical owner even though both tests can enter it.
+    fn shared_tail_early_return(
+        &mut self,
+        prefix: &[CanonicalBlockId],
+        outer: &CanonicalBlockId,
+        outer_bci: u32,
+        frame: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let Some(tail_node) = frame
+            .shared_tail
+            .filter(|tail| frame.boundary == Some(*tail))
+        else {
+            return Ok(None);
+        };
+        if !self.return_is_boolean || frame.scope.is_some() || frame.own_try.is_some() {
+            return Ok(None);
+        }
+        let Some(outer_node) = self.view.index_of(outer) else {
+            return Ok(None);
+        };
+        let outer_successors = self.view.successor_ids(outer);
+        let [first, second] = outer_successors.as_slice() else {
+            return Ok(None);
+        };
+        let mut shape = None;
+        for (test, returned) in [(first, second), (second, first)] {
+            let Some(test_node) = self.view.index_of(test) else {
+                continue;
+            };
+            let Some(return_node) = self.view.index_of(returned) else {
+                continue;
+            };
+            let test_successors = self.view.successor_ids(test);
+            if test_successors.len() == 2
+                && test_successors.contains(returned)
+                && test_successors
+                    .iter()
+                    .any(|block| self.view.index_of(block) == Some(tail_node))
+                && self.view.successors(return_node).is_empty()
+                && self
+                    .terminal_bci(returned)
+                    .and_then(|bci| self.operations.get(bci))
+                    .is_some_and(|operation| matches!(operation, Operation::Return))
+            {
+                if shape
+                    .replace((test.clone(), returned.clone(), test_node, return_node))
+                    .is_some()
+                {
+                    return Ok(None);
+                }
+            }
+        }
+        let Some((inner, returned, inner_node, return_node)) = shape else {
+            return Ok(None);
+        };
+        if self.visited.contains(&inner_node)
+            || self.visited.contains(&return_node)
+            || outer.path() != inner.path()
+            || outer.path() != returned.path()
+            || !self.view.dominates(outer_node, inner_node)
+            || !self.view.dominates(outer_node, return_node)
+        {
+            return Ok(None);
+        }
+        let Some(tail) = self.view.id_of(tail_node).cloned() else {
+            return Ok(None);
+        };
+        let Some(paths) = self.proved_forward_paths(
+            outer_node,
+            &[self.view.index_of(first), self.view.index_of(second)],
+            Some(tail_node),
+            outer_bci,
+        )?
+        else {
+            return Ok(None);
+        };
+        if !paths
+            .iter()
+            .all(|path| path.contains(&return_node) || path.contains(&tail_node))
+            || !paths.iter().any(|path| path.contains(&tail_node))
+        {
+            return Ok(None);
+        }
+        let mut incoming_inner = Vec::new();
+        let mut incoming_return = Vec::new();
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(outer_bci))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(outer_bci),
+            )?;
+            if edge.to() == &inner {
+                incoming_inner.push((edge.kind(), edge.from().clone()));
+            }
+            if edge.to() == &returned {
+                incoming_return.push((edge.kind(), edge.from().clone()));
+            }
+        }
+        if !exact_normal_predecessors(&incoming_inner, &[outer.clone()])
+            || !exact_normal_predecessors(&incoming_return, &[outer.clone(), inner.clone()])
+        {
+            return Ok(None);
+        }
+        let Some(inner_bci) = self.terminal_bci(&inner) else {
+            return Ok(None);
+        };
+        let Some((outer_op, outer_target)) = self
+            .operations
+            .get(outer_bci)
+            .and_then(Operation::comparison)
+        else {
+            return Ok(None);
+        };
+        let Some((inner_op, inner_target)) = self
+            .operations
+            .get(inner_bci)
+            .and_then(Operation::comparison)
+        else {
+            return Ok(None);
+        };
+        if self
+            .branch_arity_proved(outer, outer_bci, outer_op)
+            .is_err()
+            || self
+                .branch_arity_proved(&inner, inner_bci, inner_op)
+                .is_err()
+        {
+            return Ok(None);
+        }
+        let Some(outer_edges) = self.split_arms(&outer_successors, outer_target) else {
+            return Ok(None);
+        };
+        let Some(inner_edges) = self.split_arms(&self.view.successor_ids(&inner), inner_target)
+        else {
+            return Ok(None);
+        };
+        charge(
+            self.budget,
+            CountedBudgetDimension::IrItems,
+            2,
+            Some(outer_bci),
+        )?;
+        self.visited.extend([inner_node, return_node]);
+        Ok(Some(Region::SharedTailEarlyReturn {
+            prefix: prefix.to_vec(),
+            tests: [(outer.clone(), outer_bci), (inner, inner_bci)],
+            test_edges: [outer_edges, inner_edges],
+            return_block: returned,
+            join: tail,
+        }))
+    }
+
+    /// Enumerate a branch's strictly forward normal paths. A path may end only at an explicit
+    /// return or at the inherited tail. Each edge and block examined is charged before use.
+    fn proved_forward_paths(
+        &mut self,
+        branch: usize,
+        starts: &[Option<usize>; 2],
+        tail: Option<usize>,
+        at: u32,
+    ) -> Result<Option<[BTreeSet<usize>; 2]>, StopReason> {
+        let mut adjacency: BTreeMap<usize, Vec<(CanonicalEdgeKind, usize)>> = BTreeMap::new();
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+            let (Some(from), Some(to)) = (
+                self.view.index_of(edge.from()),
+                self.view.index_of(edge.to()),
+            ) else {
+                return Ok(None);
+            };
+            adjacency.entry(from).or_default().push((edge.kind(), to));
+        }
+        let mut paths = [BTreeSet::new(), BTreeSet::new()];
+        for (index, start) in starts.iter().enumerate() {
+            let Some(start) = start else { return Ok(None) };
+            let mut pending = vec![*start];
+            while let Some(node) = pending.pop() {
+                poll(self.budget, Some(at))?;
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(at),
+                )?;
+                if !paths[index].insert(node) {
+                    continue;
+                }
+                let Some(block) = self.view.id_of(node) else {
+                    return Ok(None);
+                };
+                let Some(origin) = self.view.id_of(branch) else {
+                    return Ok(None);
+                };
+                if block.path() != origin.path()
+                    || (Some(node) != tail
+                        && (block.bci() <= origin.bci()
+                            || self.view.is_loop_header(node)
+                            || (tail.is_none() && !self.view.dominates(branch, node))))
+                {
+                    return Ok(None);
+                }
+                if Some(node) == tail {
+                    continue;
+                }
+                let mut successors = Vec::new();
+                for &(kind, next) in adjacency.get(&node).into_iter().flatten() {
+                    poll(self.budget, Some(at))?;
+                    charge(
+                        self.budget,
+                        CountedBudgetDimension::AnalysisSteps,
+                        1,
+                        Some(at),
+                    )?;
+                    if kind != CanonicalEdgeKind::Normal {
+                        return Ok(None);
+                    }
+                    let Some(destination) = self.view.id_of(next) else {
+                        return Ok(None);
+                    };
+                    if destination.path() != block.path() || destination.bci() <= block.bci() {
+                        return Ok(None);
+                    }
+                    successors.push(next);
+                }
+                if successors.is_empty() {
+                    if !self
+                        .terminal_bci(block)
+                        .and_then(|bci| self.operations.get(bci))
+                        .is_some_and(|operation| matches!(operation, Operation::Return))
+                    {
+                        return Ok(None);
+                    }
+                } else {
+                    pending.extend(successors);
+                }
+            }
+        }
+        Ok(Some(paths))
+    }
+
+    /// A unique first block shared by both normal forward paths is the enclosing continuation.
+    /// The predecessor certificate excludes side entries and back edges before arm ownership moves.
+    fn shared_forward_join(
+        &mut self,
+        branch: usize,
+        then_node: Option<usize>,
+        else_node: Option<usize>,
+        at: u32,
+    ) -> Result<Option<usize>, StopReason> {
+        let Some([then_path, else_path]) =
+            self.proved_forward_paths(branch, &[then_node, else_node], None, at)?
+        else {
+            return Ok(None);
+        };
+        let entered: BTreeSet<_> = then_path.union(&else_path).copied().collect();
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(at))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(at),
+            )?;
+            let Some(target) = self.view.index_of(edge.to()) else {
+                return Ok(None);
+            };
+            if !entered.contains(&target) {
+                continue;
+            }
+            let Some(source) = self.view.index_of(edge.from()) else {
+                return Ok(None);
+            };
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(self.view.len().saturating_mul(2)).unwrap_or(u64::MAX),
+                Some(at),
+            )?;
+            if edge.kind() != CanonicalEdgeKind::Normal
+                || !self.view.dominates(branch, source)
+                || self.view.dominates(target, source)
+            {
+                return Ok(None);
+            }
+        }
+        let common: BTreeSet<_> = then_path.intersection(&else_path).copied().collect();
+        if common.is_empty() {
+            return Ok(None);
+        }
+        poll(self.budget, Some(at))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(
+                common
+                    .len()
+                    .saturating_mul(self.canonical.edges().len().saturating_add(self.view.len())),
+            )
+            .unwrap_or(u64::MAX),
+            Some(at),
+        )?;
+        let Some(candidate) = unique_first_common(&common, |node| self.view.reachable(node)) else {
+            return Ok(None);
+        };
+        let Some(join) = self.view.id_of(candidate) else {
+            return Ok(None);
+        };
+        if !self.forward_join_predecessors(branch, candidate)
+            || self
+                .canonical
+                .edges()
+                .iter()
+                .any(|edge| edge.to() == join && edge.kind() != CanonicalEdgeKind::Normal)
+        {
+            return Ok(None);
+        }
+        Ok(Some(candidate))
     }
 
     /// Whether one successor of a two-successor branch is the **forward join** of that branch: the
@@ -6818,6 +7217,21 @@ impl Walker<'_> {
 
 /// Both inner arms must actually enter the continuation. Cardinality plus membership alone
 /// would let two identical incoming edges stand in for the missing second predecessor.
+/// The earliest common node must lead to every other common node. Two incomparable minima do
+/// not define one continuation, regardless of their physical address ordering.
+fn unique_first_common(
+    common: &BTreeSet<usize>,
+    reachable: impl Fn(usize) -> BTreeSet<usize>,
+) -> Option<usize> {
+    let mut first = None;
+    for &candidate in common {
+        if common.is_subset(&reachable(candidate)) && first.replace(candidate).is_some() {
+            return None;
+        }
+    }
+    first
+}
+
 fn exact_normal_predecessors<T: Ord>(actual: &[(CanonicalEdgeKind, T)], expected: &[T]) -> bool {
     actual.len() == expected.len()
         && expected.iter().collect::<BTreeSet<_>>().len() == expected.len()
@@ -6836,6 +7250,26 @@ fn continuation_claims_are_exact<T: Ord + Clone>(blocks: &[T], visited: &BTreeSe
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn shared_tail_needs_one_comparable_first_common_block() {
+        let joined = BTreeSet::from([24, 32]);
+        assert_eq!(
+            unique_first_common(&joined, |node| {
+                if node == 24 {
+                    joined.clone()
+                } else {
+                    BTreeSet::from([32])
+                }
+            }),
+            Some(24)
+        );
+        let incomparable = BTreeSet::from([23, 30, 34]);
+        assert_eq!(
+            unique_first_common(&incomparable, |node| BTreeSet::from([node])),
+            None
+        );
+    }
 
     #[test]
     fn cf02_tail_requires_both_distinct_normal_predecessors() {
