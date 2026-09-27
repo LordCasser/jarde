@@ -114,6 +114,8 @@ const BODY_MARKER: &str = "lambda$";
 
 /// The method-handle kind of the static factory call this layer expects.
 const REF_INVOKE_STATIC: u8 = 6;
+/// The method-handle kind javac uses when a captured receiver calls its synthetic body.
+const REF_INVOKE_SPECIAL: u8 = 7;
 
 /// The handle kinds whose invocation supplies the receiver first.
 const REF_RECEIVER_KINDS: [u8; 3] = [5, 7, 9];
@@ -190,6 +192,10 @@ pub struct SyntheticLambdaHelperCandidate {
     pub site_cp: u16,
     pub bootstrap_index: u16,
     pub implementation_index: u16,
+    /// The exact reference kind read from the implementation MethodHandle.
+    pub implementation_kind: u8,
+    /// Number of creation-time values in the invokedynamic descriptor.
+    pub capture_count: usize,
     pub owner: JvmBytes,
     pub name: JvmBytes,
     pub descriptor: JvmBytes,
@@ -1193,7 +1199,7 @@ pub fn synthetic_lambda_helper_candidates(
         else {
             continue;
         };
-        if implementation_kind != REF_INVOKE_STATIC
+        if ![REF_INVOKE_STATIC, REF_INVOKE_SPECIAL].contains(&implementation_kind)
             || implementation_owner != owner
             || !implementation_name.0.starts_with(BODY_MARKER.as_bytes())
         {
@@ -1215,9 +1221,6 @@ pub fn synthetic_lambda_helper_candidates(
         else {
             continue;
         };
-        if !site_parameters.is_empty() {
-            continue;
-        }
         let method_type = |index: u16| -> Option<(Vec<Type>, Option<Type>)> {
             let Ok(CpEntryKind::MethodType { descriptor, .. }) =
                 cp_entry(pool, index).map(|entry| &entry.kind)
@@ -1232,7 +1235,30 @@ pub fn synthetic_lambda_helper_candidates(
         else {
             continue;
         };
-        if sam_parameters != parameters || inst_parameters != parameters {
+        if sam_parameters != inst_parameters {
+            continue;
+        }
+        let owner_source = std::str::from_utf8(&implementation_owner.0)
+            .ok()
+            .map(source_name);
+        let supported = match implementation_kind {
+            REF_INVOKE_STATIC => {
+                (site_parameters.is_empty() && parameters == sam_parameters)
+                    || (site_parameters.as_slice() == [Type::Int]
+                        && sam_parameters.as_slice() == [Type::Int]
+                        && parameters.as_slice() == [Type::Int, Type::Int])
+            }
+            REF_INVOKE_SPECIAL => {
+                site_parameters.len() == 2
+                    && owner_source.as_ref().is_some_and(|owner| {
+                        site_parameters.as_slice() == [Type::Reference(owner.clone()), Type::Int]
+                    })
+                    && sam_parameters.is_empty()
+                    && parameters.as_slice() == [Type::Int]
+            }
+            _ => false,
+        };
+        if !supported {
             continue;
         }
         candidates.push(SyntheticLambdaHelperCandidate {
@@ -1240,6 +1266,8 @@ pub fn synthetic_lambda_helper_candidates(
             site_cp: site.cp(),
             bootstrap_index: site.bootstrap_index(),
             implementation_index,
+            implementation_kind,
+            capture_count: site_parameters.len(),
             owner: implementation_owner.clone(),
             name: implementation_name.clone(),
             descriptor: descriptor.clone(),
