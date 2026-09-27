@@ -1,0 +1,30 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_cli_version": "1.5.6",
+  "jadx_source_sha256": {
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/ExcHandlersRegionMaker.java": "bec06f3ebbd671a7a45a6949e3adb583cde365005fef84c3b5363302edb2279c",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/ProcessTryCatchRegions.java": "0a382bc7e189742410b7a1b93f90703f60dfd7cc1256e06ddca4da0ccff6225d"
+  },
+  "javac_release": 8,
+  "verification": "java -Xverify:all",
+  "input_sha256": "91be0f9e52b41b4f96d0650742f1712fef1cab10f795f57c8f65b3462c5d2d52",
+  "class_sha256": "2cce0d5077dd04cd3c90c790fbcf3e3a5f54a96250b6185b92dfa8118367ec0e",
+  "original": {
+    "javac_exit": 0,
+    "javac_stderr": "",
+    "java_exit": 0,
+    "stdout": "4:110\n",
+    "java_stderr": ""
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "javac_stderr": "",
+    "java_exit": 0,
+    "stdout": "4:110\n",
+    "java_stderr": ""
+  },
+  "jarde": {
+    "javac_exit": 1,
+    "javac_stderr": "<classes>/HandlerLoopProbe.java:34: \u9519\u8bef: \u7f3a\u5c11\u8fd4\u56de\u8bed\u53e5\n    }\n    ^\n1 \u4e2a\u9519\u8bef\n"
+  }
+}

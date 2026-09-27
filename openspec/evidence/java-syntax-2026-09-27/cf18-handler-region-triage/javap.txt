@@ -1,0 +1,84 @@
+public final class HandlerLoopProbe {
+  private static int effects;
+
+  public HandlerLoopProbe();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  private static int work(int);
+    Code:
+       0: iload_0
+       1: ifne          14
+       4: new           #7                  // class java/lang/NumberFormatException
+       7: dup
+       8: ldc           #9                  // String zero
+      10: invokespecial #11                 // Method java/lang/NumberFormatException."<init>":(Ljava/lang/String;)V
+      13: athrow
+      14: iload_0
+      15: iconst_2
+      16: if_icmpne     29
+      19: new           #14                 // class java/lang/IllegalStateException
+      22: dup
+      23: ldc           #16                 // String two
+      25: invokespecial #18                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      28: athrow
+      29: iload_0
+      30: ireturn
+
+  private static int run();
+    Code:
+       0: iconst_0
+       1: istore_0
+       2: iconst_0
+       3: istore_1
+       4: iload_1
+       5: iconst_3
+       6: if_icmpge     57
+       9: iload_0
+      10: iload_1
+      11: invokestatic  #19                 // Method work:(I)I
+      14: iadd
+      15: istore_0
+      16: goto          32
+      19: astore_2
+      20: getstatic     #25                 // Field effects:I
+      23: bipush        10
+      25: iadd
+      26: putstatic     #25                 // Field effects:I
+      29: goto          51
+      32: iinc          0, 1
+      35: goto          51
+      38: astore_2
+      39: getstatic     #25                 // Field effects:I
+      42: bipush        100
+      44: iadd
+      45: putstatic     #25                 // Field effects:I
+      48: iinc          0, 2
+      51: iinc          1, 1
+      54: goto          4
+      57: iload_0
+      58: ireturn
+    Exception table:
+       from    to  target type
+           9    16    19   Class java/lang/NumberFormatException
+           9    29    38   Class java/lang/IllegalStateException
+          32    35    38   Class java/lang/IllegalStateException
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: getstatic     #29                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: new           #35                 // class java/lang/StringBuilder
+       6: dup
+       7: invokespecial #37                 // Method java/lang/StringBuilder."<init>":()V
+      10: invokestatic  #38                 // Method run:()I
+      13: invokevirtual #42                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      16: ldc           #46                 // String :
+      18: invokevirtual #48                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      21: getstatic     #25                 // Field effects:I
+      24: invokevirtual #42                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      27: invokevirtual #51                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      30: invokevirtual #55                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      33: return
+}

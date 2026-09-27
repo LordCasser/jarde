@@ -1,0 +1,25 @@
+{
+  "quality": "fallback",
+  "fallbacks": [
+    "jre_region_irreducible"
+  ],
+  "regions": [
+    {
+      "bci": 0,
+      "blocks": [
+        0,
+        4,
+        9,
+        57,
+        32,
+        19,
+        38,
+        51
+      ],
+      "code": "jre_region_irreducible",
+      "message": "the graph is not reducible over 4 block(s) [4, 9, 32, 51]: a loop is entered at more than its header or two loops cross, which no Java structure spells",
+      "rule": null,
+      "structured": false
+    }
+  ]
+}
