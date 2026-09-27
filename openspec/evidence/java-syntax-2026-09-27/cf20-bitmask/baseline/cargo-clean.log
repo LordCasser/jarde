@@ -1,0 +1,6 @@
+exit=0
+command=cargo clean --manifest-path /Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/Cargo.toml --target-dir /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf20-qk8vdkds/cargo-target
+stdout_sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+stderr_sha256=4e03989cd5e5fea5ba7ac256367c8d6a69a8966cc7fb4d8eabd319f4142f138f
+stdout_bytes=0
+stderr_bytes=38

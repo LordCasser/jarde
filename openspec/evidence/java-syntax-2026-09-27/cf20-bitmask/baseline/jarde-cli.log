@@ -1,0 +1,6 @@
+exit=0
+command=/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf20-qk8vdkds/cargo-target/debug/jarde-cli class-source --input /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf20-qk8vdkds/original-classes/BitmaskAudit.class --class BitmaskAudit --policy single-class --release 8 --format text --output /Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/openspec/evidence/java-syntax-2026-09-27/cf20-bitmask/baseline/BitmaskAudit.jarde.java
+stdout_sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+stderr_sha256=25194012f0b61117da3db70ba8c405bc401e82d25ba12ca39d02c18b89cbf16e
+stdout_bytes=0
+stderr_bytes=246033

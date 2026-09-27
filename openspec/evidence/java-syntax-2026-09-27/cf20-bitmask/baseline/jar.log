@@ -1,0 +1,5 @@
+exit=0
+command=jar cf /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf20-qk8vdkds/input.jar -C /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf20-qk8vdkds/original-classes BitmaskAudit.class
+stdout:
+
+stderr:

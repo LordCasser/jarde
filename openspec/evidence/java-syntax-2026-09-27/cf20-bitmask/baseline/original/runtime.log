@@ -1,0 +1,11 @@
+exit=0
+command=java -Xverify:all -cp /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf20-qk8vdkds/original-classes BitmaskAudit
+stdout:
+0=22:1,33:1
+1=22:1,33:1
+2=11:1,44:1
+3=11:1,44:1
+-2147483648=22:1,33:1
+-2147483646=11:1,44:1
+
+stderr:
