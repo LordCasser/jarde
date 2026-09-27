@@ -1,0 +1,13 @@
+{
+  "mode": "baseline",
+  "jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "javac": "javac 23.0.1",
+  "source_sha256": {
+    "Wildcards.java": "0ce0206e8be352ee6ada3f7a05ef130d899ccf3deccba8381c0a81f0306f8e69",
+    "Runner.java": "b4a1ddb7e304f5964d3db3ac66a83d310b35b77c88c66ebc35d181806e645b87"
+  },
+  "original_class_sha256": "4b8c889f57ad3e374463401bedfc00d79015ae16a07e8e57638fdc931a977a0f",
+  "original_verified_run": "any=java.util.List<?>\next=java.util.List<? extends java.lang.Number>\nsup=java.util.List<? super java.lang.String>\nextArray=java.util.List<? extends byte[]>\nsupArray=java.util.List<? super int[]>\nraw=java.util.List\n",
+  "jadx_verified_run": "any=java.util.List<?>\next=java.util.List<? extends java.lang.Number>\nsup=java.util.List<? super java.lang.String>\nextArray=java.util.List<? extends byte[]>\nsupArray=java.util.List<? super int[]>\nraw=java.util.List\n",
+  "jarde_verified_run": "any=java.util.List\next=java.util.List\nsup=java.util.List\nextArray=java.util.List\nsupArray=java.util.List\nraw=java.util.List\n"
+}

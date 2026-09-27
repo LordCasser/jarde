@@ -1,0 +1,6 @@
+any=java.util.List
+ext=java.util.List
+sup=java.util.List
+extArray=java.util.List
+supArray=java.util.List
+raw=java.util.List

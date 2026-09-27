@@ -1,0 +1,17 @@
+package dt17;
+
+import java.util.List;
+
+public class Wildcards {
+    public static void any(List<?> list) {}
+
+    public static void ext(List<? extends Number> list) {}
+
+    public static void sup(List<? super String> list) {}
+
+    public static void extArray(List<? extends byte[]> list) {}
+
+    public static void supArray(List<? super int[]> list) {}
+
+    public static void raw(List list) {}
+}
