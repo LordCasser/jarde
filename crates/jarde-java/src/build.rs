@@ -6459,6 +6459,7 @@ pub(crate) fn build(
         switch_depth: 0,
         finally_span: None,
         finally_return: None,
+        finally_catch_pop: None,
         shared_finally: None,
     };
     if let Some(reason) = builder.declarations.incomplete.get(&Vec::new()).cloned() {
@@ -7210,6 +7211,8 @@ struct Builder<'a> {
     finally_span: Option<(u32, u32)>,
     /// The unique save instruction and physical return of that bounded body.
     finally_return: Option<(u32, u32)>,
+    /// The proved named catch's pop of its already-presented append result.
+    finally_catch_pop: Option<u32>,
     /// The one synthetic Region::Try nested in a proved shared catch-all guard. Its two child
     /// bodies use different physical slices and saved returns, but emit one existing Try AST.
     shared_finally: Option<SharedFinallyBuild>,
@@ -10106,6 +10109,7 @@ impl Builder<'_> {
         self.switch_depth = checkpoint.switch_depth;
         self.finally_span = None;
         self.finally_return = None;
+        self.finally_catch_pop = None;
         self.shared_finally = None;
     }
 
@@ -12881,17 +12885,30 @@ impl Builder<'_> {
                     }
                     guard::Shape::Finally {
                         normal_cleanup,
-                        returns,
-                        save,
+                        completion,
                         ..
                     } => {
+                        let saved_return = match completion {
+                            guard::FinallyCompletion::SavedReturn { save, returns } => {
+                                Some((*save, *returns))
+                            }
+                            guard::FinallyCompletion::Joined { .. } => None,
+                        };
+                        let at = saved_return.map_or(plan.body().0, |(_, returns)| returns);
                         let body = if let Some(inner) = structured_body {
                             let outer = std::mem::take(&mut self.stmts);
                             self.finally_span = Some(plan.body());
-                            self.finally_return = Some((*save, *returns));
+                            self.finally_return = saved_return;
+                            self.finally_catch_pop = match completion {
+                                guard::FinallyCompletion::Joined { catch_pop, .. } => {
+                                    Some(*catch_pop)
+                                }
+                                guard::FinallyCompletion::SavedReturn { .. } => None,
+                            };
                             let walked = self.region(inner, &child(path, 0));
                             self.finally_span = None;
                             self.finally_return = None;
+                            self.finally_catch_pop = None;
                             let body = std::mem::replace(&mut self.stmts, outer);
                             if let Err(stop) = walked {
                                 self.restore_finally(
@@ -12904,11 +12921,19 @@ impl Builder<'_> {
                             body
                         } else {
                             let mut body = self.body_range(plan.body())?;
-                            let return_stmt = match self.guarded_return(*returns) {
+                            let Some((_, returns)) = saved_return else {
+                                let bcis = self.region_quote(region, at);
+                                return self.fallback(
+                                    bcis,
+                                    "the joined finally has no bounded nested catch",
+                                    at,
+                                );
+                            };
+                            let return_stmt = match self.guarded_return(returns) {
                                 Ok(statement) => statement,
                                 Err(reason) => {
-                                    let bcis = self.region_quote(region, *returns);
-                                    return self.fallback(bcis, &reason, *returns);
+                                    let bcis = self.region_quote(region, returns);
+                                    return self.fallback(bcis, &reason, returns);
                                 }
                             };
                             body.push(return_stmt);
@@ -12923,15 +12948,20 @@ impl Builder<'_> {
                                 return Err(stop);
                             }
                         };
-                        if body.iter().chain(&finally_body).any(statement_has_fallback) {
-                            let bcis = self.region_quote(region, *returns);
+                        let nested_complete = saved_return.is_some() || body.iter().any(|statement| {
+                            matches!(&statement.kind, StmtKind::Try { catches, .. } if catches.len() == 1)
+                        });
+                        if !nested_complete
+                            || body.iter().chain(&finally_body).any(statement_has_fallback)
+                        {
+                            let bcis = self.region_quote(region, at);
                             if let Some(checkpoint) = finally_checkpoint.take() {
                                 self.restore_finally(checkpoint);
                             }
                             return self.fallback(
                                 bcis,
                                 "the proved finally contains an instruction this Java writer cannot state",
-                                *returns,
+                                at,
                             );
                         }
                         let mut origin = OriginSet::new(Origin::direct(plan.body().0));
@@ -12955,7 +12985,7 @@ impl Builder<'_> {
                                         .any(statement_has_fallback)
                                 }))
                         {
-                            let bcis = self.region_quote(region, *returns);
+                            let bcis = self.region_quote(region, at);
                             self.restore_finally(
                                 finally_checkpoint
                                     .take()
@@ -12964,10 +12994,55 @@ impl Builder<'_> {
                             return self.fallback(
                                 bcis,
                                 "the proved finally has an unpresented declaration or lead",
-                                *returns,
+                                at,
                             );
                         }
-                        let pushed = self.push(statement);
+                        let fused_return =
+                            if let guard::FinallyCompletion::Joined { continuation, .. } =
+                                completion
+                                && plan.join().is_none()
+                            {
+                                let Some(instruction) =
+                                    self.instructions.get(continuation).copied()
+                                else {
+                                    let bcis = self.region_quote(region, *continuation);
+                                    if let Some(checkpoint) = finally_checkpoint.take() {
+                                        self.restore_finally(checkpoint);
+                                    }
+                                    return self.fallback(
+                                        bcis,
+                                        "the joined finally continuation has no names record",
+                                        *continuation,
+                                    );
+                                };
+                                if !matches!(
+                                    self.operations.get(*continuation),
+                                    Some(Operation::Return)
+                                ) || !stack_operands(instruction).is_empty()
+                                {
+                                    let bcis = self.region_quote(region, *continuation);
+                                    if let Some(checkpoint) = finally_checkpoint.take() {
+                                        self.restore_finally(checkpoint);
+                                    }
+                                    return self.fallback(
+                                        bcis,
+                                        "the joined finally continuation is not a void return",
+                                        *continuation,
+                                    );
+                                }
+                                Some(Stmt::new(
+                                    StmtKind::Return { value: None },
+                                    OriginSet::new(Origin::direct(*continuation)),
+                                ))
+                            } else {
+                                None
+                            };
+                        let pushed = self.push(statement).and_then(|()| {
+                            if let Some(return_stmt) = fused_return {
+                                self.push(return_stmt)?;
+                            }
+                            Ok(())
+                        });
                         if pushed.is_err()
                             && let Some(checkpoint) = finally_checkpoint.take()
                         {
@@ -15863,6 +15938,7 @@ impl Builder<'_> {
             || self.sites.owns(at)
             || self.clause_parameters.contains(&at)
             || self.settled.contains(&at)
+            || self.finally_catch_pop == Some(at)
             || self.compounds.owns_copy(at)
         {
             return Ok(());

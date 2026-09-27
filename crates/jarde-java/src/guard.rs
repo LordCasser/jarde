@@ -190,11 +190,10 @@ pub enum Shape {
         else_exit_bci: u32,
         else_return_bci: u32,
     },
-    /// A straight protected body whose saved return and two cleanup copies were proved.
+    /// One protected body with two proved cleanup copies and an exclusive completion form.
     Finally {
         normal_cleanup: (u32, u32),
-        returns: u32,
-        save: u32,
+        completion: FinallyCompletion,
         row_ordinal: u32,
         structured: bool,
     },
@@ -208,6 +207,20 @@ pub enum Shape {
         normal_cleanup: (u32, u32),
         catch_cleanup: (u32, u32),
         completion: SharedFinallyCompletion,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum FinallyCompletion {
+    SavedReturn {
+        save: u32,
+        returns: u32,
+    },
+    Joined {
+        transfer: u32,
+        continuation: u32,
+        catch_pop: u32,
+        named_row: u32,
     },
 }
 
@@ -2442,6 +2455,259 @@ fn boolean_join_cleanup(
     Ok(Some(copies))
 }
 
+/// Javac's outer finally around an inner named catch has one normal copy after the entire
+/// protected range and one handler copy. This certificate is separate from saved returns and
+/// from the three-row shared-join layout: both rows, both copies, and the one continuation close
+/// together before a region may claim any block.
+fn prove_nested_join_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [named, outer] = facts.handlers else {
+        return Ok(None);
+    };
+    let start = current.bci();
+    if named.ordinal + 1 != outer.ordinal
+        || named.catch_type_index.is_none()
+        || outer.catch_type_index.is_some()
+        || named.start_bci != start
+        || outer.start_bci != start
+        || !(start < named.end_bci
+            && named.end_bci < named.handler_bci
+            && named.handler_bci < outer.end_bci
+            && outer.end_bci < outer.handler_bci)
+        || !facts
+            .in_block(current)
+            .iter()
+            .any(|step| step.bci() == start)
+    {
+        return Ok(None);
+    }
+    let normal_start = outer.end_bci;
+    let handler = outer.handler_bci;
+    let Some(handler_start) = facts.next_bci(handler) else {
+        return Ok(None);
+    };
+    let (
+        Some((normal_pop, normal_field, normal_constant, normal_invoke)),
+        Some((handler_pop, handler_field, handler_constant, handler_invoke)),
+    ) = (
+        append_cleanup(facts, normal_start)?,
+        append_cleanup(facts, handler_start)?,
+    )
+    else {
+        return Ok(None);
+    };
+    if (normal_field, normal_constant, normal_invoke)
+        != (handler_field, handler_constant, handler_invoke)
+    {
+        return Ok(None);
+    }
+    let (Some(transfer), Some(primary_load)) =
+        (facts.next_bci(normal_pop), facts.next_bci(handler_pop))
+    else {
+        return Ok(None);
+    };
+    let Some(rethrow) = facts.next_bci(primary_load) else {
+        return Ok(None);
+    };
+    let handler_end = facts.span_end(rethrow);
+    if facts.op(transfer) != Some(&Operation::Transfer)
+        || facts.op(rethrow) != Some(&Operation::Throw)
+        || !matches!(facts.op(handler), Some(Operation::Store { .. }))
+        || !matches!(facts.op(primary_load), Some(Operation::Load { .. }))
+        || !handler_binding(facts, handler)
+        || !handler_binding(facts, named.handler_bci)
+        || facts.next_bci(transfer) != Some(handler)
+    {
+        return Ok(None);
+    }
+    let (Some(named_block), Some(handler_block), Some(normal_block)) = (
+        facts.row_handler(named),
+        facts.row_handler(outer),
+        facts.block_of(normal_start).cloned(),
+    ) else {
+        return Ok(None);
+    };
+    if named_block.bci() != named.handler_bci
+        || handler_block.bci() != handler
+        || facts
+            .bcis((normal_start, facts.span_end(transfer)))
+            .iter()
+            .any(|bci| facts.block_of(*bci) != Some(&normal_block))
+        || facts
+            .bcis((handler, handler_end))
+            .iter()
+            .any(|bci| facts.block_of(*bci) != Some(&handler_block))
+        || !facts.view.successor_ids(&handler_block).is_empty()
+    {
+        return Ok(None);
+    }
+    let Some(catch_start) = facts.next_bci(named.handler_bci) else {
+        return Ok(None);
+    };
+    let Some((catch_pop, _, _, _)) = append_cleanup(facts, catch_start)? else {
+        return Ok(None);
+    };
+    let Some(catch_successor) = facts
+        .next_bci(catch_pop)
+        .and_then(|bci| facts.block_of(bci))
+    else {
+        return Ok(None);
+    };
+    if facts.in_block(&named_block).last().map(SsaInstruction::bci) != Some(catch_pop)
+        || facts.block_of(catch_pop) != Some(&named_block)
+        || facts.view.successor_ids(&named_block) != [catch_successor.clone()]
+        || (catch_successor != &normal_block
+            && !facts
+                .blocks_in((start, outer.end_bci))
+                .contains(catch_successor))
+    {
+        return Ok(None);
+    }
+    let normal_successors = facts.view.successor_ids(&normal_block);
+    let Some(normal_node) = facts.view.index_of(&normal_block) else {
+        return Ok(None);
+    };
+    let continuation = handler_end;
+    let join = match normal_successors.as_slice() {
+        [join]
+            if join.bci() == continuation
+                && facts.block_at(continuation).as_ref() == Some(join)
+                && facts
+                    .view
+                    .index_of(join)
+                    .is_some_and(|node| facts.view.predecessors(node) == [normal_node])
+                && matches!(facts.in_block(join), [only]
+                if facts.op(only.bci()) == Some(&Operation::Return) && only.reads().is_empty()) =>
+        {
+            Some(join.clone())
+        }
+        [] if facts.block_of(continuation) == Some(&normal_block)
+            && facts.in_block(&normal_block).last().is_some_and(|last| {
+                last.bci() == continuation
+                    && facts.op(continuation) == Some(&Operation::Return)
+                    && last.reads().is_empty()
+            }) =>
+        {
+            None
+        }
+        _ => return Ok(None),
+    };
+    let (Some(store), Some(load), Some(throw)) = (
+        facts.step(handler),
+        facts.step(primary_load),
+        facts.step(rethrow),
+    ) else {
+        return Ok(None);
+    };
+    if !matches!((facts.op(handler), facts.op(primary_load)),
+        (Some(Operation::Store { slot: stored }), Some(Operation::Load { slot: loaded })) if stored == loaded)
+        || !store.instruction.writes().iter().any(|(_, written)| {
+            load.instruction
+                .reads()
+                .iter()
+                .any(|(_, read)| facts.same(*written, *read))
+        })
+        || !load.instruction.writes().iter().any(|(slot, written)| {
+            matches!(slot, Slot::Stack(_))
+                && stack_operands(throw.instruction)
+                    .iter()
+                    .any(|(_, read)| facts.same(*written, *read))
+        })
+        || stack_operands(throw.instruction).len() != 1
+    {
+        return Ok(None);
+    }
+    for bci in facts.bcis((start, handler_end)) {
+        facts.charge(bci)?;
+        let expected = if bci < named.end_bci {
+            &[named.ordinal, outer.ordinal][..]
+        } else if bci < outer.end_bci {
+            &[outer.ordinal][..]
+        } else {
+            &[][..]
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+            || (bci < outer.end_bci && matches!(facts.op(bci), Some(Operation::Return)))
+        {
+            return Ok(None);
+        }
+    }
+    let protected = facts.blocks_in((start, outer.end_bci));
+    let inner = facts.blocks_in((start, named.end_bci));
+    if facts.view.predecessors(normal_node).len() != 2
+        || facts
+            .view
+            .predecessors(normal_node)
+            .iter()
+            .any(|predecessor| {
+                facts
+                    .view
+                    .id_of(*predecessor)
+                    .is_none_or(|block| !protected.contains(block))
+            })
+    {
+        return Ok(None);
+    }
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        let valid = match edge.kind() {
+            CanonicalEdgeKind::Exception { handler_ordinal } if edge.to() == &named_block => {
+                handler_ordinal == named.ordinal && inner.contains(edge.from())
+            }
+            CanonicalEdgeKind::Exception { handler_ordinal } if edge.to() == &handler_block => {
+                handler_ordinal == outer.ordinal && protected.contains(edge.from())
+            }
+            CanonicalEdgeKind::Exception { .. } => {
+                !protected.contains(edge.from()) && edge.from() != &handler_block
+            }
+            CanonicalEdgeKind::Normal if edge.from() == &normal_block => {
+                join.as_ref() == Some(edge.to())
+            }
+            CanonicalEdgeKind::Normal if protected.contains(edge.from()) => {
+                protected.contains(edge.to()) || edge.to() == &normal_block
+            }
+            CanonicalEdgeKind::Normal => {
+                edge.to() != &normal_block
+                    && edge.to() != &handler_block
+                    && edge.to() != &named_block
+            }
+            CanonicalEdgeKind::Call { .. } => false,
+            CanonicalEdgeKind::Return { .. } => {
+                !protected.contains(edge.from()) && edge.from() != &handler_block
+            }
+        };
+        if !valid {
+            return Ok(None);
+        }
+    }
+    let owned = facts.blocks_in((start, handler_end));
+    Ok(Some(Plan {
+        shape: Shape::Finally {
+            normal_cleanup: (normal_start, facts.span_end(normal_pop)),
+            completion: FinallyCompletion::Joined {
+                transfer,
+                continuation,
+                catch_pop,
+                named_row: named.ordinal,
+            },
+            row_ordinal: outer.ordinal,
+            structured: true,
+        },
+        lead: (start, start),
+        body: (start, outer.end_bci),
+        owned,
+        join,
+        facts: facts.bcis((start, handler_end)),
+    }))
+}
+
 /// A deliberately separate completion contract: the two normal copies end in transfers to one
 /// continuation, not in saved values. The old saved-return certificate is left unchanged.
 fn prove_shared_join_finally(
@@ -3106,12 +3372,15 @@ pub(crate) fn shared_finally_candidate(
     current: &CanonicalBlockId,
     budget: &mut Budget,
 ) -> Result<Option<Plan>, StopReason> {
-    if !FINALLY.admits(profile) || handlers.len() != 3 {
+    if !FINALLY.admits(profile) || !matches!(handlers.len(), 2 | 3) {
         return Ok(None);
     }
     let sites = Sites::empty();
     let mut facts = Facts::new(canonical, view, ssa, ops, handlers, &sites, budget);
     facts.charge(current.bci())?;
+    if handlers.len() == 2 {
+        return prove_nested_join_finally(&mut facts, current);
+    }
     if let Some(plan) = prove_shared_join_finally(&mut facts, current)? {
         return Ok(Some(plan));
     }
@@ -3365,6 +3634,41 @@ mod finally_copy_tests {
     const NESTED_TEST_CLS: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class"
     );
+
+    #[test]
+    fn nested_test1_and_test2_have_exclusive_joined_certificates() {
+        for (method, protected_end, normal, handler, join) in [
+            (b"test1".as_slice(), 29, (29, 39), 42, 55),
+            (b"test2".as_slice(), 19, (19, 29), 32, 45),
+        ] {
+            let plan = shared_probe_method(NESTED_TEST_CLS, method, b"(I)V", |_| {}, None)
+                .unwrap()
+                .expect("the two-copy joined finally is proved");
+            let Shape::Finally {
+                normal_cleanup,
+                completion,
+                row_ordinal,
+                structured,
+            } = plan.shape()
+            else {
+                panic!("outer finally shape");
+            };
+            assert_eq!(plan.body(), (0, protected_end));
+            assert_eq!(*normal_cleanup, normal);
+            assert_eq!(*row_ordinal, 1);
+            assert!(*structured);
+            assert!(matches!(
+                completion,
+                FinallyCompletion::Joined { named_row: 0, continuation, .. } if *continuation == join
+            ));
+            assert_eq!(
+                plan.join().map(CanonicalBlockId::bci),
+                (method == b"test1").then_some(join)
+            );
+            assert!(!plan.owned().iter().any(|block| block.bci() == join));
+            assert!(plan.facts().contains(&handler));
+        }
+    }
 
     #[test]
     fn nested_test3_append_copies_have_one_shared_join_certificate() {
@@ -4152,6 +4456,9 @@ fn guarded(
         return Ok(Some(verdict));
     }
     if FINALLY.admits(profile) {
+        if let Some(plan) = prove_nested_join_finally(facts, current)? {
+            return Ok(Some(Verdict::Claimed(plan)));
+        }
         if let Some(plan) = prove_shared_join_finally(facts, current)? {
             return Ok(Some(Verdict::Claimed(plan)));
         }
@@ -4250,6 +4557,7 @@ pub(crate) fn catches(
     ops: &Operations,
     handlers: &[ExceptionHandlerFact],
     fragmented: Option<&crate::fragmented_catch::FragmentedCatch>,
+    visible_named_row: Option<u32>,
     profile: &crate::pass::RecoveryProfile,
     current: &CanonicalBlockId,
     budget: &mut Budget,
@@ -4274,6 +4582,25 @@ pub(crate) fn catches(
         .collect();
     if rows_here.is_empty() {
         return Ok(None);
+    }
+    if let Some(visible) = visible_named_row {
+        let [row] = rows_here.as_slice() else {
+            return Ok(None);
+        };
+        if row.ordinal != visible || row.start_bci != current.bci() {
+            return Ok(None);
+        }
+        let sites = Sites::empty();
+        let facts = Facts::new(canonical, view, ssa, ops, handlers, &sites, budget);
+        let Some(sites) = clause_sites(&facts, &[row]) else {
+            return Ok(None);
+        };
+        return Ok(Some(Catches {
+            sites,
+            join: join_after(&facts, row.end_bci),
+            lead: (current.bci(), row.start_bci),
+            inner: None,
+        }));
     }
     // How one set of rows reads as **clauses**: every range begins at one instruction, and there are
     // at most two ends — one `try`, or the nesting of P3 2.5 (the narrower range inside the wider
@@ -5116,8 +5443,10 @@ fn resources(
                     return Ok(Verdict::Claimed(Plan {
                         shape: Shape::Finally {
                             normal_cleanup: proof.normal_cleanup,
-                            returns: proof.saved_return.1,
-                            save: proof.saved_return.0,
+                            completion: FinallyCompletion::SavedReturn {
+                                save: proof.saved_return.0,
+                                returns: proof.saved_return.1,
+                            },
                             row_ordinal: proof.row_ordinal,
                             structured,
                         },

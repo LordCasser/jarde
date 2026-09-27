@@ -45,6 +45,56 @@ const NESTED_TEST3_NEGATIVES: [&[u8]; 5] = [
         "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3WidenedRow.class"
     ),
 ];
+const NESTED_TEST12_NEGATIVES: [(&str, &[u8]); 8] = [
+    (
+        "test1",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1DifferentConstant.class"
+        ),
+    ),
+    (
+        "test1",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1WidenedRow.class"
+        ),
+    ),
+    (
+        "test1",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1BypassCleanup.class"
+        ),
+    ),
+    (
+        "test1",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1ChangedRethrow.class"
+        ),
+    ),
+    (
+        "test2",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2DifferentConstant.class"
+        ),
+    ),
+    (
+        "test2",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2WidenedRow.class"
+        ),
+    ),
+    (
+        "test2",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2BypassCleanup.class"
+        ),
+    ),
+    (
+        "test2",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2ChangedRethrow.class"
+        ),
+    ),
+];
 const NEGATIVES: [&[u8]; 3] = [
     include_bytes!(
         "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoinValueMismatch.class"
@@ -241,6 +291,78 @@ fn nested_test3_has_one_finally_and_complete_physical_ownership() {
 }
 
 #[test]
+fn nested_test1_and_test2_have_one_outer_finally_and_complete_ownership() {
+    for (name, expected_blocks, bcis) in [
+        (
+            "test1",
+            &[0, 8, 19, 42, 55][..],
+            &[
+                0, 1, 2, 5, 8, 9, 10, 13, 15, 18, 19, 20, 23, 25, 28, 29, 30, 33, 35, 38, 39, 42,
+                43, 44, 47, 49, 52, 53, 54, 55,
+            ][..],
+        ),
+        (
+            "test2",
+            &[0, 8, 19, 32][..],
+            &[
+                0, 1, 2, 5, 8, 9, 10, 13, 15, 18, 19, 20, 23, 25, 28, 29, 32, 33, 34, 37, 39, 42,
+                43, 44, 45,
+            ][..],
+        ),
+    ] {
+        let report = recover_method(
+            NESTED_TEST_CLS,
+            name,
+            "(I)V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls",
+            0x0001,
+            None,
+        );
+        assert!(
+            report.produced(),
+            "{name}: {:?}\n{}",
+            report.outcome,
+            report.text
+        );
+        assert_eq!(
+            report.text.matches("finally {").count(),
+            1,
+            "{name}: {}",
+            report.text
+        );
+        assert_eq!(
+            report.text.matches("this.sb.append(\"-finally\")").count(),
+            1,
+            "{name}: {}",
+            report.text
+        );
+        assert!(
+            report.text.contains("NullPointerException"),
+            "{name}: {}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("@bytecode"),
+            "{name}: {}",
+            report.text
+        );
+        let blocks: Vec<_> = report
+            .regions
+            .iter()
+            .flat_map(|region| &region.blocks)
+            .copied()
+            .collect();
+        assert_eq!(blocks, expected_blocks, "{name}: {}", report.text);
+        for &bci in bcis {
+            assert!(
+                !report.source_map.of_bci(bci).is_empty(),
+                "{name}: BCI {bci} has no origin"
+            );
+        }
+    }
+}
+
+#[test]
 fn nested_test3_equal_other_string_is_still_one_finally() {
     let report = recover_method(
         NESTED_OTHER_CONSTANT,
@@ -268,6 +390,56 @@ fn nested_test3_verifier_valid_near_misses_refuse_shared_finally() {
         );
         assert!(!report.text.contains("finally {"), "{}", report.text);
         assert!(report.text.contains("@bytecode"), "{}", report.text);
+    }
+}
+
+#[test]
+fn nested_test1_and_test2_verifier_valid_near_misses_refuse_outer_finally() {
+    for (method, class) in NESTED_TEST12_NEGATIVES {
+        let report = recover_method(
+            class,
+            method,
+            "(I)V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls",
+            0x0001,
+            None,
+        );
+        assert!(
+            !report.text.contains("finally {"),
+            "{method}: {}",
+            report.text
+        );
+        assert!(
+            report.text.contains("@bytecode"),
+            "{method}: {}",
+            report.text
+        );
+    }
+}
+
+#[test]
+fn nested_test1_and_test2_stop_discards_text_and_source_map() {
+    for method in ["test1", "test2"] {
+        let recover = |budget| {
+            recover_method(
+                NESTED_TEST_CLS,
+                method,
+                "(I)V",
+                "jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls",
+                0x0001,
+                Some(budget),
+            )
+        };
+        let mut tiny = limits();
+        tiny.ir_items = 1;
+        let stopped = recover(Budget::new(tiny));
+        assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+        assert!(matches!(stopped.stop(), Some(StopReason::Budget { .. })));
+        let token = CancellationToken::new();
+        token.cancel();
+        let cancelled = recover(Budget::with_cancellation_token(limits(), token));
+        assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+        assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
     }
 }
 
