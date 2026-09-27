@@ -1,0 +1,35 @@
+{
+  "expected_stdout": "2:-3:RuntimeException\n",
+  "jadx": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "2:-3:RuntimeException\n"
+  },
+  "jadx_source_count": 4,
+  "jarde": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "2:-3:RuntimeException\n"
+  },
+  "jarde_report_classes": [
+    "ConstructorRef",
+    "InstanceRef",
+    "Maker",
+    "StaticRef"
+  ],
+  "jarde_source_count": 4,
+  "lambda_helper_absent": true,
+  "method_reference_assertions": [
+    "Math::abs",
+    "this::number",
+    "RuntimeException::new"
+  ],
+  "original": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "2:-3:RuntimeException\n"
+  }
+}

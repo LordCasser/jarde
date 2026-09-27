@@ -1,0 +1,11 @@
+package dt27;
+
+/* JADX INFO: loaded from: input.jar:dt27/ConstructorRef.class */
+class ConstructorRef {
+    ConstructorRef() {
+    }
+
+    static Maker maker() {
+        return RuntimeException::new;
+    }
+}

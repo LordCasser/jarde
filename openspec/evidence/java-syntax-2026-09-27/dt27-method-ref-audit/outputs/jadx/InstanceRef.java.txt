@@ -1,0 +1,20 @@
+package dt27;
+
+import java.util.function.IntSupplier;
+
+/* JADX INFO: loaded from: input.jar:dt27/InstanceRef.class */
+class InstanceRef {
+    private final int value;
+
+    InstanceRef(int i) {
+        this.value = i;
+    }
+
+    int number() {
+        return this.value;
+    }
+
+    IntSupplier supplier() {
+        return this::number;
+    }
+}
