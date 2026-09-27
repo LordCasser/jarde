@@ -12,5 +12,5 @@
 ## 3. 三方验收与回归
 
 - [x] 3.1 用 fresh CLI 对原验收类、pinned JADX 和 Jarde 完整 Java 8 源码分别重编，`java -Xverify:all` 对照异常类、消息、对象身份和计数；所有有效错误近邻不得生成错误 catch/finally，固定 `handled()` 仍单列。
-- [ ] 3.2 跑普通具名 catch、multi-catch、TWR/monitor、Test12/Test13/共享 finally 回归和 `cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、格式、OpenSpec strict、diff check；清理专用 Cargo target。
+- [x] 3.2 跑普通具名 catch、multi-catch、TWR/monitor、Test12/Test13/共享 finally 回归和 `cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、格式、OpenSpec strict、diff check；清理专用 Cargo target。
 - [ ] 3.3 root 独立审阅 Guard 证书、类型表示、Region/Builder 所有权、负例和三方运行，写主线验收记录并更新 CF-16 清单；不把整个 CF-16 标为追平。
