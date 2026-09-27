@@ -10,4 +10,4 @@
 ## 3. 三方集成验收
 
 - [x] 3.1 用冻结脚本的 `--require-jarde` 门槛重编原/JADX/Jarde 完整类源码并执行 `java -Xverify:all`；四行均为 `-1:0 / 8:1 / 3:0 / 8:1`，Jarde `pick` 无 `@bytecode`，物理 BCI 11/17/26/35/38/44/50 来源与 Region owner 可查。
-- [ ] 3.2 重放已验收的顶层带效果双出口、单出口循环臂及相邻 if/loop Rust 测试，并确认固定 `TestNotIndexedLoop` 仍保守拒绝；通过 `cargo fmt --all -- --check`、`cargo check --workspace --locked`、`git diff --check`、`openspec validate recover-nested-effectful-loop-arm --strict`，root 记录验收并清理专用 Cargo target。
+- [x] 3.2 重放已验收的顶层带效果双出口、单出口循环臂及相邻 if/loop Rust 测试，并确认固定 `TestNotIndexedLoop` 仍保守拒绝；通过 `cargo fmt --all -- --check`、`cargo check --workspace --locked`、`git diff --check`、`openspec validate recover-nested-effectful-loop-arm --strict`，root 记录验收并清理专用 Cargo target。
