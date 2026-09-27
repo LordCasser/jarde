@@ -11,7 +11,7 @@
 ## Decisions
 
 1. **P1：将声明类与实际接收者分开证明。** 在既有选中类池和父字段/引用实参证书上逐 BCI 核对 C/D `putfield` 的 A owner、唯一字段与 B 接收者，再核对 A.access$002 的精确私有目标和根类三处 `bits(A)` 私有调用。新证书仅在调用点已有的物理定义和源级重载唯一性均闭合时消费；不把“能 cast 为 A”当作所有同名成员都安全的全局规则。JADX `ModVisitor.fixFieldUsage` 的源级 cast 与 `ShadowFieldVisitor` 的遮蔽处理可参考，但固定 class 无物理 `checkcast`；保留 Jarde 现有准确 owner cast 和物理 accessor 形式。比在 printer 上统一强制 cast 更早阻止误绑。
-2. **P2：泛型投影保持物理正文不变。** 复用 reader 的 Signature 解析和擦除核验，在 `class_source` 对有副作用 void 正文加入有界参数使用检查，确认所有被投影为 T 的形参在正文及同类调用点仍按擦除 B 合法。只改变源级声明，AST/SSA 仍用物理 B；如需依赖 P1 的固定 D 正文，先用仅调用 `t.self(z)` 的完整独立类族证明 P2，再做固定组合集成。避免从已生成文本反推泛型。
+2. **P2：泛型投影保持物理正文不变。** 复用 reader 的 Signature 解析和擦除核验，在 `class_source` 对完整直线 void 正文加入有界参数使用检查，确认被投影为 T 的形参槽未被写入，正文完整且所有参数引用来自同一 AST/SSA run；AST/SSA 仍用物理 B。固定 D 的四次 P1 字段写入及精确 accessor 调用可在源码里保留为 B 类型操作，因为唯一 class bound 擦除为 B，P1 将 A 字段访问和 accessor 目标显式钉定，且正文不把 B 值写回未知子类型 T。`$` bound 名称只可在当前选中 class 自己的 `InnerClasses` 记录证明它与 bound 名称具有同一 outer 和合法直系 inner 名、bound 与已验证物理参数擦除完全相同、同一 physical descriptor 已有该类型的源码拼写时复用；此表证明的是 classfile 声明的 nesting 关系，不声称 B 的定义也已被独立解析。不做字符串 `$` 到 `.` 替换，也不放宽一般 generic-name helper。预算/取消发生在发布泛型声明前；独立完整 Java 8 类族先证明反射/擦除和负例，再以 P1 固定 D 四写入正文做集成验证。
 3. **P3：跨块拼接先证明整条链，再原子投影。** 复用已有 concat 身份、转换规则与 builder 语句能力，有限遍历四组条件与 φ、同一个 StringBuilder 的追加链和最终返回；要求唯一 builder、无别名、准确 append(String) 次序、每个字段 getter/私有 getter 一次、无未计入效果/异常边。能在现有 builder 中顺序输出等价语句则无需新增 AST 机制；否则仅增最小可证明的条件值表示，不放宽 `jre_concat_split` 的入口条件。参考 JADX `SimplifyVisitor` 的链识别，但不照搬无验证的块折叠。
 4. **集成点保持三包解耦。** P1 核对成员与调用目标，P2 核对泛型源级声明，P3 核对值流与求值位置；三者共同使用已选物理定义、BCI 与 SSA，而非各自引入类层级推断器。P1/P2/P3 可在隔离 worktree 并行，固定 D 正例依赖 P1+P2，固定根类依赖 P1+P3；合入后一次重跑整体门槛。
 
