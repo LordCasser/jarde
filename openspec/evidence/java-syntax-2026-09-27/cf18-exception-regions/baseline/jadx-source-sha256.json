@@ -1,0 +1,15 @@
+{
+  "jadx-core/src/test/java/jadx/tests/integration/trycatch/TestIfInTryCatch.java": "1a10d71a0145a0b78d32d0d147584dcd4e45cb20ec24cc5f7e418bf8c2dd1d95",
+  "jadx-core/src/test/java/jadx/tests/integration/trycatch/TestNestedTryCatch.java": "50f8a37df1550d4d0bc009c6bf35867cc319ac2a430f393ee6f1d4d01a691c6e",
+  "jadx-core/src/test/java/jadx/tests/integration/trycatch/TestLoopInTryCatch.java": "20ece2978d792360ea2bf02f9ba320c2d20f97f563de53d0947026bfb71c66fc",
+  "jadx-core/src/test/java/jadx/tests/integration/trycatch/TestTryCatchInIf.java": "9dcb37f1b944a73f4c5877c8499a37237ce55afa6da07a4cb1e95c44db463ad7",
+  "jadx-core/src/test/java/jadx/tests/integration/trycatch/TestTryCatchNoMoveExc.java": "4a8e83ac8be609152d2e31beab1c294284d296c630c8851deb66a2bea2b6405b",
+  "jadx-core/src/test/java/jadx/tests/integration/loops/TestTryCatchInLoop.java": "9fc7c99bf968ffbfb948bf5dca186f36c1d923ee9c4600f8d86ff85899003830",
+  "jadx-core/src/test/smali/trycatch/TestTryCatchNoMoveExc.smali": "5bdf9280386646baa3256ea77dfc362e755df2ef776c2de28c176f2561435ce6",
+  "jadx-core/src/test/smali/trycatch/TestLoopInTryCatch.smali": "e1eeed31b63e80389af0cfcf8bd09f1956b53eb950693744576d32f462d13bb7",
+  "jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/ExcHandlersRegionMaker.java": "bec06f3ebbd671a7a45a6949e3adb583cde365005fef84c3b5363302edb2279c",
+  "jadx-core/src/main/java/jadx/core/dex/visitors/regions/ProcessTryCatchRegions.java": "0a382bc7e189742410b7a1b93f90703f60dfd7cc1256e06ddca4da0ccff6225d",
+  "jadx-core/src/main/java/jadx/core/dex/visitors/regions/PostProcessRegions.java": "84915484fc0505c6889d49a9d6cf410d43fecb896d8c8204fc7d19210585e853",
+  "jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java": "13fc172963c7a12b97ce500cb17fe1e893802ec227dc4ca3ac0955e5a0bd325c",
+  "jadx-core/src/test/java/jadx/tests/api/SmaliTest.java": "80dd4db966cf66a3a3f4324024db143156264a12b5cbe1ebd4286f28a2b946f1"
+}

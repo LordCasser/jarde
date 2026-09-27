@@ -1,0 +1,6 @@
+exit=0
+command=cargo clean --manifest-path /Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/Cargo.toml --target-dir /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf18-453025hj/cargo-target
+stdout:
+
+stderr:
+     Removed 2788 files, 1.3GiB total

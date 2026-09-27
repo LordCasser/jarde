@@ -1,0 +1,5 @@
+exit=0
+command=/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf18-453025hj/cargo-target/debug/jarde-cli class-source --input /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf18-453025hj/original-classes/ExceptionRegionsAudit.class --class ExceptionRegionsAudit --policy single-class --release 8 --format json --evidence region_details --output /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf18-453025hj/class-source.json
+stdout:
+
+stderr:

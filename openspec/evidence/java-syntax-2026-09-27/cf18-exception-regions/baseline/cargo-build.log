@@ -1,0 +1,5 @@
+exit=0
+command=cargo build -q -p jarde-cli --bin jarde-cli
+stdout:
+
+stderr:

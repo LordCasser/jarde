@@ -1,0 +1,9 @@
+exit=1
+command=java -Xverify:all -cp /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf18-453025hj/jadx-classes ExceptionRegionsAudit
+stdout:
+
+stderr:
+Exception in thread "main" java.lang.IllegalStateException: two
+	at ExceptionRegionsAudit.work(Unknown Source)
+	at ExceptionRegionsAudit.run(Unknown Source)
+	at ExceptionRegionsAudit.main(Unknown Source)

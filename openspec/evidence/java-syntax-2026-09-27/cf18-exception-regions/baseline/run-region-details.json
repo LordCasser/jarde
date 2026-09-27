@@ -1,0 +1,100 @@
+{
+  "quality": "fallback",
+  "outcome": "produced",
+  "fallbacks": [
+    "jre_region_irreducible"
+  ],
+  "diagnostics": [
+    {
+      "code": "jre_region_irreducible",
+      "message": "the graph is not reducible over 8 block(s) [8, 13, 17, 28, 85, 58, 63, 66]: a loop is entered at more than its header or two loops cross, which no Java structure spells",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_recovery_produced",
+      "message": "1 region(s), 1 statement(s), 1 segment(s), 495 byte(s) written from 14 canonical block(s)",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_field_not_emitted",
+      "message": "the field access at BCI 1 passed field identity proof, but no matching Java field operation was emitted by the final body",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_field_not_emitted",
+      "message": "the field access at BCI 17 passed field identity proof, but no matching Java field operation was emitted by the final body",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_field_not_emitted",
+      "message": "the field access at BCI 22 passed field identity proof, but no matching Java field operation was emitted by the final body",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_field_not_emitted",
+      "message": "the field access at BCI 39 passed field identity proof, but no matching Java field operation was emitted by the final body",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_field_not_emitted",
+      "message": "the field access at BCI 45 passed field identity proof, but no matching Java field operation was emitted by the final body",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_field_not_emitted",
+      "message": "the field access at BCI 73 passed field identity proof, but no matching Java field operation was emitted by the final body",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_field_not_emitted",
+      "message": "the field access at BCI 79 passed field identity proof, but no matching Java field operation was emitted by the final body",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_field_accesses",
+      "message": "7 field instruction(s) read under field@1: 0 presented, 7 refused",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_declaration",
+      "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+      "provenance": null,
+      "severity": "info"
+    }
+  ],
+  "regions": [
+    {
+      "bci": 0,
+      "blocks": [
+        0,
+        8,
+        13,
+        91,
+        17,
+        28,
+        85,
+        72,
+        58,
+        38,
+        63,
+        66,
+        52,
+        55
+      ],
+      "code": "jre_region_irreducible",
+      "message": "the graph is not reducible over 8 block(s) [8, 13, 17, 28, 85, 58, 63, 66]: a loop is entered at more than its header or two loops cross, which no Java structure spells",
+      "rule": null,
+      "structured": false
+    }
+  ]
+}

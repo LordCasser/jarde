@@ -1,0 +1,6 @@
+exit=0
+command=java -Xverify:all -cp /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf18-453025hj/original-classes ExceptionRegionsAudit
+stdout:
+124:115
+
+stderr:

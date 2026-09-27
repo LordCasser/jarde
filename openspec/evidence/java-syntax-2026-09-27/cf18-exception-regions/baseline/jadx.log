@@ -1,0 +1,5 @@
+exit=0
+command=jadx -q -d /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf18-453025hj/jadx /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf18-453025hj/input.jar
+stdout:
+
+stderr:
