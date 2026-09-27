@@ -20135,7 +20135,7 @@ mod enum_constant_body_relation_tests {
         )
         .unwrap();
         let compile = Command::new("javac")
-            .args(["--release", "8", "-g", "-parameters", "-d"])
+            .args(["--release", "8", "-g:none", "-d"])
             .arg(&classes)
             .arg(&source)
             .output()
@@ -27503,60 +27503,106 @@ mod integer_constant_name_tests {
     }
 
     #[test]
-    fn duplicate_shadow_wrong_field_and_indirect_return_keep_numeric_text() {
+    fn direct_integer_return_names_independently_of_a_numeric_case_key() {
+        let bytes = compiled(
+            "ReturnOnly",
+            "class ReturnOnly { static final int HIGH=3294; static int f(int x){switch(x){case 1:return HIGH;default:return 0;}} }",
+        );
+        let report = source(&bytes, "ReturnOnly", &mut task_budget(&[]).unwrap());
+        assert!(report.text.contains("case 1:"));
+        assert!(report.text.contains("return HIGH;"));
+        assert!(!report.text.contains("case HIGH:"));
+        let [name] = report.integer_constant_projections.as_slice() else {
+            panic!("one direct return name expected");
+        };
+        assert_eq!(&report.text[name.start..name.end], "HIGH");
+        assert!(name.anchors.iter().any(|anchor| matches!(
+            anchor,
+            class_source::MemberFamilyPhysicalAnchor::Field { .. }
+        )));
+        assert!(name.anchors.iter().any(|anchor| matches!(
+            anchor,
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint { .. }
+        )));
+        let method = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"f")
+            .unwrap();
+        let class_source::ClassSourceOutcome::Recovered {
+            report: physical, ..
+        } = &method.outcome
+        else {
+            panic!()
+        };
+        assert!(physical.text.contains("case 1:"));
+        assert!(physical.text.contains("return 3294;"));
+    }
+
+    #[test]
+    fn case_and_return_candidates_are_independent_with_narrow_refusals() {
         let variants = [
             (
                 "Duplicate",
                 "static final int LOW=2748, OTHER=2748, HIGH=3294; static int f(int x){switch(x){case 2748:return HIGH;default:return 0;}}",
                 false,
+                true,
             ),
             (
                 "Shadow",
                 "static final int LOW=2748, HIGH=3294; static int f(int LOW){switch(LOW){case 2748:return HIGH;default:return 0;}}",
                 false,
+                true,
             ),
             (
                 "ShadowReturn",
                 "static final int LOW=2748, HIGH=3294; static int f(int HIGH,int x){switch(x){case LOW:return 3294;default:return 0;}}",
                 true,
+                false,
             ),
             (
                 "Mutable",
                 "static int LOW=2748; static final int HIGH=3294; static int f(int x){switch(x){case 2748:return HIGH;default:return 0;}}",
                 false,
+                true,
             ),
             (
                 "WideField",
                 "static final long LOW=2748L; static final int HIGH=3294; static int f(int x){switch(x){case 2748:return HIGH;default:return 0;}}",
                 false,
+                true,
             ),
             (
                 "ClinitValue",
                 "static final int LOW; static { LOW=2748; } static final int HIGH=3294; static int f(int x){switch(x){case 2748:return HIGH;default:return 0;}}",
                 false,
+                true,
             ),
             (
                 "Indirect",
                 "static final int LOW=2748, HIGH=3294; static int f(int x){switch(x){case LOW:return HIGH+1;default:return 0;}}",
                 true,
+                false,
             ),
             (
                 "NarrowReturn",
                 "static final int LOW=2748, HIGH=1; static short f(int x){switch(x){case LOW:return HIGH;default:return 0;}}",
                 true,
+                false,
             ),
             (
                 "Character",
                 "static final int LOW=65, HIGH=3294; static int f(char x){switch(x){case LOW:return HIGH;default:return 0;}}",
                 false,
+                false,
             ),
         ];
-        for (name, body, case_named) in variants {
+        for (name, body, case_named, return_named) in variants {
             let bytes = compiled(name, &format!("class {name} {{{body}}}"));
             let report = source(&bytes, name, &mut task_budget(&[]).unwrap());
             assert_eq!(report.text.contains("case LOW:"), case_named, "{name}");
-            assert!(!report.text.contains("return HIGH;"), "{name}");
-            if !case_named {
+            assert_eq!(report.text.contains("return HIGH;"), return_named, "{name}");
+            if !case_named && !return_named {
                 assert!(report.integer_constant_projections.is_empty(), "{name}");
             }
         }

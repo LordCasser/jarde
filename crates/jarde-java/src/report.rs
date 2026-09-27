@@ -724,25 +724,26 @@ pub fn project_class_source_integer_constants(
                                 }
                             }
                             arm.labels = Some(SwitchLabels::Integer(labels));
-                            if returns_int
-                                && let [direct] = arm.body.as_mut_slice()
-                                && let StmtKind::Return {
-                                    value: Some(returned),
-                                } = &mut direct.kind
-                                && returned.presented == Some(Type::Int)
-                                && let ExprKind::Integer(number) = returned.kind
-                                && let Some(name) = names.get(&number)
-                            {
-                                uses.push(IntegerConstantNameUse {
-                                    name: (*name).to_owned(),
-                                    bci: returned.origin.primary().bci(),
-                                    case_label: false,
-                                });
-                                returned.kind = ExprKind::IntegerConstantName {
-                                    name: (*name).to_owned(),
-                                    value: number,
-                                };
-                            }
+                        }
+                        if returns_int
+                            && !arm.keys.is_empty()
+                            && let [direct] = arm.body.as_mut_slice()
+                            && let StmtKind::Return {
+                                value: Some(returned),
+                            } = &mut direct.kind
+                            && returned.presented == Some(Type::Int)
+                            && let ExprKind::Integer(number) = returned.kind
+                            && let Some(name) = names.get(&number)
+                        {
+                            uses.push(IntegerConstantNameUse {
+                                name: (*name).to_owned(),
+                                bci: returned.origin.primary().bci(),
+                                case_label: false,
+                            });
+                            returned.kind = ExprKind::IntegerConstantName {
+                                name: (*name).to_owned(),
+                                value: number,
+                            };
                         }
                         pending.extend(&mut arm.body);
                     }
