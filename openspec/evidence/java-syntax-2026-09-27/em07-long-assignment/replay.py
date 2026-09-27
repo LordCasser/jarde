@@ -76,6 +76,10 @@ def main():
                         "em07.Assignment"], out / "javap-Assignment.txt")
         if bytecode.returncode or "dup2_x1" not in bytecode.stdout:
             raise RuntimeError("Java 8 compiler did not produce dup2_x1")
+        original_class = temp / "original-classes" / "em07" / "Assignment.class"
+        class_snapshot = out / "source" / "Assignment.class"
+        class_snapshot.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(original_class, class_snapshot)
         jar = temp / "input.jar"
         if run(["jar", "cf", jar, "-C", temp / "original-classes", "."], out / "jar.log").returncode:
             raise RuntimeError("input jar failed")
@@ -83,7 +87,9 @@ def main():
         if run([args.jadx, "-d", jadx_root, jar], out / "jadx.log").returncode:
             raise RuntimeError("JADX failed")
         source_dir = out / "source"
-        source_dir.mkdir()
+        source_dir.mkdir(exist_ok=True)
+        for source in sorted(INPUT.glob("*.java")):
+            shutil.copy2(source, source_dir / source.name)
         jadx_source = source_dir / "jadx-Assignment.java"
         shutil.copy2(jadx_root / "sources/em07/Assignment.java", jadx_source)
         if "this.value = j;" not in jadx_source.read_text() or "return j;" not in jadx_source.read_text():
@@ -120,6 +126,7 @@ def main():
         "jadx_test_sha256": JADX_TEST_HASH,
         "jarde_cli_sha256": digest(args.jarde.resolve()),
         "input_sha256": {p.name: digest(p) for p in sorted(INPUT.glob("*.java"))},
+        "original_class_sha256": digest(out / "source" / "Assignment.class"),
         "original": original, "jadx": jadx, "jarde": jarde,
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
