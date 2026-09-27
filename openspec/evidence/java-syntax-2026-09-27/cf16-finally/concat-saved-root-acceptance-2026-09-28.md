@@ -6,4 +6,4 @@
 
 root 从该提交新建 `/private/tmp/jarde-cf16-concat-root-target` 构建 CLI，运行 `bash tests/fixtures/p3-concat-saved-finally/replay.sh /private/tmp/jarde-cf16-concat-root-target/debug/jarde-cli /private/tmp/jarde-cf16-concat-root-replay`。同布局完整类的原 class/Jarde Java 8 重编与 `java -Xverify:all` 均为 `normal:1`、`caught:arg:1`；固定 JADX 为 `normal:2`、`caught:arg:1`，其正常分支多执行一次清理。受控 `getMessage()` 抛错的原 class/Jarde 都输出 `true:java.lang.IllegalStateException:message:1`，其中 `true` 是同一异常对象身份。三个 verifier 有效错误近邻均拒绝 finally 投影。root 的 `cargo test -p jarde-java --test p3_shared_join_finally --locked` 为 14/14；OpenSpec strict、diff check 通过。实施代理另完成 jarde-java 全测试、workspace check 和格式检查。
 
-固定原始完整类的 `main()` 仍有独立引用恢复缺口；本次只验收 `handled` 的同布局最小完整类，CF-16 其余 Test14 条件清理等形态继续单列。
+固定原始完整类的 `main()` 仍有[独立恢复缺口](full-original-main-debt.md)；本次只验收 `handled` 的同布局最小完整类，CF-16 其余 Test14 条件清理等形态继续单列。
