@@ -1,0 +1,6 @@
+target_test_method_bci_opcode_rows_match=true
+target_normal_original_equals_pinned_jadx=true
+target_jarde_source_status=explanation_only_no_test_body
+target_control=separate_helper_seam_probe
+control_original_equals_pinned_jadx=true
+control_jarde_equals_original=false

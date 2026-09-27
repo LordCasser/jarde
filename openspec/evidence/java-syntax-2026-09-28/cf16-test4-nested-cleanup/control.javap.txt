@@ -1,0 +1,135 @@
+Classfile /tmp/cf16-test4-classes/original/jadx/tests/integration/trycatch/Control.class
+  Last modified 2026年9月28日; size 840 bytes
+  SHA-256 checksum ed5c36a62052e609c24a76466208b8415f417363edbb027632dfdc84b0e89c42
+  Compiled from "Control.java"
+public class jadx.tests.integration.trycatch.Control
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #24                         // jadx/tests/integration/trycatch/Control
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // java/io/OutputStream.write:(I)V
+   #8 = Class              #10            // java/io/OutputStream
+   #9 = NameAndType        #11:#12        // write:(I)V
+  #10 = Utf8               java/io/OutputStream
+  #11 = Utf8               write
+  #12 = Utf8               (I)V
+  #13 = Methodref          #8.#14         // java/io/OutputStream.close:()V
+  #14 = NameAndType        #15:#6         // close:()V
+  #15 = Utf8               close
+  #16 = Methodref          #17.#18        // java/io/File.delete:()Z
+  #17 = Class              #19            // java/io/File
+  #18 = NameAndType        #20:#21        // delete:()Z
+  #19 = Utf8               java/io/File
+  #20 = Utf8               delete
+  #21 = Utf8               ()Z
+  #22 = Class              #23            // java/io/IOException
+  #23 = Utf8               java/io/IOException
+  #24 = Class              #25            // jadx/tests/integration/trycatch/Control
+  #25 = Utf8               jadx/tests/integration/trycatch/Control
+  #26 = Utf8               Code
+  #27 = Utf8               LineNumberTable
+  #28 = Utf8               LocalVariableTable
+  #29 = Utf8               this
+  #30 = Utf8               Ljadx/tests/integration/trycatch/Control;
+  #31 = Utf8               run
+  #32 = Utf8               (Ljava/io/OutputStream;Ljava/io/File;)V
+  #33 = Utf8               outputStream
+  #34 = Utf8               Ljava/io/OutputStream;
+  #35 = Utf8               file
+  #36 = Utf8               Ljava/io/File;
+  #37 = Utf8               StackMapTable
+  #38 = Class              #39            // java/lang/Throwable
+  #39 = Utf8               java/lang/Throwable
+  #40 = Utf8               Exceptions
+  #41 = Utf8               SourceFile
+  #42 = Utf8               Control.java
+{
+  public jadx.tests.integration.trycatch.Control();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 7: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/trycatch/Control;
+
+  public static void run(java.io.OutputStream, java.io.File) throws java.io.IOException;
+    descriptor: (Ljava/io/OutputStream;Ljava/io/File;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=5, args_size=2
+         0: aload_0
+         1: iconst_1
+         2: invokevirtual #7                  // Method java/io/OutputStream.write:(I)V
+         5: aload_0
+         6: invokevirtual #13                 // Method java/io/OutputStream.close:()V
+         9: aload_1
+        10: invokevirtual #16                 // Method java/io/File.delete:()Z
+        13: pop
+        14: goto          38
+        17: astore_2
+        18: goto          38
+        21: astore_3
+        22: aload_0
+        23: invokevirtual #13                 // Method java/io/OutputStream.close:()V
+        26: aload_1
+        27: invokevirtual #16                 // Method java/io/File.delete:()Z
+        30: pop
+        31: goto          36
+        34: astore        4
+        36: aload_3
+        37: athrow
+        38: return
+      Exception table:
+         from    to  target type
+             5    14    17   Class java/io/IOException
+             0     5    21   any
+            22    31    34   Class java/io/IOException
+      LineNumberTable:
+        line 10: 0
+        line 13: 5
+        line 14: 9
+        line 16: 14
+        line 15: 17
+        line 17: 18
+        line 12: 21
+        line 13: 22
+        line 14: 26
+        line 16: 31
+        line 15: 34
+        line 17: 36
+        line 18: 38
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      39     0 outputStream   Ljava/io/OutputStream;
+            0      39     1  file   Ljava/io/File;
+      StackMapTable: number_of_entries = 5
+        frame_type = 81 /* same_locals_1_stack_item */
+          stack = [ class java/io/IOException ]
+        frame_type = 67 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 12
+          locals = [ class java/io/OutputStream, class java/io/File, top, class java/lang/Throwable ]
+          stack = [ class java/io/IOException ]
+        frame_type = 1 /* same */
+        frame_type = 249 /* chop */
+          offset_delta = 1
+    Exceptions:
+      throws java.io.IOException
+}
+SourceFile: "Control.java"

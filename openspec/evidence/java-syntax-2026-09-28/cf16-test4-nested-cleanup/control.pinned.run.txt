@@ -1,0 +1,4 @@
+normal|[write:1, close, delete]|none
+body-io|[write:1, close, delete]|IOException:body
+cleanup-io|[write:1, close]|none
+cleanup-runtime|[write:1, close]|IllegalStateException:cleanup

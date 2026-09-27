@@ -1,0 +1,169 @@
+Classfile /Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde/openspec/evidence/java-syntax-2026-09-28/cf16-test4-nested-cleanup/classes/jadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls.class
+  Last modified 2026年9月28日; size 1189 bytes
+  SHA-256 checksum 2bf1b8932e521aade29fa1d562269903f9b8e9942f86981eb458d4f552d67060
+  Compiled from "TestTryCatchFinally4.java"
+public class jadx.tests.integration.trycatch.TestTryCatchFinally4$TestCls
+  minor version: 0
+  major version: 55
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #37                         // jadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 3
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = String             #8             // test
+   #8 = Utf8               test
+   #9 = String             #10            // txt
+  #10 = Utf8               txt
+  #11 = Methodref          #12.#13        // java/io/File.createTempFile:(Ljava/lang/String;Ljava/lang/String;)Ljava/io/File;
+  #12 = Class              #14            // java/io/File
+  #13 = NameAndType        #15:#16        // createTempFile:(Ljava/lang/String;Ljava/lang/String;)Ljava/io/File;
+  #14 = Utf8               java/io/File
+  #15 = Utf8               createTempFile
+  #16 = Utf8               (Ljava/lang/String;Ljava/lang/String;)Ljava/io/File;
+  #17 = Class              #18            // java/io/FileOutputStream
+  #18 = Utf8               java/io/FileOutputStream
+  #19 = Methodref          #17.#20        // java/io/FileOutputStream."<init>":(Ljava/io/File;)V
+  #20 = NameAndType        #5:#21         // "<init>":(Ljava/io/File;)V
+  #21 = Utf8               (Ljava/io/File;)V
+  #22 = Methodref          #23.#24        // java/io/OutputStream.write:(I)V
+  #23 = Class              #25            // java/io/OutputStream
+  #24 = NameAndType        #26:#27        // write:(I)V
+  #25 = Utf8               java/io/OutputStream
+  #26 = Utf8               write
+  #27 = Utf8               (I)V
+  #28 = Methodref          #23.#29        // java/io/OutputStream.close:()V
+  #29 = NameAndType        #30:#6         // close:()V
+  #30 = Utf8               close
+  #31 = Methodref          #12.#32        // java/io/File.delete:()Z
+  #32 = NameAndType        #33:#34        // delete:()Z
+  #33 = Utf8               delete
+  #34 = Utf8               ()Z
+  #35 = Class              #36            // java/io/IOException
+  #36 = Utf8               java/io/IOException
+  #37 = Class              #38            // jadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls
+  #38 = Utf8               jadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls
+  #39 = Utf8               Code
+  #40 = Utf8               LineNumberTable
+  #41 = Utf8               LocalVariableTable
+  #42 = Utf8               this
+  #43 = Utf8               Ljadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls;
+  #44 = Utf8               file
+  #45 = Utf8               Ljava/io/File;
+  #46 = Utf8               outputStream
+  #47 = Utf8               Ljava/io/OutputStream;
+  #48 = Utf8               StackMapTable
+  #49 = Class              #50            // java/lang/Throwable
+  #50 = Utf8               java/lang/Throwable
+  #51 = Utf8               Exceptions
+  #52 = Utf8               SourceFile
+  #53 = Utf8               TestTryCatchFinally4.java
+  #54 = Utf8               NestHost
+  #55 = Class              #56            // jadx/tests/integration/trycatch/TestTryCatchFinally4
+  #56 = Utf8               jadx/tests/integration/trycatch/TestTryCatchFinally4
+  #57 = Utf8               InnerClasses
+  #58 = Utf8               TestCls
+{
+  public jadx.tests.integration.trycatch.TestTryCatchFinally4$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 15: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls;
+
+  public void test() throws java.io.IOException;
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=6, args_size=1
+         0: ldc           #7                  // String test
+         2: ldc           #9                  // String txt
+         4: invokestatic  #11                 // Method java/io/File.createTempFile:(Ljava/lang/String;Ljava/lang/String;)Ljava/io/File;
+         7: astore_1
+         8: new           #17                 // class java/io/FileOutputStream
+        11: dup
+        12: aload_1
+        13: invokespecial #19                 // Method java/io/FileOutputStream."<init>":(Ljava/io/File;)V
+        16: astore_2
+        17: aload_2
+        18: iconst_1
+        19: invokevirtual #22                 // Method java/io/OutputStream.write:(I)V
+        22: aload_2
+        23: invokevirtual #28                 // Method java/io/OutputStream.close:()V
+        26: aload_1
+        27: invokevirtual #31                 // Method java/io/File.delete:()Z
+        30: pop
+        31: goto          57
+        34: astore_3
+        35: goto          57
+        38: astore        4
+        40: aload_2
+        41: invokevirtual #28                 // Method java/io/OutputStream.close:()V
+        44: aload_1
+        45: invokevirtual #31                 // Method java/io/File.delete:()Z
+        48: pop
+        49: goto          54
+        52: astore        5
+        54: aload         4
+        56: athrow
+        57: return
+      Exception table:
+         from    to  target type
+            22    31    34   Class java/io/IOException
+            17    22    38   any
+            40    49    52   Class java/io/IOException
+            38    40    38   any
+      LineNumberTable:
+        line 17: 0
+        line 18: 8
+        line 20: 17
+        line 23: 22
+        line 24: 26
+        line 26: 31
+        line 25: 34
+        line 27: 35
+        line 22: 38
+        line 23: 40
+        line 24: 44
+        line 26: 49
+        line 25: 52
+        line 27: 54
+        line 28: 57
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      58     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls;
+            8      50     1  file   Ljava/io/File;
+           17      41     2 outputStream   Ljava/io/OutputStream;
+      StackMapTable: number_of_entries = 5
+        frame_type = 255 /* full_frame */
+          offset_delta = 34
+          locals = [ class jadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls, class java/io/File, class java/io/OutputStream ]
+          stack = [ class java/io/IOException ]
+        frame_type = 67 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 13
+          locals = [ class jadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls, class java/io/File, class java/io/OutputStream, top, class java/lang/Throwable ]
+          stack = [ class java/io/IOException ]
+        frame_type = 1 /* same */
+        frame_type = 249 /* chop */
+          offset_delta = 2
+    Exceptions:
+      throws java.io.IOException
+}
+SourceFile: "TestTryCatchFinally4.java"
+NestHost: class jadx/tests/integration/trycatch/TestTryCatchFinally4
+InnerClasses:
+  public static #58= #37 of #55;          // TestCls=class jadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls of class jadx/tests/integration/trycatch/TestTryCatchFinally4

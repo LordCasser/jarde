@@ -1,0 +1,2 @@
+test() BCI/opcode equal: true
+test() exception rows equal: true
