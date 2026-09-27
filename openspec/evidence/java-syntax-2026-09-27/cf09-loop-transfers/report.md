@@ -33,3 +33,5 @@ python3 openspec/evidence/java-syntax-2026-09-27/cf09-loop-transfers/replay.py \
 ```
 
 本次重放使用 Jarde CLI SHA-256 `32bf54586fe54655f3d21e1f94c71548aa280b9b442e3918db36b67cd1d41b3a`。Java 8 参数的过时提示来自当前 JDK；所有编译和运行退出码仍为 0。
+
+root 在含 CF-07 的主线重新构建 CLI（SHA-256 `c738c75b0834390de9e8bab46bfc1d7376f0ce90bd9319a0e6804708b3dbb976`），独立重放到 `/tmp/jarde-cf09-root-acceptance`。两组原/JADX/Jarde 完整类仍各自 Java 8 重编、验证运行且五行逐字相同；`p3_loop_transfers` 5/5 通过。故此处只验收 CF-09 标签目标首片，不把未测组合算作整个单元追平。

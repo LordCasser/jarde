@@ -19,6 +19,12 @@ Jarde 在完整类恢复中将 `test(File[])` 标为 `@bytecode`，并报告 `lo
 
 这个差距落在 CF-08 可终止的 `while (true)` 加显式 `break` 正例上。它与 CF-07 已记录的循环出口所有权/局部变量范围问题相邻，但物理形态是两个循环内 break 赋值汇合到循环后清理，而不是循环体内唯一分支到达的终止 `return` 叶。这里仅记录实测证据；是否复用或扩展现有 `own-proved-loop-terminal-return` 工作项，应在该工作项中判断，不另起实现机制。
 
+## 缩小后的双出口反例
+
+为了把上述复杂样例的外层空值分支、`File` 调用与局部汇合分开，本目录另固定 `input/simple/cf08/EndlessInts.java`：整数 `i` 的 `while (true)` 中，`i >= limit` 与 `i == 3` 分别 `break` 到同一个返回块。`replay-simple.py` 使用同一 JADX 提交与源码哈希固定条件，记录在 `simple-baseline/`。原 class 与 JADX 完整源码以 Java 8 重编、`-Xverify:all` 运行，六行同为 `0,1,2,3,3,3`。JADX 将其等价写为 `while (i2 < i && i2 != 3)`。
+
+Jarde 的 Region 证据先把 BCI 2/10/18 认作循环，随后把第二个出口的 BCI 15 `goto 24` 列为未覆盖块；输出的 `if (local1 == 3) {}` 没有 `break`，尾部附带 `@bytecode 15`。这份带引用标记的类**恰好仍能通过 javac**，但在 `limit=4` 的运行中没有按原 class 于 3 停止，五秒内不退出。故“能重编”不能越过 `@bytecode` 和执行对照来宣称正确。这个最小反例表明 CF-08 至少有一条独立的循环出口所有权缺口；复杂 `NotIndexedLoop` 的方法级 `jre_region_arms_do_not_meet` 与跨引用局部范围是相邻的另一个形态，后续任务不得把它们一起用放宽局部检查解决。
+
 重放命令：
 
 ```sh

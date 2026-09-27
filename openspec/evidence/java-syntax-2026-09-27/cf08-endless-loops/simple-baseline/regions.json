@@ -1,0 +1,78 @@
+{
+  "representation": "mixed",
+  "quality": "fallback",
+  "regions": [
+    {
+      "bci": 0,
+      "blocks": [
+        0
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "straight",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 2,
+      "blocks": [
+        2,
+        10,
+        18
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "loop",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 7,
+      "blocks": [
+        7,
+        24
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "straight",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 15,
+      "blocks": [
+        15
+      ],
+      "code": "jre_region_uncovered_blocks",
+      "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [15]",
+      "rule": null,
+      "structured": false
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "jre_region_uncovered_blocks",
+      "message": "1 live block(s) are reachable only through edges the normal-flow view leaves out: [15]",
+      "provenance": null,
+      "severity": "warning"
+    },
+    {
+      "code": "jre_recovery_produced",
+      "message": "4 region(s), 7 statement(s), 18 segment(s), 452 byte(s) written from 7 canonical block(s)",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_declaration",
+      "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+      "provenance": null,
+      "severity": "info"
+    }
+  ]
+}
