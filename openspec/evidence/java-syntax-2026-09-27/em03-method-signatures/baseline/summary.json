@@ -1,0 +1,33 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_test_sha256": {
+    "others/TestMethodParametersAttribute.java": "7d76c5f1f59850dd24d38c600c8c2c3e5ca050eebacf1c53ae0e35b8d065b7ed",
+    "others/TestThrows.java": "f6349d4ef0217ab3003b5c18510030ad8f12b66e66e6a40fc43adf6fcdd7ee5f",
+    "others/TestMissingExceptions.java": "3938383630e374f4a2db3b28413d5a7d965e7b2b809c883b6fdbec3abbcd83cc",
+    "others/TestInvalidExceptions.java": "c7336423737a003022b8fbfe71d05b10023e23332cd6e2f687bd66dfc9d30637",
+    "others/TestIncorrectMethodSignature.java": "65b3d33fa903a77e18bfe0dd004e16b478cb9dbdb6ece7d151a1a7bdc6ddef7e"
+  },
+  "jarde_cli_sha256": "8f1f0012324350e4fc65c7fef4b3e3835102e6d4fda00df280b466270c98e727",
+  "input_sha256": {
+    "Runner.java": "2dcd4988359752b72530a9d76f4f3ba53af99a9961a1d9ce75e7a4d4000edddc",
+    "Signatures.java": "689e5baf6ef78ea676da3736982c3076a917b2bcfa52f5ce3160163ca72c0c8d"
+  },
+  "original": {
+    "javac_exit": 0,
+    "source_sha256": "689e5baf6ef78ea676da3736982c3076a917b2bcfa52f5ce3160163ca72c0c8d",
+    "runtime_exit": 0,
+    "stdout": "ok\n9\nnegative\nparamStr:false:number:true\n[class java.io.IOException]\n[class java.io.IOException]"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "source_sha256": "a7d862a5374aade71b7231926af005a089ab413e18c9e45dda79cc5b7d620e22",
+    "runtime_exit": 0,
+    "stdout": "ok\n9\nnegative\nparamStr:false:number:true\n[class java.io.IOException]\n[class java.io.IOException]"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "source_sha256": "2d2affe28267523f8cd7f8533c9766d7ad194af1c477ffd3b52fd716bbc0a767",
+    "runtime_exit": 0,
+    "stdout": "ok\n9\nnegative\narg1:false:arg2:false\n[class java.io.IOException]\n[class java.io.IOException]"
+  }
+}
