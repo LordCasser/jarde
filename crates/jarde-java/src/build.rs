@@ -16393,7 +16393,7 @@ impl Builder<'_> {
         };
         let operands = stack_operands(instruction);
         let member = site.member_inner.as_ref();
-        let qualifier = if let Some(member) = member {
+        let qualifier = if let Some(member) = member.filter(|member| !member.implicit_this) {
             let Some(qualifier_read) = self.instructions.get(&member.qualifier).copied() else {
                 return Err(format!(
                     "no names record exists for the proven member qualifier read at BCI {}",
@@ -16463,15 +16463,24 @@ impl Builder<'_> {
                 OriginSet::new(Origin::direct(site.constructor)),
                 |set, bci| set.plus_derived(Origin::derived(*bci)),
             );
-        Ok(Expr::new(
-            ExprKind::New {
-                ty: self.source_type_path_name(&site.class)
-                    .or_else(|| spell_reference(&site.class)).ok_or_else(|| {
+        let source_type = if member.is_some_and(|member| member.implicit_this) {
+            member
+                .expect("checked implicit member site")
+                .simple_name
+                .clone()
+        } else {
+            self.source_type_path_name(&site.class)
+                .or_else(|| spell_reference(&site.class))
+                .ok_or_else(|| {
                     format!(
                         "the construction at BCI {} names the class `{}`, which this layer cannot spell as a Java type",
                         site.constructor, site.class
                     )
-                })?,
+                })?
+        };
+        Ok(Expr::new(
+            ExprKind::New {
+                ty: source_type,
                 qualifier,
                 member_name: member.map(|member| member.simple_name.clone()),
                 diamond: member.is_some_and(|member| member.generic_diamond)

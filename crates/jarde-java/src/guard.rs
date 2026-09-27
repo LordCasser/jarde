@@ -2312,7 +2312,16 @@ mod finally_copy_tests {
             (BTreeSet::from([10]), [Some(((0, 10), 0)), None]),
         ] {
             let fields = crate::field::Plan::empty();
-            let sites = crate::init::sites(ssa, &ops, &chains, &reserved, &fields, &[], code);
+            let sites = crate::init::sites(
+                ssa,
+                &ops,
+                &chains,
+                &reserved,
+                &fields,
+                &[],
+                &crate::facts::MethodFacts::new("run", "()V", 0),
+                code,
+            );
             for (index, (store, floor, end)) in [(9, 0, 10), (19, 10, 20)].into_iter().enumerate() {
                 let mut case_budget = Budget::new(limits());
                 let facts =
@@ -2355,6 +2364,7 @@ mod finally_copy_tests {
             &BTreeSet::new(),
             &crate::field::Plan::empty(),
             &[],
+            &crate::facts::MethodFacts::new("run", "()V", 0),
             code,
         );
         let mut case_budget = Budget::new(limits());

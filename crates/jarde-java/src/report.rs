@@ -2544,6 +2544,7 @@ fn recover_inner(
         chains.owned(),
         &fields,
         request.member_inner_targets,
+        request.facts.method(),
         code,
     );
     let mut recovered: Recovered = match crate::region::recover(
