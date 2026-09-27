@@ -1,0 +1,8 @@
+exit=1
+stdout:
+
+stderr:
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-27/em12-super-dispatch/baseline/binding/source/jarde/em12/Case.java:41: 错误: 缺少返回语句
+    }
+    ^
+1 个错误

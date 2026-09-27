@@ -1,0 +1,5 @@
+exit=0
+stdout_sha256=dbc8c7b4e9ad5ce88d78bead6b798b831a7dc4045e5e6cb5fa1c4c2510254de6
+stderr_sha256=58517874b2157c177369886ff6a815380cadbfb1ee468db86947312fc9296a27
+member_family.projection.reason = "Outer.super source binding refused: source hierarchy contains a competing same-name method"
+member_family.projection.state = "refused"

@@ -1,0 +1,109 @@
+exit=0
+stdout:
+Compiled from "Case.java"
+public class em12.Case extends em12.Parent {
+  public em12.Case();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method em12/Parent."<init>":()V
+       4: return
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    Code:
+       0: new           #11                 // class em12/Case
+       3: dup
+       4: invokespecial #13                 // Method "<init>":()V
+       7: astore_1
+       8: getstatic     #14                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      11: astore_2
+      12: aload_1
+      13: invokestatic  #20                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      16: pop
+      17: aload_2
+      18: new           #26                 // class em12/Case$Member
+      21: dup
+      22: aload_1
+      23: dup
+      24: invokestatic  #20                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      27: pop
+      28: invokespecial #28                 // Method em12/Case$Member."<init>":(Lem12/Case;)V
+      31: aconst_null
+      32: invokevirtual #31                 // Method em12/Case$Member.call:(Lem12/Arg;)Ljava/lang/String;
+      35: invokevirtual #34                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      38: return
+
+  static java.lang.String access$001(em12.Case, em12.Arg);
+    descriptor: (Lem12/Case;Lem12/Arg;)Ljava/lang/String;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #1                  // Method em12/Parent.pick:(Lem12/Arg;)Ljava/lang/String;
+       5: areturn
+}
+Compiled from "Case.java"
+class em12.Case$Member {
+  final em12.Case this$0;
+    descriptor: Lem12/Case;
+
+  em12.Case$Member(em12.Case);
+    descriptor: (Lem12/Case;)V
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #1                  // Field this$0:Lem12/Case;
+       5: aload_0
+       6: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       9: return
+
+  java.lang.String call(em12.Arg);
+    descriptor: (Lem12/Arg;)Ljava/lang/String;
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field this$0:Lem12/Case;
+       4: aload_1
+       5: invokestatic  #13                 // Method em12/Case.access$001:(Lem12/Case;Lem12/Arg;)Ljava/lang/String;
+       8: areturn
+}
+Compiled from "Parent.java"
+class em12.Parent {
+  em12.Parent();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  java.lang.String pick(em12.Arg);
+    descriptor: (Lem12/Arg;)Ljava/lang/String;
+    Code:
+       0: ldc           #7                  // String number
+       2: areturn
+
+  java.lang.String pick(em12.NarrowArg);
+    descriptor: (Lem12/NarrowArg;)Ljava/lang/String;
+    Code:
+       0: ldc           #9                  // String integer
+       2: areturn
+}
+Compiled from "Arg.java"
+class em12.Arg {
+  em12.Arg();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+}
+Compiled from "NarrowArg.java"
+class em12.NarrowArg extends em12.Arg {
+  em12.NarrowArg();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method em12/Arg."<init>":()V
+       4: return
+}
+
+stderr:
