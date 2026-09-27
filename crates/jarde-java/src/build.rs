@@ -10313,6 +10313,24 @@ impl Builder<'_> {
         if first_join != second_branch {
             return Ok(false);
         }
+        // A one-argument append at the first join consumes the earlier Phi before the next
+        // condition begins. It is a complete operand of the builder chain, not the first of two
+        // arguments carried together to the later invocation.
+        if self.ssa.phis().iter().any(|phi| {
+            let uses = self.ssa.value(phi.value()).uses();
+            phi.block() == first_join
+                && uses.len() == 1
+                && uses[0].bci().is_some_and(|bci| {
+                    bci < *second_bci
+                        && matches!(self.operations.get(bci), Some(Operation::Invoke(target))
+                            if target.name() == "append"
+                                && target.descriptor() == "(Ljava/lang/String;)Ljava/lang/StringBuilder;")
+                        && self.instructions.get(&bci).is_some_and(|instruction|
+                            stack_operands(instruction).last().is_some_and(|(_, value)| *value == phi.value()))
+                })
+        }) {
+            return Ok(false);
+        }
         let ConditionalValueAttempt::Proved(second_proof) = prove_conditional_value(
             second,
             self.canonical,

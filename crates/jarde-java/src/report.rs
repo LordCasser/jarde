@@ -3886,7 +3886,10 @@ fn recover_inner(
         Ok(fields) => fields,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
-    let chains = concat::plan(ssa, &operations);
+    let chains = match concat::plan_four_conditional_strings(ssa, canonical, &operations, budget) {
+        Ok(chains) => chains,
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+    };
     let array_initializers =
         match build::ArrayInitializers::prove(ssa, &operations, &fields, budget) {
             Ok(arrays) => arrays,

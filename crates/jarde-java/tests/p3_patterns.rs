@@ -58,6 +58,12 @@ const EM21_ALIAS_REFUSALS: &[u8] =
 const NARROW_EXCEPTION: &[u8] = include_bytes!(
     "../../../tests/fixtures/p3-conditional-values/narrow-exception/NarrowException.class"
 );
+const BRANCHED_BITS: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-dt29-branched/v8/BranchedBits.class");
+const BRANCHED_BITS_ALTERNATE: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-dt29-branched/v8/BranchedBitsAlternate.class");
+const BRANCHED_BITS_NEGATIVES: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-dt29-branched/v8/BranchedBitsNegatives.class");
 
 fn limits() -> Limits {
     Limits {
@@ -6045,4 +6051,138 @@ fn byte_conditional_invocation_budget_and_cancellation_publish_no_partial_proof(
     ));
     assert!(cancelled.text.is_empty());
     assert!(cancelled.source_map.is_empty());
+}
+
+#[test]
+fn four_branched_string_values_have_one_builder_and_four_physical_appends() {
+    let report = present(
+        BRANCHED_BITS,
+        b"bits",
+        b"(Ldt29p3/BranchedBits$A;)Ljava/lang/String;",
+        1,
+        Vec::new(),
+    );
+    assert!(report.produced(), "{:?}", report.stop());
+    assert_eq!(report.quality, Quality::Structured, "{}", report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(report.text.matches(" ? \"1\" : \"0\"").count(), 4);
+    let chain = report
+        .concats
+        .iter()
+        .find(|chain| chain.presented())
+        .unwrap();
+    assert_eq!(chain.head, 0);
+    assert_eq!(chain.tail, Some(75));
+    assert_eq!(
+        chain
+            .appends
+            .iter()
+            .map(|append| append.bci)
+            .collect::<Vec<_>>(),
+        [21, 38, 55, 72]
+    );
+    for bci in [0, 3, 4, 8, 21, 25, 38, 42, 55, 59, 72, 75, 78] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci}: {}",
+            report.text
+        );
+    }
+}
+
+#[test]
+fn four_branch_certificate_reads_field_symbols_and_string_literals_from_bytes() {
+    let report = present(
+        BRANCHED_BITS_ALTERNATE,
+        b"bits",
+        b"(Ldt29p3/BranchedBitsAlternate$A;)Ljava/lang/String;",
+        1,
+        Vec::new(),
+    );
+    assert_eq!(report.quality, Quality::Structured, "{}", report.text);
+    assert!(
+        report.text.contains("arg0.alpha ? \"Y\" : \"N\""),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("arg0.gamma ? \"Y\" : \"N\""),
+        "{}",
+        report.text
+    );
+    assert!(report.text.contains("readDelta(arg0)"), "{}", report.text);
+    assert_eq!(
+        report
+            .concats
+            .iter()
+            .filter(|chain| chain.presented())
+            .count(),
+        1
+    );
+}
+
+#[test]
+fn four_branch_certificate_refuses_alias_phi_effect_handler_overload_and_missing_getter() {
+    for name in [
+        b"alias".as_slice(),
+        b"reused",
+        b"exchanged",
+        b"effect",
+        b"handler",
+        b"overload",
+        b"missing",
+    ] {
+        let report = present(
+            BRANCHED_BITS_NEGATIVES,
+            name,
+            b"(Ldt29p3/BranchedBitsNegatives$A;)Ljava/lang/String;",
+            1,
+            Vec::new(),
+        );
+        assert!(report.produced(), "{name:?}: {:?}", report.stop());
+        assert!(
+            report.concats.iter().all(|chain| !chain.presented()),
+            "{name:?}: {}",
+            report.text
+        );
+        assert!(
+            report.concats.iter().any(|chain| chain.refusal.is_some()),
+            "{name:?}: no physical concat refusal"
+        );
+        assert!(
+            report.text.contains("@bytecode"),
+            "{name:?}: {}",
+            report.text
+        );
+    }
+}
+
+#[test]
+fn four_branch_certificate_stops_without_partial_text() {
+    let payload = analyze(
+        BRANCHED_BITS,
+        b"bits",
+        b"(Ldt29p3/BranchedBits$A;)Ljava/lang/String;",
+    );
+    let facts = facts_of(BRANCHED_BITS, b"bits", 1, Vec::new());
+    let members = members_of(BRANCHED_BITS);
+    let mut limited_budget = Budget::new(Limits {
+        ir_items: 1,
+        ..limits()
+    });
+    let limited = recover_body(&payload, &facts, Some(&members), &mut limited_budget);
+    assert!(!limited.produced());
+    assert!(matches!(limited.stop(), Some(StopReason::Budget { .. })));
+    assert!(limited.text.is_empty());
+
+    let token = jarde_reader::budget::CancellationToken::new();
+    token.cancel();
+    let mut cancelled_budget = Budget::with_cancellation_token(limits(), token);
+    let cancelled = recover_body(&payload, &facts, Some(&members), &mut cancelled_budget);
+    assert!(!cancelled.produced());
+    assert!(matches!(
+        cancelled.stop(),
+        Some(StopReason::Cancelled { .. })
+    ));
+    assert!(cancelled.text.is_empty());
 }
