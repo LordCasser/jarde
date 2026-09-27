@@ -1950,6 +1950,16 @@ pub(crate) fn project_method_signature(
                 "same-run AST/SSA direct parameter return and method-local Signature scope/erasure proof",
             )
         } else if parsed.type_parameters.is_empty() {
+            let empty_void_wildcard_parameter = ordinary_empty_void_wildcard_parameter_is_proved(
+                record,
+                attributes,
+                &parsed,
+                candidate,
+                class_flags,
+                class_internal,
+                class_superclass,
+                class_interfaces,
+            );
             let declaration = ordinary_parameterized_declaration(
                 record,
                 attributes,
@@ -1966,6 +1976,8 @@ pub(crate) fn project_method_signature(
                 declaration,
                 if body_generic_throws {
                     "same-run AST/Code/SSA empty-void proof"
+                } else if empty_void_wildcard_parameter {
+                    "same-run AST/Code/SSA unused-parameter proof"
                 } else {
                     "same-run AST/SSA parameter-return proof"
                 },
@@ -2911,6 +2923,16 @@ fn ordinary_parameterized_declaration(
 ) -> Result<String> {
     let refused = |why| Error::unsupported("ordinary_generic_source_unproved", why);
     let item = &record.item;
+    let empty_void_wildcard_parameter = ordinary_empty_void_wildcard_parameter_is_proved(
+        record,
+        attributes,
+        parsed,
+        candidate,
+        class_flags,
+        class_internal,
+        class_superclass,
+        class_interfaces,
+    );
     if record.declaration.is_none()
         || matches!(item.name.raw().0.as_slice(), b"<init>" | b"<clinit>")
         || item.access_flags
@@ -3083,6 +3105,7 @@ fn ordinary_parameterized_declaration(
             {
                 Some(Vec::new())
             }
+            GenericReturnValue::EmptyVoid if empty_void_wildcard_parameter => Some(Vec::new()),
             GenericReturnValue::EmptyVoid => None,
             GenericReturnValue::NullLiteral => None,
             GenericReturnValue::Parameter(slot) => signature
@@ -3227,6 +3250,63 @@ fn ordinary_parameterized_declaration(
         arguments.join(", "),
         throws_clause(&throws),
     ))
+}
+
+/// The first narrow empty-body parameter projection: one static `List` wildcard whose bound has
+/// an existing simple source spelling. The body candidate is produced from the same complete
+/// Code/AST/SSA run and carries every physical parameter slot.
+fn ordinary_empty_void_wildcard_parameter_is_proved(
+    record: &ClassSourceMethod,
+    attributes: &MemberAttributes,
+    parsed: &jarde_reader::signature::MethodSignature,
+    candidate: Option<&GenericReturnCandidate>,
+    class_flags: u16,
+    class_internal: &[u8],
+    class_superclass: Option<&[u8]>,
+    class_interfaces: &[Vec<u8>],
+) -> bool {
+    let item = &record.item;
+    candidate.is_some_and(|candidate| matches!(&candidate.value, GenericReturnValue::EmptyVoid))
+        && is_static(item.access_flags)
+        && item.access_flags & !(ACC_PUBLIC | ACC_PRIVATE | ACC_PROTECTED | ACC_STATIC) == 0
+        && attributes.throws_raw.is_empty()
+        && parsed.result.is_none()
+        && parsed.throws.is_empty()
+        && record.annotations.attributes.is_empty()
+        && record.annotations.refusals.is_empty()
+        && record.parameter_annotations.attributes.is_empty()
+        && record.parameter_annotations.refusals.is_empty()
+        && record.type_annotations.attributes.is_empty()
+        && record.type_annotations.refusals.is_empty()
+        && !class_internal.contains(&b'$')
+        && class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) == 0
+        && class_superclass == Some(b"java/lang/Object".as_slice())
+        && class_interfaces.is_empty()
+        && matches!(parsed.parameters.as_slice(), [SignatureType::Class(class)]
+            if matches!(class.segments.as_slice(), [segment]
+                if segment.binary_name == b"java/util/List"
+                    && matches!(segment.arguments.as_slice(), [argument]
+                        if ordinary_simple_wildcard_argument(argument))))
+}
+
+fn ordinary_simple_wildcard_argument(argument: &TypeArgument) -> bool {
+    let simple_class = |ty: &SignatureType| {
+        matches!(ty, SignatureType::Class(class)
+            if matches!(class.segments.as_slice(), [segment]
+                if segment.arguments.is_empty()
+                    && simple_generic_class_name(&segment.binary_name).is_ok()))
+    };
+    let primitive_array = |ty: &SignatureType| {
+        matches!(ty, SignatureType::Array(element)
+            if matches!(element.as_ref(), SignatureType::Base(b'B' | b'C' | b'D' | b'F' | b'I' | b'J' | b'S' | b'Z')))
+    };
+    match argument {
+        TypeArgument::Any => true,
+        TypeArgument::Extends(ty) | TypeArgument::Super(ty) => {
+            simple_class(ty) || primitive_array(ty)
+        }
+        TypeArgument::Exact(_) => false,
+    }
 }
 
 fn spell_ordinary_signature_type(
