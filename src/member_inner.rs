@@ -28,8 +28,52 @@ pub(crate) fn prove_family_call_site(
     record: &jarde_java::init::NewRecord,
     constructor: &PhysicalMethodId,
     child_name: &[u8],
+    root_definition: &PhysicalDefinitionId,
+    root_name: &[u8],
 ) -> std::result::Result<MemberCallProof, String> {
     let refuse = |reason: &str| Err(reason.to_owned());
+    // javac lowers an unqualified `new Inner()` in Outer to `new; dup; aload_0;
+    // invokespecial; areturn`. The implicit current receiver is already non-null, so the
+    // explicit `requireNonNull; pop` pair used for a source-qualified expression is absent.
+    // Admit only this entire, side-effect-free return body in the selected root definition.
+    if caller.owner == *root_definition
+        && caller.name.0 == b"make"
+        && caller.descriptor.0 == [b"()L".as_slice(), child_name, b";"].concat()
+        && record.head == 0
+        && let Some(code) = ir.code()
+        && code.exception_handlers.is_empty()
+        && code.exception_handler_count == 0
+        && code.instructions.len() == 5
+    {
+        let [head, copy, receiver, call, returned] = code.instructions.as_slice() else {
+            return refuse("implicit member return body has an incomplete instruction shape");
+        };
+        if head.opcode == 0xbb
+            && head.bci == record.head
+            && copy.opcode == 0x59
+            && receiver.opcode == 0x2a
+            && call.opcode == 0xb7
+            && returned.opcode == 0xb0
+            && matches!(cp_entry(ir.constant_pool(), call.constant_pool_index.unwrap_or(0)).ok().map(|entry| &entry.kind),
+                Some(CpEntryKind::MethodRef { owner, name, descriptor, .. })
+                    if owner.0 == child_name
+                        && name.0 == constructor.name.0
+                        && descriptor.0 == constructor.descriptor.0
+                        && descriptor.0 == [b"(L".as_slice(), root_name, b";)V"].concat())
+        {
+            return Ok(MemberCallProof {
+                caller: caller.clone(),
+                allocation_bci: head.bci,
+                copy_bci: copy.bci,
+                qualifier_bci: receiver.bci,
+                null_check_bci: receiver.bci,
+                null_pop_bci: receiver.bci,
+                constructor_bci: call.bci,
+                constructor: constructor.clone(),
+                ordinary_argument_bcis: Vec::new(),
+            });
+        }
+    }
     if !record.presented {
         return Err(record.refusal.as_ref().map_or_else(
             || "new@1 refused the member allocation without a reason".to_owned(),

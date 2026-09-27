@@ -98,6 +98,7 @@ pub(crate) struct MemberInnerSite {
     pub(crate) outer: String,
     pub(crate) simple_name: String,
     pub(crate) generic_diamond: bool,
+    pub(crate) implicit_this: bool,
 }
 
 struct MemberProof {
@@ -113,6 +114,7 @@ struct ConstructionFacts<'a> {
     chains: &'a crate::concat::Plan,
     fields: &'a field::Plan,
     member_targets: &'a [ProvedMemberInnerTarget],
+    method: Option<&'a crate::facts::MethodFacts>,
     code: &'a MethodCodeFacts,
 }
 
@@ -293,6 +295,7 @@ pub(crate) fn sites(
     reserved: &BTreeSet<u32>,
     fields: &field::Plan,
     member_targets: &[ProvedMemberInnerTarget],
+    method: &crate::facts::MethodFacts,
     code: &MethodCodeFacts,
 ) -> Sites {
     let facts = ConstructionFacts {
@@ -301,6 +304,7 @@ pub(crate) fn sites(
         chains,
         fields,
         member_targets,
+        method: Some(method),
         code,
     };
     let blocks: Vec<&[SsaInstruction]> = ssa
@@ -626,6 +630,7 @@ fn verify_member(
         ssa,
         operations,
         code,
+        method,
         ..
     } = *facts;
     let at = constructor.bci();
@@ -636,6 +641,64 @@ fn verify_member(
             "the member constructor at BCI {at} has no physical outer argument"
         )));
     };
+    if let (Some([receiver, call]), Some(method_facts)) = (block.get(index + 2..index + 4), method)
+    {
+        let root_descriptor = [b"()L".as_slice(), target.owner.as_bytes(), b";"].concat();
+        let constructor_descriptor = format!("(L{};)V", target.outer);
+        let exact_root_return = method_facts.name() == "make"
+            && method_facts.descriptor().as_bytes() == root_descriptor
+            && method_facts
+                .access_flags()
+                .is_some_and(|flags| flags & 0x0008 == 0)
+            && method_facts
+                .declaring_class()
+                .is_some_and(|class| class.name() == target.outer);
+        let exact_code = code.instructions.len() == 5
+            && code.stopped_at.is_none()
+            && code
+                .instructions
+                .iter()
+                .map(|instruction| instruction.opcode)
+                .eq([0xbb, 0x59, 0x2a, 0xb7, 0xb0])
+            && code.exception_handlers.is_empty()
+            && code.exception_handler_count == 0;
+        let receiver_value = receiver.writes().first().map(|(_, value)| *value);
+        if exact_root_return
+            && exact_code
+            && receiver.opcode() == 0x2a
+            && matches!(
+                operations.get(receiver.bci()),
+                Some(Operation::Load { slot: 0 })
+            )
+            && matches!(operations.get(call.bci()), Some(Operation::Invoke(invoke))
+                if invoke.kind() == crate::facts::InvokeKind::Special
+                    && invoke.owner() == target.owner
+                    && invoke.name() == "<init>"
+                    && invoke.descriptor() == constructor_descriptor)
+            && operands.len() == 2
+            && receiver_value == Some(physical_outer)
+            && single_use_at(ssa, physical_outer, call.bci())
+            && matches!(ssa.value(physical_outer).ty(),
+                Value::Ref(RefType::Named { name, .. })
+                    if name == target.outer.as_bytes()
+                        || name.as_slice() == [b"L".as_slice(), target.outer.as_bytes(), b";"].concat())
+        {
+            let receiver_bci = receiver.bci();
+            return Ok(MemberProof {
+                site: MemberInnerSite {
+                    qualifier: receiver_bci,
+                    check: receiver_bci,
+                    pop: receiver_bci,
+                    outer: target.outer.clone(),
+                    simple_name: target.simple_name.clone(),
+                    generic_diamond: false,
+                    implicit_this: true,
+                },
+                arguments: vec![receiver_bci],
+                owned: [block[index + 1].bci(), receiver_bci].into_iter().collect(),
+            });
+        }
+    }
     let Some([qualifier, copy, check, pop]) = block.get(index + 2..index + 6) else {
         return Err(shape(format!(
             "the member constructor at BCI {at} has no complete qualifier check"
@@ -779,6 +842,7 @@ fn verify_member(
             outer: target.outer.clone(),
             simple_name: target.simple_name.clone(),
             generic_diamond: target.generic_diamond,
+            implicit_this: false,
         },
         arguments,
         owned,
@@ -1625,6 +1689,7 @@ mod tests {
             chains: &crate::concat::Plan::empty(),
             fields: &fields,
             member_targets: &targets,
+            method: None,
             code: &code,
         };
         verify(head, index, block.instructions(), ty.clone(), &facts)
@@ -1744,6 +1809,7 @@ mod tests {
             let operations = Operations::of(code, ir.constant_pool());
             let chains = crate::concat::plan(ssa, &operations);
             let fields = field::Plan::empty();
+            let method_facts = crate::facts::MethodFacts::new(name, descriptor, 0);
             let no_chain_proof = crate::concat::Plan::empty();
             let reserved_only = sites(
                 ssa,
@@ -1752,6 +1818,7 @@ mod tests {
                 chains.owned(),
                 &fields,
                 &[],
+                &method_facts,
                 code,
             );
             let reserved_refusal = reserved_only
@@ -1766,6 +1833,7 @@ mod tests {
                 chains.owned(),
                 &fields,
                 &[],
+                &method_facts,
                 code,
             );
             let chain = chains
@@ -1870,6 +1938,7 @@ mod tests {
                 chains: &chains,
                 fields: &fields,
                 member_targets: &[],
+                method: None,
                 code: &boundary_code,
             };
             let boundary =

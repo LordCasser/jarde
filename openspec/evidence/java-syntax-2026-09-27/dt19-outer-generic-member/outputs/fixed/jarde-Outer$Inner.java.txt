@@ -1,0 +1,24 @@
+// jarde: presentation of `dt19/Outer$Inner` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt19;
+
+public class Outer$Inner extends java.lang.Object {
+    final dt19.Outer this$0;
+
+    public Outer$Inner(dt19.Outer arg1) {
+        // @method <init>(Ldt19/Outer;)V
+        // @declaration a constructor of `dt19.Outer$Inner`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.this$0 = arg1;
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `id(Ljava/lang/Object;)Ljava/lang/Object;`: unsupported (jvm_signature_scope_unproved): type variable `T` is not declared in the available Signature scope
+    public java.lang.Object id(java.lang.Object arg1) {
+        // @method id(Ljava/lang/Object;)Ljava/lang/Object;
+        // @declaration an instance method of `dt19.Outer$Inner`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg1;
+    }
+}

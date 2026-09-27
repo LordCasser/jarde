@@ -1,0 +1,43 @@
+{
+  "assertions": {
+    "jarde_complete_family_source_and_consumer_verify_and_run_equally": true,
+    "jarde_generic_member_family": "projected_and_verified",
+    "original_and_jadx_complete_java8_sources_verify_and_run_equally": true
+  },
+  "class_sha256": {
+    "Outer$Inner.class": "6faf18f56c0e8620c4a05c2a8da8fc2b521177c08a0ec384c48a9a31bf7250c0",
+    "Outer.class": "07f69a14ec6f4b07bded78475043d6eb0d6f5503a12e26542578174a2c517da3"
+  },
+  "jadx": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "ok\n"
+  },
+  "jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jarde": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "ok\n"
+  },
+  "jarde_member_family": {
+    "calls": "proved",
+    "calls_reason": null,
+    "capture": "proved",
+    "projection": "projected",
+    "projection_reason": null,
+    "state": "prepared"
+  },
+  "javac": "javac 23.0.1",
+  "original": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "ok\n"
+  },
+  "source_sha256": {
+    "Outer.java": "e3347938563bfd48f3e7fe978691447fa5d234f2c242a8cdae77732ffd12fced",
+    "Runner.java": "547242ee53c6b37c3bc314415837e7db1f3902371bb91b6689815ec38c6cb6f6"
+  }
+}

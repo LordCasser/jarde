@@ -1,0 +1,19 @@
+package dt19;
+
+/* JADX INFO: loaded from: input.jar:dt19/Outer.class */
+public class Outer<T> {
+
+    /* JADX INFO: loaded from: input.jar:dt19/Outer$Inner.class */
+    public class Inner {
+        public Inner() {
+        }
+
+        public T id(T t) {
+            return t;
+        }
+    }
+
+    public Outer<T>.Inner make() {
+        return new Inner();
+    }
+}

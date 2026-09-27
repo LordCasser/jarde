@@ -11405,6 +11405,39 @@ fn project_class_source_member_family(
     {
         return Ok(Err("physical family recovery is incomplete".to_owned()));
     }
+    let generic_family = has_supported_generic_member_family_header(root, child);
+    if [root, child.as_ref()].iter().any(|physical| {
+        physical
+            .declaration
+            .as_ref()
+            .is_some_and(|declaration| declaration.generic_signature.is_some())
+    }) && !generic_family
+    {
+        return Ok(Err(
+            "family generic headers do not match the proved one-variable root/member slice"
+                .to_owned(),
+        ));
+    }
+    if generic_family
+        && root.declaration.as_ref().is_some_and(|declaration| {
+            let child_descriptor = format!(
+                "()L{}${};",
+                String::from_utf8_lossy(&declaration.item.declaration.this_class.raw().0),
+                relation.simple_name
+            );
+            sites.len() != 1
+                || sites.first().is_none_or(|site| {
+                    site.caller.owner != root.class
+                        || site.caller.name.0 != b"make"
+                        || site.caller.descriptor.0 != child_descriptor.as_bytes()
+                        || site.constructor.owner != child.class
+                })
+        })
+    {
+        return Ok(Err(
+            "generic member family requires the unique proved make() construction site".to_owned(),
+        ));
+    }
     if let Err(reason) = prove_member_family_external_use_closure(
         content,
         environment,
@@ -11612,7 +11645,14 @@ fn project_class_source_member_family(
                                     .any(|read| read.method == method.item.identity)
                                 || outer_super_bridges
                                     .iter()
-                                    .any(|closed| closed.bridge.bridge == method.item.identity))))
+                                    .any(|closed| closed.bridge.bridge == method.item.identity)))
+                        && !(generic_family
+                            && method.markers.len() == 1
+                            && method.generic_signature_refused
+                            && ((physical.class == root.class
+                                && method.item.identity.name.0 == b"make")
+                                || (physical.class == child.class
+                                    && method.item.identity.name.0 == b"id"))))
                     || !method.annotations.refusals.is_empty()
                     || !method.parameter_annotations.refusals.is_empty()
                     || !method.type_annotations.refusals.is_empty()
@@ -11648,7 +11688,10 @@ fn project_class_source_member_family(
                 &root.class,
                 root_name,
                 root_source_name.clone(),
-                0,
+                root.declaration
+                    .as_ref()
+                    .and_then(|declaration| declaration.generic_scope.as_ref())
+                    .map_or(0, |scope| scope.type_parameters.len()),
                 None,
                 true,
             ),
@@ -11661,6 +11704,57 @@ fn project_class_source_member_family(
                 false,
             ),
         ],
+    };
+    let root_scope = root
+        .declaration
+        .as_ref()
+        .and_then(|declaration| declaration.generic_scope.as_ref())
+        .map(|scope| scope.type_parameters.as_slice())
+        .unwrap_or(&[]);
+    let (root_family_read, child_family_read, root_pool, child_pool) = if generic_family {
+        let Some((root_definition, root_read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            None,
+            root_binary,
+            execution,
+            budget,
+        )?
+        else {
+            return Ok(Err(
+                "selected Outer definition cannot be reread for generic scope projection"
+                    .to_owned(),
+            ));
+        };
+        let Some((child_definition, child_read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            None,
+            child_binary,
+            execution,
+            budget,
+        )?
+        else {
+            return Ok(Err(
+                "selected Inner definition cannot be reread for generic scope projection"
+                    .to_owned(),
+            ));
+        };
+        if root_definition != root.class || child_definition != child.class {
+            return Ok(Err(
+                "generic Signature reread resolved a different physical family".to_owned(),
+            ));
+        }
+        let root_pool = class_constant_pool(&root_read.bytes, budget)?;
+        let child_pool = class_constant_pool(&child_read.bytes, budget)?;
+        (
+            Some(root_read),
+            Some(child_read),
+            Some(root_pool),
+            Some(child_pool),
+        )
+    } else {
+        (None, None, None, None)
     };
     let mut root_methods = Vec::new();
     let mut child_methods = Vec::new();
@@ -11697,6 +11791,29 @@ fn project_class_source_member_family(
                 .flat_map(|closed| &closed.calls)
                 .filter(|site| site.caller == method.item.identity)
                 .collect();
+            let mut family_method = method.clone();
+            let mut family_signature_derived = Vec::new();
+            let is_generic_scope_refusal =
+                method.markers.len() == 1 && method.generic_signature_refused;
+            if generic_family
+                && physical.class == child.class
+                && method.item.identity.name.0 == b"id"
+                && is_generic_scope_refusal
+            {
+                let (Some(read), Some(pool)) = (&child_family_read, &child_pool) else {
+                    return Ok(Err("child Signature scope reread is absent".to_owned()));
+                };
+                family_signature_derived.push(project_family_signature_record(
+                    &mut family_method,
+                    read,
+                    pool,
+                    root_scope,
+                    root,
+                    &target,
+                    false,
+                    budget,
+                )?);
+            }
             if outer_super_sites.iter().any(|site| {
                 !matches!(
                     capture_reads.iter().find(|read| read.bci == site.capture_read_bci),
@@ -11773,6 +11890,13 @@ fn project_class_source_member_family(
                 continue;
             }
             if call_sites.is_empty() && capture_reads.is_empty() && outer_super_sites.is_empty() {
+                if !family_signature_derived.is_empty() {
+                    child_methods.push(class_source::MemberFamilyMethodText {
+                        index: method.item.index,
+                        text: family_method.text,
+                        derived: family_signature_derived,
+                    });
+                }
                 continue;
             }
             let analyzed = jarde_jvm::analyze_method_ir(
@@ -11873,17 +11997,37 @@ fn project_class_source_member_family(
                     method.item.index
                 )));
             }
-            let Some(text) = class_source::member_family_recovered_method_text(method, &recovery)
+            if generic_family
+                && physical.class == root.class
+                && method.item.identity.name.0 == b"make"
+                && is_generic_scope_refusal
+            {
+                let (Some(read), Some(pool)) = (&root_family_read, &root_pool) else {
+                    return Ok(Err("root Signature scope reread is absent".to_owned()));
+                };
+                family_signature_derived.push(project_family_signature_record(
+                    &mut family_method,
+                    read,
+                    pool,
+                    root_scope,
+                    root,
+                    &target,
+                    true,
+                    budget,
+                )?);
+            }
+            let Some(text) =
+                class_source::member_family_recovered_method_text(&family_method, &recovery)
             else {
                 return Ok(Err(
                     "projected family method artifact cannot be placed".to_owned()
                 ));
             };
-            let mut derived = Vec::new();
+            let mut derived = family_signature_derived;
             for site in call_sites {
                 let needle = format!("new {}", relation.simple_name);
                 let Some((start, end)) = family_recovery_token_span(
-                    method,
+                    &family_method,
                     &recovery,
                     site.allocation_bci,
                     site.constructor_bci,
@@ -11924,7 +12068,7 @@ fn project_class_source_member_family(
                 };
                 let needle = format!("{root_source_name}.super.{name}");
                 let Some((start, end)) = family_recovery_token_span(
-                    method,
+                    &family_method,
                     &recovery,
                     site.call_bci,
                     site.call_bci,
@@ -11985,7 +12129,12 @@ fn project_class_source_member_family(
                 }
                 let needle = format!("{root_source_name}.this");
                 let Some((start, end)) = family_recovery_token_span(
-                    method, &recovery, read.bci, read.bci, &needle, budget,
+                    &family_method,
+                    &recovery,
+                    read.bci,
+                    read.bci,
+                    &needle,
+                    budget,
                 )?
                 else {
                     return Ok(Err(format!(
@@ -13981,6 +14130,137 @@ fn family_recovery_token_span(
     ))
 }
 
+fn has_supported_generic_member_family_header(
+    root: &ClassSourceReport,
+    child: &ClassSourceReport,
+) -> bool {
+    let (Some(root_declaration), Some(child_declaration)) =
+        (root.declaration.as_ref(), child.declaration.as_ref())
+    else {
+        return false;
+    };
+    let exact_signature = root_declaration
+        .generic_signature
+        .as_ref()
+        .is_some_and(|signature| signature.0 == b"<T:Ljava/lang/Object;>Ljava/lang/Object;");
+    let Some(scope) = root_declaration.generic_scope.as_ref() else {
+        return false;
+    };
+    exact_signature
+        && root_declaration.generic_refusal.is_none()
+        && root_declaration.item.declaration.access_flags & (0x0200 | 0x4000 | 0x2000) == 0
+        && root_declaration
+            .item
+            .declaration
+            .super_class
+            .as_ref()
+            .is_some_and(|name| name.raw().0 == b"java/lang/Object")
+        && root_declaration.item.declaration.interfaces.is_empty()
+        && root_declaration
+            .item
+            .declaration
+            .this_class
+            .raw()
+            .0
+            .iter()
+            .all(|byte| *byte != b'$')
+        && scope.type_parameters.len() == 1
+        && scope.type_parameters[0].name == b"T"
+        && scope.type_parameters[0].descriptor == b"Ljava/lang/Object;"
+        && child_declaration.generic_signature.is_none()
+        && child_declaration.generic_refusal.is_none()
+}
+
+fn project_family_signature_record(
+    record: &mut class_source::ClassSourceMethod,
+    read: &ConfirmedRead,
+    pool: &[jarde_reader::classfile::CpEntryFacts],
+    scope: &[jarde_reader::signature::TypeParameterErasure],
+    root: &ClassSourceReport,
+    target: &jarde_java::report::ProvedMemberInnerTarget,
+    root_return: bool,
+    budget: &mut Budget,
+) -> Result<class_source::MemberFamilyDerivedProjection> {
+    let member = read
+        .facts
+        .methods
+        .get(usize::try_from(record.item.index).unwrap_or(usize::MAX))
+        .ok_or_else(|| {
+            Error::unsupported(
+                "generic_member_family_signature_unproved",
+                "method table position is absent on Signature reread",
+            )
+        })?;
+    if member.name.raw().0 != record.item.name.raw().0
+        || member.descriptor.raw().0 != record.item.descriptor.raw().0
+    {
+        return Err(Error::unsupported(
+            "generic_member_family_signature_unproved",
+            "method identity changed on Signature reread",
+        ));
+    }
+    let pool = pool;
+    let attributes = class_source::declared_member_attributes(&read.bytes, member, pool, budget)?;
+    let class_internal = &read.facts.this_class.raw().0;
+    let class_superclass = read
+        .facts
+        .super_class
+        .as_ref()
+        .map(|name| name.raw().0.as_slice());
+    let class_interfaces = read
+        .facts
+        .interfaces
+        .iter()
+        .map(|name| name.raw().0.clone())
+        .collect::<Vec<_>>();
+    class_source::project_member_family_generic_signature(
+        record,
+        member,
+        &attributes,
+        &read.bytes,
+        pool,
+        class_internal,
+        read.facts.access_flags,
+        class_superclass,
+        &class_interfaces,
+        scope,
+        target,
+        root_return,
+        budget,
+    )?;
+    let declaration = record.declaration.as_ref().ok_or_else(|| {
+        Error::unsupported(
+            "generic_member_family_signature_unproved",
+            "projected family method has no declaration",
+        )
+    })?;
+    let start = record.text.find(declaration).ok_or_else(|| {
+        Error::unsupported(
+            "generic_member_family_signature_unproved",
+            "projected method declaration has no unique placement",
+        )
+    })?;
+    if record.text[start + declaration.len()..].contains(declaration) {
+        return Err(Error::unsupported(
+            "generic_member_family_signature_unproved",
+            "projected method declaration placement is ambiguous",
+        ));
+    }
+    Ok(class_source::MemberFamilyDerivedProjection {
+        kind: class_source::MemberFamilyDerivedKind::MemberGenericSignature,
+        start,
+        end: start + declaration.len(),
+        anchors: vec![
+            class_source::MemberFamilyPhysicalAnchor::MethodSignature {
+                method: record.item.identity.clone(),
+            },
+            class_source::MemberFamilyPhysicalAnchor::ClassDefinition {
+                definition: root.class.clone(),
+            },
+        ],
+    })
+}
+
 fn prove_class_source_member_calls(
     content: &[ArtifactSnapshot],
     environment: &ResolutionEnvironment,
@@ -14033,12 +14313,19 @@ fn prove_class_source_member_calls(
         });
     };
     if [root, child].iter().any(|physical| {
-        physical.declaration.as_ref().is_none_or(|declaration| {
-            declaration.generic_signature.is_some() || declaration.generic_refusal.is_some()
-        })
-    }) {
+        physical
+            .declaration
+            .as_ref()
+            .is_none_or(|declaration| declaration.generic_refusal.is_some())
+    }) || ([root, child].iter().any(|physical| {
+        physical
+            .declaration
+            .as_ref()
+            .is_some_and(|declaration| declaration.generic_signature.is_some())
+    }) && !has_supported_generic_member_family_header(root, child))
+    {
         return Ok(Calls::Refused {
-            reason: "family call source path requires non-generic root and member headers"
+            reason: "family generic headers do not match the proved one-variable root/member slice"
                 .to_owned(),
             sites: Vec::new(),
             refusals: Vec::new(),
@@ -14054,7 +14341,17 @@ fn prove_class_source_member_calls(
         capture_field: capture.field_name.clone(),
         generic_diamond: false,
         source_type_path: vec![
-            source_type_path_segment(&root.class, root_binary, root_source.clone(), 0, None, true),
+            source_type_path_segment(
+                &root.class,
+                root_binary,
+                root_source.clone(),
+                root.declaration
+                    .as_ref()
+                    .and_then(|declaration| declaration.generic_scope.as_ref())
+                    .map_or(0, |scope| scope.type_parameters.len()),
+                None,
+                true,
+            ),
             source_type_path_segment(
                 &child.class,
                 child_binary,
@@ -14201,6 +14498,8 @@ fn prove_class_source_member_calls(
                     record,
                     &capture.constructor,
                     &candidate.child_name,
+                    &root.class,
+                    root_name,
                 ) {
                     Ok(site) => sites.push(site),
                     Err(reason) => refusals.push(MemberCallRefusal {

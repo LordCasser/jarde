@@ -1,0 +1,37 @@
+// jarde: presentation of `dt19/Outer` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt19;
+
+// jarde: class Signature `<T:Ljava/lang/Object;>Ljava/lang/Object;` projected after physical parent erasure proof
+public class Outer<T> extends java.lang.Object {
+    public Outer() {
+        // @method <init>()V
+        // @declaration a constructor of `dt19.Outer`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public dt19.Outer<T>.Inner make() {
+        // jarde: generic Signature `()Ldt19/Outer<TT;>.Inner;` projected after descriptor erasure and selected family return Signature and proved member construction
+        // @method make()Ldt19/Outer$Inner;
+        // @declaration an instance method of `dt19.Outer`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return new Inner();
+    }
+
+    public class Inner extends java.lang.Object {
+        public Inner() {
+            super();
+            return;
+        }
+
+        public T id(T arg1) {
+            // jarde: generic Signature `(TT;)TT;` projected after descriptor erasure and proved inherited outer-variable scope and same-run parameter-return proof
+            // @method id(Ljava/lang/Object;)Ljava/lang/Object;
+            // @declaration an instance method of `dt19.Outer$Inner`, member flags 0x0001
+            // recovered from bytecode; presentation is not claimed to compile
+            return arg1;
+        }
+    }
+}

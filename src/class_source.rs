@@ -259,6 +259,10 @@ pub struct ClassSourceDeclaration {
     pub generic_signature: Option<JvmBytes>,
     /// Why the class Signature could not be published as a complete Java header.
     pub generic_refusal: Option<String>,
+    /// The exact class Signature erasure scope that published this header. It is kept for the
+    /// separately proved member-family pass and is deliberately absent from the JSON view.
+    #[serde(skip)]
+    pub(crate) generic_scope: Option<ClassSignatureErasureProof>,
 }
 
 /// One class-level annotation attribute's original shell and its parsed annotation entries.
@@ -452,6 +456,10 @@ pub struct ClassSourceMethod {
     /// Same-run source candidate retained for the final family writer only.
     #[serde(skip)]
     pub(crate) same_run_generic_return: Option<GenericReturnCandidate>,
+    /// The physical method's ordinary Signature attempt refused. Family assembly may replace
+    /// that one marker on a cloned writer record only after its separate proof succeeds.
+    #[serde(skip)]
+    pub(crate) generic_signature_refused: bool,
     /// Closed source-tail shape parsed from this physical constructor's Signature.
     #[serde(skip)]
     pub(crate) enum_constructor_source_tail: EnumConstructorSourceTail,
@@ -724,6 +732,7 @@ pub enum MemberFamilyDerivedKind {
     NestedEnumTypeReference,
     MemberConstruction,
     MemberReturnType,
+    MemberGenericSignature,
     MemberConstructorName,
     MemberClassDeclaration,
     CapturedOuterRead,
@@ -751,6 +760,9 @@ pub enum MemberFamilyPhysicalAnchor {
     ConstructorParameter {
         method: PhysicalMethodId,
         index: u32,
+    },
+    MethodSignature {
+        method: PhysicalMethodId,
     },
     /// The bridge's raw MethodRef and the exact selected target declaration are retained together.
     OuterSuperTarget {
@@ -2096,6 +2108,157 @@ pub(crate) fn project_method_signature(
             record.refuse_generic(&error.to_string(), budget)
         }
     }
+}
+
+/// Project the two method Signatures that close the first generic enclosing-member family slice.
+/// The caller has already proved the physical root/child relation, capture and complete call
+/// closure. This function supplies the root's published Signature scope to the existing method
+/// erasure and source-type spelling machinery; it does not infer a type from emitted text.
+pub(crate) fn project_member_family_generic_signature(
+    record: &mut ClassSourceMethod,
+    member: &MemberHeader,
+    attributes: &MemberAttributes,
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    class_internal: &[u8],
+    class_flags: u16,
+    class_superclass: Option<&[u8]>,
+    class_interfaces: &[Vec<u8>],
+    class_scope: &[TypeParameterErasure],
+    target: &jarde_java::report::ProvedMemberInnerTarget,
+    root_return: bool,
+    budget: &mut Budget,
+) -> Result<()> {
+    let refused = |why| Error::unsupported("generic_member_family_signature_unproved", why);
+    let shells = attribute_shells(member, b"Signature");
+    if shells.len() != 1
+        || class_scope.len() != 1
+        || class_scope[0].descriptor != b"Ljava/lang/Object;"
+        || record.markers.len() != 1
+        || !record.generic_signature_refused
+        || !record.annotations.attributes.is_empty()
+        || !record.parameter_annotations.attributes.is_empty()
+        || !record.type_annotations.attributes.is_empty()
+    {
+        return Err(refused(
+            "family method is outside the one-variable unannotated Signature slice",
+        ));
+    }
+    let raw = attribute_facts(bytes, &shells, pool, budget)?
+        .signature
+        .ok_or_else(|| {
+            Error::invalid_input(
+                "jvm_signature_missing",
+                "Signature attribute did not resolve",
+            )
+        })?
+        .0;
+    let parsed = parse_method_signature(&raw, budget)?;
+    if !parsed.type_parameters.is_empty() {
+        return Err(refused(
+            "method-local type variables are outside the family scope",
+        ));
+    }
+    prove_method_signature_erasure_with_class_scope(
+        &parsed,
+        &member.descriptor.raw().0,
+        &attributes.throws_raw,
+        class_scope,
+        budget,
+    )?;
+
+    let declaration = if root_return {
+        let SignatureType::Class(result) = parsed
+            .result
+            .as_ref()
+            .ok_or_else(|| refused("root method has no generic result"))?
+        else {
+            return Err(refused("root result is not the selected member class"));
+        };
+        let [outer, inner] = result.segments.as_slice() else {
+            return Err(refused(
+                "root result does not carry the complete outer/member Signature path",
+            ));
+        };
+        if class_internal != target.outer.as_bytes()
+            || member.name.raw().0 != b"make"
+            || member.descriptor.raw().0 != format!("()L{};", target.owner).as_bytes()
+            || !parsed.parameters.is_empty()
+            || !parsed.throws.is_empty()
+            || outer.binary_name != target.outer.as_bytes()
+            || outer.arguments.as_slice()
+                != [TypeArgument::Exact(SignatureType::TypeVariable(
+                    class_scope[0].name.clone(),
+                ))]
+            || inner.binary_name != target.owner.as_bytes()
+            || !inner.arguments.is_empty()
+        {
+            return Err(refused(
+                "root method Signature is not the selected Outer<T>.Inner return",
+            ));
+        }
+        let result = spell_ordinary_signature_type_with_member_path(
+            parsed.result.as_ref().unwrap(),
+            class_scope,
+            &target.source_type_path,
+            budget,
+            0,
+        )?;
+        let mut signature = method_descriptor(&member.descriptor.raw().0, false, false)
+            .ok_or_else(|| refused("root physical descriptor cannot be spelled"))?;
+        signature.returns = Some(result);
+        let (name, aliased) = written_name(&member.name.raw().0);
+        if aliased || !is_java_identifier(&name) {
+            return Err(refused("root method name has no source spelling"));
+        }
+        format_generic_method_header(record, &signature, &name, &[], &attributes.throws)
+    } else {
+        if member.name.raw().0 != b"id"
+            || member.descriptor.raw().0 != b"(Ljava/lang/Object;)Ljava/lang/Object;"
+            || parsed.parameters.as_slice()
+                != [SignatureType::TypeVariable(class_scope[0].name.clone())]
+            || parsed.result.as_ref()
+                != Some(&SignatureType::TypeVariable(class_scope[0].name.clone()))
+            || !parsed.throws.is_empty()
+        {
+            return Err(refused(
+                "child method Signature is not the inherited T id(T) shape",
+            ));
+        }
+        let candidate = record.same_run_generic_return.as_ref().ok_or_else(|| {
+            refused("child identity method has no retained same-run body candidate")
+        })?;
+        let mut staged = record.clone();
+        // The one marker is precisely the independent physical request's missing outer scope.
+        // It is omitted only on this temporary family-writer record after the relation gate above.
+        staged.markers.clear();
+        ordinary_parameterized_declaration(
+            &staged,
+            attributes,
+            &parsed,
+            Some(candidate),
+            class_flags,
+            class_internal,
+            class_superclass,
+            class_interfaces,
+            class_scope,
+            false,
+            budget,
+        )?
+    };
+    // `record` is a family-writer clone. Drop only the independently recorded scope refusal;
+    // `project_generic` replaces it with the successful family-scope note below.
+    record.markers.clear();
+    record.project_generic(
+        declaration,
+        &raw,
+        if root_return {
+            "selected family return Signature and proved member construction"
+        } else {
+            "proved inherited outer-variable scope and same-run parameter-return proof"
+        },
+        budget,
+    )
 }
 
 /// Spell one generic constructor only after its same-run body candidate, Signature erasure, and
@@ -3684,7 +3847,6 @@ fn signature_result_matches_member_creation(
         && class.segments[0].arguments.len() == outer.type_parameter_count
         && class.segments[1].arguments.len() == member.type_parameter_count
         && !class.segments[0].arguments.is_empty()
-        && !class.segments[1].arguments.is_empty()
 }
 
 fn generic_method_declaration(
@@ -5132,6 +5294,7 @@ impl ClassSourceDeclaration {
             annotation_refusals: Vec::new(),
             generic_signature: None,
             generic_refusal: None,
+            generic_scope: None,
         }
     }
 
@@ -5328,6 +5491,7 @@ impl ClassSourceDeclaration {
         match result {
             Ok(Some((declaration, proof))) => {
                 self.declaration = declaration;
+                self.generic_scope = Some(proof.clone());
                 Ok(Some(proof))
             }
             Ok(None) => Ok(None),
@@ -5985,6 +6149,7 @@ impl ClassSourceMethod {
         self.declaration = Some(declaration);
         self.text = text;
         self.markers = markers;
+        self.generic_signature_refused = false;
         Ok(())
     }
 
@@ -6001,6 +6166,7 @@ impl ClassSourceMethod {
         )?;
         self.markers.push(marker);
         self.text = text;
+        self.generic_signature_refused = true;
         Ok(())
     }
 
@@ -6166,6 +6332,7 @@ impl ClassSourceMethod {
             markers,
             outcome: ClassSourceOutcome::NoBody,
             same_run_generic_return: None,
+            generic_signature_refused: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
@@ -6186,6 +6353,7 @@ impl ClassSourceMethod {
             markers,
             outcome: ClassSourceOutcome::Unspelled,
             same_run_generic_return: None,
+            generic_signature_refused: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
@@ -6223,6 +6391,7 @@ impl ClassSourceMethod {
                 diagnostics,
             },
             same_run_generic_return: None,
+            generic_signature_refused: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
@@ -6264,6 +6433,7 @@ impl ClassSourceMethod {
             markers,
             outcome: ClassSourceOutcome::Recovered { report, analysis },
             same_run_generic_return,
+            generic_signature_refused: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
