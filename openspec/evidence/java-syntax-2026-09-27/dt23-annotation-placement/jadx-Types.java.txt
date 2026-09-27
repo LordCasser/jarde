@@ -1,0 +1,16 @@
+package dt23;
+
+/* JADX INFO: loaded from: input.jar:dt23/Types.class */
+@A(c = Types.class)
+public class Types {
+
+    @A(c = Types.class)
+    public int field;
+
+    @A(c = Types.class)
+    public void first(@A(c = Types.class) int i) {
+    }
+
+    public void second(int i, @A(c = Types.class, i = 5) int i2) {
+    }
+}

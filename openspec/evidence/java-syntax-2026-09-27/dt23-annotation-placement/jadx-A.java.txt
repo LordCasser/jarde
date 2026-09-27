@@ -1,0 +1,12 @@
+package dt23;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/* JADX INFO: loaded from: input.jar:dt23/A.class */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface A {
+    Class<?> c();
+
+    int i() default 7;
+}

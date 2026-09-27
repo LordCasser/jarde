@@ -1,0 +1,33 @@
+{
+  "jadx_commit": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "javac": "javac 23.0.1",
+  "source_sha256": {
+    "A.java": "3c102721affcf66f7c0a3bcf3d1f64cec8c25472abec599d19e1e4a6db9f3e85",
+    "Types.java": "9fc815533e44c101f161cfe5e3fc075131860b7eeb2191bd18d769e646a90006",
+    "Runner.java": "adba9ce7462533205397450b469667810e6f796f42fff6b5b04ca285f90dee6e"
+  },
+  "class_sha256": {
+    "A": "327ebe78e0dbdaf23c12df0b4213b7699b007261c756b2b11d318ff5a3a1f64f",
+    "Runner": "2950bcc1240582119d7538308a5a58b5f78347a772706a12e7e021d99396f3b5",
+    "Types": "ca6fe164532f084e21d414e0f197989521bbfd91bb13420c40ceada41a252de1"
+  },
+  "original": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stdout": "class=true\nfield=true\nmethod=true\nparam0=true\nparam1=5\n"
+  },
+  "jadx": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stdout": "class=true\nfield=true\nmethod=true\nparam0=true\nparam1=5\n"
+  },
+  "jarde": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stdout": "class=true\nfield=true\nmethod=true\nparam0=true\nparam1=5\n"
+  },
+  "assertions": {
+    "complete_java8_verified_equal": true,
+    "four_annotation_sites_and_two_parameter_positions": true
+  }
+}

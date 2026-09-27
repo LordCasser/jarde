@@ -1,0 +1,33 @@
+// jarde: presentation of `dt23/Types` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt23;
+
+@dt23.A(c = dt23.Types.class)
+
+public class Types extends java.lang.Object {
+    @dt23.A(c = dt23.Types.class)
+    public int field;
+
+    public Types() {
+        // @method <init>()V
+        // @declaration a constructor of `dt23.Types`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    @dt23.A(c = dt23.Types.class)
+    public void first(@dt23.A(c = dt23.Types.class) int arg1) {
+        // @method first(I)V
+        // @declaration an instance method of `dt23.Types`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    public void second(int arg1, @dt23.A(c = dt23.Types.class, i = 5) int arg2) {
+        // @method second(II)V
+        // @declaration an instance method of `dt23.Types`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+}
