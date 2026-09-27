@@ -18,4 +18,4 @@
 
 - [x] 4.1 用 fresh CLI 将原 class、pinned JADX 和 Jarde 的完整 Java 8 源码分别重编、`java -Xverify:all` 运行并逐字比较输出与反射泛型类型；核三种精确 `::`、每个工厂的物理 BCI/CP 来源及 verifier 有效负例。
 - [x] 4.2 跑固定非泛型 DT-27、`preserve-lambda-descriptor-adaptation`、数组构造引用、lambda helper 及相关 class-source 泛型回归，再跑 `cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、格式、OpenSpec strict 和 diff check；清理本任务专用 Cargo target。
-- [ ] 4.3 root 独立审阅目标证书、函数适配、捕获阶段、负例与三方运行，更新 DT-27 清单并写验收记录；只验收此泛型切片，不宣称整个 DT-27 追平。
+- [x] 4.3 root 独立审阅目标证书、函数适配、捕获阶段、负例与三方运行，更新 DT-27 清单并写验收记录；只验收此泛型切片，不宣称整个 DT-27 追平。
