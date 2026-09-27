@@ -1,0 +1,4 @@
+Pinned JADX dev binary, checkout 2fb1b16386941660fda07e9017285aec40fcb37f.
+Default output: 3 extracted `finally` clauses.
+`--no-finally` output: no extracted `finally` clauses and 7 ordinary cleanup copies (`sb.append("-finally");`).
+The replay script regenerates both outputs and asserts the 3/7 counts.

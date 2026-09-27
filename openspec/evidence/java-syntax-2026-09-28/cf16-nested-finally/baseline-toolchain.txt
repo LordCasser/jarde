@@ -1,0 +1,12 @@
+jarde_checkout_head=61a167b2113f16715d8038834e2952339c3844d6
+jarde_cli=/private/tmp/jarde-cf16-nested-root-target/debug/jarde-cli
+jarde_cli_version=jarde-cli 0.1.0
+jarde_cli_sha256=851b335980eaffb216ab9a164767b47ed357256caa655d95559fb9b655a19937
+javac=/usr/bin/javac
+java=/usr/bin/java
+jadx_checkout_head=2fb1b16386941660fda07e9017285aec40fcb37f
+jadx=/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx
+jadx_version=dev
+jadx_binary_sha256=5d115ed2ecb34b2f96ae80704b966ffa3d9cce33c2de3cdf8d348a8159b116e3
+fixed_test_class_sha256=d9b9cb676203d943ee3cf97d66e62dda2a637125d7f737be1e22ca275c209185
+recompiled_minimal_class_sha256=d6cc7ae92abcb740e9ef174bc6da1db2ce4ebfc0db7d9e1d9a7012794a5c86c9

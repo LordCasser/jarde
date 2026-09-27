@@ -1,0 +1,5 @@
+57ac3528fc5643e638f1c02455e6deb32fb64e3f3bf9413c206304060361da33  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/FinallyMinimalProbe.java
+b21615765e0c3b64aa5de5b3652dc83276c5958dc1b3f4e7a3ddac82461a1a07  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/MinimalRunner.java
+c2dff99146ac9f301fdc8a343567ac3b468307a32ba64e8b005ea3123a2d6a6d  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12.java
+d9b9cb676203d943ee3cf97d66e62dda2a637125d7f737be1e22ca275c209185  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class
+983d2ffbb401e93e0b7447fea6314b75ad0853a6c47525b218fe54a78f9e492c  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/jarde-baseline-report.txt

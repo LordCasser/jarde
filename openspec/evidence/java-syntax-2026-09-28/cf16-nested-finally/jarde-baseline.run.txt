@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.AssertionError: 1,0 expected=call-out-finally actual=
+	at jadx.tests.integration.trycatch.MinimalRunner.main(MinimalRunner.java:13)

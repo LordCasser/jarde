@@ -1,0 +1,319 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/cf16-nested-finally.tCPngc/original/jadx/tests/integration/trycatch/FinallyMinimalProbe.class
+  Last modified 2026年9月28日; size 1553 bytes
+  SHA-256 checksum d6cc7ae92abcb740e9ef174bc6da1db2ce4ebfc0db7d9e1d9a7012794a5c86c9
+  Compiled from "FinallyMinimalProbe.java"
+public class jadx.tests.integration.trycatch.FinallyMinimalProbe
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // jadx/tests/integration/trycatch/FinallyMinimalProbe
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 5, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // jadx/tests/integration/trycatch/FinallyMinimalProbe.call:(I)V
+   #8 = Class              #10            // jadx/tests/integration/trycatch/FinallyMinimalProbe
+   #9 = NameAndType        #11:#12        // call:(I)V
+  #10 = Utf8               jadx/tests/integration/trycatch/FinallyMinimalProbe
+  #11 = Utf8               call
+  #12 = Utf8               (I)V
+  #13 = Class              #14            // java/lang/NullPointerException
+  #14 = Utf8               java/lang/NullPointerException
+  #15 = Fieldref           #8.#16         // jadx/tests/integration/trycatch/FinallyMinimalProbe.sb:Ljava/lang/StringBuilder;
+  #16 = NameAndType        #17:#18        // sb:Ljava/lang/StringBuilder;
+  #17 = Utf8               sb
+  #18 = Utf8               Ljava/lang/StringBuilder;
+  #19 = String             #20            // -catch
+  #20 = Utf8               -catch
+  #21 = Methodref          #22.#23        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #22 = Class              #24            // java/lang/StringBuilder
+  #23 = NameAndType        #25:#26        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #24 = Utf8               java/lang/StringBuilder
+  #25 = Utf8               append
+  #26 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #27 = String             #28            // -out
+  #28 = Utf8               -out
+  #29 = String             #30            // -finally
+  #30 = Utf8               -finally
+  #31 = String             #11            // call
+  #32 = String             #33            // -npe
+  #33 = Utf8               -npe
+  #34 = Methodref          #13.#3         // java/lang/NullPointerException."<init>":()V
+  #35 = String             #36            // -iae
+  #36 = Utf8               -iae
+  #37 = Class              #38            // java/lang/IllegalArgumentException
+  #38 = Utf8               java/lang/IllegalArgumentException
+  #39 = Methodref          #37.#3         // java/lang/IllegalArgumentException."<init>":()V
+  #40 = Utf8               Code
+  #41 = Utf8               LineNumberTable
+  #42 = Utf8               LocalVariableTable
+  #43 = Utf8               this
+  #44 = Utf8               Ljadx/tests/integration/trycatch/FinallyMinimalProbe;
+  #45 = Utf8               test1
+  #46 = Utf8               e
+  #47 = Utf8               Ljava/lang/NullPointerException;
+  #48 = Utf8               excType
+  #49 = Utf8               I
+  #50 = Utf8               StackMapTable
+  #51 = Class              #52            // java/lang/Throwable
+  #52 = Utf8               java/lang/Throwable
+  #53 = Utf8               test2
+  #54 = Utf8               test3
+  #55 = Utf8               SourceFile
+  #56 = Utf8               FinallyMinimalProbe.java
+{
+  public jadx.tests.integration.trycatch.FinallyMinimalProbe();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 2: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/trycatch/FinallyMinimalProbe;
+
+  public void test1(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_0
+         1: iload_1
+         2: invokevirtual #7                  // Method call:(I)V
+         5: goto          19
+         8: astore_2
+         9: aload_0
+        10: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        13: ldc           #19                 // String -catch
+        15: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: pop
+        19: aload_0
+        20: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        23: ldc           #27                 // String -out
+        25: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        28: pop
+        29: aload_0
+        30: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        33: ldc           #29                 // String -finally
+        35: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        38: pop
+        39: goto          55
+        42: astore_3
+        43: aload_0
+        44: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        47: ldc           #29                 // String -finally
+        49: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        52: pop
+        53: aload_3
+        54: athrow
+        55: return
+      Exception table:
+         from    to  target type
+             0     5     8   Class java/lang/NullPointerException
+             0    29    42   any
+      LineNumberTable:
+        line 8: 0
+        line 11: 5
+        line 9: 8
+        line 10: 9
+        line 12: 19
+        line 14: 29
+        line 15: 39
+        line 14: 42
+        line 15: 53
+        line 16: 55
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            9      10     2     e   Ljava/lang/NullPointerException;
+            0      56     0  this   Ljadx/tests/integration/trycatch/FinallyMinimalProbe;
+            0      56     1 excType   I
+      StackMapTable: number_of_entries = 4
+        frame_type = 72 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NullPointerException ]
+        frame_type = 10 /* same */
+        frame_type = 86 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 12 /* same */
+
+  public void test2(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_0
+         1: iload_1
+         2: invokevirtual #7                  // Method call:(I)V
+         5: goto          19
+         8: astore_2
+         9: aload_0
+        10: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        13: ldc           #19                 // String -catch
+        15: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: pop
+        19: aload_0
+        20: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        23: ldc           #29                 // String -finally
+        25: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        28: pop
+        29: goto          45
+        32: astore_3
+        33: aload_0
+        34: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        37: ldc           #29                 // String -finally
+        39: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        42: pop
+        43: aload_3
+        44: athrow
+        45: return
+      Exception table:
+         from    to  target type
+             0     5     8   Class java/lang/NullPointerException
+             0    19    32   any
+      LineNumberTable:
+        line 21: 0
+        line 24: 5
+        line 22: 8
+        line 23: 9
+        line 26: 19
+        line 27: 29
+        line 26: 32
+        line 27: 43
+        line 28: 45
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            9      10     2     e   Ljava/lang/NullPointerException;
+            0      46     0  this   Ljadx/tests/integration/trycatch/FinallyMinimalProbe;
+            0      46     1 excType   I
+      StackMapTable: number_of_entries = 4
+        frame_type = 72 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NullPointerException ]
+        frame_type = 10 /* same */
+        frame_type = 76 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 12 /* same */
+
+  public void test3(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_0
+         1: iload_1
+         2: invokevirtual #7                  // Method call:(I)V
+         5: aload_0
+         6: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+         9: ldc           #29                 // String -finally
+        11: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        14: pop
+        15: goto          55
+        18: astore_2
+        19: aload_0
+        20: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        23: ldc           #19                 // String -catch
+        25: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        28: pop
+        29: aload_0
+        30: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        33: ldc           #29                 // String -finally
+        35: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        38: pop
+        39: goto          55
+        42: astore_3
+        43: aload_0
+        44: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        47: ldc           #29                 // String -finally
+        49: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        52: pop
+        53: aload_3
+        54: athrow
+        55: return
+      Exception table:
+         from    to  target type
+             0     5    18   Class java/lang/NullPointerException
+             0     5    42   any
+            18    29    42   any
+      LineNumberTable:
+        line 32: 0
+        line 36: 5
+        line 37: 15
+        line 33: 18
+        line 34: 19
+        line 36: 29
+        line 37: 39
+        line 36: 42
+        line 37: 53
+        line 38: 55
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           19      10     2     e   Ljava/lang/NullPointerException;
+            0      56     0  this   Ljadx/tests/integration/trycatch/FinallyMinimalProbe;
+            0      56     1 excType   I
+      StackMapTable: number_of_entries = 3
+        frame_type = 82 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NullPointerException ]
+        frame_type = 87 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 12 /* same */
+
+  public void call(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+         4: ldc           #31                 // String call
+         6: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+         9: pop
+        10: iload_1
+        11: lookupswitch  { // 2
+                       1: 36
+                       2: 54
+                 default: 72
+            }
+        36: aload_0
+        37: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        40: ldc           #32                 // String -npe
+        42: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        45: pop
+        46: new           #13                 // class java/lang/NullPointerException
+        49: dup
+        50: invokespecial #34                 // Method java/lang/NullPointerException."<init>":()V
+        53: athrow
+        54: aload_0
+        55: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        58: ldc           #35                 // String -iae
+        60: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        63: pop
+        64: new           #37                 // class java/lang/IllegalArgumentException
+        67: dup
+        68: invokespecial #39                 // Method java/lang/IllegalArgumentException."<init>":()V
+        71: athrow
+        72: return
+      LineNumberTable:
+        line 41: 0
+        line 42: 10
+        line 44: 36
+        line 45: 46
+        line 47: 54
+        line 48: 64
+        line 50: 72
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      73     0  this   Ljadx/tests/integration/trycatch/FinallyMinimalProbe;
+            0      73     1 excType   I
+      StackMapTable: number_of_entries = 3
+        frame_type = 36 /* same */
+        frame_type = 17 /* same */
+        frame_type = 17 /* same */
+}
+SourceFile: "FinallyMinimalProbe.java"

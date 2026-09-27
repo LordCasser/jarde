@@ -1,0 +1,12 @@
+original_javac_exit=0
+original_java_Xverify_all_exit=0
+jadx_decompile_exit=0
+jadx_javac_exit=0
+jadx_java_Xverify_all_exit=0
+jarde_class_source_exit=0
+jarde_javac_exit=0
+jarde_java_Xverify_all_exit=1
+original_equals_jadx=true
+jarde_equals_original=false
+jadx_default_finally_clause_count=3
+jadx_no_finally_cleanup_copy_count=7

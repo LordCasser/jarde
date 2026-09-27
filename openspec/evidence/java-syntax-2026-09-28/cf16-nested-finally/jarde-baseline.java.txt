@@ -1,0 +1,65 @@
+// jarde: presentation of `jadx/tests/integration/trycatch/FinallyMinimalProbe` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package jadx.tests.integration.trycatch;
+
+public class FinallyMinimalProbe extends java.lang.Object {
+    private java.lang.StringBuilder sb;
+
+    public FinallyMinimalProbe() {
+        // @method <init>()V
+        // @declaration a constructor of `jadx.tests.integration.trycatch.FinallyMinimalProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void test1(int excType) {
+        // jarde: not recovered: the recovery run for `test1(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method test1(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.FinallyMinimalProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 2 5
+        // BCI 42: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 8 9 10 13 15 18 19 20 23 25 28 29 30 33 35 38 39 42 43 44 47 49 52 53 54 55
+        // 4 live block(s) are reachable only through edges the normal-flow view leaves out: [19, 8, 42, 55]
+    }
+
+    public void test2(int excType) {
+        // jarde: not recovered: the recovery run for `test2(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method test2(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.FinallyMinimalProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 2 5
+        // BCI 32: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 8 9 10 13 15 18 19 20 23 25 28 29 32 33 34 37 39 42 43 44 45
+        // 3 live block(s) are reachable only through edges the normal-flow view leaves out: [19, 8, 32]
+    }
+
+    public void test3(int excType) {
+        // jarde: not recovered: the recovery run for `test3(I)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method test3(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.FinallyMinimalProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 2 5 6 9 11 14 15
+        // BCI 42: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        // @bytecode 18 19 20 23 25 28 29 30 33 35 38 39 42 43 44 47 49 52 53 54 55
+        // 3 live block(s) are reachable only through edges the normal-flow view leaves out: [55, 18, 42]
+    }
+
+    public void call(int excType) {
+        // @method call(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.FinallyMinimalProbe`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.sb.append("call");
+        switch (excType) {
+            case 1:
+                this.sb.append("-npe");
+                throw new java.lang.NullPointerException();
+            case 2:
+                this.sb.append("-iae");
+                throw new java.lang.IllegalArgumentException();
+            default:
+                return;
+        }
+    }
+}

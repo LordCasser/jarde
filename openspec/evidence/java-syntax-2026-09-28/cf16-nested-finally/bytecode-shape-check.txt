@@ -1,0 +1,3 @@
+test1: bci_opcode_and_exception_table_equal=true
+test2: bci_opcode_and_exception_table_equal=true
+test3: bci_opcode_and_exception_table_equal=true

@@ -1,0 +1,170 @@
+Fixed TestTryCatchFinally12$TestCls.class, javap -c -v excerpt (Java 8 classfile).
+Methods test1/test2/test3 are shown with bytecode offsets, opcodes, and exception tables.
+
+  public void test1(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_0
+         1: iload_1
+         2: invokevirtual #7                  // Method call:(I)V
+         5: goto          19
+         8: astore_2
+         9: aload_0
+        10: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        13: ldc           #19                 // String -catch
+        15: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: pop
+        19: aload_0
+        20: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        23: ldc           #27                 // String -out
+        25: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        28: pop
+        29: aload_0
+        30: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        33: ldc           #29                 // String -finally
+        35: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        38: pop
+        39: goto          55
+        42: astore_3
+        43: aload_0
+        44: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        47: ldc           #29                 // String -finally
+        49: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        52: pop
+        53: aload_3
+        54: athrow
+        55: return
+      Exception table:
+         from    to  target type
+             0     5     8   Class java/lang/NullPointerException
+             0    29    42   any
+      LineNumberTable:
+        line 12: 0
+        line 15: 5
+        line 13: 8
+        line 14: 9
+        line 16: 19
+        line 18: 29
+        line 19: 39
+        line 18: 42
+        line 19: 53
+        line 20: 55
+      StackMapTable: number_of_entries = 4
+        frame_type = 72 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NullPointerException ]
+        frame_type = 10 /* same */
+        frame_type = 86 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 12 /* same */
+
+  public void test2(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_0
+         1: iload_1
+         2: invokevirtual #7                  // Method call:(I)V
+         5: goto          19
+         8: astore_2
+         9: aload_0
+        10: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        13: ldc           #19                 // String -catch
+        15: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: pop
+        19: aload_0
+        20: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        23: ldc           #29                 // String -finally
+        25: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        28: pop
+        29: goto          45
+        32: astore_3
+        33: aload_0
+        34: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        37: ldc           #29                 // String -finally
+        39: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        42: pop
+        43: aload_3
+        44: athrow
+        45: return
+      Exception table:
+         from    to  target type
+             0     5     8   Class java/lang/NullPointerException
+             0    19    32   any
+      LineNumberTable:
+        line 25: 0
+        line 28: 5
+        line 26: 8
+        line 27: 9
+        line 30: 19
+        line 31: 29
+        line 30: 32
+        line 31: 43
+        line 32: 45
+      StackMapTable: number_of_entries = 4
+        frame_type = 72 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NullPointerException ]
+        frame_type = 10 /* same */
+        frame_type = 76 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 12 /* same */
+
+  public void test3(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_0
+         1: iload_1
+         2: invokevirtual #7                  // Method call:(I)V
+         5: aload_0
+         6: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+         9: ldc           #29                 // String -finally
+        11: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        14: pop
+        15: goto          55
+        18: astore_2
+        19: aload_0
+        20: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        23: ldc           #19                 // String -catch
+        25: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        28: pop
+        29: aload_0
+        30: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        33: ldc           #29                 // String -finally
+        35: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        38: pop
+        39: goto          55
+        42: astore_3
+        43: aload_0
+        44: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        47: ldc           #29                 // String -finally
+        49: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        52: pop
+        53: aload_3
+        54: athrow
+        55: return
+      Exception table:
+         from    to  target type
+             0     5    18   Class java/lang/NullPointerException
+             0     5    42   any
+            18    29    42   any
+      LineNumberTable:
+        line 36: 0
+        line 40: 5
+        line 41: 15
+        line 37: 18
+        line 38: 19
+        line 40: 29
+        line 41: 39
+        line 40: 42
+        line 41: 53
+        line 42: 55
+      StackMapTable: number_of_entries = 3
+        frame_type = 82 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NullPointerException ]
+        frame_type = 87 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 12 /* same */
