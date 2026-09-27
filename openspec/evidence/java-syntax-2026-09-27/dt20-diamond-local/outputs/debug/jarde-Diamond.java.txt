@@ -15,7 +15,7 @@ public class Diamond extends java.lang.Object {
         // @method test()Ljava/lang/String;
         // @declaration an instance method of `dt20.Diamond`, member flags 0x0001
         // recovered from bytecode; presentation is not claimed to compile
-        java.util.HashMap map = new java.util.HashMap();
+        java.util.Map<java.lang.String, java.lang.String> map = new java.util.HashMap<>();
         return (java.lang.String) map.get((java.lang.Object) "test");
     }
 }

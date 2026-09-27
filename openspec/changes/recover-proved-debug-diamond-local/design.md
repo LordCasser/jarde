@@ -11,9 +11,9 @@
 ## Decisions
 
 1. **扩展现有同次 Code debug 事实。** 在 reader 读 LVT 的同一嵌套属性遍历中识别 LVTT，保留原始签名和 slot/名称/BCI 范围；只有唯一、完整、与 LVT 精确一致的记录可用于投影。畸形/重复/冲突记录不影响已读指令及名称，不被当作泛型事实。不得在 class-source 另读 `Code` 或从输出文本解析。
-2. **局部身份先于类型。** facade 把该 raw 事实随既有 `DebugLocal` 交给 recovery；`reuse` 确定一个 `LocalVariable` 后，声明规划才解析 LVTT 的 `Map<String,String>`，证明其擦除是 LVT `Map`，范围覆盖唯一 store/use，且同轮 Code/SSA 只有已证的 `HashMap.<init>()` 对应的值写入。缺任一条件保持现有 raw 规划；已有 `Type::Reference` 可承载经过验证的源码类型，但不得绕过决定一次的契约。
+2. **局部身份先于类型。** facade 把该 raw 事实随既有 `DebugLocal` 交给 recovery；`reuse` 确定一个 `LocalVariable` 后，声明规划才解析 LVTT 的 `Map<String,String>`，证明其擦除是 LVT `Map`，`[8,20)` 范围覆盖读取，且唯一初始化 store 恰在范围前一条指令结束（`astore_1@7`），其 SSA 输入唯一来自同轮 Code/SSA 的 `HashMap.<init>()` 分配。该局部只有一个写入和一个范围内读取。缺任一条件保持现有 raw 规划；`Type::Reference` 继续表达擦除语义，源码拼写只作为按既有 `LocalVariable` 键控的投影，且不得绕过决定一次的契约。
 3. **菱形只绑定确切构造。** 必须证成该 `new java.util.HashMap` 无参构造结果正是被赋给该局部的值，且 Java 8 标准库 `HashMap<K,V>` 可赋给目标 `Map<K,V>`；`ExprKind::New.diamond` 与局部声明在同一次原子 AST 决定中提交。不能把其它 `new HashMap`、raw/no-debug 方法或其它用途顺手变为菱形。若局部类型可证但构造目标不能证成，整个本片泛型投影拒绝。
-4. **验证生产证明和对照。** 对真实 `-g`/`-g:none` class，检查原/JADX/Jarde 完整源码重编与验证运行。再构造 verifier-valid 的错范围、重复 LVTT、不同泛型实参、第二次写入及低预算/取消负例；不以唯一正例的文本断言替代闭合证据。
+4. **验证生产证明和对照。** 对真实 `-g`/`-g:none` class，检查原/JADX/Jarde 完整源码重编与验证运行。再构造 verifier-valid 的不同泛型实参、同槽不同寿命和第二次写入负例；另以错范围、畸形签名和重复 LVTT 验证 reader 拒绝。当前 JVM 会以 `ClassFormatError` 拒绝这三种变异输入，所以只断言 reader/Jarde 的 raw 回退和回退源码 verifier，不声称变异输入可运行；低预算/取消必须让整次请求停止，不能发布半成品。不以唯一正例的文本断言替代闭合证据。
 
 ## Risks / Trade-offs
 

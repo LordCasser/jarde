@@ -2735,6 +2735,7 @@ fn recover_inner(
             has_receiver: request.facts.method().has_receiver(),
             parameter_types: &parameter_types,
             return_type,
+            debug_locals: request.facts.debug_locals(),
             names: &names,
             reuse: &reuse,
             chains: &chains,

@@ -18,5 +18,14 @@
       "jadx_verified_run": "true\n",
       "jarde_verified_run": "true\n"
     }
+  },
+  "allocation_isolation": "proved local uses diamond; unrelated HashMap remains raw",
+  "refusal_controls": {
+    "second-write": "raw local and constructor retained; Java 8 verifier passed",
+    "slot-reuse": "raw local and constructor retained; Java 8 verifier passed",
+    "different-signature": "raw local and constructor retained; Java 8 verifier passed",
+    "malformed-lvtt": "raw local retained; original and recovered Java 8 verifiers passed",
+    "wrong-lvtt-range": "raw local retained; recovered Java 8 verifier passed; JVM rejects mutated input metadata",
+    "duplicate-lvtt": "raw local retained; recovered Java 8 verifier passed; JVM rejects mutated input metadata"
   }
 }

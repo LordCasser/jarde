@@ -1036,6 +1036,9 @@ impl<'a> Emitter<'a> {
                 } else {
                     emitter.put("new ", at)?;
                     emitter.put(ty, at)?;
+                    if *diamond {
+                        emitter.put("<>", at)?;
+                    }
                 }
                 emitter.put("(", at)?;
                 for (index, arg) in args.iter().enumerate() {
@@ -2571,6 +2574,19 @@ mod tests {
             generic_map.text_of_bci(&generic.text, 23),
             vec!["arg0.new Inner<>(2)"],
         );
+
+        let generic_class = Expr::new(
+            ExprKind::New {
+                ty: "java.util.HashMap".to_string(),
+                qualifier: None,
+                member_name: None,
+                diamond: true,
+                args: vec![],
+            },
+            OriginSet::new(Origin::direct(24)),
+        );
+        let (generic_class, _) = emitted_value(generic_class);
+        assert!(generic_class.text.contains("new java.util.HashMap<>();"));
     }
 
     #[test]

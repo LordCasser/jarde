@@ -20731,15 +20731,58 @@ fn debug_locals(
     let jarde_reader::classfile::LocalDebugTable::Read(records) = code.debug() else {
         return Vec::new();
     };
+    let generic_records = match code.generic_debug() {
+        jarde_reader::classfile::LocalDebugTypeTable::Read(records) => records.as_slice(),
+        jarde_reader::classfile::LocalDebugTypeTable::Absent
+        | jarde_reader::classfile::LocalDebugTypeTable::Unstated => &[],
+    };
+    // Both tables are bounded by the already charged Code attribute. Index them once: comparing
+    // every LVT row with every other LVT/LVTT row would make debug metadata quadratic work.
+    let mut local_counts = std::collections::BTreeMap::new();
+    for record in records {
+        let key = (
+            record.slot,
+            record.start_bci,
+            record.end_bci,
+            record.name.0.as_slice(),
+        );
+        *local_counts.entry(key).or_insert(0usize) += 1;
+    }
+    let mut generic_by_local = std::collections::BTreeMap::new();
+    for generic in generic_records {
+        let key = (
+            generic.slot,
+            generic.start_bci,
+            generic.end_bci,
+            generic.name.0.as_slice(),
+        );
+        generic_by_local
+            .entry(key)
+            .or_insert_with(Vec::new)
+            .push(generic);
+    }
     records
         .iter()
         .map(|record| {
-            jarde_java::DebugLocal::over(
+            let key = (
+                record.slot,
+                record.start_bci,
+                record.end_bci,
+                record.name.0.as_slice(),
+            );
+            let local = jarde_java::DebugLocal::over(
                 record.slot,
                 record.name_lossy(),
                 record.start_bci,
                 record.end_bci,
-            )
+            );
+            if local_counts.get(&key) == Some(&1)
+                && let Some([generic]) = generic_by_local.get(&key).map(Vec::as_slice)
+            {
+                local.with_type_metadata(record.descriptor.0.clone(), generic.signature.0.clone())
+            } else {
+                local
+            }
         })
         .collect()
 }
