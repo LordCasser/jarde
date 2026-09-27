@@ -602,40 +602,41 @@ fn the_payload_carries_the_tables_of_one_real_run() {
         reading,
         Reading {
             canonical_blocks: 6,
-            canonical_edges: 4,
+            canonical_edges: 5,
             canonical_normal_edges: 0,
             canonical_call_edges: 2,
             canonical_return_edges: 2,
             canonical_throw_sites: 1,
-            canonical_handler_rows: 0,
-            canonical_unreachable: 3,
+            canonical_handler_rows: 1,
+            canonical_unreachable: 0,
             canonical_complete: true,
             canonical_clones: 2,
             blocks_with_origin: 6,
             covered_starts: BTreeSet::from([0, 8, 11, 15, 17]),
             instruction_spans: 6,
-            frame_blocks: 3,
+            frame_blocks: 6,
             frame_locals_slots: 5,
             frame_deepest_stack: 1,
             entry_locals: 5,
             entry_stack: 0,
             entry_inputs: 0,
-            ssa_values: 10,
+            ssa_values: 16,
             ssa_phis: 0,
-            ssa_blocks: 3,
-            ssa_effect_records: 10,
-            ssa_throwing_effects: 0,
-            ssa_anchored_effects: 0,
+            ssa_blocks: 6,
+            ssa_effect_records: 17,
+            ssa_throwing_effects: 1,
+            ssa_anchored_effects: 1,
             value_definitions: BTreeSet::from([
+                "caught".to_string(),
                 "entry:local0".to_string(),
                 "entry:local1".to_string(),
                 "instruction".to_string(),
             ]),
-            values_with_origin: 8,
+            values_with_origin: 14,
             direct_phi_inputs: 0,
             itself_phi_inputs: 0,
             replaced_phis: 0,
-            ssa_instruction_records: 10,
+            ssa_instruction_records: 17,
         },
         "the payload of this body is this structure and nothing else"
     );
@@ -665,12 +666,12 @@ fn the_payload_carries_the_tables_of_one_real_run() {
         "one effect record per instruction the names hold"
     );
     assert!(
-        reading.ssa_instruction_records < body.instruction_count,
-        "the names cover the blocks the entry reaches, which here is fewer instructions than the body"
+        reading.ssa_instruction_records >= body.instruction_count,
+        "the names include both copies of instructions reached through the jsr finally path"
     );
 
-    // The three zeroes above are this body's truth, not a hole in the surface: `finallyPath` has
-    // no handler record that covers a site of a reached block and no merge of disagreeing values.
+    // The published handler row and throwing effect describe the reached jsr finally path. Two
+    // canonical copies make the table's instruction-record count exceed the physical body count.
     // The phi surface itself is pinned by `method_ir`'s own unit test over an assembled branch.
 }
 
