@@ -5,6 +5,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::slice;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
@@ -729,11 +730,15 @@ struct Scratch(PathBuf);
 
 impl Scratch {
     fn new() -> Self {
+        static NEXT_ID: AtomicU64 = AtomicU64::new(0);
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .expect("system clock follows the epoch")
             .as_nanos();
-        Self(std::env::temp_dir().join(format!("jarde-loop-do-{nonce}")))
+        let id = NEXT_ID.fetch_add(1, Ordering::Relaxed);
+        Self(
+            std::env::temp_dir().join(format!("jarde-loop-do-{}-{nonce}-{id}", std::process::id())),
+        )
     }
 
     fn path(&self) -> &Path {
