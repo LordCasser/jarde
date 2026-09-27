@@ -5,8 +5,8 @@
 
 ## 2. 三副本共用清理
 
-- [ ] 2.1 在现有共享 finally 证书内证明 `test3` 三份当前实例 `StringBuilder.append(String)` 清理：精确字段/成员/常量、入口 `this`、SSA 局部栈消费和唯一 `pop`；正例获证，参数/目标/消费变化负例拒绝，预算/取消停在原子边界。
-- [ ] 2.2 复用现有 `Joined` 正常完成与 `Plan::join`，让 `test3` 的具名 catch、一次 finally、独立 BCI 55 后续块被唯一 Region owner 认领；测试断言所有物理 BCI 来源和三行异常表，最小完整类的 test3 三路径与原 class 一致。
+- [x] 2.1 在现有共享 finally 证书内证明 `test3` 三份当前实例 `StringBuilder.append(String)` 清理：精确字段/成员/常量、入口 `this`、SSA 局部栈消费和唯一 `pop`；正例获证，参数/目标/消费变化负例拒绝，预算/取消停在原子边界。
+- [x] 2.2 复用现有 `Joined` 正常完成与 `Plan::join`，让 `test3` 的具名 catch、一次 finally、独立 BCI 55 后续块被唯一 Region owner 认领；测试断言所有物理 BCI 来源和三行异常表，最小完整类的 test3 三路径与原 class 一致。
 
 ## 3. 两副本外层清理与内层 catch
 

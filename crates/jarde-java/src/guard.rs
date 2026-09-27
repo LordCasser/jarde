@@ -1800,6 +1800,136 @@ fn cleanup_sequence(facts: &Facts<'_>, copy: &[u32]) -> Option<Vec<(Operation, V
     Some(normalized)
 }
 
+/// The only instance-call cleanup admitted by the shared-join certificate. Each copy reads the
+/// field afresh, and every produced stack value has exactly its next physical consumer.
+fn append_cleanup(
+    facts: &mut Facts<'_>,
+    start: u32,
+) -> Result<Option<(u32, Operation, Operation, Operation)>, StopReason> {
+    let mut bcis = [start; 5];
+    for index in 1..bcis.len() {
+        let Some(next) = facts.next_bci(bcis[index - 1]) else {
+            return Ok(None);
+        };
+        bcis[index] = next;
+    }
+    let [receiver, field, constant, invoke, pop] = bcis;
+    for bci in bcis {
+        facts.charge(bci)?;
+    }
+    let Some(Operation::Field {
+        access: crate::facts::FieldAccess::Read,
+        is_static: false,
+        descriptor,
+        ..
+    }) = facts.op(field)
+    else {
+        return Ok(None);
+    };
+    let field_op = facts.op(field).unwrap().clone();
+    let constant_op = facts.op(constant).cloned();
+    let invoke_op = facts.op(invoke).cloned();
+    let valid = facts
+        .step(receiver)
+        .is_some_and(|step| step.instruction.opcode() == 0x2a)
+        && facts.op(receiver) == Some(&Operation::Load { slot: 0 })
+        && descriptor == "Ljava/lang/StringBuilder;"
+        && matches!(
+            facts.op(constant),
+            Some(Operation::Push(crate::facts::ConstantValue::String(_)))
+        )
+        && matches!(facts.op(invoke), Some(Operation::Invoke(target))
+            if target.kind() == InvokeKind::Virtual
+                && target.owner() == "java/lang/StringBuilder"
+                && target.name() == "append"
+                && target.descriptor() == "(Ljava/lang/String;)Ljava/lang/StringBuilder;")
+        && facts
+            .step(pop)
+            .is_some_and(|step| step.instruction.opcode() == 0x57)
+        && matches!(facts.op(pop), Some(Operation::Other));
+    if !valid {
+        return Ok(None);
+    }
+    let steps: Vec<_> = bcis.iter().filter_map(|bci| facts.step(*bci)).collect();
+    if steps.len() != 5
+        || steps[0].instruction.reads().len() != 1
+        || steps[0].instruction.reads()[0].0 != Slot::Local(0)
+        || !matches!(
+            facts
+                .ssa
+                .value(facts.resolve(steps[0].instruction.reads()[0].1))
+                .def(),
+            Definition::Entry {
+                slot: Slot::Local(0),
+                ..
+            }
+        )
+        || !steps[2].instruction.reads().is_empty()
+        || !steps[4].instruction.writes().is_empty()
+    {
+        return Ok(None);
+    }
+    for index in 0..4 {
+        let outputs: Vec<_> = steps[index]
+            .instruction
+            .writes()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .collect();
+        if outputs.len() != 1
+            || steps[index].instruction.writes().len() != 1
+            || !matches!(facts.ssa.value(facts.resolve(outputs[0].1)).def(),
+                Definition::Instruction { bci, .. } if *bci == bcis[index])
+        {
+            return Ok(None);
+        }
+        let expected_consumer = if index == 0 {
+            1
+        } else if index == 1 || index == 2 {
+            3
+        } else {
+            4
+        };
+        let expected_operands = stack_operands(steps[expected_consumer].instruction);
+        if !expected_operands
+            .iter()
+            .any(|(_, value)| facts.same(*value, outputs[0].1))
+        {
+            return Ok(None);
+        }
+        let mut uses = 0;
+        for bci in facts.order.clone() {
+            facts.charge(bci)?;
+            if let Some(step) = facts.step(bci) {
+                uses += stack_operands(step.instruction)
+                    .iter()
+                    .filter(|(_, value)| facts.same(*value, outputs[0].1))
+                    .count();
+            }
+        }
+        if uses != 1 {
+            return Ok(None);
+        }
+    }
+    let field_reads = steps[1].instruction.reads();
+    let invoke_reads = steps[3].instruction.reads();
+    let pop_reads = steps[4].instruction.reads();
+    if !matches!(field_reads, [(Slot::Stack(0), value)]
+        if facts.same(*value, steps[0].instruction.writes()[0].1))
+        || !matches!(invoke_reads, [(Slot::Stack(1), argument), (Slot::Stack(0), receiver)]
+            if facts.same(*argument, steps[2].instruction.writes()[0].1)
+                && facts.same(*receiver, steps[1].instruction.writes()[0].1))
+        || !matches!(pop_reads, [(Slot::Stack(0), value)]
+            if facts.same(*value, steps[3].instruction.writes()[0].1))
+    {
+        return Ok(None);
+    }
+    let (Some(constant_op), Some(invoke_op)) = (constant_op, invoke_op) else {
+        return Ok(None);
+    };
+    Ok(Some((pop, field_op, constant_op, invoke_op)))
+}
+
 /// Prove only a straight return/handler pair, before any region ownership or emission. The row's
 /// half-open range is checked first: a cleanup call caught by its own handler can run twice.
 fn prove_finally_copy(
@@ -2204,42 +2334,13 @@ fn shared_cleanup_copies(
     Ok(true)
 }
 
-/// A deliberately separate completion contract: the two normal copies end in transfers to one
-/// continuation, not in saved values. The old saved-return certificate is left unchanged.
-fn prove_shared_join_finally(
+/// Preserve the older boolean-field certificate as its own narrow copy proof.
+fn boolean_join_cleanup(
     facts: &mut Facts<'_>,
-    current: &CanonicalBlockId,
-) -> Result<Option<Plan>, StopReason> {
-    let [named, try_any, catch_any] = facts.handlers else {
-        return Ok(None);
-    };
-    let start = current.bci();
-    if named.ordinal + 1 != try_any.ordinal
-        || try_any.ordinal + 1 != catch_any.ordinal
-        || named.catch_type_index.is_none()
-        || try_any.catch_type_index.is_some()
-        || catch_any.catch_type_index.is_some()
-        || (named.start_bci, named.end_bci) != (try_any.start_bci, try_any.end_bci)
-        || named.handler_bci != catch_any.start_bci
-        || try_any.handler_bci != catch_any.handler_bci
-        || !(start <= named.start_bci
-            && named.start_bci < named.end_bci
-            && named.end_bci < named.handler_bci
-            && named.handler_bci < catch_any.end_bci
-            && catch_any.end_bci < try_any.handler_bci)
-        || !facts
-            .in_block(current)
-            .iter()
-            .any(|instruction| instruction.bci() == named.start_bci)
-    {
-        return Ok(None);
-    }
-    let first = named.end_bci;
-    let second = catch_any.end_bci;
-    let handler = try_any.handler_bci;
-    let Some(third) = facts.next_bci(handler) else {
-        return Ok(None);
-    };
+    first: u32,
+    second: u32,
+    third: u32,
+) -> Result<Option<[(u32, u32); 3]>, StopReason> {
     let mut copies = [(0, 0); 3];
     for (index, at) in [first, second, third].into_iter().enumerate() {
         let (Some(push), Some(write)) = (
@@ -2338,6 +2439,72 @@ fn prove_shared_join_finally(
             }
         }
     }
+    Ok(Some(copies))
+}
+
+/// A deliberately separate completion contract: the two normal copies end in transfers to one
+/// continuation, not in saved values. The old saved-return certificate is left unchanged.
+fn prove_shared_join_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [named, try_any, catch_any] = facts.handlers else {
+        return Ok(None);
+    };
+    let start = current.bci();
+    if named.ordinal + 1 != try_any.ordinal
+        || try_any.ordinal + 1 != catch_any.ordinal
+        || named.catch_type_index.is_none()
+        || try_any.catch_type_index.is_some()
+        || catch_any.catch_type_index.is_some()
+        || (named.start_bci, named.end_bci) != (try_any.start_bci, try_any.end_bci)
+        || named.handler_bci != catch_any.start_bci
+        || try_any.handler_bci != catch_any.handler_bci
+        || !(start <= named.start_bci
+            && named.start_bci < named.end_bci
+            && named.end_bci < named.handler_bci
+            && named.handler_bci < catch_any.end_bci
+            && catch_any.end_bci < try_any.handler_bci)
+        || !facts
+            .in_block(current)
+            .iter()
+            .any(|instruction| instruction.bci() == named.start_bci)
+    {
+        return Ok(None);
+    }
+    let first = named.end_bci;
+    let second = catch_any.end_bci;
+    let handler = try_any.handler_bci;
+    let Some(third) = facts.next_bci(handler) else {
+        return Ok(None);
+    };
+    let mut copies = [(0, 0); 3];
+    let appended = matches!(
+        facts.next_bci(first).and_then(|bci| facts.op(bci)),
+        Some(Operation::Field {
+            access: crate::facts::FieldAccess::Read,
+            ..
+        })
+    );
+    if appended {
+        let mut member_pair = None;
+        for (index, at) in [first, second, third].into_iter().enumerate() {
+            let Some((pop, field, constant, invoke)) = append_cleanup(facts, at)? else {
+                return Ok(None);
+            };
+            let current = (field, constant, invoke);
+            if member_pair.as_ref().is_some_and(|pair| pair != &current) {
+                return Ok(None);
+            }
+            member_pair = Some(current);
+            copies[index] = (at, pop);
+        }
+    } else {
+        let Some(verified) = boolean_join_cleanup(facts, first, second, third)? else {
+            return Ok(None);
+        };
+        copies = verified;
+    }
     let (Some(first_transfer), Some(second_transfer), Some(primary_load)) = (
         facts.next_bci(copies[0].1),
         facts.next_bci(copies[1].1),
@@ -2405,70 +2572,80 @@ fn prove_shared_join_finally(
         return Ok(None);
     }
     let join_instructions = facts.in_block(join);
-    let same_join_field = match (
-        facts.op(copies[0].1),
-        join_instructions
-            .get(1)
-            .and_then(|step| facts.op(step.bci())),
-    ) {
-        (
-            Some(Operation::Field {
-                owner: write_owner,
-                name: write_name,
-                descriptor: write_descriptor,
-                ..
-            }),
-            Some(Operation::Field {
-                access: crate::facts::FieldAccess::Read,
-                is_static: false,
-                owner: read_owner,
-                name: read_name,
-                descriptor: read_descriptor,
-            }),
-        ) => {
-            (write_owner, write_name, write_descriptor) == (read_owner, read_name, read_descriptor)
+    if appended {
+        if join_instructions.len() != 1
+            || facts.op(join_instructions[0].bci()) != Some(&Operation::Return)
+            || !join_instructions[0].reads().is_empty()
+        {
+            return Ok(None);
         }
-        _ => false,
-    };
-    if join_instructions.len() != 3
-        || join_instructions[0].opcode() != 0x2a
-        || !same_join_field
-        || facts.op(join_instructions[2].bci()) != Some(&Operation::Return)
-    {
-        return Ok(None);
-    }
-    let (receiver, field_read, returned) = (
-        &join_instructions[0],
-        &join_instructions[1],
-        &join_instructions[2],
-    );
-    let receiver_outputs: Vec<_> = receiver
-        .writes()
-        .iter()
-        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
-        .collect();
-    let field_outputs: Vec<_> = field_read
-        .writes()
-        .iter()
-        .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
-        .collect();
-    if facts.op(receiver.bci()) != Some(&Operation::Load { slot: 0 })
-        || receiver.reads().len() != 1
-        || !matches!(
-            facts.ssa.value(facts.resolve(receiver.reads()[0].1)).def(),
-            Definition::Entry {
-                slot: Slot::Local(0),
-                ..
+    } else {
+        let same_join_field = match (
+            facts.op(copies[0].1),
+            join_instructions
+                .get(1)
+                .and_then(|step| facts.op(step.bci())),
+        ) {
+            (
+                Some(Operation::Field {
+                    owner: write_owner,
+                    name: write_name,
+                    descriptor: write_descriptor,
+                    ..
+                }),
+                Some(Operation::Field {
+                    access: crate::facts::FieldAccess::Read,
+                    is_static: false,
+                    owner: read_owner,
+                    name: read_name,
+                    descriptor: read_descriptor,
+                }),
+            ) => {
+                (write_owner, write_name, write_descriptor)
+                    == (read_owner, read_name, read_descriptor)
             }
-        )
-        || receiver_outputs.len() != 1
-        || field_outputs.len() != 1
-        || stack_operands(field_read).len() != 1
-        || !facts.same(stack_operands(field_read)[0].1, receiver_outputs[0].1)
-        || stack_operands(returned).len() != 1
-        || !facts.same(stack_operands(returned)[0].1, field_outputs[0].1)
-    {
-        return Ok(None);
+            _ => false,
+        };
+        if join_instructions.len() != 3
+            || join_instructions[0].opcode() != 0x2a
+            || !same_join_field
+            || facts.op(join_instructions[2].bci()) != Some(&Operation::Return)
+        {
+            return Ok(None);
+        }
+        let (receiver, field_read, returned) = (
+            &join_instructions[0],
+            &join_instructions[1],
+            &join_instructions[2],
+        );
+        let receiver_outputs: Vec<_> = receiver
+            .writes()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .collect();
+        let field_outputs: Vec<_> = field_read
+            .writes()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .collect();
+        if facts.op(receiver.bci()) != Some(&Operation::Load { slot: 0 })
+            || receiver.reads().len() != 1
+            || !matches!(
+                facts.ssa.value(facts.resolve(receiver.reads()[0].1)).def(),
+                Definition::Entry {
+                    slot: Slot::Local(0),
+                    ..
+                }
+            )
+            || receiver_outputs.len() != 1
+            || field_outputs.len() != 1
+            || stack_operands(field_read).len() != 1
+            || !facts.same(stack_operands(field_read)[0].1, receiver_outputs[0].1)
+            || stack_operands(returned).len() != 1
+            || !facts.same(stack_operands(returned)[0].1, field_outputs[0].1)
+        {
+            return Ok(None);
+        }
     }
     let (Some(store), Some(load), Some(throw)) = (
         facts.step(handler),
@@ -3185,6 +3362,74 @@ mod finally_copy_tests {
     const JOIN: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoin.class"
     );
+    const NESTED_TEST_CLS: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class"
+    );
+
+    #[test]
+    fn nested_test3_append_copies_have_one_shared_join_certificate() {
+        let plan = shared_probe_method(
+            NESTED_TEST_CLS,
+            b"test3",
+            b"(I)V",
+            |rows| {
+                assert_eq!(
+                    rows.iter()
+                        .map(|row| (
+                            row.ordinal,
+                            row.start_bci,
+                            row.end_bci,
+                            row.handler_bci,
+                            row.catch_type_index
+                        ))
+                        .collect::<Vec<_>>(),
+                    [
+                        (0, 0, 5, 18, Some(13)),
+                        (1, 0, 5, 42, None),
+                        (2, 18, 29, 42, None)
+                    ]
+                );
+            },
+            None,
+        )
+        .unwrap()
+        .expect("all three append copies are proved");
+        let Shape::SharedFinally {
+            rows,
+            normal_cleanup,
+            catch_cleanup,
+            completion,
+            ..
+        } = plan.shape()
+        else {
+            panic!("shared finally shape");
+        };
+        assert_eq!(*rows, [0, 1, 2]);
+        assert_eq!((*normal_cleanup, *catch_cleanup), ((5, 15), (29, 39)));
+        assert_eq!(
+            *completion,
+            SharedFinallyCompletion::Joined {
+                transfers: [15, 39]
+            }
+        );
+        assert_eq!(plan.join().map(CanonicalBlockId::bci), Some(55));
+        assert!(!plan.owned().iter().any(|block| block.bci() == 55));
+        assert_eq!(
+            plan.facts(),
+            &(vec![
+                0, 1, 2, 5, 6, 9, 11, 14, 15, 18, 19, 20, 23, 25, 28, 29, 30, 33, 35, 38, 39, 42,
+                43, 44, 47, 49, 52, 53, 54,
+            ])
+        );
+        assert!(
+            shared_probe_method(NESTED_TEST_CLS, b"test3", b"(I)V", |_| {}, Some("budget"))
+                .is_err()
+        );
+        assert!(
+            shared_probe_method(NESTED_TEST_CLS, b"test3", b"(I)V", |_| {}, Some("cancel"))
+                .is_err()
+        );
+    }
     const JOIN_VALUE_MISMATCH: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoinValueMismatch.class"
     );

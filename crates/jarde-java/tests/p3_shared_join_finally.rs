@@ -22,6 +22,29 @@ use jarde_reader::view::{
 
 const FIXTURE: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoin.class");
+const NESTED_TEST_CLS: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class"
+);
+const NESTED_OTHER_CONSTANT: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3MatchingOtherConstant.class"
+);
+const NESTED_TEST3_NEGATIVES: [&[u8]; 5] = [
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3DifferentConstant.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3DifferentField.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3DifferentTarget.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3StoredResult.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test3WidenedRow.class"
+    ),
+];
 const NEGATIVES: [&[u8]; 3] = [
     include_bytes!(
         "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoinValueMismatch.class"
@@ -58,6 +81,24 @@ fn limits() -> Limits {
 }
 
 fn recover_test(class: &[u8], recovery_budget: Option<Budget>) -> jarde_java::RecoveryReport {
+    recover_method(
+        class,
+        "test",
+        "(Ljava/lang/Object;)Z",
+        "TestTryCatchFinally$TestCls",
+        0x0002,
+        recovery_budget,
+    )
+}
+
+fn recover_method(
+    class: &[u8],
+    name: &str,
+    descriptor: &str,
+    owner: &str,
+    flags: u16,
+    recovery_budget: Option<Budget>,
+) -> jarde_java::RecoveryReport {
     let mut budget = Budget::new(limits());
     let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
         .expect("fixture opens");
@@ -72,8 +113,8 @@ fn recover_test(class: &[u8], recovery_budget: Option<Budget>) -> jarde_java::Re
             },
             variant: PhysicalVariant::Base,
         },
-        name: JvmBytes(b"test".to_vec()),
-        descriptor: JvmBytes(b"(Ljava/lang/Object;)Z".to_vec()),
+        name: JvmBytes(name.as_bytes().to_vec()),
+        descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
     };
     let domain = LoadDomain {
         loader: LoaderId("app".into()),
@@ -112,9 +153,9 @@ fn recover_test(class: &[u8], recovery_budget: Option<Budget>) -> jarde_java::Re
     )
     .expect("fixed class analyzes");
     let facts = RecoveryFacts::new(
-        MethodFacts::new("test", "(Ljava/lang/Object;)Z", 2)
-            .with_access_flags(0x0002)
-            .with_declaring_class(DeclaringClass::new("TestTryCatchFinally$TestCls", 0x0021)),
+        MethodFacts::new(name, descriptor, 2)
+            .with_access_flags(flags)
+            .with_declaring_class(DeclaringClass::new(owner, 0x0021)),
     );
     let mut budget = recovery_budget.unwrap_or(budget);
     recover(
@@ -156,6 +197,102 @@ fn fixed_shared_join_has_one_finally_and_complete_physical_ownership() {
             "BCI {bci} has no source origin"
         );
     }
+}
+
+#[test]
+fn nested_test3_has_one_finally_and_complete_physical_ownership() {
+    let report = recover_method(
+        NESTED_TEST_CLS,
+        "test3",
+        "(I)V",
+        "jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls",
+        0x0001,
+        None,
+    );
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert_eq!(
+        report.text.matches("this.sb.append(\"-finally\")").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert!(report.text.contains("finally {"), "{}", report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    let blocks: Vec<_> = report
+        .regions
+        .iter()
+        .flat_map(|region| &region.blocks)
+        .copied()
+        .collect();
+    assert_eq!(
+        blocks.iter().copied().collect::<BTreeSet<_>>(),
+        BTreeSet::from([0, 18, 42, 55])
+    );
+    assert_eq!(blocks.len(), 4);
+    for bci in [
+        0, 1, 2, 5, 6, 9, 11, 14, 15, 18, 19, 20, 23, 25, 28, 29, 30, 33, 35, 38, 39, 42, 43, 44,
+        47, 49, 52, 53, 54, 55,
+    ] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci} has no origin"
+        );
+    }
+}
+
+#[test]
+fn nested_test3_equal_other_string_is_still_one_finally() {
+    let report = recover_method(
+        NESTED_OTHER_CONSTANT,
+        "test3",
+        "(I)V",
+        "jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls",
+        0x0001,
+        None,
+    );
+    assert!(report.text.contains("finally {"), "{}", report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(report.text.matches("this.sb.append(\"-catch\")").count(), 2);
+}
+
+#[test]
+fn nested_test3_verifier_valid_near_misses_refuse_shared_finally() {
+    for class in NESTED_TEST3_NEGATIVES {
+        let report = recover_method(
+            class,
+            "test3",
+            "(I)V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls",
+            0x0001,
+            None,
+        );
+        assert!(!report.text.contains("finally {"), "{}", report.text);
+        assert!(report.text.contains("@bytecode"), "{}", report.text);
+    }
+}
+
+#[test]
+fn nested_test3_stop_discards_text_and_source_map() {
+    let recover = |budget| {
+        recover_method(
+            NESTED_TEST_CLS,
+            "test3",
+            "(I)V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls",
+            0x0001,
+            Some(budget),
+        )
+    };
+    let mut tiny = limits();
+    tiny.ir_items = 1;
+    let stopped = recover(Budget::new(tiny));
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    assert!(matches!(stopped.stop(), Some(StopReason::Budget { .. })));
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover(Budget::with_cancellation_token(limits(), token));
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
 }
 
 #[test]
