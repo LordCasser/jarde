@@ -70,7 +70,8 @@ use crate::evidence::{
     RecoveryEvidenceKind, RecoveryEvidenceRequest, SegmentPublication,
 };
 use crate::facts::{
-    ACC_ANNOTATION, ACC_INTERFACE, ClassMembers, FieldAccess, Operation, RecoveryFacts,
+    ACC_ANNOTATION, ACC_INTERFACE, ClassMembers, ConstantValue, FieldAccess, Operation,
+    RecoveryFacts,
 };
 
 const ACC_ENUM: u16 = 0x4000;
@@ -891,6 +892,8 @@ pub struct GenericConstructorCandidate {
 pub enum GenericReturnValue {
     /// The body is exactly one effect-free `return;` instruction.
     EmptyVoid,
+    /// The body is exactly an effect-free `aconst_null; areturn` sequence.
+    NullLiteral,
     Parameter(u16),
     Conditional {
         test: u16,
@@ -1633,6 +1636,88 @@ fn generic_return_candidate(
     let StmtKind::Return { value: Some(value) } = &program.stmts[0].kind else {
         return Ok(None);
     };
+    if matches!(value.kind, ExprKind::Null) {
+        if program.statements != 1
+            || !parameter_types.is_empty()
+            || code.stopped_at.is_some()
+            || code.exception_handler_count != 0
+            || !code.exception_handlers.is_empty()
+            || code.instructions.len() != 2
+            || ssa.blocks().len() != 1
+            || !ssa.phis().is_empty()
+            || ssa.blocks()[0].instructions().len() != 2
+        {
+            return Ok(None);
+        }
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            3,
+            Some(code.instructions[0].bci),
+        )?;
+        let [push, returned] = &code.instructions[..] else {
+            unreachable!("instruction count checked above")
+        };
+        let [ssa_push, ssa_return] = &ssa.blocks()[0].instructions()[..] else {
+            unreachable!("SSA instruction count checked above")
+        };
+        let Some((Slot::Stack(pushed_slot), pushed_value)) = ssa_push.writes().first() else {
+            return Ok(None);
+        };
+        let mut body_operations = operations.iter();
+        let Some((push_operation_bci, Operation::Push(ConstantValue::Null))) =
+            body_operations.next()
+        else {
+            return Ok(None);
+        };
+        let Some((return_operation_bci, Operation::Return)) = body_operations.next() else {
+            return Ok(None);
+        };
+        let effects = ssa.effects().instructions();
+        if body_operations.next().is_some()
+            || push.opcode != 0x01
+            || returned.opcode != 0xb0
+            || push.bci.checked_add(1) != Some(returned.bci)
+            || *push_operation_bci != push.bci
+            || *return_operation_bci != returned.bci
+            || ssa_push.bci() != push.bci
+            || ssa_push.opcode() != push.opcode
+            || !ssa_push.reads().is_empty()
+            || !matches!(ssa_push.writes(), [(Slot::Stack(_), _)])
+            || ssa_return.bci() != returned.bci
+            || ssa_return.opcode() != returned.opcode
+            || !matches!(ssa_return.reads(), [(Slot::Stack(slot), value)]
+                if slot == pushed_slot && value == pushed_value)
+            || !ssa_return.writes().is_empty()
+            || value.origin.primary().provenance() != crate::source_map::Provenance::Direct
+            || value.origin.primary().bci() != push.bci
+            || program.stmts[0].origin.primary().provenance()
+                != crate::source_map::Provenance::Direct
+            || program.stmts[0].origin.primary().bci() != returned.bci
+            || !matches!(effects, [push_effect, return_effect]
+                if push_effect.bci() == push.bci
+                    && push_effect.opcode() == push.opcode
+                    && push_effect.locals_read().is_empty()
+                    && push_effect.locals_written().is_empty()
+                    && push_effect.stack_delta() == 1
+                    && !push_effect.may_throw()
+                    && push_effect.handlers().is_empty()
+                    && return_effect.bci() == returned.bci
+                    && return_effect.opcode() == returned.opcode
+                    && return_effect.locals_read().is_empty()
+                    && return_effect.locals_written().is_empty()
+                    && return_effect.stack_delta() == -1
+                    && !return_effect.may_throw()
+                    && return_effect.handlers().is_empty())
+        {
+            return Ok(None);
+        }
+        crate::stop::poll(budget, Some(returned.bci))?;
+        return Ok(Some(GenericReturnCandidate {
+            parameters: Vec::new(),
+            value: GenericReturnValue::NullLiteral,
+        }));
+    }
     let mut parameters = Vec::new();
     for slot in parameter_types.keys() {
         crate::stop::charge(
