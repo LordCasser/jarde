@@ -3096,6 +3096,7 @@ fn prove_shared_join_finally(
 fn prove_shared_finally(
     facts: &mut Facts<'_>,
     current: &CanonicalBlockId,
+    chains: Option<&crate::concat::Plan>,
 ) -> Result<Option<Plan>, StopReason> {
     let [named, try_any, catch_any] = facts.handlers else {
         return Ok(None);
@@ -3245,9 +3246,9 @@ fn prove_shared_finally(
     {
         return Ok(None);
     }
-    // This first slice presents each saved value directly in Java's return position, which
-    // evaluates it before the finally call. Only the two literal producers of the frozen call
-    // shape are admitted; other producers need their own placement proof.
+    // A saved value is evaluated before its finally copy. A literal needs only its direct stack
+    // flow; the catch's concat additionally needs the *same* complete chain already proved by
+    // concat::Plan, wholly inside the catch-all protected range.
     for save in [first_save, second_save] {
         let Some(producer) = facts.previous_bci(save) else {
             return Ok(None);
@@ -3262,7 +3263,24 @@ fn prove_shared_finally(
             .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
             .collect();
         let inputs = stack_operands(stored.instruction);
-        if !matches!(facts.op(producer), Some(Operation::Push(_)))
+        let producer_proved = match facts.op(producer) {
+            Some(Operation::Push(_)) => true,
+            Some(Operation::Invoke(_)) if save == second_save => {
+                if let Some(chain) = chains.and_then(|plan| plan.value_at(producer)) {
+                    let chain_end = facts.span_end(chain.tail);
+                    let span: std::collections::BTreeSet<_> =
+                        facts.bcis((chain.head, chain_end)).into_iter().collect();
+                    chain.tail == producer
+                        && catch_any.start_bci <= chain.head
+                        && chain_end <= catch_any.end_bci
+                        && chain.owned == span
+                } else {
+                    false
+                }
+            }
+            _ => false,
+        };
+        if !producer_proved
             || outputs.len() != 1
             || inputs.len() != 1
             || !facts.same(outputs[0].1, inputs[0].1)
@@ -3768,6 +3786,7 @@ pub(crate) fn shared_finally_candidate(
     view: &NormalFlowView,
     ssa: &SsaTable,
     ops: &Operations,
+    chains: &crate::concat::Plan,
     handlers: &[ExceptionHandlerFact],
     profile: &crate::pass::RecoveryProfile,
     current: &CanonicalBlockId,
@@ -3788,7 +3807,7 @@ pub(crate) fn shared_finally_candidate(
     if let Some(plan) = prove_shared_join_finally(&mut facts, current)? {
         return Ok(Some(plan));
     }
-    prove_shared_finally(&mut facts, current)
+    prove_shared_finally(&mut facts, current, Some(chains))
 }
 
 #[cfg(test)]
@@ -4003,6 +4022,12 @@ mod finally_copy_tests {
         let ssa = ir.ssa().unwrap();
         let code = ir.code().unwrap();
         let ops = Operations::of(code, ir.constant_pool());
+        let mut chains =
+            crate::concat::plan_four_conditional_strings(ssa, canonical, &ops, &mut budget)
+                .expect("concat plan");
+        if stop == Some("no-chain") {
+            chains = crate::concat::Plan::empty();
+        }
         let view = NormalFlowView::build(canonical, &mut budget).unwrap();
         let mut rows = code.exception_handlers.clone();
         edit_rows(&mut rows);
@@ -4020,6 +4045,7 @@ mod finally_copy_tests {
             &view,
             ssa,
             &ops,
+            &chains,
             &rows,
             &crate::pass::JAVA_8,
             canonical.blocks()[0].id(),
@@ -4029,6 +4055,9 @@ mod finally_copy_tests {
 
     const CALL: &[u8] = include_bytes!(
         "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyCall.class"
+    );
+    const CONCAT_SAVED: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-27/cf16-finally/original/FinallyOnce.class"
     );
     const FIELD: &[u8] =
         include_bytes!("../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinally.class");
@@ -4315,6 +4344,54 @@ mod finally_copy_tests {
         assert_eq!((*normal_cleanup, *catch_cleanup), ((21, 24), (30, 33)));
         assert!(plan.owned().iter().any(|block| block.bci() == 35));
         assert!(plan.facts().contains(&36) && plan.facts().contains(&40));
+    }
+
+    #[test]
+    fn concat_saved_return_uses_the_same_complete_chain_certificate() {
+        let plan = shared_probe(CONCAT_SAVED, |_| {}, None)
+            .unwrap()
+            .expect("the protected concat is one saved-return value");
+        let Shape::SharedFinally {
+            rows,
+            catch_body,
+            completion,
+            normal_cleanup,
+            catch_cleanup,
+            ..
+        } = plan.shape()
+        else {
+            panic!("the three-row saved-return shape");
+        };
+        assert_eq!(*rows, [0, 1, 2]);
+        assert_eq!(*catch_body, (31, 55));
+        assert_eq!(
+            *completion,
+            SharedFinallyCompletion::SavedReturns([(20, 30), (54, 64)])
+        );
+        assert_eq!((*normal_cleanup, *catch_cleanup), ((21, 29), (55, 63)));
+        assert!(
+            [32, 35, 36, 39, 41, 44, 45, 48, 51]
+                .iter()
+                .all(|bci| plan.facts().contains(bci))
+        );
+        assert!(
+            shared_probe(CONCAT_SAVED, |_| {}, Some("no-chain"))
+                .unwrap()
+                .is_none()
+        );
+        assert!(
+            shared_probe(CONCAT_SAVED, |rows| rows[2].end_bci = 51, None)
+                .unwrap()
+                .is_none()
+        );
+        assert!(matches!(
+            shared_probe(CONCAT_SAVED, |_| {}, Some("budget")),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            shared_probe(CONCAT_SAVED, |_| {}, Some("cancel")),
+            Err(StopReason::Cancelled { .. })
+        ));
     }
 
     #[test]
@@ -4958,7 +5035,7 @@ fn guarded(
         if let Some(plan) = prove_shared_join_finally(facts, current)? {
             return Ok(Some(Verdict::Claimed(plan)));
         }
-        if let Some(plan) = prove_shared_finally(facts, current)? {
+        if let Some(plan) = prove_shared_finally(facts, current, None)? {
             return Ok(Some(Verdict::Claimed(plan)));
         }
     }

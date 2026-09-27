@@ -4116,6 +4116,7 @@ fn recover_inner(
         &view,
         ssa,
         &operations,
+        &chains,
         &sites,
         code,
         method_synchronized,
