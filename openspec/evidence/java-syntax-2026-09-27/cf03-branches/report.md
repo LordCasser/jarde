@@ -23,3 +23,7 @@ python3 openspec/evidence/java-syntax-2026-09-27/cf03-branches/replay.py \
 `post-else-if-chain/summary.json` 是 CF-03 else-if 拼写改动后的固定脚本结果，完整日志和三侧生成源码也保存在该目录。`ChainOnly` 原 class、JADX、Jarde 完整类源码均通过 `javac --release 8 -g:none` 和 `java -Xverify:all`；五行输出逐字相同：`10:1`、`20:2`、`30:3`、`40:4`、`10:14`。Jarde 输出三个 `else if`，与 JADX 数量相同；Jarde 源码 SHA-256 为 `07d19e0854e8842832d9e8c078d1988751744d6c589448eba1cc0900703e4b8a`。
 
 同次完整 `BranchShapes` 重放中，原 class 与固定 JADX 仍通过 Java 8 编译和验证运行，15 行结果相同。Jarde 完整类源码仍在 `nested` 缺少返回语句而编译失败；`post-else-if-chain/jarde/javac.log` 记录该结果。else-if 呈现没有改变 AST，也没有修复或掩盖 BCI 24 的共享尾区域归属差距，后者仍需 CF-02 区域修复集成后重验。
+
+## CF-02 合入后的共享尾定位
+
+root 在含 CF-02 与 else-if 修复的主线重放 `nested(ZII)Z`，结果仍为 BCI 24 双归属引用。[区域探针](baseline/region-probe.log)显示：BCI 0 的两后继为 4/14，既无 immediate post-dominator，也无直接后继型 forward join；内层 BCI 8/18 分别把 BCI 24 当作自己的后续入口。物理 `javap` 显示 BCI 12/22 分别早退 `false`，BCI 8/18 的成功边才抵达 BCI 24 的一次 `hits++` 与 `return true`。这不是 else-if 拼写或 CF-02 内层可达后继的问题；[独立 OpenSpec](../../changes/own-proved-shared-early-return-tail/proposal.md)限定证明两臂共同前向尾部及唯一归属，不允许复制副作用或绕过所有权检查。

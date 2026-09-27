@@ -1,0 +1,7 @@
+exit=0
+P3JOIN branch=0 ipdom=None then=Some(4) else=Some(14) ft=false fe=false frame_boundary=None
+P3JOIN branch=4 ipdom=None then=Some(8) else=Some(12) ft=false fe=true frame_boundary=None
+P3JOIN branch=8 ipdom=None then=Some(12) else=Some(24) ft=true fe=false frame_boundary=Some(12)
+P3JOIN branch=14 ipdom=None then=Some(18) else=Some(22) ft=false fe=true frame_boundary=None
+P3JOIN branch=18 ipdom=None then=Some(22) else=Some(24) ft=true fe=false frame_boundary=Some(22)
+P3VISITED blocks=[0, 4, 14, 8, 12, 18, 22, 24] visited=[0, 4, 14, 8, 18, 24]
