@@ -197,6 +197,8 @@ pub(crate) enum ProvedEnumConstantGroup {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct ProvedEnumConstantBodyGroup {
     pub(crate) constants: Vec<ProvedEnumBodyConstant>,
+    /// Source constructor recovered from the exact single-String assignment proof.
+    pub(crate) constructor_text: Option<String>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -205,6 +207,8 @@ pub(crate) struct ProvedEnumBodyConstant {
     pub(crate) allocation_bci: u32,
     pub(crate) constructor_bci: u32,
     pub(crate) field_write_bci: u32,
+    /// ASCII-only Java source spelling proven from this constant's initializer stack.
+    pub(crate) string_argument: Option<String>,
     pub(crate) subclass: Option<jarde_reader::model::PhysicalDefinitionId>,
     /// The selected child's already-recovered source-visible members. A direct constant has no
     /// child and no member sidecar; sharing this slice does not run recovery or copy reports.

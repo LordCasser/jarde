@@ -4466,6 +4466,12 @@ impl Engine {
             && structure_complete
             && matches!(&execution, ExecutionReport::Complete { .. })
         {
+            let enum_interfaces = read
+                .facts
+                .interfaces
+                .iter()
+                .map(|name| name.raw().0.clone())
+                .collect::<Vec<_>>();
             match resolve_enum_constant_body_relations(
                 content,
                 &environment,
@@ -4473,6 +4479,7 @@ impl Engine {
                 &pool,
                 &read.facts.this_class.raw().0,
                 read.facts.access_flags,
+                &enum_interfaces,
                 &read.facts.fields,
                 &read.facts.methods,
                 &enum_code_candidates,
@@ -7693,6 +7700,9 @@ pub(crate) struct PendingEnumConstantBodyGroupShape {
     pub(crate) constants: Vec<PendingEnumConstantBodyConstant>,
     pub(crate) implicit_members: Vec<PendingEnumConstantBodyMember>,
     pub(crate) abstract_methods: Vec<PendingEnumConstantBodyMember>,
+    /// The one Java 8 direct-interface abstract method used by the DT-12 slice when the enum
+    /// inherits its required body signature instead of declaring it itself.
+    pub(crate) interface_methods: Vec<PendingEnumConstantBodyMember>,
     pub(crate) constructors: Vec<PendingEnumConstantBodyMember>,
     /// The private constructor reaches java/lang/Enum unchanged; the optional synthetic
     /// access constructor reaches that private constructor unchanged and ignores its marker.
@@ -7711,6 +7721,8 @@ pub(crate) struct PendingEnumConstantBodyInitializerPrefix {
     pub(crate) values_factory_call_bci: u32,
     pub(crate) values_field_write_bci: u32,
     pub(crate) prefix_end_bci: u32,
+    /// Raw class-file string constants, retained until the ASCII-only source proof.
+    pub(crate) source_arguments: Vec<Vec<u8>>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -7750,10 +7762,13 @@ fn prove_enum_constructor_instructions(
 
     let refusal =
         || "the constructor does not forward unchanged name/ordinal on a pure edge".to_owned();
-    let opcodes: &[u8] = if marker {
-        &[0x2a, 0x2b, 0x1c, 0x01, 0xb7, 0xb1]
-    } else {
-        &[0x2a, 0x2b, 0x1c, 0xb7, 0xb1]
+    let source_argument =
+        expected_descriptor.starts_with(b"(Ljava/lang/String;ILjava/lang/String;");
+    let opcodes: &[u8] = match (source_argument, marker) {
+        (false, false) => &[0x2a, 0x2b, 0x1c, 0xb7, 0xb1],
+        (false, true) => &[0x2a, 0x2b, 0x1c, 0x01, 0xb7, 0xb1],
+        (true, false) => &[0x2a, 0x2b, 0x1c, 0x2d, 0xb7, 0xb1],
+        (true, true) => &[0x2a, 0x2b, 0x1c, 0x2d, 0x01, 0xb7, 0xb1],
     };
     if instructions.len() != opcodes.len() {
         return Err(refusal());
@@ -7772,6 +7787,7 @@ fn prove_enum_constructor_instructions(
                         0 => Some(0),
                         1 => Some(1),
                         2 => Some(2),
+                        3 if source_argument => Some(3),
                         _ => None,
                     })
         {
@@ -7823,6 +7839,76 @@ fn prove_enum_constructor_candidate(
         call_bci,
         target_owner: target_owner.to_vec(),
         target_descriptor: target_descriptor.to_vec(),
+    })
+}
+
+/// Prove the one DT-12 source constructor: enum name/ordinal go unchanged to Enum, then the
+/// sole source String argument is assigned to the sole proved `op` field.
+fn prove_enum_string_constructor_candidate(
+    candidates: &[crate::enum_constants::EnumMethodCodeCandidate],
+    member: &PendingEnumConstantBodyMember,
+    identity: &PhysicalMethodId,
+    enum_owner: &[u8],
+) -> std::result::Result<PendingEnumConstructorEdge, String> {
+    use crate::enum_constants::EnumCodeReference;
+    let matches: Vec<_> = candidates
+        .iter()
+        .filter(|candidate| candidate.table_index == member.table_index)
+        .collect();
+    let [code] = matches.as_slice() else {
+        return Err("the selected String constructor has no unique same-run Code".to_owned());
+    };
+    let instructions = &code.instructions;
+    if code.member.as_ref() != Some(identity)
+        || !member.has_code
+        || !code.complete
+        || code.exception_handler_count != 0
+        || instructions.len() != 8
+    {
+        return Err("the selected String constructor Code is incomplete".to_owned());
+    }
+    let expected = [0x2a, 0x2b, 0x1c, 0xb7, 0x2a, 0x2d, 0xb5, 0xb1];
+    let mut next_bci = 0u32;
+    for (index, instruction) in instructions.iter().enumerate() {
+        if instruction.bci != next_bci
+            || instruction.opcode != expected[index]
+            || instruction.width
+                != if instruction.opcode == 0xb7 || instruction.opcode == 0xb5 {
+                    3
+                } else {
+                    1
+                }
+            || instruction.immediate.is_some()
+            || instruction.local
+                != match index {
+                    0 => Some(0),
+                    1 => Some(1),
+                    2 => Some(2),
+                    4 => Some(0),
+                    5 => Some(3),
+                    _ => None,
+                }
+        {
+            return Err("the String constructor is not a pure `op = arg0` constructor".to_owned());
+        }
+        next_bci = next_bci
+            .checked_add(instruction.width)
+            .ok_or_else(|| "constructor BCI overflow".to_owned())?;
+    }
+    if !matches!(&instructions[3].reference,
+        Some(EnumCodeReference::Method { owner, name, descriptor, interface: false })
+            if owner == b"java/lang/Enum" && name == b"<init>" && descriptor == b"(Ljava/lang/String;I)V")
+        || !matches!(&instructions[6].reference,
+            Some(EnumCodeReference::Field { owner, name, descriptor })
+                if owner == enum_owner && name == b"op" && descriptor == b"Ljava/lang/String;")
+    {
+        return Err("the String constructor does not preserve Enum and op semantics".to_owned());
+    }
+    Ok(PendingEnumConstructorEdge {
+        caller: identity.clone(),
+        call_bci: instructions[3].bci,
+        target_owner: b"java/lang/Enum".to_vec(),
+        target_descriptor: b"(Ljava/lang/String;I)V".to_vec(),
     })
 }
 
@@ -8061,9 +8147,33 @@ fn prove_enum_body_initializer_prefix(
     };
     let mut cursor = 0;
     let mut field_write_bcis = Vec::with_capacity(2);
+    let mut source_arguments = Vec::with_capacity(2);
     let enum_descriptor = [b"L".as_slice(), owner, b";"].concat();
     for constant in constants {
-        let part = instructions.get(cursor..cursor + 6).ok_or_else(refused)?;
+        let width = match constant.descriptor_source_argument_count {
+            0 => 6,
+            1 => 7,
+            _ => return Err(refused()),
+        };
+        let part = instructions
+            .get(cursor..cursor + width)
+            .ok_or_else(refused)?;
+        let string_argument = if width == 7 {
+            match &part[4].reference {
+                Some(EnumCodeReference::String(value))
+                    if matches!(part[4].opcode, 0x12 | 0x13)
+                        && part[4].immediate.is_none()
+                        && part[4].local.is_none() =>
+                {
+                    Some(value.clone())
+                }
+                _ => return Err(refused()),
+            }
+        } else {
+            None
+        };
+        let constructor = &part[width - 2];
+        let field_write = &part[width - 1];
         if part[0].bci != constant.allocation_bci
             || !matches!(&part[0].reference, Some(EnumCodeReference::Class(actual))
                 if part[0].opcode == 0xbb && actual == &constant.allocation_owner)
@@ -8071,19 +8181,23 @@ fn prove_enum_body_initializer_prefix(
             || !matches!(&part[2].reference, Some(EnumCodeReference::String(actual))
                 if matches!(part[2].opcode, 0x12 | 0x13) && actual == &constant.field_name)
             || !ordinal(Some(&part[3]), constant.expected_ordinal)
-            || part[4].bci != constant.constructor_bci
-            || !matches!(&part[4].reference,
+            || constructor.bci != constant.constructor_bci
+            || !matches!(&constructor.reference,
                 Some(EnumCodeReference::Method { owner: actual_owner, name, descriptor, interface: false })
-                    if part[4].opcode == 0xb7
+                    if constructor.opcode == 0xb7
                         && actual_owner == &constant.constructor_owner
                         && name == b"<init>"
                         && descriptor == &constant.constructor_descriptor)
-            || !field(Some(&part[5]), &constant.field_name, &enum_descriptor)
+            || (width == 7
+                && constant.constructor_descriptor != b"(Ljava/lang/String;ILjava/lang/String;)V")
+            || (width == 6 && constant.constructor_descriptor != b"(Ljava/lang/String;I)V")
+            || !field(Some(field_write), &constant.field_name, &enum_descriptor)
         {
             return Err(refused());
         }
-        field_write_bcis.push(part[5].bci);
-        cursor += 6;
+        field_write_bcis.push(field_write.bci);
+        source_arguments.push(string_argument.unwrap_or_default());
+        cursor += width;
     }
     let factory_call = instructions.get(cursor).ok_or_else(refused)?;
     let values_descriptor = [b"()[L".as_slice(), owner, b";"].concat();
@@ -8129,6 +8243,7 @@ fn prove_enum_body_initializer_prefix(
         values_factory_call_bci: factory_call.bci,
         values_field_write_bci: store.bci,
         prefix_end_bci,
+        source_arguments,
     })
 }
 
@@ -8140,6 +8255,7 @@ fn resolve_enum_constant_body_relations(
     enum_pool: &[jarde_reader::classfile::CpEntryFacts],
     enum_owner: &[u8],
     enum_access_flags: u16,
+    enum_interfaces: &[Vec<u8>],
     fields: &[jarde_reader::classfile::MemberHeader],
     methods: &[jarde_reader::classfile::MemberHeader],
     code_candidates: &[crate::enum_constants::EnumMethodCodeCandidate],
@@ -8159,6 +8275,7 @@ fn resolve_enum_constant_body_relations(
     const ACC_ABSTRACT: u16 = 0x0400;
     const ACC_ENUM: u16 = 0x4000;
     const BASE_CTOR: &[u8] = b"(Ljava/lang/String;I)V";
+    const STRING_CTOR: &[u8] = b"(Ljava/lang/String;ILjava/lang/String;)V";
 
     budget.charge(
         CountedBudgetDimension::AnalysisSteps,
@@ -8326,7 +8443,9 @@ fn resolve_enum_constant_body_relations(
         ((field_index, field), (constructed_field_index, allocation, constructor_bci, descriptor)),
     ) in constants.iter().zip(&constructions).enumerate()
     {
-        if *field_index != *constructed_field_index || descriptor.as_slice() != BASE_CTOR {
+        if *field_index != *constructed_field_index
+            || !matches!(descriptor.as_slice(), BASE_CTOR | STRING_CTOR)
+        {
             return Ok(Vec::new());
         }
         let Some(constructor_owner) = code
@@ -8355,7 +8474,7 @@ fn resolve_enum_constant_body_relations(
             constructor_descriptor: descriptor.clone(),
             // This count describes only the constructor descriptor after the VM-injected
             // name/ordinal pair; it does not prove the values passed at this call site.
-            descriptor_source_argument_count: 0,
+            descriptor_source_argument_count: u8::from(descriptor.as_slice() == STRING_CTOR),
         });
     }
 
@@ -8409,6 +8528,19 @@ fn resolve_enum_constant_body_relations(
         has_code: false,
         access_marker_owner: None,
     }];
+    let source_ctor = if constant_shape
+        .iter()
+        .all(|constant| constant.descriptor_source_argument_count == 1)
+    {
+        STRING_CTOR
+    } else if constant_shape
+        .iter()
+        .all(|constant| constant.descriptor_source_argument_count == 0)
+    {
+        BASE_CTOR
+    } else {
+        return Ok(Vec::new());
+    };
     for (name, descriptor, flags) in [
         (b"<clinit>".as_slice(), b"()V".as_slice(), ACC_STATIC),
         (
@@ -8426,7 +8558,7 @@ fn resolve_enum_constant_body_relations(
             array_descriptor.as_slice(),
             ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC,
         ),
-        (b"<init>".as_slice(), BASE_CTOR, ACC_PRIVATE),
+        (b"<init>".as_slice(), source_ctor, ACC_PRIVATE),
     ] {
         let Some(member) = unique_method_record(name, descriptor) else {
             return Ok(Vec::new());
@@ -8458,7 +8590,7 @@ fn resolve_enum_constant_body_relations(
         .any(|constant| constant.allocation_owner != enum_owner);
     if constructors
         .iter()
-        .filter(|method| method.descriptor == BASE_CTOR)
+        .filter(|method| method.descriptor == source_ctor)
         .count()
         != 1
         || bridge_indexes.len() != usize::from(needs_bridge)
@@ -8471,7 +8603,7 @@ fn resolve_enum_constant_body_relations(
                 })
         })
         || constructors.iter().any(|constructor| {
-            constructor.descriptor != BASE_CTOR
+            constructor.descriptor != source_ctor
                 && !bridge_indexes
                     .iter()
                     .any(|(table_index, _)| *table_index == constructor.table_index)
@@ -8493,7 +8625,48 @@ fn resolve_enum_constant_body_relations(
         .filter(|(_, method)| method.access_flags & ACC_ABSTRACT != 0)
         .map(|(index, method)| physical_member(index, method))
         .collect();
-    if (enum_access_flags & ACC_ABSTRACT != 0) != !abstract_methods.is_empty()
+    let mut interface_methods = Vec::new();
+    if enum_access_flags & ACC_ABSTRACT != 0 && abstract_methods.is_empty() {
+        if enum_interfaces.len() != 1 {
+            return Ok(Vec::new());
+        }
+        let Some((_, interface_read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            Some(clinit_identity),
+            &enum_interfaces[0],
+            execution,
+            budget,
+        )?
+        else {
+            return Ok(Vec::new());
+        };
+        if interface_read.facts.access_flags & 0x0200 == 0
+            || interface_read.facts.methods.len() != 1
+        {
+            return Ok(Vec::new());
+        }
+        let method = &interface_read.facts.methods[0];
+        if method.access_flags != (0x0001 | ACC_ABSTRACT)
+            || method.name.raw().0.is_empty()
+            || method.descriptor.raw().0.is_empty()
+            || method
+                .attributes
+                .iter()
+                .any(|attribute| attribute.name.raw().0 == b"Code")
+        {
+            return Ok(Vec::new());
+        }
+        interface_methods.push(PendingEnumConstantBodyMember {
+            table_index: 0,
+            name: method.name.raw().0.clone(),
+            descriptor: method.descriptor.raw().0.clone(),
+            access_flags: method.access_flags,
+            has_code: false,
+            access_marker_owner: None,
+        });
+    }
+    if (!abstract_methods.is_empty() && enum_access_flags & ACC_ABSTRACT == 0)
         || abstract_methods.iter().any(|method| method.has_code)
         || methods.iter().enumerate().any(|(index, method)| {
             !physical_member(index, method).has_code && method.access_flags & ACC_ABSTRACT == 0
@@ -8564,15 +8737,24 @@ fn resolve_enum_constant_body_relations(
     let constructor_chain = (|| {
         let private = constructors
             .iter()
-            .find(|member| member.descriptor == BASE_CTOR)
+            .find(|member| member.descriptor == source_ctor)
             .ok_or_else(|| "the unique private enum constructor is absent".to_owned())?;
-        let private_edge = prove_enum_constructor_candidate(
-            code_candidates,
-            private,
-            &constructor_identity(private),
-            b"java/lang/Enum",
-            BASE_CTOR,
-        )?;
+        let private_edge = if source_ctor == STRING_CTOR {
+            prove_enum_string_constructor_candidate(
+                code_candidates,
+                private,
+                &constructor_identity(private),
+                enum_owner,
+            )?
+        } else {
+            prove_enum_constructor_candidate(
+                code_candidates,
+                private,
+                &constructor_identity(private),
+                b"java/lang/Enum",
+                BASE_CTOR,
+            )?
+        };
         let mut edges = vec![private_edge];
         if needs_bridge {
             let access = constructors
@@ -8584,7 +8766,7 @@ fn resolve_enum_constant_body_relations(
                 access,
                 &constructor_identity(access),
                 enum_owner,
-                BASE_CTOR,
+                source_ctor,
             )?);
         }
         Ok(edges)
@@ -8603,6 +8785,7 @@ fn resolve_enum_constant_body_relations(
         constants: constant_shape,
         implicit_members,
         abstract_methods,
+        interface_methods,
         constructors,
         constructor_chain,
         direct_constant_bcis,
@@ -8958,15 +9141,25 @@ fn prove_enum_constant_child_body(
                     && base.descriptor.raw().0 == method.item.descriptor.raw().0
             })
             .collect();
-        let [base] = matching_base.as_slice() else {
-            return Ok((
-                refuse("the selected child method has no unique base declaration"),
-                execution,
-            ));
+        let interface_base: Vec<_> = relation
+            .group_shape
+            .interface_methods
+            .iter()
+            .filter(|base| base.name == name && base.descriptor == method.item.descriptor.raw().0)
+            .collect();
+        let base_flags = match (matching_base.as_slice(), interface_base.as_slice()) {
+            ([base], []) => base.access_flags,
+            ([], [base]) => base.access_flags,
+            _ => {
+                return Ok((
+                    refuse("the selected child method has no unique base declaration"),
+                    execution,
+                ));
+            }
         };
-        if base.access_flags & (0x0002 | 0x0008 | 0x0010) != 0
-            || (base.access_flags & 0x0001 != 0 && flags & 0x0001 == 0)
-            || (base.access_flags & 0x0004 != 0 && flags & (0x0001 | 0x0004) == 0)
+        if base_flags & (0x0002 | 0x0008 | 0x0010) != 0
+            || (base_flags & 0x0001 != 0 && flags & 0x0001 == 0)
+            || (base_flags & 0x0004 != 0 && flags & (0x0001 | 0x0004) == 0)
         {
             return Ok((
                 refuse("the child method cannot override its base declaration"),
@@ -9060,12 +9253,58 @@ fn prove_enum_constant_body_group(
         || shape.implicit_members.len() != 6
         || chain.is_empty()
         || prefix.constant_field_write_bcis.len() != 2
+        || prefix.source_arguments.len() != 2
         || relations
             .iter()
             .any(|relation| relation.group_shape != *shape)
     {
         return Ok(refuse("the pending two-constant group is incomplete"));
     }
+    let string_arguments = shape.constants.iter().all(|constant| {
+        constant.descriptor_source_argument_count == 1
+            && constant.constructor_descriptor == b"(Ljava/lang/String;ILjava/lang/String;)V"
+    });
+    let zero_arguments = shape.constants.iter().all(|constant| {
+        constant.descriptor_source_argument_count == 0
+            && constant.constructor_descriptor == b"(Ljava/lang/String;I)V"
+    });
+    if !string_arguments && !zero_arguments {
+        return Ok(refuse(
+            "the constants do not share one supported constructor shape",
+        ));
+    }
+    if string_arguments
+        && (shape.enum_access_flags & 0x0400 == 0
+            || shape.interface_methods.len() != 1
+            || shape
+                .constants
+                .iter()
+                .any(|constant| constant.allocation_owner == owner))
+    {
+        return Ok(refuse(
+            "the String-argument slice requires two abstract-enum anonymous bodies",
+        ));
+    }
+    let source_argument_texts: Option<Vec<String>> = if string_arguments {
+        prefix
+            .source_arguments
+            .iter()
+            .map(|raw| {
+                raw.is_ascii()
+                    .then(|| String::from_utf8(raw.clone()).ok())
+                    .flatten()
+            })
+            .collect()
+    } else if prefix.source_arguments.iter().all(Vec::is_empty) {
+        Some(Vec::new())
+    } else {
+        None
+    };
+    let Some(source_argument_texts) = source_argument_texts else {
+        return Ok(refuse(
+            "a source argument is not an exact ASCII String literal",
+        ));
+    };
 
     let code_at = |index: u64| -> Option<&crate::enum_constants::EnumMethodCodeCandidate> {
         let matching: Vec<_> = codes
@@ -9283,8 +9522,13 @@ fn prove_enum_constant_body_group(
             || !field.markers.is_empty()
             || !jarde_java::is_java_identifier(&name)
             || constant.expected_ordinal != ordinal as u32
-            || constant.descriptor_source_argument_count != 0
-            || constant.constructor_descriptor != b"(Ljava/lang/String;I)V"
+            || constant.descriptor_source_argument_count != if string_arguments { 1 } else { 0 }
+            || constant.constructor_descriptor
+                != if string_arguments {
+                    b"(Ljava/lang/String;ILjava/lang/String;)V".as_slice()
+                } else {
+                    b"(Ljava/lang/String;I)V".as_slice()
+                }
             || constant.constructor_owner != constant.allocation_owner
         {
             return Ok(refuse(
@@ -9347,6 +9591,7 @@ fn prove_enum_constant_body_group(
             allocation_bci: constant.allocation_bci,
             constructor_bci: constant.constructor_bci,
             field_write_bci: prefix.constant_field_write_bcis[ordinal],
+            string_argument: string_arguments.then(|| source_argument_texts[ordinal].clone()),
             subclass,
             methods,
         });
@@ -9356,7 +9601,82 @@ fn prove_enum_constant_body_group(
             "the child relations do not cover exactly the anonymous constants",
         ));
     }
-    Ok(Ok(ProvedEnumConstantBodyGroup { constants: proved }))
+    let constructor_text = if string_arguments {
+        let constructor = shape
+            .constructors
+            .iter()
+            .find(|member| member.descriptor == b"(Ljava/lang/String;ILjava/lang/String;)V");
+        let Some(constructor) = constructor else {
+            return Ok(refuse("the source String constructor is absent"));
+        };
+        let Some(source) = usize::try_from(constructor.table_index)
+            .ok()
+            .and_then(|index| source_methods.get(index))
+        else {
+            return Ok(refuse("the source String constructor record is absent"));
+        };
+        let has_only_enum_signature_marker =
+            source.enum_constructor_signature_erasure_refused && source.markers.len() == 1;
+        if constructor.access_flags != 0x0002
+            || source.item.index != constructor.table_index
+            || source.item.name.raw().0 != b"<init>"
+            || source.enum_constructor_source_tail
+                != class_source::EnumConstructorSourceTail::SingleString
+            || source.declaration.is_none()
+            || !source.enum_constructor_signature_erasure_refused
+            || !source.annotations.refusals.is_empty()
+            || !source.annotations.uses.is_empty()
+            || !source.parameter_annotations.refusals.is_empty()
+            || source
+                .parameter_annotations
+                .uses_by_position
+                .iter()
+                .any(|uses| !uses.is_empty())
+            || !source.type_annotations.refusals.is_empty()
+            || source
+                .type_annotations
+                .parameter_uses
+                .iter()
+                .any(|uses| !uses.is_empty())
+            || (!source.markers.is_empty() && !has_only_enum_signature_marker)
+        {
+            return Ok(refuse(
+                "the source String constructor signature is not safely presentable",
+            ));
+        }
+        let Some(op_field) = source_fields.iter().find(|field| {
+            field.item.name.raw().0 == b"op"
+                && field.item.descriptor.raw().0 == b"Ljava/lang/String;"
+                && field.item.identity.owner == declaration.item.definition
+                && field.item.access_flags & (0x0008 | 0x0040 | 0x1000) == 0
+                && field.item.access_flags & 0x0002 != 0
+                && field.declaration.is_some()
+                && field.markers.is_empty()
+        }) else {
+            return Ok(refuse(
+                "the assigned String field is not uniquely presentable",
+            ));
+        };
+        if source_fields
+            .iter()
+            .filter(|field| field.item.name.raw().0 == b"op")
+            .count()
+            != 1
+            || op_field.item.name.raw().0 != b"op"
+        {
+            return Ok(refuse("the source String field is ambiguous"));
+        }
+        Some(format!(
+            "    private {}(java.lang.String arg0) {{\n        this.op = arg0;\n    }}\n",
+            declaration.name
+        ))
+    } else {
+        None
+    };
+    Ok(Ok(ProvedEnumConstantBodyGroup {
+        constants: proved,
+        constructor_text,
+    }))
 }
 
 /// Census each selected input through P1's physical scanner. A relation is exclusive only when
@@ -9609,12 +9929,14 @@ fn census_enum_constant_body_uses(
 }
 
 fn enum_access_constructor_marker_owner(descriptor: &[u8]) -> Option<Vec<u8>> {
-    let Some(parameter) = descriptor
-        .strip_prefix(b"(Ljava/lang/String;I")
-        .and_then(|tail| tail.strip_suffix(b";)V"))
-    else {
+    let tail = descriptor.strip_prefix(b"(Ljava/lang/String;I")?;
+    let parameter = tail
+        .strip_prefix(b"Ljava/lang/String;")
+        .or(Some(tail))?
+        .strip_suffix(b";)V")?;
+    if parameter.is_empty() {
         return None;
-    };
+    }
     let owner = parameter.strip_prefix(b"L")?;
     if owner.is_empty() || owner.contains(&b';') || owner.contains(&b'[') {
         return None;
@@ -9630,7 +9952,10 @@ fn enum_constant_constructor_matches(
 ) -> bool {
     constructor_owner == allocation_owner
         && constructor_name == b"<init>"
-        && constructor_descriptor == b"(Ljava/lang/String;I)V"
+        && matches!(
+            constructor_descriptor,
+            b"(Ljava/lang/String;I)V" | b"(Ljava/lang/String;ILjava/lang/String;)V"
+        )
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -14332,6 +14657,12 @@ mod enum_constant_body_relation_tests {
     const MEASURE: &str = include_str!(
         "../openspec/evidence/java-syntax-2026-09-22/enum-declaration/user-static-boundary/Measure.java"
     );
+    const DOUBLE_OPERATIONS: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/TestEnums2a/DoubleOperations.java"
+    );
+    const IOPS: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/TestEnums2a/IOps.java"
+    );
     const UNRELATED: &str = "package demo; public class Other { public static Object make() { return new Object() {}; } }";
 
     fn budget() -> Budget {
@@ -14354,6 +14685,54 @@ mod enum_constant_body_relation_tests {
 
     fn compiled_entries(debug: bool) -> Vec<(Vec<u8>, Vec<u8>)> {
         compiled_entries_with_op(debug, OP)
+    }
+
+    fn compiled_double_operations(debug: bool) -> Vec<(Vec<u8>, Vec<u8>)> {
+        compiled_double_operations_source(debug, DOUBLE_OPERATIONS)
+    }
+
+    fn compiled_double_operations_source(
+        debug: bool,
+        enum_source: &str,
+    ) -> Vec<(Vec<u8>, Vec<u8>)> {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir = std::env::temp_dir().join(format!(
+            "jarde-dt12-enum-body-{}-{nonce}-{}",
+            std::process::id(),
+            NEXT_FIXTURE_ID.fetch_add(1, Ordering::Relaxed)
+        ));
+        fs::create_dir_all(dir.join("source/demo")).unwrap();
+        let classes = dir.join("classes");
+        fs::create_dir_all(&classes).unwrap();
+        fs::write(dir.join("source/demo/DoubleOperations.java"), enum_source).unwrap();
+        fs::write(dir.join("source/demo/IOps.java"), IOPS).unwrap();
+        let compile = Command::new("javac")
+            .args(["--release", "8"])
+            .arg(if debug { "-g" } else { "-g:none" })
+            .arg("-d")
+            .arg(&classes)
+            .arg(dir.join("source/demo/DoubleOperations.java"))
+            .arg(dir.join("source/demo/IOps.java"))
+            .output()
+            .expect("javac is available for the frozen DT-12 source");
+        assert!(
+            compile.status.success(),
+            "javac failed: {}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        let mut entries = Vec::new();
+        for entry in fs::read_dir(classes.join("demo")).unwrap() {
+            let path = entry.unwrap().path();
+            entries.push((
+                format!("demo/{}", path.file_name().unwrap().to_string_lossy()).into_bytes(),
+                fs::read(path).unwrap(),
+            ));
+        }
+        fs::remove_dir_all(dir).unwrap();
+        entries
     }
 
     fn compiled_entries_with_op(debug: bool, op_source: &str) -> Vec<(Vec<u8>, Vec<u8>)> {
@@ -14494,11 +14873,10 @@ mod enum_constant_body_relation_tests {
         fs::create_dir_all(classes.join("demo")).unwrap();
         let probe_file = source_dir.join("Probe.java");
         fs::write(&probe_file, probe_source).unwrap();
-        if enum_source.is_none() {
-            for (name, bytes) in entries {
-                if name.starts_with(format!("demo/{enum_name}").as_bytes()) {
-                    fs::write(classes.join(String::from_utf8_lossy(name).as_ref()), bytes).unwrap();
-                }
+        for (name, bytes) in entries {
+            let target_prefix = format!("demo/{enum_name}");
+            if enum_source.is_none() || !name.starts_with(target_prefix.as_bytes()) {
+                fs::write(classes.join(String::from_utf8_lossy(name).as_ref()), bytes).unwrap();
             }
         }
         let mut javac = Command::new("javac");
@@ -14506,14 +14884,14 @@ mod enum_constant_body_relation_tests {
             .arg("--release")
             .arg("8")
             .arg(if debug { "-g" } else { "-g:none" })
+            .arg("-cp")
+            .arg(&classes)
             .arg("-d")
             .arg(&classes);
         if let Some(source) = enum_source {
             let enum_file = source_dir.join(format!("{enum_name}.java"));
             fs::write(&enum_file, source).unwrap();
             javac.arg(enum_file);
-        } else {
-            javac.arg("-cp").arg(&classes);
         }
         let compile = javac.arg(&probe_file).output().unwrap();
         assert!(
@@ -14534,6 +14912,233 @@ mod enum_constant_body_relation_tests {
             String::from_utf8_lossy(&run.stderr)
         );
         String::from_utf8(run.stdout).unwrap()
+    }
+
+    #[test]
+    fn dt12_ascii_string_arguments_project_atomically_and_recompile() {
+        const PROBE: &str = r#"package demo;
+public class Probe {
+    public static void main(String[] args) {
+        System.out.println(DoubleOperations.TIMES.name() + "=" + DoubleOperations.TIMES.getOp()
+            + ":" + DoubleOperations.TIMES.ordinal() + ":" + DoubleOperations.TIMES.apply(2, 3)
+            + ":" + DoubleOperations.TIMES.getClass().getName());
+        System.out.println(DoubleOperations.DIVIDE.name() + "=" + DoubleOperations.DIVIDE.getOp()
+            + ":" + DoubleOperations.DIVIDE.ordinal() + ":" + DoubleOperations.DIVIDE.apply(10, 5)
+            + ":" + DoubleOperations.DIVIDE.getClass().getName());
+    }
+}"#;
+        let expected =
+            "TIMES=*:0:6.0:demo.DoubleOperations$1\nDIVIDE=/:1:2.0:demo.DoubleOperations$2\n";
+        for debug in [true, false] {
+            let entries = compiled_double_operations(debug);
+            let source_report = report(&entries, "demo/DoubleOperations");
+            let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+            ) = &source_report.enum_constant_proof
+            else {
+                panic!(
+                    "DT-12 must prove the exact two-string body group: {:?}",
+                    source_report.enum_constant_proof
+                );
+            };
+            assert_eq!(
+                group
+                    .constants
+                    .iter()
+                    .map(|constant| constant.string_argument.as_deref())
+                    .collect::<Vec<_>>(),
+                vec![Some("*"), Some("/")]
+            );
+            assert!(
+                group
+                    .constructor_text
+                    .as_deref()
+                    .is_some_and(|text| text.contains("DoubleOperations(java.lang.String arg0)"))
+            );
+            let text = &source_report.text;
+            assert!(text.contains("TIMES(\"*\")"));
+            assert!(text.contains("DIVIDE(\"/\")"));
+            assert!(text.contains("private DoubleOperations(java.lang.String arg0)"));
+            assert!(!text.contains("DoubleOperations$1 arg"));
+            assert!(!text.contains("DoubleOperations$2 arg"));
+            let nonce = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos();
+            let directory = std::env::temp_dir().join(format!(
+                "jarde-dt12-projection-{}-{nonce}",
+                std::process::id()
+            ));
+            let original = run_enum_source(
+                &directory,
+                "original",
+                "DoubleOperations",
+                None,
+                PROBE,
+                &entries,
+                debug,
+            );
+            let projected = run_enum_source(
+                &directory,
+                "jarde",
+                "DoubleOperations",
+                Some(text),
+                PROBE,
+                &entries,
+                debug,
+            );
+            assert_eq!(original, expected);
+            assert_eq!(projected, original);
+            fs::remove_dir_all(directory).unwrap();
+        }
+    }
+
+    #[test]
+    fn dt12_rejects_verifier_valid_ordinal_and_bridge_forwarding_changes() {
+        const PROBE: &str = r#"package demo; public class Probe {
+    public static void main(String[] args) {
+        System.out.println(DoubleOperations.TIMES.name() + "=" + DoubleOperations.TIMES.getOp()
+            + ":" + DoubleOperations.TIMES.ordinal());
+    }
+}"#;
+        let entries = compiled_double_operations(false);
+        let mut wrong_ordinal = entries.clone();
+        let main = wrong_ordinal
+            .iter_mut()
+            .find(|(name, _)| name == b"demo/DoubleOperations.class")
+            .unwrap();
+        main.1 = mutate_initializer_byte(&main.1, 6, 0x04); // iconst_0 -> iconst_1
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let directory = std::env::temp_dir().join(format!(
+            "jarde-dt12-negative-{}-{nonce}",
+            std::process::id()
+        ));
+        let run = run_enum_source(
+            &directory,
+            "ordinal",
+            "DoubleOperations",
+            None,
+            PROBE,
+            &wrong_ordinal,
+            false,
+        );
+        assert_eq!(
+            run, "TIMES=*:1\n",
+            "-Xverify:all accepts the wrong but well-typed ordinal"
+        );
+        let ordinal_report = report(&wrong_ordinal, "demo/DoubleOperations");
+        assert!(matches!(
+            ordinal_report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(!ordinal_report.text.contains("TIMES(\"*\")"));
+
+        let mut wrong_bridge = entries.clone();
+        let child = wrong_bridge
+            .iter_mut()
+            .find(|(name, _)| name == b"demo/DoubleOperations$1.class")
+            .unwrap();
+        child.1 = mutate_constructor_byte(
+            &child.1,
+            b"(Ljava/lang/String;ILjava/lang/String;)V",
+            3,
+            0x2b, // forward enum name in the String argument slot
+        );
+        let run = run_enum_source(
+            &directory,
+            "bridge",
+            "DoubleOperations",
+            None,
+            PROBE,
+            &wrong_bridge,
+            false,
+        );
+        assert_eq!(
+            run, "TIMES=TIMES:0\n",
+            "the verifier accepts the reference-to-reference substitution"
+        );
+        let bridge_report = report(&wrong_bridge, "demo/DoubleOperations");
+        assert!(matches!(
+            bridge_report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(!bridge_report.text.contains("TIMES(\"*\")"));
+        fs::remove_dir_all(directory).unwrap();
+    }
+
+    #[test]
+    fn dt12_rejects_non_ascii_nonliteral_and_three_constant_groups() {
+        let non_ascii = DOUBLE_OPERATIONS.replace("TIMES(\"*\")", "TIMES(\"é\")");
+        let non_ascii_entries = compiled_double_operations_source(false, &non_ascii);
+        let non_ascii_report = report(&non_ascii_entries, "demo/DoubleOperations");
+        assert!(matches!(
+            non_ascii_report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(!non_ascii_report.text.contains("TIMES(\"é\")"));
+
+        let expression = DOUBLE_OPERATIONS.replace("TIMES(\"*\")", "TIMES(\"*\".trim())");
+        let expression_entries = compiled_double_operations_source(false, &expression);
+        let expression_report = report(&expression_entries, "demo/DoubleOperations");
+        assert!(matches!(
+            expression_report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(!expression_report.text.contains("TIMES(\"*\")"));
+
+        let three = DOUBLE_OPERATIONS.replace(
+            "    };\n\n    private final String op;",
+            "    },\n    EXTRA(\"+\") {\n        @Override\n        public double apply(double x, double y) { return x + y; }\n    };\n\n    private final String op;",
+        );
+        let three_entries = compiled_double_operations_source(false, &three);
+        let three_report = report(&three_entries, "demo/DoubleOperations");
+        assert!(matches!(
+            three_report.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { .. }
+        ));
+        assert!(!three_report.text.contains("EXTRA(\"+\")"));
+    }
+
+    #[test]
+    fn dt12_output_budget_and_precancellation_publish_no_partial_group() {
+        let entries = compiled_double_operations(false);
+        let complete = report(&entries, "demo/DoubleOperations");
+        let mut limits = budget().limits().clone();
+        limits.output_bytes = complete.usage.output_bytes.saturating_sub(1);
+        let low = report_with_budget(&entries, "demo/DoubleOperations", Budget::new(limits));
+        assert!(matches!(
+            low.enum_constant_proof,
+            crate::enum_constants::ClassSourceEnumConstantProof::Stopped { .. }
+        ));
+        assert!(!low.text.contains("TIMES(\"*\")"));
+        assert!(!low.text.contains("DIVIDE(\"/\")"));
+
+        let cancellation = jarde_reader::budget::CancellationToken::new();
+        cancellation.cancel();
+        let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+        ) = &complete.enum_constant_proof
+        else {
+            panic!("the uncancelled DT-12 fixture has a complete proof");
+        };
+        let shape = &complete.enum_constant_body_relations[0].group_shape;
+        let error = match class_source::prepare_enum_constant_body_source_projection(
+            complete.declaration.as_ref().unwrap(),
+            &complete.fields,
+            &complete.methods,
+            group,
+            shape,
+            &mut Budget::with_cancellation_token(budget().limits().clone(), cancellation),
+        ) {
+            Err(error) => error,
+            Ok(_) => panic!("pre-cancelled output cannot publish the body projection"),
+        };
+        assert!(matches!(error, Error::Cancelled { .. }));
+        assert!(complete.text.contains("TIMES(\"*\")"));
+        assert!(complete.text.contains("DIVIDE(\"/\")"));
     }
 
     #[test]
@@ -15120,6 +15725,7 @@ public class Probe {
                         values_factory_call_bci: 26,
                         values_field_write_bci: 29,
                         prefix_end_bci: 32,
+                        source_arguments: vec![Vec::new(), Vec::new()],
                     }),
                     "exact <clinit> prefix for {class}, debug={debug}"
                 );

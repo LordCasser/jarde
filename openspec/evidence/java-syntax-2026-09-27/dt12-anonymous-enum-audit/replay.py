@@ -99,7 +99,7 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt12-audit-") as temp_name:
                 raise SystemExit(f"{case}/{debug}: javap failed")
 
             jar = temp / case / debug / "original.jar"
-            packed = run(["jar", "--create", "--file", str(jar), "-C", str(original_classes), "."], env=env)
+            packed = run(["jar", "--create", "--date=2000-01-01T00:00:00Z", "--file", str(jar), "-C", str(original_classes), "."], env=env)
             save(variants / debug / "jar.log", packed, temp)
             if packed.returncode:
                 raise SystemExit(f"{case}/{debug}: jar failed")

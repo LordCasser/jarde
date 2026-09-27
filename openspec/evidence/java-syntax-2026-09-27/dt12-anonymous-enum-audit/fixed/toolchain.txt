@@ -1,0 +1,17 @@
+$ java -version
+openjdk version "23.0.1" 2024-10-15
+OpenJDK Runtime Environment (build 23.0.1+11-39)
+OpenJDK 64-Bit Server VM (build 23.0.1+11-39, mixed mode, sharing)
+exit=0
+$ javac -version
+javac 23.0.1
+exit=0
+$ javap -version
+23.0.1
+exit=0
+$ /Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx --version
+dev
+exit=0
+JADX checkout HEAD: 2fb1b16386941660fda07e9017285aec40fcb37f
+JADX checkout status: clean
+Jarde invocation: python3 replay.py fixed <JARDE_CLI>

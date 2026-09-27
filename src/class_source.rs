@@ -390,6 +390,7 @@ pub(crate) enum EnumConstructorSourceTail {
     Unrecognized,
     NoArg,
     Int,
+    SingleString,
     StringVarargs,
 }
 
@@ -1746,6 +1747,12 @@ pub(crate) fn project_method_signature(
 ) -> Result<()> {
     let shells = attribute_shells(member, b"Signature");
     if shells.is_empty() {
+        if class_flags & 0x4000 != 0
+            && member.name.raw().0 == b"<init>"
+            && member.descriptor.raw().0 == b"(Ljava/lang/String;ILjava/lang/String;)V"
+        {
+            record.enum_constructor_source_tail = EnumConstructorSourceTail::SingleString;
+        }
         return project_member_inner_descriptor_path(record, candidate, budget);
     }
     let result = (|| -> Result<Option<(String, Vec<u8>, &'static str)>> {
@@ -1779,6 +1786,18 @@ pub(crate) fn project_method_signature(
             && parsed.throws.is_empty()
         {
             EnumConstructorSourceTail::NoArg
+        } else if shells.len() == 1
+            && name.as_slice() == b"<init>"
+            && member.descriptor.raw().0.as_slice() == b"(Ljava/lang/String;ILjava/lang/String;)V"
+            && parsed.type_parameters.is_empty()
+            && matches!(parsed.parameters.as_slice(), [SignatureType::Class(class)]
+                if class.segments.len() == 1
+                    && class.segments[0].binary_name == b"java/lang/String"
+                    && class.segments[0].arguments.is_empty())
+            && parsed.result.is_none()
+            && parsed.throws.is_empty()
+        {
+            EnumConstructorSourceTail::SingleString
         } else if shells.len() == 1
             && name.as_slice() == b"<init>"
             && member.descriptor.raw().0.as_slice() == b"(Ljava/lang/String;I[Ljava/lang/String;)V"
@@ -6170,6 +6189,7 @@ pub(crate) fn prepare_enum_constant_source_projection(
         && (group.delegating_constructor_method_index.is_some()
             || constructor.item.descriptor.raw().0 != b"(Ljava/lang/String;I)V"
             || constructor.enum_constructor_source_tail == EnumConstructorSourceTail::Int
+            || constructor.enum_constructor_source_tail == EnumConstructorSourceTail::SingleString
             || constructor.enum_constructor_source_tail == EnumConstructorSourceTail::StringVarargs
             || !implicit_signature_shape)
     {
@@ -6510,6 +6530,19 @@ pub(crate) fn prepare_enum_constant_body_source_projection(
         }
         constants_text.push_str("    ");
         constants_text.push_str(&name);
+        if let Some(argument) = &constant.string_argument {
+            if !argument.is_ascii() {
+                return Ok(None);
+            }
+            budget.charge(
+                CountedBudgetDimension::OutputBytes,
+                u64::try_from(argument.len().saturating_mul(6).saturating_add(4))
+                    .unwrap_or(u64::MAX),
+            )?;
+            constants_text.push_str("(\"");
+            constants_text.push_str(&jarde_java::escape_string(argument));
+            constants_text.push_str("\")");
+        }
         match (&constant.subclass, &constant.methods) {
             (None, None) => {}
             (Some(subclass), Some(body_methods)) if !body_methods.is_empty() => {
@@ -6576,6 +6609,40 @@ pub(crate) fn prepare_enum_constant_body_source_projection(
             implicit_method_indices.push(member.table_index);
         }
     }
+    let mut constructor_texts = Vec::new();
+    if let Some(text) = &group.constructor_text {
+        let constructors: Vec<_> = shape
+            .constructors
+            .iter()
+            .filter(|member| member.descriptor == b"(Ljava/lang/String;ILjava/lang/String;)V")
+            .collect();
+        let [constructor] = constructors.as_slice() else {
+            return Ok(None);
+        };
+        let Some(method) = usize::try_from(constructor.table_index)
+            .ok()
+            .and_then(|index| methods.get(index))
+        else {
+            return Ok(None);
+        };
+        if method.item.index != constructor.table_index
+            || method.enum_constructor_source_tail != EnumConstructorSourceTail::SingleString
+            || !text.ends_with("}\n")
+        {
+            return Ok(None);
+        }
+        budget.charge(
+            CountedBudgetDimension::OutputBytes,
+            u64::try_from(text.len()).unwrap_or(u64::MAX),
+        )?;
+        constructor_texts.push((constructor.table_index, text.clone()));
+    } else if group
+        .constants
+        .iter()
+        .any(|constant| constant.string_argument.is_some())
+    {
+        return Ok(None);
+    }
     budget.charge(
         CountedBudgetDimension::OutputBytes,
         u64::try_from(constants_text.len()).unwrap_or(u64::MAX),
@@ -6585,7 +6652,7 @@ pub(crate) fn prepare_enum_constant_body_source_projection(
         backing_field_index,
         implicit_method_indices,
         constants_text,
-        constructor_texts: Vec::new(),
+        constructor_texts,
         initializer_text: None,
     }))
 }
