@@ -8,8 +8,10 @@
       "run_stdout": "1:0\n"
     },
     "jarde": {
-      "compile_exit": 1,
-      "compile_stderr": "<TMP>/byte-conditional-call-jarde-src/dt28/ByteConditionalCall.java:21: error: missing return statement\n    }\n    ^\n1 error\n"
+      "compile_exit": 0,
+      "run_exit": 0,
+      "run_stderr": "",
+      "run_stdout": "1:0\n"
     },
     "jarde_report_classes": [
       "ByteConditionalCall"
@@ -27,8 +29,9 @@
     }
   },
   "jadx_commit": "2fb1b16386941660fda07e9017285aec40fcb37f",
-  "jarde_baseline_commit": "85117144069a5ab6901792b2c0a9f73951f2f3b8",
-  "jarde_difference": "only byte-conditional-call in this fixture fails Jarde recompilation: byteConditionalCall(JZ)B has no recovered statement because the invocation's byte parameter receives an int-typed conditional without a proven narrowing conversion",
+  "jarde_baseline_commit": "f39211c27c326df3b9f471970102a943627833b4",
+  "jarde_difference": "pre-fix Jarde refused byteConditionalCall(JZ)B at BCI 10; post-fix both complete source groups compile with --release 8, pass -Xverify:all, and match original/JADX output",
+  "pre_fix_jarde_diagnostic": "Fixed pre-change baseline: Jarde build `f39211c27c326df3b9f471970102a943627833b4`.\n\nThe pinned class `dt28/ByteConditionalCall` produced this diagnostic in `run(JZ)B`:\n\n    the parameter 1 of the invocation at BCI 10 is declared `byte` presents `int` and this layer has no proven conversion to `byte`\n\nThe source left the method body empty, so `javac --release 8` failed with:\n\n`ByteConditionalCall.java:21: error: missing return statement`\n\nThe fixed replay keeps this file intact and records the diagnostic in `outputs/results.json` beside the passing post-fix comparison.\n",
   "scope": [
     "(long) char before shift; (int) long before shift",
     "long-to-byte, int-to-short, int-to-char narrowing",

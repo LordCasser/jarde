@@ -5283,3 +5283,246 @@ fn the_oracle_rejects_a_constructor_call_written_after_its_field_initializers() 
         "a constructor call written after the initializers is not the same body: {from_text:?}"
     );
 }
+
+#[derive(Clone, Copy)]
+enum ByteConditionalCase {
+    InRangeConstants,
+    OutOfRangeConstant,
+    IntLocals,
+    ShortTarget,
+    AmbiguousJoin,
+}
+
+/// A verifier-valid conditional feeding a primitive invocation. No `i2b` is present: the positive
+/// case proves only that its two int constants fit byte and that the invocation descriptor is B.
+fn byte_conditional_invocation_class(case: ByteConditionalCase) -> Vec<u8> {
+    let mut pool = Pool::default();
+    let _code = pool.utf8("Code");
+    let class_name = pool.utf8(match case {
+        ByteConditionalCase::InRangeConstants => "p/ByteConditional",
+        ByteConditionalCase::OutOfRangeConstant => "p/ByteConditionalOutOfRange",
+        ByteConditionalCase::IntLocals => "p/ByteConditionalIntLocals",
+        ByteConditionalCase::ShortTarget => "p/ShortConditional",
+        ByteConditionalCase::AmbiguousJoin => "p/ByteConditionalAmbiguous",
+    });
+    let this_class = pool.class(class_name);
+    let object_name = pool.utf8("java/lang/Object");
+    let object = pool.class(object_name);
+    let (method_descriptor, max_locals, target_name, target_descriptor, true_arm, false_arm) =
+        match case {
+            ByteConditionalCase::InRangeConstants => {
+                ("(Z)B", 1, "acceptByte", "(B)B", vec![0x04], vec![0x03])
+            }
+            ByteConditionalCase::OutOfRangeConstant => (
+                "(Z)B",
+                1,
+                "acceptByte",
+                "(B)B",
+                vec![0x10, 127],
+                vec![0x11, 0, 128],
+            ),
+            ByteConditionalCase::IntLocals => {
+                ("(ZII)B", 3, "acceptByte", "(B)B", vec![0x1b], vec![0x1c])
+            }
+            ByteConditionalCase::ShortTarget => {
+                ("(Z)S", 1, "acceptShort", "(S)S", vec![0x04], vec![0x03])
+            }
+            ByteConditionalCase::AmbiguousJoin => {
+                ("(ZZ)B", 2, "acceptByte", "(B)B", vec![0x04], vec![0x03])
+            }
+        };
+    let target = member_ref(&mut pool, this_class, target_name, target_descriptor);
+    let mut call_code = if matches!(case, ByteConditionalCase::AmbiguousJoin) {
+        // The first test jumps directly into the true arm, giving that join a second predecessor
+        // outside the immediately preceding if/else. The verifier accepts equal stack heights,
+        // while source recovery must refuse to claim an unambiguous conditional tree.
+        vec![0x1b, 0x9a, 0, 7, 0x1a, 0x99, 0, 7]
+    } else {
+        vec![0x1a, 0x99, 0, 0]
+    };
+    let true_start = call_code.len();
+    call_code.extend_from_slice(&true_arm);
+    let goto_at = call_code.len();
+    call_code.extend_from_slice(&[0xa7, 0, 0]);
+    let false_start = call_code.len();
+    call_code.extend_from_slice(&false_arm);
+    let join = call_code.len();
+    if matches!(case, ByteConditionalCase::AmbiguousJoin) {
+        // ifne at BCI 1 targets the true arm; ifeq at BCI 5 targets the false arm.
+        call_code[2..4].copy_from_slice(
+            &u16::try_from(true_start - 1)
+                .expect("fixture branch fits")
+                .to_be_bytes(),
+        );
+        call_code[6..8].copy_from_slice(
+            &u16::try_from(false_start - 5)
+                .expect("fixture branch fits")
+                .to_be_bytes(),
+        );
+    } else {
+        call_code[2..4].copy_from_slice(
+            &u16::try_from(false_start - 1)
+                .expect("fixture branch fits")
+                .to_be_bytes(),
+        );
+    }
+    call_code[goto_at + 1..goto_at + 3].copy_from_slice(
+        &u16::try_from(join - goto_at)
+            .expect("fixture branch fits")
+            .to_be_bytes(),
+    );
+    call_code.push(0xb8);
+    call_code.extend_from_slice(&target.to_be_bytes());
+    call_code.push(0xac);
+
+    let call_name = pool.utf8("call");
+    let call_descriptor = pool.utf8(method_descriptor);
+    let target_name = pool.utf8(target_name);
+    let target_descriptor = pool.utf8(target_descriptor);
+    let accept_code = Code::default().op(0x1a).op(0xac).done();
+    class_bytes(
+        &pool,
+        this_class,
+        object,
+        &[],
+        &[
+            MemberDef {
+                flags: 0x0009,
+                name: call_name,
+                descriptor: call_descriptor,
+                max_stack: 1,
+                max_locals,
+                code: call_code,
+            },
+            MemberDef {
+                flags: 0x000a,
+                name: target_name,
+                descriptor: target_descriptor,
+                max_stack: 1,
+                max_locals: 1,
+                code: accept_code,
+            },
+        ],
+    )
+}
+
+#[test]
+fn byte_conditional_invocation_narrows_only_proved_in_range_arms() {
+    let class = byte_conditional_invocation_class(ByteConditionalCase::InRangeConstants);
+    let mut class_budget = Budget::new(limits());
+    let header = class_facts(&class, &mut class_budget).expect("fixture is a class file");
+    let call = header
+        .methods
+        .iter()
+        .find(|method| method.name.raw().0 == b"call")
+        .expect("fixture declares call");
+    assert_eq!(call.descriptor.raw().0, b"(Z)B");
+    let call_code = method_code_facts(&class, call, &mut class_budget)
+        .expect("call Code attribute is readable");
+    assert!(
+        call_code
+            .instructions
+            .iter()
+            .all(|instruction| instruction.opcode != 0x91),
+        "the class has no physical i2b: {:?}",
+        call_code.instructions
+    );
+    let report = present(&class, b"call", b"(Z)B", 1, vec![]);
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert!(
+        report
+            .text
+            .contains("return acceptByte(arg0 ? (byte) 1 : (byte) 0);"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    for bci in [0, 1, 4, 5, 8, 9, 12] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "condition/arm/call/return BCI {bci} has no source segment:\n{}",
+            report.text
+        );
+    }
+}
+
+#[test]
+fn byte_conditional_invocation_refuses_unproved_arms_targets_and_joins() {
+    for (case, descriptor, name) in [
+        (
+            ByteConditionalCase::OutOfRangeConstant,
+            "(Z)B",
+            "out-of-range arm",
+        ),
+        (
+            ByteConditionalCase::IntLocals,
+            "(ZII)B",
+            "unconverted int local arms",
+        ),
+        (
+            ByteConditionalCase::ShortTarget,
+            "(Z)S",
+            "non-byte descriptor",
+        ),
+        (
+            ByteConditionalCase::AmbiguousJoin,
+            "(ZZ)B",
+            "extra join predecessor",
+        ),
+    ] {
+        let class = byte_conditional_invocation_class(case);
+        let parameters = if descriptor == "(ZII)B" {
+            3
+        } else if descriptor == "(ZZ)B" {
+            2
+        } else {
+            1
+        };
+        let report = present(&class, b"call", descriptor.as_bytes(), parameters, vec![]);
+        assert!(
+            report.produced(),
+            "{name}: {:?}\n{}",
+            report.outcome,
+            report.text
+        );
+        assert!(
+            report.text.contains("@bytecode"),
+            "{name} must remain quoted:\n{}",
+            report.text
+        );
+        assert!(
+            !report.text.contains("return accept"),
+            "{name} must not expose a partial call:\n{}",
+            report.text
+        );
+    }
+}
+
+#[test]
+fn byte_conditional_invocation_budget_and_cancellation_publish_no_partial_proof() {
+    let class = byte_conditional_invocation_class(ByteConditionalCase::InRangeConstants);
+    let payload = analyze(&class, b"call", b"(Z)B");
+    let facts = facts_of(&class, b"call", 1, vec![]);
+    let members = members_of(&class);
+    let mut limited_budget = Budget::new(Limits {
+        analysis_steps: 1,
+        ..limits()
+    });
+    let limited = recover_body(&payload, &facts, Some(&members), &mut limited_budget);
+    assert!(!limited.produced(), "{:?}", limited.outcome);
+    assert!(matches!(limited.stop(), Some(StopReason::Budget { .. })));
+    assert!(limited.text.is_empty());
+    assert!(limited.source_map.is_empty());
+
+    let token = jarde_reader::budget::CancellationToken::new();
+    token.cancel();
+    let mut cancelled_budget = Budget::with_cancellation_token(limits(), token);
+    let cancelled = recover_body(&payload, &facts, Some(&members), &mut cancelled_budget);
+    assert!(!cancelled.produced(), "{:?}", cancelled.outcome);
+    assert!(matches!(
+        cancelled.stop(),
+        Some(StopReason::Cancelled { .. })
+    ));
+    assert!(cancelled.text.is_empty());
+    assert!(cancelled.source_map.is_empty());
+}

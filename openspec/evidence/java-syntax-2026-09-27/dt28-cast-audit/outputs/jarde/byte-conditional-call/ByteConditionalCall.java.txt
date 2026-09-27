@@ -12,12 +12,10 @@ public final class ByteConditionalCall extends java.lang.Object {
     }
 
     public static byte run(long arg0, boolean arg2) {
-        // jarde: not recovered: the recovery run for `run(JZ)B` produced no statement (explanation only); the artifact's own comment lines are below
         // @method run(JZ)B
         // @declaration a static method of `dt28.ByteConditionalCall`, member flags 0x0009
         // recovered from bytecode; presentation is not claimed to compile
-        // @bytecode 13 10 0
-        // the parameter 1 of the invocation at BCI 10 is declared `byte` presents `int` and this layer has no proven conversion to `byte`
+        return acceptByte(arg0, arg2 ? (byte) 1 : (byte) 0);
     }
 
     private static byte acceptByte(long arg0, byte arg2) {

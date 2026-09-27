@@ -16,7 +16,8 @@ ROOT = HERE.parents[3]
 JADX_ROOT = Path("/Users/lordcasser/workspace/testzone/jadx")
 JADX = JADX_ROOT / "jadx-cli/build/install/jadx/bin/jadx"
 JADX_HEAD = "2fb1b16386941660fda07e9017285aec40fcb37f"
-JARDE_BASE = "85117144069a5ab6901792b2c0a9f73951f2f3b8"
+JARDE_BASE = "f39211c27c326df3b9f471970102a943627833b4"
+PRE_FIX_DIAGNOSTIC = HERE / "pre-fix-jarde-diagnostic.txt"
 CASES = {
     "supported": {
         "sources": ("PrimitiveCasts.java", "Runner.java"),
@@ -109,6 +110,9 @@ def main() -> None:
     require(not checked("git", "status", "--porcelain", cwd=JADX_ROOT).strip(),
             "pinned JADX checkout is not clean")
     require(JADX.is_file(), f"pinned JADX executable is missing: {JADX}")
+    pre_fix_diagnostic = PRE_FIX_DIAGNOSTIC.read_text()
+    require("BCI 10" in pre_fix_diagnostic and "missing return statement" in pre_fix_diagnostic,
+            "the frozen pre-fix refusal diagnostic is missing or changed")
     clean_outputs()
     results: dict[str, object] = {}
     with tempfile.TemporaryDirectory(prefix="jarde-dt28-cast-") as temporary:
@@ -188,18 +192,13 @@ def main() -> None:
                         json.dumps(report_obj, indent=2, ensure_ascii=False, sort_keys=True) + "\n")
             (OUT / "jarde" / case / "complete-sources.txt").write_text("\n".join(jarde_texts))
             jarde = compile_run(jarde_sources, work, f"{case}-jarde-rebuild", main_class)
-            if case == "supported":
-                require(jarde == {"compile_exit": 0, "run_exit": 0,
-                                  "run_stdout": expected, "run_stderr": ""},
-                        f"Jarde supported control failed: {jarde}")
-            else:
-                require(jarde.get("compile_exit") == 1 and "missing return statement" in
-                        str(jarde.get("compile_stderr", "")),
-                        f"Jarde expected refusal boundary changed: {jarde}")
+            require(jarde == {"compile_exit": 0, "run_exit": 0,
+                              "run_stdout": expected, "run_stderr": ""},
+                    f"Jarde Java 8 verification failed for {case}: {jarde}")
+            if case == "byte-conditional-call":
                 complete_jarde_text = "\n".join(jarde_texts)
-                require("not recovered: the recovery run for `run(JZ)B` produced no statement" in
-                        complete_jarde_text and "parameter 1 of the invocation" in complete_jarde_text,
-                        "Jarde output no longer identifies the unproved byte invocation conversion")
+                require("(byte) 1" in complete_jarde_text and "(byte) 0" in complete_jarde_text,
+                        "Jarde did not present each proven in-range branch as byte")
 
             results[case] = {
                 "original": original,
@@ -213,6 +212,7 @@ def main() -> None:
 
         results["jadx_commit"] = JADX_HEAD
         results["jarde_baseline_commit"] = JARDE_BASE
+        results["pre_fix_jarde_diagnostic"] = pre_fix_diagnostic
         results["scope"] = [
             "(long) char before shift; (int) long before shift",
             "long-to-byte, int-to-short, int-to-char narrowing",
@@ -221,9 +221,8 @@ def main() -> None:
             "byte-valued conditional passed to byte parameter",
         ]
         results["jarde_difference"] = (
-            "only byte-conditional-call in this fixture fails Jarde recompilation: "
-            "byteConditionalCall(JZ)B has no recovered statement because the invocation's "
-            "byte parameter receives an int-typed conditional without a proven narrowing conversion"
+            "pre-fix Jarde refused byteConditionalCall(JZ)B at BCI 10; post-fix both complete "
+            "source groups compile with --release 8, pass -Xverify:all, and match original/JADX output"
         )
         (OUT / "results.json").write_text(
             json.dumps(results, indent=2, ensure_ascii=False, sort_keys=True) + "\n")
