@@ -1,0 +1,14 @@
+java.lang.Integer:1:true
+integer-bounds:-128:true:127:true
+integer-outside:-129:false:128:false
+integer-context:java.lang.Integer:1
+java.lang.Boolean:true:true
+boolean-false:java.lang.Boolean:false:true
+java.lang.Byte:2:true
+java.lang.Short:3:true
+java.lang.Character:c:true
+character-bounds:127:true:128:false
+java.lang.Long:4:true
+0:0:7
+true:false
+null-unbox:NPE
