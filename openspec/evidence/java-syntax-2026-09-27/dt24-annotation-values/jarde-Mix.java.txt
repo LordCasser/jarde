@@ -1,0 +1,32 @@
+// jarde: presentation of `dt24/Mix` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt24;
+
+@java.lang.annotation.Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
+
+public @interface Mix {
+    // jarde: no body: the member `name()Ljava/lang/String;` is declared abstract and its declaration carries no Code attribute
+    public abstract java.lang.String name();
+
+    // jarde: no body: the member `num()I` is declared abstract and its declaration carries no Code attribute
+    public abstract int num();
+
+    // jarde: no body: the member `value()F` is declared abstract and its declaration carries no Code attribute
+    public abstract float value();
+
+    // jarde: no body: the member `doubles()[D` is declared abstract and its declaration carries no Code attribute
+    public abstract double[] doubles();
+
+    // jarde: no body: the member `cls()Ljava/lang/Class;` is declared abstract and its declaration carries no Code attribute
+    // jarde: generic Signature `()Ljava/lang/Class<*>;` projected after descriptor erasure and same-run AST/SSA parameter-return proof
+    public abstract java.lang.Class<?> cls();
+
+    // jarde: no body: the member `mode()Ldt24/Mode;` is declared abstract and its declaration carries no Code attribute
+    public abstract dt24.Mode mode();
+
+    // jarde: no body: the member `nested()Ldt24/Simple;` is declared abstract and its declaration carries no Code attribute
+    public abstract dt24.Simple nested();
+
+    // jarde: no body: the member `ints()[I` is declared abstract and its declaration carries no Code attribute
+    public abstract int[] ints();
+}

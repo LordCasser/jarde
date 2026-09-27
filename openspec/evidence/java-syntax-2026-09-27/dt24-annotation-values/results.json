@@ -1,0 +1,37 @@
+{
+  "jadx_commit": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "javac": "javac 23.0.1",
+  "source_sha256": {
+    "Simple.java": "13ac113690853c5efe5124e661d58860f685c43305f37106f923a6081dd07461",
+    "Mode.java": "553451b1716d0434802db47a543087c8bcb30006747427979d88c32207fca1bc",
+    "Mix.java": "d3d335036cd12a3bf15b76f5a05aed8ab724a86cf6dd18b1ed554552ce264a65",
+    "Tagged.java": "e3b501f2b276da68c47f550637804b14102d1fd594761eea9004c618a55e71f4",
+    "Runner.java": "6ada12796fa6e9d8e1ce94b186ff6adf440afca5f0bff5f148e11cc0327e54d2"
+  },
+  "class_sha256": {
+    "Mix": "00db587a6feebc04f240655f3a3fa7fc1c626e6e22aba39a0029420384baa23c",
+    "Mode": "9c706eb953843908f25f2e2368502224a41009312c33073885c1887100ccba05",
+    "Runner": "53f48d35fba3fa90fb2e293f77af80edf2d6d6c7329587e6c90f64e2b3d37dc3",
+    "Simple": "3eca317200a0923324eeb210bad59c73436164add81cf4bffd4f8746eead5e1e",
+    "Tagged": "5ea7160da33e9a78e975e8355df8eaa2a81ddb93241d8bfe4964fa9e531887f4"
+  },
+  "original": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stdout": "b:7:9.87:[0.0, 1.1]:java.lang.Exception:TWO:false:[3, 5]\n"
+  },
+  "jadx": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stdout": "b:7:9.87:[0.0, 1.1]:java.lang.Exception:TWO:false:[3, 5]\n"
+  },
+  "jarde": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "run_stdout": "b:7:9.87:[0.0, 1.1]:java.lang.Exception:TWO:false:[3, 5]\n"
+  },
+  "assertions": {
+    "complete_java8_verified_equal": true,
+    "all_selected_annotation_value_kinds_present": true
+  }
+}

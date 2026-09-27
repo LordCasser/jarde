@@ -1,0 +1,7 @@
+package dt24;
+
+/* JADX INFO: loaded from: input.jar:dt24/Mode.class */
+public enum Mode {
+    ONE,
+    TWO
+}

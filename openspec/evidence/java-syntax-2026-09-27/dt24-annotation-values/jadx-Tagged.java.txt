@@ -1,0 +1,6 @@
+package dt24;
+
+/* JADX INFO: loaded from: input.jar:dt24/Tagged.class */
+@Mix(name = "b", num = 7, value = 9.87f, doubles = {0.0d, 1.1d}, cls = Exception.class, mode = Mode.TWO, nested = @Simple(false), ints = {3, 5})
+public class Tagged {
+}

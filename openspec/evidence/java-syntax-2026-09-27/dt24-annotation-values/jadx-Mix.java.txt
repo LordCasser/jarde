@@ -1,0 +1,24 @@
+package dt24;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/* JADX INFO: loaded from: input.jar:dt24/Mix.class */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Mix {
+    String name();
+
+    int num();
+
+    float value();
+
+    double[] doubles();
+
+    Class<?> cls();
+
+    Mode mode();
+
+    Simple nested();
+
+    int[] ints();
+}

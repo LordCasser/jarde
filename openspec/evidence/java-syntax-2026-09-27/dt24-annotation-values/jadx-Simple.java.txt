@@ -1,0 +1,10 @@
+package dt24;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/* JADX INFO: loaded from: input.jar:dt24/Simple.class */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Simple {
+    boolean value();
+}
