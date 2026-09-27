@@ -992,7 +992,7 @@ fn static_member_incomplete_targets_never_publish_partial_nested_source() {
         assert!(matches!(
             report.member_family,
             ClassSourceMemberFamily::Prepared {
-                capture: ClassSourceMemberCapture::StaticNoCapture { target: None },
+                capture: ClassSourceMemberCapture::Refused { .. },
                 projection: ClassSourceMemberProjection::Refused { .. },
                 ..
             }

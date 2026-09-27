@@ -893,7 +893,7 @@ pub enum ClassSourceMemberCapture {
     },
     StaticNoCapture {
         #[serde(skip)]
-        target: Option<Box<jarde_java::report::ProvedStaticMemberTarget>>,
+        target: Box<jarde_java::report::ProvedStaticMemberTarget>,
     },
     Refused {
         reason: String,
@@ -7596,7 +7596,7 @@ pub(crate) fn member_family_source_text(
         || !child_declaration.annotation_refusals.is_empty()
         || (member.capture.is_some() && member.relation.access_flags & ACC_STATIC != 0)
         || (member.capture.is_none() && (member.relation.access_flags & ACC_STATIC == 0
-            || member.static_target.is_some_and(|target| target.definition != member.child.class)
+            || member.static_target.is_none_or(|target| target.definition != member.child.class)
             || !member.child.fields.is_empty()))
         || child_declaration.item.declaration.access_flags
             & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION)

@@ -2393,11 +2393,14 @@ impl Engine {
             && physically_complete
             && candidate.access_flags & 0x0008 != 0
         {
-            class_source::ClassSourceMemberCapture::StaticNoCapture {
-                target: static_target
-                    .filter(|target| target.definition == child_definition)
-                    .cloned()
-                    .map(Box::new),
+            match static_target.filter(|target| target.definition == child_definition) {
+                Some(target) => class_source::ClassSourceMemberCapture::StaticNoCapture {
+                    target: Box::new(target.clone()),
+                },
+                None => class_source::ClassSourceMemberCapture::Refused {
+                    reason: "static no-capture target was not proved from the class-level relation"
+                        .to_owned(),
+                },
             }
         } else if matches!(relation, Ok(true)) && physically_complete {
             match prove_class_source_member_capture(
@@ -2426,37 +2429,31 @@ impl Engine {
             (Ok(true), class_source::ClassSourceMemberCapture::StaticNoCapture { target })
                 if physically_complete =>
             {
-                if let Some(target) = target {
-                    match prove_class_source_static_calls(
-                        &root_report.methods,
-                        &child.methods,
-                        target,
-                        budget,
-                    ) {
-                        Ok(class_source::ClassSourceMemberCalls::StaticDeclarationOnly)
-                            if !static_declaration_only_shape(candidate, &child_facts, &child) =>
-                        {
-                            class_source::ClassSourceMemberCalls::Refused {
-                                reason: "static declaration-only child is outside the abstract member slice".to_owned(),
-                                sites: Vec::new(),
-                                refusals: Vec::new(),
-                            }
-                        }
-                        Ok(calls) => calls,
-                        Err(error) => {
-                            merge_execution(&mut capture_execution, stop_execution(&error, budget));
-                            class_source::ClassSourceMemberCalls::Refused {
-                                reason: "static member call proof stopped".to_owned(),
-                                sites: Vec::new(),
-                                refusals: Vec::new(),
-                            }
+                match prove_class_source_static_calls(
+                    &root_report.methods,
+                    &child.methods,
+                    target,
+                    budget,
+                ) {
+                    Ok(class_source::ClassSourceMemberCalls::StaticDeclarationOnly)
+                        if !static_declaration_only_shape(candidate, &child_facts, &child) =>
+                    {
+                        class_source::ClassSourceMemberCalls::Refused {
+                            reason:
+                                "static declaration-only child is outside the abstract member slice"
+                                    .to_owned(),
+                            sites: Vec::new(),
+                            refusals: Vec::new(),
                         }
                     }
-                } else {
-                    class_source::ClassSourceMemberCalls::Refused {
-                        reason: "static constructor definition proof is incomplete".to_owned(),
-                        sites: Vec::new(),
-                        refusals: Vec::new(),
+                    Ok(calls) => calls,
+                    Err(error) => {
+                        merge_execution(&mut capture_execution, stop_execution(&error, budget));
+                        class_source::ClassSourceMemberCalls::Refused {
+                            reason: "static member call proof stopped".to_owned(),
+                            sites: Vec::new(),
+                            refusals: Vec::new(),
+                        }
                     }
                 }
             }
@@ -13743,8 +13740,7 @@ fn static_declaration_only_shape(
     child: &class_source::ClassSourceReport,
 ) -> bool {
     if candidate.access_flags != 0x0409
-        || facts.access_flags & 0x0400 == 0
-        || facts.access_flags & (0x0200 | 0x2000 | 0x4000) != 0
+        || facts.access_flags != 0x0421
         || !facts.fields.is_empty()
         || facts.methods.len() != 2
         || child.declaration.as_ref().is_none_or(|declaration| {
@@ -14121,10 +14117,7 @@ fn project_class_source_member_family(
     else {
         return Ok(Err("family relation is not prepared".to_owned()));
     };
-    if let ClassSourceMemberCapture::StaticNoCapture {
-        target: Some(target),
-    } = capture
-    {
+    if let ClassSourceMemberCapture::StaticNoCapture { target } = capture {
         match calls {
             ClassSourceMemberCalls::StaticProved { sites } => {
                 return project_class_source_static_member_family(

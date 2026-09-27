@@ -1,0 +1,31 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_tests_sha256": {
+    "TestClassGen.java": "4b0757aa3932fe4570c38f1ef420c20ba2fdc9ceb533abe334f38826e304ef95",
+    "TestClassImplementsSignature.java": "37c0ffce23c9610df4b98ed8cc584070a5b2c5b97cf24560756c180e65f1d087",
+    "TestIncorrectFieldSignature.java": "9cb94370e3bd176e1c29179b12f44f53132774224429d76afb5d928b3c1f6a32"
+  },
+  "jarde_cli_sha256": "2602d9b1e41dbc1e0eb21012b799eeaac7563077610c57d97139535ff4737593",
+  "fixture": "single",
+  "input_sha256": {
+    "Runner.java": "da1ba21bc259dab1b3491f95c5933575719db7253d2c78c968c2b38b9841ddbf",
+    "SingleAbstract.java": "f5788bce3d184a64cbae29a45d3efcde89efbb0201a1494c789dd65f7efe0c10"
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "true:1"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "true:1"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "true:1"
+  },
+  "jarde_root_missing": [],
+  "jarde_physical_child_count": 1
+}
