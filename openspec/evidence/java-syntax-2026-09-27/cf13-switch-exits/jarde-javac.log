@@ -1,0 +1,5 @@
+exit=1
+openspec/evidence/java-syntax-2026-09-27/cf13-switch-exits/jarde/SwitchLoopExits.java:21: 错误: 缺少返回语句
+    }
+    ^
+1 个错误

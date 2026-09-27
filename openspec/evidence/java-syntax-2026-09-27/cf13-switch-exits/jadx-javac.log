@@ -1,0 +1,5 @@
+exit=1
+openspec/evidence/java-syntax-2026-09-27/cf13-switch-exits/jadx/sources/cf13/SwitchLoopExits.java:16: 错误: 无法访问的语句
+                    break;
+                    ^
+1 个错误
