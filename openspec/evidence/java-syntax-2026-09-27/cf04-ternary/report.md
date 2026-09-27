@@ -19,3 +19,9 @@ python3 openspec/evidence/java-syntax-2026-09-27/cf04-ternary/replay.py \
 ```
 
 `--out` 必须为空目录。这里保留修前完整类失败和隔离基本形状通过两类事实；输入 JAR 与编译目录自动清理，仅保存源码、`javap`、日志和哈希。
+
+## 修后复放
+
+[after/summary.json](after/summary.json) 固定了同一输入、JADX 提交和源文件哈希。原 class、JADX、Jarde 的完整 `TernaryCases` 源码均以 Java 8 重编，`java -Xverify:all` 退出码均为 0，13 行输出逐字一致；`TernaryBasic` 三方 11 行也逐字一致。Jarde 的 `nested` 现在保留整数 `1/2` 条件返回，见 [完整源码](after/source/jarde/cf04/TernaryCases.java)。脚本已把这两组一致性设为失败即报错的修后门槛。
+
+正例单元测试同时检查 BCI 1/5/12 的测试、15/19 的整数 producer、20 的唯一 `ireturn` 以及各物理来源。非字面量 producer、额外消费者和异常保护路径均未得到值证明，保持整方法引用。该闭包仅覆盖两个直接 `int` 字面量 producer；任意表达式 producer 与数值转换仍需另案证明。

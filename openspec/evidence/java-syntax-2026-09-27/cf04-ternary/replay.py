@@ -150,6 +150,12 @@ def main():
         }
         (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         print(json.dumps(summary, indent=2))
+        for label, result in ((name, summary[name]) for name in ("original", "jadx", "jarde")):
+            if result.get("javac_exit") != 0 or result.get("runtime_exit") != 0 or result.get("stdout") != EXPECTED:
+                raise RuntimeError(f"complete TernaryCases Java 8 replay differs: {label}")
+        for label, result in summary["basic"].items():
+            if result.get("javac_exit") != 0 or result.get("runtime_exit") != 0 or result.get("stdout") != basic_expected:
+                raise RuntimeError(f"complete TernaryBasic Java 8 replay differs: {label}")
 
 
 if __name__ == "__main__":
