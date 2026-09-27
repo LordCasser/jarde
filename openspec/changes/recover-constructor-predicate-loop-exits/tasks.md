@@ -14,4 +14,4 @@
 
 - [x] 3.1 将原/JADX/Jarde 完整 Java 8 源码分别重编并以 `java -Xverify:all` 跑 null、空数组、含 `f`、含 `h` 四路，确认三方逐项输出 `null / null / f / h`，保存可重放证据。
 - [x] 3.2 复跑已验收双出口循环、二层三来源样本和 verifier 有效负例；核预算/取消原子性，并运行 `cargo test -p jarde-java --tests --locked`、`cargo fmt --all -- --check`、`cargo check --workspace --locked`、`openspec validate recover-constructor-predicate-loop-exits --strict` 和 `git diff --check`，清理专用 Cargo target。
-- [ ] 3.3 root 独立审阅 CFG/SSA/效果/来源证书，重放完整类三方运行及关键负例并记录验收；通过后更新 CF-08 清单，仅把已证固定形态标为恢复。
+- [x] 3.3 root 独立审阅 CFG/SSA/效果/来源证书，重放完整类三方运行及关键负例并记录[验收](../../evidence/java-syntax-2026-09-27/cf08-endless-loops/constructor-predicate-root-acceptance-2026-09-28.md)；通过后更新 CF-08 清单，仅把已证固定形态标为恢复。
