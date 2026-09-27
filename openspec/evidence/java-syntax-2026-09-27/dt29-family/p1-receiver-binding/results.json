@@ -1,0 +1,508 @@
+{
+  "budget": "method_bodies=1 stopped explicitly",
+  "fixed_combined": {
+    "methods": {
+      "C.set": [
+        2,
+        7,
+        12,
+        17
+      ],
+      "D.set": [
+        2,
+        7,
+        12,
+        17
+      ],
+      "run.bits(A)": [
+        14,
+        31,
+        74
+      ]
+    },
+    "physical_accessor": "dt29/FieldCast$A.access$002:(Ldt29/FieldCast$A;Z)Z",
+    "physical_field_owner": "dt29/FieldCast$A",
+    "physical_private_target": "dt29/FieldCast.bits:(Ldt29/FieldCast$A;)Ljava/lang/String;",
+    "source_maps": {
+      "C.set": {
+        "12": [
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$C.class",
+              "owner_sha256": "fed88965f662949faaabe0787e94d6b9e22f0938caf5916b03528ef338a9f70b",
+              "primary_bci": 12
+            },
+            "text": "    ((dt29.FieldCast$A) arg1).packagePrivateField = arg2;\n"
+          }
+        ],
+        "17": [
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$C.class",
+              "owner_sha256": "fed88965f662949faaabe0787e94d6b9e22f0938caf5916b03528ef338a9f70b",
+              "primary_bci": 17
+            },
+            "text": "dt29.FieldCast$A"
+          },
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$C.class",
+              "owner_sha256": "fed88965f662949faaabe0787e94d6b9e22f0938caf5916b03528ef338a9f70b",
+              "primary_bci": 17
+            },
+            "text": "dt29.FieldCast$A.access$002((dt29.FieldCast$A) arg1, arg2)"
+          },
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$C.class",
+              "owner_sha256": "fed88965f662949faaabe0787e94d6b9e22f0938caf5916b03528ef338a9f70b",
+              "primary_bci": 17
+            },
+            "text": "    dt29.FieldCast$A.access$002((dt29.FieldCast$A) arg1, arg2);\n"
+          }
+        ],
+        "2": [
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$C.class",
+              "owner_sha256": "fed88965f662949faaabe0787e94d6b9e22f0938caf5916b03528ef338a9f70b",
+              "primary_bci": 2
+            },
+            "text": "    ((dt29.FieldCast$A) arg1).publicField = arg2;\n"
+          }
+        ],
+        "7": [
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$C.class",
+              "owner_sha256": "fed88965f662949faaabe0787e94d6b9e22f0938caf5916b03528ef338a9f70b",
+              "primary_bci": 7
+            },
+            "text": "    ((dt29.FieldCast$A) arg1).protectedField = arg2;\n"
+          }
+        ]
+      },
+      "D.set": {
+        "12": [
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$D.class",
+              "owner_sha256": "82d798eb9a0c11f65a675ab14f462f64d5e0235bd2456c556683cf015f84eb92",
+              "primary_bci": 12
+            },
+            "text": "    ((dt29.FieldCast$A) arg1).packagePrivateField = arg2;\n"
+          }
+        ],
+        "17": [
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$D.class",
+              "owner_sha256": "82d798eb9a0c11f65a675ab14f462f64d5e0235bd2456c556683cf015f84eb92",
+              "primary_bci": 17
+            },
+            "text": "dt29.FieldCast$A"
+          },
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$D.class",
+              "owner_sha256": "82d798eb9a0c11f65a675ab14f462f64d5e0235bd2456c556683cf015f84eb92",
+              "primary_bci": 17
+            },
+            "text": "dt29.FieldCast$A.access$002((dt29.FieldCast$A) arg1, arg2)"
+          },
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$D.class",
+              "owner_sha256": "82d798eb9a0c11f65a675ab14f462f64d5e0235bd2456c556683cf015f84eb92",
+              "primary_bci": 17
+            },
+            "text": "    dt29.FieldCast$A.access$002((dt29.FieldCast$A) arg1, arg2);\n"
+          }
+        ],
+        "2": [
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$D.class",
+              "owner_sha256": "82d798eb9a0c11f65a675ab14f462f64d5e0235bd2456c556683cf015f84eb92",
+              "primary_bci": 2
+            },
+            "text": "    ((dt29.FieldCast$A) arg1).publicField = arg2;\n"
+          }
+        ],
+        "7": [
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "(Ldt29/FieldCast$B;Z)V",
+              "method_name": "set",
+              "owner_class": "dt29/FieldCast$D.class",
+              "owner_sha256": "82d798eb9a0c11f65a675ab14f462f64d5e0235bd2456c556683cf015f84eb92",
+              "primary_bci": 7
+            },
+            "text": "    ((dt29.FieldCast$A) arg1).protectedField = arg2;\n"
+          }
+        ]
+      },
+      "run.bits(A)": {
+        "14": [
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "()Ljava/lang/String;",
+              "method_name": "run",
+              "owner_class": "dt29/FieldCast.class",
+              "owner_sha256": "c33da32b5079bc59d7cdf83164695123a7e880624f52337aa5e886d9c2c9e7fb",
+              "primary_bci": 14
+            },
+            "text": "bits((dt29.FieldCast$A) local0)"
+          }
+        ],
+        "31": [
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [],
+              "method_descriptor": "()Ljava/lang/String;",
+              "method_name": "run",
+              "owner_class": "dt29/FieldCast.class",
+              "owner_sha256": "c33da32b5079bc59d7cdf83164695123a7e880624f52337aa5e886d9c2c9e7fb",
+              "primary_bci": 31
+            },
+            "text": "bits((dt29.FieldCast$A) local0)"
+          }
+        ],
+        "74": [
+          {
+            "origin": {
+              "cp": null,
+              "derived_bcis": [
+                77
+              ],
+              "method_descriptor": "()Ljava/lang/String;",
+              "method_name": "run",
+              "owner_class": "dt29/FieldCast.class",
+              "owner_sha256": "c33da32b5079bc59d7cdf83164695123a7e880624f52337aa5e886d9c2c9e7fb",
+              "primary_bci": 74
+            },
+            "text": "bits((dt29.FieldCast$A) local0)"
+          }
+        ]
+      }
+    },
+    "source_sha256": "daadc9da3711519ed2d0c7f2157c420d2a13540ed6898f182a3f64591be0c2af"
+  },
+  "fixture_sha256": "d5e3f0b632cc32cd87abb6059a5704622ff5cfc2f0278c65a19f467b289d3f45",
+  "jadx": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "stdout": "101:true:false:true:false\n"
+  },
+  "jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jarde": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "stdout": "101:true:false:true:false\n"
+  },
+  "negative": {
+    "ambiguous_accessor": "refused at BCI 17",
+    "bits_wrong_descriptor": "refused at BCI 14",
+    "bits_wrong_name": "refused at BCI 14",
+    "bits_wrong_owner": "refused at BCI 14",
+    "cross_package": "refused at BCI 7",
+    "final": "refused at BCI 7",
+    "private": "refused at BCI 7",
+    "static": "refused at BCI 7",
+    "wrong_descriptor": "refused at BCI 7",
+    "wrong_name": "refused at BCI 7",
+    "wrong_owner": "refused at BCI 7",
+    "wrong_parent": "refused at BCI 7",
+    "wrong_ssa_receiver": "refused at BCI 7"
+  },
+  "original": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "stdout": "101:true:false:true:false\n"
+  },
+  "physical_classes": [
+    "dt29p1/ReceiverBindingFamily$A",
+    "dt29p1/ReceiverBindingFamily$B",
+    "dt29p1/ReceiverBindingFamily$C",
+    "dt29p1/ReceiverBindingFamily$D",
+    "dt29p1/ReceiverBindingFamily"
+  ],
+  "run_bits_a_call_bcis": [
+    14,
+    31,
+    57
+  ],
+  "source_bcis": {
+    "ReceiverBindingFamily$C": [
+      2,
+      7,
+      12,
+      17
+    ],
+    "ReceiverBindingFamily$D": [
+      2,
+      7,
+      12,
+      17
+    ]
+  },
+  "source_maps": {
+    "ReceiverBindingFamily$C.set": {
+      "12": [
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$C.class",
+            "owner_sha256": "92cc282d625a29371e44c118661fec4c7784f55f7e78726eb4d10288eb2edc01",
+            "primary_bci": 12
+          },
+          "text": "    ((dt29p1.ReceiverBindingFamily$A) arg1).packageField = arg2;\n"
+        }
+      ],
+      "17": [
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$C.class",
+            "owner_sha256": "92cc282d625a29371e44c118661fec4c7784f55f7e78726eb4d10288eb2edc01",
+            "primary_bci": 17
+          },
+          "text": "dt29p1.ReceiverBindingFamily$A"
+        },
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$C.class",
+            "owner_sha256": "92cc282d625a29371e44c118661fec4c7784f55f7e78726eb4d10288eb2edc01",
+            "primary_bci": 17
+          },
+          "text": "dt29p1.ReceiverBindingFamily$A.access$002((dt29p1.ReceiverBindingFamily$A) arg1, arg2)"
+        },
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$C.class",
+            "owner_sha256": "92cc282d625a29371e44c118661fec4c7784f55f7e78726eb4d10288eb2edc01",
+            "primary_bci": 17
+          },
+          "text": "    dt29p1.ReceiverBindingFamily$A.access$002((dt29p1.ReceiverBindingFamily$A) arg1, arg2);\n"
+        }
+      ],
+      "2": [
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$C.class",
+            "owner_sha256": "92cc282d625a29371e44c118661fec4c7784f55f7e78726eb4d10288eb2edc01",
+            "primary_bci": 2
+          },
+          "text": "    ((dt29p1.ReceiverBindingFamily$A) arg1).publicField = arg2;\n"
+        }
+      ],
+      "7": [
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$C.class",
+            "owner_sha256": "92cc282d625a29371e44c118661fec4c7784f55f7e78726eb4d10288eb2edc01",
+            "primary_bci": 7
+          },
+          "text": "    ((dt29p1.ReceiverBindingFamily$A) arg1).protectedField = arg2;\n"
+        }
+      ]
+    },
+    "ReceiverBindingFamily$D.set": {
+      "12": [
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$D.class",
+            "owner_sha256": "07a28b28e3ed70cf7299b747b9eb4870a8f5a4f15cf9147ab369015a659451aa",
+            "primary_bci": 12
+          },
+          "text": "    ((dt29p1.ReceiverBindingFamily$A) arg1).packageField = arg2;\n"
+        }
+      ],
+      "17": [
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$D.class",
+            "owner_sha256": "07a28b28e3ed70cf7299b747b9eb4870a8f5a4f15cf9147ab369015a659451aa",
+            "primary_bci": 17
+          },
+          "text": "dt29p1.ReceiverBindingFamily$A"
+        },
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$D.class",
+            "owner_sha256": "07a28b28e3ed70cf7299b747b9eb4870a8f5a4f15cf9147ab369015a659451aa",
+            "primary_bci": 17
+          },
+          "text": "dt29p1.ReceiverBindingFamily$A.access$002((dt29p1.ReceiverBindingFamily$A) arg1, arg2)"
+        },
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$D.class",
+            "owner_sha256": "07a28b28e3ed70cf7299b747b9eb4870a8f5a4f15cf9147ab369015a659451aa",
+            "primary_bci": 17
+          },
+          "text": "    dt29p1.ReceiverBindingFamily$A.access$002((dt29p1.ReceiverBindingFamily$A) arg1, arg2);\n"
+        }
+      ],
+      "2": [
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$D.class",
+            "owner_sha256": "07a28b28e3ed70cf7299b747b9eb4870a8f5a4f15cf9147ab369015a659451aa",
+            "primary_bci": 2
+          },
+          "text": "    ((dt29p1.ReceiverBindingFamily$A) arg1).publicField = arg2;\n"
+        }
+      ],
+      "7": [
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "(Ldt29p1/ReceiverBindingFamily$B;Z)V",
+            "method_name": "set",
+            "owner_class": "dt29p1/ReceiverBindingFamily$D.class",
+            "owner_sha256": "07a28b28e3ed70cf7299b747b9eb4870a8f5a4f15cf9147ab369015a659451aa",
+            "primary_bci": 7
+          },
+          "text": "    ((dt29p1.ReceiverBindingFamily$A) arg1).protectedField = arg2;\n"
+        }
+      ]
+    },
+    "run.bits(A)": {
+      "14": [
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "()I",
+            "method_name": "run",
+            "owner_class": "dt29p1/ReceiverBindingFamily.class",
+            "owner_sha256": "89c4919b17f8e96f8ec7d658bb2ccee68333bc24ca3bde77232267e18a8927a4",
+            "primary_bci": 14
+          },
+          "text": "bits((dt29p1.ReceiverBindingFamily$A) local0)"
+        }
+      ],
+      "31": [
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "()I",
+            "method_name": "run",
+            "owner_class": "dt29p1/ReceiverBindingFamily.class",
+            "owner_sha256": "89c4919b17f8e96f8ec7d658bb2ccee68333bc24ca3bde77232267e18a8927a4",
+            "primary_bci": 31
+          },
+          "text": "bits((dt29p1.ReceiverBindingFamily$A) local0)"
+        }
+      ],
+      "57": [
+        {
+          "origin": {
+            "cp": null,
+            "derived_bcis": [],
+            "method_descriptor": "()I",
+            "method_name": "run",
+            "owner_class": "dt29p1/ReceiverBindingFamily.class",
+            "owner_sha256": "89c4919b17f8e96f8ec7d658bb2ccee68333bc24ca3bde77232267e18a8927a4",
+            "primary_bci": 57
+          },
+          "text": "bits((dt29p1.ReceiverBindingFamily$A) local0)"
+        }
+      ]
+    }
+  }
+}
