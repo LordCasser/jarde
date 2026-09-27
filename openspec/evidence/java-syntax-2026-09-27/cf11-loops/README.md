@@ -46,3 +46,5 @@ java -Xverify:all -cp openspec/evidence/java-syntax-2026-09-27/cf11-loops/jarde 
 Jarde 现有相关回归：`CARGO_TARGET_DIR=/tmp/jarde-cf11-target CARGO_INCREMENTAL=0 cargo test --test p3_loop_test_values --test p3_loop_transfers`，`p3_loop_test_values` 4/4、`p3_loop_transfers` 5/5 通过。它们覆盖条件/转移边界，不等同于固定 JADX 测试覆盖。
 
 审计结论仅限这个首片：三方完整源码重编、验证运行一致，未发现该窄嵌套/顺序形态的差距。JADX 四个 fixture 中三个主要是文本断言；不把它们文本相似本身当作 Jarde 通过证据。更复杂 break/continue、共享状态、不可约图和更深嵌套仍待独立验收。
+
+主线验收：在已合入 CF-06 的 `1422af58` CLI 上重放同一原始 class，Jarde 完整源码 SHA-256 仍为 `1c449e92d3dc9a9069c41b8d9c92b2f6748c6b16b171b72ea6c701c90481de28`，与本目录归档完全一致；三份归档 class 的 `-Xverify:all` 输出均为 `40 / 25`。
