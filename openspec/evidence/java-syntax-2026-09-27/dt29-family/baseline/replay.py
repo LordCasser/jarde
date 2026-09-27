@@ -158,14 +158,22 @@ def main():
                              out / "jarde-logs" / f"{class_name}-json.log")
             require(report_run.returncode == 0, f"Jarde report failed for {physical}")
             report = json.loads(report_run.stdout)
-            methods[physical] = [
-                {"name": bytes(member["item"]["identity"]["name"]).decode(errors="replace"),
-                 "descriptor": bytes(member["item"]["identity"]["descriptor"]).decode(errors="replace"),
-                 "quality": member.get("outcome", {}).get("report", {}).get("quality"),
-                 "quoted_bcis": [int(value) for value in re.findall(
-                     r"@bytecode\s+(\d+)", member.get("outcome", {}).get("report", {}).get("text", ""))]}
-                for member in report.get("methods", [])
-            ]
+            methods[physical] = []
+            for member in report.get("methods", []):
+                body = member.get("outcome", {}).get("report", {})
+                source_bcis = set()
+                for segment in body.get("source_map", {}).get("segments", []):
+                    origin = segment["origin"]
+                    source_bcis.add(origin["primary"]["bci"])
+                    source_bcis.update(item["bci"] for item in origin.get("derived", []))
+                methods[physical].append({
+                    "name": bytes(member["item"]["identity"]["name"]).decode(errors="replace"),
+                    "descriptor": bytes(member["item"]["identity"]["descriptor"]).decode(errors="replace"),
+                    "quality": body.get("quality"),
+                    "quoted_bcis": [int(value) for value in re.findall(
+                        r"@bytecode\s+(\d+)", body.get("text", ""))],
+                    "source_bcis": sorted(source_bcis),
+                })
         jarde_sources = sorted(jarde_source.glob("*.java"))
         for class_name in ("FieldCast$C", "FieldCast$D", "FieldCast"):
             disassembly = run(["javap", "-classpath", jar, "-v", "-c", "-p",
@@ -189,6 +197,16 @@ def main():
                     "Jarde complete family or generic metadata differs")
             require(all("@bytecode" not in path.read_text() for path in jarde_sources),
                     "Jarde still quotes a physical method")
+            required = {
+                ("dt29/FieldCast$C", "set"): {2, 7, 12, 17},
+                ("dt29/FieldCast$D", "set"): {2, 7, 12, 17},
+                ("dt29/FieldCast", "run"): {14, 31, 74},
+                ("dt29/FieldCast", "bits"): {8, 21, 25, 38, 42, 55, 59, 72, 78},
+            }
+            for (owner, name), bcis in required.items():
+                candidates = [method for method in methods[owner] if method["name"] == name]
+                require(len(candidates) == 1 and bcis.issubset(candidates[0]["source_bcis"]),
+                        f"{owner}.{name} lost required physical BCI sources")
         print(json.dumps({key: summary[key] for key in ("classes", "original", "jadx", "jarde")},
                          indent=2, ensure_ascii=False))
 
