@@ -1,0 +1,110 @@
+Classfile /Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde/tests/fixtures/p3-shared-catchall-finally/v8/SharedFinally.class
+  Last modified 2026年9月27日; size 514 bytes
+  SHA-256 checksum 8677378307e4d1bdd422b6dbe6860c9fe1aca6c3eff944258c19078b71bfd0bd
+public class SharedFinally
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // SharedFinally
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 3, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // SharedFinally.cleanupCount:I
+   #8 = Class              #10            // SharedFinally
+   #9 = NameAndType        #11:#12        // cleanupCount:I
+  #10 = Utf8               SharedFinally
+  #11 = Utf8               cleanupCount
+  #12 = Utf8               I
+  #13 = Class              #14            // java/lang/IllegalArgumentException
+  #14 = Utf8               java/lang/IllegalArgumentException
+  #15 = String             #16            // arg
+  #16 = Utf8               arg
+  #17 = Methodref          #13.#18        // java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+  #18 = NameAndType        #5:#19         // "<init>":(Ljava/lang/String;)V
+  #19 = Utf8               (Ljava/lang/String;)V
+  #20 = String             #21            // normal
+  #21 = Utf8               normal
+  #22 = String             #23            // caught
+  #23 = Utf8               caught
+  #24 = Utf8               Code
+  #25 = Utf8               handled
+  #26 = Utf8               (Z)Ljava/lang/String;
+  #27 = Utf8               StackMapTable
+  #28 = Class              #29            // java/lang/Throwable
+  #29 = Utf8               java/lang/Throwable
+  #30 = Utf8               count
+  #31 = Utf8               ()I
+{
+  public SharedFinally();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static java.lang.String handled(boolean);
+    descriptor: (Z)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=4, args_size=1
+         0: iconst_0
+         1: putstatic     #7                  // Field cleanupCount:I
+         4: iload_0
+         5: ifeq          18
+         8: new           #13                 // class java/lang/IllegalArgumentException
+        11: dup
+        12: ldc           #15                 // String arg
+        14: invokespecial #17                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+        17: athrow
+        18: ldc           #20                 // String normal
+        20: astore_1
+        21: getstatic     #7                  // Field cleanupCount:I
+        24: iconst_1
+        25: iadd
+        26: putstatic     #7                  // Field cleanupCount:I
+        29: aload_1
+        30: areturn
+        31: astore_1
+        32: ldc           #22                 // String caught
+        34: astore_2
+        35: getstatic     #7                  // Field cleanupCount:I
+        38: iconst_1
+        39: iadd
+        40: putstatic     #7                  // Field cleanupCount:I
+        43: aload_2
+        44: areturn
+        45: astore_3
+        46: getstatic     #7                  // Field cleanupCount:I
+        49: iconst_1
+        50: iadd
+        51: putstatic     #7                  // Field cleanupCount:I
+        54: aload_3
+        55: athrow
+      Exception table:
+         from    to  target type
+             4    21    31   Class java/lang/IllegalArgumentException
+             4    21    45   any
+            31    35    45   any
+      StackMapTable: number_of_entries = 3
+        frame_type = 18 /* same */
+        frame_type = 76 /* same_locals_1_stack_item */
+          stack = [ class java/lang/IllegalArgumentException ]
+        frame_type = 77 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+
+  public static int count();
+    descriptor: ()I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #7                  // Field cleanupCount:I
+         3: ireturn
+}
