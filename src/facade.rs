@@ -14091,10 +14091,18 @@ fn prove_direct_parent_field_writes(
             .iter()
             .filter(|field| field.name.raw().0 == name.0)
             .collect();
-        if matching.len() != 1
-            || matching[0].descriptor.raw().0 != descriptor.0
-            || matching[0].access_flags & (0x0001 | 0x0008) != 0x0001
-        {
+        if matching.len() != 1 || matching[0].descriptor.raw().0 != descriptor.0 {
+            continue;
+        }
+        let flags = matching[0].access_flags;
+        let existing_public_instance = flags & (0x0001 | 0x0008) == 0x0001;
+        let same_package_non_public_instance = {
+            const ACC_PROTECTED: u16 = 0x0004;
+
+            package_name(&declaration.class_name().0) == package_name(&owner.0)
+                && (flags == 0 || flags == ACC_PROTECTED)
+        };
+        if !existing_public_instance && !same_package_non_public_instance {
             continue;
         }
         let (Ok(source), Ok(owner), Ok(name), Ok(descriptor)) = (

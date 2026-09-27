@@ -1,0 +1,74 @@
+Classfile jar:file:///var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-parent-field-h4stujeb/combined-fieldcast.jar!/dt29/FieldCast$B.class
+  Last modified 2000年1月1日; size 395 bytes
+  SHA-256 checksum dd2dd6899b2c52b2285653366daf4df6fa4ef0aa473297c59cc3645cd7bd0c4a
+public class dt29.FieldCast$B extends dt29.FieldCast$A
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #21                         // dt29/FieldCast$B
+  super_class: #2                         // dt29/FieldCast$A
+  interfaces: 0, fields: 0, methods: 2, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // dt29/FieldCast$A."<init>":()V
+   #2 = Class              #4             // dt29/FieldCast$A
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               dt29/FieldCast$A
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #2.#8          // dt29/FieldCast$A.publicField:Z
+   #8 = NameAndType        #9:#10         // publicField:Z
+   #9 = Utf8               publicField
+  #10 = Utf8               Z
+  #11 = Fieldref           #2.#12         // dt29/FieldCast$A.protectedField:Z
+  #12 = NameAndType        #13:#10        // protectedField:Z
+  #13 = Utf8               protectedField
+  #14 = Fieldref           #2.#15         // dt29/FieldCast$A.packagePrivateField:Z
+  #15 = NameAndType        #16:#10        // packagePrivateField:Z
+  #16 = Utf8               packagePrivateField
+  #17 = Methodref          #2.#18         // dt29/FieldCast$A.access$002:(Ldt29/FieldCast$A;Z)Z
+  #18 = NameAndType        #19:#20        // access$002:(Ldt29/FieldCast$A;Z)Z
+  #19 = Utf8               access$002
+  #20 = Utf8               (Ldt29/FieldCast$A;Z)Z
+  #21 = Class              #22            // dt29/FieldCast$B
+  #22 = Utf8               dt29/FieldCast$B
+  #23 = Utf8               Code
+  #24 = Utf8               self
+  #25 = Utf8               (Z)V
+  #26 = Utf8               InnerClasses
+  #27 = Class              #28            // dt29/FieldCast
+  #28 = Utf8               dt29/FieldCast
+  #29 = Utf8               A
+  #30 = Utf8               B
+{
+  public dt29.FieldCast$B();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method dt29/FieldCast$A."<init>":()V
+         4: return
+
+  public void self(boolean);
+    descriptor: (Z)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: putfield      #7                  // Field dt29/FieldCast$A.publicField:Z
+         5: aload_0
+         6: iload_1
+         7: putfield      #11                 // Field dt29/FieldCast$A.protectedField:Z
+        10: aload_0
+        11: iload_1
+        12: putfield      #14                 // Field dt29/FieldCast$A.packagePrivateField:Z
+        15: aload_0
+        16: iload_1
+        17: invokestatic  #17                 // Method dt29/FieldCast$A.access$002:(Ldt29/FieldCast$A;Z)Z
+        20: pop
+        21: return
+}
+InnerClasses:
+  public static #29= #2 of #27;           // A=class dt29/FieldCast$A of class dt29/FieldCast
+  public static #30= #21 of #27;          // B=class dt29/FieldCast$B of class dt29/FieldCast

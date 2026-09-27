@@ -1,0 +1,82 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-parent-field-h4stujeb/original-classes/dt29/SamePackageParentFamily$B.class
+  Last modified 2026年9月27日; size 467 bytes
+  SHA-256 checksum 8b072630eb205ea7df76925bfce86d900087b23cf4e63e5a453b2ce52ddc34e2
+public class dt29.SamePackageParentFamily$B extends dt29.SamePackageParentFamily$A
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #21                         // dt29/SamePackageParentFamily$B
+  super_class: #2                         // dt29/SamePackageParentFamily$A
+  interfaces: 0, fields: 2, methods: 2, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // dt29/SamePackageParentFamily$A."<init>":()V
+   #2 = Class              #4             // dt29/SamePackageParentFamily$A
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               dt29/SamePackageParentFamily$A
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #2.#8          // dt29/SamePackageParentFamily$A.publicField:Z
+   #8 = NameAndType        #9:#10         // publicField:Z
+   #9 = Utf8               publicField
+  #10 = Utf8               Z
+  #11 = Fieldref           #2.#12         // dt29/SamePackageParentFamily$A.protectedField:Z
+  #12 = NameAndType        #13:#10        // protectedField:Z
+  #13 = Utf8               protectedField
+  #14 = Fieldref           #2.#15         // dt29/SamePackageParentFamily$A.packagePrivateField:Z
+  #15 = NameAndType        #16:#10        // packagePrivateField:Z
+  #16 = Utf8               packagePrivateField
+  #17 = Methodref          #2.#18         // dt29/SamePackageParentFamily$A.access$002:(Ldt29/SamePackageParentFamily$A;Z)Z
+  #18 = NameAndType        #19:#20        // access$002:(Ldt29/SamePackageParentFamily$A;Z)Z
+  #19 = Utf8               access$002
+  #20 = Utf8               (Ldt29/SamePackageParentFamily$A;Z)Z
+  #21 = Class              #22            // dt29/SamePackageParentFamily$B
+  #22 = Utf8               dt29/SamePackageParentFamily$B
+  #23 = Utf8               Code
+  #24 = Utf8               set
+  #25 = Utf8               (ZZ)V
+  #26 = Utf8               InnerClasses
+  #27 = Class              #28            // dt29/SamePackageParentFamily
+  #28 = Utf8               dt29/SamePackageParentFamily
+  #29 = Utf8               A
+  #30 = Utf8               B
+{
+  protected boolean protectedField;
+    descriptor: Z
+    flags: (0x0004) ACC_PROTECTED
+
+  boolean packagePrivateField;
+    descriptor: Z
+    flags: (0x0000)
+
+  public dt29.SamePackageParentFamily$B();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method dt29/SamePackageParentFamily$A."<init>":()V
+         4: return
+
+  public void set(boolean, boolean);
+    descriptor: (ZZ)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=3
+         0: aload_0
+         1: iload_1
+         2: putfield      #7                  // Field dt29/SamePackageParentFamily$A.publicField:Z
+         5: aload_0
+         6: iload_1
+         7: putfield      #11                 // Field dt29/SamePackageParentFamily$A.protectedField:Z
+        10: aload_0
+        11: iload_1
+        12: putfield      #14                 // Field dt29/SamePackageParentFamily$A.packagePrivateField:Z
+        15: aload_0
+        16: iload_2
+        17: invokestatic  #17                 // Method dt29/SamePackageParentFamily$A.access$002:(Ldt29/SamePackageParentFamily$A;Z)Z
+        20: pop
+        21: return
+}
+InnerClasses:
+  public static #29= #2 of #27;           // A=class dt29/SamePackageParentFamily$A of class dt29/SamePackageParentFamily
+  public static #30= #21 of #27;          // B=class dt29/SamePackageParentFamily$B of class dt29/SamePackageParentFamily

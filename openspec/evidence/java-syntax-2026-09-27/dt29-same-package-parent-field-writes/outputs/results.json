@@ -1,0 +1,71 @@
+{
+  "boundary_cases": {
+    "cross_package_protected": "refused at BCI 2; explicit A cast rejected by javac",
+    "final": "refused at BCI 7",
+    "method_body_budget": "request stopped explicitly",
+    "non_B_receiver": "refused at BCI 2",
+    "non_direct_parent_wrong_owner": "refused at BCI 2",
+    "private": "refused at BCI 7",
+    "private_accessor_control": "physical accessor call retained",
+    "public_final_control": "existing public path retained",
+    "static": "refused at BCI 7",
+    "volatile": "refused at BCI 7",
+    "wrong_descriptor": "refused at BCI 7",
+    "wrong_name": "refused at BCI 7"
+  },
+  "combined_B": {
+    "class": "dt29/FieldCast$B",
+    "method": "self(Z)V",
+    "physical_cp_owner": "dt29/FieldCast$A",
+    "remaining_scope": [
+      "C",
+      "D",
+      "root string concatenation/run/bits"
+    ],
+    "source_map_bcis": [
+      7,
+      12
+    ]
+  },
+  "expected_stdout": "true:true:false:false\n",
+  "fixed_jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "input_class_sha256": {
+    "dt29/SamePackageParentFamily": "85c8f1a8ad10dd94501b281e60cbf15d25cf0fc1e745ed5b48954866689aa565",
+    "dt29/SamePackageParentFamily$A": "5505a0e839775d7874668a7cccd4b2c19de42946ad393222f862076764e9c9fd",
+    "dt29/SamePackageParentFamily$B": "8b072630eb205ea7df76925bfce86d900087b23cf4e63e5a453b2ce52ddc34e2"
+  },
+  "input_classes": [
+    "dt29/SamePackageParentFamily",
+    "dt29/SamePackageParentFamily$A",
+    "dt29/SamePackageParentFamily$B"
+  ],
+  "jadx": {
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "true:true:false:false\n"
+  },
+  "jarde": {
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "true:true:false:false\n"
+  },
+  "jarde_parent_casts": [
+    "BCI 7 -> ((dt29.SamePackageParentFamily$A) this).protectedField",
+    "BCI 12 -> ((dt29.SamePackageParentFamily$A) this).packagePrivateField"
+  ],
+  "original": {
+    "compile_exit": 0,
+    "compile_stderr": "",
+    "run_exit": 0,
+    "run_stderr": "",
+    "run_stdout": "true:true:false:false\n"
+  },
+  "source_map_bcis": [
+    7,
+    12
+  ]
+}
