@@ -1,0 +1,40 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_test_sha256": {
+    "TestVariablesDefinitions.java": "293ed655612c8363045108f62b8f0f346695462183de6a3a8b95ab760948b5bf",
+    "TestVariablesInLoop.java": "8d4395994c749a7f30a226c5d1c352824b59b0c9a64321366bd66d788cc42aa3",
+    "TestVariablesUsageWithLoops.java": "415b37eba73c00f53d04d5996dfa7a6b5cc4516203e14b4cd5a96f2d9515decf",
+    "TestVariables4.java": "000d31467bcab53b8a444cdd38bbd38420183817c94a5a57e0dcfb08ad02b9aa",
+    "TestVariablesGeneric.java": "18026e4f1744c19f0822395a0929764e73216e88e6c32bc4851517a28177fa83"
+  },
+  "jadx_production_sha256": {
+    "dex/visitors/ssa/SSATransform.java": "9f3d5486e53c7206fc81fb356cb2c57d22e015041724007ea28826511e35587a",
+    "dex/visitors/regions/variables/ProcessVariables.java": "929d20895a6a4130b4a718a8b29fe0011c3a72d0d8f34951387a3e18e497ed8a",
+    "dex/visitors/InitCodeVariables.java": "97cbe40981ef70ac4ca0f8fb65c828ed4d4cde38bffc164caa42de93c060c2e3",
+    "codegen/RegionGen.java": "8b80ef618487e38cb09a2bbd81b70de0dd096996a321a0c9dcf55e1dc011d4ee"
+  },
+  "jarde_base_revision": "a25f9d57b957601ad866b65e5be308a5b4577b3a",
+  "jarde_cli_sha256": "165dd69000032ad8cf869331b68675181da2d5e5cc6ac7a337b1af1e8084ae1c",
+  "input_sha256": {
+    "LocalScopes.java": "8f8b01866740553daf5c34308f7a8aba3ab78aae0a0c4d9430af064cd33a4088",
+    "Runner.java": "5ccc9c6681584bc76719ffc761895d25cd03c93f35281dcb9f9c24bc1f5edec3"
+  },
+  "original_class_sha256": "25386b1b3b3aed6c95d74dc44d4d2ee3703f36f66897c8a370e2d93577ff4991",
+  "original": {
+    "source_sha256": "8f8b01866740553daf5c34308f7a8aba3ab78aae0a0c4d9430af064cd33a4088",
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "5\n3\n0\n10\n6\n2\n3"
+  },
+  "jadx": {
+    "source_sha256": "e3df2c4be7c7e0d932f9280211c28d9b2b991fa7ea0d8be74d73ee973b3eac61",
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "5\n3\n0\n10\n6\n2\n3"
+  },
+  "jarde": {
+    "source_sha256": "cfb3a396c6f88601d44746265d68d8f050be143541c50a15fb7008c0df96484c",
+    "javac_exit": 1
+  },
+  "jarde_gap": "synchronized-monitor-slots-reused-as-loop-integers"
+}

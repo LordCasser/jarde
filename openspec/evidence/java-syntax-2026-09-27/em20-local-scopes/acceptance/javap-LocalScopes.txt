@@ -1,0 +1,106 @@
+public class em20.LocalScopes {
+  public em20.LocalScopes();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static int joined(boolean, int);
+    Code:
+       0: iload_0
+       1: ifeq          11
+       4: iload_1
+       5: iconst_1
+       6: iadd
+       7: istore_2
+       8: goto          15
+      11: iload_1
+      12: iconst_1
+      13: isub
+      14: istore_2
+      15: iload_2
+      16: ireturn
+
+  public static int loop(int);
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iconst_0
+       3: istore_2
+       4: iload_2
+       5: iload_0
+       6: if_icmpge     23
+       9: iload_2
+      10: iconst_1
+      11: iadd
+      12: istore_3
+      13: iload_1
+      14: iload_3
+      15: iadd
+      16: istore_1
+      17: iinc          2, 1
+      20: goto          4
+      23: iload_1
+      24: ireturn
+
+  public static int synchronizedLoop(int);
+    Code:
+       0: ldc           #7                  // class em20/LocalScopes
+       2: dup
+       3: astore_2
+       4: monitorenter
+       5: iload_0
+       6: iconst_1
+       7: iadd
+       8: istore_1
+       9: aload_2
+      10: monitorexit
+      11: goto          19
+      14: astore_3
+      15: aload_2
+      16: monitorexit
+      17: aload_3
+      18: athrow
+      19: iconst_0
+      20: istore_2
+      21: iconst_0
+      22: istore_3
+      23: iload_3
+      24: iload_1
+      25: if_icmpge     38
+      28: iload_2
+      29: iload_3
+      30: iadd
+      31: istore_2
+      32: iinc          3, 1
+      35: goto          23
+      38: iload_2
+      39: ireturn
+    Exception table:
+       from    to  target type
+           5    11    14   any
+          14    17    14   any
+
+  public static int caught(boolean);
+    Code:
+       0: iconst_1
+       1: istore_1
+       2: iload_0
+       3: ifeq          16
+       6: new           #9                  // class java/lang/IllegalArgumentException
+       9: dup
+      10: ldc           #11                 // String requested
+      12: invokespecial #13                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      15: athrow
+      16: iconst_2
+      17: istore_1
+      18: goto          24
+      21: astore_2
+      22: iconst_3
+      23: istore_1
+      24: iload_1
+      25: ireturn
+    Exception table:
+       from    to  target type
+           2    18    21   Class java/lang/IllegalArgumentException
+}
