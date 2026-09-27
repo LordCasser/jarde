@@ -6545,6 +6545,7 @@ fn published_local_assignments(
                 }
                 ExprKind::Local(_)
                 | ExprKind::Integer(_)
+                | ExprKind::IntegerConstantName { .. }
                 | ExprKind::Boolean(_)
                 | ExprKind::Long(_)
                 | ExprKind::Float(_)
@@ -22444,6 +22445,7 @@ fn stated_by_expression(expr: &Expr, names: &mut Vec<String>, bcis: &mut Vec<u32
         // A literal, a name used as a type, `null`, a boolean and an integer state no local name
         // and no further text.
         ExprKind::Integer(_)
+        | ExprKind::IntegerConstantName { .. }
         | ExprKind::Boolean(_)
         | ExprKind::Long(_)
         | ExprKind::Float(_)

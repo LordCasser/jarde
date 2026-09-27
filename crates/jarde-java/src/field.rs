@@ -482,6 +482,7 @@ pub(crate) fn committed_presentations(
                 }
                 ExprKind::Local(_)
                 | ExprKind::Integer(_)
+                | ExprKind::IntegerConstantName { .. }
                 | ExprKind::Boolean(_)
                 | ExprKind::Long(_)
                 | ExprKind::Float(_)

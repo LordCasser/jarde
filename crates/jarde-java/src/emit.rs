@@ -921,6 +921,12 @@ impl<'a> Emitter<'a> {
                                 self.put(&format!("case \"{}\":\n", escape_string(literal)), at)?;
                             }
                         }
+                        Some(crate::ast::SwitchLabels::Integer(labels)) => {
+                            for label in labels {
+                                self.put(&label_pad, at)?;
+                                self.put(&format!("case {label}:\n"), at)?;
+                            }
+                        }
                         None => {
                             for key in &arm.keys {
                                 self.put(&label_pad, at)?;
@@ -981,6 +987,7 @@ impl<'a> Emitter<'a> {
                 emitter.expr(value)
             }
             ExprKind::Integer(value) => emitter.put(&value.to_string(), at),
+            ExprKind::IntegerConstantName { name, .. } => emitter.put(name, at),
             ExprKind::Boolean(value) => emitter.put(if *value { "true" } else { "false" }, at),
             ExprKind::Long(value) => emitter.put(&format!("{value}L"), at),
             ExprKind::Float(bits) => emitter.put(&spell_float(*bits), at),

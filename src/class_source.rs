@@ -387,6 +387,14 @@ pub struct ClassSourceField {
     pub markers: Vec<String>,
 }
 
+/// A same-read, same-class field whose exact integer ConstantValue is already in its declaration.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ProvedIntegerConstant {
+    pub(crate) field: FieldItem,
+    pub(crate) name: String,
+    pub(crate) value: i32,
+}
+
 /// One method of the presented class: the record of the class read, the spelling of its declaration,
 /// the text this presentation wrote for it, and the result of its own body's run.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -576,6 +584,10 @@ pub struct ClassSourceReport {
     /// The methods of the class read, in the order its method table declares them, each with the
     /// result of its own run.
     pub methods: Vec<ClassSourceMethod>,
+    /// Names written only in the assembled source, anchored to their physical method and field.
+    pub integer_constant_projections: Vec<MemberFamilyDerivedProjection>,
+    #[serde(skip)]
+    pub(crate) integer_constant_candidates: Vec<ProvedIntegerConstant>,
     /// Source-only direct override hints, each anchored to the child and selected parent methods.
     /// Neither method's physical annotation attributes are changed.
     pub direct_override_proofs: Vec<ClassSourceDirectOverrideProof>,
@@ -784,6 +796,7 @@ pub struct MemberFamilyDerivedProjection {
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum MemberFamilyDerivedKind {
+    IntegerConstantName,
     NestedEnumDeclaration,
     NestedAnnotationDeclaration,
     NestedEnumTypeReference,
@@ -6272,6 +6285,25 @@ impl ClassSourceField {
 }
 
 impl ClassSourceMethod {
+    /// Rebuild the same recovered method envelope around already emitted projected statements.
+    pub(crate) fn integer_constant_projection_text(&self, body: &str) -> Option<String> {
+        let declaration = self.declaration.as_ref()?;
+        let ClassSourceOutcome::Recovered { report, .. } = &self.outcome else {
+            return None;
+        };
+        let original = artifact(&report.text)?;
+        if !self.markers.is_empty() {
+            return None;
+        }
+        let staged = Artifact {
+            envelope: original.envelope,
+            statements: body,
+        };
+        Some(prefix_method_annotations(
+            block_member(declaration, Placed::Block(staged), &self.markers),
+            &self.annotations,
+        ))
+    }
     /// The one physical-recovery marker that may be replaced by a later complete family re-run.
     /// It remains on this physical record; only the separately assembled source text omits it.
     pub(crate) fn has_only_explanation_marker(&self) -> bool {

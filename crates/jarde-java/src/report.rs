@@ -554,6 +554,231 @@ pub fn emit_class_source_method_ast(
     )
 }
 
+/// A name admitted only for a class-source projection. The physical method report is untouched.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct IntegerConstantName {
+    pub value: i32,
+    pub name: String,
+}
+
+/// The original method BCI associated with one name written by the projected AST.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct IntegerConstantNameUse {
+    pub name: String,
+    pub bci: u32,
+    pub case_label: bool,
+}
+
+/// Project only integer switch labels and the direct integer return in a selected arm.
+/// `None` means the same-run AST proves no safe replacement; a stop is propagated before publish.
+#[doc(hidden)]
+pub fn project_class_source_integer_constants(
+    ast: &ClassSourceMethodAst,
+    candidates: &[IntegerConstantName],
+    returns_int: bool,
+    budget: &mut Budget,
+) -> Result<Option<(String, Vec<IntegerConstantNameUse>)>, crate::stop::StopReason> {
+    use crate::ast::{ExprKind, StmtKind, SwitchLabels, Type};
+    if !ast.projection.complete_code
+        || candidates.is_empty()
+        || ast.projection.parameter_names.iter().any(Option::is_none)
+    {
+        return Ok(None);
+    }
+    let mut occupied = std::collections::HashSet::new();
+    occupied.extend(ast.projection.parameter_names.iter().flatten().cloned());
+    let mut pending: Vec<&crate::ast::Stmt> = ast.projection.program.stmts.iter().collect();
+    while let Some(stmt) = pending.pop() {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(stmt.origin.primary().bci()),
+        )?;
+        match &stmt.kind {
+            StmtKind::Declare { name, .. } | StmtKind::ForEach { name, .. } => {
+                occupied.insert(name.clone());
+            }
+            _ => {}
+        }
+        match &stmt.kind {
+            StmtKind::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                pending.extend(then_body);
+                pending.extend(else_body);
+            }
+            StmtKind::While { body, .. }
+            | StmtKind::DoWhile { body, .. }
+            | StmtKind::ForEach { body, .. }
+            | StmtKind::Synchronized { body, .. } => pending.extend(body),
+            StmtKind::For {
+                init, update, body, ..
+            } => {
+                pending.push(init);
+                pending.push(update);
+                pending.extend(body);
+            }
+            StmtKind::Switch { arms, .. } => {
+                for arm in arms {
+                    pending.extend(&arm.body);
+                }
+            }
+            StmtKind::Try {
+                resources,
+                catches,
+                body,
+                finally_body,
+            } => {
+                occupied.extend(resources.iter().map(|resource| resource.name.clone()));
+                for catch in catches {
+                    occupied.insert(catch.name.clone());
+                    pending.extend(&catch.body);
+                }
+                pending.extend(body);
+                pending.extend(finally_body.iter().flatten());
+            }
+            _ => {}
+        }
+    }
+    let names: std::collections::HashMap<i64, &str> = candidates
+        .iter()
+        .filter(|candidate| !occupied.contains(&candidate.name))
+        .map(|candidate| (i64::from(candidate.value), candidate.name.as_str()))
+        .collect();
+    if names.is_empty() {
+        return Ok(None);
+    }
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        program_node_count(&ast.projection.program),
+        ast.projection
+            .program
+            .stmts
+            .first()
+            .map(|stmt| stmt.origin.primary().bci()),
+    )?;
+    let mut program = ast.projection.program.clone();
+    let mut uses = Vec::new();
+    let mut pending: Vec<&mut crate::ast::Stmt> = program.stmts.iter_mut().collect();
+    while let Some(stmt) = pending.pop() {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            1,
+            Some(stmt.origin.primary().bci()),
+        )?;
+        match &mut stmt.kind {
+            StmtKind::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                pending.extend(then_body);
+                pending.extend(else_body);
+            }
+            StmtKind::While { body, .. }
+            | StmtKind::DoWhile { body, .. }
+            | StmtKind::ForEach { body, .. }
+            | StmtKind::Synchronized { body, .. } => pending.extend(body),
+            StmtKind::For {
+                init, update, body, ..
+            } => {
+                pending.push(init);
+                pending.push(update);
+                pending.extend(body);
+            }
+            StmtKind::Switch { value, arms } => {
+                if value.presented == Some(Type::Int) {
+                    for arm in arms.iter_mut() {
+                        if arm.labels.is_some() {
+                            continue;
+                        }
+                        let labels: Vec<String> = arm
+                            .keys
+                            .iter()
+                            .map(|key| {
+                                names
+                                    .get(key)
+                                    .map_or_else(|| key.to_string(), |name| (*name).to_owned())
+                            })
+                            .collect();
+                        let replaced = arm
+                            .keys
+                            .iter()
+                            .zip(&labels)
+                            .any(|(key, label)| *label != key.to_string());
+                        if replaced {
+                            for (key, label) in arm.keys.iter().zip(&labels) {
+                                if *label != key.to_string() {
+                                    uses.push(IntegerConstantNameUse {
+                                        name: label.clone(),
+                                        bci: stmt.origin.primary().bci(),
+                                        case_label: true,
+                                    });
+                                }
+                            }
+                            arm.labels = Some(SwitchLabels::Integer(labels));
+                            if returns_int
+                                && let [direct] = arm.body.as_mut_slice()
+                                && let StmtKind::Return {
+                                    value: Some(returned),
+                                } = &mut direct.kind
+                                && returned.presented == Some(Type::Int)
+                                && let ExprKind::Integer(number) = returned.kind
+                                && let Some(name) = names.get(&number)
+                            {
+                                uses.push(IntegerConstantNameUse {
+                                    name: (*name).to_owned(),
+                                    bci: returned.origin.primary().bci(),
+                                    case_label: false,
+                                });
+                                returned.kind = ExprKind::IntegerConstantName {
+                                    name: (*name).to_owned(),
+                                    value: number,
+                                };
+                            }
+                        }
+                        pending.extend(&mut arm.body);
+                    }
+                } else {
+                    for arm in arms {
+                        pending.extend(&mut arm.body);
+                    }
+                }
+            }
+            StmtKind::Try {
+                catches,
+                body,
+                finally_body,
+                ..
+            } => {
+                for catch in catches {
+                    pending.extend(&mut catch.body);
+                }
+                pending.extend(body);
+                pending.extend(finally_body.iter_mut().flatten());
+            }
+            _ => {}
+        }
+    }
+    if uses.is_empty() {
+        return Ok(None);
+    }
+    let body = crate::emit::emit_class_source_statements(
+        &program.stmts,
+        &ast.projection.member,
+        1,
+        budget,
+    )?;
+    Ok(Some((body, uses)))
+}
+
 /// The BCI of the one statically proved field write in the narrow anonymous constructor shape.
 #[doc(hidden)]
 pub fn class_source_anonymous_constructor_initializer_bci(
@@ -928,6 +1153,7 @@ fn project_captured_expr(
         })?,
         ExprKind::Local(_)
         | ExprKind::Integer(_)
+        | ExprKind::IntegerConstantName { .. }
         | ExprKind::Boolean(_)
         | ExprKind::Long(_)
         | ExprKind::Float(_)
@@ -2954,6 +3180,7 @@ fn collect_expression_anchors(expr: &Expr, anchors: &mut std::collections::BTree
         }
         ExprKind::Local(_)
         | ExprKind::Integer(_)
+        | ExprKind::IntegerConstantName { .. }
         | ExprKind::Boolean(_)
         | ExprKind::Long(_)
         | ExprKind::Float(_)
@@ -4854,6 +5081,7 @@ fn program_node_count(program: &build::Program) -> u64 {
             K::Concat { parts } => expressions.extend(parts.iter().map(|part| &part.value)),
             K::Local(_)
             | K::Integer(_)
+            | K::IntegerConstantName { .. }
             | K::Boolean(_)
             | K::Long(_)
             | K::Float(_)
@@ -5226,6 +5454,7 @@ fn visit_class_initializer_field_reads(
         }
         ExprKind::Local(_)
         | ExprKind::Integer(_)
+        | ExprKind::IntegerConstantName { .. }
         | ExprKind::Boolean(_)
         | ExprKind::Long(_)
         | ExprKind::Float(_)
@@ -5361,6 +5590,7 @@ fn charge_expression_tree_at_depth(
             }
         }
         ExprKind::Integer(_)
+        | ExprKind::IntegerConstantName { .. }
         | ExprKind::Local(_)
         | ExprKind::Boolean(_)
         | ExprKind::Long(_)
