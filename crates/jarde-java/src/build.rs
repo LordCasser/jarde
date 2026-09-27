@@ -3754,7 +3754,14 @@ pub(crate) fn prove_intermediate_join_value(
     };
     // A prefix is emitted before the branch plan is consulted. Keep this first slice to a
     // branch-only root, so a refused whole-arm quote cannot claim an already emitted prefix.
-    if !prefix.is_empty() || (!has_bridge(then_arm) && !has_bridge(else_arm)) {
+    // A one-armed guard with an empty sibling can carry a terminal return after the
+    // child's join. It is not the two-join value bridge this proof owns.
+    let has_sibling =
+        |arm: &Region| matches!(arm, Region::Straight { blocks } if !blocks.is_empty());
+    if !prefix.is_empty()
+        || !(has_bridge(then_arm) && has_sibling(else_arm)
+            || has_bridge(else_arm) && has_sibling(then_arm))
+    {
         return Ok(IntermediateJoinAttempt::NotCandidate);
     }
     Ok(
@@ -5739,6 +5746,10 @@ pub(crate) fn build(
     regions: &[Region],
     budget: &mut Budget,
 ) -> Result<Program, StopReason> {
+    // This guard-tail shape is executable only when its nested boolean value renders in full.
+    // A child quote followed by the sibling's unconditional false return would be compilable but
+    // would silently change the true path. Retain one atomic method quote on any build refusal.
+    let early_return_tail = regions.iter().any(has_early_return_tail);
     let guarded_return_exits = guard_return_ownership(regions, budget)?;
     let mut instructions: BTreeMap<u32, &SsaInstruction> = BTreeMap::new();
     let mut block_of: BTreeMap<u32, CanonicalBlockId> = BTreeMap::new();
@@ -5934,6 +5945,24 @@ pub(crate) fn build(
             builder.region(region, &path)?;
         }
     }
+    if early_return_tail && builder.ragged {
+        let bcis = canonical
+            .blocks()
+            .iter()
+            .flat_map(|block| block.blocks().iter().copied())
+            .chain(regions.iter().flat_map(unaccounted_region_bcis))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>();
+        let at = bcis.first().copied().unwrap_or(0);
+        builder.stmts.clear();
+        builder.statements = 0;
+        builder.fallback(
+            bcis,
+            "the early-return predicate tail was not completely proved",
+            at,
+        )?;
+    }
     let mut field_increments = BTreeMap::new();
     if let Some(plan) = builder.increments.get() {
         for increment in plan.statements.values() {
@@ -5979,6 +6008,42 @@ pub(crate) fn build(
         lambdas_presented: builder.lambdas_presented,
         accessors_presented: builder.accessors_presented,
     })
+}
+
+fn has_early_return_tail(region: &Region) -> bool {
+    match region {
+        Region::If {
+            then_arm, else_arm, ..
+        } => {
+            let closed_tail = |arm: &Region, sibling: &Region| {
+                matches!(sibling, Region::Straight { blocks } if blocks.is_empty())
+                    && matches!(arm, Region::Sequence { regions }
+                        if matches!(regions.as_slice(),
+                            [Region::If { join: Some(join), .. }, Region::Straight { blocks }]
+                            if blocks.first() == Some(join)))
+            };
+            closed_tail(then_arm, else_arm)
+                || closed_tail(else_arm, then_arm)
+                || has_early_return_tail(then_arm)
+                || has_early_return_tail(else_arm)
+        }
+        Region::Sequence { regions } | Region::Loop { body: regions, .. } => {
+            regions.iter().any(has_early_return_tail)
+        }
+        Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
+            groups.iter().any(|group| has_early_return_tail(&group.arm))
+        }
+        Region::Try { body, catches, .. } => {
+            has_early_return_tail(body)
+                || catches
+                    .iter()
+                    .any(|catch| has_early_return_tail(catch.body()))
+        }
+        Region::Guard {
+            body: Some(body), ..
+        } => has_early_return_tail(body),
+        _ => false,
+    }
 }
 
 /// A supplied family fact must identify a claimed instance read in this exact physical body.
@@ -23910,6 +23975,25 @@ mod tests {
                 .count()
                 == 1
         );
+    }
+
+    #[test]
+    fn one_armed_early_return_tail_is_not_an_intermediate_join_value() {
+        fn empty_sibling(region: &mut Region) {
+            let Region::If { else_arm, .. } = region else {
+                panic!("the fixture root is an if");
+            };
+            *else_arm = Box::new(Region::Straight { blocks: Vec::new() });
+        }
+        let (region, _, _, _, _, _, _, attempt, _) = fixture_value_attempts_with_tree(
+            INTERMEDIATE_JOIN_FIXTURE,
+            "choose",
+            "(I)I",
+            None,
+            Some(empty_sibling),
+        );
+        assert!(has_early_return_tail(&region));
+        assert!(matches!(attempt, IntermediateJoinAttempt::NotCandidate));
     }
 
     #[test]

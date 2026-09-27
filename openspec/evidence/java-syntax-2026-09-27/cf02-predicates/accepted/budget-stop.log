@@ -1,0 +1,4 @@
+exit=2
+stdout_bytes=0
+stderr_tail:
+{"status":"error","error":{"kind":"budget_exceeded","dimension":"output_bytes","limit":1,"consumed":0,"requested":703},"usage":{"input_bytes":800,"archive_entries":9,"entry_bytes":499,"read_bytes":343,"class_bytes":998,"attribute_bytes":445,"code_bytes":5,"result_items":18,"output_bytes":0,"class_headers":1,"method_bodies":1,"ir_items":61,"ir_edges":2,"analysis_steps":34,"normalization_clones":0,"nested_depth":0,"dependency_depth":0,"elapsed_millis":49}}

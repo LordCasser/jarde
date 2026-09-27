@@ -12,6 +12,7 @@ import tempfile
 
 HERE = Path(__file__).resolve().parent
 INPUT = HERE / "input/cf02"
+EFFECTS = HERE / "input/effects/cf02"
 JADX_REV = "2fb1b16386941660fda07e9017285aec40fcb37f"
 PINS = {
     "test/java/jadx/tests/integration/conditions/TestCmpOp.java": "5b8d2d6b4f1a32fe06f609ce6458fd6344290214ebbf787fb4f15b8ca1aaf7d0",
@@ -25,7 +26,7 @@ PINS = {
     "main/java/jadx/core/codegen/ConditionGen.java": "dee46ba02afb449f7323d4deffd18053e5585b8425ff19f69caf6699f1895e55",
 }
 EXPECTED = "false\ntrue\nfalse\nfalse\ntrue\nfalse\nfalse\nfalse\nfalse\ntrue"
-BASELINE_JARDE = "false\ntrue\nfalse\nfalse\ntrue\nfalse\nfalse\nfalse\nfalse\nfalse"
+EXPECTED_EFFECTS = "false:0\nfalse:0\nfalse:1\ntrue:1"
 
 
 def sha(path):
@@ -43,12 +44,12 @@ def run(command, log):
     return result
 
 
-def compile_run(label, source, output, temporary):
+def compile_run(label, source, output, temporary, runner=None, main="cf02.Runner"):
     classes = temporary / f"{label}-classes"
     classes.mkdir()
     run(["javac", "--release", "8", "-Xlint:-options", "-g:none", "-d", classes,
-         source, INPUT / "Runner.java"], output / label / "javac.log")
-    result = run(["java", "-Xverify:all", "-cp", classes, "cf02.Runner"],
+         source, runner or INPUT / "Runner.java"], output / label / "javac.log")
+    result = run(["java", "-Xverify:all", "-cp", classes, main],
                  output / label / "runtime.log")
     return classes, result.stdout.strip()
 
@@ -97,14 +98,36 @@ def main():
                       if line.startswith(("P3JOIN", "P3VISITED", "P3LOST"))) + "\n")
         _, jadx = compile_run("jadx", jadx_source, output, temporary)
         _, jarde = compile_run("jarde", jarde_source, output, temporary)
-        if original != EXPECTED or jadx != EXPECTED or jarde != BASELINE_JARDE:
+        if original != EXPECTED or jadx != EXPECTED or jarde != EXPECTED:
             raise RuntimeError(f"unexpected predicate behavior: {original!r} {jadx!r} {jarde!r}")
+        effects_classes, effects_original = compile_run(
+            "effects-original", EFFECTS / "PredicateEffects.java", output, temporary,
+            EFFECTS / "EffectsRunner.java", "cf02.EffectsRunner")
+        effects_jar = temporary / "effects.jar"
+        run(["jar", "cf", effects_jar, "-C", effects_classes,
+             "cf02/PredicateEffects.class"], output / "effects-jar.log")
+        effects_source = output / "source/jarde/cf02/PredicateEffects.java"
+        effects_source.write_text(run(
+            [args.jarde, "class-source", "--input", effects_jar,
+             "--class", "cf02.PredicateEffects", "--policy", "plain-jar",
+             "--release", "8", "--format", "text"],
+            output / "effects-jarde.log").stdout)
+        _, effects_jarde = compile_run(
+            "effects-jarde", effects_source, output, temporary,
+            EFFECTS / "EffectsRunner.java", "cf02.EffectsRunner")
+        if effects_original != EXPECTED_EFFECTS or effects_jarde != EXPECTED_EFFECTS:
+            raise RuntimeError(f"unexpected call counts: {effects_original!r} {effects_jarde!r}")
         summary = {"jadx_revision": rev, "jadx_pins": PINS,
                    "jarde_cli_sha256": sha(args.jarde),
-                   "input_sha256": {p.name: sha(p) for p in INPUT.glob("*.java")},
+                   "input_sha256": {"predicates/" + p.name: sha(p) for p in INPUT.glob("*.java")}
+                       | {"effects/" + p.name: sha(p) for p in EFFECTS.glob("*.java")},
                    "original_class_sha256": sha(classes / "cf02/Predicates.class"),
-                   "source_sha256": {"jadx": sha(jadx_source), "jarde": sha(jarde_source)},
-                   "original_stdout": original, "jadx_stdout": jadx, "jarde_stdout": jarde}
+                   "effects_class_sha256": sha(effects_classes / "cf02/PredicateEffects.class"),
+                   "source_sha256": {"jadx": sha(jadx_source), "jarde": sha(jarde_source),
+                                     "effects_jarde": sha(effects_source)},
+                   "original_stdout": original, "jadx_stdout": jadx, "jarde_stdout": jarde,
+                   "effects_original_stdout": effects_original,
+                   "effects_jarde_stdout": effects_jarde}
         (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         print(json.dumps({"original": original, "jadx": jadx, "jarde": jarde}, indent=2))
 

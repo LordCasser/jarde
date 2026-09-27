@@ -1,0 +1,33 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "test/java/jadx/tests/integration/conditions/TestCmpOp.java": "5b8d2d6b4f1a32fe06f609ce6458fd6344290214ebbf787fb4f15b8ca1aaf7d0",
+    "test/java/jadx/tests/integration/conditions/TestCmpOp2.java": "b9f50b29f3b2f323137c4026b2c509b609086b854e7f48d286dcb078b9e2ce9a",
+    "test/java/jadx/tests/integration/conditions/TestConditions7.java": "45cb838ad4ddd173a5260c433d50b920184e36e16211f723b03a35dbaeff1d5c",
+    "test/java/jadx/tests/integration/conditions/TestTernary3.java": "73f3017522b72f24d96ff65d5919d859fec787b17668e3213e71236bda99cbea",
+    "main/java/jadx/core/dex/instructions/IfNode.java": "fa1ce4ebf7e99b05434e61f07858293f10a0ee048602adc195bfed90377e1191",
+    "main/java/jadx/core/dex/instructions/IfOp.java": "a4e19f99e4024160328e65dcb9eb6e76365d021e2ef551db709bfe2a1d4eaba8",
+    "main/java/jadx/core/dex/regions/conditions/Compare.java": "e6e1fbb428f3903b7d564470b46ca4c384ed6869ba9b0898f9a71580b3c9d774",
+    "main/java/jadx/core/dex/regions/conditions/IfCondition.java": "4d80dcce617f8bd799a5ef136dbaca981fd6a08c4d242410809184fdefc3af5e",
+    "main/java/jadx/core/codegen/ConditionGen.java": "dee46ba02afb449f7323d4deffd18053e5585b8425ff19f69caf6699f1895e55"
+  },
+  "jarde_cli_sha256": "3e3e3003d7585f8b5dab2c0d40eb628925311cdf2ff96d281505079b0211c526",
+  "input_sha256": {
+    "predicates/Runner.java": "d390c67cf9ff57cf3a5d7838f61a8bf43f5912afddb48f7a4df5c3ffafcc83ec",
+    "predicates/Predicates.java": "07650d37579ee0442d1ffb2407e07daae60c25737d99a8101b047cbe9f1412b1",
+    "effects/EffectsRunner.java": "d36947f643ce95dd59fa299a24abd4bf540b261352e64dc17442692554eea0c3",
+    "effects/PredicateEffects.java": "77bd652f7bb94d628418ebea30e411c6f5d122bb33aab7462f758e313d001eb4"
+  },
+  "original_class_sha256": "b5ee52d137db638aefdd2f6554c440b38d59e83e6cf4b42c0de28f93f4e176d5",
+  "effects_class_sha256": "6e7a5ac25918b260cee8bc113db7a69f6a55dcb759caa1b0578c0510ebb41907",
+  "source_sha256": {
+    "jadx": "02a33a1d6ed3e61367d2504e1e2dacc1cf71d26e4aecdbf3df06d701b34008fc",
+    "jarde": "014bdae95be4e1ae43a3426efa7d18e5dd82a05bb05cc4880b1c4b09601c9dd0",
+    "effects_jarde": "4abe1b4c5b878d567c90fab7470e6c3146ffe8ce600283c056bcff0d23a199dc"
+  },
+  "original_stdout": "false\ntrue\nfalse\nfalse\ntrue\nfalse\nfalse\nfalse\nfalse\ntrue",
+  "jadx_stdout": "false\ntrue\nfalse\nfalse\ntrue\nfalse\nfalse\nfalse\nfalse\ntrue",
+  "jarde_stdout": "false\ntrue\nfalse\nfalse\ntrue\nfalse\nfalse\nfalse\nfalse\ntrue",
+  "effects_original_stdout": "false:0\nfalse:0\nfalse:1\ntrue:1",
+  "effects_jarde_stdout": "false:0\nfalse:0\nfalse:1\ntrue:1"
+}
