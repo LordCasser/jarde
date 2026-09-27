@@ -74,7 +74,6 @@ if JADX_ROOT.exists():
         raise SystemExit("DT-11 evidence requires JADX checkout 2fb1b16386941660fda07e9017285aec40fcb37f")
 else:
     raise SystemExit("Set JADX_CHECKOUT to the fixed JADX source checkout")
-versions.append(f"JARDE source revision: {subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,text=True,stdout=subprocess.PIPE,check=True).stdout.strip()}")
 versions.append(f"JARDE CLI source: {'provided binary' if JARDE_CLI else 'cargo run -p jarde-cli from repository checkout'}")
 
 with tempfile.TemporaryDirectory(prefix="dt11-audit-") as scratch:
