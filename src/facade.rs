@@ -5150,47 +5150,64 @@ impl Engine {
             // attribute is that member's read failing, and the member is still published with the
             // declaration the flags and the descriptor state — neither attribute was read to write
             // either clause from — while the engine keeps the reader's own code for it.
-            let attributes = match class_source::declared_member_attributes(
-                &read.bytes,
-                member,
-                &pool,
-                budget,
-            ) {
-                Ok(attributes) => attributes,
-                Err(error) => {
-                    let stop = stop_execution(&error, budget);
-                    let ends = ends_the_request(&stop);
-                    let spelled = class_source::spell_method(
-                        &item,
-                        None,
-                        &declaration.name,
-                        read.facts.access_flags,
-                        None,
-                        &annotation_read.facts,
-                        &pool,
-                    );
-                    let record = ClassSourceMethod::refused(
-                        item,
-                        spelled,
-                        stop.clone(),
-                        vec![stop_diagnostic(&error, class_provenance.clone())],
-                    );
-                    merge_execution(&mut execution, stop);
-                    // The member is published, so it is charged as the item it is, exactly as the
-                    // members below are: a refusal that could not pay for its own record is the
-                    // request's stop and the record is not written.
-                    if let Err(charge) = charge_item(budget) {
-                        merge_execution(&mut execution, stop_execution(&charge, budget));
-                        diagnostics.push(stop_diagnostic(&charge, class_provenance.clone()));
-                        break;
+            let attributes =
+                match class_source::declared_member_attributes(&read.bytes, member, &pool, budget)
+                    .and_then(|mut attributes| {
+                        if let Some(parameters) = &attributes.parameters {
+                            budget.charge(
+                                CountedBudgetDimension::AnalysisSteps,
+                                u64::try_from(parameters.len())
+                                    .unwrap_or(u64::MAX)
+                                    .saturating_mul(
+                                        u64::try_from(read.facts.fields.len()).unwrap_or(u64::MAX),
+                                    ),
+                            )?;
+                            if parameters.iter().any(|parameter| {
+                                read.facts.fields.iter().any(|field| {
+                                    field.name.raw().0.as_slice() == parameter.name.as_bytes()
+                                })
+                            }) {
+                                // A simple field write may reserve its name in the body's naming table.
+                                attributes.parameters = None;
+                            }
+                        }
+                        Ok(attributes)
+                    }) {
+                    Ok(attributes) => attributes,
+                    Err(error) => {
+                        let stop = stop_execution(&error, budget);
+                        let ends = ends_the_request(&stop);
+                        let spelled = class_source::spell_method(
+                            &item,
+                            None,
+                            &declaration.name,
+                            read.facts.access_flags,
+                            None,
+                            &annotation_read.facts,
+                            &pool,
+                        );
+                        let record = ClassSourceMethod::refused(
+                            item,
+                            spelled,
+                            stop.clone(),
+                            vec![stop_diagnostic(&error, class_provenance.clone())],
+                        );
+                        merge_execution(&mut execution, stop);
+                        // The member is published, so it is charged as the item it is, exactly as the
+                        // members below are: a refusal that could not pay for its own record is the
+                        // request's stop and the record is not written.
+                        if let Err(charge) = charge_item(budget) {
+                            merge_execution(&mut execution, stop_execution(&charge, budget));
+                            diagnostics.push(stop_diagnostic(&charge, class_provenance.clone()));
+                            break;
+                        }
+                        methods.push(record);
+                        if ends {
+                            break;
+                        }
+                        continue;
                     }
-                    methods.push(record);
-                    if ends {
-                        break;
-                    }
-                    continue;
-                }
-            };
+                };
             let spelled = class_source::spell_method(
                 &item,
                 None,
@@ -5259,6 +5276,7 @@ impl Engine {
                             prepared,
                             &assembly_context,
                             item.index,
+                            attributes.parameters.as_deref(),
                             evidence,
                             PreparedMemberOptions {
                                 prove_generic_return: member
@@ -9237,6 +9255,7 @@ fn recover_prepared_member(
     prepared: &jarde_reader::prepared::PreparedClass<'_>,
     assembly_context: &class_source::ClassSourceAssemblyContext,
     method_index: u64,
+    method_parameters: Option<&[class_source::ProvedMethodParameter]>,
     evidence: &RecoveryEvidenceRequest,
     options: PreparedMemberOptions<'_>,
     budget: &mut Budget,
@@ -9286,6 +9305,7 @@ fn recover_prepared_member(
         prepared,
         assembly_context,
         options.static_member_target,
+        method_parameters,
         evidence,
         options.prove_generic_return,
         options.capture_enum_constructor_ast,
@@ -18214,6 +18234,7 @@ mod member_inner_target_tests {
                     CalleeClass::None,
                     Some(&context),
                     None,
+                    None,
                     &evidence,
                     &mut test_budget(),
                     true,
@@ -23275,6 +23296,7 @@ fn recovery_presented_for_class_source(
     prepared: &jarde_reader::prepared::PreparedClass<'_>,
     assembly_context: &class_source::ClassSourceAssemblyContext,
     static_member_target: Option<&jarde_java::report::ProvedStaticMemberTarget>,
+    method_parameters: Option<&[class_source::ProvedMethodParameter]>,
     evidence: &RecoveryEvidenceRequest,
     prove_generic_return: bool,
     capture_enum_constructor_ast: bool,
@@ -23301,6 +23323,7 @@ fn recovery_presented_for_class_source(
         CalleeClass::Prepared(prepared),
         Some(assembly_context),
         static_member_target,
+        method_parameters,
         evidence,
         budget,
         true,
@@ -23382,6 +23405,7 @@ fn recovery_from(
         callee_class,
         None,
         None,
+        None,
         evidence,
         budget,
         false,
@@ -23399,6 +23423,7 @@ fn recovery_from_with_class_candidates(
     callee_class: CalleeClass<'_>,
     assembly_context: Option<&class_source::ClassSourceAssemblyContext>,
     static_member_target: Option<&jarde_java::report::ProvedStaticMemberTarget>,
+    method_parameters: Option<&[class_source::ProvedMethodParameter]>,
     evidence: &RecoveryEvidenceRequest,
     budget: &mut Budget,
     include_class_source_candidates: bool,
@@ -23419,11 +23444,26 @@ fn recovery_from_with_class_candidates(
     Option<jarde_java::report::AnonymousAllocationScan>,
     Option<jarde_java::report::ClassSourceMethodAst>,
 )> {
-    let facts = crate::facade::recovery_facts(
+    let mut facts = crate::facade::recovery_facts(
         analyzed.ir().declaration(),
         analyzed.ir().code(),
         &request.method,
     );
+    if let Some(parameters) = method_parameters
+        && analyzed.ir().code().is_some_and(|code| {
+            matches!(
+                code.debug(),
+                jarde_reader::classfile::LocalDebugTable::Absent
+            )
+        })
+    {
+        facts = facts.with_debug_locals(
+            parameters
+                .iter()
+                .map(|parameter| jarde_java::DebugLocal::named(parameter.slot, &parameter.name))
+                .collect(),
+        );
+    }
     let profile = request.environment.runtime.profile.clone();
     // The callee evidence one recovery run's own call sites justify, read on demand from the very
     // definition the run read the presented body from (P3 3.2). It happens **between** the run and

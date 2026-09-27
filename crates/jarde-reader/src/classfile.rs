@@ -2502,6 +2502,8 @@ pub struct AttributeFacts {
     pub signature: Option<JvmBytes>,
     /// `Exceptions` (method): internal names, expanded from `CONSTANT_Class`.
     pub exceptions: Vec<JvmBytes>,
+    /// `MethodParameters` (method): entries in descriptor order, when present.
+    pub method_parameters: Option<Vec<MethodParameterFacts>>,
     /// `InnerClasses` (class).
     pub inner_classes: Vec<InnerClassFacts>,
     /// `EnclosingMethod` (class).
@@ -2530,6 +2532,14 @@ pub struct AttributeFacts {
     pub runtime_invisible_type_annotations: Vec<TypeAnnotationFacts>,
     /// `Module` (class).
     pub module: Option<ModuleFacts>,
+}
+
+/// One raw member-level `MethodParameters` entry (JVMS 4.7.24).
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MethodParameterFacts {
+    pub name_index: u16,
+    pub name: Option<JvmBytes>,
+    pub access_flags: u16,
 }
 
 /// One type annotation exactly as an annotation attribute declares it (JVMS 4.7.20).
@@ -3019,6 +3029,32 @@ pub fn attribute_facts(
                 let mut reader = AttributeReader::new(attribute_content(bytes, shell, budget)?);
                 facts.exceptions = read_class_name_list(&mut reader, pool, budget)?;
                 reader.expect_end()?;
+            }
+            b"MethodParameters" => {
+                ensure_unique(&mut seen, "MethodParameters")?;
+                let mut reader = AttributeReader::new(attribute_content(bytes, shell, budget)?);
+                let count = reader.u8()?;
+                let mut parameters = Vec::with_capacity(usize::from(count));
+                for _ in 0..count {
+                    budget.poll()?;
+                    let name_index = reader.u16()?;
+                    let access_flags = reader.u16()?;
+                    if access_flags & !(0x0010 | 0x1000 | 0x8000) != 0 {
+                        return Err(Error::invalid_input(
+                            "classfile_invalid_attribute_content",
+                            "MethodParameters entry has invalid access flags",
+                        ));
+                    }
+                    parameters.push(MethodParameterFacts {
+                        name_index,
+                        name: (name_index != 0)
+                            .then(|| cp_utf8(pool, name_index))
+                            .transpose()?,
+                        access_flags,
+                    });
+                }
+                reader.expect_end()?;
+                facts.method_parameters = Some(parameters);
             }
             b"InnerClasses" => {
                 ensure_unique(&mut seen, "InnerClasses")?;
@@ -7896,6 +7932,81 @@ mod reader_facts_tests {
             ),
             "classfile_invalid_attribute_content"
         );
+    }
+
+    #[test]
+    fn method_parameters_are_complete_unique_and_charged_once() {
+        let (catalog, _) = catalog_class();
+        let catalog_facts = class_facts(&catalog, &mut budget()).unwrap();
+        let name = index_of_utf8(&catalog_facts, b"method");
+        let pool = catalog_facts.constant_pool;
+        let shell_for = |content: &[u8]| {
+            let mut bytes = Vec::new();
+            attribute(&mut bytes, name, content);
+            let shell = AttributeShell {
+                name: JvmString::from_parts(
+                    b"MethodParameters".to_vec(),
+                    "MethodParameters".encode_utf16().collect(),
+                ),
+                span: ByteSpan::new(0, bytes.len() as u64),
+                content_span: ByteSpan::new(6, content.len() as u64),
+            };
+            (bytes, shell)
+        };
+        let mut content = vec![1];
+        buf_u16(&mut content, name);
+        buf_u16(&mut content, 0x0010);
+        let (bytes, shell) = shell_for(&content);
+        let mut limits = unlimited_limits();
+        limits.attribute_bytes = bytes.len() as u64;
+        let mut exact = Budget::new(limits);
+        let parameters = attribute_facts(&bytes, &[shell.clone()], &pool, &mut exact)
+            .unwrap()
+            .method_parameters
+            .unwrap();
+        assert_eq!(parameters[0].name_index, name);
+        assert_eq!(parameters[0].name.as_ref().unwrap().0, b"method");
+        assert_eq!(parameters[0].access_flags, 0x0010);
+        assert_eq!(exact.usage().attribute_bytes, bytes.len() as u64);
+        assert_eq!(
+            error_code(
+                attribute_facts(&bytes, &[shell.clone(), shell], &pool, &mut budget()).unwrap_err()
+            ),
+            "classfile_duplicate_attribute"
+        );
+        for malformed in [
+            vec![1, 0, 0],       // truncated entry
+            vec![0, 0],          // trailing byte
+            vec![1, 0, 0, 0, 1], // invalid flag
+        ] {
+            let (bytes, shell) = shell_for(&malformed);
+            assert_eq!(
+                error_code(attribute_facts(&bytes, &[shell], &pool, &mut budget()).unwrap_err()),
+                "classfile_invalid_attribute_content"
+            );
+        }
+        let (bytes, shell) = shell_for(&[1, 0xff, 0xff, 0, 0]);
+        assert_eq!(
+            error_code(attribute_facts(&bytes, &[shell], &pool, &mut budget()).unwrap_err()),
+            "classfile_invalid_constant_pool_index"
+        );
+        let mut low = unlimited_limits();
+        low.attribute_bytes = (content.len() + 5) as u64;
+        let mut low = Budget::new(low);
+        let (bytes, shell) = shell_for(&content);
+        assert!(matches!(
+            attribute_facts(&bytes, &[shell], &pool, &mut low),
+            Err(Error::BudgetExceeded { .. })
+        ));
+        assert_eq!(low.usage().attribute_bytes, 0);
+        let cancellation = crate::budget::CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled = Budget::with_cancellation_token(unlimited_limits(), cancellation);
+        let (bytes, shell) = shell_for(&content);
+        assert!(matches!(
+            attribute_facts(&bytes, &[shell], &pool, &mut cancelled),
+            Err(Error::Cancelled { .. })
+        ));
     }
 
     #[test]

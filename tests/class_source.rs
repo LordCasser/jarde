@@ -144,6 +144,184 @@ const DT08_CAPTURE_SOURCE: &str = include_str!(
 const DT08_RUNNER_SOURCE: &str = include_str!(
     "../openspec/evidence/java-syntax-2026-09-27/dt08-local-capture/input/p/Runner.java"
 );
+const EM03_SOURCE: &str = include_str!(
+    "../openspec/evidence/java-syntax-2026-09-27/em03-method-signatures/input/em03/Signatures.java"
+);
+
+#[test]
+fn method_parameters_name_body_and_declaration_only_without_lvt() {
+    let scratch = BridgeProjectionScratch::new();
+    for (variant, options, expected) in [
+        (
+            "parameters",
+            &["-g:none", "-parameters"][..],
+            "named(java.lang.String paramStr, final int number)",
+        ),
+        (
+            "no-parameters",
+            &["-g:none"][..],
+            "named(java.lang.String arg1, int arg2)",
+        ),
+        (
+            "lvt",
+            &["-g", "-parameters"][..],
+            "named(java.lang.String paramStr, int number)",
+        ),
+    ] {
+        let directory = scratch.child(variant);
+        let source = directory.join("Signatures.java");
+        fs::write(&source, EM03_SOURCE).unwrap();
+        let compiled = Command::new("javac")
+            .args(["--release", "8"])
+            .args(options)
+            .args(["-d"])
+            .arg(&directory)
+            .arg(&source)
+            .output()
+            .expect("javac is available for the Java 8 parameter regression");
+        assert!(
+            compiled.status.success(),
+            "{}",
+            String::from_utf8_lossy(&compiled.stderr)
+        );
+        let bytes = fs::read(directory.join("em03/Signatures.class")).unwrap();
+        let snapshot = open(bytes);
+        let report = class_source_of(&snapshot, "em03/Signatures", EnvironmentPolicy::SingleClass);
+        assert!(report.text.contains(expected), "{variant}: {}", report.text);
+        let body_name = if variant == "no-parameters" {
+            "arg1"
+        } else {
+            "paramStr"
+        };
+        assert!(
+            report.text.contains(&format!("return {body_name};")),
+            "{variant}: {}",
+            report.text
+        );
+        if variant == "parameters" {
+            let facts = class_facts(
+                &fs::read(directory.join("em03/Signatures.class")).unwrap(),
+                &mut budget(),
+            )
+            .unwrap();
+            let named = facts
+                .methods
+                .iter()
+                .find(|method| method.name.raw().0 == b"named")
+                .unwrap();
+            let shell = named
+                .attributes
+                .iter()
+                .find(|shell| shell.name.raw().0 == b"MethodParameters")
+                .unwrap();
+            let start = usize::try_from(shell.content_span.start).unwrap();
+            let mut missing_name = fs::read(directory.join("em03/Signatures.class")).unwrap();
+            missing_name[start + 1..start + 3].copy_from_slice(&0_u16.to_be_bytes());
+            let fallback = class_source_of(
+                &open(missing_name),
+                "em03/Signatures",
+                EnvironmentPolicy::SingleClass,
+            );
+            assert!(
+                fallback
+                    .text
+                    .contains("named(java.lang.String arg1, int arg2)"),
+                "{}",
+                fallback.text
+            );
+            assert!(fallback.text.contains("return arg1;"), "{}", fallback.text);
+
+            let mut duplicate_name = fs::read(directory.join("em03/Signatures.class")).unwrap();
+            let first_name = duplicate_name[start + 1..start + 3].to_vec();
+            duplicate_name[start + 5..start + 7].copy_from_slice(&first_name);
+            let fallback = class_source_of(
+                &open(duplicate_name),
+                "em03/Signatures",
+                EnvironmentPolicy::SingleClass,
+            );
+            assert!(
+                fallback
+                    .text
+                    .contains("named(java.lang.String arg1, int arg2)"),
+                "{}",
+                fallback.text
+            );
+            assert!(fallback.text.contains("return arg1;"), "{}", fallback.text);
+
+            let mut wrong_count = fs::read(directory.join("em03/Signatures.class")).unwrap();
+            wrong_count[start] = 1;
+            wrong_count.drain(start + 5..start + 9);
+            let length = usize::try_from(shell.span.start).unwrap() + 2;
+            wrong_count[length..length + 4].copy_from_slice(&5_u32.to_be_bytes());
+            let fallback = class_source_of(
+                &open(wrong_count),
+                "em03/Signatures",
+                EnvironmentPolicy::SingleClass,
+            );
+            assert!(
+                fallback
+                    .text
+                    .contains("named(java.lang.String arg1, int arg2)"),
+                "{}",
+                fallback.text
+            );
+            assert!(fallback.text.contains("return arg1;"), "{}", fallback.text);
+
+            let mut bad_flags = fs::read(directory.join("em03/Signatures.class")).unwrap();
+            bad_flags[start + 3..start + 5].copy_from_slice(&1_u16.to_be_bytes());
+            let refused = class_source_of(
+                &open(bad_flags),
+                "em03/Signatures",
+                EnvironmentPolicy::SingleClass,
+            );
+            let named = refused
+                .methods
+                .iter()
+                .find(|method| method.item.name.raw().0 == b"named")
+                .unwrap();
+            assert!(matches!(named.outcome, ClassSourceOutcome::Refused { .. }));
+            assert!(!refused.text.contains("named(java.lang.String paramStr"));
+        }
+    }
+}
+
+#[test]
+fn method_parameters_follow_wide_slots_and_refuse_name_collisions() {
+    let scratch = BridgeProjectionScratch::new();
+    for (variant, source, expected, returned) in [
+        (
+            "wide",
+            "package em03; public class Wide { public long named(long first, final double second) { return first; } }",
+            "named(long first, final double second)",
+            "return first;",
+        ),
+        (
+            "collision",
+            "package em03; public class Wide { public long named(long wide, String arg2) { return wide; } }",
+            "named(long arg1, java.lang.String arg3)",
+            "return arg1;",
+        ),
+    ] {
+        let directory = scratch.child(variant);
+        let path = directory.join("Wide.java");
+        fs::write(&path, source).unwrap();
+        let compiled = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-parameters", "-d"])
+            .arg(&directory)
+            .arg(&path)
+            .output()
+            .unwrap();
+        assert!(
+            compiled.status.success(),
+            "{}",
+            String::from_utf8_lossy(&compiled.stderr)
+        );
+        let snapshot = open(fs::read(directory.join("em03/Wide.class")).unwrap());
+        let report = class_source_of(&snapshot, "em03/Wide", EnvironmentPolicy::SingleClass);
+        assert!(report.text.contains(expected), "{variant}: {}", report.text);
+        assert!(report.text.contains(returned), "{variant}: {}", report.text);
+    }
+}
 
 // ---------------------------------------------------------------------------------------------
 // Fixtures: one class-file builder and one stored-only archive writer
