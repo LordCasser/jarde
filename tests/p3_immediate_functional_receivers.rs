@@ -849,6 +849,48 @@ fn a_complex_lambda_helper_rejects_the_whole_helper_group() {
 }
 
 #[test]
+fn an_overdeep_lambda_helper_is_refused_before_recursive_projection_walks() {
+    let scratch = Scratch::new();
+    let original = scratch.child("lambda-helper-deep");
+    let expression = format!("x{}", " + 1".repeat(300));
+    fs::write(
+        original.join("LambdaDeep.java"),
+        format!(
+            "import java.util.function.*;\npublic final class LambdaDeep {{\n  static IntUnaryOperator deep() {{ return x -> {expression}; }}\n}}\n"
+        ),
+    )
+    .unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("LambdaDeep.java"))
+        .output()
+        .unwrap();
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let snapshot = open(&fs::read(original.join("LambdaDeep.class")).unwrap());
+    let recovered = class_source(&snapshot, "LambdaDeep", &RecoveryEvidenceRequest::all());
+    assert!(recovered.text.contains("lambda$deep$0"));
+    assert!(
+        recovered.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "lambda_helper_projection_refused"
+                && diagnostic.message.contains("lambda$deep$0")
+                && diagnostic.message.contains("bounded straight-line")
+        }),
+        "overdeep helper must be refused with a physical helper reason: {:?}",
+        recovered.diagnostics
+    );
+    assert!(
+        !recovered
+            .text
+            .contains("inlined exact no-capture primitive lambda helper")
+    );
+}
+
+#[test]
 fn lambda_helper_projection_budget_stop_does_not_publish_partial_helpers() {
     let scratch = Scratch::new();
     let original = scratch.child("lambda-helper-budget");
