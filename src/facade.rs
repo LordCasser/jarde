@@ -14024,8 +14024,8 @@ fn proved_reference_widening(
 }
 
 /// The class-source path alone may relax the field rule's exact receiver-owner match. Each
-/// certificate names one instruction and one declaration in the selected direct parent; the
-/// recovery layer rechecks the actual SSA receiver before it emits an owner cast.
+/// certificate names one instruction and one declaration in the selected direct parent of the
+/// actual receiver. The recovery layer rechecks that same SSA receiver before emitting a cast.
 fn prove_direct_parent_field_writes(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
@@ -14033,9 +14033,7 @@ fn prove_direct_parent_field_writes(
     budget: &mut Budget,
 ) -> Result<Vec<jarde_java::report::ProvedSuperclassFieldWrite>> {
     use jarde_reader::classfile::cp_entry;
-    let (Some(code), Some(declaration), Some(parent)) =
-        (ir.code(), ir.declaration(), ir.direct_super_class())
-    else {
+    let (Some(code), Some(declaration)) = (ir.code(), ir.declaration()) else {
         return Ok(Vec::new());
     };
     let mut cache = std::collections::BTreeMap::new();
@@ -14064,7 +14062,21 @@ fn prove_direct_parent_field_writes(
         else {
             continue;
         };
-        if owner.0 != parent.0 {
+        let Some(source) = named_stack_receiver(ir, instruction.bci, budget)? else {
+            continue;
+        };
+        if source == owner.0
+            || !selected_direct_parent(
+                content,
+                request,
+                ir,
+                source,
+                &owner.0,
+                &mut cache,
+                &mut execution,
+                budget,
+            )?
+        {
             continue;
         }
         let Some(header) = selected_reference_header(
@@ -14080,6 +14092,11 @@ fn prove_direct_parent_field_writes(
             continue;
         };
         if header.flags & ACC_INTERFACE != 0 {
+            continue;
+        }
+        if package_name(&declaration.class_name().0) != package_name(&owner.0)
+            && header.flags & 0x0001 == 0
+        {
             continue;
         }
         budget.charge(
@@ -14106,7 +14123,7 @@ fn prove_direct_parent_field_writes(
             continue;
         }
         let (Ok(source), Ok(owner), Ok(name), Ok(descriptor)) = (
-            std::str::from_utf8(&declaration.class_name().0),
+            std::str::from_utf8(source),
             std::str::from_utf8(&owner.0),
             std::str::from_utf8(&name.0),
             std::str::from_utf8(&descriptor.0),
@@ -14133,9 +14150,7 @@ fn prove_direct_parent_accessor_calls(
     budget: &mut Budget,
 ) -> Result<Vec<jarde_java::report::ProvedReferenceOverloadCall>> {
     use jarde_reader::classfile::cp_entry;
-    let (Some(code), Some(declaration), Some(parent)) =
-        (ir.code(), ir.declaration(), ir.direct_super_class())
-    else {
+    let (Some(code), Some(declaration)) = (ir.code(), ir.declaration()) else {
         return Ok(Vec::new());
     };
     let mut cache = std::collections::BTreeMap::new();
@@ -14169,7 +14184,24 @@ fn prove_direct_parent_accessor_calls(
         else {
             continue;
         };
-        if owner.0 != parent.0 || !name.0.starts_with(b"access$") {
+        if !name.0.starts_with(b"access$") {
+            continue;
+        }
+        let Some(source) = named_stack_receiver(ir, instruction.bci, budget)? else {
+            continue;
+        };
+        if source == owner.0
+            || !selected_direct_parent(
+                content,
+                request,
+                ir,
+                source,
+                &owner.0,
+                &mut cache,
+                &mut execution,
+                budget,
+            )?
+        {
             continue;
         }
         let mut expected = b"(L".to_vec();
@@ -14190,6 +14222,11 @@ fn prove_direct_parent_accessor_calls(
         else {
             continue;
         };
+        if package_name(&declaration.class_name().0) != package_name(&owner.0)
+            && header.flags & 0x0001 == 0
+        {
+            continue;
+        }
         budget.charge(
             CountedBudgetDimension::AnalysisSteps,
             u64::try_from(header.methods.len()).unwrap_or(u64::MAX),
@@ -14203,13 +14240,13 @@ fn prove_direct_parent_accessor_calls(
             || matching[0].descriptor.raw().0 != descriptor.0
             || matching[0].access_flags & (0x0008 | 0x1000) != (0x0008 | 0x1000)
             || matching[0].access_flags & 0x0002 != 0
+            || (package_name(&declaration.class_name().0) != package_name(&owner.0)
+                && matching[0].access_flags & 0x0001 == 0)
         {
             continue;
         }
-        let (Ok(source), Ok(target)) = (
-            std::str::from_utf8(&declaration.class_name().0),
-            std::str::from_utf8(&owner.0),
-        ) else {
+        let (Ok(source), Ok(target)) = (std::str::from_utf8(source), std::str::from_utf8(&owner.0))
+        else {
             continue;
         };
         proved.push(jarde_java::report::ProvedReferenceOverloadCall {
@@ -14219,6 +14256,68 @@ fn prove_direct_parent_accessor_calls(
         });
     }
     Ok(proved)
+}
+
+/// The lowest consumed stack slot is the physical receiver or first static argument.
+/// Names are frame facts, and each inspected SSA instruction is charged to the request.
+fn named_stack_receiver<'a>(
+    ir: &'a jarde_jvm::method_ir::MethodIr,
+    bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<&'a [u8]>> {
+    let Some(ssa) = ir.ssa() else {
+        return Ok(None);
+    };
+    for site in ssa.blocks().iter().flat_map(|block| block.instructions()) {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if site.bci() != bci {
+            continue;
+        }
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(site.reads().len()).unwrap_or(u64::MAX),
+        )?;
+        let first = site
+            .reads()
+            .iter()
+            .filter_map(|(slot, value)| match slot {
+                jarde_jvm::method_ir::Slot::Stack(depth) => Some((*depth, *value)),
+                jarde_jvm::method_ir::Slot::Local(_) => None,
+            })
+            .min_by_key(|(depth, _)| *depth);
+        return Ok(first.and_then(|(_, value)| match ssa.value(value).ty() {
+            jarde_jvm::method_ir::Value::Ref(jarde_jvm::method_ir::RefType::Named {
+                name, ..
+            }) => Some(
+                name.strip_prefix(b"L")
+                    .and_then(|name| name.strip_suffix(b";"))
+                    .unwrap_or(name),
+            ),
+            _ => None,
+        }));
+    }
+    Ok(None)
+}
+
+/// The cast is confined to one selected, direct B -> A edge. A missing or ambiguous
+/// dependency supplies no source-level relation.
+fn selected_direct_parent(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    source: &[u8],
+    owner: &[u8],
+    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<bool> {
+    Ok(
+        selected_reference_header(content, request, ir, source, cache, execution, budget)?
+            .is_some_and(|header| {
+                header.flags & ACC_INTERFACE == 0 && header.super_name.as_deref() == Some(owner)
+            }),
+    )
 }
 
 /// A cast to the exact declared one-argument type chooses that declaration in Java 8's strict
@@ -14310,6 +14409,44 @@ mod reference_overload_tests {
             None
         );
     }
+
+    #[test]
+    fn private_target_keeps_a_binding_with_b_overload_and_refuses_bad_declarations() {
+        let a = method("(Lpkg/A;)I", 0x000a);
+        let b = method("(Lpkg/B;)I", 0x000a);
+        let mut budget = task_budget(&[]).unwrap();
+        let check = |methods: &[MemberHeader], budget: &mut Budget| {
+            exact_private_reference_target(methods, b"take", b"(Lpkg/A;)I", b"pkg/A", budget)
+                .unwrap()
+        };
+        assert!(check(&[a.clone(), b], &mut budget));
+        assert!(!check(&[a.clone(), a.clone()], &mut budget));
+        assert!(!check(&[method("(Lpkg/A;)I", 0x0009)], &mut budget));
+        assert!(!check(&[method("(Lpkg/A;)I", 0x100a)], &mut budget));
+        assert!(!check(&[method("(Lpkg/A;)Z", 0x000a)], &mut budget));
+        let mut limits = task_budget(&[]).unwrap().limits().clone();
+        limits.analysis_steps = 0;
+        assert!(matches!(
+            exact_private_reference_target(
+                &[a.clone()],
+                b"take",
+                b"(Lpkg/A;)I",
+                b"pkg/A",
+                &mut Budget::new(limits)
+            ),
+            Err(Error::BudgetExceeded { .. })
+        ));
+        let cancellation = jarde_reader::budget::CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled = Budget::with_cancellation_token(
+            task_budget(&[]).unwrap().limits().clone(),
+            cancellation,
+        );
+        assert!(matches!(
+            exact_private_reference_target(&[a], b"take", b"(Lpkg/A;)I", b"pkg/A", &mut cancelled),
+            Err(Error::Cancelled { .. })
+        ));
+    }
 }
 
 fn unique_reference_overload_target(
@@ -14365,6 +14502,63 @@ fn unique_reference_overload_target(
             None => return Ok(false),
         }
     }
+}
+
+/// A private static call in the declaring class can be fixed by its exact
+/// descriptor even when another overload takes the more specific source type.
+/// The explicit A cast makes only overloads applicable to A relevant.
+fn unique_private_reference_target(
+    ir: &jarde_jvm::method_ir::MethodIr,
+    owner: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    target: &[u8],
+    is_static: bool,
+    budget: &mut Budget,
+) -> Result<bool> {
+    if !is_static
+        || ir
+            .declaration()
+            .is_none_or(|decl| decl.class_name().0 != owner)
+        || ir
+            .direct_super_class()
+            .is_none_or(|parent| parent.0 != b"java/lang/Object")
+        || !ir.direct_interfaces().is_empty()
+    {
+        return Ok(false);
+    }
+    let Some(methods) = ir.class_methods() else {
+        return Ok(false);
+    };
+    exact_private_reference_target(methods, name, descriptor, target, budget)
+}
+
+fn exact_private_reference_target(
+    methods: &[MemberHeader],
+    name: &[u8],
+    descriptor: &[u8],
+    target: &[u8],
+    budget: &mut Budget,
+) -> Result<bool> {
+    let mut exact = 0_u32;
+    for method in methods {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if method.name.raw().0 != name
+            || single_reference_parameter(&method.descriptor.raw().0) != Some(target)
+        {
+            continue;
+        }
+        let flags = method.access_flags;
+        if method.descriptor.raw().0 != descriptor
+            || flags & (0x0002 | 0x0008) != (0x0002 | 0x0008)
+            || flags & (0x0040 | 0x0080 | 0x1000) != 0
+        {
+            return Ok(false);
+        }
+        exact += 1;
+    }
+    Ok(exact == 1)
 }
 
 fn prove_reference_overload_calls(
@@ -14432,6 +14626,14 @@ fn prove_reference_overload_calls(
             is_static,
             &mut cache,
             &mut execution,
+            budget,
+        )? && !unique_private_reference_target(
+            ir,
+            &owner.0,
+            &name.0,
+            &descriptor.0,
+            target,
+            is_static,
             budget,
         )? {
             continue;
