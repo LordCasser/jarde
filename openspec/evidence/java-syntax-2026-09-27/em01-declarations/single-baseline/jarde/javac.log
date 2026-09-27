@@ -1,0 +1,15 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-27/em01-declarations/input-single/em01/Runner.java:4: 错误: 找不到符号
+        System.out.println(java.lang.reflect.Modifier.isAbstract(SingleAbstract.A.class.getModifiers()) + ":" + SingleAbstract.A.class.getDeclaredMethods().length);
+                                                                               ^
+  符号:   类 A
+  位置: 类 SingleAbstract
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-27/em01-declarations/input-single/em01/Runner.java:4: 错误: 找不到符号
+        System.out.println(java.lang.reflect.Modifier.isAbstract(SingleAbstract.A.class.getModifiers()) + ":" + SingleAbstract.A.class.getDeclaredMethods().length);
+                                                                                                                              ^
+  符号:   类 A
+  位置: 类 SingleAbstract
+2 个错误
+3 个警告

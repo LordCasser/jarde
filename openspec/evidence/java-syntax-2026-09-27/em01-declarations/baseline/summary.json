@@ -1,0 +1,34 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_tests_sha256": {
+    "TestClassGen.java": "4b0757aa3932fe4570c38f1ef420c20ba2fdc9ceb533abe334f38826e304ef95",
+    "TestClassImplementsSignature.java": "37c0ffce23c9610df4b98ed8cc584070a5b2c5b97cf24560756c180e65f1d087",
+    "TestIncorrectFieldSignature.java": "9cb94370e3bd176e1c29179b12f44f53132774224429d76afb5d928b3c1f6a32"
+  },
+  "jarde_cli_sha256": "8f1f0012324350e4fc65c7fef4b3e3835102e6d4fda00df280b466270c98e727",
+  "fixture": "multi",
+  "input_sha256": {
+    "Generic.java": "333a02ca5c4535765d594c9332e5d1bb9534f32813b8e8f6a1976ac3d8153ee5",
+    "Runner.java": "aaaec6d22325479857eb9fdcd295b37cb8cf7ffbb95ead9369539b2b7c4307b8",
+    "Shape.java": "843bdbc08f749d219ab0abc30c9778a47e548b7e64c4aab1830eb86b0c8d5c20"
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "2:1\n1:java.lang.Comparable<em01.Generic$A<T>>"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "2:1\n1:java.lang.Comparable<em01.Generic$A<T>>"
+  },
+  "jarde": {
+    "javac_exit": 1
+  },
+  "jarde_root_missing": [
+    "Shape.I",
+    "Shape.A",
+    "Generic.A"
+  ],
+  "jarde_physical_child_count": 3
+}
