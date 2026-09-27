@@ -9,3 +9,5 @@
 类级诊断保留被拒绝的物理 helper 与站点位置；所有相关 helper 和站点成功 staging 以前不隐藏任何 helper。捕获来源证书的入口为 `report.rs::prove_lambda_helper_captures`，类级原子隐藏继续走 `facade.rs::lambda_helper_census_refusal` 及既有统一提交；只允许捕获站点对应的 static/instance helper flags。DT-26 之外的局部变量生命周期推断、重赋值/效果表达式、额外 helper 调用、复杂或异常 body 均保持拒绝；DT-27 方法引用、泛型 target 和其它捕获类型仍是独立差距。
 
 验证：`cargo fmt --all --check`、`cargo check --workspace --all-features --locked`、`cargo test -p jarde-java --lib --locked`（220/220）、`cargo test -p jarde-java --test anonymous_allocation_candidates --locked`（5/5）、`cargo test --test p3_immediate_functional_receivers --locked`（16/16）和 `openspec validate recover-proved-captured-lambda-bodies --strict` 通过。三方 replay 连续两次输出 SHA 相同。当前基线的全 workspace test 在 `generic_constructor_projection::generic_constructor_projects_atomically_for_debug_and_no_debug_classes` 失败，独立复跑仍复现；root 已在后续 main commit `fdfc5ef0` 单独修复该债务，本变更没有触碰 generic constructor 路径。
+
+root 将实现摘取到 `b4d554ad` 后，以 SHA-256 `6485f11da9316846e9eaa90dc8dae5e28cabe99e3aeecda5999895093bc4785c` 的本线 CLI 独立重放；`outputs/results.json` 及两份反编译源码哈希均与代理冻结结果相同。当前主线 `p3_immediate_functional_receivers` 聚焦测试复跑为 16/16，`cargo fmt --check` 与 OpenSpec strict 通过。
