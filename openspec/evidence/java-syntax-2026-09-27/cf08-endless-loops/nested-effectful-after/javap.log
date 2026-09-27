@@ -1,0 +1,55 @@
+exit=0
+stdout:
+public final class cf08nested.NestedEffectful {
+  static int calls;
+
+  public cf08nested.NestedEffectful();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static int cost(int);
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: iload_0
+       9: ireturn
+
+  public static int pick(int[]);
+    Code:
+       0: aload_0
+       1: ifnonnull     9
+       4: iconst_m1
+       5: istore_1
+       6: goto          50
+       9: iconst_0
+      10: istore_2
+      11: iload_2
+      12: aload_0
+      13: arraylength
+      14: if_icmplt     26
+      17: bipush        7
+      19: invokestatic  #13                 // Method cost:(I)I
+      22: istore_1
+      23: goto          44
+      26: aload_0
+      27: iload_2
+      28: iaload
+      29: istore_1
+      30: iload_1
+      31: iconst_3
+      32: if_icmpne     38
+      35: goto          44
+      38: iinc          2, 1
+      41: goto          11
+      44: iload_1
+      45: getstatic     #7                  // Field calls:I
+      48: iadd
+      49: istore_1
+      50: iload_1
+      51: ireturn
+}
+stderr:

@@ -25,6 +25,12 @@ const FIXTURE: &[u8] =
 const NEGATIVES: &[u8] = include_bytes!(
     "../../../tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExitNegatives.class"
 );
+const NESTED: &[u8] = include_bytes!(
+    "../../../tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectful.class"
+);
+const NESTED_NEGATIVES: &[u8] = include_bytes!(
+    "../../../tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectfulNegatives.class"
+);
 
 fn limits() -> Limits {
     Limits {
@@ -198,6 +204,133 @@ fn effectful_exits_own_each_block_and_source_once() {
         .expect("one loop owner");
     assert_eq!(loop_owner.blocks, vec![2, 8, 17, 26, 29]);
     assert!(!loop_owner.blocks.contains(&35));
+}
+
+#[test]
+fn nested_effectful_exits_keep_the_inner_tail_in_its_if_arm() {
+    let report = recover_class_method_with_budget(
+        NESTED,
+        "cf08nested/NestedEffectful",
+        "pick",
+        "([I)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert!(report.text.contains("while (true)"), "{}", report.text);
+    assert_eq!(report.text.matches("break;").count(), 2, "{}", report.text);
+    assert_eq!(report.text.matches("cost(7)").count(), 1, "{}", report.text);
+    for bci in [
+        0, 1, 4, 5, 9, 10, 11, 12, 13, 14, 17, 19, 22, 23, 26, 27, 28, 29, 30, 31, 32, 35, 38, 41,
+        44, 45, 48, 49, 50, 51,
+    ] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "missing BCI {bci}: {}",
+            report.text
+        );
+    }
+    let arm_owner = report
+        .regions
+        .iter()
+        .find(|region| {
+            region.rule.is_some_and(|rule| rule.rule() == "if") && region.blocks.contains(&11)
+        })
+        .expect("one enclosing arm owner");
+    assert_eq!(arm_owner.blocks, vec![0, 4, 9, 11, 17, 26, 35, 38, 44]);
+    assert!(!arm_owner.blocks.contains(&50));
+    assert_eq!(
+        report
+            .regions
+            .iter()
+            .filter(|region| region.blocks.contains(&50))
+            .count(),
+        1
+    );
+}
+
+#[test]
+fn nested_effectful_exits_reject_unproved_edges() {
+    for (name, header) in [
+        ("extraEntry", 24),
+        ("differentTarget", 11),
+        ("bypassTail", 11),
+        ("thirdJoinInput", 24),
+        ("withHandler", 11),
+    ] {
+        let report = recover_class_method_with_budget(
+            NESTED_NEGATIVES,
+            "cf08nested/NestedEffectfulNegatives",
+            name,
+            "([I)I",
+            RecoveryEvidenceRequest::all(),
+            None,
+        );
+        assert!(report.produced(), "{name}: {:?}", report.outcome);
+        assert!(
+            !report.text.contains("while (true)"),
+            "{name}: {}",
+            report.text
+        );
+        assert!(report.text.contains("@bytecode"), "{name}: {}", report.text);
+        assert!(
+            report
+                .regions
+                .iter()
+                .any(|region| region.blocks.contains(&header)),
+            "{name}: missing physical BCI {header}: {:?}",
+            report.regions
+        );
+    }
+}
+
+#[test]
+fn nested_effectful_certificate_stops_without_partial_source() {
+    use jarde_java::StopReason;
+    let full = recover_class_method_with_budget(
+        NESTED,
+        "cf08nested/NestedEffectful",
+        "pick",
+        "([I)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::new(limits())),
+    );
+    let ExecutionReport::Complete { usage } = full.execution else {
+        panic!("full candidate did not complete: {:?}", full.outcome);
+    };
+    let mut late = limits();
+    late.analysis_steps = usage.analysis_steps - 1;
+    let stopped = recover_class_method_with_budget(
+        NESTED,
+        "cf08nested/NestedEffectful",
+        "pick",
+        "([I)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::new(late)),
+    );
+    assert!(!stopped.produced());
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    assert!(matches!(
+        stopped.stop(),
+        Some(StopReason::Budget {
+            dimension: CountedBudgetDimension::AnalysisSteps,
+            ..
+        })
+    ));
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover_class_method_with_budget(
+        NESTED,
+        "cf08nested/NestedEffectful",
+        "pick",
+        "([I)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::with_cancellation_token(limits(), token)),
+    );
+    assert!(!cancelled.produced());
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
 }
 
 #[test]
