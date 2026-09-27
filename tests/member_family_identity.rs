@@ -1460,7 +1460,7 @@ fn family_output_budget_refusal_keeps_both_physical_texts() {
 }
 
 #[test]
-fn outer_super_method_bridge_is_not_projected() {
+fn outer_super_method_bridge_projects_with_physical_origin() {
     let report = report_from_named(
         include_bytes!("../openspec/evidence/java-syntax-2026-09-26/named-member-outer-receiver/variants/fixture.jar").to_vec(),
         "OuterReceiverCases",
@@ -1472,12 +1472,158 @@ fn outer_super_method_bridge_is_not_projected() {
     else {
         panic!("physical super-bridge family should remain prepared");
     };
-    assert!(
-        matches!(projection, ClassSourceMemberProjection::Refused { reason } if reason.contains("Outer.super method bridge")),
-        "{projection:?}"
-    );
-    assert!(report.text.contains("access$"));
+    let ClassSourceMemberProjection::Projected { derived } = projection else {
+        panic!("closed bridge must project: {projection:?}");
+    };
+    assert!(report.text.contains("OuterReceiverCases.super.value()"));
+    assert!(!report.text.contains("static int access$101("));
     assert!(child.text.contains("OuterReceiverCases$Member"));
-    assert!(!report.text.contains("class Member"));
-    assert!(!report.text.contains("OuterReceiverCases.super.value()"));
+    assert!(derived.iter().any(|entry| {
+        entry.kind == MemberFamilyDerivedKind::HiddenOuterSuperBridge
+            && entry.anchors.iter().any(|anchor| {
+                matches!(anchor,
+                MemberFamilyPhysicalAnchor::OuterSuperTarget { owner, name, descriptor, .. }
+                    if owner.0 == b"ReceiverBase" && name.0 == b"value" && descriptor.0 == b"()I")
+            })
+    }));
+}
+
+fn em12_jar(case: &str, parent: &str, omit_narrow: bool) -> Vec<u8> {
+    let temp = TestDirectory::new();
+    std::fs::create_dir(temp.path().join("em12")).unwrap();
+    for (name, source) in [
+        ("Case", case),
+        ("Parent", parent),
+        (
+            "Arg",
+            include_str!(
+                "../openspec/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/Arg.java"
+            ),
+        ),
+        (
+            "NarrowArg",
+            include_str!(
+                "../openspec/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/NarrowArg.java"
+            ),
+        ),
+    ] {
+        std::fs::write(temp.path().join(format!("em12/{name}.java")), source).unwrap();
+    }
+    let compiled = Command::new("javac")
+        .args([
+            "--release",
+            "8",
+            "-g:none",
+            "-d",
+            ".",
+            "em12/Case.java",
+            "em12/Parent.java",
+            "em12/Arg.java",
+            "em12/NarrowArg.java",
+        ])
+        .current_dir(temp.path())
+        .output()
+        .unwrap();
+    assert!(
+        compiled.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compiled.stderr)
+    );
+    let names = ["Case", "Case$Member", "Parent", "Arg", "NarrowArg"];
+    let bytes: Vec<_> = names
+        .iter()
+        .filter(|name| !omit_narrow || **name != "NarrowArg")
+        .map(|name| std::fs::read(temp.path().join(format!("em12/{name}.class"))).unwrap())
+        .collect();
+    let entries: Vec<_> = names
+        .iter()
+        .filter(|name| !omit_narrow || **name != "NarrowArg")
+        .zip(&bytes)
+        .map(|(name, bytes)| (format!("em12/{name}.class").into_bytes(), bytes.as_slice()))
+        .collect();
+    jar_of(
+        &entries
+            .iter()
+            .map(|(name, bytes)| (name.as_slice(), *bytes))
+            .collect::<Vec<_>>(),
+    )
+}
+
+#[test]
+fn outer_super_overload_requires_direct_source_parameter_and_complete_subclass_chain() {
+    const CASE: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/Case.java"
+    );
+    const PARENT: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-09-27/em12-super-dispatch/input/em12/Parent.java"
+    );
+    let projected = report_from_named(
+        em12_jar(CASE, PARENT, false),
+        "em12/Case",
+        task_limits(&[]).unwrap(),
+    );
+    assert!(
+        matches!(
+            &projected.member_family,
+            ClassSourceMemberFamily::Prepared {
+                projection: ClassSourceMemberProjection::Projected { .. },
+                ..
+            }
+        ),
+        "{:?}",
+        projected.member_family
+    );
+    assert!(
+        projected.text.contains("Case.super.pick(arg1)"),
+        "{}",
+        projected.text
+    );
+    assert!(!projected.text.contains("static String access$"));
+
+    let cast = CASE.replace("pick(value)", "pick((Arg) null)");
+    let intermediate = CASE.replace(
+        "return Case.super.pick(value);",
+        "Arg copy = value; return Case.super.pick(copy);",
+    );
+    let narrow = CASE
+        .replace("call(Arg value)", "call(NarrowArg value)")
+        .replace("pick(value)", "pick((Arg) value)");
+    let applicable = PARENT.replace("pick(NarrowArg value)", "pick(Object value)");
+    let generic = PARENT.replace(
+        "String pick(NarrowArg value)",
+        "<T extends NarrowArg> String pick(T value)",
+    );
+    let checked = PARENT.replace(
+        "pick(NarrowArg value)",
+        "pick(NarrowArg value) throws java.io.IOException",
+    );
+    let varargs = PARENT.replace("pick(NarrowArg value)", "pick(NarrowArg... value)");
+    for (case, parent, omit_narrow, must_reach_binding) in [
+        (cast.as_str(), PARENT, false, false),
+        (intermediate.as_str(), PARENT, false, false),
+        (narrow.as_str(), PARENT, false, true),
+        (CASE, PARENT, true, true),
+        (CASE, applicable.as_str(), false, true),
+        (CASE, generic.as_str(), false, true),
+        (CASE, checked.as_str(), false, true),
+        (CASE, varargs.as_str(), false, true),
+    ] {
+        let refused = report_from_named(
+            em12_jar(case, parent, omit_narrow),
+            "em12/Case",
+            task_limits(&[]).unwrap(),
+        );
+        let ClassSourceMemberFamily::Prepared {
+            projection: ClassSourceMemberProjection::Refused { reason },
+            ..
+        } = &refused.member_family
+        else {
+            panic!("variant should refuse projection: {case}");
+        };
+        assert!(
+            !must_reach_binding || reason.contains("Outer.super source binding refused"),
+            "{reason}"
+        );
+        assert!(!refused.text.contains("Case.super.pick("));
+    }
 }

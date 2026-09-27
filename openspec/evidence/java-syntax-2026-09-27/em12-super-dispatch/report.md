@@ -18,4 +18,10 @@ python3 openspec/evidence/java-syntax-2026-09-27/em12-super-dispatch/replay.py \
   --out /tmp/em12-audit-replay
 ```
 
-`--out` 必须是空目录。当前脚本把第二片 Jarde 编译失败作为冻结预期；实施后应改为第三侧完整重编和 `number` 运行的验收。编译中间物、JAR 与临时类自动删除；这里只保存可审查的文本证据。
+`--out` 必须是空目录。脚本现以第二片 Jarde 完整重编、验证运行 `number` 为验收；旧的编译失败保留在 `baseline/binding` 作为修前证据。编译中间物、JAR 与临时类自动删除；这里只保存可审查的文本证据。
+
+## EM-12 修后验收
+
+[after/summary.json](after/summary.json) 是从本变更的 Jarde CLI 和上述固定 JADX revision 重放所得。普通样本的原 class、JADX、Jarde 完整依赖源码分别通过 `javac --release 8` 和 `java -Xverify:all`，输出 `20:10:1:3`；重载样本的三侧完整源码也分别通过相同检查，输出 `number`。[Jarde 生成的 Case.java](after/binding/source/jarde/em12/Case.java) 保留 `Case.super.pick(arg1)`，同轮家族报告为 `projected`；[编译日志](after/binding/binding-jarde/javac.log)与[运行日志](after/binding/binding-jarde/runtime.log)保存第三侧结果。原 class 与 JADX 的对应日志也在 `after/binding`。
+
+放行仅覆盖单个普通引用实参：成员方法参数描述符与目标一致，SSA 在每个调用点直接读取该形参，且所选完整 class 父链证明竞争者参数是严格子类。`NarrowArg` 静态形参即使显式转成 `Arg`、`null`/cast、局部中转、缺失 `NarrowArg` 声明和可适用的 `Object` 重载均保持拒绝；同型显式 `other` 的捕获负例仍由现有桥调用单元测试覆盖。泛型、接口、数组、varargs、装箱与 checked exception 重载仍在证明边界之外，不能据此声称通用 Java 重载恢复。

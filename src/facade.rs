@@ -14392,7 +14392,8 @@ fn project_class_source_member_family(
                         &outer_read.facts,
                         &superclass_definition,
                         &superclass_read.facts,
-                        &bridge,
+                        child,
+                        &closure,
                         execution,
                         budget,
                     )? {
@@ -16112,9 +16113,8 @@ fn prove_outer_super_bridge_use_closure(
     }))
 }
 
-/// Prove that Java 8's `Outer.super.name(args)` has only the exact direct-parent
-/// declaration named by the bridge's MethodRef in the selected source hierarchy.
-/// The JVM target proof alone does not settle source overload or generic binding.
+/// Prove the selected source binding after the physical bridge and every use have closed.
+/// The JVM target alone does not state the static types of the generated arguments.
 #[allow(clippy::too_many_arguments)]
 fn prove_outer_super_source_binding(
     content: &[ArtifactSnapshot],
@@ -16122,11 +16122,13 @@ fn prove_outer_super_source_binding(
     outer: &ClassMemberFacts,
     parent_definition: &PhysicalDefinitionId,
     parent: &ClassMemberFacts,
-    bridge: &class_source::OuterSuperBridgeProof,
+    child: &ClassSourceReport,
+    closure: &class_source::OuterSuperBridgeClosureProof,
     execution: &mut ExecutionReport,
     budget: &mut Budget,
 ) -> Result<std::result::Result<(), String>> {
     let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    let bridge = &closure.bridge;
     if bridge.target_method.owner != *parent_definition
         || bridge.target_owner.0 != parent.this_class.raw().0
         || bridge.target_method.name != bridge.target_name
@@ -16150,6 +16152,10 @@ fn prove_outer_super_source_binding(
     {
         return refuse("bridge target has no exact Java source spelling");
     }
+    let target_parameters = descriptor_facts(&bridge.target_descriptor.0, DescriptorKind::Method)
+        .ok()
+        .map(|descriptor| descriptor.parameters().to_vec());
+    let mut proved_argument_type = false;
     let mut pending = vec![(parent.this_class.raw().0.clone(), false)];
     pending.extend(
         outer
@@ -16222,10 +16228,74 @@ fn prove_outer_super_source_binding(
             let is_target = definition == bridge.target_method.owner
                 && method.descriptor.raw().0 == bridge.target_descriptor.0;
             if !is_target {
-                return refuse("source hierarchy contains a competing same-name method");
+                if method.access_flags & (0x0040 | 0x0080 | 0x1000) != 0
+                    || method.attributes.iter().any(|attribute| {
+                        matches!(
+                            attribute.name.raw().0.as_slice(),
+                            b"Signature" | b"Exceptions"
+                        )
+                    })
+                {
+                    return refuse("competing method has an unproved source signature");
+                }
+                let Some(candidate) =
+                    descriptor_facts(method.descriptor.raw().0.as_slice(), DescriptorKind::Method)
+                        .ok()
+                else {
+                    return refuse("competing method descriptor is unreadable");
+                };
+                let Some(target_parameters) = target_parameters.as_ref() else {
+                    return refuse("bridge target parameters are unreadable");
+                };
+                if candidate.parameters().len() != target_parameters.len() {
+                    continue;
+                }
+                let ([target_arg], [candidate_arg]) =
+                    (target_parameters.as_slice(), candidate.parameters())
+                else {
+                    return refuse(
+                        "same-arity overload is outside the single-reference-argument proof",
+                    );
+                };
+                let (Some(target_name), Some(candidate_name)) =
+                    (target_arg.object_name(), candidate_arg.object_name())
+                else {
+                    return refuse("same-arity overload has an unproved parameter conversion");
+                };
+                if target_arg.is_array() || candidate_arg.is_array() {
+                    return refuse("array overload conversion is unproved");
+                }
+                if !proved_argument_type {
+                    if let Err(reason) = prove_outer_super_argument_type(
+                        content,
+                        environment,
+                        child,
+                        closure,
+                        target_arg
+                            .bytes(&bridge.target_descriptor.0)
+                            .unwrap_or_default(),
+                        execution,
+                        budget,
+                    )? {
+                        return Ok(Err(reason));
+                    }
+                    proved_argument_type = true;
+                }
+                if !proved_strict_class_subtype(
+                    content,
+                    environment,
+                    &candidate_name.0,
+                    &target_name.0,
+                    execution,
+                    budget,
+                )? {
+                    return refuse("source hierarchy contains a competing same-name method");
+                }
+                continue;
             }
             exact_target += 1;
             if exact_target != 1
+                || method.access_flags & (0x0040 | 0x0080 | 0x1000) != 0
                 || method.attributes.iter().any(|attribute| {
                     matches!(
                         attribute.name.raw().0.as_slice(),
@@ -16253,6 +16323,187 @@ fn prove_outer_super_source_binding(
         return refuse("direct parent target has no unique source declaration");
     }
     Ok(Ok(()))
+}
+
+/// This subset knows the source type only when the writer names a plain method parameter and
+/// the bridge consumes its direct `aload`. A bridge descriptor by itself proves neither fact.
+#[allow(clippy::too_many_arguments)]
+fn prove_outer_super_argument_type(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    child: &ClassSourceReport,
+    closure: &class_source::OuterSuperBridgeClosureProof,
+    expected: &[u8],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<(), String>> {
+    use jarde_jvm::method_ir::{Definition, Slot};
+
+    let refuse = |reason: &str| Ok(Err(reason.to_owned()));
+    let Some(child_name) = child
+        .declaration
+        .as_ref()
+        .map(|declaration| &declaration.item.declaration.this_class.raw().0)
+    else {
+        return refuse("member source declaration is unavailable");
+    };
+    let Some((selected, read)) = resolve_class_source_dependency_read_raw(
+        content,
+        environment,
+        None,
+        child_name,
+        execution,
+        budget,
+    )?
+    else {
+        return refuse("selected member declaration is unavailable for argument proof");
+    };
+    let facts = read.facts;
+    if selected != child.class
+        || facts.stopped_at.is_some()
+        || facts.method_count != facts.methods.len() as u64
+        || facts.this_class.raw().0 != *child_name
+        || facts
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Signature")
+    {
+        return refuse("member source declaration is incomplete or generic");
+    }
+    for call in &closure.calls {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let [argument_bci] = call.argument_bcis.as_slice() else {
+            return refuse("overloaded bridge needs one direct member parameter argument");
+        };
+        let Some(method) = facts.methods.iter().find(|method| {
+            method.name.raw().0 == call.caller.name.0
+                && method.descriptor.raw().0 == call.caller.descriptor.0
+        }) else {
+            return refuse("member caller has no selected physical declaration");
+        };
+        if method
+            .attributes
+            .iter()
+            .any(|attribute| attribute.name.raw().0 == b"Signature")
+            || !child.methods.iter().any(|source| {
+                source.item.identity == call.caller
+                    && source.declaration.is_some()
+                    && !source.generic_signature_refused
+            })
+        {
+            return refuse("member caller source parameter type is unproved");
+        }
+        let Ok(signature) = descriptor_facts(&call.caller.descriptor.0, DescriptorKind::Method)
+        else {
+            return refuse("member caller descriptor is unreadable");
+        };
+        let [parameter] = signature.parameters() else {
+            return refuse("member caller is outside the single-parameter proof");
+        };
+        if parameter.bytes(&call.caller.descriptor.0) != Some(expected) {
+            return refuse("member source parameter differs from bridge target parameter");
+        }
+        let slot = if method.access_flags & 0x0008 == 0 {
+            1
+        } else {
+            0
+        };
+        let analyzed = jarde_jvm::analyze_method_ir(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: call.caller.clone(),
+                stages: MethodOperation::Analysis.stages().to_vec(),
+            },
+            budget,
+        )?;
+        merge_execution(execution, analyzed.report().execution.clone());
+        if analyzed.report().method != call.caller
+            || !matches!(
+                analyzed.report().execution,
+                ExecutionReport::Complete { .. }
+            )
+        {
+            return refuse("member caller SSA is incomplete for source argument proof");
+        }
+        let Some(ssa) = analyzed.ir().ssa() else {
+            return refuse("member caller SSA is unavailable");
+        };
+        let loads: Vec<_> = ssa
+            .blocks()
+            .iter()
+            .flat_map(|block| block.instructions())
+            .filter(|instruction| instruction.bci() == *argument_bci)
+            .collect();
+        let [load] = loads.as_slice() else {
+            return refuse("bridge argument has no unique direct load");
+        };
+        if !matches!(load.opcode(), 0x19 | 0x2a..=0x2d)
+            || !matches!(load.reads(), [(Slot::Local(actual), value)]
+                if *actual == slot && matches!(ssa.value(*value).def(), Definition::Entry { slot: Slot::Local(entry), .. } if *entry == slot))
+            || load.writes().len() != 1
+            || !matches!(ssa.value(load.writes()[0].1).def(), Definition::Instruction { bci, .. } if *bci == *argument_bci)
+        {
+            return refuse("bridge argument is not a direct member parameter load");
+        }
+    }
+    Ok(Ok(()))
+}
+
+/// A value statically typed as `parent` cannot be passed to a parameter whose selected,
+/// complete class chain proves it is a strict subclass of `parent`.
+#[allow(clippy::too_many_arguments)]
+fn proved_strict_class_subtype(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    narrow: &[u8],
+    parent: &[u8],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<bool> {
+    if narrow == parent {
+        return Ok(false);
+    }
+    let mut next = narrow.to_vec();
+    let mut seen = std::collections::BTreeSet::new();
+    loop {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if !seen.insert(next.clone()) {
+            return Ok(false);
+        }
+        let Some((_, read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            None,
+            &next,
+            execution,
+            budget,
+        )?
+        else {
+            return Ok(false);
+        };
+        let facts = read.facts;
+        if facts.stopped_at.is_some()
+            || facts.this_class.raw().0 != next
+            || facts.method_count != facts.methods.len() as u64
+            || facts.field_count != facts.fields.len() as u64
+            || facts.access_flags & ACC_INTERFACE != 0
+            || facts
+                .attributes
+                .iter()
+                .any(|attribute| attribute.name.raw().0 == b"Signature")
+        {
+            return Ok(false);
+        }
+        if next == parent {
+            return Ok(true);
+        }
+        let Some(super_class) = facts.super_class.as_ref() else {
+            return Ok(false);
+        };
+        next = super_class.raw().0.clone();
+    }
 }
 
 fn direct_member_bridge_invocation(
@@ -16868,7 +17119,8 @@ mod outer_super_bridge_closure_tests {
                 &outer_read.facts,
                 &parent_definition,
                 &parent_read.facts,
-                &bridge,
+                child,
+                &closure,
                 &mut execution,
                 &mut budget,
             )
@@ -16898,7 +17150,8 @@ mod outer_super_bridge_closure_tests {
                 &outer_read.facts,
                 &parent_definition,
                 &overloaded_parent,
-                &bridge,
+                child,
+                &closure,
                 &mut execution,
                 &mut budget,
             )
@@ -16907,6 +17160,8 @@ mod outer_super_bridge_closure_tests {
         );
         let mut wrong_target = bridge.clone();
         wrong_target.target_method.owner = root.class.clone();
+        let mut wrong_closure = closure.clone();
+        wrong_closure.bridge = wrong_target;
         assert!(
             prove_outer_super_source_binding(
                 std::slice::from_ref(&snapshot),
@@ -16914,7 +17169,8 @@ mod outer_super_bridge_closure_tests {
                 &outer_read.facts,
                 &parent_definition,
                 &parent_read.facts,
-                &wrong_target,
+                child,
+                &wrong_closure,
                 &mut execution,
                 &mut budget,
             )

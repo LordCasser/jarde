@@ -1,0 +1,42 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "test/java/jadx/tests/integration/invoke/TestSuperInvoke.java": "4eae09fd53c675d6be5d239341ee7bd8d90f4c50070957f80b2c2936183373e4",
+    "test/java/jadx/tests/integration/invoke/TestSuperInvokeWithGenerics.java": "bee4ceabeb2cf33a692a9ba01adf0abfeff4a527b27a79b402b53b241818d9b8",
+    "test/java/jadx/tests/integration/inline/TestSyntheticInline2.java": "14a8e2a426e59c76fa481db41623f1959d22b74b9a21831b4e5acfb03c4e8c05",
+    "test/java/jadx/tests/integration/others/TestShadowingSuperMember.java": "3ccaaa8d19c8f502992b14b49cb414a1984949d64aab841a91ac1f2009d1b59f",
+    "main/java/jadx/core/dex/visitors/ConstructorVisitor.java": "477a662a43413d0e3dd162ee5ddcf6bb739347f678bb4a8c36687e780c74cc3b",
+    "main/java/jadx/core/dex/visitors/InlineMethods.java": "9f6668390a733b496ce3069244120c66eba520929c4daa8f73ff3d5e38f2d92f",
+    "main/java/jadx/core/codegen/InsnGen.java": "c6308a71dd870d7f13bb8ac7efdb58191966cd6a5254aa11e443c95af6bafed6"
+  },
+  "jarde_cli_sha256": "c2f8e83d9f7d44ff24a78113a0c5505ee1f9bb04e1ab920211b00fa62c90495c",
+  "input_sha256": "9711fea1e6ffb4558fb39761b55c28ea4aeb8d35f8b2108095c4363cac140b18",
+  "original_classes_sha256": {
+    "OuterReceiverCases$Member.class": "db8c785169ff8073c46ba9b6abb28753b6c7f75ff418a714b91d88e1d782d6d1",
+    "ReceiverMemberBase.class": "ae5f083b08dbcb81ab2744c337f5377bb71a2b5b6386560b57763372d4c29448",
+    "OuterReceiverCases$StaticNested.class": "ae8da0014d054c6c1ce39ce550ac09464618c4a8a888dd96beb0be2785440810",
+    "OuterReceiverCases.class": "881bba6b3ec7768ca7ff329b4e1ed408f98ee8c7945e9589608d6fde0826d02d",
+    "ReceiverBase.class": "77a27ef94f858ae036e912581ec6f10bd6a1e14f299c0d2c0c3eafa79fca26a0"
+  },
+  "runtime": "20:10:1:3",
+  "jarde_member_projection": "projected",
+  "binding_regression": {
+    "input_sha256": {
+      "Case": "656dc399e02c47f07feeb4bc38a9a5e1128ffad13dd0c45edd76e34de55cdaa9",
+      "Parent": "800165bd920968912bfe0da0c072e7f3af0d735962b851969da5122bb6a6acb6",
+      "Arg": "3c8a2092e7f80923e227ddd2f82222d40c0a2794b69933b85d517c5a97acfe99",
+      "NarrowArg": "9415f70fbeb5e2b03470cd29d2c7bc67b850c66f6bb6210710aea250f4420f4a"
+    },
+    "original_classes_sha256": {
+      "Arg.class": "b9c814c209e0201bb92fc57dd4bf5d54fb125cb6914599d5e33da8c8c878f1c0",
+      "NarrowArg.class": "d8e5193f966f6d9833924b233e5c9d764e67362dc90a1f5acd052549ae8b003b",
+      "Case$Member.class": "dec3bc5584a4e50ffe12692c0050d15696ff766f9e7a9b864e979c9f5198dcc3",
+      "Parent.class": "666695275af91ba83c01d528ea118f67dbcf5712d3f2ddc81e73be6e1ba19d6b",
+      "Case.class": "b9884446024a6daa718e7d04d717ebfc6f0f6437a61d6c0a0d180879be105258"
+    },
+    "original_runtime": "number",
+    "jadx_runtime": "number",
+    "jarde_runtime": "number",
+    "jarde_member_projection": "projected"
+  }
+}

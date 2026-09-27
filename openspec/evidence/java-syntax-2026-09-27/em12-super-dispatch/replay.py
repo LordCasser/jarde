@@ -97,23 +97,15 @@ def binding_regression(args, out, temporary):
         if name == "Case":
             projection = (output / "jarde-logs/Case.log").read_text()
     compile_run("binding-jadx", sources["jadx"], output, temporary, "em12.Case", "number")
-    if 'member_family.projection.reason = "Outer.super source binding refused: source hierarchy contains a competing same-name method"' not in projection:
-        raise RuntimeError("Jarde did not expose the expected source-binding refusal")
-    classes = temporary / "binding-jarde-classes"
-    compile_command = ["javac", "--release", "8", "-Xlint:-options", "-d", classes,
-                       *sources["jarde"]]
-    result = subprocess.run([str(part) for part in compile_command], capture_output=True,
-                            text=True, timeout=180)
-    (output / "binding-jarde").mkdir()
-    (output / "binding-jarde/javac.log").write_text(
-        f"exit={result.returncode}\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}")
-    if result.returncode == 0:
-        raise RuntimeError("source-binding regression unexpectedly recompiled")
+    if 'member_family.projection.state = "projected"' not in projection:
+        raise RuntimeError("Jarde did not project the proved source binding")
+    if "Case.super.pick(" not in (output / "source/jarde/em12/Case.java").read_text():
+        raise RuntimeError("Jarde lost the lexical outer-super call")
+    compile_run("binding-jarde", sources["jarde"], output, temporary, "em12.Case", "number")
     return {"input_sha256": {name: digest(BINDING / f"{name}.java") for name in BINDING_CLASSES},
             "original_classes_sha256": {p.name: digest(p) for p in original.rglob("*.class")},
             "original_runtime": "number", "jadx_runtime": "number",
-            "jarde_javac_exit": result.returncode,
-            "jarde_refusal": "source hierarchy contains a competing same-name method"}
+            "jarde_runtime": "number", "jarde_member_projection": "projected"}
 
 
 def main():
