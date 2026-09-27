@@ -3590,6 +3590,16 @@ impl Engine {
             &read.facts.attributes,
             &pool,
             budget,
+            |parent_name, budget| {
+                prove_direct_generic_superclass_parent(
+                    content,
+                    environment,
+                    &definition,
+                    parent_name,
+                    &mut execution,
+                    budget,
+                )
+            },
         ) {
             Ok(proof) => class_scope = proof,
             Err(error) => {
@@ -7767,6 +7777,106 @@ fn resolve_class_source_dependency_read_raw(
         return Ok(None);
     }
     Ok(Some((resolved.definition, read)))
+}
+
+/// Prove the one parent shape admitted by direct class-header projection. The read is selected
+/// through the class-source request's existing resolution environment and shared budget; the
+/// child's Signature alone never establishes that a generic declaration exists.
+fn prove_direct_generic_superclass_parent(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    child: &PhysicalDefinitionId,
+    parent_name: &[u8],
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<bool> {
+    let Some((definition, read)) = resolve_class_source_dependency_read_raw(
+        content,
+        environment,
+        None,
+        parent_name,
+        execution,
+        budget,
+    )?
+    else {
+        return Ok(false);
+    };
+    let facts = &read.facts;
+    if definition == *child
+        || facts.stopped_at.is_some()
+        || facts.method_count != facts.methods.len() as u64
+        || facts.field_count != facts.fields.len() as u64
+        || facts.this_class.raw().0 != parent_name
+        || parent_name.contains(&b'$')
+        || std::str::from_utf8(parent_name)
+            .ok()
+            .is_none_or(|name| !name.split('/').all(jarde_java::is_java_identifier))
+        || facts.access_flags & (ACC_INTERFACE | ACC_ANNOTATION | 0x4000) != 0
+        || facts
+            .super_class
+            .as_ref()
+            .is_none_or(|name| name.raw().0 != b"java/lang/Object")
+        || !facts.interfaces.is_empty()
+        || facts.attributes.iter().any(|attribute| {
+            matches!(
+                attribute.name.raw().0.as_slice(),
+                b"RuntimeVisibleTypeAnnotations" | b"RuntimeInvisibleTypeAnnotations"
+            )
+        })
+    {
+        return Ok(false);
+    }
+    let signatures: Vec<_> = facts
+        .attributes
+        .iter()
+        .filter(|attribute| attribute.name.raw().0 == b"Signature")
+        .cloned()
+        .collect();
+    if signatures.len() != 1 {
+        return Ok(false);
+    }
+    let pool = class_constant_pool(&read.bytes, budget)?;
+    let Some(raw) = attribute_facts(&read.bytes, &signatures, &pool, budget)?.signature else {
+        return Ok(false);
+    };
+    let parsed = match jarde_reader::signature::parse_class_signature(&raw.0, budget) {
+        Ok(parsed) => parsed,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => return Err(error),
+        Err(_) => return Ok(false),
+    };
+    let parameter_matches = matches!(parsed.type_parameters.as_slice(), [parameter]
+        if std::str::from_utf8(&parameter.name).ok().is_some_and(jarde_java::is_java_identifier)
+        && matches!(parameter.class_bound.as_ref(), Some(jarde_reader::signature::SignatureType::Class(class))
+            if matches!(class.segments.as_slice(), [segment]
+                if segment.binary_name == b"java/lang/Object" && segment.arguments.is_empty()))
+        && parameter.interface_bounds.is_empty());
+    let object_super_matches = matches!(parsed.superclass.segments.as_slice(), [segment]
+        if segment.binary_name == b"java/lang/Object" && segment.arguments.is_empty());
+    if !parameter_matches || !object_super_matches || !parsed.interfaces.is_empty() {
+        return Ok(false);
+    }
+    let physical_interfaces: Vec<Vec<u8>> = facts
+        .interfaces
+        .iter()
+        .map(|name| name.raw().0.clone())
+        .collect();
+    let Some(parent_super) = facts.super_class.as_ref() else {
+        return Ok(false);
+    };
+    let proof = match jarde_reader::signature::prove_class_signature_erasure(
+        &parsed,
+        &parent_super.raw().0,
+        &physical_interfaces,
+        budget,
+    ) {
+        Ok(proof) => proof,
+        Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => return Err(error),
+        Err(_) => return Ok(false),
+    };
+    if proof.type_parameters.len() != 1 {
+        return Ok(false);
+    }
+    Ok(true)
 }
 
 /// Certify every field leaf in the narrow enum int-expression grammar before source emission.
@@ -22880,4 +22990,195 @@ fn class_view_coverage(
         }
     }
     coverage
+}
+
+#[cfg(test)]
+mod direct_generic_superclass_tests {
+    use super::*;
+    use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
+    use std::io::{Cursor, Write};
+
+    const CHILD: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Child.class"
+    );
+    const PARENT: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-27/dt21-parameterized-parent/outputs/classes/Parent.class"
+    );
+
+    fn limits() -> Limits {
+        Limits {
+            input_bytes: u64::MAX,
+            archive_entries: u64::MAX,
+            entry_bytes: u64::MAX,
+            read_bytes: u64::MAX,
+            class_bytes: u64::MAX,
+            attribute_bytes: u64::MAX,
+            code_bytes: u64::MAX,
+            result_items: u64::MAX,
+            output_bytes: u64::MAX,
+            class_headers: u64::MAX,
+            method_bodies: u64::MAX,
+            ir_items: u64::MAX,
+            ir_edges: u64::MAX,
+            analysis_steps: u64::MAX,
+            normalization_clones: u64::MAX,
+            nested_depth: u64::MAX,
+            dependency_depth: u64::MAX,
+            elapsed_millis: u64::MAX,
+        }
+    }
+
+    fn jar(include_parent: bool) -> Vec<u8> {
+        let mut output = Cursor::new(Vec::new());
+        let mut zip = ZipArchiveWriter::new(&mut output);
+        let mut entries = vec![(b"dt21parent/Child.class".as_slice(), CHILD)];
+        if include_parent {
+            entries.push((b"dt21parent/Parent.class".as_slice(), PARENT));
+        }
+        for (name, bytes) in entries {
+            let (mut entry, config) = zip
+                .new_file(EntryPath::verbatim(name.to_vec()))
+                .compression_method(CompressionMethod::new(0))
+                .start()
+                .unwrap();
+            let mut writer = config.wrap(&mut entry);
+            writer.write_all(bytes).unwrap();
+            let (_, descriptor) = writer.finish().unwrap();
+            entry.finish(descriptor).unwrap();
+        }
+        zip.finish().unwrap();
+        output.into_inner()
+    }
+
+    fn class_source(
+        engine: &Engine,
+        snapshot: &ArtifactSnapshot,
+        budget: &mut Budget,
+    ) -> Result<OperationOutcome<ClassSourceReport>> {
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        engine.class_source(
+            std::slice::from_ref(snapshot),
+            &ClassSourceRequest {
+                class: ClassRef::Name {
+                    class: ClassNameQuery::internal("dt21parent/Child"),
+                },
+                environment,
+            },
+            budget,
+        )
+    }
+
+    fn snapshot(engine: &Engine, budget: &mut Budget, include_parent: bool) -> ArtifactSnapshot {
+        engine
+            .open(ArtifactInput::bytes(jar(include_parent)), budget)
+            .unwrap()
+    }
+
+    #[test]
+    fn selected_parent_signature_projects_one_direct_string_argument() {
+        let engine = Engine::new();
+        let mut budget = Budget::new(limits());
+        let snapshot = snapshot(&engine, &mut budget, true);
+        let OperationOutcome::Performed(report) =
+            class_source(&engine, &snapshot, &mut budget).unwrap()
+        else {
+            panic!("the selected Child class should be presented")
+        };
+        assert!(
+            report
+                .text
+                .contains("class Child extends dt21parent.Parent<java.lang.String> {")
+        );
+        assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+        let declaration = report.declaration.unwrap();
+        assert_eq!(
+            declaration.generic_signature.unwrap().0,
+            b"Ldt21parent/Parent<Ljava/lang/String;>;".to_vec()
+        );
+        assert!(declaration.generic_refusal.is_none());
+    }
+
+    #[test]
+    fn missing_parent_keeps_the_physical_raw_class_header() {
+        let engine = Engine::new();
+        let mut budget = Budget::new(limits());
+        let snapshot = snapshot(&engine, &mut budget, false);
+        let OperationOutcome::Performed(report) =
+            class_source(&engine, &snapshot, &mut budget).unwrap()
+        else {
+            panic!("the physical Child declaration remains reportable")
+        };
+        assert!(
+            report
+                .text
+                .contains("class Child extends dt21parent.Parent {"),
+            "{}",
+            report.text
+        );
+        assert!(report.text.contains("class Signature projection refused"));
+        assert_eq!(report.class.class_bytes.length, CHILD.len() as u64);
+    }
+
+    #[test]
+    fn dependency_budget_stop_does_not_publish_a_partial_generic_header() {
+        let engine = Engine::new();
+        let mut open_budget = Budget::new(limits());
+        let snapshot = snapshot(&engine, &mut open_budget, true);
+        let mut limited = limits();
+        limited.class_headers = 1;
+        let mut budget = Budget::new(limited);
+        let outcome = class_source(&engine, &snapshot, &mut budget).unwrap();
+        let OperationOutcome::Performed(report) = outcome else {
+            panic!("class-source retains the already selected physical declaration")
+        };
+        assert!(
+            report
+                .text
+                .contains("class Child extends dt21parent.Parent {")
+        );
+        assert!(!report.text.contains("Parent<java.lang.String>"));
+        assert!(report.text.contains("class Signature projection refused"));
+        assert!(!matches!(
+            report.execution,
+            ExecutionReport::Complete { .. }
+        ));
+        assert_eq!(report.class.class_bytes.length, CHILD.len() as u64);
+    }
+
+    #[test]
+    fn cancellation_during_parent_proof_does_not_publish_a_generic_header() {
+        let engine = Engine::new();
+        let mut open_budget = Budget::new(limits());
+        let snapshot = snapshot(&engine, &mut open_budget, true);
+        let OperationOutcome::Performed(report) =
+            class_source(&engine, &snapshot, &mut open_budget).unwrap()
+        else {
+            panic!("the complete physical Child declaration should be available")
+        };
+        let mut declaration = report.declaration.unwrap();
+        let raw_header = "public class Child extends dt21parent.Parent";
+        declaration.declaration = raw_header.to_owned();
+        let facts = class_member_facts(CHILD, &mut open_budget).unwrap();
+        let pool = class_constant_pool(CHILD, &open_budget).unwrap();
+        let error = declaration
+            .project_generic_signature(CHILD, &facts.attributes, &pool, &mut open_budget, |_, _| {
+                Err(Error::Cancelled {
+                    reason: "controlled parent-proof stop".to_owned(),
+                })
+            })
+            .unwrap_err();
+        assert!(matches!(error, Error::Cancelled { .. }));
+        assert_eq!(declaration.declaration, raw_header);
+        assert!(declaration.generic_refusal.is_some());
+    }
 }
