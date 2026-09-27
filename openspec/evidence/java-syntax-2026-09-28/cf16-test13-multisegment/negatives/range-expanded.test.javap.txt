@@ -1,0 +1,47 @@
+  public void test(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_0
+         1: invokevirtual #7                  // Method doSomething1:()V
+         4: iload_1
+         5: bipush        -12
+         7: if_icmpne     15
+        10: aload_0
+        11: invokevirtual #12                 // Method doSomething4:()V
+        14: return
+        15: iload_1
+        16: bipush        10
+        18: if_icmple     28
+        21: aload_0
+        22: invokevirtual #15                 // Method doSomething2:()V
+        25: goto          37
+        28: iload_1
+        29: iconst_m1
+        30: if_icmpne     37
+        33: aload_0
+        34: invokevirtual #18                 // Method doSomething3:()V
+        37: aload_0
+        38: invokevirtual #12                 // Method doSomething4:()V
+        41: goto          63
+        44: astore_2
+        45: aload_0
+        46: invokevirtual #23                 // Method logError:()V
+        49: aload_0
+        50: invokevirtual #12                 // Method doSomething4:()V
+        53: goto          63
+        56: astore_3
+        57: aload_0
+        58: invokevirtual #12                 // Method doSomething4:()V
+        61: aload_3
+        62: athrow
+        63: return
+      Exception table:
+         from    to  target type
+             0    10    44   Class java/lang/Exception
+            15    37    44   Class java/lang/Exception
+             0    14    56   any
+            15    37    56   any
+            44    49    56   any
+      LineNumberTable:

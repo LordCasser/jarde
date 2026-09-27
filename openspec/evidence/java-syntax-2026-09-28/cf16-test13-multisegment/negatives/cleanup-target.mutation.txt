@@ -1,0 +1,4 @@
+mutation=cleanup-target
+class=jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls
+test(I)V BCI 11 Methodref #12 doSomething4()V -> #18 doSomething3()V
+class_bytes_changed=1

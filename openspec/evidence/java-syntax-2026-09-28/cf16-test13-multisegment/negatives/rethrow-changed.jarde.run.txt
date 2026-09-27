@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.AssertionError: rethrow-changed expected=do1,throw:AssertionError,finally,/java.lang.NullPointerException actual=/none
+	at jadx.tests.integration.trycatch.NegativeRunner.main(NegativeRunner.java:59)

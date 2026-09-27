@@ -1,0 +1,4 @@
+mutation=branch-bypass
+class=jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls
+test(I)V BCI 7 if_icmpne target 15 -> 63 (return), bypassing branch work and normal cleanup
+class_bytes_changed=1

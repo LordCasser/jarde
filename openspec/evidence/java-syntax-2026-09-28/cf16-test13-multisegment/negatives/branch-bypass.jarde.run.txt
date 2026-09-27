@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.AssertionError: branch-bypass expected=do1,/none actual=/none
+	at jadx.tests.integration.trycatch.NegativeRunner.main(NegativeRunner.java:59)

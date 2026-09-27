@@ -1,0 +1,8 @@
+jarde_source_head=32155897af127badaa495979011d6c0838215400
+jarde_cli=/tmp/cf16-test13-negative-target/debug/jarde-cli
+jarde_cli_version=jarde-cli 0.1.0
+jarde_cli_sha256=65727630057c0ac9377faa707cd6e6bf969b9b58fca030765d0c7ce55166a329
+jadx_head=2fb1b16386941660fda07e9017285aec40fcb37f
+jadx_version=dev
+jadx_launcher_sha256=5d115ed2ecb34b2f96ae80704b966ffa3d9cce33c2de3cdf8d348a8159b116e3
+fixed_baseline_head=dd35384c204f960e4be61b7d47adf3350f96fc71

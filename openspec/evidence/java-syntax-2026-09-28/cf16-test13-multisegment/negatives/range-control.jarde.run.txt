@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.AssertionError: range-control expected=do1,finally,throw-finally,/java.lang.AssertionError actual=/none
+	at jadx.tests.integration.trycatch.NegativeRunner.main(NegativeRunner.java:59)

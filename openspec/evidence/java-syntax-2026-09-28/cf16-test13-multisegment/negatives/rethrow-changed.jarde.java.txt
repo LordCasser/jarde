@@ -1,0 +1,116 @@
+// jarde: presentation of `jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package jadx.tests.integration.trycatch;
+
+public class TestTryCatchFinally13$TestCls extends java.lang.Object {
+    public static final java.lang.StringBuilder TRACE;
+
+    public static int THROW_AT;
+
+    public static int THROW_ERROR_AT;
+
+    public static boolean THROW_FINALLY_ONCE;
+
+    public static java.lang.RuntimeException LAST_FAILURE;
+
+    public TestTryCatchFinally13$TestCls() {
+        // @method <init>()V
+        // @declaration a constructor of `jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void test(int i) {
+        // @method test(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            // @bytecode 0 1 4 5 7
+            // block at BCI 0 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+        } catch (java.lang.Exception ex) {
+            // @bytecode 44 45 46 49 50 53
+            // block at BCI 44 leaves through exception handler 4: a handler's shape is not part of the recoverable subset
+        }
+        // @bytecode 10 11 14 15 16 18 21 22 25 28 29 30 33 34 37 38 41 56 57 58 61 62 63
+        // 8 live block(s) are reachable only through edges the normal-flow view leaves out: [10, 15, 56, 21, 28, 63, 37, 33]
+    }
+
+    void logError() {
+        // @method logError()V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.TRACE.append("catch:").append((java.lang.String) jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.LAST_FAILURE.getClass().getSimpleName()).append(',');
+        return;
+    }
+
+    void doSomething1() {
+        // @method doSomething1()V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        invoke(1, "do1");
+        return;
+    }
+
+    void doSomething2() {
+        // @method doSomething2()V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        invoke(2, "do2");
+        return;
+    }
+
+    void doSomething3() {
+        // @method doSomething3()V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        invoke(3, "do3");
+        return;
+    }
+
+    void doSomething4() {
+        // @method doSomething4()V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.TRACE.append("finally,");
+        if (jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.THROW_FINALLY_ONCE) {
+            jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.THROW_FINALLY_ONCE = false;
+            jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.TRACE.append("throw-finally,");
+            throw new java.lang.AssertionError((java.lang.Object) "injected cleanup failure");
+        } else {
+            return;
+        }
+    }
+
+    private static void invoke(int site, java.lang.String name) {
+        // @method invoke(ILjava/lang/String;)V
+        // @declaration a static method of `jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.TRACE.append(name).append(',');
+        if (jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.THROW_ERROR_AT == site) {
+            jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.TRACE.append("throw:AssertionError,");
+            throw new java.lang.AssertionError((java.lang.Object) "injected original failure");
+        } else if (jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.THROW_AT == site) {
+            if (site == 1) {
+                jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.LAST_FAILURE = new java.lang.IllegalArgumentException();
+            } else if (site == 2) {
+                jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.LAST_FAILURE = new java.lang.IllegalStateException();
+    } else {
+                jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.LAST_FAILURE = new java.lang.UnsupportedOperationException();
+    }
+    } else {
+            return;
+    }
+        // @bytecode 92 95 97 100 103 106 109 112 114 117 118 121
+        // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [92]
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        TRACE = new java.lang.StringBuilder();
+        jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.THROW_AT = -1;
+        jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls.THROW_ERROR_AT = -1;
+    }
+}

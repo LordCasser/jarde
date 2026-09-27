@@ -1,0 +1,1 @@
+branch-bypass trace=do1, thrown=none finallyCount=0

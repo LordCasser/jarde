@@ -1,0 +1,1 @@
+range-expanded trace=do1,finally,throw-finally,finally, thrown=java.lang.AssertionError finallyCount=2

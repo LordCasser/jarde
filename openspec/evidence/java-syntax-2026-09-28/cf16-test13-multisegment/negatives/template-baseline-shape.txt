@@ -1,0 +1,2 @@
+template_vs_frozen_probe_bci_and_opcode_equal=true
+template_vs_frozen_probe_exception_table_equal=true

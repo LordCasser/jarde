@@ -1,0 +1,1 @@
+rethrow-changed trace=do1,throw:AssertionError,finally, thrown=java.lang.NullPointerException finallyCount=1

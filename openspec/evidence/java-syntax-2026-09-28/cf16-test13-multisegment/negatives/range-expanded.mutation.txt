@@ -1,0 +1,4 @@
+mutation=range-expanded
+class=jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls
+exception table row 2: catch-all [0,10)->56 -> [0,14)->56; newly covers early cleanup BCIs 10..13
+class_bytes_changed=1

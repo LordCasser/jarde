@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.AssertionError: cleanup-target expected=do1,do3,/none actual=/none
+	at jadx.tests.integration.trycatch.NegativeRunner.main(NegativeRunner.java:59)

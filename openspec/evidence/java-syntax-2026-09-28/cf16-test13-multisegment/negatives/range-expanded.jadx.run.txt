@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.AssertionError: range-expanded expected=do1,finally,throw-finally,finally,/java.lang.AssertionError actual=do1,finally,throw-finally,/java.lang.AssertionError
+	at jadx.tests.integration.trycatch.NegativeRunner.main(NegativeRunner.java:59)

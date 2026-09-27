@@ -1,0 +1,1 @@
+range-control trace=do1,finally,throw-finally, thrown=java.lang.AssertionError finallyCount=1

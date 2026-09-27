@@ -1,0 +1,1 @@
+cleanup-target trace=do1,do3, thrown=none finallyCount=0

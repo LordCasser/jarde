@@ -1,0 +1,4 @@
+mutation=rethrow-changed
+class=jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls
+test(I)V BCI 61 aload_3 (original Throwable) -> aconst_null; BCI 62 athrow now completes with NullPointerException
+class_bytes_changed=1
