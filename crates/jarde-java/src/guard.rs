@@ -208,6 +208,18 @@ pub enum Shape {
         catch_cleanup: (u32, u32),
         completion: SharedFinallyCompletion,
     },
+    /// The one five-row, two-segment, four-copy Java 8 finally certificate.
+    SegmentedFinally {
+        rows: [u32; 5],
+        segments: [(u32, u32); 2],
+        catch_body: (u32, u32),
+        catch_handler: CanonicalBlockId,
+        catch_type: u16,
+        catch_parameter: u16,
+        cleanup: [(u32, u32); 4],
+        early_return: u32,
+        transfers: [u32; 2],
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -290,7 +302,9 @@ impl Plan {
         match self.shape {
             Shape::Resources { .. } => &TWR,
             Shape::Monitor { .. } | Shape::MonitorBranches { .. } => &MONITOR,
-            Shape::Finally { .. } | Shape::SharedFinally { .. } => &FINALLY,
+            Shape::Finally { .. }
+            | Shape::SharedFinally { .. }
+            | Shape::SegmentedFinally { .. } => &FINALLY,
         }
     }
 }
@@ -3359,6 +3373,351 @@ fn prove_shared_finally(
     }))
 }
 
+/// Four copies of the same instance call, each with a fresh, uniquely consumed receiver from
+/// the method's entry local. The member is compared as a resolved operation, never by its name.
+fn segmented_cleanup_copies(
+    facts: &mut Facts<'_>,
+    starts: [u32; 4],
+) -> Result<Option<[(u32, u32); 4]>, StopReason> {
+    let mut spans = [(0, 0); 4];
+    let mut member: Option<Operation> = None;
+    for (index, start) in starts.into_iter().enumerate() {
+        let Some(invoke) = facts.next_bci(start) else {
+            return Ok(None);
+        };
+        facts.charge(start)?;
+        facts.charge(invoke)?;
+        let (Some(load), Some(call)) = (facts.step(start), facts.step(invoke)) else {
+            return Ok(None);
+        };
+        let Some(Operation::Invoke(target)) = facts.op(invoke) else {
+            return Ok(None);
+        };
+        if facts.op(start) != Some(&Operation::Load { slot: 0 })
+            || load.instruction.opcode() != 0x2a
+            || target.kind() != InvokeKind::Virtual
+            || target.descriptor() != "()V"
+            || member
+                .as_ref()
+                .is_some_and(|prior| prior != facts.op(invoke).unwrap())
+            || load.instruction.reads().len() != 1
+            || !matches!(
+                facts
+                    .ssa
+                    .value(facts.resolve(load.instruction.reads()[0].1))
+                    .def(),
+                Definition::Entry {
+                    slot: Slot::Local(0),
+                    ..
+                }
+            )
+            || load.instruction.writes().len() != 1
+            || !matches!(load.instruction.writes()[0].0, Slot::Stack(_))
+            || stack_operands(call.instruction).len() != 1
+            || !facts.same(
+                load.instruction.writes()[0].1,
+                stack_operands(call.instruction)[0].1,
+            )
+            || call
+                .instruction
+                .writes()
+                .iter()
+                .any(|(slot, _)| matches!(slot, Slot::Stack(_)))
+        {
+            return Ok(None);
+        }
+        let mut consumers = 0;
+        for bci in facts.order.clone() {
+            facts.charge(bci)?;
+            if let Some(step) = facts.step(bci) {
+                consumers += stack_operands(step.instruction)
+                    .iter()
+                    .filter(|(_, read)| facts.same(*read, load.instruction.writes()[0].1))
+                    .count();
+            }
+        }
+        if consumers != 1 {
+            return Ok(None);
+        }
+        member = facts.op(invoke).cloned();
+        spans[index] = (start, facts.span_end(invoke));
+    }
+    Ok(Some(spans))
+}
+
+/// Exactly two named segments, two matching catch-all segments and one catch-body row.
+/// No caller can combine this with a three-row certificate and claim the shared handler twice.
+fn prove_segmented_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [named_first, named_second, any_first, any_second, catch_any] = facts.handlers else {
+        return Ok(None);
+    };
+    let rows = [named_first, named_second, any_first, any_second, catch_any];
+    if rows
+        .windows(2)
+        .any(|pair| pair[0].ordinal + 1 != pair[1].ordinal)
+        || named_first.catch_type_index.is_none()
+        || named_second.catch_type_index != named_first.catch_type_index
+        || rows[2..].iter().any(|row| row.catch_type_index.is_some())
+        || named_first.handler_bci != named_second.handler_bci
+        || any_first.handler_bci != any_second.handler_bci
+        || any_first.handler_bci != catch_any.handler_bci
+        || (named_first.start_bci, named_first.end_bci) != (any_first.start_bci, any_first.end_bci)
+        || (named_second.start_bci, named_second.end_bci)
+            != (any_second.start_bci, any_second.end_bci)
+        || !(current.bci() == named_first.start_bci
+            && named_first.start_bci < named_first.end_bci
+            && named_first.end_bci < named_second.start_bci
+            && named_second.start_bci < named_second.end_bci
+            && named_second.end_bci < named_first.handler_bci
+            && named_first.handler_bci == catch_any.start_bci
+            && catch_any.start_bci < catch_any.end_bci
+            && catch_any.end_bci < any_first.handler_bci)
+        || !facts
+            .in_block(current)
+            .iter()
+            .any(|instruction| instruction.bci() == named_first.start_bci)
+    {
+        return Ok(None);
+    }
+    let segments = [
+        (named_first.start_bci, named_first.end_bci),
+        (named_second.start_bci, named_second.end_bci),
+    ];
+    let early_start = segments[0].1;
+    let normal_start = segments[1].1;
+    let catch_start = catch_any.end_bci;
+    let handler = any_first.handler_bci;
+    let Some(exceptional_start) = facts.next_bci(handler) else {
+        return Ok(None);
+    };
+    let Some(cleanup) = segmented_cleanup_copies(
+        facts,
+        [early_start, normal_start, catch_start, exceptional_start],
+    )?
+    else {
+        return Ok(None);
+    };
+    let [early_return, normal_transfer, catch_transfer, load] = cleanup.map(|span| span.1);
+    let Some(rethrow) = facts.next_bci(load) else {
+        return Ok(None);
+    };
+    let end = facts.span_end(rethrow);
+    if facts.op(early_return) != Some(&Operation::Return)
+        || facts.op(normal_transfer) != Some(&Operation::Transfer)
+        || facts.op(catch_transfer) != Some(&Operation::Transfer)
+        || facts.op(rethrow) != Some(&Operation::Throw)
+        || facts.next_bci(early_return) != Some(segments[1].0)
+        || facts.next_bci(normal_transfer) != Some(named_first.handler_bci)
+        || facts.next_bci(catch_transfer) != Some(handler)
+        || !handler_binding(facts, named_first.handler_bci)
+        || !handler_binding(facts, handler)
+    {
+        return Ok(None);
+    }
+    let (
+        Some(named_block),
+        Some(handler_block),
+        Some(early_block),
+        Some(normal_block),
+        Some(catch_block),
+    ) = (
+        facts.row_handler(named_first),
+        facts.row_handler(any_first),
+        facts.block_of(early_start).cloned(),
+        facts.block_of(normal_start).cloned(),
+        facts.block_of(catch_start).cloned(),
+    )
+    else {
+        return Ok(None);
+    };
+    if named_block.bci() != named_first.handler_bci
+        || handler_block.bci() != handler
+        || facts.row_handler(named_second) != Some(named_block.clone())
+        || facts.row_handler(any_second) != Some(handler_block.clone())
+        || facts.row_handler(catch_any) != Some(handler_block.clone())
+        || facts.block_of(early_return) != Some(&early_block)
+        || early_block.bci() != early_start
+        || normal_block.bci() != normal_start
+        || facts.block_of(normal_transfer) != Some(&normal_block)
+        || facts.block_of(catch_transfer) != Some(&catch_block)
+        || facts.block_of(rethrow) != Some(&handler_block)
+        || !facts.view.successor_ids(&early_block).is_empty()
+        || !facts.view.successor_ids(&handler_block).is_empty()
+        || facts
+            .step(early_return)
+            .is_none_or(|step| !step.instruction.reads().is_empty())
+    {
+        return Ok(None);
+    }
+    let (normal_successors, catch_successors) = (
+        facts.view.successor_ids(&normal_block),
+        facts.view.successor_ids(&catch_block),
+    );
+    let ([join], [catch_join]) = (normal_successors.as_slice(), catch_successors.as_slice()) else {
+        return Ok(None);
+    };
+    if join != catch_join
+        || join.bci() != end
+        || facts.block_at(end).as_ref() != Some(join)
+        || facts
+            .view
+            .index_of(join)
+            .is_none_or(|index| facts.view.predecessors(index).len() != 2)
+        || facts.view.index_of(&early_block).is_none_or(|index| {
+            facts.view.predecessors(index).len() != 1
+                || !facts.blocks_in(segments[0]).iter().any(|block| {
+                    facts
+                        .view
+                        .index_of(block)
+                        .is_some_and(|from| facts.view.predecessors(index).contains(&from))
+                })
+        })
+    {
+        return Ok(None);
+    }
+    let (Some(store), Some(loaded), Some(thrown)) =
+        (facts.step(handler), facts.step(load), facts.step(rethrow))
+    else {
+        return Ok(None);
+    };
+    let (Some(Operation::Store { slot: saved }), Some(Operation::Load { slot: loaded_slot })) =
+        (facts.op(handler), facts.op(load))
+    else {
+        return Ok(None);
+    };
+    if saved != loaded_slot
+        || !store.instruction.writes().iter().any(|(_, written)| {
+            loaded
+                .instruction
+                .reads()
+                .iter()
+                .any(|(_, read)| facts.same(*written, *read))
+        })
+        || !loaded.instruction.writes().iter().any(|(slot, written)| {
+            matches!(slot, Slot::Stack(_))
+                && stack_operands(thrown.instruction)
+                    .iter()
+                    .any(|(_, read)| facts.same(*written, *read))
+        })
+        || stack_operands(thrown.instruction).len() != 1
+    {
+        return Ok(None);
+    }
+    for bci in facts.bcis((current.bci(), end)) {
+        facts.charge(bci)?;
+        let expected: &[u32] = if segments[0].0 <= bci && bci < segments[0].1 {
+            &[named_first.ordinal, any_first.ordinal]
+        } else if segments[1].0 <= bci && bci < segments[1].1 {
+            &[named_second.ordinal, any_second.ordinal]
+        } else if catch_any.start_bci <= bci && bci < catch_any.end_bci {
+            &[catch_any.ordinal]
+        } else {
+            &[]
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+            || (!expected.is_empty() && matches!(facts.op(bci), Some(Operation::Return)))
+        {
+            return Ok(None);
+        }
+    }
+    let first = facts.blocks_in(segments[0]);
+    let second = facts.blocks_in(segments[1]);
+    let caught = facts.blocks_in((catch_any.start_bci, catch_any.end_bci));
+    let protected = first.iter().chain(&second).collect::<BTreeSet<_>>();
+    let catch = caught.into_iter().collect::<BTreeSet<_>>();
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        let from_first = first.contains(edge.from());
+        let from_second = second.contains(edge.from());
+        let from_catch = catch.contains(edge.from());
+        let valid = match edge.kind() {
+            CanonicalEdgeKind::Exception { handler_ordinal } if from_first => {
+                (handler_ordinal == named_first.ordinal && edge.to() == &named_block)
+                    || (handler_ordinal == any_first.ordinal && edge.to() == &handler_block)
+            }
+            CanonicalEdgeKind::Exception { handler_ordinal } if from_second => {
+                (handler_ordinal == named_second.ordinal && edge.to() == &named_block)
+                    || (handler_ordinal == any_second.ordinal && edge.to() == &handler_block)
+            }
+            CanonicalEdgeKind::Exception { handler_ordinal } if from_catch => {
+                handler_ordinal == catch_any.ordinal && edge.to() == &handler_block
+            }
+            CanonicalEdgeKind::Exception { .. } => {
+                edge.to() != &named_block
+                    && edge.to() != &handler_block
+                    && !protected.contains(&edge.to())
+                    && !catch.contains(edge.to())
+                    && ![&early_block, &normal_block, &catch_block, &handler_block]
+                        .contains(&edge.from())
+            }
+            CanonicalEdgeKind::Normal
+                if edge.from() == &normal_block || edge.from() == &catch_block =>
+            {
+                edge.to() == join
+            }
+            CanonicalEdgeKind::Normal if from_first => {
+                first.contains(edge.to()) || edge.to() == &early_block || second.contains(edge.to())
+            }
+            CanonicalEdgeKind::Normal if from_second => {
+                second.contains(edge.to()) || edge.to() == &normal_block
+            }
+            CanonicalEdgeKind::Normal if from_catch => {
+                catch.contains(edge.to()) || edge.to() == &catch_block
+            }
+            CanonicalEdgeKind::Normal => {
+                edge.to() != &named_block
+                    && edge.to() != &handler_block
+                    && edge.to() != &early_block
+                    && edge.to() != &normal_block
+                    && edge.to() != &catch_block
+                    && !protected.contains(&edge.to())
+                    && !catch.contains(edge.to())
+            }
+            CanonicalEdgeKind::Call { .. } => false,
+            CanonicalEdgeKind::Return { .. } => edge.from() == &early_block,
+        };
+        if !valid {
+            return Ok(None);
+        }
+    }
+    let mut owned = facts.blocks_in((current.bci(), end));
+    owned.sort_by_key(CanonicalBlockId::bci);
+    owned.dedup();
+    let origins = facts.bcis((current.bci(), end));
+    let Some(Operation::Store {
+        slot: catch_parameter,
+    }) = facts.op(named_first.handler_bci)
+    else {
+        return Ok(None);
+    };
+    Ok(Some(Plan {
+        shape: Shape::SegmentedFinally {
+            rows: rows.map(|row| row.ordinal),
+            segments,
+            catch_body: (catch_any.start_bci, catch_any.end_bci),
+            catch_handler: named_block,
+            catch_type: named_first.catch_type_index.unwrap(),
+            catch_parameter: *catch_parameter,
+            cleanup,
+            early_return,
+            transfers: [normal_transfer, catch_transfer],
+        },
+        lead: (current.bci(), segments[0].0),
+        body: (segments[0].0, segments[1].1),
+        owned,
+        join: Some(join.clone()),
+        facts: origins,
+    }))
+}
+
 /// The named-catch entry asks only this private certificate before the ordinary catch reader.
 /// An unsuccessful probe leaves that reader's existing decision unchanged.
 #[allow(clippy::too_many_arguments)]
@@ -3372,12 +3731,15 @@ pub(crate) fn shared_finally_candidate(
     current: &CanonicalBlockId,
     budget: &mut Budget,
 ) -> Result<Option<Plan>, StopReason> {
-    if !FINALLY.admits(profile) || !matches!(handlers.len(), 2 | 3) {
+    if !FINALLY.admits(profile) || !matches!(handlers.len(), 2 | 3 | 5) {
         return Ok(None);
     }
     let sites = Sites::empty();
     let mut facts = Facts::new(canonical, view, ssa, ops, handlers, &sites, budget);
     facts.charge(current.bci())?;
+    if handlers.len() == 5 {
+        return prove_segmented_finally(&mut facts, current);
+    }
     if handlers.len() == 2 {
         return prove_nested_join_finally(&mut facts, current);
     }
@@ -3634,6 +3996,80 @@ mod finally_copy_tests {
     const NESTED_TEST_CLS: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class"
     );
+    const SEGMENTED_TEST_CLS: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/TestTryCatchFinally13$TestCls.probe.class"
+    );
+    const SEGMENTED_NEGATIVE_TARGET: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/cleanup-target.class"
+    );
+    const SEGMENTED_NEGATIVE_BRANCH: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/branch-bypass.class"
+    );
+    const SEGMENTED_NEGATIVE_RANGE: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/range-expanded.class"
+    );
+    const SEGMENTED_NEGATIVE_THROW: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/negatives/rethrow-changed.class"
+    );
+    const SEGMENTED_EXTERNAL_ENTRY: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test13-multisegment/acceptance/external-entry.class"
+    );
+
+    #[test]
+    fn segmented_test13_certificate_and_verifier_valid_neighbors() {
+        let probe = |class, edit_rows: fn(&mut Vec<ExceptionHandlerFact>), stop| {
+            shared_probe_method(class, b"test", b"(I)V", edit_rows, stop)
+        };
+        let plan = probe(SEGMENTED_TEST_CLS, |_| {}, None)
+            .unwrap()
+            .expect("the five-row certificate is complete");
+        let Shape::SegmentedFinally {
+            rows,
+            segments,
+            catch_body,
+            cleanup,
+            early_return,
+            transfers,
+            ..
+        } = plan.shape()
+        else {
+            panic!("segmented finally shape");
+        };
+        assert_eq!(*rows, [0, 1, 2, 3, 4]);
+        assert_eq!(*segments, [(0, 10), (15, 37)]);
+        assert_eq!(*catch_body, (44, 49));
+        assert_eq!(*cleanup, [(10, 14), (37, 41), (49, 53), (57, 61)]);
+        assert_eq!(*early_return, 14);
+        assert_eq!(*transfers, [41, 53]);
+        assert_eq!(plan.join().map(CanonicalBlockId::bci), Some(63));
+        assert!(!plan.owned().iter().any(|block| block.bci() == 63));
+        for class in [
+            SEGMENTED_NEGATIVE_TARGET,
+            SEGMENTED_NEGATIVE_BRANCH,
+            SEGMENTED_NEGATIVE_RANGE,
+            SEGMENTED_NEGATIVE_THROW,
+            SEGMENTED_EXTERNAL_ENTRY,
+        ] {
+            assert!(probe(class, |_| {}, None).unwrap().is_none());
+        }
+        for edit in [
+            (|rows: &mut Vec<ExceptionHandlerFact>| {
+                rows.pop();
+            }) as fn(&mut Vec<ExceptionHandlerFact>),
+            |rows| rows.swap(0, 1),
+            |rows| rows[3].end_bci = 38,
+        ] {
+            assert!(probe(SEGMENTED_TEST_CLS, edit, None).unwrap().is_none());
+        }
+        assert!(matches!(
+            probe(SEGMENTED_TEST_CLS, |_| {}, Some("budget")),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            probe(SEGMENTED_TEST_CLS, |_| {}, Some("cancel")),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
 
     #[test]
     fn nested_test1_and_test2_have_exclusive_joined_certificates() {

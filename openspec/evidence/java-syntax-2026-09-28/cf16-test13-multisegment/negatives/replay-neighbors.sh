@@ -137,9 +137,17 @@ for kind in cleanup-target branch-bypass range-expanded range-control rethrow-ch
       jarde_run=$?
     fi
   fi
-  if [[ "$verify_status" != 0 || "$jarde_incomplete_marker" != true ]]; then
+  if [[ "$kind" == range-control && "${JARDE_RANGE_CONTROL_RECOVERED:-false}" == true ]]; then
+    if [[ "$verify_status" != 0 || "$jarde_incomplete_marker" != false ]] || ! grep -Fq 'finally {' "$OUT/$kind.jarde.java.txt"; then
+      echo "range-control failed verifier-run or its recovered finally is incomplete" >&2
+      exit 5
+    fi
+  elif [[ "$verify_status" != 0 || "$jarde_incomplete_marker" != true ]] || grep -Fq 'finally {' "$OUT/$kind.jarde.java.txt"; then
     echo "$kind failed verifier-run or lacks a Jarde incompleteness marker" >&2
     exit 5
+  fi
+  if [[ "$kind" == range-expanded ]]; then
+    cmp "$OUT/range-expanded.original.run.txt" "$HERE/range-expanded.original.run.txt" || exit 5
   fi
   printf '%s_verifier_runner_exit=%s\n%s_jadx_decompile_exit=%s\n%s_jadx_javac_release8_exit=%s\n%s_jadx_runner_exit=%s\n%s_jarde_source_exit=%s\n%s_jarde_full_method_refusal=%s\n%s_jarde_incomplete_method_marker=%s\n%s_jarde_javac_release8_exit=%s\n%s_jarde_runner_exit=%s\n' \
     "$kind" "$verify_status" "$kind" "$jadx_status" "$kind" "$jadx_compile" "$kind" "$jadx_run" "$kind" "$jarde_status" "$kind" "$jarde_full_refusal" "$kind" "$jarde_incomplete_marker" "$kind" "$jarde_compile" "$kind" "$jarde_run" >> "$OUT/results.txt"
