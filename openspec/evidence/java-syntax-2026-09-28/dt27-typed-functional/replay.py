@@ -109,6 +109,9 @@ def main():
         source = work / "original-source"
         run(["javac", "--release", "8", "-g", "-d", source,
              HERE / "TypedRefs.java", HERE / "Runner.java"])
+        assert (source / "dt27/TypedRefs.class").read_bytes() == frozen, (
+            "recompiled TypedRefs.class differs from the frozen baseline"
+        )
         assert run(["java", "-Xverify:all", "-cp", source, "dt27.Runner"]) == EXPECTED
 
         jadx_out = work / "jadx"
@@ -157,6 +160,7 @@ def main():
                 member = method(negative, name)
                 assert "generic Signature projection refused" in member["text"], (label, name)
                 assert "java.util.function.Function<java.lang.String, java.lang.Integer>" not in member["declaration"]
+                assert "::" not in member["text"], (label, name)
             (destination / (label + "-runtime.txt")).write_text(actual)
 
         forged_dir = work / "forged"
@@ -192,6 +196,7 @@ def main():
         assert stopped.returncode == 2 and not stopped_output.exists(), stopped.stderr
         assert "budget_exceeded" in stopped.stderr
     print("original=JADX=Jarde Java8 verifier/runtime/reflection: pass")
+    print("recompiled TypedRefs.class equals frozen bytes: pass")
     print(FROZEN_BEFORE, end="")
     print("direct sites: parse@0/#13, bound@1/#17, supplier@1/#20")
     print("forged parameter/result signatures: verifier valid, generic projection refused")

@@ -469,6 +469,9 @@ pub struct ClassSourceMethod {
     /// that one marker on a cloned writer record only after its separate proof succeeds.
     #[serde(skip)]
     pub(crate) generic_signature_refused: bool,
+    /// The staged generic declaration and body were charged and published together.
+    #[serde(skip)]
+    pub(crate) generic_signature_projected: bool,
     /// Closed source-tail shape parsed from this physical constructor's Signature.
     #[serde(skip)]
     pub(crate) enum_constructor_source_tail: EnumConstructorSourceTail,
@@ -6621,6 +6624,7 @@ impl ClassSourceMethod {
         self.text = text;
         self.markers = markers;
         self.generic_signature_refused = false;
+        self.generic_signature_projected = true;
         Ok(())
     }
 
@@ -6645,13 +6649,7 @@ impl ClassSourceMethod {
     /// class-source Signature transaction failed (including an output-budget stop). Retain the
     /// physical report for inspection, but publish only an explicit incomplete-source marker.
     pub(crate) fn withhold_unprojected_functional_body(&mut self) {
-        if self
-            .markers
-            .iter()
-            .any(|marker| marker.contains("generic Signature") && marker.contains("projected"))
-            || !matches!(&self.outcome, ClassSourceOutcome::Recovered { report, .. }
-                if report.text.contains("::"))
-        {
+        if self.generic_signature_projected {
             return;
         }
         let marker = format!(
@@ -6875,6 +6873,7 @@ impl ClassSourceMethod {
             outcome: ClassSourceOutcome::NoBody,
             same_run_generic_return: None,
             generic_signature_refused: false,
+            generic_signature_projected: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
@@ -6896,6 +6895,7 @@ impl ClassSourceMethod {
             outcome: ClassSourceOutcome::Unspelled,
             same_run_generic_return: None,
             generic_signature_refused: false,
+            generic_signature_projected: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
@@ -6934,6 +6934,7 @@ impl ClassSourceMethod {
             },
             same_run_generic_return: None,
             generic_signature_refused: false,
+            generic_signature_projected: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
@@ -6976,6 +6977,7 @@ impl ClassSourceMethod {
             outcome: ClassSourceOutcome::Recovered { report, analysis },
             same_run_generic_return,
             generic_signature_refused: false,
+            generic_signature_projected: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         }
@@ -8658,6 +8660,7 @@ mod tests {
             outcome: ClassSourceOutcome::NoBody,
             same_run_generic_return: None,
             generic_signature_refused: false,
+            generic_signature_projected: false,
             enum_constructor_source_tail: EnumConstructorSourceTail::Unrecognized,
             enum_constructor_signature_erasure_refused: false,
         };
@@ -8754,6 +8757,34 @@ mod tests {
         assert!(matches!(error, Error::BudgetExceeded { .. }));
         assert_eq!(record, before);
         assert!(!record.text.contains("<T extends"));
+        assert!(!record.generic_signature_projected);
+    }
+
+    #[test]
+    fn functional_withholding_uses_projected_state_not_markers_or_source_text() {
+        let (mut failed, _, _, _, _) = generic_void_probe();
+        failed
+            .markers
+            .push("// jarde: generic Signature projected".to_owned());
+        failed.text = "    public java.util.function.Function raw() { return value; }\n".to_owned();
+        failed.withhold_unprojected_functional_body();
+        assert!(failed.text.contains("typed functional source"));
+        assert!(!failed.text.contains("Function raw"));
+
+        let (mut projected, _, _, _, _) = generic_void_probe();
+        projected.no_body_kind = Some(NoBodyKind::Abstract);
+        projected
+            .project_generic(
+                "public <T extends probe.Bound> void set(T arg1, boolean arg2)".to_owned(),
+                b"<T:Lprobe/Bound;>(TT;Z)V",
+                "same-run AST/SSA void-body proof",
+                &mut Budget::new(unlimited_annotation_test_limits()),
+            )
+            .expect("complete projection fits the budget");
+        assert!(projected.generic_signature_projected);
+        let text = projected.text.clone();
+        projected.withhold_unprojected_functional_body();
+        assert_eq!(projected.text, text);
     }
 
     #[test]
