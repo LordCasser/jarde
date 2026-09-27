@@ -1742,6 +1742,33 @@ impl Engine {
                 }
             }
         }
+        if matches!(report.execution, ExecutionReport::Complete { .. }) {
+            if matches!(
+                report.member_family,
+                class_source::ClassSourceMemberFamily::Absent
+            ) && matches!(
+                report.nested_enum_family,
+                class_source::ClassSourceNestedEnumFamily::Absent
+            ) && matches!(
+                report.nested_annotation_family,
+                class_source::ClassSourceNestedAnnotationFamily::Absent
+            ) && matches!(
+                report.anonymous_interface_projection,
+                class_source::ClassSourceAnonymousInterfaceProjection::Absent
+            ) {
+                if let Err(error) = project_class_source_integer_constant_names(
+                    &mut report,
+                    &_root_method_asts,
+                    budget,
+                ) {
+                    merge_execution(&mut report.execution, stop_execution(&error, budget));
+                    report.diagnostics.push(stop_diagnostic(
+                        &error,
+                        Some(definition_provenance(&report.class)),
+                    ));
+                }
+            }
+        }
         report.usage = budget.usage();
         report.execution = with_usage(report.execution, budget.usage());
         Ok(OperationOutcome::Performed(report))
@@ -4669,6 +4696,8 @@ impl Engine {
                     stages,
                     fields: Vec::new(),
                     methods: Vec::new(),
+                    integer_constant_projections: Vec::new(),
+                    integer_constant_candidates: Vec::new(),
                     direct_override_proofs: Vec::new(),
                     member_family: class_source::ClassSourceMemberFamily::Absent,
                     nested_enum_family: class_source::ClassSourceNestedEnumFamily::Absent,
@@ -5048,6 +5077,7 @@ impl Engine {
         // declarations in this task.
         let mut fields = Vec::new();
         let mut constant_value_spellable = Vec::new();
+        let mut integer_constant_candidates = Vec::new();
         let mut ended = class_signature_stop;
         for (index, field) in read.facts.fields.iter().enumerate() {
             if ended {
@@ -5121,7 +5151,48 @@ impl Engine {
                 ended = true;
                 break;
             }
+            if let Some(class_source::MemberDefault::Integer(value)) = constant
+                && source_field.declaration.is_some()
+                && source_field.item.access_flags & (0x0008 | 0x0010) == (0x0008 | 0x0010)
+                && field.descriptor.raw().0 == b"I"
+                && field
+                    .attributes
+                    .iter()
+                    .filter(|attribute| attribute.name.raw().0 == b"ConstantValue")
+                    .count()
+                    == 1
+                && let Ok(name) = std::str::from_utf8(&source_field.item.name.raw().0)
+                && jarde_java::is_java_identifier(name)
+            {
+                integer_constant_candidates.push(class_source::ProvedIntegerConstant {
+                    field: source_field.item.clone(),
+                    name: name.to_owned(),
+                    value,
+                });
+            }
             fields.push(source_field);
+        }
+        if !structure_complete
+            || ended
+            || u64::try_from(fields.len()).ok() != Some(read.facts.field_count)
+        {
+            integer_constant_candidates.clear();
+        } else {
+            let mut name_counts = std::collections::HashMap::<Vec<u8>, usize>::new();
+            for field in &fields {
+                *name_counts
+                    .entry(field.item.name.raw().0.clone())
+                    .or_default() += 1;
+            }
+            integer_constant_candidates
+                .retain(|candidate| name_counts.get(candidate.name.as_bytes()) == Some(&1));
+            let counts: std::collections::HashMap<i32, usize> = integer_constant_candidates
+                .iter()
+                .fold(std::collections::HashMap::new(), |mut counts, candidate| {
+                    *counts.entry(candidate.value).or_default() += 1;
+                    counts
+                });
+            integer_constant_candidates.retain(|candidate| counts[&candidate.value] == 1);
         }
         for (index, member) in read.facts.methods.iter().enumerate() {
             if ended {
@@ -5313,6 +5384,8 @@ impl Engine {
                                 array_helper_census_needed,
                                 capture_array_helper_use_table: array_helper_use_runs.is_empty(),
                                 capture_anonymous_child_asts,
+                                capture_integer_constant_asts: !integer_constant_candidates
+                                    .is_empty(),
                                 static_member_target: static_target.as_ref(),
                             },
                             budget,
@@ -7016,6 +7089,8 @@ impl Engine {
                 stages,
                 fields,
                 methods,
+                integer_constant_projections: Vec::new(),
+                integer_constant_candidates,
                 direct_override_proofs: Vec::new(),
                 member_family: class_source::ClassSourceMemberFamily::Absent,
                 nested_enum_family: class_source::ClassSourceNestedEnumFamily::Absent,
@@ -7959,6 +8034,7 @@ fn validate_initializer_expression(
                 state.has_nonconstant_shape = true;
             }
             ExprKind::Integer(_)
+            | ExprKind::IntegerConstantName { .. }
             | ExprKind::Boolean(_)
             | ExprKind::Long(_)
             | ExprKind::Float(_)
@@ -9303,6 +9379,150 @@ enum ArrayBootstrapArgument {
     Other,
 }
 
+fn project_class_source_integer_constant_names(
+    report: &mut ClassSourceReport,
+    asts: &[(
+        PhysicalMethodId,
+        jarde_java::report::ClassSourceMethodAst,
+        Option<jarde_java::report::GenericConstructorCandidate>,
+        Option<jarde_java::report::AnonymousAllocationScan>,
+    )],
+    budget: &mut Budget,
+) -> Result<()> {
+    if report.integer_constant_candidates.is_empty()
+        || !matches!(report.execution, ExecutionReport::Complete { .. })
+        || report.methods.iter().any(|method| {
+            matches!(&method.outcome, class_source::ClassSourceOutcome::Recovered { report, .. }
+                if !matches!(report.execution, ExecutionReport::Complete { .. }))
+        })
+    {
+        return Ok(());
+    }
+    let candidates: Vec<_> = report
+        .integer_constant_candidates
+        .iter()
+        .map(|candidate| jarde_java::report::IntegerConstantName {
+            value: candidate.value,
+            name: candidate.name.clone(),
+        })
+        .collect();
+    let mut projected = Vec::new();
+    for method in &report.methods {
+        let class_source::ClassSourceOutcome::Recovered {
+            report: recovery, ..
+        } = &method.outcome
+        else {
+            continue;
+        };
+        if recovery.quality != Quality::Structured
+            || recovery.representation != crate::ir::Representation::Java
+            || recovery.content != RecoveryContent::ContainsStatements
+            || !recovery.fallbacks.is_empty()
+        {
+            continue;
+        }
+        let Some((_, ast, _, _)) = asts
+            .iter()
+            .find(|(identity, _, _, _)| *identity == method.item.identity)
+        else {
+            continue;
+        };
+        let Some((body, uses)) = jarde_java::report::project_class_source_integer_constants(
+            ast,
+            &candidates,
+            method.item.descriptor.raw().0.ends_with(b")I"),
+            budget,
+        )
+        .map_err(|stop| {
+            enum_projection_stop_error(
+                stop,
+                "integer constant name projection",
+                "integer_constant_ir_missing",
+            )
+        })?
+        else {
+            continue;
+        };
+        let Some(text) = method.integer_constant_projection_text(&body) else {
+            continue;
+        };
+        let mut derived = Vec::new();
+        let mut unique = true;
+        for use_site in uses {
+            let prefix = if use_site.case_label {
+                "case "
+            } else {
+                "return "
+            };
+            let suffix = if use_site.case_label { ":" } else { ";" };
+            let needle = format!("{prefix}{}{suffix}", use_site.name);
+            let mut matches = text.match_indices(&needle);
+            let Some((at, _)) = matches.next() else {
+                unique = false;
+                break;
+            };
+            if matches.next().is_some() {
+                unique = false;
+                break;
+            }
+            let start = at + prefix.len();
+            let Some(field) = report
+                .integer_constant_candidates
+                .iter()
+                .find(|candidate| candidate.name == use_site.name)
+            else {
+                unique = false;
+                break;
+            };
+            derived.push(class_source::MemberFamilyDerivedProjection {
+                kind: class_source::MemberFamilyDerivedKind::IntegerConstantName,
+                start,
+                end: start + use_site.name.len(),
+                anchors: vec![
+                    class_source::MemberFamilyPhysicalAnchor::Field {
+                        field: field.field.identity.clone(),
+                        index: field.field.index,
+                    },
+                    class_source::MemberFamilyPhysicalAnchor::MethodPoint {
+                        method: method.item.identity.clone(),
+                        bci: use_site.bci,
+                    },
+                ],
+            });
+        }
+        if unique {
+            projected.push(class_source::MemberFamilyMethodText {
+                index: method.item.index,
+                text,
+                derived,
+            });
+        }
+    }
+    if projected.is_empty() {
+        return Ok(());
+    }
+    let Some((text, derived)) =
+        class_source::source_text_with_method_projections(report, &projected)
+    else {
+        return Ok(());
+    };
+    budget.charge(
+        CountedBudgetDimension::OutputBytes,
+        u64::try_from(text.len()).unwrap_or(u64::MAX),
+    )?;
+    for method in &mut report.methods {
+        if let Some(staged) = projected
+            .iter()
+            .find(|staged| staged.index == method.item.index)
+        {
+            method.text = staged.text.clone();
+        }
+    }
+    report.text = text;
+    report.integer_constant_projections = derived;
+    Ok(())
+}
+
 struct PreparedMemberOptions<'a> {
     prove_generic_return: bool,
     capture_enum_group_code: bool,
@@ -9310,6 +9530,7 @@ struct PreparedMemberOptions<'a> {
     array_helper_census_needed: bool,
     capture_array_helper_use_table: bool,
     capture_anonymous_child_asts: bool,
+    capture_integer_constant_asts: bool,
     static_member_target: Option<&'a jarde_java::report::ProvedStaticMemberTarget>,
 }
 
@@ -9344,6 +9565,12 @@ fn recover_prepared_member(
     } else {
         None
     };
+    let integer_switch_ast = options.capture_integer_constant_asts
+        && analyzed.ir().code().is_some_and(|code| {
+            code.instructions
+                .iter()
+                .any(|instruction| matches!(instruction.opcode, 0xaa | 0xab))
+        });
     if analyzed.ir().code().is_some() {
         // The prepared half of the same demand-path decode (`crate::d0_counts`): one count per
         // member body this presentation really decoded.
@@ -9373,7 +9600,9 @@ fn recover_prepared_member(
         evidence,
         options.prove_generic_return,
         options.capture_enum_constructor_ast,
-        options.capture_anonymous_child_asts || options.array_helper_census_needed,
+        options.capture_anonymous_child_asts
+            || options.array_helper_census_needed
+            || integer_switch_ast,
         budget,
     )?;
     // The constructor AST is an evidence handoff from this exact run. The ordinary method report
@@ -19906,7 +20135,7 @@ mod enum_constant_body_relation_tests {
         )
         .unwrap();
         let compile = Command::new("javac")
-            .args(["--release", "8", "-g:none", "-d"])
+            .args(["--release", "8", "-g", "-parameters", "-d"])
             .arg(&classes)
             .arg(&source)
             .output()
@@ -27165,5 +27394,311 @@ mod direct_generic_superclass_tests {
         assert!(matches!(error, Error::Cancelled { .. }));
         assert_eq!(declaration.declaration, raw_header);
         assert!(declaration.generic_refusal.is_some());
+    }
+}
+
+#[cfg(test)]
+mod integer_constant_name_tests {
+    use super::*;
+    use std::fs;
+    use std::process::Command;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    static NEXT: AtomicU64 = AtomicU64::new(0);
+    const FIXED: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-09-27/cf12-integer-switch/baseline/IntegerSwitchAudit.original.class"
+    );
+
+    fn source(bytes: &[u8], name: &str, budget: &mut Budget) -> ClassSourceReport {
+        let engine = Engine::new();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(bytes.to_vec()), budget)
+            .unwrap();
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::SingleClass,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let OperationOutcome::Performed(report) = engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal(name),
+                    },
+                    environment,
+                },
+                budget,
+            )
+            .unwrap()
+        else {
+            panic!("class must be unique");
+        };
+        report
+    }
+
+    fn compiled(name: &str, text: &str) -> Vec<u8> {
+        let dir = std::env::temp_dir().join(format!(
+            "jarde-cf12-test-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        fs::create_dir_all(&dir).unwrap();
+        let java = dir.join(format!("{name}.java"));
+        fs::write(&java, text).unwrap();
+        let result = Command::new("javac")
+            .args(["--release", "8", "-g", "-parameters", "-d"])
+            .arg(&dir)
+            .arg(&java)
+            .output()
+            .unwrap();
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        let bytes = fs::read(dir.join(format!("{name}.class"))).unwrap();
+        fs::remove_dir_all(dir).unwrap();
+        bytes
+    }
+
+    #[test]
+    fn fixed_switch_names_keep_physical_keys_returns_and_origins() {
+        let report = source(FIXED, "IntegerSwitchAudit", &mut task_budget(&[]).unwrap());
+        assert!(report.text.contains("case LOW:"));
+        assert!(report.text.contains("return HIGH;"));
+        assert!(report.text.contains("case 4:"));
+        assert!(report.text.contains("return 20;"));
+        let method = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"labelConstant")
+            .unwrap();
+        let class_source::ClassSourceOutcome::Recovered {
+            report: physical, ..
+        } = &method.outcome
+        else {
+            panic!()
+        };
+        assert!(physical.text.contains("case 2748:"));
+        assert!(physical.text.contains("return 3294;"));
+        assert_eq!(report.integer_constant_projections.len(), 2);
+        for (entry, name, bci) in [
+            (&report.integer_constant_projections[0], "LOW", 1),
+            (&report.integer_constant_projections[1], "HIGH", 20),
+        ] {
+            assert_eq!(&report.text[entry.start..entry.end], name);
+            assert!(entry.anchors.iter().any(|anchor| matches!(
+                anchor,
+                class_source::MemberFamilyPhysicalAnchor::Field { .. }
+            )));
+            assert!(entry.anchors.iter().any(|anchor| matches!(anchor, class_source::MemberFamilyPhysicalAnchor::MethodPoint { bci: at, .. } if *at == bci)));
+        }
+    }
+
+    #[test]
+    fn duplicate_shadow_wrong_field_and_indirect_return_keep_numeric_text() {
+        let variants = [
+            (
+                "Duplicate",
+                "static final int LOW=2748, OTHER=2748, HIGH=3294; static int f(int x){switch(x){case 2748:return HIGH;default:return 0;}}",
+                false,
+            ),
+            (
+                "Shadow",
+                "static final int LOW=2748, HIGH=3294; static int f(int LOW){switch(LOW){case 2748:return HIGH;default:return 0;}}",
+                false,
+            ),
+            (
+                "ShadowReturn",
+                "static final int LOW=2748, HIGH=3294; static int f(int HIGH,int x){switch(x){case LOW:return 3294;default:return 0;}}",
+                true,
+            ),
+            (
+                "Mutable",
+                "static int LOW=2748; static final int HIGH=3294; static int f(int x){switch(x){case 2748:return HIGH;default:return 0;}}",
+                false,
+            ),
+            (
+                "WideField",
+                "static final long LOW=2748L; static final int HIGH=3294; static int f(int x){switch(x){case 2748:return HIGH;default:return 0;}}",
+                false,
+            ),
+            (
+                "ClinitValue",
+                "static final int LOW; static { LOW=2748; } static final int HIGH=3294; static int f(int x){switch(x){case 2748:return HIGH;default:return 0;}}",
+                false,
+            ),
+            (
+                "Indirect",
+                "static final int LOW=2748, HIGH=3294; static int f(int x){switch(x){case LOW:return HIGH+1;default:return 0;}}",
+                true,
+            ),
+            (
+                "NarrowReturn",
+                "static final int LOW=2748, HIGH=1; static short f(int x){switch(x){case LOW:return HIGH;default:return 0;}}",
+                true,
+            ),
+            (
+                "Character",
+                "static final int LOW=65, HIGH=3294; static int f(char x){switch(x){case LOW:return HIGH;default:return 0;}}",
+                false,
+            ),
+        ];
+        for (name, body, case_named) in variants {
+            let bytes = compiled(name, &format!("class {name} {{{body}}}"));
+            let report = source(&bytes, name, &mut task_budget(&[]).unwrap());
+            assert_eq!(report.text.contains("case LOW:"), case_named, "{name}");
+            assert!(!report.text.contains("return HIGH;"), "{name}");
+            if !case_named {
+                assert!(report.integer_constant_projections.is_empty(), "{name}");
+            }
+        }
+        let mut invalid = compiled(
+            "InvalidField",
+            "class InvalidField { static final int LOW=2748; static int f(int x){switch(x){case 2748:return 1;default:return 0;}} }",
+        );
+        let needle = b"\x01\x00\x03LOW";
+        let positions: Vec<_> = invalid
+            .windows(needle.len())
+            .enumerate()
+            .filter_map(|(at, bytes)| (bytes == needle).then_some(at))
+            .collect();
+        assert_eq!(positions.len(), 1);
+        invalid[positions[0] + 3..positions[0] + 6].copy_from_slice(b"for");
+        let report = source(&invalid, "InvalidField", &mut task_budget(&[]).unwrap());
+        assert!(!report.text.contains("case for:"));
+        assert!(report.integer_constant_projections.is_empty());
+    }
+
+    #[test]
+    fn output_limit_or_cancellation_never_publishes_partial_name_projection() {
+        let mut limited = task_budget(&[]).unwrap().limits().clone();
+        limited.output_bytes = 3500;
+        let report = source(FIXED, "IntegerSwitchAudit", &mut Budget::new(limited));
+        assert!(report.integer_constant_projections.is_empty());
+        assert!(!report.text.contains("case LOW:"));
+        assert!(!matches!(
+            report.execution,
+            ExecutionReport::Complete { .. }
+        ));
+        assert!(
+            report
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.message.contains("OutputBytes") })
+        );
+        assert!(report.methods.iter().any(|method| method.item.name.raw().0 == b"labelConstant"
+            && matches!(&method.outcome, class_source::ClassSourceOutcome::Recovered { report, .. }
+                if report.text.contains("case 2748:"))));
+        let engine = Engine::new();
+        let mut cancelled = task_budget(&[]).unwrap();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(FIXED.to_vec()), &mut cancelled)
+            .unwrap();
+        cancelled.cancellation_token().cancel();
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::SingleClass,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let stopped = engine.class_source(
+            std::slice::from_ref(&snapshot),
+            &ClassSourceRequest {
+                class: ClassRef::Name {
+                    class: ClassNameQuery::internal("IntegerSwitchAudit"),
+                },
+                environment,
+            },
+            &mut cancelled,
+        );
+        match stopped {
+            Ok(OperationOutcome::Performed(report)) => {
+                assert!(report.integer_constant_projections.is_empty())
+            }
+            Ok(OperationOutcome::Incomplete(candidates)) => {
+                assert!(matches!(
+                    candidates.execution,
+                    ExecutionReport::Cancelled { .. }
+                ));
+            }
+            Err(Error::Cancelled { .. }) => {}
+            other => panic!("unexpected cancellation outcome: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn incomplete_field_table_never_proves_an_integer_name() {
+        // Walk only the class-file header to corrupt the field count while preserving its pool.
+        let mut bytes = FIXED.to_vec();
+        let read_u16 = |bytes: &[u8], at: usize| u16::from_be_bytes([bytes[at], bytes[at + 1]]);
+        let pool_count = usize::from(read_u16(&bytes, 8));
+        let mut at = 10;
+        let mut index = 1;
+        while index < pool_count {
+            let tag = bytes[at];
+            at += 1;
+            at += match tag {
+                1 => {
+                    let length = usize::from(read_u16(&bytes, at));
+                    2 + length
+                }
+                3 | 4 | 9 | 10 | 11 | 12 | 17 | 18 => 4,
+                5 | 6 => {
+                    index += 1;
+                    8
+                }
+                7 | 8 | 16 | 19 | 20 => 2,
+                15 => 3,
+                _ => panic!("unexpected constant pool tag {tag}"),
+            };
+            index += 1;
+        }
+        at += 6; // class flags, this_class and super_class
+        let interfaces = usize::from(read_u16(&bytes, at));
+        at += 2 + interfaces * 2;
+        assert_eq!(read_u16(&bytes, at), 2);
+        bytes[at + 1] = 3;
+        let mut budget = task_budget(&[]).unwrap();
+        let facts = class_member_facts(&bytes, &mut budget).unwrap();
+        assert!(facts.stopped_at.is_some() || facts.fields.len() as u64 != facts.field_count);
+        let engine = Engine::new();
+        if let Ok(snapshot) = engine.open(ArtifactInput::bytes(bytes), &mut budget) {
+            let environment = EnvironmentRequest {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+                policy: EnvironmentPolicy::SingleClass,
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                    layout: LayoutMode::Generic,
+                },
+                loader: LoaderId("app".to_owned()),
+            };
+            if let Ok(OperationOutcome::Performed(report)) = engine.class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("IntegerSwitchAudit"),
+                    },
+                    environment,
+                },
+                &mut budget,
+            ) {
+                assert!(report.integer_constant_projections.is_empty());
+            }
+        }
     }
 }

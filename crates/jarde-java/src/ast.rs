@@ -152,6 +152,8 @@ pub enum ExprKind {
     },
     /// An `int`-shaped literal.
     Integer(i64),
+    /// A class-source-only name for an exact same-class integer ConstantValue.
+    IntegerConstantName { name: String, value: i64 },
     /// `true`/`false` — a boolean constant.
     ///
     /// This node exists for the same reason [`ExprKind::Not`] does, read from the other side: a
@@ -517,7 +519,7 @@ impl Expr {
 fn presented_of(kind: &ExprKind) -> Option<Type> {
     match kind {
         ExprKind::LocalAssign { ty, .. } => Some(ty.clone()),
-        ExprKind::Integer(_) => Some(Type::Int),
+        ExprKind::Integer(_) | ExprKind::IntegerConstantName { .. } => Some(Type::Int),
         ExprKind::Long(_) => Some(Type::Long),
         // The leaf's own bits state its type: a float literal is a float, a double literal a
         // double, and the presentation never widens one into the other.
@@ -903,6 +905,7 @@ pub struct SwitchArm {
 pub enum SwitchLabels {
     Enum(Vec<String>),
     String(Vec<String>),
+    Integer(Vec<String>),
 }
 
 /// One statement and the anchors behind its text.
