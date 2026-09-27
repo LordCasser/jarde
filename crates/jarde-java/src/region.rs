@@ -1750,6 +1750,8 @@ struct Frame {
     /// catch and try catch-all are both present in the protected body; the catch body owns its
     /// separate catch-all row.
     own_finally: Option<((u32, (u32, u32)), Option<(u32, (u32, u32))>)>,
+    /// The sole inner named row admitted by a proved two-copy outer finally body.
+    nested_finally_row: Option<u32>,
     /// Other case-entry nodes of a switch arm. They end this arm before the next case claims them.
     case_entries: Option<BTreeSet<usize>>,
     /// The physical normal-flow exit of the loop whose body this frame walks.
@@ -1817,6 +1819,7 @@ impl Frame {
             allow_own_loop_entry: false,
             own_try: None,
             own_finally: None,
+            nested_finally_row: None,
             case_entries: self.case_entries.clone(),
             loop_exit: exit,
             loop_targets: {
@@ -1854,6 +1857,7 @@ impl Frame {
             // its owner so a throwing arm's exception edges can be matched to this try's catches.
             own_try: self.own_try,
             own_finally: self.own_finally,
+            nested_finally_row: self.nested_finally_row,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
             loop_targets: self.loop_targets.clone(),
@@ -1882,6 +1886,7 @@ impl Frame {
             allow_own_loop_entry: false,
             own_try: self.own_try,
             own_finally: self.own_finally,
+            nested_finally_row: self.nested_finally_row,
             case_entries: Some(case_entries),
             loop_exit: self.loop_exit,
             loop_targets: self.loop_targets.clone(),
@@ -1906,7 +1911,8 @@ impl Frame {
             own_loop: None,
             allow_own_loop_entry: false,
             own_try: Some(start),
-            own_finally: None,
+            own_finally: self.nested_finally_row.and(self.own_finally),
+            nested_finally_row: self.nested_finally_row,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
             loop_targets: self.loop_targets.clone(),
@@ -2090,13 +2096,23 @@ fn one(region: Region, next: Option<CanonicalBlockId>) -> Run {
     (vec![region], next)
 }
 
-fn finally_body_supported(region: &Region) -> bool {
+fn finally_body_supported(region: &Region, nested_catch: bool) -> bool {
     match region {
         Region::Straight { .. } => true,
-        Region::Sequence { regions } => regions.iter().all(finally_body_supported),
+        Region::Sequence { regions } => regions
+            .iter()
+            .all(|region| finally_body_supported(region, nested_catch)),
         Region::If {
             then_arm, else_arm, ..
-        } => finally_body_supported(then_arm) && finally_body_supported(else_arm),
+        } => {
+            finally_body_supported(then_arm, nested_catch)
+                && finally_body_supported(else_arm, nested_catch)
+        }
+        Region::Try { body, catches, .. } if nested_catch => {
+            catches.len() == 1
+                && finally_body_supported(body, false)
+                && finally_body_supported(catches[0].body(), false)
+        }
         _ => false,
     }
 }
@@ -2260,7 +2276,16 @@ impl Walker<'_> {
                     self.budget,
                 )?
             {
-                if let Some(body) = self.shared_finally_body(&current, &plan, frame)? {
+                let body = match plan.shape() {
+                    crate::guard::Shape::Finally { .. } => {
+                        self.finally_body(&current, &plan, frame)?
+                    }
+                    crate::guard::Shape::SharedFinally { .. } => {
+                        self.shared_finally_body(&current, &plan, frame)?
+                    }
+                    _ => None,
+                };
+                if let Some(body) = body {
                     for block in plan.owned() {
                         if let Some(index) = self.view.index_of(block) {
                             self.visited.insert(index);
@@ -2287,7 +2312,7 @@ impl Walker<'_> {
                 return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
             }
             if frame.own_try != Some(node)
-                && frame.own_finally.is_none()
+                && (frame.own_finally.is_none() || frame.nested_finally_row.is_some())
                 && self.starts_catch(&current)
                 && let Some((body, lead, catches, join, tails)) =
                     self.try_region(&current, node, frame)?
@@ -3623,6 +3648,7 @@ impl Walker<'_> {
             self.operations,
             self.handlers,
             self.fragmented.as_ref(),
+            frame.nested_finally_row,
             self.profile,
             start,
             self.budget,
@@ -3792,7 +3818,9 @@ impl Walker<'_> {
         outer: &Frame,
     ) -> Result<Option<Region>, StopReason> {
         let crate::guard::Shape::Finally {
-            row_ordinal, save, ..
+            row_ordinal,
+            completion,
+            ..
         } = plan.shape()
         else {
             return Ok(None);
@@ -3839,15 +3867,52 @@ impl Walker<'_> {
         frame.scope = Some(expected.clone());
         frame.boundary = None;
         frame.own_try = None;
-        frame.own_finally = Some(((*row_ordinal, plan.body()), None));
+        let (save, nested_row) = match completion {
+            crate::guard::FinallyCompletion::SavedReturn { save, .. } => (Some(*save), None),
+            crate::guard::FinallyCompletion::Joined { named_row, .. } => (None, Some(*named_row)),
+        };
+        let named_span = nested_row.and_then(|ordinal| {
+            self.handlers
+                .iter()
+                .find(|row| row.ordinal == ordinal)
+                .map(|row| (ordinal, (row.start_bci, row.end_bci)))
+        });
+        frame.own_finally = Some(((*row_ordinal, plan.body()), named_span));
+        frame.nested_finally_row = nested_row;
         let walked = self.region_at(start, &frame);
-        let (regions, next) = match walked {
+        let (mut regions, mut next) = match walked {
             Ok(result) => result,
             Err(stop) => {
                 self.visited = previous;
                 return Err(stop);
             }
         };
+        for _ in 0..expected.len() {
+            if nested_row.is_none() {
+                break;
+            }
+            let Some(at) = next.as_ref() else { break };
+            if !self
+                .view
+                .index_of(at)
+                .is_some_and(|node| expected.contains(&node))
+            {
+                break;
+            }
+            let (tail, following) = match self.region_at(at, &frame) {
+                Ok(result) => result,
+                Err(stop) => {
+                    self.visited = previous;
+                    return Err(stop);
+                }
+            };
+            if following.as_ref() == Some(at) || tail.is_empty() {
+                self.visited = previous;
+                return Ok(None);
+            }
+            regions.extend(tail);
+            next = following;
+        }
         let body = if regions.len() == 1 {
             regions.into_iter().next().unwrap()
         } else {
@@ -3865,15 +3930,20 @@ impl Walker<'_> {
                     names
                         .instructions()
                         .iter()
-                        .any(|instruction| instruction.bci() == *save)
+                        .any(|instruction| Some(instruction.bci()) == save)
                 })
             })
             .count();
-        if next.is_some()
-            || !finally_body_supported(&body)
+        if (nested_row.is_none() && next.is_some())
+            || next.as_ref().is_some_and(|at| {
+                self.view
+                    .index_of(at)
+                    .is_some_and(|node| expected.contains(&node))
+            })
+            || !finally_body_supported(&body, nested_row.is_some())
             || actual != expected
             || actual.len() != blocks.len()
-            || save_count != 1
+            || save_count != usize::from(save.is_some())
             || self
                 .visited
                 .difference(&previous)
@@ -4047,7 +4117,7 @@ impl Walker<'_> {
             })
             .count();
         if next.is_some()
-            || !finally_body_supported(&body)
+            || !finally_body_supported(&body, false)
             || actual != expected
             || actual.len() != blocks.len()
             || save_count != usize::from(save.is_some())

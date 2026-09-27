@@ -3,3 +3,11 @@ b21615765e0c3b64aa5de5b3652dc83276c5958dc1b3f4e7a3ddac82461a1a07  openspec/evide
 c2dff99146ac9f301fdc8a343567ac3b468307a32ba64e8b005ea3123a2d6a6d  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12.java
 d9b9cb676203d943ee3cf97d66e62dda2a637125d7f737be1e22ca275c209185  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/TestTryCatchFinally12$TestCls.class
 983d2ffbb401e93e0b7447fea6314b75ad0853a6c47525b218fe54a78f9e492c  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/jarde-baseline-report.txt
+57027045584fac47269f081fb8b5a6781fd0c8c0288cbdcbbf1685f4a258cb21  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1DifferentConstant.class
+661078ef750a8ea1ca5dcb287168a454542451e75c51659d1359ae8262eb31bf  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1WidenedRow.class
+4187f57015cbad30e0ecf63de7b14c4987515c6fa379f2ecbf100c156615670d  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1BypassCleanup.class
+d3c8f315e3694e10b185813dcc8dd7786878d1091014a59432ac7347265f6753  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test1ChangedRethrow.class
+dd2fd01a368278e737f677ad27a092393a45e3cf502b5604abe55a808dbfd2fd  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2DifferentConstant.class
+8beb539d8266083675825e125afbde04731b98f601773fb06a79e473cbda8113  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2WidenedRow.class
+d1559c90e5b043b3ddd80fdd06ce8dea1452b1c5a116e1dccf6ce606d458ceb5  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2BypassCleanup.class
+8cf778f8d8d40300dc105b84c6bd2a9f2b4884519228e6352628d6fd4d7328fc  openspec/evidence/java-syntax-2026-09-28/cf16-nested-finally/Test2ChangedRethrow.class
