@@ -6,6 +6,18 @@ use std::{
 };
 
 fn source(bytes: &[u8], name: &str) -> ClassSourceReport {
+    let mut budget = task_budget(&[]).unwrap();
+    match source_with_budget(bytes, name, &mut budget) {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("unexpected class-source outcome: {other:?}"),
+    }
+}
+
+fn source_with_budget(
+    bytes: &[u8],
+    name: &str,
+    budget: &mut Budget,
+) -> OperationOutcome<ClassSourceReport> {
     let engine = Engine::new();
     let snapshot = engine
         .open(
@@ -29,17 +41,9 @@ fn source(bytes: &[u8], name: &str) -> ClassSourceReport {
             loader: LoaderId("app".to_owned()),
         },
     };
-    match engine
-        .class_source(
-            std::slice::from_ref(&snapshot),
-            &request,
-            &mut task_budget(&[]).unwrap(),
-        )
+    engine
+        .class_source(std::slice::from_ref(&snapshot), &request, budget)
         .unwrap()
-    {
-        OperationOutcome::Performed(report) => report,
-        other => panic!("unexpected class-source outcome: {other:?}"),
-    }
 }
 
 #[test]
@@ -90,6 +94,261 @@ fn exceptions_without_generic_throws_suffix_survive() {
         "{}",
         report.text
     );
+}
+
+#[test]
+fn exact_generic_instance_null_return_projects_and_preserves_physical_method() {
+    let original = r#"
+        public class GenericNullReturnProbe {
+            public <T extends Number> T value() { return null; }
+        }
+    "#;
+    let report = compiled_source("GenericNullReturnProbe", original);
+    let value = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"value")
+        .expect("the physical value method remains in the method table");
+    assert_eq!(
+        value.item.descriptor.raw().0,
+        b"()Ljava/lang/Number;",
+        "projection keeps the physical descriptor"
+    );
+    assert!(value.declaration.as_deref().is_some_and(|declaration| {
+        declaration.contains("public <T extends java.lang.Number> T value()")
+    }));
+    assert!(value.text.contains("return null;"));
+    assert!(
+        value
+            .text
+            .contains("same-run AST/Code/SSA exact null-return")
+    );
+
+    let runner = r#"
+        import java.lang.reflect.*;
+        import java.util.Arrays;
+        public class GenericReflectionRunner {
+            public static void main(String[] args) throws Exception {
+                GenericNullReturnProbe probe = new GenericNullReturnProbe();
+                Integer value = probe.<Integer>value();
+                Method method = GenericNullReturnProbe.class.getDeclaredMethod("value");
+                TypeVariable<Method> variable = method.getTypeParameters()[0];
+                System.out.print(value == null);
+                System.out.print(":" + variable.getName());
+                System.out.print(":" + Arrays.toString(variable.getBounds()));
+                System.out.print(":" + method.getGenericReturnType());
+            }
+        }
+    "#;
+    assert_eq!(
+        java_output("GenericNullReturnProbe", original, runner),
+        java_output("GenericNullReturnProbe", &report.text, runner)
+    );
+}
+
+#[test]
+fn generic_instance_null_return_rejects_unproved_signatures_bodies_and_bindings() {
+    let cases = [
+        (
+            "GenericNullEffectProbe",
+            r#"
+                public class GenericNullEffectProbe {
+                    static int effects;
+                    public <T extends Number> T value() { effects++; return null; }
+                }
+            "#,
+            "body effect",
+        ),
+        (
+            "GenericNullHandlerProbe",
+            r#"
+                public class GenericNullHandlerProbe {
+                    public <T extends Number> T value() {
+                        try { throw new IllegalStateException(); }
+                        catch (IllegalStateException expected) { return null; }
+                    }
+                }
+            "#,
+            "exception handler and extra operations",
+        ),
+        (
+            "GenericNullPhiProbe",
+            r#"
+                public class GenericNullPhiProbe {
+                    public <T extends Number> T value(boolean choose) {
+                        return choose ? null : null;
+                    }
+                }
+            "#,
+            "conditional return and SSA merge",
+        ),
+        (
+            "GenericNullClassVariableProbe",
+            r#"
+                public class GenericNullClassVariableProbe<U extends Number> {
+                    public <T extends Number> T value() { return null; }
+                }
+            "#,
+            "class variable scope",
+        ),
+        (
+            "GenericNullAnnotatedProbe",
+            r#"
+                import java.lang.annotation.*;
+                @Target(ElementType.TYPE_USE) @Retention(RetentionPolicy.RUNTIME)
+                @interface GenericNullMark {}
+                public class GenericNullAnnotatedProbe {
+                    public <T extends Number> @GenericNullMark T value() { return null; }
+                }
+            "#,
+            "type-use annotation",
+        ),
+        (
+            "GenericNullBoundProbe",
+            r#"
+                public class GenericNullBoundProbe {
+                    public <T extends CharSequence> T value() { return null; }
+                }
+            "#,
+            "descriptor and bound",
+        ),
+        (
+            "GenericNullBindingProbe",
+            r#"
+                public class GenericNullBindingProbe {
+                    public <T extends Number> T value() { return null; }
+                    public Number value(Number input) { return input; }
+                    public Number caller() { return value(); }
+                }
+            "#,
+            "same-class overload binding",
+        ),
+        (
+            "GenericNullStaticProbe",
+            r#"
+                public class GenericNullStaticProbe {
+                    public static <T extends Number> T value() { return null; }
+                }
+            "#,
+            "static method outside the DT-16 instance slice",
+        ),
+    ];
+    for (name, java, boundary) in cases {
+        let report = compiled_source(name, java);
+        let method = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"value")
+            .unwrap_or_else(|| panic!("{boundary}: physical method missing"));
+        assert!(
+            !method
+                .text
+                .contains("<T extends java.lang.Number> T value()"),
+            "{boundary}: {}",
+            method.text
+        );
+        assert!(
+            method.text.contains("generic Signature projection refused"),
+            "{boundary}: {}",
+            method.text
+        );
+        assert!(
+            method.declaration.as_deref().is_some_and(|declaration| {
+                declaration.contains("java.lang.") && declaration.contains("value(")
+            }),
+            "{boundary}: physical declaration missing: {method:?}"
+        );
+    }
+}
+
+#[test]
+fn generic_null_return_refuses_signature_erasure_mismatch() {
+    let mut bytes = compile_class_bytes(
+        "GenericNullErasureProbe",
+        r#"
+            public class GenericNullErasureProbe {
+                public <T extends Number> T value() { return null; }
+            }
+        "#,
+    );
+    let signature = b"<T:Ljava/lang/Number;>()TT;";
+    let wrong = b"<T:Ljava/lang/Object;>()TT;";
+    assert_eq!(signature.len(), wrong.len());
+    let position = bytes
+        .windows(signature.len())
+        .position(|window| window == signature)
+        .expect("compiled method signature is present in its constant pool");
+    bytes[position..position + wrong.len()].copy_from_slice(wrong);
+    let report = source(&bytes, "GenericNullErasureProbe");
+    let method = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"value")
+        .unwrap();
+    assert_eq!(method.item.descriptor.raw().0, b"()Ljava/lang/Number;");
+    assert!(method.text.contains("jvm_signature_erasure_mismatch"));
+    assert!(!method.text.contains("<T extends"));
+}
+
+#[test]
+fn generic_null_return_budget_and_cancellation_never_publish_a_partial_header() {
+    let bytes = compile_class_bytes(
+        "GenericNullStopProbe",
+        r#"
+            public class GenericNullStopProbe {
+                public <T extends Number> T value() { return null; }
+            }
+        "#,
+    );
+    let mut output_limited = task_budget(&[BudgetOverride::new("output_bytes", 1).unwrap()])
+        .expect("one output byte is a valid stop boundary");
+    match source_with_budget(&bytes, "GenericNullStopProbe", &mut output_limited) {
+        OperationOutcome::Performed(report) => {
+            assert!(
+                !report
+                    .text
+                    .contains("<T extends java.lang.Number> T value()")
+            );
+            assert!(matches!(
+                report.execution,
+                jarde_reader::model::ExecutionReport::Partial {
+                    reason: jarde_reader::model::TerminationReason::BudgetExceeded { .. },
+                    ..
+                }
+            ));
+            let method = report
+                .methods
+                .iter()
+                .find(|method| method.item.name.raw().0 == b"value")
+                .expect("the partial report retains the physical method identity");
+            assert_eq!(method.item.descriptor.raw().0, b"()Ljava/lang/Number;");
+        }
+        OperationOutcome::Incomplete(report) => {
+            assert!(matches!(
+                report.execution,
+                jarde_reader::model::ExecutionReport::Partial {
+                    reason: jarde_reader::model::TerminationReason::BudgetExceeded { .. },
+                    ..
+                }
+            ));
+        }
+        other => panic!("unexpected output-limited outcome: {other:?}"),
+    }
+
+    let mut cancelled = task_budget(&[]).unwrap();
+    cancelled.cancellation_token().cancel();
+    assert!(matches!(
+        source_with_budget(&bytes, "GenericNullStopProbe", &mut cancelled),
+        OperationOutcome::Incomplete(report)
+            if matches!(report.execution, jarde_reader::model::ExecutionReport::Cancelled { .. })
+    ));
+    let complete = source(&bytes, "GenericNullStopProbe");
+    let physical = complete
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"value")
+        .expect("an independent complete query still exposes the physical method");
+    assert_eq!(physical.item.descriptor.raw().0, b"()Ljava/lang/Number;");
 }
 
 #[test]
@@ -174,6 +433,11 @@ fn erasure_shape_and_body_refusals_keep_descriptor_declarations() {
 }
 
 fn compiled_source(name: &str, java: &str) -> ClassSourceReport {
+    let bytes = compile_class_bytes(name, java);
+    source(&bytes, name)
+}
+
+fn compile_class_bytes(name: &str, java: &str) -> Vec<u8> {
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -198,9 +462,8 @@ fn compiled_source(name: &str, java: &str) -> ClassSourceReport {
         String::from_utf8_lossy(&output.stderr)
     );
     let bytes = fs::read(dir.join(format!("{name}.class"))).unwrap();
-    let report = source(&bytes, name);
     fs::remove_dir_all(dir).unwrap();
-    report
+    bytes
 }
 
 fn java_output(name: &str, java: &str, runner: &str) -> String {

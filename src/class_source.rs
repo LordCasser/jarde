@@ -1832,6 +1832,13 @@ pub(crate) fn project_method_signature(
             matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
                 && !parsed.type_parameters.is_empty()
                 && matches!(parsed.throws.as_slice(), [SignatureType::TypeVariable(_)]);
+        let body_generic_null_return =
+            matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
+                && !parsed.type_parameters.is_empty()
+                && matches!(candidate, Some(GenericReturnCandidate {
+                parameters,
+                value: GenericReturnValue::NullLiteral,
+            }) if parameters.is_empty());
         budget.charge(
             CountedBudgetDimension::AnalysisSteps,
             u64::try_from(pool.len()).unwrap_or(u64::MAX),
@@ -1886,6 +1893,24 @@ pub(crate) fn project_method_signature(
             (
                 declaration,
                 "same-run AST/Code/SSA empty-void and method-local Signature scope/erasure proof",
+            )
+        } else if body_generic_null_return {
+            let declaration = generic_null_instance_method_declaration(
+                record,
+                attributes,
+                &parsed,
+                candidate,
+                class_internal,
+                class_flags,
+                class_superclass,
+                class_interfaces,
+                class_scope,
+                class_signature_present,
+                budget,
+            )?;
+            (
+                declaration,
+                "same-run AST/Code/SSA exact null-return and method-local Signature scope/erasure proof",
             )
         } else if static_method_local_generic_throws {
             let declaration = static_method_local_generic_throws_declaration(
@@ -3040,6 +3065,7 @@ fn ordinary_parameterized_declaration(
                 Some(Vec::new())
             }
             GenericReturnValue::EmptyVoid => None,
+            GenericReturnValue::NullLiteral => None,
             GenericReturnValue::Parameter(slot) => signature
                 .parameters
                 .iter()
@@ -3482,8 +3508,10 @@ fn generic_method_declaration(
     let candidate = candidate
         .ok_or_else(|| refused("the recovered AST/SSA body is not a direct parameter return"))?;
     let item = &record.item;
+    let null_instance_return = matches!(candidate.value, GenericReturnValue::NullLiteral);
+    let is_static = item.access_flags & ACC_STATIC != 0;
     if record.declaration.is_none()
-        || item.access_flags & ACC_STATIC == 0
+        || is_static == null_instance_return
         || item.access_flags
             & !(ACC_PUBLIC
                 | ACC_PRIVATE
@@ -3624,6 +3652,7 @@ fn generic_method_declaration(
     }
     let return_proved = match candidate.value {
         GenericReturnValue::EmptyVoid => false,
+        GenericReturnValue::NullLiteral => null_instance_return && parsed.parameters.is_empty(),
         GenericReturnValue::Parameter(slot) => result_slots.contains(&slot),
         GenericReturnValue::Conditional {
             test,
@@ -3648,7 +3677,9 @@ fn generic_method_declaration(
     }
     let mut words = Vec::new();
     words.extend(visibility(item.access_flags));
-    words.push("static");
+    if is_static {
+        words.push("static");
+    }
     if item.access_flags & ACC_FINAL != 0 {
         words.push("final")
     }
@@ -3693,6 +3724,71 @@ fn generic_method_declaration(
         arguments.join(", "),
         throws_clause(&throws),
     ))
+}
+
+#[allow(clippy::too_many_arguments)]
+fn generic_null_instance_method_declaration(
+    record: &ClassSourceMethod,
+    attributes: &MemberAttributes,
+    parsed: &jarde_reader::signature::MethodSignature,
+    candidate: Option<&GenericReturnCandidate>,
+    class_internal: &[u8],
+    class_flags: u16,
+    class_superclass: Option<&[u8]>,
+    class_interfaces: &[Vec<u8>],
+    class_scope: &[TypeParameterErasure],
+    class_signature_present: bool,
+    budget: &mut Budget,
+) -> Result<String> {
+    let refused = |why| Error::unsupported("generic_source_shape_unproved", why);
+    let item = &record.item;
+    if !matches!(record.outcome, ClassSourceOutcome::Recovered { .. })
+        || item.access_flags & (ACC_PUBLIC | ACC_STATIC) != ACC_PUBLIC
+        || item.descriptor.raw().0.as_slice() != b"()Ljava/lang/Number;"
+        || class_internal.contains(&b'$')
+        || class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) != 0
+        || class_superclass != Some(b"java/lang/Object".as_slice())
+        || !class_interfaces.is_empty()
+        || !class_scope.is_empty()
+        || class_signature_present
+        || !attributes.throws_raw.is_empty()
+        || !parsed.parameters.is_empty()
+        || !parsed.throws.is_empty()
+        || !matches!(candidate, Some(GenericReturnCandidate {
+            parameters,
+            value: GenericReturnValue::NullLiteral,
+        }) if parameters.is_empty())
+    {
+        return Err(refused(
+            "null-return method-local type variable requires a public no-argument instance method on a top-level Object subclass with no interfaces",
+        ));
+    }
+    let [parameter] = parsed.type_parameters.as_slice() else {
+        return Err(refused(
+            "null-return method must declare exactly one type variable",
+        ));
+    };
+    let Some(SignatureType::TypeVariable(result)) = parsed.result.as_ref() else {
+        return Err(refused("null-return method result is not a type variable"));
+    };
+    let Some(SignatureType::Class(bound)) = parameter.class_bound.as_ref() else {
+        return Err(refused(
+            "null-return type variable must have one class bound",
+        ));
+    };
+    if parameter.name != *result
+        || !parameter.interface_bounds.is_empty()
+        || bound.segments.len() != 1
+        || bound.segments[0].binary_name.as_slice() != b"java/lang/Number"
+        || !bound.segments[0].arguments.is_empty()
+    {
+        return Err(refused(
+            "null-return Signature must be one method-local T extends Number result",
+        ));
+    }
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    generic_method_declaration(record, attributes, parsed, candidate, false)
 }
 
 fn simple_generic_class_name(raw: &[u8]) -> Result<String> {

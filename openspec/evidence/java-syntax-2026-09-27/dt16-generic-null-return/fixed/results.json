@@ -1,0 +1,16 @@
+{
+  "mode": "fixed",
+  "jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "javac": "javac 23.0.1",
+  "source_sha256": {
+    "NullResult.java": "758df68bca833452fc7228174dc7ca94c788c7a0a9ce2dd8140ae2e0f8c94596",
+    "Runner.java": "58ef52fbe76d243bce39df980980785dceda9e32c7a242dc111c4a2a26acf30f"
+  },
+  "original_class_sha256": "a634b9e777ec0580c1ad5727893f974ec1c2d1ecd7e1b4b5497fa735c6ba7aad",
+  "original_verified_run": "true:T:java.lang.Number:T\n",
+  "jadx_verified_run": "true:T:java.lang.Number:T\n",
+  "jarde": {
+    "compile_exit": 0,
+    "verified_run": "true:T:java.lang.Number:T\n"
+  }
+}

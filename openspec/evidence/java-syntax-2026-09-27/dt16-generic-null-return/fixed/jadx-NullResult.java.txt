@@ -1,0 +1,8 @@
+package dt16;
+
+/* JADX INFO: loaded from: input.jar:dt16/NullResult.class */
+public class NullResult {
+    public <T extends Number> T value() {
+        return null;
+    }
+}

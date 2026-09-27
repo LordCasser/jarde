@@ -1,0 +1,14 @@
+public class dt16.NullResult {
+  public dt16.NullResult();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public <T extends java.lang.Number> T value();
+    descriptor: ()Ljava/lang/Number;
+    Code:
+       0: aconst_null
+       1: areturn
+}
