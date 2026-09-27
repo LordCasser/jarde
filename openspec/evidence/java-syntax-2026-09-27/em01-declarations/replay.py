@@ -108,7 +108,8 @@ def main():
             physical_dir.mkdir(parents=True, exist_ok=True)
             (physical_dir / (name.replace('.', '_').replace('$', '_') + '.java')).write_text(result.stdout)
         jadx = compile_run('jadx', jadx_sources, runner, out, work, True, expected)
-        jarde = compile_run('jarde', jarde_sources, runner, out, work, False, expected)
+        jarde = compile_run('jarde', jarde_sources, runner, out, work,
+                            args.fixture == 'single', expected)
     if args.fixture == 'multi':
         jadx_shape = (out / 'source/jadx/em01/Shape.java').read_text()
         jadx_generic = (out / 'source/jadx/em01/Generic.java').read_text()
@@ -124,9 +125,15 @@ def main():
     else:
         jadx_single = (out / 'source/jadx/em01/SingleAbstract.java').read_text()
         jarde_single = (out / 'source/jarde/em01/SingleAbstract.java').read_text()
-        if 'public static abstract class A' not in jadx_single or 'class A' in jarde_single:
-            raise RuntimeError('single static member baseline changed')
-        missing = ['SingleAbstract.A']
+        physical = (out / 'source/jarde-physical/em01_SingleAbstract_A.java').read_text()
+        if 'public static abstract class A' not in jadx_single:
+            raise RuntimeError('JADX single member changed')
+        if (jarde_single.count('public static abstract class A') != 1
+                or 'A() {' not in jarde_single
+                or 'abstract int test2();' not in jarde_single
+                or 'SingleAbstract$A()' not in physical):
+            raise RuntimeError('Jarde single declaration-only projection changed')
+        missing = []
     summary = {'jadx_revision': JADX_REV, 'jadx_tests_sha256': TESTS,
                'jarde_cli_sha256': digest(args.jarde),
                'fixture': args.fixture, 'input_sha256': {p.name: digest(p) for p in sorted(input_dir.glob('*.java'))},
