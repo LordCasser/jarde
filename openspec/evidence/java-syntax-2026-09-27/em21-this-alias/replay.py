@@ -52,6 +52,7 @@ def compile_and_run(label, source, out, temp):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("mode", nargs="?", choices=("baseline", "fixed"), default="fixed")
     parser.add_argument("--jarde", type=Path, required=True)
     parser.add_argument("--jadx", type=Path, required=True)
     parser.add_argument("--jadx-checkout", type=Path, required=True)
@@ -68,6 +69,10 @@ def main():
         source = args.jadx_checkout / "jadx-core/src/test/java/jadx/tests/integration/usethis" / relative
         if digest(source) != expected_hash:
             raise RuntimeError(f"JADX test changed: {relative}")
+        if relative == "TestRedundantThis.java":
+            text = source.read_text()
+            if "\n\t// @Test\n" not in text:
+                raise RuntimeError("TestRedundantThis @Test is no longer commented out")
     if run(["javac", "-version"], out / "javac-version.txt").returncode:
         raise RuntimeError("javac unavailable")
     if run(["java", "-version"], out / "java-version.txt").returncode:
@@ -95,10 +100,38 @@ def main():
             raise RuntimeError("Jarde class-source failed")
         jarde_source = source_dir / "jarde-ThisUse.java"
         jarde_source.write_text(jarde_result.stdout)
-        for expected in ("local1 = this", "local1.touch()", "local1.field = 123",
-                         "local1 = new em21.ThisUse()", "return local1"):
-            if expected not in jarde_result.stdout:
-                raise RuntimeError(f"Jarde alias source shape missing: {expected}")
+        if args.mode == "baseline":
+            for expected in (
+                "local1 = this", "local1.touch()", "local1.field = 123",
+                "local1 = new em21.ThisUse()", "return local1",
+            ):
+                if expected not in jarde_result.stdout:
+                    raise RuntimeError(f"Jarde baseline source shape missing: {expected}")
+        else:
+            for expected in (
+                "this.touch()", "this.field = 123",
+                "java.util.Objects.isNull((java.lang.Object) this)",
+                "local1 = this", "local1 = new em21.ThisUse()", "return local1",
+            ):
+                if expected not in jarde_result.stdout:
+                    raise RuntimeError(f"Jarde fixed source shape missing: {expected}")
+            inline = jarde_result.stdout.split("public void inline()", 1)[1].split("public void checked()", 1)[0]
+            checked = jarde_result.stdout.split("public void checked()", 1)[1].split("public em21.ThisUse choose()", 1)[0]
+            for method, text in (("inline", inline), ("checked", checked)):
+                if "local1" in text:
+                    raise RuntimeError(f"Jarde retained a proved this alias in {method}")
+            choose = jarde_result.stdout.split("public em21.ThisUse choose()", 1)[1]
+            for expected in ("local1 = this", "local1 = new em21.ThisUse()", "local1.touch()", "return local1"):
+                if expected not in choose:
+                    raise RuntimeError(f"Jarde choose negative shape missing: {expected}")
+            stopped = run(
+                [args.jarde, "class-source", "--input", jar, "--class", "em21.ThisUse",
+                 "--policy", "plain-jar", "--release", "8", "--evidence", "essential",
+                 "--format", "text", "--budget", "output_bytes=1"],
+                out / "jarde-output-budget.log",
+            )
+            if stopped.returncode == 0 or stopped.stdout:
+                raise RuntimeError("Jarde output-budget stop published partial class source")
         jadx_text = jadx_source.read_text()
         for expected in ("Objects.isNull(this)", "this.field = 123", "thisUse = this",
                          "thisUse = new ThisUse()"):
@@ -114,10 +147,12 @@ def main():
             else:
                 jarde = result
     summary = {
+        "mode": args.mode,
         "jadx_revision": JADX_REVISION, "jadx_test_sha256": TEST_HASHES,
         "jarde_cli_sha256": digest(args.jarde.resolve()),
         "input_sha256": {p.name: digest(p) for p in sorted(INPUT.glob("*.java"))},
         "original": original, "jadx": jadx, "jarde": jarde,
+        "output_budget_stop": "no_source_published" if args.mode == "fixed" else "not_checked",
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary, indent=2))

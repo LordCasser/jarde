@@ -435,12 +435,21 @@ struct Declarations {
     incomplete: BTreeMap<RegionPath, String>,
     /// One atomic local declaration/construction projection, keyed by the existing local identity.
     generic_locals: BTreeMap<LocalVariable, GenericLocalProjection>,
+    /// Locals whose one direct write from the current receiver and every read are proved to be
+    /// receiver positions. The writer may omit only this store and these load values.
+    this_aliases: BTreeMap<LocalVariable, ThisAliasProjection>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct GenericLocalProjection {
     source_type: String,
     allocation_bci: u32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct ThisAliasProjection {
+    store_bci: u32,
+    reads: BTreeSet<u32>,
 }
 
 /// The lexical declaration decision made before the AST exists.
@@ -680,6 +689,8 @@ fn declarations(
     names: &NameTable,
     reuse: &reuse::Plan,
     parameters: u16,
+    has_receiver: bool,
+    declaring_class: Option<&str>,
     parameter_types: &BTreeMap<u16, Type>,
     return_type: Option<&Type>,
     fields: &field::Plan,
@@ -695,6 +706,19 @@ fn declarations(
     }
     let twr_cleanup = twr_cleanup_bcis.into_iter().collect::<BTreeSet<_>>();
     let uses = slot_uses(ssa, operations, reuse, &paths, &twr_cleanup);
+    let this_aliases = prove_this_aliases(
+        &uses,
+        &paths,
+        ssa,
+        operations,
+        reuse,
+        names,
+        parameters,
+        has_receiver,
+        declaring_class,
+        fields,
+        budget,
+    )?;
     let short_circuit_booleans = short_circuit_local_booleans(
         regions,
         canonical,
@@ -736,6 +760,7 @@ fn declarations(
     let mut plan = Declarations {
         decided,
         generic_locals,
+        this_aliases,
         ..Declarations::default()
     };
     // The slots a guarded statement declares **in its own header** (P3 2.4): a `try (T n = …)`
@@ -779,6 +804,9 @@ fn declarations(
         }
     }
     for (variable, variable_uses) in &live_uses {
+        if plan.this_aliases.contains_key(variable) {
+            continue;
+        }
         // A parameter's declaration is the signature, not the body, and a variable this layer has no
         // name for is one whose writes are already reported as a fallback of their own.
         if variable.slot() < parameters || names.text(*variable).is_none() {
@@ -979,6 +1007,354 @@ fn declarations(
         )
     });
     Ok(plan)
+}
+
+/// Prove the one local alias this change removes: one non-parameter local is written directly
+/// from the method receiver, and every load of that exact local value is the receiver of an
+/// ordinary call/instance-field access or the sole argument to Objects.isNull.
+///
+/// The proof uses the existing local identity and SSA use graph. It deliberately does not follow
+/// copies, phi inputs, or values through arbitrary expressions. Any access outside a presented
+/// region, any unsupported consumer, or any extra SSA use simply leaves the old local projection
+/// in place.
+#[allow(clippy::too_many_arguments)]
+fn prove_this_aliases(
+    uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
+    paths: &RegionPaths,
+    ssa: &SsaTable,
+    operations: &Operations,
+    reuse: &reuse::Plan,
+    names: &NameTable,
+    parameters: u16,
+    has_receiver: bool,
+    declaring_class: Option<&str>,
+    fields: &field::Plan,
+    budget: &mut Budget,
+) -> Result<BTreeMap<LocalVariable, ThisAliasProjection>, StopReason> {
+    let mut aliases = BTreeMap::new();
+    if !has_receiver {
+        return Ok(aliases);
+    }
+    let mut paths_by_bci: Option<BTreeMap<u32, Option<RegionPath>>> = None;
+    let mut trivial_alias_phis: Option<BTreeSet<(CanonicalBlockId, u16, ValueId)>> = None;
+    for (variable, accesses) in uses {
+        let first_bci = accesses.first().map(|access| access.bci);
+        poll(budget, first_bci)?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(accesses.len()).unwrap_or(u64::MAX),
+            first_bci,
+        )?;
+        if variable.slot() < parameters || variable.slot() == 0 || names.text(*variable).is_none() {
+            continue;
+        }
+        if accesses.iter().any(|access| {
+            access
+                .path
+                .as_ref()
+                .is_none_or(|path| paths.fallbacks.contains(path))
+        }) {
+            continue;
+        }
+        let writes = accesses
+            .iter()
+            .filter(|access| access.written.is_some())
+            .collect::<Vec<_>>();
+        let reads = accesses
+            .iter()
+            .filter(|access| access.read.is_some())
+            .collect::<Vec<_>>();
+        let [write] = writes.as_slice() else {
+            continue;
+        };
+        let Some(written) = write.written else {
+            continue;
+        };
+        let Some(stored) = write.stored else {
+            continue;
+        };
+        let Some(Operation::Store { slot }) = operations.get(write.bci) else {
+            continue;
+        };
+        if *slot != variable.slot() || reads.is_empty() {
+            continue;
+        }
+        let Some(store_instruction) = instruction_at(ssa, write.bci) else {
+            continue;
+        };
+        if store_instruction.reads() != [(Slot::Stack(0), stored)]
+            || store_instruction.writes() != [(Slot::Local(variable.slot()), written)]
+            || !matches!(
+                ssa.value(written).def(),
+                Definition::Instruction { bci, .. } if *bci == write.bci
+            )
+        {
+            continue;
+        }
+        let Definition::Instruction {
+            bci: receiver_load, ..
+        } = ssa.value(stored).def()
+        else {
+            continue;
+        };
+        let receiver_load = *receiver_load;
+        let Some(Operation::Load { slot: 0 }) = operations.get(receiver_load) else {
+            continue;
+        };
+        let Some(receiver_instruction) = instruction_at(ssa, receiver_load) else {
+            continue;
+        };
+        let [(Slot::Local(0), receiver_value)] = receiver_instruction.reads() else {
+            continue;
+        };
+        if !matches!(
+            ssa.value(*receiver_value).def(),
+            Definition::Entry {
+                slot: Slot::Local(0),
+                ..
+            }
+        ) {
+            continue;
+        }
+        let [(Slot::Stack(_), loaded_receiver)] = receiver_instruction.writes() else {
+            continue;
+        };
+        if *loaded_receiver != stored || ssa.value(written).replaced_by().is_some() {
+            continue;
+        }
+        let expected_reads = reads
+            .iter()
+            .map(|access| access.bci)
+            .collect::<BTreeSet<_>>();
+        let direct_reads = ssa
+            .value(written)
+            .uses()
+            .iter()
+            .filter_map(|use_| use_.bci())
+            .collect::<BTreeSet<_>>();
+        let direct_use_count = ssa
+            .value(written)
+            .uses()
+            .iter()
+            .filter(|use_| use_.bci().is_some())
+            .count();
+        let phi_uses = ssa
+            .value(written)
+            .uses()
+            .iter()
+            .filter(|use_| use_.bci().is_none())
+            .collect::<Vec<_>>();
+        if !phi_uses.is_empty() && trivial_alias_phis.is_none() {
+            let mut proven = BTreeSet::new();
+            for (_, value) in ssa.values_with_ids() {
+                poll(budget, first_bci)?;
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, first_bci)?;
+                if let (
+                    Definition::Phi {
+                        block,
+                        slot: Slot::Local(slot),
+                    },
+                    Some(replaced_by),
+                ) = (value.def(), value.replaced_by())
+                {
+                    proven.insert((block.clone(), *slot, replaced_by));
+                }
+            }
+            trivial_alias_phis = Some(proven);
+        }
+        let trivial_phis = phi_uses.iter().all(|use_| {
+            trivial_alias_phis.as_ref().is_some_and(|proven| {
+                proven.contains(&(use_.block().clone(), variable.slot(), written))
+            })
+        });
+        if direct_reads != expected_reads
+            || expected_reads.len() != reads.len()
+            || direct_use_count != reads.len()
+            || !trivial_phis
+        {
+            continue;
+        }
+        let mut complete = true;
+        for access in &reads {
+            poll(budget, Some(access.bci))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(access.bci),
+            )?;
+            let Some(read_value) = access.read else {
+                complete = false;
+                break;
+            };
+            if read_value != written
+                || reuse.variable_at(variable.slot(), access.bci) != Some(*variable)
+            {
+                complete = false;
+                break;
+            }
+            let Some(Operation::Load { slot: read_slot }) = operations.get(access.bci) else {
+                complete = false;
+                break;
+            };
+            if *read_slot != variable.slot() {
+                complete = false;
+                break;
+            }
+            let Some(load) = instruction_at(ssa, access.bci) else {
+                complete = false;
+                break;
+            };
+            let Some(source) = load.reads().iter().find_map(|(slot, value)| {
+                (*slot == Slot::Local(variable.slot())).then_some(*value)
+            }) else {
+                complete = false;
+                break;
+            };
+            let Some(loaded) = load
+                .writes()
+                .iter()
+                .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+            else {
+                complete = false;
+                break;
+            };
+            if !matches!(load.reads(), [(Slot::Local(_), _)])
+                || !matches!(load.writes(), [(Slot::Stack(_), _)])
+                || source != written
+            {
+                complete = false;
+                break;
+            }
+            let [consumer] = ssa.value(loaded).uses() else {
+                complete = false;
+                break;
+            };
+            let Some(consumer_bci) = consumer.bci() else {
+                complete = false;
+                break;
+            };
+            let Some(consumer_instruction) = instruction_at(ssa, consumer_bci) else {
+                complete = false;
+                break;
+            };
+            if paths_by_bci.is_none() {
+                let mut indexed = BTreeMap::new();
+                for block in ssa.blocks() {
+                    let path = paths.paths.get(block.block()).cloned();
+                    for instruction in block.instructions() {
+                        poll(budget, Some(instruction.bci()))?;
+                        charge(
+                            budget,
+                            CountedBudgetDimension::AnalysisSteps,
+                            1,
+                            Some(instruction.bci()),
+                        )?;
+                        indexed.insert(instruction.bci(), path.clone());
+                    }
+                }
+                paths_by_bci = Some(indexed);
+            }
+            let Some(paths_by_bci) = paths_by_bci.as_ref() else {
+                unreachable!("the BCI paths were indexed above")
+            };
+            if !bci_is_in_presented_region(paths_by_bci, paths, write.bci)
+                || !bci_is_in_presented_region(paths_by_bci, paths, receiver_load)
+                || !bci_is_in_presented_region(paths_by_bci, paths, consumer_bci)
+            {
+                complete = false;
+                break;
+            }
+            if !supported_this_alias_consumer(
+                operations.get(consumer_bci),
+                consumer_instruction,
+                loaded,
+                declaring_class,
+                fields,
+            ) {
+                complete = false;
+                break;
+            }
+        }
+        if complete {
+            aliases.insert(
+                *variable,
+                ThisAliasProjection {
+                    store_bci: write.bci,
+                    reads: expected_reads,
+                },
+            );
+        }
+    }
+    Ok(aliases)
+}
+
+fn supported_this_alias_consumer(
+    operation: Option<&Operation>,
+    instruction: &SsaInstruction,
+    loaded: ValueId,
+    declaring_class: Option<&str>,
+    fields: &field::Plan,
+) -> bool {
+    let operands = stack_operands(instruction);
+    match operation {
+        Some(Operation::Invoke(target))
+            if matches!(target.kind(), InvokeKind::Virtual | InvokeKind::Interface)
+                || (target.kind() == InvokeKind::Special
+                    && declaring_class == Some(target.owner())) =>
+        {
+            let Ok(descriptor) =
+                descriptor_facts(target.descriptor().as_bytes(), DescriptorKind::Method)
+            else {
+                return false;
+            };
+            let Some(_) = descriptor.parameter_slots() else {
+                return false;
+            };
+            operands
+                .iter()
+                .any(|(slot, value)| *slot == Slot::Stack(0) && *value == loaded)
+        }
+        Some(Operation::Invoke(target))
+            if target.kind() == InvokeKind::Static
+                && target.owner() == "java/util/Objects"
+                && target.name() == "isNull"
+                && target.descriptor() == "(Ljava/lang/Object;)Z" =>
+        {
+            operands.as_slice() == [(Slot::Stack(0), loaded)]
+        }
+        Some(Operation::Field {
+            access: FieldAccess::Read,
+            is_static: false,
+            ..
+        }) => {
+            fields.claim(instruction.bci()).is_some()
+                && operands.as_slice() == [(Slot::Stack(0), loaded)]
+        }
+        Some(Operation::Field {
+            access: FieldAccess::Write,
+            is_static: false,
+            ..
+        }) => {
+            fields.claim(instruction.bci()).is_some()
+                && operands
+                    .iter()
+                    .any(|(slot, value)| *slot == Slot::Stack(0) && *value == loaded)
+        }
+        _ => false,
+    }
+}
+
+fn bci_is_in_presented_region(
+    paths_by_bci: &BTreeMap<u32, Option<RegionPath>>,
+    paths: &RegionPaths,
+    bci: u32,
+) -> bool {
+    paths_by_bci
+        .get(&bci)
+        .and_then(Option::as_ref)
+        .is_some_and(|path| !paths.fallbacks.contains(path))
 }
 
 /// Proves the single supported LVTT local before either its declaration or its allocation AST is
@@ -5412,6 +5788,11 @@ pub(crate) fn build(
         inputs.names,
         inputs.reuse,
         inputs.parameters,
+        inputs.has_receiver
+            && inputs
+                .physical_method
+                .is_some_and(|method| method.name.0.as_slice() != b"<init>"),
+        inputs.declaring_class,
         inputs.parameter_types,
         inputs.return_type.as_ref(),
         inputs.fields,
@@ -13504,6 +13885,14 @@ impl Builder<'_> {
         poll(self.budget, Some(instruction.bci()))?;
         let at = instruction.bci();
         if self
+            .declarations
+            .this_aliases
+            .values()
+            .any(|alias| alias.store_bci == at)
+        {
+            return Ok(());
+        }
+        if self
             .finally_span
             .is_some_and(|span| at < span.0 || at >= span.1)
         {
@@ -15171,6 +15560,21 @@ impl Builder<'_> {
         }
         if let Some(allocation_value) = self.array_initializers.allocation_value(value) {
             return self.render_value(allocation_value, at, depth + 1);
+        }
+        if let Definition::Instruction { bci, .. } = self.ssa.value(value).def()
+            && let Some(Operation::Load { slot }) = self.operations.get(*bci)
+            && let Some(variable) = self.reuse.variable_at(*slot, *bci)
+            && self
+                .declarations
+                .this_aliases
+                .get(&variable)
+                .is_some_and(|alias| alias.reads.contains(bci))
+        {
+            let mut receiver = Expr::direct(ExprKind::Local("this".to_string()), *bci);
+            if let Some(ty) = self.decided_type(variable) {
+                receiver = receiver.presenting(ty);
+            }
+            return Ok(receiver);
         }
         match self.ssa.value(value).def() {
             Definition::Entry { block, slot } | Definition::Phi { block, slot } => match slot {
