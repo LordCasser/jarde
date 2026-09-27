@@ -6275,6 +6275,7 @@ pub(crate) fn build(
         switch_depth: 0,
         finally_span: None,
         finally_return: None,
+        shared_call_finally: None,
     };
     if let Some(reason) = builder.declarations.incomplete.get(&Vec::new()).cloned() {
         // An access outside every claimed region has no narrower complete closure. Refuse the
@@ -7025,6 +7026,19 @@ struct Builder<'a> {
     finally_span: Option<(u32, u32)>,
     /// The unique save instruction and physical return of that bounded body.
     finally_return: Option<(u32, u32)>,
+    /// The one synthetic Region::Try nested in a proved shared catch-all guard. Its two child
+    /// bodies use different physical slices and saved returns, but emit one existing Try AST.
+    shared_call_finally: Option<SharedCallFinallyBuild>,
+}
+
+#[derive(Clone)]
+struct SharedCallFinallyBuild {
+    path: RegionPath,
+    protected: (u32, u32),
+    catch_body: (u32, u32),
+    returns: [(u32, u32); 2],
+    normal_cleanup: u32,
+    facts: Vec<u32>,
 }
 
 /// State that a speculative structured finally body may change before its enclosing Try exists.
@@ -9908,6 +9922,7 @@ impl Builder<'_> {
         self.switch_depth = checkpoint.switch_depth;
         self.finally_span = None;
         self.finally_return = None;
+        self.shared_call_finally = None;
     }
 
     /// Build the two-test early return as one statement. The separate tail remains owned by the
@@ -12776,6 +12791,77 @@ impl Builder<'_> {
                         }
                         pushed
                     }
+                    guard::Shape::SharedCallFinally {
+                        catch_body,
+                        normal_cleanup,
+                        returns,
+                        ..
+                    } => {
+                        let Some(inner @ Region::Try { catches, .. }) = structured_body.as_deref()
+                        else {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("shared finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the shared finally has no bounded catch structure",
+                                plan.body().0,
+                            );
+                        };
+                        if catches.len() != 1 {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("shared finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the shared finally has no unique named catch",
+                                plan.body().0,
+                            );
+                        }
+                        let nested_path = child(path, 0);
+                        let mark = self.stmts.len();
+                        self.shared_call_finally = Some(SharedCallFinallyBuild {
+                            path: nested_path.clone(),
+                            protected: plan.body(),
+                            catch_body: *catch_body,
+                            returns: *returns,
+                            normal_cleanup: *normal_cleanup,
+                            facts: plan.facts().to_vec(),
+                        });
+                        let built = self.region(inner, &nested_path);
+                        self.shared_call_finally = None;
+                        if let Err(stop) = built {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("shared finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                        let complete = self.stmts[mark..].iter().all(|statement| {
+                            !statement_has_fallback(statement)
+                                && undeclared_local(statement, &self.undeclared).is_none()
+                        }) && self.stmts[mark..].iter().any(|statement| {
+                            matches!(&statement.kind, StmtKind::Try { finally_body: Some(body), catches, .. }
+                                if body.len() == 1 && catches.len() == 1)
+                        });
+                        if !complete {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("shared finally checkpoint"),
+                            );
+                            return self.fallback(bcis, "the shared finally has an unpresented body, declaration, or cleanup", plan.body().0);
+                        }
+                        Ok(())
+                    }
                 }
             }
             Region::Try {
@@ -12784,6 +12870,11 @@ impl Builder<'_> {
                 body,
                 catches,
             } => {
+                let shared = self
+                    .shared_call_finally
+                    .as_ref()
+                    .filter(|shared| shared.path == *path)
+                    .cloned();
                 for block in prefix {
                     self.block(block)?;
                 }
@@ -12815,7 +12906,14 @@ impl Builder<'_> {
                 }
                 let mut body_statements = Vec::new();
                 let outer = std::mem::replace(&mut self.settled, lead);
+                let previous_finally = (self.finally_span, self.finally_return);
+                if let Some(shared) = &shared {
+                    self.finally_span = Some(shared.protected);
+                    self.finally_return = Some(shared.returns[0]);
+                }
                 let walked = self.arm(body, &mut body_statements, &child(path, 0));
+                self.finally_span = previous_finally.0;
+                self.finally_return = previous_finally.1;
                 self.settled = outer;
                 walked?;
                 let mut written = Vec::with_capacity(catches.len());
@@ -12828,11 +12926,19 @@ impl Builder<'_> {
                         .insert(LocalVariable::whole(clause.parameter()));
                     self.clause_parameters.insert(clause.handler().bci());
                     let mut handler = Vec::new();
-                    self.arm(
+                    let previous_finally = (self.finally_span, self.finally_return);
+                    if let Some(shared) = &shared {
+                        self.finally_span = Some(shared.catch_body);
+                        self.finally_return = Some(shared.returns[1]);
+                    }
+                    let walked = self.arm(
                         clause.body(),
                         &mut handler,
                         &child(path, u32::try_from(index + 1).unwrap_or(u32::MAX)),
-                    )?;
+                    );
+                    self.finally_span = previous_finally.0;
+                    self.finally_return = previous_finally.1;
+                    walked?;
                     // P3 2.2's third negative: a clause whose body walk wrote **no** statement
                     // while the body's own region still holds instructions the header and the
                     // control flow do not account for is not an empty catch. The handler body is
@@ -12878,12 +12984,20 @@ impl Builder<'_> {
                 for clause in catches {
                     origin = origin.plus_derived(Origin::derived(clause.handler().bci()));
                 }
+                let finally_body = if let Some(shared) = &shared {
+                    for bci in &shared.facts {
+                        origin = origin.plus_derived(Origin::derived(*bci));
+                    }
+                    Some(self.body_range((shared.normal_cleanup, shared.normal_cleanup + 1))?)
+                } else {
+                    None
+                };
                 self.push(Stmt::new(
                     StmtKind::Try {
                         resources: Vec::new(),
                         catches: written,
                         body: body_statements,
-                        finally_body: None,
+                        finally_body,
                     },
                     origin,
                 ))
@@ -13331,6 +13445,27 @@ impl Builder<'_> {
         Ok(Stmt::new(
             StmtKind::Return { value: Some(value) },
             OriginSet::new(Origin::direct(return_bci)),
+        ))
+    }
+
+    /// A proved saved literal is evaluated in the source return position, before Java runs its
+    /// finally clause. The physical store/load are retained as derived origins, not emitted as an
+    /// Object-typed local that could hide the method's declared return type.
+    fn shared_saved_return(
+        &mut self,
+        save_bci: u32,
+        return_bci: u32,
+    ) -> Result<Stmt, ValueRenderFailure> {
+        let Some(store) = self.instructions.get(&save_bci).copied() else {
+            return Err(format!("the saved return at BCI {save_bci} has no names record").into());
+        };
+        let Some((_, value)) = stack_operands(store).last().copied() else {
+            return Err(format!("the saved return at BCI {save_bci} reads no value").into());
+        };
+        let value = self.return_expr(value, save_bci, return_bci)?;
+        Ok(Stmt::new(
+            StmtKind::Return { value: Some(value) },
+            OriginSet::new(Origin::direct(return_bci)).plus_derived(Origin::derived(save_bci)),
         ))
     }
 
@@ -14737,6 +14872,13 @@ impl Builder<'_> {
         };
         let instructions: Vec<SsaInstruction> = names.instructions().to_vec();
         for instruction in &instructions {
+            if self.shared_call_finally.is_some()
+                && self
+                    .finally_return
+                    .is_some_and(|(save, _)| save == instruction.bci())
+            {
+                continue;
+            }
             self.instruction(instruction)?;
         }
         if let Some((save, return_bci)) = self.finally_return
@@ -14744,7 +14886,12 @@ impl Builder<'_> {
                 .iter()
                 .any(|instruction| instruction.bci() == save)
         {
-            match self.guarded_return(return_bci) {
+            let returned = if self.shared_call_finally.is_some() {
+                self.shared_saved_return(save, return_bci)
+            } else {
+                self.guarded_return(return_bci)
+            };
+            match returned {
                 Ok(statement) => self.push(statement)?,
                 Err(reason) => self.fallback(vec![save, return_bci], reason, return_bci)?,
             }

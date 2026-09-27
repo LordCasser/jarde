@@ -1737,8 +1737,10 @@ struct Frame {
     /// so the walk that recovers it starts at it, and reading it as the start of *another* `try`
     /// would be reading the statement it is already building (see [`Walker::try_region`]).
     own_try: Option<usize>,
-    /// The one proved catch-all row consumed by an enclosing finally certificate.
-    own_finally: Option<(u32, (u32, u32))>,
+    /// The rows consumed by the enclosing finally certificate in this bounded body. The named
+    /// catch and try catch-all are both present in the protected body; the catch body owns its
+    /// separate catch-all row.
+    own_finally: Option<((u32, (u32, u32)), Option<(u32, (u32, u32))>)>,
     /// Other case-entry nodes of a switch arm. They end this arm before the next case claims them.
     case_entries: Option<BTreeSet<usize>>,
     /// The physical normal-flow exit of the loop whose body this frame walks.
@@ -2225,6 +2227,49 @@ impl Walker<'_> {
             // theirs. This is read **before** the block is marked visited: the statement's own range
             // starts in this block, and the walk that recovers it starts there too
             // ([`Self::try_region`]).
+            // A shared catch-all has to be selected before the ordinary named-catch reader:
+            // that reader owns only its named row and cannot account for the second protected
+            // range or either return copy. The private guard proof is complete before any child
+            // walk may mark a block visited.
+            if frame.own_try != Some(node)
+                && frame.own_finally.is_none()
+                && self.starts_catch(&current)
+                && let Some(plan) = crate::guard::shared_call_finally_candidate(
+                    self.canonical,
+                    self.view,
+                    self.ssa,
+                    self.operations,
+                    self.handlers,
+                    self.profile,
+                    &current,
+                    self.budget,
+                )?
+            {
+                if let Some(body) = self.shared_finally_body(&current, &plan, frame)? {
+                    for block in plan.owned() {
+                        if let Some(index) = self.view.index_of(block) {
+                            self.visited.insert(index);
+                        }
+                    }
+                    return Ok(one(
+                        Region::Guard {
+                            prefix,
+                            plan,
+                            body: Some(Box::new(body)),
+                        },
+                        None,
+                    ));
+                }
+                let reason = FallbackReason::Guard {
+                    pass: None,
+                    code: "jre_guard_finally_copy",
+                    at: current.bci(),
+                    message:
+                        "the shared catch-all finally has no complete bounded try and catch bodies"
+                            .into(),
+                };
+                return Ok(gap(prefix, plan.owned().to_vec(), reason, None));
+            }
             if frame.own_try != Some(node)
                 && frame.own_finally.is_none()
                 && self.starts_catch(&current)
@@ -3561,7 +3606,7 @@ impl Walker<'_> {
         frame.scope = Some(expected.clone());
         frame.boundary = None;
         frame.own_try = None;
-        frame.own_finally = Some((*row_ordinal, plan.body()));
+        frame.own_finally = Some(((*row_ordinal, plan.body()), None));
         let walked = self.region_at(start, &frame);
         let (regions, next) = match walked {
             Ok(result) => result,
@@ -3609,17 +3654,181 @@ impl Walker<'_> {
         Ok(Some(body))
     }
 
+    fn shared_finally_body(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let crate::guard::Shape::SharedCallFinally {
+            rows,
+            catch_body,
+            catch_handler,
+            catch_type,
+            catch_parameter,
+            returns,
+            ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        let previous = self.visited.clone();
+        let try_rows = ((rows[0], plan.body()), Some((rows[1], plan.body())));
+        let try_body = self.bounded_shared_finally_body(
+            start,
+            plan.body(),
+            returns[0].0,
+            try_rows,
+            plan,
+            outer,
+        )?;
+        let Some(try_body) = try_body else {
+            self.visited = previous;
+            return Ok(None);
+        };
+        let catch_rows = ((rows[2], *catch_body), None);
+        let catch = self.bounded_shared_finally_body(
+            catch_handler,
+            *catch_body,
+            returns[1].0,
+            catch_rows,
+            plan,
+            outer,
+        );
+        let catch = match catch {
+            Ok(catch) => catch,
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        let Some(catch) = catch else {
+            self.visited = previous;
+            return Ok(None);
+        };
+        let try_blocks = try_body.blocks().into_iter().collect::<BTreeSet<_>>();
+        let catch_blocks = catch.blocks().into_iter().collect::<BTreeSet<_>>();
+        if !try_blocks.is_disjoint(&catch_blocks) {
+            self.visited = previous;
+            return Ok(None);
+        }
+        Ok(Some(Region::Try {
+            prefix: Vec::new(),
+            lead: (plan.body().0, plan.body().0),
+            body: Box::new(try_body),
+            catches: vec![CatchClause {
+                type_indices: vec![*catch_type],
+                handler: catch_handler.clone(),
+                parameter: *catch_parameter,
+                body: Box::new(catch),
+            }],
+        }))
+    }
+
+    fn bounded_shared_finally_body(
+        &mut self,
+        start: &CanonicalBlockId,
+        span: (u32, u32),
+        save: u32,
+        rows: ((u32, (u32, u32)), Option<(u32, (u32, u32))>),
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let expected: BTreeSet<usize> = plan
+            .owned()
+            .iter()
+            .filter_map(|block| {
+                self.ssa
+                    .block(block)
+                    .is_some_and(|names| {
+                        names.instructions().iter().any(|instruction| {
+                            span.0 <= instruction.bci() && instruction.bci() < span.1
+                        })
+                    })
+                    .then(|| self.view.index_of(block))
+                    .flatten()
+            })
+            .collect();
+        let Some(start_node) = self.view.index_of(start) else {
+            return Ok(None);
+        };
+        if !expected.contains(&start_node)
+            || expected.iter().any(|node| {
+                self.visited.contains(node)
+                    || outer
+                        .scope
+                        .as_ref()
+                        .is_some_and(|scope| !scope.contains(node))
+            })
+            || expected.iter().any(|node| {
+                *node != start_node
+                    && self
+                        .view
+                        .predecessors(*node)
+                        .iter()
+                        .any(|parent| !expected.contains(parent))
+            })
+        {
+            return Ok(None);
+        }
+        let previous = self.visited.clone();
+        let mut frame = outer.clone();
+        frame.scope = Some(expected.clone());
+        frame.boundary = None;
+        frame.own_try = Some(start_node);
+        frame.own_finally = Some(rows);
+        let walked = self.region_at(start, &frame);
+        let (regions, next) = match walked {
+            Ok(result) => result,
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        let body = if regions.len() == 1 {
+            regions.into_iter().next().unwrap()
+        } else {
+            Region::Sequence { regions }
+        };
+        let blocks = body.blocks();
+        let actual = blocks
+            .iter()
+            .filter_map(|block| self.view.index_of(block))
+            .collect::<BTreeSet<_>>();
+        let save_count = blocks
+            .iter()
+            .filter(|block| {
+                self.ssa.block(block).is_some_and(|names| {
+                    names
+                        .instructions()
+                        .iter()
+                        .any(|instruction| instruction.bci() == save)
+                })
+            })
+            .count();
+        if next.is_some()
+            || !finally_body_supported(&body)
+            || actual != expected
+            || actual.len() != blocks.len()
+            || save_count != 1
+            || self
+                .visited
+                .difference(&previous)
+                .copied()
+                .collect::<BTreeSet<_>>()
+                != expected
+        {
+            self.visited = previous;
+            return Ok(None);
+        }
+        Ok(Some(body))
+    }
+
     fn finally_edges_accounted(
         &self,
         block: &CanonicalBlockId,
-        (ordinal, span): (u32, (u32, u32)),
+        rows: ((u32, (u32, u32)), Option<(u32, (u32, u32))>),
     ) -> bool {
-        let handler = self
-            .canonical
-            .handler_rows()
-            .iter()
-            .find(|row| row.ordinal() == ordinal)
-            .and_then(|row| row.handler());
         let mut accounted = false;
         for edge in self
             .canonical
@@ -3629,14 +3838,23 @@ impl Walker<'_> {
         {
             match edge.kind() {
                 CanonicalEdgeKind::Exception { handler_ordinal } => {
-                    if handler_ordinal != ordinal
-                        || handler != Some(edge.to())
-                        || !self.ssa.block(block).is_some_and(|names| {
-                            names.instructions().iter().any(|instruction| {
-                                span.0 <= instruction.bci() && instruction.bci() < span.1
-                            })
-                        })
-                    {
+                    let matches =
+                        [Some(rows.0), rows.1]
+                            .into_iter()
+                            .flatten()
+                            .any(|(ordinal, span)| {
+                                handler_ordinal == ordinal
+                                    && self.canonical.handler_rows().iter().any(|row| {
+                                        row.ordinal() == ordinal && row.handler() == Some(edge.to())
+                                    })
+                                    && self.ssa.block(block).is_some_and(|names| {
+                                        names.instructions().iter().any(|instruction| {
+                                            span.0 <= instruction.bci()
+                                                && instruction.bci() < span.1
+                                        })
+                                    })
+                            });
+                    if !matches {
                         return false;
                     }
                     accounted = true;
