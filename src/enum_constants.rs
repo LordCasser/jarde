@@ -1429,18 +1429,20 @@ pub(crate) fn prove_group(
     let prefix = if let Some(edge) = &delegation_edge {
         edge.initializer_prefix.clone()
     } else {
-        // The raw matcher below is deliberately small but still inspects the selected complete
-        // initializer stream. Charge and poll that bounded work before any local interpretation.
-        let mut literal_bytes = 0_u64;
-        for instruction in &clinit.instructions {
-            budget.charge(CountedBudgetDimension::IrItems, 3)?;
-            budget.poll()?;
-            if let Some(EnumCodeReference::String(value)) = &instruction.reference {
-                literal_bytes =
-                    literal_bytes.saturating_add(u64::try_from(value.len()).unwrap_or(u64::MAX));
+        if method_headers[constructor_index].descriptor.raw().0 == STRING_VARARGS_CTOR_DESCRIPTOR {
+            // This slice inspects the complete raw initializer stream and copies string literals.
+            // Charge it here without changing the pre-existing int/no-arg proof budget behavior.
+            let mut literal_bytes = 0_u64;
+            for instruction in &clinit.instructions {
+                budget.charge(CountedBudgetDimension::IrItems, 3)?;
+                budget.poll()?;
+                if let Some(EnumCodeReference::String(value)) = &instruction.reference {
+                    literal_bytes = literal_bytes
+                        .saturating_add(u64::try_from(value.len()).unwrap_or(u64::MAX));
+                }
             }
+            budget.charge(CountedBudgetDimension::AnalysisSteps, literal_bytes)?;
         }
-        budget.charge(CountedBudgetDimension::AnalysisSteps, literal_bytes)?;
         match prove_initializer_prefix(InitializerPrefixInput {
             code: clinit,
             owner,
