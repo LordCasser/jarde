@@ -181,6 +181,8 @@ pub(crate) struct LambdaSite {
     pub(crate) evidence: lambda::Evidence,
     /// Which writing the site took; `None` when it was refused.
     pub(crate) form: Option<LambdaForm>,
+    /// The class-source target and both conversion stages selected this exact reference.
+    pub(crate) typed_reference: bool,
     /// Why the site was not presented, when it was not.
     pub(crate) refusal: Option<LambdaRefusal>,
     /// Every value the site captures, in the order the instruction reads it off the stack.
@@ -341,6 +343,7 @@ pub(crate) struct Inputs<'a> {
     /// The selected class-source member targets whose proved paths may spell nested owners in this
     /// run's static calls.
     pub(crate) member_inner_targets: &'a [crate::report::ProvedMemberInnerTarget],
+    pub(crate) typed_functional_target: Option<crate::report::TypedFunctionalTarget>,
     /// The exact interface-special targets whose Java source binding the facade proved.
     pub(crate) interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
     pub(crate) reference_overload_calls: &'a [crate::report::ProvedReferenceOverloadCall],
@@ -6396,6 +6399,7 @@ pub(crate) fn build(
         chains: inputs.chains,
         members: inputs.members,
         member_inner_targets: inputs.member_inner_targets,
+        typed_functional_target: inputs.typed_functional_target,
         interface_super_calls: inputs.interface_super_calls,
         reference_overload_calls: inputs.reference_overload_calls,
         captured_outer_reads: inputs.captured_outer_reads,
@@ -7050,6 +7054,7 @@ struct Builder<'a> {
     /// The class's other members, when the caller handed them over (P3 2.2, A12).
     members: Option<&'a ClassMembers>,
     member_inner_targets: &'a [crate::report::ProvedMemberInnerTarget],
+    typed_functional_target: Option<crate::report::TypedFunctionalTarget>,
     interface_super_calls: &'a [crate::report::ProvedInterfaceSuperCall],
     reference_overload_calls: &'a [crate::report::ProvedReferenceOverloadCall],
     captured_outer_reads: &'a [crate::report::ProvedCapturedOuterRead],
@@ -20977,6 +20982,23 @@ impl Builder<'_> {
             self.members,
             &captures,
             &self.profile,
+            self.typed_functional_target.filter(|target| {
+                target.use_site == bci
+                    && target.site_cp == site.cp()
+                    && match operands.as_slice() {
+                        [] => true,
+                        [(_, value)] => {
+                            let Some(load) = self.instructions.get(&0) else {
+                                return false;
+                            };
+                            load.opcode() == 0x2a
+                                && matches!(load.reads(), [(Slot::Local(0), entry)]
+                                    if matches!(self.ssa.value(*entry).def(), Definition::Entry { slot: Slot::Local(0), .. }))
+                                && matches!(load.writes(), [(Slot::Stack(_), written)] if written == value)
+                        }
+                        _ => false,
+                    }
+            }),
             self.budget,
             bci,
         )?;
@@ -20998,6 +21020,7 @@ impl Builder<'_> {
                     evidence,
                     None,
                     Some(refusal.clone()),
+                    false,
                     &unrendered(),
                 );
                 return Err(refusal.message().to_string().into());
@@ -21038,6 +21061,7 @@ impl Builder<'_> {
                 evidence,
                 None,
                 Some(refusal.clone()),
+                false,
                 &unrendered(),
             );
             return Err(refusal.message().to_string().into());
@@ -21064,6 +21088,7 @@ impl Builder<'_> {
                     evidence,
                     None,
                     Some(refusal.clone()),
+                    false,
                     &unrendered(),
                 );
                 return Err(refusal.message().to_string().into());
@@ -21095,6 +21120,7 @@ impl Builder<'_> {
                         evidence,
                         None,
                         Some(refusal.clone()),
+                        false,
                         &unrendered(),
                     );
                     return Err(refusal.message().to_string().into());
@@ -21265,7 +21291,15 @@ impl Builder<'_> {
                 )
             }
         };
-        self.publish_lambda(bci, site, evidence, Some(plan.form), None, &captured);
+        self.publish_lambda(
+            bci,
+            site,
+            evidence,
+            Some(plan.form),
+            None,
+            plan.typed_reference,
+            &captured,
+        );
         Ok(expr.presenting(factory_type))
     }
 
@@ -21283,6 +21317,7 @@ impl Builder<'_> {
         evidence: crate::lambda::Evidence,
         form: Option<LambdaForm>,
         refusal: Option<Refusal>,
+        typed_reference: bool,
         captures: &[LambdaCapture],
     ) {
         let shape = refusal.map(|refusal| LambdaRefusal::of(&refusal, bci));
@@ -21301,6 +21336,7 @@ impl Builder<'_> {
             sam_descriptor: site.descriptor().to_string(),
             evidence,
             form,
+            typed_reference,
             refusal: shape,
             captures: captures.to_vec(),
         });
