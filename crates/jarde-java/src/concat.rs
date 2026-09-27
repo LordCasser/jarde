@@ -53,17 +53,21 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use jarde_jvm::method_ir::{Definition, Slot, SsaInstruction, SsaTable, ValueId};
+use jarde_jvm::method_ir::{
+    CanonicalCfg, CanonicalEdgeKind, Definition, PhiInput, Slot, SsaInstruction, SsaTable, ValueId,
+};
+use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use serde::Serialize;
 
 use crate::ast::Type;
 use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::evidence::Publication;
-use crate::facts::Operation;
+use crate::facts::{ConstantValue, FieldAccess, InvokeKind, Operation};
 use crate::lambda::parse_method;
 use crate::pass::{CONCAT, Precondition, RuleVersion};
 use crate::refusal::{Gap, Refusal};
+use crate::stop::{StopReason, charge, poll};
 
 /// The classes whose chain is a string concatenation, in the order the design lists them.
 ///
@@ -395,6 +399,375 @@ pub(crate) fn plan(ssa: &SsaTable, operations: &Operations) -> Plan {
     }
     plan.refused.sort_by_key(|refused| refused.head);
     plan
+}
+
+/// The one bounded branched form used by Java 8's four conditional String operands.
+/// The ordinary same-block rule and its `jre_concat_split` refusal remain unchanged. A
+/// successful certificate replaces that refusal only after the entire physical method, CFG,
+/// four stack Phis and one unaliased builder have been checked as a unit.
+pub(crate) fn plan_four_conditional_strings(
+    ssa: &SsaTable,
+    canonical: &CanonicalCfg,
+    operations: &Operations,
+    budget: &mut Budget,
+) -> Result<Plan, StopReason> {
+    let mut plan = plan(ssa, operations);
+    let Some(index) = plan
+        .refused
+        .iter()
+        .position(|candidate| candidate.refusal.code() == "jre_concat_split")
+    else {
+        return Ok(plan);
+    };
+    let head = plan.refused[index].head;
+    if let Some(chain) = verify_four_conditional_strings(head, ssa, canonical, operations, budget)?
+    {
+        if chain.owned.is_disjoint(&plan.owned) {
+            plan.refused.remove(index);
+            plan.owned.extend(&chain.owned);
+            plan.chains.insert(chain.tail, chain);
+        }
+    }
+    Ok(plan)
+}
+
+fn verify_four_conditional_strings(
+    head: u32,
+    ssa: &SsaTable,
+    canonical: &CanonicalCfg,
+    operations: &Operations,
+    budget: &mut Budget,
+) -> Result<Option<Chain>, StopReason> {
+    let all: Vec<_> = ssa
+        .blocks()
+        .iter()
+        .flat_map(|block| block.instructions().iter())
+        .collect();
+    let scan = all
+        .len()
+        .saturating_add(ssa.phis().len())
+        .saturating_add(canonical.edges().len());
+    poll(budget, Some(head))?;
+    charge(
+        budget,
+        CountedBudgetDimension::IrItems,
+        u64::try_from(scan).unwrap_or(u64::MAX),
+        Some(head),
+    )?;
+    // This certificate deliberately owns one complete method. A statement before, within or
+    // after the chain would need a separate evaluation-position proof.
+    if all.len() != 33 || canonical.unreachable().len() != 0 {
+        return Ok(None);
+    }
+    // At most 64 value readers chase at most 16 Phi levels; each level scans the Phi
+    // table. Reserve that complete work before following any recursive builder identity.
+    let phi_walk = 64usize.saturating_mul(17).saturating_mul(ssa.phis().len());
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(scan.saturating_add(phi_walk)).unwrap_or(u64::MAX),
+        Some(head),
+    )?;
+    let mut ordered = all;
+    ordered.sort_by_key(|instruction| instruction.bci());
+    if ordered[0].bci() != head {
+        return Ok(None);
+    }
+    let op = |index: usize| operations.get(ordered[index].bci());
+    let Some(Operation::Allocate { ty }) = op(0) else {
+        return Ok(None);
+    };
+    if ty != "java/lang/StringBuilder" || op(1) != Some(&Operation::Duplicate) {
+        return Ok(None);
+    }
+    let Some(Operation::Invoke(init)) = op(2) else {
+        return Ok(None);
+    };
+    if init.owner() != ty || init.name() != "<init>" || init.descriptor() != "()V" {
+        return Ok(None);
+    }
+    let Some(Operation::Invoke(to_string)) = op(31) else {
+        return Ok(None);
+    };
+    if to_string.owner() != ty
+        || to_string.name() != "toString"
+        || to_string.descriptor() != "()Ljava/lang/String;"
+        || op(32) != Some(&Operation::Return)
+    {
+        return Ok(None);
+    }
+    let mut block_of = BTreeMap::new();
+    for block in ssa.blocks() {
+        for instruction in block.instructions() {
+            block_of.insert(instruction.bci(), block.block().clone());
+        }
+    }
+    let mut producers = vec![ordered[0].bci(), ordered[1].bci(), ordered[2].bci()];
+    if !stack_operands(ordered[1])
+        .first()
+        .is_some_and(|(_, value)| is_the_instance(ssa, *value, &producers[..1]))
+    {
+        return Ok(None);
+    }
+    if !stack_operands(ordered[2])
+        .first()
+        .is_some_and(|(_, value)| is_the_instance(ssa, *value, &producers))
+    {
+        return Ok(None);
+    }
+    let mut appends = Vec::with_capacity(4);
+    let mut previous_append = None;
+    let mut field_owner = None;
+    let mut field_names = BTreeSet::new();
+    for part in 0..4 {
+        poll(budget, Some(head))?;
+        let base = 3 + 7 * part;
+        let [
+            load,
+            getter,
+            branch,
+            true_value,
+            transfer,
+            false_value,
+            append,
+        ] = &ordered[base..base + 7]
+        else {
+            unreachable!()
+        };
+        if !matches!(op(base), Some(Operation::Load { slot: 0 }))
+            || !matches!(op(base + 2), Some(Operation::Comparison { .. }))
+            || !matches!(
+                op(base + 3),
+                Some(Operation::Push(ConstantValue::String(_)))
+            )
+            || op(base + 4) != Some(&Operation::Transfer)
+            || !matches!(
+                op(base + 5),
+                Some(Operation::Push(ConstantValue::String(_)))
+            )
+        {
+            return Ok(None);
+        }
+        let getter_valid = match op(base + 1) {
+            Some(Operation::Field {
+                access: FieldAccess::Read,
+                is_static: false,
+                owner,
+                name,
+                descriptor,
+            }) if part < 3 && descriptor == "Z" => {
+                if field_owner.as_ref().is_some_and(|known| known != owner)
+                    || !field_names.insert(name.clone())
+                {
+                    false
+                } else {
+                    field_owner.get_or_insert_with(|| owner.clone());
+                    true
+                }
+            }
+            Some(Operation::Invoke(target))
+                if part == 3
+                    && target.kind() == InvokeKind::Static
+                    && field_owner.as_ref().is_some_and(|owner| {
+                        target.owner() == owner && target.descriptor() == format!("(L{owner};)Z")
+                    }) =>
+            {
+                true
+            }
+            _ => false,
+        };
+        if !getter_valid
+            || stack_operands(getter).last().map(|(_, value)| *value)
+                != load
+                    .writes()
+                    .iter()
+                    .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+        {
+            return Ok(None);
+        }
+        let getter_value = getter
+            .writes()
+            .iter()
+            .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value));
+        if stack_operands(branch).last().map(|(_, value)| *value) != getter_value {
+            return Ok(None);
+        }
+        let Some(Operation::Invoke(target)) = op(base + 6) else {
+            return Ok(None);
+        };
+        if target.owner() != ty
+            || target.name() != "append"
+            || target.descriptor() != "(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+        {
+            return Ok(None);
+        }
+        let Some(test_block) = block_of.get(&branch.bci()) else {
+            return Ok(None);
+        };
+        let (Some(true_block), Some(false_block), Some(join_block)) = (
+            block_of.get(&true_value.bci()),
+            block_of.get(&false_value.bci()),
+            block_of.get(&append.bci()),
+        ) else {
+            return Ok(None);
+        };
+        if block_of.get(&load.bci()) != Some(test_block)
+            || block_of.get(&getter.bci()) != Some(test_block)
+            || block_of.get(&transfer.bci()) != Some(true_block)
+            || test_block == true_block
+            || test_block == false_block
+            || true_block == false_block
+            || join_block == true_block
+            || join_block == false_block
+            || !matches!(op(base + 2), Some(Operation::Comparison { target, .. }) if *target == false_block.bci())
+        {
+            return Ok(None);
+        }
+        let edges = canonical.edges();
+        let successors = |from: &_| {
+            edges
+                .iter()
+                .filter(|edge| edge.from() == from)
+                .collect::<Vec<_>>()
+        };
+        let test_edges = successors(test_block);
+        let true_edges = successors(true_block);
+        let false_edges = successors(false_block);
+        if test_edges.len() != 2
+            || true_edges.len() != 1
+            || false_edges.len() != 1
+            || test_edges
+                .iter()
+                .any(|edge| edge.kind() != CanonicalEdgeKind::Normal)
+            || !test_edges.iter().any(|edge| edge.to() == true_block)
+            || !test_edges.iter().any(|edge| edge.to() == false_block)
+            || true_edges[0].kind() != CanonicalEdgeKind::Normal
+            || true_edges[0].to() != join_block
+            || false_edges[0].kind() != CanonicalEdgeKind::Normal
+            || false_edges[0].to() != join_block
+            || edges.iter().filter(|edge| edge.to() == join_block).count() != 2
+        {
+            return Ok(None);
+        }
+        let phi = ssa.phis().iter().find(|phi| {
+            phi.block() == join_block
+                && matches!(phi.slot(), Slot::Stack(_))
+                && phi.inputs().len() == 2
+                && phi.inputs()[0] != phi.inputs()[1]
+                && stack_operands(append)
+                    .last()
+                    .is_some_and(|(_, value)| *value == phi.value())
+        });
+        let Some(phi) = phi else { return Ok(None) };
+        let true_id = true_value
+            .writes()
+            .iter()
+            .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value));
+        let false_id = false_value
+            .writes()
+            .iter()
+            .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value));
+        if !matches!((true_id, false_id), (Some(t), Some(f))
+            if phi.inputs().contains(&PhiInput::Value(t)) && phi.inputs().contains(&PhiInput::Value(f)))
+            || ssa.value(phi.value()).uses().len() != 1
+            || ssa.value(phi.value()).uses()[0].bci() != Some(append.bci())
+        {
+            return Ok(None);
+        }
+        if !ssa.block(true_block).is_some_and(|block| {
+            block
+                .exit()
+                .iter()
+                .any(|(slot, value)| *slot == phi.slot() && Some(*value) == true_id)
+        }) || !ssa.block(false_block).is_some_and(|block| {
+            block
+                .exit()
+                .iter()
+                .any(|(slot, value)| *slot == phi.slot() && Some(*value) == false_id)
+        }) {
+            return Ok(None);
+        }
+        let append_operands = stack_operands(append);
+        if append_operands.len() != 2 || !builder_origin(ssa, append_operands[0].1, &producers, 0) {
+            return Ok(None);
+        }
+        // The earlier append must be the only builder producer carried to this test block.
+        if let Some(previous) = previous_append
+            && !builder_origin(ssa, append_operands[0].1, &[previous], 0)
+        {
+            return Ok(None);
+        }
+        producers.push(append.bci());
+        previous_append = Some(append.bci());
+        appends.push((append.bci(), Type::Reference("java.lang.String".into())));
+    }
+    let tail_operands = stack_operands(ordered[31]);
+    let return_operands = stack_operands(ordered[32]);
+    let tail_value = ordered[31]
+        .writes()
+        .iter()
+        .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value));
+    if tail_operands.len() != 1
+        || !builder_origin(ssa, tail_operands[0].1, &[producers[6]], 0)
+        || return_operands.len() != 1
+        || tail_value != Some(return_operands[0].1)
+    {
+        return Ok(None);
+    }
+    // No protected instruction, exceptional successor, or unaccounted builder observer may be
+    // folded into this single expression. Every opcode of this method was matched above.
+    if canonical
+        .throw_sites()
+        .iter()
+        .any(|site| !site.handlers().is_empty())
+    {
+        return Ok(None);
+    }
+    for instruction in &ordered {
+        let at = instruction.bci();
+        if [ordered[1].bci(), ordered[2].bci(), ordered[31].bci()].contains(&at)
+            || appends.iter().any(|(append, _)| *append == at)
+        {
+            continue;
+        }
+        if instruction
+            .reads()
+            .iter()
+            .any(|(_, value)| builder_origin(ssa, *value, &producers, 0))
+        {
+            return Ok(None);
+        }
+    }
+    Ok(Some(Chain {
+        head,
+        tail: ordered[31].bci(),
+        class: ty.clone(),
+        appends,
+        owned: ordered[..32]
+            .iter()
+            .map(|instruction| instruction.bci())
+            .collect(),
+    }))
+}
+
+fn builder_origin(ssa: &SsaTable, value: ValueId, producers: &[u32], depth: usize) -> bool {
+    if depth > 16 {
+        return false;
+    }
+    match ssa.value(value).def() {
+        Definition::Instruction { bci, .. } => producers.contains(bci),
+        Definition::Phi { .. } => ssa
+            .phis()
+            .iter()
+            .find(|phi| phi.value() == value)
+            .is_some_and(|phi| match phi.inputs() {
+                [PhiInput::Value(left), PhiInput::Value(right)] if left == right => {
+                    builder_origin(ssa, *left, producers, depth + 1)
+                }
+                _ => false,
+            }),
+        _ => false,
+    }
 }
 
 /// Every driver BCI one chain states: its head, its `toString` and each `append`.
