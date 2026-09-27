@@ -35,3 +35,5 @@ IllegalStateException:multi
 本轮没有发现普通 typed catch / multi-catch 首片差距。JADX 固定的 empty-catch 与 unreachable-catch 代表测试断言弱、且后者依赖 Smali；这两类没有纳入三方运行首片，仍需单独扩验，因此 CF-15 只标部分已测。
 
 证据文件保存输入、三方完整源码、原始 class 和三方运行输出。定向验证结果：`CARGO_TARGET_DIR=/tmp/jarde-cf15-target CARGO_INCREMENTAL=0 cargo test --test p3_typed_catch --test p3_nested_try`，typed catch 6/6、nested try 2/2 通过；这些现有测试是补充，不代替固定 JADX 测试或本次三方源样本。
+
+主线复核：root 用合入 CF-06/CF-08 的 CLI（SHA-256 `95295d3e1688077b9cde0620739178525fb95b77084425540452b79623b791d1`）重新恢复同一原 class，完整源码 SHA-256 为 `4be2fb3a699f16bba03336b882afedf88476940877b9345e0b6ea0b201286d3f`，与本目录 Jarde 归档相同；再次 Java 8 重编并 `-Xverify:all` 运行输出同上述五行。原始/JADX/Jarde 三份归档 class 亦独立验证运行一致。
