@@ -1,0 +1,7 @@
+null=ok
+normal=body,alternate,ok
+clear=body,ok
+body-throw=body,finally,IllegalStateException:body
+clear-throw=body,IllegalStateException:body
+finally-throw=body,alternate,ok
+both-throw=body,finally,IllegalArgumentException:finally

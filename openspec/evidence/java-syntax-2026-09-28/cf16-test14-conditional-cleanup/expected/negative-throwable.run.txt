@@ -1,0 +1,7 @@
+null=ok
+normal=body,finally,ok
+clear=body,ok
+body-throw=body,finally,NullPointerException:Cannot throw exception because "null" is null
+clear-throw=body,NullPointerException:Cannot throw exception because "null" is null
+finally-throw=body,finally,IllegalArgumentException:finally
+both-throw=body,finally,IllegalArgumentException:finally

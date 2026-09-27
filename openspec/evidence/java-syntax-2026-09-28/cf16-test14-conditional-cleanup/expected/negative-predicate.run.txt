@@ -1,0 +1,7 @@
+null=NullPointerException:Cannot invoke "jadx.tests.integration.trycatch.TestTryCatchFinally14$TestCls$TCls.doFinally()" because "this.t" is null
+normal=body,ok
+clear=body,NullPointerException:Cannot invoke "jadx.tests.integration.trycatch.TestTryCatchFinally14$TestCls$TCls.doFinally()" because "this.t" is null
+body-throw=body,finally,IllegalStateException:body
+clear-throw=body,IllegalStateException:body
+finally-throw=body,ok
+both-throw=body,finally,IllegalArgumentException:finally
