@@ -36,7 +36,7 @@ Jarde 的 `handled` 当前整体拒绝：`local 1 crosses a quoted fallback regi
 
 为隔离清理语句类型，`SharedFinallyCall.java` 是同形对照：唯一额外的私有 `cleanup()` 将计数器加一，三个副本各只含一条相同的 `invokestatic cleanup:()V`。`SharedFinallyCall.javap.txt` 固定其 ordinal 0 `[4,21)→26 IAE`、1 `[4,21)→35 any`、2 `[26,30)→35 any`；两份返回分别保存于 BCI 20/29，三份调用在 21/30/36，handler 在 35 保存异常并于 40 重抛。原 class 经 `javac --release 8 -g:none` 和 `java -Xverify:all` 输出仍为 `normal:1`、`caught:1`。`jarde-call/SharedFinallyCall.java` 显示 Jarde 仍以同一 slot 1 跨 quoted fallback 诊断整体拒绝，完整源码重编在第 29 行缺少返回。故 `iadd` 是增量效果证明要求，但**不是**共享 row/双返回结构门槛失败的唯一原因；调用形态也未取得所有权闭包。
 
-## 1.2 结论：门槛未通过，保留拒绝
+## 1.2 历史结论：门槛未通过，保留拒绝
 
 逐点核对现有 Guard/Region/Builder，尚无法证明该类族的有界子正文能完整且一次性认领：
 
@@ -44,7 +44,7 @@ Jarde 的 `handled` 当前整体拒绝：`local 1 crosses a quoted fallback regi
 2. `region.rs::Walker::region_at` 在同一入口先走 `starts_catch`；`guard::catches` 会请求 guard 裁决，guard 对候选 catch-all 拒绝后，不生成具名 catch 子 Region。现有 `Frame::own_finally` 仅存一条 `(ordinal, span)`，`finally_edges_accounted` 对另一条异常边返回 false；`finally_body` 只检查一份受保护正文及一次 save，且该 frame 抑制 nested catch 入口。没有经证书封闭的 `[4,21)` try、`[31,35)` catch 和两条 catch-all 边的联合 owner。
 3. `build.rs` 的 `Shape::Finally` 分支只带一个 `(save, return)`，构建 `StmtKind::Try` 时固定 `catches: Vec::new()`；它的临时 `finally_return` 也只针对一处保存。当前失败的 slot 1 局部作用域与两个 saved return，不能靠放宽声明规则或把 catch 副本写进 try body 解决。必须先证明两个子 Region 和两个局部作用域、异常行优先级与失败 checkpoint 闭合，才能提交 AST 与 visited。
 
-以上是当前接缝的具体阻碍，并非证明该形态永远无法实现。按照任务 1.2 的门槛，本分支不新增通用异常 IR、不放宽旧证书、不输出部分 try；2.x/3.x 维持未完成。
+以上是当时接缝的具体阻碍，并非证明该形态永远无法实现。按照任务 1.2 的门槛，该阶段不新增通用异常 IR、不放宽旧证书、不输出部分 try；随后仅实现了下述调用型切片，字段增量型仍未完成。
 
 下一次可拆的**最小内部合同**是：私有 Guard 证书把 ordinal `[0,1,2]`、`[4,21)` 与 `[31,35)`、唯一 handler 45、两组 `(save, cleanup, load, return)` 及 `(45, cleanup, 54,55)` 同异常重抛作为一个不可分割的结果；清理的 `iadd` 只能在三个副本的 SSA 操作/值/字段目标与效果顺序全部相等后纳入该证书，不能单独放宽通用 `cleanup_sequence`。Region 必须先分别恢复恰好覆盖 `[4,21)` 和 `[31,35)` 的子正文，且逐条匹配 ordinal 0 的优先级和 ordinal 1/2 的异常边；每个子正文的物理块集与证书 `owned` 不交叠、并集完整。Builder 应在同一 checkpoint 下给两个 saved return 各安放其原值，只将一份清理放进既有 `StmtKind::Try` 的 `finally_body`，将 catch 参数与正文放进 `catches`。所有权、声明、来源或预算/取消任一步失败都回滚整个候选，原物理 BCI 和三条异常行保持可追溯拒绝。上述合同成立后才可运行 Jarde 完整源码与原 class 的行为对照。
 
