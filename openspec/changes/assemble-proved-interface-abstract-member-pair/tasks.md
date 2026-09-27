@@ -17,4 +17,4 @@
 
 - [x] 4.1 用 fresh CLI 比较原/JADX/Jarde 的完整 `Shape` Java 8 源码与同一 Runner，`java -Xverify:all` 行为和反射一致；所有有效近邻保守拒绝，不把 `Generic.A` 误投影。
 - [x] 4.2 运行现有 `SingleAbstract.A`、构造型 static member、嵌套 enum/annotation、member family 与 class-source 测试，`cargo test -p jarde --test class_source --locked`、`cargo check --workspace --locked`、fmt、OpenSpec strict、diff check；清理本任务专用 Cargo target。
-- [ ] 4.3 root 独立审阅联合关系、接口声明、原子来源、三方运行和负例，更新 EM-01 清单并写验收记录；仅验收 `Shape` pair，`Generic.A` 另列。
+- [x] 4.3 root 独立审阅联合关系、接口声明、原子来源、三方运行和负例，更新 EM-01 清单并写验收记录；仅验收 `Shape` pair，`Generic.A` 另列。
