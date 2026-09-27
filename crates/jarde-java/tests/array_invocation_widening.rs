@@ -30,6 +30,9 @@ const UNKNOWN_RELATION: &[u8] = include_bytes!(
 const BUILTIN_INTERFACES: &[u8] = include_bytes!(
     "../../../tests/fixtures/p3-array-invocation-widening/v8/ArrayInterfaceProbe.class"
 );
+const LIST_TO_ITERABLE: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-27/cf10-foreach/isolation/list-iterable-call/original/ListToIterable.class"
+);
 
 fn limits() -> Limits {
     Limits {
@@ -335,6 +338,69 @@ fn default_and_all_evidence_emit_the_same_successful_body_and_stop_before_partia
         CORE,
         "typedStringArray",
         "([Ljava/lang/String;)Ljava/lang/String;",
+        1,
+        false,
+        None,
+        true,
+    );
+    assert!(!cancelled.produced());
+    assert!(cancelled.text.is_empty());
+    assert!(cancelled.source_map.is_empty());
+    assert!(
+        cancelled
+            .stop()
+            .expect("cancelled run stops")
+            .is_cancelled()
+    );
+}
+
+#[test]
+fn list_argument_keeps_the_iterable_call_once_with_both_origins() {
+    let report = recover_method(LIST_TO_ITERABLE, "main", "([Ljava/lang/String;)V", 1);
+    assert_recovered(&report, "consume((java.lang.Iterable) asList(");
+    assert_eq!(
+        report.text.matches("asList(").count(),
+        1,
+        "the argument producer is evaluated once:\n{}",
+        report.text
+    );
+    let producer = report
+        .source_map
+        .segments()
+        .iter()
+        .find(|segment| segment.text(&report.text).contains("asList("))
+        .expect("the producer has a source-map segment");
+    assert!(producer.origin().bcis().contains(&19));
+    let invocation = report
+        .source_map
+        .segments()
+        .iter()
+        .find(|segment| {
+            segment
+                .text(&report.text)
+                .contains("consume((java.lang.Iterable)")
+        })
+        .expect("the target-typed invocation has a source-map segment");
+    assert!(invocation.origin().bcis().contains(&22));
+
+    let stopped = recover_method_with_options(
+        LIST_TO_ITERABLE,
+        "main",
+        "([Ljava/lang/String;)V",
+        1,
+        false,
+        Some(8),
+        false,
+    );
+    assert!(!stopped.produced());
+    assert!(stopped.text.is_empty());
+    assert!(stopped.source_map.is_empty());
+    assert!(matches!(stopped.outcome, RecoveryOutcome::Stopped(_)));
+
+    let cancelled = recover_method_with_options(
+        LIST_TO_ITERABLE,
+        "main",
+        "([Ljava/lang/String;)V",
         1,
         false,
         None,
