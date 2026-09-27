@@ -11,6 +11,7 @@
 ## Decisions
 
 - 在 enum initializer 的类级原始 Code 证书中验证 branch diamond：唯一 predicate producer，条件分支左右路径各有一枚 literal，路径无其他操作，并在唯一 join 按原 stack value 进入唯一匹配构造器；保留每个 branch/arm/join/constructor BCI。
+- 冻结实现只接受直接的同类 `invokestatic ()Z` predicate、`ifeq`/`ifne`、一条 literal fall-through arm、一条 `goto` 和一条 literal taken arm；按 branch polarity 绑定 Java true/false 次序，再要求 `goto` 目标就是唯一 constructor call。它不读取 predicate 方法体，也不把其他 boolean producer、嵌套 diamond、带操作的 arm 或 switch 归约成 ternary。
 - 对 predicate 只复用同次可读 expression evidence；不得从输出文本解析、凭相邻 BCI 将未证明调用提升成条件。已证明的条件 effects 必须在打印表达式处执行恰一次。
 - 让新 argument variant 仍进入既有完整 enum group；与 constructor descriptor、物理常量字段、`putstatic` 位置和 `$VALUES` 顺序闭合。任一常量不满足形状则整组拒绝。
 - 不把 JADX 的 String ternary 用于证明 int gate；它只说明组合形态和 DT-11 的简单 String constructor argument 未分别验证。实施边界仍以 `TernaryInit` 与 `LiteralInit` 控制为准。

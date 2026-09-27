@@ -1,0 +1,22 @@
+package dt14;
+
+/* JADX INFO: loaded from: input.jar:dt14/StringTernaryInit.class */
+public enum StringTernaryInit {
+    FIRST(useNumber() ? "1" : "A"),
+    SECOND(useNumber() ? "2" : "B"),
+    ANY(useNumber() ? "1" : "2");
+
+    private final String value;
+
+    StringTernaryInit(String str) {
+        this.value = str;
+    }
+
+    String value() {
+        return this.value;
+    }
+
+    static boolean useNumber() {
+        return false;
+    }
+}

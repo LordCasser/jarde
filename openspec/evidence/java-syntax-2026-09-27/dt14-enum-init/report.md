@@ -51,4 +51,10 @@ StringTernaryInit.java:6: error: enum constant expected here
 
 ## 窄提案
 
-分别提交 `recover-enum-user-initializer-suffix` 与 `recover-ternary-enum-arguments`。前者只在完整 enum prefix 后的用户 `<clinit>` suffix 能由同次结构证据完整表达时，原子投影 enum 常量与用户 static field/block；首个验收形状是上面的 `Map` 初始化与 `values()` 遍历，不扩成任意 class initializer decompiler。后者只接受完整、有界的 conditional diamond 构造实参，保留条件的单次求值/分支次序和对应构造器实参。凡未解释指令、额外效果、入口/汇合歧义或停止都拒绝整个 enum 常量组，不剥除物理来源。两项都不实现生产代码；普通枚举、DT-11 String-varargs 和 DT-12/13 均保持独立边界。
+分别提交 `recover-enum-user-initializer-suffix` 与 `recover-ternary-enum-arguments`。前者只在完整 enum prefix 后的用户 `<clinit>` suffix 能由同次结构证据完整表达时，原子投影 enum 常量与用户 static field/block；首个验收形状是上面的 `Map` 初始化与 `values()` 遍历，不扩成任意 class initializer decompiler。后者只接受完整、有界的 conditional diamond 构造实参，保留条件的单次求值/分支次序和对应构造器实参。凡未解释指令、额外效果、入口/汇合歧义或停止都拒绝整个 enum 常量组，不剥除物理来源。初始审计未实现生产代码；后者的 int 首片验收见下节。普通枚举、DT-11 String-varargs 和 DT-12/13 均保持独立边界。
+
+## int ternary proposal 验收
+
+`recover-ternary-enum-arguments` 实现后，执行 `python3 openspec/evidence/java-syntax-2026-09-27/dt14-enum-init/replay.py fixed-ternary`。原始、固定 JADX `2fb1b16386941660fda07e9017285aec40fcb37f` 和 Jarde 的 int ternary 全源码均以 Java 8 编译并通过 `java -Xverify:all`，输出一致为 `ternary=1:20:1:3`。literal 与 plain enum 控制继续一致通过。String ternary 仍被拒绝并保持原有重编失败，用来记录 DT-11 边界；Map suffix 也仍被拒绝，属于另一个提案。
+
+生产证明仅接收直接的同类 `invokestatic ()Z`、`ifeq` 或 `ifne`、两个 int literal arm、一个 `goto` 及唯一 constructor join。branch target 与 join target 均逐一匹配真实指令 BCI，`if` polarity 决定源 true/false arm；条件方法体不被额外读取。单元测试另外用可由 Java 8 编译且经 `-Xverify:all` 检查的带调用 arm、带字段写 arm和嵌套 diamond 验证原子拒绝及 `<clinit>` 物理 origin 保留；还用反转 predicate 和交替调用计数验证 arm 次序、执行位置、次数与顺序。逐案例源码、javap、运行状态保存在 `fixed-ternary/`。

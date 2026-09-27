@@ -1,0 +1,63 @@
+// jarde: presentation of `dt14/CustomInit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt14;
+
+public enum CustomInit {
+    public static final dt14.CustomInit RED;
+
+    public static final dt14.CustomInit BLUE;
+
+    // jarde: field Signature projection refused for `BY_NAMELjava/util/Map;`: unsupported (field_generic_source_unproved): field name, flags, descriptor, or type-use annotation path cannot be preserved
+    public static final java.util.Map BY_NAME;
+
+    private static final dt14.CustomInit[] $VALUES;
+
+    public static dt14.CustomInit[] values() {
+        // @method values()[Ldt14/CustomInit;
+        // @declaration a static method of `dt14.CustomInit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (dt14.CustomInit[]) dt14.CustomInit.$VALUES.clone();
+    }
+
+    public static dt14.CustomInit valueOf(java.lang.String arg0) {
+        // @method valueOf(Ljava/lang/String;)Ldt14/CustomInit;
+        // @declaration a static method of `dt14.CustomInit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (dt14.CustomInit) java.lang.Enum.valueOf(dt14.CustomInit.class, arg0);
+    }
+
+    // jarde: generic Signature projection refused for `<init>(Ljava/lang/String;I)V`: invalid input (jvm_signature_erasure_mismatch): erased Signature disagrees with the physical descriptor at parameter count
+    private CustomInit(java.lang.String arg1, int arg2) {
+        // @method <init>(Ljava/lang/String;I)V
+        // @declaration a constructor of `dt14.CustomInit`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super(arg1, arg2);
+        return;
+    }
+
+    private static dt14.CustomInit[] $values() {
+        // @method $values()[Ldt14/CustomInit;
+        // @declaration a static method of `dt14.CustomInit`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return new dt14.CustomInit[]{dt14.CustomInit.RED, dt14.CustomInit.BLUE};
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `dt14.CustomInit`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        dt14.CustomInit[] local0;
+        int local1;
+        int local2;
+        dt14.CustomInit.RED = new dt14.CustomInit("RED", 0);
+        dt14.CustomInit.BLUE = new dt14.CustomInit("BLUE", 1);
+        dt14.CustomInit.$VALUES = $values();
+        dt14.CustomInit.BY_NAME = new java.util.HashMap();
+        local0 = values();
+        local1 = local0.length;
+        for (local2 = 0; local2 < local1; local2 = local2 + 1) {
+            Object local3 = local0[local2];
+            dt14.CustomInit.BY_NAME.put((java.lang.Object) local3.name(), (java.lang.Object) local3);
+        }
+    }
+}

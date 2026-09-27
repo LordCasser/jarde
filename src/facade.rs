@@ -7465,6 +7465,14 @@ fn certify_enum_int_static_fields(
                 collect(left, refs, budget)?;
                 collect(right, refs, budget)?;
             }
+            Argument::Ternary {
+                when_true,
+                when_false,
+                ..
+            } => {
+                collect(when_true, refs, budget)?;
+                collect(when_false, refs, budget)?;
+            }
         }
         Ok(())
     }
@@ -8022,6 +8030,7 @@ fn prove_enum_physical_constructor(
             immediate: operands.immediate,
             local: operands.local.map(|local| local.index),
             reference,
+            branch_target_bci: None,
         });
     }
     let result =
@@ -16918,6 +16927,7 @@ public class Probe {
             immediate: None,
             local: None,
             reference,
+            branch_target_bci: None,
         };
         let mut instructions = Vec::new();
         for constant in &shape.constants {

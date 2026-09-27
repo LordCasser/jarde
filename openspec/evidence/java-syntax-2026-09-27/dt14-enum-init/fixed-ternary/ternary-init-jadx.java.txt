@@ -1,0 +1,24 @@
+package dt14;
+
+/* JADX INFO: loaded from: input.jar:dt14/TernaryInit.class */
+public enum TernaryInit {
+    FIRST(useNumber() ? 1 : 10),
+    SECOND(useNumber() ? 2 : 20),
+    ANY(useNumber() ? 1 : 2);
+
+    static int calls;
+    private final int code;
+
+    TernaryInit(int i) {
+        this.code = i;
+    }
+
+    int code() {
+        return this.code;
+    }
+
+    public static boolean useNumber() {
+        calls++;
+        return calls % 2 == 1;
+    }
+}

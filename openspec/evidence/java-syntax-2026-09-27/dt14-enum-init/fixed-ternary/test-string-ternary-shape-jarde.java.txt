@@ -1,0 +1,81 @@
+// jarde: presentation of `dt14/StringTernaryInit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt14;
+
+public enum StringTernaryInit {
+    public static final dt14.StringTernaryInit FIRST;
+
+    public static final dt14.StringTernaryInit SECOND;
+
+    public static final dt14.StringTernaryInit ANY;
+
+    private final java.lang.String value;
+
+    private static final dt14.StringTernaryInit[] $VALUES;
+
+    public static dt14.StringTernaryInit[] values() {
+        // @method values()[Ldt14/StringTernaryInit;
+        // @declaration a static method of `dt14.StringTernaryInit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (dt14.StringTernaryInit[]) dt14.StringTernaryInit.$VALUES.clone();
+    }
+
+    public static dt14.StringTernaryInit valueOf(java.lang.String arg0) {
+        // @method valueOf(Ljava/lang/String;)Ldt14/StringTernaryInit;
+        // @declaration a static method of `dt14.StringTernaryInit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (dt14.StringTernaryInit) java.lang.Enum.valueOf(dt14.StringTernaryInit.class, arg0);
+    }
+
+    // jarde: generic Signature projection refused for `<init>(Ljava/lang/String;ILjava/lang/String;)V`: invalid input (jvm_signature_erasure_mismatch): erased Signature disagrees with the physical descriptor at parameter count
+    private StringTernaryInit(java.lang.String arg1, int arg2, java.lang.String arg3) {
+        // @method <init>(Ljava/lang/String;ILjava/lang/String;)V
+        // @declaration a constructor of `dt14.StringTernaryInit`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super(arg1, arg2);
+        this.value = arg3;
+        return;
+    }
+
+    java.lang.String value() {
+        // @method value()Ljava/lang/String;
+        // @declaration an instance method of `dt14.StringTernaryInit`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.value;
+    }
+
+    static boolean useNumber() {
+        // @method useNumber()Z
+        // @declaration a static method of `dt14.StringTernaryInit`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return false;
+    }
+
+    private static dt14.StringTernaryInit[] $values() {
+        // @method $values()[Ldt14/StringTernaryInit;
+        // @declaration a static method of `dt14.StringTernaryInit`, member flags 0x100a
+        // recovered from bytecode; presentation is not claimed to compile
+        return new dt14.StringTernaryInit[]{dt14.StringTernaryInit.FIRST, dt14.StringTernaryInit.SECOND, dt14.StringTernaryInit.ANY};
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `dt14.StringTernaryInit`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 4 6 7 10 13 15 18
+        // the carried argument crosses an independent instruction at BCI 20
+        // @bytecode 20 23 26 29 30 32 33 36 39 41 44
+        // the carried argument crosses an independent instruction at BCI 20
+        // @bytecode 46
+        // the dependency chain from BCI 46 to final consumer 49 is not bounded
+        // @bytecode 49 46
+        // the value at BCI 49 was produced by a saved declaration this run could not commit
+        // @bytecode 52
+        // the instruction at BCI 52 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 55
+        // the instruction at BCI 55 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 75 72
+        // the value at BCI 75 comes from an Duplicate at BCI 55, which produces no expression this subset writes
+        dt14.StringTernaryInit.$VALUES = $values();
+    }
+}
