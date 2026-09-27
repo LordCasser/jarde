@@ -1,0 +1,36 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_source_sha256": {
+    "jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch.java": "36848c105c3b6647a3b1a2e3a9aa3c185beb8819faa5a9b285932c082e4f3ba6",
+    "jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchNoDefault.java": "f3681c9b7864e8991a01a060d7e6acb28114143f9b7221cb41a50fa5bc164f76",
+    "jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchLabels.java": "8fad0c3325b33685dbb985bc9e9f55c130c8c678e4e333b60cd66dd02875ed77",
+    "jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchFallThrough.java": "09923ba8927401aeda55ab857a61c0297298ee9bfd88c853c585e10e800d8501",
+    "jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase.java": "2d8274e36ca18118ca94554c0d5afd1f9ddf21441c2fff304d242454cc409d54",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/SwitchRegionMaker.java": "741133377c6d9ec0f60c40d234f01e3dbd79f2bd80e4a2ed15ca105f0a408bd1",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/ModVisitor.java": "2d208158695097fd5ee4bfb833fa865b4b75e0f784fc9b8fde1ffbb3e49cf69f",
+    "jadx-core/src/main/java/jadx/core/codegen/RegionGen.java": "8b80ef618487e38cb09a2bbd81b70de0dd096996a321a0c9dcf55e1dc011d4ee",
+    "jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java": "13fc172963c7a12b97ce500cb17fe1e893802ec227dc4ca3ac0955e5a0bd325c"
+  },
+  "input_sha256": "3d71be525a7feca77f29464a4cc27b9a5e30e790536a5d0e30e42dcec62bc19c",
+  "runner_sha256": "9328261498b23bc101842c358d322f1e8765c45f2437f22142f0c737c10db0b6",
+  "class_sha256": [
+    "b631927bf0557b89de102f37f2d4d6662642b58ec851059458302e1f48697a71  IntegerSwitchAudit.jadx.class",
+    "28e29e1d2449ded82992e1b78e43412ea54c2d60dad23cc998a384585b216c3f  IntegerSwitchAudit.jarde.class",
+    "b1a6be1a8c0c3ecc517cae946e298711f1367b5735c683c69d4812c015f9857b  IntegerSwitchAudit.original.class"
+  ],
+  "runtime": [
+    "-1=-1,3,99,0",
+    "1=11,3,99,0",
+    "2=20,3,99,0",
+    "7=11,3,99,0",
+    "10=-1,14,99,0",
+    "20=-1,6,99,0",
+    "30=-1,-5,99,0",
+    "4=-1,3,2748,0",
+    "8=-1,3,3294,0",
+    "9=-1,3,99,0",
+    "2748=-1,3,99,3294"
+  ],
+  "javac_release": 8,
+  "verification": "java -Xverify:all"
+}

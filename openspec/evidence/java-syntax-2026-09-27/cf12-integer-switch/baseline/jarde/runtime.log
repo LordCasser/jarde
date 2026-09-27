@@ -1,0 +1,16 @@
+exit=0
+command=java -Xverify:all -cp /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf12-tbe43ynd/jarde-classes IntegerSwitchAuditRunner
+stdout:
+-1=-1,3,99,0
+1=11,3,99,0
+2=20,3,99,0
+7=11,3,99,0
+10=-1,14,99,0
+20=-1,6,99,0
+30=-1,-5,99,0
+4=-1,3,2748,0
+8=-1,3,3294,0
+9=-1,3,99,0
+2748=-1,3,99,3294
+
+stderr:

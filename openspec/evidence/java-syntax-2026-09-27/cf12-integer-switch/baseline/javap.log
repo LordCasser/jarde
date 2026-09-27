@@ -1,0 +1,152 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf12-tbe43ynd/original/IntegerSwitchAudit.class
+  Last modified 2026年9月27日; size 603 bytes
+  SHA-256 checksum b1a6be1a8c0c3ecc517cae946e298711f1367b5735c683c69d4812c015f9857b
+public class IntegerSwitchAudit
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #7                          // IntegerSwitchAudit
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 5, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // IntegerSwitchAudit
+   #8 = Utf8               IntegerSwitchAudit
+   #9 = Utf8               LOW
+  #10 = Utf8               I
+  #11 = Utf8               ConstantValue
+  #12 = Integer            2748
+  #13 = Utf8               HIGH
+  #14 = Integer            3294
+  #15 = Utf8               Code
+  #16 = Utf8               grouped
+  #17 = Utf8               (I)I
+  #18 = Utf8               StackMapTable
+  #19 = Utf8               fallthrough
+  #20 = Utf8               noDefault
+  #21 = Utf8               labelConstant
+{
+  static final int LOW;
+    descriptor: I
+    flags: (0x0018) ACC_STATIC, ACC_FINAL
+    ConstantValue: int 2748
+
+  static final int HIGH;
+    descriptor: I
+    flags: (0x0018) ACC_STATIC, ACC_FINAL
+    ConstantValue: int 3294
+
+  public IntegerSwitchAudit();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int grouped(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: lookupswitch  { // 3
+                       1: 36
+                       2: 39
+                       7: 36
+                 default: 42
+            }
+        36: bipush        11
+        38: ireturn
+        39: bipush        20
+        41: ireturn
+        42: iconst_m1
+        43: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 36 /* same */
+        frame_type = 2 /* same */
+        frame_type = 2 /* same */
+
+  public static int fallthrough(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: iconst_3
+         1: istore_1
+         2: iload_0
+         3: lookupswitch  { // 3
+                      10: 36
+                      20: 39
+                      30: 46
+                 default: 49
+            }
+        36: iinc          1, 4
+        39: iload_1
+        40: iconst_2
+        41: imul
+        42: istore_1
+        43: goto          49
+        46: bipush        -5
+        48: istore_1
+        49: iload_1
+        50: ireturn
+      StackMapTable: number_of_entries = 4
+        frame_type = 252 /* append */
+          offset_delta = 36
+          locals = [ int ]
+        frame_type = 2 /* same */
+        frame_type = 6 /* same */
+        frame_type = 2 /* same */
+
+  public static int noDefault(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=1
+         0: bipush        99
+         2: istore_1
+         3: iload_0
+         4: lookupswitch  { // 2
+                       4: 32
+                       8: 39
+                 default: 43
+            }
+        32: sipush        2748
+        35: istore_1
+        36: goto          43
+        39: sipush        3294
+        42: istore_1
+        43: iload_1
+        44: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 252 /* append */
+          offset_delta = 32
+          locals = [ int ]
+        frame_type = 6 /* same */
+        frame_type = 3 /* same */
+
+  public static int labelConstant(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: lookupswitch  { // 1
+                    2748: 20
+                 default: 24
+            }
+        20: sipush        3294
+        23: ireturn
+        24: iconst_0
+        25: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 20 /* same */
+        frame_type = 3 /* same */
+}

@@ -1,0 +1,4 @@
+exit=0
+command=cargo run -q -p jarde-cli -- class-source --input /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-cf12-tbe43ynd/original/IntegerSwitchAudit.class --class IntegerSwitchAudit --policy single-class --release 8 --format text --output /Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde/openspec/evidence/java-syntax-2026-09-27/cf12-integer-switch/baseline/IntegerSwitchAudit.jarde.java
+stdout_sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+stderr_sha256=e3953b6ee170521ba81c2c9200be2b8d01534797419fb5a282748491c21d5e65
