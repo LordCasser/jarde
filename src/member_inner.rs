@@ -2600,7 +2600,8 @@ mod tests {
         assert!(!capture_write_is_unique_site(
             read_id,
             8,
-            &proved.constructor
+            &proved.constructor,
+            2
         ));
         assert_eq!(proved.reads[0].consumer_bcis, vec![11]);
 
@@ -2617,6 +2618,7 @@ mod tests {
             b"NamedMemberFamilyStage1$Member",
             b"this$0",
             b"LNamedMemberFamilyStage1;",
+            2,
             &mut budget,
         )
         .unwrap()
@@ -2633,6 +2635,7 @@ mod tests {
             b"NamedMemberFamilyStage1$Member",
             b"this$0",
             b"LNamedMemberFamilyStage1;",
+            2,
             &mut budget,
         )
         .unwrap()
