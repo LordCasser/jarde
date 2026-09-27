@@ -36,14 +36,15 @@ EM 的 10 个剔除条目各有去向：EM-08→CF-18，EM-09→CF-07/16，EM-14
 | 已证差距，已写独立 OpenSpec | DT-12 | [双匿名枚举体审计](../java-syntax-2026-09-27/dt12-anonymous-enum-audit/analysis.md)：JADX `TestEnums2a` 的两个匿名常量体各取一个 String 字面量，原版/JADX Java 8 全源码重编与验证运行一致，Jarde 物理枚举完整源码重编失败；零参数体证书未覆盖显式 String 实参。`TestEnums6` 没有匿名常量体，改归 DT-11 邻接边界。 |
 | 已证差距，已写独立 OpenSpec | DT-13 | [嵌套枚举与接口声明对照](../java-syntax-2026-09-27/dt13-enum-shapes/report.md)：简单 `enum implements I` 完整源码 Java 8 编译和 `-Xverify:all` 行为通过；嵌套 enum 被拆为 `$` 顶层类，原 `Outer.Inner` API consumer 编译失败；已提窄 OpenSpec，尚未实现。 |
 | 已证差距，已写独立 OpenSpec | DT-16 | [实例泛型 null 返回对照](../java-syntax-2026-09-27/dt16-generic-null-return/report.md)：原/JADX 的 `<T extends Number> T value()` 与外部显式 `<Integer>` consumer 均通过 Java 8 重编及验证运行；Jarde 只写擦除后的 `Number value()`，原 consumer 编译失败。现有同轮候选未准入 `return null;`，窄提案已冻结。 |
+| 已证差距，已写独立 OpenSpec | DT-17 | [单 List 参数空 void 通配符对照](../java-syntax-2026-09-27/dt17-wildcard-void/report.md)：原/JADX/Jarde 完整源码均可 Java 8 重编运行，但 Jarde 的 `?`、上下界及数组界五个反射参数都退化为 raw `List`；无 Signature 的 raw 控制保持正确。窄提案复用现有 reader/printer 与同轮空正文候选。 |
 | JADX 未完成 | CF-17 | `TestTryWithResources` 的唯一目标标为 `@NotYetImplemented` |
 | 部分已测、仍待扩验 | CF-01 | [真实短路 CFG 与否定组合](../java-syntax-2026-09-27/cf01-short-circuit/report.md)已证明固定小形态原/JADX/Jarde 完整 Java 8 源码重编及 `-Xverify:all` 运行一致；账本其余形态仍待测。[eager 反例](../java-syntax-2026-09-27/cf01-eager-boolean/report.md)单独记录 JADX 将布尔 `&` / `|` 错写成 `&&` / `||` 的副作用差异，Jarde 保留 eager 次数 |
 | 部分已测、仍待扩验 | DT-15 | [顶级类与接口泛型上界](../java-syntax-2026-09-27/dt15-generic-class-bounds/report.md)：原/JADX/Jarde 的完整类型源码与同一 API consumer 均以 Java 8 重编，`-Xverify:all` 的泛型反射上界结果逐字一致；成员泛型类型及参数化父接口/父类未由此通过。两个对应 JADX 测试只直接断言方法头。 |
 | 未测 | CF-02～16、CF-18、CF-20 | 17 个正向测试候选，见控制流账本 |
-| 未测 | DT-07～09、DT-14、DT-17～29、DT-31 | 18 个候选，见声明/类型账本 |
+| 未测 | DT-07～09、DT-14、DT-18～29、DT-31 | 17 个候选，见声明/类型账本 |
 | 未测 | EM-01～03、EM-05～07、EM-10～12、EM-17～25、EM-27 | 19 个候选，见表达式/杂项账本 |
 
-当前有 **11 个冻结差距已修复但待扩验的单元、3 个已证差距（DT-12 双匿名体 String 参数；DT-13 嵌套 enum 源位置；DT-16 实例泛型 null 返回）、54 个未测的正向候选、2 个部分已测但仍待扩验单元（CF-01、DT-15）、1 个 JADX 未完成单元**。CF-19、DT-02、DT-04、DT-05、DT-06、DT-10、DT-11 与 EM-04 的窄切片，以及先前 DT-01/03、EM-13 均已通过 root 独立验收；这不自动把各单元全部变体标为“已追平”。DT-12、DT-13、DT-16 均已写独立 OpenSpec；DT-13 的接口声明子形态在固定样例上通过，但不代表 `TestEnumsInterface` 中匿名常量体追平。任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
+当前有 **11 个冻结差距已修复但待扩验的单元、4 个已证差距（DT-12 双匿名体 String 参数；DT-13 嵌套 enum 源位置；DT-16 实例泛型 null 返回；DT-17 空 void 通配符参数）、53 个未测的正向候选、2 个部分已测但仍待扩验单元（CF-01、DT-15）、1 个 JADX 未完成单元**。CF-19、DT-02、DT-04、DT-05、DT-06、DT-10、DT-11 与 EM-04 的窄切片，以及先前 DT-01/03、EM-13 均已通过 root 独立验收；这不自动把各单元全部变体标为“已追平”。DT-12、DT-13、DT-16、DT-17 均已写独立 OpenSpec；DT-13 的接口声明子形态在固定样例上通过，但不代表 `TestEnumsInterface` 中匿名常量体追平。任何一项都不能靠单例推定整个单元已追平。若发现测试本身无有效正向断言，先修正其证据级别和分母。
 
 独立回归债务：[具名成员类 `Outer.super` 桥测试与基线投影不一致](outer-super-bridge-baseline-debt.md)，在未修改的 `36b57495` 已可复现；归入 EM-12/DT-03 后续核验，不混入 DT-02 静态成员类实现。
 
