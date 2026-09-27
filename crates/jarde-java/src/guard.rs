@@ -199,14 +199,14 @@ pub enum Shape {
         structured: bool,
     },
     /// One named catch and two normal returns sharing a proved catch-all cleanup handler.
-    SharedCallFinally {
+    SharedFinally {
         rows: [u32; 3],
         catch_body: (u32, u32),
         catch_handler: CanonicalBlockId,
         catch_type: u16,
         catch_parameter: u16,
-        normal_cleanup: u32,
-        catch_cleanup: u32,
+        normal_cleanup: (u32, u32),
+        catch_cleanup: (u32, u32),
         returns: [(u32, u32); 2],
     },
 }
@@ -271,7 +271,7 @@ impl Plan {
         match self.shape {
             Shape::Resources { .. } => &TWR,
             Shape::Monitor { .. } | Shape::MonitorBranches { .. } => &MONITOR,
-            Shape::Finally { .. } | Shape::SharedCallFinally { .. } => &FINALLY,
+            Shape::Finally { .. } | Shape::SharedFinally { .. } => &FINALLY,
         }
     }
 }
@@ -2043,10 +2043,165 @@ fn prove_finally_copy(
     }))
 }
 
-/// Prove the Java 8 call-only layout as one unit. The three rows and all three copies are
+/// The first and last instructions of a cleanup. The caller separately proves the three
+/// effects identical; this only finds the return/throw after each copy.
+fn shared_cleanup_span(facts: &Facts<'_>, start: u32) -> Option<(u32, u32)> {
+    match facts.op(start)? {
+        Operation::Invoke(_) => Some((start, start)),
+        Operation::Field {
+            access: crate::facts::FieldAccess::Read,
+            is_static: true,
+            descriptor,
+            ..
+        } if descriptor == "I" => {
+            let push = facts.next_bci(start)?;
+            let add = facts.next_bci(push)?;
+            let write = facts.next_bci(add)?;
+            matches!(
+                facts.op(push),
+                Some(Operation::Push(crate::facts::ConstantValue::Int(_)))
+            )
+            .then_some(())?;
+            (facts.op(add)
+                == Some(&Operation::Arithmetic {
+                    op: crate::facts::ArithmeticOp::Add,
+                }))
+            .then_some(())?;
+            matches!(facts.op(write), Some(Operation::Field { access: crate::facts::FieldAccess::Write, is_static: true, descriptor, .. }) if descriptor == "I")
+                .then_some((start, write))
+        }
+        _ => None,
+    }
+}
+
+fn shared_cleanup_copies(
+    facts: &mut Facts<'_>,
+    copies: [(u32, u32); 3],
+) -> Result<bool, StopReason> {
+    let first = facts.op(copies[0].0);
+    if let Some(Operation::Invoke(target)) = first {
+        return Ok(target.kind() == InvokeKind::Static
+            && target.descriptor() == "()V"
+            && copies.iter().all(|&(start, last)| {
+                start == last
+                    && facts.op(start) == first
+                    && facts.step(start).is_some_and(|step| {
+                        stack_operands(step.instruction).is_empty()
+                            && !step
+                                .instruction
+                                .writes()
+                                .iter()
+                                .any(|(slot, _)| matches!(slot, Slot::Stack(_)))
+                    })
+            }));
+    }
+    let Some(read) = first.cloned() else {
+        return Ok(false);
+    };
+    let mut constant = None;
+    for &(start, last) in &copies {
+        let Some(push) = facts.next_bci(start) else {
+            return Ok(false);
+        };
+        let Some(add) = facts.next_bci(push) else {
+            return Ok(false);
+        };
+        let Some(write) = facts.next_bci(add) else {
+            return Ok(false);
+        };
+        let Some(Operation::Push(crate::facts::ConstantValue::Int(value))) = facts.op(push) else {
+            return Ok(false);
+        };
+        if write != last
+            || facts.op(start) != Some(&read)
+            || constant.is_some_and(|prior| prior != *value)
+            || facts.op(add)
+                != Some(&Operation::Arithmetic {
+                    op: crate::facts::ArithmeticOp::Add,
+                })
+            || facts
+                .step(add)
+                .is_none_or(|step| step.instruction.opcode() != 0x60)
+        {
+            return Ok(false);
+        }
+        constant = Some(*value);
+        let Some(Operation::Field {
+            access: crate::facts::FieldAccess::Read,
+            is_static: true,
+            descriptor,
+            ..
+        }) = facts.op(start)
+        else {
+            return Ok(false);
+        };
+        if descriptor != "I"
+            || facts.op(write)
+                != Some(&Operation::Field {
+                    access: crate::facts::FieldAccess::Write,
+                    is_static: true,
+                    owner: match &read {
+                        Operation::Field { owner, .. } => owner.clone(),
+                        _ => return Ok(false),
+                    },
+                    name: match &read {
+                        Operation::Field { name, .. } => name.clone(),
+                        _ => return Ok(false),
+                    },
+                    descriptor: "I".to_owned(),
+                })
+        {
+            return Ok(false);
+        }
+        for (producer, consumer) in [(start, add), (push, add), (add, write)] {
+            let (Some(produced), Some(consumed)) = (facts.step(producer), facts.step(consumer))
+            else {
+                return Ok(false);
+            };
+            let outputs: Vec<_> = produced
+                .instruction
+                .writes()
+                .iter()
+                .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+                .collect();
+            if outputs.len() != 1
+                || stack_operands(consumed.instruction)
+                    .iter()
+                    .filter(|(_, value)| facts.same(outputs[0].1, *value))
+                    .count()
+                    != 1
+            {
+                return Ok(false);
+            }
+            let mut consumers = 0;
+            for bci in facts.order.clone() {
+                facts.charge(bci)?;
+                if let Some(step) = facts.step(bci) {
+                    consumers += stack_operands(step.instruction)
+                        .iter()
+                        .filter(|(_, value)| facts.same(outputs[0].1, *value))
+                        .count();
+                }
+            }
+            if consumers != 1 {
+                return Ok(false);
+            }
+        }
+        if stack_operands(facts.step(add).unwrap().instruction).len() != 2
+            || stack_operands(facts.step(write).unwrap().instruction).len() != 1
+            || !facts.step(start).unwrap().instruction.reads().is_empty()
+            || !facts.step(push).unwrap().instruction.reads().is_empty()
+        {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+/// Prove the Java 8 shared-cleanup layout as one unit. The three rows and all three copies are
 /// inseparable: accepting just the try row would put the catch's normal completion outside the
 /// source `finally`, while accepting just the two normal copies would lose exceptional cleanup.
-fn prove_shared_call_finally(
+fn prove_shared_finally(
     facts: &mut Facts<'_>,
     current: &CanonicalBlockId,
 ) -> Result<Option<Plan>, StopReason> {
@@ -2073,31 +2228,40 @@ fn prove_shared_call_finally(
     {
         return Ok(None);
     }
-    let first_call = named.end_bci;
-    let second_call = catch_any.end_bci;
+    let first_start = named.end_bci;
+    let second_start = catch_any.end_bci;
     let third_handler = try_any.handler_bci;
+    let Some(first_cleanup) = shared_cleanup_span(facts, first_start) else {
+        return Ok(None);
+    };
+    let Some(second_cleanup) = shared_cleanup_span(facts, second_start) else {
+        return Ok(None);
+    };
+    let Some(third_start) = facts.next_bci(third_handler) else {
+        return Ok(None);
+    };
+    let Some(third_cleanup) = shared_cleanup_span(facts, third_start) else {
+        return Ok(None);
+    };
     let (Some(first_save), Some(second_save)) = (
-        facts.previous_bci(first_call),
-        facts.previous_bci(second_call),
+        facts.previous_bci(first_start),
+        facts.previous_bci(second_start),
     ) else {
         return Ok(None);
     };
-    let Some(first_load) = facts.next_bci(first_call) else {
+    let Some(first_load) = facts.next_bci(first_cleanup.1) else {
         return Ok(None);
     };
     let Some(first_return) = facts.next_bci(first_load) else {
         return Ok(None);
     };
-    let Some(second_load) = facts.next_bci(second_call) else {
+    let Some(second_load) = facts.next_bci(second_cleanup.1) else {
         return Ok(None);
     };
     let Some(second_return) = facts.next_bci(second_load) else {
         return Ok(None);
     };
-    let Some(third_call) = facts.next_bci(third_handler) else {
-        return Ok(None);
-    };
-    let Some(primary_load) = facts.next_bci(third_call) else {
+    let Some(primary_load) = facts.next_bci(third_cleanup.1) else {
         return Ok(None);
     };
     let Some(rethrow) = facts.next_bci(primary_load) else {
@@ -2108,7 +2272,7 @@ fn prove_shared_call_finally(
         || facts.next_bci(second_return) != Some(third_handler)
         || first_save < protected.0
         || second_save < catch_any.start_bci
-        || third_handler <= second_call
+        || third_handler <= second_start
         || facts.row_handler(named).as_ref().map(CanonicalBlockId::bci) != Some(named.handler_bci)
         || facts
             .row_handler(try_any)
@@ -2150,24 +2314,7 @@ fn prove_shared_call_finally(
             return Ok(None);
         }
     }
-    let calls = [first_call, second_call, third_call];
-    let Some(Operation::Invoke(target)) = facts.op(first_call) else {
-        return Ok(None);
-    };
-    if target.kind() != InvokeKind::Static
-        || target.descriptor() != "()V"
-        || calls.iter().any(|bci| {
-            facts.op(*bci) != Some(&Operation::Invoke(target.clone()))
-                || facts.step(*bci).is_none_or(|step| {
-                    !stack_operands(step.instruction).is_empty()
-                        || step
-                            .instruction
-                            .writes()
-                            .iter()
-                            .any(|(slot, _)| matches!(slot, Slot::Stack(_)))
-                })
-        })
-    {
+    if !shared_cleanup_copies(facts, [first_cleanup, second_cleanup, third_cleanup])? {
         return Ok(None);
     }
     let (
@@ -2272,23 +2419,29 @@ fn prove_shared_call_finally(
             return Ok(None);
         }
     }
-    let Some(normal_block) = facts.block_of(first_call).cloned() else {
+    let Some(normal_block) = facts.block_of(first_start).cloned() else {
         return Ok(None);
     };
-    let Some(catch_block) = facts.block_of(second_call).cloned() else {
+    let Some(catch_block) = facts.block_of(second_start).cloned() else {
         return Ok(None);
     };
     let Some(handler_block) = facts.block_at(third_handler) else {
         return Ok(None);
     };
-    if [first_call, first_load, first_return]
+    if facts
+        .bcis((first_start, facts.span_end(first_cleanup.1)))
         .iter()
+        .chain(&[first_load, first_return])
         .any(|bci| facts.block_of(*bci) != Some(&normal_block))
-        || [second_call, second_load, second_return]
+        || facts
+            .bcis((second_start, facts.span_end(second_cleanup.1)))
             .iter()
+            .chain(&[second_load, second_return])
             .any(|bci| facts.block_of(*bci) != Some(&catch_block))
-        || [third_handler, third_call, primary_load, rethrow]
+        || facts
+            .bcis((third_handler, facts.span_end(third_cleanup.1)))
             .iter()
+            .chain(&[primary_load, rethrow])
             .any(|bci| facts.block_of(*bci) != Some(&handler_block))
         || !facts.view.successor_ids(&normal_block).is_empty()
         || !facts.view.successor_ids(&catch_block).is_empty()
@@ -2349,14 +2502,14 @@ fn prove_shared_call_finally(
     let owned = facts.blocks_in((start, handler_end));
     let origins = facts.bcis((start, handler_end));
     Ok(Some(Plan {
-        shape: Shape::SharedCallFinally {
+        shape: Shape::SharedFinally {
             rows: [named.ordinal, try_any.ordinal, catch_any.ordinal],
             catch_body: (catch_any.start_bci, catch_any.end_bci),
             catch_handler: facts.row_handler(named).unwrap(),
             catch_type: named.catch_type_index.unwrap(),
             catch_parameter: *catch_parameter,
-            normal_cleanup: first_call,
-            catch_cleanup: second_call,
+            normal_cleanup: (first_start, facts.span_end(first_cleanup.1)),
+            catch_cleanup: (second_start, facts.span_end(second_cleanup.1)),
             returns: [(first_save, first_return), (second_save, second_return)],
         },
         lead: (start, protected.0),
@@ -2370,7 +2523,7 @@ fn prove_shared_call_finally(
 /// The named-catch entry asks only this private certificate before the ordinary catch reader.
 /// An unsuccessful probe leaves that reader's existing decision unchanged.
 #[allow(clippy::too_many_arguments)]
-pub(crate) fn shared_call_finally_candidate(
+pub(crate) fn shared_finally_candidate(
     canonical: &CanonicalCfg,
     view: &NormalFlowView,
     ssa: &SsaTable,
@@ -2386,7 +2539,7 @@ pub(crate) fn shared_call_finally_candidate(
     let sites = Sites::empty();
     let mut facts = Facts::new(canonical, view, ssa, ops, handlers, &sites, budget);
     facts.charge(current.bci())?;
-    prove_shared_call_finally(&mut facts, current)
+    prove_shared_finally(&mut facts, current)
 }
 
 #[cfg(test)]
@@ -2531,12 +2684,10 @@ mod finally_copy_tests {
     }
 
     fn shared_probe(
+        class: &[u8],
         edit_rows: impl FnOnce(&mut Vec<ExceptionHandlerFact>),
         stop: Option<&str>,
     ) -> Result<Option<Plan>, StopReason> {
-        let class = include_bytes!(
-            "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyCall.class"
-        );
         let mut budget = Budget::new(limits());
         let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
             .expect("frozen class opens");
@@ -2605,7 +2756,7 @@ mod finally_copy_tests {
             token.cancel();
         }
         let mut proof_budget = Budget::with_cancellation_token(proof_limits, token);
-        shared_call_finally_candidate(
+        shared_finally_candidate(
             canonical,
             &view,
             ssa,
@@ -2617,12 +2768,18 @@ mod finally_copy_tests {
         )
     }
 
+    const CALL: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyCall.class"
+    );
+    const FIELD: &[u8] =
+        include_bytes!("../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinally.class");
+
     #[test]
     fn shared_call_certificate_owns_three_rows_and_two_returns() {
-        let plan = shared_probe(|_| {}, None)
+        let plan = shared_probe(CALL, |_| {}, None)
             .unwrap()
             .expect("one complete certificate");
-        let Shape::SharedCallFinally {
+        let Shape::SharedFinally {
             rows,
             catch_body,
             returns,
@@ -2637,7 +2794,7 @@ mod finally_copy_tests {
         assert_eq!(plan.body(), (4, 21));
         assert_eq!(*catch_body, (26, 30));
         assert_eq!(*returns, [(20, 25), (29, 34)]);
-        assert_eq!((*normal_cleanup, *catch_cleanup), (21, 30));
+        assert_eq!((*normal_cleanup, *catch_cleanup), ((21, 24), (30, 33)));
         assert!(plan.owned().iter().any(|block| block.bci() == 35));
         assert!(plan.facts().contains(&36) && plan.facts().contains(&40));
     }
@@ -2645,22 +2802,23 @@ mod finally_copy_tests {
     #[test]
     fn shared_call_certificate_refuses_row_changes_and_propagates_stops() {
         assert!(
-            shared_probe(|rows| rows.swap(0, 1), None)
+            shared_probe(CALL, |rows| rows.swap(0, 1), None)
                 .unwrap()
                 .is_none()
         );
         assert!(
-            shared_probe(|rows| rows[1].end_bci = 24, None)
+            shared_probe(CALL, |rows| rows[1].end_bci = 24, None)
                 .unwrap()
                 .is_none()
         );
         assert!(
-            shared_probe(|rows| rows[2].handler_bci = 26, None)
+            shared_probe(CALL, |rows| rows[2].handler_bci = 26, None)
                 .unwrap()
                 .is_none()
         );
         assert!(
             shared_probe(
+                CALL,
                 |rows| {
                     let mut extra = rows[2].clone();
                     extra.ordinal = 3;
@@ -2672,11 +2830,49 @@ mod finally_copy_tests {
             .is_none()
         );
         assert!(matches!(
-            shared_probe(|_| {}, Some("budget")),
+            shared_probe(CALL, |_| {}, Some("budget")),
             Err(StopReason::Budget { .. })
         ));
         assert!(matches!(
-            shared_probe(|_| {}, Some("cancel")),
+            shared_probe(CALL, |_| {}, Some("cancel")),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
+
+    #[test]
+    fn shared_field_certificate_owns_full_spans_and_propagates_stops() {
+        let plan = shared_probe(FIELD, |_| {}, None)
+            .unwrap()
+            .expect("field certificate");
+        let Shape::SharedFinally {
+            rows,
+            catch_body,
+            returns,
+            normal_cleanup,
+            catch_cleanup,
+            ..
+        } = plan.shape()
+        else {
+            panic!("shared finally shape");
+        };
+        assert_eq!(*rows, [0, 1, 2]);
+        assert_eq!(plan.body(), (4, 21));
+        assert_eq!(*catch_body, (31, 35));
+        assert_eq!(*returns, [(20, 30), (34, 44)]);
+        assert_eq!((*normal_cleanup, *catch_cleanup), ((21, 29), (35, 43)));
+        assert!(plan.owned().iter().any(|block| block.bci() == 45));
+        assert!(plan.facts().contains(&46) && plan.facts().contains(&55));
+        assert!(
+            shared_probe(FIELD, |rows| rows[1].end_bci = 29, None)
+                .unwrap()
+                .is_none()
+        );
+        assert!(matches!(
+            shared_probe(FIELD, |_| {}, Some("budget")),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            shared_probe(FIELD, |_| {}, Some("cancel")),
             Err(StopReason::Cancelled { .. })
         ));
     }
@@ -3217,7 +3413,7 @@ fn guarded(
         return Ok(Some(verdict));
     }
     if FINALLY.admits(profile)
-        && let Some(plan) = prove_shared_call_finally(facts, current)?
+        && let Some(plan) = prove_shared_finally(facts, current)?
     {
         return Ok(Some(Verdict::Claimed(plan)));
     }

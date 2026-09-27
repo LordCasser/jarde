@@ -2235,7 +2235,7 @@ impl Walker<'_> {
             if frame.own_try != Some(node)
                 && frame.own_finally.is_none()
                 && self.starts_catch(&current)
-                && let Some(plan) = crate::guard::shared_call_finally_candidate(
+                && let Some(plan) = crate::guard::shared_finally_candidate(
                     self.canonical,
                     self.view,
                     self.ssa,
@@ -3785,7 +3785,7 @@ impl Walker<'_> {
         plan: &crate::guard::Plan,
         outer: &Frame,
     ) -> Result<Option<Region>, StopReason> {
-        let crate::guard::Shape::SharedCallFinally {
+        let crate::guard::Shape::SharedFinally {
             rows,
             catch_body,
             catch_handler,
