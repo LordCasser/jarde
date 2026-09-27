@@ -18,4 +18,4 @@
 
 - [x] 4.1 fresh CLI 原/JADX/Jarde 完整 `multi` Java 8 源码及外部 consumer 重编，`java -Xverify:all` 运行、泛型反射、桥反射和错误参数异常一致；1.2 全部近邻拒绝。
 - [x] 4.2 运行 Shape pair、单静态成员、泛型签名/桥及 class-source 回归，workspace check、fmt、OpenSpec strict、diff check；清理专用 Cargo target。
-- [ ] 4.3 root 独立核关系、Signature 作用域、桥再生与完整三方运行，更新 EM-01 清单；只标记固定 Generic.A 子形态。
+- [x] 4.3 root 独立核关系、Signature 作用域、桥再生与完整三方运行，更新 EM-01 清单；只标记固定 Generic.A 子形态。

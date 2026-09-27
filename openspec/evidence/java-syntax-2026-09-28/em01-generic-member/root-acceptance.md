@@ -1,0 +1,9 @@
+# EM-01 `Generic.A<T>` 主线独立验收
+
+固定 JADX `2fb1b16386941660fda07e9017285aec40fcb37f`，原 `Generic.class` SHA-256 `c55a1b43d880f69df08b557988acd8c8f3e2158588911e9d3de0e91196c3a890`，`Generic$A.class` 为 `172a63a58d3f7b62b040a2e038e05f387447943ddecf64a10cf36155b168e1f5`。root 从主线 `4319efbf` 新建 CLI（SHA-256 `0a720562692c82ed1d326de8cf67f530b70bb071177f72a4a94abbe35f6b0a88`），独立运行本目录 `replay.py`、`negative_replay.py`，又运行原 EM-01 `multi` 的 `replay.py`。原始、JADX、Jarde 的完整 `Shape.java` 和 `Generic.java` 均通过 `javac --release 8 -g:none`，原 Runner 及外部 BridgeRunner 在 `java -Xverify:all` 下逐行一致。原 `multi` Runner 的两行为 `2:1` 和 `1:java.lang.Comparable<em01.Generic$A<T>>`；桥 consumer 的六行及三方记录见 [replay-summary.json](replay-summary.json)。原 EM-01 脚本的根缺失列表现在为空。
+
+root 对照物理 class 表、Signature 和投影路径：唯一静态 child 的双向 `InnerClasses` 关系必须吻合；`T` 的擦除为 `Object`，类头接口表与 `Comparable<A<T>>`、字段 `T value`、typed `compareTo(A<T>)` 同轮证明。物理 `compareTo(Object)` 仍能独立查询；根源码只保留 typed 方法，由 `javac` 再生一个 bridge。固定桥的 flags `0x1041` 与 `aload_0; aload_1; checkcast A; invokevirtual compareTo(A); ireturn`、无异常表均被逐项核对。桥 consumer 的反射结果为两个声明方法、一个 bridge，错误 Object 实参为 `ClassCastException`。Jarde 的独立物理 child 报告继续使用 `Generic$A`，没有被源级改写污染。
+
+七个 verifier 可加载的 child 近邻均拒绝整组根投影：错 self row、接口 Signature 不符、字段或方法的未知 `T`、桥额外效果、错调用目标及错 cast；根方法额外使用 child 也拒绝，无关根方法仍可投影。桥的三个近邻分别有可观测的错误参数接受、`NoSuchMethodError`、合法 `A` 实参 `ClassCastException`，因此不能仅凭 bridge flags 隐去代码。root 重放结果保存在 `/private/tmp/jarde-em01-generic-root-acceptance` 与 `/private/tmp/jarde-em01-generic-root-negative`，仓库内脚本和冻结摘要可复现。
+
+root 运行 `cargo test --test generic_static_member_family --locked`（2 例）、`class_source`（87 例）、`generic_outer_member_family`（3 例）、`member_family_identity`（20 例），`cargo check --workspace --locked`、`cargo fmt --all -- --check`、OpenSpec strict 和 `git diff --check` 均通过。此次只验收准确的单个 `public static abstract A<T>`、一个 `T value`、typed `compareTo` 与 javac 桥的子形态；其他泛型成员、接口组合和 bridge lowering 仍需独立样例。
