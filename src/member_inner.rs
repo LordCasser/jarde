@@ -985,6 +985,95 @@ pub(crate) fn scan_nested_enum_root(
     Ok(candidate.map_or(FamilyRootScan::Absent, FamilyRootScan::Candidate))
 }
 
+/// Find the one direct Java 8 member annotation supported by class-source projection. The typed
+/// InnerClasses row supplies identity; the binary `$` spelling is checked only for consistency.
+pub(crate) fn scan_nested_annotation_root(
+    root: &[u8],
+    nesting: &ClassSourceAssemblyContext,
+    budget: &mut Budget,
+) -> Result<FamilyRootScan> {
+    if nesting.major_version != Some(52) {
+        return Ok(FamilyRootScan::Absent);
+    }
+    const ACC_INTERFACE: u16 = 0x0200;
+    const ACC_ANNOTATION: u16 = 0x2000;
+    const ACC_STATIC: u16 = 0x0008;
+    const KIND: u16 = ACC_INTERFACE | ACC_ANNOTATION;
+    const VISIBILITY: u16 = 0x0001 | 0x0002 | 0x0004;
+    let mut candidate = None;
+    let mut direct_rows = 0usize;
+    for row in &nesting.resolved_inner_classes {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if row.outer_class.as_deref() != Some(root) {
+            continue;
+        }
+        direct_rows += 1;
+        if row.access_flags & KIND != KIND {
+            continue;
+        }
+        if candidate.is_some() {
+            return Ok(FamilyRootScan::Refused(
+                "owner has multiple direct nested annotation rows outside the one-child subset"
+                    .to_owned(),
+            ));
+        }
+        let Some(simple_name) = row
+            .inner_name
+            .as_ref()
+            .and_then(|name| std::str::from_utf8(&name.0).ok())
+        else {
+            return Ok(FamilyRootScan::Refused(
+                "nested annotation row has no UTF-8 source name".to_owned(),
+            ));
+        };
+        if !jarde_java::names::is_java_identifier(simple_name)
+            || row.access_flags & ACC_STATIC == 0
+            || (row.access_flags & VISIBILITY).count_ones() > 1
+            || row.class != [root, b"$", simple_name.as_bytes()].concat()
+        {
+            return Ok(FamilyRootScan::Refused(
+                "nested annotation row is not a source-spellable static member".to_owned(),
+            ));
+        }
+        candidate = Some(FamilyRootCandidate {
+            child_name: row.class.clone(),
+            simple_name: simple_name.to_owned(),
+            access_flags: row.access_flags,
+        });
+    }
+    let Some(selected) = candidate else {
+        return Ok(FamilyRootScan::Absent);
+    };
+    // This slice has one direct child total. A sibling could introduce a competing source family
+    // or require another declaration position, so refuse before selecting any projection.
+    if direct_rows != 1 {
+        return Ok(FamilyRootScan::Refused(
+            "owner has additional direct member rows outside the one-child annotation subset"
+                .to_owned(),
+        ));
+    }
+    let matching_rows = nesting
+        .resolved_inner_classes
+        .iter()
+        .filter(|row| {
+            row.outer_class.as_deref() == Some(root)
+                && (row.class == selected.child_name
+                    || row
+                        .inner_name
+                        .as_ref()
+                        .is_some_and(|name| name.0.as_slice() == selected.simple_name.as_bytes()))
+        })
+        .count();
+    if matching_rows != 1 {
+        return Ok(FamilyRootScan::Refused(
+            "nested annotation owner row is duplicated or conflicts with another member row"
+                .to_owned(),
+        ));
+    }
+    Ok(FamilyRootScan::Candidate(selected))
+}
+
 const FAMILY_FORBIDDEN_FLAGS: u16 = 0x0200 | 0x2000 | 0x4000;
 const FAMILY_VISIBILITY_FLAGS: u16 = 0x0001 | 0x0002 | 0x0004;
 
@@ -1022,6 +1111,11 @@ pub(crate) fn scan_family_root(
         // this ordinary construction/capture family and must not be admitted or reported as a
         // malformed ordinary member candidate.
         if row.access_flags & 0x4000 != 0 {
+            continue;
+        }
+        // A canonical member annotation has its own small source projection. It is not an ordinary
+        // construction/capture member and must not be reported as a malformed ordinary family.
+        if row.access_flags & (0x0200 | 0x2000) == (0x0200 | 0x2000) {
             continue;
         }
         let Ok(outer) = cp_class_name(pool, row.outer_class_index) else {

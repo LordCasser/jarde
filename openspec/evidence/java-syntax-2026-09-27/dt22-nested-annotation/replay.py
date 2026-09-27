@@ -103,8 +103,7 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt22-annotation-") as temporary:
     require(jarde_only.returncode == 0, jarde_only.stderr)
     jarde = compile_run(sorted(jarde_sources.glob("*.java")) + [HERE / "Runner.java"],
                         work / "jarde-runner-classes")
-    require(jarde["compile_exit"] != 0 and "symbol:   class A" in jarde["compile_diagnostic"],
-            "baseline Jarde must fail only at the original Holder.A source API")
+    require(jarde == original, "fixed Jarde complete source or runtime differs from original")
     require("public @interface Holder$A" in child_text,
             "independent child declaration must keep its physical name")
     require("default 0x1.19999ap0f" in child_text
@@ -122,11 +121,18 @@ with tempfile.TemporaryDirectory(prefix="jarde-dt22-annotation-") as temporary:
         "jarde_sources_only_compile_exit": jarde_only.returncode,
         "jarde_original_api": jarde,
         "jarde_headers": jarde_headers,
+        "pre_fix": {
+            "jarde_original_api_compile_exit": 1,
+            "compile_diagnostic": "<FIXTURE>/Runner.java:5: error: cannot find symbol\\n        System.out.println(\"nested=\" + Holder.A.class.getMethod(\"value\").getDefaultValue());\\n                                             ^\\n  symbol:   class A\\n  location: class Holder\\n1 error\\n",
+            "source": "Captured from the fixed pre-change DT-22 results before replay update.",
+        },
         "assertions": {
             "original_jadx_java8_verified_equal": True,
+            "original_jarde_java8_verified_equal": True,
+            "jarde_nested_annotation_is_in_root_source": True,
             "jarde_top_level_defaults_preserved": True,
             "jarde_physical_nested_default_preserved": True,
-            "jarde_nested_owner_source_api_missing": True,
+            "jarde_dollar_name_remains_top_level": True,
         },
     }
     (HERE / "results.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")

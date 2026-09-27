@@ -584,6 +584,9 @@ pub struct ClassSourceReport {
     /// physical report (including its enum group proof); projecting it only changes the owner's
     /// assembled text.
     pub nested_enum_family: ClassSourceNestedEnumFamily,
+    /// A separately proved direct member annotation. Its child remains a physical report even
+    /// when the owner's assembled source contains the declaration.
+    pub nested_annotation_family: ClassSourceNestedAnnotationFamily,
     /// Same-run class-level bridge admission results. These are adapter evidence for the
     /// subsequent source projection and remain visible beside the physical method records.
     #[doc(hidden)]
@@ -704,6 +707,34 @@ pub enum ClassSourceNestedEnumProjection {
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case")]
+pub enum ClassSourceNestedAnnotationFamily {
+    Absent,
+    Refused {
+        reason: String,
+        #[serde(skip)]
+        child: Option<Box<ClassSourceReport>>,
+    },
+    Prepared {
+        relation: ClassSourceMemberRelation,
+        #[serde(skip)]
+        child: Box<ClassSourceReport>,
+        projection: ClassSourceNestedAnnotationProjection,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case")]
+pub enum ClassSourceNestedAnnotationProjection {
+    Refused {
+        reason: String,
+    },
+    Projected {
+        derived: Vec<MemberFamilyDerivedProjection>,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case")]
 pub enum ClassSourceMemberProjection {
     Refused {
         reason: String,
@@ -729,6 +760,7 @@ pub struct MemberFamilyDerivedProjection {
 #[serde(rename_all = "snake_case")]
 pub enum MemberFamilyDerivedKind {
     NestedEnumDeclaration,
+    NestedAnnotationDeclaration,
     NestedEnumTypeReference,
     MemberConstruction,
     MemberReturnType,
@@ -1204,7 +1236,7 @@ fn class_declaration(name: &str, facts: &ClassDeclarationFacts) -> String {
     class_declaration_with_types(name, facts, None, None, None)
 }
 
-pub(crate) fn nested_enum_class_header(name: &str, facts: &ClassDeclarationFacts) -> String {
+pub(crate) fn nested_member_class_header(name: &str, facts: &ClassDeclarationFacts) -> String {
     class_declaration(name, facts)
 }
 
@@ -7072,13 +7104,13 @@ pub(crate) fn source_text(
     .expect("ordinary class writer has no derived ranges to translate")
 }
 
-pub(crate) fn source_text_with_nested_enum(
+pub(crate) fn source_text_with_nested_declaration(
     declaration: &ClassSourceDeclaration,
     fields: &[ClassSourceField],
     methods: &[ClassSourceMethod],
     context: &ClassSourceTextContext<'_>,
     method_texts: &[MemberFamilyMethodText],
-    nested: &NestedEnumSourceText,
+    nested: &NestedClassSourceText,
 ) -> (String, Vec<MemberFamilyDerivedProjection>) {
     let mut derived = Vec::new();
     let text = source_text_with_member(
@@ -7115,7 +7147,7 @@ pub(crate) struct MemberFamilyMethodText {
     pub(crate) derived: Vec<MemberFamilyDerivedProjection>,
 }
 
-pub(crate) struct NestedEnumSourceText {
+pub(crate) struct NestedClassSourceText {
     pub(crate) text: String,
     pub(crate) derived: Vec<MemberFamilyDerivedProjection>,
 }
@@ -7410,7 +7442,7 @@ fn source_text_with_member(
     context: &ClassSourceTextContext<'_>,
     member_family: Option<&MemberFamilyTextProjection<'_>>,
     method_texts: &[MemberFamilyMethodText],
-    nested_enum: Option<&NestedEnumSourceText>,
+    nested_class: Option<&NestedClassSourceText>,
     derived: &mut Vec<MemberFamilyDerivedProjection>,
 ) -> Option<String> {
     let initializer_field_order = context.initializer_field_order;
@@ -7636,7 +7668,7 @@ fn source_text_with_member(
             entry
         }));
     }
-    if let Some(nested) = nested_enum {
+    if let Some(nested) = nested_class {
         if !first {
             out.push('\n');
         }
@@ -7822,15 +7854,15 @@ pub(crate) fn nested_enum_source_text(
     methods: &[ClassSourceMethod],
     enum_projection: &EnumConstantSourceProjection,
     method_texts: &[MemberFamilyMethodText],
-    descendant: Option<&NestedEnumSourceText>,
+    descendant: Option<&NestedClassSourceText>,
     anchors: Vec<MemberFamilyPhysicalAnchor>,
-) -> Option<NestedEnumSourceText> {
+) -> Option<NestedClassSourceText> {
     const SOURCE_CLASS_FLAGS: u16 =
         ACC_PUBLIC | ACC_PRIVATE | ACC_PROTECTED | ACC_ABSTRACT | ACC_FINAL | ACC_STRICT;
     let mut facts = declaration.item.declaration.clone();
     facts.access_flags =
         (facts.access_flags & !SOURCE_CLASS_FLAGS) | (access_flags & SOURCE_CLASS_FLAGS);
-    let header = nested_enum_class_header(simple_name, &facts);
+    let header = nested_member_class_header(simple_name, &facts);
     let mut text = format!("    {header} {{\n");
     let own_start = "    ".len();
     let mut derived = Vec::new();
@@ -7944,7 +7976,7 @@ pub(crate) fn nested_enum_source_text(
         end: text.len() - 1,
         anchors,
     });
-    Some(NestedEnumSourceText { text, derived })
+    Some(NestedClassSourceText { text, derived })
 }
 
 /// The name of the member table one stop happened in.

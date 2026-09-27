@@ -10,4 +10,9 @@ public class Holder extends java.lang.Object {
         super();
         return;
     }
+
+    public @interface A {
+        // jarde: no body: the member `value()F` is declared abstract and its declaration carries no Code attribute
+        public abstract float value() default 0x1.19999ap0f;
+    }
 }

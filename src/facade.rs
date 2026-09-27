@@ -1574,6 +1574,105 @@ impl Engine {
                 }
             }
         }
+        let nested_annotation = self.prepare_nested_annotation_family(
+            content,
+            request,
+            evidence,
+            &environment,
+            snapshot,
+            &report,
+            &root_nesting,
+            budget,
+        );
+        match nested_annotation {
+            Ok((family, nested_execution)) => {
+                merge_execution(&mut report.execution, nested_execution);
+                report.nested_annotation_family = family;
+            }
+            Err(error) => {
+                merge_execution(&mut report.execution, stop_execution(&error, budget));
+                report.diagnostics.push(stop_diagnostic(
+                    &error,
+                    Some(definition_provenance(&report.class)),
+                ));
+                report.nested_annotation_family =
+                    class_source::ClassSourceNestedAnnotationFamily::Refused {
+                        reason: "nested annotation proof stopped".to_owned(),
+                        child: None,
+                    };
+            }
+        }
+        if let class_source::ClassSourceNestedAnnotationFamily::Refused { reason, .. } =
+            &report.nested_annotation_family
+        {
+            report
+                .diagnostics
+                .push(nested_annotation_refusal_diagnostic(
+                    reason,
+                    definition_provenance(&report.class),
+                ));
+        }
+        if matches!(
+            report.nested_annotation_family,
+            class_source::ClassSourceNestedAnnotationFamily::Prepared { .. }
+        ) {
+            let mut projection_execution = ExecutionReport::Complete {
+                usage: budget.usage(),
+            };
+            let projected =
+                project_class_source_nested_annotation(&report, &mut projection_execution, budget);
+            merge_execution(&mut report.execution, projection_execution);
+            match projected {
+                Ok(Ok((text, derived))) => {
+                    report.text = text;
+                    if let class_source::ClassSourceNestedAnnotationFamily::Prepared {
+                        projection,
+                        ..
+                    } = &mut report.nested_annotation_family
+                    {
+                        *projection =
+                            class_source::ClassSourceNestedAnnotationProjection::Projected {
+                                derived,
+                            };
+                    }
+                }
+                Ok(Err(reason)) => {
+                    report
+                        .diagnostics
+                        .push(nested_annotation_refusal_diagnostic(
+                            &reason,
+                            definition_provenance(&report.class),
+                        ));
+                    if let class_source::ClassSourceNestedAnnotationFamily::Prepared {
+                        projection,
+                        ..
+                    } = &mut report.nested_annotation_family
+                    {
+                        *projection =
+                            class_source::ClassSourceNestedAnnotationProjection::Refused { reason };
+                    }
+                }
+                Err(error) => {
+                    merge_execution(&mut report.execution, stop_execution(&error, budget));
+                    report.diagnostics.push(stop_diagnostic(
+                        &error,
+                        Some(definition_provenance(&report.class)),
+                    ));
+                    if let class_source::ClassSourceNestedAnnotationFamily::Prepared {
+                        projection,
+                        ..
+                    } = &mut report.nested_annotation_family
+                    {
+                        *projection =
+                            class_source::ClassSourceNestedAnnotationProjection::Refused {
+                                reason: format!(
+                                    "nested annotation source projection stopped: {error}"
+                                ),
+                            };
+                    }
+                }
+            }
+        }
         if matches!(
             report.member_family,
             class_source::ClassSourceMemberFamily::Absent
@@ -1850,6 +1949,279 @@ impl Engine {
                 child,
                 projection: class_source::ClassSourceNestedEnumProjection::Refused {
                     reason: "nested enum projection has not completed".to_owned(),
+                },
+            },
+            execution,
+        ))
+    }
+
+    fn prepare_nested_annotation_family(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
+        environment: &ResolutionEnvironment,
+        snapshot: &ArtifactSnapshot,
+        root_report: &ClassSourceReport,
+        nesting: &class_source::ClassSourceAssemblyContext,
+        budget: &mut Budget,
+    ) -> Result<(
+        class_source::ClassSourceNestedAnnotationFamily,
+        ExecutionReport,
+    )> {
+        use class_source::{
+            ClassSourceMemberRelation as Relation, ClassSourceNestedAnnotationFamily as Family,
+        };
+        let mut execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        let Some(root_declaration) = root_report.declaration.as_ref() else {
+            return Ok((Family::Absent, execution));
+        };
+        let owner = root_declaration.item.declaration.this_class.raw().0.clone();
+        let (child_name, simple_name, access_flags) =
+            match crate::member_inner::scan_nested_annotation_root(&owner, nesting, budget)? {
+                crate::member_inner::FamilyRootScan::Absent => {
+                    return Ok((Family::Absent, execution));
+                }
+                crate::member_inner::FamilyRootScan::Refused(reason) => {
+                    return Ok((
+                        Family::Refused {
+                            reason,
+                            child: None,
+                        },
+                        execution,
+                    ));
+                }
+                crate::member_inner::FamilyRootScan::Candidate(candidate) => (
+                    candidate.child_name,
+                    candidate.simple_name,
+                    candidate.access_flags,
+                ),
+            };
+        let Some((child_definition, child_read)) = resolve_class_source_dependency_read_raw(
+            content,
+            environment,
+            None,
+            &child_name,
+            &mut execution,
+            budget,
+        )?
+        else {
+            return Ok((
+                Family::Refused {
+                    reason: "selected environment did not uniquely resolve the nested annotation definition".to_owned(),
+                    child: None,
+                },
+                execution,
+            ));
+        };
+        let annotation_bytes = child_read.bytes.clone();
+        let annotation_facts = child_read.facts.clone();
+        let child_request = ClassSourceRequest {
+            class: ClassRef::Definition {
+                definition: child_definition.clone(),
+            },
+            environment: request.environment.clone(),
+        };
+        let child_class_item = match charge_item(budget) {
+            Ok(()) => Some(child_read.class.clone()),
+            Err(error) => {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                return Ok((
+                    Family::Refused {
+                        reason: "nested annotation child report stopped before publication"
+                            .to_owned(),
+                        child: None,
+                    },
+                    execution,
+                ));
+            }
+        };
+        let (child, _, _, _, _, _) = self.prepare_physical_class_source(
+            content,
+            &child_request,
+            evidence,
+            environment,
+            snapshot,
+            root_report.view.clone(),
+            root_report.stages.clone(),
+            BoundClass {
+                read: child_read,
+                search_coverage: None,
+                class_item: child_class_item,
+            },
+            ExecutionReport::Complete {
+                usage: budget.usage(),
+            },
+            Vec::new(),
+            false,
+            budget,
+        )?;
+        let pool = class_constant_pool(&annotation_bytes, budget)?;
+        let shells = annotation_facts
+            .attributes
+            .iter()
+            .filter(|attribute| {
+                matches!(
+                    attribute.name.raw().0.as_slice(),
+                    b"InnerClasses" | b"EnclosingMethod"
+                )
+            })
+            .cloned()
+            .collect::<Vec<_>>();
+        let child_nesting = match class_source::read_class_source_assembly_context(
+            &annotation_bytes,
+            &shells,
+            &pool,
+            budget,
+        ) {
+            Ok(nesting) => nesting,
+            Err(error) => {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                return Ok((
+                    Family::Refused {
+                        reason: "nested annotation InnerClasses proof stopped".to_owned(),
+                        child: Some(Box::new(child)),
+                    },
+                    execution,
+                ));
+            }
+        };
+        let candidate = crate::member_inner::FamilyRootCandidate {
+            child_name: child_name.clone(),
+            simple_name: simple_name.clone(),
+            access_flags,
+        };
+        let relation_agrees = crate::member_inner::child_relation_agrees(
+            &owner,
+            &candidate,
+            &annotation_facts,
+            &child_nesting,
+            &pool,
+            budget,
+        )?;
+        let version = annotation_bytes.get(4..8).map(|bytes| {
+            (
+                u16::from_be_bytes([bytes[0], bytes[1]]),
+                u16::from_be_bytes([bytes[2], bytes[3]]),
+            )
+        });
+        const ACC_INTERFACE: u16 = 0x0200;
+        const ACC_ABSTRACT: u16 = 0x0400;
+        const ACC_ANNOTATION: u16 = 0x2000;
+        const ACC_ENUM: u16 = 0x4000;
+        let flags = annotation_facts.access_flags;
+        if !relation_agrees
+            || version != Some((0, 52))
+            || flags & (ACC_ANNOTATION | ACC_INTERFACE | ACC_ABSTRACT)
+                != (ACC_ANNOTATION | ACC_INTERFACE | ACC_ABSTRACT)
+            || flags & ACC_ENUM != 0
+            || annotation_facts.stopped_at.is_some()
+            || annotation_facts.fields.len() != 0
+            || annotation_facts.methods.len() != 1
+        {
+            return Ok((
+                Family::Refused {
+                    reason: "nested annotation lacks matching Java 8 kind, complete member tables, or two-sided member evidence".to_owned(),
+                    child: Some(Box::new(child)),
+                },
+                execution,
+            ));
+        }
+        let header = &annotation_facts.methods[0];
+        if header.name.raw().0 != b"value"
+            || header.descriptor.raw().0 != b"()F"
+            || header.access_flags & (0x0001 | ACC_ABSTRACT) != (0x0001 | ACC_ABSTRACT)
+            || header.access_flags & !(0x0001 | ACC_ABSTRACT) != 0
+        {
+            return Ok((
+                Family::Refused {
+                    reason: "nested annotation element is outside the public float value() slice"
+                        .to_owned(),
+                    child: Some(Box::new(child)),
+                },
+                execution,
+            ));
+        }
+        let default_shell_count = header
+            .attributes
+            .iter()
+            .filter(|attribute| attribute.name.raw().0 == b"AnnotationDefault")
+            .count();
+        let default = if default_shell_count == 1 {
+            match class_source::declared_annotation_default(
+                &annotation_bytes,
+                header,
+                &pool,
+                budget,
+            ) {
+                Ok(default) => default,
+                Err(error) => {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    return Ok((
+                        Family::Refused {
+                            reason: format!(
+                                "nested annotation default read stopped or failed: {error}"
+                            ),
+                            child: Some(Box::new(child)),
+                        },
+                        execution,
+                    ));
+                }
+            }
+        } else {
+            None
+        };
+        if !matches!(default, Some(class_source::MemberDefault::Float(_))) {
+            return Ok((
+                Family::Refused {
+                    reason: "nested annotation element lacks one completely readable and spellable AnnotationDefault".to_owned(),
+                    child: Some(Box::new(child)),
+                },
+                execution,
+            ));
+        }
+        let child_is_complete = matches!(child.execution, ExecutionReport::Complete { .. })
+            && child.fields.is_empty()
+            && child.methods.len() == 1
+            && child.methods[0].item.name.raw().0 == b"value"
+            && child.methods[0].item.descriptor.raw().0 == b"()F"
+            && child.methods[0]
+                .declaration
+                .as_ref()
+                .is_some_and(|declaration| declaration.contains(" default "))
+            && child.methods[0].markers.len() == 1
+            && matches!(
+                child.methods[0].outcome,
+                class_source::ClassSourceOutcome::NoBody
+            )
+            && child.declaration.as_ref().is_some_and(|declaration| {
+                declaration.annotation_uses.is_empty()
+                    && declaration.annotation_refusals.is_empty()
+                    && declaration.generic_signature.is_none()
+                    && declaration.generic_refusal.is_none()
+            });
+        if !child_is_complete {
+            return Ok((
+                Family::Refused {
+                    reason: "nested annotation physical element records are incomplete or not reproducible".to_owned(),
+                    child: Some(Box::new(child)),
+                },
+                execution,
+            ));
+        }
+        Ok((
+            Family::Prepared {
+                relation: Relation {
+                    root: root_report.class.clone(),
+                    child: child_definition,
+                    simple_name,
+                    access_flags,
+                },
+                child: Box::new(child),
+                projection: class_source::ClassSourceNestedAnnotationProjection::Refused {
+                    reason: "nested annotation projection has not completed".to_owned(),
                 },
             },
             execution,
@@ -3290,6 +3662,8 @@ impl Engine {
                     methods: Vec::new(),
                     member_family: class_source::ClassSourceMemberFamily::Absent,
                     nested_enum_family: class_source::ClassSourceNestedEnumFamily::Absent,
+                    nested_annotation_family:
+                        class_source::ClassSourceNestedAnnotationFamily::Absent,
                     bridge_proofs: Vec::new(),
                     enum_switch_proofs: Vec::new(),
                     initializer_proof: if read.facts.access_flags & ACC_INTERFACE != 0
@@ -5301,6 +5675,7 @@ impl Engine {
                 methods,
                 member_family: class_source::ClassSourceMemberFamily::Absent,
                 nested_enum_family: class_source::ClassSourceNestedEnumFamily::Absent,
+                nested_annotation_family: class_source::ClassSourceNestedAnnotationFamily::Absent,
                 bridge_proofs,
                 enum_switch_proofs,
                 initializer_proof,
@@ -12198,6 +12573,175 @@ fn project_class_source_member_family(
     Ok(Ok((text, derived)))
 }
 
+fn project_class_source_nested_annotation(
+    root: &ClassSourceReport,
+    _execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<std::result::Result<(String, Vec<class_source::MemberFamilyDerivedProjection>), String>>
+{
+    use class_source::{
+        ClassSourceNestedAnnotationFamily as Family, MemberFamilyDerivedKind as DerivedKind,
+        MemberFamilyDerivedProjection as Projection, MemberFamilyPhysicalAnchor as Anchor,
+    };
+    let Family::Prepared {
+        relation, child, ..
+    } = &root.nested_annotation_family
+    else {
+        return Ok(Err("nested annotation relation is not prepared".to_owned()));
+    };
+    if !matches!(
+        root.member_family,
+        class_source::ClassSourceMemberFamily::Absent
+    ) || !matches!(
+        root.nested_enum_family,
+        class_source::ClassSourceNestedEnumFamily::Absent
+    ) {
+        return Ok(Err(
+            "another class-family projection is present outside this annotation slice".to_owned(),
+        ));
+    }
+    if !matches!(root.execution, ExecutionReport::Complete { .. })
+        || !matches!(child.execution, ExecutionReport::Complete { .. })
+    {
+        return Ok(Err(
+            "owner or annotation physical preparation is incomplete".to_owned(),
+        ));
+    }
+    let Some(root_declaration) = root.declaration.as_ref() else {
+        return Ok(Err(
+            "nested annotation owner has no source declaration".to_owned()
+        ));
+    };
+    let Some(child_declaration) = child.declaration.as_ref() else {
+        return Ok(Err("nested annotation has no source declaration".to_owned()));
+    };
+    if !child.fields.is_empty() || child.methods.len() != 1 {
+        return Ok(Err(
+            "nested annotation physical records are outside the one-element subset".to_owned(),
+        ));
+    }
+    let method = &child.methods[0];
+    if method.item.name.raw().0 != b"value"
+        || method.item.descriptor.raw().0 != b"()F"
+        || method
+            .declaration
+            .as_ref()
+            .is_none_or(|declaration| !declaration.contains(" default "))
+        || !matches!(method.outcome, class_source::ClassSourceOutcome::NoBody)
+        || method.markers.len() != 1
+        || !method.markers[0].contains("no body")
+    {
+        return Ok(Err(
+            "nested annotation element does not reproduce one complete default declaration"
+                .to_owned(),
+        ));
+    }
+    let child_context = class_source::ClassSourceTextContext {
+        initializer_field_order: None,
+        declared_methods: child.methods.len() as u64,
+        member_table: None,
+        execution: &child.execution,
+        enum_projection: None,
+        array_helper_indices: None,
+        array_method_texts: None,
+        array_helper_markers: None,
+    };
+    if class_source::source_text(
+        child_declaration,
+        &child.fields,
+        &child.methods,
+        &child_context,
+    ) != child.text
+    {
+        return Ok(Err(
+            "nested annotation child writer cannot reproduce its physical report".to_owned(),
+        ));
+    }
+    let binary_leaf = std::str::from_utf8(&child_declaration.item.declaration.this_class.raw().0)
+        .ok()
+        .and_then(|name| name.rsplit('/').next())
+        .unwrap_or_default();
+    if root
+        .fields
+        .iter()
+        .filter_map(|field| field.declaration.as_deref())
+        .chain(root.methods.iter().flat_map(|method| {
+            [method.declaration.as_deref(), Some(method.text.as_str())]
+                .into_iter()
+                .flatten()
+        }))
+        .any(|text| text.contains(binary_leaf))
+    {
+        return Ok(Err(
+            "owner source references the annotation binary name outside this declaration slice"
+                .to_owned(),
+        ));
+    }
+    let context = class_source::ClassSourceTextContext {
+        initializer_field_order: None,
+        declared_methods: root.methods.len() as u64,
+        member_table: None,
+        execution: &root.execution,
+        enum_projection: None,
+        array_helper_indices: None,
+        array_method_texts: None,
+        array_helper_markers: None,
+    };
+    if class_source::source_text(root_declaration, &root.fields, &root.methods, &context)
+        != root.text
+    {
+        return Ok(Err(
+            "owner has another source projection outside this annotation slice".to_owned(),
+        ));
+    }
+    let mut facts = child_declaration.item.declaration.clone();
+    const VISIBILITY_AND_STATIC: u16 = 0x0001 | 0x0002 | 0x0004 | 0x0008;
+    facts.access_flags = (facts.access_flags & !VISIBILITY_AND_STATIC)
+        | (relation.access_flags & (0x0001 | 0x0002 | 0x0004));
+    let header = class_source::nested_member_class_header(&relation.simple_name, &facts);
+    let mut nested_text = String::new();
+    let header_text = format!("    {header} {{\n");
+    nested_text.push_str(&header_text);
+    for line in method.text.split_inclusive('\n') {
+        nested_text.push_str("    ");
+        nested_text.push_str(line);
+    }
+    nested_text.push_str("    }\n");
+    let nested_end = nested_text.len().saturating_sub(1);
+    budget.poll()?;
+    let nested = class_source::NestedClassSourceText {
+        text: nested_text,
+        derived: vec![Projection {
+            kind: DerivedKind::NestedAnnotationDeclaration,
+            start: 0,
+            end: nested_end,
+            anchors: vec![
+                Anchor::ClassDefinition {
+                    definition: relation.root.clone(),
+                },
+                Anchor::ClassDefinition {
+                    definition: relation.child.clone(),
+                },
+            ],
+        }],
+    };
+    let (text, derived) = class_source::source_text_with_nested_declaration(
+        root_declaration,
+        &root.fields,
+        &root.methods,
+        &context,
+        &[],
+        &nested,
+    );
+    let added_output = text
+        .len()
+        .saturating_sub(root.text.len())
+        .try_into()
+        .unwrap_or(u64::MAX);
+    budget.charge(CountedBudgetDimension::OutputBytes, added_output)?;
+    Ok(Ok((text, derived)))
+}
+
 fn project_class_source_nested_enum(
     content: &[ArtifactSnapshot],
     environment: &ResolutionEnvironment,
@@ -12261,7 +12805,7 @@ fn project_class_source_nested_enum(
             "root class has another source projection outside this nested-enum slice".to_owned(),
         ));
     }
-    let (text, derived) = class_source::source_text_with_nested_enum(
+    let (text, derived) = class_source::source_text_with_nested_declaration(
         declaration,
         &root.fields,
         &root.methods,
@@ -12324,7 +12868,7 @@ fn render_nested_enum_at(
     owner_source_name: &str,
     execution: &mut ExecutionReport,
     budget: &mut Budget,
-) -> Result<std::result::Result<class_source::NestedEnumSourceText, String>> {
+) -> Result<std::result::Result<class_source::NestedClassSourceText, String>> {
     use class_source::MemberFamilyPhysicalAnchor as Anchor;
     let class_source::ClassSourceNestedEnumFamily::Prepared {
         relation, child, ..
@@ -20308,6 +20852,15 @@ pub(crate) fn stop_diagnostic(error: &Error, provenance: Option<Provenance>) -> 
 fn nested_enum_refusal_diagnostic(reason: &str, provenance: Provenance) -> Diagnostic {
     Diagnostic {
         code: "nested_enum_source_refused".to_owned(),
+        severity: DiagnosticSeverity::Warning,
+        message: reason.to_owned(),
+        provenance: Some(provenance),
+    }
+}
+
+fn nested_annotation_refusal_diagnostic(reason: &str, provenance: Provenance) -> Diagnostic {
+    Diagnostic {
+        code: "nested_annotation_source_refused".to_owned(),
         severity: DiagnosticSeverity::Warning,
         message: reason.to_owned(),
         provenance: Some(provenance),
