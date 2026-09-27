@@ -3092,6 +3092,7 @@ impl Engine {
         let mut enum_code_candidates = Vec::new();
         let mut enum_switch_candidate_runs = Vec::new();
         let mut array_constructor_candidate_runs = Vec::new();
+        let mut lambda_helper_candidate_runs = Vec::new();
         let mut array_helper_use_runs = Vec::new();
         // This only avoids scanning unrelated classes. A header-level synthetic lambda helper is
         // not proof of a projection; all eligibility still comes from same-run Code/CP/AST facts.
@@ -3575,6 +3576,7 @@ impl Engine {
                                 bridge: bridge_candidate,
                                 enum_switches: enum_switch_candidates,
                                 array_constructors: array_constructor_candidates,
+                                lambda_helpers: lambda_helper_candidates,
                                 array_helper_uses,
                                 enum_switch_field_uses,
                                 generic_return,
@@ -3600,6 +3602,9 @@ impl Engine {
                                 }
                                 if let Some(candidates) = array_constructor_candidates {
                                     array_constructor_candidate_runs.extend(candidates);
+                                }
+                                if let Some(candidates) = lambda_helper_candidates {
+                                    lambda_helper_candidate_runs.extend(candidates);
                                 }
                                 if let Some(scan) = array_helper_uses {
                                     array_helper_use_runs.push(scan);
@@ -4287,6 +4292,249 @@ impl Engine {
                         }
                     }
                     continue;
+                }
+            }
+        }
+        let mut lambda_projection_stopped = false;
+        let relevant_lambda_headers: Vec<_> = read
+            .facts
+            .methods
+            .iter()
+            .filter(|member| {
+                member.name.raw().0.starts_with(b"lambda$")
+                    && member.access_flags & (0x0002 | 0x0008 | 0x1000)
+                        == (0x0002 | 0x0008 | 0x1000)
+                    && member.descriptor.raw().0.ends_with(b")I")
+                    && code_shell(member).is_some()
+            })
+            .collect();
+        if array_projection_complete && !relevant_lambda_headers.is_empty() {
+            let owned_candidates: Vec<_> = lambda_helper_candidate_runs
+                .iter()
+                .filter(|candidate| {
+                    candidate.helper_owner == read.facts.this_class.raw().clone()
+                        && relevant_lambda_headers.iter().any(|header| {
+                            candidate.helper.name == *header.name.raw()
+                                && candidate.helper.descriptor == *header.descriptor.raw()
+                        })
+                })
+                .cloned()
+                .collect();
+            let all_owned = relevant_lambda_headers.iter().all(|header| {
+                owned_candidates.iter().any(|candidate| {
+                    candidate.helper_owner == read.facts.this_class.raw().clone()
+                        && candidate.helper.name == *header.name.raw()
+                        && candidate.helper.descriptor == *header.descriptor.raw()
+                })
+            });
+            if !all_owned {
+                for header in &relevant_lambda_headers {
+                    if !owned_candidates.iter().any(|candidate| {
+                        candidate.helper.name == *header.name.raw()
+                            && candidate.helper.descriptor == *header.descriptor.raw()
+                    }) {
+                        diagnostics.push(lambda_helper_refusal_diagnostic(
+                            &String::from_utf8_lossy(&header.name.raw().0),
+                            None,
+                            "synthetic helper has no exact supported owned LambdaMetafactory site",
+                            class_provenance.clone(),
+                        ));
+                    }
+                }
+            }
+            if all_owned {
+                let mut by_helper: Vec<(
+                    PhysicalMethodId,
+                    Vec<jarde_java::report::ClassSourceLambdaHelperCandidate>,
+                )> = Vec::new();
+                for candidate in owned_candidates {
+                    if let Some((_, grouped)) = by_helper
+                        .iter_mut()
+                        .find(|(helper, _)| *helper == candidate.helper)
+                    {
+                        grouped.push(candidate);
+                    } else {
+                        by_helper.push((candidate.helper.clone(), vec![candidate]));
+                    }
+                }
+                let mut pending = Vec::new();
+                let mut whole_set_accepted = true;
+                for (helper, candidates) in by_helper {
+                    if lambda_projection_stopped {
+                        break;
+                    }
+                    let census_sites = candidates
+                        .iter()
+                        .map(|candidate| LambdaHelperUseSite {
+                            member: candidate.member.clone(),
+                            helper: RawMethodReference {
+                                owner: candidate.helper_owner.clone(),
+                                name: candidate.helper.name.clone(),
+                                descriptor: candidate.helper.descriptor.clone(),
+                            },
+                            bootstrap_index: candidate.bootstrap_index,
+                            implementation_index: candidate.implementation_index,
+                            use_site: candidate.use_site,
+                            site_cp: candidate.site_cp,
+                        })
+                        .collect::<Vec<_>>();
+                    let refusal = match lambda_helper_census_refusal(
+                        &census_sites,
+                        &array_helper_use_runs,
+                        budget,
+                    ) {
+                        Ok(refusal) => refusal,
+                        Err(error) => {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            whole_set_accepted = false;
+                            break;
+                        }
+                    };
+                    if let Some(reason) = refusal {
+                        diagnostics.push(lambda_helper_refusal_diagnostic(
+                            &String::from_utf8_lossy(&helper.name.0),
+                            candidates.first().map(|candidate| candidate.use_site),
+                            &reason,
+                            class_provenance.clone(),
+                        ));
+                        whole_set_accepted = false;
+                        break;
+                    }
+                    let Some(helper_ast) = method_asts
+                        .iter()
+                        .find(|(member, _, _, _)| member == &helper)
+                        .map(|(_, ast, _, _)| ast)
+                    else {
+                        diagnostics.push(lambda_helper_refusal_diagnostic(
+                            &String::from_utf8_lossy(&helper.name.0),
+                            candidates.first().map(|candidate| candidate.use_site),
+                            "complete same-run helper AST is absent",
+                            class_provenance.clone(),
+                        ));
+                        whole_set_accepted = false;
+                        break;
+                    };
+                    let mut staged = Vec::new();
+                    let mut accepted = true;
+                    for candidate in &candidates {
+                        let mut member_matches = methods
+                            .iter()
+                            .enumerate()
+                            .filter(|(_, method)| method.item.identity == candidate.member);
+                        let Some((method_index, method)) = member_matches.next() else {
+                            accepted = false;
+                            break;
+                        };
+                        if member_matches.next().is_some() {
+                            accepted = false;
+                            break;
+                        }
+                        if !method_asts
+                            .iter()
+                            .any(|(member, _, _, _)| member == &candidate.member)
+                        {
+                            accepted = false;
+                            break;
+                        }
+                        let projected = match jarde_java::report::emit_class_source_lambda_helper(
+                            candidate, helper_ast, budget,
+                        ) {
+                            Ok(Some(text)) => text,
+                            Ok(None) => {
+                                diagnostics.push(lambda_helper_refusal_diagnostic(&String::from_utf8_lossy(&helper.name.0), Some(candidate.use_site), "helper or caller AST is outside the straight-line primitive proof", class_provenance.clone()));
+                                accepted = false;
+                                break;
+                            }
+                            Err(stop) => {
+                                diagnostics.push(lambda_helper_refusal_diagnostic(
+                                    &String::from_utf8_lossy(&helper.name.0),
+                                    Some(candidate.use_site),
+                                    &format!("the helper-set projection stopped before atomic commit: {stop:?}"),
+                                    class_provenance.clone(),
+                                ));
+                                let error = enum_projection_stop_error(
+                                    stop,
+                                    "lambda helper projection",
+                                    "lambda_helper_projection_stopped",
+                                );
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                accepted = false;
+                                lambda_projection_stopped = true;
+                                break;
+                            }
+                        };
+                        let marker = format!(
+                            "// jarde: inlined exact no-capture primitive lambda helper {:?} at invokedynamic@{}",
+                            helper.name, candidate.use_site
+                        );
+                        let Some(full_text) = method.array_projection_text(&projected, marker)
+                        else {
+                            accepted = false;
+                            break;
+                        };
+                        if let Err(error) = budget.charge(
+                            CountedBudgetDimension::OutputBytes,
+                            u64::try_from(full_text.len()).unwrap_or(u64::MAX),
+                        ) {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            accepted = false;
+                            lambda_projection_stopped = true;
+                            break;
+                        }
+                        staged.push((method_index, method.item.index, full_text));
+                    }
+                    let overlap = staged.iter().any(|(_, index, _)| {
+                        array_projection_members
+                            .iter()
+                            .any(|(_, members)| members.contains(index))
+                    });
+                    if accepted && !staged.is_empty() && !overlap {
+                        let marker = format!(
+                            "// jarde: omitted physical lambda helper {:?} after proving all class-wide uses",
+                            helper.name
+                        );
+                        if let Err(error) = budget.charge(
+                            CountedBudgetDimension::OutputBytes,
+                            u64::try_from(marker.len()).unwrap_or(u64::MAX),
+                        ) {
+                            merge_execution(&mut execution, stop_execution(&error, budget));
+                            diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                            lambda_projection_stopped = true;
+                            accepted = false;
+                        } else if let Some(helper_method) =
+                            methods.iter().find(|method| method.item.identity == helper)
+                        {
+                            pending.push((helper_method.item.index, marker, staged));
+                        } else {
+                            accepted = false;
+                        }
+                    } else {
+                        accepted = false;
+                    }
+                    if !accepted {
+                        whole_set_accepted = false;
+                        break;
+                    }
+                }
+                if whole_set_accepted && !lambda_projection_stopped {
+                    for (helper_index, marker, staged) in pending {
+                        array_projection_method_texts
+                            .extend(staged.iter().map(|(_, index, text)| (*index, text.clone())));
+                        array_helper_method_indices.push(helper_index);
+                        array_projection_markers.push(marker);
+                        let indices = staged
+                            .iter()
+                            .map(|(method_index, index, _)| {
+                                array_original_member_texts
+                                    .push((*index, methods[*method_index].text.clone()));
+                                *index
+                            })
+                            .collect();
+                        array_projection_members.push((helper_index, indices));
+                    }
                 }
             }
         }
@@ -6528,6 +6776,444 @@ fn array_helper_census_refusal(
     Ok(None)
 }
 
+#[derive(Clone)]
+struct LambdaHelperUseSite {
+    member: PhysicalMethodId,
+    helper: RawMethodReference,
+    bootstrap_index: u16,
+    implementation_index: u16,
+    use_site: u32,
+    site_cp: u16,
+}
+
+fn lambda_helper_census_refusal(
+    candidates: &[LambdaHelperUseSite],
+    scans: &[ArrayHelperUseScan],
+    budget: &mut Budget,
+) -> Result<Option<String>> {
+    let Some(first) = scans.first() else {
+        return Ok(Some("same-run class use census is absent".to_owned()));
+    };
+    let Some(candidate) = candidates.first() else {
+        return Ok(Some("no owned use site".to_owned()));
+    };
+    let target = candidate.helper.clone();
+    let row_count = u64::try_from(first.bootstrap_rows.len()).unwrap_or(u64::MAX);
+    let scan_count = u64::try_from(scans.len()).unwrap_or(u64::MAX);
+    let candidate_count = u64::try_from(candidates.len()).unwrap_or(u64::MAX);
+    let argument_count = first.bootstrap_rows.iter().fold(0_u64, |sum, row| {
+        sum.saturating_add(u64::try_from(row.arguments.len()).unwrap_or(u64::MAX))
+    });
+    let tuple_count = scans.iter().fold(0_u64, |sum, scan| {
+        sum.saturating_add(u64::try_from(scan.invokedynamic_sites.len()).unwrap_or(u64::MAX))
+    });
+    let reference_count = scans.iter().fold(0_u64, |sum, scan| {
+        sum.saturating_add(u64::try_from(scan.direct_calls.len()).unwrap_or(u64::MAX))
+            .saturating_add(u64::try_from(scan.ldc_handles.len()).unwrap_or(u64::MAX))
+    });
+    let work = row_count
+        .saturating_mul(row_count)
+        .saturating_mul(2)
+        .saturating_add(argument_count)
+        .saturating_add(reference_count)
+        .saturating_add(scan_count.saturating_mul(row_count.saturating_add(argument_count)))
+        .saturating_add(tuple_count)
+        .saturating_add(
+            candidate_count.saturating_mul(
+                scan_count
+                    .saturating_add(tuple_count)
+                    .saturating_add(row_count)
+                    .saturating_add(argument_count)
+                    .saturating_add(1),
+            ),
+        )
+        .saturating_add(
+            argument_count.saturating_mul(scan_count).saturating_mul(
+                tuple_count
+                    .saturating_add(candidate_count)
+                    .saturating_add(1),
+            ),
+        );
+    budget.charge(CountedBudgetDimension::IrItems, work)?;
+    for scan in scans {
+        budget.poll()?;
+        if !scan.complete || scan.member.is_none() {
+            return Ok(Some("an all-class Code/use scan is incomplete".to_owned()));
+        }
+        if array_helper_has_direct_use(&target, std::slice::from_ref(scan)) {
+            return Ok(Some(
+                "helper has a direct invocation or ldc MethodHandle use".to_owned(),
+            ));
+        }
+        if !scan.bootstrap_rows.is_empty() && scan.bootstrap_rows != first.bootstrap_rows {
+            return Ok(Some(
+                "same-run payloads disagree about BootstrapMethods".to_owned(),
+            ));
+        }
+    }
+    for owned in candidates {
+        budget.poll()?;
+        let Some(scan) = scans
+            .iter()
+            .find(|scan| scan.member.as_ref() == Some(&owned.member))
+        else {
+            return Ok(Some("owned site has no all-class use scan".to_owned()));
+        };
+        if !scan.invokedynamic_sites.contains(&(
+            owned.use_site,
+            owned.site_cp,
+            owned.bootstrap_index,
+        )) {
+            return Ok(Some(
+                "owned site does not match exact BCI/CP/bootstrap tuple".to_owned(),
+            ));
+        }
+        let Some(row) = first
+            .bootstrap_rows
+            .iter()
+            .find(|row| row.index == owned.bootstrap_index)
+        else {
+            return Ok(Some("owned site has no bootstrap row".to_owned()));
+        };
+        if owned.helper != target
+            || !matches!(row.arguments.get(1), Some(ArrayBootstrapArgument::MethodHandle { cp_index, target: actual }) if *cp_index == owned.implementation_index && same_raw_target(actual, &target))
+        {
+            return Ok(Some(
+                "exact LambdaMetafactory implementation handle differs".to_owned(),
+            ));
+        }
+    }
+    let mut reachable = std::collections::BTreeSet::new();
+    let mut dynamic_reachable = std::collections::BTreeSet::new();
+    for scan in scans {
+        for (_, _, index) in &scan.invokedynamic_sites {
+            reachable.insert(*index);
+        }
+        reachable.extend(scan.dynamic_bootstrap_indices.iter().copied());
+        dynamic_reachable.extend(scan.dynamic_bootstrap_indices.iter().copied());
+    }
+    let mut queue = reachable
+        .iter()
+        .copied()
+        .collect::<std::collections::VecDeque<_>>();
+    while let Some(index) = queue.pop_front() {
+        budget.poll()?;
+        let Some(row) = first.bootstrap_rows.iter().find(|row| row.index == index) else {
+            return Ok(Some("reachable bootstrap row is missing".to_owned()));
+        };
+        for argument in &row.arguments {
+            budget.poll()?;
+            if let ArrayBootstrapArgument::Dynamic { bootstrap_index } = argument {
+                dynamic_reachable.insert(*bootstrap_index);
+                if reachable.insert(*bootstrap_index) {
+                    queue.push_back(*bootstrap_index);
+                }
+            }
+        }
+    }
+    // Finish the Dynamic closure before inspecting helper handles. A later row can point back to
+    // an earlier owned lambda row, and validation during BFS would depend on queue order.
+    let mut reachable_sites = Vec::new();
+    for scan in scans {
+        for site in &scan.invokedynamic_sites {
+            budget.poll()?;
+            if reachable.contains(&site.2) {
+                reachable_sites.push((scan.member.clone(), site.0, site.1, site.2));
+            }
+        }
+    }
+    for index in &reachable {
+        budget.poll()?;
+        let Some(row) = first.bootstrap_rows.iter().find(|row| row.index == *index) else {
+            return Ok(Some("reachable bootstrap row is missing".to_owned()));
+        };
+        if row
+            .bootstrap
+            .as_ref()
+            .is_some_and(|reference| same_raw_target(reference, &target))
+        {
+            return Ok(Some(
+                "helper occurs as a reachable bootstrap method".to_owned(),
+            ));
+        }
+        for (argument_index, argument) in row.arguments.iter().enumerate() {
+            budget.poll()?;
+            if let ArrayBootstrapArgument::MethodHandle {
+                cp_index,
+                target: actual,
+            } = argument
+                && same_raw_target(actual, &target)
+            {
+                if dynamic_reachable.contains(index) {
+                    return Ok(Some(
+                        "helper-bearing bootstrap row is also reachable through CONSTANT_Dynamic"
+                            .to_owned(),
+                    ));
+                }
+                if argument_index != 1
+                    || !candidates.iter().any(|candidate| {
+                        candidate.bootstrap_index == *index
+                            && candidate.implementation_index == *cp_index
+                    })
+                {
+                    return Ok(Some(
+                        "reachable bootstrap contains an additional helper handle use".to_owned(),
+                    ));
+                }
+                if !reachable_sites.iter().any(|site| site.3 == *index) {
+                    return Ok(Some(
+                        "reachable helper bootstrap has no owned invokedynamic site".to_owned(),
+                    ));
+                }
+                for (member, bci, cp, bootstrap) in
+                    reachable_sites.iter().filter(|site| site.3 == *index)
+                {
+                    if !candidates.iter().any(|candidate| {
+                        Some(&candidate.member) == member.as_ref()
+                            && candidate.use_site == *bci
+                            && candidate.site_cp == *cp
+                            && candidate.bootstrap_index == *bootstrap
+                            && candidate.implementation_index == *cp_index
+                    }) {
+                        return Ok(Some(
+                            "a reachable helper bootstrap serves an unprojected invokedynamic site"
+                                .to_owned(),
+                        ));
+                    }
+                }
+            }
+        }
+    }
+    Ok(None)
+}
+
+fn lambda_helper_refusal_diagnostic(
+    helper: &str,
+    use_site: Option<u32>,
+    reason: &str,
+    provenance: Option<Provenance>,
+) -> Diagnostic {
+    Diagnostic {
+        code: "lambda_helper_projection_refused".to_owned(),
+        severity: DiagnosticSeverity::Warning,
+        message: format!(
+            "physical helper {helper:?} at invokedynamic {use_site:?} was retained: {reason}"
+        ),
+        provenance,
+    }
+}
+
+#[cfg(test)]
+mod lambda_helper_census_tests {
+    use super::*;
+
+    fn id(name: &[u8]) -> PhysicalMethodId {
+        PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: jarde_reader::model::PhysicalClassLocation::StandaloneRoot {
+                    snapshot: jarde_reader::model::SnapshotId("lambda-census".to_owned()),
+                },
+                class_bytes: jarde_reader::model::ClassBytesId {
+                    digest: jarde_reader::model::Digest("00".repeat(32)),
+                    length: 1,
+                },
+                variant: jarde_reader::model::PhysicalVariant::Base,
+            },
+            name: jarde_reader::model::JvmBytes(name.to_vec()),
+            descriptor: jarde_reader::model::JvmBytes(
+                b"()Ljava/util/function/IntSupplier;".to_vec(),
+            ),
+        }
+    }
+
+    fn target() -> RawMethodReference {
+        RawMethodReference {
+            owner: jarde_reader::model::JvmBytes(b"p/S".to_vec()),
+            name: jarde_reader::model::JvmBytes(b"lambda$x$0".to_vec()),
+            descriptor: jarde_reader::model::JvmBytes(b"()I".to_vec()),
+        }
+    }
+
+    fn candidate(member: PhysicalMethodId) -> LambdaHelperUseSite {
+        LambdaHelperUseSite {
+            member,
+            helper: target(),
+            bootstrap_index: 0,
+            implementation_index: 21,
+            use_site: 4,
+            site_cp: 17,
+        }
+    }
+
+    fn method_handle(cp_index: u16) -> ArrayBootstrapArgument {
+        ArrayBootstrapArgument::MethodHandle {
+            cp_index,
+            target: target(),
+        }
+    }
+
+    fn scan(
+        member: PhysicalMethodId,
+        rows: Vec<ArrayBootstrapRow>,
+        sites: Vec<(u32, u16, u16)>,
+    ) -> ArrayHelperUseScan {
+        ArrayHelperUseScan {
+            complete: true,
+            member: Some(member),
+            direct_calls: Vec::new(),
+            ldc_handles: Vec::new(),
+            bootstrap_rows: rows,
+            invokedynamic_sites: sites,
+            dynamic_bootstrap_indices: Vec::new(),
+        }
+    }
+
+    fn row(index: u16, arguments: Vec<ArrayBootstrapArgument>) -> ArrayBootstrapRow {
+        ArrayBootstrapRow {
+            index,
+            bootstrap: None,
+            arguments,
+        }
+    }
+
+    fn budget() -> Budget {
+        let mut limits = crate::task_budget(&[]).unwrap().limits().clone();
+        limits.ir_items = u64::MAX;
+        limits.elapsed_millis = u64::MAX;
+        Budget::new(limits)
+    }
+
+    #[test]
+    fn shared_bootstrap_row_rejects_any_unprojected_invokedynamic_site() {
+        let member = id(b"make");
+        let candidate = candidate(member.clone());
+        let rows = vec![row(
+            0,
+            vec![ArrayBootstrapArgument::Other, method_handle(21)],
+        )];
+        let scans = vec![scan(member.clone(), rows, vec![(4, 17, 0), (9, 18, 0)])];
+        assert!(
+            lambda_helper_census_refusal(&[candidate], &scans, &mut budget())
+                .unwrap()
+                .unwrap()
+                .contains("unprojected invokedynamic")
+        );
+    }
+
+    #[test]
+    fn nested_dynamic_bootstrap_with_helper_in_non_implementation_argument_is_rejected() {
+        let member = id(b"make");
+        let candidate = candidate(member.clone());
+        let rows = vec![
+            row(
+                0,
+                vec![
+                    ArrayBootstrapArgument::Other,
+                    method_handle(21),
+                    ArrayBootstrapArgument::Dynamic { bootstrap_index: 1 },
+                ],
+            ),
+            row(1, vec![method_handle(21)]),
+        ];
+        let scans = vec![scan(member, rows, vec![(4, 17, 0)])];
+        assert!(
+            lambda_helper_census_refusal(&[candidate], &scans, &mut budget())
+                .unwrap()
+                .is_some()
+        );
+    }
+
+    #[test]
+    fn direct_helper_invocation_and_incomplete_scan_both_refuse() {
+        let member = id(b"make");
+        let candidate = candidate(member.clone());
+        let rows = vec![row(
+            0,
+            vec![ArrayBootstrapArgument::Other, method_handle(21)],
+        )];
+        let mut direct_scan = scan(member.clone(), rows.clone(), vec![(4, 17, 0)]);
+        direct_scan.direct_calls.push(target());
+        assert!(
+            lambda_helper_census_refusal(
+                std::slice::from_ref(&candidate),
+                std::slice::from_ref(&direct_scan),
+                &mut budget()
+            )
+            .unwrap()
+            .unwrap()
+            .contains("direct invocation")
+        );
+
+        let mut incomplete = scan(member, rows, vec![(4, 17, 0)]);
+        incomplete.direct_calls.clear();
+        incomplete.complete = false;
+        assert!(
+            lambda_helper_census_refusal(&[candidate], &[incomplete], &mut budget())
+                .unwrap()
+                .unwrap()
+                .contains("incomplete")
+        );
+    }
+
+    #[test]
+    fn constant_dynamic_reuse_of_an_owned_lambda_row_refuses_projection() {
+        let member = id(b"make");
+        let candidate = candidate(member.clone());
+        let rows = vec![row(
+            0,
+            vec![ArrayBootstrapArgument::Other, method_handle(21)],
+        )];
+        let mut scan = scan(member, rows, vec![(4, 17, 0)]);
+        scan.dynamic_bootstrap_indices.push(0);
+        assert!(
+            lambda_helper_census_refusal(&[candidate], &[scan], &mut budget())
+                .unwrap()
+                .unwrap()
+                .contains("CONSTANT_Dynamic")
+        );
+    }
+
+    #[test]
+    fn nested_dynamic_back_edge_to_earlier_owned_row_refuses_independent_of_queue_order() {
+        let member = id(b"make");
+        let candidate = candidate(member.clone());
+        let rows = vec![
+            row(0, vec![ArrayBootstrapArgument::Other, method_handle(21)]),
+            row(
+                1,
+                vec![ArrayBootstrapArgument::Dynamic { bootstrap_index: 0 }],
+            ),
+        ];
+        let mut scan = scan(member, rows, vec![(4, 17, 0)]);
+        // Seed row 1 after the owned row 0 in queue order. Its nested Dynamic edge still makes
+        // row 0 ConstantDynamic-reachable, so validation must happen after closure discovery.
+        scan.dynamic_bootstrap_indices.push(1);
+        assert!(
+            lambda_helper_census_refusal(&[candidate], &[scan], &mut budget())
+                .unwrap()
+                .unwrap()
+                .contains("CONSTANT_Dynamic")
+        );
+    }
+
+    #[test]
+    fn cancellation_stops_class_census_before_publication() {
+        let member = id(b"make");
+        let candidate = candidate(member.clone());
+        let rows = vec![row(
+            0,
+            vec![ArrayBootstrapArgument::Other, method_handle(21)],
+        )];
+        let scans = vec![scan(member, rows, vec![(4, 17, 0)])];
+        let mut budget = budget();
+        budget.cancellation_token().cancel();
+        assert!(matches!(
+            lambda_helper_census_refusal(&[candidate], &scans, &mut budget),
+            Err(Error::Cancelled { .. })
+        ));
+    }
+}
+
 fn array_target_declaration_matches(
     candidate: &jarde_java::report::ClassSourceArrayConstructorCandidate,
     method: &ClassSourceMethod,
@@ -6618,6 +7304,7 @@ struct PreparedMemberRecovery {
     bridge: Option<jarde_java::bridge::ClassSourceBridgeCandidate>,
     enum_switches: Option<Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>>,
     array_constructors: Option<Vec<jarde_java::report::ClassSourceArrayConstructorCandidate>>,
+    lambda_helpers: Option<Vec<jarde_java::report::ClassSourceLambdaHelperCandidate>>,
     array_helper_uses: Option<ArrayHelperUseScan>,
     enum_switch_field_uses: Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
     generic_return: Option<jarde_java::report::GenericReturnCandidate>,
@@ -6716,6 +7403,7 @@ fn recover_prepared_member(
         bridge,
         enum_switches,
         array_constructors,
+        lambda_helpers,
         enum_switch_field_uses,
         generic_return,
         generic_constructor,
@@ -6731,7 +7419,7 @@ fn recover_prepared_member(
         evidence,
         options.prove_generic_return,
         options.capture_enum_constructor_ast,
-        options.capture_anonymous_child_asts,
+        options.capture_anonymous_child_asts || options.array_helper_census_needed,
         budget,
     )?;
     // The constructor AST is an evidence handoff from this exact run. The ordinary method report
@@ -6756,6 +7444,7 @@ fn recover_prepared_member(
         bridge,
         enum_switches,
         array_constructors,
+        lambda_helpers,
         array_helper_uses,
         enum_switch_field_uses,
         generic_return,
@@ -14359,7 +15048,7 @@ mod member_inner_target_tests {
             };
             let evidence = jarde_java::RecoveryEvidenceRequest::essential()
                 .with_kind(jarde_java::RecoveryEvidenceKind::RuleDetails);
-            let (detailed, _, _, _, _, _, _, generic_return, _, _, _) =
+            let (detailed, _, _, _, _, _, _, _, generic_return, _, _, _) =
                 recovery_from_with_class_candidates(
                     std::slice::from_ref(&snapshot),
                     &request,
@@ -19255,6 +19944,7 @@ fn recovery_presented_for_class_source(
     Option<jarde_java::bridge::ClassSourceBridgeCandidate>,
     Option<Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>>,
     Option<Vec<jarde_java::report::ClassSourceArrayConstructorCandidate>>,
+    Option<Vec<jarde_java::report::ClassSourceLambdaHelperCandidate>>,
     Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
     Option<jarde_java::report::GenericReturnCandidate>,
     Option<jarde_java::report::GenericConstructorCandidate>,
@@ -19356,7 +20046,7 @@ fn recovery_from(
         false,
         false,
     )
-    .map(|(recovered, _, _, _, _, _, _, _, _, _, _)| recovered)
+    .map(|(recovered, _, _, _, _, _, _, _, _, _, _, _)| recovered)
 }
 
 fn recovery_from_with_class_candidates(
@@ -19379,6 +20069,7 @@ fn recovery_from_with_class_candidates(
     Option<jarde_java::bridge::ClassSourceBridgeCandidate>,
     Option<Vec<jarde_java::enumswitch::ClassSourceEnumSwitchCandidate>>,
     Option<Vec<jarde_java::report::ClassSourceArrayConstructorCandidate>>,
+    Option<Vec<jarde_java::report::ClassSourceLambdaHelperCandidate>>,
     Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
     Option<jarde_java::report::GenericReturnCandidate>,
     Option<jarde_java::report::GenericConstructorCandidate>,
@@ -19465,6 +20156,7 @@ fn recovery_from_with_class_candidates(
         bridge_candidate,
         enum_switch_candidates,
         array_constructor_candidates,
+        lambda_helper_candidates,
         enum_switch_field_uses,
         generic_return,
         generic_constructor,
@@ -19489,6 +20181,7 @@ fn recovery_from_with_class_candidates(
                 result.bridge,
                 Some(result.enum_switches),
                 Some(result.array_constructors),
+                Some(result.lambda_helpers),
                 Some(result.enum_switch_field_uses),
                 result.generic_return,
                 result.generic_constructor,
@@ -19514,6 +20207,7 @@ fn recovery_from_with_class_candidates(
                 result.bridge,
                 Some(result.enum_switches),
                 Some(result.array_constructors),
+                Some(result.lambda_helpers),
                 Some(result.enum_switch_field_uses),
                 result.generic_return,
                 result.generic_constructor,
@@ -19533,9 +20227,11 @@ fn recovery_from_with_class_candidates(
             None,
             None,
             None,
+            None,
         ),
         None => (
             jarde_java::recover(&request, budget),
+            None,
             None,
             None,
             None,
@@ -19601,6 +20297,7 @@ fn recovery_from_with_class_candidates(
         bridge_candidate,
         enum_switch_candidates,
         array_constructor_candidates,
+        lambda_helper_candidates,
         enum_switch_field_uses,
         generic_return,
         generic_constructor,

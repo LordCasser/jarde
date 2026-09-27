@@ -725,3 +725,186 @@ fn receiver_cast_output_and_ir_budgets_and_cancellation_do_not_publish_partial_j
     );
     assert_no_partial_java_body(cancelled, "a pre-cancelled receiver body");
 }
+
+#[test]
+fn no_capture_primitive_lambda_helpers_inline_as_one_class_projection() {
+    let scratch = Scratch::new();
+    let original = scratch.child("lambda-helper-original");
+    fs::write(original.join("LambdaSubject.java"), "import java.util.function.*;\npublic final class LambdaSubject {\n  static IntSupplier zero() { return () -> 7; }\n  static IntUnaryOperator one() { return x -> x + 10; }\n  static IntBinaryOperator two() { return (x,y) -> x * 10 + y; }\n  static int run() { return zero().getAsInt() + one().applyAsInt(5) + two().applyAsInt(4,2); }\n}\n").unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("LambdaSubject.java"))
+        .output()
+        .unwrap();
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let bytes = fs::read(original.join("LambdaSubject.class")).unwrap();
+    let snapshot = open(&bytes);
+    let recovered = class_source(&snapshot, "LambdaSubject", &RecoveryEvidenceRequest::all());
+    for helper in ["lambda$zero$0", "lambda$one$1", "lambda$two$2"] {
+        assert!(
+            !recovered.text.contains(&format!("{}(", helper)),
+            "helper call or declaration leaked: {}",
+            recovered.text
+        );
+        assert!(
+            recovered
+                .methods
+                .iter()
+                .any(|method| method.item.name.raw().0 == helper.as_bytes()),
+            "physical method report must remain for {helper}"
+        );
+    }
+    assert!(recovered.text.contains("return () -> 7;"));
+    assert!(recovered.text.contains("return (int p0) -> p0 + 10;"));
+    assert!(
+        recovered
+            .text
+            .contains("return (int p0, int p1) -> p0 * 10 + p1;")
+    );
+    let emitted = scratch.child("lambda-helper-emitted");
+    fs::write(emitted.join("LambdaSubject.java"), &recovered.text).unwrap();
+    fs::write(emitted.join("LambdaRunner.java"), "public class LambdaRunner { public static void main(String[] a) { System.out.println(LambdaSubject.run()); } }\n").unwrap();
+    let recompile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&emitted)
+        .arg(emitted.join("LambdaSubject.java"))
+        .arg(emitted.join("LambdaRunner.java"))
+        .output()
+        .unwrap();
+    assert!(
+        recompile.status.success(),
+        "{}\n{}",
+        String::from_utf8_lossy(&recompile.stdout),
+        String::from_utf8_lossy(&recompile.stderr)
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-cp"])
+        .arg(&emitted)
+        .arg("LambdaRunner")
+        .output()
+        .unwrap();
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(String::from_utf8_lossy(&run.stdout), "64\n");
+}
+
+#[test]
+fn a_complex_lambda_helper_rejects_the_whole_helper_group() {
+    let scratch = Scratch::new();
+    let original = scratch.child("lambda-helper-negative");
+    fs::write(original.join("LambdaNegative.java"), "import java.util.function.*;\npublic final class LambdaNegative {\n  static IntUnaryOperator simple() { return x -> x + 1; }\n  static IntUnaryOperator branch() { return x -> x > 0 ? x : 0; }\n}\n").unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("LambdaNegative.java"))
+        .output()
+        .unwrap();
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let bytes = fs::read(original.join("LambdaNegative.class")).unwrap();
+    let snapshot = open(&bytes);
+    let recovered = class_source(&snapshot, "LambdaNegative", &RecoveryEvidenceRequest::all());
+    assert!(recovered.text.contains("lambda$simple$0"));
+    assert!(recovered.text.contains("lambda$branch$1"));
+    assert!(
+        !recovered
+            .text
+            .contains("inlined exact no-capture primitive lambda helper")
+    );
+    assert!(
+        recovered
+            .diagnostics
+            .iter()
+            .any(
+                |diagnostic| diagnostic.code == "lambda_helper_projection_refused"
+                    && diagnostic.message.contains("lambda$branch$1")
+                    && diagnostic.message.contains("straight-line")
+            ),
+        "refusal must identify the physical helper and unsupported proof: {:?}",
+        recovered.diagnostics
+    );
+    assert!(
+        recovered
+            .methods
+            .iter()
+            .any(|method| method.item.name.raw().0 == b"lambda$simple$0")
+    );
+    assert!(
+        recovered
+            .methods
+            .iter()
+            .any(|method| method.item.name.raw().0 == b"lambda$branch$1")
+    );
+}
+
+#[test]
+fn lambda_helper_projection_budget_stop_does_not_publish_partial_helpers() {
+    let scratch = Scratch::new();
+    let original = scratch.child("lambda-helper-budget");
+    fs::write(original.join("LambdaBudget.java"), "import java.util.function.*;\npublic final class LambdaBudget {\n  static IntSupplier zero() { return () -> 7; }\n  static IntUnaryOperator one() { return x -> x + 1; }\n}\n").unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("LambdaBudget.java"))
+        .output()
+        .unwrap();
+    assert!(compile.status.success());
+    let snapshot = open(&fs::read(original.join("LambdaBudget.class")).unwrap());
+    let complete = class_source(&snapshot, "LambdaBudget", &RecoveryEvidenceRequest::all());
+    let mut stopped_between_helpers = None;
+    for cut in (1..=2000).step_by(10) {
+        let mut limits = complete.limits.clone();
+        limits.output_bytes = complete.usage.output_bytes.saturating_sub(cut);
+        let mut budget = Budget::new(limits);
+        let outcome = Engine::new()
+            .class_source_with_evidence(
+                slice::from_ref(&snapshot),
+                &request(&snapshot, "LambdaBudget"),
+                &RecoveryEvidenceRequest::all(),
+                &mut budget,
+            )
+            .unwrap();
+        let OperationOutcome::Performed(report) = outcome else {
+            panic!("expected a class-source report: {outcome:?}")
+        };
+        if report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "lambda_helper_projection_refused"
+                && diagnostic
+                    .message
+                    .contains("projection stopped before atomic commit")
+        }) {
+            stopped_between_helpers = Some(report);
+            break;
+        }
+    }
+    let stopped = stopped_between_helpers
+        .expect("a budget between helper projections must stop the atomic group");
+    assert!(
+        stopped.diagnostics.iter().any(|diagnostic| diagnostic.code
+            == "lambda_helper_projection_refused"
+            && diagnostic.message.contains("lambda$one$1")
+            && diagnostic
+                .message
+                .contains("projection stopped before atomic commit")),
+        "the budget must stop while staging the second helper: {:?}",
+        stopped.diagnostics
+    );
+    assert!(stopped.text.contains("lambda$zero$0"));
+    assert!(stopped.text.contains("lambda$one$1"));
+    assert!(
+        !stopped
+            .text
+            .contains("inlined exact no-capture primitive lambda helper")
+    );
+}
