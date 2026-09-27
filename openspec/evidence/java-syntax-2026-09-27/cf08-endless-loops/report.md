@@ -36,3 +36,11 @@ python3 openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/replay.py \
 ```
 
 当前固定回放记录的 Jarde CLI SHA-256 为 `6b94a3e7c5d640d7034c96827913db08f7d473c88008418037f776bc1d80d8cd`。`javac` 对 Java 8 选项给出的弃用提示不影响退出状态或回放结果。
+
+## 双网关窄修复验收
+
+[修后重放](simple-after/summary.json)启用 `replay-simple.py --require-jarde`：原 class、固定 JADX、Jarde 的**完整** Java 8 类均重编成功，在 `java -Xverify:all` 下六行同为 `0,1,2,3,3,3`；`limit=4` 正常结束，没有 `@bytecode`。本次 CLI SHA-256 为 `f36d347f11cca0e6ce37f27018aa27875f8195c42fc8a773a37592c609ff6c7e`，三份源码 SHA-256 依次为 `e657d1e5571cd3bf2ebd64f2b6d0ffdc761bb738b94143488fbb83abbc46778a`、`7f563d32983c0949231b7445f44d70f893379a56899f33e172b9ccdef3191aea`、`9fff4ace10f7da20544a4cd5852daa73d21c10f2f4e4c54c13ef9864d880c2e0`。
+
+[修后区域](simple-after/regions.json)将 BCI 2/10/15/18 一次归给循环，BCI 7/24 留在外层。头部 BCI 7 和体内 BCI 15 是分别由精确单一正常入边到达、直接转接到同一个真实后继 BCI 24 的纯 `goto`；循环唯一回边的终止转移为 BCI 21。两网关证明后，`Region::Loop.exit` 仍记物理 BCI 7，`LoopTarget.break_target` 改指 BCI 24，体内 BCI 15 才有循环 `break` 所有权。定向测试核实 BCI 4/7/12/15/18/21/24/25 都在 source map；纯转移 BCI 7/21 只在双网关证书成立时附于 loop 语句的派生来源。
+
+额外入口的 verifier 有效负例、不同最终目标、带效果网关与异常边都保留物理引用，不能被循环误认领；预算和取消没有半份源码。完整 `jarde-java` 测试、`p3_loop_transfers`、CF-07 固定三方八行回放、CF-09 `Grid` 与 `OuterContinue` 三方回放均通过。`cargo fmt --all -- --check`、`cargo check -p jarde-java -p jarde-cli`、`git diff --check` 和 OpenSpec strict 校验通过；独立 Cargo target 经 `cargo clean` 删除 17,801 个文件、6.8 GiB。复杂 `TestNotIndexedLoop` 的外层分支和局部汇合仍未处理。

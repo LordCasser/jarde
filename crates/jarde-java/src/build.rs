@@ -11982,6 +11982,7 @@ impl Builder<'_> {
                 form,
                 for_header,
                 body,
+                gateway_origins,
                 ..
             } => {
                 // The test is written *inside* the loop statement, so the values it reads and the
@@ -12201,6 +12202,9 @@ impl Builder<'_> {
                     } else {
                         (kind, OriginSet::new(Origin::direct(first_test_bci)))
                     };
+                let origin = gateway_origins.iter().fold(origin, |origin, bci| {
+                    origin.plus_derived(Origin::derived(*bci))
+                });
                 self.push(Stmt::new(kind, origin))
             }
             Region::LoopBreak {

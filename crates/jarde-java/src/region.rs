@@ -505,8 +505,11 @@ pub enum Region {
         /// body.
         body: Vec<Region>,
         exit: Option<CanonicalBlockId>,
+        /// Transfer BCIs whose control effect this loop presents, proved by the two-gateway
+        /// certificate. Ordinary loops carry no extra origins.
+        gateway_origins: Vec<u32>,
     },
-    /// An edge in a loop body whose target is exactly this loop's exit.
+    /// An edge in a loop body whose target is this loop's proved Java break destination.
     LoopBreak {
         /// The terminal instruction that transfers to the exit.
         source_bci: u32,
@@ -1732,7 +1735,7 @@ struct Frame {
     own_finally: Option<(u32, (u32, u32))>,
     /// Other case-entry nodes of a switch arm. They end this arm before the next case claims them.
     case_entries: Option<BTreeSet<usize>>,
-    /// The exact normal-flow target of a `break` from the loop whose body this frame walks.
+    /// The physical normal-flow exit of the loop whose body this frame walks.
     loop_exit: Option<usize>,
     /// Proven transfer destinations of enclosing loops, outermost first.
     loop_targets: Vec<LoopTarget>,
@@ -1768,6 +1771,7 @@ impl Frame {
         header: usize,
         continue_target: usize,
         exit: Option<usize>,
+        break_target: Option<usize>,
         exits: BTreeSet<usize>,
         transfer_sources: &BTreeSet<usize>,
         terminal_returns: &BTreeSet<usize>,
@@ -1800,7 +1804,7 @@ impl Frame {
                 targets.push(LoopTarget {
                     header,
                     exits,
-                    break_target: exit,
+                    break_target,
                     continue_target,
                 });
                 targets
@@ -2383,6 +2387,10 @@ impl Walker<'_> {
                                 .loop_targets
                                 .iter()
                                 .any(|target| target.exits.contains(&node))
+                            || frame
+                                .loop_targets
+                                .iter()
+                                .any(|target| target.break_target == Some(node))
                             || frame.loop_targets.iter().any(|target| {
                                 frame.loop_targets.last().map(|current| current.header)
                                     != Some(target.header)
@@ -5167,6 +5175,7 @@ impl Walker<'_> {
                     header_node,
                     header_node,
                     exit_node,
+                    exit_node,
                     exits,
                     &transfer_sources,
                     &terminal_returns,
@@ -5196,6 +5205,7 @@ impl Walker<'_> {
                         for_header: None,
                         body,
                         exit: Some(chain.exit.clone()),
+                        gateway_origins: Vec::new(),
                     }],
                     Some(chain.exit),
                 )));
@@ -5258,6 +5268,7 @@ impl Walker<'_> {
             Continuation::FallThrough
         };
         let exit_node = self.view.index_of(&outside);
+        let exit_gateway = self.loop_exit_gateway_pair(header_node, exit_node, blocks, frame)?;
         let for_header = self.prove_for_header(header, header_node, blocks)?;
         let exits = self.loop_exit_nodes(blocks);
         let mut all_exits: BTreeSet<usize> = frame
@@ -5277,7 +5288,10 @@ impl Walker<'_> {
         {
             all_exits.insert(update_node);
         }
-        let transfer_sources = self.loop_transfer_sources(&all_exits);
+        let mut transfer_sources = self.loop_transfer_sources(&all_exits);
+        if let Some((gateway, _, _)) = exit_gateway {
+            transfer_sources.insert(gateway);
+        }
         let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
         let body_frame = frame.loop_body(
             blocks,
@@ -5288,6 +5302,7 @@ impl Walker<'_> {
                 .and_then(|proof| self.view.index_of(&proof.update_block))
                 .unwrap_or(header_node),
             exit_node,
+            exit_gateway.map(|(_, target, _)| target).or(exit_node),
             exits,
             &transfer_sources,
             &terminal_returns,
@@ -5296,6 +5311,9 @@ impl Walker<'_> {
         self.visited.insert(header_node);
         let mut expected = blocks.clone();
         expected.remove(&header_node);
+        if let Some((gateway, _, _)) = exit_gateway {
+            expected.insert(gateway);
+        }
         expected.extend(terminal_returns);
         if !self.covers(&expected) {
             // The loop's shape is refused, and every block the body's walk claimed goes into the
@@ -5314,6 +5332,9 @@ impl Walker<'_> {
             for_header,
             body,
             exit: Some(outside.clone()),
+            gateway_origins: exit_gateway
+                .map(|(_, _, origins)| origins.to_vec())
+                .unwrap_or_default(),
         }];
         Ok(Some((run, Some(outside))))
     }
@@ -6241,6 +6262,7 @@ impl Walker<'_> {
                 blocks: vec![header.clone()],
             }],
             exit: Some(exit.clone()),
+            gateway_origins: Vec::new(),
         }];
         Ok(Some((run, Some(exit))))
     }
@@ -6429,6 +6451,7 @@ impl Walker<'_> {
                         blocks: vec![header.clone()],
                     }],
                     exit: Some(exit.clone()),
+                    gateway_origins: Vec::new(),
                 },
                 Some(exit),
             )));
@@ -6511,6 +6534,7 @@ impl Walker<'_> {
             header_node,
             latch_node,
             exit_node,
+            exit_node,
             exits.clone(),
             &transfer_sources,
             &terminal_returns,
@@ -6546,6 +6570,7 @@ impl Walker<'_> {
             for_header: None,
             body,
             exit: Some(exit.clone()),
+            gateway_origins: Vec::new(),
         }];
         Ok(Some((run, Some(exit))))
     }
@@ -6588,7 +6613,7 @@ impl Walker<'_> {
             .collect()
     }
 
-    /// A body branch exclusively owns a one-instruction normal transfer to this loop's exit.
+    /// A body branch exclusively owns a one-instruction normal transfer to the stated destination.
     /// The bridge is outside the natural loop because it never takes the back edge.
     fn loop_exit_bridge(
         &self,
@@ -6638,8 +6663,129 @@ impl Walker<'_> {
         self.leaving_edge(id).is_none()
             && self.ssa.block(id).is_some_and(|block| {
                 matches!(block.instructions(), [instruction]
-                    if matches!(self.operations.get(instruction.bci()), Some(Operation::Transfer)))
+                    if matches!(instruction.opcode(), 0xa7 | 0xc8)
+                        && matches!(self.operations.get(instruction.bci()), Some(Operation::Transfer)))
             })
+    }
+
+    /// The header's physical failure gateway remains the loop's `exit`; a second proved gateway
+    /// may use their shared successor as this loop's Java `break` target. Both bridges are checked
+    /// against the canonical edges before either is admitted to the body frame.
+    fn loop_exit_gateway_pair(
+        &mut self,
+        header: usize,
+        header_exit: Option<usize>,
+        blocks: &BTreeSet<usize>,
+        frame: &Frame,
+    ) -> Result<Option<(usize, usize, [u32; 2])>, StopReason> {
+        let Some(header_exit) = header_exit else {
+            return Ok(None);
+        };
+        let successors = self.view.successors(header_exit);
+        let [target] = successors.as_slice() else {
+            return Ok(None);
+        };
+        let Some(target_id) = self.view.id_of(*target).cloned() else {
+            return Ok(None);
+        };
+        let Some(header_id) = self.view.id_of(header) else {
+            return Ok(None);
+        };
+        poll(self.budget, Some(header_id.bci()))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(blocks.len()).unwrap_or(u64::MAX),
+            Some(header_id.bci()),
+        )?;
+        let exits = self.loop_exit_nodes(blocks);
+        if exits.len() != 2 || !exits.contains(&header_exit) {
+            return Ok(None);
+        }
+        let Some(gateway) = exits.into_iter().find(|node| *node != header_exit) else {
+            return Ok(None);
+        };
+        if frame
+            .scope
+            .as_ref()
+            .is_some_and(|scope| !scope.contains(&gateway))
+        {
+            return Ok(None);
+        }
+        let edges = u64::try_from(self.canonical.edges().len())
+            .unwrap_or(u64::MAX)
+            .saturating_mul(2);
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            edges,
+            Some(header_id.bci()),
+        )?;
+        if !self.loop_exit_bridge(header, header_exit, &target_id, blocks) {
+            return Ok(None);
+        }
+        let Some(loop_of) = self.view.loop_entered_at(header) else {
+            return Ok(None);
+        };
+        let latches: Vec<_> = loop_of.latches().iter().copied().collect();
+        let [latch] = latches.as_slice() else {
+            return Ok(None);
+        };
+        let Some(latch_id) = self.view.id_of(*latch) else {
+            return Ok(None);
+        };
+        let Some(latch_bci) = self.terminal_bci(latch_id) else {
+            return Ok(None);
+        };
+        if self.view.successors(*latch) != [header]
+            || self.leaving_edge(latch_id).is_some()
+            || !self.ssa.block(latch_id).is_some_and(|block| {
+                block.instructions().last().is_some_and(|instruction| {
+                    instruction.bci() == latch_bci
+                        && matches!(instruction.opcode(), 0xa7 | 0xc8)
+                        && matches!(self.operations.get(latch_bci), Some(Operation::Transfer))
+                })
+            })
+        {
+            return Ok(None);
+        }
+        let mut owner = None;
+        for source in blocks {
+            let Some(source_id) = self.view.id_of(*source) else {
+                continue;
+            };
+            poll(self.budget, Some(source_id.bci()))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(source_id.bci()),
+            )?;
+            if *source == header || !self.view.successors(*source).contains(&gateway) {
+                continue;
+            }
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                edges,
+                Some(source_id.bci()),
+            )?;
+            if !self.loop_exit_bridge(*source, gateway, &target_id, blocks)
+                || owner.replace(*source).is_some()
+            {
+                return Ok(None);
+            }
+        }
+        Ok(owner.map(|_| {
+            (
+                gateway,
+                *target,
+                [
+                    self.view.id_of(header_exit).expect("proved gateway").bci(),
+                    latch_bci,
+                ],
+            )
+        }))
     }
 
     /// Exact normal-flow predecessors that consist of a single edge to an enclosing loop target.

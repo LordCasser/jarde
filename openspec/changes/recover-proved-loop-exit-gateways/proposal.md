@@ -20,4 +20,4 @@ CF-08 的纯整数 `while (true)` 双 `break` 已构成最小可执行反例：�
 
 ## Impact
 
-仅涉及 `crates/jarde-java/src/region.rs` 的现有循环出口归属/区域走访、必要的定向回归及 CF-08 固定证据；沿用当前 JVM IR、SSA、预算、来源和原子拒绝合同。不引入新 crate、公共 pass 或额外 AST/Region 种类，也不改变其它循环形态的准入。
+主要涉及 `crates/jarde-java/src/region.rs` 的现有循环出口归属/区域走访，并在 `build.rs` 中只为双网关证书附着纯转移的派生来源；另有必要的定向回归及 CF-08 固定证据；沿用当前 JVM IR、SSA、预算、来源和原子拒绝合同。不引入新 crate、公共 pass 或额外 AST/Region 种类，也不改变其它循环形态的准入。
