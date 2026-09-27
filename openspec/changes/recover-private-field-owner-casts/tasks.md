@@ -4,7 +4,7 @@
 
 ## 2. 恢复已证明的两种字段写入
 
-- [ ] 2.1 对精确 `A` owner 与已证明 `B extends A` 恢复 `visible` 写入；owner/descriptor 错配及缺少继承关系时必须拒绝，并保留 field-instruction 来源。
+- [ ] 2.1 对精确 `A` owner 与已证明 `B extends A` 恢复 `visible` 写入；用 `B` 隐藏同名字段的验证运行确认写入仍落在 `A.visible`，owner/descriptor 错配及缺少继承关系时必须拒绝，并保留 field-instruction 来源。
 - [ ] 2.2 只对唯一、无额外效果的 javac private-field setter accessor 恢复 `hidden` 写入、`B→A` 调用实参与结果丢弃；多个目标或其他字段写入必须拒绝。
 
 ## 3. 三方闭环与组合边界

@@ -12,11 +12,11 @@ Javac 对 `A.visible` 生成 owner 为 `A` 的直接 `putfield`；Jarde 的 fiel
 
 ## Decisions
 
-1. 保留字段指令声明的确切 owner `A`，只在该 class 的父类关系与字段 name/descriptor 一致时，允许接收者 `B` 写该字段。不得把 owner 改写为 `B`，以免误选隐藏字段。
-2. 对私有写入只认领精确的 accessor 调用链：唯一调用目标、receiver 的已证明父类转换、一个目标 private field store、与原描述符一致的返回值，以及调用点对 accessor 结果的丢弃。条件任一不符即拒绝折叠。
+1. 保留字段指令声明的确切 owner `A`，只在完整选中类定义证明 `B extends A`、`A` 声明该 name/descriptor，且当前写入 BCI 的 receiver 确为 `B` 时允许该写入。源码应显式通过 `A` 类型接收者（例如 `((A) this).visible`）选择原字段；裸 `this.visible` 在 `B` 隐藏同名字段时会误选。现有 `field@1` 的严格 receiver==owner 门仍适用于没有这组逐 BCI 证明的其它指令。
+2. 对私有写入只认领精确的 accessor 调用链：唯一调用目标、receiver 的已证明父类转换、一个目标 private field store、与原描述符一致的返回值，以及调用点对 accessor 结果的丢弃。优先完整呈现原物理 helper 和调用，不为达成此闭环引入跨类 accessor 内联；若采用内联也必须证明类族中 helper 可安全省略。条件任一不符即拒绝折叠或 helper 的结构化恢复。
 3. `B.set` 要么呈现 public store 与 private accessor 的完整合法调用，要么沿现有来源协议保留未恢复区域。不得静默丢弃 `putfield`、在 access$ 方法中留下缺 `return` 的文本，或将拒绝结果写成完整源码。
 4. 复用现有 class relation、field reference、invoke 与 producer-consumer 来源事实。无需添加通用类型闭包、名字启发式或新的分析 pass。
-5. 反例验证至少包含 owner 错配/父类关系缺失、多个候选 accessor、accessor 额外字段写入；它们都不能触发本项窄恢复规则。
+5. 反例验证至少包含 owner 错配/父类关系缺失、多个候选 accessor、accessor 额外字段写入；隐藏同名字段是保留 owner 的正向判据，它不能被输出为裸 `B.visible`。
 6. fixed `TestFieldCast` 的多字段、多个 child 与泛型 D 组合继续作为后续集成验收；本 change 不把它的所有代码输出问题纳入。
 
 ## Risks / Trade-offs
