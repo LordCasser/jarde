@@ -3,6 +3,8 @@
 package dt26;
 
 public class CaptureCases extends java.lang.Object {
+    // jarde: omitted physical lambda helper JvmBytes([108, 97, 109, 98, 100, 97, 36, 97, 100, 100, 36, 48]) after proving all class-wide uses
+    // jarde: omitted physical lambda helper JvmBytes([108, 97, 109, 98, 100, 97, 36, 98, 111, 117, 110, 100, 36, 49]) after proving all class-wide uses
     public CaptureCases() {
         // @method <init>()V
         // @declaration a constructor of `dt26.CaptureCases`, member flags 0x0001
@@ -12,17 +14,19 @@ public class CaptureCases extends java.lang.Object {
     }
 
     public java.util.function.IntUnaryOperator add(int arg1) {
+        // jarde: inlined exact primitive lambda helper JvmBytes([108, 97, 109, 98, 100, 97, 36, 97, 100, 100, 36, 48]) at invokedynamic@1
         // @method add(I)Ljava/util/function/IntUnaryOperator;
         // @declaration an instance method of `dt26.CaptureCases`, member flags 0x0001
         // recovered from bytecode; presentation is not claimed to compile
-        return (int p0) -> dt26.CaptureCases.lambda$add$0(arg1, p0);
+        return (int p0) -> p0 + arg1;
     }
 
     public java.util.function.IntSupplier bound(int arg1) {
+        // jarde: inlined exact primitive lambda helper JvmBytes([108, 97, 109, 98, 100, 97, 36, 98, 111, 117, 110, 100, 36, 49]) at invokedynamic@2
         // @method bound(I)Ljava/util/function/IntSupplier;
         // @declaration an instance method of `dt26.CaptureCases`, member flags 0x0001
         // recovered from bytecode; presentation is not claimed to compile
-        return () -> this.lambda$bound$1(arg1);
+        return () -> this.number() + arg1;
     }
 
     public int number() {
@@ -30,19 +34,5 @@ public class CaptureCases extends java.lang.Object {
         // @declaration an instance method of `dt26.CaptureCases`, member flags 0x0001
         // recovered from bytecode; presentation is not claimed to compile
         return -3;
-    }
-
-    private int lambda$bound$1(int arg1) {
-        // @method lambda$bound$1(I)I
-        // @declaration an instance method of `dt26.CaptureCases`, member flags 0x1002
-        // recovered from bytecode; presentation is not claimed to compile
-        return this.number() + arg1;
-    }
-
-    private static int lambda$add$0(int arg0, int arg1) {
-        // @method lambda$add$0(II)I
-        // @declaration a static method of `dt26.CaptureCases`, member flags 0x100a
-        // recovered from bytecode; presentation is not claimed to compile
-        return arg1 + arg0;
     }
 }

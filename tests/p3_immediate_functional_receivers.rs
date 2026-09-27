@@ -18,6 +18,164 @@ const BOUND_CONTROL: &[u8] = include_bytes!(
     "fixtures/p3-immediate-functional-receivers/v8/bound-control/BoundFunctionalReceiver.class"
 );
 
+#[derive(Clone, Debug)]
+enum TestCpEntry {
+    Utf8(String),
+    Class(u16),
+    NameAndType(u16),
+    Member(u16, u16),
+    MethodHandle { kind_offset: usize, reference: u16 },
+    Other,
+}
+
+fn u16_at(bytes: &[u8], offset: usize) -> u16 {
+    u16::from_be_bytes([bytes[offset], bytes[offset + 1]])
+}
+
+fn u32_at(bytes: &[u8], offset: usize) -> usize {
+    u32::from_be_bytes(bytes[offset..offset + 4].try_into().unwrap()) as usize
+}
+
+fn test_constant_pool(bytes: &[u8]) -> (Vec<Option<TestCpEntry>>, usize) {
+    let count = usize::from(u16_at(bytes, 8));
+    let mut pool = vec![None; count];
+    let mut cursor = 10;
+    let mut index = 1;
+    while index < count {
+        let tag = bytes[cursor];
+        cursor += 1;
+        let entry = match tag {
+            1 => {
+                let length = usize::from(u16_at(bytes, cursor));
+                cursor += 2;
+                let value = String::from_utf8_lossy(&bytes[cursor..cursor + length]).into_owned();
+                cursor += length;
+                TestCpEntry::Utf8(value)
+            }
+            7 => {
+                let class = u16_at(bytes, cursor);
+                cursor += 2;
+                TestCpEntry::Class(class)
+            }
+            9..=11 => {
+                let class = u16_at(bytes, cursor);
+                let name_type = u16_at(bytes, cursor + 2);
+                cursor += 4;
+                TestCpEntry::Member(class, name_type)
+            }
+            12 => {
+                let name = u16_at(bytes, cursor);
+                let descriptor = u16_at(bytes, cursor + 2);
+                cursor += 4;
+                let _ = descriptor;
+                TestCpEntry::NameAndType(name)
+            }
+            15 => {
+                let kind_offset = cursor;
+                let reference = u16_at(bytes, cursor + 1);
+                cursor += 3;
+                TestCpEntry::MethodHandle {
+                    kind_offset,
+                    reference,
+                }
+            }
+            3 | 4 | 17 | 18 => {
+                cursor += 4;
+                TestCpEntry::Other
+            }
+            5 | 6 => {
+                cursor += 8;
+                pool[index] = Some(TestCpEntry::Other);
+                index += 1;
+                TestCpEntry::Other
+            }
+            8 | 16 | 19 | 20 => {
+                cursor += 2;
+                TestCpEntry::Other
+            }
+            _ => panic!("unexpected classfile constant-pool tag {tag}"),
+        };
+        pool[index] = Some(entry);
+        index += 1;
+    }
+    (pool, cursor)
+}
+
+fn cp_utf8(pool: &[Option<TestCpEntry>], index: u16) -> &str {
+    match pool[usize::from(index)].as_ref().unwrap() {
+        TestCpEntry::Utf8(value) => value,
+        other => panic!("expected UTF8 entry, got {other:?}"),
+    }
+}
+
+fn method_handle_kind_offset(bytes: &[u8], target_name: &str) -> usize {
+    let (pool, _) = test_constant_pool(bytes);
+    for entry in pool.iter().flatten() {
+        let TestCpEntry::MethodHandle {
+            kind_offset,
+            reference,
+        } = entry
+        else {
+            continue;
+        };
+        let Some(TestCpEntry::Member(class_index, name_type_index)) =
+            pool[usize::from(*reference)].as_ref()
+        else {
+            continue;
+        };
+        let TestCpEntry::Class(class_name_index) =
+            pool[usize::from(*class_index)].as_ref().unwrap()
+        else {
+            continue;
+        };
+        let TestCpEntry::NameAndType(name_index) =
+            pool[usize::from(*name_type_index)].as_ref().unwrap()
+        else {
+            continue;
+        };
+        let _ = cp_utf8(&pool, *class_name_index);
+        if cp_utf8(&pool, *name_index) == target_name {
+            return *kind_offset;
+        }
+    }
+    panic!("classfile has no method handle for {target_name}");
+}
+
+fn mutate_method_flag(bytes: &mut [u8], target_name: &str, mask: u16) {
+    let (pool, mut cursor) = test_constant_pool(bytes);
+    cursor += 6;
+    let interface_count = usize::from(u16_at(bytes, cursor));
+    cursor += 2 + interface_count * 2;
+    let fields_count = usize::from(u16_at(bytes, cursor));
+    cursor += 2;
+    for _ in 0..fields_count {
+        let attributes = usize::from(u16_at(bytes, cursor + 6));
+        cursor += 8;
+        for _ in 0..attributes {
+            let length = u32_at(bytes, cursor + 2);
+            cursor += 6 + length;
+        }
+    }
+    let methods_count = usize::from(u16_at(bytes, cursor));
+    cursor += 2;
+    for _ in 0..methods_count {
+        let flags_offset = cursor;
+        let name_index = u16_at(bytes, cursor + 2);
+        let attributes = usize::from(u16_at(bytes, cursor + 6));
+        cursor += 8;
+        if cp_utf8(&pool, name_index) == target_name {
+            let flags = u16_at(bytes, flags_offset) ^ mask;
+            bytes[flags_offset..flags_offset + 2].copy_from_slice(&flags.to_be_bytes());
+            return;
+        }
+        for _ in 0..attributes {
+            let length = u32_at(bytes, cursor + 2);
+            cursor += 6 + length;
+        }
+    }
+    panic!("classfile has no method {target_name}");
+}
+
 struct Fixture {
     name: &'static str,
     class: &'static str,
@@ -797,6 +955,341 @@ fn no_capture_primitive_lambda_helpers_inline_as_one_class_projection() {
 }
 
 #[test]
+fn direct_int_and_this_plus_int_captures_inline_with_call_time_semantics() {
+    let scratch = Scratch::new();
+    let original = scratch.child("captured-lambda-original");
+    fs::write(
+        original.join("CaptureCases.java"),
+        "import java.util.function.*;\n\
+         public final class CaptureCases {\n\
+           public IntUnaryOperator add(int base) { return x -> x + base; }\n\
+           public IntSupplier bound(int delta) { return () -> this.number() + delta; }\n\
+           public int number() { return -3; }\n\
+         }\n",
+    )
+    .unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("CaptureCases.java"))
+        .output()
+        .unwrap();
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let snapshot = open(&fs::read(original.join("CaptureCases.class")).unwrap());
+    let recovered = class_source(&snapshot, "CaptureCases", &RecoveryEvidenceRequest::all());
+    assert!(recovered.text.contains("return (int p0) -> p0 + arg1;"));
+    assert!(
+        recovered
+            .text
+            .contains("return () -> this.number() + arg1;")
+    );
+    assert!(!recovered.text.contains("lambda$"), "{}", recovered.text);
+    for helper in ["lambda$add$0", "lambda$bound$1"] {
+        assert!(
+            recovered
+                .methods
+                .iter()
+                .any(|method| { method.item.name.raw().0 == helper.as_bytes() }),
+            "physical helper method report was dropped for {helper}"
+        );
+    }
+    let emitted = scratch.child("captured-lambda-emitted");
+    fs::write(emitted.join("CaptureCases.java"), &recovered.text).unwrap();
+    fs::write(
+        emitted.join("Runner.java"),
+        "public final class Runner { public static void main(String[] a) { CaptureCases c = new CaptureCases(); System.out.println(c.add(12).applyAsInt(-5) + \":\" + c.bound(2).getAsInt()); } }\n",
+    )
+    .unwrap();
+    let recompile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&emitted)
+        .arg(emitted.join("CaptureCases.java"))
+        .arg(emitted.join("Runner.java"))
+        .output()
+        .unwrap();
+    assert!(
+        recompile.status.success(),
+        "{}\n{}",
+        recovered.text,
+        String::from_utf8_lossy(&recompile.stderr)
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-cp"])
+        .arg(&emitted)
+        .arg("Runner")
+        .output()
+        .unwrap();
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    assert_eq!(String::from_utf8_lossy(&run.stdout), "7:-1\n");
+}
+
+#[test]
+fn effectful_capture_source_refuses_the_entire_captured_helper_group() {
+    let scratch = Scratch::new();
+    let original = scratch.child("captured-lambda-effect-negative");
+    fs::write(
+        original.join("CaptureEffect.java"),
+        "import java.util.function.*;\n\
+         public final class CaptureEffect {\n\
+           static int next() { return 3; }\n\
+           static IntUnaryOperator effect() { int base = next(); return x -> x + base; }\n\
+         }\n",
+    )
+    .unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("CaptureEffect.java"))
+        .output()
+        .unwrap();
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let snapshot = open(&fs::read(original.join("CaptureEffect.class")).unwrap());
+    let recovered = class_source(&snapshot, "CaptureEffect", &RecoveryEvidenceRequest::all());
+    assert!(recovered.text.contains("lambda$effect$0"));
+    assert!(
+        recovered.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "lambda_helper_projection_refused"
+                && diagnostic.message.contains("lambda$effect$0")
+                && diagnostic.message.contains("direct parameter load")
+        }),
+        "capture-source refusal must be located: {:?}",
+        recovered.diagnostics
+    );
+}
+
+#[test]
+fn phi_merged_capture_source_is_refused_without_hiding_its_helper() {
+    let scratch = Scratch::new();
+    let original = scratch.child("captured-lambda-phi-negative");
+    fs::write(
+        original.join("CapturePhi.java"),
+        "import java.util.function.*;\n\
+         public final class CapturePhi {\n\
+           static IntUnaryOperator merged(boolean choose) { int base; if (choose) base = 2; else base = 3; return x -> x + base; }\n\
+         }\n",
+    )
+    .unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("CapturePhi.java"))
+        .output()
+        .unwrap();
+    assert!(
+        compile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let snapshot = open(&fs::read(original.join("CapturePhi.class")).unwrap());
+    let recovered = class_source(&snapshot, "CapturePhi", &RecoveryEvidenceRequest::all());
+    assert!(recovered.text.contains("lambda$merged$0"));
+    assert!(
+        recovered.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "lambda_helper_projection_refused"
+                && diagnostic.message.contains("lambda$merged$0")
+                && diagnostic.message.contains("direct parameter load")
+        }),
+        "phi capture refusal must name its proof boundary: {:?}",
+        recovered.diagnostics
+    );
+}
+
+#[test]
+fn captured_lambda_ir_budget_stop_keeps_physical_helpers_and_does_not_inline() {
+    let scratch = Scratch::new();
+    let original = scratch.child("captured-lambda-budget-original");
+    fs::write(
+        original.join("CaptureBudget.java"),
+        "import java.util.function.*;\n\
+         public final class CaptureBudget {\n\
+           IntUnaryOperator add(int base) { return x -> x + base; }\n\
+           IntSupplier bound(int delta) { return () -> this.number() + delta; }\n\
+           int number() { return -3; }\n\
+         }\n",
+    )
+    .unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("CaptureBudget.java"))
+        .output()
+        .unwrap();
+    assert!(compile.status.success());
+    let snapshot = open(&fs::read(original.join("CaptureBudget.class")).unwrap());
+    let complete = class_source(&snapshot, "CaptureBudget", &RecoveryEvidenceRequest::all());
+    let mut limits = complete.limits.clone();
+    limits.ir_items = complete.usage.ir_items.saturating_sub(1);
+    let outcome = Engine::new()
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request(&snapshot, "CaptureBudget"),
+            &RecoveryEvidenceRequest::all(),
+            &mut Budget::new(limits),
+        )
+        .unwrap();
+    let OperationOutcome::Performed(stopped) = outcome else {
+        panic!("the budget stop retains a report: {outcome:?}")
+    };
+    assert!(stopped.text.contains("lambda$add$0"));
+    assert!(stopped.text.contains("lambda$bound$1"));
+    assert!(
+        !stopped
+            .text
+            .contains("inlined exact primitive lambda helper")
+    );
+    assert!(
+        stopped.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "lambda_helper_projection_refused"
+                || diagnostic.code.contains("budget")
+                || diagnostic.message.contains("budget")
+        }),
+        "budget stop must remain visible: {:?}",
+        stopped.diagnostics
+    );
+
+    let token = jarde::budget::CancellationToken::new();
+    token.cancel();
+    let outcome = Engine::new()
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request(&snapshot, "CaptureBudget"),
+            &RecoveryEvidenceRequest::all(),
+            &mut Budget::with_cancellation_token(complete.limits.clone(), token),
+        )
+        .unwrap();
+    assert!(
+        matches!(outcome, OperationOutcome::Incomplete(_)),
+        "pre-cancellation publishes no class-source text or helper omission: {outcome:?}"
+    );
+}
+
+#[test]
+fn captured_helper_handle_or_physical_flags_mismatch_refuses_omission() {
+    let scratch = Scratch::new();
+    let original = scratch.child("captured-lambda-identity-original");
+    fs::write(
+        original.join("CaptureIdentity.java"),
+        "import java.util.function.*;\n\
+         public final class CaptureIdentity {\n\
+           IntUnaryOperator add(int base) { return x -> x + base; }\n\
+           IntSupplier bound(int delta) { return () -> this.number() + delta; }\n\
+           int number() { return -3; }\n\
+         }\n",
+    )
+    .unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("CaptureIdentity.java"))
+        .output()
+        .unwrap();
+    assert!(compile.status.success());
+    let clean_bytes = fs::read(original.join("CaptureIdentity.class")).unwrap();
+
+    let mut wrong_handle = clean_bytes.clone();
+    let handle_offset = method_handle_kind_offset(&wrong_handle, "lambda$add$0");
+    assert_eq!(wrong_handle[handle_offset], 6);
+    wrong_handle[handle_offset] = 7;
+    let handle_snapshot = open(&wrong_handle);
+    let handle_report = class_source(
+        &handle_snapshot,
+        "CaptureIdentity",
+        &RecoveryEvidenceRequest::all(),
+    );
+    assert!(handle_report.text.contains("lambda$add$0"));
+    assert!(
+        handle_report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "lambda_helper_projection_refused"
+                && diagnostic.message.contains("lambda$add$0")
+        }),
+        "wrong handle must be visible as a refusal: {:?}",
+        handle_report.diagnostics
+    );
+
+    let mut wrong_flags = clean_bytes;
+    mutate_method_flag(&mut wrong_flags, "lambda$bound$1", 0x0002);
+    let flags_snapshot = open(&wrong_flags);
+    let flags_report = class_source(
+        &flags_snapshot,
+        "CaptureIdentity",
+        &RecoveryEvidenceRequest::all(),
+    );
+    assert!(flags_report.text.contains("lambda$bound$1"));
+    assert!(
+        flags_report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "lambda_helper_projection_refused"
+                && diagnostic.message.contains("lambda$bound$1")
+        }),
+        "wrong helper flags must be visible as a refusal: {:?}",
+        flags_report.diagnostics
+    );
+}
+
+#[test]
+fn captured_int_parameter_precedes_sam_parameter_in_the_helper_mapping() {
+    let scratch = Scratch::new();
+    let original = scratch.child("captured-lambda-order-original");
+    fs::write(
+        original.join("CaptureOrder.java"),
+        "import java.util.function.*;\n\
+         public final class CaptureOrder {\n\
+           IntUnaryOperator subtract(int base) { return x -> x - base; }\n\
+         }\n",
+    )
+    .unwrap();
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(original.join("CaptureOrder.java"))
+        .output()
+        .unwrap();
+    assert!(compile.status.success());
+    let snapshot = open(&fs::read(original.join("CaptureOrder.class")).unwrap());
+    let recovered = class_source(&snapshot, "CaptureOrder", &RecoveryEvidenceRequest::all());
+    assert!(recovered.text.contains("return (int p0) -> p0 - arg1;"));
+    assert!(!recovered.text.contains("lambda$"));
+    let emitted = scratch.child("captured-lambda-order-emitted");
+    fs::write(emitted.join("CaptureOrder.java"), recovered.text).unwrap();
+    fs::write(
+        emitted.join("Runner.java"),
+        "public final class Runner { public static void main(String[] a) { System.out.println(new CaptureOrder().subtract(2).applyAsInt(5)); } }\n",
+    )
+    .unwrap();
+    let recompile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&emitted)
+        .arg(emitted.join("CaptureOrder.java"))
+        .arg(emitted.join("Runner.java"))
+        .output()
+        .unwrap();
+    assert!(
+        recompile.status.success(),
+        "{}",
+        String::from_utf8_lossy(&recompile.stderr)
+    );
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-cp"])
+        .arg(&emitted)
+        .arg("Runner")
+        .output()
+        .unwrap();
+    assert!(run.status.success());
+    assert_eq!(String::from_utf8_lossy(&run.stdout), "3\n");
+}
+
+#[test]
 fn a_complex_lambda_helper_rejects_the_whole_helper_group() {
     let scratch = Scratch::new();
     let original = scratch.child("lambda-helper-negative");
@@ -820,7 +1313,7 @@ fn a_complex_lambda_helper_rejects_the_whole_helper_group() {
     assert!(
         !recovered
             .text
-            .contains("inlined exact no-capture primitive lambda helper")
+            .contains("inlined exact primitive lambda helper")
     );
     assert!(
         recovered
@@ -886,7 +1379,7 @@ fn an_overdeep_lambda_helper_is_refused_before_recursive_projection_walks() {
     assert!(
         !recovered
             .text
-            .contains("inlined exact no-capture primitive lambda helper")
+            .contains("inlined exact primitive lambda helper")
     );
 }
 
@@ -947,6 +1440,6 @@ fn lambda_helper_projection_budget_stop_does_not_publish_partial_helpers() {
     assert!(
         !stopped
             .text
-            .contains("inlined exact no-capture primitive lambda helper")
+            .contains("inlined exact primitive lambda helper")
     );
 }

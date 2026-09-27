@@ -817,6 +817,172 @@ pub(crate) struct ClassSourceMethodAstSource {
     /// Every physical instruction BCI observed in the complete Code attribute. A certificate
     /// compares this exact set to the admitted AST anchors; a matching node count is insufficient.
     pub(crate) instruction_bcis: Vec<u32>,
+    /// Decoded invocation targets, tied to their physical instruction BCIs.
+    pub(crate) call_targets: Vec<(u32, crate::facts::CallTarget)>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum LambdaHelperCaptureBinding {
+    This,
+    IntParameter { slot: u16, name: String },
+}
+
+fn prove_lambda_helper_captures(
+    ir: &jarde_jvm::method_ir::MethodIr,
+    facts: &crate::facts::RecoveryFacts,
+    names: &NameTable,
+    site: &build::LambdaSite,
+    candidate: &crate::lambda::SyntheticLambdaHelperCandidate,
+    budget: &mut Budget,
+) -> Result<Result<Vec<LambdaHelperCaptureBinding>, String>, crate::stop::StopReason> {
+    use jarde_jvm::method_ir::{Definition, Slot};
+
+    if candidate.capture_count == 0 {
+        return Ok(Ok(Vec::new()));
+    }
+    let Some(code) = ir.code() else {
+        return Ok(Err("complete enclosing Code attribute is absent".into()));
+    };
+    if !matches!(code.execution, ExecutionReport::Complete { .. }) || code.stopped_at.is_some() {
+        return Ok(Err("enclosing method scan is incomplete".into()));
+    }
+    let Some(ssa) = ir.ssa() else {
+        return Ok(Err("enclosing SSA table is absent".into()));
+    };
+    let Some(instruction) = ssa
+        .blocks()
+        .iter()
+        .flat_map(|block| block.instructions())
+        .find(|instruction| instruction.bci() == candidate.call_site)
+    else {
+        return Ok(Err(
+            "invokedynamic site has no same-run SSA instruction".into()
+        ));
+    };
+    if site.use_site != candidate.call_site
+        || site.site_cp != candidate.site_cp
+        || site.bootstrap_index != candidate.bootstrap_index
+        || site.captures.len() != candidate.capture_count
+    {
+        return Ok(Err(
+            "capture record does not match exact bootstrap site".into()
+        ));
+    }
+    let operands = build::stack_operands(instruction);
+    if operands.len() != candidate.capture_count {
+        return Ok(Err(
+            "SSA capture arity differs from the site descriptor".into()
+        ));
+    }
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(code.instructions.len()).unwrap_or(u64::MAX),
+        Some(candidate.call_site),
+    )?;
+    crate::stop::poll(budget, Some(candidate.call_site))?;
+    let operations = Operations::of(code, ir.constant_pool());
+    let entry_slot = |value_id| -> Option<u16> {
+        match ssa.value(value_id).def() {
+            Definition::Entry {
+                slot: Slot::Local(slot),
+                ..
+            } => Some(*slot),
+            Definition::Instruction { bci, .. } => {
+                let instruction = ssa
+                    .blocks()
+                    .iter()
+                    .flat_map(|block| block.instructions())
+                    .find(|instruction| instruction.bci() == *bci)?;
+                let Operation::Load { slot } = operations.get(*bci)? else {
+                    return None;
+                };
+                let mut reads = instruction
+                    .reads()
+                    .iter()
+                    .filter(|(read_slot, _)| *read_slot == Slot::Local(*slot));
+                let (_, read_id) = reads.next()?;
+                if reads.next().is_some()
+                    || !matches!(
+                        ssa.value(*read_id).def(),
+                        Definition::Entry {
+                            slot: Slot::Local(entry),
+                            ..
+                        } if entry == slot
+                    )
+                {
+                    return None;
+                }
+                Some(*slot)
+            }
+            _ => None,
+        }
+    };
+    let method = facts.method();
+    let is_static = method
+        .access_flags()
+        .is_some_and(|flags| flags & crate::facts::ACC_STATIC != 0);
+    let parameter_types = method.parameter_types();
+    let expected_instance = candidate.implementation_kind == 7;
+    if expected_instance && is_static {
+        return Ok(Err(
+            "captured receiver shape disagrees with enclosing method flags".into(),
+        ));
+    }
+    let mut bindings = Vec::with_capacity(operands.len());
+    let mut parameter_slot = None;
+    for (index, (_, value_id)) in operands.iter().enumerate() {
+        let Some(slot) = entry_slot(*value_id) else {
+            return Ok(Err(format!(
+                "capture {index} is not a direct parameter load"
+            )));
+        };
+        if expected_instance && index == 0 {
+            if slot != 0 {
+                return Ok(Err("instance capture receiver is not direct this".into()));
+            }
+            bindings.push(LambdaHelperCaptureBinding::This);
+            continue;
+        }
+        if parameter_types.get(&slot) != Some(&Type::Int) {
+            return Ok(Err(format!(
+                "capture {index} is not a direct int parameter"
+            )));
+        }
+        if parameter_slot.replace(slot).is_some() {
+            return Ok(Err(
+                "more than one int parameter capture is unsupported".into()
+            ));
+        }
+        let Some(name) = names.whole(slot).map(|name| name.text().to_owned()) else {
+            return Ok(Err(
+                "captured int parameter has no unique whole-slot name".into()
+            ));
+        };
+        bindings.push(LambdaHelperCaptureBinding::IntParameter { slot, name });
+    }
+    if bindings.len() != candidate.capture_count
+        || (candidate.implementation_kind == 6 && bindings.len() != 1)
+        || (candidate.implementation_kind == 7
+            && (bindings.len() != 2
+                || !matches!(bindings.first(), Some(LambdaHelperCaptureBinding::This))))
+    {
+        return Ok(Err(
+            "captured parameters do not match the admitted static/instance form".into(),
+        ));
+    }
+
+    for (bci, operation) in operations.iter() {
+        crate::stop::poll(budget, Some(*bci))?;
+        if let Some(slot) = parameter_slot
+            && matches!(operation, Operation::Store { slot: written } | Operation::Increment { slot: written, .. } if *written == slot)
+        {
+            return Ok(Err(format!(
+                "captured int parameter slot {slot} is written at BCI {bci}"
+            )));
+        }
+    }
+    Ok(Ok(bindings))
 }
 
 #[doc(hidden)]
@@ -841,7 +1007,23 @@ pub struct ClassSourceLambdaHelperCandidate {
     pub implementation_index: u16,
     pub use_site: u32,
     pub site_cp: u16,
+    pub(crate) implementation_kind: u8,
+    pub(crate) capture_bindings: Option<Vec<LambdaHelperCaptureBinding>>,
+    pub(crate) capture_refusal: Option<String>,
     pub(crate) projection: std::sync::Arc<LambdaHelperProjectionSource>,
+}
+
+impl ClassSourceLambdaHelperCandidate {
+    /// The implementation MethodHandle reference kind read from this site's bootstrap row.
+    pub fn implementation_kind(&self) -> u8 {
+        self.implementation_kind
+    }
+
+    /// Why capture binding was refused, when the site's shape was recognized but its source was
+    /// not proved safe to move into the lambda body.
+    pub fn capture_refusal(&self) -> Option<&str> {
+        self.capture_refusal.as_deref()
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1298,6 +1480,8 @@ pub fn emit_class_source_lambda_helper(
     let helper = &helper_ast.projection;
     if caller.member != candidate.member
         || helper.member != candidate.helper
+        || candidate.capture_refusal.is_some()
+        || candidate.capture_bindings.is_none()
         || !helper.complete_code
         || helper.has_exception_handlers
         || caller.program.ragged
@@ -1326,9 +1510,24 @@ pub fn emit_class_source_lambda_helper(
     let Some((parameters, Some(Type::Int))) = crate::lambda::parse_method(descriptor) else {
         return Ok(None);
     };
+    let captures = candidate.capture_bindings.as_deref().unwrap_or_default();
+    let lambda_parameter_count = match candidate.implementation_kind {
+        6 => parameters.len().saturating_sub(captures.len()),
+        7 => 0,
+        _ => return Ok(None),
+    };
     if !(parameters.is_empty()
         || parameters.as_slice() == [Type::Int]
         || parameters.as_slice() == [Type::Int, Type::Int])
+        || (candidate.implementation_kind == 6
+            && !((captures.is_empty() && parameters.len() <= 2)
+                || (captures.len() == 1
+                    && lambda_parameter_count == 1
+                    && parameters.as_slice() == [Type::Int, Type::Int])))
+        || (candidate.implementation_kind == 7
+            && (captures.len() != 2
+                || !matches!(captures.first(), Some(LambdaHelperCaptureBinding::This))
+                || parameters.as_slice() != [Type::Int]))
         || helper.parameter_names.len() != parameters.len()
         || helper.parameter_names.iter().any(Option::is_none)
     {
@@ -1363,29 +1562,85 @@ pub fn emit_class_source_lambda_helper(
     };
     let helper_name = String::from_utf8_lossy(&candidate.helper.name.0);
     let helper_owner = String::from_utf8_lossy(&candidate.helper_owner.0).replace('/', ".");
+    let (receiver_matches, expected_args) = match candidate.implementation_kind {
+        6 => (
+            matches!(&receiver.kind, crate::ast::ExprKind::Path(owner) if owner == &helper_owner),
+            captures
+                .iter()
+                .filter_map(|capture| match capture {
+                    LambdaHelperCaptureBinding::IntParameter { name, .. } => Some(name.as_str()),
+                    LambdaHelperCaptureBinding::This => None,
+                })
+                .chain(lambda_params.iter().map(|param| param.name.as_str()))
+                .collect::<Vec<_>>(),
+        ),
+        7 => (
+            matches!(&receiver.kind, crate::ast::ExprKind::Local(name) if name == "this"),
+            captures
+                .iter()
+                .filter_map(|capture| match capture {
+                    LambdaHelperCaptureBinding::IntParameter { name, .. } => Some(name.as_str()),
+                    LambdaHelperCaptureBinding::This => None,
+                })
+                .collect::<Vec<_>>(),
+        ),
+        _ => (false, Vec::new()),
+    };
     if lambda.origin.primary().bci() != candidate.use_site
         || lambda.origin.primary().cp() != Some(candidate.site_cp)
-        || lambda_params.len() != parameters.len()
-        || args.len() != parameters.len()
+        || lambda_params.len() != lambda_parameter_count
+        || args.len() != expected_args.len()
         || name != helper_name.as_ref()
-        || !matches!(&receiver.kind, crate::ast::ExprKind::Path(owner) if owner == &helper_owner)
-        || !args.iter().zip(lambda_params).all(|(arg, param)| matches!(&arg.kind, crate::ast::ExprKind::Local(local) if local == &param.name))
+        || !receiver_matches
+        || !args.iter().zip(expected_args).all(|(arg, expected)| matches!(&arg.kind, crate::ast::ExprKind::Local(local) if local == expected))
+        || (candidate.implementation_kind == 7 && !lambda_params.is_empty())
     {
         return Ok(None);
     }
-    let substitutions: std::collections::BTreeMap<String, String> = helper
+    let mut substitutions: std::collections::BTreeMap<String, String> = helper
         .parameter_names
         .iter()
-        .zip(lambda_params)
+        .zip(args)
         .map(|(name, param)| {
             (
                 name.clone().expect("checked parameter name"),
-                param.name.clone(),
+                match &param.kind {
+                    crate::ast::ExprKind::Local(name) => name.clone(),
+                    _ => String::new(),
+                },
             )
         })
         .collect();
+    if substitutions.values().any(String::is_empty) {
+        return Ok(None);
+    }
+    for (parameter, lambda_parameter) in helper
+        .parameter_names
+        .iter()
+        .skip(captures.len())
+        .zip(lambda_params)
+    {
+        substitutions.insert(
+            parameter.clone().expect("checked parameter name"),
+            lambda_parameter.name.clone(),
+        );
+    }
+    let helper_owner_internal = String::from_utf8_lossy(&candidate.helper_owner.0);
+    let allow_instance_call = candidate.implementation_kind == 7
+        && helper.call_targets.len() == 1
+        && helper.call_targets.iter().all(|(bci, target)| {
+            target.kind() == crate::facts::InvokeKind::Virtual
+                && target.owner() == helper_owner_internal.as_ref()
+                && target.name() == "number"
+                && target.descriptor() == "()I"
+                && !target.is_interface_reference()
+                && lambda_helper_instance_call_at(donor, *bci)
+        });
+    if candidate.implementation_kind == 7 && !allow_instance_call {
+        return Ok(None);
+    }
     let mut inlined = donor.clone();
-    if !rewrite_lambda_arithmetic(&mut inlined, &substitutions) {
+    if !rewrite_lambda_arithmetic(&mut inlined, &substitutions, allow_instance_call) {
         return Ok(None);
     }
     let mut program = caller.program.clone();
@@ -1407,6 +1662,31 @@ pub fn emit_class_source_lambda_helper(
         budget,
     )?;
     Ok(Some(emitted.text))
+}
+
+fn lambda_helper_instance_call_at(expression: &crate::ast::Expr, bci: u32) -> bool {
+    use crate::ast::ExprKind;
+    match &expression.kind {
+        ExprKind::Call {
+            receiver: Some(receiver),
+            name,
+            args,
+        } => {
+            (expression.origin.primary().bci() == bci
+                && name == "number"
+                && args.is_empty()
+                && matches!(receiver.kind, ExprKind::Local(ref local) if local == "this"))
+                || lambda_helper_instance_call_at(receiver, bci)
+                || args
+                    .iter()
+                    .any(|argument| lambda_helper_instance_call_at(argument, bci))
+        }
+        ExprKind::Binary { left, right, .. } => {
+            lambda_helper_instance_call_at(left, bci) || lambda_helper_instance_call_at(right, bci)
+        }
+        ExprKind::Neg { value } => lambda_helper_instance_call_at(value, bci),
+        _ => false,
+    }
 }
 
 /// Recursive anchor collection and arithmetic rewriting stay safely shallow for this proof.
@@ -1439,6 +1719,7 @@ fn lambda_helper_instruction_coverage(helper: &ClassSourceMethodAstSource) -> bo
 fn rewrite_lambda_arithmetic(
     expression: &mut crate::ast::Expr,
     substitutions: &std::collections::BTreeMap<String, String>,
+    allow_instance_call: bool,
 ) -> bool {
     use crate::ast::{BinaryOp, ExprKind};
     match &mut expression.kind {
@@ -1450,7 +1731,9 @@ fn rewrite_lambda_arithmetic(
             true
         }
         ExprKind::Integer(_) => true,
-        ExprKind::Neg { value } => rewrite_lambda_arithmetic(value, substitutions),
+        ExprKind::Neg { value } => {
+            rewrite_lambda_arithmetic(value, substitutions, allow_instance_call)
+        }
         ExprKind::Binary { op, left, right }
             if matches!(
                 op,
@@ -1461,8 +1744,19 @@ fn rewrite_lambda_arithmetic(
                     | BinaryOp::Remainder
             ) =>
         {
-            rewrite_lambda_arithmetic(left, substitutions)
-                && rewrite_lambda_arithmetic(right, substitutions)
+            rewrite_lambda_arithmetic(left, substitutions, allow_instance_call)
+                && rewrite_lambda_arithmetic(right, substitutions, allow_instance_call)
+        }
+        ExprKind::Call {
+            receiver: Some(receiver),
+            name,
+            args,
+        } if allow_instance_call
+            && name == "number"
+            && args.is_empty()
+            && matches!(receiver.kind, ExprKind::Local(ref local) if local == "this") =>
+        {
+            true
         }
         _ => false,
     }
@@ -3027,10 +3321,22 @@ fn recover_inner(
         } else {
             Vec::new()
         };
+        let call_targets: Vec<(u32, crate::facts::CallTarget)> = if retain_all_method_asts {
+            operations
+                .iter()
+                .filter_map(|(bci, operation)| match operation {
+                    Operation::Invoke(target) => Some((*bci, target.clone())),
+                    _ => None,
+                })
+                .collect()
+        } else {
+            Vec::new()
+        };
         let weight = if retain_all_method_asts {
             program_node_count(&program)
                 .saturating_add(u64::try_from(parameter_names.len()).unwrap_or(u64::MAX))
                 .saturating_add(u64::try_from(instruction_bcis.len()).unwrap_or(u64::MAX))
+                .saturating_add(u64::try_from(call_targets.len()).unwrap_or(u64::MAX))
         } else {
             2
         };
@@ -3059,6 +3365,7 @@ fn recover_inner(
                 }),
                 instruction_count: request.ir.code().map_or(0, |code| code.instructions.len()),
                 instruction_bcis,
+                call_targets,
             }),
         });
     }
@@ -3239,9 +3546,6 @@ fn recover_inner(
         });
         let mut candidates = Vec::new();
         for site in &program.lambdas {
-            if !site.captures.is_empty() {
-                continue;
-            }
             let Some(helper) = exact_helpers.iter().find(|helper| {
                 helper.call_site == site.use_site
                     && helper.site_cp == site.site_cp
@@ -3254,6 +3558,18 @@ fn recover_inner(
                 name: helper.name.clone(),
                 descriptor: helper.descriptor.clone(),
             };
+            let (capture_bindings, capture_refusal) = match prove_lambda_helper_captures(
+                request.ir,
+                request.facts,
+                &names,
+                site,
+                helper,
+                budget,
+            ) {
+                Ok(Ok(bindings)) => (Some(bindings), None),
+                Ok(Err(reason)) => (None, Some(reason)),
+                Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+            };
             candidates.push(ClassSourceLambdaHelperCandidate {
                 member: member.clone(),
                 helper: helper_identity,
@@ -3262,6 +3578,9 @@ fn recover_inner(
                 implementation_index: helper.implementation_index,
                 use_site: helper.call_site,
                 site_cp: helper.site_cp,
+                implementation_kind: helper.implementation_kind,
+                capture_bindings,
+                capture_refusal,
                 projection: projection.clone(),
             });
         }
@@ -4936,6 +5255,7 @@ mod lambda_helper_instruction_coverage_tests {
             has_exception_handlers: false,
             instruction_count: instruction_bcis.len(),
             instruction_bcis,
+            call_targets: Vec::new(),
         }
     }
 
@@ -5022,6 +5342,7 @@ mod anonymous_capture_projection_tests {
                 has_exception_handlers: false,
                 instruction_count: 0,
                 instruction_bcis: Vec::new(),
+                call_targets: Vec::new(),
             }),
         }
     }
