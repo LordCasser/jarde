@@ -9,8 +9,8 @@
 
 ## 3. P2：有正文的泛型 void 声明
 
-- [ ] 3.1 复用 Signature 解析与擦除核验，让 `<T extends B> void set(T,boolean)` 的获证参数使用保留源级泛型头，物理正文仍以 B 解释；独立完整类族原/JADX/Jarde Java 8 重编、验证运行及反射四项元数据一致。
-- [ ] 3.2 用错上界/擦除、未绑定 T、不兼容正文使用、同类重载和预算/取消验证拒绝与来源；泛型声明及相邻 class_source Rust 测试通过。
+- [x] 3.1 复用 Signature 解析与擦除核验，让 `<T extends B> void set(T,boolean)` 的获证参数使用保留源级泛型头，物理正文仍以 B 解释；独立完整类族原/JADX/Jarde Java 8 重编、验证运行及反射四项元数据一致。
+- [x] 3.2 用错上界/擦除、未绑定 T、不兼容正文使用、同类重载和预算/取消验证拒绝与来源；泛型声明及相邻 class_source Rust 测试通过。
 
 ## 4. P3：跨块四条件拼接
 
@@ -19,5 +19,5 @@
 
 ## 5. 完整类族集成验收
 
-- [ ] 5.1 合入三个工作包后重新生成固定九个物理类的完整 Jarde 源码；原/JADX/Jarde 均以 `javac --release 8 -g:none` 重编，`java -Xverify:all` 精确输出 `runnable:1111:0000:1111:ClassCastException`，所有相关方法无 `@bytecode`/缺失 return，D 反射泛型签名和逐 BCI 来源正确。
-- [ ] 5.2 重放三包独立负例与已通过的 DT-29 父字段/接口 cast 控制、相关 Rust 测试、`cargo fmt --all -- --check`、`cargo check --workspace --locked`、`git diff --check` 和 `openspec validate recover-dt29-fieldcast-family --strict`；root 独立记录结果、清理专用 Cargo target 并提交推送。
+- [x] 5.1 合入三个工作包后重新生成固定九个物理类的完整 Jarde 源码；原/JADX/Jarde 均以 `javac --release 8 -g:none` 重编，`java -Xverify:all` 精确输出 `runnable:1111:0000:1111:ClassCastException`，所有相关方法无 `@bytecode`/缺失 return，D 反射泛型签名和逐 BCI 来源正确。
+- [x] 5.2 重放三包独立负例与已通过的 DT-29 父字段/接口 cast 控制、相关 Rust 测试、`cargo fmt --all -- --check`、`cargo check --workspace --locked`、`git diff --check` 和 `openspec validate recover-dt29-fieldcast-family --strict`；root 独立记录结果、清理专用 Cargo target 并提交推送。
