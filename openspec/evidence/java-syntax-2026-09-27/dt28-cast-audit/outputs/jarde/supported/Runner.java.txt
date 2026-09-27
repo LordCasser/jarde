@@ -1,0 +1,26 @@
+// jarde: presentation of `dt28/Runner` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt28;
+
+public final class Runner extends java.lang.Object {
+    public Runner() {
+        // @method <init>()V
+        // @declaration a constructor of `dt28.Runner`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `dt28.Runner`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(dt28.PrimitiveCasts.widenChar('\u0016'));
+        java.lang.System.out.println(dt28.PrimitiveCasts.truncateLong(4294967304L));
+        java.lang.System.out.println("" + (int) dt28.PrimitiveCasts.narrowLong(258L) + ":" + (int) dt28.PrimitiveCasts.narrowInt(65538) + ":" + (int) dt28.PrimitiveCasts.narrowChar(65538));
+        java.lang.System.out.println("" + (int) dt28.PrimitiveCasts.byteConditional(true) + ":" + (int) dt28.PrimitiveCasts.byteConditional(false));
+        java.lang.System.out.println("" + dt28.PrimitiveCasts.promotedConditional(true, 3, 4L) + ":" + dt28.PrimitiveCasts.promotedConditional(false, 3, 4L));
+        java.lang.System.out.println("ok");
+        return;
+    }
+}

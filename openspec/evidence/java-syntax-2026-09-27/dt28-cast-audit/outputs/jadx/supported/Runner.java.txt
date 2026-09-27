@@ -1,0 +1,13 @@
+package dt28;
+
+/* JADX INFO: loaded from: supported.jar:dt28/Runner.class */
+public final class Runner {
+    public static void main(String[] strArr) {
+        System.out.println(PrimitiveCasts.widenChar((char) 22));
+        System.out.println(PrimitiveCasts.truncateLong(4294967304L));
+        System.out.println(((int) PrimitiveCasts.narrowLong(258L)) + ":" + ((int) PrimitiveCasts.narrowInt(65538)) + ":" + ((int) PrimitiveCasts.narrowChar(65538)));
+        System.out.println(((int) PrimitiveCasts.byteConditional(true)) + ":" + ((int) PrimitiveCasts.byteConditional(false)));
+        System.out.println(PrimitiveCasts.promotedConditional(true, 3, 4L) + ":" + PrimitiveCasts.promotedConditional(false, 3, 4L));
+        System.out.println("ok");
+    }
+}

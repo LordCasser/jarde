@@ -1,0 +1,68 @@
+{
+  "byte-conditional-call": {
+    "expected_stdout": "1:0\n",
+    "jadx": {
+      "compile_exit": 0,
+      "run_exit": 0,
+      "run_stderr": "",
+      "run_stdout": "1:0\n"
+    },
+    "jarde": {
+      "compile_exit": 1,
+      "compile_stderr": "<TMP>/byte-conditional-call-jarde-src/dt28/ByteConditionalCall.java:21: error: missing return statement\n    }\n    ^\n1 error\n"
+    },
+    "jarde_report_classes": [
+      "ByteConditionalCall"
+    ],
+    "original": {
+      "compile_exit": 0,
+      "run_exit": 0,
+      "run_stderr": "",
+      "run_stdout": "1:0\n"
+    },
+    "source_counts": {
+      "jadx": 2,
+      "jarde": 2,
+      "original": 2
+    }
+  },
+  "jadx_commit": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jarde_baseline_commit": "85117144069a5ab6901792b2c0a9f73951f2f3b8",
+  "jarde_difference": "only byte-conditional-call in this fixture fails Jarde recompilation: byteConditionalCall(JZ)B has no recovered statement because the invocation's byte parameter receives an int-typed conditional without a proven narrowing conversion",
+  "scope": [
+    "(long) char before shift; (int) long before shift",
+    "long-to-byte, int-to-short, int-to-char narrowing",
+    "byte-valued conditional return",
+    "mixed int/long conditional promotion control",
+    "byte-valued conditional passed to byte parameter"
+  ],
+  "supported": {
+    "expected_stdout": "94489280512\n2\n2:2:2\n1:0\n3:4\nok\n",
+    "jadx": {
+      "compile_exit": 0,
+      "run_exit": 0,
+      "run_stderr": "",
+      "run_stdout": "94489280512\n2\n2:2:2\n1:0\n3:4\nok\n"
+    },
+    "jarde": {
+      "compile_exit": 0,
+      "run_exit": 0,
+      "run_stderr": "",
+      "run_stdout": "94489280512\n2\n2:2:2\n1:0\n3:4\nok\n"
+    },
+    "jarde_report_classes": [
+      "PrimitiveCasts"
+    ],
+    "original": {
+      "compile_exit": 0,
+      "run_exit": 0,
+      "run_stderr": "",
+      "run_stdout": "94489280512\n2\n2:2:2\n1:0\n3:4\nok\n"
+    },
+    "source_counts": {
+      "jadx": 2,
+      "jarde": 2,
+      "original": 2
+    }
+  }
+}

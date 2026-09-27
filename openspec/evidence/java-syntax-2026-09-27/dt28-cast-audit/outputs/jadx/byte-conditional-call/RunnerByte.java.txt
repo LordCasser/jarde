@@ -1,0 +1,8 @@
+package dt28;
+
+/* JADX INFO: loaded from: byte-conditional-call.jar:dt28/RunnerByte.class */
+public final class RunnerByte {
+    public static void main(String[] strArr) {
+        System.out.println(((int) ByteConditionalCall.run(9L, true)) + ":" + ((int) ByteConditionalCall.run(9L, false)));
+    }
+}

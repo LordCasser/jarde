@@ -1,0 +1,89 @@
+// jarde: presentation of `dt28/PrimitiveCasts` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt28;
+
+public final class PrimitiveCasts extends java.lang.Object {
+    private PrimitiveCasts() {
+        // @method <init>()V
+        // @declaration a constructor of `dt28.PrimitiveCasts`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static long widenChar(char arg0) {
+        // @method widenChar(C)J
+        // @declaration a static method of `dt28.PrimitiveCasts`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (long) arg0 << 32;
+    }
+
+    public static int truncateLong(long arg0) {
+        // @method truncateLong(J)I
+        // @declaration a static method of `dt28.PrimitiveCasts`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (int) arg0 >> 2;
+    }
+
+    public static byte narrowLong(long arg0) {
+        // @method narrowLong(J)B
+        // @declaration a static method of `dt28.PrimitiveCasts`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (byte) (int) arg0;
+    }
+
+    public static short narrowInt(int arg0) {
+        // @method narrowInt(I)S
+        // @declaration a static method of `dt28.PrimitiveCasts`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (short) arg0;
+    }
+
+    public static char narrowChar(int arg0) {
+        // @method narrowChar(I)C
+        // @declaration a static method of `dt28.PrimitiveCasts`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (char) arg0;
+    }
+
+    public static byte byteConditional(boolean arg0) {
+        // @method byteConditional(Z)B
+        // @declaration a static method of `dt28.PrimitiveCasts`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return (byte) (arg0 ? 1 : 0);
+    }
+
+    public static long promotedConditional(boolean arg0, int arg1, long arg2) {
+        // @method promotedConditional(ZIJ)J
+        // @declaration a static method of `dt28.PrimitiveCasts`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0 ? (long) arg1 : arg2;
+    }
+}
+
+// jarde: presentation of `dt28/Runner` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt28;
+
+public final class Runner extends java.lang.Object {
+    public Runner() {
+        // @method <init>()V
+        // @declaration a constructor of `dt28.Runner`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `dt28.Runner`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println(dt28.PrimitiveCasts.widenChar('\u0016'));
+        java.lang.System.out.println(dt28.PrimitiveCasts.truncateLong(4294967304L));
+        java.lang.System.out.println("" + (int) dt28.PrimitiveCasts.narrowLong(258L) + ":" + (int) dt28.PrimitiveCasts.narrowInt(65538) + ":" + (int) dt28.PrimitiveCasts.narrowChar(65538));
+        java.lang.System.out.println("" + (int) dt28.PrimitiveCasts.byteConditional(true) + ":" + (int) dt28.PrimitiveCasts.byteConditional(false));
+        java.lang.System.out.println("" + dt28.PrimitiveCasts.promotedConditional(true, 3, 4L) + ":" + dt28.PrimitiveCasts.promotedConditional(false, 3, 4L));
+        java.lang.System.out.println("ok");
+        return;
+    }
+}

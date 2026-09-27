@@ -1,0 +1,26 @@
+public final class dt28.ByteConditionalCall {
+  private dt28.ByteConditionalCall();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static byte run(long, boolean);
+    descriptor: (JZ)B
+    Code:
+       0: lload_0
+       1: iload_2
+       2: ifeq          9
+       5: iconst_1
+       6: goto          10
+       9: iconst_0
+      10: invokestatic  #7                  // Method acceptByte:(JB)B
+      13: ireturn
+
+  private static byte acceptByte(long, byte);
+    descriptor: (JB)B
+    Code:
+       0: iload_2
+       1: ireturn
+}

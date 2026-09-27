@@ -1,0 +1,35 @@
+package dt28;
+
+/* JADX INFO: loaded from: supported.jar:dt28/PrimitiveCasts.class */
+public final class PrimitiveCasts {
+    private PrimitiveCasts() {
+    }
+
+    public static long widenChar(char c) {
+        return ((long) c) << 32;
+    }
+
+    public static int truncateLong(long j) {
+        return ((int) j) >> 2;
+    }
+
+    public static byte narrowLong(long j) {
+        return (byte) j;
+    }
+
+    public static short narrowInt(int i) {
+        return (short) i;
+    }
+
+    public static char narrowChar(int i) {
+        return (char) i;
+    }
+
+    public static byte byteConditional(boolean z) {
+        return z ? (byte) 1 : (byte) 0;
+    }
+
+    public static long promotedConditional(boolean z, int i, long j) {
+        return z ? i : j;
+    }
+}

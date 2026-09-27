@@ -1,0 +1,24 @@
+package dt28;
+
+/* JADX INFO: loaded from: byte-conditional-call.jar:dt28/ByteConditionalCall.class */
+public final class ByteConditionalCall {
+    private ByteConditionalCall() {
+    }
+
+    public static byte run(long j, boolean z) {
+        return acceptByte(j, z ? (byte) 1 : (byte) 0);
+    }
+
+    private static byte acceptByte(long j, byte b) {
+        return b;
+    }
+}
+
+package dt28;
+
+/* JADX INFO: loaded from: byte-conditional-call.jar:dt28/RunnerByte.class */
+public final class RunnerByte {
+    public static void main(String[] strArr) {
+        System.out.println(((int) ByteConditionalCall.run(9L, true)) + ":" + ((int) ByteConditionalCall.run(9L, false)));
+    }
+}
