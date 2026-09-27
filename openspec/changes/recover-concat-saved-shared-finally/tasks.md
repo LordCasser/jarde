@@ -13,4 +13,4 @@
 
 - [x] 3.1 使用 fresh CLI 将原/JADX/Jarde 完整 Java 8 类分别重编并 `java -Xverify:all`；Jarde 的正常、具名 catch、异常对象/消息与计数等于原 class，单列 JADX 二次清理错误，所有有效错误近邻保守拒绝。
 - [x] 3.2 运行共享调用型/字段型/汇合点、Test12/Test13、普通具名 catch、拼接回归，`cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、`cargo fmt --all -- --check`、OpenSpec strict 与 `git diff --check`；清理专用 Cargo target。
-- [ ] 3.3 root 独立审阅拼接计划来源、异常覆盖、值身份、区域/Builder 所有权和三方运行，写主线验收记录并更新 CF-16 清单；仅标记该固定切片，不宣称整个 CF-16 追平。
+- [x] 3.3 root 独立审阅拼接计划来源、异常覆盖、值身份、区域/Builder 所有权和三方运行，写主线验收记录并更新 CF-16 清单；仅标记该固定切片，不宣称整个 CF-16 追平。
