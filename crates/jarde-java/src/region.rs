@@ -546,6 +546,9 @@ pub enum Region {
         /// An internally structured protected body. The enclosing plan remains its sole physical
         /// owner; this tree supplies lexical structure to the Java writer.
         body: Option<Box<Region>>,
+        /// A separately bounded conditional cleanup, present only when the finally certificate
+        /// proves both physical copies and this tree owns the normal copy's lexical `if`.
+        finally_body: Option<Box<Region>>,
     },
     /// `try { … } catch (T n) { … }` — a protected range the exception table states, with one clause
     /// per row that names its `catch` type.
@@ -986,8 +989,15 @@ pub(crate) fn project_string_switches(
                 }
             }
             Region::Guard {
-                body: Some(body), ..
-            } => visit(body, ir, budget)?,
+                body: Some(body),
+                finally_body,
+                ..
+            } => {
+                visit(body, ir, budget)?;
+                if let Some(cleanup) = finally_body {
+                    visit(cleanup, ir, budget)?;
+                }
+            }
             Region::ShortCircuitValue { .. }
             | Region::TwoExitReturn { .. }
             | Region::SharedTailEarlyReturn { .. } => {}
@@ -2313,19 +2323,22 @@ impl Walker<'_> {
                     self.budget,
                 )?
             {
-                let body = match plan.shape() {
-                    crate::guard::Shape::Finally { .. } => {
-                        self.finally_body(&current, &plan, frame)?
-                    }
-                    crate::guard::Shape::SharedFinally { .. } => {
-                        self.shared_finally_body(&current, &plan, frame)?
-                    }
-                    crate::guard::Shape::SegmentedFinally { .. } => {
-                        self.segmented_finally_body(&current, &plan, frame)?
-                    }
+                let recovered = match plan.shape() {
+                    crate::guard::Shape::Finally { .. } => self
+                        .finally_body(&current, &plan, frame)?
+                        .map(|body| (body, None)),
+                    crate::guard::Shape::ConditionalFinally { .. } => self
+                        .conditional_finally_regions(&current, &plan, frame)?
+                        .map(|(body, cleanup)| (body, Some(cleanup))),
+                    crate::guard::Shape::SharedFinally { .. } => self
+                        .shared_finally_body(&current, &plan, frame)?
+                        .map(|body| (body, None)),
+                    crate::guard::Shape::SegmentedFinally { .. } => self
+                        .segmented_finally_body(&current, &plan, frame)?
+                        .map(|body| (body, None)),
                     _ => None,
                 };
-                if let Some(body) = body {
+                if let Some((body, finally_body)) = recovered {
                     for block in plan.owned() {
                         if let Some(index) = self.view.index_of(block) {
                             self.visited.insert(index);
@@ -2337,6 +2350,7 @@ impl Walker<'_> {
                             prefix,
                             plan,
                             body: Some(Box::new(body)),
+                            finally_body: finally_body.map(Box::new),
                         },
                         join,
                     ));
@@ -2449,6 +2463,7 @@ impl Walker<'_> {
                             prefix,
                             plan,
                             body: Some(Box::new(body)),
+                            finally_body: None,
                         },
                         join,
                     ));
@@ -2477,6 +2492,7 @@ impl Walker<'_> {
                         prefix,
                         plan,
                         body: None,
+                        finally_body: None,
                     },
                     None,
                 ));
@@ -2508,6 +2524,7 @@ impl Walker<'_> {
                                     prefix,
                                     plan,
                                     body: None,
+                                    finally_body: None,
                                 },
                                 join,
                             ));
@@ -4140,6 +4157,172 @@ impl Walker<'_> {
             return Ok(None);
         }
         Ok(Some(body))
+    }
+
+    /// Walk the protected body and the normal cleanup as two bounded regions. The Guard plan is
+    /// their sole physical owner; the second tree supplies the lexical `if` written in `finally`.
+    fn conditional_finally_regions(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<(Region, Region)>, StopReason> {
+        let crate::guard::Shape::ConditionalFinally {
+            row_ordinal,
+            normal_cleanup,
+            normal_return,
+            ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        let previous = self.visited.clone();
+        let protected = self.bounded_conditional_finally_region(
+            start,
+            plan.body(),
+            normal_cleanup.0,
+            *row_ordinal,
+            plan,
+            outer,
+        );
+        let protected = match protected {
+            Ok(Some(body)) => body,
+            Ok(None) => {
+                self.visited = previous;
+                return Ok(None);
+            }
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        let Some(cleanup_start) = self
+            .canonical
+            .blocks()
+            .iter()
+            .find(|block| block.id().bci() == normal_cleanup.0)
+            .map(|block| block.id().clone())
+        else {
+            self.visited = previous;
+            return Ok(None);
+        };
+        let cleanup = self.bounded_conditional_finally_region(
+            &cleanup_start,
+            *normal_cleanup,
+            *normal_return,
+            *row_ordinal,
+            plan,
+            outer,
+        );
+        let cleanup = match cleanup {
+            Ok(Some(body)) => body,
+            Ok(None) => {
+                self.visited = previous;
+                return Ok(None);
+            }
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        if !matches!(protected, Region::If { .. }) || !matches!(cleanup, Region::If { .. }) {
+            self.visited = previous;
+            return Ok(None);
+        }
+        Ok(Some((protected, cleanup)))
+    }
+
+    fn bounded_conditional_finally_region(
+        &mut self,
+        start: &CanonicalBlockId,
+        span: (u32, u32),
+        exit: u32,
+        row_ordinal: u32,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let expected: BTreeSet<usize> = plan
+            .owned()
+            .iter()
+            .filter_map(|block| {
+                let names = self.ssa.block(block)?;
+                names
+                    .instructions()
+                    .iter()
+                    .all(|instruction| span.0 <= instruction.bci() && instruction.bci() < span.1)
+                    .then(|| self.view.index_of(block))
+                    .flatten()
+            })
+            .collect();
+        let (Some(start_node), Some(exit_block)) = (
+            self.view.index_of(start),
+            self.canonical
+                .blocks()
+                .iter()
+                .find(|block| block.id().bci() == exit)
+                .map(|block| block.id().clone()),
+        ) else {
+            return Ok(None);
+        };
+        let Some(exit_node) = self.view.index_of(&exit_block) else {
+            return Ok(None);
+        };
+        if expected.is_empty()
+            || !expected.contains(&start_node)
+            || expected.contains(&exit_node)
+            || expected.iter().any(|node| {
+                self.visited.contains(node)
+                    || outer
+                        .scope
+                        .as_ref()
+                        .is_some_and(|scope| !scope.contains(node))
+            })
+            || expected.iter().any(|node| {
+                *node != start_node
+                    && self
+                        .view
+                        .predecessors(*node)
+                        .iter()
+                        .any(|parent| !expected.contains(parent))
+            })
+        {
+            return Ok(None);
+        }
+        let previous = self.visited.clone();
+        let mut frame = outer.clone();
+        frame.scope = Some(expected.clone());
+        frame.boundary = Some(exit_node);
+        frame.own_try = Some(start_node);
+        frame.own_finally = Some(((row_ordinal, plan.body()), None));
+        let walked = self.region_at(start, &frame);
+        let (regions, next) = match walked {
+            Ok(run) => run,
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        let region = sequence_region(regions);
+        let blocks = region.blocks();
+        let actual: BTreeSet<_> = blocks
+            .iter()
+            .filter_map(|block| self.view.index_of(block))
+            .collect();
+        if next.as_ref().is_some_and(|at| at != &exit_block)
+            || !finally_body_supported(&region, false)
+            || actual != expected
+            || blocks.len() != actual.len()
+            || self
+                .visited
+                .difference(&previous)
+                .copied()
+                .collect::<BTreeSet<_>>()
+                != expected
+        {
+            self.visited = previous;
+            return Ok(None);
+        }
+        Ok(Some(region))
     }
 
     fn shared_finally_body(

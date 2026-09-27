@@ -1900,8 +1900,15 @@ fn short_circuit_local_booleans(
                 pending.extend(catches.iter().map(|clause| clause.body()));
             }
             Region::Guard {
-                body: Some(body), ..
-            } => pending.push(body),
+                body: Some(body),
+                finally_body,
+                ..
+            } => {
+                pending.push(body);
+                if let Some(cleanup) = finally_body {
+                    pending.push(cleanup);
+                }
+            }
             Region::Straight { .. }
             | Region::TwoExitReturn { .. }
             | Region::SharedTailEarlyReturn { .. }
@@ -2394,8 +2401,15 @@ fn collect_guards(region: &Region, visit: &mut impl FnMut(&Region)) {
             }
         }
         Region::Guard {
-            body: Some(body), ..
-        } => collect_guards(body, visit),
+            body: Some(body),
+            finally_body,
+            ..
+        } => {
+            collect_guards(body, visit);
+            if let Some(cleanup) = finally_body {
+                collect_guards(cleanup, visit);
+            }
+        }
         Region::ShortCircuitValue { .. }
         | Region::TwoExitReturn { .. }
         | Region::SharedTailEarlyReturn { .. } => {}
@@ -2423,7 +2437,12 @@ fn guard_return_ownership(
         poll(budget, None)?;
         charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
         match region {
-            Region::Guard { plan, .. } => {
+            Region::Guard {
+                plan,
+                body,
+                finally_body,
+                ..
+            } => {
                 if let guard::Shape::Monitor {
                     normal_exit_bci,
                     returns: Some(return_bci),
@@ -2464,6 +2483,12 @@ fn guard_return_ownership(
                             ambiguous_returns.insert(return_bci);
                         }
                     }
+                }
+                if let Some(body) = body {
+                    pending.push(body);
+                }
+                if let Some(cleanup) = finally_body {
+                    pending.push(cleanup);
                 }
             }
             Region::Sequence { regions } | Region::Loop { body: regions, .. } => {
@@ -3046,10 +3071,15 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
             }
         }
         Region::Guard {
-            body: Some(body), ..
+            body: Some(body),
+            finally_body,
+            ..
         } => {
             out.tries.insert(path.clone());
             collect_paths(body, &child(path, 0), out);
+            if let Some(cleanup) = finally_body {
+                collect_paths(cleanup, &child(path, 1), out);
+            }
         }
         Region::Sequence { regions } => {
             for (index, region) in regions.iter().enumerate() {
@@ -3262,8 +3292,15 @@ fn unaccounted_region_bcis(region: &Region) -> Vec<u32> {
             }
         }
         Region::Guard {
-            body: Some(body), ..
-        } => bcis.extend(unaccounted_region_bcis(body)),
+            body: Some(body),
+            finally_body,
+            ..
+        } => {
+            bcis.extend(unaccounted_region_bcis(body));
+            if let Some(cleanup) = finally_body {
+                bcis.extend(unaccounted_region_bcis(cleanup));
+            }
+        }
         Region::Fallback { reason, .. } => bcis.extend_from_slice(reason.unaccounted()),
         Region::ShortCircuitValue { .. }
         | Region::TwoExitReturn { .. }
@@ -6814,8 +6851,15 @@ fn has_early_return_tail(region: &Region) -> bool {
                     .any(|catch| has_early_return_tail(catch.body()))
         }
         Region::Guard {
-            body: Some(body), ..
-        } => has_early_return_tail(body),
+            body: Some(body),
+            finally_body,
+            ..
+        } => {
+            has_early_return_tail(body)
+                || finally_body
+                    .as_ref()
+                    .is_some_and(|cleanup| has_early_return_tail(cleanup))
+        }
         _ => false,
     }
 }
@@ -10824,8 +10868,15 @@ impl Builder<'_> {
                 }
             }
             Region::Guard {
-                body: Some(body), ..
-            } => self.prepare_conditional_region(body)?,
+                body: Some(body),
+                finally_body,
+                ..
+            } => {
+                self.prepare_conditional_region(body)?;
+                if let Some(cleanup) = finally_body {
+                    self.prepare_conditional_region(cleanup)?;
+                }
+            }
             Region::ShortCircuitValue { consumer, .. } => {
                 if let ShortCircuitValueAttempt::Proved(proof) = prove_short_circuit_value(
                     region,
@@ -12772,6 +12823,7 @@ impl Builder<'_> {
                 prefix,
                 plan,
                 body: structured_body,
+                finally_body: structured_finally_body,
             } => {
                 // The walk wrote nothing of the statement's own header: the first resource's
                 // initialisation (or the monitor's entry) is the last block it reached, and the
@@ -13091,6 +13143,90 @@ impl Builder<'_> {
                             && let Some(checkpoint) = finally_checkpoint.take()
                         {
                             self.restore_finally(checkpoint);
+                        }
+                        pushed
+                    }
+                    guard::Shape::ConditionalFinally { normal_return, .. } => {
+                        let (
+                            Some(body_region @ Region::If { .. }),
+                            Some(cleanup_region @ Region::If { .. }),
+                        ) = (
+                            structured_body.as_deref(),
+                            structured_finally_body.as_deref(),
+                        )
+                        else {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("conditional finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the conditional finally has no two bounded if regions",
+                                plan.body().0,
+                            );
+                        };
+                        let outer = std::mem::take(&mut self.stmts);
+                        self.finally_span = Some(plan.body());
+                        let built_body = self.region(body_region, &child(path, 0));
+                        self.finally_span = None;
+                        let body = std::mem::replace(&mut self.stmts, outer);
+                        if let Err(stop) = built_body {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("conditional finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                        let outer = std::mem::take(&mut self.stmts);
+                        let built_cleanup = self.region(cleanup_region, &child(path, 1));
+                        let finally_body = std::mem::replace(&mut self.stmts, outer);
+                        if let Err(stop) = built_cleanup {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("conditional finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                        let mut origin = OriginSet::new(Origin::direct(plan.body().0))
+                            .plus_derived(Origin::derived(*normal_return));
+                        for bci in plan.facts() {
+                            origin = origin.plus_derived(Origin::derived(*bci));
+                        }
+                        let statement = Stmt::new(
+                            StmtKind::Try {
+                                resources: Vec::new(),
+                                catches: Vec::new(),
+                                body,
+                                finally_body: Some(finally_body),
+                            },
+                            origin,
+                        );
+                        if statement_has_fallback(&statement)
+                            || undeclared_local(&statement, &self.undeclared).is_some()
+                        {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("conditional finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the conditional finally has an unpresented body or cleanup",
+                                plan.body().0,
+                            );
+                        }
+                        let pushed = self.push(statement);
+                        if pushed.is_err() {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("conditional finally checkpoint"),
+                            );
                         }
                         pushed
                     }

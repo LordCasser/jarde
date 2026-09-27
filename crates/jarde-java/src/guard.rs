@@ -197,6 +197,13 @@ pub enum Shape {
         row_ordinal: u32,
         structured: bool,
     },
+    /// One catch-all and two equivalent null-guarded cleanup copies with a void completion.
+    ConditionalFinally {
+        row_ordinal: u32,
+        normal_cleanup: (u32, u32),
+        handler_cleanup: (u32, u32),
+        normal_return: u32,
+    },
     /// One named catch and two normal completions sharing a proved catch-all cleanup handler.
     SharedFinally {
         rows: [u32; 3],
@@ -303,6 +310,7 @@ impl Plan {
             Shape::Resources { .. } => &TWR,
             Shape::Monitor { .. } | Shape::MonitorBranches { .. } => &MONITOR,
             Shape::Finally { .. }
+            | Shape::ConditionalFinally { .. }
             | Shape::SharedFinally { .. }
             | Shape::SegmentedFinally { .. } => &FINALLY,
         }
@@ -2248,6 +2256,307 @@ fn prove_finally_copy(
     }))
 }
 
+/// The two reads are separate instructions and separate SSA values. The first is used only by
+/// `ifnull`; the second is the receiver of the one optional call. A source `if (t != null)
+/// t.doFinally()` preserves both reads, including when the protected body changed `t`.
+fn conditional_cleanup_copy(
+    facts: &Facts<'_>,
+    copy: &[u32; 6],
+    null_exit: u32,
+) -> Option<(Operation, Operation)> {
+    let [
+        first_load,
+        first_field,
+        branch,
+        second_load,
+        second_field,
+        call,
+    ] = *copy;
+    let field = facts.op(first_field)?.clone();
+    let invoke = facts.op(call)?.clone();
+    if facts.op(first_load) != Some(&Operation::Load { slot: 0 })
+        || facts.op(second_load) != Some(&Operation::Load { slot: 0 })
+        || facts.op(second_field) != Some(&field)
+        || facts.op(branch)
+            != Some(&Operation::Comparison {
+                op: CompareOp::JumpIfNull,
+                target: null_exit,
+            })
+        || !matches!(&field, Operation::Field {
+            access: crate::facts::FieldAccess::Read,
+            is_static: false,
+            descriptor,
+            ..
+        } if descriptor.starts_with('L') && descriptor.ends_with(';'))
+        || !matches!(&invoke, Operation::Invoke(target)
+            if target.kind() == InvokeKind::Virtual
+                && target.descriptor() == "()V"
+                && matches!(&field, Operation::Field { descriptor, .. }
+                    if descriptor == &format!("L{};", target.owner())))
+    {
+        return None;
+    }
+    let steps: Vec<_> = copy
+        .iter()
+        .map(|bci| facts.step(*bci))
+        .collect::<Option<_>>()?;
+    for index in [0, 3] {
+        let [(Slot::Local(0), receiver)] = steps[index].instruction.reads() else {
+            return None;
+        };
+        if !matches!(
+            facts.ssa.value(facts.resolve(*receiver)).def(),
+            Definition::Entry {
+                slot: Slot::Local(0),
+                ..
+            }
+        ) {
+            return None;
+        }
+    }
+    for (producer, consumer) in [(0, 1), (1, 2), (3, 4), (4, 5)] {
+        let outputs: Vec<_> = steps[producer]
+            .instruction
+            .writes()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .collect();
+        let inputs = stack_operands(steps[consumer].instruction);
+        if outputs.len() != 1
+            || inputs.len() != 1
+            || !facts.same(outputs[0].1, inputs[0].1)
+            || facts
+                .order
+                .iter()
+                .filter(|bci| {
+                    facts.step(**bci).is_some_and(|step| {
+                        stack_operands(step.instruction)
+                            .iter()
+                            .any(|(_, value)| facts.same(*value, outputs[0].1))
+                    })
+                })
+                .count()
+                != 1
+        {
+            return None;
+        }
+    }
+    let first_value = steps[1]
+        .instruction
+        .writes()
+        .iter()
+        .find(|(slot, _)| matches!(slot, Slot::Stack(_)))?
+        .1;
+    let second_value = steps[4]
+        .instruction
+        .writes()
+        .iter()
+        .find(|(slot, _)| matches!(slot, Slot::Stack(_)))?
+        .1;
+    if facts.same(first_value, second_value) {
+        return None;
+    }
+    Some((field, invoke))
+}
+
+/// A bounded Java 8 void finally whose normal and exceptional copies each contain exactly one
+/// null branch and one optional call. This is independent of the straight-copy certificate.
+fn prove_conditional_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [row] = facts.handlers else {
+        return Ok(None);
+    };
+    if row.catch_type_index.is_some()
+        || row.start_bci != 0
+        || row.start_bci != current.bci()
+        || row.start_bci >= row.end_bci
+        || facts.order.len() > 64
+        || facts.row_handler(row).as_ref().map(CanonicalBlockId::bci) != Some(row.handler_bci)
+    {
+        return Ok(None);
+    }
+    let Some(&normal_return) = facts.order.last() else {
+        return Ok(None);
+    };
+    let normal = facts.bcis((row.end_bci, row.handler_bci));
+    let handler = facts.bcis((row.handler_bci, normal_return));
+    let ([n0, n1, n2, n3, n4, n5, n6], [h0, h1, h2, h3, h4, h5, h6, h7, h8]) =
+        (normal.as_slice(), handler.as_slice())
+    else {
+        return Ok(None);
+    };
+    let normal_copy = [*n0, *n1, *n2, *n3, *n4, *n5];
+    let handler_copy = [*h1, *h2, *h3, *h4, *h5, *h6];
+    if facts.op(*n6) != Some(&Operation::Transfer)
+        || facts.op(normal_return) != Some(&Operation::Return)
+        || !facts
+            .step(normal_return)
+            .is_some_and(|step| stack_operands(step.instruction).is_empty())
+        || !matches!(facts.op(*h0), Some(Operation::Store { .. }))
+        || !matches!(facts.op(*h7), Some(Operation::Load { .. }))
+        || facts.op(*h8) != Some(&Operation::Throw)
+        || facts.next_bci(*h8) != Some(normal_return)
+    {
+        return Ok(None);
+    }
+    let Some((normal_field, normal_call)) =
+        conditional_cleanup_copy(facts, &normal_copy, normal_return)
+    else {
+        return Ok(None);
+    };
+    let Some((handler_field, handler_call)) = conditional_cleanup_copy(facts, &handler_copy, *h7)
+    else {
+        return Ok(None);
+    };
+    if normal_field != handler_field || normal_call != handler_call {
+        return Ok(None);
+    }
+    let (Some(Operation::Store { slot: stored }), Some(Operation::Load { slot: loaded })) =
+        (facts.op(*h0), facts.op(*h7))
+    else {
+        return Ok(None);
+    };
+    let (Some(store), Some(load), Some(throw)) =
+        (facts.step(*h0), facts.step(*h7), facts.step(*h8))
+    else {
+        return Ok(None);
+    };
+    let store_input = stack_operands(store.instruction);
+    let throw_input = stack_operands(throw.instruction);
+    if stored != loaded
+        || store_input.len() != 1
+        || throw_input.len() != 1
+        || !store.instruction.writes().iter().any(|(slot, written)| {
+            *slot == Slot::Local(*stored)
+                && load
+                    .instruction
+                    .reads()
+                    .iter()
+                    .any(|(_, read)| facts.same(*written, *read))
+        })
+        || !load.instruction.writes().iter().any(|(slot, written)| {
+            matches!(slot, Slot::Stack(_)) && facts.same(*written, throw_input[0].1)
+        })
+    {
+        return Ok(None);
+    }
+    let protected = facts.blocks_in((row.start_bci, row.end_bci));
+    let normal_blocks = facts.blocks_in((row.end_bci, row.handler_bci));
+    let handler_blocks = facts.blocks_in((row.handler_bci, normal_return));
+    let (
+        Some(normal_entry),
+        Some(normal_call_block),
+        Some(handler_entry),
+        Some(handler_call_block),
+        Some(rethrow_block),
+        Some(return_block),
+    ) = (
+        facts.block_at(*n0),
+        facts.block_at(*n3),
+        facts.block_at(*h0),
+        facts.block_at(*h4),
+        facts.block_at(*h7),
+        facts.block_at(normal_return),
+    )
+    else {
+        return Ok(None);
+    };
+    if protected.is_empty()
+        || normal_blocks.is_empty()
+        || handler_blocks.is_empty()
+        || !facts.canonical.unreachable().is_empty()
+        || facts.canonical.blocks().len()
+            != protected.len() + normal_blocks.len() + handler_blocks.len() + 1
+        || facts
+            .view
+            .successor_ids(&normal_entry)
+            .iter()
+            .cloned()
+            .collect::<BTreeSet<_>>()
+            != BTreeSet::from([normal_call_block.clone(), return_block.clone()])
+        || facts.view.successor_ids(&normal_call_block) != [return_block.clone()]
+        || facts
+            .view
+            .successor_ids(&handler_entry)
+            .iter()
+            .cloned()
+            .collect::<BTreeSet<_>>()
+            != BTreeSet::from([handler_call_block.clone(), rethrow_block.clone()])
+        || facts.view.successor_ids(&handler_call_block) != [rethrow_block.clone()]
+        || !facts.view.successor_ids(&rethrow_block).is_empty()
+        || !facts.view.successor_ids(&return_block).is_empty()
+    {
+        return Ok(None);
+    }
+    for bci in facts.bcis((row.start_bci, facts.span_end(normal_return))) {
+        facts.charge(bci)?;
+        let expected = if bci < row.end_bci {
+            vec![row.ordinal]
+        } else {
+            Vec::new()
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|entry| entry.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+            || (bci < row.end_bci && facts.op(bci) == Some(&Operation::Return))
+        {
+            return Ok(None);
+        }
+    }
+    for block in facts.canonical.blocks() {
+        facts.charge(block.id().bci())?;
+        for edge in facts
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == block.id())
+        {
+            facts.charge(block.id().bci())?;
+            let from_protected = protected.contains(block.id());
+            let from_normal = normal_blocks.contains(block.id());
+            let from_handler = handler_blocks.contains(block.id());
+            let valid = match edge.kind() {
+                CanonicalEdgeKind::Exception { handler_ordinal } => {
+                    from_protected && handler_ordinal == row.ordinal && edge.to() == &handler_entry
+                }
+                CanonicalEdgeKind::Normal if from_protected => {
+                    protected.contains(edge.to()) || edge.to() == &normal_entry
+                }
+                CanonicalEdgeKind::Normal if from_normal => {
+                    normal_blocks.contains(edge.to()) || edge.to() == &return_block
+                }
+                CanonicalEdgeKind::Normal if from_handler => handler_blocks.contains(edge.to()),
+                CanonicalEdgeKind::Normal => false,
+                CanonicalEdgeKind::Return { .. } => block.id() == &return_block,
+                CanonicalEdgeKind::Call { .. } => false,
+            };
+            if !valid {
+                return Ok(None);
+            }
+        }
+    }
+    let owned = facts.blocks_in((row.start_bci, facts.span_end(normal_return)));
+    let origins = facts.bcis((row.start_bci, facts.span_end(normal_return)));
+    Ok(Some(Plan {
+        shape: Shape::ConditionalFinally {
+            row_ordinal: row.ordinal,
+            normal_cleanup: (*n0, row.handler_bci),
+            handler_cleanup: (*h0, facts.span_end(*h8)),
+            normal_return,
+        },
+        lead: (row.start_bci, row.start_bci),
+        body: (row.start_bci, row.end_bci),
+        owned,
+        join: None,
+        facts: origins,
+    }))
+}
+
 /// The first and last instructions of a cleanup. The caller separately proves the three
 /// effects identical; this only finds the return/throw after each copy.
 fn shared_cleanup_span(facts: &Facts<'_>, start: u32) -> Option<(u32, u32)> {
@@ -3792,12 +4101,28 @@ pub(crate) fn shared_finally_candidate(
     current: &CanonicalBlockId,
     budget: &mut Budget,
 ) -> Result<Option<Plan>, StopReason> {
-    if !FINALLY.admits(profile) || !matches!(handlers.len(), 2 | 3 | 5) {
+    if !FINALLY.admits(profile) || !matches!(handlers.len(), 1 | 2 | 3 | 5) {
         return Ok(None);
+    }
+    if handlers.len() == 1 {
+        let row = &handlers[0];
+        // This private slice begins at the method entry and its normal cleanup begins by
+        // loading `this`. Reject other one-row finally shapes before charging a new probe.
+        if row.catch_type_index.is_some()
+            || row.start_bci != 0
+            || current.bci() != 0
+            || ops.get(row.end_bci) != Some(&Operation::Load { slot: 0 })
+            || !matches!(ops.get(row.handler_bci), Some(Operation::Store { .. }))
+        {
+            return Ok(None);
+        }
     }
     let sites = Sites::empty();
     let mut facts = Facts::new(canonical, view, ssa, ops, handlers, &sites, budget);
     facts.charge(current.bci())?;
+    if handlers.len() == 1 {
+        return prove_conditional_finally(&mut facts, current);
+    }
     if handlers.len() == 5 {
         return prove_segmented_finally(&mut facts, current);
     }
@@ -4059,6 +4384,35 @@ mod finally_copy_tests {
     const CONCAT_SAVED: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-27/cf16-finally/original/FinallyOnce.class"
     );
+    const CONDITIONAL_TEST14: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/TestTryCatchFinally14$TestCls.class"
+    );
+    const CONDITIONAL_TEST14_NEGATIVES: [&[u8]; 6] = [
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-field.class"
+        ),
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-call.class"
+        ),
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-predicate.class"
+        ),
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-self-protected.class"
+        ),
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-external-entry.class"
+        ),
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-throwable.class"
+        ),
+    ];
+    const CONDITIONAL_TEST14_SLOT0: &[u8] =
+        include_bytes!("../../../tests/fixtures/p3-conditional-finally/Test14-slot0.class");
+    const CONDITIONAL_TEST14_SECOND_FIELD: &[u8] =
+        include_bytes!("../../../tests/fixtures/p3-conditional-finally/Test14-second-field.class");
+    const CONDITIONAL_TEST14_HANDLER_CALL: &[u8] =
+        include_bytes!("../../../tests/fixtures/p3-conditional-finally/Test14-handler-call.class");
     const FIELD: &[u8] =
         include_bytes!("../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinally.class");
     const JOIN: &[u8] = include_bytes!(
@@ -4390,6 +4744,57 @@ mod finally_copy_tests {
         ));
         assert!(matches!(
             shared_probe(CONCAT_SAVED, |_| {}, Some("cancel")),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
+
+    #[test]
+    fn conditional_test14_two_copies_and_verifier_valid_neighbors() {
+        let probe = |class, stop| shared_probe_method(class, b"test", b"()V", |_| {}, stop);
+        let plan = probe(CONDITIONAL_TEST14, None)
+            .unwrap()
+            .expect("conditional finally certificate");
+        let Shape::ConditionalFinally {
+            row_ordinal,
+            normal_cleanup,
+            handler_cleanup,
+            normal_return,
+        } = plan.shape()
+        else {
+            panic!("conditional finally shape");
+        };
+        assert_eq!(*row_ordinal, 0);
+        assert_eq!(*normal_cleanup, (14, 31));
+        assert_eq!(*handler_cleanup, (31, 48));
+        assert_eq!(*normal_return, 48);
+        assert_eq!(plan.body(), (0, 14));
+        assert_eq!(
+            plan.facts(),
+            &[
+                0, 1, 4, 7, 8, 11, 14, 15, 18, 21, 22, 25, 28, 31, 32, 33, 36, 39, 40, 43, 46, 47,
+                48
+            ]
+        );
+        for class in CONDITIONAL_TEST14_NEGATIVES {
+            assert!(probe(class, None).unwrap().is_none());
+        }
+        assert!(probe(CONDITIONAL_TEST14_SLOT0, None).unwrap().is_none());
+        assert!(
+            probe(CONDITIONAL_TEST14_SECOND_FIELD, None)
+                .unwrap()
+                .is_none()
+        );
+        assert!(
+            probe(CONDITIONAL_TEST14_HANDLER_CALL, None)
+                .unwrap()
+                .is_none()
+        );
+        assert!(matches!(
+            probe(CONDITIONAL_TEST14, Some("budget")),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            probe(CONDITIONAL_TEST14, Some("cancel")),
             Err(StopReason::Cancelled { .. })
         ));
     }
