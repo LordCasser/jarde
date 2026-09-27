@@ -1,0 +1,4 @@
+PartialSwitchCatch1=verified,runTest(1,0)=call-out-finally
+PartialSwitchCatch2=verified,runTest(1,0)=call-out-finally
+PartialSwitchCatch3=verified,runTest(1,0)=call-out-finally
+TwrSwitchCatch=verified,runTest(1,0)=call-out-finally

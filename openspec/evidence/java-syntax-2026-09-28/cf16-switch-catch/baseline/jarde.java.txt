@@ -1,0 +1,88 @@
+// jarde: presentation of `jadx/tests/integration/trycatch/SwitchCatchMinimal` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package jadx.tests.integration.trycatch;
+
+public class SwitchCatchMinimal extends java.lang.Object {
+    private java.lang.StringBuilder sb;
+
+    public SwitchCatchMinimal() {
+        // @method <init>()V
+        // @declaration a constructor of `jadx.tests.integration.trycatch.SwitchCatchMinimal`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void test1(int excType) {
+        // @method test1(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.SwitchCatchMinimal`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            try {
+                this.call(excType);
+            } catch (java.lang.NullPointerException e) {
+                this.sb.append("-catch");
+            }
+            this.sb.append("-out");
+        } finally {
+            this.sb.append("-finally");
+        }
+        return;
+    }
+
+    public void test2(int excType) {
+        // @method test2(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.SwitchCatchMinimal`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            try {
+                this.call(excType);
+            } catch (java.lang.NullPointerException e) {
+                this.sb.append("-catch");
+            }
+        } finally {
+            this.sb.append("-finally");
+        }
+        return;
+    }
+
+    public void test3(int excType) {
+        // @method test3(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.SwitchCatchMinimal`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            this.call(excType);
+        } catch (java.lang.NullPointerException e) {
+            this.sb.append("-catch");
+        } finally {
+            this.sb.append("-finally");
+        }
+        return;
+    }
+
+    public void call(int excType) {
+        // @method call(I)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.SwitchCatchMinimal`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.sb.append("call");
+        switch (excType) {
+            case 1:
+                this.sb.append("-npe");
+                throw new java.lang.NullPointerException();
+            case 2:
+                this.sb.append("-iae");
+                throw new java.lang.IllegalArgumentException();
+            default:
+                return;
+        }
+    }
+
+    public java.lang.String runTest(int testNumber, int excType) {
+        // jarde: not recovered: the recovery run for `runTest(II)Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method runTest(II)Ljava/lang/String;
+        // @declaration an instance method of `jadx.tests.integration.trycatch.SwitchCatchMinimal`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 1 4 5 8 11 12 40 41 42 45 48 49 50 53 56 57 58 61 64 65 66 69 72 73 76 79 80 83 86
+        // canonical block at BCI 40 on jsr path [] has more than one owner in the completed Region tree; the whole method is quoted
+    }
+}

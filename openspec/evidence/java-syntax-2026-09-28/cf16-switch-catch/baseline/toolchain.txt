@@ -1,0 +1,11 @@
+jarde_checkout_head=5bf6d91723af706f8692fa03b8ade6876965a5da
+jarde_cli=/private/tmp/cf16-switch-cargo-target/debug/jarde-cli
+jarde_cli_version=jarde-cli 0.1.0
+jarde_cli_sha256=235ccdcf46097023f087e3f703cfc6c7efd12c8ea7f7d946daabff4b555372d1
+javac=/usr/bin/javac
+java=/usr/bin/java
+javap=/usr/bin/javap
+jadx_checkout_head=2fb1b16386941660fda07e9017285aec40fcb37f
+jadx=/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx
+jadx_version=dev
+jadx_binary_sha256=5d115ed2ecb34b2f96ae80704b966ffa3d9cce33c2de3cdf8d348a8159b116e3

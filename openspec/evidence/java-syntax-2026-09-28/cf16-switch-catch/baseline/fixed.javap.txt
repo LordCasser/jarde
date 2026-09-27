@@ -1,0 +1,487 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/baseline/TestTryCatchFinally12$TestCls.class
+  Last modified 2026年9月28日; size 2356 bytes
+  SHA-256 checksum d9b9cb676203d943ee3cf97d66e62dda2a637125d7f737be1e22ca275c209185
+  Compiled from "TestTryCatchFinally12.java"
+public class jadx.tests.integration.trycatch.TestTryCatchFinally12$TestCls
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 7, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls.call:(I)V
+   #8 = Class              #10            // jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls
+   #9 = NameAndType        #11:#12        // call:(I)V
+  #10 = Utf8               jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls
+  #11 = Utf8               call
+  #12 = Utf8               (I)V
+  #13 = Class              #14            // java/lang/NullPointerException
+  #14 = Utf8               java/lang/NullPointerException
+  #15 = Fieldref           #8.#16         // jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls.sb:Ljava/lang/StringBuilder;
+  #16 = NameAndType        #17:#18        // sb:Ljava/lang/StringBuilder;
+  #17 = Utf8               sb
+  #18 = Utf8               Ljava/lang/StringBuilder;
+  #19 = String             #20            // -catch
+  #20 = Utf8               -catch
+  #21 = Methodref          #22.#23        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #22 = Class              #24            // java/lang/StringBuilder
+  #23 = NameAndType        #25:#26        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #24 = Utf8               java/lang/StringBuilder
+  #25 = Utf8               append
+  #26 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #27 = String             #28            // -out
+  #28 = Utf8               -out
+  #29 = String             #30            // -finally
+  #30 = Utf8               -finally
+  #31 = String             #11            // call
+  #32 = String             #33            // -npe
+  #33 = Utf8               -npe
+  #34 = Methodref          #13.#3         // java/lang/NullPointerException."<init>":()V
+  #35 = String             #36            // -iae
+  #36 = Utf8               -iae
+  #37 = Class              #38            // java/lang/IllegalArgumentException
+  #38 = Utf8               java/lang/IllegalArgumentException
+  #39 = Methodref          #37.#3         // java/lang/IllegalArgumentException."<init>":()V
+  #40 = Methodref          #22.#3         // java/lang/StringBuilder."<init>":()V
+  #41 = Methodref          #8.#42         // jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls.test1:(I)V
+  #42 = NameAndType        #43:#12        // test1:(I)V
+  #43 = Utf8               test1
+  #44 = Methodref          #8.#45         // jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls.test2:(I)V
+  #45 = NameAndType        #46:#12        // test2:(I)V
+  #46 = Utf8               test2
+  #47 = Methodref          #8.#48         // jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls.test3:(I)V
+  #48 = NameAndType        #49:#12        // test3:(I)V
+  #49 = Utf8               test3
+  #50 = Methodref          #51.#52        // java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+  #51 = Class              #53            // java/lang/Integer
+  #52 = NameAndType        #54:#55        // valueOf:(I)Ljava/lang/Integer;
+  #53 = Utf8               java/lang/Integer
+  #54 = Utf8               valueOf
+  #55 = Utf8               (I)Ljava/lang/Integer;
+  #56 = Methodref          #57.#58        // jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+  #57 = Class              #59            // jadx/tests/api/utils/assertj/JadxAssertions
+  #58 = NameAndType        #60:#61        // assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+  #59 = Utf8               jadx/tests/api/utils/assertj/JadxAssertions
+  #60 = Utf8               assertThat
+  #61 = Utf8               (Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+  #62 = Methodref          #63.#64        // jadx/tests/api/utils/assertj/JadxAssertions$Assertion.isEqualTo:(Ljava/lang/Object;)V
+  #63 = Class              #65            // jadx/tests/api/utils/assertj/JadxAssertions$Assertion
+  #64 = NameAndType        #66:#67        // isEqualTo:(Ljava/lang/Object;)V
+  #65 = Utf8               jadx/tests/api/utils/assertj/JadxAssertions$Assertion
+  #66 = Utf8               isEqualTo
+  #67 = Utf8               (Ljava/lang/Object;)V
+  #68 = Methodref          #22.#69        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #69 = NameAndType        #70:#71        // toString:()Ljava/lang/String;
+  #70 = Utf8               toString
+  #71 = Utf8               ()Ljava/lang/String;
+  #72 = Methodref          #8.#73         // jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls.runTest:(II)Ljava/lang/String;
+  #73 = NameAndType        #74:#75        // runTest:(II)Ljava/lang/String;
+  #74 = Utf8               runTest
+  #75 = Utf8               (II)Ljava/lang/String;
+  #76 = String             #77            // call-out-finally
+  #77 = Utf8               call-out-finally
+  #78 = String             #79            // call-npe-catch-out-finally
+  #79 = Utf8               call-npe-catch-out-finally
+  #80 = String             #81            // call-iae-finally
+  #81 = Utf8               call-iae-finally
+  #82 = String             #83            // call-finally
+  #83 = Utf8               call-finally
+  #84 = String             #85            // call-npe-catch-finally
+  #85 = Utf8               call-npe-catch-finally
+  #86 = Utf8               Code
+  #87 = Utf8               LineNumberTable
+  #88 = Utf8               StackMapTable
+  #89 = Class              #90            // java/lang/Throwable
+  #90 = Utf8               java/lang/Throwable
+  #91 = Utf8               check
+  #92 = Utf8               SourceFile
+  #93 = Utf8               TestTryCatchFinally12.java
+  #94 = Utf8               InnerClasses
+  #95 = Class              #96            // jadx/tests/integration/trycatch/TestTryCatchFinally12
+  #96 = Utf8               jadx/tests/integration/trycatch/TestTryCatchFinally12
+  #97 = Utf8               TestCls
+  #98 = Utf8               Assertion
+{
+  public jadx.tests.integration.trycatch.TestTryCatchFinally12$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 6: 0
+
+  public void test1(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_0
+         1: iload_1
+         2: invokevirtual #7                  // Method call:(I)V
+         5: goto          19
+         8: astore_2
+         9: aload_0
+        10: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        13: ldc           #19                 // String -catch
+        15: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: pop
+        19: aload_0
+        20: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        23: ldc           #27                 // String -out
+        25: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        28: pop
+        29: aload_0
+        30: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        33: ldc           #29                 // String -finally
+        35: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        38: pop
+        39: goto          55
+        42: astore_3
+        43: aload_0
+        44: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        47: ldc           #29                 // String -finally
+        49: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        52: pop
+        53: aload_3
+        54: athrow
+        55: return
+      Exception table:
+         from    to  target type
+             0     5     8   Class java/lang/NullPointerException
+             0    29    42   any
+      LineNumberTable:
+        line 12: 0
+        line 15: 5
+        line 13: 8
+        line 14: 9
+        line 16: 19
+        line 18: 29
+        line 19: 39
+        line 18: 42
+        line 19: 53
+        line 20: 55
+      StackMapTable: number_of_entries = 4
+        frame_type = 72 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NullPointerException ]
+        frame_type = 10 /* same */
+        frame_type = 86 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 12 /* same */
+
+  public void test2(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_0
+         1: iload_1
+         2: invokevirtual #7                  // Method call:(I)V
+         5: goto          19
+         8: astore_2
+         9: aload_0
+        10: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        13: ldc           #19                 // String -catch
+        15: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: pop
+        19: aload_0
+        20: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        23: ldc           #29                 // String -finally
+        25: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        28: pop
+        29: goto          45
+        32: astore_3
+        33: aload_0
+        34: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        37: ldc           #29                 // String -finally
+        39: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        42: pop
+        43: aload_3
+        44: athrow
+        45: return
+      Exception table:
+         from    to  target type
+             0     5     8   Class java/lang/NullPointerException
+             0    19    32   any
+      LineNumberTable:
+        line 25: 0
+        line 28: 5
+        line 26: 8
+        line 27: 9
+        line 30: 19
+        line 31: 29
+        line 30: 32
+        line 31: 43
+        line 32: 45
+      StackMapTable: number_of_entries = 4
+        frame_type = 72 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NullPointerException ]
+        frame_type = 10 /* same */
+        frame_type = 76 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 12 /* same */
+
+  public void test3(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_0
+         1: iload_1
+         2: invokevirtual #7                  // Method call:(I)V
+         5: aload_0
+         6: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+         9: ldc           #29                 // String -finally
+        11: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        14: pop
+        15: goto          55
+        18: astore_2
+        19: aload_0
+        20: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        23: ldc           #19                 // String -catch
+        25: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        28: pop
+        29: aload_0
+        30: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        33: ldc           #29                 // String -finally
+        35: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        38: pop
+        39: goto          55
+        42: astore_3
+        43: aload_0
+        44: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        47: ldc           #29                 // String -finally
+        49: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        52: pop
+        53: aload_3
+        54: athrow
+        55: return
+      Exception table:
+         from    to  target type
+             0     5    18   Class java/lang/NullPointerException
+             0     5    42   any
+            18    29    42   any
+      LineNumberTable:
+        line 36: 0
+        line 40: 5
+        line 41: 15
+        line 37: 18
+        line 38: 19
+        line 40: 29
+        line 41: 39
+        line 40: 42
+        line 41: 53
+        line 42: 55
+      StackMapTable: number_of_entries = 3
+        frame_type = 82 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NullPointerException ]
+        frame_type = 87 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 12 /* same */
+
+  public void call(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+         4: ldc           #31                 // String call
+         6: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+         9: pop
+        10: iload_1
+        11: lookupswitch  { // 2
+                       1: 36
+                       2: 54
+                 default: 72
+            }
+        36: aload_0
+        37: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        40: ldc           #32                 // String -npe
+        42: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        45: pop
+        46: new           #13                 // class java/lang/NullPointerException
+        49: dup
+        50: invokespecial #34                 // Method java/lang/NullPointerException."<init>":()V
+        53: athrow
+        54: aload_0
+        55: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        58: ldc           #35                 // String -iae
+        60: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        63: pop
+        64: new           #37                 // class java/lang/IllegalArgumentException
+        67: dup
+        68: invokespecial #39                 // Method java/lang/IllegalArgumentException."<init>":()V
+        71: athrow
+        72: return
+      LineNumberTable:
+        line 45: 0
+        line 46: 10
+        line 48: 36
+        line 49: 46
+        line 51: 54
+        line 52: 64
+        line 54: 72
+      StackMapTable: number_of_entries = 3
+        frame_type = 36 /* same */
+        frame_type = 17 /* same */
+        frame_type = 17 /* same */
+
+  public java.lang.String runTest(int, int);
+    descriptor: (II)Ljava/lang/String;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=4, args_size=3
+         0: aload_0
+         1: new           #22                 // class java/lang/StringBuilder
+         4: dup
+         5: invokespecial #40                 // Method java/lang/StringBuilder."<init>":()V
+         8: putfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        11: iload_1
+        12: tableswitch   { // 1 to 3
+                       1: 40
+                       2: 48
+                       3: 56
+                 default: 61
+            }
+        40: aload_0
+        41: iload_2
+        42: invokevirtual #41                 // Method test1:(I)V
+        45: goto          61
+        48: aload_0
+        49: iload_2
+        50: invokevirtual #44                 // Method test2:(I)V
+        53: goto          61
+        56: aload_0
+        57: iload_2
+        58: invokevirtual #47                 // Method test3:(I)V
+        61: goto          79
+        64: astore_3
+        65: iload_2
+        66: invokestatic  #50                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        69: invokestatic  #56                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+        72: iconst_2
+        73: invokestatic  #50                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        76: invokevirtual #62                 // Method jadx/tests/api/utils/assertj/JadxAssertions$Assertion.isEqualTo:(Ljava/lang/Object;)V
+        79: aload_0
+        80: getfield      #15                 // Field sb:Ljava/lang/StringBuilder;
+        83: invokevirtual #68                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        86: areturn
+      Exception table:
+         from    to  target type
+            11    61    64   Class java/lang/IllegalArgumentException
+      LineNumberTable:
+        line 57: 0
+        line 59: 11
+        line 61: 40
+        line 62: 45
+        line 64: 48
+        line 65: 53
+        line 67: 56
+        line 72: 61
+        line 70: 64
+        line 71: 65
+        line 73: 79
+      StackMapTable: number_of_entries = 6
+        frame_type = 40 /* same */
+        frame_type = 7 /* same */
+        frame_type = 7 /* same */
+        frame_type = 4 /* same */
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class java/lang/IllegalArgumentException ]
+        frame_type = 14 /* same */
+
+  public void check();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: aload_0
+         1: iconst_1
+         2: iconst_0
+         3: invokevirtual #72                 // Method runTest:(II)Ljava/lang/String;
+         6: invokestatic  #56                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+         9: ldc           #76                 // String call-out-finally
+        11: invokevirtual #62                 // Method jadx/tests/api/utils/assertj/JadxAssertions$Assertion.isEqualTo:(Ljava/lang/Object;)V
+        14: aload_0
+        15: iconst_1
+        16: iconst_1
+        17: invokevirtual #72                 // Method runTest:(II)Ljava/lang/String;
+        20: invokestatic  #56                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+        23: ldc           #78                 // String call-npe-catch-out-finally
+        25: invokevirtual #62                 // Method jadx/tests/api/utils/assertj/JadxAssertions$Assertion.isEqualTo:(Ljava/lang/Object;)V
+        28: aload_0
+        29: iconst_1
+        30: iconst_2
+        31: invokevirtual #72                 // Method runTest:(II)Ljava/lang/String;
+        34: invokestatic  #56                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+        37: ldc           #80                 // String call-iae-finally
+        39: invokevirtual #62                 // Method jadx/tests/api/utils/assertj/JadxAssertions$Assertion.isEqualTo:(Ljava/lang/Object;)V
+        42: aload_0
+        43: iconst_2
+        44: iconst_0
+        45: invokevirtual #72                 // Method runTest:(II)Ljava/lang/String;
+        48: invokestatic  #56                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+        51: ldc           #82                 // String call-finally
+        53: invokevirtual #62                 // Method jadx/tests/api/utils/assertj/JadxAssertions$Assertion.isEqualTo:(Ljava/lang/Object;)V
+        56: aload_0
+        57: iconst_2
+        58: iconst_1
+        59: invokevirtual #72                 // Method runTest:(II)Ljava/lang/String;
+        62: invokestatic  #56                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+        65: ldc           #84                 // String call-npe-catch-finally
+        67: invokevirtual #62                 // Method jadx/tests/api/utils/assertj/JadxAssertions$Assertion.isEqualTo:(Ljava/lang/Object;)V
+        70: aload_0
+        71: iconst_2
+        72: iconst_2
+        73: invokevirtual #72                 // Method runTest:(II)Ljava/lang/String;
+        76: invokestatic  #56                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+        79: ldc           #80                 // String call-iae-finally
+        81: invokevirtual #62                 // Method jadx/tests/api/utils/assertj/JadxAssertions$Assertion.isEqualTo:(Ljava/lang/Object;)V
+        84: aload_0
+        85: iconst_3
+        86: iconst_0
+        87: invokevirtual #72                 // Method runTest:(II)Ljava/lang/String;
+        90: invokestatic  #56                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+        93: ldc           #82                 // String call-finally
+        95: invokevirtual #62                 // Method jadx/tests/api/utils/assertj/JadxAssertions$Assertion.isEqualTo:(Ljava/lang/Object;)V
+        98: aload_0
+        99: iconst_3
+       100: iconst_1
+       101: invokevirtual #72                 // Method runTest:(II)Ljava/lang/String;
+       104: invokestatic  #56                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+       107: ldc           #84                 // String call-npe-catch-finally
+       109: invokevirtual #62                 // Method jadx/tests/api/utils/assertj/JadxAssertions$Assertion.isEqualTo:(Ljava/lang/Object;)V
+       112: aload_0
+       113: iconst_3
+       114: iconst_2
+       115: invokevirtual #72                 // Method runTest:(II)Ljava/lang/String;
+       118: invokestatic  #56                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(Ljava/lang/Object;)Ljadx/tests/api/utils/assertj/JadxAssertions$Assertion;
+       121: ldc           #80                 // String call-iae-finally
+       123: invokevirtual #62                 // Method jadx/tests/api/utils/assertj/JadxAssertions$Assertion.isEqualTo:(Ljava/lang/Object;)V
+       126: return
+      LineNumberTable:
+        line 77: 0
+        line 78: 14
+        line 79: 28
+        line 81: 42
+        line 82: 56
+        line 83: 70
+        line 85: 84
+        line 86: 98
+        line 87: 112
+        line 88: 126
+}
+SourceFile: "TestTryCatchFinally12.java"
+InnerClasses:
+  public static #97= #8 of #95;           // TestCls=class jadx/tests/integration/trycatch/TestTryCatchFinally12$TestCls of class jadx/tests/integration/trycatch/TestTryCatchFinally12
+  public static final #98= #63 of #57;    // Assertion=class jadx/tests/api/utils/assertj/JadxAssertions$Assertion of class jadx/tests/api/utils/assertj/JadxAssertions

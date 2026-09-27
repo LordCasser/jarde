@@ -1,0 +1,8 @@
+PartialSwitchCatch1: runTest_exception_rows=[(40, 45, 48, 'Class java/lang/IllegalArgumentException')]
+PartialSwitchCatch1: verifier_valid=true; verifier_runtime=runTest(1,0)
+PartialSwitchCatch2: runTest_exception_rows=[(48, 53, 56, 'Class java/lang/IllegalArgumentException')]
+PartialSwitchCatch2: verifier_valid=true; verifier_runtime=runTest(1,0)
+PartialSwitchCatch3: runTest_exception_rows=[(56, 61, 64, 'Class java/lang/IllegalArgumentException')]
+PartialSwitchCatch3: verifier_valid=true; verifier_runtime=runTest(1,0)
+TwrSwitchCatch: runTest_exception_rows=[(20, 69, 72, 'Class java/lang/IllegalArgumentException'), (20, 88, 95, 'Class java/lang/Throwable'), (97, 101, 104, 'Class java/lang/Throwable'), (11, 116, 119, 'Class java/lang/Exception')]
+TwrSwitchCatch: verifier_valid=true; verifier_runtime=runTest(1,0)
