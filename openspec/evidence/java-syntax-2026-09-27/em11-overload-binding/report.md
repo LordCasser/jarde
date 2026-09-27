@@ -41,4 +41,4 @@ python3 openspec/evidence/java-syntax-2026-09-27/em11-overload-binding/replay.py
 
 ## 缺口与拆分
 
-为 `ArrayList → List` 的已证明上溯及同类/继承重载目标建了窄 [OpenSpec](../../../changes/preserve-proved-reference-overload-binding/proposal.md)，仅规划调用正文和负例；没有实现代码。`generic_call_binding_unproved` 的泛型声明投影、合成访问器的 Smali 路径，以及固定 JADX 的 NYI 精确写法均是独立边界，本变更不混入。库存总表保持原样。
+为 `ArrayList → List` 的已证明上溯及同类/继承重载目标建了窄 [OpenSpec](../../../changes/preserve-proved-reference-overload-binding/proposal.md)。本页及 [`observed/`](observed/) 保留实施前审计；随后实现的完整源码复验记录在 [verification.md](verification.md) 和 [`observed-after/`](observed-after/) 中。`generic_call_binding_unproved` 的泛型声明投影、合成访问器的 Smali 路径，以及固定 JADX 的 NYI 精确写法均是独立边界。库存总表保持原样。

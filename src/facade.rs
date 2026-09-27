@@ -13552,6 +13552,439 @@ fn interface_super_calls_presented(
     }
 }
 
+#[derive(Clone)]
+struct ReferenceClassHeader {
+    flags: u16,
+    super_name: Option<Vec<u8>>,
+    interfaces: Vec<Vec<u8>>,
+    methods: Vec<MemberHeader>,
+}
+
+impl ReferenceClassHeader {
+    fn from_facts(facts: &ClassMemberFacts) -> Option<Self> {
+        if facts.stopped_at.is_some()
+            || facts.method_count != u64::try_from(facts.methods.len()).ok()?
+        {
+            return None;
+        }
+        Some(Self {
+            flags: facts.access_flags,
+            super_name: facts.super_class.as_ref().map(|name| name.raw().0.clone()),
+            interfaces: facts
+                .interfaces
+                .iter()
+                .map(|name| name.raw().0.clone())
+                .collect(),
+            methods: facts.methods.clone(),
+        })
+    }
+
+    fn from_ir(ir: &jarde_jvm::method_ir::MethodIr) -> Option<Self> {
+        Some(Self {
+            flags: ir.declaration()?.class_access_flags(),
+            super_name: ir.direct_super_class().map(|name| name.0.clone()),
+            interfaces: ir
+                .direct_interfaces()
+                .iter()
+                .map(|name| name.raw().0.clone())
+                .collect(),
+            methods: ir.class_methods()?.to_vec(),
+        })
+    }
+}
+
+/// A single reference parameter is the only overload form proved in this slice. Its exact
+/// descriptor leaves no varargs or boxing phase to interpret at the call site.
+fn single_reference_parameter(descriptor: &[u8]) -> Option<&[u8]> {
+    let tail = descriptor.strip_prefix(b"(L")?;
+    let end = tail.iter().position(|byte| *byte == b';')?;
+    (tail.get(end + 1) == Some(&b')') && tail.len() > end + 2).then_some(&tail[..end])
+}
+
+fn selected_reference_header(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    owner: &[u8],
+    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<Option<ReferenceClassHeader>> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+    if let Some(cached) = cache.get(owner) {
+        return Ok(cached.clone());
+    }
+    let current = ir
+        .declaration()
+        .map(|declaration| declaration.class_name().0.as_slice());
+    let selected = if current == Some(owner) {
+        ReferenceClassHeader::from_ir(ir)
+    } else {
+        resolve_class_source_dependency_read_raw(
+            content,
+            &request.environment,
+            Some(&request.method),
+            owner,
+            execution,
+            budget,
+        )?
+        .and_then(|(_, read)| ReferenceClassHeader::from_facts(&read.facts))
+    };
+    cache.insert(owner.to_vec(), selected.clone());
+    Ok(selected)
+}
+
+/// The Java runtime fact is usable only when the selected order proves that it supplies no
+/// competing definition. A failed or ambiguous read is not evidence of absence.
+fn platform_class_unprovided(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    owner: &[u8],
+    budget: &mut Budget,
+) -> Result<bool> {
+    let resolution = jarde_jvm::resolve_symbol(
+        content,
+        &ResolutionRequest {
+            environment: request.environment.clone(),
+            target: jarde_reader::model::SymbolRef::Class {
+                owner: JvmBytes(owner.to_vec()),
+            },
+            use_kind: ReferenceUse::ClassReference,
+            caller: jarde_jvm::environment::CallerContext {
+                loader: request.environment.runtime.load_domain.loader.clone(),
+                enclosing: Some(request.method.clone()),
+            },
+            dispatch: None,
+        },
+        budget,
+    )?;
+    Ok(resolution.state == Some(ResolutionState::Missing)
+        && matches!(resolution.execution, ExecutionReport::Complete { .. })
+        && resolution.environment_problems.is_empty()
+        && resolution.unresolved_dependencies.is_empty()
+        && resolution.candidates.is_empty())
+}
+
+fn proved_reference_widening(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    source: &[u8],
+    target: &[u8],
+    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<bool> {
+    if source == target {
+        return Ok(false);
+    }
+    let runtime = &request.environment.runtime;
+    if source == b"java/util/ArrayList"
+        && target == b"java/util/List"
+        && runtime.profile.java_release == 8
+        && runtime.load_domain.delegation == DelegationPolicy::ParentFirst
+        && runtime.load_domain.module_mode == ModuleMode::ClassPath
+        && runtime.load_domain.external_override == RuntimeUncertainty::None
+        && runtime.load_domain.runtime_transformation == RuntimeUncertainty::None
+    {
+        // Java SE 8 declares ArrayList<E> implements List<E>:
+        // https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html
+        // Do not apply the platform contract when this environment selects, ambiguously
+        // provides, or cannot finish reading either definition.
+        return Ok(platform_class_unprovided(content, request, source, budget)?
+            && platform_class_unprovided(content, request, target, budget)?);
+    }
+
+    let mut pending = vec![(source.to_vec(), 0_u64)];
+    let mut visited = std::collections::BTreeSet::new();
+    while let Some((name, depth)) = pending.pop() {
+        budget.poll()?;
+        budget.observe_dependency_depth(depth)?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if !visited.insert(name.clone()) {
+            continue;
+        }
+        let Some(header) =
+            selected_reference_header(content, request, ir, &name, cache, execution, budget)?
+        else {
+            continue;
+        };
+        if name == target {
+            return Ok(true);
+        }
+        if let Some(parent) = header.super_name {
+            if parent != b"java/lang/Object" {
+                pending.push((parent, depth.saturating_add(1)));
+            }
+        }
+        pending.extend(
+            header
+                .interfaces
+                .into_iter()
+                .map(|name| (name, depth.saturating_add(1))),
+        );
+    }
+    Ok(false)
+}
+
+/// A cast to the exact declared one-argument type chooses that declaration in Java 8's strict
+/// invocation phase. Require one visible declaration on a complete selected class chain; a
+/// same-parameter bridge, an unseen parent or an interface graph remains unproved.
+fn exact_reference_overload_count(
+    methods: &[MemberHeader],
+    name: &[u8],
+    descriptor: &[u8],
+    target: &[u8],
+    is_static: bool,
+    budget: &mut Budget,
+) -> Result<Option<u32>> {
+    let mut exact = 0_u32;
+    for method in methods {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if method.name.raw().0 != name {
+            continue;
+        }
+        let flags = method.access_flags;
+        if flags & (0x0040 | 0x0080 | 0x1000) != 0 {
+            return Ok(None);
+        }
+        if single_reference_parameter(&method.descriptor.raw().0) == Some(target) {
+            if method.descriptor.raw().0 != descriptor
+                || flags & 0x0001 == 0
+                || (flags & 0x0008 != 0) != is_static
+            {
+                return Ok(None);
+            }
+            exact += 1;
+        }
+    }
+    Ok(Some(exact))
+}
+
+#[cfg(test)]
+mod reference_overload_tests {
+    use super::*;
+
+    fn jvm_string(text: &str) -> JvmString {
+        serde_json::from_value(serde_json::json!({
+            "raw": text.as_bytes(),
+            "utf16": text.encode_utf16().collect::<Vec<_>>(),
+            "escaped": text,
+        }))
+        .unwrap()
+    }
+
+    fn method(descriptor: &str, flags: u16) -> MemberHeader {
+        MemberHeader {
+            name: jvm_string("take"),
+            descriptor: jvm_string(descriptor),
+            access_flags: flags,
+            attributes: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn exact_target_refuses_same_formal_ambiguity_and_bridge() {
+        let descriptor = b"(Lpkg/Base;)Ljava/lang/String;";
+        let target = b"pkg/Base";
+        let mut budget = task_budget(&[]).unwrap();
+        let count = |methods: &[MemberHeader], budget: &mut Budget| {
+            exact_reference_overload_count(methods, b"take", descriptor, target, true, budget)
+                .unwrap()
+        };
+        let original = method("(Lpkg/Base;)Ljava/lang/String;", 0x0009);
+        assert_eq!(count(std::slice::from_ref(&original), &mut budget), Some(1));
+        assert_eq!(
+            count(&[original.clone(), original.clone()], &mut budget),
+            Some(2)
+        );
+        assert_eq!(
+            count(
+                &[
+                    original.clone(),
+                    method("(Lpkg/Base;)Ljava/lang/Object;", 0x0009)
+                ],
+                &mut budget
+            ),
+            None
+        );
+        assert_eq!(
+            count(
+                &[original, method("(Lpkg/Base;)Ljava/lang/String;", 0x0049)],
+                &mut budget
+            ),
+            None
+        );
+    }
+}
+
+fn unique_reference_overload_target(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    owner: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    target: &[u8],
+    is_static: bool,
+    cache: &mut std::collections::BTreeMap<Vec<u8>, Option<ReferenceClassHeader>>,
+    execution: &mut ExecutionReport,
+    budget: &mut Budget,
+) -> Result<bool> {
+    let mut current = owner.to_vec();
+    let mut visited = std::collections::BTreeSet::new();
+    let mut exact = 0_u32;
+    let mut depth = 0_u64;
+    loop {
+        budget.poll()?;
+        budget.observe_dependency_depth(depth)?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if !visited.insert(current.clone()) || current == b"java/lang/Object" {
+            return Ok(false);
+        }
+        let Some(header) =
+            selected_reference_header(content, request, ir, &current, cache, execution, budget)?
+        else {
+            return Ok(false);
+        };
+        if header.flags & ACC_INTERFACE != 0 || !header.interfaces.is_empty() {
+            return Ok(false);
+        }
+        let Some(count) = exact_reference_overload_count(
+            &header.methods,
+            name,
+            descriptor,
+            target,
+            is_static,
+            budget,
+        )?
+        else {
+            return Ok(false);
+        };
+        exact += count;
+        match header.super_name {
+            Some(parent) if parent == b"java/lang/Object" => return Ok(exact == 1),
+            Some(parent) => {
+                current = parent;
+                depth = depth.saturating_add(1);
+            }
+            None => return Ok(false),
+        }
+    }
+}
+
+fn prove_reference_overload_calls(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    budget: &mut Budget,
+) -> Result<Vec<jarde_java::report::ProvedReferenceOverloadCall>> {
+    use jarde_reader::classfile::{cp_class_name, cp_entry};
+    let Some(code) = ir.code() else {
+        return Ok(Vec::new());
+    };
+    let mut sources = std::collections::BTreeSet::new();
+    for instruction in &code.instructions {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if instruction.opcode == 0xbb
+            && let Some(index) = instruction.constant_pool_index
+            && let Ok(name) = cp_class_name(ir.constant_pool(), index)
+        {
+            sources.insert(name.0);
+        }
+    }
+    if sources.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut cache = std::collections::BTreeMap::new();
+    let mut execution = ExecutionReport::Complete {
+        usage: budget.usage(),
+    };
+    let mut proved = Vec::new();
+    for instruction in &code.instructions {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let is_static = instruction.opcode == 0xb8;
+        if !is_static && instruction.opcode != 0xb6 {
+            continue;
+        }
+        let Some(index) = instruction.constant_pool_index else {
+            continue;
+        };
+        let Ok(entry) = cp_entry(ir.constant_pool(), index) else {
+            continue;
+        };
+        let CpEntryKind::MethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        } = &entry.kind
+        else {
+            continue;
+        };
+        let Some(target) = single_reference_parameter(&descriptor.0) else {
+            continue;
+        };
+        if !unique_reference_overload_target(
+            content,
+            request,
+            ir,
+            &owner.0,
+            &name.0,
+            &descriptor.0,
+            target,
+            is_static,
+            &mut cache,
+            &mut execution,
+            budget,
+        )? {
+            continue;
+        }
+        for source in &sources {
+            budget.poll()?;
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if proved_reference_widening(
+                content,
+                request,
+                ir,
+                source,
+                target,
+                &mut cache,
+                &mut execution,
+                budget,
+            )? {
+                let (Ok(source), Ok(target)) =
+                    (std::str::from_utf8(source), std::str::from_utf8(target))
+                else {
+                    continue;
+                };
+                proved.push(jarde_java::report::ProvedReferenceOverloadCall {
+                    bci: instruction.bci,
+                    source: source.replace('/', "."),
+                    target: target.replace('/', "."),
+                });
+            }
+        }
+    }
+    Ok(proved)
+}
+
+fn reference_overload_calls_presented(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    budget: &mut Budget,
+) -> Result<Vec<jarde_java::report::ProvedReferenceOverloadCall>> {
+    match prove_reference_overload_calls(content, request, ir, budget) {
+        Ok(proved) => Ok(proved),
+        Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Ok(Vec::new()),
+        Err(error) => Err(error),
+    }
+}
+
 fn unique_source_default(
     root: &[u8],
     name: &[u8],
@@ -24114,6 +24547,11 @@ fn recovery_from_with_class_candidates(
     };
     let interface_super_calls =
         interface_super_calls_presented(content, request, analyzed.ir(), budget)?;
+    let reference_overload_calls = if assembly_context.is_some() {
+        reference_overload_calls_presented(content, request, analyzed.ir(), budget)?
+    } else {
+        Vec::new()
+    };
     // What the artifact this run is about to commit is *of*, as this entry's own trusted read states
     // it (D3'): the physical identity the run was bound to, the member record the selection above
     // established and the environment the run was validated under. This is the entry's statement and
@@ -24128,7 +24566,8 @@ fn recovery_from_with_class_candidates(
         .with_evidence(evidence.clone())
         .with_subject(subject)
         .with_member_inner_targets(&member_inner_targets)
-        .with_interface_super_calls(&interface_super_calls);
+        .with_interface_super_calls(&interface_super_calls)
+        .with_reference_overload_calls(&reference_overload_calls);
     let request = if let Some(target) = static_member_target {
         request.with_static_member_target(target)
     } else {

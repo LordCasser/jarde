@@ -120,6 +120,9 @@ pub struct RecoveryRequest<'a> {
     /// by the facade's selected-definition reads. Direct recovery has no such environment and
     /// therefore leaves interface-qualified `super` calls refused.
     pub interface_super_calls: &'a [ProvedInterfaceSuperCall],
+    /// Exact invocation sites whose source reference widening and target declaration were proved
+    /// against the selected class-source environment. A method-only request has none.
+    pub reference_overload_calls: &'a [ProvedReferenceOverloadCall],
     /// Exact captured-outer reads proved by the selected class-source family assembly.
     /// A direct method request has no lexical family and supplies none.
     pub captured_outer_reads: &'a [ProvedCapturedOuterRead],
@@ -230,6 +233,15 @@ pub struct ProvedInterfaceSuperCall {
     pub owner: String,
     pub name: String,
     pub descriptor: String,
+}
+
+/// One selected invocation's safe upcast and unique source method binding.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProvedReferenceOverloadCall {
+    pub bci: u32,
+    pub source: String,
+    pub target: String,
 }
 
 /// One selected definition in a source type path proved by the class-source adapter.
@@ -2151,6 +2163,7 @@ impl<'a> RecoveryRequest<'a> {
             member_inner_targets: &[],
             static_member_target: None,
             interface_super_calls: &[],
+            reference_overload_calls: &[],
             captured_outer_reads: &[],
             outer_super_calls: &[],
             evidence: RecoveryEvidenceRequest::essential(),
@@ -2180,6 +2193,15 @@ impl<'a> RecoveryRequest<'a> {
     /// Supply only interface-special targets proved against this request's selected environment.
     pub fn with_interface_super_calls(mut self, calls: &'a [ProvedInterfaceSuperCall]) -> Self {
         self.interface_super_calls = calls;
+        self
+    }
+
+    /// Supply only invocation sites proved against the selected source hierarchy.
+    pub fn with_reference_overload_calls(
+        mut self,
+        calls: &'a [ProvedReferenceOverloadCall],
+    ) -> Self {
+        self.reference_overload_calls = calls;
         self
     }
 
@@ -3821,6 +3843,7 @@ fn recover_inner(
             members: request.members,
             member_inner_targets: request.member_inner_targets,
             interface_super_calls: request.interface_super_calls,
+            reference_overload_calls: request.reference_overload_calls,
             captured_outer_reads: request.captured_outer_reads,
             outer_super_calls: request.outer_super_calls,
             physical_method: request.ir.declaration().map(|member| member.identity()),

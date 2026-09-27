@@ -1,0 +1,192 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_source_pins": {
+    "test/java/jadx/tests/integration/invoke/TestCastInOverloadedInvoke.java": "ce275a64584f006b8e6ee9e516cee134fe1d85a650880f7638cbade6bb4ebc0c",
+    "test/java/jadx/tests/integration/invoke/TestHierarchyOverloadedInvoke.java": "3d878526b62265fd24ffb705bcb12e95c4d54fdc3eb89c82b8b4545569a35cde",
+    "test/java/jadx/tests/integration/invoke/TestOverloadedInvoke.java": "a17d21222c3cdb07481e5516e486de9d255215767dc82671bb9dd655703293f9",
+    "test/java/jadx/tests/integration/invoke/TestCastInOverloadedAccessor.java": "a673bdc37513ddd88326326642ac663c2c8c46b4ef98c2c5fa109a140c7eb716",
+    "main/java/jadx/core/dex/visitors/MethodInvokeVisitor.java": "60ee5bd34ad003d48c85bc622f7ac160f4a197acb894999140fcedf1914129ff",
+    "main/java/jadx/core/codegen/InsnGen.java": "c6308a71dd870d7f13bb8ac7efdb58191966cd6a5254aa11e443c95af6bafed6"
+  },
+  "jarde_cli_sha256": "8b14f5a1cf7580d41b5f5f5e2ea9ad47d63df1542526ffaf8c3b18dbe12f9c97",
+  "input_source_sha256": {
+    "OverloadCalls.java": "70e770c0ad6d8d7603424aad2f3ade770ca9a9dc088b20c743bd1d72c111f039",
+    "HBase.java": "7afd52333324334eab3fd0081c5886ec70e5719c41dea45fa979835ff5313c61",
+    "HMid.java": "7ccca56a237ba487007d840396175e1965298c6df5d38f0dc0b14b46c19e8242",
+    "HLeaf.java": "7e2d7510ea267a477d846a0462958e0000daf144e9c035c47ba7439eaac0f865",
+    "HierarchyCalls.java": "645cb3ac7f814c00df0843f9062640b3945a10297edd27a852593c4a49b71036",
+    "InputHierarchyCalls.java": "7ed377093f91aa83f12140314388fec0d98bff823ea3a61674bf80766036860d",
+    "Runner.java": "7e4ef28ad861e965b445aca8810e277c186417b45573cd0ccec8738377347d79"
+  },
+  "original_class_sha256": {
+    "OverloadCalls": "64baa8dcfdf1bd01ee1d6cb077c7fed7362a0c374d6f195c45fd1c6393c2a92f",
+    "HBase": "d8cd1a76c2c8735bd6ab570ec4bf548a41897153cd3889324b02099f7f0dd509",
+    "HMid": "0e3fe0ddb9374f632c0be7a1d34091ad53ee5bdd69b5ba957fa23fe6373b9737",
+    "HLeaf": "a022590ccfe8189cb732762f193aac7cf67730e98b0f202f3b351fdeee5e67c7",
+    "HierarchyCalls": "2f8553ab161dd522ec4e25b4edead504c0e78fb2626476104317c54c6c4b0794",
+    "InputHierarchyCalls": "bb50ace457448dfbc1dd2a42a1a8a2413250b097d03e5bf5c235230cccb925b4",
+    "Runner": "bd0fed29f45a505a3ac6851371f61b28119e14a94a811d0ac807a29995fa08d2"
+  },
+  "generated_source_sha256": {
+    "jadx": {
+      "OverloadCalls.java": "be0c5c1f6da66923a5b973ee5c2355c7b7412683d7923ec9ad183336a086603d",
+      "HBase.java": "b0cfa0cc96e1ac79649b3d515ff45692b6b142c68d5ddd8cf60fc4432033a9df",
+      "HMid.java": "a1b409063bf833eb85ca40c2d9999d33bd374c917e81814cc1e74b006e948799",
+      "HLeaf.java": "4f834a0db7603dba8784718e6250d72a66bbc9c9a251f70b5fe05682c956fe9c",
+      "HierarchyCalls.java": "b3911a6595c08af7fb5f738879fa5293a013e6797edd25f7d7a9dcbc516a8d68",
+      "InputHierarchyCalls.java": "0344017a1732689c7d93aff6635e4ead9399ce23e32139c95757772f8a6fe33f",
+      "Runner.java": "5c55f9316570f0e75b5cc21a5970443c5a76c18e4eb261554acc68e0ee0e63c0"
+    },
+    "jarde": {
+      "OverloadCalls.java": "e2b53b46e75e7a8873c6faff01efb95bd4d98902a9bc5abd48f4c55bfb0d73a5",
+      "HBase.java": "e5ea445b0cd221c6b696e3712eff121fc1f3a93207c1e14db39e100b3589b9b5",
+      "HMid.java": "69c6c64ef176a5f47f4568b65eb7c8c4a84897a0852aa5f0dc1002caf9daa370",
+      "HLeaf.java": "2fa1caa7381cf49e36b1e66c0eaf0ef511ed5e870e1b0577c119222e46b788b0",
+      "HierarchyCalls.java": "ffacbc51fad29d91ad3c7de4865b401ae4790ab50af36df80a24ad4632397181",
+      "InputHierarchyCalls.java": "a7e8797d1d12d20d97df1d952f0c3da5d40baad2c41226ca1a5a6780cdcd4b35",
+      "Runner.java": "9cd3d6615df3a1ce34793e4ef40e9e41b523a321252deac9124111f0bb84c8cd"
+    }
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "ArrayList/List/String/List/ArrayList/String/Object[][]/int[][]\nArrayList/List/String/List/ArrayList/none/Object[][]/int[][]\nleaf-ArrayList/mid-List/base-String/mid-List/leaf-ArrayList/base-String/mid-List\nmid\ncreated=2\n",
+    "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "ArrayList/List/String/List/ArrayList/String/Object[][]/int[][]\nArrayList/List/String/List/ArrayList/none/Object[][]/int[][]\nleaf-ArrayList/mid-List/base-String/mid-List/leaf-ArrayList/base-String/mid-List\nmid\ncreated=2\n",
+    "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "ArrayList/List/String/List/ArrayList/String/Object[][]/int[][]\nArrayList/List/String/List/ArrayList/none/Object[][]/int[][]\nleaf-ArrayList/mid-List/base-String/mid-List/leaf-ArrayList/base-String/mid-List\nmid\ncreated=2\n",
+    "stdout_sha256": "d7546a995eff5923c4ebd8ef430d17106f92583b401311674d95f465bc835333"
+  },
+  "jarde_class_source": {
+    "OverloadCalls": {
+      "exit": 0,
+      "stderr_sha256": "1972931ac67e0bf3e53483bf94431560c12f3eda2c21d529115ec2f1690d311a"
+    },
+    "HBase": {
+      "exit": 0,
+      "stderr_sha256": "a2fda079e8337a998880f61b6bf89d09f1c0265ece51f639ed03dbc3370516c1"
+    },
+    "HMid": {
+      "exit": 0,
+      "stderr_sha256": "0c4c434089cf6c4dc2310c24c7e607640df179002f26fb59857d70d344ff3332"
+    },
+    "HLeaf": {
+      "exit": 0,
+      "stderr_sha256": "1ee499ee7d0d2b37c4151ef7ba4668c09183e3d2a54279ba5d405a9b4ba9c9b7"
+    },
+    "HierarchyCalls": {
+      "exit": 0,
+      "stderr_sha256": "7bab29697cbd90e7adaf55abdee17d20f3763046403ee26d8ed14fe3c517f643"
+    },
+    "InputHierarchyCalls": {
+      "exit": 0,
+      "stderr_sha256": "c74fe802a453be4b0940576e56496570a00e875174afe14f7d1747ef9c24ec7f"
+    },
+    "Runner": {
+      "exit": 0,
+      "stderr_sha256": "873b3d5301d17e921701355e20884c577619f80a0040f21ffda8dc38dba6b478"
+    }
+  },
+  "cast_source_anchors": {
+    "OverloadCalls": {
+      "producer_bci": 15,
+      "derived_bcis": [
+        11,
+        14,
+        18
+      ]
+    },
+    "HierarchyCalls": {
+      "producer_bci": 39,
+      "derived_bcis": [
+        35,
+        38,
+        42
+      ]
+    },
+    "InputHierarchyCalls": {
+      "producer_bci": 4,
+      "derived_bcis": [
+        0,
+        3,
+        7
+      ]
+    }
+  },
+  "simple_input_source_sha256": {
+    "NullArrayCalls.java": "98afdf49b3899576b99153f91906747efa86fad43e43894fdecb376967b54ba6",
+    "Runner.java": "67e5780416cbd3be9efde1e7b5010ddf1d113195f633a229318df862931ce3ff"
+  },
+  "simple_original_class_sha256": {
+    "NullArrayCalls": "557af53c1207f8d65a2d7d4152f0831fbf8dfd58b6d25bfefcf89ec71bef72fa",
+    "Runner": "633bfc6e4b0043043834b5267c2e997bfd9a270b9ffa3f98ef841afacb66baf5"
+  },
+  "simple_generated_source_sha256": {
+    "jadx": {
+      "NullArrayCalls.java": "301484c522c4fc45d0148d6d6db5edf35314bb132c21b950edf97638219e791e",
+      "Runner.java": "dca74bb99539f562f12d01d1b44129d329c654de2ac9b96777bdb0e7dd2c09d3"
+    },
+    "jarde": {
+      "NullArrayCalls.java": "14bc122f6e63a1c7059bfb2e000e8ce7531337fe412884dfd8cf011f05e4a92d",
+      "Runner.java": "0a21abe3d07d2e248e9fad3d6eaa07abb1bc7dd086c55ea6c452c39107b0dd62"
+    }
+  },
+  "simple_original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "String/List/ArrayList/Object[][]/int[][]\n",
+    "stdout_sha256": "09c80e4ab488735411bc929003f1442d277a93a23f030215bf2f6c88e9b8646c"
+  },
+  "simple_jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "String/List/ArrayList/Object[][]/int[][]\n",
+    "stdout_sha256": "09c80e4ab488735411bc929003f1442d277a93a23f030215bf2f6c88e9b8646c"
+  },
+  "simple_jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "String/List/ArrayList/Object[][]/int[][]\n",
+    "stdout_sha256": "09c80e4ab488735411bc929003f1442d277a93a23f030215bf2f6c88e9b8646c"
+  },
+  "negative_input_source_sha256": {
+    "MissingBase.java": "7a9842313361cf72874847dcbc1151189c210dc5f8a2bd698770ef9a0f305bf0",
+    "MissingChild.java": "5aa04daf704b0507961ad2fa4813f8b34846fe82274a7df31740ae59216940de",
+    "MissingCalls.java": "e8d3d0a459eb5ceb053e00cc810c26c35106ec9fd12b18ee46badf1b13d2eea5",
+    "MissingIface.java": "372eced1092d1357d1413de088362566aa3d87bc5ed05aec30c112b470f6af70",
+    "InterfaceChild.java": "0741a389143f6b1530d0e098c3e1aae30dfff8f53c4f75cbc20451f82d2526a1",
+    "MissingInterfaceCalls.java": "6301458bc852cc1f1aeb1b27ec73686f2f1dcab685620335bc6b2b3d6b66dd57",
+    "Runner.java": "28ea10525b63fbc97336d1a45029724aa9f8e9812ef4f2b82bf054f8790e3bbb"
+  },
+  "negative_original_class_sha256": {
+    "MissingBase": "d4857d740c42cf02ee91e77fb2ae1b0f1c96bba8113533e3fe6829f6d20f4485",
+    "MissingChild": "f80c0eba05647ffe98732381b7a6ed47a042393a0f591be11a31afedffb75185",
+    "MissingCalls": "cf259fcb92536b01fbd2d2aaf17670d5468c96327dd9e9ef9b7f345a472f9585",
+    "MissingIface": "175e8eb7d65fc4412294eae28984db77218dde8f466bf23bc65cb0a9529eb798",
+    "InterfaceChild": "2841173f2df78134b7d3551494df8cbaa8e4fe244d5fbcf9016006702ce296da",
+    "MissingInterfaceCalls": "23077ae6c93e693944fa666031dbdec4137b225225339a3bc4708da03b12e4ef",
+    "Runner": "f6ff1d63c06657a494e988d19016e6f47606692923a30bb6aab00c59da3ba51e"
+  },
+  "negative_original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "base\ninterface\n",
+    "stdout_sha256": "158338f13b50ddf26803a16d70055dd428aec0c8a9293b5f3f2e73e71a70ea41"
+  },
+  "missing_hierarchy_jarde_source_sha256": {
+    "MissingCalls.java": "b24d3518f61a6e00062f3cd3c9eaa11cc411fc791ad94293d66cc6d4926ffca5",
+    "MissingInterfaceCalls.java": "32c4fb7ed4b48ad95ad88062b56838f427f04c60d50f0839f1349edcb1906bc2"
+  },
+  "missing_hierarchy_jarde_exit": {
+    "MissingCalls": 0,
+    "MissingInterfaceCalls": 0
+  }
+}

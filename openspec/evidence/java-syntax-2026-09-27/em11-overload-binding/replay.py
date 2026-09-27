@@ -12,7 +12,7 @@ import tempfile
 
 HERE = Path(__file__).resolve().parent
 INPUT = HERE / "input" / "em11"
-NAMES = ("OverloadCalls", "HBase", "HMid", "HLeaf", "HierarchyCalls", "Runner")
+NAMES = ("OverloadCalls", "HBase", "HMid", "HLeaf", "HierarchyCalls", "InputHierarchyCalls", "Runner")
 JADX_REV = "2fb1b16386941660fda07e9017285aec40fcb37f"
 JADX_PINS = {
     "test/java/jadx/tests/integration/invoke/TestCastInOverloadedInvoke.java": "ce275a64584f006b8e6ee9e516cee134fe1d85a650880f7638cbade6bb4ebc0c",
@@ -26,6 +26,8 @@ EXPECTED = (
     "ArrayList/List/String/List/ArrayList/String/Object[][]/int[][]\n"
     "ArrayList/List/String/List/ArrayList/none/Object[][]/int[][]\n"
     "leaf-ArrayList/mid-List/base-String/mid-List/leaf-ArrayList/base-String/mid-List\n"
+    "mid\n"
+    "created=2\n"
 )
 
 
@@ -109,9 +111,34 @@ def main():
                                   "stderr_sha256": hashlib.sha256(jarde_result.stderr.encode()).hexdigest()}
         jadx = compile_and_run("jadx", jadx_sources, temporary, output)
         jarde = compile_and_run("jarde", jarde_sources, temporary, output)
-        hierarchy_jarde = compile_and_run("hierarchy-jarde", jarde_sources[1:5],
-                                          temporary, output)
-
+        source_anchors = {}
+        for name, marker, cast, call_bci in (
+            ("OverloadCalls", "call((java.util.List) new java.util.ArrayList())",
+             "(java.util.List) new java.util.ArrayList()", 18),
+            ("HierarchyCalls", "call((java.util.List) new java.util.ArrayList())",
+             "(java.util.List) new java.util.ArrayList()", 42),
+            ("InputHierarchyCalls", "take((em11.HMid) new em11.HLeaf())",
+             "(em11.HMid) new em11.HLeaf()", 7),
+        ):
+            source = output / "source" / "jarde" / "em11" / f"{name}.java"
+            if marker not in source.read_text():
+                raise RuntimeError(f"target overload cast missing from {name}")
+            evidence = checked(args.jarde, "class-source", "--input", jar,
+                               "--class", f"em11.{name}", "--policy", "plain-jar",
+                               "--release", "8", "--format", "json", "--evidence", "source_map")
+            report = json.loads(evidence.stdout)
+            body = next(method["outcome"]["report"] for method in report["methods"]
+                        if method["item"]["name"]["escaped"] == "run")
+            anchors = [segment["origin"] for segment in body["source_map"]["segments"]
+                       if body["text"][segment["start"]:segment["end"]] == cast]
+            if not any(origin.get("primary") and
+                       call_bci in [anchor["bci"] for anchor in origin["derived"]]
+                       for origin in anchors):
+                raise RuntimeError(f"cast source map lost its producer or call BCI: {name}")
+            source_anchors[name] = {
+                "producer_bci": anchors[0]["primary"]["bci"],
+                "derived_bcis": [anchor["bci"] for anchor in anchors[0]["derived"]],
+            }
         simple_names = ("NullArrayCalls", "Runner")
         simple_sources = [HERE / "input" / "em11simple" / f"{name}.java" for name in simple_names]
         simple_original = compile_and_run("simple-original", simple_sources, temporary, output,
@@ -147,8 +174,42 @@ def main():
         simple_jarde = compile_and_run("simple-jarde", simple_jarde_sources, temporary, output,
                                        "em11simple.Runner")
 
-    if jadx.get("stdout") != EXPECTED or jadx["javac_exit"]:
-        raise RuntimeError("fixed JADX full source failed Java 8 comparison")
+        negative_names = ("MissingBase", "MissingChild", "MissingCalls", "MissingIface",
+                          "InterfaceChild", "MissingInterfaceCalls", "Runner")
+        negative_sources = [HERE / "input" / "em11negative" / f"{name}.java"
+                            for name in negative_names]
+        negative_original = compile_and_run("negative-original", negative_sources,
+                                            temporary, output, "em11negative.Runner")
+        if negative_original.get("stdout") != "base\ninterface\n":
+            raise RuntimeError("the complete negative input did not retain its original binding")
+        negative_class_hashes = {
+            name: digest(temporary / "negative-original-classes" / "em11negative" / f"{name}.class")
+            for name in negative_names
+        }
+        missing_jar = temporary / "missing-base.jar"
+        checked("jar", "cf", missing_jar,
+                "-C", temporary / "negative-original-classes", "em11negative/MissingChild.class",
+                "-C", temporary / "negative-original-classes", "em11negative/MissingCalls.class",
+                "-C", temporary / "negative-original-classes", "em11negative/InterfaceChild.class",
+                "-C", temporary / "negative-original-classes", "em11negative/MissingInterfaceCalls.class")
+        missing_results = {}
+        missing_sources = []
+        for name in ("MissingCalls", "MissingInterfaceCalls"):
+            missing_result = run(args.jarde, "class-source", "--input", missing_jar,
+                                 "--class", f"em11negative.{name}", "--policy", "plain-jar",
+                                 "--release", "8", "--format", "text")
+            missing_source = output / "source" / "missing-hierarchy-jarde" / "em11negative" / f"{name}.java"
+            missing_source.parent.mkdir(parents=True, exist_ok=True)
+            missing_source.write_text(missing_result.stdout)
+            if (missing_result.returncode != 0
+                    or "invocation at BCI 7" not in missing_result.stdout
+                    or "no safe reference conversion evidence" not in missing_result.stdout):
+                raise RuntimeError(f"missing selected hierarchy was not refused: {name}")
+            missing_results[name] = missing_result.returncode
+            missing_sources.append(missing_source)
+
+    if any(item.get("stdout") != EXPECTED for item in (original, jadx, jarde)):
+        raise RuntimeError("full-source overload binding differs across the three compilers")
     expected_simple = "String/List/ArrayList/Object[][]/int[][]\n"
     if any(item.get("stdout") != expected_simple for item in
            (simple_original, simple_jadx, simple_jarde)):
@@ -166,8 +227,8 @@ def main():
         "original": original,
         "jadx": jadx,
         "jarde": jarde,
-        "hierarchy_jarde": hierarchy_jarde,
         "jarde_class_source": jarde_status,
+        "cast_source_anchors": source_anchors,
         "simple_input_source_sha256": {source.name: digest(source) for source in simple_sources},
         "simple_original_class_sha256": simple_class_hashes,
         "simple_generated_source_sha256": {
@@ -177,6 +238,12 @@ def main():
         "simple_original": simple_original,
         "simple_jadx": simple_jadx,
         "simple_jarde": simple_jarde,
+        "negative_input_source_sha256": {source.name: digest(source) for source in negative_sources},
+        "negative_original_class_sha256": negative_class_hashes,
+        "negative_original": negative_original,
+        "missing_hierarchy_jarde_source_sha256": {source.name: digest(source)
+                                                   for source in missing_sources},
+        "missing_hierarchy_jarde_exit": missing_results,
     }
     (output / "results.json").write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
     print(f"original={original['javac_exit']}/{original.get('runtime_exit')} "
