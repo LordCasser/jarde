@@ -55,6 +55,9 @@ const BOXED_SAM_PROBE: &[u8] = include_bytes!(
 const EM21_THIS_ALIAS: &[u8] = include_bytes!("fixtures/em21-this-alias/ThisUse.class");
 const EM21_ALIAS_REFUSALS: &[u8] =
     include_bytes!("fixtures/em21-this-alias/ThisAliasRefusals.class");
+const NARROW_EXCEPTION: &[u8] = include_bytes!(
+    "../../../tests/fixtures/p3-conditional-values/narrow-exception/NarrowException.class"
+);
 
 fn limits() -> Limits {
     Limits {
@@ -5451,6 +5454,7 @@ enum ByteConditionalCase {
     OutOfRangeConstant,
     IntLocals,
     ShortTarget,
+    ShortOutOfRangeConstant,
     AmbiguousJoin,
 }
 
@@ -5464,11 +5468,14 @@ fn byte_conditional_invocation_class(case: ByteConditionalCase) -> Vec<u8> {
         ByteConditionalCase::OutOfRangeConstant => "p/ByteConditionalOutOfRange",
         ByteConditionalCase::IntLocals => "p/ByteConditionalIntLocals",
         ByteConditionalCase::ShortTarget => "p/ShortConditional",
+        ByteConditionalCase::ShortOutOfRangeConstant => "p/ShortConditionalOutOfRange",
         ByteConditionalCase::AmbiguousJoin => "p/ByteConditionalAmbiguous",
     });
     let this_class = pool.class(class_name);
     let object_name = pool.utf8("java/lang/Object");
     let object = pool.class(object_name);
+    let beyond_short = matches!(case, ByteConditionalCase::ShortOutOfRangeConstant)
+        .then(|| u8::try_from(pool.push(vec![3, 0, 0, 0x80, 0])).expect("fixture pool fits ldc"));
     let (method_descriptor, max_locals, target_name, target_descriptor, true_arm, false_arm) =
         match case {
             ByteConditionalCase::InRangeConstants => {
@@ -5488,6 +5495,14 @@ fn byte_conditional_invocation_class(case: ByteConditionalCase) -> Vec<u8> {
             ByteConditionalCase::ShortTarget => {
                 ("(Z)S", 1, "acceptShort", "(S)S", vec![0x04], vec![0x03])
             }
+            ByteConditionalCase::ShortOutOfRangeConstant => (
+                "(Z)S",
+                1,
+                "acceptShort",
+                "(S)S",
+                vec![0x04],
+                vec![0x12, beyond_short.expect("constant is pooled")],
+            ),
             ByteConditionalCase::AmbiguousJoin => {
                 ("(ZZ)B", 2, "acceptByte", "(B)B", vec![0x04], vec![0x03])
             }
@@ -5608,6 +5623,216 @@ fn byte_conditional_invocation_narrows_only_proved_in_range_arms() {
 }
 
 #[test]
+fn short_conditional_invocation_preserves_its_physical_target() {
+    let class = byte_conditional_invocation_class(ByteConditionalCase::ShortTarget);
+    let report = present(&class, b"call", b"(Z)S", 1, vec![]);
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert!(
+        report
+            .text
+            .contains("return acceptShort(arg0 ? (short) 1 : (short) 0);"),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+}
+
+/// The Phi carries either a declared field or an integer constant to one physical call.
+fn field_conditional_invocation_class(
+    field_descriptor: &str,
+    target_descriptor: &str,
+    constant: i16,
+    field_first: bool,
+    extra_use: bool,
+) -> (Vec<u8>, u32, u32) {
+    let mut pool = Pool::default();
+    pool.utf8("Code");
+    let class_name = pool.utf8("p/NarrowFieldConditional");
+    let this_class = pool.class(class_name);
+    let object_name = pool.utf8("java/lang/Object");
+    let object = pool.class(object_name);
+    let field = field_ref(&mut pool, this_class, "value", field_descriptor);
+    let target = member_ref(&mut pool, this_class, "accept", target_descriptor);
+    let field_name = pool.utf8("value");
+    let field_type = pool.utf8(field_descriptor);
+    let field_arm = || {
+        let mut bytes = vec![0x2a, 0xb4];
+        bytes.extend_from_slice(&field.to_be_bytes());
+        bytes
+    };
+    let constant_arm = || match constant {
+        0 => vec![0x03],
+        128 => vec![0x11, 0, 128],
+        _ => unreachable!("the fixture uses only its tested constants"),
+    };
+    let mut code = vec![0x2a, 0x1b, 0x99, 0, 0];
+    code.extend_from_slice(&if field_first {
+        field_arm()
+    } else {
+        constant_arm()
+    });
+    let goto = code.len();
+    code.extend_from_slice(&[0xa7, 0, 0]);
+    let false_start = code.len();
+    code.extend_from_slice(&if field_first {
+        constant_arm()
+    } else {
+        field_arm()
+    });
+    let join = code.len();
+    code[3..5].copy_from_slice(&u16::try_from(false_start - 2).unwrap().to_be_bytes());
+    code[goto + 1..goto + 3].copy_from_slice(&u16::try_from(join - goto).unwrap().to_be_bytes());
+    if extra_use {
+        code.extend_from_slice(&[0x59, 0x57]); // dup/pop consumes the Phi before the call
+    }
+    let call_bci = u32::try_from(code.len()).unwrap();
+    code.push(0xb7);
+    code.extend_from_slice(&target.to_be_bytes());
+    code.push(0xac);
+    let call_name = pool.utf8("call");
+    let call_descriptor = pool.utf8("(Z)I");
+    let accept_name = pool.utf8("accept");
+    let accept_descriptor = pool.utf8(target_descriptor);
+    let class = class_bytes(
+        &pool,
+        this_class,
+        object,
+        &[FieldDef {
+            flags: 0x0002,
+            name: field_name,
+            descriptor: field_type,
+        }],
+        &[
+            MemberDef {
+                flags: 0x0001,
+                name: call_name,
+                descriptor: call_descriptor,
+                max_stack: 3,
+                max_locals: 2,
+                code,
+            },
+            MemberDef {
+                flags: 0x0002,
+                name: accept_name,
+                descriptor: accept_descriptor,
+                max_stack: 1,
+                max_locals: 2,
+                code: Code::default().op(0x1b).op(0xac).done(),
+            },
+        ],
+    );
+    let constant_bci = if field_first {
+        u32::try_from(false_start).unwrap()
+    } else {
+        5
+    };
+    (class, constant_bci, call_bci)
+}
+
+#[test]
+fn field_conditional_invocation_requires_matching_field_target_and_range() {
+    for (field, target, constant, field_first, narrow) in [
+        ("B", "(B)I", 0, false, Some("byte")),
+        ("S", "(S)I", 0, true, Some("short")),
+        ("I", "(B)I", 0, false, None),
+        ("B", "(S)I", 0, false, None),
+        ("B", "(B)I", 128, false, None),
+    ] {
+        let (class, constant_bci, call_bci) =
+            field_conditional_invocation_class(field, target, constant, field_first, false);
+        let report = present(&class, b"call", b"(Z)I", 2, vec![]);
+        assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+        if let Some(narrow) = narrow {
+            assert!(
+                report.text.contains(&format!("({narrow}) 0")),
+                "{}",
+                report.text
+            );
+            assert!(!report.text.contains("@bytecode"), "{}", report.text);
+            assert!(
+                report
+                    .source_map
+                    .direct_of_bci(constant_bci)
+                    .iter()
+                    .any(|segment| {
+                        segment
+                            .text(&report.text)
+                            .contains(&format!("({narrow}) 0"))
+                    })
+            );
+            assert!(
+                report
+                    .source_map
+                    .derived_of_bci(call_bci)
+                    .iter()
+                    .any(|segment| {
+                        segment
+                            .text(&report.text)
+                            .contains(&format!("({narrow}) 0"))
+                    })
+            );
+        } else {
+            assert!(report.text.contains("@bytecode"), "{}", report.text);
+            assert!(
+                !report.text.contains("return this.accept"),
+                "{}",
+                report.text
+            );
+        }
+    }
+    let (class, _, _) = field_conditional_invocation_class("B", "(B)I", 0, false, true);
+    let report = present(&class, b"call", b"(Z)I", 2, vec![]);
+    assert!(report.text.contains("@bytecode"), "{}", report.text);
+    assert!(
+        !report.text.contains("return this.accept"),
+        "{}",
+        report.text
+    );
+}
+
+#[test]
+fn field_conditional_invocation_stop_publishes_no_partial_method() {
+    let (class, _, _) = field_conditional_invocation_class("B", "(B)I", 0, false, false);
+    let payload = analyze(&class, b"call", b"(Z)I");
+    let facts = facts_of(&class, b"call", 2, vec![]);
+    let members = members_of(&class);
+    let mut limited_budget = Budget::new(Limits {
+        analysis_steps: 1,
+        ..limits()
+    });
+    let limited = recover_body(&payload, &facts, Some(&members), &mut limited_budget);
+    assert!(!limited.produced(), "{:?}", limited.outcome);
+    assert!(matches!(limited.stop(), Some(StopReason::Budget { .. })));
+    assert!(limited.text.is_empty());
+    assert!(limited.source_map.is_empty());
+
+    let token = jarde_reader::budget::CancellationToken::new();
+    token.cancel();
+    let mut cancelled_budget = Budget::with_cancellation_token(limits(), token);
+    let cancelled = recover_body(&payload, &facts, Some(&members), &mut cancelled_budget);
+    assert!(!cancelled.produced(), "{:?}", cancelled.outcome);
+    assert!(matches!(
+        cancelled.stop(),
+        Some(StopReason::Cancelled { .. })
+    ));
+    assert!(cancelled.text.is_empty());
+    assert!(cancelled.source_map.is_empty());
+}
+
+#[test]
+fn protected_narrow_conditional_does_not_cross_exception_edges() {
+    let report = present(NARROW_EXCEPTION, b"call", b"(Z)I", 2, vec![]);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(report.text.contains("@bytecode"), "{}", report.text);
+    assert!(!report.text.contains("(byte) 0"), "{}", report.text);
+    assert!(
+        !report.text.contains("return this.accept"),
+        "{}",
+        report.text
+    );
+}
+
+#[test]
 fn byte_conditional_invocation_refuses_unproved_arms_targets_and_joins() {
     for (case, descriptor, name) in [
         (
@@ -5621,9 +5846,9 @@ fn byte_conditional_invocation_refuses_unproved_arms_targets_and_joins() {
             "unconverted int local arms",
         ),
         (
-            ByteConditionalCase::ShortTarget,
+            ByteConditionalCase::ShortOutOfRangeConstant,
             "(Z)S",
-            "non-byte descriptor",
+            "out-of-range short arm",
         ),
         (
             ByteConditionalCase::AmbiguousJoin,

@@ -92,6 +92,8 @@ def replay_class(stem, runner_name, expected, args, out, temp):
                     compact=True)
     if recovered.returncode:
         raise RuntimeError("Jarde CLI failed")
+    if "@bytecode" in recovered.stdout:
+        raise RuntimeError(f"Jarde left a bytecode fallback in complete {stem} source")
     jarde_source.write_text(recovered.stdout)
     jadx, _ = compile_run("jadx", jadx_source, runner, f"cf05.{runner_name}", out, temp)
     jarde, _ = compile_run("jarde", jarde_source, runner, f"cf05.{runner_name}", out, temp)
@@ -127,8 +129,7 @@ def main():
         (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         print(json.dumps(summary, indent=2))
         for stem, expected in (("cases", EXPECTED), ("basic", BASIC_EXPECTED)):
-            for side in (("original", "jadx") if stem == "cases" else
-                         ("original", "jadx", "jarde")):
+            for side in ("original", "jadx", "jarde"):
                 result = summary[stem][side]
                 if result.get("javac_exit") != 0 or result.get("runtime_exit") != 0 or result.get("stdout") != expected:
                     raise RuntimeError(f"complete CF-05 {stem} Java 8 replay differs: {side}")
