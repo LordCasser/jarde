@@ -17,4 +17,4 @@
 
 - [x] 4.1 fresh CLI 重编原/JADX/Jarde 三份完整 Java 8 类，`java -Xverify:all` 七路径逐字比较，特别核字段置空及“正文/清理均抛错”最终传播清理异常；所有有效近邻安全拒绝。
 - [x] 4.2 运行既有直线 finally、Test12/Test13、共享 finally、具名 catch、TWR/monitor 回归，`cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、`cargo fmt --all -- --check`、OpenSpec strict 与 diff check；清理专用 Cargo target。
-- [ ] 4.3 root 独立审阅配对 CFG/SSA 证书、Region/Builder 原子性、负例与三方运行，写主线验收记录并更新 CF-16 清单；仅勾销固定 Test14 切片。
+- [x] 4.3 root 独立审阅配对 CFG/SSA 证书、Region/Builder 原子性、负例与三方运行，写主线验收记录并更新 CF-16 清单；仅勾销固定 Test14 切片。
