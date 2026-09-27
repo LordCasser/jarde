@@ -1,0 +1,30 @@
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+<REPO>/openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/outputs/TestEnums2a/g/jarde-source/demo/DoubleOperations.java:6: error: enum constant expected here
+    public static final demo.DoubleOperations TIMES;
+    ^
+<REPO>/openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/outputs/TestEnums2a/g/jarde-source/demo/DoubleOperations.java:52: error: ')' or ',' expected
+    DoubleOperations(java.lang.String x0, int x1, java.lang.String x2, demo.DoubleOperations$1 x3) {
+                                     ^
+<REPO>/openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/outputs/TestEnums2a/g/jarde-source/demo/DoubleOperations.java:52: error: ';' expected
+    DoubleOperations(java.lang.String x0, int x1, java.lang.String x2, demo.DoubleOperations$1 x3) {
+                                                      ^
+<REPO>/openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/outputs/TestEnums2a/g/jarde-source/demo/DoubleOperations.java:52: error: ',', '}', or ';' expected
+    DoubleOperations(java.lang.String x0, int x1, java.lang.String x2, demo.DoubleOperations$1 x3) {
+                                                           ^
+<REPO>/openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/outputs/TestEnums2a/g/jarde-source/demo/DoubleOperations.java:52: error: ',', '}', or ';' expected
+    DoubleOperations(java.lang.String x0, int x1, java.lang.String x2, demo.DoubleOperations$1 x3) {
+                                                                  ^
+<REPO>/openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/outputs/TestEnums2a/g/jarde-source/demo/DoubleOperations.java:52: error: ',', '}', or ';' expected
+    DoubleOperations(java.lang.String x0, int x1, java.lang.String x2, demo.DoubleOperations$1 x3) {
+                                                                           ^
+<REPO>/openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/outputs/TestEnums2a/g/jarde-source/demo/DoubleOperations.java:52: error: ',', '}', or ';' expected
+    DoubleOperations(java.lang.String x0, int x1, java.lang.String x2, demo.DoubleOperations$1 x3) {
+                                                                                              ^
+<REPO>/openspec/evidence/java-syntax-2026-09-27/dt12-anonymous-enum-audit/outputs/TestEnums2a/g/jarde-source/demo/DoubleOperations.java:52: error: ',', '}', or ';' expected
+    DoubleOperations(java.lang.String x0, int x1, java.lang.String x2, demo.DoubleOperations$1 x3) {
+                                                                                                 ^
+8 errors
+3 warnings
+exit=1

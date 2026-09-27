@@ -15,7 +15,7 @@
 | DT-09 | 匿名类实例初始化块 | `inner/TestAnonymousClass4.java` | `dex/visitors/AnonymousClassVisitor.java`, `codegen/ClassGen.java` | 断言匿名体 `{ f = 1; }` 与重写方法顺序。 |
 | DT-10 | 空枚举、普通枚举常量 | `enums/TestEnums.java`, `enums/TestEnums7.java` | `dex/visitors/EnumVisitor.java`, `codegen/ClassGen.java` | [已实测 0/1/4 常量差距](../java-syntax-2026-09-27/enum-arity/report.md)：不将编译器 `$VALUES` 当源码字段；两常量既有证明不代表本单元完成。 |
 | DT-11 | 带构造参数、字段及构造器的枚举 | `enums/TestEnums3.java`, `enums/TestEnums4.java` | `dex/visitors/EnumVisitor.java`, `codegen/ClassGen.java` | 可变参数构造器见 `TestEnums4`。 |
-| DT-12 | 含匿名常量体的枚举 | `enums/TestEnums2a.java`, `enums/TestEnums6.java` | `dex/visitors/EnumVisitor.java`, `dex/visitors/ProcessAnonymous.java` | 常量体与普通枚举类方法分开判定。 |
+| DT-12 | 含匿名常量体的枚举 | `enums/TestEnums2a.java`, `enums/TestEnums6.java` | `dex/visitors/EnumVisitor.java`, `dex/visitors/ProcessAnonymous.java` | [已证差距及窄提案](../java-syntax-2026-09-27/dt12-anonymous-enum-audit/analysis.md)：`TestEnums2a` 的双匿名体加单 String 字面量实参，Jarde 仅证明零实参体；`TestEnums6` 无匿名常量体，归相邻 DT-11 构造委托边界，不作为 DT-12 正例。 |
 | DT-13 | 嵌套枚举及 `enum implements I` | `enums/TestInnerEnums.java`, `enums/TestEnumsInterface.java` | `dex/visitors/EnumVisitor.java`, `codegen/ClassGen.java` | 两个可分别验收的组合形态，汇总时可拆分。 |
 | DT-14 | 枚举自定义静态初始化 | `enums/TestEnumsWithCustomInit.java`, `enums/TestEnumsWithTernary.java` | `dex/visitors/EnumVisitor.java`, `codegen/ClassGen.java` | `TestEnumsWithStaticFields.java` 使用 Smali 且禁用编译，不算重编证据。 |
 | DT-15 | 类/接口泛型形参与上界 | `generics/TestUsageInGenerics.java`, `generics/TestGenericsMthOverride.java` | `dex/visitors/SignatureProcessor.java`, `dex/nodes/parser/SignatureParser.java`, `codegen/ClassGen.java` | 依赖有效 Signature；损坏签名属容错而非语法恢复。 |

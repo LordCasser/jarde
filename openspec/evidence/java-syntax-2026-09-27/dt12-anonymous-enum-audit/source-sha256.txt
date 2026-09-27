@@ -1,0 +1,6 @@
+JADX baseline: 2fb1b16386941660fda07e9017285aec40fcb37f
+
+36221944555af75deacc539048e869fadb898a120cde0769ce206fe3d30c9d1b  jadx-core/src/test/java/jadx/tests/integration/enums/TestEnums2a.java
+b168f0a27e354fec21d206bb8c431b839f6e7ee8a9b0b4808c5b2dc1ca2a9a48  jadx-core/src/test/java/jadx/tests/integration/enums/TestEnums6.java
+42dfec216493fe1f71fca70d465a9d001d6b5c2b8edb0206e264f4190e523846  jadx-core/src/main/java/jadx/core/dex/visitors/EnumVisitor.java
+73926044712f85fb7ce46443ceef5344caaef5305081e57c9a719f880122da4b  jadx-core/src/main/java/jadx/core/dex/visitors/ProcessAnonymous.java

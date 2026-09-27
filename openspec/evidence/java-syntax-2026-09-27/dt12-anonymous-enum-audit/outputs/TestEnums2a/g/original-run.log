@@ -1,0 +1,3 @@
+TIMES=*:6:demo.DoubleOperations$1
+DIVIDE=/:2:demo.DoubleOperations$2
+exit=0
