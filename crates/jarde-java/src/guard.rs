@@ -1309,6 +1309,15 @@ fn copied_local(facts: &Facts<'_>, store: u32, floor: u32) -> Option<u16> {
 
 /// Whether one range is exactly one initialisation: a value expression that ends in the store.
 fn single_statement(facts: &Facts<'_>, span: (u32, u32), store: u32) -> bool {
+    single_statement_with_constructor(facts, span, store, false)
+}
+
+fn single_statement_with_constructor(
+    facts: &Facts<'_>,
+    span: (u32, u32),
+    store: u32,
+    allow_constructor: bool,
+) -> bool {
     let Some(step) = facts.step(store) else {
         return false;
     };
@@ -1322,7 +1331,10 @@ fn single_statement(facts: &Facts<'_>, span: (u32, u32), store: u32) -> bool {
         if bci == store {
             continue;
         }
-        if instruction.instruction.writes().is_empty() {
+        if instruction.instruction.writes().is_empty()
+            && !(allow_constructor
+                && matches!(facts.op(bci), Some(Operation::Invoke(call)) if call.name() == "<init>"))
+        {
             return false;
         }
         for (_, written) in instruction.instruction.writes() {
@@ -1336,6 +1348,34 @@ fn single_statement(facts: &Facts<'_>, span: (u32, u32), store: u32) -> bool {
                 })
             });
             if !consumed {
+                // `new; dup; invokespecial <init>` replaces one duplicate alias with the
+                // initialized value in SSA. The other alias is the constructor receiver, so its
+                // old SSA id has no literal reader even though the value remains on the stack.
+                if allow_constructor
+                    && matches!(facts.op(bci), Some(Operation::Duplicate))
+                    && facts.op(facts.span_end(bci)).is_some_and(
+                        |op| matches!(op, Operation::Invoke(call) if call.name() == "<init>"),
+                    )
+                    && facts.step(facts.span_end(bci)).is_some_and(|next| {
+                        next.instruction.reads().iter().any(|(_, read)| {
+                            instruction
+                                .instruction
+                                .writes()
+                                .iter()
+                                .any(|(_, alias)| facts.same(*alias, *read))
+                        }) && next.instruction.writes().iter().any(|(_, initialized)| {
+                            facts.step(store).is_some_and(|store| {
+                                store
+                                    .instruction
+                                    .reads()
+                                    .iter()
+                                    .any(|(_, read)| facts.same(*initialized, *read))
+                            })
+                        })
+                    })
+                {
+                    continue;
+                }
                 return false;
             }
         }
@@ -1353,29 +1393,31 @@ fn single_statement(facts: &Facts<'_>, span: (u32, u32), store: u32) -> bool {
     })
 }
 
-/// A completed static-field assignment before a protected range is an ordinary statement, not a
+/// A completed field assignment before a protected range is an ordinary statement, not a
 /// resource header. Keep the proof within the current straight-line block: every value made by the
 /// assignment must be consumed there, and none of its stack values may survive into the range.
 fn completed_field_assignment(facts: &Facts<'_>, before: u32, floor: u32, range: u32) -> bool {
-    if !matches!(
-        facts.op(before),
-        Some(Operation::Field {
-            access: crate::facts::FieldAccess::Write,
-            is_static: true,
-            ..
-        })
-    ) || facts.span_end(before) != range
-    {
+    let Some(Operation::Field {
+        access: crate::facts::FieldAccess::Write,
+        is_static,
+        ..
+    }) = facts.op(before)
+    else {
+        return false;
+    };
+    if facts.span_end(before) != range {
         return false;
     }
+    let statement_of =
+        |start| single_statement_with_constructor(facts, (start, range), before, !is_static);
     let mut start = before;
     while let Some(previous) = facts.previous_bci(start).filter(|bci| *bci >= floor) {
-        if !single_statement(facts, (previous, range), before) {
+        if !statement_of(previous) {
             break;
         }
         start = previous;
     }
-    if start == before || !single_statement(facts, (start, range), before) {
+    if start == before || !statement_of(start) {
         return false;
     }
     let statement = facts.bcis((start, range));
@@ -4362,6 +4404,24 @@ mod monitor_branch_tests {
     }
 
     #[test]
+    fn completed_instance_field_prefix_is_not_a_resource_header() {
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/TestTryCatchFinally12$TestCls.class"
+        );
+        assert!(matches!(
+            plans(class, "runTest", "(II)Ljava/lang/String;").first(),
+            Some(Verdict::NotGuarded)
+        ));
+        let resource = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-switch-catch/variants/TwrSwitchCatch.class"
+        );
+        assert!(matches!(
+            plans(resource, "runTest", "(II)Ljava/lang/String;").first(),
+            Some(Verdict::Refused { pass: Some(_), .. })
+        ));
+    }
+
+    #[test]
     fn frozen_two_arm_fixture_is_one_monitor_plan_and_three_arm_control_is_refused() {
         let accepted = include_bytes!(
             "../../../openspec/evidence/java-syntax-2026-09-22/synchronized-multi-exit/SynchronizedMultiExit.class"
@@ -4501,6 +4561,8 @@ pub(crate) struct Catches {
     /// The block the code after the `try` begins at, when the protected range is followed by a
     /// transfer; `None` when nothing follows it (every path out of the range leaves the method).
     pub(crate) join: Option<CanonicalBlockId>,
+    /// Exclusive end of this level's named protected range.
+    pub(crate) protected_end: u32,
     /// The instructions of the block the statement begins in that are written **before** the `try`:
     /// the half-open range from that block's own start to the protected range's start. Empty where
     /// the range begins where its block does, which is where `javac` puts it whenever no statement
@@ -4598,6 +4660,7 @@ pub(crate) fn catches(
         return Ok(Some(Catches {
             sites,
             join: join_after(&facts, row.end_bci),
+            protected_end: row.end_bci,
             lead: (current.bci(), row.start_bci),
             inner: None,
         }));
@@ -4688,6 +4751,7 @@ pub(crate) fn catches(
             Ok(Some(Catches {
                 sites,
                 join: join_after(&facts, *end),
+                protected_end: *end,
                 lead,
                 inner: None,
             }))
@@ -4716,10 +4780,12 @@ pub(crate) fn catches(
             Ok(Some(Catches {
                 sites: outer_sites,
                 join: join.clone(),
+                protected_end: *outer_end,
                 lead,
                 inner: Some(Box::new(Catches {
                     sites: inner_sites,
                     join: inner_join,
+                    protected_end: *inner_end,
                     lead,
                     inner: None,
                 })),
