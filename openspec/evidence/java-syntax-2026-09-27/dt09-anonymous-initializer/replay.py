@@ -52,6 +52,10 @@ def main():
     parser.add_argument("--jarde", type=Path, required=True)
     parser.add_argument("--jadx", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument(
+        "--expect-projection", action="store_true",
+        help="verify the proved anonymous initializer projection instead of the frozen baseline refusal",
+    )
     args = parser.parse_args()
     out = args.out.resolve()
     if out.exists() and any(out.iterdir()):
@@ -105,10 +109,20 @@ def main():
             out, temp, "p.Runner",
         )
         jarde_subject = (jarde_out / "Subject.java").read_text()
-        if "anonymous_child_constructor_ast_missing" not in refusals:
+        if args.expect_projection:
+            if refusals:
+                raise RuntimeError(f"the proved Jarde projection was refused: {refusals}")
+            if "new p.Base() {" not in jarde_subject or "new p.Subject$1()" in jarde_subject:
+                raise RuntimeError("Jarde did not project the anonymous superclass")
+        elif "anonymous_child_constructor_ast_missing" not in refusals:
             raise RuntimeError("the expected Jarde constructor proof refusal changed")
-        if "new Base() {" not in jadx_subject or "new p.Subject$1()" not in jarde_subject:
+        if "new Base() {" not in jadx_subject or (not args.expect_projection and "new p.Subject$1()" not in jarde_subject):
             raise RuntimeError("the source syntax comparison changed")
+        for label, source in (("jadx", jadx_subject), ("jarde", jarde_subject)):
+            if label == "jarde" and not args.expect_projection:
+                continue
+            if source.find("value = 1;") < 0 or source.find("value = 1;") > source.find("void run()"):
+                raise RuntimeError(f"{label} initializer effect does not precede the override")
         summary = {
             "fixed_jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
             "jarde_cli_sha256": digest(args.jarde.resolve()),
