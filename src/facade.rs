@@ -3261,26 +3261,73 @@ impl Engine {
             name: JvmBytes(b"<init>".to_vec()),
             descriptor: JvmBytes(constructor_descriptor.clone()),
         };
-        let Some((_, _, Some(proof), _)) = child_asts
+        let Some((_, constructor_ast, proof, _)) = child_asts
             .iter()
             .find(|(member, _, _, _)| member == &constructor_identity)
         else {
             return Err(Error::unsupported(
                 "anonymous_child_constructor_ast_missing",
-                "the constructor lacks its same-run forwarding proof",
+                "the constructor lacks its same-run initializer or forwarding proof",
             ));
         };
-        let forwarded: Vec<u16> = proof.parameters.iter().map(|(slot, _)| *slot).collect();
-        if proof.forwarded_parameter_slots != forwarded
-            || proof.init.class.as_deref() != std::str::from_utf8(&parent_name).ok()
-            || proof.init.target != Some(jarde_java::ast::ConstructorTarget::Super)
-            || !proof.init.presented
-        {
+        let constructor_initializer =
+            jarde_java::report::class_source_anonymous_constructor_initializer_bci(constructor_ast);
+        let initializer_text = if let Some(proof) = proof {
+            let forwarded: Vec<u16> = proof.parameters.iter().map(|(slot, _)| *slot).collect();
+            if proof.forwarded_parameter_slots != forwarded
+                || proof.init.class.as_deref() != std::str::from_utf8(&parent_name).ok()
+                || proof.init.target != Some(jarde_java::ast::ConstructorTarget::Super)
+                || !proof.init.presented
+                || constructor_initializer.is_some()
+            {
+                return Err(Error::unsupported(
+                    "anonymous_super_forwarding_unproved",
+                    "the same-run constructor AST, SSA and Code do not prove exact ordered slot forwarding",
+                ));
+            }
+            String::new()
+        } else if let Some(initializer) = constructor_initializer {
+            let root_field = root.fields.iter().any(|field| {
+                field.item.name.raw().0 == initializer.name.as_bytes()
+                    && field.item.descriptor.raw().0 == initializer.descriptor.as_bytes()
+                    && field.item.access_flags & 0x0008 != 0
+            });
+            if initializer.owner.as_bytes() != root_name.as_slice()
+                || initializer.super_owner.as_bytes() != parent_name.as_slice()
+                || initializer.descriptor != "I"
+                || !root_field
+            {
+                return Err(Error::unsupported(
+                    "anonymous_child_initializer_field_unproved",
+                    "the constructor write does not name one declared static int field of the root class",
+                ));
+            }
+            let Some(statement) =
+                jarde_java::report::emit_class_source_anonymous_constructor_initializer(
+                    constructor_ast,
+                    initializer.bci,
+                    budget,
+                )
+                .map_err(|stop| {
+                    enum_projection_stop_error(
+                        stop,
+                        "anonymous superclass projection",
+                        "anonymous_super_ir_missing",
+                    )
+                })?
+            else {
+                return Err(Error::unsupported(
+                    "anonymous_child_initializer_ast_missing",
+                    "the proved constructor field write is absent from its same-run AST",
+                ));
+            };
+            format!("            {{\n{statement}            }}\n")
+        } else {
             return Err(Error::unsupported(
-                "anonymous_super_forwarding_unproved",
-                "the same-run constructor AST, SSA and Code do not prove exact ordered slot forwarding",
+                "anonymous_child_constructor_ast_missing",
+                "the constructor lacks its same-run forwarding or initializer proof",
             ));
-        }
+        };
         let mut method_texts = Vec::new();
         for method in &child.methods {
             if method.item.identity == constructor_identity {
@@ -3320,7 +3367,7 @@ impl Engine {
             allocation_bci,
             allocation_type,
             &source_type,
-            &method_texts.concat(),
+            &format!("{initializer_text}{}", method_texts.concat()),
             None,
             budget,
         )
