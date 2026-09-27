@@ -27,9 +27,10 @@ def run(command, log):
     return result
 
 
-def compile_and_run(label, sources, out, runner):
-    classes = out / label / "classes"
+def compile_and_run(label, sources, out, temporary, runner):
+    classes = temporary / label / "classes"
     classes.mkdir(parents=True)
+    (out / label).mkdir(parents=True, exist_ok=True)
     compile_result = run(
         ["javac", "--release", "8", "-g:none", "-d", classes, *sources],
         out / label / "javac.log",
@@ -59,7 +60,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="jarde-dt09-") as temp_name:
         temp = Path(temp_name)
         original_sources = sorted(INPUT.glob("*.java"))
-        original = compile_and_run("original", original_sources, temp, "p.Runner")
+        original = compile_and_run("original", original_sources, out, temp, "p.Runner")
         jar = temp / "original.jar"
         if run(["jar", "cf", jar, "-C", temp / "original" / "classes", "."],
                out / "jar.log").returncode:
@@ -76,7 +77,7 @@ def main():
             (jadx_out / name).write_bytes((jadx_sources / name).read_bytes())
         jadx = compile_and_run(
             "jadx", [jadx_out / "Base.java", jadx_out / "Subject.java", INPUT / "Runner.java"],
-            out, "p.Runner",
+            out, temp, "p.Runner",
         )
 
         jarde_out = out / "jarde"
@@ -101,7 +102,7 @@ def main():
         refusals = [entry["code"] for entry in report["diagnostics"]]
         jarde = compile_and_run(
             "jarde", [*sorted(jarde_out.glob("*.java")), INPUT / "Runner.java"],
-            out, "p.Runner",
+            out, temp, "p.Runner",
         )
         jarde_subject = (jarde_out / "Subject.java").read_text()
         if "anonymous_child_constructor_ast_missing" not in refusals:
