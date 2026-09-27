@@ -1,0 +1,54 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_tests_sha256": {
+    "TestInterfaceDefaultMethod.java": "2c79ea5601eb5aa22c2d22277d9329c6e5184bc65e104c490ca36d023fbaca4a",
+    "TestOverridePrivateMethod.java": "8b58092f447017e4300bd190256bf0e6fc0f2590fd2791d73252a78bf05890f9",
+    "TestOverridePackagePrivateMethod.java": "fa2e3d9da656f687fb3903ee0a4b4468429420a8e3543438012e3f301c65db01",
+    "TestBadMethodAccessModifiers.java": "9498d91c3d69d87fe2bf24a09c3bfc3fc291abf0f14b3c3f4b499f8451d467de"
+  },
+  "jarde_cli_sha256": "8f1f0012324350e4fc65c7fef4b3e3835102e6d4fda00df280b466270c98e727",
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "7:5\n1:2:1\n2:1",
+    "source_sha256": {
+      "em02/Contract.java": "9b65efaef98e88f426e2d83ecda6982980e2b8cc1c5462c310aecaff08898cbb",
+      "em02/PackageBase.java": "b1980f2f4ae615a12305b637ca03714eff8eb32c1b762d0f0ff4e5e14d88040e",
+      "em02/PackageChild.java": "786962900917ac55deb580db63e345aaa2fcf3ee2f039c26b2d5b04ac374eb40",
+      "em02/PrivateBase.java": "7a0e37148cb8a4c17aae3066643ed3e068378ba7ffc057284287cd46e0c6dda5",
+      "em02/PrivateChild.java": "4e3fa9a033b2fa643244c716fcc0705547ab2d3517b6f7f17716cd5866988491",
+      "em02/other/CrossPackageChild.java": "62f099178d416f593755b4ba96cb7e94cbba9bd1e704cd8338ce319efafe4072"
+    }
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "7:5\n1:2:1\n2:1",
+    "source_sha256": {
+      "jadx/em02/Contract.java": "20079e495a39d13bc53691c5eff0af14e1016e7122812769c090be85a299ebd3",
+      "jadx/em02/PrivateBase.java": "b24e7b30c985fdb915dbd879b61e864804fc7b0121a99ecc8260808d9baa3182",
+      "jadx/em02/PrivateChild.java": "190adff8f3c404777c6a16459e468884b1305f543a8688c4667ff3959e03b63a",
+      "jadx/em02/PackageBase.java": "12c437f05479f61d71d43587923603b00f1eeba9ae2ae7f9387206548be878af",
+      "jadx/em02/PackageChild.java": "177a0cadd1c02af7d2634f2211f6f47a86190657f64897eb35c60c42615c5abc",
+      "jadx/em02/other/CrossPackageChild.java": "bc67dda96c7a4e7505dda260f20dba5de24270a3d74b4da0c3323056e626c401"
+    }
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "7:5\n1:2:1\n2:1",
+    "source_sha256": {
+      "jarde/em02/Contract.java": "2aeaf7b5851941e37e5725a6aabb5c9ef20fcaeb405115cb3e1ecdc62857b48c",
+      "jarde/em02/PrivateBase.java": "36e275c695f360ce970f132ad97e450d73706bc1f8a6bc0facab6f0bc6df69fd",
+      "jarde/em02/PrivateChild.java": "3599cd2153388b595615f2228436b27e5b52f15034cf6c817ea9aaabdb7b60bb",
+      "jarde/em02/PackageBase.java": "5e8dfc4ab5a1c9d85c47fd899f21a55bfc5953506b46c16d858de495875ba673",
+      "jarde/em02/PackageChild.java": "7327a473627db67b77625001078b1adbafa4cbe4635a782e583920779a3bbc18",
+      "jarde/em02/other/CrossPackageChild.java": "af13f4d2d24171d3fd3270d597923701991b5efb6c7a85b6366824e0b6c3c2d6"
+    }
+  },
+  "override": {
+    "jadx_same_package": true,
+    "jarde_same_package": false,
+    "both_reject_private_and_cross_package": true
+  }
+}
