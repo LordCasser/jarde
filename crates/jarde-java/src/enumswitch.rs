@@ -1264,10 +1264,11 @@ fn enum_descriptor(owner: &str) -> Vec<u8> {
 }
 
 fn claim_bcis(claimed: &mut BTreeSet<u32>, bcis: &[u32]) -> bool {
-    if bcis.iter().any(|bci| claimed.contains(bci)) {
+    let unique: BTreeSet<_> = bcis.iter().copied().collect();
+    if unique.len() != bcis.len() || unique.iter().any(|bci| claimed.contains(bci)) {
         return false;
     }
-    claimed.extend(bcis.iter().copied());
+    claimed.extend(unique);
     true
 }
 
