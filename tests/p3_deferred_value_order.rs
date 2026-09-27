@@ -93,7 +93,7 @@ fn class_source_of(snapshot: &ArtifactSnapshot) -> ClassSourceReport {
     }
 }
 
-fn class_source_without_evidence(snapshot: &ArtifactSnapshot) -> ClassSourceReport {
+fn class_source_with_default_selection(snapshot: &ArtifactSnapshot) -> ClassSourceReport {
     let request = request(snapshot);
     match Engine::new()
         .class_source(slice::from_ref(snapshot), &request, &mut budget())
@@ -313,7 +313,7 @@ fn deferred_values_keep_real_producer_order_and_structural_controls() {
 fn deferred_value_sources_keep_producer_mark_consumer_bcis_and_default_text() {
     let snapshot = open(FIXTURE);
     let report = class_source_of(&snapshot);
-    let default = class_source_without_evidence(&snapshot);
+    let default = class_source_with_default_selection(&snapshot);
     assert_eq!(
         default.text, report.text,
         "evidence selection changes the artifact"
@@ -352,8 +352,8 @@ fn deferred_value_sources_keep_producer_mark_consumer_bcis_and_default_text() {
             other => panic!("default recovery was not recovered: {other:?}"),
         };
         assert!(
-            default_recovery.source_map.is_empty(),
-            "default recovery unexpectedly built a source map for {}{}",
+            !default_recovery.source_map.is_empty(),
+            "the class-source default selection requested no source map for {}{}",
             String::from_utf8_lossy(name),
             String::from_utf8_lossy(descriptor)
         );
@@ -361,7 +361,7 @@ fn deferred_value_sources_keep_producer_mark_consumer_bcis_and_default_text() {
             default_recovery
                 .evidence
                 .state(RecoveryEvidenceKind::SourceMap),
-            EvidenceState::NotRequested
+            EvidenceState::Complete
         );
     }
 }
