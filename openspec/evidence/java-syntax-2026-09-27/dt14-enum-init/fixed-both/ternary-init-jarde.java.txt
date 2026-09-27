@@ -1,0 +1,34 @@
+// jarde: presentation of `dt14/TernaryInit` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt14;
+
+// jarde: class Signature `Ljava/lang/Enum<Ldt14/TernaryInit;>;` not projected
+// jarde: class Signature projection refused: unsupported (class_generic_source_unproved): class kind, nesting, name, or type-use annotations lack a faithful generic header position
+public enum TernaryInit {
+    FIRST(useNumber() ? 1 : 10),
+    SECOND(useNumber() ? 2 : 20),
+    ANY(useNumber() ? 1 : 2);
+
+    static int calls;
+
+    private final int code;
+
+    private TernaryInit(int arg0) {
+        this.code = arg0;
+    }
+
+    int code() {
+        // @method code()I
+        // @declaration an instance method of `dt14.TernaryInit`, member flags 0x0000
+        // recovered from bytecode; presentation is not claimed to compile
+        return this.code;
+    }
+
+    public static boolean useNumber() {
+        // @method useNumber()Z
+        // @declaration a static method of `dt14.TernaryInit`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        dt14.TernaryInit.calls = dt14.TernaryInit.calls + 1;
+        return dt14.TernaryInit.calls % 2 == 1;
+    }
+}

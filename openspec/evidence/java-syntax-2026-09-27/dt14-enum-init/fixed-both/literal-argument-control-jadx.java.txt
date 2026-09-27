@@ -1,0 +1,17 @@
+package dt14;
+
+/* JADX INFO: loaded from: input.jar:dt14/LiteralInit.class */
+public enum LiteralInit {
+    FIRST(1),
+    SECOND(20);
+
+    private final int code;
+
+    LiteralInit(int i) {
+        this.code = i;
+    }
+
+    int code() {
+        return this.code;
+    }
+}
