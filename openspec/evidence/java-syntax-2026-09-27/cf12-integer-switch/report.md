@@ -32,3 +32,5 @@ CF-12 的控制流核心在这个代表样本上已追平：合并标签、无 d
 JADX 常量恢复路径可在本地源码直接核对：`jadx-core/src/main/java/jadx/core/dex/visitors/ModVisitor.java` 的 switch visitor 调用 `replaceConstKeys`，其以 `parentClass.getConstField(keys[k])` 将匹配整数 key 替换为字段引用；`jadx-core/src/main/java/jadx/core/codegen/RegionGen.java` 的 `addCaseKey` 对 `FieldInfo` 调用 `useField`，最终通过字段 alias 输出标签，并用字段 `ConstantValue` 注释数值。JADX 测试 `TestSwitchLabels.test` 与 `testWithDisabledConstReplace` 对此有正反断言。Jarde 当前 `crates/jarde-java/src/emit.rs::switch_key` 只依据 key 数值和 selector 是否呈现为 `char` 格式化 label；整数 key 输出十进制数，符合本次观测。
 
 该差距不改变控制流，也不影响编译或运行。建议后续将它作为独立的“整数 switch 常量字段别名恢复”窄任务；不要因此把 CF-12 标为控制流不支持。此报告没有实现该任务。
+
+主线复核：root 用合入 CF-06/CF-08 后的 CLI（SHA-256 `95295d3e1688077b9cde0620739178525fb95b77084425540452b79623b791d1`）重新恢复同一原 class，完整源码 SHA-256 仍为 `ad3777d4808c25d7e601806f191deb10fe34edc419316e40ee62b115e83dae8a`，与本目录归档逐字一致；再次 Java 8 重编并以 `-Xverify:all` 运行同一 runner，11 行逐字一致。数值 case/return 的质量差距仍存在。

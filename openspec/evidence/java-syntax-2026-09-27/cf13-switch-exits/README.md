@@ -41,3 +41,5 @@ java -Xverify:all -cp openspec/evidence/java-syntax-2026-09-27/cf13-switch-exits
 ```
 
 Existing Jarde verification: `CARGO_TARGET_DIR=/tmp/jarde-cf13-target CARGO_INCREMENTAL=0 cargo test --test p3_switch_loop_exits` passed 3/3. The temporary Cargo target is removed after this audit.
+
+主线复核：root 用含 CF-06 与 CF-08 的 CLI 重放同一原 class，Jarde 完整源码 SHA-256 仍为 `d256948ada7fe9ab1f739a612551212d55d2718c7dc9ce54e5390502f1e595d5`，与本目录归档相同；`walk(I)I` 仍在 BCI 9 因多重 Region owner 引用，Java 8 编译报缺少返回语句。root 独立运行原 class 得 `38`，独立重编固定 JADX 源码仍在 continue 后的 `break` 报不可达语句。本例的 JADX 输出不是可重编正例，后续实现应以原 class 的语义和控制流为准，而不能把这个无效 `break` 复制进 Jarde。
