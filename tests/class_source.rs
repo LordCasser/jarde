@@ -147,6 +147,115 @@ const DT08_RUNNER_SOURCE: &str = include_str!(
 const EM03_SOURCE: &str = include_str!(
     "../openspec/evidence/java-syntax-2026-09-27/em03-method-signatures/input/em03/Signatures.java"
 );
+const SAME_PACKAGE_PARENT_FIELD_SOURCE: &str = include_str!(
+    "../openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/fixtures/SamePackageParentFamily.java"
+);
+
+#[test]
+fn same_package_parent_field_writes_keep_owner_source_and_stop_boundaries() {
+    let scratch = BridgeProjectionScratch::new();
+    let directory = scratch.child("same-package-parent-fields");
+    let source = directory.join("SamePackageParentFamily.java");
+    fs::write(&source, SAME_PACKAGE_PARENT_FIELD_SOURCE).expect("write the frozen Java fixture");
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-Xlint:-options", "-d"])
+        .arg(&directory)
+        .arg(&source)
+        .output()
+        .expect("the installed JDK provides javac");
+    assert!(
+        compile.status.success(),
+        "javac rejected the frozen fixture:\n{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    let family = fs::read(directory.join("dt29/SamePackageParentFamily.class"))
+        .expect("the outer family class was compiled");
+    let parent = fs::read(directory.join("dt29/SamePackageParentFamily$A.class"))
+        .expect("the parent class was compiled");
+    let child = fs::read(directory.join("dt29/SamePackageParentFamily$B.class"))
+        .expect("the child class was compiled");
+    let snapshot = open(zip_of(&[
+        (b"dt29/SamePackageParentFamily.class", &family),
+        (b"dt29/SamePackageParentFamily$A.class", &parent),
+        (b"dt29/SamePackageParentFamily$B.class", &child),
+    ]));
+    let engine = Engine::new();
+    let class_request = request(
+        &snapshot,
+        ClassRef::Name {
+            class: ClassNameQuery::internal("dt29/SamePackageParentFamily$B"),
+        },
+        EnvironmentPolicy::PlainJar,
+    );
+    let report = performed(
+        engine
+            .class_source(slice::from_ref(&snapshot), &class_request, &mut budget())
+            .expect("the complete parent field class source is available"),
+    );
+    assert!(
+        report
+            .text
+            .contains("((dt29.SamePackageParentFamily$A) this).protectedField = arg1;")
+    );
+    assert!(
+        report
+            .text
+            .contains("((dt29.SamePackageParentFamily$A) this).packagePrivateField = arg1;")
+    );
+    assert!(!report.text.contains("@bytecode 7") && !report.text.contains("@bytecode 12"));
+    let setter = report
+        .methods
+        .iter()
+        .find(|method| method.item.name.raw().0 == b"set")
+        .expect("the physical setter remains reported");
+    let setter_report = match &setter.outcome {
+        ClassSourceOutcome::Recovered { report, .. } => report,
+        other => panic!("the setter remains a recovered body: {other:?}"),
+    };
+    assert!(!setter_report.source_map.of_bci(7).is_empty());
+    assert!(!setter_report.source_map.of_bci(12).is_empty());
+
+    let mut constrained =
+        task_budget(&[BudgetOverride::new("method_bodies", 1).expect("a legal body limit")])
+            .expect("the request budget is valid");
+    let stopped = performed(
+        engine
+            .class_source(slice::from_ref(&snapshot), &class_request, &mut constrained)
+            .expect("the body limit is reported in the class view"),
+    );
+    assert!(matches!(
+        stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::MethodBodies
+            },
+            ..
+        }
+    ));
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut cancelled = Budget::with_cancellation_token(budget().limits().clone(), token);
+    let outcome = engine
+        .class_source(slice::from_ref(&snapshot), &class_request, &mut cancelled)
+        .expect("cancellation remains a stated class-source outcome");
+    match outcome {
+        OperationOutcome::Incomplete(selection) => {
+            assert!(matches!(
+                selection.execution,
+                ExecutionReport::Cancelled { .. }
+            ));
+        }
+        OperationOutcome::Performed(report) => {
+            assert!(matches!(
+                report.execution,
+                ExecutionReport::Cancelled { .. }
+            ));
+            assert!(report.text.is_empty() || !report.text.contains("= arg1;"));
+        }
+        OperationOutcome::Ambiguous(_) => panic!("the fixture class name is unique"),
+    }
+}
 
 #[test]
 fn direct_override_projection_requires_selected_complete_ordinary_parent() {
