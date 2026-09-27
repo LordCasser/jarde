@@ -7262,7 +7262,29 @@ impl Walker<'_> {
                 // With no proven join, preserve the ordinary frame's transfer and ownership rules.
                 frame.arm(join_node, Some(branch_bci))
             };
-            let (arm_run, _) = self.region_at(&start, &case_frame)?;
+            let (mut arm_run, arm_next) = self.region_at(&start, &case_frame)?;
+            if let Some(next) = arm_next.as_ref()
+                && matches!(arm_run.as_slice(), [Region::Switch { .. }])
+                && self.view.index_of(next) != case_frame.boundary
+                && !self.continue_switch_arm(
+                    &mut arm_run,
+                    next,
+                    &start,
+                    &case_frame,
+                    &case_entries,
+                )?
+            {
+                // A child switch left a continuation that this arm cannot own. Refuse the
+                // method rather than publish its first dispatch with the tail elsewhere.
+                self.unclosed_tail_at.get_or_insert(branch.bci());
+                entered.push(sequence_region(arm_run));
+                return Ok(quoted(
+                    &entered,
+                    FallbackReason::SwitchShape {
+                        block_bci: branch.bci(),
+                    },
+                ));
+            }
             let arm = sequence_region(arm_run);
             let arm_nodes: BTreeSet<usize> = arm
                 .blocks()
@@ -7307,6 +7329,113 @@ impl Walker<'_> {
         }];
         run.extend(tails);
         Ok((run, join))
+    }
+
+    /// Keep one child switch's proved join inside its enclosing case. This is the single
+    /// hash-dispatch → final-dispatch continuation used by nested javac String switches; the
+    /// ordinary sequence projection still decides whether the pair is a String switch.
+    fn continue_switch_arm(
+        &mut self,
+        run: &mut Vec<Region>,
+        next: &CanonicalBlockId,
+        start: &CanonicalBlockId,
+        frame: &Frame,
+        case_entries: &BTreeSet<usize>,
+    ) -> Result<bool, StopReason> {
+        let [
+            Region::Switch {
+                branch,
+                join: Some(join),
+                ..
+            },
+        ] = run.as_slice()
+        else {
+            return Ok(false);
+        };
+        let (Some(start_node), Some(branch_node), Some(next_node)) = (
+            self.view.index_of(start),
+            self.view.index_of(branch),
+            self.view.index_of(next),
+        ) else {
+            return Ok(false);
+        };
+        if join != next
+            || next.path() != start.path()
+            || next.bci() <= branch.bci()
+            || frame.stops_at(next_node)
+            || case_entries.contains(&next_node)
+            || self.visited.contains(&next_node)
+            || self.excluded_edge_nodes.contains(next)
+            || !self.view.dominates(start_node, next_node)
+            || !self.forward_join_predecessors(branch_node, next_node)
+            || !run[0].is_structured()
+        {
+            return Ok(false);
+        }
+        let first_owned: BTreeSet<_> = run[0].blocks().into_iter().cloned().collect();
+        poll(self.budget, Some(next.bci()))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+            Some(next.bci()),
+        )?;
+        if self.canonical.edges().iter().any(|edge| {
+            edge.to() == next
+                && (edge.kind() != CanonicalEdgeKind::Normal || !first_owned.contains(edge.from()))
+        }) {
+            return Ok(false);
+        }
+
+        let before = self.visited.clone();
+        let (tail, tail_next) = self.region_at(next, frame)?;
+        let [Region::Switch { .. }] = tail.as_slice() else {
+            return Ok(false);
+        };
+        if tail_next.is_some() || !tail[0].is_structured() {
+            return Ok(false);
+        }
+        let tail_owned: BTreeSet<_> = tail[0].blocks().into_iter().cloned().collect();
+        let newly_visited: BTreeSet<_> = self
+            .visited
+            .difference(&before)
+            .filter_map(|node| self.view.id_of(*node).cloned())
+            .collect();
+        if tail_owned != newly_visited
+            || tail_owned.is_empty()
+            || !tail_owned.is_disjoint(&first_owned)
+            || tail_owned.iter().any(|block| {
+                block.path() != start.path()
+                    || self.excluded_edge_nodes.contains(block)
+                    || self.view.index_of(block).is_none_or(|node| {
+                        !self.view.dominates(start_node, node)
+                            || case_entries.contains(&node)
+                            || frame.stops_at(node)
+                            || self.view.is_loop_header(node)
+                    })
+            })
+        {
+            return Ok(false);
+        }
+        poll(self.budget, Some(next.bci()))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+            Some(next.bci()),
+        )?;
+        if self.canonical.edges().iter().any(|edge| {
+            (tail_owned.contains(edge.to())
+                && (edge.kind() != CanonicalEdgeKind::Normal
+                    || !(first_owned.contains(edge.from()) || tail_owned.contains(edge.from()))))
+                || (tail_owned.contains(edge.from())
+                    && edge.kind() == CanonicalEdgeKind::Normal
+                    && !tail_owned.contains(edge.to()))
+        }) {
+            return Ok(false);
+        }
+        run.extend(tail);
+        Ok(true)
     }
 
     /// Find the narrow shared forward join needed when a switch's direct return/throw arm

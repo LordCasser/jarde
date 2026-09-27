@@ -1429,8 +1429,7 @@ impl<'a> Emitter<'a> {
     }
 }
 
-/// Whether Java control can reach the statement following this sequence. The direct transfers
-/// and both sides of an `if` are enough to decide the switch-arm exits this recovery proves.
+/// Whether Java control can reach the statement following this sequence.
 fn statements_can_complete(body: &[Stmt]) -> bool {
     body.last().is_none_or(|statement| match &statement.kind {
         StmtKind::Break { .. }
@@ -1442,7 +1441,29 @@ fn statements_can_complete(body: &[Stmt]) -> bool {
             else_body,
             ..
         } => statements_can_complete(then_body) || statements_can_complete(else_body),
+        StmtKind::Switch { arms, .. } => {
+            !arms.iter().any(|arm| arm.default)
+                || arms.iter().any(|arm| {
+                    arm.body.is_empty()
+                        || switch_arm_breaks(&arm.body)
+                        || (!arm.fall_through && statements_can_complete(&arm.body))
+                })
+        }
         _ => true,
+    })
+}
+
+/// An explicit unlabelled break completes the nearest switch, including through either arm of
+/// a final `if`. A labelled break leaves an outer statement and does not complete this switch.
+fn switch_arm_breaks(body: &[Stmt]) -> bool {
+    body.last().is_some_and(|statement| match &statement.kind {
+        StmtKind::Break { label: None } => true,
+        StmtKind::If {
+            then_body,
+            else_body,
+            ..
+        } => switch_arm_breaks(then_body) || switch_arm_breaks(else_body),
+        _ => false,
     })
 }
 
