@@ -12,8 +12,8 @@
 
 1. **证明物理网关与最终目标，再决定 Java 出口。** 只在头部失败边到达一个无效果、不可抛、仅含直接 `goto` 的正常出口网关，且体内比较分支到达另一个满足同样约束的网关时，核对两个网关的唯一正常后继为同一块。网关的普通入边必须分别且仅来自已证明的头部/体内分支；排除异常、子例程、额外正常入口和未解码指令。沿 canonical CFG 与 SSA 已有事实核对指令、目标和使用，不按 BCI 邻近或后支配点猜测。可借鉴 JADX `LoopRegionMaker` 分开收集 loop condition exit 与额外 exit edge 的调查顺序，但不用它的块复制或启发式插 break 代替物理证明。
 2. **让 LoopTarget 表示实际 break 目标，保留原始正常出口。** `Region::Loop.exit` 仍持有头部真实失败后继 BCI 7；候选通过后，既有 `LoopTarget.break_target` 指向共同后继 BCI 24。只把已证明的体内网关 BCI 15 放进本次 `Frame.loop_body` 可走访范围，使原有 `loop_exit_bridge`/`Region::LoopBreak` 路径认领它；循环体覆盖必须实际访问网关一次，外层继续从 BCI 7 到 BCI 24。若实现发现现有 Region 表示无法同时保留这两个身份，应先收紧拒绝并回报设计，而不是改写全局 CFG 或放宽词法计划。
-3. **发布前检查两条路径和来源。** 体内分支的 taken/fall-through 极性保持原样；循环体、头部正常出口与共同后继不重叠拥有。来源须包含 BCI 4、7、12、15、18、21、24/25 的对应条件、转移、更新及返回；任何候选网关未被结构实际消费或出现额外所有者，整方法继续引用。枚举与核边按现有预算计费，取消直接传播。
-4. **不增依赖和中间控制流层。** 当前 reader/JVM IR 已提供 decoded transfer、normal/exception edge、SSA 与区域事实；第三方 CFG 库不能代替本项目的预算、物理来源和 Region 所有权合同。新增私有有界证书或参数即可，无需新 crate、公共 pass、AST 或 Region 枚举。
+3. **发布前检查两条路径和来源。** 体内分支的 taken/fall-through 极性保持原样；循环体、头部正常出口与共同后继不重叠拥有。来源须包含 BCI 4、7、12、15、18、21、24/25 的对应条件、转移、更新及返回；由于纯 `goto` 无独立 Java 语句，仅在双网关证书同时核实唯一回边转移后，将 BCI 7 和 21 作为循环语句的派生来源，不对一般 `Loop.exit` 推断来源；任何候选网关未被结构实际消费或出现额外所有者，整方法继续引用。枚举与核边按现有预算计费，取消直接传播。
+4. **不增依赖和中间控制流层。** 当前 reader/JVM IR 已提供 decoded transfer、normal/exception edge、SSA 与区域事实；第三方 CFG 库不能代替本项目的预算、物理来源和 Region 所有权合同。新增私有有界证书或参数即可；`build.rs` 仅消费证书附着的两个转移来源，无需新 crate、公共 pass、AST 或 Region 枚举。
 
 ## Risks / Trade-offs
 

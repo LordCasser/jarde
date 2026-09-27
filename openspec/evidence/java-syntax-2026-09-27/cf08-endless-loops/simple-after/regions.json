@@ -1,0 +1,63 @@
+{
+  "representation": "java",
+  "quality": "structured",
+  "regions": [
+    {
+      "bci": 0,
+      "blocks": [
+        0
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "straight",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 2,
+      "blocks": [
+        2,
+        10,
+        15,
+        18
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "loop",
+        "version": "1"
+      },
+      "structured": true
+    },
+    {
+      "bci": 7,
+      "blocks": [
+        7,
+        24
+      ],
+      "code": null,
+      "message": null,
+      "rule": {
+        "rule": "straight",
+        "version": "1"
+      },
+      "structured": true
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "jre_recovery_produced",
+      "message": "3 region(s), 7 statement(s), 18 segment(s), 357 byte(s) written from 7 canonical block(s)",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_declaration",
+      "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+      "provenance": null,
+      "severity": "info"
+    }
+  ]
+}
