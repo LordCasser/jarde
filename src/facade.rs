@@ -4678,7 +4678,10 @@ impl Engine {
                         class_source::ClassSourceAnonymousInterfaceProjection::Absent,
                     bridge_proofs: Vec::new(),
                     enum_switch_proofs: Vec::new(),
-                    initializer_proof: if read.facts.access_flags & (ACC_ANNOTATION | 0x4000) == 0 {
+                    initializer_proof: if read.facts.access_flags
+                        & (ACC_ANNOTATION | 0x4000 | 0x8000)
+                        == 0
+                    {
                         ClassSourceInitializerProof::Refused {
                         reason: "the class declaration was not published, so its static initializer group cannot be proved".to_owned(),
                     }
@@ -6391,7 +6394,7 @@ impl Engine {
         if let Some(stop) = &read.facts.stopped_at {
             merge_execution(&mut execution, member_stop_execution(stop, budget));
         }
-        let initializer_scope = read.facts.access_flags & (ACC_ANNOTATION | 0x4000) == 0;
+        let initializer_scope = read.facts.access_flags & (ACC_ANNOTATION | 0x4000 | 0x8000) == 0;
         let mut initializer_proof = if initializer_scope {
             match prove_static_initializer_group(
                 &declaration,
@@ -7192,6 +7195,9 @@ fn prove_static_initializer_group(
         .iter()
         .filter(|field| field.is_static && !field.has_constant_value)
         .count();
+    if !is_interface && clinit_positions.is_empty() {
+        return Ok(ClassSourceInitializerProof::NotApplicable);
+    }
     if !is_interface && runtime_field_count == 0 {
         return Ok(ClassSourceInitializerProof::NotApplicable);
     }
