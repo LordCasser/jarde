@@ -4678,11 +4678,9 @@ impl Engine {
                         class_source::ClassSourceAnonymousInterfaceProjection::Absent,
                     bridge_proofs: Vec::new(),
                     enum_switch_proofs: Vec::new(),
-                    initializer_proof: if read.facts.access_flags & ACC_INTERFACE != 0
-                        && read.facts.access_flags & ACC_ANNOTATION == 0
-                    {
+                    initializer_proof: if read.facts.access_flags & (ACC_ANNOTATION | 0x4000) == 0 {
                         ClassSourceInitializerProof::Refused {
-                        reason: "the class declaration was not published, so its interface initializer group cannot be proved".to_owned(),
+                        reason: "the class declaration was not published, so its static initializer group cannot be proved".to_owned(),
                     }
                     } else {
                         ClassSourceInitializerProof::NotApplicable
@@ -6393,10 +6391,9 @@ impl Engine {
         if let Some(stop) = &read.facts.stopped_at {
             merge_execution(&mut execution, member_stop_execution(stop, budget));
         }
-        let mut initializer_proof = if read.facts.access_flags & ACC_INTERFACE != 0
-            && read.facts.access_flags & ACC_ANNOTATION == 0
-        {
-            match prove_interface_initializer_group(
+        let initializer_scope = read.facts.access_flags & (ACC_ANNOTATION | 0x4000) == 0;
+        let mut initializer_proof = if initializer_scope {
+            match prove_static_initializer_group(
                 &declaration,
                 &read.facts.fields,
                 read.facts.field_count,
@@ -6423,7 +6420,7 @@ impl Engine {
         } else {
             ClassSourceInitializerProof::NotApplicable
         };
-        let initializer_field_order = match project_interface_initializer_group(
+        let initializer_field_order = match project_static_initializer_group(
             &initializer_proof,
             &mut fields,
             &methods,
@@ -7043,21 +7040,22 @@ impl Engine {
     }
 }
 
-/// One physical interface field and the facts needed to join it to a same-run `<clinit>` write.
-struct InterfaceInitializerField {
+/// One physical field and the facts needed to join static writes to a same-run `<clinit>`.
+struct StaticInitializerField {
     index: u64,
     name: String,
     ty: JavaType,
+    is_static: bool,
     has_constant_value: bool,
 }
 
-/// The all-or-nothing structural proof for the ordinary-interface field initializer group.
+/// The all-or-nothing structural proof for an ordinary interface or class static field group.
 ///
 /// This consumes the existing member read, source field records and same-run AST sidecars. It
 /// performs no class read or recovery, and never consults either report text. The result is only a
 /// verdict and origin mapping; source emission remains a later step.
 #[allow(clippy::too_many_arguments)]
-fn prove_interface_initializer_group(
+fn prove_static_initializer_group(
     declaration: &ClassSourceDeclaration,
     field_headers: &[MemberHeader],
     field_count: u64,
@@ -7072,10 +7070,11 @@ fn prove_interface_initializer_group(
     budget: &mut Budget,
 ) -> Result<ClassSourceInitializerProof> {
     let class_facts = &declaration.item.declaration;
+    let is_interface = class_facts.access_flags & ACC_INTERFACE != 0;
     let class_name = String::from_utf16(class_facts.this_class.utf16()).ok();
     let Some(class_name) = class_name else {
         return Ok(initializer_refused(
-            "the interface's internal name is not a Unicode Java name",
+            "the class's internal name is not a Unicode Java name",
         ));
     };
     if !fields_complete
@@ -7108,16 +7107,23 @@ fn prove_interface_initializer_group(
         }
         if !field_names.insert(name.clone()) {
             return Ok(initializer_refused(format!(
-                "interface field name `{name}` is ambiguous in Java source"
+                "field name `{name}` is ambiguous in Java source"
             )));
         }
-        let required_flags = 0x0001 | 0x0008 | 0x0010;
-        let forbidden_flags = 0x0002 | 0x0004 | 0x0040 | 0x0080 | 0x4000;
-        if header.access_flags & required_flags != required_flags
-            || header.access_flags & forbidden_flags != 0
+        let interface_flags = 0x0001 | 0x0008 | 0x0010;
+        let forbidden_interface_flags = 0x0002 | 0x0004 | 0x0040 | 0x0080 | 0x4000;
+        let class_field_flags = 0x0001 | 0x0002 | 0x0004 | 0x0008 | 0x0010 | 0x0040 | 0x0080;
+        let visibility_flags = header.access_flags & (0x0001 | 0x0002 | 0x0004);
+        if (is_interface
+            && (header.access_flags & interface_flags != interface_flags
+                || header.access_flags & forbidden_interface_flags != 0))
+            || (!is_interface
+                && (header.access_flags & !class_field_flags != 0
+                    || visibility_flags.count_ones() > 1
+                    || header.access_flags & (0x0010 | 0x0040) == (0x0010 | 0x0040)))
         {
             return Ok(initializer_refused(format!(
-                "interface field `{name}` does not have an unambiguous public static final declaration"
+                "field `{name}` does not have unambiguous Java source flags"
             )));
         }
         if source.item.index != u64::try_from(index).unwrap_or(u64::MAX)
@@ -7158,10 +7164,11 @@ fn prove_interface_initializer_group(
                 "field `{name}` and its descriptor are duplicated"
             )));
         }
-        fields.push(InterfaceInitializerField {
+        fields.push(StaticInitializerField {
             index: source.item.index,
             name,
             ty,
+            is_static: header.access_flags & 0x0008 != 0,
             has_constant_value,
         });
     }
@@ -7183,18 +7190,27 @@ fn prove_interface_initializer_group(
 
     let runtime_field_count = fields
         .iter()
-        .filter(|field| !field.has_constant_value)
+        .filter(|field| field.is_static && !field.has_constant_value)
         .count();
+    if !is_interface && runtime_field_count == 0 {
+        return Ok(ClassSourceInitializerProof::NotApplicable);
+    }
+    if !is_interface && fields.iter().any(|field| field.has_constant_value) {
+        return Ok(initializer_refused(
+            "an ordinary class field has a ConstantValue initialization phase",
+        ));
+    }
     let Some(&clinit_index) = clinit_positions.first() else {
         if runtime_field_count == 0 {
             return Ok(ClassSourceInitializerProof::Proved { fields: Vec::new() });
         }
         return Ok(initializer_refused(
-            "the interface has runtime-initialized fields but no `<clinit>()V` member",
+            "the class has runtime-initialized static fields but no `<clinit>()V` member",
         ));
     };
     let clinit_header = &method_headers[clinit_index];
     if clinit_header.access_flags & 0x0008 == 0
+        || (!is_interface && clinit_header.access_flags != 0x0008)
         || clinit_header
             .attributes
             .iter()
@@ -7271,21 +7287,21 @@ fn prove_interface_initializer_group(
                 last_write_bci = Some(write.bci);
                 if write.owner != class_name || !write.is_static {
                     return Ok(initializer_refused(format!(
-                        "write at BCI {} does not target a static field of this interface",
+                        "write at BCI {} does not target a static field of this class",
                         write.bci
                     )));
                 }
                 let key = (write.name.clone(), write.descriptor.as_bytes().to_vec());
                 let Some(&field_index) = field_by_identity.get(&key) else {
                     return Ok(initializer_refused(format!(
-                        "write at BCI {} does not name one field in the complete interface field table",
+                        "write at BCI {} does not name one field in the complete field table",
                         write.bci
                     )));
                 };
                 let field = &fields[field_index];
-                if field.has_constant_value {
+                if !field.is_static || field.has_constant_value {
                     return Ok(initializer_refused(format!(
-                        "write at BCI {} duplicates the ConstantValue initialization of field `{}`",
+                        "write at BCI {} does not target a runtime static field `{}`",
                         write.bci, field.name
                     )));
                 }
@@ -7334,7 +7350,7 @@ fn prove_interface_initializer_group(
                     field.name
                 )));
             }
-        } else if writes_by_field[index].is_none() {
+        } else if field.is_static && writes_by_field[index].is_none() {
             return Ok(initializer_refused(format!(
                 "runtime field `{}` has no unique `<clinit>()V` write",
                 field.name
@@ -7418,6 +7434,13 @@ fn prove_interface_initializer_group(
             )));
         }
         for (read_bci, target_index) in own_runtime_reads {
+            if !is_interface
+                && writes_by_field[target_index].is_some_and(|(order, _)| order >= write.order)
+            {
+                return Ok(initializer_refused(format!(
+                    "read at BCI {read_bci} names a forward static field"
+                )));
+            }
             let Some((target_order, target_write_bci)) = writes_by_field[target_index] else {
                 return Ok(initializer_refused(format!(
                     "read at BCI {read_bci} names a runtime field with no proved write"
@@ -7449,7 +7472,7 @@ enum InitializerProjectionFailure {
 
 /// Commits an admitted runtime initializer group only after every RHS fragment has been emitted.
 /// The returned indices are source order; the `fields` vector itself stays in classfile order.
-fn project_interface_initializer_group(
+fn project_static_initializer_group(
     proof: &ClassSourceInitializerProof,
     fields: &mut [ClassSourceField],
     methods: &[ClassSourceMethod],
@@ -7723,7 +7746,7 @@ fn validate_initializer_expression(
     root: &Expr,
     write_bci: u32,
     class_name: &str,
-    fields: &[InterfaceInitializerField],
+    fields: &[StaticInitializerField],
     field_by_identity: &std::collections::BTreeMap<(String, Vec<u8>), usize>,
     read_claims: &std::collections::BTreeMap<
         u32,
@@ -7789,10 +7812,15 @@ fn validate_initializer_expression(
                     let key = (claim.name.clone(), claim.descriptor.as_bytes().to_vec());
                     let Some(&target_index) = field_by_identity.get(&key) else {
                         return Ok(Some(format!(
-                            "same-interface field read at BCI {read_bci} does not resolve to one declared field"
+                            "same-class field read at BCI {read_bci} does not resolve to one declared field"
                         )));
                     };
                     let field = &fields[target_index];
+                    if !field.is_static {
+                        return Ok(Some(format!(
+                            "same-class instance field read at BCI {read_bci} cannot be moved to a static declaration"
+                        )));
+                    }
                     if field.has_constant_value {
                         // A ConstantValue with a primitive or String type is a Java constant
                         // variable. Other reference-typed ConstantValue attributes (legal as class
@@ -7860,7 +7888,7 @@ fn validate_initializer_expression(
             }
             ExprKind::PostfixUpdate { .. } => {
                 return Ok(Some(
-                    "a postfix update has no interface-initializer evaluation proof".to_owned(),
+                    "a postfix update has no static-initializer evaluation proof".to_owned(),
                 ));
             }
             ExprKind::ArrayLength { array } => {

@@ -3365,7 +3365,14 @@ pub fn recover_for_class_source_with_anonymous_ast(
         .method()
         .declaring_class()
         .is_some_and(|class| class.access_flags() & ACC_ENUM != 0);
-    let collect_initializer = is_clinit && (is_ordinary_interface || is_enum);
+    let is_ordinary_class = request
+        .facts
+        .method()
+        .declaring_class()
+        .is_some_and(|class| {
+            class.access_flags() & (ACC_INTERFACE | ACC_ANNOTATION | ACC_ENUM) == 0
+        });
+    let collect_initializer = is_clinit && (is_ordinary_interface || is_ordinary_class || is_enum);
     let collect_enum_constructor = collect_enum_constructor_candidates
         && is_enum
         && request.facts.method().name() == "<init>"

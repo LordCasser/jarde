@@ -98,6 +98,15 @@ def main():
     jadx_text = jadx_source.read_text()
     jarde_text = jarde_source.read_text()
     for label, text in (("jadx", jadx_text), ("jarde", jarde_text)):
+        static_lines = [line.strip() for line in text.splitlines()
+                        if line.strip().startswith("private static final ")]
+        ordered_fields = ["trace", "a", "b", "c", "result"]
+        projected = [next((line for line in static_lines if f" {name} = " in line), None)
+                     for name in ordered_fields]
+        if any(line is None for line in projected) or [static_lines.index(line) for line in projected] != list(range(5)):
+            raise RuntimeError(f"{label} lost the ordered declaration initializer chain")
+        if "static {" in text:
+            raise RuntimeError(f"{label} retained the consumed static initializer block")
         if "int field = initField()" in text:
             raise RuntimeError(f"{label} moved a state-dependent constructor call to a field declaration")
         if "field = " not in text or "initField()" not in text:
