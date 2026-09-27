@@ -4,7 +4,7 @@
 
 | 独立处理组 | 失败测试 | 当前证据与下一步 |
 | --- | --- | --- |
-| JVM IR 固定读数 | `p3_method_ir::the_payload_carries_the_tables_of_one_real_run` | 预期 handler row 0、SSA 10，实际 row 1、SSA 16；`2ad29cee` 修改了异常边/handler 行生成，须核旧基线与当前物理图后更新或修生产。Luna 独立审计中。 |
+| JVM IR 固定读数，已单独修正 | `p3_method_ir::the_payload_carries_the_tables_of_one_real_run` | 在未改动的 `2ad29cee` 已复现：当时的规范化异常边使 handler row 为 1、SSA 值为 16，旧断言仍记录改动前的 0/10。`aa5f81ad` 只更新该测试的结构读数与说明；定向测试 4/4、`jarde-jvm` 234/234 通过。尚未重跑全工作区，因此不据此宣称整套转绿。 |
 | 恢复/证据旧断言待核 | `p3_numeric_comparison::call_operands_keep_order_and_the_negative_boolean_merge_stays_quoted`；`p3_popped_static_qualifier::an_unmatched_non_invoke_qualifier_is_refused_with_its_full_source_chain`；`p3_shift_negative_boundaries::a_boolean_return_consumer_keeps_the_shift_refusal_at_its_real_bci`；`p3_throw::lower_parameter_stack_value_is_not_an_extra_throw_read`；`p3_try_local` 的 2 项；`p3_type_qualifier::static_owners_survive_generated_parameter_and_suffix_names` | 有的当前输出比旧拒绝断言更完整，有的证据请求或来源位置变化；逐测试核基线、源码可编译性、运行语义和物理 BCI，不能批量改为正例。单独于 CF-06/07。 |
 | 预算与停止断言待核 | `p3_required_conversions::the_conversion_costs_no_ir_item_and_no_normalization_clone`；`p3_shift_expressions::shift_recovery_stops_cleanly_at_resource_limits_and_before_work`；`p5_bulk_corpus` 的 2 项 | 先核限额计费点和冻结 fixture，更新过时阈值或定位实际回归；不在语法点实现中调大预算。 |
 | 本次运行环境 | `p5_optimize_workloads::the_three_sink_modes_publish_the_same_result` | 测试以编译时 `env!("CARGO_TARGET_TMPDIR")` 为 scratch root，并断言它不以 `/tmp` 开头；本次把 `CARGO_TARGET_DIR` 设在 `/tmp`，因此该前置断言必然失败。换用非 `/tmp` target 才能判断后续测试逻辑是否通过；这项不计作已确认的产品回归。 |
