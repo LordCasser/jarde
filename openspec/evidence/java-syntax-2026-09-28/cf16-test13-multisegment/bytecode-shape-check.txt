@@ -1,0 +1,4 @@
+instruction_bci_sequence_equal=true
+opcode_sequence_equal=true
+exception_table_equal=true
+helper_invocation_opcode_differences=0

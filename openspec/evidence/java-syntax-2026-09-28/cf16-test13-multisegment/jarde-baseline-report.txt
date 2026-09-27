@@ -1,0 +1,2 @@
+jarde_safe_refusal=true
+The CLI returned 0 and compiled presentation returned 0. Method test(I)V is explanation-only: no executable statements were recovered; its Jarde-compiled runner failed on early-return trace. Full machine report: 273200 bytes (kept only in replay output).

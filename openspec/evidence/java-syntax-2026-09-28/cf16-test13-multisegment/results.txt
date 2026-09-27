@@ -1,0 +1,12 @@
+original_javac_release8_exit=0
+original_java_Xverify_all_exit=0
+jadx_decompile_exit=0
+jadx_javac_release8_exit=0
+jadx_java_Xverify_all_exit=0
+jarde_class_source_exit=0
+jarde_javac_release8_exit=0
+jarde_java_Xverify_all_exit=1
+jarde_test_method_safe_refusal=true
+original_equals_jadx=true
+original_equals_jarde=false
+jarde_report_size_bytes=273200

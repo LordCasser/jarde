@@ -1,0 +1,324 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/cf16-test13-multisegment.XNPOoT/original/jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls.class
+  Last modified 2026年9月28日; size 2198 bytes
+  SHA-256 checksum 153192e37d1dae02418ea37aea83c57a00cbcd8cbce55e30802fce329ed4451b
+  Compiled from "TestTryCatchFinally13$TestCls.java"
+public class jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 3, methods: 9, attributes: 1
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Methodref          #8.#9         // jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls.doSomething1:()V
+    #8 = Class              #10           // jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls
+    #9 = NameAndType        #11:#6        // doSomething1:()V
+   #10 = Utf8               jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls
+   #11 = Utf8               doSomething1
+   #12 = Methodref          #8.#13        // jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls.doSomething4:()V
+   #13 = NameAndType        #14:#6        // doSomething4:()V
+   #14 = Utf8               doSomething4
+   #15 = Methodref          #8.#16        // jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls.doSomething2:()V
+   #16 = NameAndType        #17:#6        // doSomething2:()V
+   #17 = Utf8               doSomething2
+   #18 = Methodref          #8.#19        // jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls.doSomething3:()V
+   #19 = NameAndType        #20:#6        // doSomething3:()V
+   #20 = Utf8               doSomething3
+   #21 = Class              #22           // java/lang/Exception
+   #22 = Utf8               java/lang/Exception
+   #23 = Methodref          #8.#24        // jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls.logError:()V
+   #24 = NameAndType        #25:#6        // logError:()V
+   #25 = Utf8               logError
+   #26 = Fieldref           #8.#27        // jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls.TRACE:Ljava/lang/StringBuilder;
+   #27 = NameAndType        #28:#29       // TRACE:Ljava/lang/StringBuilder;
+   #28 = Utf8               TRACE
+   #29 = Utf8               Ljava/lang/StringBuilder;
+   #30 = String             #31           // catch:
+   #31 = Utf8               catch:
+   #32 = Methodref          #33.#34       // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #33 = Class              #35           // java/lang/StringBuilder
+   #34 = NameAndType        #36:#37       // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #35 = Utf8               java/lang/StringBuilder
+   #36 = Utf8               append
+   #37 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #38 = Fieldref           #8.#39        // jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls.LAST_FAILURE:Ljava/lang/RuntimeException;
+   #39 = NameAndType        #40:#41       // LAST_FAILURE:Ljava/lang/RuntimeException;
+   #40 = Utf8               LAST_FAILURE
+   #41 = Utf8               Ljava/lang/RuntimeException;
+   #42 = Methodref          #2.#43        // java/lang/Object.getClass:()Ljava/lang/Class;
+   #43 = NameAndType        #44:#45       // getClass:()Ljava/lang/Class;
+   #44 = Utf8               getClass
+   #45 = Utf8               ()Ljava/lang/Class;
+   #46 = Methodref          #47.#48       // java/lang/Class.getSimpleName:()Ljava/lang/String;
+   #47 = Class              #49           // java/lang/Class
+   #48 = NameAndType        #50:#51       // getSimpleName:()Ljava/lang/String;
+   #49 = Utf8               java/lang/Class
+   #50 = Utf8               getSimpleName
+   #51 = Utf8               ()Ljava/lang/String;
+   #52 = Methodref          #33.#53       // java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+   #53 = NameAndType        #36:#54       // append:(C)Ljava/lang/StringBuilder;
+   #54 = Utf8               (C)Ljava/lang/StringBuilder;
+   #55 = String             #56           // do1
+   #56 = Utf8               do1
+   #57 = Methodref          #8.#58        // jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls.invoke:(ILjava/lang/String;)V
+   #58 = NameAndType        #59:#60       // invoke:(ILjava/lang/String;)V
+   #59 = Utf8               invoke
+   #60 = Utf8               (ILjava/lang/String;)V
+   #61 = String             #62           // do2
+   #62 = Utf8               do2
+   #63 = String             #64           // do3
+   #64 = Utf8               do3
+   #65 = String             #66           // finally,
+   #66 = Utf8               finally,
+   #67 = Fieldref           #8.#68        // jadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls.THROW_AT:I
+   #68 = NameAndType        #69:#70       // THROW_AT:I
+   #69 = Utf8               THROW_AT
+   #70 = Utf8               I
+   #71 = Class              #72           // java/lang/IllegalArgumentException
+   #72 = Utf8               java/lang/IllegalArgumentException
+   #73 = Methodref          #71.#3        // java/lang/IllegalArgumentException."<init>":()V
+   #74 = Class              #75           // java/lang/IllegalStateException
+   #75 = Utf8               java/lang/IllegalStateException
+   #76 = Methodref          #74.#3        // java/lang/IllegalStateException."<init>":()V
+   #77 = Class              #78           // java/lang/UnsupportedOperationException
+   #78 = Utf8               java/lang/UnsupportedOperationException
+   #79 = Methodref          #77.#3        // java/lang/UnsupportedOperationException."<init>":()V
+   #80 = String             #81           // throw:
+   #81 = Utf8               throw:
+   #82 = Methodref          #33.#3        // java/lang/StringBuilder."<init>":()V
+   #83 = Utf8               Code
+   #84 = Utf8               LineNumberTable
+   #85 = Utf8               LocalVariableTable
+   #86 = Utf8               this
+   #87 = Utf8               Ljadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls;
+   #88 = Utf8               test
+   #89 = Utf8               (I)V
+   #90 = Utf8               ex
+   #91 = Utf8               Ljava/lang/Exception;
+   #92 = Utf8               i
+   #93 = Utf8               StackMapTable
+   #94 = Class              #95           // java/lang/Throwable
+   #95 = Utf8               java/lang/Throwable
+   #96 = Utf8               site
+   #97 = Utf8               name
+   #98 = Utf8               Ljava/lang/String;
+   #99 = Utf8               <clinit>
+  #100 = Utf8               SourceFile
+  #101 = Utf8               TestTryCatchFinally13$TestCls.java
+{
+  public static final java.lang.StringBuilder TRACE;
+    descriptor: Ljava/lang/StringBuilder;
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static int THROW_AT;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static java.lang.RuntimeException LAST_FAILURE;
+    descriptor: Ljava/lang/RuntimeException;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public jadx.tests.integration.trycatch.TestTryCatchFinally13$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls;
+
+  public void test(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: aload_0
+         1: invokevirtual #7                  // Method doSomething1:()V
+         4: iload_1
+         5: bipush        -12
+         7: if_icmpne     15
+        10: aload_0
+        11: invokevirtual #12                 // Method doSomething4:()V
+        14: return
+        15: iload_1
+        16: bipush        10
+        18: if_icmple     28
+        21: aload_0
+        22: invokevirtual #15                 // Method doSomething2:()V
+        25: goto          37
+        28: iload_1
+        29: iconst_m1
+        30: if_icmpne     37
+        33: aload_0
+        34: invokevirtual #18                 // Method doSomething3:()V
+        37: aload_0
+        38: invokevirtual #12                 // Method doSomething4:()V
+        41: goto          63
+        44: astore_2
+        45: aload_0
+        46: invokevirtual #23                 // Method logError:()V
+        49: aload_0
+        50: invokevirtual #12                 // Method doSomething4:()V
+        53: goto          63
+        56: astore_3
+        57: aload_0
+        58: invokevirtual #12                 // Method doSomething4:()V
+        61: aload_3
+        62: athrow
+        63: return
+      Exception table:
+         from    to  target type
+             0    10    44   Class java/lang/Exception
+            15    37    44   Class java/lang/Exception
+             0    10    56   any
+            15    37    56   any
+            44    49    56   any
+      LineNumberTable:
+        line 10: 0
+        line 11: 4
+        line 22: 10
+        line 12: 14
+        line 14: 15
+        line 15: 21
+        line 16: 28
+        line 17: 33
+        line 22: 37
+        line 23: 41
+        line 19: 44
+        line 20: 45
+        line 22: 49
+        line 23: 53
+        line 22: 56
+        line 23: 61
+        line 24: 63
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           45       4     2    ex   Ljava/lang/Exception;
+            0      64     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls;
+            0      64     1     i   I
+      StackMapTable: number_of_entries = 6
+        frame_type = 15 /* same */
+        frame_type = 12 /* same */
+        frame_type = 8 /* same */
+        frame_type = 70 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Exception ]
+        frame_type = 75 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 6 /* same */
+
+  void logError();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #26                 // Field TRACE:Ljava/lang/StringBuilder;
+         3: ldc           #30                 // String catch:
+         5: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+         8: getstatic     #38                 // Field LAST_FAILURE:Ljava/lang/RuntimeException;
+        11: invokevirtual #42                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        14: invokevirtual #46                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+        17: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        20: bipush        44
+        22: invokevirtual #52                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        25: pop
+        26: return
+      LineNumberTable:
+        line 27: 0
+        line 28: 26
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      27     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls;
+
+  void doSomething1();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iconst_1
+         1: ldc           #55                 // String do1
+         3: invokestatic  #57                 // Method invoke:(ILjava/lang/String;)V
+         6: return
+      LineNumberTable:
+        line 31: 0
+        line 32: 6
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       7     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls;
+
+  void doSomething2();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iconst_2
+         1: ldc           #61                 // String do2
+         3: invokestatic  #57                 // Method invoke:(ILjava/lang/String;)V
+         6: return
+      LineNumberTable:
+        line 35: 0
+        line 36: 6
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       7     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls;
+
+  void doSomething3();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iconst_3
+         1: ldc           #63                 // String do3
+         3: invokestatic  #57                 // Method invoke:(ILjava/lang/String;)V
+         6: return
+      LineNumberTable:
+        line 39: 0
+        line 40: 6
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       7     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls;
+
+  void doSomething4();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #26                 // Field TRACE:Ljava/lang/StringBuilder;
+         3: ldc           #65                 // String finally,
+         5: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+         8: pop
+         9: return
+      LineNumberTable:
+        line 43: 0
+        line 44: 9
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      10     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally13$TestCls;
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: new           #33                 // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #82                 // Method java/lang/StringBuilder."<init>":()V
+         7: putstatic     #26                 // Field TRACE:Ljava/lang/StringBuilder;
+        10: iconst_m1
+        11: putstatic     #67                 // Field THROW_AT:I
+        14: return
+      LineNumberTable:
+        line 4: 0
+        line 5: 10
+}
+SourceFile: "TestTryCatchFinally13$TestCls.java"

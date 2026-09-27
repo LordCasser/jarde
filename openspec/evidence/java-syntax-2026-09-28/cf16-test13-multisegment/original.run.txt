@@ -1,0 +1,7 @@
+early-return=do1,finally, finallyCount=1
+normal-then=do1,do2,finally, finallyCount=1
+normal-else=do1,finally, finallyCount=1
+normal-else-if=do1,do3,finally, finallyCount=1
+catch-site-1=do1,throw:IllegalArgumentException,catch:IllegalArgumentException,finally, finallyCount=1
+catch-site-2=do1,do2,throw:IllegalStateException,catch:IllegalStateException,finally, finallyCount=1
+catch-site-3=do1,do3,throw:UnsupportedOperationException,catch:UnsupportedOperationException,finally, finallyCount=1

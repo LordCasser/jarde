@@ -1,0 +1,3 @@
+Exception in thread "main" java.lang.AssertionError: early-return expected=do1,finally, actual=
+	at jadx.tests.integration.trycatch.ProbeRunner.run(ProbeRunner.java:11)
+	at jadx.tests.integration.trycatch.ProbeRunner.main(ProbeRunner.java:21)
