@@ -29,6 +29,22 @@ EXPECTED_CLASSES = [
     "FieldCast$B", "FieldCast$C", "FieldCast$D", "InterfaceCast",
 ]
 EXPECTED = "runnable:1111:0000:1111:ClassCastException\n"
+EXPECTED_REFLECTION = "1:T:dt29.FieldCast$B:T:dt29.FieldCast$B\n"
+REFLECTION_SOURCE = """package dt29;
+import java.lang.reflect.Method;
+import java.lang.reflect.TypeVariable;
+public class GenericRunner {
+    public static void main(String[] args) throws Exception {
+        Class<?> owner = Class.forName("dt29.FieldCast$D");
+        Method method = owner.getDeclaredMethod("set", Class.forName("dt29.FieldCast$B"), boolean.class);
+        TypeVariable<Method>[] vars = method.getTypeParameters();
+        System.out.println(vars.length + ":" + vars[0].getName() + ":"
+            + vars[0].getBounds()[0].getTypeName() + ":"
+            + method.getGenericParameterTypes()[0].getTypeName() + ":"
+            + method.getParameterTypes()[0].getTypeName());
+    }
+}
+"""
 
 
 def digest(path):
@@ -50,8 +66,11 @@ def require(condition, message):
 def compile_and_run(label, sources, runner, out, work):
     classes = work / f"{label}-classes"
     classes.mkdir()
+    reflection = work / f"{label}-reflection" / "GenericRunner.java"
+    reflection.parent.mkdir()
+    reflection.write_text(REFLECTION_SOURCE)
     result = run(["javac", "--release", "8", "-g:none", "-Xlint:-options",
-                  "-d", classes, *sources, runner], out / label / "javac.log")
+                  "-d", classes, *sources, runner, reflection], out / label / "javac.log")
     answer = {"compile_exit": result.returncode,
               "compile_stderr": result.stderr.replace(str(work), "<TMP>")}
     if result.returncode == 0:
@@ -59,6 +78,11 @@ def compile_and_run(label, sources, runner, out, work):
                        out / label / "runtime.log")
         answer.update(run_exit=executed.returncode, stdout=executed.stdout,
                       run_stderr=executed.stderr)
+        reflected = run(["java", "-Xverify:all", "-cp", classes, "dt29.GenericRunner"],
+                        out / label / "reflection.log")
+        answer.update(reflection_exit=reflected.returncode,
+                      reflection_stdout=reflected.stdout,
+                      reflection_stderr=reflected.stderr)
     return answer, classes
 
 
@@ -66,6 +90,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--jarde", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--require-jarde", action="store_true")
     args = parser.parse_args()
     out = args.out.resolve()
     require(not out.exists() or not any(out.iterdir()), "--out must be absent or empty")
@@ -85,10 +110,12 @@ def main():
     with tempfile.TemporaryDirectory(prefix="jarde-dt29-family-") as temporary:
         work = Path(temporary)
         original, original_classes = compile_and_run("original", sources, runner, out, work)
-        require(original.get("stdout") == EXPECTED and original.get("run_exit") == 0,
+        require(original.get("stdout") == EXPECTED and original.get("run_exit") == 0
+                and original.get("reflection_stdout") == EXPECTED_REFLECTION
+                and original.get("reflection_exit") == 0,
                 "original fixture changed")
         class_files = sorted(path for path in (original_classes / "dt29").glob("*.class")
-                             if path.stem != "Runner")
+                             if path.stem not in ("Runner", "GenericRunner"))
         class_names = [path.stem for path in class_files]
         require(sorted(class_names) == sorted(EXPECTED_CLASSES),
                 f"physical class set changed: {class_names}")
@@ -110,7 +137,9 @@ def main():
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, destination)
         jadx, _ = compile_and_run("jadx", jadx_sources, runner, out, work)
-        require(jadx.get("stdout") == EXPECTED and jadx.get("run_exit") == 0,
+        require(jadx.get("stdout") == EXPECTED and jadx.get("run_exit") == 0
+                and jadx.get("reflection_stdout") == EXPECTED_REFLECTION
+                and jadx.get("reflection_exit") == 0,
                 "fixed JADX whole family changed")
         jarde_source = work / "jarde-source" / "dt29"
         jarde_source.mkdir(parents=True)
@@ -152,6 +181,14 @@ def main():
             "jarde_methods": methods,
         }
         (out / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n")
+        if args.require_jarde:
+            require(jarde.get("compile_exit") == 0 and jarde.get("run_exit") == 0
+                    and jarde.get("stdout") == EXPECTED
+                    and jarde.get("reflection_exit") == 0
+                    and jarde.get("reflection_stdout") == EXPECTED_REFLECTION,
+                    "Jarde complete family or generic metadata differs")
+            require(all("@bytecode" not in path.read_text() for path in jarde_sources),
+                    "Jarde still quotes a physical method")
         print(json.dumps({key: summary[key] for key in ("classes", "original", "jadx", "jarde")},
                          indent=2, ensure_ascii=False))
 

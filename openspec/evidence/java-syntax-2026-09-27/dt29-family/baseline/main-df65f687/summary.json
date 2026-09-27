@@ -7,7 +7,7 @@
     "jadx-core/src/main/java/jadx/core/dex/visitors/ShadowFieldVisitor.java": "50811e321fd841b298b96f3f12bad7d481a0207de5b21c2386d78f24e9d713d5",
     "jadx-core/src/main/java/jadx/core/dex/visitors/SimplifyVisitor.java": "71aede9230b70a162d65b782c9e4c09e1a6d03925927787a6de6603a838798e2"
   },
-  "jarde_cli_sha256": "7f8dafe1d928570cde099a10807a395ca209ea2e54f5479fd6295d99ec9dc92f",
+  "jarde_cli_sha256": "9a5d1b08b377fec1fabc38eddbc73c1fbbb7ffe0e13e4ce6af2f3dff2397555c",
   "input_sha256": {
     "Both.java": "b84757e36e19fb2d10a374e0841c75abacc9b4e2384ae863680e3604ffe510c2",
     "CloseOnly.java": "fc1b59d7d804883c0165d9db7457d42d75bc4f58df17ddff93683787640ddcb4",
@@ -42,14 +42,20 @@
     "compile_stderr": "",
     "run_exit": 0,
     "stdout": "runnable:1111:0000:1111:ClassCastException\n",
-    "run_stderr": ""
+    "run_stderr": "",
+    "reflection_exit": 0,
+    "reflection_stdout": "1:T:dt29.FieldCast$B:T:dt29.FieldCast$B\n",
+    "reflection_stderr": ""
   },
   "jadx": {
     "compile_exit": 0,
     "compile_stderr": "",
     "run_exit": 0,
     "stdout": "runnable:1111:0000:1111:ClassCastException\n",
-    "run_stderr": ""
+    "run_stderr": "",
+    "reflection_exit": 0,
+    "reflection_stdout": "1:T:dt29.FieldCast$B:T:dt29.FieldCast$B\n",
+    "reflection_stderr": ""
   },
   "jarde": {
     "compile_exit": 1,
