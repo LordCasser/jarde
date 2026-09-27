@@ -3642,6 +3642,7 @@ fn recover_inner(
     let reuse = match reuse::plan(
         ssa,
         canonical,
+        &recovered.regions,
         slots,
         request.facts.method().parameters(),
         request.facts.debug_locals(),

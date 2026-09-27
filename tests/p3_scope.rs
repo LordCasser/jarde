@@ -47,6 +47,10 @@ use std::slice;
 const NO_DEBUG: &[u8] = include_bytes!("fixtures/p3-scope/v8/Scope.class");
 /// The same source with `-g`: its `LocalVariableTable` states the source names.
 const DEBUG: &[u8] = include_bytes!("fixtures/p3-scope/v8-debug/Scope.class");
+/// EM-20's no-debug guard/loop fixture, whose source is in the fixed replay input.
+const MONITOR_REUSE: &[u8] = include_bytes!("fixtures/em20-monitor-reuse/LocalScopes.class");
+/// Three refusal controls: plain catch, a later handler read, and a loop back to the guard.
+const MONITOR_REFUSALS: &[u8] = include_bytes!("fixtures/em20-monitor-reuse/NonGuard.class");
 
 /// The members this sample declares, each with a body: the premise every request below rests on.
 const DECLARED: [(&[u8], &[u8]); 8] = [
@@ -125,6 +129,11 @@ struct Fixture {
 /// so that the members presented below are the ones the class declares rather than the ones this file
 /// claims.
 fn fixture(engine: &Engine, bytes: &[u8]) -> Fixture {
+    let expected: Vec<&[u8]> = DECLARED.iter().map(|(name, _)| *name).collect();
+    fixture_with_members(engine, bytes, &expected)
+}
+
+fn fixture_with_members(engine: &Engine, bytes: &[u8], expected: &[&[u8]]) -> Fixture {
     let mut budget = Budget::new(limits());
     let snapshot = engine
         .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
@@ -144,9 +153,9 @@ fn fixture(engine: &Engine, bytes: &[u8]) -> Fixture {
         .iter()
         .map(|member| member.name.raw().0.clone())
         .collect();
-    for (name, _) in DECLARED {
+    for name in expected {
         assert!(
-            declared.iter().any(|member| member.as_slice() == name),
+            declared.iter().any(|member| member.as_slice() == *name),
             "the sample declares the member this case presents, `{}`: {declared:?}",
             String::from_utf8_lossy(name)
         );
@@ -160,6 +169,22 @@ fn fixture(engine: &Engine, bytes: &[u8]) -> Fixture {
 /// One recovery run over one member of a sample, through the entry point the CLI calls: both halves of
 /// the answer, so the run's own usage is readable beside the presentation.
 fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -> RecoveredMethod {
+    recover_with_budget(
+        engine,
+        fixture,
+        name,
+        descriptor,
+        &mut Budget::new(limits()),
+    )
+}
+
+fn recover_with_budget(
+    engine: &Engine,
+    fixture: &Fixture,
+    name: &[u8],
+    descriptor: &[u8],
+    budget: &mut Budget,
+) -> RecoveredMethod {
     let request = MethodAnalysisRequest {
         environment: environment(&fixture.snapshot),
         method: PhysicalMethodId {
@@ -175,10 +200,139 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
         },
         stages: AnalysisStage::ALL.to_vec(),
     };
-    let mut budget = Budget::new(limits());
     engine
-        .recover_method(slice::from_ref(&fixture.snapshot), &request, &mut budget)
+        .recover_method(slice::from_ref(&fixture.snapshot), &request, budget)
         .expect("a legal request is answered, not raised")
+}
+
+#[test]
+fn a_proved_monitor_cleanup_ends_before_reused_loop_integers() {
+    let engine = Engine::new();
+    let fixture = fixture_with_members(&engine, MONITOR_REUSE, &[b"synchronizedLoop"]);
+    let text = body(&engine, &fixture, b"synchronizedLoop", b"(I)I");
+    assert!(
+        text.contains("synchronized (em20.LocalScopes.class)"),
+        "{text}"
+    );
+    assert!(text.contains("int local2_2;"), "{text}");
+    assert!(text.contains("int local3_2;"), "{text}");
+    assert!(text.contains("return local2_2;"), "{text}");
+    assert!(!text.contains("@bytecode"), "{text}");
+}
+
+#[test]
+fn non_monitor_handler_and_back_edge_do_not_borrow_the_monitor_split() {
+    let engine = Engine::new();
+    let fixture = fixture_with_members(
+        &engine,
+        MONITOR_REFUSALS,
+        &[
+            b"catchThenLoop",
+            b"laterHandlerReadsReusedInt",
+            b"monitorInOuterLoop",
+        ],
+    );
+    let ordinary = recover(&engine, &fixture, b"catchThenLoop", b"(I)I");
+    assert!(
+        ordinary.recovery().text.contains("catch parameter scope"),
+        "{}",
+        ordinary.recovery().text
+    );
+    let handler = recover(&engine, &fixture, b"laterHandlerReadsReusedInt", b"(I)I");
+    assert!(
+        handler
+            .recovery()
+            .text
+            .contains("crosses a protected region"),
+        "{}",
+        handler.recovery().text
+    );
+    let back_edge = recover(&engine, &fixture, b"monitorInOuterLoop", b"(I)I");
+    assert!(
+        back_edge
+            .recovery()
+            .text
+            .contains("BCI 12 writes `Object` and BCI 34 writes `int`"),
+        "{}",
+        back_edge.recovery().text
+    );
+    for report in [ordinary, handler, back_edge] {
+        assert_ne!(report.recovery().quality, Quality::Structured);
+        assert!(report.recovery().produced());
+        assert!(!report.recovery().text.contains("_2 = 0;"));
+    }
+}
+
+#[test]
+fn a_stopped_monitor_reuse_run_publishes_no_partial_local() {
+    let engine = Engine::new();
+    let fixture = fixture_with_members(&engine, MONITOR_REUSE, &[b"synchronizedLoop"]);
+    let mut full_budget = Budget::new(limits());
+    let full = recover_with_budget(
+        &engine,
+        &fixture,
+        b"synchronizedLoop",
+        b"(I)I",
+        &mut full_budget,
+    );
+    assert!(full.recovery().produced());
+    let analysis_items = match &full.analysis().execution {
+        ExecutionReport::Complete { usage } => usage.counted_usage(CountedBudgetDimension::IrItems),
+        other => panic!("the fixture analysis completes: {other:?}"),
+    };
+    // Find a bound that stops while accounting for the monitor handler block (BCI 14), after
+    // analysis has completed. The small window is fixed by this compiled method's region shape.
+    let stopped = (analysis_items..analysis_items + 32)
+        .find_map(|limit| {
+            let mut bounded = Budget::new(Limits {
+                ir_items: limit,
+                ..limits()
+            });
+            let result = recover_with_budget(
+                &engine,
+                &fixture,
+                b"synchronizedLoop",
+                b"(I)I",
+                &mut bounded,
+            );
+            matches!(
+                result.analysis().execution,
+                ExecutionReport::Complete { .. }
+            )
+            .then_some(result)
+            .filter(|result| {
+                matches!(
+                    result.recovery().stop(),
+                    Some(StopReason::Budget { at: Some(14), .. })
+                )
+            })
+        })
+        .expect("a bounded run stops while charging the monitor handler proof");
+    assert!(!stopped.recovery().produced());
+    assert_eq!(stopped.recovery().text, "");
+    assert!(stopped.recovery().source_map.is_empty());
+    assert!(matches!(
+        stopped.recovery().stop(),
+        Some(StopReason::Budget { .. })
+    ));
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut cancelled = Budget::with_cancellation_token(limits(), token);
+    let stopped = recover_with_budget(
+        &engine,
+        &fixture,
+        b"synchronizedLoop",
+        b"(I)I",
+        &mut cancelled,
+    );
+    assert!(!stopped.recovery().produced());
+    assert_eq!(stopped.recovery().text, "");
+    assert!(stopped.recovery().source_map.is_empty());
+    assert!(matches!(
+        stopped.analysis().execution,
+        ExecutionReport::Cancelled { .. }
+    ));
 }
 
 /// The usage snapshot of a finished run.

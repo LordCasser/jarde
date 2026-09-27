@@ -169,6 +169,10 @@ pub enum Shape {
         /// handler exit and is carried explicitly so later value placement never infers ownership
         /// from instruction order or from the aggregate proof anchors.
         normal_exit_bci: u32,
+        /// The exact exception-table rows proved to enter the monitor cleanup handler, including
+        /// the handler's self-protection row. Other exception rows inside this region are not a
+        /// license to split a reused local across the statement.
+        cleanup_rows: BTreeSet<u32>,
         /// The BCI of the `return` the **normal** path ends in, where it ends in one: `None` is the
         /// `goto` shape, whose run continues after the statement, and `Some(bci)` the shape whose
         /// region returns the value the body left on the stack — the return is written *inside* the
@@ -3224,12 +3228,20 @@ fn monitor(
     if handler.exit_bci != *handler_exit {
         return Ok(Some(refuse(Unproven::Monitor, *handler_exit)));
     }
-    let guarded = facts.covering(*handler_exit).iter().any(|row| {
-        row.catch_type_index.is_none() && facts.row_handler(row).as_ref() == Some(&handler.entry)
-    });
-    if !guarded {
+    let guarded_rows: BTreeSet<u32> = facts
+        .covering(*handler_exit)
+        .iter()
+        .filter_map(|row| {
+            (row.catch_type_index.is_none()
+                && facts.row_handler(row).as_ref() == Some(&handler.entry))
+            .then_some(row.ordinal)
+        })
+        .collect();
+    if guarded_rows.is_empty() {
         return Ok(Some(refuse(Unproven::Monitor, *handler_exit)));
     }
+    let mut cleanup_rows = guarded_rows;
+    cleanup_rows.insert(row.ordinal);
     // The body: the instructions the region protects, between the enter and the normal exit's load.
     let body = (row.start_bci, exit_load);
     if body.0 >= body.1 || !facts.statement_free(body) {
@@ -3269,6 +3281,7 @@ fn monitor(
         shape: Shape::Monitor {
             enter_bci: enter,
             normal_exit_bci: *normal_exit,
+            cleanup_rows,
             returns,
         },
         lead: (start, start),
