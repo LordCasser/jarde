@@ -13715,19 +13715,36 @@ impl Builder<'_> {
 
     /// The type and the parameter name one `catch` clause's header states.
     ///
-    /// The type is the **rows' own** `catch_type` list: each entry is the pool's `CONSTANT_Class`
+    /// A named clause's type is the **rows' own** `catch_type` list: each entry is the pool's `CONSTANT_Class`
     /// entry the compiler wrote into the exception table, and the clause names those classes and no
     /// others — widening one to a superclass would claim the handler catches exceptions the table
     /// says it does not, and narrowing it would catch fewer. Several entries are the multi-catch the
     /// table states, spelled `A | B` in table order. Each is spelled from the pool's own internal
-    /// form, so the name in the text is the name the class file states.
+    /// form, so the name in the text is the name the class file states. The exceptional-only
+    /// catch-all has no class index; its separate proof states `java.lang.Throwable` explicitly.
     ///
     /// The parameter is the local the handler's **entry store** fills, named by the same table every
     /// other local is named by: a body compiled without debug metadata states no name, and the slot's
     /// own ordinal (`localN`, `argN`) is what the text writes then. No name is invented for it.
     fn catch_header(&self, clause: &CatchClause) -> Result<(String, String), String> {
-        let mut types: Vec<String> = Vec::with_capacity(clause.type_indices().len());
-        for index in clause.type_indices() {
+        let crate::guard::CatchTypes::Named(indices) = clause.types() else {
+            return Ok((
+                "java.lang.Throwable".to_owned(),
+                self.names
+                    .whole(clause.parameter())
+                    .map(RenderedName::text)
+                    .ok_or_else(|| {
+                        format!(
+                            "the catch parameter at BCI {} lives in slot {}, which has no name",
+                            clause.handler().bci(),
+                            clause.parameter()
+                        )
+                    })?
+                    .to_owned(),
+            ));
+        };
+        let mut types: Vec<String> = Vec::with_capacity(indices.len());
+        for index in indices {
             let internal = cp_class_name(self.pool, *index).map_err(|_| {
                 format!(
                     "the catch type at constant-pool index {index} is not a `CONSTANT_Class` entry, so the clause names no class"

@@ -577,10 +577,9 @@ pub enum Region {
 /// One `catch` clause of a presented `try`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CatchClause {
-    /// Constant-pool indexes of the `catch` types this clause names, in exception-table order:
-    /// [`crate::build`] spells them from the class file's pool, one class for an ordinary clause and
-    /// `A | B` for the multi-catch rows that share one handler.
-    type_indices: Vec<u16>,
+    /// Named constant-pool types, or the Throwable type established by the single catch-all proof.
+    /// [`crate::build`] spells named types from the pool in exception-table order.
+    types: crate::guard::CatchTypes,
     /// The canonical block the rows' handler entry maps to.
     handler: CanonicalBlockId,
     /// The local slot the handler's own first instruction stores the caught exception into: the
@@ -592,8 +591,8 @@ pub struct CatchClause {
 
 impl CatchClause {
     /// Constant-pool indexes of the `catch` types this clause names.
-    pub fn type_indices(&self) -> &[u16] {
-        &self.type_indices
+    pub(crate) fn types(&self) -> &crate::guard::CatchTypes {
+        &self.types
     }
 
     /// The block this clause's handler entry is.
@@ -2407,6 +2406,9 @@ impl Walker<'_> {
             let mut guard_verdict = if (leaving.is_some() || monitor_entry)
                 && frame.own_finally.is_none()
                 && !self.visited.contains(&node)
+                && !(frame.own_try == Some(node)
+                    && self.handlers.len() == 1
+                    && self.handlers[0].catch_type_index.is_none())
             {
                 Some(crate::guard::examine(
                     self.canonical,
@@ -2546,7 +2548,8 @@ impl Walker<'_> {
                     && frame
                         .segmented_finally_rows
                         .is_none_or(|rows| !self.segmented_finally_edges_accounted(&current, rows))
-                    && (frame.own_try.is_none() || !self.edges_accounted_by_catches(&current))
+                    && (frame.own_try.is_none()
+                        || !self.edges_accounted_by_catches(&current, frame))
                 {
                     return Ok(gap(prefix, vec![current], reason, None));
                 }
@@ -3637,12 +3640,10 @@ impl Walker<'_> {
         .cloned()
     }
 
-    /// Whether a named row's protected range begins at one block.
+    /// Whether a catch candidate's protected range begins at one block.
     ///
     /// The cheap precondition of the `try`/`catch` shape, read before the shape is examined: a block
-    /// no named row begins at is not the head of one, and nothing is paid for asking.
-    /// Whether a block holds the head of a `try`: a row that names a `catch` type begins where the
-    /// block does, or **inside** it.
+    /// no named row or single catch-all candidate begins at is not the head of one.
     ///
     /// The second half is the same fact as the canonical graph's fusion: `javac` puts a `try` after
     /// a statement the compiler ran in the same straight-line run (`int x = 1; try { … }`), and the
@@ -3651,7 +3652,8 @@ impl Walker<'_> {
     /// instructions before it become the statement's [`Region::Try::lead`].
     fn starts_catch(&self, block: &CanonicalBlockId) -> bool {
         self.handlers.iter().any(|row| {
-            row.catch_type_index.is_some()
+            (row.catch_type_index.is_some()
+                || (self.handlers.len() == 1 && row.catch_type_index.is_none()))
                 && row.start_bci >= block.bci()
                 && self
                     .terminal_bci(block)
@@ -3827,7 +3829,7 @@ impl Walker<'_> {
                 handler
             };
             catches.push(CatchClause {
-                type_indices: site.type_indices.clone(),
+                types: site.types.clone(),
                 handler: site.handler.clone(),
                 parameter: site.parameter,
                 body: Box::new(handler),
@@ -4208,7 +4210,7 @@ impl Walker<'_> {
             body: Box::new(try_body),
             normal_exit_bci: None,
             catches: vec![CatchClause {
-                type_indices: vec![*catch_type],
+                types: crate::guard::CatchTypes::Named(vec![*catch_type]),
                 handler: catch_handler.clone(),
                 parameter: *catch_parameter,
                 body: Box::new(catch),
@@ -4286,7 +4288,7 @@ impl Walker<'_> {
             body: Box::new(try_body),
             normal_exit_bci: None,
             catches: vec![CatchClause {
-                type_indices: vec![*catch_type],
+                types: crate::guard::CatchTypes::Named(vec![*catch_type]),
                 handler: catch_handler.clone(),
                 parameter: *catch_parameter,
                 body: Box::new(catch),
@@ -4564,7 +4566,7 @@ impl Walker<'_> {
     /// block stays quoted. What it is *not* is `accounted = true` on its own — a block whose only
     /// edges are dead ones has no clause to be written inside, which is
     /// [`Self::leaves_only_through_dead_edges`]'s answer to give at the quote site.
-    fn edges_accounted_by_catches(&self, block: &CanonicalBlockId) -> bool {
+    fn edges_accounted_by_catches(&self, block: &CanonicalBlockId, frame: &Frame) -> bool {
         let mut accounted = false;
         for edge in self
             .canonical
@@ -4577,7 +4579,7 @@ impl Walker<'_> {
                     if !self.exception_edge_takeable(block, handler_ordinal) {
                         continue;
                     }
-                    if !self.exception_edge_accounted(block, edge.to(), handler_ordinal) {
+                    if !self.exception_edge_accounted(block, edge.to(), handler_ordinal, frame) {
                         return false;
                     }
                     accounted = true;
@@ -4626,6 +4628,7 @@ impl Walker<'_> {
         block: &CanonicalBlockId,
         handler: &CanonicalBlockId,
         handler_ordinal: u32,
+        frame: &Frame,
     ) -> bool {
         let Some(row) = self
             .handlers
@@ -4642,7 +4645,8 @@ impl Walker<'_> {
         else {
             return false;
         };
-        if row.catch_type_index.is_none()
+        if (row.catch_type_index.is_none()
+            && !(self.handlers.len() == 1 && frame.own_try == self.view.index_of(block)))
             || row.start_bci >= span.end_bci()
             || block.bci() >= row.end_bci
         {
