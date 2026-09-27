@@ -37,4 +37,4 @@ both-throw=body,finally,IllegalArgumentException:finally
 | `external-entry` | 正文判空分支新增到正常清理非空臂的入口 | `null` 路径以 `NullPointerException` 结束 |
 | `throwable` | handler 重抛前把原 Throwable 替换为 `null` | `body-throw` 路径以 `NullPointerException` 结束 |
 
-重放命令为 `replay-fixtures.sh [OUTPUT_DIR]`。在记录基线上，六个变体全部通过 JVM 验证，并出现各自列出的可观察差异；没有 verifier 无效项。Jarde 生成结果仍是前述安全拒绝，未在本夹具任务重建 Rust CLI，也没有声称目标方法已恢复；独立验收时仍须核对该拒绝测试及 1.2 近邻拒绝行为。
+重放命令为 `replay-fixtures.sh [OUTPUT_DIR]`。root 在提交 `0f5aafa9e03ee639f41a2ae0f323e6652487243a` 上独立运行脚本，原/JADX 七路径相同、最小类目标方法同布局、六个负例的 JVM 验证及逐字节 hash 检查全部通过；OpenSpec strict 与 diff check 通过。Jarde 生成结果仍是前述安全拒绝，尚未声称目标方法已恢复；实施验收时仍须核对该拒绝测试及 1.2 近邻拒绝行为。
