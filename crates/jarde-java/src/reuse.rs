@@ -178,7 +178,12 @@ fn monitor_guard_blocks(
     while let Some(region) = pending.pop() {
         poll(budget, None)?;
         match region {
-            Region::Guard { plan, body, .. } => {
+            Region::Guard {
+                plan,
+                body,
+                finally_body,
+                ..
+            } => {
                 if let crate::guard::Shape::Monitor { cleanup_rows, .. } = plan.shape() {
                     let mut owned = BTreeSet::new();
                     for block in plan.owned() {
@@ -195,6 +200,9 @@ fn monitor_guard_blocks(
                 }
                 if let Some(body) = body {
                     pending.push(body);
+                }
+                if let Some(cleanup) = finally_body {
+                    pending.push(cleanup);
                 }
             }
             Region::Sequence { regions } | Region::Loop { body: regions, .. } => {

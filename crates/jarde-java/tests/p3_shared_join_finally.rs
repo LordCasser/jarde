@@ -33,6 +33,34 @@ const SEGMENTED_TEST13_ACCEPTANCE: &[u8] = include_bytes!(
 );
 const CONCAT_SAVED: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-concat-saved-finally/v8/FinallyOnce.class");
+const CONDITIONAL_TEST14: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/TestTryCatchFinally14$TestCls.class"
+);
+const CONDITIONAL_TEST14_MINIMAL: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-conditional-finally/Test14-minimal.class");
+const CONDITIONAL_TEST14_NEGATIVES: [&[u8]; 9] = [
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-field.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-call.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-predicate.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-self-protected.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-external-entry.class"
+    ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test14-conditional-cleanup/negatives/Test14-throwable.class"
+    ),
+    include_bytes!("../../../tests/fixtures/p3-conditional-finally/Test14-slot0.class"),
+    include_bytes!("../../../tests/fixtures/p3-conditional-finally/Test14-second-field.class"),
+    include_bytes!("../../../tests/fixtures/p3-conditional-finally/Test14-handler-call.class"),
+];
 const CONCAT_SAVED_NEGATIVES: [&[u8]; 3] = [
     include_bytes!("../../../tests/fixtures/p3-concat-saved-finally/negatives/non-concat.class"),
     include_bytes!(
@@ -732,6 +760,107 @@ fn concat_saved_return_neighbors_and_stops_refuse_atomically() {
             "(Z)Ljava/lang/String;",
             "FinallyOnce",
             0x0009,
+            Some(budget),
+        );
+        assert!(report.text.is_empty() && report.source_map.is_empty());
+        assert!(report.stop().is_some());
+    }
+}
+
+#[test]
+fn conditional_test14_has_two_bounded_if_regions_and_all_origins() {
+    let report = recover_method(
+        CONDITIONAL_TEST14,
+        "test",
+        "()V",
+        "jadx/tests/integration/trycatch/TestTryCatchFinally14$TestCls",
+        0x0001,
+        None,
+    );
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(
+        report.text.matches("finally {").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("this.t != null").count(),
+        2,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("this.t.doSomething();").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("this.t.doFinally();").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(report.regions.len(), 1);
+    assert_eq!(report.regions[0].blocks, [0, 7, 14, 21, 31, 39, 46, 48]);
+    for bci in [
+        0, 1, 4, 7, 8, 11, 14, 15, 18, 21, 22, 25, 28, 31, 32, 33, 36, 39, 40, 43, 46, 47, 48,
+    ] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci} has no origin"
+        );
+    }
+    let minimal = recover_method(
+        CONDITIONAL_TEST14_MINIMAL,
+        "test",
+        "()V",
+        "jadx/tests/integration/trycatch/TestTryCatchFinally14$TestCls",
+        0x0001,
+        None,
+    );
+    assert_eq!(minimal.text, report.text);
+}
+
+#[test]
+fn conditional_test14_neighbors_and_stops_refuse_atomically() {
+    for class in CONDITIONAL_TEST14_NEGATIVES {
+        let report = recover_method(
+            class,
+            "test",
+            "()V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally14$TestCls",
+            0x0001,
+            None,
+        );
+        assert!(!report.text.contains("finally {"), "{}", report.text);
+        assert!(report.text.contains("@bytecode"), "{}", report.text);
+    }
+    for budget in [
+        {
+            let mut tiny = limits();
+            tiny.ir_items = 1;
+            Budget::new(tiny)
+        },
+        {
+            let mut tiny = limits();
+            tiny.output_bytes = 1;
+            Budget::new(tiny)
+        },
+        {
+            let token = CancellationToken::new();
+            token.cancel();
+            Budget::with_cancellation_token(limits(), token)
+        },
+    ] {
+        let report = recover_method(
+            CONDITIONAL_TEST14,
+            "test",
+            "()V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally14$TestCls",
+            0x0001,
             Some(budget),
         );
         assert!(report.text.is_empty() && report.source_map.is_empty());
