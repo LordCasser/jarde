@@ -5347,6 +5347,7 @@ impl Engine {
                         .map(|proof| proof.type_parameters.as_slice())
                         .unwrap_or(&[]),
                     class_signature_present,
+                    &assembly_context.resolved_inner_classes,
                     budget,
                 ) {
                     stops.push(stop_execution(&error, budget));
@@ -5500,6 +5501,7 @@ impl Engine {
                                         .map(|proof| proof.type_parameters.as_slice())
                                         .unwrap_or(&[]),
                                     class_signature_present,
+                                    &assembly_context.resolved_inner_classes,
                                     budget,
                                 ) {
                                     stops.push(stop_execution(&error, budget));
