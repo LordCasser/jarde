@@ -115,6 +115,16 @@ pub struct EnumSwitchMapProof {
     pub entries: Vec<EnumSwitchMapEntry>,
 }
 
+/// One selected enum/table pair in a closed shared helper initializer.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EnumSwitchMapRequest {
+    pub table_name: String,
+    pub enum_owner: String,
+    pub enum_constants: Vec<Vec<u8>>,
+    pub switch_keys: Vec<i64>,
+}
+
 /// The array factory named by the actual final call in the enum initializer. The caller resolves
 /// this symbolic reference against the selected physical enum definition before reading its body.
 #[doc(hidden)]
@@ -522,33 +532,70 @@ pub fn prove_enum_switch_map_initializer(
     switch_keys: &[i64],
     budget: &mut jarde_reader::budget::Budget,
 ) -> Result<Result<EnumSwitchMapProof, String>, crate::stop::StopReason> {
+    let request = EnumSwitchMapRequest {
+        table_name: table_name.to_owned(),
+        enum_owner: enum_owner.to_owned(),
+        enum_constants: enum_constants.to_vec(),
+        switch_keys: switch_keys.to_vec(),
+    };
+    match prove_enum_switch_map_initializer_group(ir, helper_owner, &[request], budget)? {
+        Ok(mut proofs) if proofs.len() == 1 => Ok(Ok(proofs.remove(0))),
+        Ok(_) => Ok(Err(
+            "the helper proof did not return exactly one map".to_owned()
+        )),
+        Err(reason) => Ok(Err(reason)),
+    }
+}
+
+/// Proves every selected enum table in one shared javac helper `<clinit>` with one complete scan.
+/// Any helper field or operation outside the closed request set is refused.
+#[doc(hidden)]
+pub fn prove_enum_switch_map_initializer_group(
+    ir: &jarde_jvm::method_ir::MethodIr,
+    helper_owner: &str,
+    requests: &[EnumSwitchMapRequest],
+    budget: &mut jarde_reader::budget::Budget,
+) -> Result<Result<Vec<EnumSwitchMapProof>, String>, crate::stop::StopReason> {
+    use jarde_reader::budget::CountedBudgetDimension;
+
     let Some(code) = ir.code() else {
         return Ok(Err(
             "the helper `<clinit>` has no complete Code facts".to_owned()
         ));
     };
-    if code.stopped_at.is_some()
-        || code.instructions.is_empty()
-        || code.instructions.len() > usize::from(u16::MAX)
-    {
-        return Ok(Err(
-            "the helper `<clinit>` instruction stream is incomplete".to_owned(),
-        ));
-    }
     let Some(cfg) = ir.canonical() else {
         return Ok(Err("the helper `<clinit>` has no canonical CFG".to_owned()));
     };
-    if !cfg.completeness().is_complete()
+    let Some(ssa) = ir.ssa() else {
+        return Ok(Err("the helper `<clinit>` has no SSA table".to_owned()));
+    };
+    if requests.is_empty()
+        || code.stopped_at.is_some()
+        || code.instructions.is_empty()
+        || code.instructions.len() > usize::from(u16::MAX)
+        || !cfg.completeness().is_complete()
         || !cfg.unreachable().is_empty()
         || cfg.blocks().iter().any(|block| block.id().is_clone())
     {
         return Ok(Err(
-            "the helper `<clinit>` has unreachable, cloned, or incomplete control flow".to_owned(),
+            "the shared helper `<clinit>` is incomplete or has no selected tables".to_owned(),
         ));
     }
-    let Some(ssa) = ir.ssa() else {
-        return Ok(Err("the helper `<clinit>` has no SSA table".to_owned()));
-    };
+    let mut request_by_table = BTreeMap::new();
+    for request in requests {
+        if request.table_name.is_empty()
+            || request.enum_owner.is_empty()
+            || request.enum_constants.is_empty()
+            || request.switch_keys.is_empty()
+            || request_by_table
+                .insert(request.table_name.as_str(), request)
+                .is_some()
+        {
+            return Ok(Err(
+                "the shared helper proof has duplicate or incomplete selected tables".to_owned(),
+            ));
+        }
+    }
     let operations = Operations::of(code, ir.constant_pool());
     let by_bci: BTreeMap<u32, &jarde_reader::classfile::InstructionFact> = code
         .instructions
@@ -557,31 +604,18 @@ pub fn prove_enum_switch_map_initializer(
         .collect();
     let operation_at = |bci| operations.get(bci);
     let shape = |message: &str| Ok(Err(message.to_owned()));
-    let table_field = |access: FieldAccess, owner: &str, name: &str, descriptor: &str| {
-        access == FieldAccess::Read
-            && owner == helper_owner
-            && name == table_name
-            && descriptor == "[I"
-    };
-
     crate::stop::charge(
         budget,
-        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        CountedBudgetDimension::IrItems,
         u64::try_from(code.instructions.len()).unwrap_or(u64::MAX),
         None,
     )?;
-    for instruction in &code.instructions {
-        crate::stop::poll(budget, Some(instruction.bci))?;
-        if operation_at(instruction.bci).is_none() {
-            return shape("the helper `<clinit>` contains an undecoded instruction");
-        }
-    }
 
-    let mut table_write = None;
-    let mut table_reads = Vec::new();
+    let mut table_writes: BTreeMap<&str, u32> = BTreeMap::new();
+    let mut table_reads: BTreeMap<&str, Vec<u32>> = BTreeMap::new();
     let mut enum_field_reads = Vec::new();
-    let mut values_calls = Vec::new();
-    let mut ordinal_calls = Vec::new();
+    let mut values_calls: BTreeMap<&str, Vec<u32>> = BTreeMap::new();
+    let mut ordinal_calls: BTreeMap<&str, Vec<u32>> = BTreeMap::new();
     let mut arrays = Vec::new();
     let mut lengths = Vec::new();
     let mut stores = Vec::new();
@@ -589,12 +623,10 @@ pub fn prove_enum_switch_map_initializer(
     let mut local_stores = Vec::new();
     let mut returns = Vec::new();
     let mut used_pushes = BTreeSet::new();
-    let mut mapped_pushes = BTreeSet::new();
-
     for instruction in &code.instructions {
-        let bci = instruction.bci;
-        let Some(operation) = operation_at(bci) else {
-            return shape("the helper `<clinit>` contains an undecoded instruction");
+        crate::stop::poll(budget, Some(instruction.bci))?;
+        let Some(operation) = operation_at(instruction.bci) else {
+            return shape("the shared helper `<clinit>` contains an undecoded instruction");
         };
         match operation {
             Operation::Field {
@@ -603,9 +635,15 @@ pub fn prove_enum_switch_map_initializer(
                 owner,
                 name,
                 descriptor,
-            } if owner == helper_owner && name == table_name && descriptor == "[I" => {
-                if table_write.replace(bci).is_some() {
-                    return shape("the helper writes the selected table more than once");
+            } if owner == helper_owner && descriptor == "[I" => {
+                let Some(request) = request_by_table.get(name.as_str()) else {
+                    return shape("the shared helper `<clinit>` writes an unselected int[] table");
+                };
+                if table_writes
+                    .insert(request.table_name.as_str(), instruction.bci)
+                    .is_some()
+                {
+                    return shape("the shared helper writes a selected table more than once");
                 }
             }
             Operation::Field {
@@ -614,8 +652,14 @@ pub fn prove_enum_switch_map_initializer(
                 owner,
                 name,
                 descriptor,
-            } if table_field(FieldAccess::Read, owner, name, descriptor) => {
-                table_reads.push(bci);
+            } if owner == helper_owner && descriptor == "[I" => {
+                if !request_by_table.contains_key(name.as_str()) {
+                    return shape("the shared helper `<clinit>` reads an unselected int[] table");
+                }
+                table_reads
+                    .entry(name.as_str())
+                    .or_default()
+                    .push(instruction.bci);
             }
             Operation::Field {
                 access: FieldAccess::Read,
@@ -623,59 +667,76 @@ pub fn prove_enum_switch_map_initializer(
                 owner,
                 name,
                 descriptor,
-            } if owner == enum_owner
-                && descriptor.as_bytes() == enum_descriptor(enum_owner).as_slice()
-                && enum_constants
-                    .iter()
-                    .any(|constant| constant.as_slice() == name.as_bytes()) =>
-            {
-                enum_field_reads.push((bci, name.as_bytes().to_vec()));
+            } => {
+                let Some(request) = requests.iter().find(|request| request.enum_owner == *owner)
+                else {
+                    return shape("the shared helper `<clinit>` reads an unrelated field");
+                };
+                if descriptor.as_bytes() != enum_descriptor(&request.enum_owner).as_slice()
+                    || !request
+                        .enum_constants
+                        .iter()
+                        .any(|constant| constant == name.as_bytes())
+                {
+                    return shape("the shared helper `<clinit>` reads an unproved enum field");
+                }
+                enum_field_reads.push((instruction.bci, owner.clone(), name.as_bytes().to_vec()));
             }
             Operation::Field { .. } => {
-                return shape("the helper `<clinit>` reads or writes an unrelated field");
+                return shape("the shared helper `<clinit>` writes or reads an unrelated field");
             }
             Operation::Invoke(target)
                 if target.kind() == crate::facts::InvokeKind::Static
-                    && target.owner() == enum_owner
                     && target.name() == "values"
-                    && target.descriptor() == format!("()[L{enum_owner};") =>
+                    && requests.iter().any(|request| {
+                        target.owner() == request.enum_owner
+                            && target.descriptor() == format!("()[L{};", request.enum_owner)
+                    }) =>
             {
-                values_calls.push(bci);
+                values_calls
+                    .entry(target.owner())
+                    .or_default()
+                    .push(instruction.bci);
             }
             Operation::Invoke(target)
                 if target.kind() == crate::facts::InvokeKind::Virtual
-                    && target.owner() == enum_owner
                     && target.name() == "ordinal"
-                    && target.descriptor() == "()I" =>
+                    && target.descriptor() == "()I"
+                    && requests
+                        .iter()
+                        .any(|request| target.owner() == request.enum_owner) =>
             {
-                ordinal_calls.push(bci);
+                ordinal_calls
+                    .entry(target.owner())
+                    .or_default()
+                    .push(instruction.bci);
             }
             Operation::Invoke(_) => {
-                return shape("the helper `<clinit>` invokes an unrelated method");
+                return shape("the shared helper `<clinit>` invokes an unrelated method");
             }
             Operation::NewArray {
                 element: crate::ast::Type::Int,
                 dimensions: 1,
                 total_dimensions: 1,
-            } => arrays.push(bci),
+            } => arrays.push(instruction.bci),
             Operation::NewArray { .. } => {
-                return shape("the helper `<clinit>` allocates an array other than one int[]");
+                return shape("the shared helper `<clinit>` allocates an array other than int[]");
             }
-            Operation::ArrayLength => lengths.push(bci),
+            Operation::ArrayLength => lengths.push(instruction.bci),
             Operation::ArrayStore {
                 element: Some(crate::ast::Type::Int),
-            } => stores.push(bci),
+            } => stores.push(instruction.bci),
             Operation::ArrayStore { .. } => {
-                return shape("the helper `<clinit>` performs a non-int array write");
+                return shape("the shared helper `<clinit>` performs a non-int array write");
             }
-            Operation::Transfer => transfers.push(bci),
-            Operation::Store { .. } => local_stores.push(bci),
-            Operation::Return => returns.push(bci),
+            Operation::Transfer => transfers.push(instruction.bci),
+            Operation::Store { .. } => local_stores.push(instruction.bci),
+            Operation::Return => returns.push(instruction.bci),
             Operation::Push(crate::facts::ConstantValue::Int(_)) => {
-                used_pushes.insert(bci);
+                used_pushes.insert(instruction.bci);
             }
             Operation::Push(_) => {
-                return shape("the helper `<clinit>` pushes a non-integer constant");
+                return shape("the shared helper `<clinit>` pushes a non-integer constant");
             }
             Operation::Other
             | Operation::Load { .. }
@@ -698,369 +759,516 @@ pub fn prove_enum_switch_map_initializer(
             | Operation::Monitor { .. }
             | Operation::Throw => {
                 return shape(
-                    "the helper `<clinit>` contains an unproved operation or side effect",
+                    "the shared helper `<clinit>` contains an unproved operation or side effect",
                 );
             }
         }
     }
 
-    if table_reads.len() != stores.len()
+    let selected_table_count = requests.len();
+    if table_writes.len() != selected_table_count
+        || table_reads.values().map(Vec::len).sum::<usize>() != stores.len()
         || enum_field_reads.len() != stores.len()
-        || ordinal_calls.len() != stores.len()
+        || ordinal_calls.values().map(Vec::len).sum::<usize>() != stores.len()
         || transfers.len() != stores.len()
         || local_stores.len() != code.exception_handlers.len()
         || returns.len() != 1
         || code.exception_handlers.len() != stores.len()
-        || values_calls.len() != 1
-        || arrays.len() != 1
-        || lengths.len() != 1
+        || values_calls.values().map(Vec::len).sum::<usize>() != selected_table_count
+        || arrays.len() != selected_table_count
+        || lengths.len() != selected_table_count
         || stores.is_empty()
-        || table_write.is_none()
     {
-        return shape("the helper `<clinit>` does not have one complete guarded write per mapping");
-    }
-    let table_write_bci = table_write.expect("checked exactly one selected table write");
-    let Some((_, allocated_array)) = ssa
-        .blocks()
-        .iter()
-        .flat_map(|block| block.instructions())
-        .find(|instruction| instruction.bci() == table_write_bci)
-        .and_then(|instruction| stack_operands(instruction).last().copied())
-    else {
-        return shape("the selected table assignment has no SSA value");
-    };
-    let Some((allocation_bci, Operation::NewArray { .. })) =
-        producer(ssa, allocated_array, &operations)
-    else {
-        return shape("the selected table is not assigned the proved int[] allocation");
-    };
-    let Some(allocation_instruction) = ssa
-        .blocks()
-        .iter()
-        .flat_map(|block| block.instructions())
-        .find(|instruction| instruction.bci() == allocation_bci)
-    else {
-        return shape("the selected array allocation has no SSA instruction");
-    };
-    let Some((_, array_length)) = stack_operands(allocation_instruction).last().copied() else {
-        return shape("the int[] allocation has no SSA length");
-    };
-    let Some((length_bci, Operation::ArrayLength)) = producer(ssa, array_length, &operations)
-    else {
-        return shape("the int[] length is not the enum values-array length");
-    };
-    let Some(length_instruction) = ssa
-        .blocks()
-        .iter()
-        .flat_map(|block| block.instructions())
-        .find(|instruction| instruction.bci() == length_bci)
-    else {
-        return shape("the enum values-array length has no SSA instruction");
-    };
-    let Some((_, values_array)) = stack_operands(length_instruction).last().copied() else {
-        return shape("the enum values-array length reads no array");
-    };
-    let Some((values_bci, Operation::Invoke(_))) = producer(ssa, values_array, &operations) else {
-        return shape("the allocated length is not produced by enum values()");
-    };
-    if values_bci != values_calls[0]
-        || length_bci != lengths[0]
-        || allocation_bci != arrays[0]
-        || !instruction_follows(
-            by_bci.get(&values_bci).copied(),
-            by_bci.get(&length_bci).copied(),
-        )
-        || !instruction_follows(
-            by_bci.get(&length_bci).copied(),
-            by_bci.get(&allocation_bci).copied(),
-        )
-        || !instruction_follows(
-            by_bci.get(&allocation_bci).copied(),
-            by_bci.get(&table_write_bci).copied(),
-        )
-    {
-        return shape("the table is not uniquely initialized from enum values().length");
+        return shape(
+            "the shared helper does not contain exactly one complete initializer per selected table",
+        );
     }
 
-    let mut entries = Vec::new();
-    let mut seen_keys = BTreeSet::new();
-    let mut seen_constants = BTreeSet::new();
-    let mut accounted_bcis = BTreeSet::from([
-        values_bci,
-        length_bci,
-        allocation_bci,
-        table_write_bci,
-        returns[0],
-    ]);
-    for store_bci in stores.iter().copied() {
-        crate::stop::poll(budget, Some(store_bci))?;
-        let Some(store_instruction) = ssa
+    let mut proofs = Vec::with_capacity(selected_table_count);
+    let mut globally_accounted = BTreeSet::from([returns[0]]);
+    let mut mapped_pushes = BTreeSet::new();
+    let mut all_handlers = BTreeSet::new();
+    for request in requests {
+        let table_name = request.table_name.as_str();
+        let Some(table_write_bci) = table_writes.get(table_name).copied() else {
+            return shape("the shared helper omits one selected table assignment");
+        };
+        let table_write_fact = by_bci.get(&table_write_bci).copied();
+        let Some((_, allocated_array)) = ssa
             .blocks()
             .iter()
             .flat_map(|block| block.instructions())
-            .find(|instruction| instruction.bci() == store_bci)
+            .find(|instruction| instruction.bci() == table_write_bci)
+            .and_then(|instruction| stack_operands(instruction).last().copied())
         else {
-            return shape("an array write has no SSA instruction");
+            return shape("a selected table assignment has no SSA value");
         };
-        let operands = stack_operands(store_instruction);
-        if operands.len() != 3 {
-            return shape("an int[] mapping write does not read exactly array, index and key");
-        }
-        let Some((
-            table_read_bci,
-            Operation::Field {
-                access,
-                is_static: true,
-                owner,
-                name,
-                descriptor,
-            },
-        )) = producer(ssa, operands[0].1, &operations)
+        let Some((allocation_bci, Operation::NewArray { .. })) =
+            producer(ssa, allocated_array, &operations)
         else {
-            return shape("an int[] mapping write does not use a static table field read");
+            return shape("a selected table is not assigned a proved int[] allocation");
         };
-        if !table_field(*access, owner, name, descriptor) || !table_reads.contains(&table_read_bci)
-        {
-            return shape("an int[] mapping write uses a different table field");
-        }
-        let Some((ordinal_bci, Operation::Invoke(target))) =
-            producer(ssa, operands[1].1, &operations)
-        else {
-            return shape("a table index is not produced by enum ordinal()");
-        };
-        if target.kind() != crate::facts::InvokeKind::Virtual
-            || target.owner() != enum_owner
-            || target.name() != "ordinal"
-            || target.descriptor() != "()I"
-        {
-            return shape("a table index is not the selected enum's instance ordinal() call");
-        }
-        let Some(ordinal_instruction) = ssa
+        let Some(allocation_instruction) = ssa
             .blocks()
             .iter()
             .flat_map(|block| block.instructions())
-            .find(|instruction| instruction.bci() == ordinal_bci)
+            .find(|instruction| instruction.bci() == allocation_bci)
         else {
-            return shape("the ordinal call has no SSA instruction");
+            return shape("a selected table allocation has no SSA instruction");
         };
-        let Some((_, constant_receiver)) = stack_operands(ordinal_instruction).first().copied()
+        let Some((_, array_length)) = stack_operands(allocation_instruction).last().copied() else {
+            return shape("a selected int[] allocation has no SSA length");
+        };
+        let Some((length_bci, Operation::ArrayLength)) = producer(ssa, array_length, &operations)
         else {
-            return shape("the ordinal call has no enum receiver");
+            return shape("a selected int[] length is not the enum values-array length");
         };
-        let Some((
-            constant_bci,
-            Operation::Field {
-                access: FieldAccess::Read,
-                is_static: true,
-                owner,
-                name: constant,
-                descriptor,
-            },
-        )) = producer(ssa, constant_receiver, &operations)
+        let Some(length_instruction) = ssa
+            .blocks()
+            .iter()
+            .flat_map(|block| block.instructions())
+            .find(|instruction| instruction.bci() == length_bci)
         else {
-            return shape("the ordinal receiver is not an enum constant field read");
+            return shape("a selected enum values-array length has no SSA instruction");
         };
-        if owner != enum_owner
-            || descriptor.as_bytes() != enum_descriptor(enum_owner).as_slice()
-            || !enum_constants
+        let Some((_, values_array)) = stack_operands(length_instruction).last().copied() else {
+            return shape("a selected values-array length reads no array");
+        };
+        let Some((values_bci, Operation::Invoke(_))) = producer(ssa, values_array, &operations)
+        else {
+            return shape("a selected allocation is not produced by enum values()");
+        };
+        let Some(values_at_bci) = operation_at(values_bci) else {
+            return shape("a selected values() call is missing its decoded operation");
+        };
+        let Operation::Invoke(values_target) = values_at_bci else {
+            return shape("a selected values() producer is not an invocation");
+        };
+        if values_target.kind() != crate::facts::InvokeKind::Static
+            || values_target.owner() != request.enum_owner
+            || values_target.name() != "values"
+            || values_target.descriptor() != format!("()[L{};", request.enum_owner)
+            || !instruction_follows(
+                by_bci.get(&values_bci).copied(),
+                by_bci.get(&length_bci).copied(),
+            )
+            || !instruction_follows(
+                by_bci.get(&length_bci).copied(),
+                by_bci.get(&allocation_bci).copied(),
+            )
+            || !instruction_follows(by_bci.get(&allocation_bci).copied(), table_write_fact)
+        {
+            return shape(
+                "a selected table is not initialized in values()->length->int[]->putstatic order",
+            );
+        }
+        let (Some(table_read_bcis), Some(values_owner_calls), Some(ordinal_owner_calls)) = (
+            table_reads.get(table_name),
+            values_calls.get(request.enum_owner.as_str()),
+            ordinal_calls.get(request.enum_owner.as_str()),
+        ) else {
+            return shape("a selected table has no complete reads or enum calls");
+        };
+        if values_owner_calls.len()
+            != requests
                 .iter()
-                .any(|candidate| candidate.as_slice() == constant.as_bytes())
-            || !enum_field_reads.contains(&(constant_bci, constant.as_bytes().to_vec()))
+                .filter(|other| other.enum_owner == request.enum_owner)
+                .count()
         {
-            return shape(
-                "the ordinal receiver is not a declared ACC_ENUM field of the selected enum",
-            );
+            return shape("selected table initializers are not unique or ordered");
         }
-        let Some((key_bci, Operation::Push(crate::facts::ConstantValue::Int(key)))) =
-            producer(ssa, operands[2].1, &operations)
-        else {
-            return shape("a table mapping value is not a proved integer constant");
-        };
-        if !used_pushes.contains(&key_bci)
-            || !seen_keys.insert(i64::from(*key))
-            || !seen_constants.insert(constant.as_bytes().to_vec())
-        {
-            return shape("the helper repeats a table key, enum constant, or key producer");
-        }
-
-        let Some(table_read_instruction) = by_bci.get(&table_read_bci).copied() else {
-            return shape("a table read has no physical instruction fact");
-        };
-        let Some(constant_instruction) = by_bci.get(&constant_bci).copied() else {
-            return shape("an enum constant read has no physical instruction fact");
-        };
-        let Some(ordinal_instruction_fact) = by_bci.get(&ordinal_bci).copied() else {
-            return shape("an ordinal call has no physical instruction fact");
-        };
-        let Some(key_instruction) = by_bci.get(&key_bci).copied() else {
-            return shape("a mapping key has no physical instruction fact");
-        };
-        let Some(store_instruction_fact) = by_bci.get(&store_bci).copied() else {
-            return shape("an array write has no physical instruction fact");
-        };
-        if !instruction_follows(Some(table_read_instruction), Some(constant_instruction))
-            || !instruction_follows(Some(constant_instruction), Some(ordinal_instruction_fact))
-            || !instruction_follows(Some(ordinal_instruction_fact), Some(key_instruction))
-            || !instruction_follows(Some(key_instruction), Some(store_instruction_fact))
-        {
-            return shape(
-                "a mapping write's table, enum, ordinal, key and store are not one ordered path",
-            );
-        }
-        let group_start = table_read_bci;
-        let group_end = store_bci.saturating_add(store_instruction_fact.width);
-        let Some(handler) = code
-            .exception_handlers
-            .iter()
-            .find(|handler| handler.start_bci == group_start && handler.end_bci == group_end)
-        else {
-            return shape("a mapping write is not enclosed by its exact exception-table range");
-        };
-        if !catch_type_is(
-            ir.constant_pool(),
-            handler.catch_type_index,
-            b"java/lang/NoSuchFieldError",
-        ) {
-            return shape("a mapping write's handler does not catch exactly NoSuchFieldError");
-        }
-        let Some(handler_instruction) = by_bci.get(&handler.handler_bci).copied() else {
-            return shape("a NoSuchFieldError handler has no instruction");
-        };
-        if !matches!(
-            operation_at(handler.handler_bci),
-            Some(Operation::Store { .. })
+        let mut entries = Vec::new();
+        let mut seen_keys = BTreeSet::new();
+        let mut seen_constants = BTreeSet::new();
+        if !claim_bcis(
+            &mut globally_accounted,
+            &[values_bci, length_bci, allocation_bci, table_write_bci],
         ) {
             return shape(
-                "a mapping write's handler has unproved effects or no enclosing transfer",
+                "a shared initializer instruction is assigned to more than one table group",
             );
         }
-        let transfer_bci = store_instruction_fact
-            .bci
-            .saturating_add(store_instruction_fact.width);
-        let Some(transfer_fact) = by_bci.get(&transfer_bci).copied() else {
-            return shape("a mapping write is not followed by its normal-path transfer");
-        };
-        if operation_at(transfer_bci) != Some(&Operation::Transfer)
-            || !instruction_follows(Some(store_instruction_fact), Some(transfer_fact))
-        {
-            return shape("a mapping write is not followed by its normal-path transfer");
+        let mut table_store_bcis = Vec::new();
+        for store_bci in stores.iter().copied() {
+            let Some(store_instruction) = ssa
+                .blocks()
+                .iter()
+                .flat_map(|block| block.instructions())
+                .find(|instruction| instruction.bci() == store_bci)
+            else {
+                return shape("a shared mapping write has no SSA instruction");
+            };
+            let operands = stack_operands(store_instruction);
+            if operands.len() != 3 {
+                return shape("an int[] mapping write does not read exactly array, index and key");
+            }
+            let Some((
+                table_read_bci,
+                Operation::Field {
+                    access: FieldAccess::Read,
+                    is_static: true,
+                    owner,
+                    name,
+                    descriptor,
+                },
+            )) = producer(ssa, operands[0].1, &operations)
+            else {
+                return shape("a shared mapping write does not use a static table field read");
+            };
+            if owner != helper_owner || name.as_str() != table_name || descriptor != "[I" {
+                continue;
+            }
+            let Some((ordinal_bci, Operation::Invoke(target))) =
+                producer(ssa, operands[1].1, &operations)
+            else {
+                return shape("a selected table index is not produced by enum ordinal()");
+            };
+            if target.kind() != crate::facts::InvokeKind::Virtual
+                || target.owner() != request.enum_owner
+                || target.name() != "ordinal"
+                || target.descriptor() != "()I"
+                || !ordinal_owner_calls.contains(&ordinal_bci)
+            {
+                return shape("a selected table index is not produced by its enum ordinal() call");
+            }
+            let Some(ordinal_instruction) = ssa
+                .blocks()
+                .iter()
+                .flat_map(|block| block.instructions())
+                .find(|instruction| instruction.bci() == ordinal_bci)
+            else {
+                return shape("a selected ordinal call has no SSA instruction");
+            };
+            let Some((_, constant_receiver)) = stack_operands(ordinal_instruction).first().copied()
+            else {
+                return shape("a selected ordinal call has no enum receiver");
+            };
+            let Some((
+                constant_bci,
+                Operation::Field {
+                    access: FieldAccess::Read,
+                    is_static: true,
+                    owner: constant_owner,
+                    name: constant,
+                    descriptor: constant_descriptor,
+                },
+            )) = producer(ssa, constant_receiver, &operations)
+            else {
+                return shape("a selected ordinal receiver is not an enum constant field read");
+            };
+            if constant_owner != &request.enum_owner
+                || constant_descriptor.as_bytes() != enum_descriptor(&request.enum_owner).as_slice()
+                || !request
+                    .enum_constants
+                    .iter()
+                    .any(|candidate| candidate.as_slice() == constant.as_bytes())
+                || !enum_field_reads.iter().any(|(bci, owner, name)| {
+                    *bci == constant_bci
+                        && owner == constant_owner
+                        && name.as_slice() == constant.as_bytes()
+                })
+            {
+                return shape("a selected ordinal receiver is not a declared constant of its enum");
+            }
+            let Some((key_bci, Operation::Push(crate::facts::ConstantValue::Int(key)))) =
+                producer(ssa, operands[2].1, &operations)
+            else {
+                return shape("a selected table mapping value is not an integer constant");
+            };
+            if !used_pushes.contains(&key_bci)
+                || !seen_keys.insert(i64::from(*key))
+                || !seen_constants.insert(constant.as_bytes().to_vec())
+            {
+                return shape(&format!(
+                    "selected table `{table_name}` repeats a key, enum constant, or key producer"
+                ));
+            }
+            let (
+                Some(table_read_fact),
+                Some(constant_fact),
+                Some(ordinal_fact),
+                Some(key_fact),
+                Some(store_fact),
+            ) = (
+                by_bci.get(&table_read_bci).copied(),
+                by_bci.get(&constant_bci).copied(),
+                by_bci.get(&ordinal_bci).copied(),
+                by_bci.get(&key_bci).copied(),
+                by_bci.get(&store_bci).copied(),
+            )
+            else {
+                return shape("a selected mapping operation lacks a physical instruction fact");
+            };
+            if !instruction_follows(Some(table_read_fact), Some(constant_fact))
+                || !instruction_follows(Some(constant_fact), Some(ordinal_fact))
+                || !instruction_follows(Some(ordinal_fact), Some(key_fact))
+                || !instruction_follows(Some(key_fact), Some(store_fact))
+            {
+                return shape(
+                    "a selected mapping's table, enum, ordinal, key and store are not one ordered path",
+                );
+            }
+            let group_end = store_bci.saturating_add(store_fact.width);
+            let Some(handler) = code.exception_handlers.iter().find(|handler| {
+                handler.start_bci == table_read_bci && handler.end_bci == group_end
+            }) else {
+                return shape(
+                    "a selected mapping is not enclosed by its exact exception-table range",
+                );
+            };
+            if !catch_type_is(
+                ir.constant_pool(),
+                handler.catch_type_index,
+                b"java/lang/NoSuchFieldError",
+            ) {
+                return shape("a selected mapping handler does not catch exactly NoSuchFieldError");
+            }
+            let Some(handler_fact) = by_bci.get(&handler.handler_bci).copied() else {
+                return shape("a selected mapping handler has no instruction");
+            };
+            if !matches!(
+                operation_at(handler.handler_bci),
+                Some(Operation::Store { .. })
+            ) {
+                return shape("a selected mapping handler has unproved effects");
+            }
+            let transfer_bci = store_bci.saturating_add(store_fact.width);
+            let Some(_transfer_fact) = by_bci.get(&transfer_bci).copied() else {
+                return shape("a selected mapping is not followed by its normal-path transfer");
+            };
+            if operation_at(transfer_bci) != Some(&Operation::Transfer) {
+                return shape("a selected mapping is not followed by a goto");
+            }
+            let handler_next = handler_fact.bci.saturating_add(handler_fact.width);
+            let next_read = table_reads
+                .values()
+                .flatten()
+                .copied()
+                .filter(|read| *read > table_read_bci)
+                .min();
+            let next_values = values_calls
+                .values()
+                .flatten()
+                .copied()
+                .filter(|call| *call > table_read_bci)
+                .min();
+            let continuation = [next_read, next_values, Some(returns[0])]
+                .into_iter()
+                .flatten()
+                .min();
+            if Some(handler_next) != continuation {
+                return shape(
+                    "a selected NoSuchFieldError handler does not rejoin the next mapping or table group",
+                );
+            }
+            let rows: Vec<_> = cfg
+                .handler_rows()
+                .iter()
+                .filter(|row| row.ordinal() == handler.ordinal)
+                .collect();
+            if rows.len() != 1
+                || rows[0].handler().map(|block| block.bci()) != Some(handler.handler_bci)
+            {
+                return shape(
+                    "a selected NoSuchFieldError handler has no unique canonical CFG row",
+                );
+            }
+            let protected_sites: Vec<_> = cfg
+                .throw_sites()
+                .iter()
+                .filter(|site| site.handlers().contains(&handler.ordinal))
+                .collect();
+            if protected_sites.is_empty()
+                || protected_sites
+                    .iter()
+                    .any(|site| site.bci() < handler.start_bci || site.bci() >= handler.end_bci)
+            {
+                return shape(
+                    "a selected NoSuchFieldError CFG edge is outside its exact protected range",
+                );
+            }
+            let expected_protected: BTreeSet<_> = protected_sites
+                .iter()
+                .map(|site| site.block().clone())
+                .collect();
+            let actual_protected: BTreeSet<_> = rows[0].protected().iter().cloned().collect();
+            if actual_protected != expected_protected {
+                return shape(
+                    "a selected NoSuchFieldError CFG row does not match its physical throw sites",
+                );
+            }
+            let handler_target = rows[0].handler().expect("checked above").clone();
+            let expected_edges: BTreeSet<_> = expected_protected
+                .iter()
+                .map(|block| (block.clone(), handler_target.clone()))
+                .collect();
+            let actual_edge_list: Vec<_> = cfg
+                .edges()
+                .iter()
+                .filter_map(|edge| {
+                    (edge.kind()
+                        == jarde_jvm::method_ir::CanonicalEdgeKind::Exception {
+                            handler_ordinal: handler.ordinal,
+                        })
+                    .then(|| (edge.from().clone(), edge.to().clone()))
+                })
+                .collect();
+            let actual_edges: BTreeSet<_> = actual_edge_list.iter().cloned().collect();
+            if actual_edge_list.len() != actual_edges.len() || actual_edges != expected_edges {
+                return shape(
+                    "a selected NoSuchFieldError exception CFG edge is missing, duplicated, or redirected",
+                );
+            }
+            let source_block = cfg.blocks().iter().find(|block| {
+                block
+                    .blocks()
+                    .first()
+                    .is_some_and(|start| *start <= transfer_bci && transfer_bci < block.end_bci())
+            });
+            let target_block = cfg.blocks().iter().find(|block| {
+                block
+                    .blocks()
+                    .first()
+                    .is_some_and(|start| *start <= handler_next && handler_next < block.end_bci())
+            });
+            let (Some(source_block), Some(target_block)) = (source_block, target_block) else {
+                return shape("a selected mapping continuation lacks a CFG block");
+            };
+            let normal_successors: Vec<_> = cfg
+                .edges()
+                .iter()
+                .filter(|edge| {
+                    edge.from() == source_block.id()
+                        && edge.kind() == jarde_jvm::method_ir::CanonicalEdgeKind::Normal
+                })
+                .collect();
+            if normal_successors.len() != 1 || normal_successors[0].to() != target_block.id() {
+                return shape(
+                    "a selected mapping goto does not have one normal successor at its verified continuation",
+                );
+            }
+            if !claim_bcis(
+                &mut globally_accounted,
+                &[
+                    table_read_bci,
+                    constant_bci,
+                    ordinal_bci,
+                    key_bci,
+                    store_bci,
+                    transfer_bci,
+                    handler.handler_bci,
+                ],
+            ) {
+                return shape(
+                    "a shared initializer instruction is assigned to more than one mapping path",
+                );
+            }
+            mapped_pushes.insert(key_bci);
+            if !all_handlers.insert(handler.ordinal) {
+                return shape("a shared mapping handler is assigned to more than one table group");
+            }
+            table_store_bcis.push(store_bci);
+            entries.push(EnumSwitchMapEntry {
+                key: i64::from(*key),
+                constant: constant.as_bytes().to_vec(),
+                constant_field_bci: constant_bci,
+                ordinal_bci,
+                table_read_bci,
+                store_bci,
+                handler_ordinal: handler.ordinal,
+                handler_bci: handler.handler_bci,
+            });
         }
-        let handler_next = handler_instruction
-            .bci
-            .saturating_add(handler_instruction.width);
-        let next_mapping_read = table_reads
+        if table_store_bcis.is_empty() || table_store_bcis.len() != table_read_bcis.len() {
+            return shape("a selected table does not have one proved mapping per table read");
+        }
+        if request
+            .switch_keys
             .iter()
+            .any(|key| !seen_keys.contains(key))
+        {
+            return shape(&format!(
+                "selected table `{table_name}` does not map every used switch key"
+            ));
+        }
+        let mut sorted_keys = request.switch_keys.clone();
+        sorted_keys.sort_unstable();
+        sorted_keys.dedup();
+        if sorted_keys.iter().any(|key| !seen_keys.contains(key)) {
+            return shape(&format!(
+                "selected table `{table_name}` omits a switch case key"
+            ));
+        }
+        let next_group_start = values_calls
+            .values()
+            .flatten()
             .copied()
-            .filter(|read| *read > table_read_bci)
+            .filter(|call| *call > values_bci)
             .min()
             .unwrap_or(returns[0]);
-        if handler_next != next_mapping_read {
-            return shape("a NoSuchFieldError handler does not rejoin at the next mapping step");
-        }
-        let Some(source_block) = cfg.blocks().iter().find(|block| {
-            block
-                .blocks()
-                .first()
-                .is_some_and(|start| *start <= transfer_bci && transfer_bci < block.end_bci())
-        }) else {
-            return shape("a mapping transfer has no CFG block");
-        };
-        let Some(target_block) = cfg.blocks().iter().find(|block| {
-            block.blocks().first().is_some_and(|start| {
-                *start <= next_mapping_read && next_mapping_read < block.end_bci()
-            })
-        }) else {
-            return shape("a mapping continuation has no CFG block");
-        };
-        let normal_successors: Vec<_> = cfg
-            .edges()
-            .iter()
-            .filter(|edge| {
-                edge.from() == source_block.id()
-                    && edge.kind() == jarde_jvm::method_ir::CanonicalEdgeKind::Normal
-            })
-            .collect();
-        if normal_successors.len() != 1 || normal_successors[0].to() != target_block.id() {
+        if table_write_bci >= next_group_start
+            || table_read_bcis
+                .iter()
+                .any(|read| *read <= table_write_bci || *read >= next_group_start)
+            || table_reads
+                .iter()
+                .filter(|(other, reads)| {
+                    **other != table_name
+                        && reads
+                            .iter()
+                            .any(|read| *read >= values_bci && *read < next_group_start)
+                })
+                .next()
+                .is_some()
+        {
             return shape(
-                "the mapping goto does not have one unique normal successor at the next mapping step",
+                "shared table initializer groups are interleaved or not contiguous in BCI order",
             );
         }
-
-        accounted_bcis.extend([
-            table_read_bci,
-            constant_bci,
-            ordinal_bci,
-            key_bci,
-            store_bci,
-            transfer_bci,
-            handler.handler_bci,
-        ]);
-        mapped_pushes.insert(key_bci);
-        entries.push(EnumSwitchMapEntry {
-            key: i64::from(*key),
-            constant: constant.as_bytes().to_vec(),
-            constant_field_bci: constant_bci,
-            ordinal_bci,
-            table_read_bci,
-            store_bci,
-            handler_ordinal: handler.ordinal,
-            handler_bci: handler.handler_bci,
+        entries.sort_by_key(|entry| entry.store_bci);
+        proofs.push(EnumSwitchMapProof {
+            initializer: ir
+                .declaration()
+                .map(|declaration| declaration.identity().clone()),
+            allocation_bci,
+            table_write_bci,
+            entries,
         });
     }
-    entries.sort_by_key(|entry| entry.store_bci);
-    let mut expected_keys: Vec<i64> = switch_keys.to_vec();
-    expected_keys.sort_unstable();
-    expected_keys.dedup();
-    let mut mapped_keys: Vec<i64> = entries.iter().map(|entry| entry.key).collect();
-    mapped_keys.sort_unstable();
-    if expected_keys
-        .iter()
-        .any(|expected| mapped_keys.binary_search(expected).is_err())
-    {
-        return shape("the helper does not map every used non-default switch key");
+    if mapped_pushes != used_pushes || all_handlers.len() != code.exception_handlers.len() {
+        return shape("the shared helper has an unconsumed key or unmatched handler");
     }
-    if used_pushes != mapped_pushes {
-        return shape("the helper has an unconsumed integer constant");
-    }
-    if accounted_bcis.len() != code.instructions.len()
+    if globally_accounted.len() != code.instructions.len()
         || code
             .instructions
             .iter()
-            .any(|instruction| !accounted_bcis.contains(&instruction.bci))
+            .any(|instruction| !globally_accounted.contains(&instruction.bci))
     {
-        return shape("the helper `<clinit>` has an instruction outside the proved map paths");
+        return shape(
+            "the shared helper `<clinit>` has an instruction outside the selected map groups and final return",
+        );
     }
-    let expected_handler_ordinals: BTreeSet<u32> =
-        entries.iter().map(|entry| entry.handler_ordinal).collect();
-    if expected_handler_ordinals.len() != code.exception_handlers.len()
-        || code
-            .exception_handlers
-            .iter()
-            .any(|handler| !expected_handler_ordinals.contains(&handler.ordinal))
-    {
-        return shape("the helper has an extra, shared, or unmatched exception handler");
-    }
-
     crate::stop::charge(
         budget,
-        jarde_reader::budget::CountedBudgetDimension::IrItems,
-        u64::try_from(entries.len())
+        CountedBudgetDimension::IrItems,
+        u64::try_from(stores.len())
             .unwrap_or(u64::MAX)
             .saturating_mul(8),
-        Some(table_write_bci),
+        None,
     )?;
-    Ok(Ok(EnumSwitchMapProof {
-        initializer: ir
-            .declaration()
-            .map(|declaration| declaration.identity().clone()),
-        allocation_bci,
-        table_write_bci,
-        entries,
-    }))
+    Ok(Ok(proofs))
 }
 
 fn enum_descriptor(owner: &str) -> Vec<u8> {
     format!("L{owner};").into_bytes()
+}
+
+fn claim_bcis(claimed: &mut BTreeSet<u32>, bcis: &[u32]) -> bool {
+    if bcis.iter().any(|bci| claimed.contains(bci)) {
+        return false;
+    }
+    claimed.extend(bcis.iter().copied());
+    true
 }
 
 fn instruction_follows(
