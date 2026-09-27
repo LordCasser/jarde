@@ -111,6 +111,22 @@ def main():
         print(json.dumps(summary, indent=2))
         if jadx.get("javac_exit") != 0 or jadx.get("runtime_exit") != 0 or jadx.get("stdout") != EXPECTED:
             raise RuntimeError("complete JADX Java 8 replay differs")
+        if jarde.get("javac_exit") != 0 or jarde.get("runtime_exit") != 0 or jarde.get("stdout") != EXPECTED:
+            raise RuntimeError("complete Jarde Java 8 replay differs")
+        source = jarde_source.read_text()
+        if "@bytecode" in source or "not recovered:" in source:
+            raise RuntimeError("Jarde emitted a quoted or missing method")
+        length = source.split("public static int lengthBranch", 1)[1].split("public boolean assignedAndChecked", 1)[0]
+        checked = source.split("public boolean assignedAndChecked", 1)[1].split("private boolean call", 1)[0]
+        if (length.count("arg0.length()") != 1
+                or "(local1 = arg0.length()) > 5" not in length
+                or "return local1;" not in length):
+            raise RuntimeError("Jarde did not keep the length assignment and later read once")
+        if (checked.count("this.call(arg1)") != 1
+                or checked.count("this.field") != 1
+                or "(local2 = this.field) != null" not in checked
+                or "local2.isEmpty()" not in checked):
+            raise RuntimeError("Jarde did not keep call/field/assignment short-circuit order")
 
 
 if __name__ == "__main__":

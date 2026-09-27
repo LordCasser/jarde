@@ -438,7 +438,8 @@ pub(crate) fn committed_presentations(
                     }
                     pending.extend(args.iter().map(Node::Expr));
                 }
-                ExprKind::Lambda { body, .. }
+                ExprKind::LocalAssign { value: body, .. }
+                | ExprKind::Lambda { body, .. }
                 | ExprKind::MethodReference {
                     qualifier: body, ..
                 }

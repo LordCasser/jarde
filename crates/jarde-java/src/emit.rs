@@ -975,6 +975,11 @@ impl<'a> Emitter<'a> {
         let at = Some(expr.origin.primary().bci());
         self.node(&expr.origin, |emitter| match &expr.kind {
             ExprKind::Local(name) => emitter.put(name, at),
+            ExprKind::LocalAssign { name, value, .. } => {
+                emitter.put(name, at)?;
+                emitter.put(" = ", at)?;
+                emitter.expr(value)
+            }
             ExprKind::Integer(value) => emitter.put(&value.to_string(), at),
             ExprKind::Boolean(value) => emitter.put(if *value { "true" } else { "false" }, at),
             ExprKind::Long(value) => emitter.put(&format!("{value}L"), at),
@@ -1470,11 +1475,11 @@ const CONDITIONAL: u8 = 1;
 /// Java's own (JLS 15). A lambda is an AssignmentExpression (15.27), looser than every operator and
 /// every suffix; the binary operators are 15.17–15.20; `!` is 15.15.6; everything else is a Primary
 /// or an ExpressionName. The comparison is a total rule rather than a table over pairs because
-/// every binary operator this subset writes is left-associative, and the AST's subset carries no
-/// assignment node whose associativity would need a second rule.
+/// every binary operator this subset writes is left-associative. A local assignment is deliberately
+/// below the conditional operator and is printed as the sole right-hand assignment expression.
 fn expression_binding(kind: &ExprKind) -> u8 {
     match kind {
-        ExprKind::Lambda { .. } => 0,
+        ExprKind::Lambda { .. } | ExprKind::LocalAssign { .. } => 0,
         ExprKind::PostfixUpdate { .. } => POSTFIX,
         ExprKind::Conditional { .. } => CONDITIONAL,
         ExprKind::Binary { op, .. } => binary_binding(*op),
@@ -2465,6 +2470,63 @@ mod tests {
             },
             bci,
         )
+    }
+
+    #[test]
+    fn local_assignment_is_grouped_under_comparison_and_null_test() {
+        let assigned_length = Expr::direct(
+            ExprKind::LocalAssign {
+                name: "length".to_owned(),
+                value: Box::new(call_at(Some(local_at("text", 8)), "length", vec![], 9)),
+                ty: Type::Int,
+            },
+            12,
+        )
+        .derived_from(11);
+        let (length, map) = emitted_value(binary_at(
+            BinaryOp::Greater,
+            assigned_length,
+            integer_at(5, 13),
+            14,
+        ));
+        assert!(
+            length.text.contains("(length = text.length()) > 5;"),
+            "{}",
+            length.text
+        );
+        assert_eq!(length.text.matches("text.length()").count(), 1);
+        assert!(!map.of_bci(11).is_empty());
+        assert!(!map.of_bci(12).is_empty());
+
+        let field = Expr::direct(
+            ExprKind::Field {
+                receiver: Box::new(local_at("this", 8)),
+                name: "field".to_owned(),
+            },
+            9,
+        )
+        .presenting(Type::Reference("java.lang.String".to_owned()));
+        let assigned_field = Expr::direct(
+            ExprKind::LocalAssign {
+                name: "value".to_owned(),
+                value: Box::new(field),
+                ty: Type::Reference("java.lang.String".to_owned()),
+            },
+            13,
+        )
+        .derived_from(12);
+        let (null_test, _) = emitted_value(binary_at(
+            BinaryOp::NotEqual,
+            assigned_field,
+            Expr::direct(ExprKind::Null, 14),
+            14,
+        ));
+        assert!(
+            null_test.text.contains("(value = this.field) != null;"),
+            "{}",
+            null_test.text
+        );
+        assert_eq!(null_test.text.matches("this.field").count(), 1);
     }
 
     fn call_at(receiver: Option<Expr>, name: &str, args: Vec<Expr>, bci: u32) -> Expr {
