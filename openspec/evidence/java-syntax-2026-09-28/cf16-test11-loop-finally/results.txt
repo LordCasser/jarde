@@ -1,0 +1,12 @@
+pinned_test_source_sha256=3e077dc69f9325fa55dec9ba92ba14a508b2ae4e6ce3d05aeb3462f9c2df1bf5
+pinned_testcls_class_sha256=3a67a7f63596c5ca7b7dbdb97a2027224d69f2a1d7b21e4f598d897510bc5f92
+bytecode_shape_check=passed
+testcls_original_java_Xverify_all=passed (two:102, empty:100)
+testcls_jadx_javac_and_java_Xverify_all=passed (two:102, empty:100)
+testcls_jarde_explanation_only_marker=present
+testcls_jarde_javac_and_java_Xverify_all=passed (two:0, empty:0)
+probe_original_java_Xverify_all=passed (ok:102, throw:102:body)
+probe_jadx_javac_and_java_Xverify_all=passed (ok:102, throw:102:body)
+probe_jarde_explanation_only_marker=present
+probe_jarde_javac_and_java_Xverify_all=passed (ok:0, ok:0)
+behavior_claim=Jarde source is a compilable presentation of a safely refused method; runtime mismatch is not claimed as correct recovery

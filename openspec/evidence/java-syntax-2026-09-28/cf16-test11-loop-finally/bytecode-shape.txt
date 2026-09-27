@@ -1,0 +1,4 @@
+pinned_bci_0_to_79=true
+pinned_exception_table=[0,4)->38 any;[38,40)->38 any
+probe_instruction_addresses_and_exception_table_match=true
+documented_opcode_differences=1,29,70:invokevirtual/invokespecial

@@ -1,0 +1,193 @@
+Classfile /var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/cf16-test11-loop-work.8iTrV5/probe-original/FinallyLoop.class
+  Last modified 2026年9月28日; size 1401 bytes
+  SHA-256 checksum 1cf56188ebcff9b8add58b3fd10796d2f789f3ffc0c22b4c7a6da7e8ecb663fc
+  Compiled from "FinallyLoop.java"
+public class FinallyLoop
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // FinallyLoop
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 5, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // FinallyLoop.call1:()V
+   #8 = Class              #10            // FinallyLoop
+   #9 = NameAndType        #11:#6         // call1:()V
+  #10 = Utf8               FinallyLoop
+  #11 = Utf8               call1
+  #12 = InterfaceMethodref #13.#14        // java/util/List.iterator:()Ljava/util/Iterator;
+  #13 = Class              #15            // java/util/List
+  #14 = NameAndType        #16:#17        // iterator:()Ljava/util/Iterator;
+  #15 = Utf8               java/util/List
+  #16 = Utf8               iterator
+  #17 = Utf8               ()Ljava/util/Iterator;
+  #18 = InterfaceMethodref #19.#20        // java/util/Iterator.hasNext:()Z
+  #19 = Class              #21            // java/util/Iterator
+  #20 = NameAndType        #22:#23        // hasNext:()Z
+  #21 = Utf8               java/util/Iterator
+  #22 = Utf8               hasNext
+  #23 = Utf8               ()Z
+  #24 = InterfaceMethodref #19.#25        // java/util/Iterator.next:()Ljava/lang/Object;
+  #25 = NameAndType        #26:#27        // next:()Ljava/lang/Object;
+  #26 = Utf8               next
+  #27 = Utf8               ()Ljava/lang/Object;
+  #28 = Methodref          #8.#29         // FinallyLoop.call2:(Ljava/lang/Object;)V
+  #29 = NameAndType        #30:#31        // call2:(Ljava/lang/Object;)V
+  #30 = Utf8               call2
+  #31 = Utf8               (Ljava/lang/Object;)V
+  #32 = Fieldref           #8.#33         // FinallyLoop.count:I
+  #33 = NameAndType        #34:#35        // count:I
+  #34 = Utf8               count
+  #35 = Utf8               I
+  #36 = Fieldref           #8.#37         // FinallyLoop.fail:Z
+  #37 = NameAndType        #38:#39        // fail:Z
+  #38 = Utf8               fail
+  #39 = Utf8               Z
+  #40 = Class              #41            // java/lang/IllegalStateException
+  #41 = Utf8               java/lang/IllegalStateException
+  #42 = String             #43            // body
+  #43 = Utf8               body
+  #44 = Methodref          #40.#45        // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #45 = NameAndType        #5:#46         // "<init>":(Ljava/lang/String;)V
+  #46 = Utf8               (Ljava/lang/String;)V
+  #47 = Utf8               Code
+  #48 = Utf8               LineNumberTable
+  #49 = Utf8               LocalVariableTable
+  #50 = Utf8               this
+  #51 = Utf8               LFinallyLoop;
+  #52 = Utf8               test
+  #53 = Utf8               (Ljava/util/List;)V
+  #54 = Utf8               item
+  #55 = Utf8               Ljava/lang/Object;
+  #56 = Utf8               list
+  #57 = Utf8               Ljava/util/List;
+  #58 = Utf8               LocalVariableTypeTable
+  #59 = Utf8               Ljava/util/List<Ljava/lang/Object;>;
+  #60 = Utf8               StackMapTable
+  #61 = Class              #62            // java/lang/Throwable
+  #62 = Utf8               java/lang/Throwable
+  #63 = Utf8               Signature
+  #64 = Utf8               (Ljava/util/List<Ljava/lang/Object;>;)V
+  #65 = Utf8               ()I
+  #66 = Utf8               SourceFile
+  #67 = Utf8               FinallyLoop.java
+{
+  public static boolean fail;
+    descriptor: Z
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public FinallyLoop();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LFinallyLoop;
+
+  public void test(java.util.List<java.lang.Object>);
+    descriptor: (Ljava/util/List;)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=7, args_size=2
+         0: aload_0
+         1: invokespecial #7                  // Method call1:()V
+         4: aload_1
+         5: invokeinterface #12,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+        10: astore_2
+        11: aload_2
+        12: invokeinterface #18,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+        17: ifeq          35
+        20: aload_2
+        21: invokeinterface #24,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        26: astore_3
+        27: aload_0
+        28: aload_3
+        29: invokespecial #28                 // Method call2:(Ljava/lang/Object;)V
+        32: goto          11
+        35: goto          79
+        38: astore        4
+        40: aload_1
+        41: invokeinterface #12,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+        46: astore        5
+        48: aload         5
+        50: invokeinterface #18,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+        55: ifeq          76
+        58: aload         5
+        60: invokeinterface #24,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        65: astore        6
+        67: aload_0
+        68: aload         6
+        70: invokespecial #28                 // Method call2:(Ljava/lang/Object;)V
+        73: goto          48
+        76: aload         4
+        78: athrow
+        79: return
+      Exception table:
+         from    to  target type
+             0     4    38   any
+            38    40    38   any
+      LineNumberTable:
+        line 9: 0
+        line 11: 4
+        line 12: 27
+        line 13: 32
+        line 14: 35
+        line 11: 38
+        line 12: 67
+        line 13: 73
+        line 14: 76
+        line 15: 79
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           27       5     3  item   Ljava/lang/Object;
+           67       6     6  item   Ljava/lang/Object;
+            0      80     0  this   LFinallyLoop;
+            0      80     1  list   Ljava/util/List;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      80     1  list   Ljava/util/List<Ljava/lang/Object;>;
+      StackMapTable: number_of_entries = 6
+        frame_type = 252 /* append */
+          offset_delta = 11
+          locals = [ class java/util/Iterator ]
+        frame_type = 250 /* chop */
+          offset_delta = 23
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 9
+          locals = [ class FinallyLoop, class java/util/List, top, top, class java/lang/Throwable, class java/util/Iterator ]
+          stack = []
+        frame_type = 250 /* chop */
+          offset_delta = 27
+        frame_type = 248 /* chop */
+          offset_delta = 2
+    Signature: #64                          // (Ljava/util/List<Ljava/lang/Object;>;)V
+
+  public int count();
+    descriptor: ()I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #32                 // Field count:I
+         4: ireturn
+      LineNumberTable:
+        line 29: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LFinallyLoop;
+}
+SourceFile: "FinallyLoop.java"
