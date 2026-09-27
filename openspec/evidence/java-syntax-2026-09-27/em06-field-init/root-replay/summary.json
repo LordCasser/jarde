@@ -1,0 +1,41 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "test/java/jadx/tests/integration/others/TestFieldInit3.java": "9b67a2a4bed2ae8b17d6416306dde9f5ef407399b841dcf5796edfb9bc4ec0cf",
+    "test/java/jadx/tests/integration/others/TestFieldInitInTryCatch.java": "7de1be987595913b00f06896631260846c142540cd61466b88b7a704e3488b8e",
+    "test/java/jadx/tests/integration/others/TestFieldInitNegative.java": "3c6cdc9b9f96c1c72b3debfac1bf2587f1b650397d5ffa38e79a66abce80a0df",
+    "test/java/jadx/tests/integration/others/TestFieldInitOrderStatic.java": "96cf60ae5a82309aa74b980f95652ff01e43497120a3d6114dcd00c4299015ef",
+    "test/java/jadx/tests/integration/arrays/TestArrayInitField.java": "245af9a71da469252343fcc845300c7668d14383f6ef597ecb686177bb2d732c",
+    "main/java/jadx/core/dex/visitors/ExtractFieldInit.java": "27127441f0667fd8ef3a3e4ac27031fed9c55054f3fb5797d869a64b97da8e68",
+    "main/java/jadx/core/codegen/ClassGen.java": "9181b93a84d38b0cca68170e3886291da27ae5e5fcaf5535e4835b51ec3c5ba3"
+  },
+  "jarde_cli_sha256": "2d63a7da67cdacd1523e424d104170a8b6d74cb68ed8ff96dba253590b4e2c69",
+  "original_class_sha256": "03b18be579259b2ec4a7ae77502ca00d7fb5ce1db43a71032ab6bab977e8c983",
+  "input_sha256": {
+    "Runner.java": "1d0f3dd41ac5dafad25ba732b48bfd0207d1567e9961c36d7c41d3a687f0c65f",
+    "FieldOrder.java": "dc4ff2a9b441ff69dca6716ac62e616fa1115e56569902a04ffef0cc72e5e08e"
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "a:ab:abc:abc\nsb2",
+    "source_sha256": "dc4ff2a9b441ff69dca6716ac62e616fa1115e56569902a04ffef0cc72e5e08e"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "a:ab:abc:abc\nsb2",
+    "source_sha256": "097664d4b7c9d679c66ede7de19b6bd9017d5983e147cfd7e95322f38cd6e456"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "a:ab:abc:abc\nsb2",
+    "source_sha256": "c624615d39f99c8fc3721ae0b8887eb6f2232c873b640e1bcdaf6539dd64a14a"
+  },
+  "static_fields_inline": {
+    "jadx": true,
+    "jarde": true
+  },
+  "instance_write_not_hoisted": true
+}

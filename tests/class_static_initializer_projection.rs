@@ -101,6 +101,26 @@ fn no_projected_fields(report: &ClassSourceReport) {
 }
 
 #[test]
+fn ordinary_class_without_clinit_has_no_initializer_group() {
+    let dir = std::env::temp_dir().join(format!("jarde-em06-absent-{}", std::process::id()));
+    fs::create_dir_all(&dir).expect("scratch directory");
+    compile(
+        &dir,
+        "NoInitializer.java",
+        "class NoInitializer { static int value; }",
+    );
+    let bytes = fs::read(dir.join("NoInitializer.class")).expect("compiled class");
+    let report = report(&bytes, "NoInitializer");
+    assert!(matches!(
+        report.initializer_proof,
+        ClassSourceInitializerProof::NotApplicable
+    ));
+    assert!(report.text.contains("static int value;"));
+    assert!(!report.text.contains("static {"));
+    fs::remove_dir_all(dir).expect("remove scratch directory");
+}
+
+#[test]
 fn em06_projects_only_the_complete_static_chain() {
     let dir = std::env::temp_dir().join(format!("jarde-em06-positive-{}", std::process::id()));
     fs::create_dir_all(&dir).expect("scratch directory");
