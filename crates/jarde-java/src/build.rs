@@ -25540,6 +25540,9 @@ mod tests {
         let ssa = ir.ssa().expect("the method publishes SSA");
         let code = ir.code().expect("the method publishes its decode");
         let operations = Operations::of(code, ir.constant_pool());
+        let chains =
+            crate::concat::plan_four_conditional_strings(ssa, canonical, &operations, &mut budget)
+                .expect("the fixture concat plan builds");
         let view = crate::normal_flow::NormalFlowView::build(canonical, &mut budget)
             .expect("the bounded normal-flow view builds");
         let recovered = crate::region::recover(
@@ -25547,6 +25550,7 @@ mod tests {
             &view,
             ssa,
             &operations,
+            &chains,
             &crate::init::Sites::empty(),
             code,
             Some(false),
