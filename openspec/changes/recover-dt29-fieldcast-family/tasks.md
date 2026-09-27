@@ -4,8 +4,8 @@
 
 ## 2. P1：跨接收者字段和私有调用
 
-- [ ] 2.1 在现有选中类层级及字段/调用证书上逐 BCI 证明 C/D 的 B 接收者访问 A 四字段和 A.access$002、根类三次 B 实参调用私有 bits(A)；独立 A/B/C/D/根类完整 fixture 原/JADX/Jarde Java 8 重编、验证运行且相关方法无 `@bytecode`。
-- [ ] 2.2 用隐藏字段、错父类/CP owner/name/descriptor、跨包访问、private/static/final 变体、错 SSA 接收者、accessor 歧义与竞争 bits(B) 重载验证安全拒绝、来源和预算/取消；相关 Rust 定向测试通过。
+- [x] 2.1 在现有选中类层级及字段/调用证书上逐 BCI 证明 C/D 的 B 接收者访问 A 四字段和 A.access$002、根类三次 B 实参调用私有 bits(A)；独立 A/B/C/D/根类完整 fixture 原/JADX/Jarde Java 8 重编、验证运行且相关方法无 `@bytecode`。
+- [x] 2.2 用隐藏字段、错父类/CP owner/name/descriptor、跨包访问、private/static/final 变体、错 SSA 接收者、accessor 歧义与竞争 bits(B) 重载验证安全拒绝、来源和预算/取消；相关 Rust 定向测试通过。
 
 ## 3. P2：有正文的泛型 void 声明
 
@@ -14,8 +14,8 @@
 
 ## 4. P3：跨块四条件拼接
 
-- [ ] 4.1 证明 bits 的唯一 builder、四个条件值与 φ、四次 append(String)、四个字段读取和最终返回的块/SSA/效果顺序，复用现有拼接或最小语句投影；独立完整类族原/JADX/Jarde Java 8 重编、验证运行 `1111/0000/混合位型` 一致且无 `@bytecode`。
-- [ ] 4.2 用 builder 别名、φ 复用/交换、额外效果或异常边、不同 append 重载、缺 getter 和预算/取消验证安全拒绝及物理来源；拼接及相邻方法 Rust 测试通过。
+- [x] 4.1 证明 bits 的唯一 builder、四个条件值与 φ、四次 append(String)、四个字段读取和最终返回的块/SSA/效果顺序，复用现有拼接或最小语句投影；独立完整类族原/JADX/Jarde Java 8 重编、验证运行 `1111/0000/混合位型` 一致且无 `@bytecode`。
+- [x] 4.2 用 builder 别名、φ 复用/交换、额外效果或异常边、不同 append 重载、缺 getter 和预算/取消验证安全拒绝及物理来源；拼接及相邻方法 Rust 测试通过。
 
 ## 5. 完整类族集成验收
 
