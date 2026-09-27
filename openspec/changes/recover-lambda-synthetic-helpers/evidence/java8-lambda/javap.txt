@@ -1,0 +1,167 @@
+Classfile /private/var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/dt25-lambda.8svCTB/original/LambdaFixture.class
+  Last modified 2026年9月27日; size 1225 bytes
+  SHA-256 checksum 8d5613ac0fecd48e8756d4c40bdff07e1802af1c22a751ad3c155bd575e9dca9
+  Compiled from "LambdaFixture.java"
+public final class LambdaFixture
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #18                         // LambdaFixture
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 7, attributes: 3
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = InvokeDynamic      #0:#8          // #0:getAsInt:()Ljava/util/function/IntSupplier;
+   #8 = NameAndType        #9:#10         // getAsInt:()Ljava/util/function/IntSupplier;
+   #9 = Utf8               getAsInt
+  #10 = Utf8               ()Ljava/util/function/IntSupplier;
+  #11 = InvokeDynamic      #1:#12         // #1:applyAsInt:()Ljava/util/function/IntUnaryOperator;
+  #12 = NameAndType        #13:#14        // applyAsInt:()Ljava/util/function/IntUnaryOperator;
+  #13 = Utf8               applyAsInt
+  #14 = Utf8               ()Ljava/util/function/IntUnaryOperator;
+  #15 = InvokeDynamic      #2:#16         // #2:applyAsInt:()Ljava/util/function/IntBinaryOperator;
+  #16 = NameAndType        #13:#17        // applyAsInt:()Ljava/util/function/IntBinaryOperator;
+  #17 = Utf8               ()Ljava/util/function/IntBinaryOperator;
+  #18 = Class              #19            // LambdaFixture
+  #19 = Utf8               LambdaFixture
+  #20 = Utf8               Code
+  #21 = Utf8               LineNumberTable
+  #22 = Utf8               zero
+  #23 = Utf8               one
+  #24 = Utf8               two
+  #25 = Utf8               lambda$two$2
+  #26 = Utf8               (II)I
+  #27 = Utf8               lambda$one$1
+  #28 = Utf8               (I)I
+  #29 = Utf8               lambda$zero$0
+  #30 = Utf8               ()I
+  #31 = Utf8               SourceFile
+  #32 = Utf8               LambdaFixture.java
+  #33 = Utf8               BootstrapMethods
+  #34 = MethodType         #30            //  ()I
+  #35 = MethodHandle       6:#36          // REF_invokeStatic LambdaFixture.lambda$zero$0:()I
+  #36 = Methodref          #18.#37        // LambdaFixture.lambda$zero$0:()I
+  #37 = NameAndType        #29:#30        // lambda$zero$0:()I
+  #38 = MethodType         #28            //  (I)I
+  #39 = MethodHandle       6:#40          // REF_invokeStatic LambdaFixture.lambda$one$1:(I)I
+  #40 = Methodref          #18.#41        // LambdaFixture.lambda$one$1:(I)I
+  #41 = NameAndType        #27:#28        // lambda$one$1:(I)I
+  #42 = MethodType         #26            //  (II)I
+  #43 = MethodHandle       6:#44          // REF_invokeStatic LambdaFixture.lambda$two$2:(II)I
+  #44 = Methodref          #18.#45        // LambdaFixture.lambda$two$2:(II)I
+  #45 = NameAndType        #25:#26        // lambda$two$2:(II)I
+  #46 = MethodHandle       6:#47          // REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #47 = Methodref          #48.#49        // java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #48 = Class              #50            // java/lang/invoke/LambdaMetafactory
+  #49 = NameAndType        #51:#52        // metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #50 = Utf8               java/lang/invoke/LambdaMetafactory
+  #51 = Utf8               metafactory
+  #52 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #53 = Utf8               InnerClasses
+  #54 = Class              #55            // java/lang/invoke/MethodHandles$Lookup
+  #55 = Utf8               java/lang/invoke/MethodHandles$Lookup
+  #56 = Class              #57            // java/lang/invoke/MethodHandles
+  #57 = Utf8               java/lang/invoke/MethodHandles
+  #58 = Utf8               Lookup
+{
+  public LambdaFixture();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 5: 0
+
+  public static java.util.function.IntSupplier zero();
+    descriptor: ()Ljava/util/function/IntSupplier;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #7,  0              // InvokeDynamic #0:getAsInt:()Ljava/util/function/IntSupplier;
+         5: areturn
+      LineNumberTable:
+        line 7: 0
+
+  public static java.util.function.IntUnaryOperator one();
+    descriptor: ()Ljava/util/function/IntUnaryOperator;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #11,  0             // InvokeDynamic #1:applyAsInt:()Ljava/util/function/IntUnaryOperator;
+         5: areturn
+      LineNumberTable:
+        line 11: 0
+
+  public static java.util.function.IntBinaryOperator two();
+    descriptor: ()Ljava/util/function/IntBinaryOperator;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: invokedynamic #15,  0             // InvokeDynamic #2:applyAsInt:()Ljava/util/function/IntBinaryOperator;
+         5: areturn
+      LineNumberTable:
+        line 15: 0
+
+  private static int lambda$two$2(int, int);
+    descriptor: (II)I
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: iload_0
+         1: bipush        10
+         3: imul
+         4: iload_1
+         5: iadd
+         6: ireturn
+      LineNumberTable:
+        line 15: 0
+
+  private static int lambda$one$1(int);
+    descriptor: (I)I
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iload_0
+         1: bipush        10
+         3: iadd
+         4: ireturn
+      LineNumberTable:
+        line 11: 0
+
+  private static int lambda$zero$0();
+    descriptor: ()I
+    flags: (0x100a) ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: bipush        7
+         2: ireturn
+      LineNumberTable:
+        line 7: 0
+}
+SourceFile: "LambdaFixture.java"
+BootstrapMethods:
+  0: #46 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #34 ()I
+      #35 REF_invokeStatic LambdaFixture.lambda$zero$0:()I
+      #34 ()I
+  1: #46 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #38 (I)I
+      #39 REF_invokeStatic LambdaFixture.lambda$one$1:(I)I
+      #38 (I)I
+  2: #46 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #42 (II)I
+      #43 REF_invokeStatic LambdaFixture.lambda$two$2:(II)I
+      #42 (II)I
+InnerClasses:
+  public static final #58= #54 of #56;    // Lookup=class java/lang/invoke/MethodHandles$Lookup of class java/lang/invoke/MethodHandles

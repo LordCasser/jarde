@@ -1,0 +1,8 @@
+JADX source revision: 2fb1b16386941660fda07e9017285aec40fcb37f
+JADX CLI: /Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/bin/jadx
+Jarde CLI: /tmp/jarde-dt21-audit-target/debug/jarde-cli (known to include work through DT20; DT21's generic superclass change is unrelated to this fixture)
+Input compiler: javac --release 8
+Runtime check: java -Xverify:all
+Replay: sh openspec/changes/recover-lambda-synthetic-helpers/evidence/java8-lambda/replay.sh
+
+Jarde CLI SHA-256 at replay: 4726f7c997f6a895cc7184a895d8b7371e48a846a35ddcdad24a6eb443a98c0e
