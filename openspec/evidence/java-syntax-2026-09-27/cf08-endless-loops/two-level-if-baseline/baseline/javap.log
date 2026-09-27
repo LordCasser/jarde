@@ -1,0 +1,73 @@
+exit=0
+stdout:
+public final class cf08twolvl.TwoLevelIf {
+  private static int calls;
+
+  public cf08twolvl.TwoLevelIf();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  private static int cost(int);
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #7                  // Field calls:I
+       8: iload_0
+       9: ireturn
+
+  static int calls();
+    Code:
+       0: getstatic     #7                  // Field calls:I
+       3: ireturn
+
+  static void resetCalls();
+    Code:
+       0: iconst_0
+       1: putstatic     #7                  // Field calls:I
+       4: return
+
+  public static int pick(int[]);
+    Code:
+       0: aload_0
+       1: ifnonnull     9
+       4: iconst_m1
+       5: istore_1
+       6: goto          61
+       9: aload_0
+      10: arraylength
+      11: istore_2
+      12: iload_2
+      13: ifne          21
+      16: iconst_m1
+      17: istore_1
+      18: goto          55
+      21: iconst_0
+      22: istore_3
+      23: iload_3
+      24: iload_2
+      25: if_icmplt     37
+      28: bipush        7
+      30: invokestatic  #13                 // Method cost:(I)I
+      33: istore_1
+      34: goto          55
+      37: aload_0
+      38: iload_3
+      39: iaload
+      40: istore_1
+      41: iload_1
+      42: iconst_3
+      43: if_icmpne     49
+      46: goto          55
+      49: iinc          3, 1
+      52: goto          23
+      55: iload_1
+      56: getstatic     #7                  // Field calls:I
+      59: iadd
+      60: istore_1
+      61: iload_1
+      62: ireturn
+}
+stderr:
