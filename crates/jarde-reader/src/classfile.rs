@@ -11655,6 +11655,17 @@ mod tests {
     /// added there by this census update. They contribute 56 Code bodies, seven handlers and 98
     /// branch/switch targets. The measured census is now 330 classes, 1,730 bodies, 160 handler
     /// records, 1,000 branch/switch targets and the same eight subroutines.
+    ///
+    /// After that measurement, seven `proved-java-structure` families added 20 classes and 55
+    /// bodies: `anonymous-inner-this` (2/5), `anonymous-interface-basic` (3/5), `package-info-basic`
+    /// (2/2), `enum-arity` (4/17), `anonymous-super-args` (3/10, one target),
+    /// `anonymous-super-direct` (3/9, two targets), and `static-member-basic` (3/7). Their frozen
+    /// inputs and tests were added in `bf5d7282`/`62b7d9dc`, `cb53a197`, `3f5a1b3a`, `dca84d10`,
+    /// `a7183f87`, `4da6a212`, and `36b57495` respectively. `proved-varargs-calls` adds one class,
+    /// 19 bodies and one target (`863a40f3`). The later DT-22 nested-annotation fixture adds three
+    /// classes and one body (`85117144`). These measured additions bring the census to 354 classes,
+    /// 1,805 bodies, 160 handlers, 1,004 branch/switch targets and the same eight subroutines; the
+    /// earlier 351/1,804 measurement predates DT-22's three classes and one body.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -11737,7 +11748,7 @@ mod tests {
             // The 2026-09 syntax-recovery expansion re-measured the whole sweep over the corpus
             // as committed: see the closing paragraph of this test's documentation for the
             // classes added after the previous census and their measured contributions.
-            (330, 1730, 160, 1000, 8),
+            (354, 1805, 160, 1004, 8),
             "fixture population changed: re-measure these counts"
         );
     }

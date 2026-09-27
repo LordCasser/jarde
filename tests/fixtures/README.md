@@ -129,9 +129,9 @@ compression are the production paths, not a test double.
 These Java syntax audit inputs use javac 23.0.1 `--release 8`; fixture-specific generation commands
 and patches are documented beside the inputs. The reader census walks every committed `.class`
 under this directory, validates the complete class and member views, and counts each decodable Code
-body, handler and control-flow target. The 2026-09 syntax-recovery expansion's current corpus
-measures 330 classes, 1,730 Code attributes, 160 handler records, 1,000 branch/switch targets and
-eight historical subroutines. Since the 310 / 1,645 / 144 / 880 baseline recorded in
+body, handler and control-flow target. The 2026-09 syntax-recovery expansion's corpus first measured
+330 classes, 1,730 Code attributes, 160 handler records, 1,000 branch/switch targets and eight
+historical subroutines. Since the 310 / 1,645 / 144 / 880 baseline recorded in
 `54e432ed`, two frozen inputs for conditional boolean field stores add five Code bodies and six
 branch targets each; four `p3-precise-rethrow/v8` inputs add 19 Code bodies, nine handlers and ten
 branch targets. Together these six classes account for the 29 bodies, nine handlers and 22 targets
@@ -141,8 +141,17 @@ four loop/transfer fixtures, two intermediate-join controls, `BoolValue` and `Tw
 Together they add 56 Code bodies, seven handlers and 98 branch/switch targets; all are referenced
 by tests or an OpenSpec record, and the generated bridge control is reproducible from its recorded
 input and generator. See [the census verification](../../openspec/evidence/java-syntax-2026-09-26/reader-census/analysis.md)
-for the full class list and provenance. This is a structural input census, not a claim that every
-fixture is fully recovered.
+for the full class list and provenance.
+
+After that 330-class measurement, committed additions brought the current sweep to 354 classes,
+1,805 Code attributes, 160 handlers and 1,004 branch/switch targets, still with eight historical
+subroutines. Seven `proved-java-structure` families account for 20 classes, 55 bodies and three
+targets: `anonymous-inner-this` (2/5), `anonymous-interface-basic` (3/5), `package-info-basic`
+(2/2), `enum-arity` (4/17), `anonymous-super-args` (3/10, one target), `anonymous-super-direct`
+(3/9, two targets), and `static-member-basic` (3/7). `proved-varargs-calls` adds one class, 19
+bodies and one target; DT-22's nested-annotation fixtures add three classes and one body. Their
+source commits are recorded beside the census assertion in `crates/jarde-reader/src/classfile.rs`.
+This is a structural input census, not a claim that every fixture is fully recovered.
 `corpus-fingerprint.json` records the current corpus file count and digests; adding a fixture input
 requires regenerating and reviewing that manifest. Structural counts do not imply syntax recovery
 acceptance.
