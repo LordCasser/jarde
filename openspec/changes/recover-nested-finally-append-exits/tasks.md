@@ -18,4 +18,4 @@
 
 - [x] 4.1 对固定三方法和最小完整类重放原/JADX/Jarde Java 8 重编、`java -Xverify:all` 九路径；核清理一次、顺序、异常对象/类型、所有物理 BCI 来源和固定 JADX 默认三处 finally；保留 `runTest`/family 独立差距的记录，不宣称整个固定类追平。
 - [x] 4.2 复跑既有 CF-16 单出口、共享调用/字段/布尔赋值、typed catch、CF-18、资源/monitor 及全部定向反例；`cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、`cargo fmt --all -- --check`、`openspec validate recover-nested-finally-append-exits --strict`、`git diff --check` 通过并清理专用 Cargo target。
-- [ ] 4.3 root 独立审阅副本等价、异常派发、SSA/Region owner、源码来源、九路径三方行为和负例，记录验收后更新 CF-16 清单，仅标记已验证的固定三方法与最小完整类。
+- [x] 4.3 root 独立审阅副本等价、异常派发、SSA/Region owner、源码来源、九路径三方行为和负例，记录验收后更新 CF-16 清单，仅标记已验证的固定三方法与最小完整类。
