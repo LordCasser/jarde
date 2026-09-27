@@ -1,0 +1,30 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_test_sha256": {
+    "arrays/TestArrays.java": "ca3b832fc63f4674802d56fed16915f95c57f7d5b26f9f72451830c451bb9284",
+    "code/TestArrayAccessReorder.java": "ae82af6f1838d8d0d858fd7493ad69392531a8ea0db61a0b07d33ba83a4978bc"
+  },
+  "jarde_cli_sha256": "8f1f0012324350e4fc65c7fef4b3e3835102e6d4fda00df280b466270c98e727",
+  "input_sha256": {
+    "Access.java": "80b471c6bdebe10e48c8f08cb5bb63ea3a8bb0f8bff17035a41ef57764363601",
+    "Runner.java": "e8d5dcbf6f4121d0bbcea20c586329b96544b5f390d590c0da6a53e13fe40544"
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "1:5\nAIOOBE\n2\n[-15, -10, -5]",
+    "source_sha256": "80b471c6bdebe10e48c8f08cb5bb63ea3a8bb0f8bff17035a41ef57764363601"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "1:5\nAIOOBE\n2\n[-15, -10, -5]",
+    "source_sha256": "921beb176d75a9e542b12cffbda8c7401480fd6575575fcffc9a989406c15c53"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "1:5\nAIOOBE\n2\n[-15, -10, -5]",
+    "source_sha256": "bbc1c43bb52eb95ec4679cce29f9397a9b414ac1e85fd4d6cd767ddf891e0cf3"
+  }
+}
