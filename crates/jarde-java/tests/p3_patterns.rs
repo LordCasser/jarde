@@ -52,6 +52,9 @@ const STRING_BUFFER: &str = "java/lang/StringBuffer";
 const BOXED_SAM_PROBE: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class"
 );
+const EM21_THIS_ALIAS: &[u8] = include_bytes!("fixtures/em21-this-alias/ThisUse.class");
+const EM21_ALIAS_REFUSALS: &[u8] =
+    include_bytes!("fixtures/em21-this-alias/ThisAliasRefusals.class");
 
 fn limits() -> Limits {
     Limits {
@@ -4506,6 +4509,164 @@ fn class_source_enum_candidate_keeps_same_run_table_switch_and_receiver_identity
     );
     assert!(all.report.produced(), "{:?}", all.report.outcome);
     assert_eq!(all.enum_switches, essential.enum_switches);
+}
+
+#[test]
+fn class_source_elides_only_the_closed_this_alias() {
+    for (method, expected, forbidden) in [
+        (
+            b"inline".as_slice(),
+            ["this.touch()", "this.field = 123"].as_slice(),
+            ["local1", "local1.touch()"].as_slice(),
+        ),
+        (
+            b"checked".as_slice(),
+            [
+                "Objects.isNull((java.lang.Object) this)",
+                "this.touch()",
+                "this.field = 123",
+            ]
+            .as_slice(),
+            ["local1", "local1.touch()"].as_slice(),
+        ),
+    ] {
+        let mut budget = Budget::new(limits());
+        let recovery = recover_class_source_exact(
+            EM21_THIS_ALIAS,
+            method,
+            b"()V",
+            1,
+            jarde_java::RecoveryEvidenceRequest::essential(),
+            &mut budget,
+        );
+        let text = &recovery.report.text;
+        assert!(recovery.report.produced(), "{text}");
+        for fragment in expected {
+            assert!(text.contains(fragment), "missing {fragment:?}: {text}");
+        }
+        for fragment in forbidden {
+            assert!(!text.contains(fragment), "retained {fragment:?}: {text}");
+        }
+    }
+
+    let mut budget = Budget::new(limits());
+    let choose = recover_class_source_exact(
+        EM21_THIS_ALIAS,
+        b"choose",
+        b"()Lem21/ThisUse;",
+        1,
+        jarde_java::RecoveryEvidenceRequest::essential(),
+        &mut budget,
+    );
+    let text = &choose.report.text;
+    assert!(choose.report.produced(), "{text}");
+    for fragment in [
+        "local1 = this",
+        "local1 = new em21.ThisUse()",
+        "local1.touch()",
+        "return local1",
+    ] {
+        assert!(text.contains(fragment), "missing {fragment:?}: {text}");
+    }
+
+    let token = jarde_reader::budget::CancellationToken::new();
+    token.cancel();
+    let mut cancelled_budget = Budget::with_cancellation_token(limits(), token);
+    let cancelled = recover_class_source_exact(
+        EM21_THIS_ALIAS,
+        b"inline",
+        b"()V",
+        1,
+        jarde_java::RecoveryEvidenceRequest::essential(),
+        &mut cancelled_budget,
+    );
+    assert!(
+        !cancelled.report.produced(),
+        "{:?}",
+        cancelled.report.outcome
+    );
+    assert!(
+        cancelled.report.text.is_empty(),
+        "{}",
+        cancelled.report.text
+    );
+}
+
+#[test]
+fn class_source_preserves_aliases_without_closed_receiver_uses() {
+    for (method, descriptor, parameters, expected) in [
+        (
+            b"reassign".as_slice(),
+            b"(Z)Lem21/ThisAliasRefusals;".as_slice(),
+            2,
+            [
+                "local2 = this",
+                "local2 = new em21.ThisAliasRefusals()",
+                "local2.target()",
+                "return local2",
+            ]
+            .as_slice(),
+        ),
+        (
+            b"argument".as_slice(),
+            b"()V".as_slice(),
+            1,
+            ["local1 = this", "consume(local1)"].as_slice(),
+        ),
+        (
+            b"returnAlias".as_slice(),
+            b"()Lem21/ThisAliasRefusals;".as_slice(),
+            1,
+            ["local1 = this", "return local1"].as_slice(),
+        ),
+        (
+            b"readField".as_slice(),
+            b"()I".as_slice(),
+            1,
+            ["return this.value"].as_slice(),
+        ),
+        (
+            b"unusedAlias".as_slice(),
+            b"()V".as_slice(),
+            1,
+            ["local1 = this"].as_slice(),
+        ),
+    ] {
+        let mut budget = Budget::new(limits());
+        let recovery = recover_class_source_exact(
+            EM21_ALIAS_REFUSALS,
+            method,
+            descriptor,
+            parameters,
+            jarde_java::RecoveryEvidenceRequest::essential(),
+            &mut budget,
+        );
+        let text = &recovery.report.text;
+        assert!(recovery.report.produced(), "{text}");
+        for fragment in expected {
+            assert!(text.contains(fragment), "missing {fragment:?}: {text}");
+        }
+    }
+
+    let mut budget = Budget::new(limits());
+    let reused = recover_class_source_exact(
+        EM21_ALIAS_REFUSALS,
+        b"reusedSlot",
+        b"()V",
+        1,
+        jarde_java::RecoveryEvidenceRequest::essential(),
+        &mut budget,
+    );
+    assert!(reused.report.produced(), "{}", reused.report.text);
+    assert!(
+        reused
+            .report
+            .text
+            .contains("no Java declaration can hold both"),
+        "{}",
+        reused.report.text
+    );
+    assert!(!reused.report.text.contains("this.target()"));
 }
 
 #[test]
