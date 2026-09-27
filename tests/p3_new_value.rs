@@ -238,13 +238,21 @@ fn a_leftover_two_instructions_read_keeps_its_refusal() {
         !local_new.contains("new java.lang.Object()"),
         "a leftover two instructions read is not written as a construction:\n{local_new}"
     );
+    for bci in [7, 8, 9] {
+        assert!(
+            local_new.contains(&format!("@bytecode {bci}")),
+            "BCI {bci} remains quoted in the refused construction:\n{local_new}"
+        );
+    }
     assert!(
-        local_new.contains("@bytecode 7"),
-        "the copy the second reader made is named by a quote:\n{local_new}"
-    );
-    assert!(
-        local_new.contains("the value at BCI 9 comes from an Duplicate at BCI 7"),
-        "the second reader is quoted as the copy it read:\n{local_new}"
+        local_new
+            .lines()
+            .collect::<Vec<_>>()
+            .windows(2)
+            .any(|lines| {
+                lines[0].contains("@bytecode 9") && lines[1].contains("copy at BCI 7")
+            }),
+        "the BCI 9 reader remains tied to the copy produced at BCI 7:\n{local_new}"
     );
     assert_eq!(
         recovered_of(&report, "localNew").content,
