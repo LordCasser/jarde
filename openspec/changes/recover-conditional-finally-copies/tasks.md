@@ -1,7 +1,7 @@
 ## 1. 冻结目标与可运行近邻
 
-- [ ] 1.1 在已冻结 Test14 基线上制作只改辅助方法的最小完整类，逐 BCI/opcode/异常行比较 `test()V`，原 class 与 pinned JADX 完整 Java 8 类 `java -Xverify:all` 七路径一致且不受 synthetic accessor 编译缺口影响。
-- [ ] 1.2 制作 verifier 有效的字段/调用/谓词不一致、自保护扩围、外部副本入口及原异常重抛改变近邻；记录每个原 class 行为或验证状态，确保拒绝测试有真实输入。
+- [x] 1.1 在已冻结 Test14 基线上制作只改辅助方法的最小完整类，逐 BCI/opcode/异常行比较 `test()V`，原 class 与 pinned JADX 完整 Java 8 类 `java -Xverify:all` 七路径一致且不受 synthetic accessor 编译缺口影响。
+- [x] 1.2 制作 verifier 有效的字段/调用/谓词不一致、自保护扩围、外部副本入口及原异常重抛改变近邻；记录每个原 class 行为或验证状态，确保拒绝测试有真实输入。
 
 ## 2. 有界双副本证明
 
