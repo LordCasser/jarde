@@ -1,0 +1,32 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_test_sha256": {
+    "arith/TestArith.java": "46021c3b7085bd7ba7117ee4085a0bf9546780fbdbddb60f1c091e71e3a8cf9d",
+    "arith/TestFieldIncrement.java": "0e1906d9c81542212477500a06adb2cfc99ea1c30dd3f071f47624894904ce3c",
+    "arith/TestFieldIncrement2.java": "5dd70254b2eb3cbd202110a44c807a19b01965da7761b7fa18c1edcaec3af247",
+    "variables/TestVariablesDefinitions2.java": "5551ab773e6e5ae1d5ab353cccf8cadd340403e5519f9b0455b732c1a0d9e3bb"
+  },
+  "jarde_cli_sha256": "4c1a3921986240c0f58f7e640ad52b472691a3bf071e1b9fdcff2697c13d88ee",
+  "input_sha256": {
+    "Runner.java": "58c3c60e49c80863756e37c0f1dffe458253d8346dfeb7a9608419f354e0109e",
+    "Updates.java": "f8601ba25a3eb06b9e1837066ca6ff0a7b1098c28103c6e24cbbaa8e9ecd0eef"
+  },
+  "original": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "2:0:A_B_\n5:4",
+    "source_sha256": "f8601ba25a3eb06b9e1837066ca6ff0a7b1098c28103c6e24cbbaa8e9ecd0eef"
+  },
+  "jadx": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "2:0:A_B_\n5:4",
+    "source_sha256": "ef83545195be7a78f7ac28345c20ec9a328b7ee3641edb0170ed6332ba822928"
+  },
+  "jarde": {
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "2:0:A_B_\n5:4",
+    "source_sha256": "b486101f5b7d86403cffd950f20436d2a0587abb6c076e4cb79f7814d0d0fe95"
+  }
+}

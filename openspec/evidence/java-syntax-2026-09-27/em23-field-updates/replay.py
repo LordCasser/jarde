@@ -95,10 +95,13 @@ def main():
             raise RuntimeError("Jarde class-source failed")
         jarde_source = source_dir / "jarde-Updates.java"
         jarde_source.write_text(jarde_result.stdout)
-        for expected in ("this.instanceField += 1", "em23.Updates.staticField = em23.Updates.staticField - 1",
+        for expected in ("this.instanceField++", "em23.Updates.staticField--",
                          "new java.lang.StringBuilder()", "arg1 = arg1 + 2", "arg1 = arg1 + 1"):
             if expected not in jarde_result.stdout:
                 raise RuntimeError(f"Jarde field-update source shape missing: {expected}")
+        for refused in ("this.instanceField += 1", "em23.Updates.staticField = em23.Updates.staticField - 1"):
+            if refused in jarde_result.stdout:
+                raise RuntimeError(f"Jarde retained the superseded field-update shape: {refused}")
         jadx_text = jadx_source.read_text()
         for expected in ("this.instanceField++", "staticField--", "result += str + '_'",
                          "return i + 2", "return i + 1"):
