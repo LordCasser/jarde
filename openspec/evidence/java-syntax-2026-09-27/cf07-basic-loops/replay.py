@@ -91,6 +91,8 @@ def main():
                          "--release", "8", "--format", "text"], out / "jarde.log")
         if recovered.returncode:
             raise RuntimeError("Jarde CLI failed")
+        if "@bytecode" in recovered.stdout:
+            raise RuntimeError("Jarde left a bytecode fallback in complete LoopCases source")
         jarde_source.write_text(recovered.stdout)
         jadx, _ = compile_run("jadx", jadx_source, out, temp)
         jarde, _ = compile_run("jarde", jarde_source, out, temp)
@@ -104,6 +106,8 @@ def main():
         print(json.dumps(summary, indent=2))
         if jadx.get("javac_exit") or jadx.get("runtime_exit") or jadx.get("stdout") != EXPECTED:
             raise RuntimeError("complete JADX Java 8 replay differs")
+        if jarde.get("javac_exit") or jarde.get("runtime_exit") or jarde.get("stdout") != EXPECTED:
+            raise RuntimeError("complete Jarde Java 8 replay differs")
 
 
 if __name__ == "__main__":

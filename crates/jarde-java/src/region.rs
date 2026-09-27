@@ -1770,6 +1770,7 @@ impl Frame {
         exit: Option<usize>,
         exits: BTreeSet<usize>,
         transfer_sources: &BTreeSet<usize>,
+        terminal_returns: &BTreeSet<usize>,
     ) -> Self {
         // A loop inside a loop may not claim a block the enclosing loop's body does not hold: the
         // scope of a body is the intersection, so a nesting cannot widen it.
@@ -1781,6 +1782,9 @@ impl Frame {
         // its block absent from the natural-loop set. Admit only single-successor predecessors of
         // an exact enclosing-loop exit/continue target; the walker will still verify that edge.
         scope.extend(transfer_sources.iter().copied());
+        // A proved return leaf is reached recursively from the branch in this body, rather than
+        // from the natural-loop walk's top-level queue.
+        scope.extend(terminal_returns.iter().copied());
         Self {
             boundary: Some(boundary),
             shared_tail: self.shared_tail,
@@ -5156,6 +5160,7 @@ impl Walker<'_> {
                 );
                 all_exits.extend(exits.iter().copied());
                 let transfer_sources = self.loop_transfer_sources(&all_exits);
+                let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
                 let body_frame = frame.loop_body(
                     blocks,
                     header_node,
@@ -5164,6 +5169,7 @@ impl Walker<'_> {
                     exit_node,
                     exits,
                     &transfer_sources,
+                    &terminal_returns,
                 );
                 let (body, _) = self.loop_body_sequence(&chain.body, &body_frame, blocks)?;
                 self.visited.extend(test_nodes.iter().copied());
@@ -5171,6 +5177,7 @@ impl Walker<'_> {
                 for node in test_nodes {
                     expected.remove(&node);
                 }
+                expected.extend(terminal_returns);
                 if !self.covers(&expected) {
                     return Ok(Some(Self::loop_fallback(
                         header,
@@ -5271,6 +5278,7 @@ impl Walker<'_> {
             all_exits.insert(update_node);
         }
         let transfer_sources = self.loop_transfer_sources(&all_exits);
+        let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
         let body_frame = frame.loop_body(
             blocks,
             header_node,
@@ -5282,11 +5290,13 @@ impl Walker<'_> {
             exit_node,
             exits,
             &transfer_sources,
+            &terminal_returns,
         );
         let (body, _) = self.loop_body_sequence(&inside, &body_frame, blocks)?;
         self.visited.insert(header_node);
         let mut expected = blocks.clone();
         expected.remove(&header_node);
+        expected.extend(terminal_returns);
         if !self.covers(&expected) {
             // The loop's shape is refused, and every block the body's walk claimed goes into the
             // refusal with it: the body region is dropped here, so naming its blocks is the only
@@ -6494,6 +6504,7 @@ impl Walker<'_> {
         );
         all_exits.extend(exits.iter().copied());
         let transfer_sources = self.loop_transfer_sources(&all_exits);
+        let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
         let mut body_frame = frame.loop_body(
             blocks,
             latch_node,
@@ -6502,6 +6513,7 @@ impl Walker<'_> {
             exit_node,
             exits.clone(),
             &transfer_sources,
+            &terminal_returns,
         );
         body_frame.allow_own_loop_entry = allow_header_entry;
         let (mut body, _) = self.loop_body_sequence(header, &body_frame, blocks)?;
@@ -6513,6 +6525,7 @@ impl Walker<'_> {
         self.visited.insert(latch_node);
         let mut expected = blocks.clone();
         expected.remove(&latch_node);
+        expected.extend(terminal_returns);
         expected.extend(
             exits
                 .iter()
@@ -6637,6 +6650,109 @@ impl Walker<'_> {
                 successors.len() == 1 && targets.contains(&successors[0])
             })
             .collect()
+    }
+
+    /// A terminal `iload; ireturn` leaf can belong to a loop despite having no back edge. Its
+    /// only entry must be one comparison in the natural loop, and its only exit must return from
+    /// this method. The SSA load-to-return relation is checked before widening the body scope.
+    fn loop_terminal_returns(
+        &mut self,
+        blocks: &BTreeSet<usize>,
+        normal_exit: Option<usize>,
+        frame: &Frame,
+    ) -> Result<BTreeSet<usize>, StopReason> {
+        let mut leaves = BTreeSet::new();
+        for source in blocks {
+            let Some(source_id) = self.view.id_of(*source) else {
+                continue;
+            };
+            poll(self.budget, Some(source_id.bci()))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(source_id.bci()),
+            )?;
+            let successors = self.view.successors(*source);
+            if successors.len() != 2
+                || !self
+                    .terminal_bci(source_id)
+                    .and_then(|bci| self.operations.get(bci))
+                    .is_some_and(|operation| operation.comparison().is_some())
+            {
+                continue;
+            }
+            for candidate in successors {
+                if blocks.contains(&candidate)
+                    || Some(candidate) == normal_exit
+                    || frame
+                        .scope
+                        .as_ref()
+                        .is_some_and(|scope| !scope.contains(&candidate))
+                    || !self.view.successors(candidate).is_empty()
+                {
+                    continue;
+                }
+                let Some(id) = self.view.id_of(candidate) else {
+                    continue;
+                };
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(self.canonical.edges().len())
+                        .unwrap_or(u64::MAX)
+                        .saturating_mul(2),
+                    Some(id.bci()),
+                )?;
+                let incoming: Vec<_> = self
+                    .canonical
+                    .edges()
+                    .iter()
+                    .filter(|edge| edge.to() == id)
+                    .map(|edge| (edge.kind(), edge.from().clone()))
+                    .collect();
+                let outgoing: Vec<_> = self
+                    .canonical
+                    .edges()
+                    .iter()
+                    .filter(|edge| edge.from() == id)
+                    .map(|edge| edge.kind())
+                    .collect();
+                if !exact_normal_predecessors(&incoming, &[source_id.clone()])
+                    || !outgoing.is_empty()
+                {
+                    continue;
+                }
+                let Some(ssa_block) = self.ssa.block(id) else {
+                    continue;
+                };
+                let [load, returned] = ssa_block.instructions() else {
+                    continue;
+                };
+                let Some(Operation::Load { slot }) = self.operations.get(load.bci()) else {
+                    continue;
+                };
+                if !matches!(load.opcode(), 0x15 | 0x1a..=0x1d)
+                    || returned.opcode() != 0xac
+                    || !matches!(self.operations.get(returned.bci()), Some(Operation::Return))
+                    || load.reads().len() != 1
+                    || load.reads()[0].0 != Slot::Local(*slot)
+                    || load.writes().len() != 1
+                    || !matches!(load.writes()[0].0, Slot::Stack(_))
+                    || returned.reads() != load.writes()
+                    || !returned.writes().is_empty()
+                    || self.ssa.value(load.writes()[0].1).uses().len() != 1
+                {
+                    continue;
+                }
+                leaves.insert(candidate);
+            }
+        }
+        if leaves.len() == 1 {
+            Ok(leaves)
+        } else {
+            Ok(BTreeSet::new())
+        }
     }
 
     /// Whether every expected block of a loop was walked.

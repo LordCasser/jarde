@@ -1,0 +1,32 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_pins": {
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestLoopCondition2.java": "9b3ba3a92bd3ea8c6acea2df2fc043aa0bb93d101761cbb7f979a3158102ef90",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestLoopDetection2.java": "4119f3090890f114aacf6b55eaa2acc08f9ecb3c0b4eb0d1079ad8cf5eeb47a2",
+    "jadx-core/src/test/java/jadx/tests/integration/loops/TestLoopCondition5.java": "4cea548bf4f4267ae97e872908c813c96e90bb07e9f1e993a921bf889ff2437b",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/LoopRegionVisitor.java": "921f09e8934fda33452a00359588b293117f160813477e7068fa1ec3b71e6515",
+    "jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/LoopRegionMaker.java": "a77bedda10bdb0d36f3979c27c1fc9471da726b36f34ae14d505f6f659c6b13e"
+  },
+  "input_sha256": "3184f43aa78ba2f26752d15e0b706fe7b0cc9cf25bca34dded34bf603ecb3c38",
+  "runner_sha256": "28b0a08ceb89b6ff31d12056831a2d7cc62bfda0a61ebc39835d2f62bc89bdf5",
+  "original_class_sha256": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+  "jarde_cli_sha256": "331307267393219036bda7efdddf186291fd62de01bcc903715f1a43f3ef7f6b",
+  "original": {
+    "source_sha256": "3184f43aa78ba2f26752d15e0b706fe7b0cc9cf25bca34dded34bf603ecb3c38",
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "0\n10\n39\n63\n9\n3\n-1\n3"
+  },
+  "jadx": {
+    "source_sha256": "8dc5b1a14452ee65c82702c480c2e9aa5ecbdfe1f8fd1db0c4d384f55aefdc4d",
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "0\n10\n39\n63\n9\n3\n-1\n3"
+  },
+  "jarde": {
+    "source_sha256": "ecbd892b39e3f36d634509de8bec9c4a5b811e96fe5a20033cc38ce896655b23",
+    "javac_exit": 0,
+    "runtime_exit": 0,
+    "stdout": "0\n10\n39\n63\n9\n3\n-1\n3"
+  }
+}

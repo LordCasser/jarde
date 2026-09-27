@@ -1,0 +1,44 @@
+[
+  {
+    "bci": 0,
+    "blocks": [
+      0
+    ],
+    "code": null,
+    "message": null,
+    "rule": {
+      "rule": "straight",
+      "version": "1"
+    },
+    "structured": true
+  },
+  {
+    "bci": 5,
+    "blocks": [
+      5,
+      11,
+      19,
+      22
+    ],
+    "code": null,
+    "message": null,
+    "rule": {
+      "rule": "loop",
+      "version": "1"
+    },
+    "structured": true
+  },
+  {
+    "bci": 28,
+    "blocks": [
+      28
+    ],
+    "code": null,
+    "message": null,
+    "rule": {
+      "rule": "straight",
+      "version": "1"
+    },
+    "structured": true
+  }
+]
