@@ -17,4 +17,4 @@
 
 - [x] 4.1 用 fresh CLI 重编原/JADX/Jarde 三份完整 Java 8 类，六路径 `java -Xverify:all` 逐字比较；1.2 所有有效近邻均安全拒绝，不能靠受控补丁通过 Jarde 路径。
 - [x] 4.2 运行固定 Test12–14、两/三/五行共享 finally、具名 catch、TWR/monitor 回归及 `cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、fmt、OpenSpec strict、diff check；清理专用 Cargo target。
-- [ ] 4.3 root 独立核对真实异常行/三副本 CFG/SSA、源图与六路径重编运行，写验收记录并更新 CF-16 清单；仅标记固定 Test16 Java 8 切片。
+- [x] 4.3 root 独立核对真实异常行/三副本 CFG/SSA、源图与六路径重编运行，写验收记录并更新 CF-16 清单；仅标记固定 Test16 Java 8 切片。
