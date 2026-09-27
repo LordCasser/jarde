@@ -1,0 +1,21 @@
+// jarde: presentation of `dt16/NullResult` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package dt16;
+
+public class NullResult extends java.lang.Object {
+    public NullResult() {
+        // @method <init>()V
+        // @declaration a constructor of `dt16.NullResult`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    // jarde: generic Signature projection refused for `value()Ljava/lang/Number;`: unsupported (generic_source_shape_unproved): the recovered AST/SSA body is not a direct parameter return
+    public java.lang.Number value() {
+        // @method value()Ljava/lang/Number;
+        // @declaration an instance method of `dt16.NullResult`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return null;
+    }
+}

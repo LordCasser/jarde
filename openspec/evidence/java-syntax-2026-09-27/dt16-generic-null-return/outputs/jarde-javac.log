@@ -1,0 +1,5 @@
+<REPO>/openspec/evidence/java-syntax-2026-09-27/dt16-generic-null-return/Runner.java:8: error: incompatible types: Number cannot be converted to Integer
+        Integer value = result.<Integer>value();
+                                             ^
+1 error
+exit=1
