@@ -1,0 +1,5 @@
+ok=obtain;transact;read;in.recycle;return:out;
+runtime=obtain;transact;out.recycle;in.recycle;throw:IllegalStateException:transact;
+remote=obtain;transact;in.recycle;throw:RemoteException:transact;
+read=obtain;transact;read;out.recycle;in.recycle;throw:IllegalStateException:read;
+cleanup=obtain;transact;read;in.recycle;out.recycle;in.recycle;throw:IllegalStateException:recycle;
