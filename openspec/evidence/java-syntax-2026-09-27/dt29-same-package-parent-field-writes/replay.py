@@ -46,6 +46,18 @@ def normalize(text: str, work: Path) -> str:
     return text.replace(str(work), "<TMP>").replace(str(ROOT), "<REPO>")
 
 
+def normalize_elapsed(value: object) -> None:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if key == "elapsed_millis":
+                value[key] = "<elapsed>"
+            else:
+                normalize_elapsed(child)
+    elif isinstance(value, list):
+        for child in value:
+            normalize_elapsed(child)
+
+
 def compile_run(sources: list[Path], runner: Path, work: Path, label: str) -> dict[str, object]:
     classes = work / f"{label}-classes"
     classes.mkdir()
@@ -372,6 +384,7 @@ def combined_b_case(work: Path) -> dict[str, object]:
     require(result.returncode == 0,
             f"combined B report did not complete: {result.stderr[-1000:]}")
     report = json.loads(result.stdout)
+    normalize_elapsed(report)
     method = next(member for member in report["methods"]
                   if member["item"]["identity"]["name"] == list(b"self"))
     body = method["outcome"]["report"]
@@ -390,7 +403,7 @@ def combined_b_case(work: Path) -> dict[str, object]:
     (OUT / "reports" / "combined-FieldCast$B.json").write_text(
         json.dumps(report, indent=2, ensure_ascii=False, sort_keys=True) + "\n")
     shutil.copyfile(jar_path, OUT / "combined-input.jar")
-    (OUT / "combined-javap.txt").write_text(javap)
+    (OUT / "combined-javap.txt").write_text(normalize(javap, work))
     return {
         "class": "dt29/FieldCast$B",
         "method": "self(Z)V",
@@ -414,10 +427,7 @@ def run_jarde(jar_path: Path, names: list[str], work: Path) -> tuple[dict[str, s
         report_text = checked(JARDE, "class-source", "--input", jar_path, "--class", name,
                               "--policy", "plain-jar", "--release", "8", "--format", "json")
         report = json.loads(report_text)
-        for method in report.get("methods", []):
-            usage = method.get("outcome", {}).get("report", {}).get("usage")
-            if isinstance(usage, dict) and "elapsed_millis" in usage:
-                usage["elapsed_millis"] = "<elapsed>"
+        normalize_elapsed(report)
         reports[name] = report
     return source_texts, reports
 
@@ -515,9 +525,9 @@ def main() -> None:
             "combined_B": combined,
             "source_map_bcis": [7, 12],
         }, indent=2, ensure_ascii=False, sort_keys=True) + "\n")
-        (OUT / "javap.txt").write_text(checked(
+        (OUT / "javap.txt").write_text(normalize(checked(
             "javap", "-classpath", original_classes, "-v", "-c",
-            "dt29.SamePackageParentFamily$B"))
+            "dt29.SamePackageParentFamily$B"), work))
         shutil.copyfile(jar_path, OUT / "input.jar")
     files = sorted(path for path in OUT.rglob("*") if path.is_file()
                    and path.name != "SHA256SUMS")

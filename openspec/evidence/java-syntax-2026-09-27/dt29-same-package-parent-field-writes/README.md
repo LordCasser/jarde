@@ -16,4 +16,4 @@ JARDE_CLI=/tmp/jarde-same-package-parent-target/debug/jarde-cli \
   python3 openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/replay.py
 ```
 
-固定 JADX checkout 为 `/Users/lordcasser/workspace/testzone/jadx`，HEAD `2fb1b16386941660fda07e9017285aec40fcb37f`。三方源码、反射 Runner、`javap`、方法报告、运行结果和 SHA-256 清单保存在 `outputs/`。
+固定 JADX checkout 为 `/Users/lordcasser/workspace/testzone/jadx`，HEAD `2fb1b16386941660fda07e9017285aec40fcb37f`。三方源码、反射 Runner、`javap`、方法报告、运行结果和 SHA-256 清单保存在 `outputs/`。`javap` 中的临时目录及 JSON 报告中的墙钟耗时会在写入证据前规范化，重放结果可稳定比较。

@@ -1,4 +1,4 @@
-Classfile jar:file:///var/folders/gm/lzn3ylzx4lz7mx29lftngdz40000gn/T/jarde-parent-field-h4stujeb/combined-fieldcast.jar!/dt29/FieldCast$B.class
+Classfile jar:file://<TMP>/combined-fieldcast.jar!/dt29/FieldCast$B.class
   Last modified 2000年1月1日; size 395 bytes
   SHA-256 checksum dd2dd6899b2c52b2285653366daf4df6fa4ef0aa473297c59cc3645cd7bd0c4a
 public class dt29.FieldCast$B extends dt29.FieldCast$A
