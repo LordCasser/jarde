@@ -2941,6 +2941,114 @@ impl Walker<'_> {
         Ok(true)
     }
 
+    /// The one physical edge by which a closed loop arm reaches its enclosing `If`'s join.
+    /// A region alone does not prove this: its declared exit must agree with every canonical
+    /// edge and with the natural loop's complete set of owners.
+    fn loop_arm_join_source(
+        &mut self,
+        arm: &Region,
+        branch: &CanonicalBlockId,
+        join: &CanonicalBlockId,
+        frame: &Frame,
+    ) -> Result<Option<CanonicalBlockId>, StopReason> {
+        fn closed_body(region: &Region) -> bool {
+            match region {
+                Region::Straight { .. } => true,
+                Region::Sequence { regions } => regions.iter().all(closed_body),
+                Region::If {
+                    then_arm,
+                    else_arm,
+                    join: Some(_),
+                    ..
+                } => closed_body(then_arm) && closed_body(else_arm),
+                _ => false,
+            }
+        }
+
+        let Region::Loop {
+            header,
+            body,
+            exit: Some(exit),
+            gateway_origins,
+            ..
+        } = arm
+        else {
+            return Ok(None);
+        };
+        if exit != join || !gateway_origins.is_empty() || !body.iter().all(closed_body) {
+            return Ok(None);
+        }
+        let Some(header_node) = self.view.index_of(header) else {
+            return Ok(None);
+        };
+        let Some(natural_loop) = self.view.loop_entered_at(header_node) else {
+            return Ok(None);
+        };
+        let blocks = arm.blocks();
+        let owners: BTreeSet<_> = blocks.iter().map(|block| (*block).clone()).collect();
+        let owner_nodes: BTreeSet<_> = owners
+            .iter()
+            .filter_map(|block| self.view.index_of(block))
+            .collect();
+        if owners.len() != blocks.len()
+            || owner_nodes != *natural_loop.blocks()
+            || owners.iter().any(|block| {
+                block.path() != branch.path()
+                    || block.bci() <= branch.bci()
+                    || block.bci() >= join.bci()
+                    || self.view.index_of(block).is_none_or(|node| {
+                        !self.visited.contains(&node)
+                            || frame
+                                .scope
+                                .as_ref()
+                                .is_some_and(|scope| !scope.contains(&node))
+                    })
+            })
+        {
+            return Ok(None);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len().saturating_add(owners.len()))
+                .unwrap_or(u64::MAX),
+            Some(header.bci()),
+        )?;
+        let mut entry_count = 0;
+        let mut exit_source = None;
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(header.bci()))?;
+            let from_loop = owners.contains(edge.from());
+            let to_loop = owners.contains(edge.to());
+            if !from_loop && !to_loop {
+                continue;
+            }
+            if edge.kind() != CanonicalEdgeKind::Normal {
+                return Ok(None);
+            }
+            if !from_loop {
+                if edge.from() != branch || edge.to() != header {
+                    return Ok(None);
+                }
+                entry_count += 1;
+            } else if !to_loop {
+                if edge.to() != join || exit_source.replace(edge.from().clone()).is_some() {
+                    return Ok(None);
+                }
+            }
+        }
+        if entry_count != 1 {
+            return Ok(None);
+        }
+        for block in &owners {
+            poll(self.budget, Some(block.bci()))?;
+            if self.view.successor_ids(block).is_empty() {
+                return Ok(None);
+            }
+        }
+        Ok(exit_source)
+    }
+
     /// Continue one nested `If`'s unclaimed forward join inside its enclosing arm. The only
     /// admitted tail is a closed straight run ending at the arm's original boundary. The visited
     /// snapshot is checked against its physical blocks before the run is attached to the arm.
@@ -2970,18 +3078,25 @@ impl Walker<'_> {
         if inner_join != next || next.path() != branch.path() || next.bci() <= branch.bci() {
             return Ok(false);
         }
-        let (
-            Region::Straight {
-                blocks: then_blocks,
-            },
-            Region::Straight {
-                blocks: else_blocks,
-            },
-        ) = (then_arm.as_ref(), else_arm.as_ref())
-        else {
-            return Ok(false);
+        let straight_end = |arm: &Region| match arm {
+            Region::Straight { blocks } => blocks.last().cloned(),
+            _ => None,
         };
-        let (Some(then_end), Some(else_end)) = (then_blocks.last(), else_blocks.last()) else {
+        let (then_end, else_end) = match (then_arm.as_ref(), else_arm.as_ref()) {
+            (Region::Straight { .. }, Region::Straight { .. }) => {
+                (straight_end(then_arm), straight_end(else_arm))
+            }
+            (Region::Loop { .. }, Region::Straight { .. }) => (
+                self.loop_arm_join_source(then_arm, branch, next, frame)?,
+                straight_end(else_arm),
+            ),
+            (Region::Straight { .. }, Region::Loop { .. }) => (
+                straight_end(then_arm),
+                self.loop_arm_join_source(else_arm, branch, next, frame)?,
+            ),
+            _ => return Ok(false),
+        };
+        let (Some(then_end), Some(else_end)) = (then_end, else_end) else {
             return Ok(false);
         };
         let Some(next_node) = self.view.index_of(next) else {
