@@ -41,3 +41,7 @@ Stage A 的唯一 uncovered BCI 61 并非 switch arm 漏走，而是 Try 边界�
 这些条件是本例可观察事实整理出的边界候选，不是已经证明的通用充分条件；尤其不能仅因一个 block 未覆盖就沿普通边把它并入 Try 或忽略 uncovered。A 方案至少还需要有效反例覆盖非 transfer end、多个 successor、前驱不全属于 body、handler entry/异常边，以及 transfer 去往非 lexical boundary 等情况。临时输出能编译或被 JVM 加载也只证明语法/验证层，不替代运行语义验收。
 
 完整正例的候选边界是单条具名 catch 完整覆盖 switch dispatch 和各 case 正文、唯一正常 join 在范围外；固定类行从 BCI 11 起，而 switch opcode 在 BCI 12、canonical block 从 BCI 0 起，必须明确处理同块 lead。保护范围只覆盖部分 arm、切入 case body、handler 交叉、arm 间跳转、非唯一 join、handler 回流到 try 正文应拒绝。已有 verifier 有效的 `PartialSwitchCatch` 临时负例只保护 case 1 调用，Jarde 没有把它扩成整 switch 外层 catch；它仍有其它局部 fallback，不能声称完整恢复。不能因现有 `TestSwitchWithTryCatch`（switch 外层、每个 case 内层 try）通过或失败，就推定此反向嵌套形态的结果。
+
+### 主线修复状态
+
+上述形成路径已由 [OpenSpec](../../changes/recover-switch-inside-named-catch/) 的受证字段前缀与单 transfer 出口闭合。root 在 `4c6301ad` 上完成[独立验收](../java-syntax-2026-09-28/cf16-switch-catch/after/root-acceptance.md)：固定类与同布局最小完整类的原/JADX/Jarde 完整 Java 8 源码各九路径重编、验证运行逐字一致，全部物理 BCI 有来源，BCI 61 单独拥有；四个 verifier 有效近邻与受控额外边未被误认。上文历史诊断保留为形成路径，不再描述当前主线的失败状态。

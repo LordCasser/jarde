@@ -16,4 +16,4 @@
 
 - [x] 4.1 原 class、pinned JADX、修后 Jarde 的完整 Java 8 源码重编并 `java -Xverify:all` 跑固定 `runTest` 各 case、default 与 IllegalArgumentException 路径；确认效果次数、返回值及 catch 顺序一致，并单独记录 InnerClasses family 范围。
 - [x] 4.2 运行相关 Guard、Try、Switch、TWR、CF-16/CF-18 回归、`cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、`cargo fmt --all -- --check`、OpenSpec strict 和 diff check；清理专用 Cargo target。
-- [ ] 4.3 root 独立审阅候选判定、transfer owner、来源、负例和三方运行，对通过的固定形状更新清单；未通过的独立债务继续单列。
+- [x] 4.3 root 独立审阅候选判定、transfer owner、来源、负例和三方运行，对通过的固定形状更新清单；未通过的独立债务继续单列。验收见 `cf16-switch-catch/after/root-acceptance.md`。
