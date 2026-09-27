@@ -150,6 +150,72 @@ const EM03_SOURCE: &str = include_str!(
 const SAME_PACKAGE_PARENT_FIELD_SOURCE: &str = include_str!(
     "../openspec/evidence/java-syntax-2026-09-27/dt29-same-package-parent-field-writes/fixtures/SamePackageParentFamily.java"
 );
+const TYPED_FUNCTIONAL_REFS: &[u8] = include_bytes!(
+    "../openspec/evidence/java-syntax-2026-09-28/dt27-typed-functional/TypedRefs.class"
+);
+
+#[test]
+fn typed_functional_references_publish_one_complete_header_body_and_source() {
+    let snapshot = open(TYPED_FUNCTIONAL_REFS.to_vec());
+    let request = request(
+        &snapshot,
+        ClassRef::Name {
+            class: ClassNameQuery::internal("dt27/TypedRefs"),
+        },
+        EnvironmentPolicy::SingleClass,
+    );
+    let report = performed(
+        Engine::new()
+            .class_source(slice::from_ref(&snapshot), &request, &mut budget())
+            .expect("the frozen class source is recoverable"),
+    );
+    for (name, reference, bci, cp) in [
+        (b"parse".as_slice(), "Integer::parseInt", 0, 13),
+        (b"bound".as_slice(), "this::length", 1, 17),
+        (b"supplier".as_slice(), "this::label", 1, 20),
+    ] {
+        let method = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == name)
+            .expect("the physical method remains present");
+        assert!(method.text.contains(reference), "{}", method.text);
+        assert!(method.text.contains("generic Signature"), "{}", method.text);
+        let ClassSourceOutcome::Recovered { report, .. } = &method.outcome else {
+            panic!("the method has no same-run recovery");
+        };
+        assert!(
+            report
+                .source_map
+                .of_bci(bci)
+                .iter()
+                .any(|segment| { segment.origin().primary().cp() == Some(cp) })
+        );
+    }
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut cancelled = Budget::with_cancellation_token(budget().limits().clone(), token);
+    let stopped = Engine::new()
+        .class_source(slice::from_ref(&snapshot), &request, &mut cancelled)
+        .expect("cancellation is an execution state");
+    match stopped {
+        OperationOutcome::Incomplete(selection) => {
+            assert!(matches!(
+                selection.execution,
+                ExecutionReport::Cancelled { .. }
+            ));
+        }
+        OperationOutcome::Performed(report) => {
+            assert!(matches!(
+                report.execution,
+                ExecutionReport::Cancelled { .. }
+            ));
+            assert!(!report.text.contains("Integer::parseInt"));
+        }
+        OperationOutcome::Ambiguous(_) => panic!("the frozen class is unambiguous"),
+    }
+}
 
 #[test]
 fn same_package_parent_field_writes_keep_owner_source_and_stop_boundaries() {

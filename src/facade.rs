@@ -5304,6 +5304,33 @@ impl Engine {
                         continue;
                     }
                 };
+            let typed_functional_kind = match class_source::typed_functional_signature_target(
+                member,
+                &attributes,
+                &read.bytes,
+                &pool,
+                &read.facts.this_class.raw().0,
+                read.facts.access_flags,
+                read.facts
+                    .super_class
+                    .as_ref()
+                    .map(|name| name.raw().0.as_slice()),
+                &physical_interfaces_raw,
+                class_scope
+                    .as_ref()
+                    .map(|proof| proof.type_parameters.as_slice())
+                    .unwrap_or(&[]),
+                class_signature_present,
+                budget,
+            ) {
+                Ok(kind) => kind,
+                Err(error @ (Error::BudgetExceeded { .. } | Error::Cancelled { .. })) => {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    break;
+                }
+                Err(_) => None,
+            };
             let spelled = class_source::spell_method(
                 &item,
                 None,
@@ -5380,6 +5407,7 @@ impl Engine {
                                     .attributes
                                     .iter()
                                     .any(|attribute| attribute.name.raw().0 == b"Signature"),
+                                typed_functional_kind,
                                 capture_enum_group_code,
                                 capture_enum_constructor_ast,
                                 array_helper_census_needed,
@@ -5507,6 +5535,11 @@ impl Engine {
                                     stops.push(stop_execution(&error, budget));
                                     diagnostics
                                         .push(stop_diagnostic(&error, class_provenance.clone()));
+                                }
+                                if typed_functional_kind
+                                    == Some(jarde_java::report::TypedFunctionalKind::FunctionStringInteger)
+                                {
+                                    record.withhold_unprojected_functional_body();
                                 }
                                 let ends = stops.iter().any(ends_the_request);
                                 (record, stops, ends)
@@ -9582,6 +9615,7 @@ fn project_class_source_integer_constant_names(
 
 struct PreparedMemberOptions<'a> {
     prove_generic_return: bool,
+    typed_functional_kind: Option<jarde_java::report::TypedFunctionalKind>,
     capture_enum_group_code: bool,
     capture_enum_constructor_ast: bool,
     array_helper_census_needed: bool,
@@ -9603,6 +9637,36 @@ fn recover_prepared_member(
     budget: &mut Budget,
 ) -> Result<PreparedMemberRecovery> {
     let analyzed = jarde_jvm::analyze_prepared_method_ir(content, prepared, request, budget)?;
+    let typed_functional_target = options.typed_functional_kind.and_then(|kind| {
+        let code = analyzed.ir().code()?;
+        if code.stopped_at.is_some()
+            || code.exception_handler_count != 0
+            || !code.exception_handlers.is_empty()
+        {
+            return None;
+        }
+        let instructions = code.instructions.as_slice();
+        let site = match instructions {
+            [site, returned] if site.opcode == 0xba && returned.opcode == 0xb0 => site,
+            [receiver, site, returned]
+                if receiver.opcode == 0x2a
+                    && receiver.bci == 0
+                    && site.opcode == 0xba
+                    && returned.opcode == 0xb0 =>
+            {
+                site
+            }
+            _ => return None,
+        };
+        if site.bci.checked_add(site.width) != instructions.last().map(|last| last.bci) {
+            return None;
+        }
+        Some(jarde_java::report::TypedFunctionalTarget {
+            kind,
+            use_site: site.bci,
+            site_cp: site.constant_pool_index?,
+        })
+    });
     let array_helper_uses = if options.array_helper_census_needed {
         scan_array_helper_uses(
             analyzed.ir(),
@@ -9653,6 +9717,7 @@ fn recover_prepared_member(
         prepared,
         assembly_context,
         options.static_member_target,
+        typed_functional_target,
         method_parameters,
         evidence,
         options.prove_generic_return,
@@ -25032,6 +25097,7 @@ fn recovery_presented_for_class_source(
     prepared: &jarde_reader::prepared::PreparedClass<'_>,
     assembly_context: &class_source::ClassSourceAssemblyContext,
     static_member_target: Option<&jarde_java::report::ProvedStaticMemberTarget>,
+    typed_functional_target: Option<jarde_java::report::TypedFunctionalTarget>,
     method_parameters: Option<&[class_source::ProvedMethodParameter]>,
     evidence: &RecoveryEvidenceRequest,
     prove_generic_return: bool,
@@ -25059,6 +25125,7 @@ fn recovery_presented_for_class_source(
         CalleeClass::Prepared(prepared),
         Some(assembly_context),
         static_member_target,
+        typed_functional_target,
         method_parameters,
         evidence,
         budget,
@@ -25142,6 +25209,7 @@ fn recovery_from(
         None,
         None,
         None,
+        None,
         evidence,
         budget,
         false,
@@ -25159,6 +25227,7 @@ fn recovery_from_with_class_candidates(
     callee_class: CalleeClass<'_>,
     assembly_context: Option<&class_source::ClassSourceAssemblyContext>,
     static_member_target: Option<&jarde_java::report::ProvedStaticMemberTarget>,
+    typed_functional_target: Option<jarde_java::report::TypedFunctionalTarget>,
     method_parameters: Option<&[class_source::ProvedMethodParameter]>,
     evidence: &RecoveryEvidenceRequest,
     budget: &mut Budget,
@@ -25283,6 +25352,11 @@ fn recovery_from_with_class_candidates(
     let request = request.with_superclass_field_writes(&superclass_field_writes);
     let request = if let Some(target) = static_member_target {
         request.with_static_member_target(target)
+    } else {
+        request
+    };
+    let request = if let Some(target) = typed_functional_target {
+        request.with_typed_functional_target(target)
     } else {
         request
     };

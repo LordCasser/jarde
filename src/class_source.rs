@@ -72,6 +72,7 @@ use crate::{
     PhysicalDefinitionId, PhysicalMethodId, PhysicalView, Result, TerminationReason, UsageSnapshot,
     attribute_facts, budget_dimension_code,
 };
+use jarde_java::report::TypedFunctionalKind;
 use jarde_java::report::{GenericConstructorCandidate, GenericReturnCandidate, GenericReturnValue};
 use jarde_java::{
     LocalVariable, NameTable, RecoveryContent, RecoveryFacts, RecoveryReport, SlotEvidence,
@@ -1944,6 +1945,70 @@ pub(crate) fn declared_member_attributes(
     })
 }
 
+/// Select only the two exact Java 8 functional targets whose source spelling this slice proves.
+/// Parsing and erasure use the same path as final declaration projection; this is only a target
+/// hypothesis until the direct Code, bootstrap, Program and SSA are checked in the same run.
+pub(crate) fn typed_functional_signature_target(
+    member: &MemberHeader,
+    attributes: &MemberAttributes,
+    bytes: &[u8],
+    pool: &[CpEntryFacts],
+    class_internal: &[u8],
+    class_flags: u16,
+    class_superclass: Option<&[u8]>,
+    class_interfaces: &[Vec<u8>],
+    class_scope: &[TypeParameterErasure],
+    class_signature_present: bool,
+    budget: &mut Budget,
+) -> Result<Option<TypedFunctionalKind>> {
+    let shells = attribute_shells(member, b"Signature");
+    if shells.len() != 1
+        || class_internal.contains(&b'$')
+        || class_flags & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION) != 0
+        || class_superclass != Some(b"java/lang/Object".as_slice())
+        || !class_interfaces.is_empty()
+        || !class_scope.is_empty()
+        || class_signature_present
+        || !attributes.throws_raw.is_empty()
+        || member.descriptor.raw().0.as_slice() != b"()Ljava/util/function/Function;"
+            && member.descriptor.raw().0.as_slice() != b"()Ljava/util/function/Supplier;"
+    {
+        return Ok(None);
+    }
+    let raw = attribute_facts(bytes, &shells, pool, budget)?
+        .signature
+        .ok_or_else(|| {
+            Error::invalid_input(
+                "jvm_signature_missing",
+                "Signature attribute did not resolve",
+            )
+        })?
+        .0;
+    let parsed = parse_method_signature(&raw, budget)?;
+    if !parsed.type_parameters.is_empty()
+        || !parsed.parameters.is_empty()
+        || !parsed.throws.is_empty()
+    {
+        return Ok(None);
+    }
+    prove_method_signature_erasure_with_class_scope(
+        &parsed,
+        &member.descriptor.raw().0,
+        &attributes.throws_raw,
+        class_scope,
+        budget,
+    )?;
+    Ok(match raw.as_slice() {
+        b"()Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/Integer;>;" => {
+            Some(TypedFunctionalKind::FunctionStringInteger)
+        }
+        b"()Ljava/util/function/Supplier<Ljava/lang/String;>;" => {
+            Some(TypedFunctionalKind::SupplierString)
+        }
+        _ => None,
+    })
+}
+
 /// Decide one generic method-header projection from this member's own Signature, an already
 /// published class-variable scope, and a typed return candidate from the same recovery run.
 /// Syntax/erasure failures are refusals; budget and cancellation remain operation stops.
@@ -2267,6 +2332,11 @@ pub(crate) fn project_method_signature(
                     "same-run AST/Code/SSA empty-void proof"
                 } else if empty_void_wildcard_parameter {
                     "same-run AST/Code/SSA unused-parameter proof"
+                } else if matches!(
+                    candidate.map(|candidate| &candidate.value),
+                    Some(GenericReturnValue::TypedFunctional { .. })
+                ) {
+                    "same-run direct Code/SSA/Program and LambdaMetafactory target proof"
                 } else {
                     "same-run AST/SSA parameter-return proof"
                 },
@@ -3616,6 +3686,18 @@ fn ordinary_parameterized_declaration(
                     )
                 })
                 .then_some(Vec::new()),
+            GenericReturnValue::TypedFunctional { target } => {
+                let expected = match target.kind {
+                    TypedFunctionalKind::FunctionStringInteger => {
+                        "java.util.function.Function<java.lang.String, java.lang.Integer>"
+                    }
+                    TypedFunctionalKind::SupplierString => {
+                        "java.util.function.Supplier<java.lang.String>"
+                    }
+                };
+                (parsed.parameters.is_empty() && result.as_deref() == Some(expected))
+                    .then_some(Vec::new())
+            }
         };
         let returned = returned.ok_or_else(|| {
             refused("return source is not a proven parameter value or selected member creation")
@@ -3624,6 +3706,7 @@ fn ordinary_parameterized_declaration(
             candidate.value,
             GenericReturnValue::MemberCreation { .. }
                 | GenericReturnValue::StaticMemberCreation { .. }
+                | GenericReturnValue::TypedFunctional { .. }
         ) && returned
             .iter()
             .any(|position| parsed.result.as_ref() != Some(&parsed.parameters[*position]))
@@ -4360,6 +4443,7 @@ fn generic_method_declaration(
         }
         GenericReturnValue::MemberCreation { .. } => false,
         GenericReturnValue::StaticMemberCreation { .. } => false,
+        GenericReturnValue::TypedFunctional { .. } => false,
     };
     if !return_proved {
         return Err(refused(
@@ -6555,6 +6639,27 @@ impl ClassSourceMethod {
         self.text = text;
         self.generic_signature_refused = true;
         Ok(())
+    }
+
+    /// A typed-only method reference cannot be left under a raw descriptor header if its
+    /// class-source Signature transaction failed (including an output-budget stop). Retain the
+    /// physical report for inspection, but publish only an explicit incomplete-source marker.
+    pub(crate) fn withhold_unprojected_functional_body(&mut self) {
+        if self
+            .markers
+            .iter()
+            .any(|marker| marker.contains("generic Signature") && marker.contains("projected"))
+            || !matches!(&self.outcome, ClassSourceOutcome::Recovered { report, .. }
+                if report.text.contains("::"))
+        {
+            return;
+        }
+        let marker = format!(
+            "// jarde: typed functional source for `{}` withheld because its generic declaration was not projected",
+            label(&self.item),
+        );
+        self.markers.push(marker);
+        self.text = comment_member(&self.markers);
     }
 
     /// The complete-source explanation for this bridge's original physical identity, call BCI and

@@ -116,6 +116,8 @@ pub struct RecoveryRequest<'a> {
     pub member_inner_targets: &'a [ProvedMemberInnerTarget],
     /// Exact static member targets selected by class-source relation proof.
     pub static_member_target: Option<&'a ProvedStaticMemberTarget>,
+    /// Class-source-only direct functional return target. Method-only recovery has none.
+    pub typed_functional_target: Option<TypedFunctionalTarget>,
     /// Exact interface-special targets whose Java source qualifier and default binding were proved
     /// by the facade's selected-definition reads. Direct recovery has no such environment and
     /// therefore leaves interface-qualified `super` calls refused.
@@ -1576,6 +1578,23 @@ pub struct GenericReturnCandidate {
     pub value: GenericReturnValue,
 }
 
+/// A narrow class-source target selected from a proved method Signature and a complete direct
+/// return Code shape. The site is still checked against the same-run bootstrap and AST.
+#[doc(hidden)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct TypedFunctionalTarget {
+    pub kind: TypedFunctionalKind,
+    pub use_site: u32,
+    pub site_cp: u16,
+}
+
+#[doc(hidden)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum TypedFunctionalKind {
+    FunctionStringInteger,
+    SupplierString,
+}
+
 /// Parameter slots, rather than rendered text, identify the values this constructor leaves unused.
 #[doc(hidden)]
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1619,6 +1638,10 @@ pub enum GenericReturnValue {
         allocation_bci: u32,
         copy_bci: u32,
         constructor_bci: u32,
+    },
+    /// Exact same-run direct LambdaMetafactory return, including its physical site.
+    TypedFunctional {
+        target: TypedFunctionalTarget,
     },
 }
 
@@ -2421,6 +2444,7 @@ impl<'a> RecoveryRequest<'a> {
             members: None,
             member_inner_targets: &[],
             static_member_target: None,
+            typed_functional_target: None,
             interface_super_calls: &[],
             reference_overload_calls: &[],
             superclass_field_writes: &[],
@@ -2447,6 +2471,12 @@ impl<'a> RecoveryRequest<'a> {
     #[doc(hidden)]
     pub fn with_static_member_target(mut self, target: &'a ProvedStaticMemberTarget) -> Self {
         self.static_member_target = Some(target);
+        self
+    }
+
+    #[doc(hidden)]
+    pub fn with_typed_functional_target(mut self, target: TypedFunctionalTarget) -> Self {
+        self.typed_functional_target = Some(target);
         self
     }
 
@@ -2869,6 +2899,128 @@ fn generic_return_candidate(
     let StmtKind::Return { value: Some(value) } = &program.stmts[0].kind else {
         return Ok(None);
     };
+    if let Some(target) = request.typed_functional_target {
+        let instructions = code.instructions.as_slice();
+        let bound = instructions.len() == 3;
+        let site_index = usize::from(bound);
+        let expected = if bound {
+            &[0x2a, 0xba, 0xb0][..]
+        } else {
+            &[0xba, 0xb0][..]
+        };
+        let exact_code = code.stopped_at.is_none()
+            && code.exception_handler_count == 0
+            && code.exception_handlers.is_empty()
+            && instructions
+                .iter()
+                .map(|instruction| instruction.opcode)
+                .eq(expected.iter().copied())
+            && instructions.get(site_index).is_some_and(|site| {
+                site.bci == target.use_site && site.constant_pool_index == Some(target.site_cp)
+            });
+        let exact_program = program.statements == 1
+            && program.stmts.len() == 1
+            && !program.ragged
+            && matches!(value.kind, ExprKind::MethodReference { .. })
+            && value.origin.primary().bci() == target.use_site
+            && value.origin.primary().cp() == Some(target.site_cp)
+            && program.stmts[0].origin.primary().bci()
+                == instructions.last().map_or(u32::MAX, |i| i.bci)
+            && matches!(program.lambdas.as_slice(), [site]
+                if site.use_site == target.use_site
+                    && site.site_cp == target.site_cp
+                    && site.typed_reference
+                    && site.form == Some(crate::lambda::LambdaForm::MethodReference)
+                    && site.refusal.is_none()
+                    && match target.kind {
+                        TypedFunctionalKind::FunctionStringInteger =>
+                            site.sam_name == "apply"
+                                && site.evidence.sam_method_type.as_deref()
+                                    == Some("(Ljava/lang/Object;)Ljava/lang/Object;")
+                                && site.evidence.instantiated_method_type.as_deref()
+                                    == Some("(Ljava/lang/String;)Ljava/lang/Integer;"),
+                        TypedFunctionalKind::SupplierString =>
+                            site.sam_name == "get"
+                                && site.evidence.sam_method_type.as_deref()
+                                    == Some("()Ljava/lang/Object;")
+                                && site.evidence.instantiated_method_type.as_deref()
+                                    == Some("()Ljava/lang/String;"),
+                    }
+                    && site.captures.len() == usize::from(bound)
+                    && (!bound || site.captures[0].bci == Some(0)));
+        let exact_ssa = ssa.blocks().len() == 1
+            && ssa.phis().is_empty()
+            && ssa.blocks()[0].instructions().len() == instructions.len()
+            && ssa.effects().instructions().len() == instructions.len()
+            && ssa.blocks()[0]
+                .instructions()
+                .iter()
+                .zip(instructions)
+                .all(|(ssa, raw)| ssa.bci() == raw.bci && ssa.opcode() == raw.opcode);
+        let exact_flow = if exact_ssa {
+            let flow = ssa.blocks()[0].instructions();
+            let site = &flow[site_index];
+            let returned = &flow[site_index + 1];
+            let capture = if bound {
+                let load = &flow[0];
+                matches!(load.reads(), [(Slot::Local(0), entry)]
+                    if matches!(ssa.value(*entry).def(), Definition::Entry { slot: Slot::Local(0), .. }))
+                    && matches!(load.writes(), [(Slot::Stack(_), written)]
+                        if matches!(site.reads(), [(Slot::Stack(_), captured)] if captured == written))
+            } else {
+                site.reads().is_empty()
+            };
+            capture
+                && matches!(site.writes(), [(Slot::Stack(_), produced)]
+                    if matches!(returned.reads(), [(Slot::Stack(_), read)] if read == produced))
+                && returned.writes().is_empty()
+                && ssa
+                    .effects()
+                    .instructions()
+                    .iter()
+                    .zip(instructions)
+                    .all(|(effect, raw)| {
+                        effect.bci() == raw.bci
+                            && effect.opcode() == raw.opcode
+                            && effect.handlers().is_empty()
+                    })
+        } else {
+            false
+        };
+        let exact_operations = operations
+            .iter()
+            .map(|(bci, operation)| (bci, operation))
+            .collect::<Vec<_>>();
+        let exact_operations = exact_operations.len() == instructions.len()
+            && exact_operations.iter().zip(instructions).all(|((bci, operation), raw)| {
+                **bci == raw.bci && match raw.opcode {
+                    0x2a => matches!(operation, Operation::Load { slot: 0 }),
+                    0xba => matches!(operation, Operation::InvokeDynamic(site) if site.cp() == target.site_cp),
+                    0xb0 => matches!(operation, Operation::Return),
+                    _ => false,
+                }
+            });
+        if exact_code
+            && exact_program
+            && exact_ssa
+            && exact_flow
+            && exact_operations
+            && parameter_types.is_empty()
+        {
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(instructions.len()).unwrap_or(u64::MAX),
+                Some(target.use_site),
+            )?;
+            crate::stop::poll(budget, Some(target.use_site))?;
+            return Ok(Some(GenericReturnCandidate {
+                parameters: Vec::new(),
+                value: GenericReturnValue::TypedFunctional { target },
+            }));
+        }
+        return Ok(None);
+    }
     if matches!(value.kind, ExprKind::Null) {
         if program.statements != 1
             || !parameter_types.is_empty()
@@ -4165,6 +4317,7 @@ fn recover_inner(
             chains: &chains,
             members: request.members,
             member_inner_targets: request.member_inner_targets,
+            typed_functional_target: request.typed_functional_target,
             interface_super_calls: request.interface_super_calls,
             reference_overload_calls: request.reference_overload_calls,
             captured_outer_reads: request.captured_outer_reads,

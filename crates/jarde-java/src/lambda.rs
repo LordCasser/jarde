@@ -273,6 +273,8 @@ pub(crate) enum Reach {
 pub(crate) struct Plan {
     /// Which of the two writings.
     pub(crate) form: LambdaForm,
+    /// Both adaptation stages allow this source reference under the class-source target.
+    pub(crate) typed_reference: bool,
     /// The descriptor-derived parameter and return adaptations consumed by the writer.
     pub(crate) adaptation: AdaptationPlan,
     /// The functional interface the invokedynamic descriptor returns.
@@ -474,6 +476,7 @@ pub(crate) fn plan(
     members: Option<&ClassMembers>,
     captures: &[(Option<u32>, Option<Type>)],
     profile: &RecoveryProfile,
+    typed_target: Option<crate::report::TypedFunctionalTarget>,
     budget: &mut Budget,
     at: u32,
 ) -> Result<Verdict, StopReason> {
@@ -812,9 +815,45 @@ pub(crate) fn plan(
     // conversions. Keep it only when both stages are identity. A bound receiver also carries a
     // creation-time null check; converting that reference to a lambda would defer the check until
     // invocation, so refuse that adaptation shape.
+    let typed_reference = typed_target.is_some_and(|target| {
+        use crate::report::TypedFunctionalKind;
+        let (interface, erased, dynamic) = match target.kind {
+            TypedFunctionalKind::FunctionStringInteger => (
+                "java.util.function.Function",
+                "(Ljava/lang/Object;)Ljava/lang/Object;",
+                "(Ljava/lang/String;)Ljava/lang/Integer;",
+            ),
+            TypedFunctionalKind::SupplierString => (
+                "java.util.function.Supplier",
+                "()Ljava/lang/Object;",
+                "()Ljava/lang/String;",
+            ),
+        };
+        target.use_site == at
+            && target.site_cp == site.cp()
+            && site
+                .descriptor()
+                .ends_with(&format!("L{};", interface.replace('.', "/")))
+            && handle.owner == FACTORY_OWNER
+            && handle.name == "metafactory"
+            && sam == erased
+            && instantiated == dynamic
+            && adaptation.parameters.iter().all(|parameter| {
+                parameter.dynamic_to_implementation == TypeConversion::Identity
+                    && matches!(
+                        parameter.sam_to_dynamic,
+                        TypeConversion::Identity | TypeConversion::CheckCast
+                    )
+            })
+            && matches!(
+                adaptation.returns.implementation_to_dynamic,
+                TypeConversion::Identity | TypeConversion::BoxPrimitive
+            )
+            && !implementation.is_generated_body()
+    });
     let parameter_adaptation = adaptation.parameters.iter().any(|parameter| {
-        parameter.sam_to_dynamic != TypeConversion::Identity
-            || parameter.dynamic_to_implementation != TypeConversion::Identity
+        parameter.dynamic_to_implementation != TypeConversion::Identity
+            || (!typed_reference && parameter.sam_to_dynamic != TypeConversion::Identity)
     });
     let reference_shape = receiver == captures.len() && !implementation.is_generated_body();
     if reference_shape
@@ -842,6 +881,7 @@ pub(crate) fn plan(
         evidence,
         outcome: Ok(Plan {
             form,
+            typed_reference: typed_reference && reference_shape && !parameter_adaptation,
             adaptation,
             target_type: interface,
             reach: implementation.reach(),
@@ -2088,6 +2128,7 @@ mod tests {
             members,
             captures,
             &crate::pass::JAVA_8,
+            None,
             &mut budget,
             7,
         )
@@ -2271,6 +2312,7 @@ mod tests {
             None,
             &captures,
             &crate::pass::JAVA_8,
+            None,
             &mut budget,
             42,
         ) {
@@ -2301,6 +2343,7 @@ mod tests {
             None,
             &captures,
             &crate::pass::JAVA_8,
+            None,
             &mut cancelled,
             42,
         ) {
