@@ -2,7 +2,8 @@
 // jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
 package dt21parent;
 
-public class Child extends dt21parent.Parent {
+// jarde: class Signature `Ldt21parent/Parent<Ljava/lang/String;>;` projected after physical parent erasure proof
+public class Child extends dt21parent.Parent<java.lang.String> {
     public Child() {
         // @method <init>()V
         // @declaration a constructor of `dt21parent.Child`, member flags 0x0001

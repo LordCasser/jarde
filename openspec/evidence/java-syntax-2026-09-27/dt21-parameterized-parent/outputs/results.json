@@ -1,11 +1,45 @@
 {
   "assertions": {
-    "jarde_complete_source_compiles_but_erases_parent_type": true,
+    "jarde_complete_source_compiles_verifies_and_preserves_parent_type": true,
     "original_and_jadx_complete_java8_sources_verify_and_preserve_parent_type": true
   },
   "class_sha256": {
     "Child.class": "51ec7dfb18f7fc1af79dbd079126f0b4d99d6b9286be24ab1f3da2540ce30237",
     "Parent.class": "28e4090d31af9b0a4a7b7cdd902171b9fffec1abcb52a4d44935088a16bc174e"
+  },
+  "controls": {
+    "ambiguous-parent": {
+      "raw_header_preserved": true,
+      "signature_refusal_reported": true
+    },
+    "extra-interface": {
+      "raw_header_preserved": true,
+      "signature_refusal_reported": true
+    },
+    "malformed-child-signature": {
+      "raw_header_preserved": true,
+      "signature_refusal_reported": true
+    },
+    "missing-parent": {
+      "raw_header_preserved": true,
+      "signature_refusal_reported": true
+    },
+    "non-generic-parent": {
+      "raw_header_preserved": true,
+      "signature_refusal_reported": true
+    },
+    "raw-no-signature": {
+      "raw_header_preserved": true,
+      "signature_refusal_reported": false
+    },
+    "wrong-parent-arity": {
+      "raw_header_preserved": true,
+      "signature_refusal_reported": true
+    },
+    "wrong-parent-erasure": {
+      "raw_header_preserved": true,
+      "signature_refusal_reported": true
+    }
   },
   "jadx": {
     "compile_exit": 0,
@@ -18,7 +52,7 @@
     "compile_exit": 0,
     "run_exit": 0,
     "run_stderr": "",
-    "run_stdout": "class dt21parent.Parent\n"
+    "run_stdout": "dt21parent.Parent<java.lang.String>\n"
   },
   "javac": "javac 23.0.1",
   "original": {
