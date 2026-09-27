@@ -64,6 +64,7 @@ pub mod enumswitch;
 pub mod evidence;
 pub mod facts;
 pub mod field;
+mod fragmented_catch;
 pub mod guard;
 pub mod init;
 pub mod lambda;

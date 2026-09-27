@@ -1148,7 +1148,11 @@ pub(crate) fn recover(
     // reader cannot see would hide exactly the fact that made it unprovable. A third fact of the
     // same kind is asked of the decode, and it is answered at the end of this function, because
     // what the body has to become then depends on what the walk found.
-    let catch_joins = proved_loop_catch_joins(canonical, view, code, budget)?;
+    let fragmented = crate::fragmented_catch::prove(canonical, view, ssa, code, budget)?;
+    let mut catch_joins = proved_loop_catch_joins(canonical, view, code, budget)?;
+    if let Some(proof) = &fragmented {
+        catch_joins.extend(proof.loop_entries.iter().copied());
+    }
     charge(
         budget,
         CountedBudgetDimension::AnalysisSteps,
@@ -1260,6 +1264,7 @@ pub(crate) fn recover(
         profile,
         budget,
         catch_joins,
+        fragmented,
         excluded_edge_nodes,
         visited: BTreeSet::new(),
         depth: 0,
@@ -1956,6 +1961,7 @@ struct Walker<'a> {
     profile: &'a crate::pass::RecoveryProfile,
     budget: &'a mut Budget,
     catch_joins: BTreeSet<(usize, usize)>,
+    fragmented: Option<crate::fragmented_catch::FragmentedCatch>,
     /// Endpoints of exception and subroutine edges, computed once so bounded local shape probes do
     /// not rescan the whole canonical edge table.
     excluded_edge_nodes: BTreeSet<CanonicalBlockId>,
@@ -2173,7 +2179,12 @@ impl Walker<'_> {
                         if target.break_target == Some(node) {
                             Some((target.header, false))
                         } else if (current_loop != Some(target.header)
-                            || frame.switch_continue == Some(node))
+                            || frame.switch_continue == Some(node)
+                            || self.fragmented.as_ref().is_some_and(|proof| {
+                                frame.own_try.is_some()
+                                    && proof.loop_header == target.header
+                                    && self.view.index_of(&proof.update) == Some(node)
+                            }))
                             && target.continue_target == node
                         {
                             Some((target.header, true))
@@ -2284,6 +2295,29 @@ impl Walker<'_> {
                     catches,
                 }];
                 run.extend(tails);
+                if self.fragmented.as_ref().is_some_and(|proof| {
+                    proof.outer_start != proof.inner_start
+                        && current.bci() == proof.inner_start
+                        && frame.own_try.is_some()
+                }) && let Some(tail_start) = join.as_ref()
+                    && frame.boundary != self.view.index_of(tail_start)
+                {
+                    let mut next = Some(tail_start.clone());
+                    for _ in 0..self.canonical.blocks().len() {
+                        let Some(at) = next.as_ref() else { break };
+                        if frame.boundary == self.view.index_of(at) {
+                            break;
+                        }
+                        let previous = at.clone();
+                        let (tail, following) = self.region_at(&previous, frame)?;
+                        run.extend(tail);
+                        next = following;
+                        if next.as_ref() == Some(&previous) {
+                            break;
+                        }
+                    }
+                    return Ok((run, next));
+                }
                 return Ok((run, join));
             }
             let leaving = self.leaving_edge(&current);
@@ -2609,18 +2643,30 @@ impl Walker<'_> {
                         (frame.switch_join.is_none() && through_bridge && through_latch)
                             .then_some(boundary)
                     });
-                    let join_node = if let Some(boundary) = loop_bridge_join {
-                        Some(boundary)
-                    } else if post_join.is_some_and(|join| {
-                        frame
-                            .loop_targets
-                            .iter()
-                            .any(|target| target.break_target == Some(join))
-                    }) {
-                        frame.switch_join.or(post_join)
-                    } else {
-                        post_join
-                    };
+                    let fragmented_handler_join = self.fragmented.as_ref().and_then(|proof| {
+                        let boundary = frame.boundary?;
+                        let [a, b] = [then_node?, else_node?];
+                        (frame.own_try.is_some()
+                            && proof.exceptional_blocks.contains(&node)
+                            && proof.loop_header == frame.loop_targets.last()?.header
+                            && (self.view.reaches(a, boundary) != self.view.reaches(b, boundary))
+                            && self.view.reaches(a, self.view.index_of(&proof.update)?)
+                            && self.view.reaches(b, self.view.index_of(&proof.update)?))
+                        .then_some(boundary)
+                    });
+                    let join_node =
+                        if let Some(boundary) = fragmented_handler_join.or(loop_bridge_join) {
+                            Some(boundary)
+                        } else if post_join.is_some_and(|join| {
+                            frame
+                                .loop_targets
+                                .iter()
+                                .any(|target| target.break_target == Some(join))
+                        }) {
+                            frame.switch_join.or(post_join)
+                        } else {
+                            post_join
+                        };
                     let shared_join = if join_node.is_none() {
                         if self.return_is_boolean
                             && frame.shared_tail.is_none()
@@ -2866,9 +2912,20 @@ impl Walker<'_> {
                             && matches!(then_run.last(), Some(Region::LoopBreak { .. }));
                         let else_breaks = else_next.is_none()
                             && matches!(else_run.last(), Some(Region::LoopBreak { .. }));
+                        let certified_continue = fragmented_handler_join == Some(join_node)
+                            && ((then_meets
+                                && else_next.is_none()
+                                && matches!(else_run.last(), Some(Region::LoopContinue { .. })))
+                                || (else_meets
+                                    && then_next.is_none()
+                                    && matches!(
+                                        then_run.last(),
+                                        Some(Region::LoopContinue { .. })
+                                    )));
                         let both_end = !then_meets && !else_meets;
                         let local_switch_join = frame.switch_join == Some(join_node);
                         if !(then_meets && else_meets)
+                            && !certified_continue
                             && !both_end
                             && !(frame.loop_targets.last().is_some_and(|target| {
                                 frame.boundary == Some(join_node)
@@ -3556,6 +3613,7 @@ impl Walker<'_> {
             self.ssa,
             self.operations,
             self.handlers,
+            self.fragmented.as_ref(),
             self.profile,
             start,
             self.budget,
@@ -3600,19 +3658,54 @@ impl Walker<'_> {
         // slot holds is one region, and the sibling quote is written after the `try` in the same
         // method, where the bytecode it names still runs.
         let mut tails: Vec<Region> = Vec::new();
+        let certified = self.fragmented.as_ref().is_some_and(|proof| {
+            start.bci() == proof.outer_start || start.bci() == proof.inner_start
+        });
         let (body, boundary) = match &shape.inner {
             Some(inner) => {
+                let outer_frame = if self.fragmented.as_ref().is_some_and(|proof| {
+                    start.bci() == proof.outer_start && proof.outer_start == proof.inner_start
+                }) {
+                    frame.protected(
+                        shape.join.as_ref().and_then(|id| self.view.index_of(id)),
+                        node,
+                    )
+                } else {
+                    frame.clone()
+                };
                 let (body, catches, join, inner_tails) =
-                    self.try_level(start, node, frame, inner)?;
-                let boundary = join.as_ref().map(|join| self.after_join(join));
-                let body = Region::Try {
+                    self.try_level(start, node, &outer_frame, inner)?;
+                let inner_region = Region::Try {
                     prefix: Vec::new(),
                     lead: inner.lead,
                     body: Box::new(body),
                     catches,
                 };
                 tails.extend(inner_tails);
-                (body, boundary)
+                if certified
+                    && shape.join != join
+                    && let Some(tail_start) = join
+                {
+                    let boundary_node = shape.join.as_ref().and_then(|id| self.view.index_of(id));
+                    let (tail, _) =
+                        self.region_at(&tail_start, &frame.protected(boundary_node, node))?;
+                    let tail = if certified {
+                        sequence_region(tail)
+                    } else {
+                        let (tail, tail_tails) = split(tail);
+                        tails.extend(tail_tails);
+                        tail
+                    };
+                    (
+                        Region::Sequence {
+                            regions: vec![inner_region, tail],
+                        },
+                        shape.join.clone(),
+                    )
+                } else {
+                    let boundary = join.as_ref().map(|join| self.after_join(join));
+                    (inner_region, boundary)
+                }
             }
             None => {
                 let boundary = shape.join.clone();
@@ -3620,8 +3713,13 @@ impl Walker<'_> {
                     .as_ref()
                     .and_then(|block| self.view.index_of(block));
                 let (body, _) = self.region_at(start, &frame.protected(boundary_node, node))?;
-                let (body, body_tails) = split(body);
-                tails.extend(body_tails);
+                let body = if certified {
+                    sequence_region(body)
+                } else {
+                    let (body, body_tails) = split(body);
+                    tails.extend(body_tails);
+                    body
+                };
                 (body, boundary)
             }
         };
@@ -3631,8 +3729,13 @@ impl Walker<'_> {
         let mut catches = Vec::with_capacity(shape.sites.len());
         for site in &shape.sites {
             let (handler, _) = self.region_at(&site.handler, &frame.arm(boundary_node, None))?;
-            let (handler, handler_tails) = split(handler);
-            tails.extend(handler_tails);
+            let handler = if certified {
+                sequence_region(handler)
+            } else {
+                let (handler, handler_tails) = split(handler);
+                tails.extend(handler_tails);
+                handler
+            };
             catches.push(CatchClause {
                 type_indices: site.type_indices.clone(),
                 handler: site.handler.clone(),
@@ -5679,6 +5782,17 @@ impl Walker<'_> {
     /// The narrow effectful dual-exit shape instead keeps its header test as the body's first
     /// `If` inside `while (true)`. Each shape checks its entry, latch, edges and ownership before
     /// building; a loop without that proof is quoted with its reason.
+    fn include_fragmented_catch_scope(&self, frame: &mut Frame, header: usize) {
+        if let Some(extra) = self
+            .fragmented
+            .as_ref()
+            .and_then(|proof| proof.supplemental_scope(header))
+            && let Some(scope) = frame.scope.as_mut()
+        {
+            scope.extend(extra.iter().copied());
+        }
+    }
+
     fn loop_region(
         &mut self,
         header: &CanonicalBlockId,
@@ -6581,6 +6695,7 @@ impl Walker<'_> {
             &BTreeSet::new(),
             &BTreeSet::new(),
         );
+        self.include_fragmented_catch_scope(&mut body_frame, header_node);
         body_frame.allow_own_loop_entry = true;
         let (body_regions, next) = self.loop_body_sequence(header, &body_frame, &scope)?;
         let owners: Vec<_> = body_regions
@@ -6697,7 +6812,7 @@ impl Walker<'_> {
                 all_exits.extend(exits.iter().copied());
                 let transfer_sources = self.loop_transfer_sources(&all_exits);
                 let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
-                let body_frame = frame.loop_body(
+                let mut body_frame = frame.loop_body(
                     blocks,
                     header_node,
                     header_node,
@@ -6708,6 +6823,7 @@ impl Walker<'_> {
                     &transfer_sources,
                     &terminal_returns,
                 );
+                self.include_fragmented_catch_scope(&mut body_frame, header_node);
                 let (body, _) = self.loop_body_sequence(&chain.body, &body_frame, blocks)?;
                 self.visited.extend(test_nodes.iter().copied());
                 let mut expected = blocks.clone();
@@ -6821,7 +6937,7 @@ impl Walker<'_> {
             transfer_sources.insert(gateway);
         }
         let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
-        let body_frame = frame.loop_body(
+        let mut body_frame = frame.loop_body(
             blocks,
             header_node,
             header_node,
@@ -6835,6 +6951,7 @@ impl Walker<'_> {
             &transfer_sources,
             &terminal_returns,
         );
+        self.include_fragmented_catch_scope(&mut body_frame, header_node);
         let (body, _) = self.loop_body_sequence(&inside, &body_frame, blocks)?;
         self.visited.insert(header_node);
         let mut expected = blocks.clone();
@@ -7361,7 +7478,15 @@ impl Walker<'_> {
                 return None;
             }
             let in_edges = self.view.predecessors(latch);
-            if in_edges.is_empty() || in_edges.iter().any(|source| !blocks.contains(source)) {
+            if in_edges.is_empty()
+                || in_edges.iter().any(|source| {
+                    !blocks.contains(source)
+                        && !self.fragmented.as_ref().is_some_and(|proof| {
+                            proof.loop_header == header_node
+                                && proof.loop_entries.contains(&(*source, latch))
+                        })
+                })
+            {
                 return None;
             }
             // If the latch also holds body effects, an early edge to its entry must execute those
@@ -8067,6 +8192,7 @@ impl Walker<'_> {
             &transfer_sources,
             &terminal_returns,
         );
+        self.include_fragmented_catch_scope(&mut body_frame, header_node);
         body_frame.allow_own_loop_entry = allow_header_entry;
         let (mut body, _) = self.loop_body_sequence(header, &body_frame, blocks)?;
         if latch_body_prefix {
