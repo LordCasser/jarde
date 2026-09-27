@@ -929,6 +929,8 @@ pub enum ClassSourceMemberCapture {
         #[serde(skip)]
         target: Box<jarde_java::report::ProvedStaticMemberTarget>,
     },
+    /// The physical relation is proved, but no constructor use target is claimed.
+    StaticDeclaration,
     Refused {
         reason: String,
     },
@@ -7731,9 +7733,18 @@ pub(crate) struct MemberFamilyTextProjection<'a> {
     pub(crate) child: &'a ClassSourceReport,
     pub(crate) capture: Option<&'a MemberCaptureProof>,
     pub(crate) static_target: Option<&'a jarde_java::report::ProvedStaticMemberTarget>,
+    pub(crate) generic_static: Option<&'a GenericStaticMemberText>,
     pub(crate) root_methods: &'a [MemberFamilyMethodText],
     pub(crate) child_methods: &'a [MemberFamilyMethodText],
     pub(crate) outer_super_bridges: &'a [OuterSuperBridgeClosureProof],
+}
+
+pub(crate) struct GenericStaticMemberText {
+    pub(crate) header: String,
+    pub(crate) field_index: u64,
+    pub(crate) field_declaration: String,
+    pub(crate) bridge: PhysicalMethodId,
+    pub(crate) bridge_invoke_bci: u32,
 }
 
 #[derive(Clone)]
@@ -7947,13 +7958,14 @@ pub(crate) fn member_family_source_text(
             || !field.annotations.attributes.is_empty()
             || !field.type_annotations.attributes.is_empty())
         || !is_java_identifier(&member.relation.simple_name)
-        || child_declaration.generic_signature.is_some()
-        || child_declaration.generic_refusal.is_some()
+        || (member.generic_static.is_none() && (child_declaration.generic_signature.is_some()
+            || child_declaration.generic_refusal.is_some()))
         || !child_declaration.annotation_refusals.is_empty()
         || (member.capture.is_some() && member.relation.access_flags & ACC_STATIC != 0)
         || (member.capture.is_none() && (member.relation.access_flags & ACC_STATIC == 0
-            || member.static_target.is_none_or(|target| target.definition != member.child.class)
-            || !member.child.fields.is_empty()))
+            || (member.static_target.is_none_or(|target| target.definition != member.child.class)
+                && member.generic_static.is_none())
+            || (member.generic_static.is_none() && !member.child.fields.is_empty())))
         || child_declaration.item.declaration.access_flags
             & (ACC_INTERFACE | ACC_ENUM | ACC_ANNOTATION)
             != 0
@@ -8009,6 +8021,7 @@ pub(crate) fn member_family_source_text(
     )?;
     let expected = 1
         + usize::from(member.capture.is_none())
+        + 3 * usize::from(member.generic_static.is_some())
         + member.outer_super_bridges.len()
         + member
             .root_methods
@@ -8088,6 +8101,7 @@ pub(crate) fn declaration_pair_source_text(
             child: &member.child,
             capture: None,
             static_target: None,
+            generic_static: None,
             root_methods: &[],
             child_methods: &methods,
             outer_super_bridges: &[],
@@ -8403,7 +8417,10 @@ fn render_member_class(
     for annotation in &declaration.annotation_uses {
         out.push_str(&indent(&format!("{annotation}\n"), 1));
     }
-    let mut class_header_declaration = class_declaration(&member.relation.simple_name, &facts);
+    let mut class_header_declaration = member.generic_static.map_or_else(
+        || class_declaration(&member.relation.simple_name, &facts),
+        |generic| generic.header.clone(),
+    );
     if member.relation.access_flags & ACC_STATIC != 0 {
         let visibility_len = ["public ", "protected ", "private "]
             .iter()
@@ -8444,6 +8461,25 @@ fn render_member_class(
             ],
         });
     }
+    if let Some(generic) = member.generic_static {
+        derived.push(MemberFamilyDerivedProjection {
+            kind: MemberFamilyDerivedKind::MemberGenericSignature,
+            start: header_start,
+            end: out.len() - 1,
+            anchors: vec![MemberFamilyPhysicalAnchor::ClassDefinition {
+                definition: member.relation.child.clone(),
+            }],
+        });
+        derived.push(MemberFamilyDerivedProjection {
+            kind: MemberFamilyDerivedKind::MemberMethodDeclaration,
+            start: header_start,
+            end: out.len() - 1,
+            anchors: vec![MemberFamilyPhysicalAnchor::MethodPoint {
+                method: generic.bridge.clone(),
+                bci: generic.bridge_invoke_bci,
+            }],
+        });
+    }
     let mut first = true;
     for field in &child.fields {
         if member
@@ -8460,12 +8496,40 @@ fn render_member_class(
             out.push_str(&indent(&format!("{annotation}\n"), 2));
         }
         let text = match &field.declaration {
+            Some(_)
+                if member
+                    .generic_static
+                    .is_some_and(|generic| generic.field_index == field.item.index) =>
+            {
+                declaration_member(&member.generic_static.unwrap().field_declaration, &[])
+            }
             Some(declaration) => declaration_member(declaration, &field.markers),
             None => comment_member(&field.markers),
         };
+        let field_start = out.len();
         out.push_str(&indent(&text, 1));
+        if member
+            .generic_static
+            .is_some_and(|generic| generic.field_index == field.item.index)
+        {
+            derived.push(MemberFamilyDerivedProjection {
+                kind: MemberFamilyDerivedKind::MemberGenericSignature,
+                start: field_start,
+                end: out.len() - 1,
+                anchors: vec![MemberFamilyPhysicalAnchor::Field {
+                    field: field.item.identity.clone(),
+                    index: field.item.index,
+                }],
+            });
+        }
     }
     for method in &child.methods {
+        if member
+            .generic_static
+            .is_some_and(|generic| generic.bridge == method.item.identity)
+        {
+            continue;
+        }
         if !first {
             out.push('\n');
         }

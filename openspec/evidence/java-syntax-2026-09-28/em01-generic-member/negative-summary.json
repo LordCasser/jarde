@@ -1,0 +1,39 @@
+{
+  "wrong-self-row": {
+    "verify_load": "em01.Generic$A",
+    "jarde_family": "refused"
+  },
+  "wrong-interface-signature": {
+    "verify_load": "em01.Generic$A",
+    "jarde_family": "refused"
+  },
+  "unknown-field-T": {
+    "verify_load": "em01.Generic$A",
+    "jarde_family": "refused"
+  },
+  "unknown-method-T": {
+    "verify_load": "em01.Generic$A",
+    "jarde_family": "refused"
+  },
+  "bridge-extra-effect": {
+    "verify_load": "em01.Generic$A",
+    "jarde_family": "refused",
+    "behavior": "bridge-wrong=accepted"
+  },
+  "bridge-wrong-target": {
+    "verify_load": "em01.Generic$A",
+    "jarde_family": "refused",
+    "behavior": "NoSuchMethodError"
+  },
+  "bridge-wrong-cast": {
+    "verify_load": "em01.Generic$A",
+    "jarde_family": "refused",
+    "behavior": "ClassCastException for legal A"
+  },
+  "root-extra-use": {
+    "jarde_family": "refused"
+  },
+  "root-unrelated-method": {
+    "jarde_family": "projected"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "class_sha256": {
+    "em01/Generic.class": "c55a1b43d880f69df08b557988acd8c8f3e2158588911e9d3de0e91196c3a890",
+    "em01/Generic$A.class": "172a63a58d3f7b62b040a2e038e05f387447943ddecf64a10cf36155b168e1f5"
+  },
+  "jarde_cli_sha256": "7b36d74b4d1f0008caefec8a105354c66bb61cc7f4675a78c872a1a0f3ced1d9",
+  "original": {
+    "Runner": "2:1\n1:java.lang.Comparable<em01.Generic$A<T>>",
+    "BridgeRunner": "type-parameters=1\ninterface=java.lang.Comparable<em01.Generic$A<T>>\nmethods=2:1\ntyped=0\nbridge-null=0\nbridge-wrong=ClassCastException"
+  },
+  "jadx": {
+    "Runner": "2:1\n1:java.lang.Comparable<em01.Generic$A<T>>",
+    "BridgeRunner": "type-parameters=1\ninterface=java.lang.Comparable<em01.Generic$A<T>>\nmethods=2:1\ntyped=0\nbridge-null=0\nbridge-wrong=ClassCastException"
+  },
+  "jarde": {
+    "Runner": "2:1\n1:java.lang.Comparable<em01.Generic$A<T>>",
+    "BridgeRunner": "type-parameters=1\ninterface=java.lang.Comparable<em01.Generic$A<T>>\nmethods=2:1\ntyped=0\nbridge-null=0\nbridge-wrong=ClassCastException"
+  },
+  "physical_child_preserved": true
+}

@@ -1,0 +1,79 @@
+Classfile Generic$A.class
+  size 565 bytes
+  SHA-256 checksum 172a63a58d3f7b62b040a2e038e05f387447943ddecf64a10cf36155b168e1f5
+public abstract class em01.Generic$A<T extends java.lang.Object> extends java.lang.Object implements java.lang.Comparable<em01.Generic$A<T>>
+  minor version: 0
+  major version: 52
+  flags: (0x0421) ACC_PUBLIC, ACC_SUPER, ACC_ABSTRACT
+  this_class: #7                          // em01/Generic$A
+  super_class: #2                         // java/lang/Object
+  interfaces: 1, fields: 1, methods: 3, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // em01/Generic$A
+   #8 = Utf8               em01/Generic$A
+   #9 = Methodref          #7.#10         // em01/Generic$A.compareTo:(Lem01/Generic$A;)I
+  #10 = NameAndType        #11:#12        // compareTo:(Lem01/Generic$A;)I
+  #11 = Utf8               compareTo
+  #12 = Utf8               (Lem01/Generic$A;)I
+  #13 = Class              #14            // java/lang/Comparable
+  #14 = Utf8               java/lang/Comparable
+  #15 = Utf8               value
+  #16 = Utf8               Ljava/lang/Object;
+  #17 = Utf8               Signature
+  #18 = Utf8               TT;
+  #19 = Utf8               Code
+  #20 = Utf8               (Lem01/Generic$A<TT;>;)I
+  #21 = Utf8               (Ljava/lang/Object;)I
+  #22 = Utf8               MethodParameters
+  #23 = Utf8               <T:Ljava/lang/Object;>Ljava/lang/Object;Ljava/lang/Comparable<Lem01/Generic$A<TT;>;>;
+  #24 = Utf8               InnerClasses
+  #25 = Class              #26            // em01/Generic
+  #26 = Utf8               em01/Generic
+  #27 = Utf8               A
+{
+  T value;
+    descriptor: Ljava/lang/Object;
+    flags: (0x0000)
+    Signature: #18                          // TT;
+
+  public em01.Generic$A();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public int compareTo(em01.Generic$A<T>);
+    descriptor: (Lem01/Generic$A;)I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: iconst_0
+         1: ireturn
+    Signature: #20                          // (Lem01/Generic$A<TT;>;)I
+
+  public int compareTo(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)I
+    flags: (0x1041) ACC_PUBLIC, ACC_BRIDGE, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: checkcast     #7                  // class em01/Generic$A
+         5: invokevirtual #9                  // Method compareTo:(Lem01/Generic$A;)I
+         8: ireturn
+    MethodParameters:
+      Name                           Flags
+      <no name>                      synthetic
+}
+Signature: #23                          // <T:Ljava/lang/Object;>Ljava/lang/Object;Ljava/lang/Comparable<Lem01/Generic$A<TT;>;>;
+InnerClasses:
+  public static abstract #27= #7 of #25;  // A=class em01/Generic$A of class em01/Generic
