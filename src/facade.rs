@@ -5430,6 +5430,7 @@ impl Engine {
                                 array_helper_uses,
                                 enum_switch_field_uses,
                                 generic_return,
+                                typed_functional_target,
                                 generic_constructor,
                                 anonymous_allocations,
                                 ast,
@@ -5536,9 +5537,10 @@ impl Engine {
                                     diagnostics
                                         .push(stop_diagnostic(&error, class_provenance.clone()));
                                 }
-                                if typed_functional_kind
-                                    == Some(jarde_java::report::TypedFunctionalKind::FunctionStringInteger)
-                                {
+                                if typed_functional_target.is_some_and(|target| {
+                                    target.kind
+                                        == jarde_java::report::TypedFunctionalKind::FunctionStringInteger
+                                }) {
                                     record.withhold_unprojected_functional_body();
                                 }
                                 let ends = stops.iter().any(ends_the_request);
@@ -9426,6 +9428,7 @@ struct PreparedMemberRecovery {
     array_helper_uses: Option<ArrayHelperUseScan>,
     enum_switch_field_uses: Option<Vec<jarde_java::report::ClassSourceEnumSwitchFieldUse>>,
     generic_return: Option<jarde_java::report::GenericReturnCandidate>,
+    typed_functional_target: Option<jarde_java::report::TypedFunctionalTarget>,
     generic_constructor: Option<jarde_java::report::GenericConstructorCandidate>,
     anonymous_allocations: Option<jarde_java::report::AnonymousAllocationScan>,
     ast: Option<jarde_java::report::ClassSourceMethodAst>,
@@ -9753,6 +9756,7 @@ fn recover_prepared_member(
         array_helper_uses,
         enum_switch_field_uses,
         generic_return,
+        typed_functional_target,
         generic_constructor,
         anonymous_allocations,
         ast,
@@ -20032,6 +20036,7 @@ mod member_inner_target_tests {
                     analyzed,
                     CalleeClass::None,
                     Some(&context),
+                    None,
                     None,
                     None,
                     &evidence,
