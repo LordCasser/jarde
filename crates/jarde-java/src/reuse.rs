@@ -113,7 +113,7 @@ pub(crate) fn plan(
     resources: &BTreeSet<u16>,
     budget: &mut Budget,
 ) -> Result<Plan, StopReason> {
-    let monitor_guards = monitor_guard_blocks(regions, budget)?;
+    let mut monitor_guards = None;
     let mut records: BTreeMap<u16, Vec<&DebugLocal>> = BTreeMap::new();
     for record in debug {
         records.entry(record.slot()).or_default().push(record);
@@ -135,7 +135,8 @@ pub(crate) fn plan(
         if let Some((names, split)) = typed_split(
             ssa,
             canonical,
-            &monitor_guards,
+            regions,
+            &mut monitor_guards,
             slot,
             parameters,
             slot_records,
@@ -176,7 +177,6 @@ fn monitor_guard_blocks(
     let mut guards = Vec::new();
     while let Some(region) = pending.pop() {
         poll(budget, None)?;
-        charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
         match region {
             Region::Guard { plan, body, .. } => {
                 if let crate::guard::Shape::Monitor { cleanup_rows, .. } = plan.shape() {
@@ -292,7 +292,8 @@ fn representative(ssa: &SsaTable, mut value: ValueId) -> Option<ValueId> {
 fn typed_split(
     ssa: &SsaTable,
     canonical: &CanonicalCfg,
-    monitor_guards: &[(BTreeSet<CanonicalBlockId>, BTreeSet<u32>)],
+    regions: &[Region],
+    monitor_guards: &mut Option<Vec<(BTreeSet<CanonicalBlockId>, BTreeSet<u32>)>>,
     slot: u16,
     parameters: u16,
     records: &[&DebugLocal],
@@ -362,8 +363,19 @@ fn typed_split(
         .map(|(access, _)| ssa.blocks()[access.block].block().clone())
         .collect();
     let mut monitor = None;
-    if earlier == Category::Reference && later == Category::Int {
-        for guard in monitor_guards {
+    if earlier == Category::Reference
+        && later == Category::Int
+        && !canonical.handler_rows().is_empty()
+    {
+        // A monitor proof needs its cleanup exception rows. Ordinary methods need no region
+        // scan, and walking already-billed non-monitor regions must not alter their ledger.
+        if monitor_guards.is_none() {
+            *monitor_guards = Some(monitor_guard_blocks(regions, budget)?);
+        }
+        for guard in monitor_guards
+            .as_ref()
+            .expect("monitor guards were just collected")
+        {
             poll(budget, Some(boundary))?;
             charge(
                 budget,
