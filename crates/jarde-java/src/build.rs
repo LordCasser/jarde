@@ -739,11 +739,13 @@ fn declarations(
     )?;
     let decided = decide_types(
         &uses,
+        regions,
         ssa,
         operations,
         reuse,
         parameters,
         parameter_types,
+        return_type,
         fields,
         &short_circuit_booleans,
         budget,
@@ -1951,11 +1953,13 @@ struct FirstWrite {
 #[allow(clippy::too_many_arguments)]
 fn decide_types(
     uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
+    regions: &[Region],
     ssa: &SsaTable,
     operations: &Operations,
     reuse: &reuse::Plan,
     parameters: u16,
     parameter_types: &BTreeMap<u16, Type>,
+    return_type: Option<&Type>,
     fields: &field::Plan,
     short_circuit_booleans: &BTreeSet<LocalVariable>,
     budget: &mut Budget,
@@ -2107,10 +2111,21 @@ fn decide_types(
             // The frames' reading of the value, or — where they state only an unknown reference — the
             // array a creation of this very body built (P3 2b): a `newarray`'s frame entry states no
             // name, and the instruction's own element type is what types the local it filled.
-            match written_type(ssa, operations, write.written) {
-                Ok(Some(ty)) => Decided::Type(ty),
-                Ok(None) => Decided::Unknown(NoType::NoFrameEntry),
-                Err(name) => Decided::Unknown(NoType::Unspellable(name)),
+            match constructor_predicate_local_type(
+                variable,
+                uses.get(variable).map(Vec::as_slice).unwrap_or(&[]),
+                regions,
+                ssa,
+                operations,
+                return_type,
+                budget,
+            )? {
+                Some(ty) => Decided::Type(ty),
+                None => match written_type(ssa, operations, write.written) {
+                    Ok(Some(ty)) => Decided::Type(ty),
+                    Ok(None) => Decided::Unknown(NoType::NoFrameEntry),
+                    Err(name) => Decided::Unknown(NoType::Unspellable(name)),
+                },
             }
         };
         let decision = match decision {
@@ -2155,6 +2170,132 @@ fn decide_types(
         decided.insert(*variable, decision);
     }
     Ok(decided)
+}
+
+/// The constructor/predicate two-exit loop has two null writes before its first typed write.
+/// Its Region certificate owns the constructor, array read and both joins; the declaration
+/// decision still needs the type that the first null write cannot state. Read every write's
+/// producer here and admit only the common `File` type, including the array element that the
+/// frame pass conservatively leaves as an unknown reference.
+fn constructor_predicate_local_type(
+    variable: &LocalVariable,
+    uses: &[SlotUse],
+    regions: &[Region],
+    ssa: &SsaTable,
+    operations: &Operations,
+    return_type: Option<&Type>,
+    budget: &mut Budget,
+) -> Result<Option<Type>, StopReason> {
+    let file = Type::Reference("java.io.File".into());
+    if return_type != Some(&file) || uses.iter().filter(|use_| use_.written.is_some()).count() != 4
+    {
+        return Ok(None);
+    }
+    let mut nulls = 0;
+    let mut constructor_block = None;
+    let mut element_block = None;
+    for use_ in uses.iter().filter(|use_| use_.written.is_some()) {
+        poll(budget, Some(use_.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(use_.bci),
+        )?;
+        let (Some(written), Some(stored)) = (use_.written, use_.stored) else {
+            return Ok(None);
+        };
+        let Definition::Instruction { block, bci } = ssa.value(written).def() else {
+            return Ok(None);
+        };
+        if *bci != use_.bci
+            || !matches!(operations.get(*bci), Some(Operation::Store { slot }) if *slot == variable.slot())
+        {
+            return Ok(None);
+        }
+        if matches!(ssa.value(stored).ty(), Value::Null) {
+            if !matches!(ssa.value(stored).def(), Definition::Instruction { bci: push, .. }
+                if matches!(operations.get(*push), Some(Operation::Push(ConstantValue::Null))))
+            {
+                return Ok(None);
+            }
+            nulls += 1;
+            continue;
+        }
+        let Definition::Instruction { bci: producer, .. } = ssa.value(stored).def() else {
+            return Ok(None);
+        };
+        match operations.get(*producer) {
+            Some(Operation::Invoke(target))
+                if target.kind() == InvokeKind::Special
+                    && target.owner() == "java/io/File"
+                    && target.name() == "<init>"
+                    && target.descriptor() == "(Ljava/lang/String;)V"
+                    && written_type(ssa, operations, written) == Ok(Some(file.clone())) =>
+            {
+                if constructor_block.replace(block.clone()).is_some() {
+                    return Ok(None);
+                }
+            }
+            Some(Operation::ArrayElementLoad { element: None }) => {
+                let Some(element_instruction) = instruction_at(ssa, *producer) else {
+                    return Ok(None);
+                };
+                let Some(array) = element_instruction
+                    .reads()
+                    .iter()
+                    .find_map(|(slot, value)| (*slot == Slot::Stack(0)).then_some(*value))
+                else {
+                    return Ok(None);
+                };
+                if array_element(ssa, operations, array, None) != Some(file.clone())
+                    || element_block.replace(block.clone()).is_some()
+                {
+                    return Ok(None);
+                }
+            }
+            _ => return Ok(None),
+        }
+    }
+    let (Some(constructor_block), Some(element_block)) = (constructor_block, element_block) else {
+        return Ok(None);
+    };
+    if nulls != 2 {
+        return Ok(None);
+    }
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            regions
+                .iter()
+                .map(|region| region.blocks().len())
+                .sum::<usize>(),
+        )
+        .unwrap_or(u64::MAX),
+        Some(constructor_block.bci()),
+    )?;
+    poll(budget, Some(constructor_block.bci()))?;
+    let mut certified = false;
+    for region in regions {
+        collect_guards(region, &mut |region| {
+            if let Region::Loop {
+                form: LoopForm::Endless,
+                tests,
+                exit: Some(_),
+                gateway_origins,
+                ..
+            } = region
+            {
+                let owned = region.blocks();
+                certified |= tests.is_empty()
+                    && gateway_origins.len() == 1
+                    && owned.contains(&&constructor_block)
+                    && owned.contains(&&element_block);
+            }
+        });
+    }
+    Ok(certified.then_some(file))
 }
 
 /// The variable one value denotes a read of, when it denotes a read at all.
