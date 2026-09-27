@@ -6,7 +6,7 @@
 
 - 在既有 FINALLY Guard 通道增加固定四行、两份嵌套清理的联合证书：证明异常范围、两个 `IOException` catch、原异常重抛、清理调用顺序与接收者相同，且所有物理指令/边均有归属。
 - 复用既有 `Region::Guard`、`StmtKind::Try` 和 catch/finally writer，一次呈现外层 `try/finally` 与 finally 内层 `try/catch`。只为证书携带不可从现有 `Shape::Finally` 推出的内层 catch 与异常副本事实；不建通用异常控制流重写机制。
-- 用固定 class 的 BCI/异常表及 Java 8 同形编译输入验收；另用明确标为不同字节码的可注入 control 验证正常、正文异常、清理受检异常和清理未检异常的顺序与传播。错误表、错调用、错接收者及停止均须安全拒绝。
+- 用固定 class 的 BCI/异常表及 Java 8 同形编译输入做原/JADX/Jarde 三方验收；另以不同字节码的可注入 control 对照原/JADX 在正常、正文异常和清理异常下的源级语义。Jarde 对该三行 control 可继续安全拒绝；不为它增设第二个证书。错误表、错调用、错接收者及停止均须安全拒绝。
 
 ## Capabilities
 
