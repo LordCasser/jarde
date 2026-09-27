@@ -5,8 +5,9 @@
 //! ranges, or a narrow SSA/CFG proof that a reference lifetime ends before an int lifetime begins
 //! (or the reverse). The second proof works when only the later variable has an LVT record or the
 //! class has no debug table; a name is attached to only the lifetime its reads cover. It requires
-//! separate definition/use chains, only trivial phi aliases, no handler/call-context edge and no
-//! path from the later lifetime back to an earlier access. BCI order alone is insufficient.
+//! separate definition/use chains, only proved phi inputs, and no path from the later lifetime
+//! back to an earlier access. A proved monitor cleanup can account for its own exception edges;
+//! other handler and call-context edges still refuse. BCI order alone is insufficient.
 //!
 //! In the LVT path, a record states two things about a source variable: its
 //! **name**, and the range of bytecode over which the source could see it. It does *not* state which
@@ -40,10 +41,13 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use jarde_jvm::method_ir::{CanonicalCfg, CanonicalEdgeKind, Slot, SsaTable, Value, ValueId};
+use jarde_jvm::method_ir::{
+    CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, Slot, SsaTable, Value, ValueId,
+};
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 
 use crate::names::{DebugLocal, LocalVariable, SlotEvidence};
+use crate::region::Region;
 use crate::stop::{StopReason, charge, poll};
 
 /// What this run decided the body's local slots hold (P3 3.4).
@@ -102,12 +106,14 @@ impl Plan {
 pub(crate) fn plan(
     ssa: &SsaTable,
     canonical: &CanonicalCfg,
+    regions: &[Region],
     slots: u16,
     parameters: u16,
     debug: &[DebugLocal],
     resources: &BTreeSet<u16>,
     budget: &mut Budget,
 ) -> Result<Plan, StopReason> {
+    let monitor_guards = monitor_guard_blocks(regions, budget)?;
     let mut records: BTreeMap<u16, Vec<&DebugLocal>> = BTreeMap::new();
     for record in debug {
         records.entry(record.slot()).or_default().push(record);
@@ -129,6 +135,7 @@ pub(crate) fn plan(
         if let Some((names, split)) = typed_split(
             ssa,
             canonical,
+            &monitor_guards,
             slot,
             parameters,
             slot_records,
@@ -157,6 +164,59 @@ pub(crate) fn plan(
         }
     }
     Ok(plan)
+}
+
+/// Only a recovered monitor guard can account for its synthetic cleanup exception edges.
+/// Region recovery has already proved and claimed every block in each plan.
+fn monitor_guard_blocks(
+    regions: &[Region],
+    budget: &mut Budget,
+) -> Result<Vec<(BTreeSet<CanonicalBlockId>, BTreeSet<u32>)>, StopReason> {
+    let mut pending: Vec<&Region> = regions.iter().rev().collect();
+    let mut guards = Vec::new();
+    while let Some(region) = pending.pop() {
+        poll(budget, None)?;
+        charge(budget, CountedBudgetDimension::IrItems, 1, None)?;
+        match region {
+            Region::Guard { plan, body, .. } => {
+                if let crate::guard::Shape::Monitor { cleanup_rows, .. } = plan.shape() {
+                    let mut owned = BTreeSet::new();
+                    for block in plan.owned() {
+                        poll(budget, Some(block.bci()))?;
+                        charge(
+                            budget,
+                            CountedBudgetDimension::IrItems,
+                            1,
+                            Some(block.bci()),
+                        )?;
+                        owned.insert(block.clone());
+                    }
+                    guards.push((owned, cleanup_rows.clone()));
+                }
+                if let Some(body) = body {
+                    pending.push(body);
+                }
+            }
+            Region::Sequence { regions } | Region::Loop { body: regions, .. } => {
+                pending.extend(regions.iter().rev());
+            }
+            Region::If {
+                then_arm, else_arm, ..
+            } => {
+                pending.push(else_arm);
+                pending.push(then_arm);
+            }
+            Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
+                pending.extend(groups.iter().rev().map(|group| group.arm.as_ref()));
+            }
+            Region::Try { body, catches, .. } => {
+                pending.extend(catches.iter().rev().map(|clause| clause.body()));
+                pending.push(body);
+            }
+            _ => {}
+        }
+    }
+    Ok(guards)
 }
 
 /// Every read and write of every local slot of the body, by slot.
@@ -232,6 +292,7 @@ fn representative(ssa: &SsaTable, mut value: ValueId) -> Option<ValueId> {
 fn typed_split(
     ssa: &SsaTable,
     canonical: &CanonicalCfg,
+    monitor_guards: &[(BTreeSet<CanonicalBlockId>, BTreeSet<u32>)],
     slot: u16,
     parameters: u16,
     records: &[&DebugLocal],
@@ -290,6 +351,33 @@ fn typed_split(
         return Ok(None);
     }
 
+    let earlier_blocks: BTreeSet<_> = typed
+        .iter()
+        .filter(|(_, kind)| *kind == earlier)
+        .map(|(access, _)| ssa.blocks()[access.block].block().clone())
+        .collect();
+    let later_blocks: BTreeSet<_> = typed
+        .iter()
+        .filter(|(_, kind)| *kind == later)
+        .map(|(access, _)| ssa.blocks()[access.block].block().clone())
+        .collect();
+    let mut monitor = None;
+    if earlier == Category::Reference && later == Category::Int {
+        for guard in monitor_guards {
+            poll(budget, Some(boundary))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(boundary),
+            )?;
+            if earlier_blocks.is_subset(&guard.0) && later_blocks.is_disjoint(&guard.0) {
+                monitor = Some(guard);
+                break;
+            }
+        }
+    }
+
     let index = |kind| if kind == earlier { 0u16 } else { 1u16 };
     let mut by_bci = BTreeMap::new();
     for (access, kind) in &typed {
@@ -317,11 +405,75 @@ fn typed_split(
         };
         reads[usize::from(index(kind))].insert(value);
     }
+    let mut phi_inputs = BTreeSet::new();
+    let mut phi_values = BTreeSet::new();
+    let mut phi_blocks = BTreeSet::new();
+    for phi in ssa
+        .phis()
+        .iter()
+        .filter(|phi| phi.slot() == Slot::Local(slot))
+    {
+        poll(budget, Some(phi.block().bci()))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(phi.block().bci()),
+        )?;
+        if let Some(replaced) = ssa.value(phi.value()).replaced_by() {
+            let Some(replaced) = representative(ssa, replaced) else {
+                return Ok(None);
+            };
+            if phi.inputs().iter().any(|input| match input {
+                jarde_jvm::method_ir::PhiInput::Value(value) => {
+                    representative(ssa, *value) != Some(replaced)
+                }
+                jarde_jvm::method_ir::PhiInput::Itself => false,
+            }) {
+                return Ok(None);
+            }
+            continue;
+        }
+        // A loop-carried phi is admitted only for the integer lifetime after this proved
+        // monitor guard. Its every incoming value must be one of that lifetime's writes.
+        if monitor.is_none_or(|(owned, _)| owned.contains(phi.block()))
+            || phi.block().bci() < boundary
+            || !reads[1].contains(&phi.value())
+            || phi.inputs().is_empty()
+        {
+            return Ok(None);
+        }
+        for input in phi.inputs() {
+            poll(budget, Some(phi.block().bci()))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(phi.block().bci()),
+            )?;
+            let jarde_jvm::method_ir::PhiInput::Value(value) = input else {
+                return Ok(None);
+            };
+            let Some(value) = representative(ssa, *value) else {
+                return Ok(None);
+            };
+            if !writes[1].contains(&value) {
+                return Ok(None);
+            }
+            phi_inputs.insert(value);
+        }
+        phi_values.insert(phi.value());
+        phi_blocks.insert(phi.block().clone());
+    }
     if (0..2).any(|part| {
         writes[part].is_empty()
             || reads[part].is_empty()
-            || !writes[part].is_subset(&reads[part])
-            || !reads[part].is_subset(&writes[part])
+            || writes[part].iter().any(|value| {
+                !reads[part].contains(value) && (part != 1 || !phi_inputs.contains(value))
+            })
+            || reads[part].iter().any(|value| {
+                !writes[part].contains(value) && (part != 1 || !phi_values.contains(value))
+            })
     }) {
         return Ok(None);
     }
@@ -338,34 +490,6 @@ fn typed_split(
             }
         }
     }
-    for phi in ssa
-        .phis()
-        .iter()
-        .filter(|phi| phi.slot() == Slot::Local(slot))
-    {
-        poll(budget, Some(phi.block().bci()))?;
-        charge(
-            budget,
-            CountedBudgetDimension::AnalysisSteps,
-            1,
-            Some(phi.block().bci()),
-        )?;
-        let Some(replaced) = ssa.value(phi.value()).replaced_by() else {
-            return Ok(None);
-        };
-        let Some(replaced) = representative(ssa, replaced) else {
-            return Ok(None);
-        };
-        if phi.inputs().iter().any(|input| match input {
-            jarde_jvm::method_ir::PhiInput::Value(value) => {
-                representative(ssa, *value) != Some(replaced)
-            }
-            jarde_jvm::method_ir::PhiInput::Itself => false,
-        }) {
-            return Ok(None);
-        }
-    }
-
     let mut edges = BTreeMap::new();
     for edge in canonical.edges() {
         poll(budget, Some(edge.from().bci()))?;
@@ -375,24 +499,23 @@ fn typed_split(
             1,
             Some(edge.from().bci()),
         )?;
-        if edge.kind() != CanonicalEdgeKind::Normal {
-            return Ok(None);
+        match edge.kind() {
+            CanonicalEdgeKind::Normal => {}
+            CanonicalEdgeKind::Exception { handler_ordinal }
+                if monitor.is_some_and(|(owned, rows)| {
+                    rows.contains(&handler_ordinal)
+                        && owned.contains(edge.from())
+                        && owned.contains(edge.to())
+                }) => {}
+            _ => return Ok(None),
         }
         edges
             .entry(edge.from().clone())
             .or_insert_with(Vec::new)
             .push(edge.to().clone());
     }
-    let earlier_blocks: BTreeSet<_> = typed
-        .iter()
-        .filter(|(_, kind)| *kind == earlier)
-        .map(|(access, _)| ssa.blocks()[access.block].block().clone())
-        .collect();
-    let mut pending: Vec<_> = typed
-        .iter()
-        .filter(|(_, kind)| *kind == later)
-        .map(|(access, _)| ssa.blocks()[access.block].block().clone())
-        .collect();
+    let mut pending: Vec<_> = later_blocks.into_iter().collect();
+    pending.extend(phi_blocks);
     let mut visited = BTreeSet::new();
     while let Some(block) = pending.pop() {
         poll(budget, Some(block.bci()))?;
