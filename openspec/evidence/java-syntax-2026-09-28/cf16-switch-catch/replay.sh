@@ -140,6 +140,14 @@ if "$JAVAC" --release 8 -g -Xlint:-options -d "$TMP/pinned-jarde" "$TMP/TestTryC
 else
 	PINNED_JARDE_JAVAC=$?
 fi
+JARDE_EQUALS_ORIGINAL=false
+PINNED_JARDE_EQUALS_ORIGINAL=false
+if [[ "$JARDE_RUN" == 0 ]] && cmp -s "$OUT/original-run.txt" "$OUT/jarde-run.txt"; then
+	JARDE_EQUALS_ORIGINAL=true
+fi
+if [[ "$PINNED_JARDE_RUN" == 0 ]] && cmp -s "$OUT/pinned-original-run.txt" "$OUT/pinned-jarde-run.txt"; then
+	PINNED_JARDE_EQUALS_ORIGINAL=true
+fi
 
 "$JAVA" -Xverify:all -cp "$TMP/original" jadx.tests.integration.trycatch.VerifyVariants > "$OUT/variants-verify-run.txt"
 for variant in PartialSwitchCatch1 PartialSwitchCatch2 PartialSwitchCatch3 TwrSwitchCatch; do
@@ -176,15 +184,18 @@ fixed_test_original_Xverify_all_exit=0
 pinned_jadx_javac_exit=0
 pinned_jadx_Xverify_all_exit=0
 fixed_test_original_equals_pinned_jadx=true
-jarde_report_expected_single_method_refusal=$(grep -q 'methods.5.outcome.report.fallbacks = \["jre_region_ownership_overlap"\]' "$OUT/jarde.report.txt" && echo true || echo false)
-pinned_jarde_runTest_report_code=$(sed -n '/methods.5.outcome.report.diagnostics.0.code = /{s/.*= "\([^"]*\)"/\1/p;q;}' "$OUT/pinned-jarde.report.txt")
+jarde_runTest_structured=$(grep -q 'methods.5.outcome.report.quality = "structured"' "$OUT/jarde.report.txt" && grep -q 'methods.5.outcome.report.fallbacks = \[\]' "$OUT/jarde.report.txt" && echo true || echo false)
+pinned_jarde_runTest_structured=$(grep -q 'methods.5.outcome.report.quality = "structured"' "$OUT/pinned-jarde.report.txt" && grep -q 'methods.5.outcome.report.fallbacks = \[\]' "$OUT/pinned-jarde.report.txt" && echo true || echo false)
 pinned_jarde_test1_test2_test3_statements=$(grep -q 'methods.1.outcome.report.content = "contains_statements"' "$OUT/pinned-jarde.report.txt" && grep -q 'methods.2.outcome.report.content = "contains_statements"' "$OUT/pinned-jarde.report.txt" && grep -q 'methods.3.outcome.report.content = "contains_statements"' "$OUT/pinned-jarde.report.txt" && echo true || echo false)
 jarde_javac_exit=$JARDE_JAVAC
 jarde_java_Xverify_all_exit=$JARDE_RUN
 pinned_jarde_javac_exit=$PINNED_JARDE_JAVAC
 pinned_jarde_Xverify_all_exit=$PINNED_JARDE_RUN
+jarde_equals_original=$JARDE_EQUALS_ORIGINAL
+pinned_jarde_equals_original=$PINNED_JARDE_EQUALS_ORIGINAL
 four_near_negative_variants_compiled_java8=true
 four_near_negative_variants_Xverify_all_and_safe_run=true
 EOF
 cat "$OUT/results.txt"
 printf 'output_dir=%s\n' "$OUT"
+[[ "$JARDE_EQUALS_ORIGINAL" == true && "$PINNED_JARDE_EQUALS_ORIGINAL" == true ]]

@@ -1,0 +1,9 @@
+1,0=call-out-finally
+1,1=call-npe-catch-out-finally
+1,2=call-iae-finally
+2,0=call-finally
+2,1=call-npe-catch-finally
+2,2=call-iae-finally
+3,0=call-finally
+3,1=call-npe-catch-finally
+3,2=call-iae-finally
