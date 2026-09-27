@@ -123,6 +123,8 @@ pub struct RecoveryRequest<'a> {
     /// Exact invocation sites whose source reference widening and target declaration were proved
     /// against the selected class-source environment. A method-only request has none.
     pub reference_overload_calls: &'a [ProvedReferenceOverloadCall],
+    /// Exact superclass field writes proved by the selected class-source environment.
+    pub superclass_field_writes: &'a [ProvedSuperclassFieldWrite],
     /// Exact captured-outer reads proved by the selected class-source family assembly.
     /// A direct method request has no lexical family and supplies none.
     pub captured_outer_reads: &'a [ProvedCapturedOuterRead],
@@ -242,6 +244,18 @@ pub struct ProvedReferenceOverloadCall {
     pub bci: u32,
     pub source: String,
     pub target: String,
+}
+
+/// A selected parent declaration and one exact field instruction. The field plan still checks the
+/// receiver's SSA type at this BCI before claiming the write.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProvedSuperclassFieldWrite {
+    pub bci: u32,
+    pub source: String,
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
 }
 
 /// One selected definition in a source type path proved by the class-source adapter.
@@ -2404,6 +2418,7 @@ impl<'a> RecoveryRequest<'a> {
             static_member_target: None,
             interface_super_calls: &[],
             reference_overload_calls: &[],
+            superclass_field_writes: &[],
             captured_outer_reads: &[],
             outer_super_calls: &[],
             evidence: RecoveryEvidenceRequest::essential(),
@@ -2442,6 +2457,15 @@ impl<'a> RecoveryRequest<'a> {
         calls: &'a [ProvedReferenceOverloadCall],
     ) -> Self {
         self.reference_overload_calls = calls;
+        self
+    }
+
+    /// Supply only exact owner and declaration proofs from the selected source environment.
+    pub fn with_superclass_field_writes(
+        mut self,
+        writes: &'a [ProvedSuperclassFieldWrite],
+    ) -> Self {
+        self.superclass_field_writes = writes;
         self
     }
 
@@ -3856,6 +3880,7 @@ fn recover_inner(
         request.facts.method().name(),
         request.facts.method().descriptor(),
         request.ir.class_fields(),
+        request.superclass_field_writes,
         budget,
     ) {
         Ok(fields) => fields,
@@ -4078,6 +4103,7 @@ fn recover_inner(
             has_receiver: request.facts.method().has_receiver(),
             parameter_types: &parameter_types,
             return_type,
+            method_access_flags: request.facts.method().access_flags(),
             debug_locals: request.facts.debug_locals(),
             names: &names,
             reuse: &reuse,

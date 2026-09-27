@@ -13849,12 +13849,14 @@ struct ReferenceClassHeader {
     super_name: Option<Vec<u8>>,
     interfaces: Vec<Vec<u8>>,
     methods: Vec<MemberHeader>,
+    fields: Vec<MemberHeader>,
 }
 
 impl ReferenceClassHeader {
     fn from_facts(facts: &ClassMemberFacts) -> Option<Self> {
         if facts.stopped_at.is_some()
             || facts.method_count != u64::try_from(facts.methods.len()).ok()?
+            || facts.field_count != u64::try_from(facts.fields.len()).ok()?
         {
             return None;
         }
@@ -13867,6 +13869,7 @@ impl ReferenceClassHeader {
                 .map(|name| name.raw().0.clone())
                 .collect(),
             methods: facts.methods.clone(),
+            fields: facts.fields.clone(),
         })
     }
 
@@ -13880,6 +13883,7 @@ impl ReferenceClassHeader {
                 .map(|name| name.raw().0.clone())
                 .collect(),
             methods: ir.class_methods()?.to_vec(),
+            fields: ir.class_fields()?.to_vec(),
         })
     }
 }
@@ -14017,6 +14021,196 @@ fn proved_reference_widening(
         );
     }
     Ok(false)
+}
+
+/// The class-source path alone may relax the field rule's exact receiver-owner match. Each
+/// certificate names one instruction and one declaration in the selected direct parent; the
+/// recovery layer rechecks the actual SSA receiver before it emits an owner cast.
+fn prove_direct_parent_field_writes(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    budget: &mut Budget,
+) -> Result<Vec<jarde_java::report::ProvedSuperclassFieldWrite>> {
+    use jarde_reader::classfile::cp_entry;
+    let (Some(code), Some(declaration), Some(parent)) =
+        (ir.code(), ir.declaration(), ir.direct_super_class())
+    else {
+        return Ok(Vec::new());
+    };
+    let mut cache = std::collections::BTreeMap::new();
+    let mut execution = ExecutionReport::Complete {
+        usage: budget.usage(),
+    };
+    let mut proved = Vec::new();
+    for instruction in &code.instructions {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if instruction.opcode != 0xb5 {
+            continue;
+        }
+        let Some(index) = instruction.constant_pool_index else {
+            continue;
+        };
+        let Ok(entry) = cp_entry(ir.constant_pool(), index) else {
+            continue;
+        };
+        let CpEntryKind::FieldRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        } = &entry.kind
+        else {
+            continue;
+        };
+        if owner.0 != parent.0 {
+            continue;
+        }
+        let Some(header) = selected_reference_header(
+            content,
+            request,
+            ir,
+            &owner.0,
+            &mut cache,
+            &mut execution,
+            budget,
+        )?
+        else {
+            continue;
+        };
+        if header.flags & ACC_INTERFACE != 0 {
+            continue;
+        }
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(header.fields.len()).unwrap_or(u64::MAX),
+        )?;
+        let matching: Vec<_> = header
+            .fields
+            .iter()
+            .filter(|field| field.name.raw().0 == name.0)
+            .collect();
+        if matching.len() != 1
+            || matching[0].descriptor.raw().0 != descriptor.0
+            || matching[0].access_flags & (0x0001 | 0x0008) != 0x0001
+        {
+            continue;
+        }
+        let (Ok(source), Ok(owner), Ok(name), Ok(descriptor)) = (
+            std::str::from_utf8(&declaration.class_name().0),
+            std::str::from_utf8(&owner.0),
+            std::str::from_utf8(&name.0),
+            std::str::from_utf8(&descriptor.0),
+        ) else {
+            continue;
+        };
+        proved.push(jarde_java::report::ProvedSuperclassFieldWrite {
+            bci: instruction.bci,
+            source: source.to_owned(),
+            owner: owner.to_owned(),
+            name: name.to_owned(),
+            descriptor: descriptor.to_owned(),
+        });
+    }
+    Ok(proved)
+}
+
+/// Only the exact static synthetic setter call selected on the direct parent receives the
+/// otherwise-unavailable B-to-A source cast. Its body is recovered independently as physical Code.
+fn prove_direct_parent_accessor_calls(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    budget: &mut Budget,
+) -> Result<Vec<jarde_java::report::ProvedReferenceOverloadCall>> {
+    use jarde_reader::classfile::cp_entry;
+    let (Some(code), Some(declaration), Some(parent)) =
+        (ir.code(), ir.declaration(), ir.direct_super_class())
+    else {
+        return Ok(Vec::new());
+    };
+    let mut cache = std::collections::BTreeMap::new();
+    let mut execution = ExecutionReport::Complete {
+        usage: budget.usage(),
+    };
+    let mut proved = Vec::new();
+    for (position, instruction) in code.instructions.iter().enumerate() {
+        budget.poll()?;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        if instruction.opcode != 0xb8
+            || code
+                .instructions
+                .get(position + 1)
+                .is_none_or(|next| next.opcode != 0x57)
+        {
+            continue;
+        }
+        let Some(index) = instruction.constant_pool_index else {
+            continue;
+        };
+        let Ok(entry) = cp_entry(ir.constant_pool(), index) else {
+            continue;
+        };
+        let CpEntryKind::MethodRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        } = &entry.kind
+        else {
+            continue;
+        };
+        if owner.0 != parent.0 || !name.0.starts_with(b"access$") {
+            continue;
+        }
+        let mut expected = b"(L".to_vec();
+        expected.extend_from_slice(&owner.0);
+        expected.extend_from_slice(b";Z)Z");
+        if descriptor.0 != expected {
+            continue;
+        }
+        let Some(header) = selected_reference_header(
+            content,
+            request,
+            ir,
+            &owner.0,
+            &mut cache,
+            &mut execution,
+            budget,
+        )?
+        else {
+            continue;
+        };
+        budget.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(header.methods.len()).unwrap_or(u64::MAX),
+        )?;
+        let matching: Vec<_> = header
+            .methods
+            .iter()
+            .filter(|method| method.name.raw().0 == name.0)
+            .collect();
+        if matching.len() != 1
+            || matching[0].descriptor.raw().0 != descriptor.0
+            || matching[0].access_flags & (0x0008 | 0x1000) != (0x0008 | 0x1000)
+            || matching[0].access_flags & 0x0002 != 0
+        {
+            continue;
+        }
+        let (Ok(source), Ok(target)) = (
+            std::str::from_utf8(&declaration.class_name().0),
+            std::str::from_utf8(&owner.0),
+        ) else {
+            continue;
+        };
+        proved.push(jarde_java::report::ProvedReferenceOverloadCall {
+            bci: instruction.bci,
+            source: source.replace('/', "."),
+            target: target.replace('/', "."),
+        });
+    }
+    Ok(proved)
 }
 
 /// A cast to the exact declared one-argument type chooses that declaration in Java 8's strict
@@ -24840,10 +25034,23 @@ fn recovery_from_with_class_candidates(
     };
     let interface_super_calls =
         interface_super_calls_presented(content, request, analyzed.ir(), budget)?;
-    let reference_overload_calls = if assembly_context.is_some() {
-        reference_overload_calls_presented(content, request, analyzed.ir(), budget)?
+    let (reference_overload_calls, superclass_field_writes) = if assembly_context.is_some() {
+        let mut calls =
+            reference_overload_calls_presented(content, request, analyzed.ir(), budget)?;
+        match prove_direct_parent_accessor_calls(content, request, analyzed.ir(), budget) {
+            Ok(accessors) => calls.extend(accessors),
+            Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => {}
+            Err(error) => return Err(error),
+        }
+        let fields = match prove_direct_parent_field_writes(content, request, analyzed.ir(), budget)
+        {
+            Ok(fields) => fields,
+            Err(Error::BudgetExceeded { .. } | Error::Cancelled { .. }) => Vec::new(),
+            Err(error) => return Err(error),
+        };
+        (calls, fields)
     } else {
-        Vec::new()
+        (Vec::new(), Vec::new())
     };
     // What the artifact this run is about to commit is *of*, as this entry's own trusted read states
     // it (D3'): the physical identity the run was bound to, the member record the selection above
@@ -24861,6 +25068,7 @@ fn recovery_from_with_class_candidates(
         .with_member_inner_targets(&member_inner_targets)
         .with_interface_super_calls(&interface_super_calls)
         .with_reference_overload_calls(&reference_overload_calls);
+    let request = request.with_superclass_field_writes(&superclass_field_writes);
     let request = if let Some(target) = static_member_target {
         request.with_static_member_target(target)
     } else {
