@@ -69,6 +69,8 @@ pub(crate) struct EnumCodeInstruction {
     pub(crate) immediate: Option<ImmediateValue>,
     pub(crate) local: Option<u16>,
     pub(crate) reference: Option<EnumCodeReference>,
+    /// Target derived from this instruction's Code operand; accepted proofs match it to a BCI.
+    pub(crate) branch_target_bci: Option<u32>,
 }
 
 /// A direct or bootstrap-mediated symbolic member reference used by one physical method.
@@ -150,6 +152,22 @@ pub(crate) enum ProvedEnumIntArgument {
         right: Box<ProvedEnumIntArgument>,
         bci: u32,
     },
+    Ternary {
+        condition: ProvedEnumIntCondition,
+        when_true: Box<ProvedEnumIntArgument>,
+        when_false: Box<ProvedEnumIntArgument>,
+        branch_bci: u32,
+        join_bci: u32,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ProvedEnumIntCondition {
+    pub(crate) owner: Vec<u8>,
+    pub(crate) name: Vec<u8>,
+    pub(crate) descriptor: Vec<u8>,
+    pub(crate) source_name: String,
+    pub(crate) bci: u32,
 }
 
 impl ProvedEnumIntArgument {
@@ -164,6 +182,17 @@ impl ProvedEnumIntArgument {
             Self::Add { left, right, .. } => {
                 format!("{} + {}", left.source_text(), right.source_text())
             }
+            Self::Ternary {
+                condition,
+                when_true,
+                when_false,
+                ..
+            } => format!(
+                "{}() ? {} : {}",
+                condition.source_name,
+                when_true.source_text(),
+                when_false.source_text()
+            ),
         }
     }
 }
@@ -720,7 +749,12 @@ pub(crate) fn capture_method_code(
     for (index, instruction) in code.instructions.iter().enumerate() {
         budget.poll()?;
         let operands = code.operands().get(index);
-        let structured = enum_instruction(instruction, operands, ir.constant_pool());
+        let branch_target_bci = operands
+            .and_then(|operands| operands.branch_offset)
+            .and_then(|offset| i64::from(instruction.bci).checked_add(i64::from(offset)))
+            .and_then(|target| u32::try_from(target).ok());
+        let structured =
+            enum_instruction(instruction, operands, ir.constant_pool(), branch_target_bci);
         if let Some(reference) = structured.reference.as_ref().filter(|reference| {
             matches!(
                 reference,
@@ -770,6 +804,7 @@ fn enum_instruction(
     instruction: &InstructionFact,
     operands: Option<&InstructionOperands>,
     pool: &[jarde_reader::classfile::CpEntryFacts],
+    branch_target_bci: Option<u32>,
 ) -> EnumCodeInstruction {
     let opcode = operands.map_or(instruction.opcode, |operands| operands.effective_opcode);
     let pool_index = operands
@@ -830,6 +865,7 @@ fn enum_instruction(
             .and_then(|operands| operands.local)
             .map(|local| local.index),
         reference,
+        branch_target_bci,
     }
 }
 
@@ -2841,7 +2877,7 @@ fn prove_initializer_prefix(
         let (call_offset, source_argument) = match &constructor_call_spec.source_argument {
             EnumSourceArgument::AnyIntExpression => {
                 let Some((argument_length, argument)) =
-                    prove_int_source_argument(instructions, cursor + 4)
+                    prove_int_source_argument(instructions, cursor + 4, owner, methods)
                 else {
                     return Err(format!(
                         "constant {} has no supported int source argument expression: {:?}",
@@ -3203,7 +3239,12 @@ fn int_constant_value(instruction: &EnumCodeInstruction) -> Option<i32> {
 fn prove_int_source_argument(
     instructions: &[EnumCodeInstruction],
     start: usize,
+    owner: &[u8],
+    methods: &[MemberHeader],
 ) -> Option<(usize, ProvedEnumIntArgument)> {
+    if let Some(ternary) = prove_int_ternary_argument(instructions, start, owner, methods) {
+        return Some(ternary);
+    }
     let first = instructions.get(start)?;
     if let Some(literal) = proved_int_literal(first) {
         return Some((1, literal));
@@ -3230,6 +3271,89 @@ fn prove_int_source_argument(
         }
     }
     Some((1, field))
+}
+
+/// Prove javac's closed `invokestatic; ifeq/ifne; literal; goto; literal; join` lowering.
+/// The condition is one same-class, no-argument boolean invocation, so spelling the call at the
+/// original constructor argument position preserves its single evaluation and effects.
+fn prove_int_ternary_argument(
+    instructions: &[EnumCodeInstruction],
+    start: usize,
+    owner: &[u8],
+    methods: &[MemberHeader],
+) -> Option<(usize, ProvedEnumIntArgument)> {
+    let [condition, branch, fallthrough_arm, jump, taken_arm, join] =
+        instructions.get(start..start.checked_add(6)?)?
+    else {
+        return None;
+    };
+    let EnumCodeReference::Method {
+        owner: condition_owner,
+        name,
+        descriptor,
+        interface: false,
+    } = condition.reference.as_ref()?
+    else {
+        return None;
+    };
+    if condition.opcode != 0xb8
+        || condition.width != 3
+        || condition.immediate.is_some()
+        || condition.local.is_some()
+        || condition_owner != owner
+        || descriptor != b"()Z"
+    {
+        return None;
+    }
+    let source_name = String::from_utf8(name.clone()).ok()?;
+    if !jarde_java::is_java_identifier(&source_name) {
+        return None;
+    }
+    let condition_method = methods.get(unique_method(methods, name, descriptor).ok()?)?;
+    if condition_method.access_flags & ACC_STATIC == 0 {
+        return None;
+    }
+    if !matches!(branch.opcode, 0x99 | 0x9a)
+        || branch.width != 3
+        || branch.immediate.is_some()
+        || branch.local.is_some()
+        || branch.reference.is_some()
+        || jump.opcode != 0xa7
+        || jump.width != 3
+        || jump.immediate.is_some()
+        || jump.local.is_some()
+        || jump.reference.is_some()
+        || !instruction_sequence_is_contiguous(&instructions[start..start + 5])
+        || join.bci != jump.branch_target_bci?
+    {
+        return None;
+    }
+    let fallthrough_value = proved_int_literal(fallthrough_arm)?;
+    let taken_value = proved_int_literal(taken_arm)?;
+    let (when_true, when_false, expected_target) = if branch.opcode == 0x99 {
+        (fallthrough_value, taken_value, taken_arm.bci)
+    } else {
+        (taken_value, fallthrough_value, taken_arm.bci)
+    };
+    if branch.branch_target_bci? != expected_target {
+        return None;
+    }
+    Some((
+        5,
+        ProvedEnumIntArgument::Ternary {
+            condition: ProvedEnumIntCondition {
+                owner: condition_owner.clone(),
+                name: name.clone(),
+                descriptor: descriptor.clone(),
+                source_name,
+                bci: condition.bci,
+            },
+            when_true: Box::new(when_true),
+            when_false: Box::new(when_false),
+            branch_bci: branch.bci,
+            join_bci: join.bci,
+        },
+    ))
 }
 
 fn proved_int_literal(instruction: &EnumCodeInstruction) -> Option<ProvedEnumIntArgument> {
@@ -4068,6 +4192,187 @@ final class ConstructorEffects {
     }
 
     #[test]
+    fn int_ternary_arguments_bind_both_arms_and_preserve_condition_evaluation() {
+        const ENUM: &str = r#"public enum TernaryArgs {
+    FIRST(choose() ? 1 : 10), SECOND(choose() ? 2 : 20), ANY(choose() ? 1 : 2),
+    INVERTED(!choose() ? 2 : 20);
+    static int calls;
+    final int value;
+    TernaryArgs(int value) { this.value = value; }
+    static boolean choose() { calls++; return calls % 2 == 1; }
+}"#;
+        const RUNNER: &str = r#"public final class TernaryArgsRunner {
+    public static void main(String[] args) {
+        System.out.println(TernaryArgs.FIRST.value + ":" + TernaryArgs.SECOND.value + ":"
+            + TernaryArgs.ANY.value + ":" + TernaryArgs.INVERTED.value + ":" + TernaryArgs.calls);
+    }
+}"#;
+        let bytes = compile_java_class("TernaryArgs", ENUM, false);
+        verify_classfile_without_initialization("TernaryArgs", &bytes);
+        let report = enum_report(&bytes, "TernaryArgs", &mut test_budget());
+        let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(group)) =
+            &report.enum_constant_proof
+        else {
+            panic!(
+                "int ternary group should prove: {:?}",
+                report.enum_constant_proof
+            );
+        };
+        let Some(ProvedEnumSourceArgument::Int(ProvedEnumIntArgument::Ternary {
+            condition,
+            when_true,
+            when_false,
+            branch_bci,
+            join_bci,
+        })) = &group.constants[0].source_argument
+        else {
+            panic!("the first argument must retain its conditional proof");
+        };
+        assert_eq!(condition.owner, b"TernaryArgs");
+        assert_eq!(condition.name, b"choose");
+        assert_eq!(condition.descriptor, b"()Z");
+        assert_eq!(condition.source_name, "choose");
+        assert!(condition.bci < *branch_bci && *branch_bci < *join_bci);
+        assert_eq!(when_true.source_text(), "1");
+        assert_eq!(when_false.source_text(), "10");
+        assert_eq!(group.constants[0].constructor_bci, *join_bci);
+        assert_eq!(
+            group
+                .constants
+                .iter()
+                .map(|constant| constant.source_argument.as_ref().unwrap().source_text())
+                .collect::<Vec<_>>(),
+            [
+                "choose() ? 1 : 10",
+                "choose() ? 2 : 20",
+                "choose() ? 1 : 2",
+                "choose() ? 20 : 2"
+            ]
+        );
+        assert!(report.text.contains(
+            "FIRST(choose() ? 1 : 10),\n    SECOND(choose() ? 2 : 20),\n    ANY(choose() ? 1 : 2),\n    INVERTED(choose() ? 20 : 2);"
+        ));
+        assert!(
+            !report
+                .text
+                .contains("public static final TernaryArgs FIRST;")
+        );
+        let initializer = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"<clinit>")
+            .unwrap();
+        assert!(initializer.text.contains("@bytecode"));
+
+        let original = compile_and_run_sources(
+            "int-ternary-original",
+            &[
+                ("TernaryArgs.java", ENUM),
+                ("TernaryArgsRunner.java", RUNNER),
+            ],
+            false,
+            "TernaryArgsRunner",
+        );
+        let recovered = compile_and_run_sources(
+            "int-ternary-recovered",
+            &[
+                ("TernaryArgs.java", &report.text),
+                ("TernaryArgsRunner.java", RUNNER),
+            ],
+            false,
+            "TernaryArgsRunner",
+        );
+        assert_eq!(original, "1:20:1:2:4\n");
+        assert_eq!(recovered, original);
+
+        let mut limits = test_budget().limits().clone();
+        limits.ir_items = 150;
+        let limited = enum_report(&bytes, "TernaryArgs", &mut Budget::new(limits));
+        assert!(matches!(
+            limited.enum_constant_proof,
+            ClassSourceEnumConstantProof::Stopped { .. }
+        ));
+        assert!(!limited.text.contains("FIRST(choose()"));
+        assert!(
+            limited
+                .text
+                .contains("public static final TernaryArgs FIRST;")
+        );
+
+        let engine = crate::Engine::new();
+        let snapshot = engine
+            .open(crate::ArtifactInput::bytes(bytes), &mut test_budget())
+            .expect("the class opens before cancellation");
+        let request = enum_request(&snapshot, "TernaryArgs");
+        let token = crate::CancellationToken::new();
+        token.cancel();
+        let cancelled = engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &request,
+                &mut Budget::with_cancellation_token(test_budget().limits().clone(), token),
+            )
+            .expect("cancellation is an operation stop");
+        match cancelled {
+            crate::OperationOutcome::Incomplete(candidates) => {
+                assert!(candidates.candidates.is_empty())
+            }
+            crate::OperationOutcome::Performed(report) => {
+                assert!(!report.text.contains("FIRST(choose()"));
+            }
+            crate::OperationOutcome::Ambiguous(candidates) => {
+                panic!("the ternary fixture became ambiguous: {candidates:?}")
+            }
+        }
+    }
+
+    #[test]
+    fn unsupported_verifier_valid_int_ternary_diamonds_keep_physical_origins() {
+        const FIXTURES: [(&str, &str); 3] = [
+            (
+                "TernaryEffectArm",
+                "public enum TernaryEffectArm { VALUE(choose() ? effect(1) : 2); final int value; TernaryEffectArm(int value) { this.value=value; } static boolean choose() { return true; } static int effect(int value) { return value; } }",
+            ),
+            (
+                "TernaryNestedJoin",
+                "public enum TernaryNestedJoin { VALUE(choose() ? (choose() ? 1 : 2) : 3); final int value; TernaryNestedJoin(int value) { this.value=value; } static boolean choose() { return true; } }",
+            ),
+            (
+                "TernaryWriteArm",
+                "public enum TernaryWriteArm { VALUE(choose() ? (marker = 4) : 2); static int marker; final int value; TernaryWriteArm(int value) { this.value=value; } static boolean choose() { return true; } }",
+            ),
+        ];
+        for (name, source) in FIXTURES {
+            let bytes = compile_java_class(name, source, false);
+            verify_classfile_without_initialization(name, &bytes);
+            let report = enum_report(&bytes, name, &mut test_budget());
+            assert!(
+                matches!(
+                    report.enum_constant_proof,
+                    ClassSourceEnumConstantProof::Refused { .. }
+                ),
+                "{name} must be refused atomically: {:?}",
+                report.enum_constant_proof
+            );
+            assert!(
+                report
+                    .text
+                    .contains(&format!("public static final {name} VALUE;"))
+            );
+            assert!(!report.text.contains("VALUE(choose()"));
+            let initializer = report
+                .methods
+                .iter()
+                .find(|method| method.item.name.raw().0 == b"<clinit>")
+                .unwrap();
+            assert!(
+                initializer.text.contains("@bytecode"),
+                "{name} retains the initializer origin"
+            );
+        }
+    }
+
+    #[test]
     fn same_package_field_uses_its_short_source_name_and_preserves_initialization() {
         const ENUM: &str = r#"package p;
 public enum PackageArgs {
@@ -4379,6 +4684,7 @@ public final class PackageArgsRunner {
                         instruction,
                         factory_code.operands().get(index),
                         &facts.constant_pool,
+                        None,
                     )
                 })
                 .collect(),
@@ -5130,6 +5436,7 @@ public final class PackageArgsRunner {
                         instruction,
                         code.operands().get(index),
                         &facts.constant_pool,
+                        None,
                     )
                 })
                 .collect(),
@@ -5764,6 +6071,7 @@ public final class PackageArgsRunner {
                 immediate: None,
                 local: None,
                 reference: None,
+                branch_target_bci: None,
             },
         );
         code.instructions.insert(
@@ -5780,6 +6088,7 @@ public final class PackageArgsRunner {
                     descriptor: b"(I)V".to_vec(),
                     interface: false,
                 }),
+                branch_target_bci: None,
             },
         );
         for instruction in &mut code.instructions[8..] {
@@ -5927,6 +6236,7 @@ public final class PackageArgsRunner {
                 descriptor: b"(I)V".to_vec(),
                 interface: false,
             }),
+            branch_target_bci: None,
         });
         let mut shifted_return = return_instruction;
         shifted_return.bci += 3;
@@ -6462,6 +6772,7 @@ public final class PackageArgsRunner {
                         instruction,
                         code.operands().get(instruction_index),
                         &facts.constant_pool,
+                        None,
                     )
                 })
                 .collect::<Vec<_>>();
