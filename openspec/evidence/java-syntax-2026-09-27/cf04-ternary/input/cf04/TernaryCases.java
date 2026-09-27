@@ -1,0 +1,47 @@
+package cf04;
+
+public class TernaryCases {
+    public static int calls;
+    private final int value;
+
+    public TernaryCases(String text, int number) {
+        this(text == null ? 0 : number);
+    }
+
+    public TernaryCases(int number) {
+        this.value = number;
+    }
+
+    public TernaryCases(String text, int number, boolean marker) {
+        this(number == 1 ? text : "", number == 0 ? "" : text);
+    }
+
+    public TernaryCases(String first, String second) {
+        this.value = first.length() * 10 + second.length();
+    }
+
+    public int value() {
+        return value;
+    }
+
+    public static int positive(int number) {
+        return number > 0 ? number : (number + 2) * 3;
+    }
+
+    public static boolean choose(boolean first, boolean second, boolean third) {
+        return first ? second : third;
+    }
+
+    public static int nested(boolean first, boolean second, boolean third) {
+        return (!first ? third : second) ? 1 : 2;
+    }
+
+    private static int arm(int value) {
+        calls++;
+        return value;
+    }
+
+    public static int effect(boolean flag) {
+        return flag ? arm(1) : arm(2);
+    }
+}

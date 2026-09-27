@@ -1,0 +1,123 @@
+exit=0
+stdout:
+public class cf04.TernaryCases {
+  public static int calls;
+
+  private final int value;
+
+  public cf04.TernaryCases(java.lang.String, int);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: ifnonnull     9
+       5: iconst_0
+       6: goto          10
+       9: iload_2
+      10: invokespecial #1                  // Method "<init>":(I)V
+      13: return
+
+  public cf04.TernaryCases(int);
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iload_1
+       6: putfield      #12                 // Field value:I
+       9: return
+
+  public cf04.TernaryCases(java.lang.String, int, boolean);
+    Code:
+       0: aload_0
+       1: iload_2
+       2: iconst_1
+       3: if_icmpne     10
+       6: aload_1
+       7: goto          12
+      10: ldc           #16                 // String
+      12: iload_2
+      13: ifne          21
+      16: ldc           #16                 // String
+      18: goto          22
+      21: aload_1
+      22: invokespecial #18                 // Method "<init>":(Ljava/lang/String;Ljava/lang/String;)V
+      25: return
+
+  public cf04.TernaryCases(java.lang.String, java.lang.String);
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: invokevirtual #21                 // Method java/lang/String.length:()I
+       9: bipush        10
+      11: imul
+      12: aload_2
+      13: invokevirtual #21                 // Method java/lang/String.length:()I
+      16: iadd
+      17: putfield      #12                 // Field value:I
+      20: return
+
+  public int value();
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field value:I
+       4: ireturn
+
+  public static int positive(int);
+    Code:
+       0: iload_0
+       1: ifle          8
+       4: iload_0
+       5: goto          13
+       8: iload_0
+       9: iconst_2
+      10: iadd
+      11: iconst_3
+      12: imul
+      13: ireturn
+
+  public static boolean choose(boolean, boolean, boolean);
+    Code:
+       0: iload_0
+       1: ifeq          8
+       4: iload_1
+       5: goto          9
+       8: iload_2
+       9: ireturn
+
+  public static int nested(boolean, boolean, boolean);
+    Code:
+       0: iload_0
+       1: ifne          11
+       4: iload_2
+       5: ifeq          19
+       8: goto          15
+      11: iload_1
+      12: ifeq          19
+      15: iconst_1
+      16: goto          20
+      19: iconst_2
+      20: ireturn
+
+  private static int arm(int);
+    Code:
+       0: getstatic     #27                 // Field calls:I
+       3: iconst_1
+       4: iadd
+       5: putstatic     #27                 // Field calls:I
+       8: iload_0
+       9: ireturn
+
+  public static int effect(boolean);
+    Code:
+       0: iload_0
+       1: ifeq          11
+       4: iconst_1
+       5: invokestatic  #30                 // Method arm:(I)I
+       8: goto          15
+      11: iconst_2
+      12: invokestatic  #30                 // Method arm:(I)I
+      15: ireturn
+}
+
+stderr:

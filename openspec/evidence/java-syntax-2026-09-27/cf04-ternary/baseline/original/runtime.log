@@ -1,0 +1,17 @@
+exit=0
+stdout:
+2
+6
+-3
+false
+true
+2
+1
+0
+7
+22
+0
+1:1
+2:1
+
+stderr:
