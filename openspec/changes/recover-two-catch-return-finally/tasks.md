@@ -17,4 +17,4 @@
 
 - [x] 4.1 fresh CLI 原/JADX/Jarde 完整 Java 8 类重编，八路径 `java -Xverify:all` 逐字一致；1.2 所有有效近邻拒绝。
 - [x] 4.2 回归 Test12–16、两/三/五行 finally、具名 catch、TWR/monitor；`cargo test -p jarde-java --tests --locked`、workspace check、fmt、OpenSpec strict、diff check，并清理专用 Cargo target。
-- [ ] 4.3 root 独立验收四行/四副本 CFG/SSA、八路径和 18 个 BCI 来源，更新 CF-16 清单；仅标记固定 Test17 Java 8 子形态。
+- [x] 4.3 root 独立验收四行/四副本 CFG/SSA、八路径和 18 个 BCI 来源，更新 CF-16 清单；仅标记固定 Test17 Java 8 子形态。
