@@ -93,8 +93,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use jarde_jvm::method_ir::{
-    CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, Definition, Slot, SsaInstruction, SsaTable,
-    ValueId,
+    CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, Definition, PhiInput, Slot, SsaInstruction,
+    SsaTable, ValueId,
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{CpEntryFacts, ExceptionHandlerFact, cp_class_name};
@@ -286,7 +286,13 @@ pub enum FinallyCompletion {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum SharedFinallyCompletion {
     SavedReturns([(u32, u32); 2]),
-    Joined { transfers: [u32; 2] },
+    Joined {
+        transfers: [u32; 2],
+    },
+    JoinedValue {
+        transfers: [u32; 2],
+        saves: [u32; 2],
+    },
 }
 
 /// One proved guarded region: the shape, the body it guards, every block it owns, and where the run
@@ -4122,6 +4128,368 @@ fn entry_unload_cleanup(
     Ok(Some(copies))
 }
 
+/// The fixed Test7 cleanup is one instance-int increment through the method-entry receiver.
+/// Each stack edge is checked independently, including both copies made by `dup`.
+fn entry_field_increment_cleanup(
+    facts: &mut Facts<'_>,
+    starts: [u32; 3],
+) -> Result<Option<[(u32, u32); 3]>, StopReason> {
+    let mut copies = [(0, 0); 3];
+    let mut field = None;
+    for (index, start) in starts.into_iter().enumerate() {
+        let mut cursor = start;
+        let mut tail = [0; 5];
+        for next in &mut tail {
+            let Some(bci) = facts.next_bci(cursor) else {
+                return Ok(None);
+            };
+            *next = bci;
+            cursor = bci;
+        }
+        let [dup, read, one, add, write] = tail;
+        for bci in [start, dup, read, one, add, write] {
+            facts.charge(bci)?;
+        }
+        let Some(Operation::Field {
+            access: crate::facts::FieldAccess::Read,
+            is_static: false,
+            descriptor,
+            ..
+        }) = facts.op(read)
+        else {
+            return Ok(None);
+        };
+        let read_field = facts.op(read).cloned().unwrap();
+        let matching_write = match &read_field {
+            Operation::Field {
+                owner,
+                name,
+                descriptor,
+                ..
+            } => {
+                Some(&Operation::Field {
+                    access: crate::facts::FieldAccess::Write,
+                    is_static: false,
+                    owner: owner.clone(),
+                    name: name.clone(),
+                    descriptor: descriptor.clone(),
+                }) == facts.op(write)
+            }
+            _ => false,
+        };
+        if descriptor != "I"
+            || field.as_ref().is_some_and(|prior| prior != &read_field)
+            || !matching_write
+            || facts.op(start) != Some(&Operation::Load { slot: 0 })
+            || facts.op(dup) != Some(&Operation::Duplicate)
+            || facts.op(one) != Some(&Operation::Push(crate::facts::ConstantValue::Int(1)))
+            || facts.op(add)
+                != Some(&Operation::Arithmetic {
+                    op: crate::facts::ArithmeticOp::Add,
+                })
+            || facts
+                .step(add)
+                .is_none_or(|step| step.instruction.opcode() != 0x60)
+        {
+            return Ok(None);
+        }
+        field = Some(read_field);
+        let (
+            Some(receiver),
+            Some(duplicated),
+            Some(read_step),
+            Some(one_step),
+            Some(add_step),
+            Some(write_step),
+        ) = (
+            facts.step(start),
+            facts.step(dup),
+            facts.step(read),
+            facts.step(one),
+            facts.step(add),
+            facts.step(write),
+        )
+        else {
+            return Ok(None);
+        };
+        let (receiver, duplicated, read_step, one_step, add_step, write_step) = (
+            receiver.instruction,
+            duplicated.instruction,
+            read_step.instruction,
+            one_step.instruction,
+            add_step.instruction,
+            write_step.instruction,
+        );
+        let stack_writes = |step: &SsaInstruction| -> Vec<ValueId> {
+            step.writes()
+                .iter()
+                .filter_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+                .collect()
+        };
+        let receiver_values = stack_writes(receiver);
+        let duplicates = stack_writes(duplicated);
+        let reads = stack_writes(read_step);
+        let constants = stack_writes(one_step);
+        let added = stack_writes(add_step);
+        if receiver.reads().len() != 1
+            || !matches!(
+                facts.ssa.value(facts.resolve(receiver.reads()[0].1)).def(),
+                Definition::Entry {
+                    slot: Slot::Local(0),
+                    ..
+                }
+            )
+            || receiver_values.len() != 1
+            || duplicates.len() != 2
+            || facts.same(duplicates[0], duplicates[1])
+            || reads.len() != 1
+            || constants.len() != 1
+            || added.len() != 1
+            || stack_operands(duplicated).len() != 1
+            || !facts.same(stack_operands(duplicated)[0].1, receiver_values[0])
+            || stack_operands(read_step).len() != 1
+            || duplicates
+                .iter()
+                .filter(|value| facts.same(**value, stack_operands(read_step)[0].1))
+                .count()
+                != 1
+            || stack_operands(add_step).len() != 2
+            || !stack_operands(add_step)
+                .iter()
+                .any(|(_, value)| facts.same(*value, reads[0]))
+            || !stack_operands(add_step)
+                .iter()
+                .any(|(_, value)| facts.same(*value, constants[0]))
+            || stack_operands(write_step).len() != 2
+            || !stack_operands(write_step)
+                .iter()
+                .any(|(_, value)| facts.same(*value, added[0]))
+            || duplicates
+                .iter()
+                .filter(|value| {
+                    stack_operands(write_step)
+                        .iter()
+                        .any(|(_, used)| facts.same(**value, *used))
+                })
+                .count()
+                != 1
+            || stack_operands(write_step)
+                .iter()
+                .any(|(_, used)| facts.same(*used, stack_operands(read_step)[0].1))
+        {
+            return Ok(None);
+        }
+        for (produced, consumer) in [
+            (receiver_values[0], dup),
+            (
+                duplicates[0],
+                if facts.same(duplicates[0], stack_operands(read_step)[0].1) {
+                    read
+                } else {
+                    write
+                },
+            ),
+            (
+                duplicates[1],
+                if facts.same(duplicates[1], stack_operands(read_step)[0].1) {
+                    read
+                } else {
+                    write
+                },
+            ),
+            (reads[0], add),
+            (constants[0], add),
+            (added[0], write),
+        ] {
+            let mut uses = 0;
+            for bci in facts.order.clone() {
+                facts.charge(bci)?;
+                if let Some(step) = facts.step(bci) {
+                    uses += stack_operands(step.instruction)
+                        .iter()
+                        .filter(|(_, value)| facts.same(produced, *value))
+                        .count();
+                    if bci == consumer
+                        && !stack_operands(step.instruction)
+                            .iter()
+                            .any(|(_, value)| facts.same(produced, *value))
+                    {
+                        return Ok(None);
+                    }
+                }
+            }
+            if uses != 1 {
+                return Ok(None);
+            }
+        }
+        copies[index] = (start, write);
+    }
+    Ok(Some(copies))
+}
+
+fn shared_joined_boolean_value(
+    facts: &mut Facts<'_>,
+    named: &ExceptionHandlerFact,
+    catch_any: &ExceptionHandlerFact,
+    join: &CanonicalBlockId,
+) -> Result<Option<[u32; 2]>, StopReason> {
+    let body = facts.bcis((named.start_bci, named.end_bci));
+    let catch = facts.bcis((named.handler_bci, catch_any.end_bci));
+    let ([receiver, argument, call, first_save], [binding, zero, second_save]) =
+        (body.as_slice(), catch.as_slice())
+    else {
+        return Ok(None);
+    };
+    let join_steps = facts.in_block(join);
+    let [reload, returned] = join_steps else {
+        return Ok(None);
+    };
+    let (reload, returned) = (reload.bci(), returned.bci());
+    for bci in [
+        *receiver,
+        *argument,
+        *call,
+        *first_save,
+        *binding,
+        *zero,
+        *second_save,
+        reload,
+        returned,
+    ] {
+        facts.charge(bci)?;
+    }
+    if facts.op(*receiver) != Some(&Operation::Load { slot: 0 })
+        || facts.op(*argument) != Some(&Operation::Load { slot: 1 })
+        || !matches!(facts.op(*call), Some(Operation::Invoke(target))
+            if target.kind() == InvokeKind::Special
+                && target.name() == "exc"
+                && target.descriptor() == "(Ljava/lang/Object;)Z")
+        || facts.op(*first_save) != Some(&Operation::Store { slot: 2 })
+        || facts.op(*binding) != Some(&Operation::Store { slot: 3 })
+        || facts.op(*zero) != Some(&Operation::Push(crate::facts::ConstantValue::Int(0)))
+        || facts.op(*second_save) != Some(&Operation::Store { slot: 2 })
+        || facts.op(reload) != Some(&Operation::Load { slot: 2 })
+        || facts.op(returned) != Some(&Operation::Return)
+    {
+        return Ok(None);
+    }
+    let (
+        Some(receiver_step),
+        Some(argument_step),
+        Some(call_step),
+        Some(zero_step),
+        Some(first_step),
+        Some(second_step),
+        Some(reload_step),
+        Some(return_step),
+    ) = (
+        facts.step(*receiver),
+        facts.step(*argument),
+        facts.step(*call),
+        facts.step(*zero),
+        facts.step(*first_save),
+        facts.step(*second_save),
+        facts.step(reload),
+        facts.step(returned),
+    )
+    else {
+        return Ok(None);
+    };
+    let (
+        receiver_step,
+        argument_step,
+        call_step,
+        zero_step,
+        first_step,
+        second_step,
+        reload_step,
+        return_step,
+    ) = (
+        receiver_step.instruction,
+        argument_step.instruction,
+        call_step.instruction,
+        zero_step.instruction,
+        first_step.instruction,
+        second_step.instruction,
+        reload_step.instruction,
+        return_step.instruction,
+    );
+    let stack_output = |step: &SsaInstruction| -> Option<ValueId> {
+        let values: Vec<_> = step
+            .writes()
+            .iter()
+            .filter_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+            .collect();
+        match values.as_slice() {
+            [value] => Some(*value),
+            _ => None,
+        }
+    };
+    let (
+        Some(receiver_value),
+        Some(argument_value),
+        Some(call_value),
+        Some(zero_value),
+        Some(reload_value),
+    ) = (
+        stack_output(receiver_step),
+        stack_output(argument_step),
+        stack_output(call_step),
+        stack_output(zero_step),
+        stack_output(reload_step),
+    )
+    else {
+        return Ok(None);
+    };
+    let saved = [first_step, second_step].map(|step| {
+        step.writes()
+            .iter()
+            .find_map(|(slot, value)| (*slot == Slot::Local(2)).then_some(*value))
+    });
+    let [Some(first_value), Some(second_value)] = saved else {
+        return Ok(None);
+    };
+    let Some(phi) = facts
+        .ssa
+        .phis()
+        .iter()
+        .find(|phi| phi.block() == join && phi.slot() == Slot::Local(2))
+    else {
+        return Ok(None);
+    };
+    let inputs = phi
+        .inputs()
+        .iter()
+        .filter_map(|input| match input {
+            PhiInput::Value(value) => Some(facts.resolve(*value)),
+            PhiInput::Itself => None,
+        })
+        .collect::<Vec<_>>();
+    if inputs.len() != 2
+        || facts.same(first_value, second_value)
+        || !inputs.contains(&facts.resolve(first_value))
+        || !inputs.contains(&facts.resolve(second_value))
+        || !matches!(receiver_step.reads(), [(Slot::Local(0), entry)]
+            if matches!(facts.ssa.value(facts.resolve(*entry)).def(), Definition::Entry { slot: Slot::Local(0), .. }))
+        || !matches!(argument_step.reads(), [(Slot::Local(1), entry)]
+            if matches!(facts.ssa.value(facts.resolve(*entry)).def(), Definition::Entry { slot: Slot::Local(1), .. }))
+        || stack_operands(call_step).len() != 2
+        || !facts.same(stack_operands(call_step)[0].1, receiver_value)
+        || !facts.same(stack_operands(call_step)[1].1, argument_value)
+        || stack_operands(first_step).len() != 1
+        || !facts.same(stack_operands(first_step)[0].1, call_value)
+        || stack_operands(second_step).len() != 1
+        || !facts.same(stack_operands(second_step)[0].1, zero_value)
+        || reload_step.reads().len() != 1
+        || !facts.same(reload_step.reads()[0].1, phi.value())
+        || stack_operands(return_step).len() != 1
+        || !facts.same(stack_operands(return_step)[0].1, reload_value)
+    {
+        return Ok(None);
+    }
+    Ok(Some([*first_save, *second_save]))
+}
+
 /// A deliberately separate completion contract: the two normal copies end in transfers to one
 /// continuation, not in saved values. The old saved-return certificate is left unchanged.
 fn prove_shared_join_finally(
@@ -4176,7 +4544,14 @@ fn prove_shared_join_finally(
             ..
         })
     );
-    if binding_row.is_some() {
+    let field_value = binding_row.is_some()
+        && facts.next_bci(first).and_then(|bci| facts.op(bci)) == Some(&Operation::Duplicate);
+    if field_value {
+        let Some(verified) = entry_field_increment_cleanup(facts, [first, second, third])? else {
+            return Ok(None);
+        };
+        copies = verified;
+    } else if binding_row.is_some() {
         let Some(verified) = entry_unload_cleanup(facts, first, second, third)? else {
             return Ok(None);
         };
@@ -4267,7 +4642,22 @@ fn prove_shared_join_finally(
         return Ok(None);
     }
     let join_instructions = facts.in_block(join);
-    if appended || binding_row.is_some() {
+    let value_saves = if field_value {
+        let Some(saves) = shared_joined_boolean_value(facts, named, catch_any, join)? else {
+            return Ok(None);
+        };
+        Some(saves)
+    } else {
+        None
+    };
+    if field_value {
+        if join_instructions.len() != 2
+            || facts.op(join_instructions[0].bci()) != Some(&Operation::Load { slot: 2 })
+            || facts.op(join_instructions[1].bci()) != Some(&Operation::Return)
+        {
+            return Ok(None);
+        }
+    } else if appended || binding_row.is_some() {
         if join_instructions.len() != 1
             || facts.op(join_instructions[0].bci()) != Some(&Operation::Return)
             || !join_instructions[0].reads().is_empty()
@@ -4472,8 +4862,15 @@ fn prove_shared_join_finally(
             },
             normal_cleanup: (first, facts.span_end(copies[0].1)),
             catch_cleanup: (second, facts.span_end(copies[1].1)),
-            completion: SharedFinallyCompletion::Joined {
-                transfers: [first_transfer, second_transfer],
+            completion: if let Some(saves) = value_saves {
+                SharedFinallyCompletion::JoinedValue {
+                    transfers: [first_transfer, second_transfer],
+                    saves,
+                }
+            } else {
+                SharedFinallyCompletion::Joined {
+                    transfers: [first_transfer, second_transfer],
+                }
             },
         },
         lead: (start, named.start_bci),

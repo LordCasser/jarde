@@ -4795,7 +4795,8 @@ impl Walker<'_> {
             plan.body(),
             match completion {
                 crate::guard::SharedFinallyCompletion::SavedReturns(returns) => Some(returns[0].0),
-                crate::guard::SharedFinallyCompletion::Joined { .. } => None,
+                crate::guard::SharedFinallyCompletion::Joined { .. }
+                | crate::guard::SharedFinallyCompletion::JoinedValue { .. } => None,
             },
             try_rows,
             plan,
@@ -4812,7 +4813,8 @@ impl Walker<'_> {
             *catch_body,
             match completion {
                 crate::guard::SharedFinallyCompletion::SavedReturns(returns) => Some(returns[1].0),
-                crate::guard::SharedFinallyCompletion::Joined { .. } => None,
+                crate::guard::SharedFinallyCompletion::Joined { .. }
+                | crate::guard::SharedFinallyCompletion::JoinedValue { .. } => None,
             },
             catch_rows,
             plan,

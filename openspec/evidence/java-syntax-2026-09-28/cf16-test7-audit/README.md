@@ -13,3 +13,11 @@ JADX Java-input 对照输出一份可重编的嵌套类源码。原 fixture 和 
 Jarde 的完整 class-source 只输出 constructor 与 exc，test(Object) 是 explanation-only，说明 local 2 crosses a quoted fallback region，边界为 0、19、35、50。完整类因此无法通过 Java 8 编译；javac 的实质诊断是缺少返回语句。这个目标有三份可观察的 finally 副本（正常、typed catch、catch-all），并且返回局部 res 跨 catch/fallback 区域使用；它不是已有“透明空 finally”形态：f++ 是可观察写入，且 typed catch 和 catch-all 共存。现有空 finally 机制不能据此计为已覆盖。
 
 可重放脚本每次先在唯一临时 Cargo target 构建当前 checkout 的 CLI，然后构建两种 Java 8 输入、运行固定 JADX CLI、重编并执行 original/JADX 源码。输出目录必须为空。运行 openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/replay.sh /tmp/cf16-test7-replay 即可。默认固定路径是本地 pinned JADX checkout 和它的 jadx 安装；可用 JADX_CHECKOUT、JADX 覆盖。脚本核 pinned HEAD、固定测试 SHA、目标方法指令/异常表相同以及 original/JADX 行为，退出时清掉 Cargo target。baseline/ 保存本次 SHA、完整 javap、JADX 与 Jarde 源码和 javac/java 日志。范围只证明固定测试的输入 profile 与上述独立 Java classfile 转写；不证明 JADX 默认 DX 输出与 Java-input 相同，也不把 CF-16 其它 finally lowering 纳入结论。
+
+## 实施验收
+
+`acceptance/` 是本次恢复后的 fresh CLI 记录。debug 和 no-debug 两份固定 class 各有 32 条 `test(Object)` 指令与同一四行异常表；Jarde 完整类经 `javac --release 8` 重编，方法均输出一个具名 catch、一个 finally、一份 `this.f += 1` 和一个合流后的布尔返回，32 个 BCI 均有来源。`acceptance/summary.json` 记录固定原 class SHA、JADX revision 和 CLI SHA，`acceptance/*-jarde-class-source/runtime.log` 与原源码/JADX 日志记录正常值和逃出 typed catch 的 AssertionError 均使 `f` 恰增一次。
+
+`probe/TestTryCatchFinally7.java` 只改 `exc(Object)`，加入抛 `Exception` 的路径，并将传入的 `AssertionError` 原对象重抛。`probe/replay.py` 逐字节比较 probe 与固定 debug/no-debug 目标方法的 52 字节代码及 32 字节异常表；`acceptance/probe/summary.json` 记录二者完全相同的 SHA。`CatchRunner` 以 `null`、`"e"`、同一 `AssertionError` 对象走正常、具名 catch、catch-all 三路，逐项核返回值、`f=1` 和 Throwable 身份。原 class、原 probe 源、JADX Java-input、Jarde 完整类均经 Java 8 编译与 `java -Xverify:all`，四方输出均为 `true/false/AssertionError`，每路字段增量一次；日志在 `acceptance/probe/`。
+
+`neighbors.py` 从固定 debug class 冻结七份 verifier 有效近邻：错字段、错接收者、错增量、返回值改写、Throwable 改写、自保护行扩围、清理后重进受保护正文。SHA 与 `java -Xverify:all` 成功记录在 `neighbors/sha256-and-verify.txt`。Jarde 定向测试逐份拒绝唯一 finally 并核关键物理 BCI 来源；预算耗尽和取消均不交付半成品源码或来源映射。默认 JADX 集成测试仍是 DX profile；这里只将固定 Java 8 Java-input classfile 切片计为恢复。
