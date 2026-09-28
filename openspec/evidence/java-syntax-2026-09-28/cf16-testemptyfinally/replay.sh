@@ -61,8 +61,7 @@ python3 "$HERE/check-bytecode-shape.py" "$OUT/original.fixed.javap.txt" \
   "$OUT/original.standalone.javap.txt" "$OUT/pinned.javap.txt" > "$OUT/bytecode-shape.txt"
 "$JAVA" -Xverify:all -cp "$TMP/pinned" "$PACKAGE_DOTS.BehaviorProbe" "$PACKAGE_DOTS.$TARGET" > "$OUT/behavior.pinned-jadx.txt"
 
-# Jarde's complete source is captured as delivered. It is expected to be un-compilable while the
-# IOException catch has no checked-throwing operation, which is why no Jarde behavior trace exists.
+# Jarde's complete source must now compile and match the three fixed behavior paths.
 "$CLI" class-source --input "$FIXED" --class "$PACKAGE_DOTS.$TARGET" --policy single-class --release 8 --format text > "$OUT/jarde.java.txt" 2> "$OUT/jarde.report.txt"
 cp "$OUT/jarde.java.txt" "$TMP/jarde/$TARGET.java"
 set +e
@@ -85,11 +84,31 @@ if [[ $JARDE_JAVAC_STATUS -eq 0 ]]; then
 else
   echo 'jarde_behavior_trace=unavailable_source_did_not_compile' >> "$OUT/results.txt"
 fi
+[[ $JARDE_JAVAC_STATUS -eq 0 ]]
+cmp "$OUT/behavior.fixed-original.txt" "$OUT/behavior.jarde.txt"
+! grep -q '@bytecode\|finally {' "$OUT/jarde.java.txt"
+grep -q 'methods.1.outcome.report.fallbacks = \[\]' "$OUT/jarde.report.txt"
 echo "fixed_class_sha256=$(shasum -a 256 "$FIXED" | awk '{print $1}')" >> "$OUT/results.txt"
 echo "standalone_class_sha256=$(shasum -a 256 "$OUT/original.standalone.class" | awk '{print $1}')" >> "$OUT/results.txt"
 cmp "$OUT/behavior.fixed-original.txt" "$OUT/behavior.standalone-original.txt"
 cmp "$OUT/behavior.fixed-original.txt" "$OUT/behavior.pinned-jadx.txt"
-printf 'fixed_equals_standalone_behavior=true\nfixed_equals_pinned_jadx_behavior=true\n' >> "$OUT/results.txt"
+printf 'fixed_equals_standalone_behavior=true\nfixed_equals_pinned_jadx_behavior=true\nfixed_equals_jarde_behavior=true\n' >> "$OUT/results.txt"
+mkdir -p "$OUT/neighbors"
+for name in changed-throwable rows-swapped handler-normal-exit; do
+  case "$name" in
+    changed-throwable) expected=aa52a381c7fce255c3043dabce882c055a39e50ea616dd496b0f8e8fa590049b ;;
+    rows-swapped) expected=b0a5daef736ba2ff388cbc3267353a0609095703d7b2b42cf50c6268baa3f989 ;;
+    handler-normal-exit) expected=26130f374f5a3808240e293bae28cd81ba5de8ab6dd2e09e1582806f7316102e ;;
+  esac
+  neighbor="$HERE/neighbors/$name.class"
+  [[ "$(shasum -a 256 "$neighbor" | awk '{print $1}')" == "$expected" ]]
+  cp "$neighbor" "$TMP/fixed/$PACKAGE/$TARGET.class"
+  "$JAVA" -Xverify:all -cp "$TMP/fixed" "$PACKAGE_DOTS.BehaviorProbe" "$PACKAGE_DOTS.$TARGET" > "$OUT/neighbors/$name.behavior.txt"
+  "$CLI" class-source --input "$neighbor" --class "$PACKAGE_DOTS.$TARGET" --policy single-class --release 8 --format text > "$OUT/neighbors/$name.jarde.java.txt" 2> "$OUT/neighbors/$name.jarde.report.txt"
+  grep -q '@bytecode' "$OUT/neighbors/$name.jarde.java.txt"
+  ! grep -q '^[[:space:]]*f1.close();' "$OUT/neighbors/$name.jarde.java.txt"
+  printf 'neighbor_%s_sha256=%s\nneighbor_%s_verifier_and_refusal=true\n' "$name" "$expected" "$name" >> "$OUT/results.txt"
+done
 cat "$OUT/results.txt"
 python3 - "$OUT" <<'PY'
 import hashlib

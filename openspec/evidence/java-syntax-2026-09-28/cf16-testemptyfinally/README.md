@@ -1,5 +1,7 @@
 # CF-16: JADX `TestEmptyFinally.TestCls.test(FileInputStream)`
 
+实现后的四方行为重放、三份 verifier 有效近邻及验收结果见 [implementation-results.md](implementation-results.md)。原始固定捕获和失败报告保留在本目录，便于对照实现前后的结果。
+
 This evidence pins the upstream test and its built nested class, compares the complete source Jarde and JADX emit for that class, and runs the same injected `FileInputStream` behavior probe against the fixed class, an exact Java 8 source extraction, and JADX's source. It contains no production or OpenSpec implementation change.
 
 The pinned JADX checkout is `/Users/lordcasser/workspace/testzone/jadx` at `2fb1b16386941660fda07e9017285aec40fcb37f`. Its upstream test is `jadx-core/src/test/java/jadx/tests/integration/trycatch/TestEmptyFinally.java`, SHA-256 `258da505cd3729bfcf4e54598314fff43d838f7ca3f8cc536c206f6ae790cc3f`. The built target `TestEmptyFinally$TestCls.class` is major version 52, SHA-256 `dcf5de9a4037ddd2169f103e426be38fac60dba8fb2d5cb38dc6ffe3c648018a`. Both are copied under `original/` so replay does not select a different build output. The fixed complete class disassembly is `original.fixed.javap.txt`.

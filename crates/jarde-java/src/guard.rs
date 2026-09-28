@@ -7078,6 +7078,17 @@ pub(crate) struct Catches {
     /// — and the levels are built from the inside out ([`crate::region::Walker::try_region`]).
     /// `None` is the ordinary statement of one protected range.
     pub(crate) inner: Option<Box<Catches>>,
+    /// A proved, effect-free catch-all rethrow belonging to this ordinary try.
+    pub(crate) transparent: Option<TransparentHandler>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TransparentHandler {
+    pub(crate) block: CanonicalBlockId,
+    pub(crate) bcis: [u32; 3],
+    pub(crate) rows: [u32; 2],
+    pub(crate) range: (u32, u32),
+    pub(crate) normal_exits: [u32; 2],
 }
 
 /// Examines one block as the `try` of a `try`/`catch`: named rows, or the certified single
@@ -7128,6 +7139,13 @@ pub(crate) fn catches(
         .block(current)
         .and_then(|block| block.instructions().last())
         .map(|instruction| instruction.bci());
+    if handlers.len() == 2 && visible_named_row.is_none() {
+        let sites = Sites::empty();
+        let mut facts = Facts::new(canonical, view, ssa, ops, handlers, &sites, budget);
+        if let Some(shape) = transparent_empty_finally(&mut facts, current)? {
+            return Ok(Some(shape));
+        }
+    }
     if handlers.len() == 1
         && handlers[0].catch_type_index.is_none()
         && handlers[0].start_bci >= current.bci()
@@ -7142,6 +7160,7 @@ pub(crate) fn catches(
                 protected_end: handlers[0].end_bci,
                 lead: (current.bci(), handlers[0].start_bci),
                 inner: None,
+                transparent: None,
             }));
         }
     }
@@ -7177,6 +7196,7 @@ pub(crate) fn catches(
             protected_end: row.end_bci,
             lead: (current.bci(), row.start_bci),
             inner: None,
+            transparent: None,
         }));
     }
     // How one set of rows reads as **clauses**: every range begins at one instruction, and there are
@@ -7268,6 +7288,7 @@ pub(crate) fn catches(
                 protected_end: *end,
                 lead,
                 inner: None,
+                transparent: None,
             }))
         }
         [inner_end, outer_end] => {
@@ -7302,11 +7323,216 @@ pub(crate) fn catches(
                     protected_end: *inner_end,
                     lead,
                     inner: None,
+                    transparent: None,
                 })),
+                transparent: None,
             }))
         }
         _ => Ok(None),
     }
+}
+
+/// The Java 8 empty-finally lowering used by the fixed CF-16 class.  The second row is
+/// compiler scaffolding only when it receives the same exception and immediately rethrows it.
+/// This deliberately proves the complete small method, including both normal transfers: a
+/// transparent handler alone says nothing about where the protected invocation completes.
+fn transparent_empty_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Catches>, StopReason> {
+    let [named, any] = facts.handlers else {
+        return Ok(None);
+    };
+    if named.catch_type_index.is_none()
+        || any.catch_type_index.is_some()
+        || named.ordinal.checked_add(1) != Some(any.ordinal)
+        || (named.start_bci, named.end_bci) != (any.start_bci, any.end_bci)
+        || named.handler_bci == any.handler_bci
+        || named.start_bci != current.bci()
+    {
+        return Ok(None);
+    }
+    let [
+        load,
+        invoke,
+        normal_exit,
+        named_store,
+        named_exit,
+        store,
+        reload,
+        rethrow,
+        done,
+    ] = facts.order.as_slice()
+    else {
+        return Ok(None);
+    };
+    let (load, invoke, normal_exit, named_store, named_exit, store, reload, rethrow, done) = (
+        *load,
+        *invoke,
+        *normal_exit,
+        *named_store,
+        *named_exit,
+        *store,
+        *reload,
+        *rethrow,
+        *done,
+    );
+    let Some(Operation::Invoke(called)) = facts.op(invoke) else {
+        return Ok(None);
+    };
+    if named.end_bci != normal_exit
+        || named.handler_bci != named_store
+        || any.handler_bci != store
+        || !matches!(facts.op(load), Some(Operation::Load { .. }))
+        || called.name() != "close"
+        || called.descriptor() != "()V"
+        || facts.op(normal_exit) != Some(&Operation::Transfer)
+        || !matches!(facts.op(named_store), Some(Operation::Store { .. }))
+        || facts.op(named_exit) != Some(&Operation::Transfer)
+        || !matches!(facts.op(store), Some(Operation::Store { .. }))
+        || !matches!(facts.op(reload), Some(Operation::Load { .. }))
+        || facts.op(rethrow) != Some(&Operation::Throw)
+        || facts.op(done) != Some(&Operation::Return)
+        || !handler_binding(facts, named_store)
+        || !handler_binding(facts, store)
+    {
+        return Ok(None);
+    }
+    let (Some(body), Some(named_block), Some(transparent), Some(join)) = (
+        facts.block_of(load).cloned(),
+        facts.row_handler(named),
+        facts.row_handler(any),
+        join_after(facts, normal_exit),
+    ) else {
+        return Ok(None);
+    };
+    if body != *current
+        || named_block.bci() != named_store
+        || transparent.bci() != store
+        || facts.block_of(invoke) != Some(&body)
+        || facts.block_of(normal_exit) != Some(&body)
+        || facts.block_of(named_exit) != Some(&named_block)
+        || facts.block_of(reload) != Some(&transparent)
+        || facts.block_of(rethrow) != Some(&transparent)
+        || facts.block_of(done) != Some(&join)
+        || facts.view.successor_ids(&named_block) != [join.clone()]
+        || !facts.view.successor_ids(&transparent).is_empty()
+        || facts
+            .in_block(&body)
+            .iter()
+            .map(SsaInstruction::bci)
+            .collect::<Vec<_>>()
+            != [load, invoke, normal_exit]
+        || facts
+            .in_block(&named_block)
+            .iter()
+            .map(SsaInstruction::bci)
+            .collect::<Vec<_>>()
+            != [named_store, named_exit]
+        || facts
+            .in_block(&transparent)
+            .iter()
+            .map(SsaInstruction::bci)
+            .collect::<Vec<_>>()
+            != [store, reload, rethrow]
+        || facts
+            .in_block(&join)
+            .iter()
+            .map(SsaInstruction::bci)
+            .collect::<Vec<_>>()
+            != [done]
+        || facts.canonical.blocks().len() != 4
+    {
+        return Ok(None);
+    }
+    let (Some(Operation::Store { slot }), Some(Operation::Load { slot: loaded })) =
+        (facts.op(store), facts.op(reload))
+    else {
+        return Ok(None);
+    };
+    let (Some(stored), Some(reloaded), Some(thrown)) =
+        (facts.step(store), facts.step(reload), facts.step(rethrow))
+    else {
+        return Ok(None);
+    };
+    if slot != loaded
+        || !stored.instruction.writes().iter().any(|(_, value)| {
+            reloaded
+                .instruction
+                .reads()
+                .iter()
+                .any(|(_, read)| facts.same(*value, *read))
+        })
+        || !reloaded.instruction.writes().iter().any(|(_, value)| {
+            stack_operands(thrown.instruction)
+                .iter()
+                .any(|(_, read)| facts.same(*value, *read))
+        })
+    {
+        return Ok(None);
+    }
+    for bci in facts.order.clone() {
+        facts.charge(bci)?;
+    }
+    let sites = facts.canonical.throw_sites();
+    if sites.len() != 2
+        || sites[0].bci() != invoke
+        || sites[0].block() != &body
+        || sites[0].handlers() != [named.ordinal, any.ordinal]
+        || sites[1].bci() != rethrow
+        || sites[1].block() != &transparent
+        || !sites[1].handlers().is_empty()
+    {
+        return Ok(None);
+    }
+    let expected = BTreeSet::from([
+        (
+            CanonicalEdgeKind::Exception {
+                handler_ordinal: named.ordinal,
+            },
+            body.clone(),
+            named_block.clone(),
+        ),
+        (
+            CanonicalEdgeKind::Exception {
+                handler_ordinal: any.ordinal,
+            },
+            body.clone(),
+            transparent.clone(),
+        ),
+        (CanonicalEdgeKind::Normal, body.clone(), join.clone()),
+        (CanonicalEdgeKind::Normal, named_block.clone(), join.clone()),
+    ]);
+    let edges = facts.canonical.edges();
+    for edge in edges {
+        facts.charge(edge.from().bci())?;
+    }
+    if edges.len() != expected.len()
+        || edges
+            .iter()
+            .map(|edge| (edge.kind(), edge.from().clone(), edge.to().clone()))
+            .collect::<BTreeSet<_>>()
+            != expected
+    {
+        return Ok(None);
+    }
+    let Some(sites) = clause_sites(facts, &[named]) else {
+        return Ok(None);
+    };
+    Ok(Some(Catches {
+        sites,
+        join: Some(join),
+        protected_end: named.end_bci,
+        lead: (current.bci(), named.start_bci),
+        inner: None,
+        transparent: Some(TransparentHandler {
+            block: transparent,
+            bcis: [store, reload, rethrow],
+            rows: [named.ordinal, any.ordinal],
+            range: (named.start_bci, named.end_bci),
+            normal_exits: [normal_exit, named_exit],
+        }),
+    }))
 }
 
 /// A catch-all may be spelled `Throwable` only for a closed, exception-only method tail.

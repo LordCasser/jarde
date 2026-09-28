@@ -9,6 +9,8 @@ import java.lang.reflect.Method;
 public final class BehaviorProbe {
 	private static final class ProbeStream extends FileInputStream {
 		private final String outcome;
+		private final IOException io = new IOException("close-io");
+		private final IllegalStateException runtime = new IllegalStateException("close-runtime");
 		private int closeCalls;
 
 		ProbeStream(String outcome) throws IOException {
@@ -21,10 +23,10 @@ public final class BehaviorProbe {
 			closeCalls++;
 			super.close();
 			if ("io".equals(outcome)) {
-				throw new IOException("close-io");
+				throw io;
 			}
 			if ("runtime".equals(outcome)) {
-				throw new IllegalStateException("close-runtime");
+				throw runtime;
 			}
 		}
 	}
@@ -36,13 +38,16 @@ public final class BehaviorProbe {
 		for (String mode : new String[] { "success", "io", "runtime" }) {
 			ProbeStream stream = new ProbeStream(mode);
 			String result = "return";
+			boolean sameThrowable = true;
 			try {
 				test.invoke(target, stream);
 			} catch (InvocationTargetException ex) {
 				Throwable cause = ex.getCause();
 				result = cause.getClass().getSimpleName() + ":" + cause.getMessage();
+				sameThrowable = cause == ("runtime".equals(mode) ? stream.runtime : stream.io);
 			}
-			System.out.println(mode + " result=" + result + " closeCalls=" + stream.closeCalls);
+			System.out.println(mode + " result=" + result + " closeCalls=" + stream.closeCalls
+					+ " sameThrowable=" + sameThrowable);
 		}
 	}
 }
