@@ -1,5 +1,7 @@
 # CF16 TestTryCatchFinally11 finally-loop baseline
 
+本页以下内容保留变更前的拒绝基线，旧 `results.txt` 与 `.jarde.java` 是当时的冻结输出。当前 `replay.sh` 已改为恢复验收；最新的路径结果、近邻 SHA 和验证边界见 [implementation-evidence.md](implementation-evidence.md)。
+
 This fixture freezes the pinned JADX `TestTryCatchFinally11.TestCls.test(List)` case and a small behavioral probe with the same loop/finally bytecode shape. It records Jarde's method-level explanation-only marker, whose displayed message says the graph is not reducible over blocks `[48, 58]`. A compilable presentation is not evidence that the recovered method preserves behavior. Whether a plain-transfer irreducibility check rejects this handler loop before the FINALLY guard is a hypothesis to verify; this evidence does not attribute the refusal to a particular CFG stage.
 
 `pinned/TestTryCatchFinally11.java` is the full JADX integration test source at commit `2fb1b16386941660fda07e9017285aec40fcb37f`, SHA-256 `3e077dc69f9325fa55dec9ba92ba14a508b2ae4e6ce3d05aeb3462f9c2df1bf5`. `TestTryCatchFinally11$TestCls.class` is the exact nested class from that pinned checkout's test build, SHA-256 `3a67a7f63596c5ca7b7dbdb97a2027224d69f2a1d7b21e4f598d897510bc5f92` (class-file major 55). The replay rejects a changed source, class, or JADX checkout. `javap-TestCls.txt` records the pinned bytecode: `test(List)` spans BCI 0–79, with exception rows `[0,4) -> 38 any` and `[38,40) -> 38 any`.

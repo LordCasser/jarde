@@ -45,6 +45,60 @@ const EMPTY_CATCH_TEST16_NEIGHBORS: [&[u8]; 5] = [
 const TWO_CATCH_TEST17: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/Test17.class"
 );
+const HANDLER_LOOP_TEST11: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/TestTryCatchFinally11$TestCls.class"
+);
+const HANDLER_LOOP_TEST11_NEIGHBORS: [(&str, &[u8], &str); 7] = [
+    (
+        "handler-second-entry",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/handler-second-entry.class"
+        ),
+        "FinallyLoop",
+    ),
+    (
+        "different-list",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/different-list.class"
+        ),
+        "FinallyLoopList",
+    ),
+    (
+        "different-target",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/different-target.class"
+        ),
+        "FinallyLoop",
+    ),
+    (
+        "different-loop-test",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/different-loop-test.class"
+        ),
+        "FinallyLoop",
+    ),
+    (
+        "cleanup-self-protected",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/cleanup-self-protected.class"
+        ),
+        "FinallyLoop",
+    ),
+    (
+        "throwable-rewritten",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/throwable-rewritten.class"
+        ),
+        "FinallyLoop",
+    ),
+    (
+        "extra-normal-exit",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test11-loop-finally/neighbors/extra-normal-exit.class"
+        ),
+        "FinallyLoop",
+    ),
+];
 const TWO_CATCH_TEST17_NEIGHBORS: [&[u8]; 7] = [
     include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test17-two-catches/classes/near/different-target.class"
@@ -352,6 +406,77 @@ fn fixed_shared_join_has_one_finally_and_complete_physical_ownership() {
             !report.source_map.of_bci(bci).is_empty(),
             "BCI {bci} has no source origin"
         );
+    }
+}
+
+#[test]
+fn fixed_test11_has_one_iterable_finally_and_all_physical_origins() {
+    let recover_test11 = |budget| {
+        recover_method(
+            HANDLER_LOOP_TEST11,
+            "test",
+            "(Ljava/util/List;)V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally11$TestCls",
+            0x0001,
+            budget,
+        )
+    };
+    let report = recover_test11(None);
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert_eq!(
+        report.text.matches("finally {").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(report.text.matches("while (").count(), 1, "{}", report.text);
+    assert_eq!(report.text.matches("call2(").count(), 1, "{}", report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    let blocks: Vec<_> = report
+        .regions
+        .iter()
+        .flat_map(|region| &region.blocks)
+        .copied()
+        .collect();
+    assert_eq!(
+        blocks.iter().copied().collect::<BTreeSet<_>>(),
+        BTreeSet::from([0, 11, 20, 35, 38, 48, 58, 76])
+    );
+    assert_eq!(blocks.len(), 8);
+    for bci in [
+        0, 1, 4, 5, 10, 11, 12, 17, 20, 21, 26, 27, 28, 29, 32, 35, 38, 40, 41, 46, 48, 50, 55, 58,
+        60, 65, 67, 68, 70, 73, 76, 78, 79,
+    ] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "missing BCI {bci}"
+        );
+    }
+    let mut tiny = limits();
+    tiny.analysis_steps = 1;
+    let stopped = recover_test11(Some(Budget::new(tiny)));
+    assert!(stopped.stop().is_some());
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover_test11(Some(Budget::with_cancellation_token(limits(), token)));
+    assert!(cancelled.stop().is_some());
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+}
+
+#[test]
+fn verifier_valid_test11_neighbors_never_gain_a_finally_certificate() {
+    for (name, class, owner) in HANDLER_LOOP_TEST11_NEIGHBORS {
+        let report = recover_method(class, "test", "(Ljava/util/List;)V", owner, 0x0001, None);
+        assert!(
+            !report.text.contains("finally {"),
+            "{name}: {}",
+            report.text
+        );
+        assert!(report.text.contains("@bytecode"), "{name}: {}", report.text);
+        if name == "handler-second-entry" {
+            assert!(report.fallbacks.contains(&"jre_region_irreducible"));
+        }
     }
 }
 
