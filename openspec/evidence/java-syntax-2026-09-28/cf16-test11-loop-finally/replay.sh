@@ -46,6 +46,7 @@ if [[ "$(shasum -a 256 "$HERE/TestTryCatchFinally11\$TestCls.class" | awk '{prin
   echo "pinned TestCls class SHA-256 mismatch" >&2
   exit 3
 fi
+(cd "$HERE/neighbors" && shasum -a 256 -c SHA256SUMS > /dev/null)
 
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/cf16-test11-loop-work.XXXXXX")"
 trap 'find "$TMP" -depth -delete' EXIT
@@ -69,6 +70,7 @@ cp "$HERE/TestTryCatchFinally11\$TestCls.class" "$TMP/testcls-original/jadx/test
 # The supplied probe differs only in private-call opcodes from the pinned test
 # method; the instruction addresses and exception-table edges must match.
 "$JAVAC" --release 8 -Xlint:-options -g -d "$TMP/probe-original" "$HERE/FinallyLoop.java" "$HERE/FinallyLoopRunner.java" \
+  "$HERE/FinallyLoopCases.java" \
   > "$OUT/probe-original-javac.stdout" 2> "$OUT/probe-original-javac.stderr"
 "$JAVAP" -classpath "$TMP/probe-original" -c -v FinallyLoop > "$OUT/javap-FinallyLoop.txt"
 "$JAVA" -Xverify:all -cp "$TMP/probe-original" FinallyLoopRunner > "$OUT/probe-original-run.txt"
@@ -131,8 +133,8 @@ cp "$JADX_TESTCLS_SOURCE" "$OUT/TestTryCatchFinally11\$TestCls.jadx.java"
 
 "$CLI" class-source --input "$HERE/TestTryCatchFinally11\$TestCls.class" --class 'jadx.tests.integration.trycatch.TestTryCatchFinally11$TestCls' \
   --policy single-class --release 8 --format text > "$OUT/TestTryCatchFinally11\$TestCls.jarde.java" 2> "$OUT/jarde-testcls.report.txt"
-grep -Fq 'the graph is not reducible over 2 block(s) [48, 58]' "$OUT/TestTryCatchFinally11\$TestCls.jarde.java"
-grep -Fq 'explanation only' "$OUT/TestTryCatchFinally11\$TestCls.jarde.java"
+grep -Fq 'finally {' "$OUT/TestTryCatchFinally11\$TestCls.jarde.java"
+if grep -Fq 'explanation only' "$OUT/TestTryCatchFinally11\$TestCls.jarde.java"; then exit 1; fi
 mkdir -p "$TMP/testcls-jarde/jadx/tests/integration/trycatch"
 cp "$OUT/TestTryCatchFinally11\$TestCls.jarde.java" "$TMP/testcls-jarde/jadx/tests/integration/trycatch/TestTryCatchFinally11\$TestCls.java"
 "$JAVAC" --release 8 -Xlint:-options -d "$TMP/testcls-jarde" "$TMP/testcls-jarde/jadx/tests/integration/trycatch/TestTryCatchFinally11\$TestCls.java" "$HERE/pinned/JadxAssertions.java" "$HERE/PinnedTestRunner.java" \
@@ -147,29 +149,64 @@ cp "$JADX_PROBE_SOURCE" "$OUT/FinallyLoop.jadx.java"
 mkdir -p "$TMP/probe-jadx-src/defpackage"
 cp "$OUT/FinallyLoop.jadx.java" "$TMP/probe-jadx-src/defpackage/FinallyLoop.java"
 "$JAVAC" --release 8 -Xlint:-options -g -d "$TMP/probe-jadx" "$TMP/probe-jadx-src/defpackage/FinallyLoop.java" "$HERE/FinallyLoopRunnerJadx.java" \
+  "$HERE/FinallyLoopCases.java" \
   > "$OUT/probe-jadx-javac.stdout" 2> "$OUT/probe-jadx-javac.stderr"
 "$JAVA" -Xverify:all -cp "$TMP/probe-jadx" defpackage.FinallyLoopRunnerJadx > "$OUT/probe-jadx-run.txt"
 "$JAVA" -Xverify:all -cp "$TMP/probe-jadx" defpackage.FinallyLoopRunnerJadx fail >> "$OUT/probe-jadx-run.txt"
 
 "$CLI" class-source --input "$TMP/probe-original/FinallyLoop.class" --class FinallyLoop --policy single-class --release 8 --format text \
   > "$OUT/FinallyLoop.jarde.java" 2> "$OUT/jarde-probe.report.txt"
-grep -Fq 'the graph is not reducible over 2 block(s) [48, 58]' "$OUT/FinallyLoop.jarde.java"
-grep -Fq 'explanation only' "$OUT/FinallyLoop.jarde.java"
+grep -Fq 'finally {' "$OUT/FinallyLoop.jarde.java"
+if grep -Fq 'explanation only' "$OUT/FinallyLoop.jarde.java"; then exit 1; fi
 mkdir -p "$TMP/probe-jarde-src"
 cp "$OUT/FinallyLoop.jarde.java" "$TMP/probe-jarde-src/FinallyLoop.java"
 "$JAVAC" --release 8 -Xlint:-options -g -d "$TMP/probe-jarde" "$TMP/probe-jarde-src/FinallyLoop.java" "$HERE/FinallyLoopRunner.java" \
+  "$HERE/FinallyLoopCases.java" \
   > "$OUT/probe-jarde-javac.stdout" 2> "$OUT/probe-jarde-javac.stderr"
 "$JAVA" -Xverify:all -cp "$TMP/probe-jarde" FinallyLoopRunner > "$OUT/probe-jarde-run.txt"
 "$JAVA" -Xverify:all -cp "$TMP/probe-jarde" FinallyLoopRunner fail >> "$OUT/probe-jarde-run.txt"
 
 printf 'two:102\nempty:100\n' > "$OUT/testcls-expected.txt"
 printf 'ok:102\nthrow:102:body\n' > "$OUT/probe-expected.txt"
-printf 'ok:0\nok:0\n' > "$OUT/probe-jarde-expected.txt"
 cmp "$OUT/testcls-original-run.txt" "$OUT/testcls-expected.txt"
 cmp "$OUT/testcls-jadx-run.txt" "$OUT/testcls-expected.txt"
 cmp "$OUT/probe-jadx-run.txt" "$OUT/probe-expected.txt"
-cmp "$OUT/probe-jarde-run.txt" "$OUT/probe-jarde-expected.txt"
+cmp "$OUT/probe-jarde-run.txt" "$OUT/probe-expected.txt"
 cmp "$OUT/probe-original-run.txt" "$OUT/probe-expected.txt"
+cmp "$OUT/testcls-jarde-run.txt" "$OUT/testcls-expected.txt"
+
+for variant in original jadx jarde; do
+  case "$variant" in
+    original) dir="$TMP/probe-original"; class=FinallyLoop ;;
+    jadx) dir="$TMP/probe-jadx"; class=defpackage.FinallyLoop ;;
+    jarde) dir="$TMP/probe-jarde"; class=FinallyLoop ;;
+  esac
+  for mode in normal iterator hasNext next call2; do
+    for body in false true; do
+      "$JAVA" -Xverify:all -cp "$dir" FinallyLoopCases "$class" "$mode" "$body"
+    done
+  done > "$OUT/probe-$variant-cases.txt"
+done
+cmp "$OUT/probe-original-cases.txt" "$OUT/probe-jadx-cases.txt"
+cmp "$OUT/probe-original-cases.txt" "$OUT/probe-jarde-cases.txt"
+
+"$JAVAC" --release 8 -Xlint:-options -d "$TMP/probe-list" "$HERE/FinallyLoopList.java" "$HERE/FinallyLoopCases.java"
+for name in handler-second-entry different-target different-loop-test cleanup-self-protected throwable-rewritten extra-normal-exit different-list; do
+  if [[ "$name" == different-list ]]; then
+    class=FinallyLoopList
+    base="$TMP/probe-list"
+  else
+    class=FinallyLoop
+    base="$TMP/probe-original"
+  fi
+  mkdir -p "$TMP/near/$name"
+  cp "$HERE/neighbors/$name.class" "$TMP/near/$name/$class.class"
+  "$JAVA" -Xverify:all -cp "$TMP/near/$name:$base" FinallyLoopCases "$class" normal false > "$OUT/near-$name-verify.txt"
+  "$CLI" class-source --input "$HERE/neighbors/$name.class" --class "$class" --policy single-class --release 8 --format text \
+    > "$OUT/near-$name.jarde.java" 2> "$OUT/near-$name.report.txt"
+  if grep -Fq 'finally {' "$OUT/near-$name.jarde.java"; then exit 1; fi
+done
+grep -Fq 'jre_region_irreducible' "$OUT/near-handler-second-entry.report.txt"
 
 cat > "$OUT/results.txt" <<EOF
 pinned_test_source_sha256=$EXPECTED_TEST_SHA
@@ -177,13 +214,13 @@ pinned_testcls_class_sha256=$EXPECTED_CLASS_SHA
 bytecode_shape_check=passed
 testcls_original_java_Xverify_all=passed (two:102, empty:100)
 testcls_jadx_javac_and_java_Xverify_all=passed (two:102, empty:100)
-testcls_jarde_explanation_only_marker=present
-testcls_jarde_javac_and_java_Xverify_all=passed (two:0, empty:0)
+testcls_jarde_javac_and_java_Xverify_all=passed (two:102, empty:100)
 probe_original_java_Xverify_all=passed (ok:102, throw:102:body)
 probe_jadx_javac_and_java_Xverify_all=passed (ok:102, throw:102:body)
-probe_jarde_explanation_only_marker=present
-probe_jarde_javac_and_java_Xverify_all=passed (ok:0, ok:0)
-behavior_claim=Jarde source is a compilable presentation of a safely refused method; runtime mismatch is not claimed as correct recovery
+probe_jarde_javac_and_java_Xverify_all=passed (ok:102, throw:102:body)
+probe_cleanup_exception_matrix=passed (10 original/JADX/Jarde paths)
+verifier_valid_neighbors=passed (7 negative classes)
+behavior_claim=the fixed two-row Java 8 iterable finally is recovered; all seven valid neighbors remain refused
 EOF
 cat "$OUT/results.txt"
 printf 'output_dir=%s\n' "$OUT"

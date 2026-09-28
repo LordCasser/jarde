@@ -615,39 +615,47 @@ impl CatchClause {
 }
 
 impl Region {
-    /// The exact instruction starts of cleanup already proved and owned by resource guards.
-    pub(crate) fn twr_cleanup_bcis(&self, out: &mut Vec<u32>) {
+    /// The exact instruction starts of physical cleanup replaced by a guard's source construct.
+    pub(crate) fn elided_cleanup_bcis(&self, out: &mut Vec<u32>) {
         match self {
             Self::Sequence { regions } => {
                 for region in regions {
-                    region.twr_cleanup_bcis(out);
+                    region.elided_cleanup_bcis(out);
                 }
             }
             Self::If {
                 then_arm, else_arm, ..
             } => {
-                then_arm.twr_cleanup_bcis(out);
-                else_arm.twr_cleanup_bcis(out);
+                then_arm.elided_cleanup_bcis(out);
+                else_arm.elided_cleanup_bcis(out);
             }
             Self::Switch { groups, .. } | Self::StringSwitch { groups, .. } => {
                 for group in groups {
-                    group.arm.twr_cleanup_bcis(out);
+                    group.arm.elided_cleanup_bcis(out);
                 }
             }
             Self::Loop { body, .. } => {
                 for region in body {
-                    region.twr_cleanup_bcis(out);
+                    region.elided_cleanup_bcis(out);
                 }
             }
             Self::Guard { plan, .. } => {
                 if let crate::guard::Shape::Resources { cleanup, .. } = plan.shape() {
                     out.extend(cleanup.iter().copied());
                 }
+                if matches!(plan.shape(), crate::guard::Shape::LoopFinally { .. }) {
+                    out.extend(
+                        plan.facts()
+                            .iter()
+                            .copied()
+                            .filter(|bci| (38..79).contains(bci)),
+                    );
+                }
             }
             Self::Try { body, catches, .. } => {
-                body.twr_cleanup_bcis(out);
+                body.elided_cleanup_bcis(out);
                 for clause in catches {
-                    clause.body.twr_cleanup_bcis(out);
+                    clause.body.elided_cleanup_bcis(out);
                 }
             }
             Self::Straight { .. }
@@ -2327,6 +2335,9 @@ impl Walker<'_> {
                     crate::guard::Shape::Finally { .. } => self
                         .finally_body(&current, &plan, frame)?
                         .map(|body| (body, None)),
+                    crate::guard::Shape::LoopFinally { .. } => self
+                        .loop_finally_regions(&current, &plan, frame)?
+                        .map(|(body, cleanup)| (body, Some(cleanup))),
                     crate::guard::Shape::ConditionalFinally { .. } => self
                         .conditional_finally_regions(&current, &plan, frame)?
                         .map(|(body, cleanup)| (body, Some(cleanup))),
@@ -2452,12 +2463,21 @@ impl Walker<'_> {
             // as a named try. Nothing is claimed until the child has covered the exact protected
             // block set and every edge has been accounted for.
             if matches!(guard_verdict.as_ref(), Some(crate::guard::Verdict::Claimed(plan))
-                if matches!(plan.shape(), crate::guard::Shape::Finally { structured: true, .. }))
+                if matches!(plan.shape(), crate::guard::Shape::Finally { structured: true, .. }
+                    | crate::guard::Shape::LoopFinally { .. }))
             {
                 let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
                     unreachable!("the structured finally verdict was just matched")
                 };
-                if let Some(body) = self.finally_body(&current, &plan, frame)? {
+                let recovered = match plan.shape() {
+                    crate::guard::Shape::LoopFinally { .. } => self
+                        .loop_finally_regions(&current, &plan, frame)?
+                        .map(|(body, cleanup)| (body, Some(cleanup))),
+                    _ => self
+                        .finally_body(&current, &plan, frame)?
+                        .map(|body| (body, None)),
+                };
+                if let Some((body, cleanup)) = recovered {
                     let join = plan.join().cloned();
                     for block in plan.owned() {
                         if let Some(node) = self.view.index_of(block) {
@@ -2469,7 +2489,7 @@ impl Walker<'_> {
                             prefix,
                             plan,
                             body: Some(Box::new(body)),
-                            finally_body: None,
+                            finally_body: cleanup.map(Box::new),
                         },
                         join,
                     ));
@@ -4017,6 +4037,105 @@ impl Walker<'_> {
             block = next;
         }
         block
+    }
+
+    fn loop_finally_regions(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<(Region, Region)>, StopReason> {
+        let crate::guard::Shape::LoopFinally { normal_cleanup, .. } = plan.shape() else {
+            return Ok(None);
+        };
+        let Some(header) = self
+            .canonical
+            .blocks()
+            .iter()
+            .find(|block| block.id().bci() == 11)
+            .map(|block| block.id().clone())
+        else {
+            return Ok(None);
+        };
+        let Some(exit) = self
+            .canonical
+            .blocks()
+            .iter()
+            .find(|block| block.id().bci() == 35)
+            .map(|block| block.id().clone())
+        else {
+            return Ok(None);
+        };
+        let Some(header_node) = self.view.index_of(&header) else {
+            return Ok(None);
+        };
+        let Some(exit_node) = self.view.index_of(&exit) else {
+            return Ok(None);
+        };
+        let expected = self
+            .view
+            .loop_entered_at(header_node)
+            .map(|loop_of| loop_of.blocks().clone());
+        let Some(expected) = expected else {
+            return Ok(None);
+        };
+        if start.bci() != 0
+            || *normal_cleanup != (4, 38)
+            || expected.len() != 2
+            || expected.contains(&exit_node)
+            || plan.owned().iter().any(|block| {
+                self.view.index_of(block).is_none_or(|node| {
+                    self.visited.contains(&node)
+                        || outer
+                            .scope
+                            .as_ref()
+                            .is_some_and(|scope| !scope.contains(&node))
+                })
+            })
+        {
+            return Ok(None);
+        }
+        let previous = self.visited.clone();
+        let mut frame = outer.clone();
+        frame.scope = Some(expected.clone());
+        frame.boundary = Some(exit_node);
+        frame.own_try = None;
+        frame.own_finally = Some(((self.handlers[0].ordinal, plan.body()), None));
+        let walked = self.region_at(&header, &frame);
+        let (regions, next) = match walked {
+            Ok(run) => run,
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        let [loop_region @ Region::Loop { .. }] = regions.as_slice() else {
+            self.visited = previous;
+            return Ok(None);
+        };
+        let actual = loop_region
+            .blocks()
+            .iter()
+            .filter_map(|block| self.view.index_of(block))
+            .collect::<BTreeSet<_>>();
+        if next.as_ref() != Some(&exit)
+            || actual != expected
+            || self
+                .visited
+                .difference(&previous)
+                .copied()
+                .collect::<BTreeSet<_>>()
+                != expected
+        {
+            self.visited = previous;
+            return Ok(None);
+        }
+        Ok(Some((
+            Region::Straight {
+                blocks: vec![start.clone()],
+            },
+            loop_region.clone(),
+        )))
     }
 
     fn finally_body(

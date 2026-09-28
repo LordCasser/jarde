@@ -197,6 +197,12 @@ pub enum Shape {
         row_ordinal: u32,
         structured: bool,
     },
+    /// The fixed two-row Java 8 layout with two equivalent iterable cleanup loops.
+    LoopFinally {
+        rows: [u32; 2],
+        normal_cleanup: (u32, u32),
+        handler_cleanup: (u32, u32),
+    },
     /// One catch-all and two equivalent null-guarded cleanup copies with a void completion.
     ConditionalFinally {
         row_ordinal: u32,
@@ -327,6 +333,7 @@ impl Plan {
             Shape::Resources { .. } => &TWR,
             Shape::Monitor { .. } | Shape::MonitorBranches { .. } => &MONITOR,
             Shape::Finally { .. }
+            | Shape::LoopFinally { .. }
             | Shape::ConditionalFinally { .. }
             | Shape::SharedFinally { .. }
             | Shape::EmptyCatchCallFinally { .. }
@@ -4721,6 +4728,289 @@ fn prove_segmented_finally(
     }))
 }
 
+/// The Java 8 two-row iterable finally is deliberately a closed certificate. Like pinned JADX's
+/// `MarkFinallyVisitor::processTryBlock`/`findCommonInsns`, it starts with the handler rethrow and
+/// compares cleanup along normal and exceptional exits. Unlike its generic path match and
+/// `DONT_GENERATE` marking, this checks the exact rows, CFG, SSA and full physical ownership before
+/// either copy can disappear. Local iterator/item slots may differ across the two copies.
+fn prove_loop_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [body_row, binding_row] = facts.handlers else {
+        return Ok(None);
+    };
+    const BCIS: [u32; 33] = [
+        0, 1, 4, 5, 10, 11, 12, 17, 20, 21, 26, 27, 28, 29, 32, 35, 38, 40, 41, 46, 48, 50, 55, 58,
+        60, 65, 67, 68, 70, 73, 76, 78, 79,
+    ];
+    if current.bci() != 0
+        || facts.order != BCIS
+        || facts.canonical.blocks().len() != 8
+        || facts
+            .canonical
+            .blocks()
+            .iter()
+            .map(|block| block.id().bci())
+            .collect::<BTreeSet<_>>()
+            != BTreeSet::from([0, 11, 20, 35, 38, 48, 58, 76])
+        || facts.block_of(79) != facts.block_at(35).as_ref()
+        || body_row.ordinal + 1 != binding_row.ordinal
+        || body_row.catch_type_index.is_some()
+        || binding_row.catch_type_index.is_some()
+        || (body_row.start_bci, body_row.end_bci, body_row.handler_bci) != (0, 4, 38)
+        || (
+            binding_row.start_bci,
+            binding_row.end_bci,
+            binding_row.handler_bci,
+        ) != (38, 40, 38)
+        || !handler_binding(facts, 38)
+    {
+        return Ok(None);
+    }
+    for bci in BCIS {
+        facts.charge(bci)?;
+        let expected = if bci < 4 {
+            &[body_row.ordinal][..]
+        } else if bci == 38 {
+            &[binding_row.ordinal][..]
+        } else {
+            &[][..]
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+        {
+            return Ok(None);
+        }
+    }
+    let load = |bci, slot| facts.op(bci) == Some(&Operation::Load { slot });
+    let store = |bci, slot| facts.op(bci) == Some(&Operation::Store { slot });
+    let Some(Operation::Store {
+        slot: normal_iterator,
+    }) = facts.op(10)
+    else {
+        return Ok(None);
+    };
+    let Some(Operation::Store { slot: normal_item }) = facts.op(26) else {
+        return Ok(None);
+    };
+    let Some(Operation::Store { slot: primary_slot }) = facts.op(38) else {
+        return Ok(None);
+    };
+    let Some(Operation::Store {
+        slot: handler_iterator,
+    }) = facts.op(46)
+    else {
+        return Ok(None);
+    };
+    let Some(Operation::Store { slot: handler_item }) = facts.op(65) else {
+        return Ok(None);
+    };
+    if !load(0, 0)
+        || !load(4, 1)
+        || !load(11, *normal_iterator)
+        || !load(20, *normal_iterator)
+        || !load(27, 0)
+        || !load(28, *normal_item)
+        || !load(40, 1)
+        || !load(48, *handler_iterator)
+        || !load(58, *handler_iterator)
+        || !load(67, 0)
+        || !load(68, *handler_item)
+        || !load(76, *primary_slot)
+        || !store(10, *normal_iterator)
+        || !store(26, *normal_item)
+        || !store(46, *handler_iterator)
+        || !store(65, *handler_item)
+        || !matches!(facts.op(1), Some(Operation::Invoke(_)))
+        || !matches!(facts.op(17), Some(Operation::Comparison { target: 35, .. }))
+        || !matches!(facts.op(55), Some(Operation::Comparison { target: 76, .. }))
+        || facts.op(32) != Some(&Operation::Transfer)
+        || facts.op(35) != Some(&Operation::Transfer)
+        || facts.op(73) != Some(&Operation::Transfer)
+        || facts.op(78) != Some(&Operation::Throw)
+        || facts.op(79) != Some(&Operation::Return)
+        || facts.op(5) != facts.op(41)
+        || facts.op(12) != facts.op(50)
+        || facts.op(21) != facts.op(60)
+        || facts.op(29) != facts.op(70)
+        || !matches!(facts.op(5), Some(Operation::Invoke(target))
+            if target.kind() == InvokeKind::Interface && target.is_interface_reference()
+                && target.owner() == "java/util/List" && target.name() == "iterator"
+                && target.descriptor() == "()Ljava/util/Iterator;")
+        || !matches!(facts.op(12), Some(Operation::Invoke(target))
+            if target.kind() == InvokeKind::Interface && target.is_interface_reference()
+                && target.owner() == "java/util/Iterator" && target.name() == "hasNext"
+                && target.descriptor() == "()Z")
+        || !matches!(facts.op(21), Some(Operation::Invoke(target))
+            if target.kind() == InvokeKind::Interface && target.is_interface_reference()
+                && target.owner() == "java/util/Iterator" && target.name() == "next"
+                && target.descriptor() == "()Ljava/lang/Object;")
+        || !matches!(facts.op(29), Some(Operation::Invoke(target))
+            if target.name() == "call2" && target.descriptor() == "(Ljava/lang/Object;)V"
+                && matches!(target.kind(), InvokeKind::Virtual | InvokeKind::Special))
+    {
+        return Ok(None);
+    }
+    // The branch sense and every transfer target are physical instruction facts, not inferred
+    // from BCI order. A nearby altered loop therefore cannot reuse the copy certificate.
+    for (bci, opcode, target) in [
+        (17, 0x99, 35),
+        (55, 0x99, 76),
+        (32, 0xa7, 11),
+        (35, 0xa7, 79),
+        (73, 0xa7, 48),
+    ] {
+        if facts
+            .step(bci)
+            .is_none_or(|step| step.instruction.opcode() != opcode)
+            || (bci != 35
+                && !facts
+                    .view
+                    .successor_ids(facts.block_of(bci).unwrap())
+                    .iter()
+                    .any(|id| id.bci() == target))
+        {
+            return Ok(None);
+        }
+    }
+    let stack = |bci| {
+        facts
+            .step(bci)?
+            .instruction
+            .writes()
+            .iter()
+            .find_map(|(slot, value)| matches!(slot, Slot::Stack(_)).then_some(*value))
+    };
+    let local = |bci, slot| {
+        facts
+            .step(bci)?
+            .instruction
+            .writes()
+            .iter()
+            .find_map(|(written, value)| (*written == Slot::Local(slot)).then_some(*value))
+    };
+    let uses_stack = |producer, consumer| {
+        stack(producer).is_some_and(|value| {
+            facts.step(consumer).is_some_and(|step| {
+                stack_operands(step.instruction)
+                    .iter()
+                    .any(|(_, read)| facts.same(value, *read))
+            })
+        })
+    };
+    let uses_local = |producer, slot, consumer| {
+        local(producer, slot).is_some_and(|value| {
+            facts.step(consumer).is_some_and(|step| {
+                step.instruction.reads().iter().any(|(read_slot, read)| {
+                    *read_slot == Slot::Local(slot) && facts.same(value, *read)
+                })
+            })
+        })
+    };
+    let entry = |bci, slot| {
+        facts.step(bci).is_some_and(|step| {
+            step.instruction.reads().iter().any(|(read_slot, value)| {
+                *read_slot == Slot::Local(slot)
+                    && matches!(facts.ssa.value(facts.resolve(*value)).def(),
+                    Definition::Entry { slot: entry_slot, .. } if *entry_slot == Slot::Local(slot))
+            })
+        })
+    };
+    if ![0, 27, 67].iter().all(|bci| entry(*bci, 0))
+        || ![4, 40].iter().all(|bci| entry(*bci, 1))
+        || ![
+            (0, 1),
+            (4, 5),
+            (5, 10),
+            (11, 12),
+            (12, 17),
+            (20, 21),
+            (21, 26),
+            (27, 29),
+            (28, 29),
+            (40, 41),
+            (41, 46),
+            (48, 50),
+            (50, 55),
+            (58, 60),
+            (60, 65),
+            (67, 70),
+            (68, 70),
+            (76, 78),
+        ]
+        .iter()
+        .all(|(from, to)| uses_stack(*from, *to))
+        || !uses_local(26, *normal_item, 28)
+        || !uses_local(65, *handler_item, 68)
+        || !uses_local(38, *primary_slot, 76)
+        || facts.step(38).is_none_or(|step| {
+            !step.instruction.reads().iter().any(|(_, value)| {
+                matches!(
+                    facts.ssa.value(facts.resolve(*value)).def(),
+                    Definition::Caught { .. } | Definition::Phi { .. }
+                )
+            })
+        })
+    {
+        return Ok(None);
+    }
+    let expected_edges = BTreeSet::from([
+        (0, 11, None),
+        (0, 38, Some(body_row.ordinal)),
+        (11, 20, None),
+        (11, 35, None),
+        (20, 11, None),
+        (38, 48, None),
+        (38, 38, Some(binding_row.ordinal)),
+        (48, 58, None),
+        (48, 76, None),
+        (58, 48, None),
+    ]);
+    let mut actual_edges = BTreeSet::new();
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        let row = match edge.kind() {
+            CanonicalEdgeKind::Normal => None,
+            CanonicalEdgeKind::Exception { handler_ordinal } => Some(handler_ordinal),
+            CanonicalEdgeKind::Call { .. } | CanonicalEdgeKind::Return { .. } => return Ok(None),
+        };
+        actual_edges.insert((edge.from().bci(), edge.to().bci(), row));
+    }
+    if actual_edges != expected_edges
+        || facts.canonical.edges().len() != expected_edges.len()
+        || ![11, 48].iter().all(|header| {
+            facts
+                .block_at(*header)
+                .and_then(|id| facts.view.index_of(&id))
+                .and_then(|node| facts.view.loop_entered_at(node))
+                .is_some_and(|loop_of| loop_of.blocks().len() == 2 && loop_of.latches().len() == 1)
+        })
+        || facts.view.dominates(
+            facts.view.index_of(&facts.block_at(48).unwrap()).unwrap(),
+            facts.view.index_of(&facts.block_at(58).unwrap()).unwrap(),
+        )
+    {
+        return Ok(None);
+    }
+    Ok(Some(Plan {
+        shape: Shape::LoopFinally {
+            rows: [body_row.ordinal, binding_row.ordinal],
+            normal_cleanup: (4, 38),
+            handler_cleanup: (40, 76),
+        },
+        lead: (0, 0),
+        body: (0, 4),
+        owned: facts.blocks_in((0, 79)),
+        join: None,
+        facts: BCIS.to_vec(),
+    }))
+}
+
 /// The named-catch entry asks only this private certificate before the ordinary catch reader.
 /// An unsuccessful probe leaves that reader's existing decision unchanged.
 #[allow(clippy::too_many_arguments)]
@@ -4754,6 +5044,11 @@ pub(crate) fn shared_finally_candidate(
     let sites = Sites::empty();
     let mut facts = Facts::new(canonical, view, ssa, ops, handlers, &sites, budget);
     facts.charge(current.bci())?;
+    if handlers.len() == 2
+        && let Some(plan) = prove_loop_finally(&mut facts, current)?
+    {
+        return Ok(Some(plan));
+    }
     if handlers.len() == 1 {
         return prove_conditional_finally(&mut facts, current);
     }
@@ -6193,6 +6488,9 @@ fn guarded(
         return Ok(Some(verdict));
     }
     if FINALLY.admits(profile) {
+        if let Some(plan) = prove_loop_finally(facts, current)? {
+            return Ok(Some(Verdict::Claimed(plan)));
+        }
         if let Some(plan) = prove_empty_catch_call_finally(facts, current)? {
             return Ok(Some(Verdict::Claimed(plan)));
         }
