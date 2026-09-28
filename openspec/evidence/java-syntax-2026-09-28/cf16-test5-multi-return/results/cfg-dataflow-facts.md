@@ -1,0 +1,13 @@
+# Test5 control-flow and local-value facts
+
+The source of truth is the fixed class disassembly in `../bytecode/fixed-class.javap.txt`. BCI labels below refer to instructions, and `local N @ BCI` names a bytecode local definition/use, not a fabricated engine SSA value number.
+
+- The ordinary body loop is `53..76`, with `76: ifne 53`. Its entry is normal flow from list construction at 44..51. It is reachable from the method entry along the `first()==true` branch at 28 to 44. It is not a handler-only SCC.
+- The early return path is BCI 31 `aconst_null`, local 5 definition at 32, `close()` at 36, local 5 use at 41, `areturn` at 43. The row `[21,34) -> 93` protects that return's pending-value setup but ends before its normal cleanup copy.
+- The successful path defines the list into local 5 at 51. The loop reads that same reference at 53 and mutates it with `List.add`; after loop exit BCI 79 reads local 5 and saves the pending result into local 6 at 81. BCI 85 closes, then BCI 90 reads local 6 and returns at 92. Row `[44,83) -> 93` contains the complete normal body and saved-return setup.
+- Handler 93 saves the caught Throwable in local 7; BCI 97 closes and 104 rethrows local 7. The final row `[93,95) -> 93` is the JVM's handler self-protection around `astore 7`, so a failure while saving the caught exception can reenter the cleanup handler.
+- The close calls at 36, 85, and 97 are normal early-return cleanup, normal successful-return cleanup, and exceptional cleanup. A thrown close exception therefore overrides the pending return or body exception; the runner exercises both cases.
+
+Jarde's same-run `--evidence all` report records `raw_facts`, `raw_cfg`, `legacy_normalization`, `canonical_cfg`, `frame`, and `ssa` all completed. It records `jre_guard_handler` at BCI 93 (“the handler's own instruction sequence is not the one this rule proves for a guarded region”) and `jre_region_uncovered_blocks` `[31,44,93,53,79]`; the presentation's name planner then reports local 4 crossing a quoted fallback region. The machine report intentionally exposes no SSA value IDs, so this note derives reaching local slots and normal/exception edges directly from the fixed class bytecode instead of claiming unpublished Jarde IDs.
+
+This graph/dataflow differs from Test11's `architecture-trace.md`: Test11's SCC `{48,58}` is unreachable from method entry in the plain-transfer graph and enters through its exception handler at 38. Test5's loop header 53 is reached normally, and its shared catch-all handler 93 is not part of that loop. A component-root dominator correction for Test11 therefore cannot restore Test5's two saved return values or their cleanup/handler ownership.

@@ -1,0 +1,4 @@
+fixed class, Java 8 original extraction, and Java 8 JADX adapter have identical BCI sequence and exception rows. All opcodes match except BCI 2, where fixed Java 8 javac uses invokevirtual for the private p(A) call and JDK 23 javac --release 8 uses invokespecial.
+descriptor: (L...$A;L...$B;)Ljava/util/List;
+rows: [21,34)->93 any, [44,83)->93 any, [93,95)->93 any
+normal loop back edge: 76 ifne 53; protected body loop is reachable from method entry via 44 -> 53.

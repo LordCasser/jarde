@@ -1,0 +1,7 @@
+c_null result=null events=[]
+first_false result=null events=[f, first, close]
+one_iteration result=[v1] events=[f, first, load1, toNext1, close]
+two_iterations result=[v1, v2] events=[f, first, load1, toNext1, load2, toNext2, close]
+load_exception throws=java.lang.IllegalStateException:load-failure events=[f, first, load1, close]
+close_overrides_return throws=java.lang.IllegalStateException:close-failure events=[f, first, load1, toNext1, close]
+close_overrides_body_error throws=java.lang.IllegalStateException:close-failure events=[f, first, load1, close]

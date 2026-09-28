@@ -1,0 +1,8 @@
+JADX HEAD 2fb1b16386941660fda07e9017285aec40fcb37f
+JADX source SHA-256 d9729beaf977fc0236e29e6f3e9f0d7d7dde14102363c782100ac69426f56edf
+JADX fixed TestCls class SHA-256 4d5a64965763bf8c0a9b81cd0881a429bf715aa5d91110de8039fd992bc91827
+JADX fixed nested A/B/C/D class SHA-256 b51bb4ae123bbf98d12545f6c253b6c4bc7f48da96d0d7be9de7decd129af5ca c82451e026c8040073fd13ca17fb1106f6f07a2964f4f9570c84f91a5fdca81d b82b82c3c9ea414a012d815fb3d1e5d9ea7e74c8492bcc54fbb7d21bb33c5ef5 7df63096bcf0aa9dbd624388394ff8dc482937fc7188b79fa94d1e9a87ff689d
+JADX CLI version dev
+Jarde tested code baseline HEAD 2fb7c56053ed13baab250a4a12607748d4ce31a4
+Java runtime openjdk version "23.0.1" 2024-10-15
+javac javac 23.0.1
