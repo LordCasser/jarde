@@ -11778,7 +11778,9 @@ mod tests {
     /// 1,805 bodies, 160 handlers, 1,004 branch/switch targets and the same eight subroutines; the
     /// earlier 351/1,804 measurement predates DT-22's three classes and one body. EM-27's two
     /// `em27-inline-string` class files add 12 bodies and no handlers, branch/switch targets or
-    /// subroutines, bringing the census to 356 classes and 1,817 bodies.
+    /// subroutines, bringing the census to 356 classes and 1,817 bodies. Subsequent committed
+    /// fixtures were re-measured at 431 classes, 2,079 bodies, 245 handlers and 1,633
+    /// branch/switch targets; the eight historical subroutines remain unchanged.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -11858,10 +11860,9 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            // The 2026-09 syntax-recovery expansion re-measured the whole sweep over the corpus
-            // as committed: see the closing paragraph of this test's documentation for the
-            // classes added after the previous census and their measured contributions.
-            (356, 1817, 160, 1004, 8),
+            // The 2026-09-28 fixture additions moved the measured sweep; see the closing paragraph
+            // of this test's documentation and the fixture index for the current corpus totals.
+            (431, 2079, 245, 1633, 8),
             "fixture population changed: re-measure these counts"
         );
     }
