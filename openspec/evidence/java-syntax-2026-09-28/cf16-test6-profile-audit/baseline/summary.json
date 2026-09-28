@@ -1,0 +1,212 @@
+{
+  "jadx_revision": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "jadx_test_sha256": "ae58ce7514ad518476e7ce2c58a4e50d7442be1ff05b701754ef4709cc4e0670",
+  "transcription_sha256": "0aa1b2127a6ea74fcfccd172405a2d560176b1cd29568e4783c2cd76f3c94fa6",
+  "jarde_cli_sha256": "a28b82213ed89d1902da9aac299369a6c2c25c90facc5ee330c50632633b5acd",
+  "modes": {
+    "debug": {
+      "class_sha256": "b0859e77c3b566546a9fec0216c26394cca2b48f8c79240d6ac2cc2b981d4a7d",
+      "code_shape": {
+        "instructions": [
+          [
+            0,
+            "aconst_null"
+          ],
+          [
+            1,
+            "astore_0"
+          ],
+          [
+            2,
+            "invokestatic"
+          ],
+          [
+            5,
+            "new"
+          ],
+          [
+            8,
+            "dup"
+          ],
+          [
+            9,
+            "ldc"
+          ],
+          [
+            11,
+            "invokespecial"
+          ],
+          [
+            14,
+            "astore_0"
+          ],
+          [
+            15,
+            "aload_0"
+          ],
+          [
+            16,
+            "ifnull"
+          ],
+          [
+            19,
+            "aload_0"
+          ],
+          [
+            20,
+            "invokevirtual"
+          ],
+          [
+            23,
+            "goto"
+          ],
+          [
+            26,
+            "astore_1"
+          ],
+          [
+            27,
+            "aload_0"
+          ],
+          [
+            28,
+            "ifnull"
+          ],
+          [
+            31,
+            "aload_0"
+          ],
+          [
+            32,
+            "invokevirtual"
+          ],
+          [
+            35,
+            "aload_1"
+          ],
+          [
+            36,
+            "athrow"
+          ],
+          [
+            37,
+            "return"
+          ]
+        ],
+        "exception_rows": [
+          [
+            2,
+            15,
+            26,
+            "any"
+          ]
+        ]
+      },
+      "original": "normal:ok\nmissing:FileNotFoundException",
+      "jadx_java_input": "normal:ok\nmissing:FileNotFoundException",
+      "jarde": "normal:ok\nmissing:ok"
+    },
+    "nodebug": {
+      "class_sha256": "99b674cb9416d45f112bedcda69406ed9468d660096847bed318a492d9b9d40e",
+      "code_shape": {
+        "instructions": [
+          [
+            0,
+            "aconst_null"
+          ],
+          [
+            1,
+            "astore_0"
+          ],
+          [
+            2,
+            "invokestatic"
+          ],
+          [
+            5,
+            "new"
+          ],
+          [
+            8,
+            "dup"
+          ],
+          [
+            9,
+            "ldc"
+          ],
+          [
+            11,
+            "invokespecial"
+          ],
+          [
+            14,
+            "astore_0"
+          ],
+          [
+            15,
+            "aload_0"
+          ],
+          [
+            16,
+            "ifnull"
+          ],
+          [
+            19,
+            "aload_0"
+          ],
+          [
+            20,
+            "invokevirtual"
+          ],
+          [
+            23,
+            "goto"
+          ],
+          [
+            26,
+            "astore_1"
+          ],
+          [
+            27,
+            "aload_0"
+          ],
+          [
+            28,
+            "ifnull"
+          ],
+          [
+            31,
+            "aload_0"
+          ],
+          [
+            32,
+            "invokevirtual"
+          ],
+          [
+            35,
+            "aload_1"
+          ],
+          [
+            36,
+            "athrow"
+          ],
+          [
+            37,
+            "return"
+          ]
+        ],
+        "exception_rows": [
+          [
+            2,
+            15,
+            26,
+            "any"
+          ]
+        ]
+      },
+      "original": "normal:ok\nmissing:FileNotFoundException",
+      "jadx_java_input": "normal:ok\nmissing:FileNotFoundException",
+      "jarde": "normal:ok\nmissing:ok"
+    }
+  }
+}
