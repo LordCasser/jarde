@@ -80,9 +80,11 @@ CF-16 审计状态：**已证 finally 重复执行差距，调用型、静态字
 
   `TestTryCatchFinally11` 的[固定双行 Java 8 子形态独立验收](../java-syntax-2026-09-28/cf16-test11-loop-finally/implementation-evidence.md)已恢复 handler 中的迭代清理：原/JADX/Jarde 完整类可重编并通过 `-Xverify:all`，10 条清理抛错路径一致，33 个 BCI 有来源，7 个 verifier 有效近邻保持拒绝。它不代表其他编译 profile 或全部循环 finally 已恢复。
 
-  `TestTryCatchFinally3` 的[固定四行表证据](../java-syntax-2026-09-28/cf16-test3-catch-finally/README.md)显示 catch、foreach 与 finally 交织：原 class、原源码转写与 JADX 在正常/visitor 异常路径一致，当前 Jarde 安全拒绝；第四行只保护 handler 的 `astore`，不保护清理调用。
+  `TestTryCatchFinally3` 的[固定四行表方法级验收](../java-syntax-2026-09-28/cf16-test3-catch-finally/results/acceptance.txt)已在 catch、foreach 与 finally 交织的固定 class 上恢复一次清理：九条路径的原 class、原源码、JADX、Jarde 方法级 harness 行为一致，34 个 BCI 有来源，七个 verifier 有效近邻拒绝。第四行只保护 handler 的 `astore`，不保护清理调用。独立的 `<clinit>` 缺口仍使 Jarde 整类源码不能重编。
 
-  [TestEmptyFinally](../java-syntax-2026-09-28/cf16-testemptyfinally/README.md) 的透明 catch-all、[TestTryCatchFinally5](../java-syntax-2026-09-28/cf16-test5-multi-return/README.md) 的正常可达循环与保存返回值、[TestTryCatchFinally9](../java-syntax-2026-09-28/cf16-test9-catch-finally/README.md) 的可空资源清理均已固定物理类与行为证据，Jarde 三者仍拒绝。Test9 的 JADX Java-input 输出漏掉一次 `close()`，原 class 与 JADX DEX 输出相符，因此以后者作正向参照。
+  [TestEmptyFinally](../java-syntax-2026-09-28/cf16-testemptyfinally/implementation-results.md) 的固定两行透明 catch-all 已恢复成普通 try/catch：Jarde 整类 Java 8 源码可重编，原/JADX/Jarde 三条路径行为一致，九个 BCI 有来源，三个 verifier 有效近邻拒绝。[TestTryCatchFinally5](../java-syntax-2026-09-28/cf16-test5-multi-return/README.md) 的正常可达循环与保存返回值、[TestTryCatchFinally9](../java-syntax-2026-09-28/cf16-test9-catch-finally/README.md) 的可空资源清理仍是已固定证据的 Jarde 缺口。Test9 的 JADX Java-input 输出漏掉一次 `close()`，原 class 与 JADX DEX 输出相符，因此以后者作正向参照。
+
+  [TestTryCatchFinally2](../java-syntax-2026-09-28/cf16-test2-loop-finally/README.md) 已固定 Java 11 物理类与 Java 8 原/JADX 行为：三处正常可达正文循环，双行 catch-all，正常/异常清理各一次；Jarde 仍安全拒绝。默认上游测试走 DX，固定 `.class` 的 CLI 对照另作 Java-input 证据。该问题与 Test5 同属正文循环加 finally，缺少 Test5 的跨清理保存返回值，不能套 Test11 的 handler-loop 修复。
 
   `TestTryCatchFinally10` 的[固定断言审计](../java-syntax-2026-09-28/cf16-test10-audit/README.md)表明活动测试关闭编译且只检查输出片段；其 DEX 输入不能直接充作 Jarde 的 JVM classfile 正例。另行编译的 Java 8 对照在六条路径上与保留目标方法的 JADX 输出一致，Jarde 对该 classfile 安全拒绝；后续 classfile 恢复须单独固定异常表与验收条件。
 

@@ -17,4 +17,4 @@
 
 - [x] 4.1 用 fresh CLI 重放固定原 class、原 Java 8 源码、固定 JADX 与 Jarde 完整源码；三条路径的关闭次数、异常身份和 `java -Xverify:all` 行为一致，Jarde 全类 `javac --release 8` 通过且没有 recovery/fallback 标记。
 - [x] 4.2 重放 1.2 近邻、普通 catch/单行 catch-all、已有两至五行 finally 切片；运行 `cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、fmt、OpenSpec strict、diff check，并清理专用 Cargo target，记录结果。
-- [ ] 4.3 root 独立复核两行异常表、SSA、边闭合、来源和三方运行，更新 CF-16 账本；只标记固定 TestEmptyFinally 切片，不外推其他空 finally lowering。
+- [x] 4.3 root 独立复核两行异常表、SSA、边闭合、来源和三方运行，更新 CF-16 账本；只标记固定 TestEmptyFinally 切片，不外推其他空 finally lowering。
