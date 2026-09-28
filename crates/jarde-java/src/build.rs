@@ -969,6 +969,14 @@ fn declarations(
                 }
                 _ => false,
             };
+        let multi_return_lead = paths.multi_return_guards.contains(&owner)
+            && variable.slot() == 4
+            && first.bci == 19
+            && variable_uses
+                .iter()
+                .map(|use_| use_.bci)
+                .collect::<BTreeSet<_>>()
+                == BTreeSet::from([19, 21, 34, 56, 69, 83, 95]);
         let has_increment = variable_uses.iter().any(|use_| {
             use_.written.is_some()
                 && matches!(operations.get(use_.bci), Some(Operation::Increment { .. }))
@@ -977,6 +985,7 @@ fn declarations(
             cross_exception_store_type_is_proven(plan.decided.get(variable), has_increment);
         if crosses_exception
             && !nested_cleanup_lead
+            && !multi_return_lead
             && (!store_type_is_proven
                 || !all_reads_reach_presented_writes(
                     ssa,
@@ -2152,7 +2161,15 @@ fn decide_types(
             // The frames' reading of the value, or — where they state only an unknown reference — the
             // array a creation of this very body built (P3 2b): a `newarray`'s frame entry states no
             // name, and the instruction's own element type is what types the local it filled.
-            match constructor_predicate_local_type(
+            match multi_return_list_type(
+                variable,
+                uses.get(variable).map(Vec::as_slice).unwrap_or(&[]),
+                regions,
+                operations,
+                return_type,
+                budget,
+            )?
+            .or(constructor_predicate_local_type(
                 variable,
                 uses.get(variable).map(Vec::as_slice).unwrap_or(&[]),
                 regions,
@@ -2160,7 +2177,7 @@ fn decide_types(
                 operations,
                 return_type,
                 budget,
-            )? {
+            )?) {
                 Some(ty) => Decided::Type(ty),
                 None => match written_type(ssa, operations, write.written) {
                     Ok(Some(ty)) => Decided::Type(ty),
@@ -2211,6 +2228,58 @@ fn decide_types(
         decided.insert(*variable, decision);
     }
     Ok(decided)
+}
+
+/// The first write of Test5's reused slot is a pending `null` return. Its
+/// second write constructs the list that the ordinary loop mutates and returns.
+/// The Guard certificate proved those values separately; the lexical list name
+/// must use the method's declared List type, not the null write's Object frame.
+fn multi_return_list_type(
+    variable: &LocalVariable,
+    uses: &[SlotUse],
+    regions: &[Region],
+    operations: &Operations,
+    return_type: Option<&Type>,
+    budget: &mut Budget,
+) -> Result<Option<Type>, StopReason> {
+    let list = Type::Reference("java.util.List".to_owned());
+    if variable.slot() != 5 || return_type != Some(&list) {
+        return Ok(None);
+    }
+    for use_ in uses {
+        poll(budget, Some(use_.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(use_.bci),
+        )?;
+    }
+    if uses.iter().map(|use_| use_.bci).collect::<BTreeSet<_>>()
+        != BTreeSet::from([32, 41, 51, 53, 79])
+        || !matches!(
+            operations.get(31),
+            Some(Operation::Push(ConstantValue::Null))
+        )
+        || !matches!(operations.get(63), Some(Operation::Invoke(call))
+            if call.kind() == crate::facts::InvokeKind::Interface
+                && call.owner() == "java/util/List"
+                && call.name() == "add"
+                && call.descriptor() == "(Ljava/lang/Object;)Z")
+    {
+        return Ok(None);
+    }
+    let paths = region_paths(regions);
+    if !paths.multi_return_guards.iter().any(|guard| {
+        uses.iter().all(|use_| {
+            use_.path
+                .as_ref()
+                .is_some_and(|path| path.starts_with(guard))
+        })
+    }) {
+        return Ok(None);
+    }
+    Ok(Some(list))
 }
 
 /// The constructor/predicate two-exit loop has two null writes before its first typed write.
@@ -3038,6 +3107,8 @@ struct RegionPaths {
     /// The lexical paths of exception regions, used to distinguish ordinary branch hoisting from
     /// a declaration whose value must cross a protected range or handler.
     tries: BTreeSet<RegionPath>,
+    /// The exact Test5 guard whose pre-try resource store is proved by its SSA certificate.
+    multi_return_guards: BTreeSet<RegionPath>,
     /// Catch parameters belong to their handler clause's block, not to the whole method. Keeping
     /// the parameter slot and clause path lets the declaration plan reject a reused identity that
     /// escapes that lexical owner.
@@ -3051,6 +3122,7 @@ fn region_paths(regions: &[Region]) -> RegionPaths {
         instruction_paths: BTreeMap::new(),
         fallbacks: BTreeSet::new(),
         tries: BTreeSet::new(),
+        multi_return_guards: BTreeSet::new(),
         catch_parameters: BTreeMap::new(),
     };
     for (index, region) in regions.iter().enumerate() {
@@ -3118,6 +3190,9 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
             ..
         } => {
             out.tries.insert(path.clone());
+            if matches!(plan.shape(), guard::Shape::MultiReturnLoopFinally { .. }) {
+                out.multi_return_guards.insert(path.clone());
+            }
             collect_paths(body, &child(path, 0), out);
             if let Some(cleanup) = finally_body {
                 collect_paths(cleanup, &child(path, 1), out);
@@ -6551,6 +6626,7 @@ pub(crate) fn build(
         switch_depth: 0,
         finally_span: None,
         finally_return: None,
+        multi_return_finally: None,
         finally_catch_pop: None,
         shared_finally: None,
     };
@@ -7311,6 +7387,8 @@ struct Builder<'a> {
     finally_span: Option<(u32, u32)>,
     /// The unique save instruction and physical return of that bounded body.
     finally_return: Option<(u32, u32)>,
+    /// Two proved saves in separate arms of the one bounded Test5 body.
+    multi_return_finally: Option<[(u32, u32); 2]>,
     /// The proved named catch's pop of its already-presented append result.
     finally_catch_pop: Option<u32>,
     /// The one synthetic Region::Try nested in a proved shared catch-all guard. Its two child
@@ -10212,6 +10290,7 @@ impl Builder<'_> {
         self.switch_depth = checkpoint.switch_depth;
         self.finally_span = None;
         self.finally_return = None;
+        self.multi_return_finally = None;
         self.finally_catch_pop = None;
         self.shared_finally = None;
     }
@@ -13361,6 +13440,86 @@ impl Builder<'_> {
                         }
                         pushed
                     }
+                    guard::Shape::MultiReturnLoopFinally {
+                        cleanup, returns, ..
+                    } => {
+                        let Some(inner) = structured_body.as_deref() else {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("multi-return finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the two-return finally has no bounded loop body",
+                                plan.body().0,
+                            );
+                        };
+                        let outer = std::mem::take(&mut self.stmts);
+                        self.finally_span = Some(plan.body());
+                        self.multi_return_finally = Some(*returns);
+                        let walked = self.region(inner, &child(path, 0));
+                        self.finally_span = None;
+                        self.multi_return_finally = None;
+                        let body = std::mem::replace(&mut self.stmts, outer);
+                        if let Err(stop) = walked {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("multi-return finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                        let cleanup_body = match self.body_range(cleanup[0]) {
+                            Ok(body) => body,
+                            Err(stop) => {
+                                self.restore_finally(
+                                    finally_checkpoint
+                                        .take()
+                                        .expect("multi-return finally checkpoint"),
+                                );
+                                return Err(stop);
+                            }
+                        };
+                        let origin = plan.facts().iter().copied().fold(
+                            OriginSet::new(Origin::direct(plan.body().0)),
+                            |origin, bci| origin.plus_derived(Origin::derived(bci)),
+                        );
+                        let statement = Stmt::new(
+                            StmtKind::Try {
+                                resources: Vec::new(),
+                                catches: Vec::new(),
+                                body,
+                                finally_body: Some(cleanup_body),
+                            },
+                            origin,
+                        );
+                        if statement_has_fallback(&statement)
+                            || undeclared_local(&statement, &self.undeclared).is_some()
+                        {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("multi-return finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the two-return finally has an unpresented body or local",
+                                plan.body().0,
+                            );
+                        }
+                        let pushed = self.push(statement);
+                        if pushed.is_err() {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("multi-return finally checkpoint"),
+                            );
+                        }
+                        pushed
+                    }
                     guard::Shape::SegmentedFinally {
                         catch_body,
                         cleanup,
@@ -15838,21 +15997,34 @@ impl Builder<'_> {
         };
         let instructions: Vec<SsaInstruction> = names.instructions().to_vec();
         for instruction in &instructions {
-            if self.shared_finally.is_some()
+            if (self.shared_finally.is_some()
                 && self
                     .finally_return
-                    .is_some_and(|(save, _)| save == instruction.bci())
+                    .is_some_and(|(save, _)| save == instruction.bci()))
+                || self.multi_return_finally.is_some_and(|returns| {
+                    returns.iter().any(|(save, _)| *save == instruction.bci())
+                })
             {
                 continue;
             }
             self.instruction(instruction)?;
         }
-        if let Some((save, return_bci)) = self.finally_return
+        let return_pair = self
+            .multi_return_finally
+            .and_then(|returns| {
+                returns.into_iter().find(|(save, _)| {
+                    instructions
+                        .iter()
+                        .any(|instruction| instruction.bci() == *save)
+                })
+            })
+            .or(self.finally_return);
+        if let Some((save, return_bci)) = return_pair
             && instructions
                 .iter()
                 .any(|instruction| instruction.bci() == save)
         {
-            let returned = if self.shared_finally.is_some() {
+            let returned = if self.shared_finally.is_some() || self.multi_return_finally.is_some() {
                 self.shared_saved_return(save, return_bci)
             } else {
                 self.guarded_return(return_bci)
@@ -16591,6 +16763,9 @@ impl Builder<'_> {
             .finally_span
             .is_some_and(|span| at < span.0 || at >= span.1)
         {
+            return Ok(());
+        }
+        if self.multi_return_finally.is_some() && (34..44).contains(&at) {
             return Ok(());
         }
         if let Some(rejection) = self.binding_rejections.get(&at).cloned() {

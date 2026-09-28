@@ -1,0 +1,2 @@
+4d5a64965763bf8c0a9b81cd0881a429bf715aa5d91110de8039fd992bc91827  openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/TestTryCatchFinally5$TestCls.class
+e3edb8d1f1db62014e74bfa27b7463250d1304309e8fbdec756ce5072f6ef8a3  openspec/changes/recover-multi-return-loop-finally/verification/TestTryCatchFinally5$TestCls.java

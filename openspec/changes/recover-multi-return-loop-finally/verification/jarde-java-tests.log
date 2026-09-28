@@ -1,0 +1,614 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.70s
+     Running unittests src/lib.rs (/tmp/jarde-cf16-test5-target/debug/deps/jarde_java-9006bf1080d4141d)
+
+running 252 tests
+test ast::tests::the_subset_spells_the_operators_and_types_it_claims ... ok
+test ast::tests::floating_leaves_present_their_own_type_from_their_own_bits ... ok
+test ast::tests::a_class_literal_expression_presents_the_class_type ... ok
+test ast::tests::bitwise_types_require_two_booleans_or_integral_operands ... ok
+test ast::tests::logical_operators_require_boolean_operands ... ok
+test bridge::tests::only_a_declared_bridge_is_this_rules_business ... ok
+test ast::tests::shift_result_width_comes_only_from_integral_left_operand ... ok
+test accessor::tests::the_marker_decides_whether_a_call_is_worth_a_verdict_and_nothing_else ... ok
+test build::tests::a_name_that_states_no_java_type_is_refused_rather_than_written ... ok
+test build::tests::a_concatenation_part_states_the_widening_its_own_append_performed ... ok
+test build::tests::a_position_converts_what_a_widening_conversion_states_and_nothing_else ... ok
+test bridge::tests::class_source_candidate_obeys_budget_and_cancellation ... ok
+test build::tests::a_descriptor_that_states_a_type_is_spelled_as_java_source ... ok
+test build::tests::a_position_writes_an_implicit_widening_as_the_value_itself ... ok
+test build::tests::an_immediate_functional_receiver_is_typed_only_by_its_same_interface_owner ... ok
+test artifact::tests::the_configuration_states_the_rule_table_this_build_registers ... ok
+test build::tests::an_immediate_functional_receiver_refuses_missing_mismatched_and_unsupported_types ... ok
+test artifact::tests::the_text_identity_is_a_digest_and_not_a_length ... ok
+test artifact::tests::every_contract_dimension_is_compared ... ok
+test ast::tests::a_node_carries_its_own_anchors ... ok
+test build::tests::array_reference_widening_uses_only_bounded_component_evidence ... ok
+test build::tests::array_store_opcode_matches_the_exact_primitive_component ... ok
+test build::tests::boolean_iinc_cannot_justify_a_cross_catch_java_declaration ... ok
+test build::tests::an_independent_effect_before_a_nested_if_prevents_tree_folding ... ok
+test build::tests::an_unproven_common_reference_type_refuses_the_complete_tree ... ok
+test build::tests::a_nested_value_carried_into_a_later_argument_is_not_published_as_a_tree ... ok
+test build::tests::a_three_leaf_nested_conditional_is_published_as_one_value ... ok
+test build::tests::an_unpresentable_nan_bit_pattern_is_refused_at_its_own_bci ... ok
+test build::tests::an_external_edge_into_a_nested_test_keeps_the_region_quoted ... ok
+test build::tests::class_literal_qualifiers_are_refused_only_when_the_current_type_shadows_the_root ... ok
+test build::tests::explicit_conversion_source_categories_accept_int_family_but_reject_boolean ... ok
+test build::tests::a_proved_member_construction_keeps_the_qualifier_and_hides_only_the_physical_prefix ... ok
+test build::tests::a_switch_join_is_not_admitted_as_an_if_conditional_value ... ok
+test build::tests::an_int_ireturn_preserves_its_literal_values ... ok
+test build::tests::a_closed_nan_negation_saves_its_operand_so_the_real_operation_stays_runtime ... ok
+test build::tests::carried_constructor_argument_keeps_both_conditionals_and_all_origins ... ok
+test build::tests::finite_and_open_negations_render_inline_without_a_saved_local ... ok
+test build::tests::cf04_nested_int_return_has_one_closed_value_and_physical_origin ... ok
+test build::tests::frozen_shared_true_write_proves_and_emits_one_delayed_rhs_assignment ... ok
+test build::tests::frozen_shared_false_write_has_a_closed_ssa_value_proof ... ok
+test build::tests::extra_argument_and_instance_receiver_refuse_the_whole_graph ... ok
+test build::tests::inherited_field_owner_cannot_claim_a_derived_receiver_type ... ok
+test build::tests::cf04_int_return_refuses_a_non_literal_producer ... ok
+test build::tests::instance_receiver_with_an_earlier_static_owner_cannot_be_emitted_twice ... ok
+test build::tests::member_constructor_boolean_adaptation_uses_the_tail_descriptor_position ... ok
+test build::tests::local_declaration_source_name_requires_one_complete_nongeneric_member_path ... ok
+test build::tests::instance_field_short_circuit_has_one_physical_owner_and_two_exact_operands ... ok
+test build::tests::intermediate_join_proof_rejects_a_second_owner_of_the_bridge_block ... ok
+test build::tests::intermediate_join_proof_rejects_a_second_ssa_use ... ok
+test build::tests::intermediate_join_proof_binds_both_phis_and_ordered_bridge ... ok
+test build::tests::mixed_short_circuit_argument_proves_one_static_boolean_sink ... ok
+test build::tests::cf04_int_return_refuses_extra_consumer_and_handler_edges ... ok
+test build::tests::one_varargs_element_is_held_when_it_can_be_the_entire_array_argument ... ok
+test build::tests::mixed_short_circuit_local_has_one_direct_phi_store_and_two_name_reads ... ok
+test build::tests::nested_conditionals_in_the_false_arm_and_four_leaf_trees_are_supported ... ok
+test build::tests::platform_reference_argument_widening_is_one_java_8_relation ... ok
+test build::tests::mixed_short_circuit_graphs_have_one_owner_and_one_proved_field_write ... ok
+test build::tests::quoted_call_loads_are_added_in_source_order_without_duplicates ... ok
+test build::tests::one_armed_early_return_tail_is_not_an_intermediate_join_value ... ok
+test build::tests::intermediate_join_proof_rejects_a_verifier_valid_unknown_operation ... ok
+test build::tests::instance_field_near_misses_keep_one_complete_quote ... ok
+test build::tests::nested_effect_values_are_presented_once_at_their_consumer ... ok
+test build::tests::mixed_short_circuit_return_reuses_the_graph_and_proves_boolean_consumer ... ok
+test build::tests::shared_false_proof_rejects_independent_test_effect_after_fresh_recovery ... ok
+test build::tests::shared_false_proof_rejects_second_write_after_fresh_recovery ... ok
+test build::tests::shared_false_proof_requires_the_decoded_static_boolean_field ... ok
+test build::tests::redirected_outer_edge_proves_shared_true_after_fresh_recovery ... ok
+test build::tests::shared_false_proof_rejects_non_boolean_producer_after_fresh_recovery ... ok
+test build::tests::shared_true_duplicate_phi_consumer_is_freshly_quoted ... ok
+test build::tests::shared_true_non_boolean_producer_is_freshly_quoted ... ok
+test concat::tests::an_append_whose_conversion_plus_would_not_reproduce_is_refused ... ok
+test build::tests::varargs_call_binding_requires_the_unique_exact_local_declaration ... ok
+test concat::tests::the_two_concatenation_classes_are_the_only_ones_this_rule_reads ... ok
+test build::tests::shared_false_short_circuit_has_one_region_owner_and_one_field_write ... ok
+test declaration::tests::an_interface_method_without_either_flag_is_abstract_and_a_static_one_is_static ... ok
+test declaration::tests::an_interfaces_non_abstract_method_is_a_default_method_and_a_classs_is_not ... ok
+test declaration::tests::a_missing_declaration_fact_is_refused_with_its_own_requirement_named ... ok
+test build::tests::outer_super_handoff_projects_exact_bridge_and_refuses_a_stale_argument ... ok
+test decode::tests::a_nul_decodes_to_the_one_nul_its_modified_utf8_bytes_state ... ok
+test decode::tests::a_raw_zero_byte_is_one_replacement_and_never_a_character ... ok
+test decode::tests::a_surrogate_pair_is_one_scalar_and_a_lone_half_is_one_replacement ... ok
+test decode::tests::a_newarray_creation_states_the_atype_code_as_an_element_type ... ok
+test build::tests::ordinary_if_and_real_loop_keep_their_region_forms ... ok
+test decode::tests::every_form_this_encoding_does_not_have_is_one_replacement_per_sequence ... ok
+test decode::tests::an_invocation_names_its_target_out_of_the_classs_own_pool ... ok
+test build::tests::the_frozen_boolean_short_circuit_return_has_a_closed_value_proof ... ok
+test decode::tests::a_switch_states_its_keys_and_the_bci_each_key_transfers_to ... ok
+test decode::tests::modified_utf8_class_names_are_decoded_before_the_ascii_spelling_gate ... ok
+test decode::tests::all_fifteen_numeric_conversion_opcodes_keep_their_source_and_result_types ... ok
+test decode::tests::ordinary_text_survives_the_modified_utf8_read_unchanged ... ok
+test build::tests::three_test_chain_with_non_boolean_producer_quotes_every_instruction ... ok
+test decode::tests::ldc_does_not_admit_method_type_or_method_handle_pool_entries ... ok
+test decode::tests::the_float_and_double_constant_opcodes_state_their_exact_bits ... ok
+test decode::tests::the_array_accesses_are_the_facts_their_own_opcodes_state ... ok
+test decode::tests::the_pool_entries_the_body_names_are_the_ones_it_reads ... ok
+test decode::tests::the_four_numeric_negation_opcodes_decode_to_one_fact ... ok
+test emit::tests::a_char_selector_writes_character_keys_and_every_other_selector_stays_decimal ... ok
+test decode::tests::the_six_integral_bitwise_opcodes_keep_their_shared_operators ... ok
+test decode::tests::pool_float_and_double_entries_reach_ldc_with_their_raw_bits ... ok
+test decode::tests::the_six_shift_opcodes_keep_their_directions ... ok
+test decode::tests::ldc_and_ldc_w_admit_class_pool_entries_with_their_pool_index ... ok
+test decode::tests::the_polarity_of_a_branch_and_the_target_it_jumps_to_come_from_the_decode ... ok
+test emit::tests::a_comment_cannot_carry_an_escape_or_end_its_own_line ... ok
+test build::tests::three_test_shared_true_chain_has_one_owner_proof_and_delayed_write ... ok
+test emit::tests::a_concatenation_starts_in_a_string_context_and_keeps_its_parts_groups ... ok
+test build::tests::short_circuit_write_keeps_a_local_declaration_before_the_field_effect ... ok
+test emit::tests::a_lambda_in_a_receiver_position_keeps_its_own_group ... ok
+test decode::tests::the_creation_instructions_take_their_arrays_from_their_own_operands ... ok
+test emit::tests::a_prefix_position_and_a_not_receiver_keep_their_groups ... ok
+test emit::tests::a_refused_write_empties_the_buffer_it_had_already_filled ... ok
+test emit::tests::a_negation_keeps_nested_groups_and_negative_literals_lexically_separate ... ok
+test emit::tests::a_nested_return_is_kept_when_the_static_initializer_tail_is_projected ... ok
+test build::tests::a_conditional_proof_binds_each_straight_arm_to_one_stack_phi_and_consumer ... ok
+test emit::tests::a_primary_operand_and_an_already_stated_group_gain_nothing ... ok
+test emit::tests::a_static_initializer_projection_keeps_budget_stop_atomic ... ok
+test emit::tests::a_single_if_else_child_is_spelled_as_a_chain_and_keeps_each_node ... ok
+test emit::tests::a_static_initializer_tail_return_closes_the_block_and_keeps_its_origin ... ok
+test emit::tests::a_string_literal_escapes_what_it_cannot_hold_literally_and_nothing_else ... ok
+test emit::tests::a_throw_source_map_budget_stops_before_publishing_a_partial_node ... ok
+test emit::tests::a_throw_stops_atomically_at_the_output_bound ... ok
+test emit::tests::a_delimited_or_already_grouped_position_gains_no_parentheses ... ok
+test emit::tests::an_else_if_chain_obeys_output_budget_and_cancellation ... ok
+test emit::tests::an_empty_static_initializer_has_no_statement_but_maps_its_terminator ... ok
+test emit::tests::a_suffix_position_keeps_the_group_of_its_operand ... ok
+test emit::tests::floating_literals_are_spelled_exactly_from_their_own_bits ... ok
+test emit::tests::enhanced_for_spells_its_label_element_and_array_with_folded_origins ... ok
+test emit::tests::compound_lvalues_emit_receiver_and_index_once_with_all_origins ... ok
+test emit::tests::bitwise_operators_keep_java_precedence_and_mixed_grouping ... ok
+test emit::tests::a_stop_inside_a_node_leaves_nothing_behind ... ok
+test emit::tests::grouping_writes_parentheses_into_the_parents_span_and_moves_no_anchor ... ok
+test emit::tests::instanceof_uses_relational_precedence_under_not ... ok
+test emit::tests::local_assignment_is_grouped_under_comparison_and_null_test ... ok
+test emit::tests::logical_operators_keep_their_precedence_over_bitwise_operators ... ok
+test emit::tests::non_initializer_returns_are_not_projected ... ok
+test emit::tests::multi_statement_and_non_if_else_bodies_keep_their_block_spelling ... ok
+test emit::tests::proven_switch_labels_use_one_closed_spelling_and_keep_integer_evidence ... ok
+test emit::tests::postfix_increment_keeps_nested_writable_targets_and_their_origins ... ok
+test emit::tests::the_budget_is_checked_before_every_write_and_a_refusal_discards_the_buffer ... ok
+test emit::tests::the_segment_table_covers_the_nodes_in_writing_order ... ok
+test enumswitch::tests::the_rule_states_the_tables_it_reads_and_claims_no_mapping ... ok
+test emit::tests::shifts_keep_precedence_associativity_casts_and_primary_operands ... ok
+test facts::tests::the_arithmetic_and_comparison_vocabulary_is_stated_once ... ok
+test facts::tests::parameter_types_places_an_arrays_successor_one_slot_past_the_array ... ok
+test facts::tests::the_caller_states_identity_and_debug_names_and_nothing_about_the_body ... ok
+test facts::tests::the_receiver_is_decided_by_the_members_own_static_flag_and_by_nothing_else ... ok
+test field::tests::final_refusal_gaps_keep_bci_order_across_plan_and_emission ... ok
+test evidence::tests::the_request_type_defaults_to_the_essential_selection ... ok
+test field::tests::receipt_budget_and_cancellation_never_return_a_partial_verdict ... ok
+test field::tests::simple_static_final_proof_charges_claimed_work ... ok
+test field::tests::simple_static_final_proof_honors_cancellation_before_indexing ... ok
+test field::tests::the_rule_states_the_ir_it_reads_and_the_one_declaration_fact_it_needs ... ok
+test evidence::tests::the_evidence_of_one_text_is_never_attached_to_another ... ok
+test evidence::tests::the_essential_selection_builds_only_what_it_asked_for ... ok
+test guard::finally_copy_tests::an_extra_cleanup_result_consumer_is_refused ... ok
+test guard::finally_copy_tests::different_cleanup_member_refuses_the_copy ... ok
+test guard::finally_copy_tests::a_terminal_saved_return_is_part_of_the_resource_plan ... ok
+test evidence::tests::the_status_list_distinguishes_not_requested_complete_partial_and_not_performed ... ok
+test guard::finally_copy_tests::a_competing_row_refuses_the_same_otherwise_proved_copy ... ok
+test guard::finally_copy_tests::implicit_cleanup_has_a_physical_copy_certificate ... ok
+test guard::finally_copy_tests::repeated_cleanup_calls_stay_outside_the_single_call_slice ... ok
+test guard::finally_copy_tests::proof_propagates_the_existing_budget_and_cancellation_stops ... ok
+test guard::finally_copy_tests::shared_call_certificate_owns_three_rows_and_two_returns ... ok
+test guard::finally_copy_tests::changed_argument_or_missing_coverage_refuses_the_copy ... ok
+test guard::finally_copy_tests::nested_test1_and_test2_have_exclusive_joined_certificates ... ok
+test guard::finally_copy_tests::empty_catch_test16_two_real_rows_three_call_copies ... ok
+test guard::finally_copy_tests::shared_join_certificate_owns_copies_and_preserves_continuation ... ok
+test guard::finally_copy_tests::nested_test3_append_copies_have_one_shared_join_certificate ... ok
+test guard::finally_copy_tests::pinned_test4_nested_cleanup_has_one_four_row_certificate ... ok
+test guard::finally_copy_tests::constructor_resource_requires_its_verified_site ... ok
+test guard::finally_copy_tests::widened_range_cannot_reenter_the_proved_cleanup ... ok
+test guard::finally_copy_tests::two_catch_test17_four_real_rows_four_call_copies ... ok
+test guard::monitor_branch_tests::existing_single_exit_monitor_plan_is_unchanged ... ok
+test guard::finally_copy_tests::shared_call_certificate_refuses_row_changes_and_propagates_stops ... ok
+test guard::finally_copy_tests::shared_field_certificate_owns_full_spans_and_propagates_stops ... ok
+test init::tests::inline_char_certificate_requires_the_exact_parent_interval_and_consumer ... ok
+test init::tests::inline_char_array_proof_obeys_shared_budget_and_cancellation ... ok
+test guard::finally_copy_tests::test4_call_and_coverage_neighbors_cannot_merge_cleanup ... ok
+test init::tests::the_two_construction_rules_state_what_they_read ... ok
+test guard::finally_copy_tests::concat_saved_return_uses_the_same_complete_chain_certificate ... ok
+test lambda::tests::a_method_descriptor_is_read_into_parameters_and_a_return_type ... ok
+test lambda::tests::a_descriptor_this_layer_does_not_read_is_refused_rather_than_split ... ok
+test guard::finally_copy_tests::shared_join_refuses_changed_rows_or_field_value_and_propagates_stops ... ok
+test lambda::tests::adaptation_plan_preserves_identity_and_proven_object_conversions ... ok
+test lambda::tests::adaptation_plan_preserves_object_to_reference_and_array_checks ... ok
+test lambda::tests::adaptation_plan_proves_boxed_sam_parameter_and_return_edges ... ok
+test lambda::tests::adaptation_plan_rejects_unknown_reference_relations_and_unsupported_returns ... ok
+test lambda::tests::boxed_adaptation_pairs_are_exact_and_arity_keeps_receiver_staticness ... ok
+test guard::monitor_branch_tests::frozen_two_arm_fixture_is_one_monitor_plan_and_three_arm_control_is_refused ... ok
+test lambda::tests::array_constructor_proof_requires_exact_member_and_complete_effect_free_code ... ok
+test lambda::tests::captured_array_length_does_not_receive_an_array_constructor_proof ... ok
+test lambda::tests::instantiated_return_is_retained_and_both_edges_are_proved ... ok
+test lambda::tests::implementation_result_can_be_discarded_only_for_a_void_sam ... ok
+test init::tests::a_verified_concat_is_composed_only_as_the_unique_constructor_argument ... ok
+test lambda::tests::lambda_adapter_parameter_work_stops_through_the_shared_analysis_budget ... ok
+test guard::monitor_branch_tests::completed_instance_field_prefix_is_not_a_resource_header ... ok
+test lambda::tests::the_declaration_spelling_reuses_this_parser_and_the_two_agree ... ok
+test lambda::tests::the_generated_body_marker_is_the_only_thing_that_decides_the_lambda_writing ... ok
+test names::tests::a_collision_resolves_by_slot_order_and_is_an_alias ... ok
+test names::tests::a_keyword_becomes_a_deterministic_alias_and_never_an_error ... ok
+test names::tests::a_static_members_slot_zero_is_a_parameter_and_keeps_its_own_naming ... ok
+test lambda::tests::plan_accepts_boxed_array_length_but_keeps_instance_handle_arity_and_captures_exact ... ok
+test names::tests::evidence_wins_where_it_exists_and_aliases_where_it_cannot_be_written ... ok
+test names::tests::a_table_that_states_no_split_still_states_one_variable ... ok
+test names::tests::free_name_with_visits_every_reserved_local_and_candidate ... ok
+test names::tests::no_debug_evidence_still_names_every_slot_deterministically ... ok
+test names::tests::one_slot_can_hold_two_variables_and_each_takes_its_own_name ... ok
+test names::tests::proven_field_names_are_reserved_for_locals_and_free_names ... ok
+test names::tests::the_receiver_is_spelled_by_its_identity_and_not_by_the_name_the_table_states ... ok
+test normal_flow::tests::handler_component_stops_before_publishing_partial_dominance ... ok
+test normal_flow::tests::the_view_states_exactly_which_edge_kinds_it_keeps ... ok
+test guard::finally_copy_tests::conditional_test14_two_copies_and_verifier_valid_neighbors ... ok
+test normal_flow::tests::handler_component_needs_one_root_and_no_exception_entry_inside_its_cycle ... ok
+test oracle::tests::the_oracle_and_the_presentation_agree_on_a_lambdas_captures ... ok
+test oracle::tests::the_oracle_names_no_helper_of_the_layers_it_checks ... ok
+test oracle::tests::the_oracle_rejects_a_flipped_condition ... ok
+test init::tests::member_call_proof_requires_same_qualifier_and_early_check ... ok
+test oracle::tests::the_oracle_and_the_presentation_agree_on_a_do_whiles_effects ... ok
+test oracle::tests::the_oracle_rejects_a_reordered_or_shortened_capture_list ... ok
+test oracle::tests::the_oracle_rejects_a_wrong_return ... ok
+test pass::tests::a_requirement_says_what_it_asks_for_and_a_rule_version_says_who_asked ... ok
+test pass::tests::the_registered_table_states_each_rule_and_its_preconditions ... ok
+test pass::tests::the_profile_is_the_fact_layers_own_type_and_the_gate_reads_its_release ... ok
+test refusal::tests::a_refusal_under_a_requirement_carries_the_rules_own_code ... ok
+test region::tests::a_fallback_names_the_code_and_the_place_it_could_not_prove ... ok
+test region::tests::cf02_tail_requires_both_distinct_normal_predecessors ... ok
+test oracle::tests::the_oracle_rejects_a_loop_effect_moved_out_of_the_loop ... ok
+test region::tests::intermediate_join_requires_one_new_claim_per_tail_block ... ok
+test refusal::tests::a_requirement_a_rule_never_declared_cannot_be_refused_under - should panic ... ok
+test region::tests::shared_tail_needs_one_comparable_first_common_block ... ok
+test report::anonymous_capture_projection_tests::duplicate_or_wrong_capture_ast_matches_refuse_the_whole_projection ... ok
+test report::anonymous_capture_projection_tests::ast_walk_budget_and_cancellation_stop_before_returning_a_projection ... ok
+test region::tests::range_end_transfer_rejects_competing_entries_and_exits ... ok
+test oracle::tests::the_oracle_states_the_priority_of_a_crossing_table_and_the_report_carries_it ... ok
+test report::anonymous_capture_projection_tests::exact_same_run_capture_read_projects_and_preserves_its_bci ... ok
+test oracle::tests::the_oracle_and_the_presentation_agree_on_polarity ... ok
+test init::tests::only_the_complete_direct_java8_string_char_array_is_embedded ... ok
+test report::class_initializer_candidate_tests::candidate_expression_charging_includes_a_member_creation_qualifier ... ok
+test report::class_initializer_candidate_tests::candidate_expression_charging_stops_at_the_shared_value_depth_bound ... ok
+test source_map::tests::a_node_keeps_its_own_anchor_apart_from_the_one_it_presents ... ok
+test report::lambda_helper_instruction_coverage_tests::equal_node_and_instruction_counts_do_not_cover_an_extra_physical_instruction ... ok
+test source_map::tests::an_anchor_says_which_member_body_its_bytecode_index_is_in ... ok
+test source_map::tests::the_table_answers_by_bci_and_by_byte ... ok
+test source_map::tests::cp_is_optional_and_survives_the_set ... ok
+test stop::tests::a_cancellation_outranks_a_bound_and_says_so ... ok
+test stop::tests::a_refused_charge_names_the_bound_it_refused_on ... ok
+test stringswitch::tests::utf16_hash_matches_java_for_bmp_supplementary_and_collision ... ok
+test oracle::tests::the_oracle_and_the_presentation_agree_on_a_loops_effects ... ok
+test stringswitch::tests::final_switch_external_predecessor_refuses ... ok
+test guard::finally_copy_tests::segmented_test13_certificate_and_verifier_valid_neighbors ... ok
+test stringswitch::tests::duplicate_literal_and_cross_bucket_predecessor_refuse ... ok
+test stringswitch::tests::unicode_and_collision_buckets_have_complete_final_mapping ... ok
+test stringswitch::tests::independent_hash_use_and_wrong_bucket_refuse ... ok
+
+test result: ok. 252 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/anonymous_allocation_candidates.rs (/tmp/jarde-cf16-test5-target/debug/deps/anonymous_allocation_candidates-0b4a947c0078d38d)
+
+running 5 tests
+test unresolved_new_constant_pool_entry_cannot_yield_a_complete_scan ... ok
+test frozen_anonymous_interface_return_bci_matches_its_allocation_scan ... ok
+test allocation_candidates_include_new_expressions_reserved_by_concat ... ok
+test same_method_double_site_scan_preserves_both_bcis_without_rule_details ... ok
+test same_run_new_sidecar_preserves_order_and_ignores_rule_details_selection ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/array_invocation_widening.rs (/tmp/jarde-cf16-test5-target/debug/deps/array_invocation_widening-1b21a1e4e6562363)
+
+running 6 tests
+test unknown_user_array_supertypes_keep_the_complete_fallback ... ok
+test local_upcast_keeps_the_object_array_overload_and_effectful_argument_once ... ok
+test list_argument_keeps_the_iterable_call_once_with_both_origins ... ok
+test object_component_upcasts_keep_the_invocation_parameter_type ... ok
+test built_in_array_marker_interfaces_are_legal_invocation_targets ... ok
+test default_and_all_evidence_emit_the_same_successful_body_and_stop_before_partial_output ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/class_initializer_candidates.rs (/tmp/jarde-cf16-test5-target/debug/deps/class_initializer_candidates-18927503589563ce)
+
+running 10 tests
+test enum_map_proof_refuses_multiple_writes_and_non_unique_keys ... ok
+test enum_identity_proof_accepts_distinct_ordinals_and_refuses_aliased_fields ... ok
+test enum_map_proof_follows_real_initializer_stores_instead_of_field_or_key_order ... ok
+test candidate_sequence_keeps_unclaimed_top_level_effects_visible ... ok
+test class_source_sidecar_keeps_field_identity_rhs_and_bytecode_order ... ok
+test sidecar_marks_a_real_exception_handler_and_never_calls_it_a_linear_body ... ok
+test enum_identity_proof_consumes_the_actual_factory_and_public_values_bodies ... ok
+test sidecar_keeps_forward_and_constant_phase_reads_at_their_real_bcis ... ok
+test initializer_sidecar_covers_ordinary_classes_and_interfaces_but_not_annotations ... ok
+test candidate_collection_budget_refusal_is_a_real_stop_without_a_partial_sidecar ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/em27_inline_char_array.rs (/tmp/jarde-cf16-test5-target/debug/deps/em27_inline_char_array-906928663e33e013)
+
+running 2 tests
+test output_budget_and_cancellation_publish_no_partial_string_constructor ... ok
+test direct_string_char_array_has_explicit_new_and_all_source_anchors ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/member_capture_outer_read.rs (/tmp/jarde-cf16-test5-target/debug/deps/member_capture_outer_read-0e7a38734454ec8b)
+
+running 2 tests
+test stale_method_bci_and_field_facts_refuse_without_publishing_source ... ok
+test exact_capture_keeps_other_and_child_origins_in_both_evidence_modes ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_boolean_array_initializer_contract.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_boolean_array_initializer_contract-a84cdebf5d661a30)
+
+running 5 tests
+test budget_and_cancellation_do_not_publish_a_partial_initializer ... ok
+test proven_boolean_initializer_uses_each_real_bastore_as_low_bit_origin ... ok
+test a_store_with_the_wrong_opcode_does_not_enter_the_boolean_initializer ... ok
+test effectful_boolean_elements_stay_ordered_once_and_keep_their_three_store_origins ... ok
+test essential_and_all_evidence_select_the_same_initializer_body ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_carried_conditional_arguments.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_carried_conditional_arguments-46cadff59c561d14)
+
+running 4 tests
+test two_constructor_arguments_are_ordered_and_source_complete ... ok
+test carried_values_in_static_and_instance_calls_keep_argument_order ... ok
+test invalid_type_extra_argument_and_non_prologue_refuse_atomically ... ok
+test carried_pair_budget_and_cancellation_publish_nothing ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_conditional_field_writes.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_conditional_field_writes-66f25d4b1f0860e2)
+
+running 1 test
+test proved_integer_conditionals_keep_jvm_boolean_field_store_semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_conditional_values.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_conditional_values-908c78ae37669faf)
+
+running 2 tests
+test a_conditional_value_cannot_publish_partial_text_on_budget_or_cancellation ... ok
+test proved_values_are_one_lazy_typed_expression_in_each_supported_position ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_effectful_exits.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_effectful_exits-12b24af5a1c3a842)
+
+running 12 tests
+test effectful_exits_own_each_block_and_source_once ... ok
+test two_level_effectful_exits_share_only_the_inner_join ... ok
+test constructor_predicate_complete_method_and_sources ... ok
+test nested_effectful_exits_keep_the_inner_tail_in_its_if_arm ... ok
+test certificate_budget_and_cancellation_leave_no_partial_source ... ok
+test nested_effectful_certificate_stops_without_partial_source ... ok
+test two_level_effectful_certificate_stops_atomically ... ok
+test non_matching_edges_effects_and_handler_do_not_publish_endless_loop ... ok
+test constructor_predicate_stops_atomically ... ok
+test nested_effectful_exits_reject_unproved_edges ... ok
+test two_level_effectful_exits_reject_unproved_edges_and_values ... ok
+test constructor_predicate_rejects_unproved_producers_and_joins ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/p3_exception_only_catchall.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_exception_only_catchall-8015f8f6470bdbdf)
+
+running 4 tests
+test caught_object_is_rethrown_unchanged ... ok
+test stop_cannot_publish_a_partial_catch ... ok
+test fixed_exception_only_catch_has_complete_source_and_unique_blocks ... ok
+test verifier_valid_neighbors_never_publish_the_wrong_catch ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_inner_assignment.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_inner_assignment-9a50ccaae3d8aafb)
+
+running 4 tests
+test call_result_is_assigned_once_inside_the_reached_condition ... ok
+test field_read_is_assigned_once_after_the_short_circuit_call ... ok
+test incomplete_copy_type_effect_and_scope_candidates_stay_quoted ... ok
+test local_assignment_budget_and_cancellation_publish_no_partial_method ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_intermediate_join.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_intermediate_join-de9bad5cf4084dde)
+
+running 5 tests
+test intermediate_join_stops_without_publishing_partial_artifact ... ok
+test verifier_valid_unknown_bridge_keeps_the_whole_candidate_referenced ... ok
+test inner_join_and_bridge_have_one_outer_arm_owner ... ok
+test verifier_valid_independent_call_and_division_bridges_remain_referenced ... ok
+test external_inner_join_entry_and_handler_edge_refuse_the_whole_region ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_java_recovery.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_java_recovery-5af66f65497fb496)
+
+running 44 tests
+test a_cancelled_run_produces_nothing_and_says_it_was_cancelled ... ok
+test a_graph_that_is_not_reducible_is_quoted_whole_with_its_own_reason ... ok
+test a_body_the_subset_cannot_prove_is_quoted_rather_than_emptied ... ok
+test a_handlers_instructions_a_dead_node_holds_are_accounted_for ... ok
+test a_do_while_loop_runs_its_body_before_the_test ... ok
+test a_capture_the_shape_may_not_replay_is_refused_under_the_declared_precondition ... ok
+test a_captured_lambda_is_written_with_its_capture_in_order_before_the_sam_parameters ... ok
+test a_committed_straight_line_body_is_presented_from_its_own_decode ... ok
+test a_keyword_name_takes_a_deterministic_alias_and_the_syntax_plane_says_so ... ok
+test a_budget_that_refuses_the_emission_of_a_lambda_body_hands_out_nothing ... ok
+test a_body_without_debug_metadata_gets_deterministic_names ... ok
+test a_payload_without_the_tables_the_recovery_needs_states_that_instead_of_an_empty_body ... ok
+test a_body_the_graph_accounts_for_names_the_copy_nothing_reaches ... ok
+test a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted ... ok
+test a_profile_that_does_not_present_java_8_is_refused_the_lambda_rule ... ok
+test a_body_without_debug_names_is_named_deterministically_and_invents_no_source_scope ... ok
+test a_lambda_body_without_debug_metadata_is_named_deterministically ... ok
+test a_reused_array_length_value_keeps_the_loop_test_quoted ... ok
+test a_sam_that_the_implementation_does_not_line_up_with_is_refused ... ok
+test a_verified_site_is_recorded_with_its_bootstrap_use_site_and_captures ... ok
+test a_tableswitch_becomes_one_arm_per_target_with_its_keys_and_default ... ok
+test a_bound_receiver_without_capture_proof_is_refused_and_a_static_reference_is_adapted ... ok
+test a_straight_line_body_with_a_call_reaches_text_and_a_segment_table ... ok
+test a_slot_the_records_cannot_place_is_one_variable_with_the_ordinal_name ... ok
+test an_arbitrary_bootstrap_is_never_presented_as_a_lambda ... ok
+test a_while_loop_keeps_its_test_inside_the_statement_and_its_body_in_order ... ok
+test an_alt_metafactory_flag_word_and_an_unread_instance_are_both_refused ... ok
+test cf18_same_run_facts ... ignored, CF-18 evidence dump
+test array_helper_candidate_rejects_non_metafactory_and_foreign_implementation_handles ... ok
+test an_array_length_with_an_extra_test_effect_keeps_the_loop_quoted ... ok
+test an_array_length_duplicate_carried_out_of_the_test_keeps_the_loop_quoted ... ok
+test an_if_else_is_written_with_the_arm_the_branch_really_picks ... ok
+test crossing_exception_records_are_quoted_with_the_priority_the_table_states ... ok
+test a_member_that_cannot_be_presented_leaves_the_member_that_can_alone ... ok
+test an_unconsumed_array_length_keeps_the_loop_test_quoted ... ok
+test the_output_bound_is_checked_at_the_write_and_a_stop_produces_nothing ... ok
+test two_captures_are_written_in_the_order_the_site_reads_them ... ok
+test execution_quality_and_representation_each_state_their_own_thing ... ok
+test cf16_named_catch_owns_complete_switch_and_range_end_transfer ... ok
+test cf16_stopped_runs_do_not_publish_a_partial_try ... ok
+test cf18_budget_and_cancellation_never_publish_partial_source ... ok
+test cf18_fixed_methods_preserve_rows_dispatch_and_presented_origins ... ok
+test cf16_partial_case_ranges_and_real_resource_keep_their_boundaries ... ok
+test cf18_verifier_valid_near_misses_refuse_the_whole_method ... ok
+
+test result: ok. 43 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/p3_loop_exit_gateways.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_loop_exit_gateways-6f73d876b6e466a1)
+
+running 3 tests
+test cf08_two_gateways_have_one_loop_owner_and_complete_sources ... ok
+test cf08_gateway_budget_and_cancellation_publish_no_partial_source ... ok
+test cf08_unproved_gateways_keep_physical_quotes ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_loop_terminal_return.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_loop_terminal_return-a62d1dde13553cff)
+
+running 4 tests
+test cf07_nonterminal_break_does_not_become_a_terminal_return ... ok
+test cf07_loop_return_leaf_has_one_owner_and_source ... ok
+test cf07_candidate_budget_and_cancellation_publish_no_partial_source ... ok
+test cf07_unproved_terminal_candidates_keep_source_and_quote ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_patterns.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_patterns-0b3e236d0bfd5f12)
+
+running 72 tests
+test a_budget_that_refuses_the_emission_of_a_new_shape_hands_out_nothing ... ok
+test a_bridge_without_a_cast_is_presented_without_any_erasure ... ok
+test a_cast_a_bridge_applies_to_a_parameter_is_not_an_erasure ... ok
+test a_bridge_that_does_something_besides_forward_is_refused_and_its_body_kept ... ok
+test a_declared_bridge_is_presented_as_the_forward_it_is_with_the_cast_it_erases ... ok
+test a_construction_only_quoted_instructions_read_is_refused_and_quoted_whole ... ok
+test a_body_that_builds_a_concatenation_out_of_an_accessor_is_presented_as_both ... ok
+test a_debug_table_that_names_slot_zero_this_is_not_a_keyword_to_alias ... ok
+test a_constructors_field_initializers_are_written_after_its_constructor_call_and_in_order ... ok
+test a_chain_a_branch_cuts_is_refused_rather_than_written_as_one_expression ... ok
+test a_chain_whose_instance_is_stored_in_a_local_is_refused ... ok
+test a_run_that_was_not_told_the_declaring_class_states_no_declaration ... ok
+test a_run_that_states_no_access_flags_cannot_decide_a_bridge ... ok
+test a_run_that_was_not_told_the_class_refuses_the_pre_call_write_and_the_prologue ... ok
+test a_static_initializer_source_map_stop_keeps_the_artifact_and_unpaid_tail_unmapped ... ok
+test a_member_the_class_declares_without_a_body_is_refused_as_itself ... ok
+test a_member_the_class_does_not_declare_a_bridge_keeps_its_cast_quoted ... ok
+test a_member_the_class_did_not_declare_synthetic_is_not_an_accessor ... ok
+test a_static_initializer_is_written_as_the_writes_it_performs_and_declared_as_one ... ok
+test a_shared_deferred_argument_dag_is_quoted_once_and_budgeted ... ok
+test a_single_append_is_not_a_concatenation ... ok
+test a_run_with_no_member_table_states_the_table_it_is_missing ... ok
+test a_table_read_indexed_by_a_local_is_refused_and_the_subscript_is_written ... ok
+test a_body_without_debug_metadata_is_still_presented_with_deterministic_names ... ok
+test a_static_object_to_interface_call_is_quoted_without_an_invented_cast ... ok
+test a_synthetic_accessors_call_site_is_presented_as_the_field_access_it_forwards ... ok
+test a_write_made_before_the_constructor_call_stays_where_the_bytecode_made_it ... ok
+test a_verified_narrow_write_accessor_keeps_the_field_cast ... ok
+test a_verified_boolean_write_accessor_keeps_call_and_callee_put_origins ... ok
+test a_verified_chain_is_written_once_with_its_operands_in_the_order_it_read_them ... ok
+test an_anonymous_classs_use_is_presented_with_the_enclosing_instance_it_really_read ... ok
+test an_interfaces_non_abstract_method_is_stated_as_a_default_method ... ok
+test an_append_overload_that_plus_would_not_reproduce_is_refused ... ok
+test a_write_accessor_becomes_the_assignment_it_performs ... ok
+test an_invocation_is_written_once_with_its_recovered_cast ... ok
+test an_unverified_boolean_write_accessor_stays_a_call ... ok
+test an_invocation_argument_with_an_unproved_cast_stays_quoted ... ok
+test an_enum_switch_is_presented_as_the_table_read_the_bytecode_performs ... ok
+test byte_conditional_invocation_budget_and_cancellation_publish_no_partial_proof ... ok
+test byte_conditional_invocation_narrows_only_proved_in_range_arms ... ok
+test an_instance_call_upcasts_this_to_object_from_the_declaring_class_fact ... ok
+test an_accessor_whose_body_does_more_than_forward_is_refused ... ok
+test class_source_enum_candidate_keeps_same_run_table_switch_and_receiver_identity ... ok
+test array_helper_candidate_reads_the_exact_bsm_member_and_proves_its_code ... ok
+test bridge_projection_fixtures_retain_same_pass_targets_or_the_shape_refusal ... ok
+test field_conditional_invocation_stop_publishes_no_partial_method ... ok
+test class_source_bridge_sidecar_is_same_run_and_independent_of_rule_details ... ok
+test class_source_elides_only_the_closed_this_alias ... ok
+test four_branch_certificate_reads_field_symbols_and_string_literals_from_bytes ... ok
+test four_branch_certificate_stops_without_partial_text ... ok
+test short_conditional_invocation_preserves_its_physical_target ... ok
+test byte_conditional_invocation_refuses_unproved_arms_targets_and_joins ... ok
+test independent_hash_use_keeps_both_physical_switches ... ok
+test protected_narrow_conditional_does_not_cross_exception_edges ... ok
+test field_conditional_invocation_requires_matching_field_target_and_range ... ok
+test the_models_section_is_independent_of_the_presentation ... ok
+test straight_finally_reuses_its_guard_verdict_with_a_tight_budget ... ok
+test nested_string_switch_cross_case_exit_is_refused ... ok
+test the_anchor_of_a_presented_field_access_states_the_member_its_bci_is_in ... ok
+test four_branched_string_values_have_one_builder_and_four_physical_appends ... ok
+test the_oracle_rejects_a_concatenation_that_calls_an_operand_twice ... ok
+test the_oracle_rejects_a_constructor_call_written_after_its_field_initializers ... ok
+test the_oracle_rejects_a_constructor_whose_field_writes_are_in_another_order ... ok
+test the_same_member_in_a_class_is_an_ordinary_method_and_a_static_one_is_stated_as_such ... ok
+test the_oracle_agrees_with_the_run_on_a_concatenation_and_on_a_field_access ... ok
+test the_same_shape_on_a_string_buffer_is_presented_with_its_call_in_the_middle ... ok
+test the_oracle_rejects_a_concatenation_whose_calls_are_written_in_another_order ... ok
+test the_oracle_agrees_with_the_run_on_a_constructor_and_on_a_construction ... ok
+test nested_string_switch_keeps_its_final_dispatch_inside_the_outer_default ... ok
+test structured_finally_keeps_the_saved_return_inside_its_branch ... ok
+test class_source_preserves_aliases_without_closed_receiver_uses ... ok
+test four_branch_certificate_refuses_alias_phi_effect_handler_overload_and_missing_getter ... ok
+
+test result: ok. 72 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_proved_boolean_conditional_returns.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_proved_boolean_conditional_returns-d84c2d80a908f2df)
+
+running 3 tests
+test non_boolean_integer_phi_keeps_the_low_bit_conversion ... ok
+test boolean_projection_stops_atomically_on_output_budget_or_cancellation ... ok
+test exact_boolean_merges_keep_the_test_polarity_and_all_origins ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_shared_join_finally.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_shared_join_finally-91e331bb1ae95e52)
+
+running 25 tests
+test catch_loop_test3_stop_discards_text_and_source_map ... ok
+test fixed_shared_join_has_one_finally_and_complete_physical_ownership ... ok
+test concat_saved_return_has_one_finally_and_complete_physical_origins ... ok
+test catch_loop_test3_has_one_finally_and_all_bci_origins ... ok
+test multi_return_loop_test5_has_one_finally_and_all_bci_origins ... ok
+test nested_test1_and_test2_have_one_outer_finally_and_complete_ownership ... ok
+test fixed_test11_has_one_iterable_finally_and_all_physical_origins ... ok
+test conditional_test14_has_two_bounded_if_regions_and_all_origins ... ok
+test nested_test3_stop_discards_text_and_source_map ... ok
+test nested_test3_has_one_finally_and_complete_physical_ownership ... ok
+test nested_test3_equal_other_string_is_still_one_finally ... ok
+test nested_test1_and_test2_stop_discards_text_and_source_map ... ok
+test shared_join_stop_discards_text_and_source_map ... ok
+test empty_catch_test16_has_one_finally_and_two_real_rows ... ok
+test catch_loop_test3_verifier_valid_neighbors_refuse_finally ... ok
+test concat_saved_return_neighbors_and_stops_refuse_atomically ... ok
+test segmented_test13_has_one_owner_and_all_physical_origins ... ok
+test verifier_valid_boundary_variants_do_not_publish_a_partial_finally ... ok
+test conditional_test14_neighbors_and_stops_refuse_atomically ... ok
+test multi_return_loop_test5_valid_neighbors_refuse_and_stops_discard_partial_output ... ok
+test nested_test1_and_test2_verifier_valid_near_misses_refuse_outer_finally ... ok
+test nested_test3_verifier_valid_near_misses_refuse_shared_finally ... ok
+test two_catch_test17_has_one_finally_and_all_physical_origins ... ok
+test verifier_valid_test11_neighbors_never_gain_a_finally_certificate ... ok
+test segmented_test13_neighbors_and_stops_publish_no_partial_finally ... ok
+
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/p3_shared_tail.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_shared_tail-bffaec05e8e45af1)
+
+running 5 tests
+test incomparable_shared_candidates_do_not_select_an_arbitrary_tail ... ok
+test tail_entry_outside_the_outer_branch_does_not_gain_a_second_owner ... ok
+test cf03_nested_claims_each_shared_leaf_and_tail_once ... ok
+test cf03_independent_guards_stay_recovered ... ok
+test cf03_candidate_budget_and_cancellation_publish_no_partial_source ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_short_circuit_chain_controls.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_short_circuit_chain_controls-bebf88e222e3a6b3)
+
+running 1 test
+test duplicate_consumer_in_three_test_shared_true_chain_is_fully_quoted ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_transparent_empty_finally.rs (/tmp/jarde-cf16-test5-target/debug/deps/p3_transparent_empty_finally-c684143855778793)
+
+running 4 tests
+test failed_body_build_quotes_the_whole_candidate ... ok
+test fixed_empty_finally_has_one_plain_catch_and_all_physical_origins ... ok
+test budget_and_cancellation_stop_before_any_partial_source ... ok
+test verifier_valid_neighbors_keep_a_stated_refusal ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s

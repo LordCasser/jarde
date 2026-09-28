@@ -1,0 +1,4 @@
+   Compiling jarde-java v0.1.0 (/private/tmp/jarde-cf16-test5-baseline-src/crates/jarde-java)
+   Compiling jarde v0.1.0 (/private/tmp/jarde-cf16-test5-baseline-src)
+   Compiling jarde-cli v0.1.0 (/private/tmp/jarde-cf16-test5-baseline-src/crates/jarde-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 14.42s

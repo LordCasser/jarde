@@ -1,0 +1,7 @@
+// @method test(Ljadx/tests/integration/trycatch/TestTryCatchFinally5$TestCls$A;Ljadx/tests/integration/trycatch/TestTryCatchFinally5$TestCls$B;)Ljava/util/List;
+// @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally5$TestCls`, member flags 0x0001
+// recovered from bytecode; presentation is not claimed to compile
+{
+    // @bytecode 0 10 12 40 53 62 88 102
+    // local 4 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+}

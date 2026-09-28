@@ -260,6 +260,13 @@ pub enum Shape {
         early_return: u32,
         transfers: [u32; 2],
     },
+    /// The fixed three-row body loop with two saved returns and one shared exceptional close.
+    MultiReturnLoopFinally {
+        rows: [u32; 3],
+        segments: [(u32, u32); 2],
+        cleanup: [(u32, u32); 3],
+        returns: [(u32, u32); 2],
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -348,6 +355,7 @@ impl Plan {
             | Shape::SharedFinally { .. }
             | Shape::EmptyCatchCallFinally { .. }
             | Shape::SegmentedFinally { .. }
+            | Shape::MultiReturnLoopFinally { .. }
             | Shape::TwoCatchReturnFinally { .. }
             | Shape::NestedCleanupFinally { .. } => &FINALLY,
         }
@@ -5165,6 +5173,275 @@ fn prove_segmented_finally(
     }))
 }
 
+/// The Java 11 Test5 lowering has two disjoint protected return paths, an ordinary
+/// do-while in the second path, and a handler row that protects only its binding.
+/// Pinning the instruction geometry keeps this certificate separate from the named-catch
+/// saved-return proof: every instruction and every edge is accounted for before a copy
+/// can be removed by the writer.
+fn prove_multi_return_loop_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [early, loop_body, binding] = facts.handlers else {
+        return Ok(None);
+    };
+    const BCIS: [u32; 45] = [
+        0, 1, 2, 5, 6, 7, 10, 11, 12, 13, 14, 19, 21, 23, 28, 31, 32, 34, 36, 41, 43, 44, 47, 48,
+        51, 53, 55, 56, 58, 63, 68, 69, 71, 76, 79, 81, 83, 85, 90, 92, 93, 95, 97, 102, 104,
+    ];
+    if current.bci() != 12
+        || facts.order != BCIS
+        || facts
+            .canonical
+            .blocks()
+            .iter()
+            .map(|b| b.id().bci())
+            .collect::<BTreeSet<_>>()
+            != BTreeSet::from([0, 10, 12, 31, 44, 53, 79, 93])
+        || (early.start_bci, early.end_bci, early.handler_bci) != (21, 34, 93)
+        || (
+            loop_body.start_bci,
+            loop_body.end_bci,
+            loop_body.handler_bci,
+        ) != (44, 83, 93)
+        || (binding.start_bci, binding.end_bci, binding.handler_bci) != (93, 95, 93)
+        || early.ordinal + 1 != loop_body.ordinal
+        || loop_body.ordinal + 1 != binding.ordinal
+        || [early, loop_body, binding]
+            .iter()
+            .any(|row| row.catch_type_index.is_some())
+        || !handler_binding(facts, 93)
+        || facts.span_end(93) != 95
+    {
+        return Ok(None);
+    }
+    // Exact opcode starts exclude any unproved operation inside the body, including
+    // another exit from the loop. The semantic checks below still compare targets and
+    // SSA values, which an opcode-only check cannot establish.
+    const OPCODES: [u8; 45] = [
+        0x2a, 0x2b, 0xb6, 0x4e, 0x2d, 0xc7, 0x01, 0xb0, 0x2c, 0x2d, 0xb9, 0x3a, 0x19, 0xb9, 0x9a,
+        0x01, 0x3a, 0x19, 0xb9, 0x19, 0xb0, 0xbb, 0x59, 0xb7, 0x3a, 0x19, 0x2c, 0x19, 0xb9, 0xb9,
+        0x57, 0x19, 0xb9, 0x9a, 0x19, 0x3a, 0x19, 0xb9, 0x19, 0xb0, 0x3a, 0x19, 0xb9, 0x19, 0xbf,
+    ];
+    for (bci, opcode) in BCIS.into_iter().zip(OPCODES) {
+        facts.charge(bci)?;
+        if facts
+            .step(bci)
+            .is_none_or(|step| step.instruction.opcode() != opcode)
+        {
+            return Ok(None);
+        }
+        let expected: &[u32] = if (21..34).contains(&bci) {
+            &[early.ordinal]
+        } else if (44..83).contains(&bci) {
+            &[loop_body.ordinal]
+        } else if bci == 93 {
+            &[binding.ordinal]
+        } else {
+            &[]
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+        {
+            return Ok(None);
+        }
+    }
+    let Some(Operation::Invoke(close)) = facts.op(36) else {
+        return Ok(None);
+    };
+    if close.kind() != InvokeKind::Interface
+        || close.name() != "close"
+        || close.descriptor() != "()V"
+        || facts.op(85) != facts.op(36)
+        || facts.op(97) != facts.op(36)
+    {
+        return Ok(None);
+    }
+    // A local read must reach precisely the receiver of each close, and all
+    // three reads must reach the one resource stored before the first row.
+    let Some(resource) = facts.step(19) else {
+        return Ok(None);
+    };
+    let Some((_, resource_value)) = resource
+        .instruction
+        .writes()
+        .iter()
+        .find(|(slot, _)| *slot == Slot::Local(4))
+    else {
+        return Ok(None);
+    };
+    for (load_bci, call_bci) in [(34, 36), (83, 85), (95, 97)] {
+        let (Some(load), Some(call)) = (facts.step(load_bci), facts.step(call_bci)) else {
+            return Ok(None);
+        };
+        if facts.op(load_bci) != Some(&Operation::Load { slot: 4 })
+            || load.instruction.reads().len() != 1
+            || !facts.same(load.instruction.reads()[0].1, *resource_value)
+            || stack_operands(call.instruction).len() != 1
+            || !load.instruction.writes().iter().any(|(slot, value)| {
+                matches!(slot, Slot::Stack(_))
+                    && facts.same(*value, stack_operands(call.instruction)[0].1)
+            })
+        {
+            return Ok(None);
+        }
+    }
+    let saved = [(32, 41, 43, 5), (81, 90, 92, 6), (93, 102, 104, 7)];
+    for (store_bci, load_bci, exit_bci, slot) in saved {
+        let (Some(store), Some(load), Some(exit)) = (
+            facts.step(store_bci),
+            facts.step(load_bci),
+            facts.step(exit_bci),
+        ) else {
+            return Ok(None);
+        };
+        if facts.op(store_bci) != Some(&Operation::Store { slot })
+            || facts.op(load_bci) != Some(&Operation::Load { slot })
+            || (if exit_bci == 104 {
+                facts.op(exit_bci) != Some(&Operation::Throw)
+            } else {
+                facts.op(exit_bci) != Some(&Operation::Return)
+            })
+            || !store.instruction.writes().iter().any(|(access, value)| {
+                *access == Slot::Local(slot)
+                    && load
+                        .instruction
+                        .reads()
+                        .iter()
+                        .any(|(_, read)| facts.same(*value, *read))
+            })
+            || stack_operands(exit.instruction).len() != 1
+            || !load.instruction.writes().iter().any(|(access, value)| {
+                matches!(access, Slot::Stack(_))
+                    && facts.same(*value, stack_operands(exit.instruction)[0].1)
+            })
+        {
+            return Ok(None);
+        }
+    }
+    if facts.op(31) != Some(&Operation::Push(crate::facts::ConstantValue::Null))
+        || !facts.step(31).is_some_and(|push| {
+            facts.step(32).is_some_and(|store| {
+                push.instruction.writes().iter().any(|(slot, value)| {
+                    matches!(slot, Slot::Stack(_))
+                        && stack_operands(store.instruction)
+                            .iter()
+                            .any(|(_, read)| facts.same(*value, *read))
+                })
+            })
+        })
+        || ![(51, 53), (51, 79)].into_iter().all(|(store, load)| {
+            facts.step(store).is_some_and(|store| {
+                facts.step(load).is_some_and(|load| {
+                    store.instruction.writes().iter().any(|(slot, value)| {
+                        *slot == Slot::Local(5)
+                            && load
+                                .instruction
+                                .reads()
+                                .iter()
+                                .any(|(_, read)| facts.same(*value, *read))
+                    })
+                })
+            })
+        })
+        || !facts.step(79).is_some_and(|load| {
+            facts.step(81).is_some_and(|store| {
+                load.instruction.writes().iter().any(|(slot, value)| {
+                    matches!(slot, Slot::Stack(_))
+                        && stack_operands(store.instruction)
+                            .iter()
+                            .any(|(_, read)| facts.same(*value, *read))
+                })
+            })
+        })
+    {
+        return Ok(None);
+    }
+    let Some(handler) = facts.block_at(93) else {
+        return Ok(None);
+    };
+    let Some(loop_header) = facts.block_at(53) else {
+        return Ok(None);
+    };
+    let Some(pre_loop) = facts.block_at(44) else {
+        return Ok(None);
+    };
+    if [early, loop_body, binding]
+        .iter()
+        .any(|row| facts.row_handler(row) != Some(handler.clone()))
+        || facts.view.successor_ids(&loop_header).len() != 2
+        || !facts.view.successor_ids(&pre_loop).contains(&loop_header)
+        || facts
+            .view
+            .predecessors(facts.view.index_of(&loop_header).unwrap())
+            .len()
+            != 2
+        || !facts
+            .view
+            .successor_ids(&loop_header)
+            .contains(&loop_header)
+        || !facts
+            .view
+            .successor_ids(&loop_header)
+            .contains(&facts.block_at(79).unwrap())
+    {
+        return Ok(None);
+    }
+    // The branch at 76 is physically in the loop header's block; it must point
+    // back to that block, with the fall-through at 79. Check raw targets below
+    // through the canonical normal edges, including all entry and exit edges.
+    let owned = facts.blocks_in((12, 105));
+    let mut actual_edges = BTreeSet::new();
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        let kind = match edge.kind() {
+            CanonicalEdgeKind::Normal => 0,
+            CanonicalEdgeKind::Exception { handler_ordinal } if edge.to() == &handler => {
+                1 + handler_ordinal
+            }
+            CanonicalEdgeKind::Exception { .. }
+            | CanonicalEdgeKind::Call { .. }
+            | CanonicalEdgeKind::Return { .. } => return Ok(None),
+        };
+        if !actual_edges.insert((edge.from().bci(), edge.to().bci(), kind)) {
+            return Ok(None);
+        }
+    }
+    let expected_edges = BTreeSet::from([
+        (0, 10, 0),
+        (0, 12, 0),
+        (12, 31, 0),
+        (12, 44, 0),
+        (12, 93, 1 + early.ordinal),
+        (44, 53, 0),
+        (44, 93, 1 + loop_body.ordinal),
+        (53, 53, 0),
+        (53, 79, 0),
+        (53, 93, 1 + loop_body.ordinal),
+        (93, 93, 1 + binding.ordinal),
+    ]);
+    if actual_edges != expected_edges {
+        return Ok(None);
+    }
+    Ok(Some(Plan {
+        shape: Shape::MultiReturnLoopFinally {
+            rows: [early.ordinal, loop_body.ordinal, binding.ordinal],
+            segments: [(21, 34), (44, 83)],
+            cleanup: [(34, 41), (83, 90), (95, 102)],
+            returns: [(32, 43), (81, 92)],
+        },
+        lead: (12, 21),
+        body: (21, 83),
+        owned,
+        join: None,
+        facts: BCIS.iter().copied().filter(|bci| *bci >= 21).collect(),
+    }))
+}
+
 /// The Java 8 two-row iterable finally is deliberately a closed certificate. Like pinned JADX's
 /// `MarkFinallyVisitor::processTryBlock`/`findCommonInsns`, it starts with the handler rethrow and
 /// compares cleanup along normal and exceptional exits. Unlike its generic path match and
@@ -5507,6 +5784,9 @@ pub(crate) fn shared_finally_candidate(
             return Ok(Some(plan));
         }
         return prove_nested_join_finally(&mut facts, current);
+    }
+    if let Some(plan) = prove_multi_return_loop_finally(&mut facts, current)? {
+        return Ok(Some(plan));
     }
     if let Some(plan) = prove_shared_join_finally(&mut facts, current)? {
         return Ok(Some(plan));

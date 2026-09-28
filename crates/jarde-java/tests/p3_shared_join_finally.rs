@@ -25,6 +25,119 @@ const FIXTURE: &[u8] =
 const CATCH_LOOP_TEST3: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/TestTryCatchFinally3$TestCls.class"
 );
+const MULTI_RETURN_LOOP_TEST5: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test5-multi-return/TestTryCatchFinally5$TestCls.class"
+);
+const MULTI_RETURN_LOOP_TEST5_NEIGHBORS: [(&str, &[u8]); 6] = [
+    (
+        "different-receiver",
+        include_bytes!(
+            "../../../openspec/changes/recover-multi-return-loop-finally/verification/neighbors/different-receiver.class"
+        ),
+    ),
+    (
+        "different-target",
+        include_bytes!(
+            "../../../openspec/changes/recover-multi-return-loop-finally/verification/neighbors/different-target.class"
+        ),
+    ),
+    (
+        "saved-value-rewritten",
+        include_bytes!(
+            "../../../openspec/changes/recover-multi-return-loop-finally/verification/neighbors/saved-value-rewritten.class"
+        ),
+    ),
+    (
+        "self-row-expanded",
+        include_bytes!(
+            "../../../openspec/changes/recover-multi-return-loop-finally/verification/neighbors/self-row-expanded.class"
+        ),
+    ),
+    (
+        "throwable-rewritten",
+        include_bytes!(
+            "../../../openspec/changes/recover-multi-return-loop-finally/verification/neighbors/throwable-rewritten.class"
+        ),
+    ),
+    (
+        "loop-extra-exit",
+        include_bytes!(
+            "../../../openspec/changes/recover-multi-return-loop-finally/verification/neighbors/loop-extra-exit.class"
+        ),
+    ),
+];
+
+fn recover_multi_return_test5(class: &[u8], budget: Option<Budget>) -> jarde_java::RecoveryReport {
+    recover_method(
+        class,
+        "test",
+        "(Ljadx/tests/integration/trycatch/TestTryCatchFinally5$TestCls$A;Ljadx/tests/integration/trycatch/TestTryCatchFinally5$TestCls$B;)Ljava/util/List;",
+        "jadx/tests/integration/trycatch/TestTryCatchFinally5$TestCls",
+        0x0001,
+        budget,
+    )
+}
+
+#[test]
+fn multi_return_loop_test5_has_one_finally_and_all_bci_origins() {
+    let report = recover_multi_return_test5(MULTI_RETURN_LOOP_TEST5, None);
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert!(
+        report.regions.iter().all(|region| region.structured),
+        "{}",
+        report.text
+    );
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(
+        report.text.matches("finally {").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches(".close();").count(),
+        1,
+        "{}",
+        report.text
+    );
+    for bci in [
+        0, 1, 2, 5, 6, 7, 10, 11, 12, 13, 14, 19, 21, 23, 28, 31, 32, 34, 36, 41, 43, 44, 47, 48,
+        51, 53, 55, 56, 58, 63, 68, 69, 71, 76, 79, 81, 83, 85, 90, 92, 93, 95, 97, 102, 104,
+    ] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci}: {}",
+            report.text
+        );
+    }
+}
+
+#[test]
+fn multi_return_loop_test5_valid_neighbors_refuse_and_stops_discard_partial_output() {
+    for (name, class) in MULTI_RETURN_LOOP_TEST5_NEIGHBORS {
+        let report = recover_multi_return_test5(class, None);
+        assert!(
+            !report.text.contains("finally {"),
+            "{name}: {}",
+            report.text
+        );
+        assert_eq!(report.quality, Quality::Fallback, "{name}: {}", report.text);
+        assert!(report.text.contains("@bytecode"), "{name}: {}", report.text);
+    }
+    let mut tiny = limits();
+    tiny.analysis_steps = 1;
+    let stopped = recover_multi_return_test5(MULTI_RETURN_LOOP_TEST5, Some(Budget::new(tiny)));
+    assert!(matches!(stopped.stop(), Some(StopReason::Budget { .. })));
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover_multi_return_test5(
+        MULTI_RETURN_LOOP_TEST5,
+        Some(Budget::with_cancellation_token(limits(), token)),
+    );
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+}
 const CATCH_LOOP_TEST3_NEIGHBORS: [(&str, &[u8]); 7] = [
     (
         "wrong-receiver",

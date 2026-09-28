@@ -1,0 +1,17 @@
+    Checking jarde-reader v0.1.0 (/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde/crates/jarde-reader)
+    Checking jarde-query v0.1.0 (/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde/crates/jarde-query)
+    Checking jarde-jvm v0.1.0 (/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde/crates/jarde-jvm)
+    Checking jarde-java v0.1.0 (/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde/crates/jarde-java)
+error: using `contains()` instead of `iter().any()` is more efficient
+    --> crates/jarde-java/src/region.rs:3867:20
+     |
+3867 |                 || body.blocks().iter().any(|block| *block == &proof.block)
+     |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `body.blocks().contains(&&proof.block)`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_contains
+     = note: `-D clippy::manual-contains` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::manual_contains)]`
+
+error: could not compile `jarde-java` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `jarde-java` (lib test) due to 1 previous error
