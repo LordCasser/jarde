@@ -105,6 +105,9 @@ pub struct NormalFlowView {
     index: BTreeMap<CanonicalBlockId, usize>,
     graph: DiGraph<usize, ()>,
     dominators: Vec<Option<usize>>,
+    /// Dominance rooted at a proved exceptional component entry. Method-entry dominance above
+    /// deliberately retains its existing meaning for branch and join proofs.
+    component_dominators: Vec<Option<usize>>,
     post_dominators: Vec<Option<usize>>,
     loops: BTreeMap<usize, NaturalLoop>,
     return_edges: usize,
@@ -184,14 +187,40 @@ impl NormalFlowView {
                     .map(|dominator| dominator.index())
             })
             .collect();
-        let loops = natural_loops(&graph, &idoms);
+        let exception_targets = canonical
+            .edges()
+            .iter()
+            .filter(|edge| matches!(edge.kind(), CanonicalEdgeKind::Exception { .. }))
+            .filter_map(|edge| index.get(edge.to()).copied())
+            .collect::<BTreeSet<_>>();
+        let cyclic_nodes = cyclic_nodes(&graph);
+        // A separate dominance forest is useful only for a cycle the method entry cannot
+        // reach. In particular, straight-line handler copies must keep their existing budget.
+        let component_dominators = if cyclic_nodes.iter().any(|node| idoms[*node].is_none()) {
+            component_dominators(
+                &graph,
+                &idoms,
+                &exception_targets,
+                canonical.edges().len(),
+                budget,
+            )?
+        } else {
+            vec![None; ids.len()]
+        };
+        let loop_dominators = idoms
+            .iter()
+            .zip(&component_dominators)
+            .map(|(method, component)| method.or(*component))
+            .collect::<Vec<_>>();
+        let loops = natural_loops(&graph, &loop_dominators);
         let post_dominators = immediate_post_dominators(&graph);
-        let cycles = cycle_count(&graph);
+        let cycles = cyclic_nodes.len();
         Ok(Self {
             ids,
             index,
             graph,
             dominators: idoms,
+            component_dominators,
             post_dominators,
             loops,
             return_edges,
@@ -345,8 +374,10 @@ impl NormalFlowView {
                             })
                 })
                 .collect();
-            let reducible =
-                entries.len() == 1 && nodes.iter().all(|node| self.dominates(entries[0], *node));
+            let reducible = entries.len() == 1
+                && nodes.iter().all(|node| {
+                    self.dominates(entries[0], *node) || self.component_dominates(entries[0], *node)
+                });
             if !reducible {
                 blocks.extend(nodes);
             }
@@ -362,6 +393,23 @@ impl NormalFlowView {
             blocks.extend(loop_of.blocks().iter().copied());
         }
         blocks.into_iter().collect()
+    }
+
+    fn component_dominates(&self, dominator: usize, node: usize) -> bool {
+        // An unproved component has no parent chain. Only roots present in this separate forest
+        // can establish local dominance; `dominates` never consults it.
+        let mut current = Some(node);
+        for _ in 0..=self.ids.len() {
+            let Some(step) = current else { return false };
+            if step == dominator {
+                return self
+                    .component_dominators
+                    .get(dominator)
+                    .is_some_and(Option::is_some);
+            }
+            current = self.component_dominators.get(step).copied().flatten();
+        }
+        false
     }
 
     /// Recheck an apparent second entry after a catch row has proved its exceptional origin.
@@ -474,6 +522,101 @@ impl NormalFlowView {
     fn node_index(&self, node: usize) -> Option<petgraph::graph::NodeIndex> {
         (node < self.graph.node_count()).then(|| petgraph::graph::NodeIndex::new(node))
     }
+}
+
+/// A separate forest for handler-only normal-flow components. A component is admitted only when
+/// its induced plain graph has one root, every node is reached from that root, and no exceptional
+/// transfer enters below it. The full graph is used for dominators after the root is established:
+/// an unreachable component cannot receive a path from the method entry, and any path leaving it
+/// for a method-reachable node cannot return to it without making it method-reachable.
+fn component_dominators(
+    graph: &DiGraph<usize, ()>,
+    method_idoms: &[Option<usize>],
+    exception_targets: &BTreeSet<usize>,
+    canonical_edges: usize,
+    budget: &mut Budget,
+) -> Result<Vec<Option<usize>>, StopReason> {
+    let count = graph.node_count();
+    let mut local = vec![None; count];
+    if count == 0 {
+        return Ok(local);
+    }
+    // The method root is represented by its self idom in petgraph. Reachability is read from
+    // that tree, leaving only genuinely method-inaccessible nodes for this second analysis.
+    let unreachable = (0..count)
+        .filter(|node| *node != 0 && method_idoms[*node].is_none())
+        .collect::<BTreeSet<_>>();
+    if unreachable.is_empty() {
+        return Ok(local);
+    }
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        (count as u64)
+            .saturating_mul(4)
+            .saturating_add((graph.edge_count() as u64).saturating_mul(4))
+            .saturating_add((canonical_edges as u64).saturating_mul(2)),
+        None,
+    )?;
+    poll_component(budget)?;
+    let mut remaining = unreachable.clone();
+    while let Some(first) = remaining.pop_first() {
+        let mut component = BTreeSet::from([first]);
+        let mut work = vec![first];
+        while let Some(node) = work.pop() {
+            let at = petgraph::graph::NodeIndex::new(node);
+            for neighbour in graph
+                .neighbors(at)
+                .chain(graph.neighbors_directed(at, petgraph::Direction::Incoming))
+            {
+                let neighbour = neighbour.index();
+                if unreachable.contains(&neighbour) && component.insert(neighbour) {
+                    remaining.remove(&neighbour);
+                    work.push(neighbour);
+                }
+            }
+        }
+        let roots = component
+            .iter()
+            .copied()
+            .filter(|node| {
+                !graph
+                    .neighbors_directed(
+                        petgraph::graph::NodeIndex::new(*node),
+                        petgraph::Direction::Incoming,
+                    )
+                    .any(|predecessor| component.contains(&predecessor.index()))
+            })
+            .collect::<Vec<_>>();
+        let [root] = roots.as_slice() else { continue };
+        if exception_targets
+            .iter()
+            .any(|to| component.contains(to) && to != root)
+        {
+            continue;
+        }
+        let root_index = petgraph::graph::NodeIndex::new(*root);
+        let idoms = dominators::simple_fast(graph, root_index);
+        if !component.iter().all(|node| {
+            *node == *root
+                || idoms
+                    .immediate_dominator(petgraph::graph::NodeIndex::new(*node))
+                    .is_some()
+        }) {
+            continue;
+        }
+        local[*root] = Some(*root);
+        for node in component.into_iter().filter(|node| node != root) {
+            local[node] = idoms
+                .immediate_dominator(petgraph::graph::NodeIndex::new(node))
+                .map(|parent| parent.index());
+        }
+    }
+    Ok(local)
+}
+
+fn poll_component(budget: &mut Budget) -> Result<(), StopReason> {
+    crate::stop::poll(budget, None)
 }
 
 /// The immediate post-dominator of every block, over plain transfers, with a virtual exit.
@@ -613,8 +756,8 @@ fn natural_loops(
     loops
 }
 
-/// How many blocks lie on a cycle of the projection.
-fn cycle_count(graph: &DiGraph<usize, ()>) -> usize {
+/// Blocks lying on cycles of the projection.
+fn cyclic_nodes(graph: &DiGraph<usize, ()>) -> BTreeSet<usize> {
     tarjan_scc(graph)
         .into_iter()
         .filter(|component| {
@@ -623,13 +766,157 @@ fn cycle_count(graph: &DiGraph<usize, ()>) -> usize {
                 graph.neighbors(node).any(|neighbour| neighbour == node)
             }
         })
-        .map(|component| component.len())
-        .sum()
+        .flatten()
+        .map(|node| node.index())
+        .collect()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use jarde_reader::budget::{CancellationToken, Limits};
+
+    fn component_graph(extra: &[(usize, usize)]) -> (DiGraph<usize, ()>, Vec<Option<usize>>) {
+        let mut graph = DiGraph::new();
+        for node in 0..4 {
+            graph.add_node(node);
+        }
+        for (from, to) in [(3, 1), (1, 2), (2, 1)]
+            .into_iter()
+            .chain(extra.iter().copied())
+        {
+            graph.add_edge(
+                petgraph::graph::NodeIndex::new(from),
+                petgraph::graph::NodeIndex::new(to),
+                (),
+            );
+        }
+        let method = dominators::simple_fast(&graph, petgraph::graph::NodeIndex::new(0));
+        let idoms = (0..4)
+            .map(|node| {
+                method
+                    .immediate_dominator(petgraph::graph::NodeIndex::new(node))
+                    .map(|id| id.index())
+            })
+            .collect();
+        (graph, idoms)
+    }
+
+    fn component_budget() -> Budget {
+        Budget::new(Limits {
+            analysis_steps: 1_000,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        })
+    }
+
+    #[test]
+    fn handler_component_needs_one_root_and_no_exception_entry_inside_its_cycle() {
+        let (graph, method) = component_graph(&[]);
+        let local = component_dominators(
+            &graph,
+            &method,
+            &BTreeSet::from([3]),
+            4,
+            &mut component_budget(),
+        )
+        .unwrap();
+        assert_eq!(local[3], Some(3));
+        assert_eq!(local[1], Some(3));
+        assert_eq!(local[2], Some(1));
+        assert!(!natural_loops(&graph, &method).contains_key(&1));
+        let combined = method
+            .iter()
+            .zip(&local)
+            .map(|(root, local)| root.or(*local))
+            .collect::<Vec<_>>();
+        assert_eq!(
+            natural_loops(&graph, &combined)
+                .get(&1)
+                .map(NaturalLoop::blocks),
+            Some(&BTreeSet::from([1, 2]))
+        );
+
+        let blocked = component_dominators(
+            &graph,
+            &method,
+            &BTreeSet::from([2, 3]),
+            4,
+            &mut component_budget(),
+        )
+        .unwrap();
+        assert!(blocked.iter().all(Option::is_none));
+        let (two_entries, method) = component_graph(&[(3, 2)]);
+        let local = component_dominators(
+            &two_entries,
+            &method,
+            &BTreeSet::from([3]),
+            5,
+            &mut component_budget(),
+        )
+        .unwrap();
+        assert_eq!(local[1], Some(3));
+        assert_eq!(local[2], Some(3));
+        let combined = method
+            .iter()
+            .zip(&local)
+            .map(|(root, local)| root.or(*local))
+            .collect::<Vec<_>>();
+        assert!(!natural_loops(&two_entries, &combined).contains_key(&1));
+        let (closed, method) = component_graph(&[]);
+        let mut closed = closed;
+        closed.remove_edge(
+            closed
+                .find_edge(
+                    petgraph::graph::NodeIndex::new(3),
+                    petgraph::graph::NodeIndex::new(1),
+                )
+                .unwrap(),
+        );
+        let local = component_dominators(
+            &closed,
+            &method,
+            &BTreeSet::new(),
+            2,
+            &mut component_budget(),
+        )
+        .unwrap();
+        assert!(local[1].is_none() && local[2].is_none());
+    }
+
+    #[test]
+    fn handler_component_stops_before_publishing_partial_dominance() {
+        let (graph, method) = component_graph(&[]);
+        let limited = component_dominators(
+            &graph,
+            &method,
+            &BTreeSet::from([3]),
+            4,
+            &mut Budget::new(Limits {
+                analysis_steps: 1,
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            }),
+        );
+        assert!(limited.is_err());
+        let token = CancellationToken::new();
+        token.cancel();
+        let cancelled = component_dominators(
+            &graph,
+            &method,
+            &BTreeSet::from([3]),
+            4,
+            &mut Budget::with_cancellation_token(
+                Limits {
+                    analysis_steps: 1_000,
+                    elapsed_millis: u64::MAX,
+                    ..Limits::default()
+                },
+                token,
+            ),
+        );
+        assert!(cancelled.is_err());
+    }
 
     #[test]
     fn the_view_states_exactly_which_edge_kinds_it_keeps() {
