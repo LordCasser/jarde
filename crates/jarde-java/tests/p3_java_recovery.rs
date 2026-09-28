@@ -2373,12 +2373,12 @@ fn a_member_that_cannot_be_presented_leaves_the_member_that_can_alone() {
         let mut budget = Budget::new(limits());
         recover_body(&presentable, &add_facts, &mut budget)
     };
-    assert_eq!(add, add_again);
+    assert_eq!(without_elapsed(&add), without_elapsed(&add_again));
     let finally_again = {
         let mut budget = Budget::new(limits());
         recover_body(&refused, &finally_facts, &mut budget)
     };
-    assert_eq!(finally, finally_again);
+    assert_eq!(without_elapsed(&finally), without_elapsed(&finally_again));
 }
 
 #[test]
