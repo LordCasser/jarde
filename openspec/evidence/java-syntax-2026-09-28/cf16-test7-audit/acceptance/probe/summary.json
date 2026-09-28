@@ -1,0 +1,22 @@
+{
+  "debug": {
+    "probe_class_sha256": "8f5745406a51e62555b97fd1a09c8f5cc413a6f84d1545b64c08472db39475e3",
+    "test_code_and_rows_sha256": "ed80336f56a8150e08bfb60e547dbb1f088f5a0706613db481ee0a5ff66825ea",
+    "outcomes": {
+      "original_source": "null:return=true,f=1\ne:return=false,f=1\nr:throw=AssertionError,f=1",
+      "jadx_java_input": "null:return=true,f=1\ne:return=false,f=1\nr:throw=AssertionError,f=1",
+      "jarde_class_source": "null:return=true,f=1\ne:return=false,f=1\nr:throw=AssertionError,f=1",
+      "original_class": "null:return=true,f=1\ne:return=false,f=1\nr:throw=AssertionError,f=1"
+    }
+  },
+  "nodebug": {
+    "probe_class_sha256": "db91278e77b633ec615dc515619a329630d5ff673aafc1051b5c0c23a145a86d",
+    "test_code_and_rows_sha256": "ed80336f56a8150e08bfb60e547dbb1f088f5a0706613db481ee0a5ff66825ea",
+    "outcomes": {
+      "original_source": "null:return=true,f=1\ne:return=false,f=1\nr:throw=AssertionError,f=1",
+      "jadx_java_input": "null:return=true,f=1\ne:return=false,f=1\nr:throw=AssertionError,f=1",
+      "jarde_class_source": "null:return=true,f=1\ne:return=false,f=1\nr:throw=AssertionError,f=1",
+      "original_class": "null:return=true,f=1\ne:return=false,f=1\nr:throw=AssertionError,f=1"
+    }
+  }
+}

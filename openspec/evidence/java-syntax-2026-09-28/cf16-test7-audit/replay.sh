@@ -18,3 +18,7 @@ python3 "$HERE/replay.py" \
 	--jadx "$JADX" \
 	--jadx-checkout "$JADX_CHECKOUT" \
 	--out "$OUT"
+python3 "$HERE/probe/replay.py" \
+	--jarde "$TARGET/debug/jarde-cli" \
+	--jadx "$JADX" \
+	--out "$OUT/probe"

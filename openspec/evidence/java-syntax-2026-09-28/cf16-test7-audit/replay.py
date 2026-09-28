@@ -122,24 +122,12 @@ def main():
             original = compile_and_run(f'{mode}-original', [fixture], out, work)
             jadx_java = next(jadx_source.rglob('TestTryCatchFinally7.java'))
             jadx = compile_and_run(f'{mode}-jadx-java-input', [jadx_java], out, work)
-            jarde = None
-            compile_failure = None
-            try:
-                jarde = compile_and_run(f'{mode}-jarde-class-source', [source_path], out, work)
-            except RuntimeError:
-                log = out / f'{mode}-jarde-class-source' / 'javac.log'
-                diagnostics = log.read_text()
-                if '缺少返回语句' in diagnostics or 'missing return statement' in diagnostics:
-                    compile_failure = 'missing return statement in test(Object); Jarde emitted explanation-only body'
-                else:
-                    raise RuntimeError(f'unexpected Jarde compile failure; see {log}')
-                (out / f'{mode}-jarde-compile-failure.txt').write_text(compile_failure + '\n')
+            jarde = compile_and_run(f'{mode}-jarde-class-source', [source_path], out, work)
             modes[mode] = {
                 'class_sha256': digest(frozen),
                 'original': original,
                 'jadx_java_input': jadx,
                 'jarde': jarde,
-                'jarde_compile_failure': compile_failure,
                 'test_method_shape': shapes[mode],
             }
         if shapes['debug']['instructions'] != shapes['nodebug']['instructions']:
@@ -165,7 +153,7 @@ def main():
                 'instruction_count': len(values['test_method_shape']['instructions']),
                 'exception_rows': len(values['test_method_shape']['exception_rows']),
                 'original_matches_jadx': values['original'] == values['jadx_java_input'],
-                'jarde': 'compiles' if values['jarde'] is not None else values['jarde_compile_failure'],
+                'jarde': 'compiles',
             }
             for mode, values in modes.items()
         },

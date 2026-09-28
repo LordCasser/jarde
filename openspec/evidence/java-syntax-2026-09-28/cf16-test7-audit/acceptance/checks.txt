@@ -1,0 +1,13 @@
+CF-16 Test7 实施检查（2026-09-28）
+
+cargo test -p jarde-java --tests --locked：通过（终次，含 Test3/4/11/13/16、TestEmptyFinally 与本次三项测试）。
+cargo check --workspace --all-targets --locked：通过。
+CI 精确 cargo clippy --workspace --all-targets --all-features --locked -- <ci.yml 中全部 -A 参数> -D warnings：通过。
+cargo fmt --all -- --check：通过。
+openspec validate --all --strict --no-interactive：215 项通过、0 失败。
+git diff --check：通过。
+JADX 默认 DX：固定 2fb1b16386941660fda07e9017285aec40fcb37f 的 TestTryCatchFinally7 test/testNoDebug 两项通过，见 jadx-default-dx.txt。
+Java-input debug/no-debug 四方行为与具名 catch 探针：见 summary.json、probe/summary.json；全部 javac --release 8 与 java -Xverify:all 通过。
+七个 verifier 有效近邻：见 ../neighbors/sha256-and-verify.txt，定向 Jarde 测试全部拒绝唯一 finally。
+
+一次完整测试运行中既有 p3_java_recovery::a_member_that_cannot_be_presented_leaves_the_member_that_can_alone 因 RecoveryReport.execution.usage.elapsed_millis 为 0/1 而偶发失败；单项重试和终次完整运行通过。该墙钟相等断言问题已交主线作独立小修，未混入本变更。

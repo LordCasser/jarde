@@ -983,17 +983,49 @@ fn declarations(
         });
         let store_type_is_proven =
             cross_exception_store_type_is_proven(plan.decided.get(variable), has_increment);
+        let joined_value_certified = variable.slot() == 2
+            && matches!(
+                plan.decided.get(variable),
+                Some(Decided::Type(Type::Boolean))
+            )
+            && regions.iter().any(|region| {
+                let Region::Guard { plan, .. } = region else {
+                    return false;
+                };
+                let guard::Shape::SharedFinally {
+                    completion: guard::SharedFinallyCompletion::JoinedValue { saves, .. },
+                    ..
+                } = plan.shape()
+                else {
+                    return false;
+                };
+                plan.join().is_some_and(|join| {
+                    variable_uses
+                        .iter()
+                        .filter(|use_| use_.written.is_some())
+                        .map(|use_| use_.bci)
+                        .collect::<BTreeSet<_>>()
+                        == saves.iter().copied().collect()
+                        && variable_uses
+                            .iter()
+                            .filter(|use_| use_.read.is_some())
+                            .map(|use_| use_.bci)
+                            .collect::<BTreeSet<_>>()
+                            == [join.bci()].into_iter().collect()
+                })
+            });
         if crosses_exception
             && !nested_cleanup_lead
             && !multi_return_lead
             && (!store_type_is_proven
-                || !all_reads_reach_presented_writes(
-                    ssa,
-                    operations,
-                    variable_uses,
-                    &paths,
-                    budget,
-                )?)
+                || !(joined_value_certified
+                    || all_reads_reach_presented_writes(
+                        ssa,
+                        operations,
+                        variable_uses,
+                        &paths,
+                        budget,
+                    )?))
         {
             plan.placements.insert(
                 *variable,
@@ -13961,7 +13993,9 @@ impl Builder<'_> {
                         Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
                             Some(returns[0])
                         }
-                        Some(guard::SharedFinallyCompletion::Joined { .. }) | None => None,
+                        Some(guard::SharedFinallyCompletion::Joined { .. })
+                        | Some(guard::SharedFinallyCompletion::JoinedValue { .. })
+                        | None => None,
                     };
                 }
                 let walked = self.arm(body, &mut body_statements, &child(path, 0));
@@ -13991,7 +14025,9 @@ impl Builder<'_> {
                                 Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
                                     Some(returns[1])
                                 }
-                                Some(guard::SharedFinallyCompletion::Joined { .. }) | None => None,
+                                Some(guard::SharedFinallyCompletion::Joined { .. })
+                                | Some(guard::SharedFinallyCompletion::JoinedValue { .. })
+                                | None => None,
                             };
                         }
                     }

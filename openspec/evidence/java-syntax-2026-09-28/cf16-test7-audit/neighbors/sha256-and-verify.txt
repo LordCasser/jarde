@@ -1,0 +1,7 @@
+wrong-field 8a41019af68cb155f308ae083929697c8be1082095f0780c6232bb68c5177701 java -Xverify:all OK
+wrong-receiver 2e0378b04d9a913c9739e6fa10e9b6ff1d05a516422fa5c82422691154f0426c java -Xverify:all OK
+wrong-increment 51245214d23400dc5c521abc84bab860a0b6b573c769c1e829c6beebe32cd434 java -Xverify:all OK
+rewritten-return eed493bc8a256a9764f71cb7dc7d087a9adc856531e96d838b449ff0dfaf9241 java -Xverify:all OK
+rewritten-throwable d707dc6f8ba46c5914336a437f61db8ed0cba2b08616f6d18f70f852c02655d6 java -Xverify:all OK
+self-row-covers-cleanup 33fddd410a71c68ff27e1fe2f55196efffc25d386b69b56b3e77713460e220fe java -Xverify:all OK
+extra-protected-entry 311c06ffe11eb91457621a3b176f4c319a1518cb0658ffe6a95774296c13cc29 java -Xverify:all OK

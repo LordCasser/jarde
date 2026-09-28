@@ -138,6 +138,56 @@ fn multi_return_loop_test5_valid_neighbors_refuse_and_stops_discard_partial_outp
     assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
     assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
 }
+const CATCH_VALUE_TEST7: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/baseline/debug/physical-class/TestTryCatchFinally7$TestCls.class"
+);
+const CATCH_VALUE_TEST7_NODEBUG: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/baseline/nodebug/physical-class/TestTryCatchFinally7$TestCls.class"
+);
+const CATCH_VALUE_TEST7_NEIGHBORS: [(&str, &[u8]); 7] = [
+    (
+        "wrong-field",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/wrong-field.class"
+        ),
+    ),
+    (
+        "wrong-receiver",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/wrong-receiver.class"
+        ),
+    ),
+    (
+        "wrong-increment",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/wrong-increment.class"
+        ),
+    ),
+    (
+        "rewritten-return",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/rewritten-return.class"
+        ),
+    ),
+    (
+        "rewritten-throwable",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/rewritten-throwable.class"
+        ),
+    ),
+    (
+        "self-row-covers-cleanup",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/self-row-covers-cleanup.class"
+        ),
+    ),
+    (
+        "extra-protected-entry",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test7-audit/neighbors/extra-protected-entry.class"
+        ),
+    ),
+];
 const CATCH_LOOP_TEST3_NEIGHBORS: [(&str, &[u8]); 7] = [
     (
         "wrong-receiver",
@@ -459,6 +509,102 @@ fn recover_test(class: &[u8], recovery_budget: Option<Budget>) -> jarde_java::Re
         0x0002,
         recovery_budget,
     )
+}
+
+#[test]
+fn catch_value_test7_has_one_field_finally_and_joined_return() {
+    for class in [CATCH_VALUE_TEST7, CATCH_VALUE_TEST7_NODEBUG] {
+        let report = recover_method(
+            class,
+            "test",
+            "(Ljava/lang/Object;)Z",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally7$TestCls",
+            0x0002,
+            None,
+        );
+        assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+        assert!(!report.text.contains("@bytecode"), "{}", report.text);
+        assert_eq!(
+            report.text.matches("finally {").count(),
+            1,
+            "{}",
+            report.text
+        );
+        assert_eq!(
+            report.text.matches("this.f += 1;").count(),
+            1,
+            "{}",
+            report.text
+        );
+        assert_eq!(
+            report.text.matches("return res;").count()
+                + report.text.matches("return local2;").count(),
+            1,
+            "{}",
+            report.text
+        );
+        for bci in [
+            0, 1, 2, 5, 6, 7, 8, 11, 12, 13, 16, 19, 20, 21, 22, 23, 24, 27, 28, 29, 32, 35, 37,
+            38, 39, 42, 43, 44, 47, 49, 50, 51,
+        ] {
+            assert!(
+                !report.source_map.of_bci(bci).is_empty(),
+                "BCI {bci}: {}",
+                report.text
+            );
+        }
+    }
+}
+
+#[test]
+fn catch_value_test7_verifier_valid_neighbors_refuse_finally() {
+    for (name, class) in CATCH_VALUE_TEST7_NEIGHBORS {
+        let report = recover_method(
+            class,
+            "test",
+            "(Ljava/lang/Object;)Z",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally7$TestCls",
+            0x0002,
+            None,
+        );
+        assert!(
+            !report.text.contains("finally {"),
+            "{name}: {}",
+            report.text
+        );
+        assert!(report.text.contains("@bytecode"), "{name}: {}", report.text);
+        for bci in [0, 19, 35, 50] {
+            assert!(
+                !report.source_map.of_bci(bci).is_empty(),
+                "{name}: BCI {bci} missing: {}",
+                report.text
+            );
+        }
+    }
+}
+
+#[test]
+fn catch_value_test7_budget_and_cancellation_discard_partial_output() {
+    let recover = |budget| {
+        recover_method(
+            CATCH_VALUE_TEST7,
+            "test",
+            "(Ljava/lang/Object;)Z",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally7$TestCls",
+            0x0002,
+            Some(budget),
+        )
+    };
+    let mut tiny = limits();
+    tiny.analysis_steps = 1;
+    let stopped = recover(Budget::new(tiny));
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    assert!(matches!(stopped.stop(), Some(StopReason::Budget { .. })));
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover(Budget::with_cancellation_token(limits(), token));
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
 }
 
 #[test]

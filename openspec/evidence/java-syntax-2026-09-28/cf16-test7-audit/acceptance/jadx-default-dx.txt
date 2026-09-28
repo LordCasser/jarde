@@ -1,0 +1,5 @@
+command: ./gradlew :jadx-core:test --tests jadx.tests.integration.trycatch.TestTryCatchFinally7 --offline --console plain
+result: BUILD SUCCESSFUL; 2 tests, 0 failures, 0 errors
+tests: test(), testNoDebug()
+input profile: default DX (test XML contains Using dex input)
+jadx HEAD: 2fb1b16386941660fda07e9017285aec40fcb37f
