@@ -2174,6 +2174,24 @@ fn finally_body_supported(region: &Region, nested_catch: bool) -> bool {
     }
 }
 
+fn shared_join_body_supported(region: &Region, loop_allowed: bool) -> bool {
+    match region {
+        Region::Loop { body, .. } if loop_allowed => body
+            .iter()
+            .all(|part| shared_join_body_supported(part, false)),
+        Region::Sequence { regions } => regions
+            .iter()
+            .all(|part| shared_join_body_supported(part, loop_allowed)),
+        Region::If {
+            then_arm, else_arm, ..
+        } => {
+            shared_join_body_supported(then_arm, loop_allowed)
+                && shared_join_body_supported(else_arm, loop_allowed)
+        }
+        _ => finally_body_supported(region, false),
+    }
+}
+
 impl Walker<'_> {
     /// The region that starts at one block, and the block the run continues at afterwards.
     ///
@@ -4848,13 +4866,48 @@ impl Walker<'_> {
         frame.own_finally = Some(rows);
         frame.segmented_finally_rows = segmented_rows;
         let walked = self.region_at(start, &frame);
-        let (regions, next) = match walked {
+        let (mut regions, mut next) = match walked {
             Ok(result) => result,
             Err(stop) => {
                 self.visited = previous;
                 return Err(stop);
             }
         };
+        if span == plan.body()
+            && matches!(
+                plan.shape(),
+                crate::guard::Shape::SharedFinally {
+                    binding_row: Some(_),
+                    ..
+                }
+            )
+        {
+            while let Some(at) = next.as_ref() {
+                if !self
+                    .view
+                    .index_of(at)
+                    .is_some_and(|node| expected.contains(&node))
+                {
+                    break;
+                }
+                let (part, following) = match self.region_at(at, &frame) {
+                    Ok(result) => result,
+                    Err(stop) => {
+                        self.visited = previous;
+                        return Err(stop);
+                    }
+                };
+                if part.is_empty() || following.as_ref() == Some(at) {
+                    self.visited = previous;
+                    return Ok(None);
+                }
+                regions.extend(part);
+                next = following;
+            }
+            if next.as_ref().is_some_and(|at| at.bci() == span.1) {
+                next = None;
+            }
+        }
         let body = if regions.len() == 1 {
             regions.into_iter().next().unwrap()
         } else {
@@ -4877,7 +4930,17 @@ impl Walker<'_> {
             })
             .count();
         if next.is_some()
-            || !finally_body_supported(&body, false)
+            || !shared_join_body_supported(
+                &body,
+                span == plan.body()
+                    && matches!(
+                        plan.shape(),
+                        crate::guard::Shape::SharedFinally {
+                            binding_row: Some(_),
+                            ..
+                        }
+                    ),
+            )
             || actual != expected
             || actual.len() != blocks.len()
             || save_count != usize::from(save.is_some())
@@ -7764,6 +7827,9 @@ impl Walker<'_> {
         };
         if let Some(reason) = self.leaving_edge(header)
             && !self.leaves_only_through_dead_edges(header)
+            && frame
+                .own_finally
+                .is_none_or(|rows| !self.finally_edges_accounted(header, rows))
         {
             return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
         }
@@ -7817,6 +7883,10 @@ impl Walker<'_> {
             &transfer_sources,
             &terminal_returns,
         );
+        if self.handlers.len() == 4 && frame.own_finally.is_some() && frame.own_try.is_some() {
+            body_frame.own_finally = frame.own_finally;
+            body_frame.own_try = frame.own_try;
+        }
         self.include_fragmented_catch_scope(&mut body_frame, header_node);
         let (body, _) = self.loop_body_sequence(&inside, &body_frame, blocks)?;
         self.visited.insert(header_node);
