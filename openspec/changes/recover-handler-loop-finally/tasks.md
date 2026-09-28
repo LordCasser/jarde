@@ -17,4 +17,4 @@
 
 - [x] 4.1 用 fresh CLI 将固定原类、固定 JADX、Jarde 完整 Java 8 类分别重编，以 `java -Xverify:all` 对照 1.1 所有路径；原行为与 Jarde 逐字一致且 1.2 有效近邻保持拒绝。
 - [x] 4.2 回归普通循环、真不可约、旧两/三/四/五行 finally、Test16/17 完整回放；运行 `cargo test -p jarde-java --tests --locked`、workspace check、fmt、OpenSpec strict、diff check，清理专用 Cargo target 并记录结果。
-- [ ] 4.3 root 独立核组件入口、双循环 CFG/SSA/异常所有权、三方运行与来源；仅将固定 Test11 Java 8 子形态记为恢复，并更新 CF-16 清单。
+- [x] 4.3 root 独立核组件入口、双循环 CFG/SSA/异常所有权、三方运行与来源；仅将固定 Test11 Java 8 子形态记为恢复，并更新 CF-16 清单。
