@@ -322,6 +322,7 @@ fn a_cancellation_while_the_window_is_full_wakes_every_waiter() {
     );
 }
 
+#[cfg(feature = "test-support")]
 #[test]
 fn a_cancellation_wakes_a_producer_waiting_for_room_in_the_shared_pool() {
     // Task 4.7 adds a second reason a producer can wait: the class's own seat is taken, and the

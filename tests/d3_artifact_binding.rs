@@ -12,6 +12,8 @@
 //! taken from the committed corpus (`tests/fixtures/p3-scope`), so every input is deterministic and
 //! no case needs a file system.
 
+#![cfg(feature = "test-support")]
+
 use jarde::*;
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
 use std::io::{Cursor, Write};

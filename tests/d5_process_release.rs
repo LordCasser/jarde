@@ -38,6 +38,8 @@
 //! and the store's own capacity. Task 7.3 owns the timing protocol, and the RSS, throughput and
 //! first-result claims it makes are not made here.
 
+#![cfg(feature = "test-support")]
+
 mod bulk_support;
 
 use bulk_support::{
