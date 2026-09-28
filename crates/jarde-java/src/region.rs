@@ -3804,7 +3804,7 @@ impl Walker<'_> {
                 || !tails.is_empty()
                 || catches.len() != 1
                 || catches.iter().any(|clause| !clause.body.is_structured())
-                || body.blocks().iter().any(|block| *block == &proof.block)
+                || body.blocks().contains(&&proof.block)
                 || catches
                     .iter()
                     .flat_map(|clause| clause.body.blocks())
