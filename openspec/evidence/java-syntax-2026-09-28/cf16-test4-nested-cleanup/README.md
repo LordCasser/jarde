@@ -25,3 +25,5 @@ Run the deterministic replay with a Jarde CLI built from this checkout and a fre
 ```
 
 The script verifies the pinned class/source hashes and JADX HEAD, compiles with `javac --release 8`, compares the target bytecode shape, decompiles with pinned JADX, invokes Jarde `class-source`, and runs the target and control variants with `java -Xverify:all`. The output directory retains the regenerated Jarde reports and run transcripts. It does not modify production code or build Rust artifacts. 近邻另以 `./check-neighbors.sh /path/to/jarde-cli /tmp/cf16-test4-neighbors` 重放。
+
+root 在合入 Test11 后用主线 fresh CLI 独立重放了 `replay.sh` 与 `check-neighbors.sh`：固定目标 31/31 BCI 来源齐全，原/JADX/Jarde 完整 Java 8 源码重编及正常路径验证运行一致；四个固定 class 变异和一个独立错接收者控制均为 verifier 有效且 Jarde 拒绝。原/JADX 三行 Control 的六条异常路径一致，Jarde 仍拒绝。主线 `cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、fmt 和两个并行 OpenSpec strict 均通过，Test11 的三方回放也再次通过。验收范围仅是固定四行嵌套清理形态：固定目标没有可注入异常入口，Control 的六路径不能冒充目标方法的异常运行证明。
