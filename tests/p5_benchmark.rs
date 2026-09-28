@@ -1839,7 +1839,7 @@ static CANDIDATES: [Candidate; 3] = [
         upgrade: "A parallel scan has to publish byte-identical results and keep the origin order \
                   (`compare` requires order equality, not a stable permutation), and it has to hold \
                   `Cancellation under pressure` — which needs the pressure corpus of task 3.2: ZIP \
-                  bomb, condy graph, irreducible CFG and missing-dependency rows, none of which are \
+                  bomb, condy graph, exceptional-entry CFG and missing-dependency rows, none of which are \
                   measured today.",
         benefit: Benefit::Unmeasured {
             why: "Nothing this harness can run is scheduled to compare against: every row is one \
@@ -5070,7 +5070,7 @@ fn orphan_world(with_parent: bool) -> Vec<u8> {
 /// | --- | --- |
 /// | the understated-size ZIP | `crates/jarde-reader/src/artifact.rs::named_budgets_cover_declared_actual_read_and_entry_count` (A08/A14) |
 /// | the condy graph | `p4_modern_facts.rs`'s shared-subgraph, cycle and four budget cases (A05) |
-/// | the irreducible CFG | `p3_execution_comparison.rs`'s `suppressedCatching` expectancy (A12/A13) and `p3_guard.rs`'s guarded refusals |
+/// | the exceptional-entry CFG | `p3_execution_comparison.rs`'s `suppressedCatching` expectancy (A12/A13) and `p3_guard.rs`'s guarded refusals |
 /// | the missing dependency | `p3-corpus/v8-missing-dep` (A11) and `p4_x2_states.rs`'s unresolved-by-name case |
 /// | cancellation | `p1_query_api.rs::cancellation_is_never_reported_as_complete`, `p1_artifact_tree.rs::budget_and_precancellation_return_non_complete_reliable_prefixes`, `p1_query_bounds.rs::cancellation_at_the_high_fanout_unit_boundary_publishes_nothing` (A14/A18) |
 fn boundary_corpora() -> Vec<Boundary> {
@@ -5104,7 +5104,7 @@ fn boundary_corpora() -> Vec<Boundary> {
             states: &["bootstrap_edge", "bootstrap_argument"],
         },
         Boundary {
-            label: "irreducible-cfg/guarded-suppressedCatching",
+            label: "exceptional-entry/guarded-suppressedCatching",
             bytes: GUARDED.to_vec(),
             providers: vec![(b"Res.class", GUARDED_RESOURCE.to_vec())],
             ask: Ask::Member {
@@ -5115,10 +5115,12 @@ fn boundary_corpora() -> Vec<Boundary> {
             cancel: false,
             exit: "complete",
             report: "",
-            states: &["jre_region_irreducible"],
+            // The catch-only path enters the loop at BCI 45. The normal-flow walk leaves its
+            // blocks uncovered, so this remains a conservative refusal beside `one` below.
+            states: &["jre_region_uncovered_blocks"],
         },
         Boundary {
-            label: "irreducible-cfg/guarded-one",
+            label: "exceptional-entry/guarded-one",
             bytes: GUARDED.to_vec(),
             providers: vec![(b"Res.class", GUARDED_RESOURCE.to_vec())],
             ask: Ask::Member {
@@ -5578,7 +5580,7 @@ fn locate_target(
 /// The 3.2 regression: every boundary corpus, run with the cache off, cold and warm.
 ///
 /// The five corpora are the ones the two scenarios name — the understated-size ZIP, the condy graph,
-/// the irreducible CFG, the missing dependency and the cancellation rows — and the differential over
+/// the exceptional-entry CFG, the missing dependency and the cancellation rows — and the differential over
 /// them is the matrix's own: the same three runs, the same planes, the same `compare`. What this test
 /// adds to `Cold and warm results` is the *shape* of the inputs: a corpus whose declared sizes lie, a
 /// corpus whose facts carry a bootstrap graph, a body the recovery layer refuses, a symbol nothing
