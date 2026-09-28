@@ -151,7 +151,9 @@ targets: `anonymous-inner-this` (2/5), `anonymous-interface-basic` (3/5), `packa
 (3/9, two targets), and `static-member-basic` (3/7). `proved-varargs-calls` adds one class, 19
 bodies and one target; DT-22's nested-annotation fixtures add three classes and one body. Their
 source commits are recorded beside the census assertion in `crates/jarde-reader/src/classfile.rs`.
-This is a structural input census, not a claim that every fixture is fully recovered.
+Later committed fixture additions moved the measured census to 431 classes, 2,079 Code attributes,
+245 handlers, 1,633 branch/switch targets and the same eight historical subroutines. This is a
+structural input census, not a claim that every fixture is fully recovered.
 `corpus-fingerprint.json` records the current corpus file count and digests; adding a fixture input
 requires regenerating and reviewing that manifest. Structural counts do not imply syntax recovery
 acceptance.
