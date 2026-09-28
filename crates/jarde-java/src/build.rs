@@ -707,12 +707,12 @@ fn declarations(
     budget: &mut Budget,
 ) -> Result<Declarations, StopReason> {
     let paths = region_paths(regions);
-    let mut twr_cleanup_bcis = Vec::new();
+    let mut elided_cleanup_bcis = Vec::new();
     for region in regions {
-        region.twr_cleanup_bcis(&mut twr_cleanup_bcis);
+        region.elided_cleanup_bcis(&mut elided_cleanup_bcis);
     }
-    let twr_cleanup = twr_cleanup_bcis.into_iter().collect::<BTreeSet<_>>();
-    let uses = slot_uses(ssa, operations, reuse, &paths, &twr_cleanup);
+    let elided_cleanup = elided_cleanup_bcis.into_iter().collect::<BTreeSet<_>>();
+    let uses = slot_uses(ssa, operations, reuse, &paths, &elided_cleanup);
     let this_aliases = prove_this_aliases(
         &uses,
         &paths,
@@ -1678,15 +1678,16 @@ fn slot_uses(
     operations: &Operations,
     reuse: &reuse::Plan,
     paths: &RegionPaths,
-    twr_cleanup: &BTreeSet<u32>,
+    elided_cleanup: &BTreeSet<u32>,
 ) -> BTreeMap<LocalVariable, Vec<SlotUse>> {
     let mut uses: BTreeMap<LocalVariable, Vec<SlotUse>> = BTreeMap::new();
     for block in ssa.blocks() {
         let path = paths.paths.get(block.block());
         for instruction in block.instructions() {
-            if twr_cleanup.contains(&instruction.bci()) {
+            if elided_cleanup.contains(&instruction.bci()) {
                 continue;
             }
+            let path = paths.instruction_paths.get(&instruction.bci()).or(path);
             for (slot, value) in instruction.reads() {
                 if let Slot::Local(slot) = slot
                     && let Some(variable) = reuse.variable_at(*slot, instruction.bci())
@@ -2992,6 +2993,8 @@ fn child(path: &[u32], index: u32) -> RegionPath {
 /// Which region holds each block, as the path from the method body down to it.
 struct RegionPaths {
     paths: BTreeMap<CanonicalBlockId, RegionPath>,
+    /// A guard may split one canonical block between its protected call and normal cleanup.
+    instruction_paths: BTreeMap<u32, RegionPath>,
     /// The paths whose region is a [`Region::Fallback`]: a quoted run, which holds no statements
     /// this layer could declare a local in.
     fallbacks: BTreeSet<RegionPath>,
@@ -3008,6 +3011,7 @@ struct RegionPaths {
 fn region_paths(regions: &[Region]) -> RegionPaths {
     let mut paths = RegionPaths {
         paths: BTreeMap::new(),
+        instruction_paths: BTreeMap::new(),
         fallbacks: BTreeSet::new(),
         tries: BTreeSet::new(),
         catch_parameters: BTreeMap::new(),
@@ -3071,6 +3075,7 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
             }
         }
         Region::Guard {
+            plan,
             body: Some(body),
             finally_body,
             ..
@@ -3079,6 +3084,11 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
             collect_paths(body, &child(path, 0), out);
             if let Some(cleanup) = finally_body {
                 collect_paths(cleanup, &child(path, 1), out);
+            }
+            if matches!(plan.shape(), guard::Shape::LoopFinally { .. }) {
+                for bci in [4, 5, 10] {
+                    out.instruction_paths.insert(bci, child(path, 1));
+                }
             }
         }
         Region::Sequence { regions } => {
@@ -12980,6 +12990,84 @@ impl Builder<'_> {
                             },
                             origin,
                         ))
+                    }
+                    guard::Shape::LoopFinally { normal_cleanup, .. } => {
+                        let Some(Region::Loop { .. }) = structured_finally_body.as_deref() else {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint.take().expect("loop finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the iterable finally has no bounded loop",
+                                plan.body().0,
+                            );
+                        };
+                        let body = self.body_range(plan.body())?;
+                        let outer = std::mem::take(&mut self.stmts);
+                        let built = self.range((normal_cleanup.0, 11)).and_then(|()| {
+                            self.region(
+                                structured_finally_body.as_deref().unwrap(),
+                                &child(path, 1),
+                            )
+                        });
+                        let cleanup = std::mem::replace(&mut self.stmts, outer);
+                        if let Err(stop) = built {
+                            self.restore_finally(
+                                finally_checkpoint.take().expect("loop finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                        if body.iter().any(statement_has_fallback)
+                            || cleanup.iter().any(statement_has_fallback)
+                            || !cleanup.iter().any(|stmt| {
+                                matches!(
+                                    stmt.kind,
+                                    StmtKind::ForEach { .. } | StmtKind::While { .. }
+                                )
+                            })
+                        {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint.take().expect("loop finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the iterable finally is not completely presentable",
+                                plan.body().0,
+                            );
+                        }
+                        let origin = plan.facts().iter().copied().fold(
+                            OriginSet::new(Origin::direct(plan.body().0)),
+                            |origin, bci| origin.plus_derived(Origin::derived(bci)),
+                        );
+                        let statement = Stmt::new(
+                            StmtKind::Try {
+                                resources: Vec::new(),
+                                catches: Vec::new(),
+                                body,
+                                finally_body: Some(cleanup),
+                            },
+                            origin,
+                        );
+                        if undeclared_local(&statement, &self.undeclared).is_some() {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint.take().expect("loop finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the iterable finally reads an undeclared local",
+                                plan.body().0,
+                            );
+                        }
+                        let pushed = self.push(statement);
+                        if pushed.is_err() {
+                            self.restore_finally(
+                                finally_checkpoint.take().expect("loop finally checkpoint"),
+                            );
+                        }
+                        pushed
                     }
                     guard::Shape::Finally {
                         normal_cleanup,
