@@ -1,0 +1,18 @@
+CF16 fixed Test3 implementation validation (2026-09-28)
+
+PASS CARGO_TARGET_DIR=/private/tmp/jarde-cf16-test3-target cargo test -p jarde-java --tests --locked
+  Includes old three-row shared finally, Test4 nested four-row cleanup,
+  Test11 two-row loop, ordinary catch/loop, target Test3, and seven near misses.
+PASS CARGO_TARGET_DIR=/private/tmp/jarde-cf16-test3-target cargo check --workspace --locked
+PASS cargo fmt --all --check
+PASS openspec validate recover-catch-loop-shared-finally --strict
+PASS git diff --check
+PASS CARGO_TARGET_DIR=/private/tmp/jarde-cf16-test3-target cargo build -p jarde-cli --locked
+PASS JARDE_CLI=/private/tmp/jarde-cf16-test3-target/debug/jarde-cli sh openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/accept.sh
+  Original class, original Java 8 source, fixed JADX complete class, and
+  unmodified Jarde test method in the explicit LOG-initialized harness agree
+  byte-for-byte across all nine paths under java -Xverify:all.
+  All seven frozen near misses load under java -Xverify:all and refuse finally.
+  Unmodified Jarde whole-class output still fails javac due independent <clinit>.
+
+The dedicated Cargo target was removed after these checks.

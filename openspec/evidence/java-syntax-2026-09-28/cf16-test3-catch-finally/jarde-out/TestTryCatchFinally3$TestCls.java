@@ -13,14 +13,24 @@ public class TestTryCatchFinally3$TestCls extends java.lang.Object {
         return;
     }
 
-    // jarde: generic Signature projection refused for `test(Ljadx/core/dex/nodes/ClassNode;Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): method body or no-body declaration has no complete source proof
+    // jarde: generic Signature projection refused for `test(Ljadx/core/dex/nodes/ClassNode;Ljava/util/List;)V`: unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types
     public static void test(jadx.core.dex.nodes.ClassNode cls, java.util.List passes) {
-        // jarde: not recovered: the recovery run for `test(Ljadx/core/dex/nodes/ClassNode;Ljava/util/List;)V` produced no statement (explanation only); the artifact's own comment lines are below
         // @method test(Ljadx/core/dex/nodes/ClassNode;Ljava/util/List;)V
         // @declaration a static method of `jadx.tests.integration.trycatch.TestTryCatchFinally3$TestCls`, member flags 0x0009
         // recovered from bytecode; presentation is not claimed to compile
-        // @bytecode 0 11 20 38 45 65 74
-        // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+        try {
+            cls.load();
+            java.util.Iterator e = passes.iterator();
+            while (e.hasNext()) {
+                jadx.core.dex.visitors.IDexTreeVisitor visitor = (jadx.core.dex.visitors.IDexTreeVisitor) e.next();
+                jadx.core.dex.visitors.DepthTraversal.visit(visitor, cls);
+            }
+        } catch (java.lang.Exception e) {
+            jadx.tests.integration.trycatch.TestTryCatchFinally3$TestCls.LOG.error("Class process exception: {}", (java.lang.Object) cls, (java.lang.Object) e);
+        } finally {
+            cls.unload();
+        }
+        return;
     }
 
     static {

@@ -2719,9 +2719,18 @@ fn catch_parameter_stays_in_clause(
                         };
                         pending.push(*loaded);
                     }
-                    // A fresh value cannot contain the caught reference. An operation whose
-                    // relationship to it is unknown cannot prove an independent binding.
+                    // A fresh value cannot carry the caught local unless it flows through one
+                    // of the invocation's SSA inputs. Follow those inputs before declaring the
+                    // slot reuse independent of the catch parameter.
                     Some(Operation::Push(_)) => {}
+                    Some(Operation::Invoke(call))
+                        if call.kind() == crate::facts::InvokeKind::Interface
+                            && call.owner() == "java/util/List"
+                            && call.name() == "iterator"
+                            && call.descriptor() == "()Ljava/util/Iterator;" =>
+                    {
+                        pending.extend(instruction.reads().iter().map(|(_, value)| *value));
+                    }
                     _ => return Ok(false),
                 }
             }

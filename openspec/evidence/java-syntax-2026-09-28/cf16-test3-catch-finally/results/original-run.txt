@@ -1,2 +1,9 @@
-normal load=1 unload=1 logs=0
-visitor_exception load=1 unload=1 logs=1 logged=java.lang.IllegalStateException: visitor-failure
+normal events=load,unload load=1 unload=1 logs=0 loggedOriginal=false terminal=ok identity=other
+load_exception events=load,logger,unload load=1 unload=1 logs=1 loggedOriginal=true terminal=ok identity=other
+load_error events=load,unload load=1 unload=1 logs=0 loggedOriginal=false terminal=AssertionError:initial identity=initial
+visitor_exception events=load,visitor,logger,unload load=1 unload=1 logs=1 loggedOriginal=true terminal=ok identity=other
+visitor_error events=load,visitor,unload load=1 unload=1 logs=0 loggedOriginal=false terminal=AssertionError:initial identity=initial
+logger_exception events=load,visitor,logger,unload load=1 unload=1 logs=1 loggedOriginal=true terminal=IllegalArgumentException:logger-failure identity=logger
+unload_normal events=load,unload load=1 unload=1 logs=0 loggedOriginal=false terminal=IllegalArgumentException:unload-failure identity=unload
+unload_catch events=load,visitor,logger,unload load=1 unload=1 logs=1 loggedOriginal=true terminal=IllegalArgumentException:unload-failure identity=unload
+unload_handler events=load,visitor,unload load=1 unload=1 logs=0 loggedOriginal=false terminal=IllegalArgumentException:unload-failure identity=unload

@@ -1,6 +1,5 @@
 package jadx.tests.integration.trycatch;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import jadx.core.dex.nodes.ClassNode;
@@ -19,28 +18,67 @@ public final class Runner {
         } catch (ReflectiveOperationException e) {
             throw new AssertionError(e);
         }
-        ClassNode normal = new ClassNode();
-        LoggerFactory.errorCount = 0;
-        invoke(test, normal, Collections.<IDexTreeVisitor>emptyList());
-        System.out.println("normal load=" + normal.loadCount + " unload=" + normal.unloadCount + " logs=" + LoggerFactory.errorCount);
-
-        ClassNode exceptional = new ClassNode();
-        LoggerFactory.errorCount = 0;
-        invoke(test, exceptional, Arrays.<IDexTreeVisitor>asList(new IDexTreeVisitor() {
-            @Override
-            public void visit(ClassNode cls) {
-                throw new IllegalStateException("visitor-failure");
-            }
-        }));
-        System.out.println("visitor_exception load=" + exceptional.loadCount + " unload=" + exceptional.unloadCount + " logs=" + LoggerFactory.errorCount
-                + " logged=" + LoggerFactory.lastError);
+        for (String mode : new String[] {"normal", "load_exception", "load_error", "visitor_exception",
+                "visitor_error", "logger_exception", "unload_normal", "unload_catch", "unload_handler"}) {
+            run(test, mode);
+        }
     }
 
-    private static void invoke(java.lang.reflect.Method test, ClassNode cls, List<IDexTreeVisitor> passes) {
+    private static void run(java.lang.reflect.Method test, String mode) {
+        ClassNode cls = new ClassNode();
+        ClassNode.events.setLength(0);
+        LoggerFactory.errorCount = 0;
+        LoggerFactory.lastError = null;
+        LoggerFactory.failure = null;
+        Throwable initial = mode.endsWith("error") ? new AssertionError("initial") : new IllegalStateException("initial");
+        RuntimeException loggerFailure = new IllegalArgumentException("logger-failure");
+        RuntimeException unloadFailure = new IllegalArgumentException("unload-failure");
+        if (mode.startsWith("load")) {
+            cls.loadFailure = initial;
+        }
+        if (mode.startsWith("unload")) {
+            cls.unloadFailure = unloadFailure;
+        }
+        if (mode.equals("logger_exception")) {
+            LoggerFactory.failure = loggerFailure;
+        }
+        List<IDexTreeVisitor> passes = Collections.emptyList();
+        if (mode.startsWith("visitor") || mode.equals("logger_exception") || mode.equals("unload_catch")
+                || mode.equals("unload_handler")) {
+            passes = Collections.<IDexTreeVisitor>singletonList(new IDexTreeVisitor() {
+                @Override
+                public void visit(ClassNode ignored) {
+                    ClassNode.event("visitor");
+                    if (!mode.equals("unload_handler")) {
+                        throwFailure(initial);
+                    }
+                    throw new AssertionError("handler-failure");
+                }
+            });
+        }
+        if (mode.equals("unload_handler")) {
+            LoggerFactory.failure = loggerFailure;
+        }
+        Throwable terminal = null;
         try {
             test.invoke(null, cls, passes);
-        } catch (ReflectiveOperationException e) {
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            terminal = e.getCause();
+        } catch (IllegalAccessException e) {
             throw new AssertionError(e);
         }
+        String result = terminal == null ? "ok" : terminal.getClass().getSimpleName() + ":" + terminal.getMessage();
+        String identity = terminal == initial ? "initial" : terminal == loggerFailure ? "logger"
+                : terminal == unloadFailure ? "unload" : "other";
+        System.out.println(mode + " events=" + ClassNode.events + " load=" + cls.loadCount + " unload=" + cls.unloadCount
+                + " logs=" + LoggerFactory.errorCount + " loggedOriginal=" + (LoggerFactory.lastError == initial)
+                + " terminal=" + result + " identity=" + identity);
+    }
+
+    private static void throwFailure(Throwable failure) {
+        if (failure instanceof Error) {
+            throw (Error) failure;
+        }
+        throw (RuntimeException) failure;
     }
 }

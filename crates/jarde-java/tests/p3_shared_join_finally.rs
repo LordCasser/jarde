@@ -8,7 +8,7 @@ use jarde_java::{
 };
 use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
-use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest, Quality};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
 use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
 use jarde_reader::model::{
@@ -22,6 +22,53 @@ use jarde_reader::view::{
 
 const FIXTURE: &[u8] =
     include_bytes!("../../../tests/fixtures/p3-shared-catchall-finally/v8/SharedFinallyJoin.class");
+const CATCH_LOOP_TEST3: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/TestTryCatchFinally3$TestCls.class"
+);
+const CATCH_LOOP_TEST3_NEIGHBORS: [(&str, &[u8]); 7] = [
+    (
+        "wrong-receiver",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/wrong-receiver.class"
+        ),
+    ),
+    (
+        "wrong-target",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/wrong-target.class"
+        ),
+    ),
+    (
+        "self-row-covers-cleanup",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/self-row-covers-cleanup.class"
+        ),
+    ),
+    (
+        "throwable-rewritten",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/throwable-rewritten.class"
+        ),
+    ),
+    (
+        "extra-protected-entry",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/extra-protected-entry.class"
+        ),
+    ),
+    (
+        "extra-catch-coverage",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/extra-catch-coverage.class"
+        ),
+    ),
+    (
+        "unknown-body-invoke",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/neighbors/unknown-body-invoke.class"
+        ),
+    ),
+];
 const EMPTY_CATCH_TEST16: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/Test16.class"
 );
@@ -299,6 +346,107 @@ fn recover_test(class: &[u8], recovery_budget: Option<Budget>) -> jarde_java::Re
         0x0002,
         recovery_budget,
     )
+}
+
+#[test]
+fn catch_loop_test3_has_one_finally_and_all_bci_origins() {
+    let report = recover_method(
+        CATCH_LOOP_TEST3,
+        "test",
+        "(Ljadx/core/dex/nodes/ClassNode;Ljava/util/List;)V",
+        "jadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls",
+        0x0009,
+        None,
+    );
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert!(report.regions.iter().all(|region| region.structured));
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(
+        report.text.matches("finally {").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("arg0.unload();").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("catch (java.lang.Exception"),
+        "{}",
+        report.text
+    );
+    for bci in [
+        0, 1, 4, 5, 10, 11, 12, 17, 20, 21, 26, 29, 30, 31, 32, 35, 38, 39, 42, 45, 46, 49, 51, 52,
+        53, 58, 59, 62, 65, 67, 68, 71, 73, 74,
+    ] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci} has no source origin: {}",
+            report.text
+        );
+    }
+}
+
+#[test]
+fn catch_loop_test3_verifier_valid_neighbors_refuse_finally() {
+    for (name, class) in CATCH_LOOP_TEST3_NEIGHBORS {
+        let report = recover_method(
+            class,
+            "test",
+            "(Ljadx/core/dex/nodes/ClassNode;Ljava/util/List;)V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls",
+            0x0009,
+            None,
+        );
+        assert!(
+            !report.text.contains("finally {"),
+            "{name}: {}",
+            report.text
+        );
+        assert!(report.text.contains("@bytecode"), "{name}: {}", report.text);
+        if name == "unknown-body-invoke" {
+            assert_eq!(report.quality, Quality::Fallback);
+            assert!(report.text.contains("@bytecode 0 11 20 38 45 65"));
+        } else {
+            assert!(
+                report.regions.iter().any(|region| !region.structured),
+                "{name}"
+            );
+            for bci in [38, 45, 65] {
+                assert!(
+                    !report.source_map.of_bci(bci).is_empty(),
+                    "{name}: physical block BCI {bci} vanished"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn catch_loop_test3_stop_discards_text_and_source_map() {
+    let recover = |budget| {
+        recover_method(
+            CATCH_LOOP_TEST3,
+            "test",
+            "(Ljadx/core/dex/nodes/ClassNode;Ljava/util/List;)V",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls",
+            0x0009,
+            Some(budget),
+        )
+    };
+    let mut tiny = limits();
+    tiny.analysis_steps = 1;
+    let stopped = recover(Budget::new(tiny));
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    assert!(matches!(stopped.stop(), Some(StopReason::Budget { .. })));
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover(Budget::with_cancellation_token(limits(), token));
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
 }
 
 fn recover_method(

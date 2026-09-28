@@ -1,0 +1,4 @@
+Jarde source: fresh CLI from this worktree
+Target class SHA-256 9c3dc61868a81eb87f90228c5ddad4336ca4ae540621e5cb9b1589474c90e71e
+Method harness: Jarde test with original LOG declaration/initializer, Java 8 verified
+Whole Jarde class-source: independent <clinit> fallback, javac failure expected

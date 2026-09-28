@@ -2,6 +2,17 @@
 // @declaration a static method of `jadx.tests.integration.trycatch.TestTryCatchFinally3$TestCls`, member flags 0x0009
 // recovered from bytecode; presentation is not claimed to compile
 {
-    // @bytecode 0 11 20 38 45 65 74
-    // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    try {
+        cls.load();
+        java.util.Iterator e = passes.iterator();
+        while (e.hasNext()) {
+            jadx.core.dex.visitors.IDexTreeVisitor visitor = (jadx.core.dex.visitors.IDexTreeVisitor) e.next();
+            jadx.core.dex.visitors.DepthTraversal.visit(visitor, cls);
+        }
+    } catch (java.lang.Exception e) {
+        jadx.tests.integration.trycatch.TestTryCatchFinally3$TestCls.LOG.error("Class process exception: {}", (java.lang.Object) cls, (java.lang.Object) e);
+    } finally {
+        cls.unload();
+    }
+    return;
 }
