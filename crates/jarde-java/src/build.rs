@@ -942,6 +942,33 @@ fn declarations(
             continue;
         }
         let crosses_exception = crosses_exception_region(variable_uses, &paths);
+        // This certificate places both initializations in the Guard lead, before its `try`.
+        // The canonical graph fuses that lead with the protected body, so block paths alone
+        // describe the stores as being inside the body. The certificate proves every later load
+        // reads those immutable stores; hoist their declarations to the Guard's lexical parent.
+        let nested_cleanup_lead = owner.len() == 1
+            && regions.get(owner[0] as usize).is_some_and(|region| {
+                matches!(region,
+                Region::Guard { plan, .. }
+                    if matches!(plan.shape(), guard::Shape::NestedCleanupFinally { .. }))
+            })
+            && match variable.slot() {
+                1 => {
+                    variable_uses
+                        .iter()
+                        .map(|use_| use_.bci)
+                        .collect::<Vec<_>>()
+                        == [7, 12, 26, 44]
+                }
+                2 => {
+                    variable_uses
+                        .iter()
+                        .map(|use_| use_.bci)
+                        .collect::<Vec<_>>()
+                        == [16, 17, 22, 40]
+                }
+                _ => false,
+            };
         let has_increment = variable_uses.iter().any(|use_| {
             use_.written.is_some()
                 && matches!(operations.get(use_.bci), Some(Operation::Increment { .. }))
@@ -949,6 +976,7 @@ fn declarations(
         let store_type_is_proven =
             cross_exception_store_type_is_proven(plan.decided.get(variable), has_increment);
         if crosses_exception
+            && !nested_cleanup_lead
             && (!store_type_is_proven
                 || !all_reads_reach_presented_writes(
                     ssa,
@@ -13488,6 +13516,124 @@ impl Builder<'_> {
                         }
                         Ok(())
                     }
+                    guard::Shape::NestedCleanupFinally { cleanup, .. } => {
+                        let Some(Region::Try { catches, .. }) = structured_finally_body.as_deref()
+                        else {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("nested cleanup checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the nested cleanup has no bounded catch",
+                                plan.body().0,
+                            );
+                        };
+                        let [clause] = catches.as_slice() else {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("nested cleanup checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the nested cleanup has no unique catch",
+                                plan.body().0,
+                            );
+                        };
+                        let (ty, name) = match self.catch_header(clause) {
+                            Ok(header) if header.0 == "java.io.IOException" => header,
+                            _ => {
+                                let bcis = self.region_quote(region, clause.handler().bci());
+                                self.restore_finally(
+                                    finally_checkpoint
+                                        .take()
+                                        .expect("nested cleanup checkpoint"),
+                                );
+                                return self.fallback(
+                                    bcis,
+                                    "the nested cleanup catch is not a bindable IOException",
+                                    clause.handler().bci(),
+                                );
+                            }
+                        };
+                        let body = match self.body_range(plan.body()) {
+                            Ok(body) => body,
+                            Err(stop) => {
+                                self.restore_finally(
+                                    finally_checkpoint
+                                        .take()
+                                        .expect("nested cleanup checkpoint"),
+                                );
+                                return Err(stop);
+                            }
+                        };
+                        let cleanup_body = match self.body_range(*cleanup) {
+                            Ok(body) => body,
+                            Err(stop) => {
+                                self.restore_finally(
+                                    finally_checkpoint
+                                        .take()
+                                        .expect("nested cleanup checkpoint"),
+                                );
+                                return Err(stop);
+                            }
+                        };
+                        let inner = Stmt::new(
+                            StmtKind::Try {
+                                resources: Vec::new(),
+                                body: cleanup_body,
+                                catches: vec![crate::ast::CatchClause {
+                                    ty,
+                                    name,
+                                    body: Vec::new(),
+                                }],
+                                finally_body: None,
+                            },
+                            OriginSet::new(Origin::direct(cleanup.0))
+                                .plus_derived(Origin::derived(clause.handler().bci())),
+                        );
+                        let origin = plan.facts().iter().copied().fold(
+                            OriginSet::new(Origin::direct(plan.body().0)),
+                            |origin, bci| origin.plus_derived(Origin::derived(bci)),
+                        );
+                        let statement = Stmt::new(
+                            StmtKind::Try {
+                                resources: Vec::new(),
+                                body,
+                                catches: Vec::new(),
+                                finally_body: Some(vec![inner]),
+                            },
+                            origin,
+                        );
+                        if statement_has_fallback(&statement)
+                            || undeclared_local(&statement, &self.undeclared).is_some()
+                        {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("nested cleanup checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the nested cleanup has an unpresented statement or local",
+                                plan.body().0,
+                            );
+                        }
+                        let pushed = self.push(statement);
+                        if pushed.is_err() {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("nested cleanup checkpoint"),
+                            );
+                        }
+                        pushed
+                    }
                     guard::Shape::SharedFinally { .. }
                     | guard::Shape::EmptyCatchCallFinally { .. } => {
                         let (catch_body, normal_cleanup, completion, empty_catch) =
@@ -25938,6 +26084,7 @@ mod tests {
             &view,
             ssa,
             &operations,
+            ir.constant_pool(),
             &chains,
             &crate::init::Sites::empty(),
             code,

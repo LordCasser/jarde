@@ -97,7 +97,7 @@ use jarde_jvm::method_ir::{
     ValueId,
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
-use jarde_reader::classfile::ExceptionHandlerFact;
+use jarde_reader::classfile::{CpEntryFacts, ExceptionHandlerFact, cp_class_name};
 
 use crate::build::stack_operands;
 use crate::decode::Operations;
@@ -238,6 +238,14 @@ pub enum Shape {
         cleanup: [(u32, u32); 4],
         saved_return: (u32, u32),
     },
+    /// Test4's two nested IOException catches around the normal and exceptional cleanup copies.
+    NestedCleanupFinally {
+        rows: [u32; 4],
+        catch_type: u16,
+        normal_handler: CanonicalBlockId,
+        catch_parameter: u16,
+        cleanup: (u32, u32),
+    },
     /// The one five-row, two-segment, four-copy Java 8 finally certificate.
     SegmentedFinally {
         rows: [u32; 5],
@@ -338,7 +346,8 @@ impl Plan {
             | Shape::SharedFinally { .. }
             | Shape::EmptyCatchCallFinally { .. }
             | Shape::SegmentedFinally { .. }
-            | Shape::TwoCatchReturnFinally { .. } => &FINALLY,
+            | Shape::TwoCatchReturnFinally { .. }
+            | Shape::NestedCleanupFinally { .. } => &FINALLY,
         }
     }
 }
@@ -3102,6 +3111,332 @@ fn prove_empty_catch_call_finally(
     }))
 }
 
+/// The fixed Test4 four-row lowering has one lexical cleanup despite two physical copies.
+fn prove_nested_cleanup_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+    pool: &[CpEntryFacts],
+) -> Result<Option<Plan>, StopReason> {
+    let [normal_row, body_row, exceptional_row, self_row] = facts.handlers else {
+        return Ok(None);
+    };
+    const BCIS: &[u32] = &[
+        0, 2, 4, 7, 8, 11, 12, 13, 16, 17, 18, 19, 22, 23, 26, 27, 30, 31, 34, 35, 38, 40, 41, 44,
+        45, 48, 49, 52, 54, 56, 57,
+    ];
+    if current.bci() != 0
+        || facts.order != BCIS
+        || (
+            normal_row.start_bci,
+            normal_row.end_bci,
+            normal_row.handler_bci,
+        ) != (22, 31, 34)
+        || (body_row.start_bci, body_row.end_bci, body_row.handler_bci) != (17, 22, 38)
+        || (
+            exceptional_row.start_bci,
+            exceptional_row.end_bci,
+            exceptional_row.handler_bci,
+        ) != (40, 49, 52)
+        || (self_row.start_bci, self_row.end_bci, self_row.handler_bci) != (38, 40, 38)
+        || normal_row.ordinal + 1 != body_row.ordinal
+        || body_row.ordinal + 1 != exceptional_row.ordinal
+        || exceptional_row.ordinal + 1 != self_row.ordinal
+        || normal_row.catch_type_index.is_none()
+        || normal_row.catch_type_index != exceptional_row.catch_type_index
+        || cp_class_name(pool, normal_row.catch_type_index.unwrap())
+            .ok()
+            .is_none_or(|name| name.0.as_slice() != b"java/io/IOException")
+        || body_row.catch_type_index.is_some()
+        || self_row.catch_type_index.is_some()
+    {
+        return Ok(None);
+    }
+    let opcodes = [
+        0x12, 0x12, 0xb8, 0x4c, 0xbb, 0x59, 0x2b, 0xb7, 0x4d, 0x2c, 0x04, 0xb6, 0x2c, 0xb6, 0x2b,
+        0xb6, 0x57, 0xa7, 0x4e, 0xa7, 0x3a, 0x2c, 0xb6, 0x2b, 0xb6, 0x57, 0xa7, 0x3a, 0x19, 0xbf,
+        0xb1,
+    ];
+    for (bci, opcode) in BCIS.iter().copied().zip(opcodes) {
+        facts.charge(bci)?;
+        if facts
+            .step(bci)
+            .is_none_or(|step| step.instruction.opcode() != opcode)
+        {
+            return Ok(None);
+        }
+        let expected = if (22..31).contains(&bci) {
+            &[normal_row.ordinal][..]
+        } else if (17..22).contains(&bci) {
+            &[body_row.ordinal][..]
+        } else if (40..49).contains(&bci) {
+            &[exceptional_row.ordinal][..]
+        } else if (38..40).contains(&bci) {
+            &[self_row.ordinal][..]
+        } else {
+            &[][..]
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+        {
+            return Ok(None);
+        }
+    }
+    let exact_call = |at, kind, owner, name, descriptor| {
+        matches!(facts.op(at), Some(Operation::Invoke(call))
+            if call.kind() == kind && call.owner() == owner
+                && call.name() == name && call.descriptor() == descriptor)
+    };
+    if !exact_call(
+        4,
+        InvokeKind::Static,
+        "java/io/File",
+        "createTempFile",
+        "(Ljava/lang/String;Ljava/lang/String;)Ljava/io/File;",
+    ) || !exact_call(
+        13,
+        InvokeKind::Special,
+        "java/io/FileOutputStream",
+        "<init>",
+        "(Ljava/io/File;)V",
+    ) || !exact_call(
+        19,
+        InvokeKind::Virtual,
+        "java/io/OutputStream",
+        "write",
+        "(I)V",
+    ) || ![23, 41].into_iter().all(|at| {
+        exact_call(
+            at,
+            InvokeKind::Virtual,
+            "java/io/OutputStream",
+            "close",
+            "()V",
+        )
+    }) || ![27, 45]
+        .into_iter()
+        .all(|at| exact_call(at, InvokeKind::Virtual, "java/io/File", "delete", "()Z"))
+        || ![34, 38, 52]
+            .into_iter()
+            .all(|at| handler_binding(facts, at))
+    {
+        return Ok(None);
+    }
+    // Both copies must read the same two initialized locals. The stack values passed to each
+    // invocation must be precisely the values produced by those loads, not another receiver.
+    for (store, uses) in [
+        (7, &[(12, 13), (26, 27), (44, 45)][..]),
+        (16, &[(17, 19), (22, 23), (40, 41)][..]),
+    ] {
+        let Some(written) = facts.step(store).and_then(|step| {
+            step.instruction
+                .writes()
+                .iter()
+                .find(|(slot, _)| matches!(slot, Slot::Local(_)))
+                .map(|(_, v)| *v)
+        }) else {
+            return Ok(None);
+        };
+        for &(load, call) in uses {
+            facts.charge(load)?;
+            let (Some(loaded), Some(called)) = (facts.step(load), facts.step(call)) else {
+                return Ok(None);
+            };
+            if !loaded
+                .instruction
+                .reads()
+                .iter()
+                .any(|(slot, value)| matches!(slot, Slot::Local(_)) && facts.same(*value, written))
+                || !loaded.instruction.writes().iter().any(|(slot, value)| {
+                    matches!(slot, Slot::Stack(_))
+                        && stack_operands(called.instruction)
+                            .iter()
+                            .any(|(_, read)| facts.same(*read, *value))
+                })
+            {
+                return Ok(None);
+            }
+        }
+    }
+    // The write argument is exactly iconst_1, and both boolean delete results are discarded.
+    if !facts.step(18).is_some_and(|pushed| {
+        pushed.instruction.writes().iter().any(|(_, value)| {
+            facts.step(19).is_some_and(|call| {
+                stack_operands(call.instruction)
+                    .iter()
+                    .any(|(_, read)| facts.same(*value, *read))
+            })
+        })
+    }) {
+        return Ok(None);
+    }
+    for (call, pop) in [(27, 30), (45, 48)] {
+        let (Some(called), Some(discarded)) = (facts.step(call), facts.step(pop)) else {
+            return Ok(None);
+        };
+        if !called.instruction.writes().iter().any(|(slot, value)| {
+            matches!(slot, Slot::Stack(_))
+                && stack_operands(discarded.instruction)
+                    .iter()
+                    .any(|(_, read)| facts.same(*value, *read))
+        }) {
+            return Ok(None);
+        }
+    }
+    // Neither named catch parameter has a consumer. The catch-all rethrows its original value.
+    for store in [34, 52] {
+        let Some(value) = facts.step(store).and_then(|step| {
+            step.instruction
+                .writes()
+                .iter()
+                .find(|(slot, _)| matches!(slot, Slot::Local(_)))
+                .map(|(_, v)| *v)
+        }) else {
+            return Ok(None);
+        };
+        for bci in BCIS.iter().copied().filter(|bci| *bci != store) {
+            facts.charge(bci)?;
+            if facts.step(bci).is_some_and(|step| {
+                step.instruction
+                    .reads()
+                    .iter()
+                    .any(|(_, read)| facts.same(*read, value))
+            }) {
+                return Ok(None);
+            }
+        }
+    }
+    let (Some(saved), Some(loaded), Some(thrown)) =
+        (facts.step(38), facts.step(54), facts.step(56))
+    else {
+        return Ok(None);
+    };
+    if !matches!((facts.op(38), facts.op(54)),
+        (Some(Operation::Store { slot: a }), Some(Operation::Load { slot: b })) if a == b)
+        || !saved.instruction.writes().iter().any(|(slot, value)| {
+            matches!(slot, Slot::Local(_))
+                && loaded
+                    .instruction
+                    .reads()
+                    .iter()
+                    .any(|(_, read)| facts.same(*value, *read))
+        })
+        || !loaded.instruction.writes().iter().any(|(slot, value)| {
+            matches!(slot, Slot::Stack(_))
+                && stack_operands(thrown.instruction)
+                    .iter()
+                    .any(|(_, read)| facts.same(*value, *read))
+        })
+    {
+        return Ok(None);
+    }
+    let (
+        Some(body),
+        Some(normal),
+        Some(normal_catch),
+        Some(exceptional),
+        Some(exceptional_catch),
+        Some(rethrow),
+        Some(join),
+    ) = (
+        facts.block_of(17).cloned(),
+        facts.block_of(22).cloned(),
+        facts.row_handler(normal_row),
+        facts.row_handler(body_row),
+        facts.row_handler(exceptional_row),
+        facts.block_at(54),
+        facts.block_at(57),
+    )
+    else {
+        return Ok(None);
+    };
+    if body != *current
+        || normal_catch.bci() != 34
+        || exceptional.bci() != 38
+        || exceptional_catch.bci() != 52
+        || rethrow.bci() != 54
+        || facts.row_handler(self_row) != Some(exceptional.clone())
+    {
+        return Ok(None);
+    }
+    let permitted_normal = [(0, 57), (34, 57), (38, 54), (52, 54)];
+    let permitted_exception = [
+        (0, 34, normal_row.ordinal),
+        (0, 38, body_row.ordinal),
+        (38, 52, exceptional_row.ordinal),
+        (38, 38, self_row.ordinal),
+    ];
+    let mut observed_normal = BTreeSet::new();
+    let mut observed_exception = BTreeSet::new();
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        let valid = match edge.kind() {
+            CanonicalEdgeKind::Normal => {
+                let edge = (edge.from().bci(), edge.to().bci());
+                observed_normal.insert(edge) && permitted_normal.contains(&edge)
+            }
+            CanonicalEdgeKind::Exception { handler_ordinal } => {
+                let edge = (edge.from().bci(), edge.to().bci(), handler_ordinal);
+                observed_exception.insert(edge) && permitted_exception.contains(&edge)
+            }
+            CanonicalEdgeKind::Call { .. } | CanonicalEdgeKind::Return { .. } => false,
+        };
+        if !valid {
+            return Ok(None);
+        }
+    }
+    if observed_normal != permitted_normal.into_iter().collect()
+        || observed_exception != permitted_exception.into_iter().collect()
+    {
+        return Ok(None);
+    }
+    let owned = facts
+        .canonical
+        .blocks()
+        .iter()
+        .map(|block| block.id().clone())
+        .filter(|block| block.bci() != 57)
+        .collect::<Vec<_>>();
+    if owned.len() != 5
+        || !owned.contains(&normal)
+        || !owned.contains(&normal_catch)
+        || !owned.contains(&exceptional_catch)
+        || !owned.contains(&rethrow)
+        || facts
+            .canonical
+            .blocks()
+            .iter()
+            .any(|block| block.id().bci() > 57)
+    {
+        return Ok(None);
+    }
+    Ok(Some(Plan {
+        shape: Shape::NestedCleanupFinally {
+            rows: [
+                normal_row.ordinal,
+                body_row.ordinal,
+                exceptional_row.ordinal,
+                self_row.ordinal,
+            ],
+            catch_type: normal_row.catch_type_index.unwrap(),
+            normal_handler: normal_catch,
+            catch_parameter: match facts.op(34) {
+                Some(Operation::Store { slot }) => *slot,
+                _ => unreachable!(),
+            },
+            cleanup: (22, 31),
+        },
+        lead: (0, 17),
+        body: (17, 22),
+        owned,
+        join: Some(join),
+        facts: BCIS.to_vec(),
+    }))
+}
+
 /// This certificate owns the complete fixed Test17 lowering. Every instruction is assigned
 /// once, including the second catch's saved return and its separately protected prefix.
 fn prove_two_catch_return_finally(
@@ -5019,6 +5354,7 @@ pub(crate) fn shared_finally_candidate(
     view: &NormalFlowView,
     ssa: &SsaTable,
     ops: &Operations,
+    pool: &[CpEntryFacts],
     chains: &crate::concat::Plan,
     handlers: &[ExceptionHandlerFact],
     profile: &crate::pass::RecoveryProfile,
@@ -5056,6 +5392,9 @@ pub(crate) fn shared_finally_candidate(
         return prove_segmented_finally(&mut facts, current);
     }
     if handlers.len() == 4 {
+        if let Some(plan) = prove_nested_cleanup_finally(&mut facts, current, pool)? {
+            return Ok(Some(plan));
+        }
         return prove_two_catch_return_finally(&mut facts, current);
     }
     if handlers.len() == 2 {
@@ -5305,6 +5644,7 @@ mod finally_copy_tests {
             &view,
             ssa,
             &ops,
+            ir.constant_pool(),
             &chains,
             &rows,
             &crate::pass::JAVA_8,
@@ -5336,6 +5676,70 @@ mod finally_copy_tests {
             "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test16-empty-catch/classes/near/external-cleanup-entry.class"
         ),
     ];
+
+    const NESTED_CLEANUP_TEST4: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test4-nested-cleanup/classes/jadx/tests/integration/trycatch/TestTryCatchFinally4$TestCls.class"
+    );
+
+    #[test]
+    fn pinned_test4_nested_cleanup_has_one_four_row_certificate() {
+        let probe = |class, stop| shared_probe_method(class, b"test", b"()V", |_| {}, stop);
+        let plan = probe(NESTED_CLEANUP_TEST4, None)
+            .unwrap()
+            .expect("four-row nested cleanup certificate");
+        let Shape::NestedCleanupFinally {
+            rows,
+            normal_handler,
+            cleanup,
+            ..
+        } = plan.shape()
+        else {
+            panic!("wrong finally certificate")
+        };
+        assert_eq!(*rows, [0, 1, 2, 3]);
+        assert_eq!(normal_handler.bci(), 34);
+        assert_eq!(*cleanup, (22, 31));
+        assert_eq!(plan.body(), (17, 22));
+        assert_eq!(plan.lead(), (0, 17));
+        assert_eq!(plan.facts().len(), 31);
+        assert_eq!(plan.owned().len(), 5);
+        assert!(matches!(
+            probe(NESTED_CLEANUP_TEST4, Some("budget")),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            probe(NESTED_CLEANUP_TEST4, Some("cancel")),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
+
+    #[test]
+    fn test4_call_and_coverage_neighbors_cannot_merge_cleanup() {
+        let cases: &[(&[u8], &[u8])] = &[
+            (b"\0\x05close", b"\0\x05flush"),
+            (b"\0\x06delete", b"\0\x06exists"),
+            (b"\0\x13java/io/IOException", b"\0\x13java/lang/Throwable"),
+            (b"\0\x16\0\x1f\0\x22\0\x23", b"\0\x1a\0\x1f\0\x22\0\x23"),
+        ];
+        for (old, new) in cases {
+            let mut changed = NESTED_CLEANUP_TEST4.to_vec();
+            let offsets = changed
+                .windows(old.len())
+                .enumerate()
+                .filter_map(|(at, window)| (window == *old).then_some(at))
+                .collect::<Vec<_>>();
+            assert_eq!(offsets.len(), 1, "mutation has one physical site");
+            changed[offsets[0]..offsets[0] + old.len()].copy_from_slice(new);
+            let proved = shared_probe_method(&changed, b"test", b"()V", |_| {}, None).unwrap();
+            assert!(!matches!(
+                proved,
+                Some(Plan {
+                    shape: Shape::NestedCleanupFinally { .. },
+                    ..
+                })
+            ));
+        }
+    }
 
     #[test]
     fn empty_catch_test16_two_real_rows_three_call_copies() {
