@@ -3296,11 +3296,15 @@ fn own_blocks(region: &Region) -> Vec<CanonicalBlockId> {
             body,
             catches,
             normal_exit_bci: _,
+            transparent,
         } => {
             let mut blocks = prefix.clone();
             blocks.extend(body.blocks().into_iter().cloned());
             for clause in catches {
                 blocks.extend(clause.body().blocks().into_iter().cloned());
+            }
+            if let Some(proof) = transparent {
+                blocks.push(proof.block.clone());
             }
             blocks
         }
@@ -13744,7 +13748,10 @@ impl Builder<'_> {
                 body,
                 catches,
                 normal_exit_bci,
+                transparent,
             } => {
+                let mut transparent_checkpoint =
+                    transparent.as_ref().map(|_| self.finally_checkpoint());
                 let shared = self
                     .shared_finally
                     .as_ref()
@@ -13774,7 +13781,14 @@ impl Builder<'_> {
                         Ok(header) => headers.push(header),
                         Err(reason) => {
                             let at = clause.handler().bci();
-                            let bcis = self.region_quote(region, at);
+                            let bcis = if transparent.is_some() {
+                                self.transparent_try_bcis(region)?
+                            } else {
+                                self.region_quote(region, at)
+                            };
+                            if let Some(checkpoint) = transparent_checkpoint.take() {
+                                self.restore_finally(checkpoint);
+                            }
                             return self.fallback(bcis, &reason, at);
                         }
                     }
@@ -13874,6 +13888,34 @@ impl Builder<'_> {
                         body: handler,
                     });
                 }
+                if let Some(proof) = transparent {
+                    let mut stated = Vec::new();
+                    for statement in &body_statements {
+                        stated_by_statement(statement, &mut Vec::new(), &mut stated);
+                    }
+                    let complete = !body_statements.is_empty()
+                        && !body_statements.iter().any(statement_has_fallback)
+                        && written
+                            .iter()
+                            .all(|clause| !clause.body.iter().any(statement_has_fallback))
+                        && self
+                            .instructions
+                            .range(proof.range.0..proof.range.1)
+                            .all(|(bci, _)| stated.contains(bci));
+                    if !complete {
+                        self.restore_finally(
+                            transparent_checkpoint
+                                .take()
+                                .expect("transparent try checkpoint"),
+                        );
+                        let bcis = self.transparent_try_bcis(region)?;
+                        return self.fallback(
+                            bcis,
+                            "the transparent catch-all has no complete try and catch presentation",
+                            proof.range.0,
+                        );
+                    }
+                }
                 // The statement is the protected range's own start; every clause adds the handler
                 // entry it was read from, so the table's own rows are the anchors of the text that
                 // states them.
@@ -13885,6 +13927,11 @@ impl Builder<'_> {
                 }
                 if let Some(bci) = normal_exit_bci {
                     origin = origin.plus_derived(Origin::derived(*bci));
+                }
+                if let Some(proof) = transparent {
+                    for bci in proof.bcis.into_iter().chain(proof.normal_exits) {
+                        origin = origin.plus_derived(Origin::derived(bci));
+                    }
                 }
                 let finally_body = if let Some(shared) = &shared {
                     for bci in &shared.facts {
@@ -21290,6 +21337,18 @@ impl Builder<'_> {
             }
         }
         bcis
+    }
+
+    /// A refused transparent try must quote every physical instruction, including its
+    /// absorbed handler. Block starts alone would lose the protected invocation.
+    fn transparent_try_bcis(&mut self, region: &Region) -> Result<Vec<u32>, StopReason> {
+        let mut bcis = Vec::new();
+        for block in region.blocks() {
+            bcis.extend(self.fallback_instruction_bcis(block)?);
+        }
+        bcis.sort_unstable();
+        bcis.dedup();
+        Ok(bcis)
     }
 
     /// The bytecodes the unproved short-circuit node must keep visible. A full refusal includes

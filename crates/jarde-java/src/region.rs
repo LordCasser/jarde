@@ -574,6 +574,8 @@ pub enum Region {
         normal_exit_bci: Option<u32>,
         /// The clauses, in exception-table order.
         catches: Vec<CatchClause>,
+        /// Effect-free physical rethrow owned by this ordinary try, when proved.
+        transparent: Option<crate::guard::TransparentHandler>,
     },
 }
 
@@ -652,10 +654,18 @@ impl Region {
                     );
                 }
             }
-            Self::Try { body, catches, .. } => {
+            Self::Try {
+                body,
+                catches,
+                transparent,
+                ..
+            } => {
                 body.elided_cleanup_bcis(out);
                 for clause in catches {
                     clause.body.elided_cleanup_bcis(out);
+                }
+                if let Some(proof) = transparent {
+                    out.extend(proof.bcis);
                 }
             }
             Self::Straight { .. }
@@ -805,12 +815,16 @@ impl Region {
                 prefix,
                 body,
                 catches,
+                transparent,
                 ..
             } => {
                 let mut blocks: Vec<&CanonicalBlockId> = prefix.iter().collect();
                 blocks.extend(body.blocks());
                 for clause in catches {
                     blocks.extend(clause.body.blocks());
+                }
+                if let Some(proof) = transparent {
+                    blocks.push(&proof.block);
                 }
                 blocks
             }
@@ -2047,6 +2061,7 @@ type OwnedTry = (
     Option<CanonicalBlockId>,
     Vec<Region>,
     Option<u32>,
+    Option<crate::guard::TransparentHandler>,
 );
 
 /// What one call of the walk proved, in the order the text writes it, and where the run continues.
@@ -2410,7 +2425,7 @@ impl Walker<'_> {
             if frame.own_try != Some(node)
                 && (frame.own_finally.is_none() || frame.nested_finally_row.is_some())
                 && self.starts_catch(&current)
-                && let Some((body, lead, catches, join, tails, exit_bci)) =
+                && let Some((body, lead, catches, join, tails, exit_bci, transparent)) =
                     self.try_region(&current, node, frame)?
             {
                 let mut run = vec![Region::Try {
@@ -2418,6 +2433,7 @@ impl Walker<'_> {
                     lead,
                     body,
                     catches,
+                    transparent,
                     normal_exit_bci: exit_bci.or_else(|| {
                         self.fragmented.as_ref().and_then(|proof| {
                             (proof.outer_start != proof.inner_start
@@ -3772,7 +3788,37 @@ impl Walker<'_> {
         else {
             return Ok(None);
         };
-        let (body, catches, join, tails, exit_bci) = self.try_level(start, node, frame, &shape)?;
+        let previous = shape.transparent.as_ref().map(|_| self.visited.clone());
+        let (body, catches, join, tails, exit_bci) =
+            match self.try_level(start, node, frame, &shape) {
+                Ok(level) => level,
+                Err(stop) => {
+                    if let Some(previous) = previous {
+                        self.visited = previous;
+                    }
+                    return Err(stop);
+                }
+            };
+        if let Some(proof) = &shape.transparent {
+            if !body.is_structured()
+                || !tails.is_empty()
+                || catches.len() != 1
+                || catches.iter().any(|clause| !clause.body.is_structured())
+                || body.blocks().iter().any(|block| *block == &proof.block)
+                || catches
+                    .iter()
+                    .flat_map(|clause| clause.body.blocks())
+                    .any(|block| block == &proof.block)
+            {
+                self.visited = previous.expect("transparent try checkpoint");
+                return Ok(None);
+            }
+            let Some(index) = self.view.index_of(&proof.block) else {
+                self.visited = previous.expect("transparent try checkpoint");
+                return Ok(None);
+            };
+            self.visited.insert(index);
+        }
         Ok(Some((
             Box::new(body),
             shape.lead,
@@ -3780,6 +3826,7 @@ impl Walker<'_> {
             join,
             tails,
             exit_bci,
+            shape.transparent,
         )))
     }
 
@@ -3840,6 +3887,7 @@ impl Walker<'_> {
                     lead: inner.lead,
                     body: Box::new(body),
                     catches,
+                    transparent: inner.transparent.clone(),
                     normal_exit_bci: self.fragmented.as_ref().and_then(|proof| {
                         (start.bci() == proof.inner_start).then_some(proof.inner_exit_bci)
                     }),
@@ -3868,7 +3916,13 @@ impl Walker<'_> {
                 let boundary_node = boundary
                     .as_ref()
                     .and_then(|block| self.view.index_of(block));
-                let protected_frame = frame.protected(boundary_node, node);
+                let mut protected_frame = frame.protected(boundary_node, node);
+                if let Some(proof) = &shape.transparent {
+                    protected_frame.own_finally = Some((
+                        (proof.rows[0], proof.range),
+                        Some((proof.rows[1], proof.range)),
+                    ));
+                }
                 let (mut body, body_next) = self.region_at(start, &protected_frame)?;
                 if let Some(bridge) = body_next
                     && self.certified_try_exit(&bridge, &body, shape, &protected_frame)?
@@ -4519,6 +4573,7 @@ impl Walker<'_> {
                 blocks: vec![start.clone()],
             }),
             normal_exit_bci: None,
+            transparent: None,
             catches: vec![CatchClause {
                 types: crate::guard::CatchTypes::Named(vec![*catch_type]),
                 handler: catch_handler.clone(),
@@ -4570,6 +4625,7 @@ impl Walker<'_> {
                 blocks: vec![start.clone()],
             }),
             normal_exit_bci: None,
+            transparent: None,
             catches: catches
                 .iter()
                 .map(|(handler, ty, parameter)| CatchClause {
@@ -4641,6 +4697,7 @@ impl Walker<'_> {
                     blocks: vec![normal],
                 }),
                 normal_exit_bci: None,
+                transparent: None,
                 catches: vec![CatchClause {
                     types: crate::guard::CatchTypes::Named(vec![*catch_type]),
                     handler: normal_handler.clone(),
@@ -4724,6 +4781,7 @@ impl Walker<'_> {
             lead: (plan.body().0, plan.body().0),
             body: Box::new(try_body),
             normal_exit_bci: None,
+            transparent: None,
             catches: vec![CatchClause {
                 types: crate::guard::CatchTypes::Named(vec![*catch_type]),
                 handler: catch_handler.clone(),
@@ -4802,6 +4860,7 @@ impl Walker<'_> {
             lead: (plan.body().0, plan.body().0),
             body: Box::new(try_body),
             normal_exit_bci: None,
+            transparent: None,
             catches: vec![CatchClause {
                 types: crate::guard::CatchTypes::Named(vec![*catch_type]),
                 handler: catch_handler.clone(),
