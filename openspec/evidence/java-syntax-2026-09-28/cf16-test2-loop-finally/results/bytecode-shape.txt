@@ -1,0 +1,2 @@
+matching instruction BCI sequence and catch-all rows across fixed class, standalone Java 8 source, and Java 8 JADX source
+single compiler opcode difference: BCI 55 private writeString call: fixed javac invokevirtual; Java 8 javac invokespecial

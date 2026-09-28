@@ -1,0 +1,280 @@
+Classfile /tmp/cf16-test2-replay.AYXSRU/original/jadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls.class
+  Last modified 2026年9月28日; size 1816 bytes
+  SHA-256 checksum 24a6c16287ba3c302739c6e79c5c852c9c0bc0e948e79920b020e6901052378d
+  Compiled from "TestTryCatchFinally2$TestCls.java"
+public class jadx.tests.integration.trycatch.TestTryCatchFinally2$TestCls
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #17                         // jadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 3, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // java/io/DataOutputStream
+   #8 = Utf8               java/io/DataOutputStream
+   #9 = Methodref          #7.#10         // java/io/DataOutputStream."<init>":(Ljava/io/OutputStream;)V
+  #10 = NameAndType        #5:#11         // "<init>":(Ljava/io/OutputStream;)V
+  #11 = Utf8               (Ljava/io/OutputStream;)V
+  #12 = Methodref          #7.#13         // java/io/DataOutputStream.writeByte:(I)V
+  #13 = NameAndType        #14:#15        // writeByte:(I)V
+  #14 = Utf8               writeByte
+  #15 = Utf8               (I)V
+  #16 = Fieldref           #17.#18        // jadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls.classes:[Ljadx/core/clsp/ClspClass;
+  #17 = Class              #19            // jadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls
+  #18 = NameAndType        #20:#21        // classes:[Ljadx/core/clsp/ClspClass;
+  #19 = Utf8               jadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls
+  #20 = Utf8               classes
+  #21 = Utf8               [Ljadx/core/clsp/ClspClass;
+  #22 = Methodref          #7.#23         // java/io/DataOutputStream.writeInt:(I)V
+  #23 = NameAndType        #24:#15        // writeInt:(I)V
+  #24 = Utf8               writeInt
+  #25 = Methodref          #26.#27        // jadx/core/clsp/ClspClass.getName:()Ljava/lang/String;
+  #26 = Class              #28            // jadx/core/clsp/ClspClass
+  #27 = NameAndType        #29:#30        // getName:()Ljava/lang/String;
+  #28 = Utf8               jadx/core/clsp/ClspClass
+  #29 = Utf8               getName
+  #30 = Utf8               ()Ljava/lang/String;
+  #31 = Methodref          #17.#32        // jadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls.writeString:(Ljava/io/DataOutputStream;Ljava/lang/String;)V
+  #32 = NameAndType        #33:#34        // writeString:(Ljava/io/DataOutputStream;Ljava/lang/String;)V
+  #33 = Utf8               writeString
+  #34 = Utf8               (Ljava/io/DataOutputStream;Ljava/lang/String;)V
+  #35 = Methodref          #26.#36        // jadx/core/clsp/ClspClass.getParents:()[Ljadx/core/dex/instructions/args/ArgType;
+  #36 = NameAndType        #37:#38        // getParents:()[Ljadx/core/dex/instructions/args/ArgType;
+  #37 = Utf8               getParents
+  #38 = Utf8               ()[Ljadx/core/dex/instructions/args/ArgType;
+  #39 = Methodref          #40.#41        // jadx/core/dex/instructions/args/ArgType.getObject:()Ljava/lang/String;
+  #40 = Class              #42            // jadx/core/dex/instructions/args/ArgType
+  #41 = NameAndType        #43:#30        // getObject:()Ljava/lang/String;
+  #42 = Utf8               jadx/core/dex/instructions/args/ArgType
+  #43 = Utf8               getObject
+  #44 = Methodref          #45.#46        // java/lang/String.hashCode:()I
+  #45 = Class              #47            // java/lang/String
+  #46 = NameAndType        #48:#49        // hashCode:()I
+  #47 = Utf8               java/lang/String
+  #48 = Utf8               hashCode
+  #49 = Utf8               ()I
+  #50 = Methodref          #7.#51         // java/io/DataOutputStream.close:()V
+  #51 = NameAndType        #52:#6         // close:()V
+  #52 = Utf8               close
+  #53 = Utf8               Code
+  #54 = Utf8               LineNumberTable
+  #55 = Utf8               LocalVariableTable
+  #56 = Utf8               this
+  #57 = Utf8               Ljadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls;
+  #58 = Utf8               test
+  #59 = Utf8               cls
+  #60 = Utf8               Ljadx/core/clsp/ClspClass;
+  #61 = Utf8               parent
+  #62 = Utf8               Ljadx/core/dex/instructions/args/ArgType;
+  #63 = Utf8               parents
+  #64 = Utf8               [Ljadx/core/dex/instructions/args/ArgType;
+  #65 = Utf8               output
+  #66 = Utf8               Ljava/io/OutputStream;
+  #67 = Utf8               out
+  #68 = Utf8               Ljava/io/DataOutputStream;
+  #69 = Utf8               StackMapTable
+  #70 = Class              #71            // java/io/OutputStream
+  #71 = Utf8               java/io/OutputStream
+  #72 = Class              #21            // "[Ljadx/core/clsp/ClspClass;"
+  #73 = Class              #64            // "[Ljadx/core/dex/instructions/args/ArgType;"
+  #74 = Class              #75            // java/lang/Throwable
+  #75 = Utf8               java/lang/Throwable
+  #76 = Utf8               Exceptions
+  #77 = Class              #78            // java/io/IOException
+  #78 = Utf8               java/io/IOException
+  #79 = Utf8               name
+  #80 = Utf8               Ljava/lang/String;
+  #81 = Utf8               SourceFile
+  #82 = Utf8               TestTryCatchFinally2$TestCls.java
+{
+  private jadx.core.clsp.ClspClass[] classes;
+    descriptor: [Ljadx/core/clsp/ClspClass;
+    flags: (0x0002) ACC_PRIVATE
+
+  public jadx.tests.integration.trycatch.TestTryCatchFinally2$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 9: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls;
+
+  public void test(java.io.OutputStream) throws java.io.IOException;
+    descriptor: (Ljava/io/OutputStream;)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=13, args_size=2
+         0: new           #7                  // class java/io/DataOutputStream
+         3: dup
+         4: aload_1
+         5: invokespecial #9                  // Method java/io/DataOutputStream."<init>":(Ljava/io/OutputStream;)V
+         8: astore_2
+         9: aload_2
+        10: iconst_1
+        11: invokevirtual #12                 // Method java/io/DataOutputStream.writeByte:(I)V
+        14: aload_2
+        15: aload_0
+        16: getfield      #16                 // Field classes:[Ljadx/core/clsp/ClspClass;
+        19: arraylength
+        20: invokevirtual #22                 // Method java/io/DataOutputStream.writeInt:(I)V
+        23: aload_0
+        24: getfield      #16                 // Field classes:[Ljadx/core/clsp/ClspClass;
+        27: astore_3
+        28: aload_3
+        29: arraylength
+        30: istore        4
+        32: iconst_0
+        33: istore        5
+        35: iload         5
+        37: iload         4
+        39: if_icmpge     64
+        42: aload_3
+        43: iload         5
+        45: aaload
+        46: astore        6
+        48: aload_0
+        49: aload_2
+        50: aload         6
+        52: invokevirtual #25                 // Method jadx/core/clsp/ClspClass.getName:()Ljava/lang/String;
+        55: invokespecial #31                 // Method writeString:(Ljava/io/DataOutputStream;Ljava/lang/String;)V
+        58: iinc          5, 1
+        61: goto          35
+        64: aload_0
+        65: getfield      #16                 // Field classes:[Ljadx/core/clsp/ClspClass;
+        68: astore_3
+        69: aload_3
+        70: arraylength
+        71: istore        4
+        73: iconst_0
+        74: istore        5
+        76: iload         5
+        78: iload         4
+        80: if_icmpge     153
+        83: aload_3
+        84: iload         5
+        86: aaload
+        87: astore        6
+        89: aload         6
+        91: invokevirtual #35                 // Method jadx/core/clsp/ClspClass.getParents:()[Ljadx/core/dex/instructions/args/ArgType;
+        94: astore        7
+        96: aload_2
+        97: aload         7
+        99: arraylength
+       100: invokevirtual #12                 // Method java/io/DataOutputStream.writeByte:(I)V
+       103: aload         7
+       105: astore        8
+       107: aload         8
+       109: arraylength
+       110: istore        9
+       112: iconst_0
+       113: istore        10
+       115: iload         10
+       117: iload         9
+       119: if_icmpge     147
+       122: aload         8
+       124: iload         10
+       126: aaload
+       127: astore        11
+       129: aload_2
+       130: aload         11
+       132: invokevirtual #39                 // Method jadx/core/dex/instructions/args/ArgType.getObject:()Ljava/lang/String;
+       135: invokevirtual #44                 // Method java/lang/String.hashCode:()I
+       138: invokevirtual #22                 // Method java/io/DataOutputStream.writeInt:(I)V
+       141: iinc          10, 1
+       144: goto          115
+       147: iinc          5, 1
+       150: goto          76
+       153: aload_2
+       154: invokevirtual #50                 // Method java/io/DataOutputStream.close:()V
+       157: goto          169
+       160: astore        12
+       162: aload_2
+       163: invokevirtual #50                 // Method java/io/DataOutputStream.close:()V
+       166: aload         12
+       168: athrow
+       169: return
+      Exception table:
+         from    to  target type
+             9   153   160   any
+           160   162   160   any
+      LineNumberTable:
+        line 13: 0
+        line 15: 9
+        line 16: 14
+        line 17: 23
+        line 18: 48
+        line 17: 58
+        line 20: 64
+        line 21: 89
+        line 22: 96
+        line 23: 103
+        line 24: 129
+        line 23: 141
+        line 20: 147
+        line 28: 153
+        line 29: 157
+        line 28: 160
+        line 29: 166
+        line 30: 169
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           48      10     6   cls   Ljadx/core/clsp/ClspClass;
+          129      12    11 parent   Ljadx/core/dex/instructions/args/ArgType;
+           96      51     7 parents   [Ljadx/core/dex/instructions/args/ArgType;
+           89      58     6   cls   Ljadx/core/clsp/ClspClass;
+            0     170     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls;
+            0     170     1 output   Ljava/io/OutputStream;
+            9     161     2   out   Ljava/io/DataOutputStream;
+      StackMapTable: number_of_entries = 8
+        frame_type = 255 /* full_frame */
+          offset_delta = 35
+          locals = [ class jadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls, class java/io/OutputStream, class java/io/DataOutputStream, class "[Ljadx/core/clsp/ClspClass;", int, int ]
+          stack = []
+        frame_type = 248 /* chop */
+          offset_delta = 28
+        frame_type = 254 /* append */
+          offset_delta = 11
+          locals = [ class "[Ljadx/core/clsp/ClspClass;", int, int ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 38
+          locals = [ class jadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls, class java/io/OutputStream, class java/io/DataOutputStream, class "[Ljadx/core/clsp/ClspClass;", int, int, class jadx/core/clsp/ClspClass, class "[Ljadx/core/dex/instructions/args/ArgType;", class "[Ljadx/core/dex/instructions/args/ArgType;", int, int ]
+          stack = []
+        frame_type = 255 /* full_frame */
+          offset_delta = 31
+          locals = [ class jadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls, class java/io/OutputStream, class java/io/DataOutputStream, class "[Ljadx/core/clsp/ClspClass;", int, int ]
+          stack = []
+        frame_type = 248 /* chop */
+          offset_delta = 5
+        frame_type = 70 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 8 /* same */
+    Exceptions:
+      throws java.io.IOException
+
+  private void writeString(java.io.DataOutputStream, java.lang.String);
+    descriptor: (Ljava/io/DataOutputStream;Ljava/lang/String;)V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=0, locals=3, args_size=3
+         0: return
+      LineNumberTable:
+        line 33: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       1     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally2$TestCls;
+            0       1     1   out   Ljava/io/DataOutputStream;
+            0       1     2  name   Ljava/lang/String;
+}
+SourceFile: "TestTryCatchFinally2$TestCls.java"

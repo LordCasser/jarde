@@ -1,0 +1,81 @@
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:generateEntrypointForLibs
+> Task :buildSrc:generateEntrypointForLibsInPluginsBlock
+> Task :buildSrc:generateExternalPluginSpecBuilders
+> Task :buildSrc:generateLibrariesForLibs
+> Task :buildSrc:extractPrecompiledScriptPluginPlugins
+> Task :buildSrc:generateScriptPluginAdapters
+> Task :buildSrc:verifyEarlyEvaluatedBuild
+> Task :buildSrc:verifyTopLevelBuild
+> Task :buildSrc:pluginDescriptors
+> Task :buildSrc:processResources
+> Task :buildSrc:compilePluginsBlocks
+> Task :buildSrc:generatePrecompiledScriptPluginAccessors
+> Task :buildSrc:compileKotlin
+> Task :buildSrc:compileJava
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:classes
+> Task :buildSrc:jar
+
+> Configure project :
+Loaded env vars (0):
+
+
+jadx version: dev
+
+> Task :jadx-plugins:jadx-java-convert:processResources
+> Task :jadx-plugins:jadx-dex-input:processResources
+> Task :jadx-plugins:jadx-raung-input:processResources
+> Task :jadx-plugins:jadx-java-input:processResources
+> Task :jadx-plugins:jadx-smali-input:processResources
+> Task :jadx-core:processResources
+> Task :jadx-core:processTestResources
+> Task :jadx-commons:jadx-zip:compileJava
+> Task :jadx-commons:jadx-zip:processResources NO-SOURCE
+> Task :jadx-commons:jadx-zip:classes
+> Task :jadx-commons:jadx-zip:jar
+> Task :jadx-plugins:jadx-input-api:compileJava
+> Task :jadx-plugins:jadx-input-api:processResources NO-SOURCE
+> Task :jadx-plugins:jadx-input-api:classes
+> Task :jadx-plugins:jadx-input-api:jar
+
+> Task :jadx-core:compileJava
+注: 某些输入文件使用或覆盖了已过时的 API。
+注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+注: /Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/utils/ListUtils.java使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+
+> Task :jadx-core:classes
+> Task :jadx-plugins:jadx-raung-input:compileJava
+> Task :jadx-plugins:jadx-raung-input:classes
+> Task :jadx-plugins:jadx-raung-input:jar
+> Task :jadx-plugins:jadx-dex-input:compileJava
+> Task :jadx-plugins:jadx-dex-input:classes
+> Task :jadx-plugins:jadx-dex-input:jar
+
+> Task :jadx-plugins:jadx-java-input:compileJava
+注: /Users/lordcasser/workspace/testzone/jadx/jadx-plugins/jadx-java-input/src/main/java/jadx/plugins/input/java/JavaInputPlugin.java使用或覆盖了已过时的 API。
+注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+
+> Task :jadx-plugins:jadx-java-input:classes
+> Task :jadx-plugins:jadx-java-input:jar
+> Task :jadx-plugins:jadx-smali-input:compileJava
+> Task :jadx-plugins:jadx-smali-input:classes
+> Task :jadx-plugins:jadx-smali-input:jar
+> Task :jadx-plugins:jadx-java-convert:compileJava
+> Task :jadx-plugins:jadx-java-convert:classes
+> Task :jadx-plugins:jadx-java-convert:jar
+> Task :jadx-core:jar
+
+> Task :jadx-core:compileTestJava
+注: 某些输入文件使用或覆盖了已过时的 API。
+注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+
+> Task :jadx-core:testClasses
+> Task :jadx-core:test
+
+[Incubating] Problems report is available at: file:///Users/lordcasser/workspace/testzone/jadx/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 4s
+40 actionable tasks: 40 executed
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.1/userguide/configuration_cache_enabling.html

@@ -1,0 +1,39 @@
+# CF16 / `TestTryCatchFinally2` loops in a finally-protected body
+
+This is a bounded, evidence-only snapshot for the fixed JADX test at commit `2fb1b16386941660fda07e9017285aec40fcb37f`. It does not change recovery code or an OpenSpec change. The frozen upstream source is [fixed/TestTryCatchFinally2.java](fixed/TestTryCatchFinally2.java), SHA-256 `d91f17350a382bd351efeb5ec21eda27fb208ab32fcb3d765c03de8426be8831`. The exact built nested class is [fixed/TestTryCatchFinally2$TestCls.class](fixed/TestTryCatchFinally2$TestCls.class), SHA-256 `330ddd26a3bb313fde9be032e78c1be83e7b6acb2c1b86e53abc1ce604b89170`, class-file major version 55. `bytecode/fixed.javap.txt` is the full class disassembly.
+
+## Profile boundary
+
+The integration test has no `@TestWithProfiles` annotation. `IntegrationTest` sets `DEFAULT_INPUT_PLUGIN = "dx"`; absent `TEST_INPUT_PLUGIN=java`, `getClassNode(TestCls.class)` compiles the source and feeds the result through the DX input plugin. Its assertion checks one `finally`, one `out.close()`, and all three enhanced-for loops. The pinned test was run explicitly with `TEST_INPUT_PLUGIN=dx` and passed; the Gradle output is [results/jadx-test-dx.log](results/jadx-test-dx.log). The test can be overridden by the environment variable, so the precise statement is that its default profile is DX input.
+
+The separate CLI capture in [jadx/TestTryCatchFinally2$TestCls.java](jadx/TestTryCatchFinally2$TestCls.java) invokes the pinned CLI directly on the frozen `.class` file. That is Java class-file input, not the upstream test's default DX-conversion path. The captured CLI version is `dev`. These two input paths must not be conflated: the CLI output supports source inspection and behavior comparison for the Java class-file artifact, while the source test establishes the default DX-profile assertion and expected Java structure. The original full class is Java 11 bytecode (major 55); the standalone source transcription and JADX Java output are compiled with `javac --release 8` for controlled method-shape and runtime probes.
+
+## Bytecode and local flow
+
+The exact `test(OutputStream)` descriptor is `(Ljava/io/OutputStream;)V`. Its instruction offsets and exception table are in `bytecode/fixed.javap.txt`. The protected body is `[9,153) -> 160 any`; the catch-all cleanup itself has `[160,162) -> 160 any`. Normal close occurs at 153–156. The exceptional handler stores the pending throwable in local 12, closes local 2, then reloads and rethrows that same local at 166–168. If that close throws, it replaces the prior outcome as ordinary Java `finally` behavior requires.
+
+There are three normal-flow loop cycles inside the protected range:
+
+- The first class array traversal has header BCI 35, body at 42, and back edge `61 -> 35`; it reads each class name and calls the empty `writeString` stub.
+- The second class traversal has header BCI 76, body at 83, and back edge `150 -> 76`; it reads each class's parent array and writes its length.
+- The nested parent traversal has header BCI 115, body at 122, and back edge `144 -> 115`; it writes each parent's string hash code.
+
+The bytecode CFG around those cycles is `35 -> 42 -> 35` with exit `35 -> 64`; then `64 -> 76`, `76 -> 83` or `153`, `83 -> 115`, `115 -> 122` or `147`, `122 -> 115`, and `147 -> 76`. Normal completion goes `153 -> 169`; any thrown exception covered by the first row transfers to 160. The handler's `astore` block is protected by its own second row and therefore has the self-exception edge `160 -> 160`; after a successful close it rethrows at 168. The handler's `close()` instruction is outside that second protected interval.
+
+The relevant verifier local slots are: 0 `this`; 1 input stream; 2 `DataOutputStream out`, defined at 8 and used through normal/exceptional cleanup; 3 the class array reused for both outer loops; 4 each outer array length; 5 each outer loop index; 6 the current class object; 7 that class's parent array; 8 the current parent-array reference for the nested loop; 9 nested array length; 10 nested index; 11 current `ArgType`; 12 pending `Throwable`. The scope concern exposed by Jarde is local 2: it must remain bound from the protected body into both finally copies.
+
+The region walk reports uncovered blocks `[35, 160, 42, 64, 76, 83, 153, 115, 122, 147]` and quotes the method. That diagnostic reflects the failed guarded-region structuring and claim coverage; it does not mean the three protected-body loops are unreachable in JVM normal flow. Jarde refuses the TWR guard at BCI 160 because the handler sequence is not the guarded-region sequence that rule certifies. The complete method result is [results/jarde-test-evidence.json](results/jarde-test-evidence.json); its key diagnostics are `jre_guard_handler` and `jre_region_uncovered_blocks`. The separate complete-class presentation is [jarde/TestTryCatchFinally2$TestCls.java](jarde/TestTryCatchFinally2$TestCls.java): it retains the field and member declarations, but marks `test` as explanation-only with no recovered statement. It is not a successful full-class decompilation and is not compilable evidence.
+
+The pattern matches the *normal protected-body loop plus finally cleanup* family represented by Test5: this method's three loop cycles are ordinary loops reachable from entry, and its cleanup handler is outside those loop SCCs. Test11's issue was a loop SCC inside an exception-only handler component, unreachable from the method root in the plain-transfer graph. No such handler loop exists here, so that Test11-specific component-root issue is not implicated. Test5's exact multi-return/pending-result local facts do not transfer: Test2 is `void`, has no return value crossing cleanup, and its central live value is the `DataOutputStream` spanning both the try body and duplicated close paths. This classification is evidence about graph shape, not a mechanism proposal.
+
+## Runtime probe
+
+[original/TestTryCatchFinally2$TestCls.java](original/TestTryCatchFinally2$TestCls.java) is a standalone transcription of the upstream target class. [support](support/) provides tiny execution stand-ins for the JADX model classes, and [probe/Runner.java](probe/Runner.java) counts class/name/parent visits, stream write calls, bytes and close calls. It runs zero classes, two classes with three total parents, a first-write failure, a later parent-write failure, close failure, and simultaneous write/close failures using `java -Xverify:all`.
+
+The fixed class, original transcription, and Java-input JADX source produce identical behavior. Normal execution visits both outer loops twice and the parent loop three times, then closes once. A write exception still triggers one close. A close exception propagates and replaces a pending write exception. The probe's model classes make calls observable; they are not the real JADX runtime library, and the empty `writeString` body is retained from the fixed test.
+
+The three Java 8 method dumps have matching instruction BCI sequences and catch-all rows. The sole opcode difference is BCI 55, the private `writeString` call: the Java 11 fixed class uses `invokevirtual`, while JDK `javac --release 8` emits `invokespecial`. This is a compiler lowering difference; loop edges and both exception rows match. See [results/bytecode-shape.txt](results/bytecode-shape.txt).
+
+## Replay
+
+Run [replay.sh](replay.sh) from this Jarde checkout. It verifies the pinned JADX revision, source hash, and built class hash; regenerates the Java-input JADX output and Jarde class/method captures; rebuilds Jarde under a disposable Cargo target; compiles the fixed class, standalone transcription and JADX source with minimal support classes; checks bytecode shape; and runs all variants with `-Xverify:all`. Its exit trap cleans the dedicated Cargo target and its temporary directory. No Cargo build output remains in this checkout.
