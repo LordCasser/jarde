@@ -1,0 +1,102 @@
+Classfile /Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde/openspec/evidence/java-syntax-2026-09-28/cf16-testemptyfinally/original/TestEmptyFinally$TestCls.class
+  Last modified 2026年9月28日; size 789 bytes
+  SHA-256 checksum dcf5de9a4037ddd2169f103e426be38fac60dba8fb2d5cb38dc6ffe3c648018a
+  Compiled from "TestEmptyFinally.java"
+public class jadx.tests.integration.trycatch.TestEmptyFinally$TestCls
+  minor version: 0
+  major version: 55
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #14                         // jadx/tests/integration/trycatch/TestEmptyFinally$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 3
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // java/io/FileInputStream.close:()V
+   #8 = Class              #10            // java/io/FileInputStream
+   #9 = NameAndType        #11:#6         // close:()V
+  #10 = Utf8               java/io/FileInputStream
+  #11 = Utf8               close
+  #12 = Class              #13            // java/io/IOException
+  #13 = Utf8               java/io/IOException
+  #14 = Class              #15            // jadx/tests/integration/trycatch/TestEmptyFinally$TestCls
+  #15 = Utf8               jadx/tests/integration/trycatch/TestEmptyFinally$TestCls
+  #16 = Utf8               Code
+  #17 = Utf8               LineNumberTable
+  #18 = Utf8               LocalVariableTable
+  #19 = Utf8               this
+  #20 = Utf8               Ljadx/tests/integration/trycatch/TestEmptyFinally$TestCls;
+  #21 = Utf8               test
+  #22 = Utf8               (Ljava/io/FileInputStream;)V
+  #23 = Utf8               f1
+  #24 = Utf8               Ljava/io/FileInputStream;
+  #25 = Utf8               StackMapTable
+  #26 = Class              #27            // java/lang/Throwable
+  #27 = Utf8               java/lang/Throwable
+  #28 = Utf8               SourceFile
+  #29 = Utf8               TestEmptyFinally.java
+  #30 = Utf8               NestHost
+  #31 = Class              #32            // jadx/tests/integration/trycatch/TestEmptyFinally
+  #32 = Utf8               jadx/tests/integration/trycatch/TestEmptyFinally
+  #33 = Utf8               InnerClasses
+  #34 = Utf8               TestCls
+{
+  public jadx.tests.integration.trycatch.TestEmptyFinally$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 15: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/trycatch/TestEmptyFinally$TestCls;
+
+  public void test(java.io.FileInputStream);
+    descriptor: (Ljava/io/FileInputStream;)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=4, args_size=2
+         0: aload_1
+         1: invokevirtual #7                  // Method java/io/FileInputStream.close:()V
+         4: goto          14
+         7: astore_2
+         8: goto          14
+        11: astore_3
+        12: aload_3
+        13: athrow
+        14: return
+      Exception table:
+         from    to  target type
+             0     4     7   Class java/io/IOException
+             0     4    11   any
+      LineNumberTable:
+        line 18: 0
+        line 23: 4
+        line 19: 7
+        line 23: 8
+        line 21: 11
+        line 23: 12
+        line 24: 14
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      15     0  this   Ljadx/tests/integration/trycatch/TestEmptyFinally$TestCls;
+            0      15     1    f1   Ljava/io/FileInputStream;
+      StackMapTable: number_of_entries = 3
+        frame_type = 71 /* same_locals_1_stack_item */
+          stack = [ class java/io/IOException ]
+        frame_type = 67 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 2 /* same */
+}
+SourceFile: "TestEmptyFinally.java"
+NestHost: class jadx/tests/integration/trycatch/TestEmptyFinally
+InnerClasses:
+  public static #34= #14 of #31;          // TestCls=class jadx/tests/integration/trycatch/TestEmptyFinally$TestCls of class jadx/tests/integration/trycatch/TestEmptyFinally

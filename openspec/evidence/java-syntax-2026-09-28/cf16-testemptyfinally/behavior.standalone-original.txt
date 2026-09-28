@@ -1,0 +1,3 @@
+success result=return closeCalls=1
+io result=return closeCalls=1
+runtime result=IllegalStateException:close-runtime closeCalls=1

@@ -1,0 +1,27 @@
+// jarde: presentation of `jadx/tests/integration/trycatch/TestEmptyFinally$TestCls` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+package jadx.tests.integration.trycatch;
+
+public class TestEmptyFinally$TestCls extends java.lang.Object {
+    public TestEmptyFinally$TestCls() {
+        // @method <init>()V
+        // @declaration a constructor of `jadx.tests.integration.trycatch.TestEmptyFinally$TestCls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void test(java.io.FileInputStream f1) {
+        // @method test(Ljava/io/FileInputStream;)V
+        // @declaration an instance method of `jadx.tests.integration.trycatch.TestEmptyFinally$TestCls`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            // @bytecode 0 1 4
+            // block at BCI 0 leaves through exception handler 0: a handler's shape is not part of the recoverable subset
+        } catch (java.io.IOException local2) {
+        }
+        return;
+        // @bytecode 11 12 13
+        // 1 live block(s) are reachable only through edges the normal-flow view leaves out: [11]
+    }
+}

@@ -1,0 +1,4 @@
+JARDE_OUTPUT/TestEmptyFinally$TestCls.java:21: 错误: 在相应的 try 语句主体中不能抛出异常错误IOException
+        } catch (java.io.IOException local2) {
+          ^
+1 个错误
