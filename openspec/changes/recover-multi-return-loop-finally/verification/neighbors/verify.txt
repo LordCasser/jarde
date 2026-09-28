@@ -1,0 +1,12 @@
+different-receiver verified
+e8185bd87683baee6a37c359ecf9ea9aa9f1e9a1fcfa279896f36aacdc598788  different-receiver.class
+different-target verified
+f8e28d4b55ce6a678bad8cf78e357ad2ea1387bc97d4782ab86ab7cb12b0c92f  different-target.class
+loop-extra-exit verified
+2a75b2a3a27e9e5f8010e573c961fa9aece9e5c8dedc29a1dc8949c1bb88e6a8  loop-extra-exit.class
+saved-value-rewritten verified
+efd08942a38964fb5aa8a417e61b611ee3ca86b13a0fc6f815983cde5ba77cd3  saved-value-rewritten.class
+self-row-expanded verified
+ddcf3c4065d0b2aeb88aa0cd764472792cdeb04a2bc8f292b98c04b757a9675f  self-row-expanded.class
+throwable-rewritten verified
+7e78845899575976e4d2b55489c3a6b3658366b8e01088553a700a1011caee8b  throwable-rewritten.class

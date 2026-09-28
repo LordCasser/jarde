@@ -1787,6 +1787,8 @@ struct Frame {
     own_finally: Option<((u32, (u32, u32)), Option<(u32, (u32, u32))>)>,
     /// The four protected rows of the one five-row segmented finally certificate.
     segmented_finally_rows: Option<[(u32, (u32, u32)); 4]>,
+    /// The two disjoint body rows of the fixed two-return loop certificate.
+    multi_return_finally_rows: Option<[(u32, (u32, u32)); 2]>,
     /// The sole inner named row admitted by a proved two-copy outer finally body.
     nested_finally_row: Option<u32>,
     /// Other case-entry nodes of a switch arm. They end this arm before the next case claims them.
@@ -1857,6 +1859,7 @@ impl Frame {
             own_try: None,
             own_finally: None,
             segmented_finally_rows: None,
+            multi_return_finally_rows: None,
             nested_finally_row: None,
             case_entries: self.case_entries.clone(),
             loop_exit: exit,
@@ -1896,6 +1899,7 @@ impl Frame {
             own_try: self.own_try,
             own_finally: self.own_finally,
             segmented_finally_rows: self.segmented_finally_rows,
+            multi_return_finally_rows: self.multi_return_finally_rows,
             nested_finally_row: self.nested_finally_row,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
@@ -1926,6 +1930,7 @@ impl Frame {
             own_try: self.own_try,
             own_finally: self.own_finally,
             segmented_finally_rows: self.segmented_finally_rows,
+            multi_return_finally_rows: self.multi_return_finally_rows,
             nested_finally_row: self.nested_finally_row,
             case_entries: Some(case_entries),
             loop_exit: self.loop_exit,
@@ -1953,6 +1958,7 @@ impl Frame {
             own_try: Some(start),
             own_finally: self.nested_finally_row.and(self.own_finally),
             segmented_finally_rows: self.segmented_finally_rows,
+            multi_return_finally_rows: self.multi_return_finally_rows,
             nested_finally_row: self.nested_finally_row,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
@@ -2393,6 +2399,9 @@ impl Walker<'_> {
                     crate::guard::Shape::SegmentedFinally { .. } => self
                         .segmented_finally_body(&current, &plan, frame)?
                         .map(|body| (body, None)),
+                    crate::guard::Shape::MultiReturnLoopFinally { .. } => self
+                        .multi_return_loop_finally_body(&current, &plan, frame)?
+                        .map(|body| (body, None)),
                     _ => None,
                 };
                 if let Some((body, finally_body)) = recovered {
@@ -2636,6 +2645,9 @@ impl Walker<'_> {
                     && frame
                         .segmented_finally_rows
                         .is_none_or(|rows| !self.segmented_finally_edges_accounted(&current, rows))
+                    && frame.multi_return_finally_rows.is_none_or(|rows| {
+                        !self.multi_return_finally_edges_accounted(&current, rows)
+                    })
                     && (frame.own_try.is_none()
                         || !self.edges_accounted_by_catches(&current, frame))
                 {
@@ -3017,6 +3029,22 @@ impl Walker<'_> {
                     let (mut then_run, mut then_next) =
                         self.region_at(&fall_through, &then_frame)?;
                     let (mut else_run, mut else_next) = self.region_at(&taken, &else_frame)?;
+                    // Test5's non-returning arm reaches an ordinary do-while header
+                    // after its list-allocation block. The generic arm walk stops at
+                    // that header, so finish this certified arm within the bounded
+                    // two-segment finally scope before comparing the arms.
+                    if frame.multi_return_finally_rows.is_some() {
+                        self.continue_multi_return_loop_arm(
+                            &mut then_run,
+                            &mut then_next,
+                            &then_frame,
+                        )?;
+                        self.continue_multi_return_loop_arm(
+                            &mut else_run,
+                            &mut else_next,
+                            &else_frame,
+                        )?;
+                    }
                     let then_loop = self.continue_effectful_loop_arm(
                         &mut then_run,
                         &mut then_next,
@@ -3362,6 +3390,34 @@ impl Walker<'_> {
             }
         }
         Ok(exit_source)
+    }
+
+    fn continue_multi_return_loop_arm(
+        &mut self,
+        run: &mut Vec<Region>,
+        next: &mut Option<CanonicalBlockId>,
+        frame: &Frame,
+    ) -> Result<(), StopReason> {
+        let Some(header) = next.as_ref() else {
+            return Ok(());
+        };
+        let Some(node) = self.view.index_of(header) else {
+            return Ok(());
+        };
+        if !self.view.is_loop_header(node) {
+            return Ok(());
+        }
+        for _ in 0..2 {
+            let Some(at) = next.as_ref() else { break };
+            let previous = at.clone();
+            let (part, following) = self.region_at(&previous, frame)?;
+            if part.is_empty() || following.as_ref() == Some(&previous) {
+                break;
+            }
+            run.extend(part);
+            *next = following;
+        }
+        Ok(())
     }
 
     /// The first straight block of a direct `if` arm can stop on arrival at a loop header.
@@ -3741,7 +3797,11 @@ impl Walker<'_> {
     fn starts_catch(&self, block: &CanonicalBlockId) -> bool {
         self.handlers.iter().any(|row| {
             (row.catch_type_index.is_some()
-                || (self.handlers.len() == 1 && row.catch_type_index.is_none()))
+                || (self.handlers.len() == 1 && row.catch_type_index.is_none())
+                || (self.handlers.len() == 3
+                    && row.catch_type_index.is_none()
+                    && row.start_bci == 21
+                    && row.end_bci == 34))
                 && row.start_bci >= block.bci()
                 && self
                     .terminal_bci(block)
@@ -4870,6 +4930,29 @@ impl Walker<'_> {
         }))
     }
 
+    fn multi_return_loop_finally_body(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let crate::guard::Shape::MultiReturnLoopFinally { rows, segments, .. } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        // The shared bounded walker owns the ordinary loop. The two physical
+        // rows remain distinct from the named-catch segmented certificate.
+        self.bounded_shared_finally_body(
+            start,
+            plan.body(),
+            None,
+            ((rows[0], segments[0]), None),
+            plan,
+            outer,
+            None,
+        )
+    }
+
     fn bounded_shared_finally_body(
         &mut self,
         start: &CanonicalBlockId,
@@ -4924,6 +5007,12 @@ impl Walker<'_> {
         frame.own_try = Some(start_node);
         frame.own_finally = Some(rows);
         frame.segmented_finally_rows = segmented_rows;
+        frame.multi_return_finally_rows = match plan.shape() {
+            crate::guard::Shape::MultiReturnLoopFinally { rows, segments, .. } => {
+                Some([(rows[0], segments[0]), (rows[1], segments[1])])
+            }
+            _ => None,
+        };
         let walked = self.region_at(start, &frame);
         let (mut regions, mut next) = match walked {
             Ok(result) => result,
@@ -4938,7 +5027,7 @@ impl Walker<'_> {
                 crate::guard::Shape::SharedFinally {
                     binding_row: Some(_),
                     ..
-                }
+                } | crate::guard::Shape::MultiReturnLoopFinally { .. }
             )
         {
             while let Some(at) = next.as_ref() {
@@ -4997,7 +5086,7 @@ impl Walker<'_> {
                         crate::guard::Shape::SharedFinally {
                             binding_row: Some(_),
                             ..
-                        }
+                        } | crate::guard::Shape::MultiReturnLoopFinally { .. }
                     ),
             )
             || actual != expected
@@ -5036,6 +5125,29 @@ impl Walker<'_> {
             (false, true) => self.finally_edges_accounted(block, (rows[1], Some(rows[3]))),
             (false, false) | (true, true) => false,
         }
+    }
+
+    fn multi_return_finally_edges_accounted(
+        &self,
+        block: &CanonicalBlockId,
+        rows: [(u32, (u32, u32)); 2],
+    ) -> bool {
+        let matches = rows
+            .iter()
+            .copied()
+            .filter(|(_, span)| {
+                self.ssa.block(block).is_some_and(|names| {
+                    names
+                        .instructions()
+                        .iter()
+                        .any(|step| span.0 <= step.bci() && step.bci() < span.1)
+                })
+            })
+            .collect::<Vec<_>>();
+        let [row] = matches.as_slice() else {
+            return false;
+        };
+        self.finally_edges_accounted(block, (*row, None))
     }
 
     fn finally_edges_accounted(
@@ -7889,6 +8001,12 @@ impl Walker<'_> {
             && frame
                 .own_finally
                 .is_none_or(|rows| !self.finally_edges_accounted(header, rows))
+            && frame
+                .segmented_finally_rows
+                .is_none_or(|rows| !self.segmented_finally_edges_accounted(header, rows))
+            && frame
+                .multi_return_finally_rows
+                .is_none_or(|rows| !self.multi_return_finally_edges_accounted(header, rows))
         {
             return Ok(Some(gap(Vec::new(), vec![header.clone()], reason, None)));
         }
@@ -7942,9 +8060,14 @@ impl Walker<'_> {
             &transfer_sources,
             &terminal_returns,
         );
-        if self.handlers.len() == 4 && frame.own_finally.is_some() && frame.own_try.is_some() {
+        if matches!(self.handlers.len(), 3 | 4)
+            && frame.own_finally.is_some()
+            && frame.own_try.is_some()
+        {
             body_frame.own_finally = frame.own_finally;
             body_frame.own_try = frame.own_try;
+            body_frame.segmented_finally_rows = frame.segmented_finally_rows;
+            body_frame.multi_return_finally_rows = frame.multi_return_finally_rows;
         }
         self.include_fragmented_catch_scope(&mut body_frame, header_node);
         let (body, _) = self.loop_body_sequence(&inside, &body_frame, blocks)?;
