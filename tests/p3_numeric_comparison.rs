@@ -390,7 +390,7 @@ fn accepted_comparison_keeps_compare_and_branch_origins() {
 }
 
 #[test]
-fn call_operands_keep_order_and_the_negative_boolean_merge_stays_quoted() {
+fn call_operands_keep_order_and_boolean_merge_preserves_double_less_than() {
     let engine = Engine::new();
     let fixture = fixture(&engine);
     for &(name, descriptor, condition) in &EFFECTS {
@@ -436,19 +436,19 @@ fn call_operands_keep_order_and_the_negative_boolean_merge_stays_quoted() {
     assert!(report.produced(), "{}", report.text);
     assert_eq!(
         report.representation,
-        Representation::Mixed,
-        "the converged boolean remains a mixed fallback:\n{}",
+        Representation::Java,
+        "the converged boolean is recovered as its equivalent Java comparison:\n{}",
         report.text
     );
     assert_eq!(
         report.quality,
-        Quality::Fallback,
-        "the converged boolean remains a fallback:\n{}",
+        Quality::Structured,
+        "the converged boolean remains structured:\n{}",
         report.text
     );
     assert!(
-        report.text.contains("@bytecode 11"),
-        "the converged return remains quoted:\n{}",
+        body(&report).contains("return arg0 < arg2;"),
+        "dcmpg/ifge must preserve Java's less-than result, including NaN:\n{}",
         report.text
     );
     for bci in [2, 3, 11] {
