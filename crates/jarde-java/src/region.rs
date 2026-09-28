@@ -47,7 +47,7 @@ use jarde_jvm::method_ir::{
     SsaBlock, SsaTable, ValueId,
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
-use jarde_reader::classfile::{ExceptionHandlerFact, MethodCodeFacts};
+use jarde_reader::classfile::{CpEntryFacts, ExceptionHandlerFact, MethodCodeFacts};
 
 use crate::decode::Operations;
 use crate::facts::{CompareOp, ConstantValue, Operation};
@@ -1146,6 +1146,7 @@ pub(crate) fn recover(
     view: &NormalFlowView,
     ssa: &SsaTable,
     operations: &Operations,
+    pool: &[CpEntryFacts],
     chains: &crate::concat::Plan,
     sites: &crate::init::Sites,
     code: &MethodCodeFacts,
@@ -1276,6 +1277,7 @@ pub(crate) fn recover(
         view,
         ssa,
         operations,
+        pool,
         chains,
         sites,
         code,
@@ -1975,6 +1977,7 @@ struct Walker<'a> {
     view: &'a NormalFlowView,
     ssa: &'a SsaTable,
     operations: &'a Operations,
+    pool: &'a [CpEntryFacts],
     chains: &'a crate::concat::Plan,
     sites: &'a crate::init::Sites,
     code: &'a MethodCodeFacts,
@@ -2324,6 +2327,7 @@ impl Walker<'_> {
                     self.view,
                     self.ssa,
                     self.operations,
+                    self.pool,
                     self.chains,
                     self.handlers,
                     self.profile,
@@ -2350,6 +2354,9 @@ impl Walker<'_> {
                     crate::guard::Shape::TwoCatchReturnFinally { .. } => self
                         .two_catch_return_finally_body(&current, &plan, frame)?
                         .map(|body| (body, None)),
+                    crate::guard::Shape::NestedCleanupFinally { .. } => self
+                        .nested_cleanup_finally_regions(&current, &plan, frame)?
+                        .map(|(body, cleanup)| (body, Some(cleanup))),
                     crate::guard::Shape::SegmentedFinally { .. } => self
                         .segmented_finally_body(&current, &plan, frame)?
                         .map(|body| (body, None)),
@@ -4557,6 +4564,75 @@ impl Walker<'_> {
                 })
                 .collect(),
         }))
+    }
+
+    fn nested_cleanup_finally_regions(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<(Region, Region)>, StopReason> {
+        let crate::guard::Shape::NestedCleanupFinally {
+            catch_type,
+            normal_handler,
+            catch_parameter,
+            ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        if plan.lead().0 != start.bci()
+            || plan.owned().iter().any(|block| {
+                self.view.index_of(block).is_none_or(|node| {
+                    self.visited.contains(&node)
+                        || outer
+                            .scope
+                            .as_ref()
+                            .is_some_and(|scope| !scope.contains(&node))
+                })
+            })
+        {
+            return Ok(None);
+        }
+        for block in plan.owned() {
+            poll(self.budget, Some(block.bci()))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(block.bci()),
+            )?;
+        }
+        let Some(normal) = self
+            .canonical
+            .blocks()
+            .iter()
+            .find(|block| block.id().bci() == 0)
+            .map(|block| block.id().clone())
+        else {
+            return Ok(None);
+        };
+        Ok(Some((
+            Region::Straight {
+                blocks: vec![start.clone()],
+            },
+            Region::Try {
+                prefix: Vec::new(),
+                lead: (22, 22),
+                body: Box::new(Region::Straight {
+                    blocks: vec![normal],
+                }),
+                normal_exit_bci: None,
+                catches: vec![CatchClause {
+                    types: crate::guard::CatchTypes::Named(vec![*catch_type]),
+                    handler: normal_handler.clone(),
+                    parameter: *catch_parameter,
+                    body: Box::new(Region::Straight {
+                        blocks: vec![normal_handler.clone()],
+                    }),
+                }],
+            },
+        )))
     }
 
     fn shared_finally_body(

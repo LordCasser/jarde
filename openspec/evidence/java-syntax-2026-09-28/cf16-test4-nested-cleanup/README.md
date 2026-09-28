@@ -10,10 +10,18 @@ The pinned JADX complete class source reconstructs the method as a body `try` wi
 
 The fixed target directly creates a `FileOutputStream`, so the pinned method offers no injection seam for forcing a body `IOException`, cleanup `IOException`, or cleanup `RuntimeException`. Its original source, pinned JADX output, and Jarde presentation compile with `--release 8` and verify-run with `java -Xverify:all`, but the target runner only observes normal completion; that result does not prove behavior recovery. The separate `Control.java` helper-seam probe drives four paths and logs operation order. Original and pinned JADX outputs match for normal completion, body `IOException`, cleanup `IOException`, and cleanup `RuntimeException`. Jarde's explanation-only control compiles as an empty method and produces empty event logs, so it does not match. This control exercises the source-level nesting semantics only: it has different bytecode and is not evidence that Jarde recovered the pinned `TestCls.test()` behavior.
 
+## 修复后独立回放
+
+上文的 `jarde.java.txt`、`jarde.report.txt` 与旧运行记录保留修复前的两级拒绝基线。修复后的 fresh CLI 输出保存在 [`recovered/`](recovered/)：固定目标的原始、JADX、Jarde 三份完整 Java 8 源码均可重编，并在 `-Xverify:all` 下正常运行一致；Jarde 的 `test()` 为 `structured`，只有一份 `finally { try { close(); delete(); } catch (IOException ...) {} }`，source map 覆盖全部 31 个物理 BCI。原始源码与固定 JADX 全文仍在本目录的 `original/` 和 `pinned/`，修复后的 Jarde 全文及 report 在 `recovered/`。目标的异常路径仍没有可注入入口，因此没有将 control 的动态结果写作固定目标的动态证明。
+
+独立 `Control.run` 的 Java 8 异常表只有三行，和固定目标的四行不同。修复后 control 的原始与固定 JADX 输出在六条路径一致，其中新增 `body-io+cleanup-io` 保留正文原异常，`body-io+cleanup-runtime` 由清理未检异常覆盖正文原异常。Jarde 对此三行形态继续安全拒绝。`replay.sh` 按这些分层断言重新运行，旧捕获文件不被覆盖。
+
+`mutate-neighbors.py` 从固定 class 确定性生成四个 verifier 有效近邻：`close→flush`、`delete→exists`、`IOException→Throwable`、首个 named catch 起点 `22→26`。`check-neighbors.sh` 使用 fresh CLI 和 JVM 验证四者均拒绝唯一 finally 投影；`delete→exists` 的正常运行留下临时文件，其余三者无残留。另一个可注入、字节码不同的 `negative/WrongReceiver.java` 在正文异常时关闭 `other` 而不是 `first`，运行事件可区分，Jarde 同样拒绝。覆盖缩窄变异在固定目标的正常路径无动态差异；其异常差异由异常表和独立 control 的清理 `IOException` 路径说明，未宣称已动态触发固定目标。
+
 Run the deterministic replay with a Jarde CLI built from this checkout and a fresh output directory:
 
 ```sh
 ./replay.sh /path/to/jarde-cli /tmp/cf16-test4-replay
 ```
 
-The script verifies the pinned class/source hashes and JADX HEAD, compiles with `javac --release 8`, compares the target bytecode shape, decompiles with pinned JADX, invokes Jarde `class-source`, and runs the target and control variants with `java -Xverify:all`. The output directory retains the regenerated Jarde reports and run transcripts. It does not modify production code or build Rust artifacts.
+The script verifies the pinned class/source hashes and JADX HEAD, compiles with `javac --release 8`, compares the target bytecode shape, decompiles with pinned JADX, invokes Jarde `class-source`, and runs the target and control variants with `java -Xverify:all`. The output directory retains the regenerated Jarde reports and run transcripts. It does not modify production code or build Rust artifacts. 近邻另以 `./check-neighbors.sh /path/to/jarde-cli /tmp/cf16-test4-neighbors` 重放。

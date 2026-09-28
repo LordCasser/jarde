@@ -1,0 +1,2 @@
+normal|[first.write:1, first.close, file.delete]|none
+body-io|[first.write:1, other.close, file.delete]|IOException:body

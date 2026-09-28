@@ -46,14 +46,29 @@ cp "$HERE/TargetRunner.java" "$TMP/pinned/$PACKAGE/"
 "$JAVA" -Xverify:all -cp "$TMP/pinned" "$PACKAGE.TargetRunner" > "$OUT/target.pinned.run.txt"
 cmp "$OUT/target.original.run.txt" "$OUT/target.pinned.run.txt"
 "$CLI" class-source --input "$FIXED" --class 'jadx.tests.integration.trycatch.TestTryCatchFinally4$TestCls' --policy single-class --release 8 --format text > "$OUT/jarde.java.txt" 2> "$OUT/jarde.report.txt"
-cmp "$OUT/jarde.java.txt" "$HERE/jarde.java.txt"
-rg -q 'not recovered: the recovery run for `test\(\)V` produced no statement' "$OUT/jarde.java.txt"
-rg -q 'local 1 crosses a quoted fallback region' "$OUT/jarde.java.txt"
+rg -q '        } finally \{' "$OUT/jarde.java.txt"
+rg -q '            } catch \(java.io.IOException ' "$OUT/jarde.java.txt"
+rg -q 'methods.1.outcome.report.quality = "structured"' "$OUT/jarde.report.txt"
+if rg -q 'methods.1.outcome.report.fallbacks = \[[^]]+\]' "$OUT/jarde.report.txt"; then
+  echo 'fixed target unexpectedly fell back' >&2; exit 1
+fi
+python3 - "$OUT/jarde.report.txt" <<'PY'
+import re, sys
+report = open(sys.argv[1]).read()
+expected = {0, 2, 4, 7, 8, 11, 12, 13, 16, 17, 18, 19, 22, 23, 26, 27,
+            30, 31, 34, 35, 38, 40, 41, 44, 45, 48, 49, 52, 54, 56, 57}
+actual = {int(bci) for bci in re.findall(
+    r'methods\.1\.outcome\.report\.source_map\.segments\.\d+\.origin\.(?:primary|derived\.\d+)\.bci = (\d+)',
+    report)}
+if actual != expected:
+    raise SystemExit(f'fixed target source map mismatch: missing={sorted(expected-actual)} extra={sorted(actual-expected)}')
+PY
 mkdir -p "$TMP/jarde/$PACKAGE"
 cp "$OUT/jarde.java.txt" "$TMP/jarde/$PACKAGE/$TARGET.java"
 cp "$HERE/TargetRunner.java" "$TMP/jarde/$PACKAGE/"
 "$JAVAC" --release 8 -g -Xlint:-options -d "$TMP/jarde" "$TMP/jarde/$PACKAGE/$TARGET.java" "$TMP/jarde/$PACKAGE/TargetRunner.java" 2> "$OUT/jarde-javac.stderr"
 "$JAVA" -Xverify:all -cp "$TMP/jarde" "$PACKAGE.TargetRunner" > "$OUT/target.jarde.run.txt"
+cmp "$OUT/target.original.run.txt" "$OUT/target.jarde.run.txt"
 
 # This control uses injectable seams and is separate from the exact target bytecode evidence.
 "$JADX" --no-res -d "$TMP/jadx-control" "$TMP/original/$PACKAGE/Control.class" > "$OUT/jadx-control.log" 2>&1
@@ -65,16 +80,18 @@ cp "$JC" "$TMP/pinned/$PACKAGE/Control.java"
 "$JAVA" -Xverify:all -cp "$TMP/pinned:$TMP/original" "$PACKAGE.ControlRunner" > "$OUT/control.pinned.run.txt"
 "$CLI" class-source --input "$TMP/original/$PACKAGE/Control.class" --class 'jadx.tests.integration.trycatch.Control' --policy single-class --release 8 --format text > "$OUT/Control.jarde.java" 2> "$OUT/control-jarde.report.txt"
 cmp "$OUT/Control.jarde.java" "$HERE/Control.jarde.java"
+rg -q 'methods.1.outcome.report.quality = "fallback"' "$OUT/control-jarde.report.txt"
 cp "$OUT/Control.jarde.java" "$TMP/jarde/$PACKAGE/Control.java"
 "$JAVAC" --release 8 -g -Xlint:-options -cp "$TMP/original" -d "$TMP/jarde" "$TMP/jarde/$PACKAGE/Control.java" "$TMP/jarde/$PACKAGE/ControlRunner.java" 2> "$OUT/control-jarde-javac.stderr"
 "$JAVA" -Xverify:all -cp "$TMP/jarde:$TMP/original" "$PACKAGE.ControlRunner" > "$OUT/control.jarde.run.txt"
 "$JAVA" -Xverify:all -cp "$TMP/original" "$PACKAGE.ControlRunner" > "$OUT/control.original.run.txt"
 cmp "$OUT/control.original.run.txt" "$OUT/control.pinned.run.txt"
-if cmp -s "$OUT/control.original.run.txt" "$OUT/control.jarde.run.txt"; then CJ=true; else CJ=false; fi
 echo "target_test_method_bci_opcode_rows_match=true" > "$OUT/results.txt"
 echo "target_normal_original_equals_pinned_jadx=$(cmp -s "$OUT/target.original.run.txt" "$OUT/target.pinned.run.txt" && echo true || echo false)" >> "$OUT/results.txt"
-echo 'target_jarde_source_status=explanation_only_no_test_body' >> "$OUT/results.txt"
-echo 'target_control=separate_helper_seam_probe' >> "$OUT/results.txt"
+echo 'target_normal_original_equals_jarde=true' >> "$OUT/results.txt"
+echo 'target_jarde_source_status=structured_nested_cleanup' >> "$OUT/results.txt"
+echo 'target_jarde_source_map_all_31_bci=true' >> "$OUT/results.txt"
+echo 'target_control=separate_three_row_helper_seam_probe' >> "$OUT/results.txt"
 echo 'control_original_equals_pinned_jadx=true' >> "$OUT/results.txt"
-echo "control_jarde_equals_original=$CJ" >> "$OUT/results.txt"
+echo 'control_jarde_source_status=safe_refusal' >> "$OUT/results.txt"
 cat "$OUT/results.txt"

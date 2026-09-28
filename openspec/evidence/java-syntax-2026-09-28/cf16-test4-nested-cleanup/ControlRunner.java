@@ -19,7 +19,7 @@ public class ControlRunner {
 		@Override
 		public void write(int value) throws IOException {
 			events.add("write:" + value);
-			if (mode.equals("body-io")) {
+			if (mode.startsWith("body-io")) {
 				throw new IOException("body");
 			}
 		}
@@ -27,10 +27,10 @@ public class ControlRunner {
 		@Override
 		public void close() throws IOException {
 			events.add("close");
-			if (mode.equals("cleanup-io")) {
+			if (mode.endsWith("cleanup-io")) {
 				throw new IOException("cleanup");
 			}
-			if (mode.equals("cleanup-runtime")) {
+			if (mode.endsWith("cleanup-runtime")) {
 				throw new IllegalStateException("cleanup");
 			}
 		}
@@ -53,7 +53,7 @@ public class ControlRunner {
 	}
 
 	public static void main(String[] args) throws Exception {
-		for (String mode : new String[] { "normal", "body-io", "cleanup-io", "cleanup-runtime" }) {
+		for (String mode : new String[] { "normal", "body-io", "cleanup-io", "cleanup-runtime", "body-io+cleanup-io", "body-io+cleanup-runtime" }) {
 			List<String> events = new ArrayList<String>();
 			String thrown = "none";
 			try {

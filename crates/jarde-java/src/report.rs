@@ -4116,6 +4116,7 @@ fn recover_inner(
         &view,
         ssa,
         &operations,
+        request.ir.constant_pool(),
         &chains,
         &sites,
         code,

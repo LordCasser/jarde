@@ -1,0 +1,3 @@
+four_fixed_class_mutations_verify_and_refuse=true
+wrong_delete_leaves_file=true
+wrong_receiver_changes_body_exception_order_and_refuses=true
