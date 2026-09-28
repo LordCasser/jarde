@@ -22574,15 +22574,19 @@ fn class_source_array_target_is_sufficient(plan: &lambda::Plan) -> bool {
     let Some(parameter) = plan.adaptation.parameters.as_slice().first() else {
         return false;
     };
-    if plan.adaptation.parameters.len() != 1
-        || parameter.sam_to_dynamic != Identity
-        || !matches!(
+    let integer = Type::Reference("java.lang.Integer".to_owned());
+    let primitive_length = parameter.implementation == Type::Int
+        && matches!(
             parameter.dynamic_to_implementation,
             Identity | UnboxPrimitive
         )
-        || parameter.implementation != Type::Int
-        || !(parameter.sam == Type::Int
-            || parameter.sam == Type::Reference("java.lang.Integer".to_owned()))
+        && (parameter.sam == Type::Int || parameter.sam == integer);
+    let boxed_length = parameter.implementation == integer
+        && parameter.sam == integer
+        && parameter.dynamic_to_implementation == Identity;
+    if plan.adaptation.parameters.len() != 1
+        || parameter.sam_to_dynamic != Identity
+        || !(primitive_length || boxed_length)
     {
         return false;
     }
