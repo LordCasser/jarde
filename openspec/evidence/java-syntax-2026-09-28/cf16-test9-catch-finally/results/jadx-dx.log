@@ -1,0 +1,3 @@
+Command: ./gradlew :jadx-cli:run --offline --args="--use-dx -d <output> <TestCls.class>"
+Profile: Java bytecode conversion to DEX
+Observed: DX conversion failed; D8 fallback emitted source successfully

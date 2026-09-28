@@ -1,0 +1,2 @@
+present result=resource-data close=1 exception=none
+missing result=<threw> close=0 exception=java.lang.NullPointerException

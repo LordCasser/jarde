@@ -1,0 +1,3 @@
+Command: cargo build --offline --locked --target-dir <temporary /private/tmp target> -p jarde-cli
+Result: success
+Cleanup: temporary target removed on script exit

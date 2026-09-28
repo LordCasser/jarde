@@ -1,0 +1,2 @@
+EXPECTED REFUSAL: Jarde source carries recovery/fallback markers; it is not treated as runnable evidence.
+Jarde full source compilation failed; no java -Xverify:all execution was attempted.

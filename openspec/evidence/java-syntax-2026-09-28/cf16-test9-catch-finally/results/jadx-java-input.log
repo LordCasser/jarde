@@ -1,0 +1,3 @@
+Command: ./gradlew :jadx-cli:run --offline --args="-d <output> <TestCls.class>"
+Profile: Java-input (no --use-dx flag)
+Result: success; source emitted

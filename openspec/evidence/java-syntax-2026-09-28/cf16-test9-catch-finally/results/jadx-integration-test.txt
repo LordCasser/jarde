@@ -1,0 +1,6 @@
+TEST_INPUT_PLUGIN: unset (IntegrationTest default is dx)
+Command: ./gradlew :jadx-core:test --offline --rerun-tasks --tests jadx.tests.integration.trycatch.TestTryCatchFinally9
+> Task :jadx-core:testClasses
+> Task :jadx-core:test
+BUILD SUCCESSFUL
+JUnit result: tests=1 skipped=0 failures=0 errors=0
