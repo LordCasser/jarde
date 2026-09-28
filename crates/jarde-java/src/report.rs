@@ -2709,6 +2709,10 @@ pub struct RecoveryReport {
     pub artifact: RecoveryArtifact,
     /// The names the presentation decided, when the run reached the naming step.
     pub aliased_names: Vec<String>,
+    /// The same naming table's whole parameter spellings for a class-source declaration.
+    /// This handoff is not serialized as recovery evidence.
+    #[serde(skip)]
+    pub parameter_names: Vec<Option<String>>,
     /// What the run states about itself, in the fact layer's diagnostic vocabulary.
     pub diagnostics: Vec<Diagnostic>,
 }
@@ -4153,10 +4157,44 @@ fn recover_inner(
     // Field declarations are borrowed from the same class facts as the body. The field plan keeps
     // the proof that lets a blank same-class static final write lose its qualifier, and the same
     // proof supplies the names the local naming walk must reserve.
-    let reserved_field_names = match fields.simple_static_final_names(budget) {
+    let mut reserved_names = match fields.simple_static_final_names(budget) {
         Ok(names) => names,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
+    // A static member of another type is spelled with its type path. Its first component must
+    // remain a type/package name in Java expression context, rather than becoming a generated
+    // parameter or local with the same spelling (`arg0.pick()` is otherwise an instance call).
+    for (bci, operation) in operations.iter() {
+        let owner = match operation {
+            Operation::Invoke(target) if target.kind() == crate::facts::InvokeKind::Static => {
+                Some(target.owner())
+            }
+            Operation::Field {
+                is_static: true,
+                owner,
+                ..
+            } => Some(owner.as_str()),
+            _ => None,
+        };
+        if let Some(owner) = owner {
+            if let Err(stop) = crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                1,
+                Some(*bci),
+            ) {
+                return stopped(method, profile.clone(), &selection, stop, budget);
+            }
+            if let Some(root) = owner
+                .split('/')
+                .next()
+                .and_then(|name| name.split('$').next())
+                && crate::names::is_java_identifier(root)
+            {
+                reserved_names.insert(root.to_owned());
+            }
+        }
+    }
     let names = if request.facts.method().has_receiver() {
         // Slot 0 holds the receiver (JVMS 4.10.1.9), so it is spelled as one: the answer comes from
         // the member's own flags and from nothing else, which is why the naming is told it instead of
@@ -4165,14 +4203,14 @@ fn recover_inner(
             request.facts.method().parameters(),
             slots,
             reuse.evidence(),
-            &reserved_field_names,
+            &reserved_names,
         )
     } else {
         NameTable::build_with_reserved(
             request.facts.method().parameters(),
             slots,
             reuse.evidence(),
-            &reserved_field_names,
+            &reserved_names,
         )
     };
     // The two shapes this run decides *before* a single statement is written, each from this run's
@@ -5176,6 +5214,14 @@ fn recover_inner(
         declaration: declaration_record,
         fallbacks,
         aliased_names,
+        parameter_names: (0..request.facts.method().parameters())
+            .map(|slot| {
+                parameter_types
+                    .contains_key(&slot)
+                    .then(|| names.whole(slot).map(|name| name.text().to_owned()))
+                    .flatten()
+            })
+            .collect(),
         diagnostics,
         method,
         rules,
@@ -6080,6 +6126,7 @@ fn stopped(
         // verdict states that the artifact the request named could not be checked against one.
         artifact: RecoveryArtifact::not_produced(selection.expected_artifact()),
         aliased_names: Vec::new(),
+        parameter_names: Vec::new(),
         diagnostics: vec![stop_diagnostic(&reason)],
     }
 }
@@ -6134,6 +6181,7 @@ fn refused(
         // publishes no binding and compares nothing.
         artifact: RecoveryArtifact::not_produced(selection.expected_artifact()),
         aliased_names: Vec::new(),
+        parameter_names: Vec::new(),
         diagnostics: vec![stop_diagnostic(&reason)],
     }
 }

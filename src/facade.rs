@@ -5438,6 +5438,7 @@ impl Engine {
                 let spelled = class_source::spell_method(
                     &item,
                     None,
+                    None,
                     &declaration.name,
                     read.facts.access_flags,
                     None,
@@ -5497,6 +5498,7 @@ impl Engine {
                         let spelled = class_source::spell_method(
                             &item,
                             None,
+                            None,
                             &declaration.name,
                             read.facts.access_flags,
                             None,
@@ -5554,6 +5556,7 @@ impl Engine {
             };
             let spelled = class_source::spell_method(
                 &item,
+                None,
                 None,
                 &declaration.name,
                 read.facts.access_flags,
@@ -5708,6 +5711,7 @@ impl Engine {
                                 let spelled = class_source::spell_method(
                                     &item,
                                     Some(recovered.facts()),
+                                    Some(&recovered.recovery().parameter_names),
                                     &declaration.name,
                                     read.facts.access_flags,
                                     Some(&attributes),

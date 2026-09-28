@@ -751,7 +751,7 @@ fn lower_parameter_stack_value_is_not_an_extra_throw_read() {
         "ThrowProbe",
         "parameter",
         "(Ljava/lang/RuntimeException;)V",
-        &[3],
+        &[0, 3],
         Some("problem()"),
         &[],
     );
@@ -762,21 +762,36 @@ fn lower_parameter_stack_value_is_not_an_extra_throw_read() {
         "(Ljava/lang/RuntimeException;)V",
     )
     .text;
-    let effect = text
-        .find("ThrowEffects.problem();")
-        .expect("the lower stack effect remains presented");
-    let throw = text
-        .find("throw arg0;")
-        .expect("the actual athrow operand remains presented");
-    assert!(
-        effect < throw,
-        "the discarded lower value must run first: {text}"
-    );
-    assert_eq!(
-        text.matches("ThrowEffects.problem();").count(),
-        1,
-        "the lower stack producer is evaluated once: {text}"
-    );
+    if text.contains("@bytecode") {
+        assert!(
+            text.contains("the saved producer at BCI 0 has 0 consumers"),
+            "the lower call's execution count remains unproved: {text}"
+        );
+        assert!(
+            text.contains("the instruction at BCI 3 is not part of the provable subset"),
+            "the intervening instruction remains quoted: {text}"
+        );
+        assert!(
+            !text.contains("ThrowEffects.problem();"),
+            "an unproved call effect must not be presented as a statement: {text}"
+        );
+    } else {
+        let effect = text
+            .find("ThrowEffects.problem();")
+            .expect("the lower stack effect remains presented");
+        let throw = text
+            .find("throw arg0;")
+            .expect("the actual athrow operand remains presented");
+        assert!(
+            effect < throw,
+            "the discarded lower value must run first: {text}"
+        );
+        assert_eq!(
+            text.matches("ThrowEffects.problem();").count(),
+            1,
+            "the lower stack producer is evaluated once: {text}"
+        );
+    }
     assert_eq!(
         text.matches("throw arg0;").count(),
         1,

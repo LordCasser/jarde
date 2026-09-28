@@ -280,13 +280,14 @@ fn shift_recovery_stops_cleanly_at_resource_limits_and_before_work() {
         panic!("IR exhaustion is reported with class source")
     };
     assert!(matches!(
-        &method(&ir_stopped, b"callTarget").outcome,
-        ClassSourceOutcome::Recovered { report, analysis }
+        ir_stopped.methods.last().map(|method| &method.outcome),
+        Some(ClassSourceOutcome::Recovered { report, analysis })
             if report.text.is_empty()
                 && matches!(report.outcome, RecoveryOutcome::Stopped(_))
-                && matches!(analysis.execution, ExecutionReport::Partial {
+                && matches!(report.execution, ExecutionReport::Partial {
                     reason: TerminationReason::BudgetExceeded { dimension: BudgetDimension::IrItems }, ..
                 })
+                && matches!(analysis.execution, ExecutionReport::Complete { .. })
     ));
 
     let mut work_limits = complete.limits.clone();
