@@ -620,6 +620,9 @@ impl Billing {
 /// bodies where the old pin counted longer quoted fallbacks, moving −144 IR items and −549 output
 /// bytes. The physical read, decoded body, and delivery counts remain unchanged. The three
 /// paths' member text and outcome equality is checked before the old-arm pins below.
+/// Reserving static owner roots during naming then bills one IR item for each static reference
+/// inspected: +1/+1/+1/+67/+1/+4 across the cases, +75 on either per-method arm. No text or
+/// outcome changes in this corpus; the separate type-qualifier fixture proves the collision fix.
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     ///
@@ -634,7 +637,7 @@ impl Billing {
         class_bytes: 1813,
         class_headers: 0,
         method_bodies: 17,
-        ir_items: 2371,
+        ir_items: 2372,
         analysis_steps: 1336,
         result_items: 37,
         output_bytes: 3657,
@@ -657,7 +660,7 @@ impl Billing {
         class_bytes: 2381,
         class_headers: 0,
         method_bodies: 26,
-        ir_items: 4111,
+        ir_items: 4112,
         analysis_steps: 2066,
         result_items: 64,
         output_bytes: 5628,
@@ -678,7 +681,7 @@ impl Billing {
         class_bytes: 2686,
         class_headers: 4,
         method_bodies: 12,
-        ir_items: 1974,
+        ir_items: 1975,
         analysis_steps: 1097,
         result_items: 43,
         output_bytes: 2638,
@@ -720,7 +723,7 @@ impl Billing {
         // that became statements, and — the one classification that moved — `boom`'s `throw new`,
         // which the expansion presents as the construction statement it is, so the case's
         // explanation-only count fell from six to five.
-        ir_items: 20264,
+        ir_items: 20331,
         analysis_steps: 10493,
         result_items: 122,
         output_bytes: 23280,
@@ -736,7 +739,7 @@ impl Billing {
         class_bytes: 1019,
         class_headers: 0,
         method_bodies: 12,
-        ir_items: 1974,
+        ir_items: 1975,
         analysis_steps: 1097,
         result_items: 35,
         output_bytes: 2638,
@@ -752,7 +755,7 @@ impl Billing {
         class_bytes: 753,
         class_headers: 0,
         method_bodies: 7,
-        ir_items: 3015,
+        ir_items: 3019,
         analysis_steps: 1172,
         result_items: 18,
         output_bytes: 1723,
@@ -785,7 +788,7 @@ impl Billing {
         class_bytes: 327895,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 33709,
+        ir_items: 33784,
         analysis_steps: 17261,
         result_items: 1378,
         output_bytes: 39564,
@@ -813,7 +816,7 @@ impl Billing {
         class_bytes: 10817,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 33709,
+        ir_items: 33784,
         analysis_steps: 17261,
         result_items: 26,
         output_bytes: 39564,
