@@ -2163,19 +2163,17 @@ fn dt07_nested_anonymous_snapshot(
         String::from_utf8_lossy(&compile.stderr)
     );
     if other_source.is_some() {
-        let compile_other = Command::new("javac")
-            .args(["--release", "8", "-g:none", "-classpath"])
-            .arg(&directory)
-            .arg("-d")
-            .arg(&directory)
-            .arg(source_directory.join("Other.java"))
-            .output()
-            .expect("JDK javac can compile the separate anonymous-child consumer");
-        assert!(
-            compile_other.status.success(),
-            "javac rejected the cross-class use:\n{}",
-            String::from_utf8_lossy(&compile_other.stderr)
+        compile_java_8_with_shadow(
+            &directory,
+            "p/Other.java",
+            &directory,
+            "package p; final class Nested$1$1 implements Action {\n\
+             Nested$1$1(Nested$1 outer) {}\n\
+             public void run() {}\n\
+             }\n",
+            "javac rejected the cross-class use",
         );
+        verify_java_8(&directory, "p.Other");
     }
     let mut names = vec![
         "Action.class",
@@ -2362,7 +2360,10 @@ fn nested_anonymous_projection_refuses_cross_class_identity_use_of_the_grandchil
         &scratch,
         None,
         Some(
-            "package p; final class Other { static Action use() { return new Nested$1$1(null); } }",
+            "package p; final class Other {\n\
+             static Action use() { return new Nested$1$1(null); }\n\
+             public static void main(String[] args) { use(); }\n\
+             }",
         ),
         false,
         false,
@@ -2662,7 +2663,10 @@ fn anonymous_double_capture_refuses_a_changed_slot_descriptor_and_cross_class_us
             "cross-class-use",
             DT08_CAPTURE_SOURCE.to_owned(),
             Some(
-                "package p; final class Other { static Runnable extra() { return new Capture$1(); } }\n",
+                "package p; final class Other {\n\
+                 static Runnable extra() { return new Capture$1(0.0D); }\n\
+                 public static void main(String[] args) { extra(); }\n\
+                 }\n",
             ),
             "anonymous_interface_child_additional_use",
         ),
@@ -2685,19 +2689,17 @@ fn anonymous_double_capture_refuses_a_changed_slot_descriptor_and_cross_class_us
         );
         if let Some(other) = other {
             fs::write(package.join("Other.java"), other).expect("write cross-class user");
-            let compile = Command::new("javac")
-                .args(["--release", "8", "-g:none", "-classpath"])
-                .arg(&directory)
-                .args(["-d"])
-                .arg(&directory)
-                .arg(package.join("Other.java"))
-                .output()
-                .expect("javac is available for the cross-class use");
-            assert!(
-                compile.status.success(),
-                "{}",
-                String::from_utf8_lossy(&compile.stderr)
+            compile_java_8_with_shadow(
+                &directory,
+                "p/Other.java",
+                &directory,
+                "package p; final class Capture$1 implements Runnable {\n\
+                 Capture$1(double value) {}\n\
+                 public void run() {}\n\
+                 }\n",
+                "javac rejected the cross-class use",
             );
+            verify_java_8(&directory, "p.Other");
         }
         let root_bytes = fs::read(package.join("Capture.class")).expect("read root class");
         let root_bytes = if name == "changed-slot" {
@@ -2990,10 +2992,23 @@ fn anonymous_inner_this_refuses_a_cross_class_constructor_reference() {
         .expect("write the frozen anonymous class");
     fs::write(
         directory.join("Other.java"),
-        "final class Other { static Runnable make(Inner outer) { return new Inner$1(outer); } }\n",
+        "final class Other {\n\
+         static Runnable make(Inner outer) { return new Inner$1(outer); }\n\
+         public static void main(String[] args) { make(new Inner()); }\n\
+         }\n",
     )
     .expect("write a second physical owner of the anonymous constructor");
-    compile_java_8(&directory, "Other.java", &directory);
+    compile_java_8_with_shadow(
+        &directory,
+        "Other.java",
+        &directory,
+        "final class Inner$1 implements Runnable {\n\
+         Inner$1(Inner outer) {}\n\
+         public void run() {}\n\
+         }\n",
+        "javac rejected the cross-class constructor reference",
+    );
+    verify_java_8(&directory, "Other");
     let other = fs::read(directory.join("Other.class")).expect("read the second owner");
     let snapshot = open(zip_of(&[
         (b"Inner.class", ANONYMOUS_INNER_THIS_ROOT),
@@ -3907,10 +3922,21 @@ fn anonymous_interface_projection_refuses_a_second_non_direct_same_class_allocat
         "public class AnonymousInterfaceBasic {\n\
          static I make() { return new I() { public int value() { return 7; } }; }\n\
          static I extra() { I local = new AnonymousInterfaceBasic$1(); return local; }\n\
+         public static void main(String[] args) { if (make().value() != 7 || extra().value() != 7) throw new AssertionError(); }\n\
          }\n",
     )
     .expect("write a direct-return candidate plus a non-direct use of the same child");
-    compile_java_8(&directory, "AnonymousInterfaceBasic.java", &directory);
+    compile_java_8_with_shadow(
+        &directory,
+        "AnonymousInterfaceBasic.java",
+        &directory,
+        "final class AnonymousInterfaceBasic$1 implements I {\n\
+         AnonymousInterfaceBasic$1() {}\n\
+         public int value() { return 7; }\n\
+         }\n",
+        "javac rejected the same-class second allocation",
+    );
+    verify_java_8(&directory, "AnonymousInterfaceBasic");
     let root_bytes = fs::read(directory.join("AnonymousInterfaceBasic.class"))
         .expect("read the compiled root class");
     let child_bytes = fs::read(directory.join("AnonymousInterfaceBasic$1.class"))
@@ -3956,10 +3982,23 @@ fn anonymous_interface_projection_refuses_a_cross_class_use_of_the_same_child() 
     .expect("write the frozen anonymous child");
     fs::write(
         directory.join("Other.java"),
-        "final class Other { static I extra() { return new AnonymousInterfaceBasic$1(); } }\n",
+        "final class Other {\n\
+         static I extra() { return new AnonymousInterfaceBasic$1(); }\n\
+         public static void main(String[] args) { if (extra().value() != 7) throw new AssertionError(); }\n\
+         }\n",
     )
     .expect("write a separate class that constructs the same child");
-    compile_java_8(&directory, "Other.java", &directory);
+    compile_java_8_with_shadow(
+        &directory,
+        "Other.java",
+        &directory,
+        "final class AnonymousInterfaceBasic$1 implements I {\n\
+         AnonymousInterfaceBasic$1() {}\n\
+         public int value() { return 7; }\n\
+         }\n",
+        "javac rejected the cross-class use of the same child",
+    );
+    verify_java_8(&directory, "Other");
     let other_bytes =
         fs::read(directory.join("Other.class")).expect("read the compiled cross-class user");
     let snapshot = open(zip_of(&[
@@ -4504,6 +4543,67 @@ fn compile_java_8(directory: &Path, source_name: &str, classpath: &Path) {
         compile.status.success(),
         "javac rejected the negative fixture:\n{}",
         String::from_utf8_lossy(&compile.stderr)
+    );
+}
+
+fn compile_java_8_with_shadow(
+    directory: &Path,
+    source_name: &str,
+    classpath: &Path,
+    shadow_source: &str,
+    failure: &str,
+) {
+    // javac 25 rejects source-level `new Outer$1(...)` when the real class carries anonymous
+    // nesting metadata. Compile the caller against an ordinary class with the same binary name
+    // and constructor; the snapshot and verifier below still use the real anonymous class bytes.
+    let shadow_source_directory = directory.join("javac-shadow-source");
+    let shadow_classes = directory.join("javac-shadow-classes");
+    fs::create_dir_all(&shadow_source_directory).expect("create compiler-only source directory");
+    fs::create_dir_all(&shadow_classes).expect("create compiler-only class directory");
+    let shadow_source_path = shadow_source_directory.join("Shadow.java");
+    fs::write(&shadow_source_path, shadow_source).expect("write the compiler-only class view");
+    let compile_shadow = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-classpath"])
+        .arg(classpath)
+        .arg("-d")
+        .arg(&shadow_classes)
+        .arg(&shadow_source_path)
+        .output()
+        .expect("JDK javac is available for the compiler-only class view");
+    assert!(
+        compile_shadow.status.success(),
+        "javac rejected the compiler-only class view:\n{}",
+        String::from_utf8_lossy(&compile_shadow.stderr)
+    );
+    let combined_classpath =
+        std::env::join_paths([shadow_classes.as_os_str(), classpath.as_os_str()])
+            .expect("the compiler classpath is representable");
+    let compile = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-classpath"])
+        .arg(combined_classpath)
+        .arg("-d")
+        .arg(directory)
+        .arg(directory.join(source_name))
+        .output()
+        .expect("JDK javac is available for the Java 8 class-source fixture");
+    assert!(
+        compile.status.success(),
+        "{failure}:\n{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+}
+
+fn verify_java_8(directory: &Path, main_class: &str) {
+    let run = Command::new("java")
+        .args(["-Xverify:all", "-classpath"])
+        .arg(directory)
+        .arg(main_class)
+        .output()
+        .expect("JDK java is available for bytecode verification");
+    assert!(
+        run.status.success(),
+        "the real class files failed JVM verification or execution:\n{}",
+        String::from_utf8_lossy(&run.stderr)
     );
 }
 
