@@ -17,4 +17,4 @@
 
 - [x] 4.1 用 fresh CLI 生成完整 Jarde class-source，和固定原 class、原源码、JADX 对照 1.1 全部路径；`javac --release 8`、`java -Xverify:all` 成功且逐路径操作/结果/异常身份一致，记录工具 SHA 和输出。
 - [x] 4.2 重放 1.2 的所有有效近邻及 Test3、Test4、Test11、Test13、TestEmptyFinally 等已验收 finally 切片；运行 `cargo test -p jarde-java --tests --locked`、workspace check、fmt、OpenSpec strict、diff check，记录结果并清理专用 Cargo target。
-- [ ] 4.3 root 独立复核三行表、正常循环/SSA/异常边、全部来源和三方行为，更新 CF-16 账本；只标记固定 Test5 切片，不推断 Test2/9 或所有编译 profile 已恢复。
+- [x] 4.3 root 独立复核三行表、正常循环/SSA/异常边、全部来源和三方行为，见 [主线验收](verification/root-acceptance.md)；已更新 CF-16 账本，只标记固定 Test5 切片，不推断 Test2/9 或所有编译 profile 已恢复。

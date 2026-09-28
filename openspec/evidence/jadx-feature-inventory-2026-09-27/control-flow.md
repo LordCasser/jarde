@@ -82,7 +82,7 @@ CF-16 审计状态：**已证 finally 重复执行差距，调用型、静态字
 
   `TestTryCatchFinally3` 的[固定四行表方法级验收](../java-syntax-2026-09-28/cf16-test3-catch-finally/results/acceptance.txt)已在 catch、foreach 与 finally 交织的固定 class 上恢复一次清理：九条路径的原 class、原源码、JADX、Jarde 方法级 harness 行为一致，34 个 BCI 有来源，七个 verifier 有效近邻拒绝。第四行只保护 handler 的 `astore`，不保护清理调用。独立的 `<clinit>` 缺口仍使 Jarde 整类源码不能重编。
 
-  [TestEmptyFinally](../java-syntax-2026-09-28/cf16-testemptyfinally/implementation-results.md) 的固定两行透明 catch-all 已恢复成普通 try/catch：Jarde 整类 Java 8 源码可重编，原/JADX/Jarde 三条路径行为一致，九个 BCI 有来源，三个 verifier 有效近邻拒绝。[TestTryCatchFinally5](../java-syntax-2026-09-28/cf16-test5-multi-return/README.md) 的正常可达循环与保存返回值、[TestTryCatchFinally9](../java-syntax-2026-09-28/cf16-test9-catch-finally/README.md) 的可空资源清理仍是已固定证据的 Jarde 缺口。Test9 的 JADX Java-input 输出漏掉一次 `close()`，原 class 与 JADX DEX 输出相符，因此以后者作正向参照。
+  [TestEmptyFinally](../java-syntax-2026-09-28/cf16-testemptyfinally/implementation-results.md) 的固定两行透明 catch-all 已恢复成普通 try/catch：Jarde 整类 Java 8 源码可重编，原/JADX/Jarde 三条路径行为一致，九个 BCI 有来源，三个 verifier 有效近邻拒绝。[TestTryCatchFinally5](../../changes/recover-multi-return-loop-finally/verification/root-acceptance.md) 的三行双返回与正常可达正文循环已恢复为完整类：九路径行为一致，45 个 BCI 有来源，六个 verifier 有效近邻拒绝。[TestTryCatchFinally9](../java-syntax-2026-09-28/cf16-test9-catch-finally/README.md) 的可空资源清理仍是已固定证据的 Jarde 缺口。Test9 的 JADX Java-input 输出漏掉一次 `close()`，原 class 与 JADX DEX 输出相符，因此以后者作正向参照。
 
   [TestTryCatchFinally2](../java-syntax-2026-09-28/cf16-test2-loop-finally/README.md) 已固定 Java 11 物理类与 Java 8 原/JADX 行为：三处正常可达正文循环，双行 catch-all，正常/异常清理各一次；Jarde 仍安全拒绝。默认上游测试走 DX，固定 `.class` 的 CLI 对照另作 Java-input 证据。该问题与 Test5 同属正文循环加 finally，缺少 Test5 的跨清理保存返回值，不能套 Test11 的 handler-loop 修复。
 
