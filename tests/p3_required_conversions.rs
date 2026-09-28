@@ -384,9 +384,10 @@ fn a_write_states_the_written_types_own_type() {
 
 /// The conversion node is a **build-time** decision: it is an AST node the producer adds, not one
 /// more IR item and not one more normalization clone. The counters are asserted for the very member
-/// the defect was found on. The current build also scans each SSA value when preparing deferred
-/// bindings, charging one IR item per value; that scan is independent of this conversion. Nothing
-/// here is claimed to make the corpus cheaper, and the cast is not paid for with a new IR item.
+/// the defect was found on. `ir_items` includes the current deferred-binding work for this method;
+/// its count is 165 on the current IR ownership path (`chains.owns`), not the historical 224. The
+/// conversion's six output characters are measured separately below, so text length is never used
+/// as a proxy for IR items.
 ///
 /// `ir_items` and `normalization_clones` are the two counters the change's verification asks about;
 /// `output_bytes` is where the difference *is* (the six characters of `(int) `), and it is asserted
@@ -434,8 +435,8 @@ fn the_conversion_costs_no_ir_item_and_no_normalization_clone() {
         recovered.recovery().text
     );
     assert_eq!(
-        usage.ir_items, 224,
-        "the conversion node is not an IR item: this includes the deferred-binding SSA scan"
+        usage.ir_items, 165,
+        "the conversion remains outside the current IR item budget"
     );
     assert_eq!(
         usage.normalization_clones, 0,
