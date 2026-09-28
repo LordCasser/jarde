@@ -277,8 +277,9 @@ fn a_partial_dimension_allocation_does_not_enter_the_initializer_candidate_path(
     let request = method_request(&snapshot, b"multiArray", b"(I)[[I");
     let mut tight = Budget::new(Limits {
         // `multianewarray` allocates only part of the descriptor's dimensions and is not a
-        // one-dimensional initializer candidate; leave no room for candidate-effect charges.
-        ir_items: 104,
+        // one-dimensional initializer candidate. Its static `DeferredEffects.mark()` owner
+        // now costs one naming-scan item; leave no room beyond that for candidate effects.
+        ir_items: 105,
         ..task_limits(&[]).expect("the task defaults are bounded")
     });
     let recovered = Engine::new()
@@ -296,7 +297,7 @@ fn a_partial_dimension_allocation_does_not_enter_the_initializer_candidate_path(
     );
     assert_eq!(
         tight.usage().ir_items,
-        104,
+        105,
         "the fixture reaches the bound exactly"
     );
 }
