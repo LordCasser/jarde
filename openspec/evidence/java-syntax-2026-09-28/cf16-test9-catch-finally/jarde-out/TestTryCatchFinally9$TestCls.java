@@ -12,11 +12,20 @@ public class TestTryCatchFinally9$TestCls extends java.lang.Object {
     }
 
     public java.lang.String test() throws java.io.IOException {
-        // jarde: not recovered: the recovery run for `test()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
         // @method test()Ljava/lang/String;
         // @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally9$TestCls`, member flags 0x0001
         // recovered from bytecode; presentation is not claimed to compile
-        // @bytecode 0 33 40 42 47 51 53 59 63
-        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+        java.io.InputStream input;
+        input = null;
+        try {
+            input = this.getClass().getResourceAsStream("resource");
+            java.util.Scanner scanner = new java.util.Scanner(input).useDelimiter("\\A");
+            java.lang.String local3 = scanner.hasNext() ? scanner.next() : "";
+            return local3;
+        } finally {
+            if (input != null) {
+                input.close();
+            }
+        }
     }
 }

@@ -210,6 +210,13 @@ pub enum Shape {
         handler_cleanup: (u32, u32),
         normal_return: u32,
     },
+    /// The two-row nullable local cleanup with a saved reference return.
+    NullableResourceFinally {
+        row_ordinal: u32,
+        normal_cleanup: (u32, u32),
+        handler_cleanup: (u32, u32),
+        saved_return: (u32, u32),
+    },
     /// One named catch and two normal completions sharing a proved catch-all cleanup handler.
     SharedFinally {
         rows: [u32; 3],
@@ -358,6 +365,7 @@ impl Plan {
             Shape::Finally { .. }
             | Shape::LoopFinally { .. }
             | Shape::ConditionalFinally { .. }
+            | Shape::NullableResourceFinally { .. }
             | Shape::SharedFinally { .. }
             | Shape::EmptyCatchCallFinally { .. }
             | Shape::SegmentedFinally { .. }
@@ -2602,6 +2610,376 @@ fn prove_conditional_finally(
         },
         lead: (row.start_bci, row.start_bci),
         body: (row.start_bci, row.end_bci),
+        owned,
+        join: None,
+        facts: origins,
+    }))
+}
+
+/// A null-guarded local copy reads one value twice: once for the branch and once as the
+/// receiver. Returning that value lets the caller check the two copies against the same local
+/// definition chain, including the exceptional phi before resource assignment completes.
+fn nullable_close_copy(
+    facts: &Facts<'_>,
+    copy: &[u32; 4],
+    exit: u32,
+    slot: u16,
+) -> Option<(ValueId, Operation)> {
+    let [test_load, branch, receiver_load, close] = *copy;
+    if facts.op(test_load) != Some(&Operation::Load { slot })
+        || facts.op(branch)
+            != Some(&Operation::Comparison {
+                op: CompareOp::JumpIfNull,
+                target: exit,
+            })
+        || facts.op(receiver_load) != Some(&Operation::Load { slot })
+        || !matches!(facts.op(close), Some(Operation::Invoke(target))
+            if target.kind() == InvokeKind::Virtual
+                && target.owner() == "java/io/InputStream"
+                && target.name() == "close"
+                && target.descriptor() == "()V")
+    {
+        return None;
+    }
+    let steps = copy
+        .map(|bci| facts.step(bci))
+        .into_iter()
+        .collect::<Option<Vec<_>>>()?;
+    let local_value = match steps[0].instruction.reads() {
+        [(Slot::Local(read_slot), value)] if *read_slot == slot => *value,
+        _ => return None,
+    };
+    if !matches!(steps[2].instruction.reads(), [(Slot::Local(read_slot), value)]
+        if *read_slot == slot && facts.same(*value, local_value))
+    {
+        return None;
+    }
+    for (producer, consumer) in [(0, 1), (2, 3)] {
+        let outputs = steps[producer].instruction.writes();
+        let inputs = stack_operands(steps[consumer].instruction);
+        if outputs.len() != 1
+            || !matches!(outputs[0].0, Slot::Stack(_))
+            || inputs.len() != 1
+            || !facts.same(outputs[0].1, inputs[0].1)
+        {
+            return None;
+        }
+    }
+    Some((local_value, facts.op(close)?.clone()))
+}
+
+/// Expand only the handler's local phi. Its inputs must be the null initialization or the
+/// resource assignment; a same-numbered slot with another producer is not the source variable.
+fn nullable_resource_value(
+    facts: &mut Facts<'_>,
+    value: ValueId,
+    null_store: ValueId,
+    resource_store: ValueId,
+) -> Result<bool, StopReason> {
+    let mut pending = vec![value];
+    let mut seen = BTreeSet::new();
+    let mut found_resource = false;
+    while let Some(value) = pending.pop() {
+        facts.charge(0)?;
+        let value = facts.resolve(value);
+        if !seen.insert(value) {
+            continue;
+        }
+        if seen.len() > 64 {
+            return Ok(false);
+        }
+        if facts.same(value, resource_store) {
+            found_resource = true;
+            continue;
+        }
+        if facts.same(value, null_store) {
+            continue;
+        }
+        let Definition::Phi { block, slot } = facts.ssa.value(value).def() else {
+            return Ok(false);
+        };
+        if *slot != Slot::Local(1) {
+            return Ok(false);
+        }
+        let Some(phi) = facts.ssa.phis().iter().find(|phi| {
+            phi.block() == block && phi.slot() == *slot && facts.same(phi.value(), value)
+        }) else {
+            return Ok(false);
+        };
+        for input in phi.inputs() {
+            match input {
+                jarde_jvm::method_ir::PhiInput::Value(value) => pending.push(*value),
+                jarde_jvm::method_ir::PhiInput::Itself
+                    if block.bci() == facts.handlers[1].handler_bci => {}
+                jarde_jvm::method_ir::PhiInput::Itself => return Ok(false),
+            }
+        }
+    }
+    Ok(found_resource)
+}
+
+/// The fixed Java 8 two-row lowering: null initialization, one resource assignment, saved
+/// return, and two conditional closes. Every instruction and edge is accounted for before Plan.
+fn prove_nullable_resource_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [body_row, self_row] = facts.handlers else {
+        return Ok(None);
+    };
+    let (start, body_start, cleanup_start, handler_start) = (
+        current.bci(),
+        body_row.start_bci,
+        body_row.end_bci,
+        body_row.handler_bci,
+    );
+    if start != 0
+        || body_row.catch_type_index.is_some()
+        || self_row.catch_type_index.is_some()
+        || self_row.ordinal != body_row.ordinal + 1
+        || self_row.start_bci != handler_start
+        || self_row.handler_bci != handler_start
+        || facts.next_bci(self_row.start_bci) != Some(self_row.end_bci)
+        || !(start < body_start && body_start < cleanup_start && cleanup_start < handler_start)
+        || facts.order.len() > 64
+        || !facts.canonical.unreachable().is_empty()
+    {
+        return Ok(None);
+    }
+    let Some(&last_bci) = facts.order.last() else {
+        return Ok(None);
+    };
+    let lead = facts.bcis((start, body_start));
+    let normal = facts.bcis((cleanup_start, handler_start));
+    let handler = facts.bcis((handler_start, facts.span_end(last_bci)));
+    let (
+        [null_push, null_save],
+        [n0, n1, n2, n3, return_load, normal_return],
+        [primary_store, h0, h1, h2, h3, primary_load, rethrow],
+    ) = (lead.as_slice(), normal.as_slice(), handler.as_slice())
+    else {
+        return Ok(None);
+    };
+    let body = facts.bcis((body_start, cleanup_start));
+    let Some(&saved_return) = body.last() else {
+        return Ok(None);
+    };
+    let resource_stores: Vec<u32> = body
+        .iter()
+        .copied()
+        .filter(|bci| facts.op(*bci) == Some(&Operation::Store { slot: 1 }))
+        .collect();
+    let [resource_store] = resource_stores.as_slice() else {
+        return Ok(None);
+    };
+    let Some(resource_call) = facts.previous_bci(*resource_store) else {
+        return Ok(None);
+    };
+    if facts.op(*null_push) != Some(&Operation::Push(crate::facts::ConstantValue::Null))
+        || facts.op(*null_save) != Some(&Operation::Store { slot: 1 })
+        || facts.op(saved_return) != Some(&Operation::Store { slot: 3 })
+        || facts.op(*return_load) != Some(&Operation::Load { slot: 3 })
+        || facts.op(*normal_return) != Some(&Operation::Return)
+        || facts.op(*primary_store) != Some(&Operation::Store { slot: 4 })
+        || facts.op(*primary_load) != Some(&Operation::Load { slot: 4 })
+        || facts.op(*rethrow) != Some(&Operation::Throw)
+        || !matches!(facts.op(resource_call), Some(Operation::Invoke(target))
+            if target.kind() == InvokeKind::Virtual
+                && target.owner() == "java/lang/Class"
+                && target.name() == "getResourceAsStream"
+                && target.descriptor() == "(Ljava/lang/String;)Ljava/io/InputStream;")
+        || facts.next_bci(*rethrow).is_some()
+        || !handler_binding(facts, *primary_store)
+    {
+        return Ok(None);
+    }
+    let (Some((normal_value, normal_call)), Some((handler_value, handler_call))) = (
+        nullable_close_copy(facts, &[*n0, *n1, *n2, *n3], *return_load, 1),
+        nullable_close_copy(facts, &[*h0, *h1, *h2, *h3], *primary_load, 1),
+    ) else {
+        return Ok(None);
+    };
+    if normal_call != handler_call {
+        return Ok(None);
+    }
+    let (
+        Some(null_step),
+        Some(null_save_step),
+        Some(resource_call_step),
+        Some(resource_step),
+        Some(save_step),
+        Some(return_load_step),
+        Some(return_step),
+        Some(primary_step),
+        Some(primary_load_step),
+        Some(throw_step),
+    ) = (
+        facts.step(*null_push),
+        facts.step(*null_save),
+        facts.step(resource_call),
+        facts.step(*resource_store),
+        facts.step(saved_return),
+        facts.step(*return_load),
+        facts.step(*normal_return),
+        facts.step(*primary_store),
+        facts.step(*primary_load),
+        facts.step(*rethrow),
+    )
+    else {
+        return Ok(None);
+    };
+    let local_written = |step: Step<'_>, slot| {
+        step.instruction
+            .writes()
+            .iter()
+            .find_map(|(written_slot, value)| {
+                (*written_slot == Slot::Local(slot)).then_some(*value)
+            })
+    };
+    let (Some(null_value), Some(resource_value), Some(saved_value), Some(primary_value)) = (
+        local_written(null_save_step, 1),
+        local_written(resource_step, 1),
+        local_written(save_step, 3),
+        local_written(primary_step, 4),
+    ) else {
+        return Ok(None);
+    };
+    if !matches!(stack_operands(null_save_step.instruction).as_slice(), [(_, read)]
+            if null_step.instruction.writes().iter().any(|(_, value)| facts.same(*value, *read)))
+        || !matches!(stack_operands(resource_step.instruction).as_slice(), [(_, read)]
+            if resource_call_step.instruction.writes().iter().any(|(slot, value)|
+                matches!(slot, Slot::Stack(_)) && facts.same(*value, *read)))
+        || !facts.same(normal_value, resource_value)
+        || !nullable_resource_value(facts, handler_value, null_value, resource_value)?
+        || !return_load_step
+            .instruction
+            .reads()
+            .iter()
+            .any(|(slot, value)| *slot == Slot::Local(3) && facts.same(*value, saved_value))
+        || !matches!(stack_operands(return_step.instruction).as_slice(), [(_, read)]
+            if return_load_step.instruction.writes().iter().any(|(_, value)| facts.same(*value, *read)))
+        || !primary_load_step
+            .instruction
+            .reads()
+            .iter()
+            .any(|(slot, value)| *slot == Slot::Local(4) && facts.same(*value, primary_value))
+        || !matches!(stack_operands(throw_step.instruction).as_slice(), [(_, read)]
+            if primary_load_step.instruction.writes().iter().any(|(_, value)| facts.same(*value, *read)))
+    {
+        return Ok(None);
+    }
+    let protected = facts.blocks_in((body_start, cleanup_start));
+    let normal_blocks = facts.blocks_in((cleanup_start, handler_start));
+    let handler_blocks = facts.blocks_in((handler_start, facts.span_end(*rethrow)));
+    let (
+        Some(normal_entry),
+        Some(normal_call_block),
+        Some(return_block),
+        Some(handler_entry),
+        Some(handler_call_block),
+        Some(rethrow_block),
+    ) = (
+        facts.block_of(*n0).cloned(),
+        facts.block_at(*n2),
+        facts.block_at(*return_load),
+        facts.block_at(*primary_store),
+        facts.block_at(*h2),
+        facts.block_at(*primary_load),
+    )
+    else {
+        return Ok(None);
+    };
+    let owned = facts.blocks_in((start, facts.span_end(*rethrow)));
+    if owned.len() != facts.canonical.blocks().len()
+        || protected.is_empty()
+        || facts.block_of(*null_push) != Some(current)
+        || facts.block_of(*null_save) != Some(current)
+        || facts
+            .view
+            .successor_ids(&normal_entry)
+            .iter()
+            .cloned()
+            .collect::<BTreeSet<_>>()
+            != BTreeSet::from([normal_call_block.clone(), return_block.clone()])
+        || facts.view.successor_ids(&normal_call_block) != [return_block.clone()]
+        || facts
+            .view
+            .successor_ids(&handler_entry)
+            .iter()
+            .cloned()
+            .collect::<BTreeSet<_>>()
+            != BTreeSet::from([handler_call_block.clone(), rethrow_block.clone()])
+        || facts.view.successor_ids(&handler_call_block) != [rethrow_block.clone()]
+        || !facts.view.successor_ids(&return_block).is_empty()
+        || !facts.view.successor_ids(&rethrow_block).is_empty()
+    {
+        return Ok(None);
+    }
+    for bci in facts.bcis((start, facts.span_end(*rethrow))) {
+        facts.charge(bci)?;
+        let expected = if body_start <= bci && bci < cleanup_start {
+            Some(body_row.ordinal)
+        } else if bci == handler_start {
+            Some(self_row.ordinal)
+        } else {
+            None
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected.into_iter().collect::<Vec<_>>()
+            || (body_start <= bci
+                && bci < cleanup_start
+                && facts.op(bci) == Some(&Operation::Return))
+        {
+            return Ok(None);
+        }
+    }
+    for block in facts.canonical.blocks() {
+        facts.charge(block.id().bci())?;
+        for edge in facts
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == block.id())
+        {
+            facts.charge(block.id().bci())?;
+            let valid = match edge.kind() {
+                CanonicalEdgeKind::Exception { handler_ordinal } => {
+                    edge.to() == &handler_entry
+                        && ((protected.contains(block.id()) && handler_ordinal == body_row.ordinal)
+                            || (block.id() == &handler_entry
+                                && handler_ordinal == self_row.ordinal))
+                }
+                CanonicalEdgeKind::Normal if normal_blocks.contains(block.id()) => {
+                    normal_blocks.contains(edge.to())
+                }
+                CanonicalEdgeKind::Normal if protected.contains(block.id()) => {
+                    protected.contains(edge.to()) || edge.to() == &normal_entry
+                }
+                CanonicalEdgeKind::Normal if handler_blocks.contains(block.id()) => {
+                    handler_blocks.contains(edge.to())
+                }
+                CanonicalEdgeKind::Return { .. } => block.id() == &return_block,
+                _ => false,
+            };
+            if !valid {
+                return Ok(None);
+            }
+        }
+    }
+    let origins = facts.bcis((start, facts.span_end(*rethrow)));
+    Ok(Some(Plan {
+        shape: Shape::NullableResourceFinally {
+            row_ordinal: body_row.ordinal,
+            normal_cleanup: (*n0, *return_load),
+            handler_cleanup: (*primary_store, facts.span_end(*rethrow)),
+            saved_return: (saved_return, *normal_return),
+        },
+        lead: (start, body_start),
+        body: (body_start, cleanup_start),
         owned,
         join: None,
         facts: origins,
@@ -6161,6 +6539,11 @@ pub(crate) fn shared_finally_candidate(
     {
         return Ok(Some(plan));
     }
+    if handlers.len() == 2
+        && let Some(plan) = prove_nullable_resource_finally(&mut facts, current)?
+    {
+        return Ok(Some(plan));
+    }
     if handlers.len() == 1 {
         return prove_conditional_finally(&mut facts, current);
     }
@@ -7674,6 +8057,9 @@ fn guarded(
         return Ok(Some(verdict));
     }
     if FINALLY.admits(profile) {
+        if let Some(plan) = prove_nullable_resource_finally(facts, current)? {
+            return Ok(Some(Verdict::Claimed(plan)));
+        }
         if let Some(plan) = prove_loop_finally(facts, current)? {
             return Ok(Some(Verdict::Claimed(plan)));
         }

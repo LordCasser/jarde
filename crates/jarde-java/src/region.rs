@@ -642,6 +642,11 @@ impl Region {
                 }
             }
             Self::Guard { plan, .. } => {
+                if let crate::guard::Shape::NullableResourceFinally { normal_cleanup, .. } =
+                    plan.shape()
+                {
+                    out.push(normal_cleanup.1);
+                }
                 if let crate::guard::Shape::Resources { cleanup, .. } = plan.shape() {
                     out.extend(cleanup.iter().copied());
                 }
@@ -2384,6 +2389,9 @@ impl Walker<'_> {
                     crate::guard::Shape::ConditionalFinally { .. } => self
                         .conditional_finally_regions(&current, &plan, frame)?
                         .map(|(body, cleanup)| (body, Some(cleanup))),
+                    crate::guard::Shape::NullableResourceFinally { .. } => self
+                        .nullable_resource_finally_regions(&current, &plan, frame)?
+                        .map(|(body, cleanup)| (body, Some(cleanup))),
                     crate::guard::Shape::SharedFinally { .. } => self
                         .shared_finally_body(&current, &plan, frame)?
                         .map(|body| (body, None)),
@@ -2514,7 +2522,8 @@ impl Walker<'_> {
             // block set and every edge has been accounted for.
             if matches!(guard_verdict.as_ref(), Some(crate::guard::Verdict::Claimed(plan))
                 if matches!(plan.shape(), crate::guard::Shape::Finally { structured: true, .. }
-                    | crate::guard::Shape::LoopFinally { .. }))
+                    | crate::guard::Shape::LoopFinally { .. }
+                    | crate::guard::Shape::NullableResourceFinally { .. }))
             {
                 let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
                     unreachable!("the structured finally verdict was just matched")
@@ -2522,6 +2531,9 @@ impl Walker<'_> {
                 let recovered = match plan.shape() {
                     crate::guard::Shape::LoopFinally { .. } => self
                         .loop_finally_regions(&current, &plan, frame)?
+                        .map(|(body, cleanup)| (body, Some(cleanup))),
+                    crate::guard::Shape::NullableResourceFinally { .. } => self
+                        .nullable_resource_finally_regions(&current, &plan, frame)?
                         .map(|(body, cleanup)| (body, Some(cleanup))),
                     _ => self
                         .finally_body(&current, &plan, frame)?
@@ -4496,6 +4508,92 @@ impl Walker<'_> {
         Ok(Some((protected, cleanup)))
     }
 
+    fn nullable_resource_finally_regions(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<(Region, Region)>, StopReason> {
+        let crate::guard::Shape::NullableResourceFinally {
+            row_ordinal,
+            normal_cleanup,
+            saved_return,
+            ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        let previous = self.visited.clone();
+        let body = self.bounded_conditional_finally_region(
+            start,
+            (plan.body().0, saved_return.0),
+            saved_return.0,
+            *row_ordinal,
+            plan,
+            outer,
+        );
+        let body = match body {
+            Ok(Some(body)) => body,
+            Ok(None) => {
+                self.visited = previous;
+                return Ok(None);
+            }
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        let Some(cleanup_start) = self
+            .ssa
+            .blocks()
+            .iter()
+            .find(|block| {
+                block
+                    .instructions()
+                    .iter()
+                    .any(|instruction| instruction.bci() == normal_cleanup.0)
+            })
+            .map(|block| block.block().clone())
+        else {
+            self.visited = previous;
+            return Ok(None);
+        };
+        // The save at the first instruction of this block belongs to the try body; the
+        // following branch belongs to finally. Both child walks inspect it, while Guard owns
+        // the physical block once and the builder limits each walk to its proved BCI span.
+        let body = Region::Sequence {
+            regions: vec![
+                body,
+                Region::Straight {
+                    blocks: vec![cleanup_start.clone()],
+                },
+            ],
+        };
+        if let Some(node) = self.view.index_of(&cleanup_start) {
+            self.visited.remove(&node);
+        }
+        let cleanup = self.bounded_conditional_finally_region(
+            &cleanup_start,
+            *normal_cleanup,
+            normal_cleanup.1,
+            *row_ordinal,
+            plan,
+            outer,
+        );
+        let cleanup = match cleanup {
+            Ok(Some(cleanup)) if matches!(cleanup, Region::If { .. }) => cleanup,
+            Ok(_) => {
+                self.visited = previous;
+                return Ok(None);
+            }
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        Ok(Some((body, cleanup)))
+    }
+
     fn bounded_conditional_finally_region(
         &mut self,
         start: &CanonicalBlockId,
@@ -4513,7 +4611,15 @@ impl Walker<'_> {
                 names
                     .instructions()
                     .iter()
-                    .all(|instruction| span.0 <= instruction.bci() && instruction.bci() < span.1)
+                    .any(|instruction| span.0 <= instruction.bci() && instruction.bci() < span.1)
+                    .then_some(names)
+                    .filter(|names| names.instructions().iter().all(|instruction| {
+                        (span.0 <= instruction.bci() && instruction.bci() < span.1)
+                            || (block == start && plan.lead().0 <= instruction.bci() && instruction.bci() < plan.lead().1)
+                            || (block == start && matches!(plan.shape(), crate::guard::Shape::NullableResourceFinally { saved_return, .. }
+                                if instruction.bci() == saved_return.0))
+                    }))
+                    .is_some()
                     .then(|| self.view.index_of(block))
                     .flatten()
             })

@@ -977,6 +977,13 @@ fn declarations(
                 .map(|use_| use_.bci)
                 .collect::<BTreeSet<_>>()
                 == BTreeSet::from([19, 21, 34, 56, 69, 83, 95]);
+        let nullable_resource_lead = variable.slot() == 1
+            && owner.len() == 1
+            && regions.get(owner[0] as usize).is_some_and(|region| {
+                matches!(region, Region::Guard { plan, .. }
+                    if matches!(plan.shape(), guard::Shape::NullableResourceFinally { .. })
+                        && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
+            });
         let has_increment = variable_uses.iter().any(|use_| {
             use_.written.is_some()
                 && matches!(operations.get(use_.bci), Some(Operation::Increment { .. }))
@@ -1017,6 +1024,7 @@ fn declarations(
         if crosses_exception
             && !nested_cleanup_lead
             && !multi_return_lead
+            && !nullable_resource_lead
             && (!store_type_is_proven
                 || !(joined_value_certified
                     || all_reads_reach_presented_writes(
@@ -2190,26 +2198,62 @@ fn decide_types(
         } else if boolean_variables.contains(variable) {
             Decided::Type(Type::Boolean)
         } else {
+            let mut nullable_type = None;
+            if matches!(variable.slot(), 1 | 3) {
+                for region in regions {
+                    collect_guards(region, &mut |region| {
+                        if let Region::Guard { plan, .. } = region
+                            && let guard::Shape::NullableResourceFinally { saved_return, .. } =
+                                plan.shape()
+                        {
+                            if variable.slot() == 1 && write.at < plan.body().0 {
+                                nullable_type = uses
+                                    .get(variable)
+                                    .into_iter()
+                                    .flatten()
+                                    .find(|use_| {
+                                        use_.written.is_some()
+                                            && plan.body().0 <= use_.bci
+                                            && use_.bci < plan.body().1
+                                    })
+                                    .and_then(|use_| use_.written)
+                                    .and_then(|value| {
+                                        written_type(ssa, operations, value).ok().flatten()
+                                    });
+                            } else if variable.slot() == 3
+                                && write.at == saved_return.0
+                                && matches!(return_type, Some(Type::Reference(name)) if name == "java.lang.String")
+                            {
+                                nullable_type = return_type.cloned();
+                            }
+                        }
+                    });
+                }
+            }
             // The frames' reading of the value, or — where they state only an unknown reference — the
             // array a creation of this very body built (P3 2b): a `newarray`'s frame entry states no
             // name, and the instruction's own element type is what types the local it filled.
-            match multi_return_list_type(
-                variable,
-                uses.get(variable).map(Vec::as_slice).unwrap_or(&[]),
-                regions,
-                operations,
-                return_type,
-                budget,
-            )?
-            .or(constructor_predicate_local_type(
-                variable,
-                uses.get(variable).map(Vec::as_slice).unwrap_or(&[]),
-                regions,
-                ssa,
-                operations,
-                return_type,
-                budget,
-            )?) {
+            let inferred_type = match nullable_type {
+                Some(ty) => Some(ty),
+                None => multi_return_list_type(
+                    variable,
+                    uses.get(variable).map(Vec::as_slice).unwrap_or(&[]),
+                    regions,
+                    operations,
+                    return_type,
+                    budget,
+                )?
+                .or(constructor_predicate_local_type(
+                    variable,
+                    uses.get(variable).map(Vec::as_slice).unwrap_or(&[]),
+                    regions,
+                    ssa,
+                    operations,
+                    return_type,
+                    budget,
+                )?),
+            };
+            match inferred_type {
                 Some(ty) => Decided::Type(ty),
                 None => match written_type(ssa, operations, write.written) {
                     Ok(Some(ty)) => Decided::Type(ty),
@@ -3679,7 +3723,7 @@ pub(crate) fn prove_conditional_value(
     operations: &Operations,
     budget: &mut Budget,
 ) -> Result<ConditionalValueAttempt, StopReason> {
-    prove_conditional_value_with_forward(region, canonical, ssa, operations, None, budget)
+    prove_conditional_value_with_forward(region, canonical, ssa, operations, None, None, budget)
 }
 
 fn prove_conditional_value_with_forward(
@@ -3688,6 +3732,7 @@ fn prove_conditional_value_with_forward(
     ssa: &SsaTable,
     operations: &Operations,
     forward: Option<(&ConditionalValueProof, &Region)>,
+    allowed_exception_row: Option<u32>,
     budget: &mut Budget,
 ) -> Result<ConditionalValueAttempt, StopReason> {
     let Region::If {
@@ -3772,10 +3817,18 @@ fn prove_conditional_value_with_forward(
     };
     for edge in canonical.edges() {
         if edge.from() == branch {
-            if edge.kind() != CanonicalEdgeKind::Normal {
-                return Ok(ConditionalValueAttempt::Refused(
-                    ConditionalValueRefusal::BranchEdges,
-                ));
+            match edge.kind() {
+                CanonicalEdgeKind::Normal => {}
+                CanonicalEdgeKind::Exception { handler_ordinal }
+                    if allowed_exception_row == Some(handler_ordinal) =>
+                {
+                    continue;
+                }
+                _ => {
+                    return Ok(ConditionalValueAttempt::Refused(
+                        ConditionalValueRefusal::BranchEdges,
+                    ));
+                }
             }
             charge(
                 budget,
@@ -3885,6 +3938,11 @@ fn prove_conditional_value_with_forward(
             }
         }
         if then_blocks.contains(edge.from()) || else_blocks.contains(edge.from()) {
+            if matches!(edge.kind(), CanonicalEdgeKind::Exception { handler_ordinal }
+                if allowed_exception_row == Some(handler_ordinal))
+            {
+                continue;
+            }
             arm_outgoing
                 .entry(edge.from().clone())
                 .or_default()
@@ -10695,7 +10753,7 @@ impl Builder<'_> {
                 index += 2;
                 continue;
             }
-            self.prepare_conditional_region(&regions[index])?;
+            self.prepare_conditional_region(&regions[index], None)?;
             index += 1;
         }
         Ok(())
@@ -10770,6 +10828,7 @@ impl Builder<'_> {
             self.ssa,
             self.operations,
             Some((&second_proof, second)),
+            None,
             self.budget,
         )?;
         let ConditionalValueAttempt::Proved(first_proof) = first_attempt else {
@@ -10924,10 +10983,16 @@ impl Builder<'_> {
         Ok(())
     }
 
-    fn prepare_conditional_region(&mut self, region: &Region) -> Result<(), StopReason> {
+    fn prepare_conditional_region(
+        &mut self,
+        region: &Region,
+        allowed_exception_row: Option<u32>,
+    ) -> Result<(), StopReason> {
         match region {
             Region::Sequence { regions } => {
-                self.prepare_conditional_regions(regions)?;
+                for region in regions {
+                    self.prepare_conditional_region(region, allowed_exception_row)?;
+                }
             }
             Region::If {
                 then_arm,
@@ -10987,13 +11052,16 @@ impl Builder<'_> {
                     }
                     return Ok(());
                 }
-                match prove_conditional_value(
+                let attempt = prove_conditional_value_with_forward(
                     region,
                     self.canonical,
                     self.ssa,
                     self.operations,
+                    None,
+                    allowed_exception_row,
                     self.budget,
-                )? {
+                )?;
+                match attempt {
                     ConditionalValueAttempt::Proved(proof) => {
                         match self.build_conditional_value(&proof, then_arm, else_arm) {
                             Ok(expression) => {
@@ -11012,33 +11080,41 @@ impl Builder<'_> {
                     }
                     ConditionalValueAttempt::Refused(_) => {}
                 }
-                self.prepare_conditional_region(then_arm)?;
-                self.prepare_conditional_region(else_arm)?;
+                self.prepare_conditional_region(then_arm, allowed_exception_row)?;
+                self.prepare_conditional_region(else_arm, allowed_exception_row)?;
             }
             Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
                 for group in groups {
-                    self.prepare_conditional_region(&group.arm)?;
+                    self.prepare_conditional_region(&group.arm, allowed_exception_row)?;
                 }
             }
             Region::Loop { body, .. } => {
                 for region in body {
-                    self.prepare_conditional_region(region)?;
+                    self.prepare_conditional_region(region, allowed_exception_row)?;
                 }
             }
             Region::Try { body, catches, .. } => {
-                self.prepare_conditional_region(body)?;
+                self.prepare_conditional_region(body, allowed_exception_row)?;
                 for clause in catches {
-                    self.prepare_conditional_region(clause.body())?;
+                    self.prepare_conditional_region(clause.body(), allowed_exception_row)?;
                 }
             }
             Region::Guard {
+                plan,
                 body: Some(body),
                 finally_body,
                 ..
             } => {
-                self.prepare_conditional_region(body)?;
+                let body_exception_row =
+                    if let guard::Shape::NullableResourceFinally { row_ordinal, .. } = plan.shape()
+                    {
+                        Some(*row_ordinal)
+                    } else {
+                        allowed_exception_row
+                    };
+                self.prepare_conditional_region(body, body_exception_row)?;
                 if let Some(cleanup) = finally_body {
-                    self.prepare_conditional_region(cleanup)?;
+                    self.prepare_conditional_region(cleanup, allowed_exception_row)?;
                 }
             }
             Region::ShortCircuitValue { consumer, .. } => {
@@ -13388,15 +13464,15 @@ impl Builder<'_> {
                         }
                         pushed
                     }
-                    guard::Shape::ConditionalFinally { normal_return, .. } => {
-                        let (
-                            Some(body_region @ Region::If { .. }),
-                            Some(cleanup_region @ Region::If { .. }),
-                        ) = (
+                    guard::Shape::ConditionalFinally { normal_return, .. }
+                    | guard::Shape::NullableResourceFinally {
+                        saved_return: (_, normal_return),
+                        ..
+                    } => {
+                        let (Some(body_region), Some(cleanup_region @ Region::If { .. })) = (
                             structured_body.as_deref(),
                             structured_finally_body.as_deref(),
-                        )
-                        else {
+                        ) else {
                             let bcis = self.region_quote(region, plan.body().0);
                             self.restore_finally(
                                 finally_checkpoint
@@ -13422,8 +13498,29 @@ impl Builder<'_> {
                             );
                             return Err(stop);
                         }
+                        let mut body = body;
+                        if matches!(plan.shape(), guard::Shape::NullableResourceFinally { .. }) {
+                            match self.guarded_return(*normal_return) {
+                                Ok(statement) => body.push(statement),
+                                Err(reason) => {
+                                    let bcis = self.region_quote(region, *normal_return);
+                                    self.restore_finally(
+                                        finally_checkpoint
+                                            .take()
+                                            .expect("nullable finally checkpoint"),
+                                    );
+                                    return self.fallback(bcis, &reason, *normal_return);
+                                }
+                            }
+                        }
                         let outer = std::mem::take(&mut self.stmts);
+                        if let guard::Shape::NullableResourceFinally { normal_cleanup, .. } =
+                            plan.shape()
+                        {
+                            self.finally_span = Some(*normal_cleanup);
+                        }
                         let built_cleanup = self.region(cleanup_region, &child(path, 1));
+                        self.finally_span = None;
                         let finally_body = std::mem::replace(&mut self.stmts, outer);
                         if let Err(stop) = built_cleanup {
                             self.restore_finally(

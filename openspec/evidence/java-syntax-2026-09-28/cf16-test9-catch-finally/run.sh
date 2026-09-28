@@ -29,18 +29,18 @@ cp "$ROOT/TestTryCatchFinally9\$TestCls.class" "$TMP_ROOT/original-class/classes
 java -Xverify:all -cp "$TMP_ROOT/runner-classes" Runner "$TMP_ROOT/original-class/classes" > "$ROOT/results/original-class-run.txt" 2> "$ROOT/results/original-class-verify.stderr"
 
 if rg -q 'jarde: not recovered:|@bytecode' "$ROOT/jarde-out/TestTryCatchFinally9\$TestCls.java"; then
-	printf '%s\n' 'EXPECTED REFUSAL: Jarde source carries recovery/fallback markers; it is not treated as runnable evidence.' > "$ROOT/results/jarde-compile-result.txt"
-	mkdir -p "$TMP_ROOT/jarde-classes"
-	if (cd "$ROOT" && javac --release 8 -g -Xlint:-options -d "$TMP_ROOT/jarde-classes" 'jarde-out/TestTryCatchFinally9$TestCls.java') > "$ROOT/results/jarde-javac.stdout" 2> "$ROOT/results/jarde-javac.stderr"; then
-		printf '%s\n' 'Jarde full source compiled, but no execution claim is made because recovery/fallback markers remain.' >> "$ROOT/results/jarde-compile-result.txt"
-	else
-		printf '%s\n' 'Jarde full source compilation failed; no java -Xverify:all execution was attempted.' >> "$ROOT/results/jarde-compile-result.txt"
-	fi
-else
-	mkdir -p "$TMP_ROOT/jarde-classes"
-	if (cd "$ROOT" && javac --release 8 -g -Xlint:-options -d "$TMP_ROOT/jarde-classes" 'jarde-out/TestTryCatchFinally9$TestCls.java') > "$ROOT/results/jarde-javac.stdout" 2> "$ROOT/results/jarde-javac.stderr"; then
-		java -Xverify:all -cp "$TMP_ROOT/runner-classes" Runner "$TMP_ROOT/jarde-classes" > "$ROOT/results/jarde-run.txt" 2> "$ROOT/results/jarde-verify.stderr"
-	else
-		printf '%s\n' 'Jarde full source compilation failed; no java -Xverify:all execution was attempted.' > "$ROOT/results/jarde-compile-result.txt"
-	fi
+	printf '%s\n' 'Jarde source contains recovery/fallback markers.' > "$ROOT/results/jarde-compile-result.txt"
+	exit 1
 fi
+mkdir -p "$TMP_ROOT/jarde-classes"
+if ! (cd "$ROOT" && javac --release 8 -g -Xlint:-options -d "$TMP_ROOT/jarde-classes" 'jarde-out/TestTryCatchFinally9$TestCls.java') > "$ROOT/results/jarde-javac.stdout" 2> "$ROOT/results/jarde-javac.stderr"; then
+	printf '%s\n' 'Jarde full source compilation failed; no java -Xverify:all execution was attempted.' > "$ROOT/results/jarde-compile-result.txt"
+	exit 1
+fi
+java -Xverify:all -cp "$TMP_ROOT/runner-classes" Runner "$TMP_ROOT/jarde-classes" > "$ROOT/results/jarde-run.txt" 2> "$ROOT/results/jarde-verify.stderr"
+printf '%s\n' 'Jarde full source compiled and ran under java -Xverify:all.' > "$ROOT/results/jarde-compile-result.txt"
+
+cmp "$ROOT/results/original-class-run.txt" "$ROOT/results/original-run.txt"
+cmp "$ROOT/results/original-class-run.txt" "$ROOT/results/jadx-dx-run.txt"
+cmp "$ROOT/results/original-class-run.txt" "$ROOT/results/jarde-run.txt"
+rg -q '^present result=resource-data close=0 exception=none identity=none readFailure=0$' "$ROOT/results/jadx-java-input-run.txt"

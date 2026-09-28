@@ -188,6 +188,53 @@ const CATCH_VALUE_TEST7_NEIGHBORS: [(&str, &[u8]); 7] = [
         ),
     ),
 ];
+const NULLABLE_RESOURCE_TEST9: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/TestTryCatchFinally9$TestCls.class"
+);
+const NULLABLE_RESOURCE_TEST9_NEIGHBORS: [(&str, &[u8]); 7] = [
+    (
+        "different-null-test",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/different-null-test.class"
+        ),
+    ),
+    (
+        "different-receiver",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/different-receiver.class"
+        ),
+    ),
+    (
+        "different-target",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/different-target.class"
+        ),
+    ),
+    (
+        "saved-return-rewritten",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/saved-return-rewritten.class"
+        ),
+    ),
+    (
+        "throwable-rewritten",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/throwable-rewritten.class"
+        ),
+    ),
+    (
+        "self-row-covers-close",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/self-row-covers-close.class"
+        ),
+    ),
+    (
+        "extra-normal-exit",
+        include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors/extra-normal-exit.class"
+        ),
+    ),
+];
 const CATCH_LOOP_TEST3_NEIGHBORS: [(&str, &[u8]); 7] = [
     (
         "wrong-receiver",
@@ -608,6 +655,84 @@ fn catch_value_test7_budget_and_cancellation_discard_partial_output() {
 }
 
 #[test]
+fn nullable_resource_test9_has_one_finally_and_complete_origins() {
+    let report = recover_method_with_parameters(
+        NULLABLE_RESOURCE_TEST9,
+        "test",
+        "()Ljava/lang/String;",
+        "jadx/tests/integration/trycatch/TestTryCatchFinally9$TestCls",
+        0x0001,
+        1,
+        None,
+    );
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(
+        report.text.matches("finally {").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches(".close();").count(),
+        1,
+        "{}",
+        report.text
+    );
+    for bci in [
+        0, 1, 2, 3, 6, 8, 11, 12, 15, 16, 17, 20, 22, 25, 26, 27, 30, 33, 34, 37, 40, 42, 43, 44,
+        47, 48, 51, 52, 53, 55, 56, 59, 60, 63, 65,
+    ] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci}: {}",
+            report.text
+        );
+    }
+}
+
+#[test]
+fn nullable_resource_test9_neighbors_refuse_and_stops_are_atomic() {
+    let recover_test9 = |class, recovery_budget| {
+        recover_method_with_parameters(
+            class,
+            "test",
+            "()Ljava/lang/String;",
+            "jadx/tests/integration/trycatch/TestTryCatchFinally9$TestCls",
+            0x0001,
+            1,
+            recovery_budget,
+        )
+    };
+    for (name, class) in NULLABLE_RESOURCE_TEST9_NEIGHBORS {
+        let report = recover_test9(class, None);
+        assert!(
+            !report.text.contains("finally {"),
+            "{name}: {}",
+            report.text
+        );
+        assert!(report.text.contains("@bytecode"), "{name}: {}", report.text);
+        assert!(
+            !report.source_map.is_empty(),
+            "{name}: missing fallback origins"
+        );
+    }
+    let mut tiny = limits();
+    tiny.analysis_steps = 1;
+    let stopped = recover_test9(NULLABLE_RESOURCE_TEST9, Some(Budget::new(tiny)));
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    assert!(matches!(stopped.stop(), Some(StopReason::Budget { .. })));
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover_test9(
+        NULLABLE_RESOURCE_TEST9,
+        Some(Budget::with_cancellation_token(limits(), token)),
+    );
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+}
+
+#[test]
 fn catch_loop_test3_has_one_finally_and_all_bci_origins() {
     let report = recover_method(
         CATCH_LOOP_TEST3,
@@ -716,6 +841,18 @@ fn recover_method(
     flags: u16,
     recovery_budget: Option<Budget>,
 ) -> jarde_java::RecoveryReport {
+    recover_method_with_parameters(class, name, descriptor, owner, flags, 2, recovery_budget)
+}
+
+fn recover_method_with_parameters(
+    class: &[u8],
+    name: &str,
+    descriptor: &str,
+    owner: &str,
+    flags: u16,
+    parameters: u16,
+    recovery_budget: Option<Budget>,
+) -> jarde_java::RecoveryReport {
     let mut budget = Budget::new(limits());
     let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
         .expect("fixture opens");
@@ -770,7 +907,7 @@ fn recover_method(
     )
     .expect("fixed class analyzes");
     let facts = RecoveryFacts::new(
-        MethodFacts::new(name, descriptor, 2)
+        MethodFacts::new(name, descriptor, parameters)
             .with_access_flags(flags)
             .with_declaring_class(DeclaringClass::new(owner, 0x0021)),
     );

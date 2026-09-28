@@ -25,7 +25,7 @@ JADX 集成测试默认设置在 `jadx-core/src/test/java/jadx/tests/api/Integra
 
 作为 profile 对照，`jadx-dx/` 是同一固定 class 经 CLI `--use-dx` 生成的完整源码。当前 CLI 日志显示 DX 转换器失败后使用 D8，并成功完成 Java-to-DEX 输入。重编源码在有效资源路径观察到 `close=1`，结构与集成测试断言相符。由 `IntegrationTest` 源码和 CLI flag 选择可以判定两者都走转换到 DEX 的输入类型；二者入口不同，所以将 CLI 输出作为 profile 对照，集成测试只作为默认 DX profile 的通过证据。
 
-资源探针由 `fixtures/Runner.java` 提供：自定义 `URLClassLoader` 为 package 相对路径提供固定字节 `resource-data`，并用 `URLStreamHandler` 返回计数型 `InputStream`。它也能返回缺失资源。固定物理 class、原转写、两份 JADX 源码各自隔离编译、以 `java -Xverify:all` 执行的结果为：
+资源探针由 `fixtures/Runner.java` 提供：自定义 `URLClassLoader` 为 package 相对路径提供固定字节 `resource-data`，并用 `URLStreamHandler` 返回计数型 `InputStream`。六条路径分别覆盖资源存在、缺失、赋值前查找抛错、赋值后读取抛错，以及正常和异常清理抛错；`readFailure` 计数确认最后一条路径的正文确已抛错。固定物理 class、原转写、两份 JADX 源码和 fresh Jarde 完整源码各自隔离编译、以 `java -Xverify:all` 执行；原 class、原转写、DX 与 Jarde 的逐行输出相同，见 `results/*-run.txt`。固定 Java-input 的有效资源路径仍为 `close=0`，读取抛错时也漏关，清理抛错路径也未抛出清理异常。
 
 | 输入 | 有效资源 | 缺失资源 |
 | --- | --- | --- |
@@ -33,14 +33,15 @@ JADX 集成测试默认设置在 `jadx-core/src/test/java/jadx/tests/api/Integra
 | 原 Java 8 转写 | `resource-data`, close=1 | `NullPointerException`, close=0 |
 | JADX Java-input 完整输出 | `resource-data`, close=0 | `NullPointerException`, close=0 |
 | JADX `--use-dx` 完整输出 | `resource-data`, close=1 | `NullPointerException`, close=0 |
+| Jarde 完整输出 | `resource-data`, close=1 | `NullPointerException`, close=0 |
 
 因此只有有效资源路径区分 Java-input 的丢失清理；缺失资源时，构造 `Scanner(null)` 先抛 NPE，finally 看到 null 输入，不会调用 close。
 
-## Jarde 当前边界
+## Jarde 恢复与反例
 
-Jarde 的完整 `class-source` 输出和单方法恢复正文在 `jarde-out/`。方法正文保留拒绝，理由为 `local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice`，物理引用为 BCI `0 33 40 42 47 51 53 59 63`。报告摘要记录 `content = explanation_only`、`syntax_status = not_java` 和分析执行状态。
+Jarde 的 fresh `class-source` 输出和单方法恢复正文在 `jarde-out/`。目标恢复为局部 `InputStream input = null`、保护体内的赋值与字符串返回，以及唯一 `finally { if (input != null) input.close(); }`。完整类以 `javac --release 8` 重编并在六条路径与原物理 class 逐行一致；目标全部 35 个指令 BCI 均有来源映射，未含 fallback。
 
-Jarde 完整 class-source 经 `javac --release 8 -g` 编译失败，报 `missing return statement`。`run.sh` 不会执行它；即使某个仅含 fallback 注释的 void 方法碰巧可编译，也不会被记为恢复成功。本证据没有将其改成方法桩再作行为比较。
+`neighbors.py` 冻结七个 verifier 有效的反例，SHA 与 `java -Xverify:all` 结果见 `neighbors/sha256-and-verify.txt`：更改正常清理的 null 判断或接收者、仅更改异常清理目标、改写保存返回值或重抛 Throwable、把 handler 自保护扩围到 `close()`、以及增加一个绕过清理的提前返回。七个 CLI 恢复结果均保留 `@bytecode` 而不合成 `finally`，见 `results/neighbors-recovery.txt`；定向测试还检查预算耗尽和取消没有发布文本或来源映射。
 
 ## 重放
 
@@ -51,3 +52,5 @@ openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/acquire.sh
 ```
 
 `acquire.sh` 会校验固定 JADX HEAD 与四个源/class 哈希，导出 Java-input 与 `--use-dx` 两份源码，重放默认 DX 集成测试，运行 Jarde CLI，再调用 `run.sh` 编译和执行可验证的完整源码。若 JADX checkout 不在默认路径，可设置 `JADX_ROOT`。Cargo 使用独立 `/private/tmp` target，脚本退出时清理；`run.sh` 也自动清理 Java 编译目录。输出的路径、CLI 临时 jar 名、编译时间和运行时间会归一化，`results/source-and-class-sha256.txt` 使用相对路径。
+
+`python3 openspec/evidence/java-syntax-2026-09-28/cf16-test9-catch-finally/neighbors.py` 可重新生成七个近邻并逐个运行 `java -Xverify:all`；`cargo test -p jarde-java --test p3_shared_join_finally --locked` 检查它们的安全拒绝及停止原子性。

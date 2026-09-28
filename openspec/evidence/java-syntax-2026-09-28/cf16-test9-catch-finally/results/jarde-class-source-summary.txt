@@ -1,4 +1,4 @@
 execution.status = "complete"
 methods.1.outcome.kind = "recovered"
 methods.1.outcome.report.execution.status = "complete"
-methods.1.outcome.report.syntax_status = "not_java"
+methods.1.outcome.report.syntax_status = "unchecked"

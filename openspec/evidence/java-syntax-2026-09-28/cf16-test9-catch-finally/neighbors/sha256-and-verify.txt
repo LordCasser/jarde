@@ -1,0 +1,7 @@
+different-null-test 091ed8d1c7eb03a0005d395b4eac027de4df51777e6b1eba537cc1a893088da9 java -Xverify:all OK
+different-receiver f45008e8d7a8530fd3c074862a6dc4af515bc71c90c6c34abdabca80195cc33d java -Xverify:all OK
+saved-return-rewritten 8de9443f8f4a64889e4bbe56036298b98effdb71e6947f72b7137dce5d8c0855 java -Xverify:all OK
+throwable-rewritten 5e2021bfcc0ec322f84931efbfc7a88ad2065a5102cc35e9ce274da59d79d5ff java -Xverify:all OK
+self-row-covers-close bab88213395f50dba4e6a5eb95d2c9b60f270c85543e0f5ad46fab885020247e java -Xverify:all OK
+extra-normal-exit 3cca85150a05e28c5c4c416fbb201f59a218ea35be8b31ba1e101c79feb2807f java -Xverify:all OK
+different-target 44233ab8258307779208d7fc877a77dbe2f666259365e33ada442df337f8f34c java -Xverify:all OK

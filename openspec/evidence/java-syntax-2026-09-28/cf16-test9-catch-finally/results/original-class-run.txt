@@ -1,2 +1,6 @@
-present result=resource-data close=1 exception=none
-missing result=<threw> close=0 exception=java.lang.NullPointerException
+present result=resource-data close=1 exception=none identity=none readFailure=0
+missing result=<threw> close=0 exception=java.lang.NullPointerException identity=other readFailure=0
+lookup-failure result=<threw> close=0 exception=java.lang.RuntimeException identity=lookup readFailure=0
+read-failure result=<threw> close=1 exception=java.lang.RuntimeException identity=read readFailure=1
+close-failure result=<threw> close=1 exception=java.io.IOException identity=close readFailure=0
+read-and-close-failure result=<threw> close=1 exception=java.io.IOException identity=close readFailure=1

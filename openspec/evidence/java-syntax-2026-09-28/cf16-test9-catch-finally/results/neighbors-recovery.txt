@@ -1,0 +1,7 @@
+different-null-test: no finally; @bytecode retained
+different-receiver: no finally; @bytecode retained
+different-target: no finally; @bytecode retained
+extra-normal-exit: no finally; @bytecode retained
+saved-return-rewritten: no finally; @bytecode retained
+self-row-covers-close: no finally; @bytecode retained
+throwable-rewritten: no finally; @bytecode retained

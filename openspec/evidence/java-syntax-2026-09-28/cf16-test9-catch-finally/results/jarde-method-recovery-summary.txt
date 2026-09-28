@@ -1,6 +1,6 @@
 outcome = "performed"
-presentation.content = "explanation_only"
+presentation.content = "contains_statements"
 recovered.analysis.compile_status = "not_attempted"
 recovered.analysis.execution.status = "complete"
 recovered.recovery.execution.status = "complete"
-recovered.recovery.syntax_status = "not_java"
+recovered.recovery.syntax_status = "unchecked"
