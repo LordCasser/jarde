@@ -21199,8 +21199,8 @@ impl Builder<'_> {
                         break;
                     }
                 }
-                match canonical {
-                    Some(canonical) if let [start] = canonical.blocks() => {
+                if let Some(canonical) = canonical {
+                    if let [start] = canonical.blocks() {
                         let begin = self
                             .code
                             .instructions
@@ -21211,13 +21211,11 @@ impl Builder<'_> {
                         {
                             self.append_clause_bci(instruction.bci, &mut held, &mut held_set)?;
                         }
-                    }
-                    Some(canonical) => {
+                    } else {
                         for &bci in canonical.blocks() {
                             self.append_clause_bci(bci, &mut held, &mut held_set)?;
                         }
                     }
-                    None => {}
                 }
             }
         }
