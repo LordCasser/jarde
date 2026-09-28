@@ -80,7 +80,9 @@ CF-16 审计状态：**已证 finally 重复执行差距，调用型、静态字
 
   `TestTryCatchFinally11` 的[固定双行 Java 8 子形态独立验收](../java-syntax-2026-09-28/cf16-test11-loop-finally/implementation-evidence.md)已恢复 handler 中的迭代清理：原/JADX/Jarde 完整类可重编并通过 `-Xverify:all`，10 条清理抛错路径一致，33 个 BCI 有来源，7 个 verifier 有效近邻保持拒绝。它不代表其他编译 profile 或全部循环 finally 已恢复。
 
-  `TestTryCatchFinally3` 的[固定四行表证据](../java-syntax-2026-09-28/cf16-test3-catch-finally/README.md)显示 catch、foreach 与 finally 交织：原 class、原源码转写与 JADX 在正常/visitor 异常路径一致，当前 Jarde 安全拒绝；自保护 handler 的清理自抛路径不纳入正向行为声明。
+  `TestTryCatchFinally3` 的[固定四行表证据](../java-syntax-2026-09-28/cf16-test3-catch-finally/README.md)显示 catch、foreach 与 finally 交织：原 class、原源码转写与 JADX 在正常/visitor 异常路径一致，当前 Jarde 安全拒绝；第四行只保护 handler 的 `astore`，不保护清理调用。
+
+  [TestEmptyFinally](../java-syntax-2026-09-28/cf16-testemptyfinally/README.md) 的透明 catch-all、[TestTryCatchFinally5](../java-syntax-2026-09-28/cf16-test5-multi-return/README.md) 的正常可达循环与保存返回值、[TestTryCatchFinally9](../java-syntax-2026-09-28/cf16-test9-catch-finally/README.md) 的可空资源清理均已固定物理类与行为证据，Jarde 三者仍拒绝。Test9 的 JADX Java-input 输出漏掉一次 `close()`，原 class 与 JADX DEX 输出相符，因此以后者作正向参照。
 
   `TestTryCatchFinally10` 的[固定断言审计](../java-syntax-2026-09-28/cf16-test10-audit/README.md)表明活动测试关闭编译且只检查输出片段；其 DEX 输入不能直接充作 Jarde 的 JVM classfile 正例。另行编译的 Java 8 对照在六条路径上与保留目标方法的 JADX 输出一致，Jarde 对该 classfile 安全拒绝；后续 classfile 恢复须单独固定异常表与验收条件。
 
