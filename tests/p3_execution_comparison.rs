@@ -381,7 +381,7 @@ const GUARDED: Sample = Sample {
         },
         Member {
             name: "fail",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
             name: "body",
@@ -421,7 +421,7 @@ const GUARDED: Sample = Sample {
         },
         Member {
             name: "syncBody",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
             name: "syncThrows",
@@ -467,7 +467,7 @@ const GUARDED: Sample = Sample {
         },
         Member {
             name: "suppressedCatching",
-            expect: Expect::Quoted(Some("jre_region_irreducible")),
+            expect: Expect::Quoted(Some("jre_region_uncovered_blocks")),
         },
     ],
     point: "P3 2.4's guarded shapes: the trace states the order of every open, body and close \
@@ -989,12 +989,12 @@ const BOOLEAN_CONTEXTS: Sample = Sample {
             name: "answer",
             expect: Expect::Executed,
         },
-        // The one refusal of this sample: `negated`'s value is a stack merge out of two constant
-        // pushes that no name denotes, and neither the boolean items nor a local's declaration
-        // speaks for it.
+        // The stack merge in `negated` comes from two constant pushes that no name denotes. The
+        // recovered boolean expression now compiles and is included in the original/Jarde trace
+        // comparison instead of remaining a quote.
         Member {
             name: "negated",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
     ],
     point: "the descriptor types a boolean context, and a local's own declaration states it too: a \
@@ -1290,13 +1290,12 @@ const HOISTED_BOOLEAN: Sample = Sample {
             name: "intLocal",
             expect: Expect::Executed,
         },
-        // The two refusals of this sample: `unproven`'s only writes are `true`/`false` literals
-        // returned from a `Z` method (the position requires a boolean the evidence does not have),
-        // and `conflicted` writes a descriptor-proven boolean into the local its own first write
-        // decided is an `int`.
+        // `unproven`'s `true`/`false` literals are now written as a boolean return, which the
+        // declaration-derived wrapper compiles and compares. `conflicted` still writes a
+        // descriptor-proven boolean into the local its own first write decided is an `int`.
         Member {
             name: "unproven",
-            expect: Expect::Quoted(None),
+            expect: Expect::Executed,
         },
         Member {
             name: "conflicted",
