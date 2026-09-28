@@ -86,6 +86,8 @@ CF-16 审计状态：**已证 finally 重复执行差距，调用型、静态字
 
   [TestTryCatchFinally2](../java-syntax-2026-09-28/cf16-test2-loop-finally/README.md) 已固定 Java 11 物理类与 Java 8 原/JADX 行为：三处正常可达正文循环，双行 catch-all，正常/异常清理各一次；Jarde 仍安全拒绝。默认上游测试走 DX，固定 `.class` 的 CLI 对照另作 Java-input 证据。该问题与 Test5 同属正文循环加 finally，缺少 Test5 的跨清理保存返回值，不能套 Test11 的 handler-loop 修复。
 
+  [TestTryCatchFinally7](../java-syntax-2026-09-28/cf16-test7-audit/README.md) 的默认 DX 集成测试同时含文本和 `check()` 行为正例；独立 Java 8 debug/no-debug 物理方法同为四行具名 catch、三份可观察 `f++` 清理，原/JADX Java-input 在正常与 AssertionError 路径一致。Jarde 当前安全拒绝 `test(Object)`，返回局部跨 fallback；其同形证据不属于透明空 finally。
+
   `TestTryCatchFinally10` 的[固定断言审计](../java-syntax-2026-09-28/cf16-test10-audit/README.md)表明活动测试关闭编译且只检查输出片段；其 DEX 输入不能直接充作 Jarde 的 JVM classfile 正例。另行编译的 Java 8 对照在六条路径上与保留目标方法的 JADX 输出一致，Jarde 对该 classfile 安全拒绝；后续 classfile 恢复须单独固定异常表与验收条件。
 
   `TestTryCatchFinally4` 的[固定四行嵌套清理 root 验收](../java-syntax-2026-09-28/cf16-test4-nested-cleanup/README.md)已在 Test11 合入后的主线独立重放：原/JADX/Jarde 完整源码 Java 8 重编及固定目标正常路径一致，31 个 BCI 来源齐全，五个 verifier 有效近邻拒绝。独立三行 Control 的六条异常路径仅验证原/JADX 源级语义，Jarde 仍安全拒绝；其结果不能当作固定四行目标的异常路径验收。
