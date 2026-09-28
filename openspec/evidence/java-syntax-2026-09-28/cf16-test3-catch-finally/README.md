@@ -15,7 +15,7 @@ JADX 测试中的活动代码断言有 5 项：foreach 语句、catch、`LOG.err
 | 2 | `[45,58)` | 65 | catch-all |
 | 3 | `[65,67)` | 65 | catch-all |
 
-最后一行使 finally handler 自身的 `unload()` 受保护；若它抛异常，异常表回到 handler 65。这里不执行这种会重复进入清理的路径。正常与 visitor 抛出 `IllegalStateException` 的路径已覆盖 catch/finally 的可观察效果。
+最后一行只覆盖 BCI 65 的 `astore 4`，不覆盖 BCI 67–70 的 `unload()`。因此这份表不能证明清理抛错会再次进入 handler；清理抛错会直接向外传播。当前重放只覆盖正常与 visitor 抛出 `IllegalStateException` 的路径，其他抛错路径由后续实现任务补齐。
 
 ## 三方结果
 
