@@ -28,4 +28,6 @@
 
 局部循环证明只在方法入口不可达的 normal-flow 组件上寻找唯一根；`dominates` 仍以方法入口为根。异常边直入组件内部、无根闭环、循环第二入口以及预算/取消都有定向拒绝测试。FINALLY 证书借鉴固定 JADX `MarkFinallyVisitor.processTryBlock`/`findCommonInsns` 从异常重抛沿出口寻找重复清理的次序；Jarde 额外检查两行范围、同一入口值、调用符号、SSA 生产消费、所有 canonical 边与全指令归属，一次提交 Region/Builder 输出，不沿用 JADX 的通用 `DONT_GENERATE` 标记。
 
-实施门禁：`cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、`cargo fmt --all -- --check`、`openspec validate recover-handler-loop-finally --strict` 与 `git diff --check` 均通过。Test11 的 `replay.sh` 通过上述三方完整回放；Test13 五行 finally 的 acceptance 与有效负例、Test16 六路径、Test17 八路径、旧 nested finally 的 `replay.sh` 也通过。普通循环、catch-join、不可约边界及两/三/四/五行 finally 的 Rust 回归均包含在整套 `jarde-java` tests 中。唯一未完成的是 OpenSpec 4.3 的 root 独立验收。
+实施门禁：`cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、`cargo fmt --all -- --check`、`openspec validate recover-handler-loop-finally --strict` 与 `git diff --check` 均通过。Test11 的 `replay.sh` 通过上述三方完整回放；Test13 五行 finally 的 acceptance 与有效负例、Test16 六路径、Test17 八路径、旧 nested finally 的 `replay.sh` 也通过。普通循环、catch-join、不可约边界及两/三/四/五行 finally 的 Rust 回归均包含在整套 `jarde-java` tests 中。
+
+root 在合入主线后用 fresh CLI 独立运行完整 `replay.sh`：固定类三方输出均为 `two:102`、`empty:100`，10 条清理异常探针逐字相等，7 个 verifier 有效近邻均拒绝。root 另读了组件局部 dominance 的唯一入口/异常入口约束、双循环的精确 CFG/SSA/异常表证书，以及 Region/Builder 的一次所有权和 33 BCI 来源测试；`cargo test -p jarde-java --tests --locked` 在主线重新通过。OpenSpec 4.3 已验收。这里只接受固定 Java 8 双行 iterable finally 子形态，不推定 Test11 的其他编译 profile 或 CF-16 余项已经恢复。
