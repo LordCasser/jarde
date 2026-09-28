@@ -17,4 +17,4 @@
 
 - [x] 4.1 用 fresh CLI 把恢复的 `test` 放入明确标注的原类声明/stand-in 方法级 harness，重编并以 `java -Xverify:all` 对照 1.1 全部路径；另记录原/JADX 完整类可编译和未经补齐的 Jarde class-source 因 `<clinit>` 独立缺口仍不能整类重编，不混淆证据等级。
 - [x] 4.2 重放 1.2 全部有效近邻以及旧三行 shared finally、Test4 四行嵌套清理、Test11 双行循环和普通 catch/loop；运行 `cargo test -p jarde-java --tests --locked`、`cargo check --workspace --locked`、fmt、OpenSpec strict、diff check，并清理专用 Cargo target，记录结果。
-- [ ] 4.3 root 独立核四行异常/CFG/SSA/来源和方法级三方行为，确认 `<clinit>` 债务仍独立，更新 CF-16 账本；只标记 Test3 方法切片，不宣称完整文件或整类源码已追平。
+- [x] 4.3 root 独立核四行异常/CFG/SSA/来源和方法级三方行为，确认 `<clinit>` 债务仍独立，更新 CF-16 账本；只标记 Test3 方法切片，不宣称完整文件或整类源码已追平。
