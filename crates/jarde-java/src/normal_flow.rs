@@ -525,8 +525,9 @@ impl NormalFlowView {
 }
 
 /// A separate forest for handler-only normal-flow components. A component is admitted only when
-/// its induced plain graph has one root, every node is reached from that root, and no exceptional
-/// transfer enters below it. The full graph is used for dominators after the root is established:
+/// its induced plain graph has one root reached by an exception edge, every node is reached from
+/// that root, and no exceptional transfer enters below it. The full graph is used for dominators
+/// after the root is established:
 /// an unreachable component cannot receive a path from the method entry, and any path leaving it
 /// for a method-reachable node cannot return to it without making it method-reachable.
 fn component_dominators(
@@ -589,6 +590,11 @@ fn component_dominators(
             })
             .collect::<Vec<_>>();
         let [root] = roots.as_slice() else { continue };
+        // A disconnected bytecode island is not a handler component merely because its plain
+        // graph has one root. Keep the old refusal unless an exception row enters at that root.
+        if !exception_targets.contains(root) {
+            continue;
+        }
         if exception_targets
             .iter()
             .any(|to| component.contains(to) && to != root)
@@ -846,6 +852,15 @@ mod tests {
         )
         .unwrap();
         assert!(blocked.iter().all(Option::is_none));
+        let unentered = component_dominators(
+            &graph,
+            &method,
+            &BTreeSet::new(),
+            4,
+            &mut component_budget(),
+        )
+        .unwrap();
+        assert!(unentered.iter().all(Option::is_none));
         let (two_entries, method) = component_graph(&[(3, 2)]);
         let local = component_dominators(
             &two_entries,
