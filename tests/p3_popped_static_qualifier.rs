@@ -161,14 +161,22 @@ fn an_unmatched_non_invoke_qualifier_is_refused_with_its_full_source_chain() {
     );
 
     let recovery = method_report(&all, "call");
+    let default_recovery = method_report(&default, "call");
     assert_eq!(
         recovery.evidence.state(RecoveryEvidenceKind::SourceMap),
         EvidenceState::Complete,
         "all evidence requests a complete map"
     );
-    assert!(
-        method_report(&default, "call").source_map.is_empty(),
-        "the default request does not materialize optional source maps"
+    assert_eq!(
+        default_recovery
+            .evidence
+            .state(RecoveryEvidenceKind::SourceMap),
+        recovery.evidence.state(RecoveryEvidenceKind::SourceMap),
+        "the default class-source request includes the same source-map evidence as all"
+    );
+    assert_eq!(
+        default_recovery.source_map, recovery.source_map,
+        "the default class-source request retains the same physical provenance as all"
     );
     for bci in [0, 1, 2, 5] {
         assert!(
