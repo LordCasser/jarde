@@ -613,6 +613,13 @@ impl Billing {
 /// +18/+68/+5/+332/+5/+22 across the six rows (+450 in either arm). The `Guarded` row also drops
 /// 68 `IrItems` and 428 `output_bytes` as its declaration/quote text changes; all physical read
 /// dimensions remain fixed. These are the recorder's measured counts, not a formula for the pass.
+///
+/// Re-measured after the guarded finally and catch recovery work on 2026-09-28. The candidate
+/// scan now bills +6/+6/+4/+467/+4/+0 analysis steps across these six fixed cases. Only the
+/// `many-method-class` case changes its presented text: its `Guarded` members now include Java
+/// bodies where the old pin counted longer quoted fallbacks, moving −144 IR items and −549 output
+/// bytes. The physical read, decoded body, and delivery counts remain unchanged. The three
+/// paths' member text and outcome equality is checked before the old-arm pins below.
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     ///
@@ -628,7 +635,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 17,
         ir_items: 2371,
-        analysis_steps: 1330,
+        analysis_steps: 1336,
         result_items: 37,
         output_bytes: 3657,
     };
@@ -651,7 +658,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 26,
         ir_items: 4111,
-        analysis_steps: 2060,
+        analysis_steps: 2066,
         result_items: 64,
         output_bytes: 5628,
     };
@@ -672,7 +679,7 @@ impl Billing {
         class_headers: 4,
         method_bodies: 12,
         ir_items: 1974,
-        analysis_steps: 1093,
+        analysis_steps: 1097,
         result_items: 43,
         output_bytes: 2638,
     };
@@ -713,10 +720,10 @@ impl Billing {
         // that became statements, and — the one classification that moved — `boom`'s `throw new`,
         // which the expansion presents as the construction statement it is, so the case's
         // explanation-only count fell from six to five.
-        ir_items: 20408,
-        analysis_steps: 10026,
+        ir_items: 20264,
+        analysis_steps: 10493,
         result_items: 122,
-        output_bytes: 23829,
+        output_bytes: 23280,
     };
     /// `damaged-tail`: the readable classes only; the damaged entries cost their own attempts.
     ///
@@ -730,7 +737,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 12,
         ir_items: 1974,
-        analysis_steps: 1093,
+        analysis_steps: 1097,
         result_items: 35,
         output_bytes: 2638,
     };
@@ -778,10 +785,10 @@ impl Billing {
         class_bytes: 327895,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 33853,
-        analysis_steps: 16774,
+        ir_items: 33709,
+        analysis_steps: 17261,
         result_items: 1378,
-        output_bytes: 40113,
+        output_bytes: 39564,
     };
 
     /// Arm B — the same requests, each carrying the one store that started empty. Pinned for the same
@@ -806,10 +813,10 @@ impl Billing {
         class_bytes: 10817,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 33853,
-        analysis_steps: 16774,
+        ir_items: 33709,
+        analysis_steps: 17261,
         result_items: 26,
-        output_bytes: 40113,
+        output_bytes: 39564,
     };
 }
 // ---------------------------------------------------------------------------------------------
