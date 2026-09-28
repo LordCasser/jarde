@@ -142,6 +142,44 @@ fn method_handle_kind_offset(bytes: &[u8], target_name: &str) -> usize {
     panic!("classfile has no method handle for {target_name}");
 }
 
+fn lambda_helper_name(bytes: &[u8], source_method: &str) -> String {
+    let (pool, mut cursor) = test_constant_pool(bytes);
+    cursor += 6;
+    let interface_count = usize::from(u16_at(bytes, cursor));
+    cursor += 2 + interface_count * 2;
+    let fields_count = usize::from(u16_at(bytes, cursor));
+    cursor += 2;
+    for _ in 0..fields_count {
+        let attributes = usize::from(u16_at(bytes, cursor + 6));
+        cursor += 8;
+        for _ in 0..attributes {
+            let length = u32_at(bytes, cursor + 2);
+            cursor += 6 + length;
+        }
+    }
+    let methods_count = usize::from(u16_at(bytes, cursor));
+    cursor += 2;
+    let prefix = format!("lambda${source_method}$");
+    let mut helper = None;
+    for _ in 0..methods_count {
+        let name_index = u16_at(bytes, cursor + 2);
+        let attributes = usize::from(u16_at(bytes, cursor + 6));
+        let name = cp_utf8(&pool, name_index);
+        if name.starts_with(&prefix) {
+            assert!(
+                helper.replace(name.to_owned()).is_none(),
+                "{source_method} has more than one lambda helper in the fixture"
+            );
+        }
+        cursor += 8;
+        for _ in 0..attributes {
+            let length = u32_at(bytes, cursor + 2);
+            cursor += 6 + length;
+        }
+    }
+    helper.unwrap_or_else(|| panic!("classfile has no lambda helper for {source_method}"))
+}
+
 fn mutate_method_flag(bytes: &mut [u8], target_name: &str, mask: u16) {
     let (pool, mut cursor) = test_constant_pool(bytes);
     cursor += 6;
@@ -904,9 +942,14 @@ fn no_capture_primitive_lambda_helpers_inline_as_one_class_projection() {
         String::from_utf8_lossy(&compile.stderr)
     );
     let bytes = fs::read(original.join("LambdaSubject.class")).unwrap();
+    let helpers = [
+        lambda_helper_name(&bytes, "zero"),
+        lambda_helper_name(&bytes, "one"),
+        lambda_helper_name(&bytes, "two"),
+    ];
     let snapshot = open(&bytes);
     let recovered = class_source(&snapshot, "LambdaSubject", &RecoveryEvidenceRequest::all());
-    for helper in ["lambda$zero$0", "lambda$one$1", "lambda$two$2"] {
+    for helper in &helpers {
         assert!(
             !recovered.text.contains(&format!("{}(", helper)),
             "helper call or declaration leaked: {}",
@@ -982,7 +1025,12 @@ fn direct_int_and_this_plus_int_captures_inline_with_call_time_semantics() {
         "{}",
         String::from_utf8_lossy(&compile.stderr)
     );
-    let snapshot = open(&fs::read(original.join("CaptureCases.class")).unwrap());
+    let bytes = fs::read(original.join("CaptureCases.class")).unwrap();
+    let snapshot = open(&bytes);
+    let helpers = [
+        lambda_helper_name(&bytes, "add"),
+        lambda_helper_name(&bytes, "bound"),
+    ];
     let recovered = class_source(&snapshot, "CaptureCases", &RecoveryEvidenceRequest::all());
     assert!(recovered.text.contains("return (int p0) -> p0 + arg1;"));
     assert!(
@@ -991,7 +1039,7 @@ fn direct_int_and_this_plus_int_captures_inline_with_call_time_semantics() {
             .contains("return () -> this.number() + arg1;")
     );
     assert!(!recovered.text.contains("lambda$"), "{}", recovered.text);
-    for helper in ["lambda$add$0", "lambda$bound$1"] {
+    for helper in &helpers {
         assert!(
             recovered
                 .methods
@@ -1130,7 +1178,12 @@ fn captured_lambda_ir_budget_stop_keeps_physical_helpers_and_does_not_inline() {
         .output()
         .unwrap();
     assert!(compile.status.success());
-    let snapshot = open(&fs::read(original.join("CaptureBudget.class")).unwrap());
+    let bytes = fs::read(original.join("CaptureBudget.class")).unwrap();
+    let helpers = [
+        lambda_helper_name(&bytes, "add"),
+        lambda_helper_name(&bytes, "bound"),
+    ];
+    let snapshot = open(&bytes);
     let complete = class_source(&snapshot, "CaptureBudget", &RecoveryEvidenceRequest::all());
     let mut limits = complete.limits.clone();
     limits.ir_items = complete.usage.ir_items.saturating_sub(1);
@@ -1145,8 +1198,8 @@ fn captured_lambda_ir_budget_stop_keeps_physical_helpers_and_does_not_inline() {
     let OperationOutcome::Performed(stopped) = outcome else {
         panic!("the budget stop retains a report: {outcome:?}")
     };
-    assert!(stopped.text.contains("lambda$add$0"));
-    assert!(stopped.text.contains("lambda$bound$1"));
+    assert!(stopped.text.contains(&helpers[0]));
+    assert!(stopped.text.contains(&helpers[1]));
     assert!(
         !stopped
             .text
@@ -1200,9 +1253,11 @@ fn captured_helper_handle_or_physical_flags_mismatch_refuses_omission() {
         .unwrap();
     assert!(compile.status.success());
     let clean_bytes = fs::read(original.join("CaptureIdentity.class")).unwrap();
+    let add_helper = lambda_helper_name(&clean_bytes, "add");
+    let bound_helper = lambda_helper_name(&clean_bytes, "bound");
 
     let mut wrong_handle = clean_bytes.clone();
-    let handle_offset = method_handle_kind_offset(&wrong_handle, "lambda$add$0");
+    let handle_offset = method_handle_kind_offset(&wrong_handle, &add_helper);
     assert_eq!(wrong_handle[handle_offset], 6);
     wrong_handle[handle_offset] = 7;
     let handle_snapshot = open(&wrong_handle);
@@ -1211,29 +1266,29 @@ fn captured_helper_handle_or_physical_flags_mismatch_refuses_omission() {
         "CaptureIdentity",
         &RecoveryEvidenceRequest::all(),
     );
-    assert!(handle_report.text.contains("lambda$add$0"));
+    assert!(handle_report.text.contains(&add_helper));
     assert!(
         handle_report.diagnostics.iter().any(|diagnostic| {
             diagnostic.code == "lambda_helper_projection_refused"
-                && diagnostic.message.contains("lambda$add$0")
+                && diagnostic.message.contains(&add_helper)
         }),
         "wrong handle must be visible as a refusal: {:?}",
         handle_report.diagnostics
     );
 
     let mut wrong_flags = clean_bytes;
-    mutate_method_flag(&mut wrong_flags, "lambda$bound$1", 0x0002);
+    mutate_method_flag(&mut wrong_flags, &bound_helper, 0x0002);
     let flags_snapshot = open(&wrong_flags);
     let flags_report = class_source(
         &flags_snapshot,
         "CaptureIdentity",
         &RecoveryEvidenceRequest::all(),
     );
-    assert!(flags_report.text.contains("lambda$bound$1"));
+    assert!(flags_report.text.contains(&bound_helper));
     assert!(
         flags_report.diagnostics.iter().any(|diagnostic| {
             diagnostic.code == "lambda_helper_projection_refused"
-                && diagnostic.message.contains("lambda$bound$1")
+                && diagnostic.message.contains(&bound_helper)
         }),
         "wrong helper flags must be visible as a refusal: {:?}",
         flags_report.diagnostics
@@ -1309,10 +1364,12 @@ fn a_complex_lambda_helper_rejects_the_whole_helper_group() {
         String::from_utf8_lossy(&compile.stderr)
     );
     let bytes = fs::read(original.join("LambdaNegative.class")).unwrap();
+    let simple_helper = lambda_helper_name(&bytes, "simple");
+    let branch_helper = lambda_helper_name(&bytes, "branch");
     let snapshot = open(&bytes);
     let recovered = class_source(&snapshot, "LambdaNegative", &RecoveryEvidenceRequest::all());
-    assert!(recovered.text.contains("lambda$simple$0"));
-    assert!(recovered.text.contains("lambda$branch$1"));
+    assert!(recovered.text.contains(&simple_helper));
+    assert!(recovered.text.contains(&branch_helper));
     assert!(
         !recovered
             .text
@@ -1324,7 +1381,7 @@ fn a_complex_lambda_helper_rejects_the_whole_helper_group() {
             .iter()
             .any(
                 |diagnostic| diagnostic.code == "lambda_helper_projection_refused"
-                    && diagnostic.message.contains("lambda$branch$1")
+                    && diagnostic.message.contains(&branch_helper)
                     && diagnostic.message.contains("straight-line")
             ),
         "refusal must identify the physical helper and unsupported proof: {:?}",
@@ -1334,13 +1391,13 @@ fn a_complex_lambda_helper_rejects_the_whole_helper_group() {
         recovered
             .methods
             .iter()
-            .any(|method| method.item.name.raw().0 == b"lambda$simple$0")
+            .any(|method| method.item.name.raw().0 == simple_helper.as_bytes())
     );
     assert!(
         recovered
             .methods
             .iter()
-            .any(|method| method.item.name.raw().0 == b"lambda$branch$1")
+            .any(|method| method.item.name.raw().0 == branch_helper.as_bytes())
     );
 }
 
@@ -1398,7 +1455,12 @@ fn lambda_helper_projection_budget_stop_does_not_publish_partial_helpers() {
         .output()
         .unwrap();
     assert!(compile.status.success());
-    let snapshot = open(&fs::read(original.join("LambdaBudget.class")).unwrap());
+    let bytes = fs::read(original.join("LambdaBudget.class")).unwrap();
+    let helpers = [
+        lambda_helper_name(&bytes, "zero"),
+        lambda_helper_name(&bytes, "one"),
+    ];
+    let snapshot = open(&bytes);
     let complete = class_source(&snapshot, "LambdaBudget", &RecoveryEvidenceRequest::all());
     let mut stopped_between_helpers = None;
     for cut in (1..=2000).step_by(10) {
@@ -1431,15 +1493,15 @@ fn lambda_helper_projection_budget_stop_does_not_publish_partial_helpers() {
     assert!(
         stopped.diagnostics.iter().any(|diagnostic| diagnostic.code
             == "lambda_helper_projection_refused"
-            && diagnostic.message.contains("lambda$one$1")
+            && diagnostic.message.contains(&helpers[1])
             && diagnostic
                 .message
                 .contains("projection stopped before atomic commit")),
         "the budget must stop while staging the second helper: {:?}",
         stopped.diagnostics
     );
-    assert!(stopped.text.contains("lambda$zero$0"));
-    assert!(stopped.text.contains("lambda$one$1"));
+    assert!(stopped.text.contains(&helpers[0]));
+    assert!(stopped.text.contains(&helpers[1]));
     assert!(
         !stopped
             .text
