@@ -84,7 +84,7 @@ CF-16 审计状态：**已证 finally 重复执行差距，调用型、静态字
 
   `TestTryCatchFinally10` 的[固定断言审计](../java-syntax-2026-09-28/cf16-test10-audit/README.md)表明活动测试关闭编译且只检查输出片段；其 DEX 输入不能直接充作 Jarde 的 JVM classfile 正例。另行编译的 Java 8 对照在六条路径上与保留目标方法的 JADX 输出一致，Jarde 对该 classfile 安全拒绝；后续 classfile 恢复须单独固定异常表与验收条件。
 
-  `TestTryCatchFinally4` 的[固定 class/同字节码重编与三方证据](../java-syntax-2026-09-28/cf16-test4-nested-cleanup/README.md)已由 root 独立重放：四行异常表中 finally 清理内还有 `IOException` catch；固定目标正常路径原/JADX 一致，可注入的独立 control 四路径原/JADX 一致，Jarde 对两者均明确拒绝。control 与固定目标字节码不同，不能把其异常路径结果当作目标方法的行为验收。
+  `TestTryCatchFinally4` 的[固定四行嵌套清理 root 验收](../java-syntax-2026-09-28/cf16-test4-nested-cleanup/README.md)已在 Test11 合入后的主线独立重放：原/JADX/Jarde 完整源码 Java 8 重编及固定目标正常路径一致，31 个 BCI 来源齐全，五个 verifier 有效近邻拒绝。独立三行 Control 的六条异常路径仅验证原/JADX 源级语义，Jarde 仍安全拒绝；其结果不能当作固定四行目标的异常路径验收。
 - **CF-18 — try/catch 与区域边界（10 个）**：`trycatch/TestNestedTryCatch.java`, `trycatch/TestNestedTryCatch2.java`, `trycatch/TestNestedTryCatch3.java`, `trycatch/TestNestedTryCatch4.java`, `trycatch/TestNestedTryCatch5.java`, `trycatch/TestTryAfterDeclaration.java`, `trycatch/TestTryCatchLastInsn.java`, `trycatch/TestTryCatchNoMoveExc.java`, `trycatch/TestTryCatchNoMoveExc2.java`, `trycatch/TestTryCatchStartOnMove.java`.
 - **X-TRY+SYNC — try/catch 与 synchronized 交叉（2 个）**：`trycatch/TestTryCatch2.java`, `trycatch/TestTryCatch8.java`.
 - **X-TRY+IF — try/catch 与 if 交叉（2 个）**：`trycatch/TestTryCatchInIf.java`, `trycatch/TestTryCatchInIf2.java`.

@@ -17,4 +17,4 @@
 
 - [x] 4.1 fresh CLI 对固定目标的原/JADX/Jarde 完整源码做 Java 8 重编、`-Xverify:all` 正常路径；对独立 control 的异常路径做原/JADX 事件/终局异常比较，记录 Jarde 的安全拒绝，不混淆两者证据。
 - [x] 4.2 verifier 有效近邻全部拒绝；运行定向 FINALLY、Region、class-source 回归，workspace check、fmt、OpenSpec strict 和 diff check；清理专用 Cargo target。
-- [ ] 4.3 root 独立验收固定物理形状、三方重放、反例和来源，更新 CF-16 清单；只标记 Test4 子形态，不宣称所有 finally 完成。
+- [x] 4.3 root 独立验收固定物理形状、三方重放、反例和来源，更新 CF-16 清单；只标记 Test4 子形态，不宣称所有 finally 完成。
