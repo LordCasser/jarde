@@ -1,38 +1,13 @@
 //! P3 2.8: `try (r) { return r.read(); }` — the Java 9 resource the compiler copies into a local.
 //!
-//! `try (r)` names an expression rather than declaring a variable, and javac keeps its value in a
-//! local of its own before the protected range (`aload r; astore copy`), which the body then reads.
-//! The `twr@1` rule read the instruction before a row's protected range for the resource's own
-//! **initialisation**, and the question it asked of that store — does what it holds come from a
-//! `new` or an invocation? — has no true answer here: `aload r; astore copy` is neither, so the row
-//! was no header at all, and the member was read as the `try`/`catch` its own table states. The copy
-//! became a statement before the `try` (`java.io.Reader local1 = arg0;`), the protected range was
-//! quoted, and the compiler's cleanup — the `close` and the `addSuppressed` — became the body of a
-//! `catch (java.lang.Throwable local2)` the source never wrote, while the `return` the normal path
-//! ends in was dropped with the block that holds it.
+//! The committed class proves a resource header from `aload r; astore copy`, its normal close,
+//! and its cleanup handler. The recovered read and return both run inside the `try` body; Java
+//! closes the resource before the return completes. The compiler's close and suppression calls
+//! are not written as source statements.
 //!
-//! The copy is a value of its own kind: the store's own statement is **one `Load` of another local**
-//! (`crates/jarde-java/src/guard.rs`'s `copied_local`), the slot it writes is not the one it read,
-//! and the header `crates/jarde-java/src/build.rs`'s `resource_declaration` already reads such a
-//! range with is `try (java.io.Reader local1 = arg0)`. Claiming the row needs one more link from the
-//! normal path: javac writes no `goto` when the body returns, so the close is the last instruction
-//! of its own block, the continuation is the very next instruction, and the close's block has that
-//! instruction as its only successor (`normal_close`). The handler is proved exactly as for every
-//! other resource, and none of it is written: the row is a header, not a clause. And the row is
-//! claimed only where the whole proof succeeds — the same store before an ordinary `catch` stays the
-//! `catch` its own table names, which is what keeps `tests/p3_typed_catch.rs`'s texts as they are.
-//!
-//! What the text below pins over `tests/fixtures/p3-try-local/v9/Held.class` (see its `README.md` for
-//! the command, the version and the digest):
-//!
-//! * the header declares the **copy** the compiler made — `try (java.io.Reader local1 = arg0)`: the
-//!   type the frames give the copy, the name of the slot the store fills, and the value the store
-//!   read — and the copy is written nowhere else;
-//! * the body holds the read's own statement between the header and the brace that closes it, read
-//!   once, and the `return` the normal path ends in is written after the statement: the body is the
-//!   row's own range and the join is the instruction that follows the close;
-//! * nothing of the compiler's cleanup is written — no `close`, no `addSuppressed`, no `catch` — and
-//!   the member's content plane is what a proved statement produces.
+//! A one-byte handler mutation breaks that proof. Its copy crosses a quoted fallback region, so
+//! the recovery conservatively preserves the bytecode boundary and explains why it cannot write
+//! a lexically valid statement for the copy. It must not claim a resource header for that input.
 
 use jarde::*;
 use std::slice;
@@ -136,17 +111,12 @@ fn patched(bytes: &[u8], needle: &[u8], replacement: &[u8]) -> Vec<u8> {
 }
 
 #[test]
-fn a_copy_whose_proof_fails_leaves_the_row_the_catch_its_table_names() {
+fn a_copy_whose_proof_fails_does_not_claim_a_resource_header() {
     // The same sample with one byte changed: the handler's null test at BCI 19 — the `aload_1` at 18
     // and the `ifnull 35` this case turns round — is no longer the `JumpIfNull` the close proof
-    // reads, so `twr` fails on the row. What the row is *then* is the half of the rule no header can
-    // state on its own: the store before it holds a local's value, not a `new` and not an
-    // invocation, so the row is no initialisation this rule may refuse the member over — the failed
-    // attempt leaves it exactly where it was, and the walk reads it as the `catch` its own table
-    // names. A store that holds a `new` or an invocation keeps the refusal beside it
-    // (`tests/p3_guard.rs` pins that side), and here the row is no header:
-    // `java.io.Reader local1 = arg0;` before the `try`, and the compiler's own cleanup as the
-    // clause's body.
+    // reads, so `twr` fails on the row. The changed handler and the copy crossing its quoted
+    // fallback prevent a sound lexical definition-use slice. The result must not claim a resource
+    // header or silently omit the copy; it retains the exact boundary as explanation-only text.
     let sample = open(&patched(
         SAMPLE,
         &[0x2b, 0xc6, 0x00, 0x10],
@@ -154,28 +124,31 @@ fn a_copy_whose_proof_fails_leaves_the_row_the_catch_its_table_names() {
     ));
     let report = class_source_of(&sample, "Held");
     let text = text_of(&report, "use");
-    let copy = at(text, "java.io.Reader local1 = arg0;");
-    let opened = at(text, "try {");
-    let clause = at(text, "} catch (java.lang.Throwable local2) {");
+    assert!(text.contains("@bytecode 0 11 15 17 22 29 35"), "{text}");
     assert!(
-        copy < opened && opened < clause,
-        "the copy is written before the `try` the row is a clause of:\n{text}"
+        text.contains("local 1 crosses a quoted fallback region"),
+        "{text}"
     );
     assert!(
         !text.contains("try ("),
         "the row is no header where the close proof it needs is the byte this case changed:\n{text}"
     );
-    // The member is not refused over the row either: a fallback the guarded rule itself states
-    // (`jre_guard_*`) is exactly what the copy must keep the row out of.
+    // The guard does not claim a failed resource initialization; the region walk gives the
+    // precise exception-edge and uncovered-block reasons for quoting the member.
     let run = run_of(&report, "use");
     assert!(
         !run.fallbacks
             .iter()
             .any(|code| code.starts_with("jre_guard_")),
-        "the failed attempt leaves the row alone rather than refusing the member over it: {:?}\n{text}",
+        "the failed attempt does not refuse the member as a resource: {:?}\n{text}",
         run.fallbacks
     );
-    assert_eq!(run.content, RecoveryContent::ContainsStatements, "{text}");
+    assert_eq!(
+        run.fallbacks,
+        vec!["jre_region_exception_edge", "jre_region_uncovered_blocks"],
+        "{text}"
+    );
+    assert_eq!(run.content, RecoveryContent::ExplanationOnly, "{text}");
 }
 
 #[test]
@@ -185,7 +158,7 @@ fn a_java_nine_resource_is_declared_from_the_copy_the_compiler_made() {
     // `[2, 7) → 17 Throwable` and the close's own row `[22, 26) → 29`. The store before the range
     // reads `arg0` into `local1`, and that store is the resource: the header declares the copy, the
     // body reads it, and the close javac performs is written by the `try` the header states — not by
-    // a clause, and not as a call.
+    // a clause, and not as a call. A return inside the resource body closes it before returning.
     let sample = open(SAMPLE);
     let report = class_source_of(&sample, "Held");
     let text = text_of(&report, "use");
@@ -198,9 +171,8 @@ fn a_java_nine_resource_is_declared_from_the_copy_the_compiler_made() {
             .expect("the resource statement is closed");
     let returned = at(text, "return local2;");
     assert!(
-        header < read && read < closing && closing < returned,
-        "the copy is declared in the header, the body's read runs between the header and the \
-         statement's closing brace, and the return the normal path ends in follows it:\n{text}"
+        header < read && read < returned && returned < closing,
+        "the copy is declared in the header, and the read and return run inside its body:\n{text}"
     );
     // The copy is the header's declaration and nothing else: it is not also written as the statement
     // before the `try` the member used to be read as.
@@ -239,15 +211,9 @@ fn a_java_nine_resource_is_declared_from_the_copy_the_compiler_made() {
     // A text with statements in it is `contains_statements`; the explanation-only answer this shape
     // used to get — its protected range quoted under a clause and its join dropped — is not.
     //
-    // The one thing the walk does not claim is the compiler's own handler, which javac put **after**
-    // the join this text writes (the return is at BCI 15 and the handler's blocks are 17, 22, 35 and
-    // 29), so it is named as an uncovered block rather than written: the statement's own range ends
-    // at the row's `to`, and nothing of the cleanup is a statement of the source.
-    assert_eq!(
-        run_of(&report, "use").fallbacks,
-        vec!["jre_region_uncovered_blocks"],
-        "{text}"
-    );
+    // The proved resource statement owns the compiler's handler and the normal close, so no
+    // fallback is needed for those blocks.
+    assert!(run_of(&report, "use").fallbacks.is_empty(), "{text}");
     assert_eq!(
         run_of(&report, "use").content,
         RecoveryContent::ContainsStatements,

@@ -31,9 +31,17 @@ fn class_source_of(
     snapshot: &ArtifactSnapshot,
     evidence: RecoveryEvidenceRequest,
 ) -> ClassSourceReport {
+    class_source_of_name(snapshot, "TypeQualifierProbe", evidence)
+}
+
+fn class_source_of_name(
+    snapshot: &ArtifactSnapshot,
+    name: &str,
+    evidence: RecoveryEvidenceRequest,
+) -> ClassSourceReport {
     let request = ClassSourceRequest {
         class: ClassRef::Name {
-            class: ClassNameQuery::internal("TypeQualifierProbe"),
+            class: ClassNameQuery::internal(name),
         },
         environment: EnvironmentRequest {
             snapshot: snapshot.id().clone(),
@@ -66,6 +74,62 @@ fn class_source_of(
             candidates.candidates.len()
         ),
     }
+}
+
+#[test]
+fn a_static_owner_and_a_read_parameter_keep_distinct_names() {
+    let scratch = Scratch::new();
+    let source = scratch.path().join("OwnerAndParameter.java");
+    fs::write(
+        &source,
+        "class arg0 { static int pick() { return 7; } }\n\
+         public class OwnerAndParameter { public static int value(Integer number) { return arg0.pick() + number.intValue(); } }\n",
+    )
+    .expect("write the counterexample source");
+    let original = scratch.path().join("original");
+    fs::create_dir(&original).expect("create javac output");
+    let output = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-d"])
+        .arg(&original)
+        .arg(&source)
+        .output()
+        .expect("start javac");
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let bytes = fs::read(original.join("OwnerAndParameter.class")).expect("read the class");
+    let report = class_source_of_name(
+        &open(&bytes),
+        "OwnerAndParameter",
+        RecoveryEvidenceRequest::all(),
+    );
+    let value = &method(&report, "value").text;
+    assert!(value.contains("value(java.lang.Integer arg0_2)"), "{value}");
+    assert!(
+        value.contains("return arg0.pick() + arg0_2.intValue();"),
+        "{value}"
+    );
+
+    fs::write(&source, &report.text).expect("write recovered class source");
+    let recovered = scratch.path().join("recovered");
+    fs::create_dir(&recovered).expect("create recovered output");
+    let output = Command::new("javac")
+        .args(["--release", "8", "-g:none", "-cp"])
+        .arg(&original)
+        .arg("-d")
+        .arg(&recovered)
+        .arg(&source)
+        .output()
+        .expect("compile recovered class");
+    assert!(
+        output.status.success(),
+        "recovered class must compile with the static owner resolved:\n{}\n{}",
+        report.text,
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 fn method<'a>(report: &'a ClassSourceReport, name: &str) -> &'a ClassSourceMethod {
@@ -179,6 +243,11 @@ fn static_owners_survive_generated_parameter_and_suffix_names() {
     assert!(
         !report.text.contains("invoke(ShadowOther arg0_2)"),
         "parameter captured arg0_2:\n{invoke}"
+    );
+    assert!(
+        report.text.contains("invoke(ShadowOther arg0_3)"),
+        "the declaration must use the body's collision-free name:\n{}",
+        report.text
     );
 
     let read = &recovered(&report, "read").text;

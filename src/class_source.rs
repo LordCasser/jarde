@@ -5037,9 +5037,11 @@ fn is_default_member(class_flags: u16, item: &MethodItem) -> bool {
 /// literal for — writes no `default` at all. Which class declares such a member is not read here:
 /// the attribute's presence is the fact, so an ordinary interface or class member that declares one
 /// is written the same way an annotation type's member is.
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn spell_method(
     item: &MethodItem,
     facts: Option<&RecoveryFacts>,
+    recovered_parameter_names: Option<&[Option<String>]>,
     class: &str,
     class_flags: u16,
     attributes: Option<&MemberAttributes>,
@@ -5076,6 +5078,7 @@ pub(crate) fn spell_method(
     let mut spelled = spell_method_declaration(
         item,
         facts,
+        recovered_parameter_names,
         class,
         class_flags,
         attributes,
@@ -5098,9 +5101,11 @@ pub(crate) fn spell_method(
     spelled
 }
 
+#[allow(clippy::too_many_arguments)]
 fn spell_method_declaration(
     item: &MethodItem,
     facts: Option<&RecoveryFacts>,
+    recovered_parameter_names: Option<&[Option<String>]>,
     class: &str,
     class_flags: u16,
     attributes: Option<&MemberAttributes>,
@@ -5143,6 +5148,7 @@ fn spell_method_declaration(
             declaration.push_str(class);
             declaration.push_str(&arguments(
                 facts,
+                recovered_parameter_names,
                 &signature,
                 parameter_annotations,
                 &type_annotations.parameter_uses,
@@ -5215,6 +5221,7 @@ fn spell_method_declaration(
     declaration.push_str(&name);
     declaration.push_str(&arguments(
         facts,
+        recovered_parameter_names,
         &signature,
         parameter_annotations,
         &type_annotations.parameter_uses,
@@ -5454,12 +5461,20 @@ fn varargs_type(ty: &str, varargs: bool) -> String {
 /// arguments, and the body still reads the slot as the array the descriptor states.
 fn arguments(
     facts: Option<&RecoveryFacts>,
+    recovered_parameter_names: Option<&[Option<String>]>,
     signature: &Signature,
     parameter_annotations: &[Vec<String>],
     type_annotations: &[Vec<String>],
     proved: Option<&[ProvedMethodParameter]>,
 ) -> String {
-    let names = parameter_names(facts, signature.slots);
+    let mut names = parameter_names(facts, signature.slots);
+    if let Some(recovered) = recovered_parameter_names {
+        for (name, chosen) in names.iter_mut().zip(recovered) {
+            if let Some(chosen) = chosen {
+                *name = chosen.clone();
+            }
+        }
+    }
     let proved = proved.filter(|parameters| {
         facts.is_some_and(|facts| {
             facts.debug_locals().len() == parameters.len()
@@ -9329,11 +9344,11 @@ mod tests {
             jarde_java::DebugLocal::named(2, "number"),
         ]);
         assert_eq!(
-            arguments(Some(&facts), &signature, &[], &[], Some(&parameters)),
+            arguments(Some(&facts), None, &signature, &[], &[], Some(&parameters)),
             "(java.lang.String paramStr, final int number)"
         );
         assert_eq!(
-            arguments(None, &signature, &[], &[], Some(&parameters)),
+            arguments(None, None, &signature, &[], &[], Some(&parameters)),
             "(java.lang.String arg1, int arg2)"
         );
         let lvt = facts.clone().with_debug_locals(vec![
@@ -9341,7 +9356,7 @@ mod tests {
             jarde_java::DebugLocal::over(2, "number", 0, 4),
         ]);
         assert_eq!(
-            arguments(Some(&lvt), &signature, &[], &[], Some(&parameters)),
+            arguments(Some(&lvt), None, &signature, &[], &[], Some(&parameters)),
             "(java.lang.String paramStr, int number)"
         );
     }
@@ -9361,14 +9376,17 @@ mod tests {
         );
         assert!(ints.varargs);
         assert_eq!(
-            arguments(None, &ints, &[], &[], None),
+            arguments(None, None, &ints, &[], &[], None),
             "(int arg0, int... arg1)"
         );
 
         // `[[B`: the dots take the place of the **last** `[]`, so the element type keeps the `[]`
         // it has and the parameter is written `byte[]...`, never `byte[][]` or `byte...`.
         let grid = method_descriptor(b"([[B)V", true, true).expect("a method descriptor");
-        assert_eq!(arguments(None, &grid, &[], &[], None), "(byte[]... arg0)");
+        assert_eq!(
+            arguments(None, None, &grid, &[], &[], None),
+            "(byte[]... arg0)"
+        );
 
         // The controls. The same descriptor without the flag keeps the array spelling, and the flag
         // on a member whose last parameter is not an array is written as the descriptor states it.
@@ -9376,13 +9394,13 @@ mod tests {
             method_descriptor(b"(I[I)V", true, false).expect("a method descriptor");
         assert!(!without_the_flag.varargs);
         assert_eq!(
-            arguments(None, &without_the_flag, &[], &[], None),
+            arguments(None, None, &without_the_flag, &[], &[], None),
             "(int arg0, int[] arg1)"
         );
         let not_an_array = method_descriptor(b"(II)V", true, true).expect("a method descriptor");
         assert!(!not_an_array.varargs, "no `...` is invented for an `int`");
         assert_eq!(
-            arguments(None, &not_an_array, &[], &[], None),
+            arguments(None, None, &not_an_array, &[], &[], None),
             "(int arg0, int arg1)"
         );
         let no_parameters = method_descriptor(b"()V", true, true).expect("a method descriptor");
@@ -9390,12 +9408,25 @@ mod tests {
             !no_parameters.varargs,
             "there is no last parameter to reach"
         );
-        assert_eq!(arguments(None, &no_parameters, &[], &[], None), "()");
+        assert_eq!(arguments(None, None, &no_parameters, &[], &[], None), "()");
 
         // The flag reaches the descriptor's last parameter and not the slot the receiver holds: an
         // instance member's `this` is no position of the list, so the dots land on slot 1 here.
         let instance = method_descriptor(b"([I)V", false, true).expect("a method descriptor");
-        assert_eq!(arguments(None, &instance, &[], &[], None), "(int... arg1)");
+        assert_eq!(
+            arguments(None, None, &instance, &[], &[], None),
+            "(int... arg1)"
+        );
+    }
+
+    #[test]
+    fn recovered_names_follow_parameter_slots_across_a_wide_value() {
+        let signature = method_descriptor(b"(JI)I", true, false).expect("a method descriptor");
+        let recovered = [Some("arg0_2".to_owned()), None, Some("arg2_2".to_owned())];
+        assert_eq!(
+            arguments(None, Some(&recovered), &signature, &[], &[], None),
+            "(long arg0_2, int arg2_2)"
+        );
     }
 
     /// JVMS 2.6.1: an array fills **one** slot whatever its element type, and a member that is not

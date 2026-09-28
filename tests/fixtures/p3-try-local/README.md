@@ -38,8 +38,8 @@ writes for such a range. One more link decides the reading: javac writes no `got
 when the body returns — the close is the last instruction of its own block, the continuation is the
 very next instruction, and the close's block has it as its only successor. The handler is proved
 exactly as for every other resource, and nothing of it is written. A store of a load whose proof does
-**not** succeed keeps the `catch` its own table names: the attempt alone does not make a row a
-header.
+**not** succeed does not claim a header; if a copied local crosses a quoted exception region, the
+current recovery leaves an explanation-only boundary instead of inventing a lexical declaration.
 
 `use(Ljava/io/Reader;)I` states `[2, 7) → 17 Throwable` and the close's own row `[22, 26) → 29`, and
 its bytes are `aload_0; astore_1` (the copy the header names), `aload_0; invokevirtual
@@ -52,7 +52,7 @@ aload_2; athrow`.
 
 | member | bytecode | pre-fix text | post-fix text |
 | --- | --- | --- | --- |
-| `use(Ljava/io/Reader;)I` | `aload_0; astore_1; aload_0; invokevirtual read; istore_2; aload_1; ifnull 15; aload_1; invokevirtual close; iload_2; ireturn`, row `[2,7) → 17` | `java.io.Reader local1 = arg0;` before a `try` whose protected range is quoted, `} catch (java.lang.Throwable local2) { if (local1 != null) { try { local1.close(); } catch (java.lang.Throwable local3) { local2.addSuppressed(local3); } } }`, and no `return` at all — BCI 11, 15 and 35 are named as uncovered blocks | `try (java.io.Reader local1 = arg0) { int local2 = arg0.read(); }` and `return local2;` after the statement: one header, the body's own read inside it, and the compiler's close written by the statement the header states |
+| `use(Ljava/io/Reader;)I` | `aload_0; astore_1; aload_0; invokevirtual read; istore_2; aload_1; ifnull 15; aload_1; invokevirtual close; iload_2; ireturn`, row `[2,7) → 17` | `java.io.Reader local1 = arg0;` before a `try` whose protected range is quoted, `} catch (java.lang.Throwable local2) { if (local1 != null) { try { local1.close(); } catch (java.lang.Throwable local3) { local2.addSuppressed(local3); } } }`, and no `return` at all — BCI 11, 15 and 35 are named as uncovered blocks | `try (java.io.Reader local1 = arg0) { int local2 = arg0.read(); return local2; }`: one header, the body's own read and return inside it, and the compiler's close written by the statement the header states |
 | `<init>()V` | `aload_0; invokespecial java/lang/Object.<init>:()V; return` | unchanged by the fix | unchanged by the fix: `super(); return;` — the constructor javac emits, so the class is one a class file can be read from |
 
 The row's handler is the compiler's cleanup, not a clause: the text carries no `catch`, no `close(`
@@ -63,7 +63,7 @@ store fills (`local1`) and the value the store read (`arg0`) — and the copy is
 `tests/p3_try_local.rs` reads the same sample once more with **one byte changed**: the handler's own
 null test at BCI 19 (`aload_1; ifnull 35`) becomes `aload_1; ifnonnull 35`, so the handler is no
 longer the close the proof reads and `twr` fails on the row. There the copy decides what the row is
-*then*: a store of a local's value is no initialisation this rule may refuse the member over, so the
-failed attempt leaves the row where it was and the walk reads it as the `catch` its own table names —
-never as a `try (…)` header and never as a refusal. A store that holds a `new` or an invocation keeps
-the refusal beside it (`tests/p3_guard.rs` pins that side).
+*then*: the failed attempt leaves the row unclaimed. The copied local crosses a quoted fallback
+region, so this member is explanation-only with its bytecode boundary retained — never a proved
+`try (…)` header. A store that holds a `new` or an invocation keeps the guard refusal beside it
+(`tests/p3_guard.rs` pins that side).

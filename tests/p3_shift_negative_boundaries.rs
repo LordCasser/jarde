@@ -159,10 +159,17 @@ fn overwritten_argument_does_not_replace_the_saved_shift_operand() {
 }
 
 #[test]
-fn a_boolean_return_consumer_keeps_the_shift_refusal_at_its_real_bci() {
+fn a_boolean_return_consumer_uses_the_shift_result_low_bit_at_its_real_bci() {
     // intLeft's JVM code is unchanged: iload_0; iload_1; ishl; ireturn. Replacing the method
     // result descriptor I with Z is verifier-valid because both use the JVM int verification type,
-    // but Java cannot return the int shift value as boolean.
+    // so the `ireturn` consumes the low bit as a boolean. Java needs an explicit adaptation.
+    // For every signed int, `x % 2` is zero exactly when bit 0 is zero, including negative x.
+    for left in [i32::MIN, -3, -2, -1, 0, 1, 2, 3, i32::MAX] {
+        for distance in [0, 1, 31, 32, 33] {
+            let shifted = left.wrapping_shl(distance & 31);
+            assert_eq!(shifted % 2 != 0, shifted & 1 != 0);
+        }
+    }
     let bytes = replace_one_constant(SLICE, b"(II)I", b"(II)Z");
     let snapshot = open(&bytes);
     let report = class_source(&snapshot, "ShiftSlice");
@@ -172,27 +179,32 @@ fn a_boolean_return_consumer_keeps_the_shift_refusal_at_its_real_bci() {
     } = &shifted.outcome
     else {
         panic!(
-            "the rejected consumer still has a recovery report: {}",
+            "the adapted consumer has a recovery report: {}",
             shifted.text
         );
     };
     assert_eq!(
         recovery.representation,
-        Representation::Mixed,
+        Representation::Java,
         "{}",
         shifted.text
     );
-    assert_eq!(recovery.quality, Quality::Fallback, "{}", shifted.text);
-    assert!(shifted.text.contains("@bytecode 3"), "{}", shifted.text);
+    assert_eq!(recovery.quality, Quality::Structured, "{}", shifted.text);
+    assert!(
+        shifted.text.contains("return (arg0 << arg1) % 2 != 0;"),
+        "{}",
+        shifted.text
+    );
+    assert!(!shifted.text.contains("@bytecode"), "{}", shifted.text);
     assert!(
         !recovery.source_map.of_bci(3).is_empty(),
-        "the refused consumer ireturn remains anchored at its actual BCI 3: {:?}\n{}",
+        "the adapted consumer ireturn remains anchored at its actual BCI 3: {:?}\n{}",
         recovery.source_map.segments(),
         shifted.text
     );
     assert!(
         !shifted.text.contains("return arg0 << arg1;"),
-        "the int-to-boolean consumer is not presented as Java:\n{}",
+        "the int shift is not returned directly as boolean:\n{}",
         shifted.text
     );
 }
