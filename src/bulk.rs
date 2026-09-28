@@ -598,11 +598,11 @@ pub enum ClassCompletion {
         /// The error code that refused it.
         code: String,
     },
-    /// A class the operation closed on: its task did not reach the end of its member table, so the
-    /// members after the last record it handed over are unknown. The records it did hand over stand,
-    /// and the stop's own code says why it stopped there.
+    /// A class the operation closed on before its stream was fully delivered. The records it did
+    /// hand over stand, and the stop's own code says why it stopped there.
     Stopped {
-        /// How many method records this class published before the operation closed.
+        /// How many method records its task produced before the operation closed. Some may still
+        /// have been buffered and never reached the sink; `methods_delivered` counts those confirmed.
         methods: u64,
         /// The code of the stop that closed it.
         code: String,
@@ -1137,8 +1137,8 @@ enum ClassEnding {
     },
     /// The class was never prepared.
     Refused(ClassRefusal),
-    /// The operation closed before this class finished: the records already handed over stand, and
-    /// the members after them are unknown.
+    /// The operation closed before this class's stream finished: the records already handed over
+    /// stand, even if the task itself completed before delivery stopped.
     Closed {
         methods: u64,
         closing: Option<Closing>,
@@ -2936,7 +2936,8 @@ fn coordinate(
 /// where it stopped: this drains the window from the front, one ended class at a time, and stops at
 /// the first class that has not ended (its task is still working, and no record of it may claim
 /// otherwise). Nothing else is delivered: the method records still waiting in those slots were never
-/// confirmed by the consumer, so they stay executed-but-undelivered.
+/// confirmed by the consumer, so they stay executed-but-undelivered. A task that finished with
+/// records still pending is therefore reported as stopped, not completed.
 ///
 /// The wait for a class that is still winding down is bounded per class: a task whose next checkpoint
 /// is one slot check returns at once, and one that is in the middle of a method states nothing here
@@ -2953,6 +2954,18 @@ fn drain_ended_classes(operation: &Operation<'_>, delivery: &mut Delivery<'_>) -
                 None => break None,
                 Some(slot) => {
                     if let Some(ending) = slot.ending.take() {
+                        let ending = match ending {
+                            ClassEnding::Prepared { methods, execution }
+                                if slot.control.is_some() || !slot.methods.is_empty() =>
+                            {
+                                ClassEnding::Closed {
+                                    methods,
+                                    closing: None,
+                                    execution,
+                                }
+                            }
+                            ending => ending,
+                        };
                         let class = slot.class.clone();
                         let ordinal = state.front;
                         retire_front(&mut state);

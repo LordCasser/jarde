@@ -172,6 +172,8 @@ P5（`p5-measured-optimization`，**已交付并归档 10/10**，归档提交 `c
 | 增量结构查询分页（`QueryBoundary` schema 3 / `EntryCursor`） | **已交付** | 页满即停：4 项页解码 193 code bytes vs 整范围 297、只读 1 个条目、不物化嵌套容器（`p1_query_demand`）；整树走查逐项等于既有枚举（顺序/深度/分类）；cursor 绑定查询身份与步骤位置，续扫按类成员表校验（伪造位置被拒）；Resource/SnapshotAll 走同一 entry 游标。已知边界：目录验证仍是容器粒度（不引第二解析器），`SnapshotAll` 不下降入 nested |
 | 单类源码快捷视图（CLI `class-source` / `Engine::class_source`） | **已交付** | 装配类声明、字段与逐成员签名与体；成员体消费**一次 prepared 类**（`class_headers` 常数 2、`class_bytes` = 类长×2，成员数只进 `method_bodies`），读取形状改动前后文本逐字节相同；无 Body、未产出、仅解释、带停止诊断都在成员位置显式标记。唯一的类文本省略是有界 Java 8 enum 整组证明成功后的隐式声明：物理 fields/methods、table index、identity、outcome 与原恢复来源仍保留在 class-source JSON；拒绝或停止时保持物理成员文本。歧义名返回候选且退出 3。**不是**可编译工程：无 package/import/resources，无类型推断名，`throws`/注解/泛型未装配。接收者拼写已按 `ACC_STATIC` 判定（实例成员写 `this`，静态成员仍是参数） |
 
+**批量流后续债务（独立处理）**：worker panic 等关闭场景下，`drain_ended_classes` 可能丢弃尚在控制槽中的 `ClassPrepared`，随后仍发送该类的 `ClassEnd`。这违反了已声明的 `ClassPrepared → Method* → ClassEnd` 类帧顺序。需要另行确定关闭时是否补发准备记录，或不发布无起点的类结束记录，并用可控时序测试固定该协议；本次只修正有待交付记录却被标为 `Completed` 的错误状态。
+
 **关闭时与之前逐字节相同**（A15 的「关缓存」那一侧）：`Budget::new` 不携带 cache，未被附上的 cache 被断言 `consultations == 0`（`tests/p5_facts_cache.rs::the_default_path_consults_no_cache`），引擎**零 cache 构造点**（`tests/p5_benchmark.rs::the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler` + `crates/` 内 grep）；cache 打开时**结果四平面 status/order/coverage/diagnostics 逐字段相等**、差异只落在 `usage` 的 charge 字段（3.1/3.2 的 off/on 差分）。五个平面里**只有 parse 的 CP/Header parse 会被 cache 答复**（读取、CRC、digest、origin、coverage 与 read evidence 全部照旧产生，命中不 charge 任何计数字段）；X1、resolution、decompile-quality、output-level **一字未改**。
 
 ### container facts 复用与定向访问（`bound-container-lookup`）
