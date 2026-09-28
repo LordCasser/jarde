@@ -1,0 +1,4 @@
+/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde/openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/jarde-out/TestTryCatchFinally3$TestCls.java:6: 错误: 可能尚未初始化变量LOG
+    private static final org.slf4j.Logger LOG;
+                                          ^
+1 个错误

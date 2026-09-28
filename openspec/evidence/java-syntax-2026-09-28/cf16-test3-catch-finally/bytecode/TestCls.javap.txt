@@ -1,0 +1,214 @@
+Classfile /Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde/openspec/evidence/java-syntax-2026-09-28/cf16-test3-catch-finally/TestTryCatchFinally3$TestCls.class
+  Last modified 2026年9月28日; size 1980 bytes
+  SHA-256 checksum 9c3dc61868a81eb87f90228c5ddad4336ca4ae540621e5cb9b1589474c90e71e
+  Compiled from "TestTryCatchFinally3.java"
+public class jadx.tests.integration.trycatch.TestTryCatchFinally3$TestCls
+  minor version: 0
+  major version: 55
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #42                         // jadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 3, attributes: 3
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // jadx/core/dex/nodes/ClassNode.load:()V
+   #8 = Class              #10            // jadx/core/dex/nodes/ClassNode
+   #9 = NameAndType        #11:#6         // load:()V
+  #10 = Utf8               jadx/core/dex/nodes/ClassNode
+  #11 = Utf8               load
+  #12 = InterfaceMethodref #13.#14        // java/util/List.iterator:()Ljava/util/Iterator;
+  #13 = Class              #15            // java/util/List
+  #14 = NameAndType        #16:#17        // iterator:()Ljava/util/Iterator;
+  #15 = Utf8               java/util/List
+  #16 = Utf8               iterator
+  #17 = Utf8               ()Ljava/util/Iterator;
+  #18 = InterfaceMethodref #19.#20        // java/util/Iterator.hasNext:()Z
+  #19 = Class              #21            // java/util/Iterator
+  #20 = NameAndType        #22:#23        // hasNext:()Z
+  #21 = Utf8               java/util/Iterator
+  #22 = Utf8               hasNext
+  #23 = Utf8               ()Z
+  #24 = InterfaceMethodref #19.#25        // java/util/Iterator.next:()Ljava/lang/Object;
+  #25 = NameAndType        #26:#27        // next:()Ljava/lang/Object;
+  #26 = Utf8               next
+  #27 = Utf8               ()Ljava/lang/Object;
+  #28 = Class              #29            // jadx/core/dex/visitors/IDexTreeVisitor
+  #29 = Utf8               jadx/core/dex/visitors/IDexTreeVisitor
+  #30 = Methodref          #31.#32        // jadx/core/dex/visitors/DepthTraversal.visit:(Ljadx/core/dex/visitors/IDexTreeVisitor;Ljadx/core/dex/nodes/ClassNode;)V
+  #31 = Class              #33            // jadx/core/dex/visitors/DepthTraversal
+  #32 = NameAndType        #34:#35        // visit:(Ljadx/core/dex/visitors/IDexTreeVisitor;Ljadx/core/dex/nodes/ClassNode;)V
+  #33 = Utf8               jadx/core/dex/visitors/DepthTraversal
+  #34 = Utf8               visit
+  #35 = Utf8               (Ljadx/core/dex/visitors/IDexTreeVisitor;Ljadx/core/dex/nodes/ClassNode;)V
+  #36 = Methodref          #8.#37         // jadx/core/dex/nodes/ClassNode.unload:()V
+  #37 = NameAndType        #38:#6         // unload:()V
+  #38 = Utf8               unload
+  #39 = Class              #40            // java/lang/Exception
+  #40 = Utf8               java/lang/Exception
+  #41 = Fieldref           #42.#43        // jadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls.LOG:Lorg/slf4j/Logger;
+  #42 = Class              #44            // jadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls
+  #43 = NameAndType        #45:#46        // LOG:Lorg/slf4j/Logger;
+  #44 = Utf8               jadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls
+  #45 = Utf8               LOG
+  #46 = Utf8               Lorg/slf4j/Logger;
+  #47 = String             #48            // Class process exception: {}
+  #48 = Utf8               Class process exception: {}
+  #49 = InterfaceMethodref #50.#51        // org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+  #50 = Class              #52            // org/slf4j/Logger
+  #51 = NameAndType        #53:#54        // error:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+  #52 = Utf8               org/slf4j/Logger
+  #53 = Utf8               error
+  #54 = Utf8               (Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+  #55 = Methodref          #56.#57        // org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+  #56 = Class              #58            // org/slf4j/LoggerFactory
+  #57 = NameAndType        #59:#60        // getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+  #58 = Utf8               org/slf4j/LoggerFactory
+  #59 = Utf8               getLogger
+  #60 = Utf8               (Ljava/lang/Class;)Lorg/slf4j/Logger;
+  #61 = Utf8               Code
+  #62 = Utf8               LineNumberTable
+  #63 = Utf8               LocalVariableTable
+  #64 = Utf8               this
+  #65 = Utf8               Ljadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls;
+  #66 = Utf8               test
+  #67 = Utf8               (Ljadx/core/dex/nodes/ClassNode;Ljava/util/List;)V
+  #68 = Utf8               visitor
+  #69 = Utf8               Ljadx/core/dex/visitors/IDexTreeVisitor;
+  #70 = Utf8               e
+  #71 = Utf8               Ljava/lang/Exception;
+  #72 = Utf8               cls
+  #73 = Utf8               Ljadx/core/dex/nodes/ClassNode;
+  #74 = Utf8               passes
+  #75 = Utf8               Ljava/util/List;
+  #76 = Utf8               LocalVariableTypeTable
+  #77 = Utf8               Ljava/util/List<Ljadx/core/dex/visitors/IDexTreeVisitor;>;
+  #78 = Utf8               StackMapTable
+  #79 = Class              #80            // java/lang/Throwable
+  #80 = Utf8               java/lang/Throwable
+  #81 = Utf8               Signature
+  #82 = Utf8               (Ljadx/core/dex/nodes/ClassNode;Ljava/util/List<Ljadx/core/dex/visitors/IDexTreeVisitor;>;)V
+  #83 = Utf8               <clinit>
+  #84 = Utf8               SourceFile
+  #85 = Utf8               TestTryCatchFinally3.java
+  #86 = Utf8               NestHost
+  #87 = Class              #88            // jadx/tests/integration/trycatch/TestTryCatchFinally3
+  #88 = Utf8               jadx/tests/integration/trycatch/TestTryCatchFinally3
+  #89 = Utf8               InnerClasses
+  #90 = Utf8               TestCls
+{
+  public jadx.tests.integration.trycatch.TestTryCatchFinally3$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 17: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls;
+
+  public static void test(jadx.core.dex.nodes.ClassNode, java.util.List<jadx.core.dex.visitors.IDexTreeVisitor>);
+    descriptor: (Ljadx/core/dex/nodes/ClassNode;Ljava/util/List;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=5, args_size=2
+         0: aload_0
+         1: invokevirtual #7                  // Method jadx/core/dex/nodes/ClassNode.load:()V
+         4: aload_1
+         5: invokeinterface #12,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+        10: astore_2
+        11: aload_2
+        12: invokeinterface #18,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+        17: ifeq          38
+        20: aload_2
+        21: invokeinterface #24,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        26: checkcast     #28                 // class jadx/core/dex/visitors/IDexTreeVisitor
+        29: astore_3
+        30: aload_3
+        31: aload_0
+        32: invokestatic  #30                 // Method jadx/core/dex/visitors/DepthTraversal.visit:(Ljadx/core/dex/visitors/IDexTreeVisitor;Ljadx/core/dex/nodes/ClassNode;)V
+        35: goto          11
+        38: aload_0
+        39: invokevirtual #36                 // Method jadx/core/dex/nodes/ClassNode.unload:()V
+        42: goto          74
+        45: astore_2
+        46: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+        49: ldc           #47                 // String Class process exception: {}
+        51: aload_0
+        52: aload_2
+        53: invokeinterface #49,  4           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+        58: aload_0
+        59: invokevirtual #36                 // Method jadx/core/dex/nodes/ClassNode.unload:()V
+        62: goto          74
+        65: astore        4
+        67: aload_0
+        68: invokevirtual #36                 // Method jadx/core/dex/nodes/ClassNode.unload:()V
+        71: aload         4
+        73: athrow
+        74: return
+      Exception table:
+         from    to  target type
+             0    38    45   Class java/lang/Exception
+             0    38    65   any
+            45    58    65   any
+            65    67    65   any
+      LineNumberTable:
+        line 22: 0
+        line 23: 4
+        line 24: 30
+        line 25: 35
+        line 29: 38
+        line 30: 42
+        line 26: 45
+        line 27: 46
+        line 29: 58
+        line 30: 62
+        line 29: 65
+        line 30: 71
+        line 31: 74
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           30       5     3 visitor   Ljadx/core/dex/visitors/IDexTreeVisitor;
+           46      12     2     e   Ljava/lang/Exception;
+            0      75     0   cls   Ljadx/core/dex/nodes/ClassNode;
+            0      75     1 passes   Ljava/util/List;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      75     1 passes   Ljava/util/List<Ljadx/core/dex/visitors/IDexTreeVisitor;>;
+      StackMapTable: number_of_entries = 5
+        frame_type = 252 /* append */
+          offset_delta = 11
+          locals = [ class java/util/Iterator ]
+        frame_type = 250 /* chop */
+          offset_delta = 26
+        frame_type = 70 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Exception ]
+        frame_type = 83 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+        frame_type = 8 /* same */
+    Signature: #82                          // (Ljadx/core/dex/nodes/ClassNode;Ljava/util/List<Ljadx/core/dex/visitors/IDexTreeVisitor;>;)V
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #42                 // class jadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls
+         2: invokestatic  #55                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+         5: putstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+         8: return
+      LineNumberTable:
+        line 18: 0
+}
+SourceFile: "TestTryCatchFinally3.java"
+NestHost: class jadx/tests/integration/trycatch/TestTryCatchFinally3
+InnerClasses:
+  public static #90= #42 of #87;          // TestCls=class jadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls of class jadx/tests/integration/trycatch/TestTryCatchFinally3

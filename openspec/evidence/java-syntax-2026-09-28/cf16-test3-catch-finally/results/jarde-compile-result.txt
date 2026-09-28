@@ -1,0 +1,1 @@
+EXPECTED REFUSAL: Jarde complete class-source did not compile; no java -Xverify:all execution was attempted.

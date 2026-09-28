@@ -1,0 +1,2 @@
+normal load=1 unload=1 logs=0
+visitor_exception load=1 unload=1 logs=1 logged=java.lang.IllegalStateException: visitor-failure

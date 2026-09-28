@@ -1,0 +1,7 @@
+// @method test(Ljadx/core/dex/nodes/ClassNode;Ljava/util/List;)V
+// @declaration a static method of `jadx.tests.integration.trycatch.TestTryCatchFinally3$TestCls`, member flags 0x0009
+// recovered from bytecode; presentation is not claimed to compile
+{
+    // @bytecode 0 11 20 38 45 65 74
+    // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+}
