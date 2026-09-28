@@ -1,5 +1,5 @@
-Classfile /private/tmp/cf16-test3.sKY0OC/original/classes/jadx/tests/integration/trycatch/TestTryCatchFinally3$TestCls.class
-  Last modified 2026年9月28日; size 1299 bytes
+Classfile <compiled-class>
+  Last modified <filesystem timestamp>; size 1299 bytes
   SHA-256 checksum 72eb5f37cfc3365f2e264aa4d542fd88dbf7430ac930eae5a9da851873d9b31e
 public class jadx.tests.integration.trycatch.TestTryCatchFinally3$TestCls
   minor version: 0
