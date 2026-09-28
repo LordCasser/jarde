@@ -962,9 +962,14 @@ fn prove_array_constructor_code(
     let [length] = method.parameters() else {
         return Ok(None);
     };
-    if length.dimensions() != 0 || !matches!(length.base(), Base::Primitive(BaseType::Int)) {
+    if length.dimensions() != 0 {
         return Ok(None);
     }
+    let boxed_length = match length.base() {
+        Base::Primitive(BaseType::Int) => false,
+        Base::Object(name) if name.0 == b"java/lang/Integer" => true,
+        _ => return Ok(None),
+    };
     let Some(result) = method.result() else {
         return Ok(None);
     };
@@ -980,8 +985,8 @@ fn prove_array_constructor_code(
         || code.exception_handler_count != 0
         || code.max_locals < 1
         || code.max_stack < 1
-        || code.instructions.len() != 3
-        || code.operands().len() != 3
+        || code.instructions.len() != if boxed_length { 4 } else { 3 }
+        || code.operands().len() != code.instructions.len()
     {
         return Ok(None);
     }
@@ -999,19 +1004,50 @@ fn prove_array_constructor_code(
         return Ok(None);
     }
 
-    let [_, _, ret] = code.instructions.as_slice() else {
-        return Ok(None);
+    let (load_operands, unbox_operands, allocation_operands, return_operands) = if boxed_length {
+        let [load, unbox, allocation, ret] = code.operands() else {
+            return Ok(None);
+        };
+        (load, Some(unbox), allocation, ret)
+    } else {
+        let [load, allocation, ret] = code.operands() else {
+            return Ok(None);
+        };
+        (load, None, allocation, ret)
     };
-    let [load_operands, allocation_operands, return_operands] = code.operands() else {
-        return Ok(None);
+    let load_matches = if boxed_length {
+        matches!(load_operands.effective_opcode, 0x19 | 0x2a)
+    } else {
+        matches!(load_operands.effective_opcode, 0x15 | 0x1a)
     };
-    if !matches!(load_operands.effective_opcode, 0x15 | 0x1a)
+    if !load_matches
         || load_operands.local.map(|local| local.index) != Some(0)
         || allocation_operands.effective_opcode != 0xbc
             && allocation_operands.effective_opcode != 0xbd
-        || ret.opcode != 0xb0
+        || code
+            .instructions
+            .last()
+            .is_none_or(|ret| ret.opcode != 0xb0)
     {
         return Ok(None);
+    }
+    if let Some(unbox) = unbox_operands {
+        let Some(index) = unbox.constant_pool_index else {
+            return Ok(None);
+        };
+        if unbox.effective_opcode != 0xb6
+            || unbox.local.is_some()
+            || unbox.immediate.is_some()
+            || !matches!(
+                cp_entry(pool, index).map(|entry| &entry.kind),
+                Ok(CpEntryKind::MethodRef { owner, name, descriptor, .. })
+                    if owner.0 == b"java/lang/Integer"
+                        && name.0 == b"intValue"
+                        && descriptor.0 == b"()I"
+            )
+        {
+            return Ok(None);
+        }
     }
     // No other typed operand may smuggle in an effect or a second value source.
     if load_operands.constant_pool_index.is_some()
@@ -1124,7 +1160,8 @@ fn handle_of(pool: &[CpEntryFacts], index: u16) -> Option<Member> {
 ///
 /// The returned handles are only read candidates. They are derived from the exact
 /// `invokedynamic` → LambdaMetafactory bootstrap → implementation MethodHandle chain in this IR,
-/// restricted to a same-class static `lambda$` helper with `(int) array` descriptor shape. The
+/// restricted to a same-class static `lambda$` helper with an `(int) array` or
+/// `(java.lang.Integer) array` descriptor shape. The
 /// member table and its complete Code still have to pass [`prove_array_constructor`].
 pub fn array_helper_candidates(ir: &jarde_jvm::method_ir::MethodIr) -> Vec<ArrayHelperCandidate> {
     let (Some(code), Some(declaration)) = (ir.code(), ir.declaration()) else {
@@ -1178,7 +1215,10 @@ pub fn array_helper_candidates(ir: &jarde_jvm::method_ir::MethodIr) -> Vec<Array
         else {
             continue;
         };
-        if parameters.as_slice() != [Type::Int] || !array_type.ends_with("[]") {
+        if !(matches!(parameters.as_slice(), [Type::Int])
+            || matches!(parameters.as_slice(), [Type::Reference(name)] if name == "java.lang.Integer"))
+            || !array_type.ends_with("[]")
+        {
             continue;
         }
         candidates.push(ArrayHelperCandidate {
@@ -1774,6 +1814,65 @@ mod tests {
         )
     }
 
+    fn boxed_array_helper_code() -> MethodCodeFacts {
+        let fact = |bci, opcode, width, constant_pool_index| InstructionFact {
+            bci,
+            opcode,
+            width,
+            span: ByteSpan::new(u64::from(bci), u64::from(width)),
+            operands_span: ByteSpan::new(u64::from(bci), u64::from(width)),
+            constant_pool_index,
+        };
+        MethodCodeFacts::from_parts(
+            1,
+            1,
+            ByteSpan::new(0, 7),
+            vec![
+                (
+                    fact(0, 0x2a, 1, None),
+                    InstructionOperands {
+                        effective_opcode: 0x2a,
+                        local: Some(LocalOperand {
+                            index: 0,
+                            wide: false,
+                        }),
+                        ..InstructionOperands::default()
+                    },
+                ),
+                (
+                    fact(1, 0xb6, 3, Some(1)),
+                    InstructionOperands {
+                        effective_opcode: 0xb6,
+                        constant_pool_index: Some(1),
+                        ..InstructionOperands::default()
+                    },
+                ),
+                (
+                    fact(4, 0xbc, 2, None),
+                    InstructionOperands {
+                        effective_opcode: 0xbc,
+                        atype: Some(10),
+                        ..InstructionOperands::default()
+                    },
+                ),
+                (
+                    fact(6, 0xb0, 1, None),
+                    InstructionOperands {
+                        effective_opcode: 0xb0,
+                        ..InstructionOperands::default()
+                    },
+                ),
+            ],
+            vec![],
+            0,
+            ExecutionReport::Complete {
+                usage: Default::default(),
+            },
+            None,
+            jarde_reader::classfile::LocalDebugTable::Absent,
+        )
+    }
+
     fn class_members_for_helper(code: Option<MethodCodeFacts>, flags: u16) -> ClassMembers {
         class_members_for("lambda$arrayCtor$0", "(I)[I", code, flags)
     }
@@ -2001,6 +2100,103 @@ mod tests {
                 19
             )
             .expect("handlers are a non-proof, never inferred over")
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn boxed_array_constructor_requires_exact_integer_unbox() {
+        let implementation = Member {
+            kind: REF_INVOKE_STATIC,
+            owner: "test/Target".to_string(),
+            name: "lambda$arrayCtor$0".to_string(),
+            descriptor: "(Ljava/lang/Integer;)[I".to_string(),
+        };
+        let flags = ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC;
+        let members = class_members_for(
+            "lambda$arrayCtor$0",
+            "(Ljava/lang/Integer;)[I",
+            Some(boxed_array_helper_code()),
+            flags,
+        );
+        let pool = [cp(1, method_ref("java/lang/Integer", "intValue", "()I"))];
+        let mut budget = unlimited_budget();
+        assert!(
+            prove_array_constructor(&implementation, &pool, Some(&members), &mut budget, 19)
+                .unwrap()
+                .is_some()
+        );
+
+        let wrong_target = [cp(1, method_ref("test/Other", "intValue", "()I"))];
+        let mut budget = unlimited_budget();
+        assert!(
+            prove_array_constructor(
+                &implementation,
+                &wrong_target,
+                Some(&members),
+                &mut budget,
+                19,
+            )
+            .unwrap()
+            .is_none()
+        );
+
+        let extra_code = boxed_array_helper_code();
+        let mut instructions = extra_code
+            .instructions
+            .iter()
+            .cloned()
+            .zip(extra_code.operands().iter().cloned())
+            .collect::<Vec<_>>();
+        instructions.insert(
+            3,
+            (
+                InstructionFact {
+                    bci: 6,
+                    opcode: 0x00,
+                    width: 1,
+                    span: ByteSpan::new(6, 1),
+                    operands_span: ByteSpan::new(6, 1),
+                    constant_pool_index: None,
+                },
+                InstructionOperands {
+                    effective_opcode: 0x00,
+                    ..InstructionOperands::default()
+                },
+            ),
+        );
+        instructions[4].0.bci = 7;
+        instructions[4].0.span = ByteSpan::new(7, 1);
+        instructions[4].0.operands_span = ByteSpan::new(7, 1);
+        let extra_code = MethodCodeFacts::from_parts(
+            1,
+            1,
+            ByteSpan::new(0, 8),
+            instructions,
+            vec![],
+            0,
+            ExecutionReport::Complete {
+                usage: Default::default(),
+            },
+            None,
+            jarde_reader::classfile::LocalDebugTable::Absent,
+        );
+        let extra_members = class_members_for(
+            "lambda$arrayCtor$0",
+            "(Ljava/lang/Integer;)[I",
+            Some(extra_code),
+            flags,
+        );
+        let mut budget = unlimited_budget();
+        assert!(
+            prove_array_constructor(
+                &implementation,
+                &pool,
+                Some(&extra_members),
+                &mut budget,
+                19,
+            )
+            .unwrap()
             .is_none()
         );
     }
