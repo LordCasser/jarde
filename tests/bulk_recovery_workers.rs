@@ -391,6 +391,7 @@ fn the_operations_total_and_a_methods_local_limit_are_two_declarations() {
 /// operation that stopped coordinating the way it says it does, fails here instead of publishing a
 /// smaller number. `optimize-demand-workloads` 4.1 is where these relations come from, and the
 /// numbers the port reports are what the performance work reads.
+#[cfg(feature = "test-support")]
 #[test]
 fn the_observation_port_sees_the_coordination_that_really_happened() {
     let probe = Arc::new(BulkProbe::new());

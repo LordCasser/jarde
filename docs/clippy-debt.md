@@ -1,10 +1,10 @@
 # Clippy baseline debt
 
 The CI Clippy gate denies warnings except for the lint names listed in `.github/workflows/ci.yml`.
-This exception list records existing style and API-shape debt; it does not lower compiler warnings,
-Clippy's correctness or suspicious groups, or any other Clippy lint. The exception list is global, so
-new instances of one of these exact lint names will also be allowed until that lint is removed from
-the list. Reduce this baseline incrementally and delete each exception when its count reaches zero.
+This exception list records existing Clippy lint debt. Every warning outside those exact lint names
+remains denied. The exception list is global, so new instances of one of these lint names will also
+be allowed until that lint is removed from the list. Reduce this baseline incrementally and delete
+each exception when its count reaches zero.
 
 ## Observed baseline
 

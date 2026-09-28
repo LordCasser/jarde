@@ -17,6 +17,8 @@
 //! This target needs the `test-support` feature, because the faults it injects are compiled out of a
 //! production build (the root manifest states that beside the feature).
 
+#![cfg(feature = "test-support")]
+
 mod bulk_support;
 
 use bulk_support::{
