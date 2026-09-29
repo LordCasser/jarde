@@ -4,9 +4,9 @@
 
 ## 当前状态
 
-- 写本文件前 `main` 与 `origin/main` 同步，代码基线为 `fcc864cec9a8682293d0c9b1bd1789b86d590076`，根工作区干净。本文档提交后以 `git status` 和 `git rev-parse HEAD` 核对新的仓库状态。
+- 13 条被工作树占用的历史分支已在 `aeb18c0f` **全部合入并推送到 `main`**；该合并的文件树与合并前 `056709b8` 完全一致。本文档提交后以 `git status` 和 `git rev-parse HEAD` 核对新的仓库状态。
 - 长期 Java 语法恢复 `/goal` 当前状态为 **paused**。用户恢复该目标前，不自行派发新语法点或继续无边界巡查。本文件记录接续路径，不代表目标已恢复。
-- 最近一次代码 CI 是 [GitHub Actions 36606512666](https://github.com/LordCasser/jarde/actions/runs/36606512666)，所有 job 成功。它验证的是 `fcc864ce` 的代码；本文件后续的文档提交需单独看对应 CI 状态。
+- 最近一次已确认的代码 CI 是 [GitHub Actions 36606512666](https://github.com/LordCasser/jarde/actions/runs/36606512666)，所有 job 成功。它验证的是 `fcc864ce` 的代码；后续 `056709b8` 仅增本文档，`aeb18c0f` 仅合并历史、文件树无变化。新提交的 CI 状态需单独查看。
 - 根目录 Cargo `target` 已清理约 10.4 GiB；隔离构建产物另清理约 103 MiB。后续测试会重新占用磁盘，Rust 工作结束后留意 `target`。
 
 ## 用户确定的工作方向
@@ -26,7 +26,9 @@
 
 两项冲突在 `crates/jarde-java/src/build.rs` 和 `crates/jarde-java/tests/p3_shared_join_finally.rs` 合并时已保留双方证明与 Test7/Test9 回归。主线已推送。验收包括 `cargo fmt --all -- --check`、OpenSpec strict 216/216、`p3_shared_join_finally` 30/30、整仓两颗固定 seed 测试，以及 CI 等价的 Clippy；上述 GitHub CI 同时通过 stable、JDK 25 oracle/P3、MSRV、fuzz 与 supply-chain job。更早的 JDK 25 CI 修正也已在主线，见 [CI 36377418834](https://github.com/LordCasser/jarde/actions/runs/36377418834)。
 
-清理了 146 条不再需要且未被检出的本地分支。**剩余 13 条非主线分支全部仍被现存工作树检出**，不应直接强删；它们的工作产物在上述审计中被主线后续或等价实现覆盖，但其提交不一定是 `main` 的字面祖先：
+先清理了 146 条不再需要且未被检出的本地分支。随后重新审计其余 13 条工作树分支：17 个独有历史提交中，12 个有主线上相同 patch-id；另外 5 个不同 patch-id 的功能、测试或证据由主线后续实现覆盖，分支新增路径在主线没有缺失。逐条核对后，用一次 `ours` 合并记录这些**已被主线内容覆盖**的分支历史，没有重放过时代码；`aeb18c0f` 的 13 个分支 tip 均已成为 `main` 祖先，且 `git diff 056709b8 aeb18c0f` 为空。本次临时集成分支已删除。
+
+**仍有 13 条分支引用被现存工作树检出**，所以引用本身尚不能直接删除；这不再是“尚未合入主线”的工作：
 
 ```text
 codex/cf16-test11-loop-finally
@@ -44,7 +46,7 @@ codex/shared-catchall-finally
 codex/string-ternary-enum
 ```
 
-其中前三条分别在 `plain-enum-arities`、`inner-this-baseline`、`dt29-branched-concat` 工作树中；通过 Codex 归档这三个工作树时均返回“protected by a pinned task or workspace”，因此停止清理，没有绕过保护。其它工作树也未擅自迁移或删除。`/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde` 是干净、detached 于 `fcc864ce` 的隔离工作树，可在确认无人使用后复用。所有工作树在上次检查时干净；接手前仍要重新检查。根工作区曾在并行测试期间被另一任务切换分支，并发工作应使用隔离工作树且每次 Git 操作前核对当前位置。
+其中前三条分别在 `plain-enum-arities`、`inner-this-baseline`、`dt29-branched-concat` 工作树中；通过 Codex 归档这三个工作树时均返回“protected by a pinned task or workspace”，因此停止清理，没有绕过保护。其它工作树也未擅自迁移或删除。`/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde` 已重新 detached 于 `aeb18c0f`，可在确认无人使用后复用。所有工作树在上次检查时干净；接手前仍要重新检查。根工作区曾在并行测试期间被另一任务切换分支，并发工作应使用隔离工作树且每次 Git 操作前核对当前位置。
 
 ## 接手时的最小核对
 
@@ -53,6 +55,7 @@ git status --short --branch
 git rev-parse HEAD
 git worktree list --porcelain
 git branch -vv
+git merge-base --is-ancestor codex/cf16-test11-loop-finally main
 ```
 
-若用户恢复语法目标，从状态账本选一个**尚未闭合的具体子形态**，重新读对应 JADX 测试/算法和 Jarde 当前代码，再冻结三方正反例。按现有 OpenSpec 写窄任务、实施、Java 8 完整类重编与验证运行、来源/拒绝边界及主 agent 验收；每完成一个切片就回写账本。CF-16 是已登记的剩余真实差距，但它的多个首片已修，不能仅凭编号重做。若任务是继续清理分支，先确认工作树归属及 pinned 状态，用 Codex 工作树归档流程处理可释放的工作树，不绕过受保护工作区，也不盲目把历史分支重新合入主线。
+若用户恢复语法目标，从状态账本选一个**尚未闭合的具体子形态**，重新读对应 JADX 测试/算法和 Jarde 当前代码，再冻结三方正反例。按现有 OpenSpec 写窄任务、实施、Java 8 完整类重编与验证运行、来源/拒绝边界及主 agent 验收；每完成一个切片就回写账本。CF-16 是已登记的剩余真实差距，但它的多个首片已修，不能仅凭编号重做。若任务是继续清理分支引用，先确认工作树归属及 pinned 状态，用 Codex 工作树归档流程处理可释放的工作树，不绕过受保护工作区；不需要重新合并已成为 `main` 祖先的历史分支。
