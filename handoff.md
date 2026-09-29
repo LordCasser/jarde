@@ -1,0 +1,58 @@
+# HANDOFF — jarde 接续说明（2026-09-30）
+
+本文件是给接续 agent 的入口。先确认下面的 Git 状态，再决定是否开始新工作；不要从旧分支名推断仍有未合入实现。
+
+## 当前状态
+
+- 写本文件前 `main` 与 `origin/main` 同步，代码基线为 `fcc864cec9a8682293d0c9b1bd1789b86d590076`，根工作区干净。本文档提交后以 `git status` 和 `git rev-parse HEAD` 核对新的仓库状态。
+- 长期 Java 语法恢复 `/goal` 当前状态为 **paused**。用户恢复该目标前，不自行派发新语法点或继续无边界巡查。本文件记录接续路径，不代表目标已恢复。
+- 最近一次代码 CI 是 [GitHub Actions 36606512666](https://github.com/LordCasser/jarde/actions/runs/36606512666)，所有 job 成功。它验证的是 `fcc864ce` 的代码；本文件后续的文档提交需单独看对应 CI 状态。
+- 根目录 Cargo `target` 已清理约 10.4 GiB；隔离构建产物另清理约 103 MiB。后续测试会重新占用磁盘，Rust 工作结束后留意 `target`。
+
+## 用户确定的工作方向
+
+先以本地 `/Users/lordcasser/workspace/testzone/jadx` 的测试和实现为基础，明确语法特性清单，逐项追平 **可证明正确** 的 JADX 已有能力；之后再探索双方都未覆盖的情况。可以参考 JADX 的反编译代码和算法，避免重复试错，但不能照搬其错误转写。对每个语法点：读相关测试和生产 visitor/region 实现，构造 Java 源码并编译，对照原 class、JADX、Jarde 的完整源码、Java 8 重编和执行；确认差距与 JVM/架构证据后写独立 OpenSpec。确定性、简单的实现任务派 Luna subagent（按难度调整思维强度），由主 agent 独立重放验收。同批互不冲突的点可并行。不要漫无目的地追加场景，也不要把一个窄 fixture 通过称为整个特性追平。
+
+入口是 [JADX 特性清单](openspec/evidence/jadx-feature-inventory-2026-09-27/README.md)、[71 个验收单元与状态账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)、[路线图中的 Java 8 对标章节](openspec/roadmap.md)。清单基于 JADX `2fb1b16386941660fda07e9017285aec40fcb37f` 的 612 个集成测试文件，去重得到 71 个工程验收单元；这个数字不是已追平数。状态账本目前记载 46 个“冻结差距已修复但待扩验”、23 个“部分已测”、1 个“已证差距”（CF-16 的剩余 `finally` 形态）、1 个“JADX 未完成”。这些是文档最后登记的状态，恢复工作时先复核源码和最新主线，避免按旧统计重复开工。
+
+架构约束：理解现有 reader → CFG/SSA → Region/AST → 类级装配与报告的证据流后再改代码；如非必要勿增实体，不考虑后向兼容。先判断是已有证明路径未消费、证据不足，还是确需新机制。与当前语法点无关的架构债务单独记录和拆分。JADX 的测试源码、文本相似度或可编译输出，都不能代替原 class 的行为证明。具体误判和拒绝边界见上述清单与各单元证据。
+
+## 最近一次主线收口
+
+用户要求先提交、推送全部当前工作，并把其它分支工作合入 `main`，随后清理不再需要的分支。审计 158 个非主线本地分支及工作树后，确认大多数历史提交已由主线后续或等价实现覆盖；直接重放旧提交会倒退代码。实际缺少的只有两项 `finally` 恢复：
+
+- `80523785`：固定 catch 值字段的 `finally`（原提交 `2c694adc`）。
+- `fcc864ce`：固定可空资源的 `finally`（原提交 `fa790c17`）。
+
+两项冲突在 `crates/jarde-java/src/build.rs` 和 `crates/jarde-java/tests/p3_shared_join_finally.rs` 合并时已保留双方证明与 Test7/Test9 回归。主线已推送。验收包括 `cargo fmt --all -- --check`、OpenSpec strict 216/216、`p3_shared_join_finally` 30/30、整仓两颗固定 seed 测试，以及 CI 等价的 Clippy；上述 GitHub CI 同时通过 stable、JDK 25 oracle/P3、MSRV、fuzz 与 supply-chain job。更早的 JDK 25 CI 修正也已在主线，见 [CI 36377418834](https://github.com/LordCasser/jarde/actions/runs/36377418834)。
+
+清理了 146 条不再需要且未被检出的本地分支。**剩余 13 条非主线分支全部仍被现存工作树检出**，不应直接强删；它们的工作产物在上述审计中被主线后续或等价实现覆盖，但其提交不一定是 `main` 的字面祖先：
+
+```text
+codex/cf16-test11-loop-finally
+codex/ci-array-ctor-jdk25
+codex/ci-required-conversions-counter
+codex/dt09-anon-init-impl
+codex/dt25-lambda-audit
+codex/dt26-captured-lambda-impl
+codex/dt29-generic-void
+codex/dt29-receiver-binding
+codex/em23-field-unit-updates
+codex/implement-proved-string-enum-constant-bodies
+codex/recover-proved-parameterized-null-return
+codex/shared-catchall-finally
+codex/string-ternary-enum
+```
+
+其中前三条分别在 `plain-enum-arities`、`inner-this-baseline`、`dt29-branched-concat` 工作树中；通过 Codex 归档这三个工作树时均返回“protected by a pinned task or workspace”，因此停止清理，没有绕过保护。其它工作树也未擅自迁移或删除。`/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde` 是干净、detached 于 `fcc864ce` 的隔离工作树，可在确认无人使用后复用。所有工作树在上次检查时干净；接手前仍要重新检查。根工作区曾在并行测试期间被另一任务切换分支，并发工作应使用隔离工作树且每次 Git 操作前核对当前位置。
+
+## 接手时的最小核对
+
+```sh
+git status --short --branch
+git rev-parse HEAD
+git worktree list --porcelain
+git branch -vv
+```
+
+若用户恢复语法目标，从状态账本选一个**尚未闭合的具体子形态**，重新读对应 JADX 测试/算法和 Jarde 当前代码，再冻结三方正反例。按现有 OpenSpec 写窄任务、实施、Java 8 完整类重编与验证运行、来源/拒绝边界及主 agent 验收；每完成一个切片就回写账本。CF-16 是已登记的剩余真实差距，但它的多个首片已修，不能仅凭编号重做。若任务是继续清理分支，先确认工作树归属及 pinned 状态，用 Codex 工作树归档流程处理可释放的工作树，不绕过受保护工作区，也不盲目把历史分支重新合入主线。
