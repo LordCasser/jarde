@@ -3053,8 +3053,25 @@ fn flag_cleanup_copy(
     if tail.len() != 0 && tail.len() != 7 {
         return None;
     }
-    let [test_load, branch, receiver_load, duplicate, field_read, constant, subtract, field_write] =
-        [*test_load, *branch, *receiver_load, *duplicate, *field_read, *constant, *subtract, *field_write];
+    let [
+        test_load,
+        branch,
+        receiver_load,
+        duplicate,
+        field_read,
+        constant,
+        subtract,
+        field_write,
+    ] = [
+        *test_load,
+        *branch,
+        *receiver_load,
+        *duplicate,
+        *field_read,
+        *constant,
+        *subtract,
+        *field_write,
+    ];
     let read = facts.op(field_read)?.clone();
     let write = facts.op(field_write)?.clone();
     let (
@@ -3225,16 +3242,23 @@ fn flag_cleanup_copy(
         else {
             return None;
         };
-        let [guard_read, guard_branch, allocate, duplicate_throw, message, construct, rethrow_new] =
-            [
-                *guard_read,
-                *guard_branch,
-                *allocate,
-                *duplicate_throw,
-                *message,
-                *construct,
-                *rethrow_new,
-            ];
+        let [
+            guard_read,
+            guard_branch,
+            allocate,
+            duplicate_throw,
+            message,
+            construct,
+            rethrow_new,
+        ] = [
+            *guard_read,
+            *guard_branch,
+            *allocate,
+            *duplicate_throw,
+            *message,
+            *construct,
+            *rethrow_new,
+        ];
         let Operation::Field {
             access: crate::facts::FieldAccess::Read,
             is_static: true,
@@ -3321,7 +3345,11 @@ fn flag_cleanup_copy(
             return None;
         }
         Some(FlagCleanupGuard {
-            field: (guard_owner.clone(), guard_name.clone(), guard_descriptor.clone()),
+            field: (
+                guard_owner.clone(),
+                guard_name.clone(),
+                guard_descriptor.clone(),
+            ),
             class: class.clone(),
             message: message.clone(),
         })
@@ -3451,7 +3479,19 @@ fn prove_flag_conditional_finally(
     let handler = facts.bcis((handler_start, facts.span_end(last_bci)));
     let (
         [false_push, false_store],
-        [n0, n1, n2, _n3, _n4, _n5, _n6, _n7, normal_tail @ .., return_load, normal_return],
+        [
+            n0,
+            n1,
+            n2,
+            _n3,
+            _n4,
+            _n5,
+            _n6,
+            _n7,
+            normal_tail @ ..,
+            return_load,
+            normal_return,
+        ],
         [
             primary_store,
             h0,
@@ -3472,8 +3512,7 @@ fn prove_flag_conditional_finally(
     };
     // The two copies are the same length: the read-modify-write core alone, or the core with the
     // same seven-instruction guarded-throw tail in both. Anything else is not this lowering.
-    if normal_tail.len() != handler_tail.len()
-        || (normal_tail.len() != 0 && normal_tail.len() != 7)
+    if normal_tail.len() != handler_tail.len() || (normal_tail.len() != 0 && normal_tail.len() != 7)
     {
         return Ok(None);
     }
