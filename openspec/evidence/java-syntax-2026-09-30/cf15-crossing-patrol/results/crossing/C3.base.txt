@@ -1,0 +1,58 @@
+// jarde: presentation of `C3` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class C3 extends java.lang.Object {
+    public C3() {
+        // @method <init>()V
+        // @declaration a constructor of `C3`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static int work(int arg0) {
+        // @method work(I)I
+        // @declaration a static method of `C3`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0 + 1;
+    }
+
+    public static java.lang.String five() {
+        // @method five()Ljava/lang/String;
+        // @declaration a static method of `C3`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        int local0;
+        local0 = 0;
+        try {
+            local0 = local0 + work(1);
+        } catch (java.lang.NoSuchFieldError local1) {
+        }
+        try {
+            local0 = local0 + work(2);
+        } catch (java.lang.IllegalStateException local1) {
+        }
+        try {
+            local0 = local0 + work(3);
+        } catch (java.lang.NoSuchFieldError local1) {
+        }
+        return "s" + local0;
+    }
+
+    public static java.lang.String popstmt() {
+        // @method popstmt()Ljava/lang/String;
+        // @declaration a static method of `C3`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.StringBuilder local0 = new java.lang.StringBuilder();
+        local0.append('a');
+        local0.append('b');
+        return local0.toString();
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `C3`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) five());
+        java.lang.System.out.println((java.lang.String) popstmt());
+        return;
+    }
+}

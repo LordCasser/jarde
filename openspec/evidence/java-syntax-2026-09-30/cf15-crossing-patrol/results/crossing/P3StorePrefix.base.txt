@@ -1,0 +1,34 @@
+// jarde: presentation of `P3StorePrefix` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class P3StorePrefix extends java.lang.Object {
+    public P3StorePrefix() {
+        // @method <init>()V
+        // @declaration a constructor of `P3StorePrefix`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.io.ByteArrayOutputStream open() {
+        // @method open()Ljava/io/ByteArrayOutputStream;
+        // @declaration a static method of `P3StorePrefix`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.io.ByteArrayOutputStream();
+    }
+
+    public static void t() {
+        // @method t()V
+        // @declaration a static method of `P3StorePrefix`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        throw new java.lang.IllegalStateException("state");
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `P3StorePrefix`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 15 26
+        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+}
