@@ -1,0 +1,161 @@
+public class V17a extends java.lang.Object implements java.lang.AutoCloseable {
+    public static boolean boom;
+
+    public V17a() {
+        // @method <init>()V
+        // @declaration a constructor of `V17a`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void close() {
+        // @method close()V
+        // @declaration an instance method of `V17a`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        if (V17a.boom) {
+            throw new java.lang.IllegalStateException("close");
+        } else {
+            return;
+        }
+    }
+
+    static void touch(V17a arg0) {
+        // @method touch(LV17a;)V
+        // @declaration a static method of `V17a`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (V17a.boom) {
+            throw new java.lang.IllegalStateException("touch");
+        } else {
+            java.lang.System.out.println("touched");
+            return;
+        }
+    }
+
+    static java.lang.String give() {
+        // @method give()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (V17a.boom) {
+            throw new java.lang.IllegalStateException("give");
+        } else {
+            return "g";
+        }
+    }
+
+    static V17a$G17 pick() {
+        // @method pick()LV17a$G17;
+        // @declaration a static method of `V17a`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (V17a.boom) {
+            throw new java.lang.IllegalStateException("pick");
+        } else {
+            return new V17a$G17Impl();
+        }
+    }
+
+    public static java.lang.String pureCalls() throws java.lang.Exception {
+        // @method pureCalls()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (V17a local0 = new V17a()) {
+            local0.toString();
+            local0.hashCode();
+        }
+        return "done";
+    }
+
+    public static java.lang.String mixedVoidAndCall() throws java.lang.Exception {
+        // @method mixedVoidAndCall()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (V17a local0 = new V17a()) {
+            touch(local0);
+            local0.toString();
+        }
+        return "done";
+    }
+
+    public static java.lang.String callBeforeReturnInside() throws java.lang.Exception {
+        // @method callBeforeReturnInside()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (V17a local0 = new V17a()) {
+            touch(local0);
+            local0.hashCode();
+            return "in";
+        }
+    }
+
+    public static java.lang.String callOnlyReturnInside() throws java.lang.Exception {
+        // @method callOnlyReturnInside()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (V17a local0 = new V17a()) {
+            local0.toString();
+            return "solo";
+        }
+    }
+
+    public static java.lang.String staticCall() throws java.lang.Exception {
+        // @method staticCall()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (V17a local0 = new V17a()) {
+            give();
+        }
+        return "done";
+    }
+
+    public static java.lang.String virtualCall() throws java.lang.Exception {
+        // @method virtualCall()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (V17a local0 = new V17a()) {
+            local0.toString();
+        }
+        return "done";
+    }
+
+    public static java.lang.String interfaceCall() throws java.lang.Exception {
+        // @method interfaceCall()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (V17a local0 = new V17a()) {
+            pick().get();
+        }
+        return "done";
+    }
+
+    public static java.lang.String receivedLocal() throws java.lang.Exception {
+        // @method receivedLocal()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (V17a local0 = new V17a()) {
+            java.lang.String local1 = local0.toString();
+        }
+        return "done";
+    }
+
+    public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) pureCalls());
+        java.lang.System.out.println((java.lang.String) mixedVoidAndCall());
+        java.lang.System.out.println((java.lang.String) callBeforeReturnInside());
+        java.lang.System.out.println((java.lang.String) callOnlyReturnInside());
+        java.lang.System.out.println((java.lang.String) staticCall());
+        java.lang.System.out.println((java.lang.String) virtualCall());
+        java.lang.System.out.println((java.lang.String) interfaceCall());
+        java.lang.System.out.println((java.lang.String) receivedLocal());
+        return;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `V17a`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        V17a.boom = false;
+    }
+}
