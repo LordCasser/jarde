@@ -1050,6 +1050,20 @@ fn declarations(
                         completion: guard::FinallyCompletion::Void { .. }, ..
                     }) && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
             });
+        // The null-lead straight finally's resource is the same shape again: the two-instruction
+        // `aconst_null; astore` initialisation sits in the Guard's lead, the body assigns the
+        // same slot, and both cleanup copies' one call reads it — the certificate's own
+        // argument-slot proof. The lead this shape carries is one statement, and a local store
+        // inside it is always that initialisation (the field-assignment lead writes a field, not
+        // a local), so the declaration hoists to the statement's lexical parent exactly as the
+        // void loop's does.
+        let null_lead_straight = owner.len() == 1
+            && regions.get(owner[0] as usize).is_some_and(|region| {
+                matches!(region, Region::Guard { plan, .. }
+                    if matches!(plan.shape(), guard::Shape::Finally {
+                        completion: guard::FinallyCompletion::SavedReturn { .. }, ..
+                    }) && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
+            });
         let has_increment = variable_uses.iter().any(|use_| {
             use_.written.is_some()
                 && matches!(operations.get(use_.bci), Some(Operation::Increment { .. }))
@@ -1096,6 +1110,7 @@ fn declarations(
             && !flag_saved_return
             && !local_null_saved_return
             && !void_loop_lead
+            && !null_lead_straight
             && (!store_type_is_proven
                 || !(joined_value_certified
                     || all_reads_reach_presented_writes(
@@ -2295,6 +2310,41 @@ fn decide_types(
                                 plan.shape()
                             && variable.slot() == *slot
                             && write.at < plan.body().0
+                        {
+                            nullable_type = uses
+                                .get(variable)
+                                .into_iter()
+                                .flatten()
+                                .find(|use_| {
+                                    use_.written.is_some()
+                                        && plan.body().0 <= use_.bci
+                                        && use_.bci < plan.body().1
+                                })
+                                .and_then(|use_| use_.written)
+                                .and_then(|value| {
+                                    written_type(ssa, operations, value).ok().flatten()
+                                });
+                        }
+                    });
+                }
+            }
+            if nullable_type.is_none() {
+                // The null-lead straight finally's lead stores `null` into the slot its cleanup
+                // call reads, with the same silence about the type: the statement's own writes
+                // say nothing, and the body's same-slot assignment is the declared type's one
+                // evidence — the same reading the local-null conditional's certificate proved.
+                // A lead this shape carries is one statement, and a local store inside it is
+                // always that initialisation (the field-assignment lead writes a field, not a
+                // local), so no other plan of this shape answers here.
+                for region in regions {
+                    collect_guards(region, &mut |region| {
+                        if let Region::Guard { plan, .. } = region
+                            && let guard::Shape::Finally {
+                                completion: guard::FinallyCompletion::SavedReturn { .. },
+                                ..
+                            } = plan.shape()
+                            && plan.lead().0 <= write.at
+                            && write.at < plan.lead().1
                         {
                             nullable_type = uses
                                 .get(variable)
