@@ -984,6 +984,17 @@ fn declarations(
                     if matches!(plan.shape(), guard::Shape::NullableResourceFinally { .. })
                         && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
             });
+        // The fixed void finally's resource is the same shape: one store in the Guard's lead, read
+        // by the protected body and by both cleanup copies. Which reads reach that store — and
+        // that both closes see the one definition — is the Guard certificate's own SSA proof, so
+        // the declaration hoists to the statement's lexical parent exactly as the nullable one does.
+        let void_loop_lead = owner.len() == 1
+            && regions.get(owner[0] as usize).is_some_and(|region| {
+                matches!(region, Region::Guard { plan, .. }
+                    if matches!(plan.shape(), guard::Shape::Finally {
+                        completion: guard::FinallyCompletion::Void { .. }, ..
+                    }) && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
+            });
         let has_increment = variable_uses.iter().any(|use_| {
             use_.written.is_some()
                 && matches!(operations.get(use_.bci), Some(Operation::Increment { .. }))
@@ -1025,6 +1036,7 @@ fn declarations(
             && !nested_cleanup_lead
             && !multi_return_lead
             && !nullable_resource_lead
+            && !void_loop_lead
             && (!store_type_is_proven
                 || !(joined_value_certified
                     || all_reads_reach_presented_writes(
@@ -13306,7 +13318,10 @@ impl Builder<'_> {
                             guard::FinallyCompletion::SavedReturn { save, returns } => {
                                 Some((*save, *returns))
                             }
-                            guard::FinallyCompletion::Joined { .. } => None,
+                            // A void completion saves no stack value and joins no named catch:
+                            // the body's own statements and the cleanup copy are the whole shape.
+                            guard::FinallyCompletion::Joined { .. }
+                            | guard::FinallyCompletion::Void { .. } => None,
                         };
                         let at = saved_return.map_or(plan.body().0, |(_, returns)| returns);
                         let body = if let Some(inner) = structured_body {
@@ -13317,7 +13332,8 @@ impl Builder<'_> {
                                 guard::FinallyCompletion::Joined { catch_pop, .. } => {
                                     Some(*catch_pop)
                                 }
-                                guard::FinallyCompletion::SavedReturn { .. } => None,
+                                guard::FinallyCompletion::SavedReturn { .. }
+                                | guard::FinallyCompletion::Void { .. } => None,
                             };
                             let walked = self.region(inner, &child(path, 0));
                             self.finally_span = None;
@@ -13362,9 +13378,11 @@ impl Builder<'_> {
                                 return Err(stop);
                             }
                         };
-                        let nested_complete = saved_return.is_some() || body.iter().any(|statement| {
-                            matches!(&statement.kind, StmtKind::Try { catches, .. } if catches.len() == 1)
-                        });
+                        let nested_complete = saved_return.is_some()
+                            || matches!(completion, guard::FinallyCompletion::Void { .. })
+                            || body.iter().any(|statement| {
+                                matches!(&statement.kind, StmtKind::Try { catches, .. } if catches.len() == 1)
+                            });
                         if !nested_complete
                             || body.iter().chain(&finally_body).any(statement_has_fallback)
                         {
@@ -23390,6 +23408,24 @@ fn array_of_value(
         Operation::Store { .. } => {
             let stored = store_operand(operations, instruction_at(ssa, bci)?)?;
             array_of_value(ssa, operations, stored, depth + 1)
+        }
+        // A subscript reads the element the array's own type names (`aaload` states none of its
+        // own): the read's value is that element, one dimension into the array operand — the same
+        // reading [`array_element`] gives the enhanced-for's element, with the array's own shape
+        // deciding the int-sized family where the opcode under-states. The one consumed dimension
+        // is the read value's own remaining array rank (`[[I` reads an `int[]`).
+        Operation::ArrayElementLoad { element } => {
+            let read = instruction_at(ssa, bci)?;
+            let operands = stack_operands(read);
+            let [(_, array), _] = operands.as_slice() else {
+                return None;
+            };
+            let (_, dimensions) = array_of_value(ssa, operations, *array, depth + 1)?;
+            let read_element = array_element(ssa, operations, *array, element.as_ref())?;
+            if dimensions == 0 {
+                return None;
+            }
+            Some((read_element, dimensions - 1))
         }
         _ => None,
     }
