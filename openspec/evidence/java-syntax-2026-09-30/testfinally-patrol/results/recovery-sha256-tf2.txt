@@ -1,0 +1,6 @@
+52f4ec0c394efa4654c4c4fe8408febae0806c943ecf909bcaf0b99fcd5c7528  fixture/Tf2.class
+107b5b4bff9b493719f1792c254f69b643c3c3b487de34e3b5fcf45cbfedde91  results/Tf2.jarde.java
+f6b1fd24870828f03253ada28f1f8df74e13640258c8dcf286ac778ec6bc99c9  results/Tf2.after.json
+4ae2a18727ca9eb29e5b46896bed4f60dc398cbc3ba60e6d886ba4d3c7677005  probe/jarde-tf2/Tf2Probe.java
+6833acb7cae2accdfb286dce579b036f99b7ce159f904bd3363a4a13bc57555a  probe/behavior-tf2-sha256.txt
+Jarde source revision 77eb1602 (null-lead straight finally certificate complete)

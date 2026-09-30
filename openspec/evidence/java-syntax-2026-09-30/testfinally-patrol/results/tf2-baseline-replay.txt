@@ -1,0 +1,28 @@
+# Tf2 基线重放（change recover-null-lead-straight-finally，任务 1.1）
+# 固定类与源 SHA（与 results/fixture-sha256.txt 一致）
+52f4ec0c394efa4654c4c4fe8408febae0806c943ecf909bcaf0b99fcd5c7528  fixture/Tf2.class
+40c503d704e677b5f5413d63f61d3f857da02ddb68b2f62a5b77312b02bbb171  fixture/Tf2.java
+
+# 双行 any 异常表与 lead/正文/副本布局（javap，`test([B)LTf2$Result;`）
+      Exception table:
+         from    to  target type
+             2    25    32   any
+            32    34    32   any
+# lead 0: aconst_null; 1: astore_2；正文 [2,25)：4: invokespecial getInputStream → 7: astore_2（同槽）、
+# 10: decode → 13: pop、14–21: new Tf2$Result(400)、24: astore_3（保存返回，区间内构造）
+# 正常副本 [25,30)：25/26: aload_0; aload_2; 27: invokespecial closeQuietly；30: aload_3; 31: areturn
+# handler 32: astore 4；副本 [34,39) 同调用；39: aload 4; 41: athrow
+
+# 主线（实现前）拒绝诊断：results/Tf2.base.json 的 fallbacks 与区域
+Tf2.base.json: fallbacks=[jre_guard_finally_copy, jre_region_uncovered_blocks] regions=[(0,None,False),(32,None,False)]
+#   BCI 32: the exceptional path repeats code the normal path also runs — the `finally` copy
+#   javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy,
+#   range, and ownership proof needed to merge them into one `finally`
+
+# 实现前 CLI 重放（同命令、基线 7a312458 二进制）与上完全一致：quality=fallback，
+# 文本 `// @bytecode 0 32` + `local 2 crosses a quoted fallback region`
+
+# 固定类 java -Xverify:all（类加载即验证；无 main，输出为 MainNotFound 而非 VerifyError）
+错误: 在类 Tf2 中找不到 main 方法, 请将 main 方法定义为:
+   public static void main(String[] args)
+verify-exit=1

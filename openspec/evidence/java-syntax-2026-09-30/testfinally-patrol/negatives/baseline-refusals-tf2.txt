@@ -1,0 +1,62 @@
+# Tf2 实现前（基线 7a312458）对固定类与全部九个负例的拒绝：整方法回退、零 finally。
+# 每类命令（基线 7a312458 的 release 二进制）：jarde class-source --input <class> --policy single-class --class <Name>
+# finally-count = 恢复文本中 'finally {' 的出现次数；marker = 回退标记行。
+
+=== fixture/Tf2.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 32
+=== negatives/src/Tf2LeadField/Tf2LeadField.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 34
+marker:        // @bytecode 0
+marker:        // @bytecode 3
+marker:        // @bytecode 10 7 5
+=== negatives/src/Tf2LeadExtra/Tf2LeadExtra.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 42
+marker:        // @bytecode 16
+marker:        // @bytecode 19 22 23
+marker:        // @bytecode 19 22 23 28
+marker:        // @bytecode 33
+marker:        // @bytecode 31 33 35
+marker:        // @bytecode 31 33 35 38
+marker:        // @bytecode 19 22 23 28 31 33 35 38 41
+marker:        // @bytecode 19 22 23 28 31 33 35 38 41 46
+marker:        // @bytecode 49
+marker:        // @bytecode 19 22 23 28 31 33 35 38 41 46 49 52
+marker:        // @bytecode 19 22 23 28 31 33 35 38 41 46 49 52 57
+marker:        // @bytecode 75 16 72 69 57 52 46 41 28 23 19 22 38 35 33 49 31
+=== negatives/src/Tf2SlotMismatch/Tf2SlotMismatch.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 34
+=== negatives/src/Tf2ArgOtherSlot/Tf2ArgOtherSlot.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 1 2 3 4 7 8 9 10 13 14 17 18 21 24 25 26 27 30 31
+marker:        // @bytecode 32 34 35 36 39 41
+=== negatives/src/Tf2CleanupExtra/Tf2CleanupExtra.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 35
+=== negatives/src/Tf2TargetMismatch/Tf2TargetMismatch.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 32
+=== negatives/src/Tf2ReturnIdentity/Tf2ReturnIdentity.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 32
+marker:        // @bytecode 16
+marker:        // @bytecode 19 22 23
+marker:        // @bytecode 19 22 23 28
+marker:        // @bytecode 64 16 61 58 52 47 28 23 19 22 55
+=== negatives/src/Tf2RethrowIdentity/Tf2RethrowIdentity.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 32
+marker:        // @bytecode 16
+marker:        // @bytecode 19 22 23
+marker:        // @bytecode 19 22 23 28
+marker:        // @bytecode 64 16 61 58 52 47 28 23 19 22 55
+=== negatives/src/Tf2SelfRowWidened/Tf2SelfRowWidened.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 32
+marker:        // @bytecode 16
+marker:        // @bytecode 19 22 23
+marker:        // @bytecode 19 22 23 28
+marker:        // @bytecode 64 16 61 58 52 47 28 23 19 22 55

@@ -1,0 +1,39 @@
+# Tf2 实现后（null-lead 直体 finally 证书落地）对固定类与全部九个负例的恢复结果：
+# 固定类结构恢复（唯一 try/finally），负例全部仍拒绝（零 finally、保留回退标记）。
+# 每类命令：jarde class-source --input <class> --policy single-class --class <Name>
+
+=== fixture/Tf2.class (test) ===
+finally-count: 1
+=== negatives/src/Tf2LeadField/Tf2LeadField.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 34
+marker:        // @bytecode 0
+=== negatives/src/Tf2LeadExtra/Tf2LeadExtra.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 42
+marker:        // @bytecode 16
+=== negatives/src/Tf2SlotMismatch/Tf2SlotMismatch.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 34
+=== negatives/src/Tf2ArgOtherSlot/Tf2ArgOtherSlot.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 1 2 3 4 7 8 9 10 13 14 17 18 21 24 25 26 27 30 31
+marker:        // @bytecode 32 34 35 36 39 41
+=== negatives/src/Tf2CleanupExtra/Tf2CleanupExtra.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 35
+=== negatives/src/Tf2TargetMismatch/Tf2TargetMismatch.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 32
+=== negatives/src/Tf2ReturnIdentity/Tf2ReturnIdentity.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 32
+marker:        // @bytecode 16
+=== negatives/src/Tf2RethrowIdentity/Tf2RethrowIdentity.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 32
+marker:        // @bytecode 16
+=== negatives/src/Tf2SelfRowWidened/Tf2SelfRowWidened.class (test) ===
+finally-count: 0
+marker:        // @bytecode 0 32
+marker:        // @bytecode 16

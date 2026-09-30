@@ -1657,6 +1657,61 @@ fn completed_field_assignment(facts: &Facts<'_>, before: u32, floor: u32, range:
     depth == 0
 }
 
+/// The two-instruction `aconst_null; astore s` a null-initialised local writes before a
+/// protected range, completed at the statement boundary the range begins at. This is the third
+/// answer the finally-copy claim gate reads for the statement's own lead: like the field
+/// assignment, the statement ends exactly where the range begins and leaves no value of its own
+/// on the stack — but what it stores is the `null` the source writes, so the local it declares
+/// is the one the body assigns and both cleanup copies call through. Anything else before the
+/// range — a wider initialisation, a non-null constant, a call — is not this lead, and the
+/// caller keeps the answer it held before the question was asked.
+fn completed_null_local_lead(
+    facts: &Facts<'_>,
+    before: u32,
+    floor: u32,
+    range: u32,
+) -> Option<u16> {
+    let Some(Operation::Store { slot }) = facts.op(before) else {
+        return None;
+    };
+    let push = facts
+        .previous_bci(before)
+        .filter(|previous| *previous >= floor)?;
+    if facts.op(push) != Some(&Operation::Push(crate::facts::ConstantValue::Null)) {
+        return None;
+    }
+    // The two instructions are the whole lead: nothing of this block's own run precedes the
+    // `null`, so the statement the range follows is exactly this initialisation.
+    if facts
+        .previous_bci(push)
+        .is_some_and(|previous| previous >= floor)
+    {
+        return None;
+    }
+    // The store reads the `null` the push wrote — one statement, not two — and the statement is
+    // one initialisation whose completion is the range's own start, with nothing of it left on
+    // the stack ([`single_statement`], [`statement_boundary`]).
+    let reads_the_null = facts.step(push).is_some_and(|step| {
+        step.instruction.writes().iter().any(|(written, value)| {
+            matches!(written, Slot::Stack(_))
+                && facts.step(before).is_some_and(|store| {
+                    store
+                        .instruction
+                        .reads()
+                        .iter()
+                        .any(|(_, read)| facts.same(*value, *read))
+                })
+        })
+    });
+    if !reads_the_null
+        || !single_statement(facts, (push, range), before)
+        || !statement_boundary(facts, before, range)
+    {
+        return None;
+    }
+    Some(*slot)
+}
+
 /// One level's handler, as the close proof reads it.
 struct CloseHandler {
     /// The handler's own instruction range.
@@ -1970,8 +2025,14 @@ struct FinallyCopyProof {
 
 /// Each stack operand must come from an earlier instruction of this copy. The returned producer
 /// ordinals make SSA value names local to the copy, so two copies can be compared structurally
-/// without accidentally equating unrelated physical `ValueId`s.
-fn cleanup_sequence(facts: &Facts<'_>, copy: &[u32]) -> Option<Vec<(Operation, Vec<usize>)>> {
+/// without accidentally equating unrelated physical `ValueId`s. A copy the null-lead finally's
+/// caller admits may also read a local — the cleanup call's receiver and its arguments — and the
+/// comparison carries the slot, so two copies agree only where they read the same one.
+fn cleanup_sequence(
+    facts: &Facts<'_>,
+    copy: &[u32],
+    admit_loads: bool,
+) -> Option<Vec<(Operation, Vec<usize>)>> {
     if copy.is_empty() || copy.len() > 32 {
         return None;
     }
@@ -1983,6 +2044,7 @@ fn cleanup_sequence(facts: &Facts<'_>, copy: &[u32]) -> Option<Vec<(Operation, V
         let instruction = facts.step(*bci)?.instruction;
         match operation {
             Operation::Push(_) => {}
+            Operation::Load { .. } if admit_loads => {}
             Operation::Invoke(_) => {
                 effects += 1;
                 calls += 1;
@@ -2169,9 +2231,12 @@ fn append_cleanup(
 
 /// Prove only a straight return/handler pair, before any region ownership or emission. The row's
 /// half-open range is checked first: a cleanup call caught by its own handler can run twice.
+/// `admit_loads` is the null-lead caller's grant: only that lead's copies read a local, so only
+/// that lead's proof compares a copy grammar that carries them.
 fn prove_finally_copy(
     facts: &mut Facts<'_>,
     row: &ExceptionHandlerFact,
+    admit_loads: bool,
 ) -> Result<Option<FinallyCopyProof>, StopReason> {
     let Some(handler) = facts.row_handler(row) else {
         return Ok(None);
@@ -2272,8 +2337,8 @@ fn prove_finally_copy(
         return Ok(None);
     }
     let (Some(normal_code), Some(handler_code)) = (
-        cleanup_sequence(facts, normal_cleanup),
-        cleanup_sequence(facts, handler_cleanup),
+        cleanup_sequence(facts, normal_cleanup, admit_loads),
+        cleanup_sequence(facts, handler_cleanup, admit_loads),
     ) else {
         return Ok(None);
     };
@@ -2414,6 +2479,130 @@ fn prove_finally_copy(
         join: None,
         origins,
     }))
+}
+
+/// The null lead's slot identity: both cleanup copies' call reads the slot the lead initialised.
+///
+/// The copy proof is structural: the two copies match instruction for instruction, but the `Load`
+/// it compares says only "the same slot", not "the value the statement's own flow has". Folding
+/// the two calls into one `finally` restates the source only where every argument of the one call
+/// each copy makes is the lead slot's own value flow — the `null` the lead writes or the
+/// assignment the body fills the slot with, expanded through the joins the read's block put in
+/// the way ([`local_null_handler_provenance`]) — and the lead's store and the body's assignments
+/// are the only definitions that slot has anywhere the statement owns, either copy included.
+/// Anything else — a constant, a call result, another slot's value, a definition the copies or
+/// the handler add — is a shape this slice refuses.
+fn null_lead_copies_read_the_lead(
+    facts: &mut Facts<'_>,
+    proof: &FinallyCopyProof,
+    start: u32,
+    slot: u16,
+) -> Result<bool, StopReason> {
+    // The statement's own definitions of the slot: the lead's store, and the body's assignments.
+    // The body must assign — the source declares, then fills — and no other store of the slot
+    // may run anywhere the statement owns.
+    let Some(lead_store) = facts.previous_bci(proof.protected.0) else {
+        return Ok(false);
+    };
+    let body_stores: Vec<u32> = facts
+        .bcis(proof.protected)
+        .into_iter()
+        .filter(|bci| {
+            matches!(
+                facts.op(*bci),
+                Some(Operation::Store { slot: filled }) if *filled == slot
+            )
+        })
+        .collect();
+    if body_stores.is_empty() {
+        return Ok(false);
+    }
+    let end = facts.span_end(proof.primary.2);
+    for bci in facts.bcis((start, end)) {
+        facts.charge(bci)?;
+        let fills_slot = matches!(
+            facts.op(bci),
+            Some(Operation::Store { slot: filled }) if *filled == slot
+        );
+        if fills_slot && lead_store != bci && !body_stores.contains(&bci) {
+            return Ok(false);
+        }
+    }
+    let local_written = |step: Step<'_>| {
+        step.instruction
+            .writes()
+            .iter()
+            .find_map(|(written, value)| (*written == Slot::Local(slot)).then_some(*value))
+    };
+    let Some(lead_value) = facts.step(lead_store).and_then(local_written) else {
+        return Ok(false);
+    };
+    let body_values: Vec<ValueId> = body_stores
+        .iter()
+        .filter_map(|bci| facts.step(*bci).and_then(local_written))
+        .collect();
+    for (cleanup, entry, require_body) in [
+        (proof.normal_cleanup, proof.normal_cleanup.0, true),
+        (proof.handler_cleanup, proof.primary.0, false),
+    ] {
+        let bcis = facts.bcis(cleanup);
+        let Some(sequence) = cleanup_sequence(facts, &bcis, true) else {
+            return Ok(false);
+        };
+        // The one call each copy makes: its descriptor names the arguments, and every argument's
+        // producer inside the copy must be a read of the lead slot itself.
+        let Some((_, (target, producers))) =
+            sequence
+                .iter()
+                .enumerate()
+                .find_map(|(ordinal, entry)| match entry {
+                    (Operation::Invoke(target), producers) => Some((ordinal, (target, producers))),
+                    _ => None,
+                })
+        else {
+            return Ok(false);
+        };
+        let Some((parameters, _)) = parse_method(target.descriptor()) else {
+            return Ok(false);
+        };
+        if producers.len() < parameters.len() {
+            return Ok(false);
+        }
+        let mut reads = Vec::new();
+        for producer in &producers[producers.len() - parameters.len()..] {
+            let Some((Operation::Load { slot: read }, _)) = sequence.get(*producer) else {
+                return Ok(false);
+            };
+            if *read != slot {
+                return Ok(false);
+            }
+            let Some(value) = facts
+                .step(bcis[*producer])
+                .and_then(|step| {
+                    step.instruction
+                        .reads()
+                        .iter()
+                        .find(|(read_slot, _)| *read_slot == Slot::Local(slot))
+                })
+                .map(|(_, value)| *value)
+            else {
+                return Ok(false);
+            };
+            reads.push(value);
+        }
+        // Each argument's read is the merged value flow of the lead and the body's own
+        // assignments. The normal copy runs the body to its end, so its read names a body
+        // value; the handler copy may be entered before the body stored, and its read may name
+        // the lead's `null` alone — either way no definition outside the two may reach it.
+        for value in reads {
+            let proven =
+                local_null_handler_provenance(facts, value, lead_value, &body_values, entry, slot)?;
+            if require_body && !proven {
+                return Ok(false);
+            }
+        }
+    }
+    Ok(true)
 }
 
 /// The two reads are separate instructions and separate SSA values. The first is used only by
@@ -8691,7 +8880,7 @@ mod finally_copy_tests {
             &sites,
             &mut proof_budget,
         );
-        prove_finally_copy(&mut facts, row)
+        prove_finally_copy(&mut facts, row, false)
     }
 
     fn shared_probe(
@@ -8874,6 +9063,291 @@ mod finally_copy_tests {
             .unwrap()
             .expect("conditional finally certificate");
         assert!(matches!(field.shape(), Shape::ConditionalFinally { .. }));
+    }
+
+    /// The fixed CF-16 Tf2 transcription: the two-row straight finally whose lead initialises
+    /// the cleanup local with `null`, the body assigns from a call, and whose one saved return
+    /// is a construction inside the protected range.
+    const NULL_LEAD_TF2: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf2.class"
+    );
+    const NULL_LEAD_TF2_DESCRIPTOR: &[u8] = b"([B)LTf2$Result;";
+
+    /// The verifier-valid neighbors the task froze: the first five break one link of the fixed
+    /// grammar from source, the last four are same-length bytecode patches
+    /// (`negatives/patch-tf2.py`) that rewrite one copy, one completion, or one row.
+    const NULL_LEAD_TF2_NEIGHBORS: [(&str, &[u8]); 9] = [
+        (
+            "Tf2LeadField",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2LeadField/Tf2LeadField.class"
+            ),
+        ),
+        (
+            "Tf2LeadExtra",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2LeadExtra/Tf2LeadExtra.class"
+            ),
+        ),
+        (
+            "Tf2SlotMismatch",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2SlotMismatch/Tf2SlotMismatch.class"
+            ),
+        ),
+        (
+            "Tf2ArgOtherSlot",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2ArgOtherSlot/Tf2ArgOtherSlot.class"
+            ),
+        ),
+        (
+            "Tf2CleanupExtra",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2CleanupExtra/Tf2CleanupExtra.class"
+            ),
+        ),
+        (
+            "Tf2TargetMismatch",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2TargetMismatch/Tf2TargetMismatch.class"
+            ),
+        ),
+        (
+            "Tf2ReturnIdentity",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2ReturnIdentity/Tf2ReturnIdentity.class"
+            ),
+        ),
+        (
+            "Tf2RethrowIdentity",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2RethrowIdentity/Tf2RethrowIdentity.class"
+            ),
+        ),
+        (
+            "Tf2SelfRowWidened",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf2SelfRowWidened/Tf2SelfRowWidened.class"
+            ),
+        ),
+    ];
+
+    /// Drives the whole guarded dispatch — the dedicated certificates first, the finally-copy
+    /// claim gate behind them — exactly as the region walk reaches it, which is the order the
+    /// families' mutual exclusion lives in.
+    fn examine_probe_labelled(
+        label: &str,
+        class: &[u8],
+        name: &[u8],
+        descriptor: &[u8],
+        stop: Option<&str>,
+    ) -> Result<Verdict, StopReason> {
+        let mut budget = Budget::new(limits());
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
+            .expect("frozen class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(class).to_hex().to_string()),
+                length: class.len() as u64,
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let method = PhysicalMethodId {
+            owner: definition,
+            name: JvmBytes(name.to_vec()),
+            descriptor: JvmBytes(descriptor.to_vec()),
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_string()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let request = MethodAnalysisRequest {
+            environment: ResolutionEnvironment {
+                runtime: RuntimeView {
+                    physical: PhysicalView {
+                        snapshot: snapshot.id().clone(),
+                        scope: PhysicalScope::SnapshotAll,
+                    },
+                    profile: RuntimeProfile {
+                        java_release: 8,
+                        multi_release: MultiReleasePolicy::Disabled,
+                        layout: LayoutMode::Generic,
+                    },
+                    load_domain: domain.clone(),
+                },
+                domains: vec![domain],
+                providers: Vec::new(),
+            },
+            method,
+            stages: AnalysisStage::ALL.to_vec(),
+        };
+        let analyzed =
+            analyze_method_ir(&[snapshot], &request, &mut budget).expect("frozen method analyzes");
+        let ir = analyzed.ir();
+        let Some(canonical) = ir.canonical() else {
+            panic!(
+                "{label}: no canonical IR (quality {:?})",
+                analyzed.report().quality
+            );
+        };
+        let ssa = ir.ssa().unwrap();
+        let code = ir.code().unwrap();
+        let ops = Operations::of(code, ir.constant_pool());
+        let view = NormalFlowView::build(canonical, &mut budget).unwrap();
+        let rows = code.exception_handlers.clone();
+        let mut proof_limits = limits();
+        if stop == Some("budget") {
+            proof_limits.analysis_steps = 0;
+        }
+        let token = CancellationToken::new();
+        if stop == Some("cancel") {
+            token.cancel();
+        }
+        let mut proof_budget = Budget::with_cancellation_token(proof_limits, token);
+        let sites = crate::init::Sites::empty();
+        let current = canonical.blocks()[0].id().clone();
+        examine(
+            canonical,
+            &view,
+            ssa,
+            &ops,
+            &rows,
+            &sites,
+            &crate::pass::JAVA_8,
+            &current,
+            &mut proof_budget,
+        )
+    }
+
+    #[test]
+    fn null_lead_straight_certificate_claims_the_fixed_two_row_lowering() {
+        let Verdict::Claimed(plan) = examine_probe_labelled(
+            "Tf2",
+            NULL_LEAD_TF2,
+            b"test",
+            NULL_LEAD_TF2_DESCRIPTOR,
+            None,
+        )
+        .unwrap() else {
+            panic!("the null-lead straight finally certificate claims the fixed class");
+        };
+        assert_eq!(plan.lead(), (0, 2));
+        assert_eq!(plan.body(), (2, 25));
+        let Shape::Finally {
+            normal_cleanup,
+            completion,
+            row_ordinal,
+            structured,
+        } = plan.shape()
+        else {
+            panic!("the straight finally shape: {:?}", plan.shape());
+        };
+        assert_eq!(*row_ordinal, 0);
+        assert_eq!(*normal_cleanup, (25, 30));
+        assert!(matches!(
+            completion,
+            FinallyCompletion::SavedReturn {
+                save: 24,
+                returns: 31
+            }
+        ));
+        assert!(*structured);
+        // The plan's evidence spans the statement's protected span: the body, both cleanup
+        // copies, and the saved/rethrown completions. The lead's own two instructions anchor the
+        // artifact's source map directly, the way every lead presentation does.
+        for bci in [2, 7, 24, 25, 26, 27, 32, 34, 35, 36, 39, 41] {
+            assert!(
+                plan.facts().contains(&bci),
+                "BCI {bci} carries no origin: {:?}",
+                plan.facts()
+            );
+        }
+        assert!(matches!(
+            examine_probe_labelled(
+                "Tf2",
+                NULL_LEAD_TF2,
+                b"test",
+                NULL_LEAD_TF2_DESCRIPTOR,
+                Some("budget"),
+            ),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            examine_probe_labelled(
+                "Tf2",
+                NULL_LEAD_TF2,
+                b"test",
+                NULL_LEAD_TF2_DESCRIPTOR,
+                Some("cancel"),
+            ),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
+
+    #[test]
+    fn null_lead_straight_certificate_refuses_the_verifier_valid_neighbors() {
+        for (name, class) in NULL_LEAD_TF2_NEIGHBORS {
+            let mut descriptor = b"([B)L".to_vec();
+            descriptor.extend_from_slice(name.as_bytes());
+            descriptor.extend_from_slice(b"$Result;");
+            let verdict = examine_probe_labelled(name, class, b"test", &descriptor, None)
+                .unwrap_or_else(|stop| panic!("{name} stopped: {stop:?}"));
+            match verdict {
+                // No guarded shape answers here at all — the broken link is one the shape
+                // readers decline before any rule claims the block.
+                Verdict::NotGuarded => {}
+                // The finally-copy claim gate reached its own refusal: it answers outside any
+                // registered rule's claim, anchored at the class's own handler entry.
+                Verdict::Refused { pass, .. } => {
+                    assert_eq!(pass, None, "{name} refused by another rule");
+                }
+                Verdict::Claimed(_) => panic!("{name} claimed a finally"),
+            }
+        }
+    }
+
+    #[test]
+    fn null_lead_straight_extension_leaves_the_family_certificates_their_own_shapes() {
+        let flag = examine_probe_labelled(
+            "Tf4",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class"
+            ),
+            b"test",
+            b"()Ljava/lang/String;",
+            None,
+        )
+        .unwrap();
+        let Verdict::Claimed(plan) = flag else {
+            panic!("the flag conditional certificate claims Tf4");
+        };
+        assert!(matches!(plan.shape(), Shape::FlagConditionalFinally { .. }));
+        let local_null = examine_probe_labelled(
+            "Tf1",
+            LOCAL_NULL_TF1,
+            b"test",
+            LOCAL_NULL_TF1_DESCRIPTOR,
+            None,
+        )
+        .unwrap();
+        let Verdict::Claimed(plan) = local_null else {
+            panic!("the local-null conditional certificate claims Tf1");
+        };
+        assert!(matches!(
+            plan.shape(),
+            Shape::LocalNullConditionalFinally { .. }
+        ));
     }
 
     const CALL: &[u8] = include_bytes!(
@@ -11605,60 +12079,86 @@ fn resources(
     // straight-body presentation gate both pass; otherwise preserve the original refusal.
     for row in &candidates {
         if let Some(at) = finally_copy(facts, row) {
-            if FINALLY.admits(profile)
-                && let Some(proof) = prove_finally_copy(facts, row)?
-                && proof.row_ordinal == row.ordinal
-                && start <= proof.protected.0
-                && proof.protected.0 < end
-                && (start == proof.protected.0
-                    || facts.previous_bci(proof.protected.0).is_some_and(|before| {
+            // The lead the protected range follows admits the shape's own readings, one of
+            // three: no statement at all, a completed field assignment, or — this slice — the
+            // two-instruction `aconst_null; astore s` a null-initialised local writes. The
+            // answer is read before the proof because the null local is the one lead whose
+            // cleanup copies may read a local at all — the slot it initialises — so it shapes
+            // the copy grammar the proof admits ([`completed_null_local_lead`]).
+            let null_lead = facts
+                .previous_bci(row.start_bci)
+                .filter(|before| *before >= start)
+                .and_then(|before| completed_null_local_lead(facts, before, start, row.start_bci));
+            let proof = if FINALLY.admits(profile) {
+                prove_finally_copy(facts, row, null_lead.is_some())?
+            } else {
+                None
+            };
+            let Some(proof) = proof else {
+                return Ok(Verdict::refused(None, Unproven::FinallyCopy, at));
+            };
+            if proof.row_ordinal != row.ordinal
+                || start > proof.protected.0
+                || proof.protected.0 >= end
+                || (start != proof.protected.0
+                    && null_lead.is_none()
+                    && !facts.previous_bci(proof.protected.0).is_some_and(|before| {
                         completed_field_assignment(facts, before, start, proof.protected.0)
                             && single_statement(facts, (start, proof.protected.0), before)
                     }))
-                && facts.statement_free((start, proof.protected.0))
-                && facts.bcis((start, proof.protected.0)).iter().all(|bci| {
+                || !facts.statement_free((start, proof.protected.0))
+                || !facts.bcis((start, proof.protected.0)).iter().all(|bci| {
                     facts.block_of(*bci) == Some(current) && facts.covering(*bci).is_empty()
                 })
             {
-                let structured = !facts.statement_free(proof.protected);
-                let return_end = facts.span_end(proof.saved_return.1);
-                let handler_end = facts.span_end(proof.primary.2);
-                let pieces = [
-                    (start, proof.protected.0),
-                    proof.protected,
-                    proof.normal_cleanup,
-                    (proof.normal_cleanup.1, return_end),
-                    (proof.primary.0, proof.handler_cleanup.0),
-                    proof.handler_cleanup,
-                    (proof.handler_cleanup.1, handler_end),
-                ];
-                if explained(facts, start, handler_end, &pieces).is_ok()
-                    && proof.owned.iter().all(|block| {
-                        facts.in_block(block).iter().all(|instruction| {
-                            let bci = instruction.bci();
-                            start <= bci
-                                && bci < handler_end
-                                && pieces.iter().any(|piece| piece.0 <= bci && bci < piece.1)
-                        })
+                return Ok(Verdict::refused(None, Unproven::FinallyCopy, at));
+            }
+            // The null lead's slot identity: both copies' call arguments are the lead slot's own
+            // merged value flow, and the lead and the body's assignments are the slot's only
+            // definitions. A shape that reads anything else keeps the refusal above.
+            if let Some(slot) = null_lead
+                && !null_lead_copies_read_the_lead(facts, &proof, start, slot)?
+            {
+                return Ok(Verdict::refused(None, Unproven::FinallyCopy, at));
+            }
+            let structured = !facts.statement_free(proof.protected);
+            let return_end = facts.span_end(proof.saved_return.1);
+            let handler_end = facts.span_end(proof.primary.2);
+            let pieces = [
+                (start, proof.protected.0),
+                proof.protected,
+                proof.normal_cleanup,
+                (proof.normal_cleanup.1, return_end),
+                (proof.primary.0, proof.handler_cleanup.0),
+                proof.handler_cleanup,
+                (proof.handler_cleanup.1, handler_end),
+            ];
+            if explained(facts, start, handler_end, &pieces).is_ok()
+                && proof.owned.iter().all(|block| {
+                    facts.in_block(block).iter().all(|instruction| {
+                        let bci = instruction.bci();
+                        start <= bci
+                            && bci < handler_end
+                            && pieces.iter().any(|piece| piece.0 <= bci && bci < piece.1)
                     })
-                {
-                    return Ok(Verdict::Claimed(Plan {
-                        shape: Shape::Finally {
-                            normal_cleanup: proof.normal_cleanup,
-                            completion: FinallyCompletion::SavedReturn {
-                                save: proof.saved_return.0,
-                                returns: proof.saved_return.1,
-                            },
-                            row_ordinal: proof.row_ordinal,
-                            structured,
+                })
+            {
+                return Ok(Verdict::Claimed(Plan {
+                    shape: Shape::Finally {
+                        normal_cleanup: proof.normal_cleanup,
+                        completion: FinallyCompletion::SavedReturn {
+                            save: proof.saved_return.0,
+                            returns: proof.saved_return.1,
                         },
-                        lead: (start, proof.protected.0),
-                        body: proof.protected,
-                        owned: proof.owned,
-                        join: proof.join,
-                        facts: proof.origins,
-                    }));
-                }
+                        row_ordinal: proof.row_ordinal,
+                        structured,
+                    },
+                    lead: (start, proof.protected.0),
+                    body: proof.protected,
+                    owned: proof.owned,
+                    join: proof.join,
+                    facts: proof.origins,
+                }));
             }
             return Ok(Verdict::refused(None, Unproven::FinallyCopy, at));
         }
