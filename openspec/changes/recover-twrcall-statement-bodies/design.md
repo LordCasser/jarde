@@ -6,7 +6,7 @@
 
 **Goals:** 正文语句子集接受"非 void `invoke` + 紧随 `pop`"为一个调用语句：pop 位于调用后同块紧邻、pop 的唯一读值是该调用的结果值（SSA 身份）。呈现复用现有调用语句通道（结果丢弃即源码分号）。
 
-**Non-Goals:** 调用结果被消费的体（赋值/嵌套表达式）；`Pop` 之外的栈消费形态；字段读/自增等其它 statement-expression（各自另片）；17b 的包围具名 catch；finally 家族正文（其证书自有文法）。
+**Non-Goals:** 调用结果被赋值接收的体（主线既有 saved-return 通道**已恢复**该形态，design 初稿表述过时，以主线行为为准）；`Pop` 之外的栈消费形态；字段读/自增等其它 statement-expression（各自另片）；17b 的包围具名 catch；finally 家族正文（其证书自有文法）。
 
 ## Decisions
 

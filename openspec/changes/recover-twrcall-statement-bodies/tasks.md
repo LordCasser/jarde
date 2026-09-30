@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含 TWR 家族、多资源、可空资源零回退）、fmt、CI 同款 Clippy 新码零新增、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 T2 与变体族三方对照：原 class/固定 JADX Java-input/Jarde `javac --release 8` 重编，`java -Xverify:all` 正常与注入异常路径逐路径一致；记录输出 SHA。（[results/three-way/run-sha256.txt](../../evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/twrcall-17a/results/three-way/run-sha256.txt)：T2 与 V17a-normal 三腿同 SHA；boom 路径原类==Jarde，JADX 参照列自身偏差如实记录）
-- [ ] 3.3 root 独立复核判据、呈现与三方行为，更新 CF-17 清单与巡查账本；C4.twrNamed 仍拒绝属 17b。
+- [x] 3.3 root 独立复核判据、呈现与三方行为，更新 CF-17 清单与巡查账本；C4.twrNamed 仍拒绝属 17b。（root 于合并主线 aa279ec6 复核：popBody 恢复 `local0.toString();`、void 对照逐字不变、四负例保持拒绝、全仓 2717/0、fmt/openspec 225/225。design 决策 2 的"赋值接收保持拒绝"表述已按主线事实修订——主线本就恢复该形态且正确。**新登记巡查点**：TWR saved-return 呈现 `Object local1 = "in"; return local1;` 不可编译〔呈现层类型拼写缺陷，try 内 return 形态〕，随 TWR 家族扩验处理。）
