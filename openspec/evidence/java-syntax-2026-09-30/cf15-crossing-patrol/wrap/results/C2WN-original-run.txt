@@ -1,0 +1,19 @@
+userWrap:w:user/true
+log:err
+userForward:logged
+ioWrap:w:io/true
+causeOnlyUser:true
+arrayWrap:held:1:arr
+userArrayWrap:held:1:uarr
+pick-T:ovl
+overloadNarrow:picked
+rawMix:raw:1:log0:true
+=== modes ===
+userWrap:fine
+userForward:fine
+ioWrap:fine
+causeOnlyUser:fine
+arrayWrap:fine
+userArrayWrap:fine
+overloadNarrow:fine
+rawMix:fine

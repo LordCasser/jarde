@@ -1,0 +1,235 @@
+// jarde: presentation of `C2W` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class C2W extends java.lang.Object {
+    public C2W() {
+        // @method <init>()V
+        // @declaration a constructor of `C2W`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.String alias(int arg0) {
+        // @method alias(I)Ljava/lang/String;
+        // @declaration a static method of `C2W`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.lang.IllegalStateException("zero");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalStateException local1) {
+            java.lang.String local2 = local1.getMessage();
+            java.lang.RuntimeException local3 = new java.lang.RuntimeException("w:" + local2, (java.lang.Throwable) local1);
+            throw local3;
+        }
+    }
+
+    public static java.lang.String iaeWrap(int arg0) {
+        // @method iaeWrap(I)Ljava/lang/String;
+        // @declaration a static method of `C2W`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.lang.IllegalArgumentException("bad");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalArgumentException local1) {
+            java.lang.RuntimeException local2 = new java.lang.RuntimeException("w:" + local1.getMessage(), (java.lang.Throwable) local1);
+            throw local2;
+        }
+    }
+
+    public static java.lang.String nested(int arg0) {
+        // @method nested(I)Ljava/lang/String;
+        // @declaration a static method of `C2W`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.lang.IllegalStateException("inner");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalStateException local1) {
+            java.lang.RuntimeException local2 = new java.lang.RuntimeException("w1", (java.lang.Throwable) local1);
+            java.lang.RuntimeException local3 = new java.lang.RuntimeException("w2:" + local2.getMessage(), (java.lang.Throwable) local2);
+            throw local3;
+        }
+    }
+
+    public static java.lang.String forward(int arg0) {
+        // @method forward(I)Ljava/lang/String;
+        // @declaration a static method of `C2W`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.lang.IllegalStateException("fwd");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalStateException local1) {
+            log((java.lang.Throwable) local1);
+            return "logged";
+        }
+    }
+
+    static void log(java.lang.Throwable arg0) {
+        // @method log(Ljava/lang/Throwable;)V
+        // @declaration a static method of `C2W`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("log:" + arg0.getMessage());
+        return;
+    }
+
+    public static java.lang.String multi(int arg0) {
+        // @method multi(I)Ljava/lang/String;
+        // @declaration a static method of `C2W`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.lang.IllegalStateException("multi");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalStateException local1) {
+            note(7, (java.lang.Throwable) local1, 'x');
+            return "noted";
+        }
+    }
+
+    static void note(int arg0, java.lang.Throwable arg1, char arg2) {
+        // @method note(ILjava/lang/Throwable;C)V
+        // @declaration a static method of `C2W`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("note:" + arg0 + ":" + arg1.getMessage() + arg2);
+        return;
+    }
+
+    public static java.lang.String causeOnly(int arg0) {
+        // @method causeOnly(I)Ljava/lang/String;
+        // @declaration a static method of `C2W`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.lang.IllegalStateException("cause");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalStateException local1) {
+            java.lang.RuntimeException local2 = new java.lang.RuntimeException((java.lang.Throwable) local1);
+            throw local2;
+        }
+    }
+
+    public static java.lang.String overloadNarrow(int arg0) {
+        // @method overloadNarrow(I)Ljava/lang/String;
+        // @declaration a static method of `C2W`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.lang.IllegalStateException("ovl");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalStateException local1) {
+            pick((java.lang.Throwable) local1);
+            return "picked";
+        }
+    }
+
+    static void pick(java.lang.Throwable arg0) {
+        // @method pick(Ljava/lang/Throwable;)V
+        // @declaration a static method of `C2W`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("pick-T:" + arg0.getMessage());
+        return;
+    }
+
+    static void pick(java.lang.IllegalStateException arg0) {
+        // @method pick(Ljava/lang/IllegalStateException;)V
+        // @declaration a static method of `C2W`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("pick-ISE:" + arg0.getMessage());
+        return;
+    }
+
+    public static java.lang.String objectTarget(int arg0) {
+        // @method objectTarget(I)Ljava/lang/String;
+        // @declaration a static method of `C2W`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.lang.IllegalStateException("obj");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalStateException local1) {
+            return "id:" + identity((java.lang.Object) local1);
+        }
+    }
+
+    static java.lang.Object identity(java.lang.Object arg0) {
+        // @method identity(Ljava/lang/Object;)Ljava/lang/Object;
+        // @declaration a static method of `C2W`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return arg0;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `C2W`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            alias(0);
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("alias:").append((java.lang.String) local1.getMessage()).append("/").append((java.lang.Object) local1.getCause() instanceof java.lang.IllegalStateException).toString());
+        }
+        java.lang.System.out.println("alias:" + alias(1));
+        try {
+            iaeWrap(0);
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("iaeWrap:").append((java.lang.String) local1.getMessage()).append("/").append((java.lang.Object) local1.getCause() instanceof java.lang.IllegalArgumentException).toString());
+        }
+        java.lang.System.out.println("iaeWrap:" + iaeWrap(1));
+        try {
+            nested(0);
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.RuntimeException local2 = (java.lang.RuntimeException) local1.getCause();
+            java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("nested:").append((java.lang.String) local1.getMessage()).append("/").append((java.lang.String) local2.getMessage()).append("/").append((java.lang.Object) local2.getCause() instanceof java.lang.IllegalStateException).toString());
+        }
+        java.lang.System.out.println("nested:" + nested(1));
+        try {
+            java.lang.System.out.println("forward:" + forward(0));
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println("forward:threw:" + local1.getMessage());
+        }
+        java.lang.System.out.println("forward:" + forward(1));
+        try {
+            java.lang.System.out.println("multi:" + multi(0));
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println("multi:threw:" + local1.getMessage());
+        }
+        java.lang.System.out.println("multi:" + multi(1));
+        try {
+            causeOnly(0);
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("causeOnly:").append((java.lang.Object) local1.getCause() instanceof java.lang.IllegalStateException).append(":").append((java.lang.String) local1.getMessage()).toString());
+        }
+        java.lang.System.out.println("causeOnly:" + causeOnly(1));
+        try {
+            java.lang.System.out.println("overloadNarrow:" + overloadNarrow(0));
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println("overloadNarrow:threw:" + local1.getMessage());
+        }
+        java.lang.System.out.println("overloadNarrow:" + overloadNarrow(1));
+        try {
+            java.lang.System.out.println("objectTarget:" + objectTarget(0));
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println("objectTarget:threw:" + local1.getMessage());
+        }
+        java.lang.System.out.println("objectTarget:" + objectTarget(1));
+        return;
+    }
+}
