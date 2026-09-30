@@ -52,5 +52,5 @@ done
 cmp "$HERE/run-original-tf3.txt" "$HERE/run-jarde-tf3.txt"
 
 (cd "$HERE" && shasum -a 256 src-tf3/*.java jarde-tf3/Tf3Probe.java jadx-tf3/Tf3Probe.java \
-run-original-tf3.txt run-jarde-tf3.txt run-jadx-tf3.txt) > behavior-tf3-sha256.txt
-(cd "$HERE" && printf 'paths: %s\n' "$(grep -c 'outcome=' run-original-tf3.txt)")
+run-original-tf3.txt run-jarde-tf3.txt run-jadx-tf3.txt > behavior-tf3-sha256.txt && \
+printf 'paths: %s\n' "$(grep -c 'outcome=' run-original-tf3.txt)")
