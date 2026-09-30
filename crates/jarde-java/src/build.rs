@@ -1014,6 +1014,35 @@ fn declarations(
                             if *slot == variable.slot()
                     ) && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
             });
+        // The segmented null-lead's lead is the same two-instruction `null` initialisation: the
+        // statement's three copies are the only readers the body's one assignment shares it
+        // with, and the certificate's own argument-slot proof says so, so the declaration hoists
+        // to the statement's lexical parent exactly as the local-null conditional's does.
+        let segmented_null_lead_lead = owner.len() == 1
+            && regions.get(owner[0] as usize).is_some_and(|region| {
+                matches!(region, Region::Guard { plan, .. }
+                    if matches!(
+                        plan.shape(),
+                        guard::Shape::SegmentedNullLeadFinally { slot, .. }
+                            if *slot == variable.slot()
+                    ) && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
+            });
+        // The segmented null-lead's saved return sits under the statement's conditions, but the
+        // early literal's store — the write the certificate hides — is the variable's first, and
+        // the normal return reads the slot back after the cleanup: the declaration hoists to the
+        // statement's body, the Test5 saved return's own placement.
+        let segmented_null_lead_saved = owner.len() == 2
+            && owner[1] == 0
+            && regions.get(owner[0] as usize).is_some_and(|region| {
+                matches!(region, Region::Guard { plan, .. }
+                if matches!(
+                    plan.shape(),
+                    guard::Shape::SegmentedNullLeadFinally {
+                        returns: [(early_save, _), _],
+                        ..
+                    } if *early_save == first.bci
+                ))
+            });
         // The proved flag conditional saves the returned value in the body and returns it after
         // the cleanup: the certificate owns the store and the one load that reads it, so the
         // declaration hoists to the statement's lexical parent exactly as the lead does.
@@ -1107,6 +1136,8 @@ fn declarations(
             && !nullable_resource_lead
             && !flag_conditional_lead
             && !local_null_lead
+            && !segmented_null_lead_lead
+            && !segmented_null_lead_saved
             && !flag_saved_return
             && !local_null_saved_return
             && !void_loop_lead
@@ -2320,6 +2351,56 @@ fn decide_types(
                                         && plan.body().0 <= use_.bci
                                         && use_.bci < plan.body().1
                                 })
+                                .and_then(|use_| use_.written)
+                                .and_then(|value| {
+                                    written_type(ssa, operations, value).ok().flatten()
+                                });
+                        }
+                    });
+                }
+            }
+            if nullable_type.is_none() {
+                // The segmented null-lead's lead stores `null` into the slot its three copies'
+                // arguments read: the body's same-slot assignment is the declared type's one
+                // evidence, exactly the local-null conditional's reading.
+                for region in regions {
+                    collect_guards(region, &mut |region| {
+                        if let Region::Guard { plan, .. } = region
+                            && let guard::Shape::SegmentedNullLeadFinally { slot, .. } =
+                                plan.shape()
+                            && variable.slot() == *slot
+                            && write.at < plan.body().0
+                        {
+                            nullable_type = uses
+                                .get(variable)
+                                .into_iter()
+                                .flatten()
+                                .find(|use_| {
+                                    use_.written.is_some()
+                                        && plan.body().0 <= use_.bci
+                                        && use_.bci < plan.body().1
+                                })
+                                .and_then(|use_| use_.written)
+                                .and_then(|value| {
+                                    written_type(ssa, operations, value).ok().flatten()
+                                });
+                        }
+                        // The segmented null-lead's saved return starts at the early literal's
+                        // own store, whose value says nothing: the normal return's producer
+                        // store is the declared type's one evidence, and the certificate owns
+                        // both stores by BCI.
+                        if let Region::Guard { plan, .. } = region
+                            && let guard::Shape::SegmentedNullLeadFinally {
+                                returns: [(early_save, _), (normal_save, _)],
+                                ..
+                            } = plan.shape()
+                            && write.at == *early_save
+                        {
+                            nullable_type = uses
+                                .get(variable)
+                                .into_iter()
+                                .flatten()
+                                .find(|use_| use_.written.is_some() && use_.bci == *normal_save)
                                 .and_then(|use_| use_.written)
                                 .and_then(|value| {
                                     written_type(ssa, operations, value).ok().flatten()
@@ -6881,6 +6962,7 @@ pub(crate) fn build(
         finally_span: None,
         finally_return: None,
         multi_return_finally: None,
+        segmented_null_lead: None,
         finally_catch_pop: None,
         shared_finally: None,
     };
@@ -7643,11 +7725,27 @@ struct Builder<'a> {
     finally_return: Option<(u32, u32)>,
     /// Two proved saves in separate arms of the one bounded Test5 body.
     multi_return_finally: Option<[(u32, u32); 2]>,
+    /// The segmented null-lead's own completion: the gap's unguarded copy, the early return's
+    /// physical `areturn`, and its two saved returns — the early one the statement's own
+    /// `return null;`, the normal one the body producer's slot read back.
+    segmented_null_lead: Option<SegmentedNullLeadCompletion>,
     /// The proved named catch's pop of its already-presented append result.
     finally_catch_pop: Option<u32>,
     /// The one synthetic Region::Try nested in a proved shared catch-all guard. Its two child
     /// bodies use different physical slices and saved returns, but emit one existing Try AST.
     shared_finally: Option<SharedFinallyBuild>,
+}
+
+/// The saved-return facts the segmented null-lead's builder reads while its body is written.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct SegmentedNullLeadCompletion {
+    /// The gap's copy: everything from its first instruction to the early `areturn` produces no
+    /// statement of its own — the copy is the folded cleanup, and the return statement the block
+    /// ends with carries the copy as derived origins.
+    early_cleanup: (u32, u32),
+    early_return: u32,
+    /// The early saved literal and the normal saved producer, each with its own `areturn`.
+    returns: [(u32, u32); 2],
 }
 
 #[derive(Clone)]
@@ -10554,6 +10652,7 @@ impl Builder<'_> {
         self.finally_span = None;
         self.finally_return = None;
         self.multi_return_finally = None;
+        self.segmented_null_lead = None;
         self.finally_catch_pop = None;
         self.shared_finally = None;
     }
@@ -13844,6 +13943,100 @@ impl Builder<'_> {
                         }
                         pushed
                     }
+                    guard::Shape::SegmentedNullLeadFinally {
+                        normal_cleanup,
+                        early_cleanup,
+                        early_return,
+                        returns,
+                        ..
+                    } => {
+                        let (Some(body_region), Some(cleanup_region @ Region::Straight { .. })) = (
+                            structured_body.as_deref(),
+                            structured_finally_body.as_deref(),
+                        ) else {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("segmented null-lead finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the segmented null-lead finally has no bounded body and cleanup",
+                                plan.body().0,
+                            );
+                        };
+                        let outer = std::mem::take(&mut self.stmts);
+                        self.finally_span = Some(plan.body());
+                        self.segmented_null_lead = Some(SegmentedNullLeadCompletion {
+                            early_cleanup: *early_cleanup,
+                            early_return: *early_return,
+                            returns: *returns,
+                        });
+                        let built_body = self.region(body_region, &child(path, 0));
+                        self.finally_span = None;
+                        self.segmented_null_lead = None;
+                        let body = std::mem::replace(&mut self.stmts, outer);
+                        if let Err(stop) = built_body {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("segmented null-lead finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                        let outer = std::mem::take(&mut self.stmts);
+                        self.finally_span = Some(*normal_cleanup);
+                        let built_cleanup = self.region(cleanup_region, &child(path, 1));
+                        self.finally_span = None;
+                        let finally_body = std::mem::replace(&mut self.stmts, outer);
+                        if let Err(stop) = built_cleanup {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("segmented null-lead finally checkpoint"),
+                            );
+                            return Err(stop);
+                        }
+                        let mut origin = OriginSet::new(Origin::direct(plan.body().0))
+                            .plus_derived(Origin::derived(*early_return));
+                        for bci in plan.facts() {
+                            origin = origin.plus_derived(Origin::derived(*bci));
+                        }
+                        let statement = Stmt::new(
+                            StmtKind::Try {
+                                resources: Vec::new(),
+                                catches: Vec::new(),
+                                body,
+                                finally_body: Some(finally_body),
+                            },
+                            origin,
+                        );
+                        if statement_has_fallback(&statement)
+                            || undeclared_local(&statement, &self.undeclared).is_some()
+                        {
+                            let bcis = self.region_quote(region, plan.body().0);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("segmented null-lead finally checkpoint"),
+                            );
+                            return self.fallback(
+                                bcis,
+                                "the segmented null-lead finally has an unpresented body or cleanup",
+                                plan.body().0,
+                            );
+                        }
+                        let pushed = self.push(statement);
+                        if pushed.is_err() {
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("segmented null-lead finally checkpoint"),
+                            );
+                        }
+                        pushed
+                    }
                     guard::Shape::SegmentedFinally {
                         catch_body,
                         cleanup,
@@ -16332,6 +16525,9 @@ impl Builder<'_> {
                 || self.multi_return_finally.is_some_and(|returns| {
                     returns.iter().any(|(save, _)| *save == instruction.bci())
                 })
+                || self
+                    .segmented_null_lead
+                    .is_some_and(|completion| completion.returns[0].0 == instruction.bci())
             {
                 continue;
             }
@@ -16346,19 +16542,51 @@ impl Builder<'_> {
                         .any(|instruction| instruction.bci() == *save)
                 })
             })
-            .or(self.finally_return);
+            .or(self.finally_return)
+            .or_else(|| {
+                let completion = self.segmented_null_lead?;
+                completion.returns.into_iter().find(|(save, _)| {
+                    instructions
+                        .iter()
+                        .any(|instruction| instruction.bci() == *save)
+                })
+            });
         if let Some((save, return_bci)) = return_pair
             && instructions
                 .iter()
                 .any(|instruction| instruction.bci() == save)
         {
-            let returned = if self.shared_finally.is_some() || self.multi_return_finally.is_some() {
+            let early_literal = self
+                .segmented_null_lead
+                .is_some_and(|completion| completion.returns[0] == (save, return_bci));
+            let returned = if self.shared_finally.is_some()
+                || self.multi_return_finally.is_some()
+                || early_literal
+            {
+                // The saved value is spelled in the source return position: the early return's
+                // own `null` literal, not an Object-typed local the slot never declared.
                 self.shared_saved_return(save, return_bci)
             } else {
                 self.guarded_return(return_bci)
             };
             match returned {
-                Ok(statement) => self.push(statement)?,
+                Ok(statement) => {
+                    let statement = if let Some(completion) = self.segmented_null_lead
+                        && completion.returns[0] == (save, return_bci)
+                    {
+                        let mut origin = statement.origin.clone();
+                        for (&bci, _) in self
+                            .instructions
+                            .range(completion.early_cleanup.0..completion.early_return)
+                        {
+                            origin = origin.plus_derived(Origin::derived(bci));
+                        }
+                        Stmt::new(statement.kind, origin)
+                    } else {
+                        statement
+                    };
+                    self.push(statement)?
+                }
                 Err(reason) => self.fallback(vec![save, return_bci], reason, return_bci)?,
             }
         }
@@ -17069,6 +17297,14 @@ impl Builder<'_> {
             .and_then(|shared| shared.segmented)
             .is_some_and(|(cleanup, _)| cleanup.0 <= at && at < cleanup.1)
         {
+            return Ok(());
+        }
+        if let Some(completion) = self.segmented_null_lead
+            && (completion.early_cleanup.0..=completion.early_return).contains(&at)
+        {
+            // The early return's own block after its saved literal: the unguarded copy the
+            // statement folds into `finally`, the load that reads the saved `null` back, and the
+            // `areturn` the block ends with — the block's own statement carries them as origins.
             return Ok(());
         }
         if self.local_assignments.contains_key(&at)
