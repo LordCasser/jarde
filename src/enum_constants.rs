@@ -1027,7 +1027,7 @@ pub(crate) fn prove_map_initializer_suffix(
     };
     let steps = &candidate.steps;
     let statements = &candidate.statements;
-    if candidate.has_exception_handlers || steps.len() != 11 || statements.len() != steps.len() {
+    if candidate.has_exception_handlers || statements.len() != steps.len() {
         return Ok(None);
     }
     for (position, (step, statement)) in steps.iter().zip(statements).enumerate() {
@@ -1040,61 +1040,54 @@ pub(crate) fn prove_map_initializer_suffix(
             return Ok(None);
         }
     }
-    if !matches!(
-        &steps[..],
-        [
+    // The instruction match above proves the suffix is the single javac array loop: one fixed
+    // start, contiguous instructions, exact opcodes and locals, and the one-element increment.
+    // One same-run recovery presents those instructions in one of two shapes, and both are
+    // admitted here: the explicit index loop, or the enhanced for whose own origins fold the same
+    // traversal. Both declare the array local first, then carry the same four field writes and
+    // the same loop tail; only the positions of the declarations differ.
+    enum SuffixPresentation {
+        IndexLoop,
+        EnhancedFor,
+    }
+    let (presentation, writes, loop_statement) = match steps.len() {
+        // Three leading declarations: the array local plus the explicit counter and limit.
+        11 => (SuffixPresentation::IndexLoop, 3..7, 9_usize),
+        // The enhanced for folds the counter and limit into the loop node's own origins.
+        8 => (SuffixPresentation::EnhancedFor, 1..5, 6_usize),
+        _ => return Ok(None),
+    };
+    if !steps[..writes.start].iter().all(|step| {
+        matches!(
+            step,
             Step::Other {
                 kind: Kind::Declaration,
-                ..
-            },
-            Step::Other {
-                kind: Kind::Declaration,
-                ..
-            },
-            Step::Other {
-                kind: Kind::Declaration,
-                ..
-            },
-            Step::FieldWrite(_),
-            Step::FieldWrite(_),
-            Step::FieldWrite(_),
-            Step::FieldWrite(_),
-            Step::Other {
-                kind: Kind::LocalAssignment,
-                ..
-            },
-            Step::Other {
-                kind: Kind::LocalAssignment,
-                ..
-            },
-            Step::Other {
-                kind: Kind::Loop,
-                ..
-            },
-            Step::Other {
-                kind: Kind::Return,
                 ..
             }
-        ]
-    ) {
+        )
+    }) || !steps[writes.clone()]
+        .iter()
+        .all(|step| matches!(step, Step::FieldWrite(_)))
+    {
         return Ok(None);
     }
-    for (position, expected_bci) in [
+    for (offset, expected_bci) in [
         group.constants[0].field_write_bci,
         group.constants[1].field_write_bci,
         group.initializer_prefix_end_bci - 3,
+        suffix[3].bci,
     ]
-    .iter()
+    .into_iter()
     .enumerate()
     {
-        let Step::FieldWrite(write) = &steps[position + 3] else {
+        let Step::FieldWrite(write) = &steps[writes.start + offset] else {
             return Ok(None);
         };
-        if write.bci != *expected_bci {
+        if write.bci != expected_bci {
             return Ok(None);
         }
     }
-    let Step::FieldWrite(map_write) = &steps[6] else {
+    let Step::FieldWrite(map_write) = &steps[writes.end - 1] else {
         return Ok(None);
     };
     if map_write.bci != suffix[3].bci
@@ -1106,14 +1099,11 @@ pub(crate) fn prove_map_initializer_suffix(
     {
         return Ok(None);
     }
-    if [steps[0].clone(), steps[1].clone(), steps[2].clone()]
-        .iter()
-        .zip([suffix[5].bci, suffix[8].bci, suffix[10].bci])
-        .any(|(step, bci)| !matches!(step, Step::Other { bci: actual, .. } if *actual == bci))
-        || !matches!(&steps[7], Step::Other { bci, .. } if *bci == suffix[5].bci)
-        || !matches!(&steps[8], Step::Other { bci, .. } if *bci == suffix[8].bci)
-        || !matches!(&steps[9], Step::Other { bci, .. } if *bci == suffix[13].bci)
-        || !matches!(&steps[10], Step::Other { bci, kind: Kind::Return, .. } if *bci == suffix[26].bci)
+    if !matches!(&steps[loop_statement], Step::Other { kind: Kind::Loop, bci, .. } if *bci == suffix[13].bci)
+        || !matches!(
+            &steps[steps.len() - 1],
+            Step::Other { bci, kind: Kind::Return, .. } if *bci == suffix[26].bci
+        )
     {
         return Ok(None);
     }
@@ -1122,68 +1112,131 @@ pub(crate) fn prove_map_initializer_suffix(
     };
     let source_owner = owner_text.replace('/', ".");
     let is_local = |expression: &Expr, expected: &str| matches!(&expression.kind, ExprKind::Local(name) if name == expected);
+    // The loop body carries exactly one effect in both presentations: the proved map write keyed
+    // by each element's own name, anchored at the proved interface call.
+    let is_map_put = |statement: &jarde_java::ast::Stmt| matches!(&statement.kind, StmtKind::Expr(expression) if matches!(&expression.kind, ExprKind::Call { receiver: Some(receiver), name, args } if name == "put" && matches!(&receiver.kind, ExprKind::Field { receiver: owner_expr, name } if matches!(&owner_expr.kind, ExprKind::Path(path) if path == &source_owner) && name == field_name_text) && matches!(args.as_slice(), [first, second] if matches!(&first.kind, ExprKind::Cast { ty: Type::Reference(ty), value } if ty == "java.lang.Object" && matches!(&value.kind, ExprKind::Call { receiver: Some(receiver), name, args } if is_local(receiver, "local3") && name == "name" && args.is_empty())) && matches!(&second.kind, ExprKind::Cast { ty: Type::Reference(ty), value } if ty == "java.lang.Object" && is_local(value, "local3")))) && expression.origin.primary().bci() == suffix[22].bci);
     if !matches!(&statements[0].kind, StmtKind::Declare { ty: Type::Reference(ty), name, value: None, .. } if ty == &format!("{source_owner}[]") && name == "local0")
-        || !matches!(&statements[1].kind, StmtKind::Declare { ty: Type::Int, name, value: None, .. } if name == "local1")
-        || !matches!(&statements[2].kind, StmtKind::Declare { ty: Type::Int, name, value: None, .. } if name == "local2")
-        || !matches!(&statements[7].kind, StmtKind::Assign { name, value } if name == "local0" && matches!(&value.kind, ExprKind::Call { receiver: None, name, args } if name == "values" && args.is_empty()) && value.origin.primary().bci() == suffix[4].bci)
-        || !matches!(&statements[8].kind, StmtKind::Assign { name, value } if name == "local1" && matches!(&value.kind, ExprKind::ArrayLength { array } if is_local(array, "local0")) && value.origin.primary().bci() == suffix[7].bci)
     {
         return Ok(None);
     }
-    let StmtKind::For {
-        label: None,
-        init,
-        cond,
-        update,
-        body,
-    } = &statements[9].kind
-    else {
-        return Ok(None);
-    };
-    if !matches!(&init.kind, StmtKind::Assign { name, value } if name == "local2" && matches!(&value.kind, ExprKind::Integer(0)))
-        || !matches!(&cond.kind, ExprKind::Binary { op: BinaryOp::Less, left, right } if is_local(left, "local2") && is_local(right, "local1"))
-        || !matches!(&update.kind, StmtKind::Assign { name, value } if name == "local2" && matches!(&value.kind, ExprKind::Binary { op: BinaryOp::Add, left, right } if is_local(left, "local2") && matches!(&right.kind, ExprKind::Integer(1))))
-    {
-        return Ok(None);
-    }
-    if body.len() != 2
-        || body[0].origin.primary().bci() != suffix[17].bci
-        || body[1].origin.primary().bci() != suffix[22].bci
-    {
-        return Ok(None);
-    }
-    let StmtKind::Declare {
-        ty: Type::Reference(local_type),
-        name,
-        value: Some(value),
-        ..
-    } = &body[0].kind
-    else {
-        return Ok(None);
-    };
-    if local_type != "Object"
-        || name != "local3"
-        || !matches!(&value.kind, ExprKind::Index { array, index } if is_local(array, "local0") && is_local(index, "local2") && value.origin.primary().bci() == suffix[16].bci)
-        || !matches!(&body[1].kind, StmtKind::Expr(expression) if matches!(&expression.kind, ExprKind::Call { receiver: Some(receiver), name, args } if name == "put" && matches!(&receiver.kind, ExprKind::Field { receiver: owner_expr, name } if matches!(&owner_expr.kind, ExprKind::Path(path) if path == &source_owner) && name == field_name_text) && matches!(args.as_slice(), [first, second] if matches!(&first.kind, ExprKind::Cast { ty: Type::Reference(ty), value } if ty == "java.lang.Object" && matches!(&value.kind, ExprKind::Call { receiver: Some(receiver), name, args } if is_local(receiver, "local3") && name == "name" && args.is_empty())) && matches!(&second.kind, ExprKind::Cast { ty: Type::Reference(ty), value } if ty == "java.lang.Object" && is_local(value, "local3")))) && expression.origin.primary().bci() == suffix[22].bci)
-    {
-        return Ok(None);
-    }
-    let mut selected = statements[0..3].to_vec();
-    selected.extend_from_slice(&statements[6..10]);
-    let StmtKind::FieldAssign { receiver, name, .. } = &mut selected[3].kind else {
+    let mut selected = statements[..writes.start].to_vec();
+    selected.extend_from_slice(&statements[writes.end - 1..=loop_statement]);
+    let StmtKind::FieldAssign { receiver, name, .. } = &mut selected[writes.start].kind else {
         unreachable!()
     };
     if name != field_name_text {
         return Ok(None);
     }
     *receiver = None;
-    let StmtKind::For { body, .. } = &mut selected[6].kind else {
-        unreachable!()
-    };
-    let StmtKind::Declare { ty, .. } = &mut body[0].kind else {
-        unreachable!()
-    };
-    *ty = Type::Reference(source_owner);
+    match presentation {
+        SuffixPresentation::IndexLoop => {
+            if !steps[0..3]
+                .iter()
+                .zip([suffix[5].bci, suffix[8].bci, suffix[10].bci])
+                .any(|(step, bci)| {
+                    !matches!(step, Step::Other { bci: actual, .. } if *actual == bci)
+                })
+                || !matches!(&steps[7], Step::Other { kind: Kind::LocalAssignment, bci, .. } if *bci == suffix[5].bci)
+                || !matches!(&steps[8], Step::Other { kind: Kind::LocalAssignment, bci, .. } if *bci == suffix[8].bci)
+                || !matches!(&statements[1].kind, StmtKind::Declare { ty: Type::Int, name, value: None, .. } if name == "local1")
+                || !matches!(&statements[2].kind, StmtKind::Declare { ty: Type::Int, name, value: None, .. } if name == "local2")
+                || !matches!(&statements[7].kind, StmtKind::Assign { name, value } if name == "local0" && matches!(&value.kind, ExprKind::Call { receiver: None, name, args } if name == "values" && args.is_empty()) && value.origin.primary().bci() == suffix[4].bci)
+                || !matches!(&statements[8].kind, StmtKind::Assign { name, value } if name == "local1" && matches!(&value.kind, ExprKind::ArrayLength { array } if is_local(array, "local0")) && value.origin.primary().bci() == suffix[7].bci)
+            {
+                return Ok(None);
+            }
+            let StmtKind::For {
+                label: None,
+                init,
+                cond,
+                update,
+                body,
+            } = &statements[loop_statement].kind
+            else {
+                return Ok(None);
+            };
+            if !matches!(&init.kind, StmtKind::Assign { name, value } if name == "local2" && matches!(&value.kind, ExprKind::Integer(0)))
+                || !matches!(&cond.kind, ExprKind::Binary { op: BinaryOp::Less, left, right } if is_local(left, "local2") && is_local(right, "local1"))
+                || !matches!(&update.kind, StmtKind::Assign { name, value } if name == "local2" && matches!(&value.kind, ExprKind::Binary { op: BinaryOp::Add, left, right } if is_local(left, "local2") && matches!(&right.kind, ExprKind::Integer(1))))
+                || body.len() != 2
+                || body[0].origin.primary().bci() != suffix[17].bci
+                || !is_map_put(&body[1])
+            {
+                return Ok(None);
+            }
+            let StmtKind::Declare {
+                ty: Type::Reference(local_type),
+                name,
+                value: Some(value),
+                ..
+            } = &body[0].kind
+            else {
+                return Ok(None);
+            };
+            if local_type != "Object"
+                || name != "local3"
+                || !matches!(&value.kind, ExprKind::Index { array, index } if is_local(array, "local0") && is_local(index, "local2") && value.origin.primary().bci() == suffix[16].bci)
+            {
+                return Ok(None);
+            }
+            let StmtKind::For { body, .. } = &mut selected
+                .last_mut()
+                .expect("the selected statements end with the loop")
+                .kind
+            else {
+                unreachable!()
+            };
+            let StmtKind::Declare { ty, .. } = &mut body[0].kind else {
+                unreachable!()
+            };
+            // The recovered element declaration states the erasure type; this proof's own fact —
+            // values() returns the owner array — states the element type it projects.
+            *ty = Type::Reference(source_owner.clone());
+        }
+        SuffixPresentation::EnhancedFor => {
+            if !matches!(&steps[0], Step::Other { bci, .. } if *bci == suffix[5].bci)
+                || !matches!(&steps[5], Step::Other { kind: Kind::LocalAssignment, bci, .. } if *bci == suffix[5].bci)
+                || !matches!(&statements[5].kind, StmtKind::Assign { name, value } if name == "local0" && matches!(&value.kind, ExprKind::Call { receiver: None, name, args } if name == "values" && args.is_empty()) && value.origin.primary().bci() == suffix[4].bci)
+            {
+                return Ok(None);
+            }
+            let StmtKind::ForEach {
+                label: None,
+                ty: Type::Reference(local_type),
+                name,
+                iterable,
+                body,
+            } = &statements[loop_statement].kind
+            else {
+                return Ok(None);
+            };
+            // The node's own origins fold the proved traversal: they must carry the element read
+            // the variable is bound to and the one-element increment the instruction match
+            // proved, so the presented enhanced for is that index loop and nothing else.
+            let loop_origins = statements[loop_statement].origin.bcis();
+            if (local_type != "Object" && local_type != &source_owner)
+                || name != "local3"
+                || !is_local(iterable, "local0")
+                || iterable.origin.primary().bci() != suffix[6].bci
+                || !loop_origins.contains(&suffix[16].bci)
+                || !loop_origins.contains(&suffix[24].bci)
+                || body.len() != 1
+                || !is_map_put(&body[0])
+            {
+                return Ok(None);
+            }
+            let StmtKind::ForEach { ty, .. } = &mut selected
+                .last_mut()
+                .expect("the selected statements end with the loop")
+                .kind
+            else {
+                unreachable!()
+            };
+            // The recovered variable states the erasure type whenever the element-type proof did
+            // not reach the presentation; the same proved element type replaces either spelling.
+            *ty = Type::Reference(source_owner.clone());
+        }
+    }
     Ok(Some(ProvedEnumMapSuffix {
         field_index: u64::try_from(*field_index).unwrap_or(u64::MAX),
         initializer_member: method.item.identity.clone(),

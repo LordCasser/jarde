@@ -23410,22 +23410,21 @@ fn array_of_value(
             array_of_value(ssa, operations, stored, depth + 1)
         }
         // A subscript reads the element the array's own type names (`aaload` states none of its
-        // own): the read's value is that element, one dimension into the array operand — the same
-        // reading [`array_element`] gives the enhanced-for's element, with the array's own shape
-        // deciding the int-sized family where the opcode under-states. The one consumed dimension
-        // is the read value's own remaining array rank (`[[I` reads an `int[]`).
-        Operation::ArrayElementLoad { element } => {
+        // own): the read's value is one dimension into the array operand, with the array's own
+        // shape deciding the int-sized family where the opcode under-states. The answer keeps the
+        // array's own base element and drops one rank (`[[I` reads an `int[]`, itself `int`'s one
+        // rank deep) — the same reading [`array_element`] gives the enhanced-for's element.
+        Operation::ArrayElementLoad { .. } => {
             let read = instruction_at(ssa, bci)?;
             let operands = stack_operands(read);
             let [(_, array), _] = operands.as_slice() else {
                 return None;
             };
-            let (_, dimensions) = array_of_value(ssa, operations, *array, depth + 1)?;
-            let read_element = array_element(ssa, operations, *array, element.as_ref())?;
+            let (element, dimensions) = array_of_value(ssa, operations, *array, depth + 1)?;
             if dimensions == 0 {
                 return None;
             }
-            Some((read_element, dimensions - 1))
+            Some((element, dimensions - 1))
         }
         _ => None,
     }
