@@ -20,7 +20,7 @@
 
 ## 下一步（不自动开工）
 
-按证书邻近度排序：Tf4（条件清理证书的局部标志 + 前置初始化 + 字段更新清理变体）与 Tf1（可空局部 + try 内赋值 + 条件调用清理）各成一片；两者共用的"前置初始化语句准入 + 初始化与清理条件的 SSA 关联证明"先做。Tf2 随 Test9 家族扩验处理；Tf3（提前 return null + 正文条件）最后。上游 `TestFinally3.test2NoDebug` 标 `@NotYetImplemented`，JADX 自身亦未完成，属已登记分母调整项。
+按证书邻近度排序推进中：Tf4（`recover-flag-conditional-finally`，已落地，见下节）与 Tf1（`recover-local-null-conditional-finally`，[spec 已立](../../../changes/recover-local-null-conditional-finally/)，排在 Tf4 后串行——共享 `guarded()` dispatch 注册点）。Tf2 形状已预读：异常表 `[2,25)→32 any` + 自保护 `[32,34)→32`，lead `[aconst_null, astore_2]`，副本为**无条件** `closeQuietly` 调用（三份：正常 25–30、异常 34–39 各一），返回值是 **try 内构造**并保存的 `astore_3`@24——失败点是 `finally_copy` 直体证书的 lead 门槛只认字段赋值，属 Test9 直体家族的"null 局部 lead + 构造保存返回"变体，随该家族扩验另片。Tf3（提前 `return null` + 正文条件流）最后。上游 `TestFinally3.test2NoDebug` 标 `@NotYetImplemented`，JADX 自身亦未完成，属已登记分母调整项。
 
 ## Tf4 落地记录（change `recover-flag-conditional-finally`）
 
