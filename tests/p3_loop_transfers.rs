@@ -1,4 +1,9 @@
 //! P3 3.1: only proved loop exits become Java break statements, with the target loop kept.
+//!
+//! Labels are spelled `loop` since `recover-labeled-loop-tail-coverage`: the presentation labels
+//! each labeled loop with a source-style name (its body's first claim is `loop`, further ones
+//! `loop2`, …) instead of the synthesized `jarde_loop_{bci}`; every assertion below targets the
+//! same loop as before the rename.
 
 use jarde::*;
 use std::slice;
@@ -71,7 +76,7 @@ fn the_for_header_and_continue_keep_their_bytecode_origins() {
     };
     for (bci, text) in [
         (3, "local2 = 0"),
-        (21, "continue jarde_loop_4"),
+        (21, "continue loop"),
         (36, "local2 = local2 + 1"),
     ] {
         assert!(
@@ -119,10 +124,10 @@ fn nested_breaks_stay_in_the_taken_arm_and_outer_break_keeps_its_loop_target() {
     let outer = method_text(&report, "labeledBreak");
     assert!(!outer.contains("@bytecode"), "{outer}");
     assert!(
-        outer.contains("if (local3 == 3) {\n                    break jarde_loop_4;"),
+        outer.contains("if (local3 == 3) {\n                    break loop;"),
         "{outer}"
     );
-    assert!(outer.contains("jarde_loop_4: while"), "{outer}");
+    assert!(outer.contains("loop: while"), "{outer}");
 }
 
 #[test]
@@ -131,12 +136,11 @@ fn an_outer_continue_runs_the_proved_for_update_and_skips_the_body_tail() {
     let method = method_text(&report, "run");
     assert!(
         !method.contains("@bytecode")
-            && method
-                .contains("jarde_loop_4: for (local2 = 0; local2 < arg0; local2 = local2 + 1)"),
+            && method.contains("loop: for (local2 = 0; local2 < arg0; local2 = local2 + 1)"),
         "BCI 36 is the only for update, including on the non-local continue path:\n{method}"
     );
     assert!(
-        method.contains("continue jarde_loop_4;")
+        method.contains("continue loop;")
             && method.contains("local1 = local1 + 100;")
             && !method.contains("for (local2 = 0; local2 < arg0; local1"),
         "the continue skips BCI 33, while a normal iteration keeps that statement in the body:\n{method}"
@@ -163,7 +167,7 @@ fn a_switch_capturing_a_loop_break_keeps_the_loop_target_and_body_update() {
     assert!(
         !method.contains("@bytecode")
             && method.contains("switch (local1)")
-            && method.contains("break jarde_loop_4;")
+            && method.contains("break loop;")
             && method.matches("local1 = local1 + 1;").count() == 1,
         "the switch's normal join stays inside the loop, and its loop breaks retain their target:\n{method}"
     );
