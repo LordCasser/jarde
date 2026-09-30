@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿、fmt、**CI 完整 30 项 allowlist clippy**（本地 1.98.0；CI 1.98.1 有 patch 漂移，推送后核对）、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 S1 三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 正常与注入异常路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核归属边界与三方行为，更新 CF-17/CF-15 账本与巡查记录。
+- [x] 3.3 root 独立复核归属边界与三方行为，更新 CF-17/CF-15 账本与巡查记录。（root 于合并主线 3bf942a5 复核：S1.twrHelper `return tag(local0);` 完整恢复、对照逐字不变、全仓 2728/0、fmt/openspec 228/228。实现者对 design 机制描述的修正复核认可——载体是绑定入口 store 指令 + 入口引用自身 Named ty（多贡献边下为 Phi），非 `def==Caught` 判定；无 TWR 双具名子句同缺陷一并恢复为有意泛化。遗留：TWR 多子句/multi-catch 槽复用仍被区域级 gate 先行拒绝，属后续片域。）
