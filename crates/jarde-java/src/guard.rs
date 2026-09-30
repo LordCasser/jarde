@@ -944,24 +944,113 @@ impl<'a> Facts<'a> {
     /// region: a quote *inside* the statement would present a `try` whose body is not the one the
     /// bytecode runs.
     fn statement_free(&self, span: (u32, u32)) -> bool {
-        self.bcis(span).into_iter().all(|bci| {
-            matches!(
-                self.op(bci),
-                Some(Operation::Push(_))
-                    | Some(Operation::Load { .. })
-                    | Some(Operation::Store { .. })
-                    | Some(Operation::Arithmetic { .. })
-                    | Some(Operation::Negate)
-                    | Some(Operation::Increment { .. })
-                    | Some(Operation::Invoke(_))
-                    | Some(Operation::Allocate { .. })
-                    | Some(Operation::Duplicate)
-                    | Some(Operation::Field { .. })
-                    | Some(Operation::CheckCast { .. })
-                    | Some(Operation::InvokeDynamic(_))
-                    | Some(Operation::ArrayLoad)
-            )
-        })
+        self.bcis(span)
+            .into_iter()
+            .all(|bci| self.statement_carried(bci))
+    }
+
+    /// Whether one instruction is carried by a statement of this subset.
+    ///
+    /// This is the operation whitelist [`Facts::statement_free`] reads: every one of these
+    /// operations is presented by a statement of the guarded-body subset (or renders where the
+    /// value it produces is consumed), and everything else would have to be quoted inside the
+    /// statement.
+    fn statement_carried(&self, bci: u32) -> bool {
+        matches!(
+            self.op(bci),
+            Some(Operation::Push(_))
+                | Some(Operation::Load { .. })
+                | Some(Operation::Store { .. })
+                | Some(Operation::Arithmetic { .. })
+                | Some(Operation::Negate)
+                | Some(Operation::Increment { .. })
+                | Some(Operation::Invoke(_))
+                | Some(Operation::Allocate { .. })
+                | Some(Operation::Duplicate)
+                | Some(Operation::Field { .. })
+                | Some(Operation::CheckCast { .. })
+                | Some(Operation::InvokeDynamic(_))
+                | Some(Operation::ArrayLoad)
+        )
+    }
+
+    /// Whether one instruction is the `pop` that ends a **discarded call**: the statement where a
+    /// non-`void` invocation's result is dropped whole, which is how javac lowers a call written as
+    /// a statement whose Java type the source does not use (`r.toString();`, P3 2c.31's own discard
+    /// shape). The presentation writes the invocation as the statement and nothing for the `pop`,
+    /// so this predicate is the acceptance the guarded body's statement subset extends by.
+    ///
+    /// The identity the bytecode states, and nothing weaker than it:
+    ///
+    /// * the instruction is a `pop` — not a `pop2`, which discards two slots and is a different
+    ///   shape this subset does not carry;
+    /// * it reads exactly one stack value;
+    /// * the instruction immediately before it **in the same block** is an invocation that writes
+    ///   exactly one stack value and no local slot — a `void` call writes nothing, and a result
+    ///   that takes a slot is a declaration or an assignment, not a discarded call;
+    /// * that written value is the one the `pop` reads, the same SSA identity;
+    /// * and the pop is the written value's **only** reader — a result anything else reads is
+    ///   written where that reader stands, and a discard beside it would evaluate it twice.
+    ///
+    /// The adjacency makes the last two conjuncts hold together: a value that reached the `pop`
+    /// across another instruction (`invoke; dup; pop; pop`'s second discard, or the stored copy of
+    /// `invoke; dup; astore; pop`) is a different discard this subset refuses rather than pairs.
+    fn discarded_call_pop(&self, bci: u32) -> bool {
+        let Some(instruction) = self.step(bci).map(|step| step.instruction) else {
+            return false;
+        };
+        if instruction.opcode() != 0x57 {
+            return false;
+        }
+        let operands = stack_operands(instruction);
+        let [(_, discarded)] = operands.as_slice() else {
+            return false;
+        };
+        let Some(previous) = self.previous_bci(bci) else {
+            return false;
+        };
+        if self.block_of(previous) != self.block_of(bci) {
+            return false;
+        }
+        if !matches!(self.op(previous), Some(Operation::Invoke(_))) {
+            return false;
+        }
+        let Some(call) = self.step(previous).map(|step| step.instruction) else {
+            return false;
+        };
+        let writes: Vec<&(Slot, ValueId)> = call
+            .writes()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .collect();
+        let [(_, written)] = writes.as_slice() else {
+            return false;
+        };
+        if call
+            .writes()
+            .iter()
+            .any(|(slot, _)| matches!(slot, Slot::Local(_)))
+        {
+            return false;
+        }
+        if !self.same(*written, *discarded) {
+            return false;
+        }
+        let uses = self.ssa.value(self.resolve(*written)).uses();
+        uses.len() == 1 && uses[0].bci() == Some(bci)
+    }
+
+    /// Whether every instruction of a guarded body's range is one a statement of this subset can
+    /// carry, with the subset's one discarded-call statement ([`Facts::discarded_call_pop`]).
+    ///
+    /// This is the resource statement's own body reading: a body whose call results the source
+    /// drops (`try (T r = new T()) { r.toString(); }`) holds a `pop` no whitelisted operation is,
+    /// and without this acceptance the whole method would degrade over a statement Java writes
+    /// every day. Every other instruction keeps [`Facts::statement_free`]'s exact whitelist.
+    fn statement_free_with_discarded_calls(&self, span: (u32, u32)) -> bool {
+        self.bcis(span)
+            .into_iter()
+            .all(|bci| self.statement_carried(bci) || self.discarded_call_pop(bci))
     }
 
     /// Whether every value written in a range that is not a local store is read inside it.
@@ -13288,7 +13377,7 @@ fn twr(
     let innermost_level = *chain.last().expect("the chain holds the innermost row");
     let innermost_handler = handlers.last().expect("one handler per level");
     let body = (innermost_level.start_bci, innermost_level.end_bci);
-    if body.0 >= body.1 || !facts.statement_free(body) {
+    if body.0 >= body.1 || !facts.statement_free_with_discarded_calls(body) {
         return Err((Unproven::Body, body.0).into());
     }
     // The normal path closes the resources in the reverse order of the header: the chain is matched
