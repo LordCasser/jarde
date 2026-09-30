@@ -1,0 +1,2 @@
+b711fbeeae8860e315663128e203817651b8d57839118fd80ae4952c7231d751  openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F1.class
+da5175933c6085dde6f9218da64eb84dad3bacacbdccbf297a7b80dbbd1c1e32  openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F2.class
