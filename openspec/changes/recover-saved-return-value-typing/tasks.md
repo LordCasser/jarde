@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿、fmt、CI 同款 Clippy 新码零新增、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 T2 三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 正常与注入异常路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核决策点落位、细化与回退边界，更新 CF-17 巡查账本（勾销已登记缺陷）。
+- [x] 3.3 root 独立复核决策点落位、细化与回退边界，更新 CF-17 巡查账本（勾销已登记缺陷）。（root 于合并主线 0e1ef5ca 复核：诊断坐实 frame 层 ldc 常量 Unknown 宽型 + Store 步进缺口，`constant_of_value` 落在 `written_type` 复用通道；T2 输出 `java.lang.String local1 = "in";` 整类可编；null/Class 变体边界正确（Class 字面量→java.lang.Class）；全仓 2726/0、fmt/openspec 226/226。17a 三处旧钉死更新与机械补丁删除复核认可——旧钉钉的是本缺陷自身，与 spec 直接冲突，补丁本为披露性临时手段。）
