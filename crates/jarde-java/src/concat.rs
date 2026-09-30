@@ -1173,7 +1173,7 @@ fn reaches_the_allocation(
     }
     match ssa.value(value).def() {
         Definition::Instruction { bci, .. } => {
-            if built.contains(&bci) {
+            if built.contains(bci) {
                 return true;
             }
             let Some(instruction) = all.iter().find(|instruction| instruction.bci() == *bci) else {

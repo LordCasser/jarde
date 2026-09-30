@@ -6435,8 +6435,8 @@ fn prove_void_loop_finally(
     let Some(third_body) = facts.block_at(122) else {
         return Ok(None);
     };
-    if facts.row_handler(&body_row).as_ref() != Some(&handler)
-        || facts.row_handler(&binding_row).as_ref() != Some(&handler)
+    if facts.row_handler(body_row).as_ref() != Some(&handler)
+        || facts.row_handler(binding_row).as_ref() != Some(&handler)
         || [
             (first_header, first_body),
             (second_header, second_body),
