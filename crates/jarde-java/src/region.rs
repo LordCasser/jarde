@@ -4693,7 +4693,7 @@ impl Walker<'_> {
                 expected.insert(node);
             }
         }
-        if !expected.contains(&update_node) {
+        if !expected.contains(update_node) {
             return Ok(None);
         }
         let body = Region::Straight {

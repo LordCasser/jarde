@@ -3313,9 +3313,7 @@ fn flag_cleanup_copy(
         if tail_thrown.len() != 2 || tail_thrown[0].1 == tail_thrown[1].1 {
             return None;
         }
-        let Some(guard_value) = stack_writes(8)?.first().map(|(_, value)| *value) else {
-            return None;
-        };
+        let guard_value = stack_writes(8)?.first().map(|(_, value)| *value)?;
         let construct_inputs = stack_operands(steps[13].instruction);
         let guard_branch_inputs = stack_operands(steps[9].instruction);
         let throw_inputs = stack_operands(steps[14].instruction);
