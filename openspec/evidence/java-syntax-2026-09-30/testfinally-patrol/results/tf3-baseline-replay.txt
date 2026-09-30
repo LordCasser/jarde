@@ -1,0 +1,32 @@
+# Tf3 基线重放（change recover-segmented-null-lead-finally，任务 1.1）
+# 固定类与源 SHA（与 results/fixture-sha256.txt 一致）
+f006eaacaecddd2e7a77821758e17d74488b6293467799eeb3c9e2c08c6c2de3  fixture/Tf3.class
+95237c8b0e615175a4b37944c5dcb3e9186bd7150fa773e154f5f1a4b5655609  fixture/Tf3.java
+
+# 分段两行 any 异常表（javap，`test()[B`；无自保护行）
+      Exception table:
+         from    to  target type
+             2    18    53   any
+            24    47    53   any
+# lead 0: aconst_null; 1: astore_1；段一 [2,18)：2–6: getfield bytes; ifnonnull 38、
+# 9–13: validate(); ifne 24、16–17: aconst_null; astore_2（早返回值）；
+# 间隙 [18,24)：18–19: aload_1; invokestatic close、22–23: aload_2; areturn（早返回副本，不受保护）；
+# 段二 [24,47)：24–28: astore_1 ← getInputStream()（同槽赋值）、29–35: putfield bytes、
+# 38–46: astore_2 ← convert(getfield bytes)（38 块从段一 ifnonnull 跳入，两段共用）；
+# 正常尾 [47,52)：47–48: close 副本、51–52: aload_2; areturn；
+# handler 53: astore_3、54–55: close 副本、58–59: aload_3; athrow。三份副本逐参数同形。
+
+# 主线（实现前）整方法回退诊断：results/Tf3.base.json 的 fallbacks 与区域
+Tf3.base.json: fallbacks=[jre_region_exception_edge, jre_region_uncovered_blocks]
+#   regions=[(0,None,False),(9,[9,38,53,16,24],None,False)]
+#   BCI 0: block at BCI 0 leaves through exception handler 0: a handler's shape is not part of
+#   the recoverable subset；另 5 个未覆盖块 [9, 38, 53, 16, 24] 与 3 个 jre_field_not_emitted。
+
+# 实现前 CLI 重放（同命令、基线 f76e5a48 二进制）与上完全一致：quality=fallback，
+# 文本 `// @bytecode 0 9 16 24 38 53` + `local 1 crosses a quoted fallback region`
+# （全键与冻结的 Tf3.base.json 相等，模计时字段）
+
+# 固定类 java -Xverify:all（类加载即验证；无 main，输出为 MainNotFound 而非 VerifyError）
+错误: 在类 Tf3 中找不到 main 方法, 请将 main 方法定义为:
+   public static void main(String[] args)
+verify-exit=0

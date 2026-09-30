@@ -1,0 +1,5 @@
+failValidate=false failBody=false failCleanup=false cached=true outcome=ok value=len=1 closes=1
+failValidate=false failBody=false failCleanup=false cached=false outcome=ok value=len=2 closes=1
+failValidate=true failBody=false failCleanup=false cached=false outcome=ok value=null closes=1
+failValidate=false failBody=true failCleanup=false cached=false outcome=RuntimeException:body value=null closes=1
+failValidate=false failBody=false failCleanup=true cached=false outcome=RuntimeException:cleanup value=null closes=1
