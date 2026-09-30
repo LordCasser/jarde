@@ -1,0 +1,2 @@
+f17ae967022f7efc6beac930a79ad6198af47d72c88a8a639fa2a9d972b4da95  openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/fixture/W1.class
+7f311954eb1b680dd04127075d12d22d637e590137e8e4bbb7fc145f6e241b3a  openspec/evidence/java-syntax-2026-10-01/cf13-switch-continue-patrol/fixture/W2.class
