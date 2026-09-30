@@ -630,7 +630,9 @@ impl Billing {
     /// runs, so this row is 2 `IrItems` and 436 `output_bytes` under the quoted one it had.
     /// The 2026-09-26 expansion moved `ir_items` +382, `analysis_steps` +529 and `output_bytes`
     /// −19: the per-body evidence work, and the quote of `Holder`'s construction the statement
-    /// replaced.
+    /// replaced. The 2026-10-01 array-slot-retype split moved `analysis_steps` +4: the reuse
+    /// planner's third narrow proof bills each write it examines before declining a slot whose
+    /// writes state no array spelling.
     const FLAT_MIXED: Self = Self {
         archive_entries: 8,
         entry_bytes: 1813,
@@ -638,7 +640,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 17,
         ir_items: 2372,
-        analysis_steps: 1336,
+        analysis_steps: 1340,
         result_items: 37,
         output_bytes: 3657,
     };
@@ -653,7 +655,8 @@ impl Billing {
     /// 2c.26, over the `Holder` this case shares with `flat-mixed`: 2 `IrItems` and 436
     /// `output_bytes` under the quoted row. The 2026-09-26 expansion moved `ir_items` +668,
     /// `analysis_steps` +750 and `output_bytes` −19 (the same per-body evidence work, plus the
-    /// `Holder` and `ModLike` quotes that became statements).
+    /// `Holder` and `ModLike` quotes that became statements). The 2026-10-01 array-slot-retype
+    /// split moved `analysis_steps` +5, the examined writes of this shape's reused slots.
     const NESTED_MIXED: Self = Self {
         archive_entries: 25,
         entry_bytes: 8061,
@@ -661,7 +664,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 26,
         ir_items: 4112,
-        analysis_steps: 2066,
+        analysis_steps: 2071,
         result_items: 64,
         output_bytes: 5628,
     };
@@ -674,7 +677,8 @@ impl Billing {
     ///
     /// 2c.26, over the `Holder` this case names twice: 2 `IrItems` and 436 `output_bytes` under the
     /// quoted row. The 2026-09-26 expansion moved `ir_items` +312, `analysis_steps` +446 and
-    /// `output_bytes` −19 (the same `Scope`/`Holder` shape as `flat-mixed`).
+    /// `output_bytes` −19 (the same `Scope`/`Holder` shape as `flat-mixed`). The 2026-10-01
+    /// array-slot-retype split moved `analysis_steps` +4, the same examined-write work.
     const TWO_ORIGINS: Self = Self {
         archive_entries: 43,
         entry_bytes: 7522,
@@ -682,7 +686,7 @@ impl Billing {
         class_headers: 4,
         method_bodies: 12,
         ir_items: 1975,
-        analysis_steps: 1097,
+        analysis_steps: 1101,
         result_items: 43,
         output_bytes: 2638,
     };
@@ -742,8 +746,13 @@ impl Billing {
         // −51 `output_bytes` — the statement and its anchored handler take the place of the
         // whole-method quote. The two arms move by the same amounts; the rows were regenerated
         // with `record_the_billing_table`, not hand-edited.
+        //
+        // The 2026-10-01 array-slot-retype split re-measured the row on the same path: the reuse
+        // planner's third narrow proof bills the writes it examines before declining a slot whose
+        // writes state no array spelling (+6 `AnalysisSteps` over this case's reused primitive
+        // slots), and no other dimension moved.
         ir_items: 20327,
-        analysis_steps: 10527,
+        analysis_steps: 10533,
         result_items: 122,
         output_bytes: 23229,
     };
@@ -752,6 +761,8 @@ impl Billing {
     /// 2c.26, over its own `Holder`: 2 `IrItems` and 436 `output_bytes` under the quoted row.
     /// The 2026-09-26 expansion moved `ir_items` +312, `analysis_steps` +446 and `output_bytes`
     /// −19, exactly the `two-origins` moves: the readable shape is the same `Scope`/`Holder` pair.
+    /// The 2026-10-01 array-slot-retype split moved `analysis_steps` +4, the same examined-write
+    /// work.
     const DAMAGED_TAIL: Self = Self {
         archive_entries: 17,
         entry_bytes: 1881,
@@ -759,7 +770,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 12,
         ir_items: 1975,
-        analysis_steps: 1097,
+        analysis_steps: 1101,
         result_items: 35,
         output_bytes: 2638,
     };
@@ -813,8 +824,11 @@ impl Billing {
         // the corpus's work moved.
         // +50/+34/−51 with the whole-construct catch, the same work
         // [`Billing::MANY_METHOD_CLASS`] records for the one member it moved.
+        // +23 with the 2026-10-01 array-slot-retype split: the reuse planner's third narrow
+        // proof bills each write it examines before declining a slot whose writes state no
+        // array spelling (the corpus's reused primitive slots), and no other dimension moved.
         ir_items: 33780,
-        analysis_steps: 17295,
+        analysis_steps: 17318,
         result_items: 1378,
         output_bytes: 39513,
     };
@@ -846,8 +860,9 @@ impl Billing {
         // the read dimensions.
         // +50/+34/−51 with the whole-construct catch — the work is the same work the direct arm
         // records, and retention still touches only the read dimensions.
+        // +23 with the 2026-10-01 array-slot-retype split, the same work the direct arm records.
         ir_items: 33780,
-        analysis_steps: 17295,
+        analysis_steps: 17318,
         result_items: 26,
         output_bytes: 39513,
     };
