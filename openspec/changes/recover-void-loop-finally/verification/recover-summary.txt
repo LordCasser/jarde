@@ -1,0 +1,3 @@
+quality = structured
+fallbacks = []
+diagnostics = ['jre_recovery_produced', 'jre_new_sites', 'jre_field_accesses', 'jre_declaration']
