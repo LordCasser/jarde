@@ -1,0 +1,3 @@
+8e735ef5b41c07d00f91f8d2b0cd72a87c4a0f4da028703d28cc55e6405a60ba  openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/fixture/T1.class
+d702ff36ce44a124e99db14222e312823294f89d76a8725bab0d87c1069fe22f  openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/fixture/T2.class
+bc89b9c6210a8f3c82d92100bda4efd9e894f87645c9f6807d0a33b615a36ae6  openspec/evidence/java-syntax-2026-09-30/cf17-twrcatch-patrol/fixture/T3.class
