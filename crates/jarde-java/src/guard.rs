@@ -383,11 +383,63 @@ pub struct Plan {
     owned: Vec<CanonicalBlockId>,
     /// The block the run continues at after the statement, when it continues at all.
     join: Option<CanonicalBlockId>,
+    /// The named `catch` a compiler winds around the whole lowering, when the statement presents
+    /// one ([`EnclosingCatch`]). `None` for every statement whose table states no such row, and
+    /// for every other guarded shape. Boxed: the clause is the rare statement's own, and the
+    /// verdict this plan travels in stays no larger than it has to be.
+    enclosing: Option<Box<EnclosingCatch>>,
     /// The instructions the proof **read**: the resources' own stores, the closes the handlers
     /// perform, the `addSuppressed` calls and the rethrows. They write no text of their own — the
     /// statement took their place — and they are the anchors the artifact records beside it, so that
     /// which instructions made a `close` or a suppression true is answerable from the text.
     facts: Vec<u32>,
+}
+
+/// The named `catch` one row winds around a whole lowering: `try (…) { … } catch (E e) { … }` as
+/// javac lowers it, one row whose range covers the claim from its first instruction to the end of
+/// the cleanup ([`enclosing_clauses`]). The clause's handler is the statement's own to present: a
+/// single straight block whose entry store binds the clause's parameter and whose only normal
+/// continuation is the statement's continuation, so the builder writes the body between the
+/// clause's braces and the ledger records the block beside the statement.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EnclosingCatch {
+    /// The exception-table row the clause is read from.
+    row_ordinal: u32,
+    /// The constant-pool index of the one class the clause names.
+    catch_type: u16,
+    /// The slot the handler's own binding store fills: the clause's parameter.
+    parameter: u16,
+    /// The canonical block the row's handler entry is: the clause body's only block.
+    handler: CanonicalBlockId,
+    /// The clause body's instructions, from the binding store to the block's end.
+    body: (u32, u32),
+}
+
+impl EnclosingCatch {
+    /// The exception-table row the clause is read from.
+    pub fn row_ordinal(&self) -> u32 {
+        self.row_ordinal
+    }
+
+    /// The constant-pool index of the class the clause names.
+    pub fn catch_type(&self) -> u16 {
+        self.catch_type
+    }
+
+    /// The slot the clause's parameter lives in.
+    pub fn parameter(&self) -> u16 {
+        self.parameter
+    }
+
+    /// The block the row's handler entry is.
+    pub fn handler(&self) -> &CanonicalBlockId {
+        &self.handler
+    }
+
+    /// The clause body's instructions, from the binding store to the block's end.
+    pub fn body(&self) -> (u32, u32) {
+        self.body
+    }
 }
 
 impl Plan {
@@ -414,6 +466,11 @@ impl Plan {
     /// The block the run continues at, when it does.
     pub fn join(&self) -> Option<&CanonicalBlockId> {
         self.join.as_ref()
+    }
+
+    /// The whole-construct `catch` the statement presents, when its table states one.
+    pub fn enclosing(&self) -> Option<&EnclosingCatch> {
+        self.enclosing.as_deref()
     }
 
     /// The instructions the proof read, in BCI order.
@@ -3016,6 +3073,7 @@ fn prove_conditional_finally(
         body: (row.start_bci, row.end_bci),
         owned,
         join: None,
+        enclosing: None,
         facts: origins,
     }))
 }
@@ -3386,6 +3444,7 @@ fn prove_nullable_resource_finally(
         body: (body_start, cleanup_start),
         owned,
         join: None,
+        enclosing: None,
         facts: origins,
     }))
 }
@@ -4237,6 +4296,7 @@ fn prove_flag_conditional_finally(
         body: (body_start, cleanup_start),
         owned,
         join: None,
+        enclosing: None,
         facts: origins,
     }))
 }
@@ -4966,6 +5026,7 @@ fn prove_local_null_conditional_finally(
         body: (body_start, cleanup_start),
         owned,
         join: None,
+        enclosing: None,
         facts: origins,
     }))
 }
@@ -5485,6 +5546,7 @@ fn prove_empty_catch_call_finally(
         body: (body, normal),
         owned: vec![body_block, facts.row_handler(named).unwrap(), primary_block],
         join: Some(join),
+        enclosing: None,
         facts: facts.order.clone(),
     }))
 }
@@ -5811,6 +5873,7 @@ fn prove_nested_cleanup_finally(
         body: (17, 22),
         owned,
         join: Some(join),
+        enclosing: None,
         facts: BCIS.to_vec(),
     }))
 }
@@ -6170,6 +6233,7 @@ fn prove_two_catch_return_finally(
         body: (body, normal),
         owned: vec![body_block, first_block, second_block, primary_block],
         join: Some(join),
+        enclosing: None,
         facts: facts.order.clone(),
     }))
 }
@@ -6423,6 +6487,7 @@ fn prove_nested_join_finally(
         body: (start, outer.end_bci),
         owned,
         join,
+        enclosing: None,
         facts: facts.bcis((start, handler_end)),
     }))
 }
@@ -7239,6 +7304,7 @@ fn prove_shared_join_finally(
         body: (named.start_bci, named.end_bci),
         owned,
         join: Some(join.clone()),
+        enclosing: None,
         facts: origins,
     }))
 }
@@ -7583,6 +7649,7 @@ fn prove_shared_finally(
         body: protected,
         owned,
         join: None,
+        enclosing: None,
         facts: origins,
     }))
 }
@@ -7928,6 +7995,7 @@ fn prove_segmented_finally(
         body: (segments[0].0, segments[1].1),
         owned,
         join: Some(join.clone()),
+        enclosing: None,
         facts: origins,
     }))
 }
@@ -8410,6 +8478,7 @@ fn prove_segmented_null_lead_finally(
         body: (body_start, body_end),
         owned,
         join: None,
+        enclosing: None,
         facts: origins,
     }))
 }
@@ -8736,6 +8805,7 @@ fn prove_multi_return_loop_finally(
         body: (21, 83),
         owned,
         join: None,
+        enclosing: None,
         facts: BCIS.iter().copied().filter(|bci| *bci >= 21).collect(),
     }))
 }
@@ -9024,6 +9094,7 @@ fn prove_void_loop_finally(
         body: (9, 153),
         owned,
         join: None,
+        enclosing: None,
         facts: BCIS.iter().copied().filter(|bci| *bci >= 9).collect(),
     }))
 }
@@ -9307,6 +9378,7 @@ fn prove_loop_finally(
         body: (0, 4),
         owned: facts.blocks_in((0, 79)),
         join: None,
+        enclosing: None,
         facts: BCIS.to_vec(),
     }))
 }
@@ -12699,6 +12771,7 @@ fn monitor(
         body,
         owned,
         join,
+        enclosing: None,
         facts: facts_read,
     })))
 }
@@ -12992,6 +13065,7 @@ fn monitor_branches(
         body: (then_start, else_exit_load),
         owned,
         join: None,
+        enclosing: None,
         facts: facts_read,
     }))
 }
@@ -13097,6 +13171,7 @@ fn resources(
                     body: proof.protected,
                     owned: proof.owned,
                     join: proof.join,
+                    enclosing: None,
                     facts: proof.origins,
                 }));
             }
@@ -13451,7 +13526,22 @@ fn twr(
         companions.push(companion.clone());
         rows.push(companion.ordinal);
     }
-    let enclosure = enclosing_clauses(facts, current, &rows, handlers[0].span.1);
+    // The join is where the run continues after the statement. `javac` writes a `goto` there
+    // whenever the statement is followed by code of its own method — the target is then a block —
+    // and a statement whose normal path ends the method (`try (…) { return …; }`) has no code to
+    // continue at all: the row itself ends where the close chain does.
+    let join = return_tail.is_none().then(|| facts.block_at(at)).flatten();
+    // The clause a whole-construct row presents ends where **both** paths converge: a join that is
+    // one pure `goto` is the compiler's own bridge to that block, and the handler's one normal
+    // successor is what the bridge reaches, not the bridge itself.
+    let continuation = join.as_ref().map(|join| continuation_of(facts, join));
+    let enclosure = enclosing_clauses(
+        facts,
+        current,
+        &rows,
+        handlers[0].span.1,
+        continuation.as_ref(),
+    );
     for row in facts.handlers {
         if rows.contains(&row.ordinal) {
             continue;
@@ -13463,8 +13553,9 @@ fn twr(
         if !covers {
             continue;
         }
-        let enclosed = enclosure.as_ref().is_some_and(|clauses| {
-            clauses
+        let enclosed = enclosure.as_ref().is_some_and(|enclosure| {
+            enclosure
+                .clauses
                 .iter()
                 .any(|clause| clause.handler_bci == row.handler_bci)
         });
@@ -13472,11 +13563,6 @@ fn twr(
             return Err((Unproven::Unexplained, row.start_bci).into());
         }
     }
-    // The join is where the run continues after the statement. `javac` writes a `goto` there
-    // whenever the statement is followed by code of its own method — the target is then a block —
-    // and a statement whose normal path ends the method (`try (…) { return …; }`) has no code to
-    // continue at all: the row itself ends where the close chain does.
-    let join = return_tail.is_none().then(|| facts.block_at(at)).flatten();
     if return_tail.is_none() && join.is_none() && at < facts.end_of(current) {
         // The close chain runs into the rest of the statement's own block, and no block begins
         // where it continues: the instructions after the statement are those of a block this shape
@@ -13486,14 +13572,16 @@ fn twr(
         // proof did not apply; treating the tail as an ordinary continuation would drop it.
         return Err((Unproven::Continuation, at).into());
     }
-    // Every row that protects part of the statement's span has to be one of its own rows — or one of
-    // the clauses of the `try` this statement sits inside, which the walk writes around it. The two
-    // cases are told apart by the table's own geometry, and the geometry is javac's: a `try (…) { … }
-    // catch (…) { … }` whose body falls through to the code after it emits **two** user rows, because
-    // the clause has to cover the cleanup's rethrow as well as the statement's own code, and neither
-    // of them spans the statement from its first instruction to the end of its handler. A **single**
-    // row that does span it is the `catch` a compiler winds around the whole construct — the shape
-    // `tests/p3_guard.rs`'s `withCatch` states — and it keeps today's refusal.
+    // Every row that protects part of the statement's span has to be one of its own rows — or one
+    // of the clauses of the `try` this statement sits inside, which the statement presents beside
+    // its header. The two cases are told apart by the table's own geometry, and the geometry is
+    // javac's: a `try (…) { … } catch (…) { … }` whose body falls through to the code after it emits
+    // **two** user rows, because the clause has to cover the cleanup's rethrow as well as the
+    // statement's own code, and neither of them spans the statement from its first instruction to
+    // the end of its handler. A **single** row that does span it is also a `catch` of the source's
+    // own — the one the compiler winds around the whole lowering — and the statement presents it as
+    // its clause when [`enclosing_clauses`] proves the handler; what the proof cannot carry keeps
+    // the refusal the unexplained-row check states.
     // Every instruction between the statement's own start and its join belongs to the shape.
     for resource in &resources {
         pieces.push(resource.init);
@@ -13529,7 +13617,7 @@ fn twr(
             cleanup_bcis.insert(bci);
         }
     }
-    let owned =
+    let mut owned =
         facts.cleanup_blocks(&facts.blocks_in((start, claimed_end)), &cleanup_bcis, &rows)?;
     let lead = (start, resources.first().map(|r| r.init.0).unwrap_or(start));
     let mut facts_read: Vec<u32> = Vec::new();
@@ -13554,9 +13642,36 @@ fn twr(
         }
     }
     facts_read.extend(cleanup_bcis.iter().copied());
+    let _ = innermost_handler;
+    let enclosing = enclosure.and_then(|enclosure| {
+        let (row, parameter) = enclosure.enclosing?;
+        let handler = facts.row_handler(row)?;
+        let body = (row.handler_bci, facts.end_of(&handler));
+        // The clause's binding store is the proof's own reading: with it in the facts, the
+        // ordinary catch reader sees the row's handler as one the rule took for itself and leaves
+        // the whole statement to this shape.
+        facts_read.push(row.handler_bci);
+        Some(Box::new(EnclosingCatch {
+            row_ordinal: row.ordinal,
+            catch_type: row.catch_type_index?,
+            parameter,
+            handler,
+            body,
+        }))
+    });
     facts_read.sort_unstable();
     facts_read.dedup();
-    let _ = innermost_handler;
+    // The clause's handler block is the statement's own: the catch presents its statements, and a
+    // live block no statement reached would be named by the uncovered-blocks scan instead of
+    // written. A block the claim already holds (the handler shared the statement's blocks) stays
+    // where it is.
+    if let Some(clause) = &enclosing {
+        let handler = clause.handler();
+        if !owned.contains(handler) {
+            owned.push(handler.clone());
+            owned.sort_by_key(CanonicalBlockId::bci);
+        }
+    }
     Ok(Plan {
         shape: Shape::Resources {
             resources,
@@ -13567,6 +13682,7 @@ fn twr(
         body,
         owned,
         join,
+        enclosing,
         facts: facts_read,
     })
 }
@@ -13581,23 +13697,39 @@ fn twr(
 /// the statement's own row does **not** have to: in the statement's own block, where [`catches`]
 /// reads them, reaching one handler that is not one of the shape's own.
 ///
-/// What is read here is exactly what [`catches`] will write around the statement: the rows that name
-/// a `catch` type, begin inside the statement's own block, reach a handler the shape did not prove —
-/// and read as **one** statement's clauses. Every range begins at one instruction and there are at
-/// most two ends (the nesting of P3 2.5); a set that does not read that way is no enclosure this
-/// rule may lean on, because the walk would not write its clauses and this rule would have claimed a
-/// statement with the handler they name dropped from the artifact.
+/// What is read here is exactly what the presentation writes around the statement, in one of two
+/// readings. The **split** reading is the rows that name a `catch` type, begin inside the
+/// statement's own block, reach a handler the shape did not prove — and read as **one** statement's
+/// clauses. Every range begins at one instruction and there are at most two ends (the nesting of
+/// P3 2.5); a set that does not read that way is no enclosure this rule may lean on, because the
+/// walk would not write its clauses and this rule would have claimed a statement with the handler
+/// they name dropped from the artifact.
 ///
-/// A row covering the shape from its first instruction to the end of its handler is **not** part of
-/// such a set: one range that spans the whole construct is the `catch` a compiler winds around it
-/// (the shape `tests/p3_guard.rs` pins as `jre_guard_unexplained_row`), not a clause the source's
-/// `try (…)` header sits inside.
+/// The **whole-construct** reading is one named row that spans the shape from its first instruction
+/// to the end of its handler: javac's `catch` wound around the entire lowering, `try (…) { … }
+/// catch (E e) { … }` — the clause covers the resources' initialisations and the cleanup alike, and
+/// the clause presentation explains it ([`enclosing_clause`]). The row is a clause of the statement
+/// only where its handler proves as one straight block, and it is the **only** such row: a second
+/// full-span row is a double `catch` or a multi-catch — two clauses, or one clause of several
+/// classes — and neither is a clause this slice states. A catch-all row is no clause under either
+/// reading: the catch-all a compiler winds around a construct is the `finally` and TWR semantics
+/// another certificate owns, and this rule keeps it unexplained.
+struct Enclosure<'a> {
+    /// Every row the presentation writes around the statement: the whole-construct clause when one
+    /// proves, and otherwise the split clause rows.
+    clauses: Vec<&'a ExceptionHandlerFact>,
+    /// The whole-construct clause: its row and the parameter slot the handler's binding store
+    /// fills.
+    enclosing: Option<(&'a ExceptionHandlerFact, u16)>,
+}
+
 fn enclosing_clauses<'a>(
     facts: &Facts<'a>,
     current: &CanonicalBlockId,
     own: &[u32],
     handler_end: u32,
-) -> Option<Vec<&'a ExceptionHandlerFact>> {
+    continuation: Option<&CanonicalBlockId>,
+) -> Option<Enclosure<'a>> {
     let shape_start = current.bci();
     let own_handlers: Vec<u32> = facts
         .handlers
@@ -13605,6 +13737,24 @@ fn enclosing_clauses<'a>(
         .filter(|row| own.contains(&row.ordinal))
         .map(|row| row.handler_bci)
         .collect();
+    // The whole-construct reading first: one row over the entire lowering, named, with a handler
+    // that is none of the shape's own and proves as the clause's one straight body.
+    let mut full_span = facts.handlers.iter().filter(|row| {
+        row.catch_type_index.is_some()
+            && row.start_bci <= shape_start
+            && row.end_bci >= handler_end
+            && !own_handlers.contains(&row.handler_bci)
+    });
+    let enclosing = match (full_span.next(), full_span.next()) {
+        (Some(row), None) => enclosing_clause(facts, row, continuation).map(|clause| (row, clause)),
+        _ => None,
+    };
+    if let Some((row, parameter)) = enclosing {
+        return Some(Enclosure {
+            clauses: vec![row],
+            enclosing: Some((row, parameter)),
+        });
+    }
     let last = facts
         .in_block(current)
         .last()
@@ -13630,7 +13780,75 @@ fn enclosing_clauses<'a>(
     if ends.len() > 2 {
         return None;
     }
-    Some(clauses)
+    Some(Enclosure {
+        clauses,
+        enclosing: None,
+    })
+}
+
+/// Proves the one row wound around a whole lowering as the clause the statement presents.
+///
+/// The handler is one canonical block, the row's entry instruction is the binding store that names
+/// the clause's parameter, and the rest of the block is the statement whitelist plus the value
+/// `return` — the statements a clause body presents as ordinary code, and nothing a branch, a loop
+/// or a second block would need (complex bodies follow [`catches`]' extension path in a later
+/// slice). The block's only normal continuation is the statement's own: a body that ends in a
+/// `return` has none, and one that falls through joins the code after the statement, where both
+/// paths converge. Anything else keeps the whole shape at the unexplained-row refusal the row held
+/// before this reading existed.
+fn enclosing_clause(
+    facts: &Facts<'_>,
+    row: &ExceptionHandlerFact,
+    continuation: Option<&CanonicalBlockId>,
+) -> Option<u16> {
+    let entry = facts.row_handler(row)?;
+    let steps = facts.in_block(&entry);
+    let first = steps.first()?;
+    if first.bci() != row.handler_bci {
+        return None;
+    }
+    let Some(Operation::Store { slot }) = facts.op(row.handler_bci) else {
+        return None;
+    };
+    if !handler_binding(facts, row.handler_bci) {
+        return None;
+    }
+    for step in steps.iter().skip(1) {
+        let carried = facts.statement_carried(step.bci())
+            || matches!(facts.op(step.bci()), Some(Operation::Return));
+        if !carried {
+            return None;
+        }
+    }
+    match facts.view.successor_ids(&entry).as_slice() {
+        [] => {}
+        [one] if continuation.is_some_and(|join| one == join) => {}
+        _ => return None,
+    }
+    Some(*slot)
+}
+
+/// The block a statement's continuation really is: a join that is one pure `goto` is the compiler's
+/// own bridge from the statement to the block its paths converge at, and both the walk (which
+/// writes no statement for it) and a clause body (which ends where the bridge lands) read through
+/// it. The fold is bounded: a bridge the graph has not collapsed is a handful of `goto` blocks in
+/// a row, and one that ran longer would be a shape no proof here reads.
+fn continuation_of(facts: &Facts<'_>, join: &CanonicalBlockId) -> CanonicalBlockId {
+    let mut current = join.clone();
+    for _ in 0..4 {
+        let steps = facts.in_block(&current);
+        let is_bridge =
+            steps.len() == 1 && matches!(facts.op(steps[0].bci()), Some(Operation::Transfer));
+        if !is_bridge {
+            break;
+        }
+        let successors = facts.view.successor_ids(&current);
+        match successors.as_slice() {
+            [one] => current = one.clone(),
+            _ => break,
+        }
+    }
+    current
 }
 
 /// Whether every instruction between a statement's own start and its join belongs to one of the

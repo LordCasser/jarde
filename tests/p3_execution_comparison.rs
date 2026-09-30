@@ -429,7 +429,7 @@ const GUARDED: Sample = Sample {
         },
         Member {
             name: "withCatch",
-            expect: Expect::Quoted(Some("jre_guard_unexplained_row")),
+            expect: Expect::Executed,
         },
         Member {
             name: "branching",
