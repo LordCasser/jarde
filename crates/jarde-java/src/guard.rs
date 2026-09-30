@@ -7962,6 +7962,41 @@ mod monitor_branch_tests {
         ));
     }
 
+    /// A statement that is no store — a `getstatic`-consuming call, a plain `void` call — is no
+    /// resource's initialisation, so the named row behind it is not examined as one: the walk is
+    /// left its own `NotGuarded`, which is what lets [`catches`] present the clause.
+    #[test]
+    fn a_non_store_statement_prefix_is_not_examined_as_a_resource_header() {
+        let getstatic = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P2GetstaticRead.class"
+        );
+        assert!(matches!(
+            plans(getstatic, "run", "()Ljava/lang/String;").first(),
+            Some(Verdict::NotGuarded)
+        ));
+        let void_call = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/M5.class"
+        );
+        assert!(matches!(
+            plans(void_call, "main", "([Ljava/lang/String;)V").first(),
+            Some(Verdict::NotGuarded)
+        ));
+    }
+
+    /// A provable two-resource header keeps its certificate: its resource stores are the ranges'
+    /// own neighbours, so the no-store answer never touches them.
+    #[test]
+    fn a_two_resource_header_keeps_its_certificate() {
+        let class = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
+        );
+        let verdicts = plans(class, "two", "()Ljava/lang/String;");
+        assert!(verdicts.iter().any(|verdict| matches!(
+            verdict,
+            Verdict::Claimed(plan) if matches!(plan.shape(), Shape::Resources { .. })
+        )));
+    }
+
     #[test]
     fn frozen_two_arm_fixture_is_one_monitor_plan_and_three_arm_control_is_refused() {
         let accepted = include_bytes!(
@@ -9577,9 +9612,9 @@ fn resources(
         //
         // [`initialisation`] refuses both this and a resource whose store is not one statement under
         // the same `ResourceInit`; the difference is that here there is no store *at all*, which is
-        // the one case that is not a resource header a rule could have read. A row with an
-        // instruction before its range keeps the refusal it has today — a `try` whose initialisation
-        // this build cannot state is never spelled as a user `catch`.
+        // the one case that is not a resource header a rule could have read. A row whose range a
+        // *store* precedes keeps the refusal it has today — a `try` whose initialisation this build
+        // cannot state is never spelled as a user `catch`.
         //
         // The instruction before the range answers the same question from the other side: it is
         // where a header's own initialisation *ends*, and an ordinary assignment — a store of a
@@ -9599,9 +9634,10 @@ fn resources(
         // the `catch` its own table names rather than becoming a `try`-with-resources refusal.
         //
         // So the questions are one — "is what precedes this range a resource's own initialisation?" —
-        // and a row answers *no* where no instruction precedes it in this block and where an
-        // ordinary assignment precedes it. Neither row is examined as a resource, and when every
-        // candidate answers no the shape is not this rule's at all.
+        // and a row answers *no* where no instruction precedes it in this block, where the statement
+        // before it is no store at all, and where an ordinary assignment precedes it. None of these
+        // rows is examined as a resource, and when every candidate answers no the shape is not this
+        // rule's at all.
         let Some(before) = facts
             .previous_bci(row.start_bci)
             .filter(|before| *before >= start)
@@ -9625,6 +9661,21 @@ fn resources(
         if row.catch_type_index.is_some()
             && completed_field_assignment(facts, before, start, row.start_bci)
         {
+            continue;
+        }
+        // A statement that is no store at all — a void call, a field write, anything that ends a
+        // statement of its own — is no resource's initialisation either: nothing it leaves behind
+        // is a value a header could declare, and [`initialisation`] reads a store. A row whose
+        // range follows such a statement is the `catch` its own table names — the nested `try` of
+        // `helper(); try { … } catch (E e) { … }` — so it is not examined as a header this rule
+        // could state: it is left to [`catches`], exactly like the rows above.
+        //
+        // The row is skipped rather than refused, because what precedes the range is read here and
+        // is no initialisation at all. A resource header a compiler writes keeps its own store
+        // immediately before the range it declares — `try (R r = open())` and Java 9's `try (r)`
+        // both store the variable the range reads — so no provable header of this shape answers no
+        // here, and a `try` whose header this build cannot state keeps degrading as one.
+        if !matches!(facts.op(before), Some(Operation::Store { .. })) {
             continue;
         }
         // A direct null literal is not enough to call an ordinary `try` a resource header. Admit it
