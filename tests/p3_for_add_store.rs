@@ -1,4 +1,8 @@
 //! Add/store loop updates move to a `for` header only when the latch owns one pure chain.
+//!
+//! The labeled loop's label is spelled `loop` since `recover-labeled-loop-tail-coverage`: the
+//! presentation replaces the synthesized `jarde_loop_{bci}` with a source-style name; the loop the
+//! assertions target is unchanged.
 
 use jarde::*;
 use std::slice;
@@ -70,10 +74,10 @@ fn outer_continue_runs_the_update_and_skips_the_body_tail() {
     let method = method_text(LABELED, "ForAddStoreLatch", "run");
     assert!(!method.contains("@bytecode"), "{method}");
     assert!(
-        method.contains("jarde_loop_8: for (local3 = 0; local3 < arg0; local3 = local3 + arg1)"),
+        method.contains("loop: for (local3 = 0; local3 < arg0; local3 = local3 + arg1)"),
         "{method}"
     );
-    assert!(method.contains("continue jarde_loop_8;"), "{method}");
+    assert!(method.contains("continue loop;"), "{method}");
     assert!(
         method.contains("for (local6 = 0; local6 < 2; local6 = local6 + 1)"),
         "{method}"
@@ -83,7 +87,7 @@ fn outer_continue_runs_the_update_and_skips_the_body_tail() {
         1,
         "{method}"
     );
-    let continue_at = method.find("continue jarde_loop_8;").unwrap();
+    let continue_at = method.find("continue loop;").unwrap();
     let body_tail_at = method.find("local5 = local5 + 1;").unwrap();
     assert!(continue_at < body_tail_at, "{method}");
 }

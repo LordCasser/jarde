@@ -1,4 +1,8 @@
 //! A switch's normal join inside a loop is distinct from a case's loop-break target.
+//!
+//! The labeled loop's label is spelled `loop` since `recover-labeled-loop-tail-coverage`: the
+//! presentation replaces the synthesized `jarde_loop_{bci}` with a source-style name; the loop the
+//! assertions target is unchanged.
 
 use jarde::*;
 use std::slice;
@@ -64,21 +68,21 @@ fn switch_loop_exit_and_local_join_keep_their_own_origins() {
     let text = &method.text;
     assert!(!report.text.contains("@bytecode"), "{}", report.text);
     assert!(
-        text.contains("jarde_loop_5: while") && text.contains("switch (local3)"),
+        text.contains("loop: while") && text.contains("switch (local3)"),
         "{text}"
     );
     assert!(
-        text.contains("if (arg2) {\n                        break jarde_loop_5;"),
+        text.contains("if (arg2) {\n                        break loop;"),
         "{text}"
     );
     assert!(
-        text.contains("default:\n                    break jarde_loop_5;"),
+        text.contains("default:\n                    break loop;"),
         "{text}"
     );
     assert_eq!(text.matches("local3 = local3 + 1;").count(), 1, "{text}");
     assert_eq!(text.matches("return local4;").count(), 1, "{text}");
     assert!(
-        !text.contains("break jarde_loop_5;\n                    break;"),
+        !text.contains("break loop;\n                    break;"),
         "{text}"
     );
     for bci in [40, 55] {
@@ -86,7 +90,7 @@ fn switch_loop_exit_and_local_join_keep_their_own_origins() {
             body.source_map
                 .text_of_bci(&body.text, bci)
                 .iter()
-                .any(|piece| piece.contains("break jarde_loop_5;")),
+                .any(|piece| piece.contains("break loop;")),
             "BCI {bci} must keep its loop-break origin: {:?}",
             body.source_map.of_bci(bci)
         );
