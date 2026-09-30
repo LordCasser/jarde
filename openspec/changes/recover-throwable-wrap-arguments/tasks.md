@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（新增回归入 `p3_` 测试文件族）、fmt、CI 同款 Clippy 新码零新增、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 C2.alias 与变体族三方对照：原 class/固定 JADX Java-input/Jarde 完整 Java 8 类重编，`java -Xverify:all` 正常路径与注入异常路径（包装消息、cause 链、双层包装 identity）逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核闭集表对 JDK 层级的逐对正确性、呈现与负例，更新 CF-15/EM-10 清单与巡查账本。
+- [x] 3.3 root 独立复核闭集表对 JDK 层级的逐对正确性、呈现与负例，更新 CF-15/EM-10 清单与巡查账本。（root 于合并主线 bb4dc2e9 复核：45 对边表抽查与 JDK 层级一致、walk 有步长上界且同名先行排除、C2.alias 三语句完整呈现 `(java.lang.Throwable) local1`、全仓 2706/0、fmt/openspec 223/223。tasks 2.2 措辞中 "IOException 包装逐项恢复" 与 design 决策 1 的 java.lang-only 口径冲突，按 design 为准：IOException 属 java.io，保持拒绝并作升级路径，负例已钉死。）
