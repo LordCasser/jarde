@@ -1,0 +1,14 @@
+# 变更前（基线 baff5438，未含 LocalNullConditionalFinally 证书）对固定 Tf1 与全部负例的恢复结果
+# 每节一行质量/区域结论：基线对固定 Tf1 整方法回退（证书不存在），对负例同样不呈现 finally。
+# 捕获自实现前 worktree 构建的 jarde-cli（命令：recover --policy single-class --class-name <N>
+# --method-name test --format json --evidence all）。
+Tf1LeadNew: quality=fallback try_finally_count=0 bytecode_fallback=True regions=[(0, {'rule': 'twr', 'version': '1'}, False), (51, None, False)]
+Tf1QueryBeforeTry: quality=fallback try_finally_count=0 bytecode_fallback=True regions=[(0, {'rule': 'twr', 'version': '1'}, False), (39, None, False)]
+Tf1SlotMismatch: quality=fallback try_finally_count=0 bytecode_fallback=True regions=[(0, None, False), (45, None, False)]
+Tf1AssignOutside: quality=fallback try_finally_count=0 bytecode_fallback=True regions=[(0, None, False), (11, None, False)]
+Tf1CleanupExtra: quality=fallback try_finally_count=0 bytecode_fallback=True regions=[(0, None, False), (45, None, False)]
+Tf1InvertedCondition: quality=fallback try_finally_count=0 bytecode_fallback=True regions=[(0, None, False), (45, None, False)]
+Tf1TargetMismatch: quality=fallback try_finally_count=0 bytecode_fallback=True regions=[(0, None, False), (45, None, False)]
+Tf1ReturnIdentity: quality=fallback try_finally_count=0 bytecode_fallback=True regions=[(0, None, False), (45, None, False)]
+Tf1RethrowIdentity: quality=fallback try_finally_count=0 bytecode_fallback=True regions=[(0, None, False), (45, None, False)]
+FIXED Tf1: quality=fallback try_finally_count=0 bytecode_fallback=True regions=[(0, None, False), (45, None, False)]

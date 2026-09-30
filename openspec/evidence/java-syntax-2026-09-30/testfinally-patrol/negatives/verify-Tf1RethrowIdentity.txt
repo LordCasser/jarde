@@ -1,0 +1,1 @@
+outcome=ok value=v closes=1

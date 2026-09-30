@@ -1,0 +1,7 @@
+// @method test(LContext;Ljava/lang/Object;)Ljava/lang/String;
+// @declaration an instance method of `Tf1CleanupExtra`, member flags 0x0000
+// recovered from bytecode; presentation is not claimed to compile
+{
+    // @bytecode 0 45 54 57 63 72
+    // local 3 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+}
