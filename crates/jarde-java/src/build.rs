@@ -1147,6 +1147,7 @@ fn declarations(
                     || all_reads_reach_presented_writes(
                         ssa,
                         operations,
+                        sites,
                         variable_uses,
                         &paths,
                         budget,
@@ -3131,10 +3132,14 @@ fn catch_parameter_stays_in_clause(
 
 /// An `iinc` has an int-shaped JVM slot even when Java source would have to call it a boolean.
 /// Hoisting a cross-catch declaration is safe only when the source type can spell the increment.
+/// A decided reference type states the class the declaration spells; the write-value proof below
+/// still decides whether the store the type was read from is one this builder can present, so the
+/// admission alone presents nothing.
 fn cross_exception_store_type_is_proven(decided: Option<&Decided>, has_increment: bool) -> bool {
     match decided {
         Some(Decided::Type(Type::Int)) => true,
         Some(Decided::Type(Type::Boolean)) => !has_increment,
+        Some(Decided::Type(Type::Reference(_))) => !has_increment,
         _ => false,
     }
 }
@@ -3146,17 +3151,21 @@ fn cross_exception_store_type_is_proven(decided: Option<&Decided>, has_increment
 /// an entry value, caught reference, unrepresented predecessor, or loop self-edge is insufficient.
 /// This intentionally rejects more shapes than the JVM could verify; it never infers assignment
 /// from bytecode order.
+#[allow(clippy::too_many_arguments)]
 fn all_reads_reach_presented_writes(
     ssa: &SsaTable,
     operations: &Operations,
+    sites: &init::Sites,
     uses: &[SlotUse],
     paths: &RegionPaths,
     budget: &mut Budget,
 ) -> Result<bool, StopReason> {
     // A reaching local definition is useful only if its value can be written at the store. Keep
     // this proof smaller than the general expression renderer: the accepted chain is an unshared
-    // int literal or a same-block load / static call / addition tree. In particular, the call must
-    // remain in the protected arm containing its store, with its result consumed exactly once.
+    // int literal or a same-block load / static call / addition tree, or — this slice — a same-block
+    // verified construction site or zero-argument static call the store alone consumes. In
+    // particular, the call must remain in the protected arm containing its store, with its result
+    // consumed exactly once.
     for write in uses.iter().filter(|use_| use_.written.is_some()) {
         charge(
             budget,
@@ -3207,10 +3216,18 @@ fn all_reads_reach_presented_writes(
             return Ok(false);
         };
         let mut seen = BTreeSet::new();
-        if !presented_int_store_value(
+        let inline = presented_int_store_value(
             ssa, operations, paths, stored, block, write.bci, &mut seen, budget, 0,
-        )? {
+        )?;
+        if !inline
+            && !presented_reference_store_value(
+                ssa, operations, sites, paths, stored, block, write.bci, budget,
+            )?
+        {
             return Ok(false);
+        }
+        if !inline {
+            continue;
         }
         let Some(first) = seen
             .iter()
@@ -3399,6 +3416,116 @@ fn presented_int_store_value(
         }
     }
     Ok(true)
+}
+
+/// The reference value a cross-exception store can safely present as its own declaration's
+/// initialiser: one **verified construction site** (`new T(…)` — the allocation, its copy and the
+/// constructor call the `new` rule proved, rendered by the same new-site expression a consumer
+/// spells) or one **zero-argument static call**. Both shapes reuse the disciplines the int chain
+/// above already states, so the value never moves and never runs twice:
+///
+/// * the producing instruction and the store share one basic block whose region is presented (no
+///   quoted run — a construction this block cannot spell stays quoted);
+/// * the value is consumed exactly once, by this store — the constructed instance a second reader
+///   shares would be evaluated once in the text and twice in the source's meaning;
+/// * the producing instruction is the store's immediate predecessor, with every instruction
+///   between the site's allocation and the store belonging to the site's own verified expression —
+///   a statement the bytecode ran between the construction and the store would change order in the
+///   text, and an argument producer of a wider call is one such statement this slice does not
+///   accept;
+/// * the block sits in a `try` statement's protected arm, the same arm discipline the int call
+///   reads: the region path is attached to the basic block, so requiring it also preserves the
+///   exception table's own answer for the call.
+///
+/// The declaration the certificate hoists reads the store where it ran — the `try` statement's
+/// lead — so nothing is evaluated anywhere else. Every other reference shape keeps the existing
+/// whole-slice refusal until its own presentation rules can supply the same proof.
+#[allow(clippy::too_many_arguments)]
+fn presented_reference_store_value(
+    ssa: &SsaTable,
+    operations: &Operations,
+    sites: &init::Sites,
+    paths: &RegionPaths,
+    value: ValueId,
+    store_block: &CanonicalBlockId,
+    consumer: u32,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        1,
+        Some(consumer),
+    )?;
+    let Definition::Instruction { block, bci } = ssa.value(value).def() else {
+        return Ok(false);
+    };
+    if block != store_block
+        || *bci >= consumer
+        || !matches!(ssa.value(value).ty(), Value::Ref(_))
+        || paths
+            .paths
+            .get(block)
+            .is_none_or(|path| paths.fallbacks.contains(path))
+        || !paths.tries.iter().any(|try_path| {
+            paths.paths.get(block).is_some_and(|path| {
+                path.starts_with(try_path) && path.get(try_path.len()) == Some(&0)
+            })
+        })
+        || !single_use_at_with_budget(ssa, value, block, consumer, budget)?
+    {
+        return Ok(false);
+    }
+    let Some(block) = ssa.block(block) else {
+        return Ok(false);
+    };
+    match operations.get(*bci) {
+        Some(Operation::Invoke(target))
+            if target.kind() == InvokeKind::Special && target.name() == "<init>" =>
+        {
+            // The construction this value came from: the site's own verified expression is the
+            // whole run from the allocation to this constructor call, and the store is the run's
+            // immediate next instruction.
+            let Some(site) = sites.site_producing(ssa, value) else {
+                return Ok(false);
+            };
+            if site.expression.is_empty() || !site.expression.contains(bci) || site.head > *bci {
+                return Ok(false);
+            }
+            let run: BTreeSet<u32> = block
+                .instructions()
+                .iter()
+                .map(|instruction| instruction.bci())
+                .filter(|at| *at >= site.head && *at < consumer)
+                .collect();
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(site.head),
+            )?;
+            if run != site.expression {
+                return Ok(false);
+            }
+            Ok(true)
+        }
+        Some(Operation::Invoke(target)) if target.kind() == InvokeKind::Static => {
+            let run: BTreeSet<u32> = block
+                .instructions()
+                .iter()
+                .map(|instruction| instruction.bci())
+                .filter(|at| *at >= *bci && *at < consumer)
+                .collect();
+            if run.len() != 1
+                || !is_java_identifier(target.name())
+                || !matches!(return_type(target.descriptor()), Some(Type::Reference(_)))
+            {
+                return Ok(false);
+            }
+            Ok(true)
+        }
+        _ => Ok(false),
+    }
 }
 
 /// The longest prefix two region paths share: the innermost region that contains both.
