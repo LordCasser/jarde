@@ -301,6 +301,30 @@ pub enum Shape {
         cleanup: [(u32, u32); 3],
         returns: [(u32, u32); 2],
     },
+    /// The TestFinally3 lowering: two catch-all rows over one handler with a gap between the
+    /// protected ranges, the gap itself the early return's own `aload s; invoke; aload v;
+    /// areturn`, and **no row over the handler** — the early, normal and exceptional cleanup
+    /// copies are all unguarded, so a cleanup throw replaces the completion on every path. A
+    /// two-instruction `aconst_null; astore s` leads the method; the protected body assigns the
+    /// same slot `s` and ends in `aconst_null; astore v` (the early return's saved literal) or
+    /// in the body producer's own store (the normal one); both returns read `v` after their
+    /// copy. `cleanup_target` is the one static call all three copies make on `s`.
+    SegmentedNullLeadFinally {
+        rows: [u32; 2],
+        slot: u16,
+        value_slot: u16,
+        segments: [(u32, u32); 2],
+        cleanup_target: crate::facts::CallTarget,
+        /// The gap's unguarded copy and the `areturn` that ends it: the instructions the early
+        /// return's statement carries as derived origins, and the range the builder skips.
+        early_cleanup: (u32, u32),
+        early_return: u32,
+        /// The normal tail's copy, the span the cleanup's own presentation reads.
+        normal_cleanup: (u32, u32),
+        /// The two saved returns — the early `null` literal's store and the normal body
+        /// producer's store — each with the `areturn` that reads its slot back.
+        returns: [(u32, u32); 2],
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -412,6 +436,7 @@ impl Plan {
             | Shape::EmptyCatchCallFinally { .. }
             | Shape::SegmentedFinally { .. }
             | Shape::MultiReturnLoopFinally { .. }
+            | Shape::SegmentedNullLeadFinally { .. }
             | Shape::TwoCatchReturnFinally { .. }
             | Shape::NestedCleanupFinally { .. } => &FINALLY,
         }
@@ -7818,6 +7843,545 @@ fn prove_segmented_finally(
     }))
 }
 
+/// The TestFinally3 lowering: a null-lead conditional body with an early `return null`, compiled
+/// as a segmented two-row table whose gap is the early return's own cleanup. The two `any` rows
+/// share one handler and neither covers it — the early-return block sits between the ranges, so
+/// its close copy, the normal tail's and the handler's are all unguarded, and a cleanup throw
+/// replaces the completion on every path. The lead's `aconst_null; astore s` initialises the slot
+/// all three copies' arguments read; the protected body assigns the same slot; the two returns
+/// read one value slot — the early one the lead-style `null` literal the protected range ends in,
+/// the normal one the body's own producer. Every instruction start, edge and exception row is
+/// read from this run's facts before the copies can fold into one `finally`.
+fn prove_segmented_null_lead_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [first_row, second_row] = facts.handlers else {
+        return Ok(None);
+    };
+    // Entry: two consecutive catch-all rows over one handler, a gap between the protected
+    // ranges, and no row over the handler itself. Every other two-row shape carries a
+    // self-protecting binding row, a resource, or a loop — none reaches past this test.
+    if first_row.catch_type_index.is_some()
+        || second_row.catch_type_index.is_some()
+        || second_row.ordinal != first_row.ordinal + 1
+        || first_row.handler_bci != second_row.handler_bci
+        || first_row.start_bci >= first_row.end_bci
+        || first_row.end_bci >= second_row.start_bci
+        || second_row.start_bci >= second_row.end_bci
+        || second_row.end_bci > first_row.handler_bci
+        || facts.order.len() > 64
+        || !facts.canonical.unreachable().is_empty()
+    {
+        return Ok(None);
+    }
+    let (body_start, early_start, body_restart, body_end, handler_start) = (
+        first_row.start_bci,
+        first_row.end_bci,
+        second_row.start_bci,
+        second_row.end_bci,
+        first_row.handler_bci,
+    );
+    let Some(&last_bci) = facts.order.last() else {
+        return Ok(None);
+    };
+    let method_end = facts.span_end(last_bci);
+    // The lead is the statement's own block opening: exactly `[aconst_null, astore s]`.
+    let lead = facts.bcis((current.bci(), body_start));
+    let [lead_push, lead_store] = lead.as_slice() else {
+        return Ok(None);
+    };
+    if *lead_push != current.bci()
+        || !matches!(
+            facts.op(*lead_push),
+            Some(Operation::Push(crate::facts::ConstantValue::Null))
+        )
+    {
+        return Ok(None);
+    }
+    let Some(Operation::Store { slot }) = facts.op(*lead_store) else {
+        return Ok(None);
+    };
+    let slot = *slot;
+    if slot == 0 {
+        return Ok(None);
+    }
+    // The gap is the early return's own block: exactly `[aload s, invoke, aload v, areturn]`,
+    // and the `areturn` is the protected range's next instruction — the gap holds nothing else.
+    let gap = facts.bcis((early_start, body_restart));
+    let [gap_load, gap_call, gap_value_load, gap_return] = gap.as_slice() else {
+        return Ok(None);
+    };
+    if facts.next_bci(*gap_return) != Some(body_restart)
+        || facts.op(*gap_return) != Some(&Operation::Return)
+    {
+        return Ok(None);
+    }
+    let Some(Operation::Load { slot: gap_read }) = facts.op(*gap_load) else {
+        return Ok(None);
+    };
+    if *gap_read != slot {
+        return Ok(None);
+    }
+    let Some(cleanup_target) = (match facts.op(*gap_call) {
+        Some(Operation::Invoke(target)) if target.kind() == InvokeKind::Static => {
+            Some(target.clone())
+        }
+        _ => None,
+    }) else {
+        return Ok(None);
+    };
+    let Some(Operation::Load { slot: value_slot }) = facts.op(*gap_value_load) else {
+        return Ok(None);
+    };
+    let value_slot = *value_slot;
+    if value_slot == slot {
+        return Ok(None);
+    }
+    // The early return's saved value is the protected range's own tail: `[aconst_null, astore v]`.
+    let Some(early_store) = facts.previous_bci(*gap_load) else {
+        return Ok(None);
+    };
+    let Some(early_push) = facts.previous_bci(early_store) else {
+        return Ok(None);
+    };
+    if early_store < body_start
+        || !matches!(
+            facts.op(early_push),
+            Some(Operation::Push(crate::facts::ConstantValue::Null))
+        )
+    {
+        return Ok(None);
+    }
+    if !matches!(
+        facts.op(early_store),
+        Some(Operation::Store {
+            slot: early_saved,
+            ..
+        }) if *early_saved == value_slot
+    ) {
+        return Ok(None);
+    }
+    // The normal completion is the same copy again, then the saved value's own return.
+    let normal = facts.bcis((body_end, handler_start));
+    let [normal_load, normal_call, normal_value_load, normal_return] = normal.as_slice() else {
+        return Ok(None);
+    };
+    if facts.next_bci(*normal_return) != Some(handler_start)
+        || facts.op(*normal_return) != Some(&Operation::Return)
+    {
+        return Ok(None);
+    }
+    if !matches!(facts.op(*normal_load), Some(Operation::Load { slot: read }) if *read == slot)
+        || !matches!(facts.op(*normal_call), Some(Operation::Invoke(target)) if *target == cleanup_target)
+        || !matches!(facts.op(*normal_value_load), Some(Operation::Load { slot: read }) if *read == value_slot)
+    {
+        return Ok(None);
+    }
+    // The normal return's saved value is the body's own producer, stored just before the tail —
+    // and not another `null` literal, which is the early return's value and no other's.
+    let Some(normal_save_store) = facts.previous_bci(*normal_load) else {
+        return Ok(None);
+    };
+    if normal_save_store < body_restart
+        || !matches!(facts.op(normal_save_store), Some(Operation::Store { slot: saved, .. }) if *saved == value_slot)
+    {
+        return Ok(None);
+    }
+    let handler = facts.bcis((handler_start, method_end));
+    let [
+        primary_store,
+        handler_load,
+        handler_call,
+        handler_throw_load,
+        rethrow,
+    ] = handler.as_slice()
+    else {
+        return Ok(None);
+    };
+    let Some(Operation::Store { slot: thrown_slot }) = facts.op(*primary_store) else {
+        return Ok(None);
+    };
+    let thrown_slot = *thrown_slot;
+    if thrown_slot == slot
+        || thrown_slot == value_slot
+        || facts.op(*rethrow) != Some(&Operation::Throw)
+        || facts.next_bci(*rethrow).is_some()
+        || !matches!(facts.op(*handler_load), Some(Operation::Load { slot: read }) if *read == slot)
+        || !matches!(facts.op(*handler_call), Some(Operation::Invoke(target)) if *target == cleanup_target)
+        || !matches!(facts.op(*handler_throw_load), Some(Operation::Load { slot: read }) if *read == thrown_slot)
+    {
+        return Ok(None);
+    }
+    // The body's own test opens the protected range: a receiver load, an instance field read,
+    // and the not-null branch into the shared normal block — the `if (f == null)` whose
+    // fall-through holds the early return. The branch's target block is the one the body's
+    // producer store stands in, which is what makes the two segments one statement's body.
+    let Some(head_load) = facts.next_bci(body_start) else {
+        return Ok(None);
+    };
+    let Some(head_branch) = facts.next_bci(head_load) else {
+        return Ok(None);
+    };
+    let Some(shared_block) = facts.block_of(normal_save_store) else {
+        return Ok(None);
+    };
+    if !matches!(facts.op(body_start), Some(Operation::Load { .. }))
+        || !matches!(
+            facts.op(head_load),
+            Some(Operation::Field {
+                access: crate::facts::FieldAccess::Read,
+                is_static: false,
+                ..
+            })
+        )
+        || facts.block_of(head_branch) != Some(current)
+        || shared_block.bci() < body_restart
+        || !matches!(
+            facts.op(head_branch),
+            Some(Operation::Comparison {
+                op: CompareOp::JumpIfNotNull,
+                target,
+            }) if *target == shared_block.bci()
+        )
+    {
+        return Ok(None);
+    }
+    // The inner guard's own test is the protected range's last statement before the saved
+    // literal: a receiver load, a boolean call, and the not-zero branch into the second range.
+    let Some(second_branch) = facts.previous_bci(early_push) else {
+        return Ok(None);
+    };
+    let Some(second_call) = facts.previous_bci(second_branch) else {
+        return Ok(None);
+    };
+    let Some(second_receiver) = facts.previous_bci(second_call) else {
+        return Ok(None);
+    };
+    if facts.next_bci(head_branch) != Some(second_receiver)
+        || facts.next_bci(second_branch) != Some(early_push)
+        || !matches!(facts.op(second_receiver), Some(Operation::Load { .. }))
+        || !matches!(facts.op(second_call), Some(Operation::Invoke(target)) if target.descriptor() == "()Z")
+        || !matches!(
+            facts.op(second_branch),
+            Some(Operation::Comparison {
+                op: CompareOp::JumpIfNotZero,
+                target,
+            }) if *target == body_restart
+        )
+    {
+        return Ok(None);
+    }
+    // The body fills the lead slot, and only inside the protected ranges: the lead's `null` and
+    // the body's assignments are the only definitions any copy's argument can read.
+    let body_store_bcis: Vec<u32> = facts
+        .bcis((body_start, body_end))
+        .into_iter()
+        .filter(|bci| {
+            matches!(
+                facts.op(*bci),
+                Some(Operation::Store {
+                    slot: filled,
+                    ..
+                }) if *filled == slot
+            )
+        })
+        .collect();
+    if body_store_bcis.is_empty()
+        || body_store_bcis.iter().any(|bci| {
+            !((body_start..early_start).contains(bci) || (body_restart..body_end).contains(bci))
+        })
+    {
+        return Ok(None);
+    }
+    let local_written = |step: Step<'_>, written: u16| {
+        step.instruction
+            .writes()
+            .iter()
+            .find_map(|(slot, value)| (*slot == Slot::Local(written)).then_some(*value))
+    };
+    let local_read = |step: Step<'_>, read: u16| {
+        step.instruction
+            .reads()
+            .iter()
+            .find_map(|(slot, value)| (*slot == Slot::Local(read)).then_some(*value))
+    };
+    let body_store_values: Vec<ValueId> = body_store_bcis
+        .iter()
+        .filter_map(|bci| facts.step(*bci).and_then(|step| local_written(step, slot)))
+        .collect();
+    if body_store_values.len() != body_store_bcis.len() {
+        return Ok(None);
+    }
+    for bci in facts.bcis((current.bci(), method_end)) {
+        facts.charge(bci)?;
+        let fills = |expected: u16| {
+            matches!(
+                facts.op(bci),
+                Some(Operation::Store {
+                    slot: filled,
+                    ..
+                }) if *filled == expected
+            )
+        };
+        if (fills(slot) && bci != *lead_store && !body_store_bcis.contains(&bci))
+            || (fills(value_slot) && bci != early_store && bci != normal_save_store)
+        {
+            return Ok(None);
+        }
+    }
+    // The two saved values, and each return's own identity: the early return hands back the
+    // literal its own store saved, the normal return hands back the producer's store.
+    let (
+        Some(lead_push_step),
+        Some(lead_store_step),
+        Some(early_push_step),
+        Some(early_store_step),
+        Some(gap_load_step),
+        Some(gap_value_step),
+        Some(gap_return_step),
+        Some(normal_save_step),
+        Some(normal_load_step),
+        Some(normal_value_step),
+        Some(normal_return_step),
+        Some(primary_store_step),
+        Some(handler_load_step),
+        Some(handler_throw_step),
+        Some(rethrow_step),
+    ) = (
+        facts.step(*lead_push),
+        facts.step(*lead_store),
+        facts.step(early_push),
+        facts.step(early_store),
+        facts.step(*gap_load),
+        facts.step(*gap_value_load),
+        facts.step(*gap_return),
+        facts.step(normal_save_store),
+        facts.step(*normal_load),
+        facts.step(*normal_value_load),
+        facts.step(*normal_return),
+        facts.step(*primary_store),
+        facts.step(*handler_load),
+        facts.step(*handler_throw_load),
+        facts.step(*rethrow),
+    )
+    else {
+        return Ok(None);
+    };
+    let (Some(lead_value), Some(early_value), Some(normal_value), Some(thrown_value)) = (
+        local_written(lead_store_step, slot),
+        local_written(early_store_step, value_slot),
+        local_written(normal_save_step, value_slot),
+        local_written(primary_store_step, thrown_slot),
+    ) else {
+        return Ok(None);
+    };
+    let lead_operand_ok = matches!(stack_operands(lead_store_step.instruction).as_slice(), [(_, read)]
+        if lead_push_step.instruction.writes().iter().any(|(_, value)| facts.same(*value, *read)));
+    let early_operand_ok = matches!(stack_operands(early_store_step.instruction).as_slice(), [(_, read)]
+        if early_push_step.instruction.writes().iter().any(|(_, value)| facts.same(*value, *read)));
+    let early_return_ok = local_read(gap_value_step, value_slot)
+        .is_some_and(|read| facts.same(read, early_value))
+        && matches!(stack_operands(gap_return_step.instruction).as_slice(), [(_, read)]
+            if gap_value_step.instruction.writes().iter().any(|(_, value)| facts.same(*value, *read)));
+    let normal_return_ok = local_read(normal_value_step, value_slot)
+        .is_some_and(|read| facts.same(read, normal_value))
+        && matches!(stack_operands(normal_return_step.instruction).as_slice(), [(_, read)]
+            if normal_value_step.instruction.writes().iter().any(|(_, value)| facts.same(*value, *read)));
+    let rethrow_ok = local_read(handler_throw_step, thrown_slot)
+        .is_some_and(|read| facts.same(read, thrown_value))
+        && matches!(stack_operands(rethrow_step.instruction).as_slice(), [(_, read)]
+            if handler_throw_step.instruction.writes().iter().any(|(_, value)| facts.same(*value, *read)));
+    if !lead_operand_ok || !early_operand_ok || !early_return_ok || !normal_return_ok || !rethrow_ok
+    {
+        return Ok(None);
+    }
+    let Definition::Instruction {
+        bci: normal_producer,
+        ..
+    } = facts.ssa.value(facts.resolve(normal_value)).def()
+    else {
+        return Ok(None);
+    };
+    if facts.op(*normal_producer) == Some(&Operation::Push(crate::facts::ConstantValue::Null)) {
+        return Ok(None);
+    }
+    // Each copy's one argument is a read of the lead slot itself, and its value is the merged
+    // flow of the lead and the body's own assignments — no definition outside the two may reach
+    // it. The normal copy runs the body to its end, so its read must name a body value; the
+    // early copy runs before any assignment and the handler may be entered before one, so
+    // either answer is theirs.
+    for (copy_read, copy_entry, require_body) in [
+        (local_read(gap_load_step, slot), *gap_load, false),
+        (local_read(normal_load_step, slot), *normal_load, true),
+        (local_read(handler_load_step, slot), handler_start, false),
+    ] {
+        let Some(read) = copy_read else {
+            return Ok(None);
+        };
+        let reaches_body = segmented_null_lead_argument(
+            facts,
+            read,
+            lead_value,
+            &body_store_values,
+            copy_entry,
+            slot,
+        )?;
+        let Some(reaches_body) = reaches_body else {
+            return Ok(None);
+        };
+        if require_body && !reaches_body {
+            return Ok(None);
+        }
+    }
+    // No protected return, exactly one covering row per instruction, and no row over the lead,
+    // the gap, the tails or the handler itself: the self-protection's absence is the statement's
+    // own claim that a cleanup throw replaces the completion on every path.
+    for bci in facts.bcis((current.bci(), method_end)) {
+        facts.charge(bci)?;
+        let expected: &[u32] = if (body_start..early_start).contains(&bci) {
+            &[first_row.ordinal]
+        } else if (body_restart..body_end).contains(&bci) {
+            &[second_row.ordinal]
+        } else {
+            &[]
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+            || (!expected.is_empty() && matches!(facts.op(bci), Some(Operation::Return)))
+        {
+            return Ok(None);
+        }
+    }
+    // Every canonical edge is one the statement states: exception edges only from the protected
+    // blocks to their own row's handler, normal edges only inside the body's own blocks, return
+    // edges only from the early-return block and the shared normal block, and no call edges.
+    let Some(early_block) = facts.block_of(*gap_load) else {
+        return Ok(None);
+    };
+    let Some(handler_block) = facts.block_at(handler_start) else {
+        return Ok(None);
+    };
+    let seg1_blocks: BTreeSet<CanonicalBlockId> = facts
+        .blocks_in((body_start, early_start))
+        .into_iter()
+        .collect();
+    let seg2_blocks: BTreeSet<CanonicalBlockId> = facts
+        .blocks_in((body_restart, body_end))
+        .into_iter()
+        .collect();
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        let from = edge.from();
+        let in_seg1 = seg1_blocks.contains(from);
+        let in_seg2 = seg2_blocks.contains(from);
+        let valid = match edge.kind() {
+            CanonicalEdgeKind::Exception { handler_ordinal } => {
+                let to_handler = edge.to() == &handler_block;
+                (in_seg1 && !in_seg2 && handler_ordinal == first_row.ordinal && to_handler)
+                    || (!in_seg1 && in_seg2 && handler_ordinal == second_row.ordinal && to_handler)
+            }
+            CanonicalEdgeKind::Normal => {
+                seg1_blocks.contains(edge.to()) || seg2_blocks.contains(edge.to())
+            }
+            CanonicalEdgeKind::Return { .. } => from == early_block || from == shared_block,
+            CanonicalEdgeKind::Call { .. } => false,
+        };
+        if !valid {
+            return Ok(None);
+        }
+    }
+    let mut owned = facts.blocks_in((current.bci(), method_end));
+    owned.sort_by_key(CanonicalBlockId::bci);
+    owned.dedup();
+    let origins = facts.bcis((current.bci(), method_end));
+    Ok(Some(Plan {
+        shape: Shape::SegmentedNullLeadFinally {
+            rows: [first_row.ordinal, second_row.ordinal],
+            slot,
+            value_slot,
+            segments: [(body_start, early_start), (body_restart, body_end)],
+            cleanup_target,
+            early_cleanup: (early_start, *gap_return),
+            early_return: *gap_return,
+            normal_cleanup: (
+                *normal_load,
+                facts.next_bci(*normal_call).unwrap_or(*normal_call),
+            ),
+            returns: [
+                (early_store, *gap_return),
+                (normal_save_store, *normal_return),
+            ],
+        },
+        lead: (current.bci(), body_start),
+        body: (body_start, body_end),
+        owned,
+        join: None,
+        facts: origins,
+    }))
+}
+
+/// What one copy argument's provenance walk finds: `None` is a definition outside the lead's
+/// `null` and the body's own assignments, `Some(false)` the lead's `null` alone, `Some(true)` a
+/// walk that reached one of the body's assignments. The walk is the local-null handler's own,
+/// widened to answer the two cases apart instead of only "the body was reached".
+fn segmented_null_lead_argument(
+    facts: &mut Facts<'_>,
+    value: ValueId,
+    lead_store: ValueId,
+    body_stores: &[ValueId],
+    handler_entry: u32,
+    slot: u16,
+) -> Result<Option<bool>, StopReason> {
+    let mut pending = vec![value];
+    let mut seen = BTreeSet::new();
+    let mut reaches_body = false;
+    while let Some(value) = pending.pop() {
+        facts.charge(0)?;
+        let value = facts.resolve(value);
+        if !seen.insert(value) {
+            continue;
+        }
+        if seen.len() > 64 {
+            return Ok(None);
+        }
+        if body_stores.iter().any(|store| facts.same(value, *store)) {
+            reaches_body = true;
+            continue;
+        }
+        if facts.same(value, lead_store) {
+            continue;
+        }
+        let Definition::Phi {
+            block,
+            slot: phi_slot,
+        } = facts.ssa.value(value).def()
+        else {
+            return Ok(None);
+        };
+        if *phi_slot != Slot::Local(slot) {
+            return Ok(None);
+        }
+        let Some(phi) = facts.ssa.phis().iter().find(|phi| {
+            phi.block() == block && phi.slot() == *phi_slot && facts.same(phi.value(), value)
+        }) else {
+            return Ok(None);
+        };
+        for input in phi.inputs() {
+            match input {
+                jarde_jvm::method_ir::PhiInput::Value(value) => pending.push(*value),
+                jarde_jvm::method_ir::PhiInput::Itself if block.bci() == handler_entry => {}
+                jarde_jvm::method_ir::PhiInput::Itself => return Ok(None),
+            }
+        }
+    }
+    Ok(Some(reaches_body))
+}
+
 /// The Java 11 Test5 lowering has two disjoint protected return paths, an ordinary
 /// do-while in the second path, and a handler row that protects only its binding.
 /// Pinning the instruction geometry keeps this certificate separate from the named-catch
@@ -8712,6 +9276,11 @@ pub(crate) fn shared_finally_candidate(
     {
         return Ok(Some(plan));
     }
+    if handlers.len() == 2
+        && let Some(plan) = prove_segmented_null_lead_finally(&mut facts, current)?
+    {
+        return Ok(Some(plan));
+    }
     if handlers.len() == 1 {
         return prove_conditional_finally(&mut facts, current);
     }
@@ -9041,6 +9610,187 @@ mod finally_copy_tests {
             ),
             Err(StopReason::Cancelled { .. })
         ));
+    }
+
+    /// The fixed CF-16 Tf3 transcription: the segmented two-row null-lead whose gap is the
+    /// early return's own unguarded copy.
+    const SEGMENTED_NULL_LEAD_TF3: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf3.class"
+    );
+    const SEGMENTED_NULL_LEAD_TF3_DESCRIPTOR: &[u8] = b"()[B";
+
+    /// The verifier-valid neighbors the task froze: two break one link of the fixed grammar
+    /// from source, the rest are same-length bytecode patches (`negatives/patch-tf3.py`) that
+    /// rewrite one copy, one completion, one condition, or one exception-table row.
+    const SEGMENTED_NULL_LEAD_TF3_NEIGHBORS: [(&str, &[u8]); 9] = [
+        (
+            "Tf3GapExtra",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3GapExtra/Tf3GapExtra.class"
+            ),
+        ),
+        (
+            "Tf3LeadField",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3LeadField/Tf3LeadField.class"
+            ),
+        ),
+        (
+            "Tf3TargetMismatch",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3TargetMismatch/Tf3TargetMismatch.class"
+            ),
+        ),
+        (
+            "Tf3ArgOtherSlot",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3ArgOtherSlot/Tf3ArgOtherSlot.class"
+            ),
+        ),
+        (
+            "Tf3ReturnIdentity",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3ReturnIdentity/Tf3ReturnIdentity.class"
+            ),
+        ),
+        (
+            "Tf3SelfRowWidened",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3SelfRowWidened/Tf3SelfRowWidened.class"
+            ),
+        ),
+        (
+            "Tf3CondNonNullRewrite",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3CondNonNullRewrite/Tf3CondNonNullRewrite.class"
+            ),
+        ),
+        (
+            "Tf3CondIfneRewrite",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3CondIfneRewrite/Tf3CondIfneRewrite.class"
+            ),
+        ),
+        (
+            "Tf3RethrowIdentity",
+            include_bytes!(
+                "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/src/Tf3RethrowIdentity/Tf3RethrowIdentity.class"
+            ),
+        ),
+    ];
+
+    #[test]
+    fn segmented_null_lead_certificate_claims_the_fixed_two_row_lowering() {
+        let plan = shared_probe_method(
+            SEGMENTED_NULL_LEAD_TF3,
+            b"test",
+            SEGMENTED_NULL_LEAD_TF3_DESCRIPTOR,
+            |_| {},
+            None,
+        )
+        .unwrap()
+        .expect("segmented null-lead finally certificate");
+        let Shape::SegmentedNullLeadFinally {
+            rows,
+            slot,
+            value_slot,
+            segments,
+            early_cleanup,
+            early_return,
+            normal_cleanup,
+            returns,
+            ..
+        } = plan.shape()
+        else {
+            panic!("segmented null-lead finally shape");
+        };
+        assert_eq!(*rows, [0, 1]);
+        assert_eq!(*slot, 1);
+        assert_eq!(*value_slot, 2);
+        assert_eq!(*segments, [(2, 18), (24, 47)]);
+        assert_eq!(*early_cleanup, (18, 23));
+        assert_eq!(*early_return, 23);
+        assert_eq!(*normal_cleanup, (47, 51));
+        assert_eq!(*returns, [(17, 23), (46, 52)]);
+        assert_eq!(plan.lead(), (0, 2));
+        assert_eq!(plan.body(), (2, 47));
+        assert_eq!(plan.owned().len(), 6);
+        assert_eq!(plan.facts().len(), 36);
+        assert!(matches!(
+            shared_probe_method(
+                SEGMENTED_NULL_LEAD_TF3,
+                b"test",
+                SEGMENTED_NULL_LEAD_TF3_DESCRIPTOR,
+                |_| {},
+                Some("budget"),
+            ),
+            Err(StopReason::Budget { .. })
+        ));
+        assert!(matches!(
+            shared_probe_method(
+                SEGMENTED_NULL_LEAD_TF3,
+                b"test",
+                SEGMENTED_NULL_LEAD_TF3_DESCRIPTOR,
+                |_| {},
+                Some("cancel"),
+            ),
+            Err(StopReason::Cancelled { .. })
+        ));
+    }
+
+    #[test]
+    fn segmented_null_lead_certificate_refuses_every_frozen_neighbor() {
+        for (name, class) in SEGMENTED_NULL_LEAD_TF3_NEIGHBORS {
+            let plan = shared_probe_method(class, b"test", b"()[B", |_| {}, None).unwrap();
+            assert!(plan.is_none(), "{name} was claimed");
+        }
+    }
+
+    #[test]
+    fn segmented_null_lead_certificate_does_not_claim_the_family_neighbors() {
+        // The family's own slices keep their own certificates: the flag conditional, the
+        // local-null conditional and the null-lead straight finally each only ever answer for
+        // their own grammar — a segmented gap, an unguarded copy or two saved returns is not
+        // any of them.
+        // The family's own entry is the walk's examination: the flag, local-null and straight
+        // certificates answer through `examine`, and none of them is the segmented shape.
+        let family: [(&str, &[u8], &[u8], &str); 3] = [
+            (
+                "Tf4",
+                include_bytes!(
+                    "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class"
+                ) as &[u8],
+                &b"()Ljava/lang/String;"[..],
+                "flag",
+            ),
+            (
+                "Tf1",
+                include_bytes!(
+                    "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf1.class"
+                ) as &[u8],
+                &b"(LContext;Ljava/lang/Object;)Ljava/lang/String;"[..],
+                "local-null",
+            ),
+            (
+                "Tf2",
+                include_bytes!(
+                    "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf2.class"
+                ) as &[u8],
+                &NULL_LEAD_TF2_DESCRIPTOR[..],
+                "straight",
+            ),
+        ];
+        for (name, class, descriptor, _) in family {
+            let Verdict::Claimed(plan) =
+                examine_probe_labelled(name, class, b"test", descriptor, None).unwrap()
+            else {
+                panic!("{name} lost its own certificate");
+            };
+            assert!(
+                !matches!(plan.shape(), Shape::SegmentedNullLeadFinally { .. }),
+                "{name} was claimed by the segmented certificate"
+            );
+        }
     }
 
     #[test]
@@ -10631,6 +11381,9 @@ fn guarded(
             return Ok(Some(Verdict::Claimed(plan)));
         }
         if let Some(plan) = prove_local_null_conditional_finally(facts, current)? {
+            return Ok(Some(Verdict::Claimed(plan)));
+        }
+        if let Some(plan) = prove_segmented_null_lead_finally(facts, current)? {
             return Ok(Some(Verdict::Claimed(plan)));
         }
         if let Some(plan) = prove_void_loop_finally(facts, current)? {

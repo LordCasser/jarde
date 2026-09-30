@@ -1,0 +1,24 @@
+# Tf3 实现后（change recover-segmented-null-lead-finally）对固定类与全部负例的恢复记录
+# 二进制：本 change 实现完成后的 jarde-cli
+# 固定类应命中唯一 finally（structured）；每个负例零 finally、保留回退标记
+
+## 固定类 Tf3.class
+quality=structured finallys=1 fallbacks=[]
+## Tf3ArgOtherSlot
+quality=fallback finallys=0 fallbacks=['jre_region_exception_edge', 'jre_region_uncovered_blocks']
+## Tf3CondIfneRewrite
+quality=fallback finallys=0 fallbacks=['jre_region_exception_edge', 'jre_region_uncovered_blocks']
+## Tf3CondNonNullRewrite
+quality=fallback finallys=0 fallbacks=['jre_region_exception_edge', 'jre_region_uncovered_blocks']
+## Tf3GapExtra
+quality=fallback finallys=0 fallbacks=['jre_region_exception_edge', 'jre_region_uncovered_blocks']
+## Tf3LeadField
+quality=fallback finallys=0 fallbacks=['jre_region_exception_edge', 'jre_region_uncovered_blocks']
+## Tf3RethrowIdentity
+quality=fallback finallys=0 fallbacks=['jre_region_exception_edge', 'jre_region_uncovered_blocks']
+## Tf3ReturnIdentity
+quality=fallback finallys=0 fallbacks=['jre_region_exception_edge', 'jre_region_uncovered_blocks']
+## Tf3SelfRowWidened
+quality=fallback finallys=0 fallbacks=['jre_region_exception_edge', 'jre_region_uncovered_blocks']
+## Tf3TargetMismatch
+quality=fallback finallys=0 fallbacks=['jre_guard_finally_copy', 'jre_region_uncovered_blocks']

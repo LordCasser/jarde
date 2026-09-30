@@ -1,0 +1,7 @@
+/tmp/tf3-jadx-fixed/Tf3.java:21: 错误: 可能尚未初始化变量inputStream
+            inputStream2 = inputStream;
+                           ^
+/tmp/tf3-jadx-fixed/Tf3.java:24: 错误: 可能尚未初始化变量inputStream
+            close(inputStream);
+                  ^
+2 个错误

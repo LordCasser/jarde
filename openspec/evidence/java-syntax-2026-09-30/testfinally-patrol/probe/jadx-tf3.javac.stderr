@@ -1,0 +1,7 @@
+/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a0f20c-15ae-7b43-bf99-307a6080ddcc/openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/probe/jadx-tf3/Tf3Probe.java:22: 错误: 可能尚未初始化变量inputStream
+            inputStream2 = inputStream;
+                           ^
+/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a0f20c-15ae-7b43-bf99-307a6080ddcc/openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/probe/jadx-tf3/Tf3Probe.java:25: 错误: 可能尚未初始化变量inputStream
+            close(inputStream);
+                  ^
+2 个错误
