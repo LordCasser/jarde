@@ -90,10 +90,13 @@ Two things, and the first is not the row union:
 `close_of_level`/`normal_close` read the unchecked close on both paths; `catches()` reads the rows
 that reach a handler the claim **proved** as the compiler's own (never as a `catch (Throwable)`);
 and `twr` reads the enclosing rows as the clauses of a `try` the statement sits inside — but only
-where that is what they are: a real `try (…) {} catch {}` emits **two** user rows, because the
-clause must also cover the cleanup's rethrow, while a single row spanning `[start, handler_end)` is
-the `catch` a compiler winds around the whole construct (`Guarded.withCatch`, `tests/p3_guard.rs`).
-That row keeps today's `jre_guard_unexplained_row` refusal.
+where that is what they are: a real `try (…) {} catch {}` over a body that **returns** emits **two**
+user rows, because the clause must also cover the cleanup's rethrow, while a single row spanning
+`[start, handler_end)` is the `catch` a compiler winds around the whole construct
+(`Guarded.withCatch`, `tests/p3_guard.rs`). Since the whole-construct catch recovery that row is
+the statement's own clause, presented beside the header when its handler proves as one straight
+block (see `openspec/changes/recover-enclosing-named-catch`); this sample's four-row split and its
+unchecked close keep the member at its own refusal below.
 
 What stands unproven is the **tail**. With no null test there is no branch, so the whole member is
 one canonical block `[0, 3, 4, 5, 8, 9, 10, 13, 14, 15, 18, 19]`: after the close the run continues

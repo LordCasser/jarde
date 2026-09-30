@@ -143,7 +143,7 @@ two findings are marked **closed** below; every other row is the earlier run's o
 | `p3-handlers/v8` (javac, `--release 8 -g:none`) | `body`, `tail`, `one`, `two`, `three`, `suppressed`, `secondInitFails`, `sync`, `syncThrows`, `main` | Java/Structured | compiles | executed: traces identical (78 lines, incl. the reverse close order of `two`/`three` and `boom \| suppressed close-r`) |
 | | `open`, `openFailing` | Java/Structured | compiles | executed: traces identical (**closed**: see finding (i)) |
 | | `syncBody`, `fail`, `boom` | Mixed/Fallback | compiles (quoted body) | boundary: the run wrote no body to execute |
-| | `withCatch` (`jre_guard_unexplained_row`), `branching` (`jre_guard_body`), `fin`, `catchFinally` (`jre_guard_finally_copy`), `syncThrowsCatching`, `secondInitFailsCatching` (`jre_guard_resource_init`), `suppressedCatching` (`jre_region_irreducible`) | Mixed/Fallback | compiles (quoted) | boundary: every BCI of every refused region is quoted, and every quoted BCI is anchored |
+| | `withCatch` (`jre_guard_unexplained_row` — **closed**: the whole-construct catch presents it now, executed with identical traces), `branching` (`jre_guard_body`), `fin`, `catchFinally` (`jre_guard_finally_copy`), `syncThrowsCatching`, `secondInitFailsCatching` (`jre_guard_resource_init`), `suppressedCatching` (`jre_region_irreducible`) | Mixed/Fallback | compiles (quoted) | boundary: every BCI of every refused region is quoted, and every quoted BCI is anchored |
 | `historical/ecj-4.6.1/v52` (**ECJ 4.6.1**, `-source 1.3`, target 52.0) | `add(II)I` | Java/Structured | compiles | executed: traces identical |
 | | `finallyPath(I)I` | Mixed/Fallback | javac: missing return statement | boundary: quoted whole (**closed**: see finding (ii)) — the graph of that body accounts for no instruction of its handler, which the text now quotes |
 
@@ -264,8 +264,9 @@ declaration this comparison derived from the run's facts.
    so the name is not declared anywhere either. This is R1's and R2's refusal, and it is the answer
    rather than a gap: the artifact states the bytecode it refused (both BCIs) and the reason.
 2. **A quoted body that still compiles is not executed**: `Guarded.syncBody`, `fail`, `boom`,
-   `withCatch`, `branching`, `fin`, `catchFinally`, `syncThrowsCatching`, `secondInitFailsCatching`,
-   `suppressedCatching`. Their text is the refused region's quote (comments), which `javac` accepts as
+   `branching`, `fin`, `catchFinally`, `syncThrowsCatching`, `secondInitFailsCatching`,
+   `suppressedCatching` (`withCatch` has since left this list: the whole-construct catch presents
+   it, and the comparison executes it with identical traces). Their text is the refused region's quote (comments), which `javac` accepts as
    a `void` body; executing it would compare an empty body against a body that opens a resource or
    throws, which is why the comparison asserts the quote instead (every BCI of every refused region is
    quoted, and every quoted BCI is an anchor of the source map).

@@ -19,7 +19,7 @@
 ## 切片划分（串行实施，同触 TWR 证明流）
 
 - **CF-17a（`recover-twrcall-statement-bodies`）**：体语句子集接受"同块非 void 调用 + 紧随 pop"（呈现为调用语句），闭合 popBody 家族。**已落地**（root 验收于合并主线 aa279ec6：popBody 恢复 `local0.toString();`、void 对照逐字不变、四负例拒绝、全仓 2717/0）。
-- **CF-17b（`recover-enclosing-named-catch`）**：包围具名行容忍（实验方向）+ Plan/Region/Builder 发射 `} catch (E e) { … }` 子句并覆盖 handler 块；守卫条件：行须完整覆盖 claim 跨度、handler 在 claim 外、claim 自身行完整。17a 落地后实施。
+- **CF-17b（`recover-enclosing-named-catch`）**：包围具名行容忍（实验方向）+ Plan/Region/Builder 发射 `} catch (E e) { … }` 子句并覆盖 handler 块；守卫条件：行须完整覆盖 claim 跨度、handler 在 claim 外、claim 自身行完整。**已实施**（[enclosing-17b](enclosing-17b/README.md)）：全跨度具名行 + 单直行 handler 证明后，T3 两形、T1.twrVoidNamed/twrPopNamed、C4.twrNamed 与 `Guarded.withCatch` 全部恢复；六负例（catch-all 包围行、部分跨度、own-handler 交叠、分支 handler、双 catch、multi-catch）保持既有拒绝逐字不变。已知边界：handler 体把参数传给形参收紧的静态方法（槽复用类型决策）属 Catches 扩展片域。
 
 **新登记巡查点（2026-10-01，17a 验收时发现）**：TWR saved-return 呈现不可编译——`voidBodyReturnInside` 输出 `Object local1 = "in"; return local1;`，方法返回位是 `String`，`return local1`（Object）不可编译。根因方向：保存返回局部的声明类型未从值生产者细化（`ldc "in"` → String），取了 astore 的栈宽类型 Object——与 Test2 已修的 `array_of_value` 同族的"值类型从生产者细化"缺口，发生在 TWR saved-return 的 `decide_types`/`written_type` 通道。待 17b 落地后作小呈现切片。
 

@@ -5,9 +5,9 @@
 /// * the ones the `twr@1`/`monitor@1` rules prove — a `try`‑with‑resources with one, two and three
 ///   resources, one whose second resource's own initialisation throws, one whose body throws, a
 ///   `synchronized` block;
-/// * the ones they must refuse — a `try`‑with‑resources with a `catch` beside it (the compiler wraps
-///   the whole construct in a row of its own), a guarded body that branches, and the two `finally`
-///   shapes.
+/// * the ones they must refuse — a guarded body that branches, and the two `finally` shapes. (The
+///   `catch` beside the `try` in `withCatch` is presented since the whole-construct catch
+///   recovery: the row the compiler wraps the construct in is the statement's own clause.)
 ///
 /// `open`/`openFailing`/`fail` print, and so does `body`/`tail`, so a run of `main` states the
 /// order of every open and every close, and the suppressed relationship of the exceptional path.

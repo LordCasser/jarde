@@ -18,7 +18,7 @@
 //!   compiler writes it, and the anchors record the BCIs the shape was proved from;
 //! * a `synchronized` block is written only where every path out of the region leaves the monitor.
 //!
-//! And what the negative cases pin: a `finally` copy, a `catch` beside the `try`, a branching body,
+//! And what the negative cases pin: a `finally` copy, a branching body,
 //! a close the exception path lacks, a suppression that is the other way round, a handler range that
 //! swallows the initialisation, a monitor whose exception path never exits, and a second entry into
 //! a monitor region are each **refused** with the rule that examined them and the link that fell
@@ -370,22 +370,30 @@ fn a_synchronized_block_is_written_only_where_every_path_leaves_the_monitor() {
 }
 
 #[test]
-fn a_try_with_a_catch_beside_it_is_refused_rather_than_partially_presented() {
-    // javac wraps the whole construct in a row of its own; the `twr@1` rule refuses the shape
-    // instead of presenting a `try` whose outer handler it would have to ignore.
+fn a_try_with_a_catch_beside_it_presents_the_statement_and_its_clause() {
+    // javac wraps the whole construct in one row of its own; since the whole-construct catch
+    // recovery, that row is the clause the statement presents beside its header: the handler's one
+    // straight block is written as the clause body, the binding store names the parameter, and the
+    // statement's ledger holds the handler block.
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);
-    let recovered = refused(&engine, &fixture, "withCatch", "jre_guard_unexplained_row");
-    let report = recovered.recovery();
-    assert!(!report.text.contains("try ("), "{}", report.text);
-    // The citation lists the BCIs of the blocks the refusal could not present, and every one of
-    // them is an anchor: what the quote names is what the artifact maps.
-    let cited = cited(&report.text);
-    assert!(cited.contains(&0), "{cited:?}");
-    let anchors = anchors(report);
-    for bci in &cited {
-        assert!(anchors.contains(bci), "the cited BCI {bci} has no anchor");
-    }
+    let report = presented(&engine, &fixture, "withCatch");
+    assert!(
+        report.text.contains(
+            "try (Res local0 = open(\"r\")) {\n        body();\n    } catch (java.lang.RuntimeException local0) {\n        tail();\n    }"
+        ),
+        "{}",
+        report.text
+    );
+    // The statement states its rule, and the clause's handler entry is an anchor of its own text:
+    // what the text states is what the table named.
+    assert!(
+        report.rules.iter().any(|rule| rule.rule() == "twr"),
+        "{:?}",
+        report.rules
+    );
+    let anchors = anchors(&report);
+    assert!(anchors.contains(&43), "{anchors:?}");
 }
 
 #[test]
