@@ -1,0 +1,38 @@
+// jarde: presentation of `X5CrossBlock` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class X5CrossBlock extends java.lang.Object {
+    public X5CrossBlock() {
+        // @method <init>()V
+        // @declaration a constructor of `X5CrossBlock`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void t(boolean arg0) {
+        // @method t(Z)V
+        // @declaration a static method of `X5CrossBlock`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0) {
+            throw new java.lang.IllegalStateException("state");
+        } else {
+            return;
+        }
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `X5CrossBlock`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 4
+        // the saved producer at BCI 4 has 3 consumers, so one local binding cannot prove its execution count
+        if (false) {
+            // @bytecode 11
+            // the instruction at BCI 11 is not part of the provable subset
+        }
+        // @bytecode 12 13 14 17 18 20 23 24
+        // BCI 12: the resource's own initialisation is not one statement of this block whose value lands in a slot: writing it in the header would move or drop an effect
+        // @bytecode 27 28 31 33 36
+        // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [28, 27]
+    }
+}

@@ -1,0 +1,34 @@
+// jarde: presentation of `X6Direct` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class X6Direct extends java.lang.Object {
+    public X6Direct() {
+        // @method <init>()V
+        // @declaration a constructor of `X6Direct`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void t(boolean arg0) {
+        // @method t(Z)V
+        // @declaration a static method of `X6Direct`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0) {
+            throw new java.lang.IllegalStateException("state");
+        } else {
+            return;
+        }
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `X6Direct`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            new java.lang.StringBuilder().append("a");
+        } catch (java.lang.IllegalStateException local1) {
+        }
+        java.lang.System.out.println("done");
+        return;
+    }
+}
