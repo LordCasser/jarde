@@ -1,16 +1,14 @@
 //! The fixed CF-16 Tf4 flag conditional: one finally, one `-=`, every physical BCI owned.
 
-use std::collections::BTreeSet;
-
 use jarde_java::{
     DeclaringClass, MethodFacts, RecoveryEvidenceRequest, RecoveryFacts, RecoveryRequest,
-    StopReason, pass::JAVA_8, recover,
+    pass::JAVA_8, recover,
 };
 use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
 use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest, Quality};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
-use jarde_reader::budget::{Budget, CancellationToken, Limits};
+use jarde_reader::budget::{Budget, Limits};
 use jarde_reader::model::{
     ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
     PhysicalVariant,
@@ -24,10 +22,15 @@ const FIXED: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class"
 );
 
+/// The same-layout probe whose cleanup can itself fail: the certificate's guarded-throw tail.
+const CLEANUP_PROBE: &[u8] = include_bytes!(
+    "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/probe/original/Tf4CleanupProbe.class"
+);
+
 /// Verifier-valid neighbors the certificate must refuse. Each one breaks exactly one link of the
-/// fixed grammar; the first six are compiled sources, the last two are bytecode patches
+/// fixed grammar; the first six are compiled sources, the last three are bytecode patches
 /// (`negatives/patch.py`) whose handler copy disagrees with the normal copy.
-const NEGATIVES: [&[u8]; 10] = [
+const NEGATIVES: [&[u8]; 11] = [
     include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4NoSetTrue.class"
     ),
@@ -58,9 +61,12 @@ const NEGATIVES: [&[u8]; 10] = [
     include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4FieldMismatch.class"
     ),
+    include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/negatives/Tf4GuardFieldMismatch.class"
+    ),
 ];
 
-const NEGATIVE_NAMES: [&str; 10] = [
+const NEGATIVE_NAMES: [&str; 11] = [
     "Tf4NoSetTrue",
     "Tf4TwoSetTrue",
     "Tf4StatementAfterSetTrue",
@@ -71,6 +77,7 @@ const NEGATIVE_NAMES: [&str; 10] = [
     "Tf4CleanupDoubleUpdate",
     "Tf4KMismatch",
     "Tf4FieldMismatch",
+    "Tf4GuardFieldMismatch",
 ];
 
 fn limits() -> Limits {
@@ -230,6 +237,77 @@ fn flag_conditional_test_has_one_finally_one_field_update_and_all_origins() {
     }
 }
 
+/// The same-layout probe whose cleanup copies carry the identical guarded-throw tail: the
+/// certificate's parameterized tail lets the one `finally` fold both copies, the injectable
+/// cleanup failure included, and every physical instruction of both copies keeps an origin.
+#[test]
+fn cleanup_probe_recovers_one_finally_with_the_guarded_throw_tail() {
+    let report = recover_test(CLEANUP_PROBE, "Tf4CleanupProbe", None);
+    assert!(report.produced(), "{:?}\n{}", report.outcome, report.text);
+    assert_eq!(report.quality, Quality::Structured);
+    assert!(!report.text.contains("@bytecode"), "{}", report.text);
+    assert_eq!(
+        report.text.matches("finally {").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("if (!local1)").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("this.result -= 2;").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report
+            .text
+            .matches("if (Tf4CleanupProbe.failCleanup)")
+            .count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report
+            .text
+            .matches(r#"throw new java.lang.RuntimeException("cleanup");"#)
+            .count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert!(
+        report.text.contains("local1 = false;") && report.text.contains("boolean local1;"),
+        "the lead presents the false initialisation: {}",
+        report.text
+    );
+    assert_eq!(report.regions.len(), 1);
+    assert!(report.regions[0].structured, "{}", report.text);
+    assert_eq!(
+        report.regions[0].blocks,
+        [0, 25, 41, 51, 53, 59, 75, 85],
+        "{}",
+        report.text
+    );
+    for bci in [
+        0, 1, 2, 3, 6, 7, 8, 9, 12, 13, 14, 17, 18, 19, 20, 21, 22, 25, 26, 27, 30, 31, 32, 35,
+        38, 41, 44, 45, 47, 50, 51, 52, 53, 55, 56, 59, 60, 61, 64, 65, 66, 69, 72, 75, 78, 79,
+        81, 84, 85, 87,
+    ] {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "BCI {bci} has no origin: {}",
+            report.text
+        );
+    }
+}
+
 /// One refusal per broken certificate link, each a verifier-valid class the engine still
 /// refuses: the negative list's order matches the six categories of the change's task 1.2.
 #[test]
@@ -252,6 +330,7 @@ fn negative_inverted_condition_ifeq_refuses() {
 fn negative_copy_constant_or_field_mismatch_refuses() {
     refuse(8);
     refuse(9);
+    refuse(10);
 }
 
 #[test]

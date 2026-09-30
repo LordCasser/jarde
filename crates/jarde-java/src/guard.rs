@@ -3012,18 +3012,30 @@ fn prove_nullable_resource_finally(
     }))
 }
 
-/// One eight-instruction flag-guarded field read-modify-write: `iload flag; ifne exit;
-/// aload_0; dup; getfield F; iconst K; isub; putfield F`. The value the branch tests is
-/// returned to the caller, which ties it to the certificate's own flag writes; the field and
-/// the constant come back so the two copies can be checked against one parameter set. Nothing
-/// here decides what the copies mean — only that this exact shape, with one consumer per
-/// intermediate value, is what the bytes say.
+/// One eight-instruction flag-guarded field read-modify-write, optionally followed by the same
+/// guarded-throw tail in both copies: `iload flag; ifne exit; aload_0; dup; getfield F;
+/// iconst K; isub; putfield F [`getstatic B; ifeq exit; new C; dup; ldc "S"; invokespecial
+/// C.<init>(Ljava/lang/String;)V; athrow`]`. The value the branch tests is returned to the
+/// caller, which ties it to the certificate's own flag writes; the field and the constant come
+/// back so the two copies can be checked against one parameter set, and the tail's guard field,
+/// class and message with them. Nothing here decides what the copies mean — only that this
+/// exact shape, with one consumer per intermediate value, is what the bytes say.
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct FlagCleanupGuard {
+    /// The static `boolean` the tail reads, as the pool states it.
+    field: (String, String, String),
+    /// The class the tail allocates.
+    class: String,
+    /// The message constant the tail passes the constructor.
+    message: String,
+}
+
 fn flag_cleanup_copy(
     facts: &Facts<'_>,
-    copy: &[u32; 8],
+    copy: &[u32],
     exit: u32,
     slot: u16,
-) -> Option<(ValueId, Operation, i64)> {
+) -> Option<(ValueId, Operation, i64, Option<FlagCleanupGuard>)> {
     let [
         test_load,
         branch,
@@ -3033,7 +3045,16 @@ fn flag_cleanup_copy(
         constant,
         subtract,
         field_write,
-    ] = *copy;
+        tail @ ..,
+    ] = copy
+    else {
+        return None;
+    };
+    if tail.len() != 0 && tail.len() != 7 {
+        return None;
+    }
+    let [test_load, branch, receiver_load, duplicate, field_read, constant, subtract, field_write] =
+        [*test_load, *branch, *receiver_load, *duplicate, *field_read, *constant, *subtract, *field_write];
     let read = facts.op(field_read)?.clone();
     let write = facts.op(field_write)?.clone();
     let (
@@ -3189,7 +3210,123 @@ fn flag_cleanup_copy(
     let Operation::Push(crate::facts::ConstantValue::Int(constant)) = facts.op(constant)? else {
         return None;
     };
-    Some((*flag, read, *constant))
+    let guard = if tail.is_empty() {
+        None
+    } else {
+        let [
+            guard_read,
+            guard_branch,
+            allocate,
+            duplicate_throw,
+            message,
+            construct,
+            rethrow_new,
+        ] = tail
+        else {
+            return None;
+        };
+        let [guard_read, guard_branch, allocate, duplicate_throw, message, construct, rethrow_new] =
+            [
+                *guard_read,
+                *guard_branch,
+                *allocate,
+                *duplicate_throw,
+                *message,
+                *construct,
+                *rethrow_new,
+            ];
+        let Operation::Field {
+            access: crate::facts::FieldAccess::Read,
+            is_static: true,
+            owner: guard_owner,
+            name: guard_name,
+            descriptor: guard_descriptor,
+        } = facts.op(guard_read)?
+        else {
+            return None;
+        };
+        if guard_descriptor != "Z"
+            || facts.op(guard_branch)
+                != Some(&Operation::Comparison {
+                    op: CompareOp::JumpIfZero,
+                    target: exit,
+                })
+        {
+            return None;
+        }
+        let Operation::Allocate { ty: class } = facts.op(allocate)? else {
+            return None;
+        };
+        let Operation::Push(crate::facts::ConstantValue::String(message)) = facts.op(message)?
+        else {
+            return None;
+        };
+        let Operation::Invoke(target) = facts.op(construct)? else {
+            return None;
+        };
+        if target.kind() != InvokeKind::Special
+            || target.name() != "<init>"
+            || target.descriptor() != "(Ljava/lang/String;)V"
+            || target.owner() != class
+            || facts.op(rethrow_new) != Some(&Operation::Throw)
+        {
+            return None;
+        }
+        // The tail's own value flow, under the same one-consumer-per-value discipline: the
+        // allocation feeds the `dup` alone, the `dup`'s upper copy and the message feed the
+        // constructor alone, the constructor's initialized value feeds the `athrow` alone — and
+        // the `dup`'s lower copy reads nowhere, because the constructor call converts it in
+        // place, which is what makes the `athrow` throw the initialized instance. The indexes
+        // are the full copy's: the eight read-modify-write instructions, then the tail.
+        let (Some(allocate_output), Some(message_output), Some(initialized)) = (
+            stack_writes(10)?.first().map(|(_, value)| *value),
+            stack_writes(12)?.first().map(|(_, value)| *value),
+            stack_writes(13)?.first().map(|(_, value)| *value),
+        ) else {
+            return None;
+        };
+        let tail_thrown = stack_writes(11)?;
+        if tail_thrown.len() != 2 || tail_thrown[0].1 == tail_thrown[1].1 {
+            return None;
+        }
+        let Some(guard_value) = stack_writes(8)?.first().map(|(_, value)| *value) else {
+            return None;
+        };
+        let construct_inputs = stack_operands(steps[13].instruction);
+        let guard_branch_inputs = stack_operands(steps[9].instruction);
+        let throw_inputs = stack_operands(steps[14].instruction);
+        if construct_inputs.len() != 2
+            || guard_branch_inputs.len() != 1
+            || throw_inputs.len() != 1
+            || !facts.same(guard_branch_inputs[0].1, guard_value)
+            || !facts.same(construct_inputs[0].1, tail_thrown[1].1)
+            || !facts.same(construct_inputs[1].1, message_output)
+            || !facts.same(throw_inputs[0].1, initialized)
+        {
+            return None;
+        }
+        for (value, consumer) in [
+            (allocate_output, duplicate_throw),
+            (tail_thrown[1].1, construct),
+            (message_output, construct),
+            (initialized, rethrow_new),
+        ] {
+            if !consumed(value, consumer) {
+                return None;
+            }
+        }
+        // The `dup`'s lower copy is the one value the conversion kills: no instruction may read
+        // it, the `athrow` included.
+        if !consumed(tail_thrown[0].1, rethrow_new) {
+            return None;
+        }
+        Some(FlagCleanupGuard {
+            field: (guard_owner.clone(), guard_name.clone(), guard_descriptor.clone()),
+            class: class.clone(),
+            message: message.clone(),
+        })
+    };
+    Some((*flag, read, *constant, guard))
 }
 
 /// The cleanup copies read the flag the lead initialises and the body sets. The normal copy
@@ -3314,17 +3451,18 @@ fn prove_flag_conditional_finally(
     let handler = facts.bcis((handler_start, facts.span_end(last_bci)));
     let (
         [false_push, false_store],
-        [n0, n1, n2, n3, n4, n5, n6, n7, return_load, normal_return],
+        [n0, n1, n2, _n3, _n4, _n5, _n6, _n7, normal_tail @ .., return_load, normal_return],
         [
             primary_store,
             h0,
-            h1,
+            _h1,
             h2,
-            h3,
-            h4,
-            h5,
-            h6,
-            h7,
+            _h3,
+            _h4,
+            _h5,
+            _h6,
+            _h7,
+            handler_tail @ ..,
             primary_load,
             rethrow,
         ],
@@ -3332,6 +3470,13 @@ fn prove_flag_conditional_finally(
     else {
         return Ok(None);
     };
+    // The two copies are the same length: the read-modify-write core alone, or the core with the
+    // same seven-instruction guarded-throw tail in both. Anything else is not this lowering.
+    if normal_tail.len() != handler_tail.len()
+        || (normal_tail.len() != 0 && normal_tail.len() != 7)
+    {
+        return Ok(None);
+    }
     let Some(Operation::Store { slot: flag_slot }) = facts.op(*false_store) else {
         return Ok(None);
     };
@@ -3418,18 +3563,18 @@ fn prove_flag_conditional_finally(
         return Ok(None);
     }
     let (
-        Some((normal_flag, normal_field, normal_constant)),
-        Some((handler_flag, handler_field, handler_constant)),
+        Some((normal_flag, normal_field, normal_constant, normal_guard)),
+        Some((handler_flag, handler_field, handler_constant, handler_guard)),
     ) = (
         flag_cleanup_copy(
             facts,
-            &[*n0, *n1, *n2, *n3, *n4, *n5, *n6, *n7],
+            &normal[..8 + normal_tail.len()],
             *return_load,
             flag_slot,
         ),
         flag_cleanup_copy(
             facts,
-            &[*h0, *h1, *h2, *h3, *h4, *h5, *h6, *h7],
+            &handler[1..9 + handler_tail.len()],
             *primary_load,
             flag_slot,
         ),
@@ -3437,7 +3582,10 @@ fn prove_flag_conditional_finally(
     else {
         return Ok(None);
     };
-    if normal_field != handler_field || normal_constant != handler_constant {
+    if normal_field != handler_field
+        || normal_constant != handler_constant
+        || normal_guard != handler_guard
+    {
         return Ok(None);
     }
     let (Some(normal_step), Some(save_step), Some(false_step), Some(return_step), Some(throw_step)) = (
@@ -3514,6 +3662,20 @@ fn prove_flag_conditional_finally(
     }
     let protected = facts.blocks_in((body_start, cleanup_start));
     let handler_blocks = facts.blocks_in((handler_start, facts.span_end(*rethrow)));
+    let mut normal_throw_block = None;
+    let mut handler_throw_block = None;
+    if !normal_tail.is_empty() {
+        let Some(block) = facts.block_of(normal[10]) else {
+            return Ok(None);
+        };
+        normal_throw_block = Some(block.clone());
+    }
+    if !handler_tail.is_empty() {
+        let Some(block) = facts.block_of(handler[11]) else {
+            return Ok(None);
+        };
+        handler_throw_block = Some(block.clone());
+    }
     let (
         Some(update_block),
         Some(return_block),
@@ -3530,6 +3692,22 @@ fn prove_flag_conditional_finally(
     else {
         return Ok(None);
     };
+    // With the guarded-throw tail the update arm branches once more: the throw block ends in an
+    // `athrow` no exception row covers, so its own effect is the copy's completion there.
+    let (update_exits, handler_update_exits) = (
+        match (&normal_throw_block, &return_block) {
+            (Some(throw), return_block) => {
+                BTreeSet::from([(*throw).clone(), (*return_block).clone()])
+            }
+            (None, return_block) => BTreeSet::from([(*return_block).clone()]),
+        },
+        match (&handler_throw_block, &rethrow_block) {
+            (Some(throw), rethrow_block) => {
+                BTreeSet::from([(*throw).clone(), (*rethrow_block).clone()])
+            }
+            (None, rethrow_block) => BTreeSet::from([(*rethrow_block).clone()]),
+        },
+    );
     let owned = facts.blocks_in((start, facts.span_end(*rethrow)));
     if owned.len() != facts.canonical.blocks().len()
         || protected.is_empty()
@@ -3540,7 +3718,13 @@ fn prove_flag_conditional_finally(
             .cloned()
             .collect::<BTreeSet<_>>()
             != BTreeSet::from([update_block.clone(), return_block.clone()])
-        || facts.view.successor_ids(&update_block) != [return_block.clone()]
+        || facts
+            .view
+            .successor_ids(&update_block)
+            .iter()
+            .cloned()
+            .collect::<BTreeSet<_>>()
+            != update_exits
         || facts
             .view
             .successor_ids(&handler_entry)
@@ -3548,7 +3732,19 @@ fn prove_flag_conditional_finally(
             .cloned()
             .collect::<BTreeSet<_>>()
             != BTreeSet::from([handler_update_block.clone(), rethrow_block.clone()])
-        || facts.view.successor_ids(&handler_update_block) != [rethrow_block.clone()]
+        || facts
+            .view
+            .successor_ids(&handler_update_block)
+            .iter()
+            .cloned()
+            .collect::<BTreeSet<_>>()
+            != handler_update_exits
+        || normal_throw_block
+            .as_ref()
+            .is_some_and(|throw| !facts.view.successor_ids(throw).is_empty())
+        || handler_throw_block
+            .as_ref()
+            .is_some_and(|throw| !facts.view.successor_ids(throw).is_empty())
         || !facts.view.successor_ids(&return_block).is_empty()
         || !facts.view.successor_ids(&rethrow_block).is_empty()
     {
@@ -3598,6 +3794,9 @@ fn prove_flag_conditional_finally(
                 }
                 CanonicalEdgeKind::Normal if block.id() == &update_block => {
                     edge.to() == &return_block
+                        || normal_throw_block
+                            .as_ref()
+                            .is_some_and(|throw| edge.to() == throw)
                 }
                 CanonicalEdgeKind::Normal if from_handler => {
                     handler_blocks.contains(edge.to()) || edge.to() == &rethrow_block

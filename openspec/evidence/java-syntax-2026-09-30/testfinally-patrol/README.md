@@ -21,3 +21,11 @@
 ## 下一步（不自动开工）
 
 按证书邻近度排序：Tf4（条件清理证书的局部标志 + 前置初始化 + 字段更新清理变体）与 Tf1（可空局部 + try 内赋值 + 条件调用清理）各成一片；两者共用的"前置初始化语句准入 + 初始化与清理条件的 SSA 关联证明"先做。Tf2 随 Test9 家族扩验处理；Tf3（提前 return null + 正文条件）最后。上游 `TestFinally3.test2NoDebug` 标 `@NotYetImplemented`，JADX 自身亦未完成，属已登记分母调整项。
+
+## Tf4 落地记录（change `recover-flag-conditional-finally`）
+
+Tf4 已由该 change 落地为 Guard 内 `prove_flag_conditional_finally` 证书：两行 any 表 + 自保护绑定行、`[iconst_0; istore]` lead、正文恰一次置真、两份逐参数同形副本（可选共有的 `getstatic; ifeq; new; dup; ldc; invokespecial; athrow` 守卫抛出尾），折叠为唯一 `try/finally` + `if (!success) { result -= 2; }`。本目录新增证据：
+
+- `results/Tf4.after.json`、`results/Tf4.jarde.java`：证书命中后的固定类恢复（structured、单一 finally region、36 个物理 BCI 全有来源；handler 副本字段访问按既有 `jre_field_not_emitted` 折叠记账）。
+- `negatives/baseline-refusals.txt`：基线 `86f2e740`（无证书）对固定类整方法回退、对全部负例拒绝；实现后由 `p3_flag_conditional_finally` 全量拒绝（11 个负例，含补丁类 Tf4GuardFieldMismatch）。
+- `probe/`：同布局探针变体三方对照。原 class 与 Jarde `javac --release 8` 重编后 `java -Xverify:all` 逐路径一致（正常 `result==1`、call 抛错 `result==-2` 且异常传播、清理抛错 `RuntimeException:cleanup` 覆盖，两探针全路径）；JADX Java-input 作参照——`Tf4CleanupProbe` 三路径一致，`Tf4Probe` 正常路径 `result=-1` 即上文登记的 `z`/`z2` 语义失真（JADX 把 `success = true` 死写为 `z2`，不合并进 `z`），不构成行为正例。输出 SHA 见 `probe/behavior-sha256.txt`。

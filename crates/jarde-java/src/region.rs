@@ -4676,13 +4676,26 @@ impl Walker<'_> {
             return Ok(None);
         };
         // The certificate proved the entry block has exactly two normal successors: the field
-        // update and the saved return. The first is the cleanup's own arm.
+        // update and the saved return. The first is the cleanup's own arm, whose blocks are the
+        // ones the certificate's normal-copy span holds — one update block alone, or the update
+        // block and its guarded-throw block.
         let mut successors = self.view.successors(start_node);
         successors.retain(|node| *node != exit_node);
         let [update_node] = successors.as_slice() else {
             return Ok(None);
         };
-        let expected = BTreeSet::from([start_node, *update_node]);
+        let mut expected = BTreeSet::from([start_node]);
+        for block in self.canonical.blocks() {
+            if normal_cleanup.0 <= block.id().bci()
+                && block.id().bci() < normal_cleanup.1
+                && let Some(node) = self.view.index_of(block.id())
+            {
+                expected.insert(node);
+            }
+        }
+        if !expected.contains(&update_node) {
+            return Ok(None);
+        }
         let body = Region::Straight {
             blocks: vec![start.clone()],
         };

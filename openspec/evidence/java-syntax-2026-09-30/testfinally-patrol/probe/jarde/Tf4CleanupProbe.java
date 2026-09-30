@@ -17,12 +17,26 @@ public class Tf4CleanupProbe extends java.lang.Object {
     }
 
     public java.lang.String test() {
-        // jarde: not recovered: the recovery run for `test()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
         // @method test()Ljava/lang/String;
         // @declaration an instance method of `Tf4CleanupProbe`, member flags 0x0001
         // recovered from bytecode; presentation is not claimed to compile
-        // @bytecode 0 25 41 51 53 59 75 85
-        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+        boolean local1;
+        java.lang.String local3;
+        local1 = false;
+        try {
+            java.lang.String local2 = this.call();
+            this.result += 1;
+            local1 = true;
+            local3 = local2;
+            return local3;
+        } finally {
+            if (!local1) {
+                this.result -= 2;
+                if (Tf4CleanupProbe.failCleanup) {
+                    throw new java.lang.RuntimeException("cleanup");
+                }
+            }
+        }
     }
 
     private java.lang.String call() {

@@ -9,6 +9,9 @@ verifier-valid (`java -Xverify:all` passes) and StackMapTable-compatible:
                       two copies disagree on the update constant.
 * Tf4FieldMismatch  — the handler copy's `getfield`/`putfield` index moves from
                       `spare` to `result`, so the copies update different fields.
+* Tf4GuardFieldMismatch — the handler copy's `getstatic failCleanup` moves to
+                      `failCall`, so the copies' guarded-throw tails guard
+                      different statics.
 
 Usage: python3 patch.py   (from this directory; recompiles the sources first)
 """
@@ -71,7 +74,7 @@ def main():
         'javac', '--release', '8', '-g:none', '-Xlint:-options',
         *map(str, HERE.glob('src/*.java')),
     ], check=True)
-    for name in ('Tf4KMismatch', 'Tf4FieldMismatch'):
+    for name in ('Tf4KMismatch', 'Tf4FieldMismatch', 'Tf4GuardFieldMismatch'):
         (HERE / f'{name}.class').write_bytes((HERE / 'src' / f'{name}.class').read_bytes())
 
     data = (HERE / 'Tf4KMismatch.class').read_bytes()
@@ -99,7 +102,25 @@ def main():
         + data[put_at + 2:]
     )
     (HERE / 'Tf4FieldMismatch.class').write_bytes(data)
-    print('patched Tf4KMismatch (iconst_2 -> iconst_3) and Tf4FieldMismatch (spare -> result)')
+    data = (HERE / 'Tf4GuardFieldMismatch.class').read_bytes()
+    refs = fieldrefs(data)
+    cls = b'Tf4GuardFieldMismatch'
+    cleanup_idx = refs[(b'failCleanup', b'Z', cls)]
+    call_idx = refs[(b'failCall', b'Z', cls)]
+    guards = [
+        match.start(1)
+        for match in re.finditer(rb'\xb2(..)\x99', data, re.S)
+        if struct.unpack('>H', match.group(1))[0] == cleanup_idx
+    ]
+    assert len(guards) == 2, f'expected the two cleanup tails, found {len(guards)}'
+    at = guards[1]
+    assert data[at - 1] == 0xB2
+    data = data[:at] + struct.pack('>H', call_idx) + data[at + 2:]
+    (HERE / 'Tf4GuardFieldMismatch.class').write_bytes(data)
+    print(
+        'patched Tf4KMismatch (iconst_2 -> iconst_3), Tf4FieldMismatch (spare -> result) '
+        'and Tf4GuardFieldMismatch (failCleanup -> failCall)'
+    )
 
 
 if __name__ == '__main__':
