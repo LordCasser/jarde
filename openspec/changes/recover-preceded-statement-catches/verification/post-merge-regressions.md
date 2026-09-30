@@ -41,3 +41,14 @@
 
 - 任务原清单未列的 `the_presentation_does_not_re_read_the_text`（task_operations）随同 fixture 修复，无独立处理。
 - 语料账本重测提交（tests/p5_bulk_corpus.rs）独立成 commit；若上游判定账本冻结优先于已验收 concat 归属，整体 revert 该 commit 即回到"门槛已修、账本两例红"的状态，门槛修复本身不受影响。
+
+## 五、CF-15 交叉切片对"store 前置"负边界的翻转（2026-09-30）
+
+本文件第一节冻结的负边界中，**store 前置降级**一项（`a_store_prefix_still_degrades_to_the_resource_refusal`，N1/P3StorePrefix）已被后继切片 [`recover-named-row-crossing-locals`](../../recover-named-row-crossing-locals/proposal.md) **翻转为正例**：该测试现为 `a_store_prefix_before_a_named_catch_presents_the_catch`，两个形状完整恢复为普通 `try`/`catch`。结构论证（C4.twrNamed 与 P5TwoResources 字节码实证）：
+
+1. 具名 catch 包装整个语句时，编译器让该行的保护范围**覆盖资源初始化**——`twrNamed` 的 `IllegalStateException` 行跨 `[0, 36)`，起点在 `new C4()` 之前，故"紧跟完成 store 的行起点"不可能是包装行的起点；
+2. lowering 自身的行在两侧都携带资源：行尾是该槽的 normal close（`aload; invokeclose` 或 `ifnull` 分支型），handler 是 close/suppress/rethrow 序列——两处皆无 close 的具名行不是任何 lowering 层级；
+3. N1/P3StorePrefix 的行恰是"具名 + 行尾无 close + handler 无 close + 起点为完成 store 的语句边界"，结构上只能是用户 `catch`。
+
+本文件第一节的其余负边界**逐项保持**：catch-all 行降级（CF-15 的 X1Catchall，`jre_guard_handler` 一字不动）、行劈开语句/吞初始化/交叠呈现（`statement_ends`/`statement_boundary` 判据原样保留，CF-15 门槛判别是并列的第五种回答，不触及它们）。旧测试期望的保留理由（当时"never spelled as a user catch"的口径）由 CF-15 的 change 文档与[复放记录](../../evidence/java-syntax-2026-09-30/cf15-crossing-patrol/results/crossing/crossing-replay.md) §3.1 承接。
+

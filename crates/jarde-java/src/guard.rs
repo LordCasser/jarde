@@ -11265,6 +11265,104 @@ mod monitor_branch_tests {
         ));
     }
 
+    /// A named row one **completed store** precedes — the CF-15 crossing answer — is no resource
+    /// header either: the store is one statement the walk reads, the range begins where it ends,
+    /// and neither the row's end nor its handler closes anything, so no lowering of this shape
+    /// could own the row. The construction store of `C1.five`, the same store in
+    /// `C4.constructNamed` and the call store of N1's `main` are the three frozen shapes; the walk
+    /// is left its own `NotGuarded`, which is what lets [`catches`] present the clauses.
+    #[test]
+    fn a_named_row_a_completed_store_precedes_is_not_examined_as_a_resource_header() {
+        let five = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C1.class"
+        );
+        assert!(matches!(
+            plans(five, "five", "()Ljava/lang/String;").first(),
+            Some(Verdict::NotGuarded)
+        ));
+        let construct = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C4.class"
+        );
+        assert!(matches!(
+            plans(construct, "constructNamed", "()Ljava/lang/String;").first(),
+            Some(Verdict::NotGuarded)
+        ));
+        let call = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/N1.class"
+        );
+        assert!(matches!(
+            plans(call, "main", "([Ljava/lang/String;)V").first(),
+            Some(Verdict::NotGuarded)
+        ));
+    }
+
+    /// The crossing answer's own boundaries: a catch-all row, a row that splits the construction,
+    /// a store whose run the walk cannot read and a construction the store does not follow keep
+    /// the examination whose proof refuses — each fixture's verifier-valid neighbor is refused as
+    /// a resource of this shape, never handed to [`catches`].
+    #[test]
+    fn the_crossing_answer_keeps_every_unreadable_or_unowned_store_refused() {
+        const X1: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X1Catchall.class"
+        );
+        const X2: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X2Split.class"
+        );
+        const X3: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X3Between.class"
+        );
+        const X4: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X4DoubleUse.class"
+        );
+        const X5: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X5CrossBlock.class"
+        );
+        for (name, class) in [
+            ("X1Catchall", X1),
+            ("X2Split", X2),
+            ("X3Between", X3),
+            ("X4DoubleUse", X4),
+            ("X5CrossBlock", X5),
+        ] {
+            let verdicts = plans(class, "main", "([Ljava/lang/String;)V");
+            assert!(
+                verdicts
+                    .iter()
+                    .any(|verdict| matches!(verdict, Verdict::Refused { pass: Some(_), .. })),
+                "{name} keeps its resource refusal: {verdicts:?}"
+            );
+            assert!(
+                !verdicts
+                    .iter()
+                    .any(|verdict| matches!(verdict, Verdict::Claimed(_))),
+                "{name} claims no header of this shape: {verdicts:?}"
+            );
+        }
+    }
+
+    /// A lowering's own row keeps its examination: `twrNamed`'s `Throwable` row one store precedes
+    /// is refused by the proof its shape owes (the body this build cannot state), and the proved
+    /// two-resource header of P5TwoResources keeps its certificate — neither is touched by the
+    /// crossing answer.
+    #[test]
+    fn a_twr_lowering_row_a_completed_store_precedes_keeps_its_examination() {
+        let twr_named = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C4.class"
+        );
+        assert!(matches!(
+            plans(twr_named, "twrNamed", "()Ljava/lang/String;").first(),
+            Some(Verdict::Refused { pass: Some(_), .. })
+        ));
+        let two = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-09-30/finallyonce-main-catches/fixture/near/P5TwoResources.class"
+        );
+        let verdicts = plans(two, "two", "()Ljava/lang/String;");
+        assert!(verdicts.iter().any(|verdict| matches!(
+            verdict,
+            Verdict::Claimed(plan) if matches!(plan.shape(), Shape::Resources { .. })
+        )));
+    }
+
     /// A provable two-resource header keeps its certificate: its resource stores are the ranges'
     /// own neighbours, so the no-store answer never touches them.
     #[test]
@@ -12933,16 +13031,18 @@ fn resources(
         // [`initialisation`] refuses both this and a resource whose store is not one statement under
         // the same `ResourceInit`; the difference is that here there is no store *at all*, which is
         // the one case that is not a resource header a rule could have read. A row whose range a
-        // *store* precedes keeps the refusal it has today — a `try` whose initialisation this build
-        // cannot state is never spelled as a user `catch`.
+        // *store* precedes keeps the refusal it has today, except where the skip below reads the
+        // store as the completed statement the range's own start follows and hands the row to
+        // [`catches`].
         //
         // The instruction before the range answers the same question from the other side: it is
         // where a header's own initialisation *ends*, and an ordinary assignment — a store of a
         // value no `new` and no invocation produced — means the `try` after `int x = 1;` is a
         // `try`/`catch` rather than a header `initialisation` could read
         // ([`initialises_resource`]). A store filled by `new Res()` or by a call keeps the row
-        // examined: a `try`-with-resources this build cannot prove keeps degrading as one, and is
-        // never spelled as a user `catch`.
+        // examined wherever a proof of this shape could own it: a `try`-with-resources this build
+        // cannot prove keeps degrading as one, and the one row the skip below spells as a user
+        // `catch` is the one no proof of this shape could have claimed.
         //
         // The third value a header's own store can hold is a **local**: `try (r)` is Java 9 syntax,
         // and javac keeps the variable's value in a local of its own before the protected range
@@ -12955,8 +13055,9 @@ fn resources(
         //
         // So the questions are one — "is what precedes this range a resource's own initialisation?" —
         // and a row answers *no* where no instruction precedes it in this block, where the statement
-        // before it is no store at all *and a statement boundary stands where the range begins*, and
-        // where an ordinary assignment precedes it. None of these
+        // before it is no store at all *and a statement boundary stands where the range begins*,
+        // where an ordinary assignment precedes it, and where a completed local store precedes a row
+        // whose handler closes no resource. None of these
         // rows is examined as a resource, and when every candidate answers no the shape is not this
         // rule's at all.
         let Some(before) = facts
@@ -12981,6 +13082,53 @@ fn resources(
         }
         if row.catch_type_index.is_some()
             && completed_field_assignment(facts, before, start, row.start_bci)
+        {
+            continue;
+        }
+        // A **completed local store** before a named row is the same question's next answer: the
+        // store is a statement of its own — `r = open();`, `b = new StringBuilder();` — and a range
+        // that begins at the boundary it ends at protects what the statements *after* it run, not
+        // the store itself ([`statement_boundary`]). No header of this shape reads such a row: a
+        // header's own store is the range's immediate neighbour, read only where the whole proof
+        // succeeds, so the row a plain initialisation statement precedes is the `catch` its own
+        // table names — left to [`catches`], exactly like the rows above.
+        //
+        // The reading is the run [`single_statement`] grows backwards from the store, the same
+        // reading [`initialises_resource`] takes of a header's own initialisation — and a store
+        // whose run cannot be read at all is no answer's evidence, by that rule's own conservatism:
+        // a statement this walk cannot read keeps the examination whose proof refuses below.
+        //
+        // The row cannot be a `try`-with-resources lowering's own row either, which is what keeps
+        // every proved resource on its current path. Where a user `catch` wraps the whole
+        // statement, the compiler starts that row **before** the initialisation it covers —
+        // `twrNamed`'s `IllegalStateException` row spans `[0, 36)` over the `new C4()` its body
+        // allocates — so the instruction before it is never the completed store the range follows.
+        // And the lowering's own rows carry the resource in both their neighbours: the code at a
+        // row's own end is the slot's **normal close** ([`normal_close`]), and the handler its row
+        // reaches runs the close/suppress/rethrow sequence ([`closes_something`]) — the same fact
+        // the outward chain below reads. A named row whose end closes nothing and whose handler
+        // closes nothing is therefore no level of the lowering, and a row one completed store
+        // precedes cannot be its outer wrapper either: handing it to [`catches`] takes no row a
+        // proof of this shape could own.
+        //
+        // The answer keeps its conditions. A catch-all row — no type at all — is not this answer's:
+        // the degradation a store prefix meets today is exactly that row's refusal, and it stays.
+        // A range whose start lands inside the store's own statement — the row splitting a `new`
+        // expression in two — stands on no boundary, and keeps the examination whose proof refuses
+        // below. And a row that carries either close of its own keeps the examination: whether the
+        // shape is the lowering's own — its closes damaged or not — is the proof's question, not
+        // this answer's.
+        if let Some(Operation::Store { slot }) = facts.op(before)
+            && row.catch_type_index.is_some()
+            && facts
+                .previous_bci(before)
+                .filter(|previous| *previous >= start)
+                .is_some_and(|previous| {
+                    single_statement(facts, (previous, facts.span_end(before)), before)
+                })
+            && normal_close(facts, row.end_bci, *slot).is_none()
+            && !facts.closes_something(row)
+            && statement_boundary(facts, before, row.start_bci)
         {
             continue;
         }
