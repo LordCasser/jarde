@@ -76,6 +76,12 @@ use crate::stop::{StopReason, charge, poll};
 /// else is accepted: a class that happens to hold `append` and `toString` is not a concatenation.
 const CONCAT_CLASSES: [&str; 2] = ["java/lang/StringBuilder", "java/lang/StringBuffer"];
 
+/// How far one `toString`'s receiver may be traced back to the allocation that built it
+/// ([`consumes_the_instance`]): each `append` return, each local store or load of the builder and
+/// each step past the chain's own instructions is one. A receiver the bound runs out on is not
+/// this chain's consumer — attribution stays with what the value flow states.
+const RECEIVER_TRACE_BOUND: usize = 16;
+
 /// The pass answerable for every verdict of this module.
 pub(crate) const RULE: RuleVersion = CONCAT.rule();
 
@@ -831,19 +837,47 @@ fn verify(
         .expect("the candidate's block holds the candidate");
     let shape = |detail: String| Refusal::shape("jre_concat_shape", detail);
     // A chain is one contiguous run of one block. A `toString` on the same class in *another* block
-    // is the shape a branch inside the concatenation leaves behind, and no `+` expression writes a
-    // value that two arms built; the walk below would refuse it anyway, but this states the reason
-    // the acceptance asks for.
-    if let Some(tail) = all.iter().find(|instruction| {
+    // can be the shape a branch inside the concatenation leaves behind — but only when that
+    // `toString` is one **this chain's own builder reaches**. A method builds several chains of one
+    // class, and the first `toString` the block order lists belongs to whichever of them its own
+    // receiver names (`FinallyOnce.main` reads its first chain's `toString` in the entry block where
+    // its third chain is built), so a candidate is attributed through value flow, not through
+    // position: its receiver must trace back — through this class's `append` returns, the local
+    // slot a source-written builder travels in and the merge a branch leaves on it, within a
+    // fixed bound — to the allocation this chain starts at. Only such a consumer in another block
+    // refuses this chain, and the refusal names the consumer's own BCI. A `toString` that is not
+    // this chain's consumer says nothing about it, and the walk below states its own reason.
+    //
+    // The allocation's own instructions are read here the way the walk reads them — the
+    // allocation, its copy and the constructor that initialized them — without the walk's shape
+    // refusals: a head whose next instructions are not that triple is no chain of this rule, and
+    // that is the walk's own error to state.
+    let built: Option<Vec<u32>> = (|| {
+        let copy = block.get(index + 1)?;
+        if operations.get(copy.bci()) != Some(&Operation::Duplicate) {
+            return None;
+        }
+        let init = block.get(index + 2)?;
         matches!(
-            operations.get(instruction.bci()),
-            Some(Operation::Invoke(target))
-                if target.owner() == ty
-                    && target.name() == "toString"
-                    && target.descriptor() == "()Ljava/lang/String;"
+            operations.get(init.bci()),
+            Some(Operation::Invoke(target)) if target.owner() == ty && target.name() == "<init>"
         )
-    }) && block_of.get(&tail.bci()).copied() != Some(head_block)
-    {
+        .then_some(vec![head, copy.bci(), init.bci()])
+    })();
+    if let Some(tail) = built.and_then(|built| {
+        all.iter().find(|instruction| {
+            instruction.bci() > head
+                && matches!(
+                    operations.get(instruction.bci()),
+                    Some(Operation::Invoke(target))
+                        if target.owner() == ty
+                            && target.name() == "toString"
+                            && target.descriptor() == "()Ljava/lang/String;"
+                )
+                && block_of.get(&instruction.bci()).copied() != Some(head_block)
+                && consumes_the_instance(ssa, operations, all, ty, &built, instruction)
+        })
+    }) {
         return Err(Refusal::shape(
             "jre_concat_split",
             format!(
@@ -1087,6 +1121,100 @@ fn verify(
 fn is_the_instance(ssa: &SsaTable, value: ValueId, produced_by: &[u32]) -> bool {
     match ssa.value(value).def() {
         Definition::Instruction { bci, .. } => produced_by.contains(bci),
+        _ => false,
+    }
+}
+
+/// Whether the `toString` at `tail` consumes the instance the candidate chain builds.
+///
+/// The check reads the chain's own value flow backwards from the `toString`'s receiver: an `append`
+/// of the same class hands the instance on through its return, a source-written builder travels in
+/// a local slot (a `Store` of the instance, a `Load` of the slot it was stored to), and a branch
+/// leaves the instance merged in a phi — one arm of which reaching the allocation makes the value
+/// the branch decides, which is the chain cut all the same. Each of those is one step, and the
+/// steps share one bound, so the walk ends at the chain's own allocation, at a definition the flow
+/// does not state, or at the bound — and only the first of the three is this chain's consumer. A
+/// `toString` whose receiver the bound runs out on is **not** attributed: the refusal stays with
+/// what the value flow states, and the walk's own reasons cover everything else.
+fn consumes_the_instance(
+    ssa: &SsaTable,
+    operations: &Operations,
+    all: &[&SsaInstruction],
+    ty: &str,
+    built: &[u32],
+    tail: &SsaInstruction,
+) -> bool {
+    let Some((_, receiver)) = stack_operands(tail).first().copied() else {
+        return false;
+    };
+    reaches_the_allocation(
+        ssa,
+        operations,
+        all,
+        ty,
+        built,
+        receiver,
+        RECEIVER_TRACE_BOUND,
+    )
+}
+
+/// One bounded step of [`consumes_the_instance`]: `steps` is what the whole walk has left.
+fn reaches_the_allocation(
+    ssa: &SsaTable,
+    operations: &Operations,
+    all: &[&SsaInstruction],
+    ty: &str,
+    built: &[u32],
+    value: ValueId,
+    steps: usize,
+) -> bool {
+    if steps == 0 {
+        return false;
+    }
+    match ssa.value(value).def() {
+        Definition::Instruction { bci, .. } => {
+            if built.contains(&bci) {
+                return true;
+            }
+            let Some(instruction) = all.iter().find(|instruction| instruction.bci() == *bci) else {
+                return false;
+            };
+            let next = match operations.get(*bci) {
+                // The instance as this class's `append` returned it: one call further back.
+                Some(Operation::Invoke(target))
+                    if target.owner() == ty && target.name() == "append" =>
+                {
+                    stack_operands(instruction).first().map(|(_, value)| *value)
+                }
+                // The instance as a `Store` wrote it: the value the store read off the stack.
+                Some(Operation::Store { .. }) => {
+                    stack_operands(instruction).first().map(|(_, value)| *value)
+                }
+                // The instance as a `Load` read it: the value the slot held at that point.
+                Some(Operation::Load { .. }) => instruction
+                    .reads()
+                    .iter()
+                    .find_map(|(slot, value)| matches!(slot, Slot::Local(_)).then_some(*value)),
+                _ => None,
+            };
+            next.is_some_and(|next| {
+                reaches_the_allocation(ssa, operations, all, ty, built, next, steps - 1)
+            })
+        }
+        // The instance as the merge of a branch left it: one arm that reaches the allocation is
+        // enough — the `toString` then reads a value the branch decides, which is the cut.
+        Definition::Phi { .. } => ssa
+            .phis()
+            .iter()
+            .find(|phi| phi.value() == value)
+            .is_some_and(|phi| {
+                phi.inputs().iter().any(|input| match input {
+                    PhiInput::Value(input) => {
+                        reaches_the_allocation(ssa, operations, all, ty, built, *input, steps - 1)
+                    }
+                    PhiInput::Itself => false,
+                })
+            }),
         _ => false,
     }
 }
