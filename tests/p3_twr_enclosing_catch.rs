@@ -302,7 +302,7 @@ fn verifier_valid_surroundings_outside_the_clause_keep_the_refusal() {
             "{method} keeps its refusal, not a recovery: {}",
             report.text
         );
-        let fallbacks: Vec<_> = report.fallbacks.iter().copied().collect();
+        let fallbacks = report.fallbacks.to_vec();
         assert!(
             fallbacks.contains(&code),
             "{method} keeps the {code} refusal: {fallbacks:?}"
