@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿、fmt、CI 完整 30 项 allowlist clippy（避免 CI-only patch lint）、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 F2 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 正常与注入异常路径逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核判据、内联纪律与三方行为，更新 CF-10 账本（勾销登记债务或收窄）与巡查记录。
+- [x] 3.3 root 独立复核判据、内联纪律与三方行为，更新 CF-10 账本（勾销登记债务或收窄）与巡查记录。（root 于合并主线 62131845 复核：F2 恢复 `while + sum 累计 + try/catch`、重编行为逐字一致（`14`）、F1 对照逐字不变、全仓 2748/0、fmt/openspec 231/231。同通道两处既有缺陷修复复核认可（array_spelling 零维、类别 2 槽位证明）；嵌套 try 两形态为区域层既有拒绝且 before/after 同哈希，登记后续片域。）
