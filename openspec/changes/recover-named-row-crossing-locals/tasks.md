@@ -17,4 +17,4 @@
 
 - [x] 4.1 C1/C4.constructNamed 与翻转后的 N1：原 class/固定 JADX Java-input/Jarde 完整 Java 8 类重编，`java -Xverify:all` 正常与注入异常路径逐路径一致；记录输出 SHA。（[results/crossing/three-way/](../../evidence/java-syntax-2026-09-30/cf15-crossing-patrol/results/crossing/three-way/) 与[复放记录](../../evidence/java-syntax-2026-09-30/cf15-crossing-patrol/results/crossing/crossing-replay.md) §4.1，八条腿组 SHA 逐路径一致）
 - [x] 4.2 `cargo test --workspace --tests --locked --no-fail-fast` 全绿、fmt、CI 同款 Clippy 新码零新增、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
-- [ ] 4.3 root 独立复核判别边界、写值呈现与三方行为，更新 CF-15 清单与巡查账本；仅标记具名行-完成-store 家族。
+- [x] 4.3 root 独立复核判别边界、写值呈现与三方行为，更新 CF-15 清单与巡查账本；仅标记具名行-完成-store 家族。（root 于合并主线 1196e7ad 复核：C1.five 五连空 catch 完整恢复〔即上游 TestEmptyCatch 的 JVM 形态〕、C4.constructNamed 恢复、twrNamed 与基线一致保持拒绝、全仓 2709/0、fmt/openspec 223/223。实现者在 root 判别上补的三个守卫复核通过：single_statement 可读防畸形程序、normal_close/closes_something 排除多资源 TWR 的具名 Throwable 行〔对 root 结构论证的有效反例修补〕，均有界且由冻结负例钉死。）
