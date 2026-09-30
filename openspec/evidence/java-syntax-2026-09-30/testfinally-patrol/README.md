@@ -20,7 +20,7 @@
 
 ## 下一步（不自动开工）
 
-按证书邻近度排序推进中：Tf4（`recover-flag-conditional-finally`）与 Tf1（`recover-local-null-conditional-finally`）均已落地并通过 root 复核（Tf4 于 f63f7634 全仓 2674/0；Tf1 于 402c9e94 全仓 2682/0、固定类唯一 `try/finally` + `if (local3 != null) { local3.close(); }`），落地记录见下节。**Tf2 为当前片**：[recover-null-lead-straight-finally](../../../changes/recover-null-lead-straight-finally/) spec 已立——异常表 `[2,25)→32 any` + 自保护 `[32,34)→32`，lead `[aconst_null, astore_2]`，副本为**无条件** `closeQuietly` 调用（正常 25–30、异常 34–39 各一），返回值是 **try 内构造**并保存的 `astore_3`@24——是 `finally_copy` 直体证书 lead 准入的"null 局部初始化"扩展，不新增证书。Tf3（提前 `return null` + 正文条件流）最后；形状已预读：异常表仅两行 `[2,18)→53` 与 `[24,47)→53`（分段绕过早返回块，**无自保护行**），共**三份**无条件 `invokestatic close` 副本（早返回 18–19、正常 47–48、异常 54–55），lead `[aconst_null, astore_1]`、正文同槽赋值@24–28、`bytes` 字段读改写与提前 `return null`——是分段 finally（Test13 族）+ 早返回（Test5 族）+ null lead 的复合形态，待 Tf2 落地后按其证书交叠设计。上游 `TestFinally3.test2NoDebug` 标 `@NotYetImplemented`，JADX 自身亦未完成，属已登记分母调整项。
+按证书邻近度排序推进中：Tf4（`recover-flag-conditional-finally`）、Tf1（`recover-local-null-conditional-finally`）与 **Tf2（`recover-null-lead-straight-finally`，落地记录见下节）** 均已落地（Tf4 于 f63f7634 全仓 2674/0；Tf1 于 402c9e94 全仓 2682/0、固定类唯一 `try/finally` + `if (local3 != null) { local3.close(); }`）。**Tf3 为当前片**：提前 `return null` + 正文条件流，与 Tf1 共享 `jre_region_exception_edge` 签名；形状已预读——异常表仅两行 `[2,18)→53` 与 `[24,47)→53`（分段绕过早返回块，**无自保护行**），共**三份**无条件 `invokestatic close` 副本（早返回 18–19、正常 47–48、异常 54–55），lead `[aconst_null, astore_1]`、正文同槽赋值@24–28、`bytes` 字段读改写与提前 `return null`——是分段 finally（Test13 族）+ 早返回（Test5 族）+ null lead 的复合形态，需在其条件模型上补正文条件流与提前返回并按证书交叠设计。上游 `TestFinally3.test2NoDebug` 标 `@NotYetImplemented`，JADX 自身亦未完成，属已登记分母调整项。
 
 ## Tf4 落地记录（change `recover-flag-conditional-finally`）
 
@@ -40,3 +40,14 @@ Tf1 已由该 change 落地为 Guard 内 `prove_local_null_conditional_finally` 
 - `probe/src-tf1/`、`probe/run-behavior-tf1.sh`、`probe/behavior-tf1-sha256.txt`：同布局探针（正文可注入异常、query 可返回 null、清理可注入异常）三方对照。原 class 与 Jarde `javac --release 8` 重编后 `java -Xverify:all` 逐路径一致（正常关闭一次返回 `v`、正文抛错关闭一次且 `RuntimeException:body` 重抛、query 返回 null 不关闭、清理抛错 `RuntimeException:cleanup` 覆盖，4 路径全过）；JADX Java-input 侧 4 路径亦一致，仍仅作参照（其恢复带巡查登记的死代码 artifact）。三方 run 输出 SHA 相同（`9cc1eae6…`）。
 
 root 复核（证书边界、副本折叠来源、账本标记）属该 change 任务 4.3，另行走查。
+
+## Tf2 落地记录（change `recover-null-lead-straight-finally`）
+
+Tf2 已由该 change 落地为 Guard 内 `finally_copy` 直体证书的 lead 准入扩展（不新增证书）：两行 any 表 + 自保护绑定行、第三种 lead 答案 `[aconst_null; astore s]`（`completed_null_local_lead`：恰两指令、存读 push 值、`single_statement` + `statement_boundary`）、正文同槽赋值 + 两份逐指令同形副本（`cleanup_sequence` 的 `admit_loads` 只由该 lead 授予——字段赋值 lead 与无前置路径的副本文法逐字节不变）、实参槽身份证明 `null_lead_copies_read_the_lead`（每个实参的 copy 内生产者必须是对 lead 槽的 `Load`，其读值经 Tf1 的 `local_null_handler_provenance` 形态展开，且整条语句内 lead 与正文赋值是该槽仅有的定义），折叠为唯一 `try/finally` + 一份 `this.closeQuietly(local2);`。本目录新增证据：
+
+- `results/Tf2.after.json`、`results/Tf2.jarde.java`、`results/recovery-sha256-tf2.txt`：证书命中后的固定类恢复（structured、单一 finally region、`java.io.InputStream local2; local2 = null;` 分离式 lead——同 Tf4/Tf1 的既有裁决、26 个物理 BCI 全有来源；保存返回按既有 saved-return 呈现为正文内 `Tf2$Result local3 = new Tf2$Result(400); return local3;`，构造不跨段移动）。
+- `results/tf2-baseline-replay.txt`：任务 1.1 的可重放基线（class/源 SHA、双行 any 表、lead/副本布局、`Tf2.base.json` 的 `jre_guard_finally_copy`@32 拒绝、固定类 `java -Xverify:all` 通过）。
+- `negatives/src/`（9 个负例，平源 + 每类独立子目录 class）、`negatives/patch-tf2.py`（4 个同长字节码补丁：目标改指、保存返回改写 null、重抛改写 null、自保护行扩围 [32,41)）、`negatives/verify-Tf2*.txt`（各负例 `java -Xverify:all` 输出全过）、`negatives/baseline-refusals-tf2.txt`（基线 `7a312458` 对固定类与全部负例零 finally）、`negatives/recovery-tf2.txt`（实现后固定类唯一 finally、9 个负例仍全拒）、`negatives/fixture-sha256-tf2.txt`。
+- `probe/src-tf2/`、`probe/run-behavior-tf2.sh`、`probe/behavior-tf2-sha256.txt`：同布局探针（正文可注入异常、getInputStream 可返回 null、清理可注入异常）三方对照。原 class 与 Jarde `javac --release 8` 重编后 `java -Xverify:all` 逐路径一致（正常关闭一次返回 400、正文抛错关闭一次且 `RuntimeException:body` 重抛、null 流 decode 容 null、closeQuietly 收到 null 不抛且仍关一次、清理抛错 `RuntimeException:cleanup` 覆盖，4 路径全过）；JADX Java-input 侧 4 路径亦一致（其 `inputStream2` 重命名失真按巡查登记仅作参照）。三方 run 输出 SHA 相同（`45300452…`）。
+
+root 复核（lead 准入边界、实参槽身份、三方行为与账本标记）属该 change 任务 4.3，另行走查。
