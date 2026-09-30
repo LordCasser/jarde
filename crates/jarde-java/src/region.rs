@@ -1794,6 +1794,9 @@ struct Frame {
     segmented_finally_rows: Option<[(u32, (u32, u32)); 4]>,
     /// The two disjoint body rows of the fixed two-return loop certificate.
     multi_return_finally_rows: Option<[(u32, (u32, u32)); 2]>,
+    /// The proved two-row void finally whose protected body holds ordinary loops: a loop body
+    /// frame keeps the certificate's own row so its covered exception edges stay accounted.
+    void_loop_finally: bool,
     /// The sole inner named row admitted by a proved two-copy outer finally body.
     nested_finally_row: Option<u32>,
     /// Other case-entry nodes of a switch arm. They end this arm before the next case claims them.
@@ -1865,6 +1868,7 @@ impl Frame {
             own_finally: None,
             segmented_finally_rows: None,
             multi_return_finally_rows: None,
+            void_loop_finally: self.void_loop_finally,
             nested_finally_row: None,
             case_entries: self.case_entries.clone(),
             loop_exit: exit,
@@ -1905,6 +1909,7 @@ impl Frame {
             own_finally: self.own_finally,
             segmented_finally_rows: self.segmented_finally_rows,
             multi_return_finally_rows: self.multi_return_finally_rows,
+            void_loop_finally: self.void_loop_finally,
             nested_finally_row: self.nested_finally_row,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
@@ -1936,6 +1941,7 @@ impl Frame {
             own_finally: self.own_finally,
             segmented_finally_rows: self.segmented_finally_rows,
             multi_return_finally_rows: self.multi_return_finally_rows,
+            void_loop_finally: self.void_loop_finally,
             nested_finally_row: self.nested_finally_row,
             case_entries: Some(case_entries),
             loop_exit: self.loop_exit,
@@ -1964,6 +1970,7 @@ impl Frame {
             own_finally: self.nested_finally_row.and(self.own_finally),
             segmented_finally_rows: self.segmented_finally_rows,
             multi_return_finally_rows: self.multi_return_finally_rows,
+            void_loop_finally: self.void_loop_finally,
             nested_finally_row: self.nested_finally_row,
             case_entries: self.case_entries.clone(),
             loop_exit: self.loop_exit,
@@ -2202,9 +2209,12 @@ fn finally_body_supported(region: &Region, nested_catch: bool) -> bool {
 
 fn shared_join_body_supported(region: &Region, loop_allowed: bool) -> bool {
     match region {
+        // A loop body may hold a loop of its own where the enclosing loop is admitted: the
+        // fixed body-loop certificates prove every physical block either way, so the nesting
+        // depth is the source's own, not a relaxation of the walk.
         Region::Loop { body, .. } if loop_allowed => body
             .iter()
-            .all(|part| shared_join_body_supported(part, false)),
+            .all(|part| shared_join_body_supported(part, loop_allowed)),
         Region::Sequence { regions } => regions
             .iter()
             .all(|part| shared_join_body_supported(part, loop_allowed)),
@@ -2535,6 +2545,21 @@ impl Walker<'_> {
                     crate::guard::Shape::NullableResourceFinally { .. } => self
                         .nullable_resource_finally_regions(&current, &plan, frame)?
                         .map(|(body, cleanup)| (body, Some(cleanup))),
+                    crate::guard::Shape::Finally {
+                        completion: crate::guard::FinallyCompletion::Void { .. },
+                        row_ordinal,
+                        ..
+                    } => self
+                        .bounded_shared_finally_body(
+                            &current,
+                            plan.body(),
+                            None,
+                            ((*row_ordinal, plan.body()), None),
+                            &plan,
+                            frame,
+                            None,
+                        )?
+                        .map(|body| (body, None)),
                     _ => self
                         .finally_body(&current, &plan, frame)?
                         .map(|body| (body, None)),
@@ -4348,6 +4373,9 @@ impl Walker<'_> {
         let (save, nested_row) = match completion {
             crate::guard::FinallyCompletion::SavedReturn { save, .. } => (Some(*save), None),
             crate::guard::FinallyCompletion::Joined { named_row, .. } => (None, Some(*named_row)),
+            // A void body has neither a saved return nor a named catch row; the bounded walker
+            // owns it, so this reader is not its walk.
+            crate::guard::FinallyCompletion::Void { .. } => return Ok(None),
         };
         let named_span = nested_row.and_then(|ordinal| {
             self.handlers
@@ -5121,6 +5149,13 @@ impl Walker<'_> {
             }
             _ => None,
         };
+        frame.void_loop_finally = matches!(
+            plan.shape(),
+            crate::guard::Shape::Finally {
+                completion: crate::guard::FinallyCompletion::Void { .. },
+                ..
+            }
+        );
         let walked = self.region_at(start, &frame);
         let (mut regions, mut next) = match walked {
             Ok(result) => result,
@@ -5136,6 +5171,10 @@ impl Walker<'_> {
                     binding_row: Some(_),
                     ..
                 } | crate::guard::Shape::MultiReturnLoopFinally { .. }
+                    | crate::guard::Shape::Finally {
+                        completion: crate::guard::FinallyCompletion::Void { .. },
+                        ..
+                    }
             )
         {
             while let Some(at) = next.as_ref() {
@@ -5195,6 +5234,10 @@ impl Walker<'_> {
                             binding_row: Some(_),
                             ..
                         } | crate::guard::Shape::MultiReturnLoopFinally { .. }
+                            | crate::guard::Shape::Finally {
+                                completion: crate::guard::FinallyCompletion::Void { .. },
+                                ..
+                            }
                     ),
             )
             || actual != expected
@@ -8176,6 +8219,13 @@ impl Walker<'_> {
             body_frame.own_try = frame.own_try;
             body_frame.segmented_finally_rows = frame.segmented_finally_rows;
             body_frame.multi_return_finally_rows = frame.multi_return_finally_rows;
+        }
+        // The proved two-row void finally keeps its own row for the same reason: a loop inside the
+        // protected body leaves through the certificate's handler, and the row is what accounts
+        // for that edge. The flag is set by the claim alone, so no other two-row shape widens.
+        if self.handlers.len() == 2 && frame.void_loop_finally {
+            body_frame.own_finally = frame.own_finally;
+            body_frame.own_try = frame.own_try;
         }
         self.include_fragmented_catch_scope(&mut body_frame, header_node);
         let (body, _) = self.loop_body_sequence(&inside, &body_frame, blocks)?;
