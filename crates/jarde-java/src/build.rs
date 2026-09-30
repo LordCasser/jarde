@@ -19311,6 +19311,56 @@ impl Builder<'_> {
         }
     }
 
+    /// The row type one local read presents when the value it reads is a named clause's own
+    /// binding, when it does.
+    ///
+    /// A `catch` clause's header declares the parameter with the **row's own** type — the class
+    /// the exception table entry names — and the value the handler's entry store writes into the
+    /// parameter's slot carries that type too: the store's stack read is the reference the handler
+    /// was entered with, the rows' own exception references merged where several sites feed one
+    /// handler, and the merge of one named row's references is that row's class. Where the slot is
+    /// one variable the plan decided once, that decision was won by the slot's first write — javac
+    /// lets the parameter reuse a resource's slot, so the resource's store is the first write and
+    /// the decision states the resource's type — and a read of the parameter then presented a type
+    /// the header's own declaration contradicts. So a read whose value is that store's presents
+    /// the binding's type: the spelling the header already states, and the type the verifier
+    /// proves for every reference the rows hand the handler.
+    ///
+    /// Three limits keep every other read exactly as it was. The value must **be** the handler's
+    /// entry store (a read of a copy, or of any other store's value, keeps the slot's decision);
+    /// the entry reference must state a named class (the catch-all row names none, and no row type
+    /// exists to take); and the store must be one whose clause header this run spelled — the
+    /// handler entry stores marked as clause parameters — so a value no presented clause declares
+    /// keeps the slot's decision.
+    fn caught_clause_parameter_type(&self, slot: u16, read: ValueId) -> Option<Type> {
+        let Definition::Instruction { bci: store_bci, .. } = self.ssa.value(read).def() else {
+            return None;
+        };
+        if !matches!(
+            self.operations.get(*store_bci),
+            Some(Operation::Store { slot: stored }) if *stored == slot
+        ) {
+            return None;
+        }
+        if !self.clause_parameters.contains(store_bci) {
+            return None;
+        }
+        // The entry store's stack read is the reference the handler was entered with, and the
+        // type presented is that reference's own.
+        let instruction = self.instructions.get(store_bci)?;
+        let stack_reads = stack_operands(instruction);
+        let [(_, caught)] = stack_reads.as_slice() else {
+            return None;
+        };
+        if !matches!(
+            self.ssa.value(*caught).ty(),
+            Value::Ref(RefType::Named { .. })
+        ) {
+            return None;
+        }
+        value_type(self.ssa.value(*caught).ty()).ok().flatten()
+    }
+
     /// Renders one SSA value as an expression, for a use at BCI `at`.
     ///
     /// `at` is the position at which the text produced here is **evaluated**: the instruction whose
@@ -19511,7 +19561,17 @@ impl Builder<'_> {
                         // record covers the load's own BCI (P3 3.4).
                         match self.reuse.variable_at(*slot, bci) {
                             Some(variable) => match self.names.text(variable) {
-                                Some(name) => Ok(self.local(variable, name, bci)),
+                                Some(name) => {
+                                    let local = self.local(variable, name, bci);
+                                    // A read of a named clause's own binding presents the row type
+                                    // the header spells, not the slot's decision: where the
+                                    // parameter reuses an earlier store's slot, the decision states
+                                    // that store's type and the header's declaration contradicts it.
+                                    match self.caught_clause_parameter_type(*slot, read) {
+                                        Some(ty) => Ok(local.presenting(ty)),
+                                        None => Ok(local),
+                                    }
+                                }
                                 None => Err(format!("local {slot} has no name to write").into()),
                             },
                             None => Err(format!(

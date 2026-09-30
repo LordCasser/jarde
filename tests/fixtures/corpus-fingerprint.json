@@ -1932,6 +1932,16 @@
       "path": "tests/fixtures/p3-catch-binding-escape/v8/CatchEscape.class"
     },
     {
+      "blake3": "33704f2406af7a94d2f1bce21ad67c69699020565819b7bb94c6b7b564d674a1",
+      "bytes": 1221,
+      "path": "tests/fixtures/p3-caught-value-argument-typing/v8/S1.class"
+    },
+    {
+      "blake3": "194c5b5775df7f50a8b6faac81c9c5d4bdf3f985d2bb87afd4e09fc7b7a30ff3",
+      "bytes": 686,
+      "path": "tests/fixtures/p3-caught-value-argument-typing/v8/S1.source.java"
+    },
+    {
       "blake3": "575d1e95c99fd5380aafb3b9dcb692d4ef92aba0306f5187c00494db1fb3ac8b",
       "bytes": 202,
       "path": "tests/fixtures/p3-chained-store/Chain.java"
