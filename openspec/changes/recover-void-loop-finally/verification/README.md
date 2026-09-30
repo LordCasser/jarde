@@ -49,6 +49,27 @@
 
 新回归在 `crates/jarde-java/tests/p3_void_loop_finally.rs`：正向证书（一个 `finally`、一次 `close()`、三个循环、89 个物理 BCI 全部有来源、owned 块集恰为 11 块）、六个近邻拒绝、预算与取消时正文与来源映射同时为空。replay 与本次验证的专用 Cargo target 均由脚本 trap 或临时目录清理，仓库内无构建产物。
 
+## 合并后回归与修复（823b4bd1 引入，95470c38 的 CI 失败）
+
+合并入主线后暴露两处根 crate 回归，均为本 change 改动的直接影响面，修复不回退任何恢复改进：
+
+1. **枚举 map 后缀折叠器只识别索引循环呈现。** `array_of_value` 的 `aaload` 扩展让 dt14/CustomInit 的 clinit 从显式索引循环呈现为增强 for（`StmtKind::ForEach`，改进本身保留），而根 crate `src/enum_constants.rs::prove_map_initializer_suffix` 的 AST 形状匹配仍只接受旧的 11 条语句索引循环形状——字节码 27 指令匹配不变地通过，`steps.len() != 11` 起拒绝，证明失败后整类回退逐字段呈现，`custom_map_suffix_recompiles_and_preserves_singleton_identity` 与 `custom_map_suffix_output_stop_and_cancellation_leave_no_partial_projection` 失败（CI 36678484547）。修复：同一 27 指令证书下承认两种呈现——索引循环（11 条语句，原检查原样保留）与增强 for（8 条语句）；增强 for 分支要求节点 origin 折叠被证循环的全部机制指令（ iterable 锚 `aload_0`@suffix[6]、元素读 `aaload`@suffix[16]、单位步进 `iinc`@suffix[24]），循环变量名 `local3` 与被证 astore_3 槽一致，body 恰为被证 put 调用——增强 for 即该索引循环的呈现由 origin 归属钉死，无新机制。
+2. **`aaload` 分支的 `(base, rank)` 维数算术对 n≥2 多算一维。** 分支把“元素的类型”（本身可能是数组类型）放进了 base 槽：`int[][]` 的 `aaload` 读出 `int[]` 却被记为 `(int[], 1)`（即 `int[][]`），p3_array_access `cell` 的 `iastore` 组件校验因此拒绝、方法回退。修复：直接返回数组自身的 base 与降一维的 rank（`[[I` 读出 `(int, 1)`）；rank-1 路径（`(base, 0)`，dt14 循环变量声明类型由此改进）逐位不变。
+
+门禁（最终文件状态，本机 JDK 23.0.1 / clippy 1.98）：
+
+| 门禁 | 结果 |
+| --- | --- |
+| `cargo test -p jarde --lib enum_constants` | 56 passed, 0 failed（54 既有 + 2 回归用例） |
+| `cargo test -p jarde-java --tests --locked` | 497 passed, 0 failed（含 p3_void_loop_finally 4 项） |
+| `cargo fmt --all -- --check`；CI 同款 Clippy + `-D warnings` | 均通过，零告警 |
+| `openspec validate --all --strict` | 218 passed, 0 failed |
+| Test2 固定类 class-source | 0 not-recovered，SHA `59d5c8ca…eeb67b` 与冻结值一致，`structured`/`fallbacks = []` |
+| dt14/CustomInit（`javac --release 8` 重编 + class-source） | clinit 仍恢复为 `for (dt14.CustomInit local3 : local0)`，常量折叠为 `RED,`/`BLUE;` + 后缀 static{} |
+| `cargo test --workspace --tests --locked` | 本 change 相关目标全绿；整仓仍有 **4 个与本 change 无关的既有失败**（见下） |
+
+**遗留阻塞（非本 change 引入，待 preceded-statement-catches 责任方决策）**：`f9da424c`（"answer no for a resources row a non-store statement precedes"，经 a620adc1 合入，二分定位）把“非 store 前缀”的异常行一律跳过资源检查放行给普通 Catches 呈现，对 handler 行覆盖范围与被拒生产链交叠的形状产生了**同一 BCI 的重叠呈现**：`PostfixHandlerBoundary.update`（行 `[7,12)→13`，行起点落在 `a()[I→i()→dup2→iaload…` 后缀链内部）现同时把 BCI 0/3 呈现为语句 `a(); i();`、又把它们列进 try 体内 quote 的 `@bytecode` 清单。全部在 a620adc1 上即可复现、与本 change 的两处修复无关的失败共 8 个：`p3_content::explanation_only_means_no_emitted_statement`、`task_operations::{an_explanation_only_result_and_a_stop_are_presented_in_order, the_presentation_does_not_re_read_the_text}`、`p3_catch_after_field_assignment::a_range_beginning_inside_the_field_assignment_is_not_a_plain_catch`、`p3_guard::a_handler_range_that_swallows_the_initialisation_is_refused`、`p3_postfix_handler_boundary::exception_handler_boundary_inside_postfix_chain_is_refused_with_real_bcis`、`p5_bulk_corpus::{the_fixed_shape_bills_the_counts_the_corpus_pins, the_old_per_method_arms_keep_their_ledger_and_the_same_text}`。修复归属该切片的验收语义（收窄 skip、拒绝该形状或重定义 pin），本次未越权处理。另观察到一次 `bulk_recovery_delivery::one_declaration_bounds_the_librarys_own_presentation_too` 在 4-worker 投递顺序下的偶发失败（同一最终状态重跑 12/12 通过、干净基线 12/12 通过，断言预算按同一次完整运行的产出减半构造，与本次改动无因果），记录在案。
+
 ## 边界
 
 本验收只声明固定 Test2 的 JVM classfile 切片与这六个有效近邻。DX/DEX 输入、其他编译器 lowering（含 `--release 8` 重编 fixed 源的 `invokespecial` 布局）、Test5 双返回、Test9 可空清理、任意循环数与 TWR 自动提取均不在证书内；这些输入继续按原判定拒绝。
