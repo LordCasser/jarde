@@ -20,7 +20,7 @@
 
 ## 下一步（不自动开工）
 
-按证书邻近度排序推进中：Tf4（`recover-flag-conditional-finally`）、Tf1（`recover-local-null-conditional-finally`）与 **Tf2（`recover-null-lead-straight-finally`，落地记录见下节）** 均已落地（Tf4 于 f63f7634 全仓 2674/0；Tf1 于 402c9e94 全仓 2682/0、固定类唯一 `try/finally` + `if (local3 != null) { local3.close(); }`）。**Tf3 为当前片**：提前 `return null` + 正文条件流，与 Tf1 共享 `jre_region_exception_edge` 签名；形状已预读——异常表仅两行 `[2,18)→53` 与 `[24,47)→53`（分段绕过早返回块，**无自保护行**），共**三份**无条件 `invokestatic close` 副本（早返回 18–19、正常 47–48、异常 54–55），lead `[aconst_null, astore_1]`、正文同槽赋值@24–28、`bytes` 字段读改写与提前 `return null`——是分段 finally（Test13 族）+ 早返回（Test5 族）+ null lead 的复合形态，需在其条件模型上补正文条件流与提前返回并按证书交叠设计。上游 `TestFinally3.test2NoDebug` 标 `@NotYetImplemented`，JADX 自身亦未完成，属已登记分母调整项。
+按证书邻近度排序推进中：Tf4（`recover-flag-conditional-finally`）、Tf1（`recover-local-null-conditional-finally`）与 **Tf2（`recover-null-lead-straight-finally`，落地记录见下节）** 均已落地（Tf4 于 f63f7634 全仓 2674/0；Tf1 于 402c9e94 全仓 2682/0、固定类唯一 `try/finally` + `if (local3 != null) { local3.close(); }`）。**Tf3（`recover-segmented-null-lead-finally`，落地记录见下节）亦已落地**：分段两行表 + 早返回副本 + null lead + 正文条件流的复合形态，按"Test13 分段 + Test5 早返回 + null lead"证书交叠设计落地为家族第五证书；至此巡查的四个转录音位全部落地（root 复核与 CF-16 分母重算属各自 change 的任务 4.3）。上游 `TestFinally3.test2NoDebug` 标 `@NotYetImplemented`，JADX 自身亦未完成，属已登记分母调整项。
 
 ## Tf4 落地记录（change `recover-flag-conditional-finally`）
 
@@ -51,3 +51,14 @@ Tf2 已由该 change 落地为 Guard 内 `finally_copy` 直体证书的 lead 准
 - `probe/src-tf2/`、`probe/run-behavior-tf2.sh`、`probe/behavior-tf2-sha256.txt`：同布局探针（正文可注入异常、getInputStream 可返回 null、清理可注入异常）三方对照。原 class 与 Jarde `javac --release 8` 重编后 `java -Xverify:all` 逐路径一致（正常关闭一次返回 400、正文抛错关闭一次且 `RuntimeException:body` 重抛、null 流 decode 容 null、closeQuietly 收到 null 不抛且仍关一次、清理抛错 `RuntimeException:cleanup` 覆盖，4 路径全过）；JADX Java-input 侧 4 路径亦一致（其 `inputStream2` 重命名失真按巡查登记仅作参照）。三方 run 输出 SHA 相同（`45300452…`）。
 
 root 复核（lead 准入边界、实参槽身份、三方行为与账本标记）属该 change 任务 4.3，另行走查。
+
+## Tf3 落地记录（change `recover-segmented-null-lead-finally`）
+
+Tf3 已由该 change 落地为 Guard 内 `prove_segmented_null_lead_finally` 证书（家族第五证书）：两行同 handler 的 any 表（`[2,18)→53`、`[24,47)→53`）且**无自保护行**、`[aconst_null; astore]` lead、受保护正文含条件流（`ifnonnull`→段二共享块、`ifne`→段二起点，均保留为源码条件）与同槽赋值、段间隙逐指令恰为 `[aload s; invokestatic; aload v; areturn]` 的早返回块（其 close 与正常/异常副本同样不受行保护——清理抛错按行表空缺直接替换）、三副本逐参数同形且实参槽即 lead 槽（Tf2 判据的 provenance 加宽版：正常副本必须到达正文赋值）、双保存返回（早返回恒 `aconst_null` 字面量、正常值为正文生产者且非 null）分开证明，折叠为唯一 `try/finally`：条件正文 + `if (bytes == null) { if (!validate()) { return null; } … }` + 一份 `close(local1);`，两个返回分开呈现。本目录新增证据：
+
+- `results/Tf3.after.json`、`results/Tf3.jarde.java`、`results/recovery-sha256-tf3.txt`：证书命中后的固定类恢复（structured、单一 finally region、36 个物理 BCI 全有来源映射；lead 呈现为分离式 `InputStream local1; local1 = null;`，同 Tf4/Tf1 的既有裁决；正常返回呈现为 `local2 = this.convert(this.bytes); return local2;`，早返回呈现为 `return null;`）。固定类的 `getInputStream()` helper 在主线与实现后同样回退（`new ByteArrayInputStream(new byte[]{})` 的嵌套数组分配不在分配规则的可证子集），属实现前即存在的基线限制，与此证书无关。
+- `results/tf3-baseline-replay.txt`：任务 1.1 的可重放基线（class/源 SHA、两行分段表、lead/条件正文/间隙/三副本布局、`Tf3.base.json` 的整方法回退诊断、固定类 `java -Xverify:all` 通过）。
+- `negatives/src/`（9 个负例：Tf3GapExtra/Tf3LeadField 平源 + 7 个逐类子目录的补丁基源）、`negatives/patch-tf3.py`（7 个同长字节码补丁：目标改指、实参槽改读、早返回身份改写、自保护行扩围 [24,55)、`ifnonnull`→`ifnull`、`ifne`→`ifeq`、重抛身份改写）、`negatives/verify-Tf3*.txt`（各负例 `java -Xverify:all` 输出全过）、`negatives/baseline-refusals-tf3.txt`（基线 `f76e5a48` 对固定类与全部负例整方法回退、零 finally）、`negatives/recovery-tf3.txt`（实现后固定类唯一 finally、9 个负例仍全拒）、`negatives/fixture-sha256-tf3.txt`。
+- `probe/src-tf3/`、`probe/run-behavior-tf3.sh`、`probe/behavior-tf3-sha256.txt`：同布局探针（validate 可拒绝、正文可注入异常、清理可注入异常、`bytes` 可预置）三方对照。原 class 与 Jarde `javac --release 8` 重编后 `java -Xverify:all` 五路径逐路径一致（已缓存：跳过读入仍清理一次返回预置值；未缓存：读入写字段清理一次；`validate()==false`：提前 `return null` 清理恰一次；正文抛错：清理一次且 `RuntimeException:body` 重抛；清理抛错：`RuntimeException:cleanup` 覆盖）。两方 run 输出 SHA 相同（`70cb7d76…`）。**固定 JADX Java-input 侧的新事实**：其恢复在早返回路径的 finally 中读取未赋值局部（`close(inputStream)` 于 `return null;` 之后），`javac --release 8` 以 definite-assignment 拒绝（`results/jadx-tf3.javac.stderr`），连同已登记的 `inputStream2` 死副本一起，JADX 的 Tf3 恢复不仅失真且非可编译 Java——继续仅作参照，不构成行为正例。
+
+root 复核（证书边界、三副本折叠来源、五路径行为与账本标记）属该 change 任务 4.3，另行走查。
