@@ -2541,7 +2541,8 @@ impl Walker<'_> {
                     | crate::guard::Shape::LoopFinally { .. }
                     | crate::guard::Shape::NullableResourceFinally { .. }
                     | crate::guard::Shape::FlagConditionalFinally { .. }
-                    | crate::guard::Shape::LocalNullConditionalFinally { .. }))
+                    | crate::guard::Shape::LocalNullConditionalFinally { .. }
+                    | crate::guard::Shape::SegmentedNullLeadFinally { .. }))
             {
                 let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
                     unreachable!("the structured finally verdict was just matched")
@@ -2558,6 +2559,9 @@ impl Walker<'_> {
                         .map(|(body, cleanup)| (body, Some(cleanup))),
                     crate::guard::Shape::LocalNullConditionalFinally { .. } => self
                         .local_null_conditional_finally_regions(&current, &plan, frame)?
+                        .map(|(body, cleanup)| (body, Some(cleanup))),
+                    crate::guard::Shape::SegmentedNullLeadFinally { .. } => self
+                        .segmented_null_lead_finally_regions(&current, &plan, frame)?
                         .map(|(body, cleanup)| (body, Some(cleanup))),
                     crate::guard::Shape::Finally {
                         completion: crate::guard::FinallyCompletion::Void { .. },
@@ -4846,6 +4850,151 @@ impl Walker<'_> {
             self.visited = previous;
             return Ok(None);
         }
+        Ok(Some((body, cleanup)))
+    }
+
+    /// The segmented null-lead's own two regions: the walked body from the statement's own entry
+    /// block — the two conditions, the early return and the shared normal block — and the
+    /// unwalked claim of the normal tail's block as the cleanup's region. The split is the
+    /// local-null conditional's own, reversed: its body is the unwalked entry-block claim and
+    /// its cleanup the walk; here the body's walk visits the tail block (its convert, its saved
+    /// return and its own copy share it) and the cleanup's Straight re-claims it, so the builder
+    /// writes the block once per span — the body's under the body's, the copy's under the
+    /// cleanup's.
+    fn segmented_null_lead_finally_regions(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<(Region, Region)>, StopReason> {
+        let crate::guard::Shape::SegmentedNullLeadFinally {
+            rows,
+            segments,
+            normal_cleanup,
+            ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        let Some(start_node) = self.view.index_of(start) else {
+            return Ok(None);
+        };
+        if self.visited.contains(&start_node)
+            || outer
+                .scope
+                .as_ref()
+                .is_some_and(|scope| !scope.contains(&start_node))
+        {
+            return Ok(None);
+        }
+        // The body's own blocks: the entry, the two segments' and the shared normal block. The
+        // handler's block is claimed by the plan after the recovery and walked never — the
+        // exceptional completion is the folded copies' rethrow, not a walked body.
+        let expected: BTreeSet<usize> = plan
+            .owned()
+            .iter()
+            .filter(|block| {
+                self.ssa.block(block).is_some_and(|names| {
+                    names.instructions().iter().any(|instruction| {
+                        (segments[0].0..segments[1].1).contains(&instruction.bci())
+                    })
+                })
+            })
+            .filter_map(|block| self.view.index_of(block))
+            .collect();
+        let previous = self.visited.clone();
+        let mut frame = outer.clone();
+        frame.scope = Some(expected.clone());
+        frame.boundary = None;
+        frame.own_try = Some(start_node);
+        frame.own_finally = Some(((rows[0], plan.body()), None));
+        frame.segmented_finally_rows = Some([
+            (rows[0], segments[0]),
+            (rows[1], segments[1]),
+            (rows[0], segments[0]),
+            (rows[1], segments[1]),
+        ]);
+        let walked = self.region_at(start, &frame);
+        let (mut regions, mut next) = match walked {
+            Ok(result) => result,
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        // The statement's one-armed condition joins at the shared normal block, and the walk
+        // stops there on arrival. The block is the body's own — its convert, its saved return
+        // and its copy share it — so the walk continues inside the same scope until the run
+        // ends or leaves the statement's span.
+        if next.as_ref().is_some_and(|at| {
+            self.view
+                .index_of(at)
+                .is_some_and(|node| expected.contains(&node))
+        }) {
+            while let Some(at) = next.as_ref() {
+                if !self
+                    .view
+                    .index_of(at)
+                    .is_some_and(|node| expected.contains(&node))
+                {
+                    break;
+                }
+                let (part, following) = match self.region_at(at, &frame) {
+                    Ok(result) => result,
+                    Err(stop) => {
+                        self.visited = previous;
+                        return Err(stop);
+                    }
+                };
+                if part.is_empty() || following.as_ref() == Some(at) {
+                    self.visited = previous;
+                    return Ok(None);
+                }
+                regions.extend(part);
+                next = following;
+            }
+            if next.as_ref().is_some_and(|at| at.bci() == segments[1].1) {
+                next = None;
+            }
+        }
+        let body = if regions.len() == 1 {
+            regions.into_iter().next().unwrap()
+        } else {
+            Region::Sequence { regions }
+        };
+        let blocks = body.blocks();
+        let actual: BTreeSet<_> = blocks
+            .iter()
+            .filter_map(|block| self.view.index_of(block))
+            .collect();
+        if next.is_some()
+            || !finally_body_supported(&body, false)
+            || actual != expected
+            || actual.len() != blocks.len()
+            || self
+                .visited
+                .difference(&previous)
+                .copied()
+                .collect::<BTreeSet<_>>()
+                != expected
+        {
+            self.visited = previous;
+            return Ok(None);
+        }
+        let Some(tail_block) = plan.owned().iter().find(|block| {
+            self.ssa.block(block).is_some_and(|names| {
+                names
+                    .instructions()
+                    .iter()
+                    .any(|instruction| instruction.bci() == normal_cleanup.0)
+            })
+        }) else {
+            self.visited = previous;
+            return Ok(None);
+        };
+        let cleanup = Region::Straight {
+            blocks: vec![tail_block.clone()],
+        };
         Ok(Some((body, cleanup)))
     }
 
