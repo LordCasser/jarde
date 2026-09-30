@@ -1,0 +1,3 @@
+f79e024d9831c159ddf280cd60278408fb713079d05335e190a36d9f4eab24a5  openspec/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L1.class
+a927006bc70533b31ed6365cda7747d780b865fa72ecf3d02eb4da819a669956  openspec/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L2.class
+2498a069b897333eab8eba6b5b0ed44c0788537728e2c42dfb9ab40f7e177ca4  openspec/evidence/java-syntax-2026-10-01/labeled-loop-patrol/fixture/L3.class
