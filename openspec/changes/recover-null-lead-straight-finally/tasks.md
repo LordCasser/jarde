@@ -17,4 +17,4 @@
 
 - [x] 4.1 探针变体（正文可注入异常、getInputStream 可返回 null、清理可注入异常）下原 class/固定 JADX Java-input/Jarde 三方 Java 8 重编，`java -Xverify:all` 正常（关闭一次、返回 400）、正文抛错（关闭一次、原异常重抛）、null 流（closeQuietly 收到 null 不抛）、清理抛错（覆盖）逐路径一致；记录输出 SHA。（`probe/src-tf2` 四路径三方 `run-*-tf2.txt` 逐字节相同（SHA `45300452…`），三侧 verify 输出为空，`behavior-tf2-sha256.txt` 记录；JADX Java-input 仍仅作参照。）
 - [x] 4.2 全仓回归（`cargo test --workspace --tests --locked --no-fail-fast` 全绿）、`cargo fmt --all -- --check`、CI 同款 Clippy 新码零新增、`openspec validate --all --strict`、diff check；构建轮次间磁盘低于 15Gi 先 `cargo clean`，完成即清。（落地提交全绿：workspace `cargo test` 0 失败、fmt/clippy 干净、validate 全过；见落地记录与提交说明。）
-- [ ] 4.3 root 独立复核 lead 准入边界、实参槽身份与三方行为，更新 CF-16 清单与巡查账本；仅标记固定 Tf2（TestFinally2）JVM 切片。
+- [x] 4.3 root 独立复核 lead 准入边界、实参槽身份与三方行为，更新 CF-16 清单与巡查账本；仅标记固定 Tf2（TestFinally2）JVM 切片。（root 于合并主线 43cb5563 复核：固定类唯一 `try/finally` + 一份 `closeQuietly`、26 BCI 来源、探针四路径三方一致、9 负例拒绝、全仓 2692/0、fmt/openspec 220/220。保存返回按既有 saved-return 呈现（`local3` 声明 + `return local3;`）为 design 决策 2 回退条款下的正确取舍——内联构造呈现会破坏 FinallyNormal 既有输出。）
