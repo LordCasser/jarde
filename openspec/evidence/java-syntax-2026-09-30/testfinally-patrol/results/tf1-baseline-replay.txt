@@ -1,0 +1,21 @@
+# Tf1 基线重放（change recover-local-null-conditional-finally，任务 1.1）
+# 固定类与源 SHA（与 results/fixture-sha256.txt 一致）
+17fac06a6009944fd6ba053361d39bfd0b1c49b34c545d869bc5b538daa9c18c  fixture/Tf1.class
+c9b35269da955a9babc2990c4877c3aa7f36255216ab35f3ae0f1e82e9618ec2  fixture/Tf1.java
+
+# 双行 any 异常表与布局（javap）
+      Exception table:
+         from    to  target type
+             2    41    52   any
+            52    54    52   any
+      StackMapTable: number_of_entries = 3
+
+# 主线（实现前）整方法回退诊断：results/Tf1.base.json 的 fallbacks 与区域
+Tf1.base.json: fallbacks=[jre_region_exception_edge, jre_region_uncovered_blocks] regions=[(0,None,False),(45,None,False)]
+
+# 实现前 CLI 重放（同命令、基线二进制）与上完全一致：quality=fallback
+
+# 固定类 java -Xverify:all（类加载即验证；无 main，输出为 MainNotFound 而非 VerifyError）
+错误: 在类 Tf1 中找不到 main 方法, 请将 main 方法定义为:
+   public static void main(String[] args)
+verify-exit=0

@@ -1,0 +1,4 @@
+failBody=false failQuery=false failCleanup=false outcome=ok value=v closes=1
+failBody=true failQuery=false failCleanup=false outcome=RuntimeException:body value=null closes=1
+failBody=false failQuery=true failCleanup=false outcome=NullPointerException:Cannot invoke "Cursor.getColumnIndexOrThrow(String)" because "<local3>" is null value=null closes=0
+failBody=true failQuery=false failCleanup=true outcome=RuntimeException:cleanup value=null closes=1

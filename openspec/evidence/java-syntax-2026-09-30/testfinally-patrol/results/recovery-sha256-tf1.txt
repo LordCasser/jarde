@@ -1,0 +1,4 @@
+17fac06a6009944fd6ba053361d39bfd0b1c49b34c545d869bc5b538daa9c18c  fixture/Tf1.class
+2dc078b5dae4226f2cae25232838d9994222e57103da25328611cf04b49a80ee  results/Tf1.jarde.java
+1d23a0b18ba4a008b90473ab2d11bac847340eb004aba4e2def635f107c8725f  results/Tf1.after.json
+Jarde source revision 64c3a7af (local-null conditional finally certificate complete)
