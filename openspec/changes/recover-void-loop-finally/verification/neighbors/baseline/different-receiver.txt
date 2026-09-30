@@ -1,0 +1,7 @@
+// @method test(Ljava/io/OutputStream;)V
+// @declaration an instance method of `jadx.tests.integration.trycatch.TestTryCatchFinally2$TestCls`, member flags 0x0001
+// recovered from bytecode; presentation is not claimed to compile
+{
+    // @bytecode 0 39 46 69 83 90 123 130 155 161 168 177
+    // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+}

@@ -288,6 +288,19 @@ pub enum FinallyCompletion {
         catch_pop: u32,
         named_row: u32,
     },
+    /// The fixed two-row void layout: the method completes with no value on either path out of the
+    /// protected body. The cleanup handler's own row protects only its binding store, and the
+    /// normal completion is the `return` the normal cleanup copy falls through to. Neither a saved
+    /// stack value nor a named catch is invented for it: the completion carries the self-protection
+    /// row and that final return, and nothing else.
+    Void {
+        /// The row that protects only the cleanup handler's binding store (`[160, 162)` of the
+        /// fixed class): the self-exception edge a rethrowing handler carries, over no cleanup
+        /// instruction.
+        binding_row: u32,
+        /// The `return` the normal completion ends in, after the cleanup copy.
+        final_return: u32,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -6217,6 +6230,294 @@ fn prove_multi_return_loop_finally(
     }))
 }
 
+/// The fixed Test2 void finally: one protected body of three ordinary loops, two cleanup copies of
+/// one `close` call on one resource, and a void completion.
+///
+/// The certificate is deliberately closed, like the two-return loop proof beside it: the two
+/// catch-all rows in table order, every instruction start and opcode, every canonical edge, the
+/// three normal back edges and the handler's own self-protection row are each read from this run's
+/// facts. The resource and the rethrown exception are proved through SSA values — the one local
+/// definition before the protected range reaches the receiver of both closes, the handler's stored
+/// value the one the rethrow reads — not through equal instruction text. The completion invents no
+/// stack value and no catch: the normal completion is the value-less `return` the normal cleanup
+/// copy falls through to (one canonical block with it, so the statement claims the block and the
+/// run ends there), and the exceptional completion is the handler's own rethrow.
+fn prove_void_loop_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [body_row, binding_row] = facts.handlers else {
+        return Ok(None);
+    };
+    const BCIS: [u32; 89] = [
+        0, 3, 4, 5, 8, 9, 10, 11, 14, 15, 16, 19, 20, 23, 24, 27, 28, 29, 30, 32, 33, 35, 37, 39,
+        42, 43, 45, 46, 48, 49, 50, 52, 55, 58, 61, 64, 65, 68, 69, 70, 71, 73, 74, 76, 78, 80, 83,
+        84, 86, 87, 89, 91, 94, 96, 97, 99, 100, 103, 105, 107, 109, 110, 112, 113, 115, 117, 119,
+        122, 124, 126, 127, 129, 130, 132, 135, 138, 141, 144, 147, 150, 153, 154, 157, 160, 162,
+        163, 166, 168, 169,
+    ];
+    const OPCODES: [u8; 89] = [
+        0xbb, 0x59, 0x2b, 0xb7, 0x4d, 0x2c, 0x04, 0xb6, 0x2c, 0x2a, 0xb4, 0xbe, 0xb6, 0x2a, 0xb4,
+        0x4e, 0x2d, 0xbe, 0x36, 0x03, 0x36, 0x15, 0x15, 0xa2, 0x2d, 0x15, 0x32, 0x3a, 0x2a, 0x2c,
+        0x19, 0xb6, 0xb6, 0x84, 0xa7, 0x2a, 0xb4, 0x4e, 0x2d, 0xbe, 0x36, 0x03, 0x36, 0x15, 0x15,
+        0xa2, 0x2d, 0x15, 0x32, 0x3a, 0x19, 0xb6, 0x3a, 0x2c, 0x19, 0xbe, 0xb6, 0x19, 0x3a, 0x19,
+        0xbe, 0x36, 0x03, 0x36, 0x15, 0x15, 0xa2, 0x19, 0x15, 0x32, 0x3a, 0x2c, 0x19, 0xb6, 0xb6,
+        0xb6, 0x84, 0xa7, 0x84, 0xa7, 0x2c, 0xb6, 0xa7, 0x3a, 0x2c, 0xb6, 0x19, 0xbf, 0xb1,
+    ];
+    if current.bci() != 0
+        || facts.order != BCIS
+        || facts
+            .canonical
+            .blocks()
+            .iter()
+            .map(|block| block.id().bci())
+            .collect::<BTreeSet<_>>()
+            != BTreeSet::from([0, 35, 42, 64, 76, 83, 115, 122, 147, 153, 160])
+        || (body_row.start_bci, body_row.end_bci, body_row.handler_bci) != (9, 153, 160)
+        || (
+            binding_row.start_bci,
+            binding_row.end_bci,
+            binding_row.handler_bci,
+        ) != (160, 162, 160)
+        || body_row.ordinal + 1 != binding_row.ordinal
+        || body_row.catch_type_index.is_some()
+        || binding_row.catch_type_index.is_some()
+        || !handler_binding(facts, 160)
+        || facts.span_end(160) != 162
+    {
+        return Ok(None);
+    }
+    // Exact opcode starts and exact row coverage per instruction: the body row covers the protected
+    // body and nothing else, the binding row covers the handler's binding store alone, and both
+    // cleanup copies sit outside every protected interval.
+    for (bci, opcode) in BCIS.into_iter().zip(OPCODES) {
+        facts.charge(bci)?;
+        if facts
+            .step(bci)
+            .is_none_or(|step| step.instruction.opcode() != opcode)
+        {
+            return Ok(None);
+        }
+        let expected: &[u32] = if (9..153).contains(&bci) {
+            &[body_row.ordinal]
+        } else if bci == 160 {
+            &[binding_row.ordinal]
+        } else {
+            &[]
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+        {
+            return Ok(None);
+        }
+    }
+    // The two cleanup copies invoke the same target; the receiver is proved by SSA below, not by
+    // the shared symbol.
+    let Some(Operation::Invoke(close)) = facts.op(154) else {
+        return Ok(None);
+    };
+    if close.kind() != InvokeKind::Virtual
+        || close.owner() != "java/io/DataOutputStream"
+        || close.name() != "close"
+        || close.descriptor() != "()V"
+        || facts.op(163) != facts.op(154)
+    {
+        return Ok(None);
+    }
+    // The one store before the protected range is the resource both closes read: local 2's
+    // definition at the store reaches the receiver of each close, and each close's only operand is
+    // the stack value its own load wrote.
+    let Some(resource) = facts.step(8) else {
+        return Ok(None);
+    };
+    let Some((_, resource_value)) = resource
+        .instruction
+        .writes()
+        .iter()
+        .find(|(slot, _)| *slot == Slot::Local(2))
+    else {
+        return Ok(None);
+    };
+    for (load_bci, call_bci) in [(153, 154), (162, 163)] {
+        let (Some(load), Some(call)) = (facts.step(load_bci), facts.step(call_bci)) else {
+            return Ok(None);
+        };
+        if facts.op(load_bci) != Some(&Operation::Load { slot: 2 })
+            || load.instruction.reads().len() != 1
+            || !facts.same(load.instruction.reads()[0].1, *resource_value)
+            || stack_operands(call.instruction).len() != 1
+            || !load.instruction.writes().iter().any(|(slot, value)| {
+                matches!(slot, Slot::Stack(_))
+                    && facts.same(*value, stack_operands(call.instruction)[0].1)
+            })
+        {
+            return Ok(None);
+        }
+    }
+    // The handler binds its own row's exception into local 12, reloads and rethrows that one value.
+    let (Some(save), Some(load), Some(throw)) = (facts.step(160), facts.step(166), facts.step(168))
+    else {
+        return Ok(None);
+    };
+    if facts.op(160) != Some(&Operation::Store { slot: 12 })
+        || facts.op(166) != Some(&Operation::Load { slot: 12 })
+        || facts.op(168) != Some(&Operation::Throw)
+        || !save.instruction.writes().iter().any(|(slot, written)| {
+            *slot == Slot::Local(12)
+                && load
+                    .instruction
+                    .reads()
+                    .iter()
+                    .any(|(_, read)| facts.same(*written, *read))
+        })
+        || stack_operands(throw.instruction).len() != 1
+        || !load.instruction.writes().iter().any(|(slot, written)| {
+            matches!(slot, Slot::Stack(_))
+                && facts.same(*written, stack_operands(throw.instruction)[0].1)
+        })
+    {
+        return Ok(None);
+    }
+    // The completion is void: the normal cleanup copy and the final `return` share one canonical
+    // block, that return is the block's last instruction, and no run continues past it.
+    let Some(handler) = facts.block_at(160) else {
+        return Ok(None);
+    };
+    let Some(normal_block) = facts.block_at(153) else {
+        return Ok(None);
+    };
+    let Some(final_return) = facts
+        .in_block(&normal_block)
+        .last()
+        .map(SsaInstruction::bci)
+    else {
+        return Ok(None);
+    };
+    if final_return != 169
+        || facts.op(169) != Some(&Operation::Return)
+        || !stack_operands(
+            facts
+                .step(169)
+                .expect("the instruction order pinned the final return")
+                .instruction,
+        )
+        .is_empty()
+        || !facts.view.successor_ids(&normal_block).is_empty()
+        || facts.block_of(162) != Some(&handler)
+        || facts.block_of(163) != Some(&handler)
+        || facts.block_of(166) != Some(&handler)
+        || facts.block_of(168) != Some(&handler)
+    {
+        return Ok(None);
+    }
+    // Three ordinary loops, each entered from the block before it and from its own back edge only,
+    // testing once with two successors. Their exits land inside the protected range: none of them
+    // is a handler component (the Test11 shape).
+    let Some(first_header) = facts.block_at(35) else {
+        return Ok(None);
+    };
+    let Some(first_body) = facts.block_at(42) else {
+        return Ok(None);
+    };
+    let Some(second_header) = facts.block_at(76) else {
+        return Ok(None);
+    };
+    let Some(second_body) = facts.block_at(83) else {
+        return Ok(None);
+    };
+    let Some(third_header) = facts.block_at(115) else {
+        return Ok(None);
+    };
+    let Some(third_body) = facts.block_at(122) else {
+        return Ok(None);
+    };
+    if facts.row_handler(&body_row).as_ref() != Some(&handler)
+        || facts.row_handler(&binding_row).as_ref() != Some(&handler)
+        || [
+            (first_header, first_body),
+            (second_header, second_body),
+            (third_header, third_body),
+        ]
+        .iter()
+        .any(|(header, body)| {
+            facts.view.successor_ids(header).len() != 2
+                || !facts.view.successor_ids(header).contains(body)
+                || facts
+                    .view
+                    .index_of(header)
+                    .is_none_or(|header| facts.view.predecessors(header).len() != 2)
+        })
+    {
+        return Ok(None);
+    }
+    // Every physical edge of the method, named: the three loop back edges, every covered block's
+    // exception edge into the one handler, and the handler's self-exception edge. The normal
+    // cleanup block ends in the return and leaves no edge. An unaccounted edge — an extra exit, a
+    // second handler, a subroutine — refuses the shape.
+    let owned = facts.blocks_in((0, 169));
+    let body_kind = 1 + body_row.ordinal;
+    let binding_kind = 1 + binding_row.ordinal;
+    let mut actual_edges = BTreeSet::new();
+    for edge in facts.canonical.edges() {
+        facts.charge(edge.from().bci())?;
+        let kind = match edge.kind() {
+            CanonicalEdgeKind::Normal => 0,
+            CanonicalEdgeKind::Exception { handler_ordinal } if edge.to() == &handler => {
+                1 + handler_ordinal
+            }
+            CanonicalEdgeKind::Exception { .. }
+            | CanonicalEdgeKind::Call { .. }
+            | CanonicalEdgeKind::Return { .. } => return Ok(None),
+        };
+        if !actual_edges.insert((edge.from().bci(), edge.to().bci(), kind)) {
+            return Ok(None);
+        }
+    }
+    let expected_edges = BTreeSet::from([
+        (0, 35, 0),
+        (35, 42, 0),
+        (35, 64, 0),
+        (42, 35, 0),
+        (64, 76, 0),
+        (76, 83, 0),
+        (76, 153, 0),
+        (83, 115, 0),
+        (115, 122, 0),
+        (115, 147, 0),
+        (122, 115, 0),
+        (147, 76, 0),
+        (0, 160, body_kind),
+        (42, 160, body_kind),
+        (64, 160, body_kind),
+        (83, 160, body_kind),
+        (122, 160, body_kind),
+        (160, 160, binding_kind),
+    ]);
+    if actual_edges != expected_edges {
+        return Ok(None);
+    }
+    Ok(Some(Plan {
+        shape: Shape::Finally {
+            normal_cleanup: (153, 157),
+            completion: FinallyCompletion::Void {
+                binding_row: binding_row.ordinal,
+                final_return: 169,
+            },
+            row_ordinal: body_row.ordinal,
+            structured: true,
+        },
+        lead: (0, 9),
+        body: (9, 153),
+        owned,
+        join: None,
+        facts: BCIS.iter().copied().filter(|bci| *bci >= 9).collect(),
+    }))
+}
+
 /// The Java 8 two-row iterable finally is deliberately a closed certificate. Like pinned JADX's
 /// `MarkFinallyVisitor::processTryBlock`/`findCommonInsns`, it starts with the handler rethrow and
 /// compares cleanup along normal and exceptional exits. Unlike its generic path match and
@@ -8093,6 +8394,9 @@ fn guarded(
     }
     if FINALLY.admits(profile) {
         if let Some(plan) = prove_nullable_resource_finally(facts, current)? {
+            return Ok(Some(Verdict::Claimed(plan)));
+        }
+        if let Some(plan) = prove_void_loop_finally(facts, current)? {
             return Ok(Some(Verdict::Claimed(plan)));
         }
         if let Some(plan) = prove_loop_finally(facts, current)? {

@@ -1,0 +1,12 @@
+different-receiver verified
+231639e0b9592fcfdf2f588c12bdb36df872a144bc00a52ef417410b7e1ae60d  different-receiver.class
+different-target verified
+49a43d2ba311da8d3a3e229fc1bbf7a7f584189ff4fcb39d017e631c91875aac  different-target.class
+loop-extra-exit verified
+9a9898a7dcd07ace73dcfc40e583fc46ea2ebe2104d87c47248fa03e3d3cc015  loop-extra-exit.class
+resource-definition-rewritten verified
+941aa0bd3b2211f14451357018658aaa3f60a7c55c419a8fab7c3ccf24df55fe  resource-definition-rewritten.class
+self-row-expanded verified
+1a0d0353b7ebdf892639caadcc9c28333da1ea57de6d1991f4ff4e589dd63459  self-row-expanded.class
+throwable-rewritten verified
+78a7a46883c4e0fc6e0f3c27461efd38aebc0ed2cec310d832c794f587917010  throwable-rewritten.class

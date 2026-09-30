@@ -1,0 +1,6 @@
+empty outcome=ok writes=2 closes=1 bytes=0100000000 nameReads=0 parentReads=0 objectReads=0
+two-classes-three-parents outcome=ok writes=7 closes=1 bytes=0100000002020001aa430001aa44010001aa45 nameReads=2 parentReads=2 objectReads=3
+write-failure-first-write outcome=IOException:write-1 writes=1 closes=1 bytes= nameReads=0 parentReads=0 objectReads=0
+write-failure-parent-write outcome=IOException:write-4 writes=4 closes=1 bytes=010000000202 nameReads=2 parentReads=1 objectReads=1
+close-failure outcome=IOException:close writes=7 closes=1 bytes=0100000002020001aa430001aa44010001aa45 nameReads=2 parentReads=2 objectReads=3
+write-and-close-failure outcome=IOException:close writes=1 closes=1 bytes= nameReads=0 parentReads=0 objectReads=0
