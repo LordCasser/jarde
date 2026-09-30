@@ -988,6 +988,33 @@ fn declarations(
         // by the protected body and by both cleanup copies. Which reads reach that store — and
         // that both closes see the one definition — is the Guard certificate's own SSA proof, so
         // the declaration hoists to the statement's lexical parent exactly as the nullable one does.
+        // The proved flag conditional's lead is the same shape: the canonical graph fuses the
+        // two-instruction initialisation with the protected body, and the certificate proves
+        // both cleanup branches read the one store's value, so the declaration hoists to the
+        // statement's lexical parent exactly as the nullable one does.
+        let flag_conditional_lead = owner.len() == 1
+            && regions.get(owner[0] as usize).is_some_and(|region| {
+                matches!(region, Region::Guard { plan, .. }
+                    if matches!(
+                        plan.shape(),
+                        guard::Shape::FlagConditionalFinally { flag_slot, .. }
+                            if *flag_slot == variable.slot()
+                    ) && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
+            });
+        // The proved flag conditional saves the returned value in the body and returns it after
+        // the cleanup: the certificate owns the store and the one load that reads it, so the
+        // declaration hoists to the statement's lexical parent exactly as the lead does.
+        let flag_saved_return = owner.len() == 1
+            && regions.get(owner[0] as usize).is_some_and(|region| {
+                matches!(region, Region::Guard { plan, .. }
+                if matches!(
+                    plan.shape(),
+                    guard::Shape::FlagConditionalFinally {
+                        saved_return: (save, _),
+                        ..
+                    } if *save == first.bci
+                ))
+            });
         let void_loop_lead = owner.len() == 1
             && regions.get(owner[0] as usize).is_some_and(|region| {
                 matches!(region, Region::Guard { plan, .. }
@@ -1036,6 +1063,8 @@ fn declarations(
             && !nested_cleanup_lead
             && !multi_return_lead
             && !nullable_resource_lead
+            && !flag_conditional_lead
+            && !flag_saved_return
             && !void_loop_lead
             && (!store_type_is_proven
                 || !(joined_value_certified
@@ -2211,7 +2240,21 @@ fn decide_types(
             Decided::Type(Type::Boolean)
         } else {
             let mut nullable_type = None;
-            if matches!(variable.slot(), 1 | 3) {
+            // A proved flag conditional is its local's boolean evidence: the Guard certificate
+            // pins the slot to one `false` initialisation, exactly one later `true` store and
+            // the two `iload` branches, so the decision needs no descriptor of its own.
+            for region in regions {
+                collect_guards(region, &mut |region| {
+                    if let Region::Guard { plan, .. } = region
+                        && let guard::Shape::FlagConditionalFinally { flag_slot, .. } = plan.shape()
+                        && variable.slot() == *flag_slot
+                        && write.at < plan.body().0
+                    {
+                        nullable_type = Some(Type::Boolean);
+                    }
+                });
+            }
+            if nullable_type.is_none() && matches!(variable.slot(), 1 | 3) {
                 for region in regions {
                     collect_guards(region, &mut |region| {
                         if let Region::Guard { plan, .. } = region
@@ -7576,6 +7619,7 @@ enum CompoundUpdate {
         duplicate: u32,
         read: u32,
         add: u32,
+        op: crate::facts::ArithmeticOp,
     },
     Array {
         array: ValueId,
@@ -9420,16 +9464,23 @@ fn prove_field_update(
     let Some(add) = instruction_in_block(block, add_bci) else {
         return Ok(None);
     };
-    if add.opcode() != 0x60
-        || !matches!(
-            operations.get(add_bci),
+    // The read-modify-write's one arithmetic step: `+=` adds, `-=` subtracts. Both spellings
+    // name the same single read and single write the rest of this proof pins down.
+    let update_op = match (add.opcode(), operations.get(add_bci)) {
+        (
+            0x60,
             Some(Operation::Arithmetic {
-                op: ArithmeticOp::Add
-            })
-        )
-    {
-        return Ok(None);
-    }
+                op: ArithmeticOp::Add,
+            }),
+        ) => ArithmeticOp::Add,
+        (
+            0x64,
+            Some(Operation::Arithmetic {
+                op: ArithmeticOp::Subtract,
+            }),
+        ) => ArithmeticOp::Subtract,
+        _ => return Ok(None),
+    };
     let Some((old, rhs)) = two_stack_values(add) else {
         return Ok(None);
     };
@@ -9563,6 +9614,7 @@ fn prove_field_update(
             duplicate: duplicate_bci,
             read: read_bci,
             add: add_bci,
+            op: update_op,
         },
         rhs_dependencies,
     )))
@@ -13486,6 +13538,10 @@ impl Builder<'_> {
                     | guard::Shape::NullableResourceFinally {
                         saved_return: (_, normal_return),
                         ..
+                    }
+                    | guard::Shape::FlagConditionalFinally {
+                        saved_return: (_, normal_return),
+                        ..
                     } => {
                         let (Some(body_region), Some(cleanup_region @ Region::If { .. })) = (
                             structured_body.as_deref(),
@@ -13517,7 +13573,11 @@ impl Builder<'_> {
                             return Err(stop);
                         }
                         let mut body = body;
-                        if matches!(plan.shape(), guard::Shape::NullableResourceFinally { .. }) {
+                        if matches!(
+                            plan.shape(),
+                            guard::Shape::NullableResourceFinally { .. }
+                                | guard::Shape::FlagConditionalFinally { .. }
+                        ) {
                             match self.guarded_return(*normal_return) {
                                 Ok(statement) => body.push(statement),
                                 Err(reason) => {
@@ -13532,7 +13592,8 @@ impl Builder<'_> {
                             }
                         }
                         let outer = std::mem::take(&mut self.stmts);
-                        if let guard::Shape::NullableResourceFinally { normal_cleanup, .. } =
+                        if let guard::Shape::NullableResourceFinally { normal_cleanup, .. }
+                        | guard::Shape::FlagConditionalFinally { normal_cleanup, .. } =
                             plan.shape()
                         {
                             self.finally_span = Some(*normal_cleanup);
@@ -20841,6 +20902,7 @@ impl Builder<'_> {
             duplicate,
             read,
             add,
+            op: update_op,
         }) = self.compounds.update_at(at)
         {
             let rendered = self
@@ -20864,11 +20926,23 @@ impl Builder<'_> {
                     return self.fallback(bcis, &reason, at);
                 }
             };
+            let op = match update_op {
+                ArithmeticOp::Add => AssignOp::Add,
+                ArithmeticOp::Subtract => AssignOp::Subtract,
+                _ => {
+                    let bcis = self.quoted_bcis(at);
+                    return self.fallback(
+                        bcis,
+                        format!("the proved int field update at BCI {at} does not add or subtract"),
+                        at,
+                    );
+                }
+            };
             self.push(Stmt::new(
                 StmtKind::FieldAssign {
                     receiver: Some(receiver),
                     name: evidence.name.clone(),
-                    op: AssignOp::Add,
+                    op,
                     value,
                 },
                 compound_origin(at, duplicate, read, add),

@@ -315,7 +315,7 @@ pub(crate) fn committed_presentations(
                     if stmt.origin.primary().method().is_none() {
                         record(at, FieldAccess::Write, name);
                     }
-                    if *op == AssignOp::Add {
+                    if matches!(op, AssignOp::Add | AssignOp::Subtract) {
                         for origin in stmt.origin.derived() {
                             stop::charge(
                                 budget,
