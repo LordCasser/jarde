@@ -1001,6 +1001,19 @@ fn declarations(
                             if *flag_slot == variable.slot()
                     ) && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
             });
+        // The proved local-null conditional's lead is the same shape: the canonical graph fuses
+        // the two-instruction `null` initialisation with the protected body, and the certificate
+        // proves both cleanup branches read the one store's value, so the declaration hoists to
+        // the statement's lexical parent exactly as the flag conditional's does.
+        let local_null_lead = owner.len() == 1
+            && regions.get(owner[0] as usize).is_some_and(|region| {
+                matches!(region, Region::Guard { plan, .. }
+                    if matches!(
+                        plan.shape(),
+                        guard::Shape::LocalNullConditionalFinally { slot, .. }
+                            if *slot == variable.slot()
+                    ) && plan.lead().0 <= first.bci && first.bci < plan.lead().1)
+            });
         // The proved flag conditional saves the returned value in the body and returns it after
         // the cleanup: the certificate owns the store and the one load that reads it, so the
         // declaration hoists to the statement's lexical parent exactly as the lead does.
@@ -1010,6 +1023,21 @@ fn declarations(
                 if matches!(
                     plan.shape(),
                     guard::Shape::FlagConditionalFinally {
+                        saved_return: (save, _),
+                        ..
+                    } if *save == first.bci
+                ))
+            });
+        // The proved local-null conditional saves the returned value in the body and returns it
+        // after the cleanup: the certificate owns the store and the one load that reads it, so
+        // the declaration hoists to the statement's lexical parent exactly as the flag
+        // conditional's does.
+        let local_null_saved_return = owner.len() == 1
+            && regions.get(owner[0] as usize).is_some_and(|region| {
+                matches!(region, Region::Guard { plan, .. }
+                if matches!(
+                    plan.shape(),
+                    guard::Shape::LocalNullConditionalFinally {
                         saved_return: (save, _),
                         ..
                     } if *save == first.bci
@@ -1064,7 +1092,9 @@ fn declarations(
             && !multi_return_lead
             && !nullable_resource_lead
             && !flag_conditional_lead
+            && !local_null_lead
             && !flag_saved_return
+            && !local_null_saved_return
             && !void_loop_lead
             && (!store_type_is_proven
                 || !(joined_value_certified
@@ -2253,6 +2283,35 @@ fn decide_types(
                         nullable_type = Some(Type::Boolean);
                     }
                 });
+            }
+            if nullable_type.is_none() {
+                // The proved local-null conditional's lead stores `null` into the slot its
+                // cleanup branches on: the statement's own writes say nothing about the type,
+                // and the body's same-slot assignments are the declared type's one evidence.
+                for region in regions {
+                    collect_guards(region, &mut |region| {
+                        if let Region::Guard { plan, .. } = region
+                            && let guard::Shape::LocalNullConditionalFinally { slot, .. } =
+                                plan.shape()
+                            && variable.slot() == *slot
+                            && write.at < plan.body().0
+                        {
+                            nullable_type = uses
+                                .get(variable)
+                                .into_iter()
+                                .flatten()
+                                .find(|use_| {
+                                    use_.written.is_some()
+                                        && plan.body().0 <= use_.bci
+                                        && use_.bci < plan.body().1
+                                })
+                                .and_then(|use_| use_.written)
+                                .and_then(|value| {
+                                    written_type(ssa, operations, value).ok().flatten()
+                                });
+                        }
+                    });
+                }
             }
             if nullable_type.is_none() && matches!(variable.slot(), 1 | 3) {
                 for region in regions {
@@ -13542,6 +13601,10 @@ impl Builder<'_> {
                     | guard::Shape::FlagConditionalFinally {
                         saved_return: (_, normal_return),
                         ..
+                    }
+                    | guard::Shape::LocalNullConditionalFinally {
+                        saved_return: (_, normal_return),
+                        ..
                     } => {
                         let (Some(body_region), Some(cleanup_region @ Region::If { .. })) = (
                             structured_body.as_deref(),
@@ -13577,6 +13640,7 @@ impl Builder<'_> {
                             plan.shape(),
                             guard::Shape::NullableResourceFinally { .. }
                                 | guard::Shape::FlagConditionalFinally { .. }
+                                | guard::Shape::LocalNullConditionalFinally { .. }
                         ) {
                             match self.guarded_return(*normal_return) {
                                 Ok(statement) => body.push(statement),
@@ -13593,8 +13657,10 @@ impl Builder<'_> {
                         }
                         let outer = std::mem::take(&mut self.stmts);
                         if let guard::Shape::NullableResourceFinally { normal_cleanup, .. }
-                        | guard::Shape::FlagConditionalFinally { normal_cleanup, .. } =
-                            plan.shape()
+                        | guard::Shape::FlagConditionalFinally { normal_cleanup, .. }
+                        | guard::Shape::LocalNullConditionalFinally {
+                            normal_cleanup, ..
+                        } = plan.shape()
                         {
                             self.finally_span = Some(*normal_cleanup);
                         }
