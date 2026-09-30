@@ -20,7 +20,7 @@
 
 ## 下一步（不自动开工）
 
-按证书邻近度排序推进中：Tf4（`recover-flag-conditional-finally`）与 Tf1（`recover-local-null-conditional-finally`）均已落地并通过 root 复核（Tf4 于 f63f7634 全仓 2674/0；Tf1 于 402c9e94 全仓 2682/0、固定类唯一 `try/finally` + `if (local3 != null) { local3.close(); }`），落地记录见下节。**Tf2 为当前片**：[recover-null-lead-straight-finally](../../../changes/recover-null-lead-straight-finally/) spec 已立——异常表 `[2,25)→32 any` + 自保护 `[32,34)→32`，lead `[aconst_null, astore_2]`，副本为**无条件** `closeQuietly` 调用（正常 25–30、异常 34–39 各一），返回值是 **try 内构造**并保存的 `astore_3`@24——是 `finally_copy` 直体证书 lead 准入的"null 局部初始化"扩展，不新增证书。Tf3（提前 `return null` + 正文条件流）最后。上游 `TestFinally3.test2NoDebug` 标 `@NotYetImplemented`，JADX 自身亦未完成，属已登记分母调整项。
+按证书邻近度排序推进中：Tf4（`recover-flag-conditional-finally`）与 Tf1（`recover-local-null-conditional-finally`）均已落地并通过 root 复核（Tf4 于 f63f7634 全仓 2674/0；Tf1 于 402c9e94 全仓 2682/0、固定类唯一 `try/finally` + `if (local3 != null) { local3.close(); }`），落地记录见下节。**Tf2 为当前片**：[recover-null-lead-straight-finally](../../../changes/recover-null-lead-straight-finally/) spec 已立——异常表 `[2,25)→32 any` + 自保护 `[32,34)→32`，lead `[aconst_null, astore_2]`，副本为**无条件** `closeQuietly` 调用（正常 25–30、异常 34–39 各一），返回值是 **try 内构造**并保存的 `astore_3`@24——是 `finally_copy` 直体证书 lead 准入的"null 局部初始化"扩展，不新增证书。Tf3（提前 `return null` + 正文条件流）最后；形状已预读：异常表仅两行 `[2,18)→53` 与 `[24,47)→53`（分段绕过早返回块，**无自保护行**），共**三份**无条件 `invokestatic close` 副本（早返回 18–19、正常 47–48、异常 54–55），lead `[aconst_null, astore_1]`、正文同槽赋值@24–28、`bytes` 字段读改写与提前 `return null`——是分段 finally（Test13 族）+ 早返回（Test5 族）+ null lead 的复合形态，待 Tf2 落地后按其证书交叠设计。上游 `TestFinally3.test2NoDebug` 标 `@NotYetImplemented`，JADX 自身亦未完成，属已登记分母调整项。
 
 ## Tf4 落地记录（change `recover-flag-conditional-finally`）
 
