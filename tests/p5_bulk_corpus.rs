@@ -723,7 +723,18 @@ impl Billing {
         // that became statements, and — the one classification that moved — `boom`'s `throw new`,
         // which the expansion presents as the construction statement it is, so the case's
         // explanation-only count fell from six to five.
-        ir_items: 20331,
+        //
+        // The merge of `recover-preceded-statement-catches` re-measured this row on the same
+        // three paths: the concat rule's value-flow attribution (the change's task 2.2) no longer
+        // refuses a chain whose same-owner `toString` in another block its own builder never
+        // reaches — `Guarded.suppressedCatching`'s loop chain, which the entry-block `toString`
+        // of the catch clause used to refuse `jre_concat_split` against, is now one of the two
+        // chains that rule presents — and the evidence records the rule materializes bill one
+        // `IrItems` each. Only this row moves, and only `ir_items` (−54): every other dimension
+        // of every row stands, no member's text or classification moved, and the two arms move by
+        // the same −54 for the same reason. The rows were regenerated with
+        // `record_the_billing_table` and the arms' own reader, not hand-edited.
+        ir_items: 20277,
         analysis_steps: 10493,
         result_items: 122,
         output_bytes: 23280,
@@ -788,7 +799,11 @@ impl Billing {
         class_bytes: 327895,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 33784,
+        // −54 with the `recover-preceded-statement-catches` merge, for the reason
+        // [`Billing::MANY_METHOD_CLASS`] records: the concat rule's presented chains bill one
+        // `IrItems` fewer per record than the refusals they replace, and no other dimension of
+        // the corpus's work moved.
+        ir_items: 33730,
         analysis_steps: 17261,
         result_items: 1378,
         output_bytes: 39564,
@@ -816,7 +831,10 @@ impl Billing {
         class_bytes: 10817,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 33784,
+        // −54 with the `recover-preceded-statement-catches` merge, the same work the direct arm
+        // records: the work the two arms share is what moved, and retention still touches only
+        // the read dimensions.
+        ir_items: 33730,
         analysis_steps: 17261,
         result_items: 26,
         output_bytes: 39564,
