@@ -1,0 +1,298 @@
+// jarde: presentation of `C2WN` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class C2WN extends java.lang.Object {
+    public C2WN() {
+        // @method <init>()V
+        // @declaration a constructor of `C2WN`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    static java.lang.String userWrap(int arg0) {
+        // @method userWrap(I)Ljava/lang/String;
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new C2WN$MyFailure("user");
+            } else {
+                return "fine";
+            }
+        } catch (C2WN$MyFailure local1) {
+            // @bytecode 48
+            // the parameter 1 of the invocation at BCI 45 is declared `java.lang.Throwable` presents `C2WN$MyFailure` but the invocation requires `java.lang.Throwable` and this layer has no safe reference conversion evidence
+            // @bytecode 49 50
+            // the statement at BCI 50 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        }
+    }
+
+    static java.lang.String userForward(int arg0) {
+        // @method userForward(I)Ljava/lang/String;
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new C2WN$MyError("err");
+            } else {
+                return "fine";
+            }
+        } catch (C2WN$MyError local1) {
+            // @bytecode 19 18
+            // the parameter 0 of the invocation at BCI 19 is declared `java.lang.Throwable` presents `C2WN$MyError` but the invocation requires `java.lang.Throwable` and this layer has no safe reference conversion evidence
+            return "logged";
+        }
+    }
+
+    static java.lang.String ioWrap(int arg0) {
+        // @method ioWrap(I)Ljava/lang/String;
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.io.IOException("io");
+            } else {
+                return "fine";
+            }
+        } catch (java.io.IOException local1) {
+            // @bytecode 48
+            // the parameter 1 of the invocation at BCI 45 is declared `java.lang.Throwable` presents `java.io.IOException` but the invocation requires `java.lang.Throwable` and this layer has no safe reference conversion evidence
+            // @bytecode 49 50
+            // the statement at BCI 50 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        }
+    }
+
+    static java.lang.String causeOnlyUser(int arg0) {
+        // @method causeOnlyUser(I)Ljava/lang/String;
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new C2WN$MyFailure("cause");
+            } else {
+                return "fine";
+            }
+        } catch (C2WN$MyFailure local1) {
+            // @bytecode 26
+            // the parameter 0 of the invocation at BCI 23 is declared `java.lang.Throwable` presents `C2WN$MyFailure` but the invocation requires `java.lang.Throwable` and this layer has no safe reference conversion evidence
+            // @bytecode 27 28
+            // the statement at BCI 28 reads `local2`, and no statement of this body declared that local: the write that would have declared it was refused, so its name cannot be read here (P3 2b.2)
+        }
+    }
+
+    static java.lang.String arrayWrap(java.lang.IllegalStateException[] arg0, int arg1) {
+        // @method arrayWrap([Ljava/lang/IllegalStateException;I)Ljava/lang/String;
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg1 == 0) {
+                throw new java.lang.IllegalStateException("arr");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalStateException local2) {
+            // @bytecode 52
+            // the parameter 0 of the invocation at BCI 31 is declared `java.lang.Throwable[]` presents `java.lang.IllegalStateException[]` but the invocation requires `java.lang.Throwable[]` and this layer has no safe reference conversion evidence
+        }
+    }
+
+    static java.lang.String userArrayWrap(C2WN$MyFailure[] arg0, int arg1) {
+        // @method userArrayWrap([LC2WN$MyFailure;I)Ljava/lang/String;
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg1 == 0) {
+                throw new C2WN$MyFailure("uarr");
+            } else {
+                return "fine";
+            }
+        } catch (C2WN$MyFailure local2) {
+            // @bytecode 52
+            // the parameter 0 of the invocation at BCI 31 is declared `java.lang.Throwable[]` presents `C2WN$MyFailure[]` but the invocation requires `java.lang.Throwable[]` and this layer has no safe reference conversion evidence
+        }
+    }
+
+    static java.lang.String allMessages(java.lang.Throwable[] arg0) {
+        // @method allMessages([Ljava/lang/Throwable;)Ljava/lang/String;
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return java.lang.String.valueOf(arg0.length);
+    }
+
+    static java.lang.String overloadNarrow(int arg0) {
+        // @method overloadNarrow(I)Ljava/lang/String;
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.lang.IllegalStateException("ovl");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalStateException local1) {
+            // @bytecode 19 18
+            // the parameter 0 of the invocation at BCI 19 is declared `java.lang.Throwable` presents `java.lang.IllegalStateException` but the invocation requires `java.lang.Throwable` and this layer has no safe reference conversion evidence
+            return "picked";
+        }
+    }
+
+    static void pick(java.lang.Throwable arg0) {
+        // @method pick(Ljava/lang/Throwable;)V
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("pick-T:" + arg0.getMessage());
+        return;
+    }
+
+    static void pick(java.lang.IllegalStateException arg0) {
+        // @method pick(Ljava/lang/IllegalStateException;)V
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("pick-ISE:" + arg0.getMessage());
+        return;
+    }
+
+    static java.lang.String rawMix(int arg0) {
+        // @method rawMix(I)Ljava/lang/String;
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.lang.IllegalStateException("raw");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalStateException local1) {
+            java.util.ArrayList local2 = new java.util.ArrayList();
+            local2.add((java.lang.Object) java.lang.Boolean.valueOf(true));
+            // @bytecode 69
+            // the parameter 0 of the invocation at BCI 60 is declared `java.lang.Throwable` presents `java.lang.IllegalStateException` but the invocation requires `java.lang.Throwable` and this layer has no safe reference conversion evidence
+        }
+    }
+
+    static java.lang.String log0(java.lang.Throwable arg0) {
+        // @method log0(Ljava/lang/Throwable;)Ljava/lang/String;
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.lang.StringBuilder().append("log0:").append((java.lang.Object) arg0 instanceof java.lang.IllegalStateException).toString();
+    }
+
+    static void log(java.lang.Throwable arg0) {
+        // @method log(Ljava/lang/Throwable;)V
+        // @declaration a static method of `C2WN`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println("log:" + arg0.getMessage());
+        return;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `C2WN`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            userWrap(0);
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("userWrap:").append((java.lang.String) local1.getMessage()).append("/").append((java.lang.Object) local1.getCause() instanceof C2WN$MyFailure).toString());
+        }
+        java.lang.System.out.println("userWrap:" + userWrap(1));
+        try {
+            java.lang.System.out.println("userForward:" + userForward(0));
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println("userForward:threw:" + local1.getMessage());
+        }
+        java.lang.System.out.println("userForward:" + userForward(1));
+        try {
+            ioWrap(0);
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("ioWrap:").append((java.lang.String) local1.getMessage()).append("/").append((java.lang.Object) local1.getCause() instanceof java.io.IOException).toString());
+        }
+        java.lang.System.out.println("ioWrap:" + ioWrap(1));
+        try {
+            causeOnlyUser(0);
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append("causeOnlyUser:").append((java.lang.Object) local1.getCause() instanceof C2WN$MyFailure).toString());
+        }
+        java.lang.System.out.println("causeOnlyUser:" + causeOnlyUser(1));
+        try {
+            java.io.PrintStream saved0 = java.lang.System.out;
+            java.lang.StringBuilder saved1 = new java.lang.StringBuilder().append("arrayWrap:");
+            // @bytecode 332
+            // the array instruction at BCI 332 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+            // @bytecode 335 332
+            // the instruction at BCI 335 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+            // @bytecode 337
+            // the instruction at BCI 337 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+            // @bytecode 340
+            // the instruction at BCI 340 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+            // @bytecode 346 332 343
+            // the copy at BCI 335 has no proved local assignment
+            // @bytecode 357 316 354 351 348 332
+            // the copy at BCI 335 has no proved local assignment
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println("arrayWrap:threw:" + local1.getMessage());
+        }
+        java.io.PrintStream saved2 = java.lang.System.out;
+        java.lang.StringBuilder saved3 = new java.lang.StringBuilder().append("arrayWrap:");
+        // @bytecode 408
+        // the array instruction at BCI 408 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 411 408
+        // the instruction at BCI 411 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 413
+        // the instruction at BCI 413 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 416
+        // the instruction at BCI 416 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 422 408 419
+        // the copy at BCI 411 has no proved local assignment
+        // @bytecode 433 392 430 427 424 408
+        // the copy at BCI 411 has no proved local assignment
+        try {
+            java.io.PrintStream saved2 = saved2;
+            java.lang.StringBuilder saved3 = saved3;
+            java.io.PrintStream saved4 = java.lang.System.out;
+            java.lang.StringBuilder saved5 = new java.lang.StringBuilder().append("userArrayWrap:");
+            // @bytecode 452
+            // the array instruction at BCI 452 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+            // @bytecode 455 452
+            // the instruction at BCI 455 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+            // @bytecode 457
+            // the instruction at BCI 457 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+            // @bytecode 460
+            // the instruction at BCI 460 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+            // @bytecode 466 452 463
+            // the copy at BCI 455 has no proved local assignment
+            // @bytecode 477 436 474 471 468 452
+            // the copy at BCI 455 has no proved local assignment
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println("userArrayWrap:threw:" + local1.getMessage());
+        }
+        java.io.PrintStream saved6 = java.lang.System.out;
+        java.lang.StringBuilder saved7 = new java.lang.StringBuilder().append("userArrayWrap:");
+        // @bytecode 528
+        // the array instruction at BCI 528 produces a value nothing in this body reads, so the instruction the bytecode runs has no place in the text
+        // @bytecode 531 528
+        // the instruction at BCI 531 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 533
+        // the instruction at BCI 533 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 536
+        // the instruction at BCI 536 belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds
+        // @bytecode 542 528 539
+        // the copy at BCI 531 has no proved local assignment
+        // @bytecode 553 512 550 547 544 528
+        // the copy at BCI 531 has no proved local assignment
+        try {
+            java.io.PrintStream saved6 = saved6;
+            java.lang.StringBuilder saved7 = saved7;
+            java.lang.System.out.println("overloadNarrow:" + overloadNarrow(0));
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println("overloadNarrow:threw:" + local1.getMessage());
+        }
+        java.lang.System.out.println("overloadNarrow:" + overloadNarrow(1));
+        try {
+            java.lang.System.out.println("rawMix:" + rawMix(0));
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println("rawMix:threw:" + local1.getMessage());
+        }
+        java.lang.System.out.println("rawMix:" + rawMix(1));
+        return;
+    }
+}

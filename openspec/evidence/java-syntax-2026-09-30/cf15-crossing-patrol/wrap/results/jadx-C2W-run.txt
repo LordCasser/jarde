@@ -1,0 +1,20 @@
+alias:w:zero/true
+iaeWrap:w:bad/true
+nested:w2:w1/w1/true
+log:fwd
+forward:logged
+note:7:multix
+multi:noted
+causeOnly:true:java.lang.IllegalStateException: cause
+pick-T:ovl
+overloadNarrow:picked
+objectTarget:id:java.lang.IllegalStateException: obj
+=== modes ===
+alias:fine
+iaeWrap:fine
+nested:fine
+forward:fine
+multi:fine
+causeOnly:fine
+overloadNarrow:fine
+objectTarget:fine

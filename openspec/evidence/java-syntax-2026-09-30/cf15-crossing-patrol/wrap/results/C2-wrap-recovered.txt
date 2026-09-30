@@ -1,0 +1,41 @@
+// jarde: presentation of `C2` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class C2 extends java.lang.Object {
+    public C2() {
+        // @method <init>()V
+        // @declaration a constructor of `C2`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static java.lang.String alias(int arg0) {
+        // @method alias(I)Ljava/lang/String;
+        // @declaration a static method of `C2`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            if (arg0 == 0) {
+                throw new java.lang.IllegalStateException("zero");
+            } else {
+                return "fine";
+            }
+        } catch (java.lang.IllegalStateException local1) {
+            java.lang.String local2 = local1.getMessage();
+            java.lang.RuntimeException local3 = new java.lang.RuntimeException("w:" + local2, (java.lang.Throwable) local1);
+            throw local3;
+        }
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `C2`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            alias(0);
+        } catch (java.lang.RuntimeException local1) {
+            java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append((java.lang.String) local1.getMessage()).append("/").append((java.lang.Object) local1.getCause() instanceof java.lang.IllegalStateException).toString());
+        }
+        java.lang.System.out.println((java.lang.String) alias(1));
+        return;
+    }
+}
