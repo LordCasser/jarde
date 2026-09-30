@@ -84,10 +84,6 @@ use crate::reuse;
 use crate::source_map::{Origin, OriginSet};
 use crate::stop::{StopReason, charge, poll};
 
-fn loop_label(header_bci: u32) -> String {
-    format!("jarde_loop_{header_bci}")
-}
-
 /// How deep a value expression may nest before the builder refuses it.
 ///
 /// Bytecode nests as deeply as the source expression did, and a source expression is bounded by the
@@ -7090,6 +7086,7 @@ pub(crate) fn build(
         short_circuit_operands: BTreeSet::new(),
         loop_headers: Vec::new(),
         labeled_loop_headers: BTreeSet::new(),
+        loop_labels: BTreeMap::new(),
         switch_depth: 0,
         finally_span: None,
         finally_return: None,
@@ -7849,6 +7846,8 @@ struct Builder<'a> {
     /// Active loop identities and the subset that require Java labels for a non-local transfer.
     loop_headers: Vec<u32>,
     labeled_loop_headers: BTreeSet<u32>,
+    /// The label each labeled loop header writes, in first-claim order ([`Builder::loop_label`]).
+    loop_labels: BTreeMap<u32, String>,
     /// A switch intercepts an unlabelled break, so a loop break from one of its arms is labeled.
     switch_depth: usize,
     /// Physical slice of the protected body while its internal Region is written.
@@ -7917,6 +7916,7 @@ struct FinallyCheckpoint {
     settled: BTreeSet<u32>,
     loop_headers: Vec<u32>,
     labeled_loop_headers: BTreeSet<u32>,
+    loop_labels: BTreeMap<u32, String>,
     switch_depth: usize,
 }
 
@@ -10753,6 +10753,7 @@ impl Builder<'_> {
             settled: self.settled.clone(),
             loop_headers: self.loop_headers.clone(),
             labeled_loop_headers: self.labeled_loop_headers.clone(),
+            loop_labels: self.loop_labels.clone(),
             switch_depth: self.switch_depth,
         }
     }
@@ -10780,6 +10781,7 @@ impl Builder<'_> {
         self.settled = checkpoint.settled;
         self.loop_headers = checkpoint.loop_headers;
         self.labeled_loop_headers = checkpoint.labeled_loop_headers;
+        self.loop_labels = checkpoint.loop_labels;
         self.switch_depth = checkpoint.switch_depth;
         self.finally_span = None;
         self.finally_return = None;
@@ -12650,6 +12652,26 @@ impl Builder<'_> {
         self.decision(variable).is_some_and(Decided::is_boolean)
     }
 
+    /// The source-style label of one labeled loop header. A class file states no label name, so
+    /// the spelling is this body's presentation choice: the first labeled loop its statement write
+    /// order claims is `loop`, and each further one is `loop2`, `loop3`, … — one deterministic
+    /// name per header, so every transfer that names the loop and the loop's own statement spell
+    /// the same word and no internal synthesis trace shows. Labels share a Java namespace of their
+    /// own, so no local name is consulted here.
+    fn loop_label(&mut self, header_bci: u32) -> String {
+        let ordinal = self.loop_labels.len() + 1;
+        self.loop_labels
+            .entry(header_bci)
+            .or_insert_with(|| {
+                if ordinal == 1 {
+                    "loop".to_string()
+                } else {
+                    format!("loop{ordinal}")
+                }
+            })
+            .clone()
+    }
+
     /// Appends the statements of one region, with the region's own declarations first.
     fn region(&mut self, region: &Region, path: &RegionPath) -> Result<(), StopReason> {
         if let Region::SharedTailEarlyReturn { prefix, tests, .. } = region {
@@ -13270,7 +13292,7 @@ impl Builder<'_> {
                 let label = self
                     .labeled_loop_headers
                     .contains(&header_bci)
-                    .then(|| loop_label(header_bci));
+                    .then(|| self.loop_label(header_bci));
                 let kind = if let Some(proof) = for_header {
                     self.settled.remove(&proof.update_bci);
                     let Some(update_instruction) =
@@ -13429,7 +13451,7 @@ impl Builder<'_> {
                 };
                 let label = if position + 1 != self.loop_headers.len() || self.switch_depth > 0 {
                     self.labeled_loop_headers.insert(target);
-                    Some(loop_label(target))
+                    Some(self.loop_label(target))
                 } else {
                     None
                 };
@@ -13456,7 +13478,7 @@ impl Builder<'_> {
                 };
                 let label = (position + 1 != self.loop_headers.len()).then(|| {
                     self.labeled_loop_headers.insert(target);
-                    loop_label(target)
+                    self.loop_label(target)
                 });
                 self.push(Stmt::new(
                     StmtKind::Continue { label },
@@ -18600,9 +18622,6 @@ impl Builder<'_> {
             let Some(previous) = index.checked_sub(1).and_then(|i| instructions.get(i)) else {
                 continue;
             };
-            let Some(next) = instructions.get(index + 1) else {
-                continue;
-            };
             let operands = stack_operands(instruction);
             let [(_, discarded)] = operands.as_slice() else {
                 continue;
@@ -18613,6 +18632,9 @@ impl Builder<'_> {
             // An invocation whose result is uniquely consumed by this `pop` is already a Java
             // statement. Prefer that existing discard representation over reusing the invocation
             // as the next static call's expression qualifier; both plans must never own one value.
+            // Nothing after the `pop` is read, so the shape holds where the `pop` ends its block —
+            // a labeled loop's trailing call ends the body block when the proved `for` header owns
+            // the update that follows it.
             if let Some(Operation::Invoke(_)) = self.operations.get(previous.bci())
                 && self.call_result_is_discarded(previous, *discarded, at)
             {
@@ -18621,7 +18643,11 @@ impl Builder<'_> {
                 continue;
             }
             // The static call the `pop` sits in front of: the evaluation it discarded is the
-            // qualifier the call's text has to carry.
+            // qualifier the call's text has to carry. This is the one shape that looks past the
+            // `pop`, so a `pop` that ends its block is never one.
+            let Some(next) = instructions.get(index + 1) else {
+                continue;
+            };
             if let Some(Operation::Invoke(target)) = self.operations.get(next.bci())
                 && target.kind() == InvokeKind::Static
             {
