@@ -20,3 +20,12 @@
 读取的呈现类型跟随**值定义**：handler 体内读到的 SSA 值若定义为 catch 绑定 store（Caught），呈现该绑定值的行类型（子句头已正确拼写的类型），不再回退槽决策。这是呈现归属修正而非新机制——`Definition::Caught` 在 build.rs 多处已有类型/拼写事实（行 22953 一带已把 caught 拼为子句类型），缺的是实参呈现路径对复用槽读取取值定义类型。
 
 原 class 为行为基准；JADX 参照不作为语义正例。
+
+## 处置结果（2026-10-01，`recover-caught-value-argument-typing`）
+
+方向已实施：实参/读取呈现对 handler 入口 store 的值按入口引用自身的类型拼写（单行子句即行
+类型），其余读取保持槽决策。诊断与落点见 [typing-diagnosis.md](typing-diagnosis.md)；变体前后
+输出见 [variants/](variants/)（S1V.java / S1V.before.txt / S1V.after.txt）；恢复输出与三方对照
+见 [results/S1-typing.after.java](results/S1-typing.after.java)、
+[results/typing-threeway.md](results/typing-threeway.md)。回归测试钉在
+`tests/p3_caught_value_argument_typing.rs`（fixture 同字节）。

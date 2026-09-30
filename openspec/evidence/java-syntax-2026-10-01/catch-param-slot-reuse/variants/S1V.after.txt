@@ -1,0 +1,128 @@
+// jarde: presentation of `S1V` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class S1V extends java.lang.Object implements java.lang.AutoCloseable {
+    public S1V() {
+        // @method <init>()V
+        // @declaration a constructor of `S1V`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void close() {
+        // @method close()V
+        // @declaration an instance method of `S1V`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    static java.lang.String tagA(java.lang.IllegalStateException arg0) {
+        // @method tagA(Ljava/lang/IllegalStateException;)Ljava/lang/String;
+        // @declaration a static method of `S1V`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return "A:" + arg0.getMessage();
+    }
+
+    static java.lang.String tagB(java.lang.IllegalArgumentException arg0) {
+        // @method tagB(Ljava/lang/IllegalArgumentException;)Ljava/lang/String;
+        // @declaration a static method of `S1V`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return "B:" + arg0.getMessage();
+    }
+
+    static java.lang.String tagR(java.lang.RuntimeException arg0) {
+        // @method tagR(Ljava/lang/RuntimeException;)Ljava/lang/String;
+        // @declaration a static method of `S1V`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return "R:" + arg0.getMessage();
+    }
+
+    static void touch(S1V arg0) {
+        // @method touch(LS1V;)V
+        // @declaration a static method of `S1V`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    public static java.lang.String clausesHelper() throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `clausesHelper()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method clausesHelper()Ljava/lang/String;
+        // @declaration a static method of `S1V`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 19 27 33 35 38 44 50
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String multiHelper() throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `multiHelper()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method multiHelper()Ljava/lang/String;
+        // @declaration a static method of `S1V`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 19 27 33 35 38 44
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String copyHelper() throws java.lang.Exception {
+        // @method copyHelper()Ljava/lang/String;
+        // @declaration a static method of `S1V`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (S1V local0 = new S1V()) {
+            touch(local0);
+        } catch (java.lang.IllegalStateException local0) {
+            java.lang.IllegalStateException local1 = local0;
+            return tagA(local1);
+        }
+        return "done";
+    }
+
+    public static java.lang.String scopeHelper() throws java.lang.Exception {
+        // @method scopeHelper()Ljava/lang/String;
+        // @declaration a static method of `S1V`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        S1V local0 = new S1V();
+        touch(local0);
+        local0 = new java.lang.IllegalStateException("x");
+        // @bytecode 26 23 22
+        // the parameter 0 of the invocation at BCI 23 is declared `java.lang.IllegalStateException` presents `S1V` but the invocation requires `java.lang.IllegalStateException` and this layer has no safe reference conversion evidence
+    }
+
+    public static void rethrowHelper() throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `rethrowHelper()V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method rethrowHelper()V
+        // @declaration a static method of `S1V`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 19 27 33 35 38 41
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String plainClauses() throws java.lang.Exception {
+        // @method plainClauses()Ljava/lang/String;
+        // @declaration a static method of `S1V`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try {
+            touch((S1V) null);
+        } catch (java.lang.IllegalStateException local0) {
+            return tagA(local0);
+        } catch (java.lang.IllegalArgumentException local0) {
+            return tagB(local0);
+        }
+        return "done";
+    }
+
+    public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `S1V`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) clausesHelper());
+        java.lang.System.out.println((java.lang.String) multiHelper());
+        java.lang.System.out.println((java.lang.String) copyHelper());
+        java.lang.System.out.println((java.lang.String) scopeHelper());
+        try {
+            rethrowHelper();
+        } catch (java.lang.IllegalStateException local1) {
+            java.lang.System.out.println("rethrown:" + local1.getMessage());
+        }
+        java.lang.System.out.println((java.lang.String) plainClauses());
+        return;
+    }
+}
