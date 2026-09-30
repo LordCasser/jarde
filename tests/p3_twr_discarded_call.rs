@@ -13,8 +13,9 @@
 //!   `invoke; checkcast; pop`, `invoke; dup; astore; pop`, `invokestatic; pop2`) keeps the whole
 //!   body refusal the change found on mainline, with the same diagnostic and BCI;
 //! * the **compile**: the recovered `T2` and `V17a` classes recompile under `javac --release 8`
-//!   (the one pre-existing saved-return store spelling is patched as the evidence README
-//!   discloses — it is not this change's text);
+//!   as presented — `recover-saved-return-value-typing` spells the saved-return declaration from
+//!   the constant's own type, so the text no longer needs the patch the evidence README once
+//!   recorded for this leg (`return "X";`);
 //! * the **runtime**: the original frozen bytes and the recovered classes print the same lines
 //!   under `java -Xverify:all`, normal and exception-injected paths included; the recorded JADX
 //!   column (`results/three-way/run-sha256.txt`) printed the same outputs for the original class;
@@ -158,22 +159,6 @@ fn member_report(class: &str, bytes: &[u8], method: &str) -> RecoveryReport {
     }
 }
 
-/// The saved-return store spelling javac's own lowering cannot take back from the presented text:
-/// the store the `twr` saved-return proof reads is presented `Object local1 = "X"; return local1;`
-/// on mainline and here alike, and a `String`-returning method cannot compile that text. The
-/// evidence README records the one mechanical patch the compile leg takes (`return "X";`); the
-/// patch touches no statement of this change's subset.
-fn compile_ready(text: &str) -> String {
-    let patched = text.replace(
-        "            Object local1 = \"in\";\n            return local1;\n",
-        "            return \"in\";\n",
-    );
-    patched.replace(
-        "            Object local1 = \"solo\";\n            return local1;\n",
-        "            return \"solo\";\n",
-    )
-}
-
 fn write_source(dir: &Path, name: &str, text: &str) -> PathBuf {
     let path = dir.join(name);
     std::fs::write(&path, text).expect("the scratch source writes");
@@ -253,7 +238,7 @@ fn the_void_call_controls_keep_their_exact_text() {
     let text = class_text(T2, "T2");
     for control in [
         "try (T2 local0 = new T2()) {\n            touch(local0);\n        }\n        return \"done\";",
-        "try (T2 local0 = new T2()) {\n            touch(local0);\n            Object local1 = \"in\";\n            return local1;\n        }",
+        "try (T2 local0 = new T2()) {\n            touch(local0);\n            java.lang.String local1 = \"in\";\n            return local1;\n        }",
     ] {
         assert!(
             text.contains(control),
@@ -288,11 +273,11 @@ fn the_variant_family_presents_every_discarded_call_shape() {
         ),
         (
             "callBeforeReturnInside",
-            "touch(local0);\n            local0.hashCode();\n            Object local1 = \"in\";",
+            "touch(local0);\n            local0.hashCode();\n            java.lang.String local1 = \"in\";",
         ),
         (
             "callOnlyReturnInside",
-            "try (V17a local0 = new V17a()) {\n            local0.toString();\n            Object local1 = \"solo\";",
+            "try (V17a local0 = new V17a()) {\n            local0.toString();\n            java.lang.String local1 = \"solo\";",
         ),
         (
             "staticCall",
@@ -394,11 +379,7 @@ fn the_negative_refusal_is_the_guard_body_diagnostic_at_the_body_bci() {
 #[test]
 fn the_recovered_classes_compile_and_run_the_original_paths() {
     let jarde_dir = scratch_dir("compile");
-    write_source(
-        &jarde_dir,
-        "V17a.java",
-        &compile_ready(&class_text(V17A, "V17a")),
-    );
+    write_source(&jarde_dir, "V17a.java", &class_text(V17A, "V17a"));
     write_source(
         &jarde_dir,
         "V17a$G17.java",
@@ -411,7 +392,7 @@ fn the_recovered_classes_compile_and_run_the_original_paths() {
     );
     write_source(&jarde_dir, "V17aRunner.java", V17A_RUNNER);
     javac(&[
-        write_source(&jarde_dir, "T2.java", &compile_ready(&class_text(T2, "T2"))),
+        write_source(&jarde_dir, "T2.java", &class_text(T2, "T2")),
         jarde_dir.join("V17a.java"),
         jarde_dir.join("V17a$G17.java"),
         jarde_dir.join("V17a$G17Impl.java"),

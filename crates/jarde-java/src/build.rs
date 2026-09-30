@@ -24321,7 +24321,51 @@ fn written_type(
     if let Some((element, dimensions)) = array_of_value(ssa, operations, value, 0) {
         return Ok(array_spelling(&element, dimensions));
     }
+    if let Some(ty) = constant_of_value(ssa, operations, value, 0) {
+        return Ok(Some(ty));
+    }
     value_type(ssa.value(value).ty())
+}
+
+/// The type a pushed constant names, when the value's own frame entry states only an unknown
+/// reference: a `ldc` of a `String` or a class constant names no class at the instruction, so the
+/// frame keeps the conservative unknown reference, and the constant its producer pushes is the
+/// value's one type evidence — the same producer-side reading [`array_of_value`] gives an array
+/// creation. A `null` push states no type of its own: the frame's `Object` spelling stays, and a
+/// merge (a phi, a caught value) keeps the fallback's answer because no single constant owns it.
+fn constant_of_value(
+    ssa: &SsaTable,
+    operations: &Operations,
+    value: ValueId,
+    depth: usize,
+) -> Option<Type> {
+    if !matches!(ssa.value(value).ty(), Value::Ref(RefType::Unknown)) {
+        return None;
+    }
+    let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
+        return None;
+    };
+    match operations.get(*bci)? {
+        Operation::Push(ConstantValue::String(_)) => {
+            Some(Type::Reference("java.lang.String".to_owned()))
+        }
+        // A class constant's own value is the `Class` object; the entry's name is the type the
+        // literal denotes (`String.class` is one `Class`, not a `String`).
+        Operation::Push(ConstantValue::Class { .. }) => {
+            Some(Type::Reference("java.lang.Class".to_owned()))
+        }
+        // A value a slot holds is the value the instruction that wrote the slot takes: the SSA
+        // states the store's own value, and what it stored is the stack value it read — the same
+        // producer step [`array_of_value`] follows.
+        Operation::Store { .. } => {
+            if depth >= MAX_VALUE_DEPTH {
+                return None;
+            }
+            let stored = store_operand(operations, instruction_at(ssa, *bci)?)?;
+            constant_of_value(ssa, operations, stored, depth + 1)
+        }
+        _ => None,
+    }
 }
 
 /// The instruction one bytecode index holds, as the SSA table's blocks publish it.

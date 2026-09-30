@@ -1,0 +1,5 @@
+d95d8c24d4108a9300b27629a2109f07882ea2f9143aa18af25360d5368ca023  Wtyping.java
+df1911e45f45139d1ca3a39ed10e60a0ecf600d40f7d63087e44339ee7d619f7  WtypingRunner.java
+59dbededca54b136d19fc62a8ec526e98cf19caac67ecfe5fa84b531a026d627  original/Wtyping.class
+# 首轮冻结（承载 base 捕获）：cef98ed87f1bb0e096898578c85045a7ab7e151d2655df167fae5e56a8144ac8（boom 钩子加入前，六成员保存值方法布局同构）
+d702ff36ce44a124e99db14222e312823294f89d76a8725bab0d87c1069fe22f  ../fixture/T2.class

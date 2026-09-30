@@ -1,0 +1,5 @@
+fbf802bea826158a5db1cb5777e3487be3c24aecb08fb389aa8e6b079192f119  T2.jarde.java
+f0c8fe95440c16e0c47355387814dfb74e5b2dcba9b613921502bfb803358573  Wtyping.jarde.java
+5edb9e3a24e5a9d9ac92d65a85421fd7003025d5e8e918729ed4a2a7153092ab  T2.jadx.java
+62527a298c06c071eb88a388b4f292242a4855ee08f13e601378f9a6635bfaa6  Wtyping.jadx.java
+# 冻结类（行为基准）：T2 = 巡查 fixture（d702ff36…）；Wtyping = 59dbeded…（见 ../fixture-sha256.txt）
