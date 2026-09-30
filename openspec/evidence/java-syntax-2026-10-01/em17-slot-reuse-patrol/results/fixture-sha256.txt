@@ -1,0 +1,2 @@
+24a58f9a4f5a5c2d0e4e5cce4f9bf2bc404aa81591a55e9eaacf0e53a2e8ced0  openspec/evidence/java-syntax-2026-10-01/em17-slot-reuse-patrol/fixture/A1.class
+0e441de3da38795dd1c9495e7d6d34972a4bc7c90e49274fb63c6869c6163e35  openspec/evidence/java-syntax-2026-10-01/em17-slot-reuse-patrol/fixture/A2.class
