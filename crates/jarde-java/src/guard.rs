@@ -217,6 +217,18 @@ pub enum Shape {
         handler_cleanup: (u32, u32),
         saved_return: (u32, u32),
     },
+    /// The fixed two-row flag conditional: a two-instruction `false` initialisation leads the
+    /// method, the protected body sets the same local `true` exactly once before it saves the
+    /// returned value, and both cleanup copies are the same eight-instruction `iload`-guarded
+    /// read-modify-write of one `int` field. `flag_slot` is the slot the lead initialises, the
+    /// body's one `true` store fills and both copies branch on.
+    FlagConditionalFinally {
+        row_ordinal: u32,
+        flag_slot: u16,
+        normal_cleanup: (u32, u32),
+        handler_cleanup: (u32, u32),
+        saved_return: (u32, u32),
+    },
     /// One named catch and two normal completions sharing a proved catch-all cleanup handler.
     SharedFinally {
         rows: [u32; 3],
@@ -379,6 +391,7 @@ impl Plan {
             | Shape::LoopFinally { .. }
             | Shape::ConditionalFinally { .. }
             | Shape::NullableResourceFinally { .. }
+            | Shape::FlagConditionalFinally { .. }
             | Shape::SharedFinally { .. }
             | Shape::EmptyCatchCallFinally { .. }
             | Shape::SegmentedFinally { .. }
@@ -2990,6 +3003,621 @@ fn prove_nullable_resource_finally(
             normal_cleanup: (*n0, *return_load),
             handler_cleanup: (*primary_store, facts.span_end(*rethrow)),
             saved_return: (saved_return, *normal_return),
+        },
+        lead: (start, body_start),
+        body: (body_start, cleanup_start),
+        owned,
+        join: None,
+        facts: origins,
+    }))
+}
+
+/// One eight-instruction flag-guarded field read-modify-write: `iload flag; ifne exit;
+/// aload_0; dup; getfield F; iconst K; isub; putfield F`. The value the branch tests is
+/// returned to the caller, which ties it to the certificate's own flag writes; the field and
+/// the constant come back so the two copies can be checked against one parameter set. Nothing
+/// here decides what the copies mean — only that this exact shape, with one consumer per
+/// intermediate value, is what the bytes say.
+fn flag_cleanup_copy(
+    facts: &Facts<'_>,
+    copy: &[u32; 8],
+    exit: u32,
+    slot: u16,
+) -> Option<(ValueId, Operation, i64)> {
+    let [
+        test_load,
+        branch,
+        receiver_load,
+        duplicate,
+        field_read,
+        constant,
+        subtract,
+        field_write,
+    ] = *copy;
+    let read = facts.op(field_read)?.clone();
+    let write = facts.op(field_write)?.clone();
+    let (
+        Operation::Field {
+            access: crate::facts::FieldAccess::Read,
+            is_static: false,
+            owner,
+            name,
+            descriptor,
+        },
+        Operation::Field {
+            access: crate::facts::FieldAccess::Write,
+            is_static: false,
+            owner: write_owner,
+            name: write_name,
+            descriptor: write_descriptor,
+        },
+    ) = (&read, &write)
+    else {
+        return None;
+    };
+    if facts.op(test_load) != Some(&Operation::Load { slot })
+        || facts.op(branch)
+            != Some(&Operation::Comparison {
+                op: CompareOp::JumpIfNotZero,
+                target: exit,
+            })
+        || facts.op(receiver_load) != Some(&Operation::Load { slot: 0 })
+        || facts.op(duplicate) != Some(&Operation::Duplicate)
+        || facts.op(subtract)
+            != Some(&Operation::Arithmetic {
+                op: crate::facts::ArithmeticOp::Subtract,
+            })
+        || descriptor != "I"
+        || (owner, name, descriptor) != (write_owner, write_name, write_descriptor)
+        || !matches!(
+            facts.op(constant),
+            Some(Operation::Push(crate::facts::ConstantValue::Int(_)))
+        )
+    {
+        return None;
+    }
+    let steps: Vec<_> = copy
+        .iter()
+        .map(|bci| facts.step(*bci))
+        .collect::<Option<_>>()?;
+    // The receiver both field accesses act on is the method's own `this`, read once and
+    // duplicated: the write's receiver is the `dup`'s lower copy, the read's its upper copy.
+    let [(Slot::Local(0), receiver)] = steps[2].instruction.reads() else {
+        return None;
+    };
+    if !matches!(
+        facts.ssa.value(facts.resolve(*receiver)).def(),
+        Definition::Entry {
+            slot: Slot::Local(0),
+            ..
+        }
+    ) {
+        return None;
+    }
+    let (_, receiver_output) = steps[2]
+        .instruction
+        .writes()
+        .iter()
+        .copied()
+        .find(|(written, _)| matches!(written, Slot::Stack(_)))?;
+    let [(Slot::Local(read_slot), flag)] = steps[0].instruction.reads() else {
+        return None;
+    };
+    if *read_slot != slot {
+        return None;
+    }
+    let (_, flag_stack) = steps[0]
+        .instruction
+        .writes()
+        .iter()
+        .copied()
+        .find(|(written, _)| matches!(written, Slot::Stack(_)))?;
+    let stack_writes = |index: usize| -> Option<Vec<(Slot, ValueId)>> {
+        let mut writes: Vec<(Slot, ValueId)> = steps[index]
+            .instruction
+            .writes()
+            .iter()
+            .filter(|(written, _)| matches!(written, Slot::Stack(_)))
+            .copied()
+            .collect();
+        writes.sort_by_key(|(written, _)| match written {
+            Slot::Stack(depth) => *depth,
+            Slot::Local(slot) => u32::from(*slot),
+        });
+        Some(writes)
+    };
+    let duplicated = stack_writes(3)?;
+    if duplicated.len() != 2 || duplicated[0].1 == duplicated[1].1 {
+        return None;
+    }
+    let branch_inputs = stack_operands(steps[1].instruction);
+    let duplicate_inputs = stack_operands(steps[3].instruction);
+    let read_inputs = stack_operands(steps[4].instruction);
+    let subtract_inputs = stack_operands(steps[6].instruction);
+    let write_inputs = stack_operands(steps[7].instruction);
+    let (Some(push_output), Some(read_output), Some(subtract_output)) = (
+        stack_writes(5)?.first().map(|(_, value)| *value),
+        stack_writes(4)?.first().map(|(_, value)| *value),
+        stack_writes(6)?.first().map(|(_, value)| *value),
+    ) else {
+        return None;
+    };
+    if branch_inputs.len() != 1
+        || duplicate_inputs.len() != 1
+        || read_inputs.len() != 1
+        || subtract_inputs.len() != 2
+        || write_inputs.len() != 2
+        || !facts.same(branch_inputs[0].1, flag_stack)
+        || !facts.same(duplicate_inputs[0].1, receiver_output)
+        || !facts.same(read_inputs[0].1, duplicated[1].1)
+        || !facts.same(write_inputs[0].1, duplicated[0].1)
+        || !facts.same(subtract_inputs[0].1, read_output)
+        || !facts.same(subtract_inputs[1].1, push_output)
+        || !facts.same(write_inputs[1].1, subtract_output)
+    {
+        return None;
+    }
+    // Every value the copy builds inside itself is consumed exactly once, where the copy
+    // consumes it. The flag and the receiver are shared with the rest of the method, so their
+    // consumers are the caller's linkage proof, not a count here.
+    let consumed = |value: ValueId, consumer: u32| -> bool {
+        facts
+            .order
+            .iter()
+            .filter(|bci| {
+                **bci != consumer
+                    && facts.step(**bci).is_some_and(|step| {
+                        stack_operands(step.instruction)
+                            .iter()
+                            .any(|(_, read)| facts.same(*read, value))
+                    })
+            })
+            .count()
+            == 0
+    };
+    for (value, consumer) in [
+        (duplicated[0].1, field_write),
+        (duplicated[1].1, field_read),
+        (read_output, subtract),
+        (push_output, subtract),
+        (subtract_output, field_write),
+    ] {
+        if !consumed(value, consumer) {
+            return None;
+        }
+    }
+    let Operation::Push(crate::facts::ConstantValue::Int(constant)) = facts.op(constant)? else {
+        return None;
+    };
+    Some((*flag, read, *constant))
+}
+
+/// The cleanup copies read the flag the lead initialises and the body sets. The normal copy
+/// runs only after the body completed, so its read must be the `true` store's own value. The
+/// handler copy runs after any protected instruction, so its read may carry either write: a
+/// direct definition or a handler phi whose inputs are both, expanded to a fixpoint.
+fn flag_value_provenance(
+    facts: &mut Facts<'_>,
+    value: ValueId,
+    lead_store: ValueId,
+    set_store: ValueId,
+    handler_entry: u32,
+    flag_slot: u16,
+) -> Result<bool, StopReason> {
+    let mut pending = vec![value];
+    let mut seen = BTreeSet::new();
+    while let Some(value) = pending.pop() {
+        facts.charge(0)?;
+        let value = facts.resolve(value);
+        if !seen.insert(value) {
+            continue;
+        }
+        if seen.len() > 64 {
+            return Ok(false);
+        }
+        if facts.same(value, lead_store) || facts.same(value, set_store) {
+            continue;
+        }
+        let Definition::Phi { block, slot } = facts.ssa.value(value).def() else {
+            return Ok(false);
+        };
+        if *slot != Slot::Local(flag_slot) {
+            return Ok(false);
+        }
+        let Some(phi) = facts.ssa.phis().iter().find(|phi| {
+            phi.block() == block && phi.slot() == *slot && facts.same(phi.value(), value)
+        }) else {
+            return Ok(false);
+        };
+        for input in phi.inputs() {
+            match input {
+                jarde_jvm::method_ir::PhiInput::Value(value) => pending.push(*value),
+                jarde_jvm::method_ir::PhiInput::Itself if block.bci() == handler_entry => {}
+                jarde_jvm::method_ir::PhiInput::Itself => return Ok(false),
+            }
+        }
+    }
+    Ok(true)
+}
+
+/// Whether one value is the expected one, through the join phis a two-predecessor block may
+/// put in the read's way: the direct definition or a phi whose every input is, expanded to a
+/// fixpoint.
+fn value_is(facts: &mut Facts<'_>, value: ValueId, expected: ValueId) -> Result<bool, StopReason> {
+    let mut pending = vec![value];
+    let mut seen = BTreeSet::new();
+    while let Some(value) = pending.pop() {
+        facts.charge(0)?;
+        let value = facts.resolve(value);
+        if !seen.insert(value) {
+            continue;
+        }
+        if seen.len() > 64 {
+            return Ok(false);
+        }
+        if facts.same(value, expected) {
+            continue;
+        }
+        let Definition::Phi { block, slot } = facts.ssa.value(value).def() else {
+            return Ok(false);
+        };
+        let Some(phi) = facts.ssa.phis().iter().find(|phi| {
+            phi.block() == block && phi.slot() == *slot && facts.same(phi.value(), value)
+        }) else {
+            return Ok(false);
+        };
+        for input in phi.inputs() {
+            match input {
+                jarde_jvm::method_ir::PhiInput::Value(value) => pending.push(*value),
+                jarde_jvm::method_ir::PhiInput::Itself => return Ok(false),
+            }
+        }
+    }
+    Ok(true)
+}
+
+/// The fixed two-row flag lowering: a two-instruction `false` initialisation, a body that sets
+/// the same local `true` exactly once before it saves the returned value, and two equivalent
+/// eight-instruction field-update copies. Every instruction and edge is accounted for before
+/// Plan; the body, the lead and the normal copy's own test may share the entry block, which is
+/// why the body's ownership is read instruction by instruction and not block by block.
+fn prove_flag_conditional_finally(
+    facts: &mut Facts<'_>,
+    current: &CanonicalBlockId,
+) -> Result<Option<Plan>, StopReason> {
+    let [body_row, self_row] = facts.handlers else {
+        return Ok(None);
+    };
+    let (start, body_start, cleanup_start, handler_start) = (
+        current.bci(),
+        body_row.start_bci,
+        body_row.end_bci,
+        body_row.handler_bci,
+    );
+    if body_row.catch_type_index.is_some()
+        || self_row.catch_type_index.is_some()
+        || self_row.ordinal != body_row.ordinal + 1
+        || self_row.start_bci != handler_start
+        || self_row.handler_bci != handler_start
+        || facts.next_bci(self_row.start_bci) != Some(self_row.end_bci)
+        || facts.order.len() > 64
+        || !facts.canonical.unreachable().is_empty()
+    {
+        return Ok(None);
+    }
+    let lead = facts.bcis((start, body_start));
+    let body = facts.bcis((body_start, cleanup_start));
+    let normal = facts.bcis((cleanup_start, handler_start));
+    let Some(&last_bci) = facts.order.last() else {
+        return Ok(None);
+    };
+    let handler = facts.bcis((handler_start, facts.span_end(last_bci)));
+    let (
+        [false_push, false_store],
+        [n0, n1, n2, n3, n4, n5, n6, n7, return_load, normal_return],
+        [
+            primary_store,
+            h0,
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6,
+            h7,
+            primary_load,
+            rethrow,
+        ],
+    ) = (lead.as_slice(), normal.as_slice(), handler.as_slice())
+    else {
+        return Ok(None);
+    };
+    let Some(Operation::Store { slot: flag_slot }) = facts.op(*false_store) else {
+        return Ok(None);
+    };
+    let flag_slot = *flag_slot;
+    if flag_slot == 0
+        || facts.op(*false_push) != Some(&Operation::Push(crate::facts::ConstantValue::Int(0)))
+        || facts.op(*n0) != Some(&Operation::Load { slot: flag_slot })
+        || !matches!(facts.op(*primary_store), Some(Operation::Store { .. }))
+        || !matches!(facts.op(*primary_load), Some(Operation::Load { .. }))
+        || facts.op(*rethrow) != Some(&Operation::Throw)
+        || facts.next_bci(*rethrow).is_some()
+    {
+        return Ok(None);
+    }
+    // The lead is the method's own first two instructions, and the body, the lead and the
+    // normal copy's test share the entry block: the body's ownership is proved per instruction.
+    if body.is_empty()
+        || facts.block_of(*false_push) != Some(current)
+        || facts.block_of(*false_store) != Some(current)
+        || body
+            .iter()
+            .copied()
+            .chain([*n0, *n1])
+            .any(|bci| facts.block_of(bci) != Some(current))
+    {
+        return Ok(None);
+    }
+    // The body sets the flag `true` exactly once, immediately before it saves the returned
+    // value: the store's only successors in the body are the save's load and store, and the
+    // save ends the body.
+    let flag_stores: Vec<u32> = body
+        .iter()
+        .copied()
+        .filter(
+            |bci| matches!(facts.op(*bci), Some(Operation::Store { slot }) if *slot == flag_slot),
+        )
+        .collect();
+    if flag_stores.len() != 1 {
+        return Ok(None);
+    }
+    let set_true = flag_stores[0];
+    let Some(save_store) = body.last().copied() else {
+        return Ok(None);
+    };
+    let Some(one_push) = facts.previous_bci(set_true) else {
+        return Ok(None);
+    };
+    let Some(save_load) = facts.previous_bci(save_store) else {
+        return Ok(None);
+    };
+    if facts.op(one_push) != Some(&Operation::Push(crate::facts::ConstantValue::Int(1)))
+        || !matches!(facts.op(save_load), Some(Operation::Load { .. }))
+        || facts.next_bci(set_true) != Some(save_load)
+        || facts.next_bci(save_load) != Some(save_store)
+    {
+        return Ok(None);
+    }
+    let Some(Operation::Store { slot: save_slot }) = facts.op(save_store) else {
+        return Ok(None);
+    };
+    let save_slot = *save_slot;
+    if save_slot == flag_slot {
+        return Ok(None);
+    }
+    // The slot is written nowhere else: the lead's `false` and the body's one `true` are the
+    // only definitions either copy's condition can read.
+    if facts
+        .bcis((start, facts.span_end(last_bci)))
+        .into_iter()
+        .any(|bci| {
+            bci != *false_store
+                && bci != set_true
+                && matches!(facts.op(bci), Some(Operation::Store { slot }) if *slot == flag_slot)
+        })
+    {
+        return Ok(None);
+    }
+    // The normal copy's completion is the saved value's own return; the handler's is the
+    // pending throwable's rethrow, whose binding store the self-protecting row covers.
+    if facts.op(*return_load) != Some(&Operation::Load { slot: save_slot })
+        || facts.op(*normal_return) != Some(&Operation::Return)
+        || !handler_binding(facts, *primary_store)
+    {
+        return Ok(None);
+    }
+    let (
+        Some((normal_flag, normal_field, normal_constant)),
+        Some((handler_flag, handler_field, handler_constant)),
+    ) = (
+        flag_cleanup_copy(
+            facts,
+            &[*n0, *n1, *n2, *n3, *n4, *n5, *n6, *n7],
+            *return_load,
+            flag_slot,
+        ),
+        flag_cleanup_copy(
+            facts,
+            &[*h0, *h1, *h2, *h3, *h4, *h5, *h6, *h7],
+            *primary_load,
+            flag_slot,
+        ),
+    )
+    else {
+        return Ok(None);
+    };
+    if normal_field != handler_field || normal_constant != handler_constant {
+        return Ok(None);
+    }
+    let (Some(normal_step), Some(save_step), Some(false_step), Some(return_step), Some(throw_step)) = (
+        facts.step(*return_load),
+        facts.step(save_store),
+        facts.step(*false_store),
+        facts.step(*normal_return),
+        facts.step(*rethrow),
+    ) else {
+        return Ok(None);
+    };
+    let local_written = |step: Step<'_>, slot| {
+        step.instruction
+            .writes()
+            .iter()
+            .find_map(|(written_slot, value)| {
+                (*written_slot == Slot::Local(slot)).then_some(*value)
+            })
+    };
+    let Some(Operation::Store { slot: primary_slot }) = facts.op(*primary_store) else {
+        return Ok(None);
+    };
+    let primary_slot = *primary_slot;
+    let (Some(set_step), Some(primary_step)) = (facts.step(set_true), facts.step(*primary_store))
+    else {
+        return Ok(None);
+    };
+    let (Some(set_value), Some(lead_value), Some(saved_value), Some(primary_value)) = (
+        local_written(set_step, flag_slot),
+        local_written(false_step, flag_slot),
+        local_written(save_step, save_slot),
+        local_written(primary_step, primary_slot),
+    ) else {
+        return Ok(None);
+    };
+    let return_inputs = stack_operands(return_step.instruction);
+    let throw_inputs = stack_operands(throw_step.instruction);
+    let primary_load_step = facts.step(*primary_load);
+    let proven = flag_value_provenance(
+        facts,
+        handler_flag,
+        lead_value,
+        set_value,
+        handler_start,
+        flag_slot,
+    )?;
+    let primary_load_reads_ok = primary_load_step.is_some_and(|step| {
+        step.instruction.reads().iter().any(|(slot, value)| {
+            *slot == Slot::Local(primary_slot) && facts.same(*value, primary_value)
+        })
+    });
+    let return_reads_ok = normal_step.instruction.reads().iter().any(|(slot, value)| {
+        *slot == Slot::Local(save_slot) && value_is(facts, *value, saved_value).unwrap_or(false)
+    });
+    let return_input_ok = matches!(return_inputs.as_slice(), [(_, read)]
+        if normal_step.instruction.writes().iter().any(|(_, value)| facts.same(*value, *read)));
+    let throw_input_ok = throw_inputs.iter().any(|(_, value)| {
+        facts.step(*primary_load).is_some_and(|step| {
+            step.instruction
+                .writes()
+                .iter()
+                .any(|(_, written)| facts.same(*written, *value))
+        })
+    });
+    if !facts.same(normal_flag, set_value)
+        || !proven
+        || facts.op(*primary_load) != Some(&Operation::Load { slot: primary_slot })
+        || !primary_load_reads_ok
+        || !return_reads_ok
+        || !return_input_ok
+        || !throw_input_ok
+    {
+        return Ok(None);
+    }
+    let protected = facts.blocks_in((body_start, cleanup_start));
+    let handler_blocks = facts.blocks_in((handler_start, facts.span_end(*rethrow)));
+    let (
+        Some(update_block),
+        Some(return_block),
+        Some(handler_entry),
+        Some(handler_update_block),
+        Some(rethrow_block),
+    ) = (
+        facts.block_of(*n2).cloned(),
+        facts.block_of(*normal_return).cloned(),
+        facts.block_of(*primary_store).cloned(),
+        facts.block_of(*h2).cloned(),
+        facts.block_of(*rethrow).cloned(),
+    )
+    else {
+        return Ok(None);
+    };
+    let owned = facts.blocks_in((start, facts.span_end(*rethrow)));
+    if owned.len() != facts.canonical.blocks().len()
+        || protected.is_empty()
+        || facts
+            .view
+            .successor_ids(current)
+            .iter()
+            .cloned()
+            .collect::<BTreeSet<_>>()
+            != BTreeSet::from([update_block.clone(), return_block.clone()])
+        || facts.view.successor_ids(&update_block) != [return_block.clone()]
+        || facts
+            .view
+            .successor_ids(&handler_entry)
+            .iter()
+            .cloned()
+            .collect::<BTreeSet<_>>()
+            != BTreeSet::from([handler_update_block.clone(), rethrow_block.clone()])
+        || facts.view.successor_ids(&handler_update_block) != [rethrow_block.clone()]
+        || !facts.view.successor_ids(&return_block).is_empty()
+        || !facts.view.successor_ids(&rethrow_block).is_empty()
+    {
+        return Ok(None);
+    }
+    for bci in facts.bcis((start, facts.span_end(*rethrow))) {
+        facts.charge(bci)?;
+        let expected: Vec<u32> = if body_start <= bci && bci < cleanup_start {
+            vec![body_row.ordinal]
+        } else if bci == handler_start {
+            vec![self_row.ordinal]
+        } else {
+            Vec::new()
+        };
+        if facts
+            .covering(bci)
+            .iter()
+            .map(|row| row.ordinal)
+            .collect::<Vec<_>>()
+            != expected
+            || (body_start <= bci
+                && bci < cleanup_start
+                && facts.op(bci) == Some(&Operation::Return))
+        {
+            return Ok(None);
+        }
+    }
+    for block in facts.canonical.blocks() {
+        facts.charge(block.id().bci())?;
+        for edge in facts
+            .canonical
+            .edges()
+            .iter()
+            .filter(|edge| edge.from() == block.id())
+        {
+            facts.charge(block.id().bci())?;
+            let from_handler = handler_blocks.contains(block.id());
+            let valid = match edge.kind() {
+                CanonicalEdgeKind::Exception { handler_ordinal } => {
+                    edge.to() == &handler_entry
+                        && ((protected.contains(block.id()) && handler_ordinal == body_row.ordinal)
+                            || (block.id() == &handler_entry
+                                && handler_ordinal == self_row.ordinal))
+                }
+                CanonicalEdgeKind::Normal if block.id() == current => {
+                    edge.to() == &update_block || edge.to() == &return_block
+                }
+                CanonicalEdgeKind::Normal if block.id() == &update_block => {
+                    edge.to() == &return_block
+                }
+                CanonicalEdgeKind::Normal if from_handler => {
+                    handler_blocks.contains(edge.to()) || edge.to() == &rethrow_block
+                }
+                CanonicalEdgeKind::Return { .. } => block.id() == &return_block,
+                _ => false,
+            };
+            if !valid {
+                return Ok(None);
+            }
+        }
+    }
+    let origins = facts.bcis((start, facts.span_end(*rethrow)));
+    Ok(Some(Plan {
+        shape: Shape::FlagConditionalFinally {
+            row_ordinal: body_row.ordinal,
+            flag_slot,
+            normal_cleanup: (cleanup_start, *return_load),
+            handler_cleanup: (*h0, *primary_load),
+            saved_return: (save_store, *normal_return),
         },
         lead: (start, body_start),
         body: (body_start, cleanup_start),
@@ -6845,6 +7473,11 @@ pub(crate) fn shared_finally_candidate(
     {
         return Ok(Some(plan));
     }
+    if handlers.len() == 2
+        && let Some(plan) = prove_flag_conditional_finally(&mut facts, current)?
+    {
+        return Ok(Some(plan));
+    }
     if handlers.len() == 1 {
         return prove_conditional_finally(&mut facts, current);
     }
@@ -8394,6 +9027,9 @@ fn guarded(
     }
     if FINALLY.admits(profile) {
         if let Some(plan) = prove_nullable_resource_finally(facts, current)? {
+            return Ok(Some(Verdict::Claimed(plan)));
+        }
+        if let Some(plan) = prove_flag_conditional_finally(facts, current)? {
             return Ok(Some(Verdict::Claimed(plan)));
         }
         if let Some(plan) = prove_void_loop_finally(facts, current)? {

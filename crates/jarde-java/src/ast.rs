@@ -690,6 +690,8 @@ pub enum AssignOp {
     Assign,
     /// `+=`
     Add,
+    /// `-=`
+    Subtract,
 }
 
 impl AssignOp {
@@ -698,6 +700,7 @@ impl AssignOp {
         match self {
             Self::Assign => "=",
             Self::Add => "+=",
+            Self::Subtract => "-=",
         }
     }
 }
