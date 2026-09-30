@@ -2402,6 +2402,9 @@ impl Walker<'_> {
                     crate::guard::Shape::NullableResourceFinally { .. } => self
                         .nullable_resource_finally_regions(&current, &plan, frame)?
                         .map(|(body, cleanup)| (body, Some(cleanup))),
+                    crate::guard::Shape::FlagConditionalFinally { .. } => self
+                        .flag_conditional_finally_regions(&current, &plan, frame)?
+                        .map(|(body, cleanup)| (body, Some(cleanup))),
                     crate::guard::Shape::SharedFinally { .. } => self
                         .shared_finally_body(&current, &plan, frame)?
                         .map(|body| (body, None)),
@@ -2533,7 +2536,8 @@ impl Walker<'_> {
             if matches!(guard_verdict.as_ref(), Some(crate::guard::Verdict::Claimed(plan))
                 if matches!(plan.shape(), crate::guard::Shape::Finally { structured: true, .. }
                     | crate::guard::Shape::LoopFinally { .. }
-                    | crate::guard::Shape::NullableResourceFinally { .. }))
+                    | crate::guard::Shape::NullableResourceFinally { .. }
+                    | crate::guard::Shape::FlagConditionalFinally { .. }))
             {
                 let Some(crate::guard::Verdict::Claimed(plan)) = guard_verdict.take() else {
                     unreachable!("the structured finally verdict was just matched")
@@ -2544,6 +2548,9 @@ impl Walker<'_> {
                         .map(|(body, cleanup)| (body, Some(cleanup))),
                     crate::guard::Shape::NullableResourceFinally { .. } => self
                         .nullable_resource_finally_regions(&current, &plan, frame)?
+                        .map(|(body, cleanup)| (body, Some(cleanup))),
+                    crate::guard::Shape::FlagConditionalFinally { .. } => self
+                        .flag_conditional_finally_regions(&current, &plan, frame)?
                         .map(|(body, cleanup)| (body, Some(cleanup))),
                     crate::guard::Shape::Finally {
                         completion: crate::guard::FinallyCompletion::Void { .. },
@@ -4619,6 +4626,101 @@ impl Walker<'_> {
                 return Err(stop);
             }
         };
+        Ok(Some((body, cleanup)))
+    }
+
+    /// Walk the flag conditional's two regions. The lead, the protected body and the normal
+    /// copy's own test share the entry block, so the body region carries that block once and
+    /// both readers rely on the builder's per-span limit: the body's statements are the block's
+    /// instructions inside the body's proved range, the cleanup's are the ones inside the
+    /// normal copy's own range. The cleanup walk starts at the same block — its test is the
+    /// block's own terminal — and ends at the saved return's block, which the statement's
+    /// guarded return owns.
+    fn flag_conditional_finally_regions(
+        &mut self,
+        start: &CanonicalBlockId,
+        plan: &crate::guard::Plan,
+        outer: &Frame,
+    ) -> Result<Option<(Region, Region)>, StopReason> {
+        let crate::guard::Shape::FlagConditionalFinally {
+            row_ordinal,
+            normal_cleanup,
+            ..
+        } = plan.shape()
+        else {
+            return Ok(None);
+        };
+        let Some(start_node) = self.view.index_of(start) else {
+            return Ok(None);
+        };
+        if self.visited.contains(&start_node)
+            || outer
+                .scope
+                .as_ref()
+                .is_some_and(|scope| !scope.contains(&start_node))
+        {
+            return Ok(None);
+        }
+        let (Some(exit_block), Some(exit_node)) = (
+            self.canonical
+                .blocks()
+                .iter()
+                .find(|block| block.id().bci() == normal_cleanup.1)
+                .map(|block| block.id().clone()),
+            self.canonical
+                .blocks()
+                .iter()
+                .find(|block| block.id().bci() == normal_cleanup.1)
+                .and_then(|block| self.view.index_of(block.id())),
+        ) else {
+            return Ok(None);
+        };
+        // The certificate proved the entry block has exactly two normal successors: the field
+        // update and the saved return. The first is the cleanup's own arm.
+        let mut successors = self.view.successors(start_node);
+        successors.retain(|node| *node != exit_node);
+        let [update_node] = successors.as_slice() else {
+            return Ok(None);
+        };
+        let expected = BTreeSet::from([start_node, *update_node]);
+        let body = Region::Straight {
+            blocks: vec![start.clone()],
+        };
+        let previous = self.visited.clone();
+        let mut frame = outer.clone();
+        frame.scope = Some(expected.clone());
+        frame.boundary = Some(exit_node);
+        frame.own_try = Some(start_node);
+        frame.own_finally = Some(((*row_ordinal, plan.body()), None));
+        let walked = self.region_at(start, &frame);
+        let (regions, next) = match walked {
+            Ok(result) => result,
+            Err(stop) => {
+                self.visited = previous;
+                return Err(stop);
+            }
+        };
+        let cleanup = sequence_region(regions);
+        let blocks = cleanup.blocks();
+        let actual: BTreeSet<_> = blocks
+            .iter()
+            .filter_map(|block| self.view.index_of(block))
+            .collect();
+        if !matches!(cleanup, Region::If { .. })
+            || next.as_ref() != Some(&exit_block)
+            || !finally_body_supported(&cleanup, false)
+            || actual != expected
+            || blocks.len() != actual.len()
+            || self
+                .visited
+                .difference(&previous)
+                .copied()
+                .collect::<BTreeSet<_>>()
+                != expected
+        {
+            self.visited = previous;
+            return Ok(None);
+        }
         Ok(Some((body, cleanup)))
     }
 
