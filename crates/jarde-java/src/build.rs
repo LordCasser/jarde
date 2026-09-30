@@ -3135,12 +3135,15 @@ fn catch_parameter_stays_in_clause(
 /// Hoisting a cross-catch declaration is safe only when the source type can spell the increment.
 /// A decided reference type states the class the declaration spells; the write-value proof below
 /// still decides whether the store the type was read from is one this builder can present, so the
-/// admission alone presents nothing.
+/// admission alone presents nothing. The remaining numeric categories state the type their own
+/// `*store`/`*load` family spells, and an `iinc` can never reach one of their slots — the same
+/// answer the int case gives, read off the verifier's own table instead of assumed.
 fn cross_exception_store_type_is_proven(decided: Option<&Decided>, has_increment: bool) -> bool {
     match decided {
         Some(Decided::Type(Type::Int)) => true,
         Some(Decided::Type(Type::Boolean)) => !has_increment,
         Some(Decided::Type(Type::Reference(_))) => !has_increment,
+        Some(Decided::Type(Type::Long | Type::Float | Type::Double)) => !has_increment,
         _ => false,
     }
 }
@@ -3163,10 +3166,11 @@ fn all_reads_reach_presented_writes(
 ) -> Result<bool, StopReason> {
     // A reaching local definition is useful only if its value can be written at the store. Keep
     // this proof smaller than the general expression renderer: the accepted chain is an unshared
-    // int literal or a same-block load / static call / addition tree, or — this slice — a same-block
-    // verified construction site or zero-argument static call the store alone consumes. In
-    // particular, the call must remain in the protected arm containing its store, with its result
-    // consumed exactly once.
+    // numeric literal or a same-block load / static call / addition tree, or — this slice — a
+    // same-block array element read whose array is a local and whose index is one of those
+    // trees, or a same-block verified construction site or zero-argument static call the store
+    // alone consumes. In particular, the call must remain in the protected arm containing its
+    // store, with its result consumed exactly once.
     for write in uses.iter().filter(|use_| use_.written.is_some()) {
         charge(
             budget,
@@ -3333,8 +3337,13 @@ fn all_reads_reach_presented_writes(
 /// The computed value a cross-exception store can safely present at that store's position.
 /// Each producer belongs to the store's basic block and is consumed once by the next node in this
 /// expression tree. This rules out moving a call across a branch, a catch boundary, or another
-/// statement, and rules out printing an effectful producer twice. Other expression shapes keep the
-/// existing whole-slice refusal until their own presentation rules can supply the same proof.
+/// statement, and rules out printing an effectful producer twice. The tree's leaves are unshared
+/// numeric literals and same-block local loads, its inner nodes are additions and static `int`
+/// calls in the protected arm, and — this slice — one array element read whose array operand is a
+/// same-block local load ([`presented_array_operand`]) and whose index is one of those trees: the
+/// read is evaluated in place, so restoring the store's statement re-runs exactly the subscript
+/// the bytecode ran. Other expression shapes keep the existing whole-slice refusal until their
+/// own presentation rules can supply the same proof.
 #[allow(clippy::too_many_arguments)]
 fn presented_int_store_value(
     ssa: &SsaTable,
@@ -3359,7 +3368,17 @@ fn presented_int_store_value(
     let Definition::Instruction { block, bci } = ssa.value(value).def() else {
         return Ok(false);
     };
-    if !matches!(ssa.value(value).ty(), Value::Int)
+    // A numeric value is one the accepted literals, loads and additions spell; a reference is
+    // spellable here only as the array an element read subscripts, never as the read's own
+    // result standing alone — an `astore` of a bare copy is no initializer this proof states.
+    let array_read = matches!(
+        operations.get(*bci),
+        Some(Operation::ArrayLoad | Operation::ArrayElementLoad { .. })
+    );
+    if !(matches!(
+        ssa.value(value).ty(),
+        Value::Int | Value::Long | Value::Float | Value::Double
+    ) || (array_read && matches!(ssa.value(value).ty(), Value::Ref(_))))
         || block != store_block
         || *bci >= consumer
         || !single_use_at_with_budget(ssa, value, block, consumer, budget)?
@@ -3375,13 +3394,21 @@ fn presented_int_store_value(
     };
     let operands = stack_operands(instruction);
     let presentable = match operations.get(*bci) {
-        Some(Operation::Push(ConstantValue::Int(_))) => operands.is_empty(),
+        Some(Operation::Push(
+            ConstantValue::Int(_)
+            | ConstantValue::Long(_)
+            | ConstantValue::Float(_)
+            | ConstantValue::Double(_),
+        )) => operands.is_empty(),
         Some(Operation::Load { slot }) => {
             operands.is_empty() && local_read(instruction, *slot).is_some()
         }
         Some(Operation::Arithmetic {
             op: ArithmeticOp::Add,
         }) => operands.len() == 2,
+        Some(Operation::ArrayLoad) | Some(Operation::ArrayElementLoad { .. }) => {
+            operands.len() == 2
+        }
         Some(Operation::Invoke(target)) => {
             let protected = paths.tries.iter().any(|try_path| {
                 paths.paths.get(block).is_some_and(|path| {
@@ -3401,22 +3428,89 @@ fn presented_int_store_value(
     // A call and its operands are evaluated at the store; the region path is attached to the
     // basic block, so requiring the same block also preserves the exception table's try arm.
     // The final store itself stays at its original BCI and retains its normal/exception edges.
-    for (_, operand) in operands {
-        if !presented_int_store_value(
-            ssa,
-            operations,
-            paths,
-            operand,
-            store_block,
-            *bci,
-            seen,
-            budget,
-            depth + 1,
-        )? {
+    // An element read's array operand is a reference the numeric tree cannot spell, so it goes
+    // to its own rule; its index and every other operand recurse through this one.
+    for (position, (_, operand)) in operands.into_iter().enumerate() {
+        let accepted = if array_read && position == 0 {
+            presented_array_operand(
+                ssa,
+                operations,
+                paths,
+                operand,
+                store_block,
+                *bci,
+                seen,
+                budget,
+            )?
+        } else {
+            presented_int_store_value(
+                ssa,
+                operations,
+                paths,
+                operand,
+                store_block,
+                *bci,
+                seen,
+                budget,
+                depth + 1,
+            )?
+        };
+        if !accepted {
             return Ok(false);
         }
     }
     Ok(true)
+}
+
+/// The array one accepted element read subscripts: one local load of the array reference, in the
+/// read's own basic block, consumed by that read and nothing else.
+///
+/// The disciplines are the element read's own — same block, one use, a presented region — plus
+/// the shared `seen` set, so the store's interval walk counts the load among the instructions
+/// the one expression tree owns. A deeper array expression (a field read, a call, another element
+/// read) is a later slice's question, and stays refused here.
+#[allow(clippy::too_many_arguments)]
+fn presented_array_operand(
+    ssa: &SsaTable,
+    operations: &Operations,
+    paths: &RegionPaths,
+    value: ValueId,
+    store_block: &CanonicalBlockId,
+    consumer: u32,
+    seen: &mut BTreeSet<ValueId>,
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        1,
+        Some(consumer),
+    )?;
+    if !seen.insert(value) {
+        return Ok(false);
+    }
+    let Definition::Instruction { block, bci } = ssa.value(value).def() else {
+        return Ok(false);
+    };
+    if !matches!(ssa.value(value).ty(), Value::Ref(_))
+        || block != store_block
+        || *bci >= consumer
+        || !matches!(operations.get(*bci), Some(Operation::Load { .. }))
+        || !single_use_at_with_budget(ssa, value, block, consumer, budget)?
+        || paths
+            .paths
+            .get(block)
+            .is_none_or(|path| paths.fallbacks.contains(path))
+    {
+        return Ok(false);
+    }
+    let Some(instruction) = instruction_at(ssa, *bci) else {
+        return Ok(false);
+    };
+    let Some(Operation::Load { slot }) = operations.get(*bci) else {
+        return Ok(false);
+    };
+    Ok(local_read(instruction, *slot).is_some())
 }
 
 /// The reference value a cross-exception store can safely present as its own declaration's
@@ -24331,8 +24425,14 @@ fn array_descriptor(descriptor: &str) -> Option<(Type, u32)> {
     Some((lambda::type_of_base(component.base())?, dimensions))
 }
 
-/// The Java spelling of one array type: its element type and one `[]` per dimension.
+/// The Java spelling of one array type: its element type and one `[]` per dimension. A shape with
+/// no dimension left is the element itself — the answer an element read out of a one-dimensional
+/// array of a primitive already is (`double[]` reads a `double`, not a reference spelled
+/// `double`), and a reference element is its own spelling.
 fn array_spelling(element: &Type, dimensions: u32) -> Option<Type> {
+    if dimensions == 0 {
+        return Some(element.clone());
+    }
     let dimensions = usize::try_from(dimensions).ok()?;
     Some(Type::Reference(format!(
         "{}{}",
