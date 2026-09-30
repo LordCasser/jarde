@@ -1,0 +1,4 @@
+failBody=false failQuery=false failCleanup=false outcome=ok value=400 closes=1
+failBody=true failQuery=false failCleanup=false outcome=RuntimeException:body value=null closes=1
+failBody=false failQuery=true failCleanup=false outcome=ok value=400 closes=1
+failBody=false failQuery=false failCleanup=true outcome=RuntimeException:cleanup value=null closes=1
