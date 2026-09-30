@@ -17,4 +17,4 @@
 
 - [x] 4.1 同布局探针变体（`call()` 可注入失败、清理可注入失败）下原 class/固定 JADX Java-input/Jarde 三方 Java 8 重编，`java -Xverify:all` 正常（`result==1`）、call 抛错（`result==-2` 且异常传播）、清理抛错（新异常覆盖）逐路径一致；记录输出 SHA。
 - [x] 4.2 回归 Test14 条件清理、Test2/5/9/11/12–17 与本批 preceded-catches 切片；`cargo test -p jarde-java --tests --locked`、workspace check、`cargo fmt --all -- --check`、CI 同款 Clippy（新码零告警）、`openspec validate --all --strict`、diff check，清理专用 Cargo target。
-- [ ] 4.3 root 独立复核证书边界、副本折叠来源与三方行为，更新 CF-16 清单与巡查账本；仅标记固定 Tf4（TestFinallyExtract）JVM 切片。
+- [x] 4.3 root 独立复核证书边界、副本折叠来源与三方行为，更新 CF-16 清单与巡查账本；仅标记固定 Tf4（TestFinallyExtract）JVM 切片。（root 于合并主线 f63f7634 复核：固定类唯一 try/finally + 一份 `if (!local1) { this.result -= 2; }`、36 BCI 来源、探针全路径与原 class 一致、11 负例拒绝、全仓 2674/0、fmt/openspec 219/219。注：lead 呈现为分离式 `boolean local1; local1 = false;`，符合 `present-proved-java-structure` 既有裁决，单语句拼写属 build.rs 另项不改验收。）
