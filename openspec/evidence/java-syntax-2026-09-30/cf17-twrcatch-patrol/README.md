@@ -19,6 +19,6 @@
 ## 切片划分（串行实施，同触 TWR 证明流）
 
 - **CF-17a（`recover-twrcall-statement-bodies`）**：体语句子集接受"同块非 void 调用 + 紧随 pop"（呈现为调用语句），闭合 popBody 家族。
-- **CF-17b（`recover-enclosing-named-catch`）**：包围具名行容忍（实验方向）+ Plan/Region/Builder 发射 `} catch (E e) { … }` 子句并覆盖 handler 块；守卫条件：行须完整覆盖 claim 跨度、handler 在 claim 外、claim 自身行完整。17a 落地后实施。
+- **CF-17b（`recover-enclosing-named-catch`）**：包围具名行容忍（实验方向）+ Plan/Region/Builder 发射 `} catch (E e) { … }` 子句并覆盖 handler 块；守卫条件：行须完整覆盖 claim 跨度、handler 在 claim 外、claim 自身行完整。17a 落地后实施。**已实施**（[enclosing-17b](enclosing-17b/README.md)）：全跨度具名行 + 单直行 handler 证明后，T3 两形、T1.twrVoidNamed/twrPopNamed、C4.twrNamed 与 `Guarded.withCatch` 全部恢复；六负例（catch-all 包围行、部分跨度、own-handler 交叠、分支 handler、双 catch、multi-catch）保持既有拒绝逐字不变。
 
 上游对照与既有证书（多资源、可空资源、multi-resource-twr change）零回退是两片共同门禁。原 class 为行为基准；JADX 参照不作为语义正例。
