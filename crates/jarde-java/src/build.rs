@@ -20490,6 +20490,9 @@ impl Builder<'_> {
                 ) {
                     return Ok(cast_argument(argument, required, bci));
                 }
+                if java_lang_throwable_widens(&presented_name, required_name) {
+                    return Ok(cast_argument(argument, required, bci));
+                }
                 Err(format!(
                     "{position} presents `{presented_name}` but the invocation requires `{required_name}` and this layer has no safe reference conversion evidence"
                 ))
@@ -23744,6 +23747,170 @@ fn platform_reference_argument_widens(java_release: u16, presented: &str, requir
     java_release == 8 && presented == "java.util.List" && required == "java.lang.Iterable"
 }
 
+/// The JDK 8 `java.lang` Throwable family one invocation argument may cross. The JVM verifier
+/// already admitted the argument's value to the invoked descriptor's parameter, so an exception
+/// value a `Throwable` slot receives (a wrap-and-rethrow's cause, a forwarding method's caught
+/// exception) cannot fail the widening on either side — the relation is the platform's own fixed
+/// class hierarchy, the same closed knowledge [`platform_reference_argument_widens`] states for
+/// its one pair. Every row is one direct superclass edge of the release-8 `java.lang` tree, kept
+/// spelled out for review; the walk admits exactly the ancestors these rows reach, and nothing
+/// outside `java.lang` (the `java.io`, `java.util` and user subclasses of the same family state
+/// no row here) widens until a resolution-environment hierarchy proof exists.
+fn java_lang_throwable_widens(presented: &str, required: &str) -> bool {
+    // (class, direct superclass), one row per documented `extends` of the JDK 8 java.lang
+    // Throwable tree. A row's two names are the javadoc's own declaration of that class.
+    const DIRECT_EDGES: &[(&str, &str)] = &[
+        // The two roots of the checked and unchecked halves.
+        ("java.lang.Exception", "java.lang.Throwable"),
+        ("java.lang.Error", "java.lang.Throwable"),
+        // The unchecked half under RuntimeException.
+        ("java.lang.RuntimeException", "java.lang.Exception"),
+        (
+            "java.lang.IllegalStateException",
+            "java.lang.RuntimeException",
+        ),
+        (
+            "java.lang.IllegalArgumentException",
+            "java.lang.RuntimeException",
+        ),
+        (
+            "java.lang.NullPointerException",
+            "java.lang.RuntimeException",
+        ),
+        ("java.lang.ClassCastException", "java.lang.RuntimeException"),
+        (
+            "java.lang.ArrayStoreException",
+            "java.lang.RuntimeException",
+        ),
+        (
+            "java.lang.ArithmeticException",
+            "java.lang.RuntimeException",
+        ),
+        (
+            "java.lang.IndexOutOfBoundsException",
+            "java.lang.RuntimeException",
+        ),
+        (
+            "java.lang.NegativeArraySizeException",
+            "java.lang.RuntimeException",
+        ),
+        (
+            "java.lang.IllegalMonitorStateException",
+            "java.lang.RuntimeException",
+        ),
+        ("java.lang.SecurityException", "java.lang.RuntimeException"),
+        (
+            "java.lang.UnsupportedOperationException",
+            "java.lang.RuntimeException",
+        ),
+        (
+            "java.lang.TypeNotPresentException",
+            "java.lang.RuntimeException",
+        ),
+        (
+            "java.lang.EnumConstantNotPresentException",
+            "java.lang.RuntimeException",
+        ),
+        // The checked half under Exception.
+        (
+            "java.lang.CloneNotSupportedException",
+            "java.lang.Exception",
+        ),
+        ("java.lang.InterruptedException", "java.lang.Exception"),
+        (
+            "java.lang.ReflectiveOperationException",
+            "java.lang.Exception",
+        ),
+        (
+            "java.lang.ClassNotFoundException",
+            "java.lang.ReflectiveOperationException",
+        ),
+        // The two documented IllegalArgumentException subclasses.
+        (
+            "java.lang.NumberFormatException",
+            "java.lang.IllegalArgumentException",
+        ),
+        (
+            "java.lang.IllegalThreadStateException",
+            "java.lang.IllegalArgumentException",
+        ),
+        // The two documented IndexOutOfBoundsException subclasses.
+        (
+            "java.lang.ArrayIndexOutOfBoundsException",
+            "java.lang.IndexOutOfBoundsException",
+        ),
+        (
+            "java.lang.StringIndexOutOfBoundsException",
+            "java.lang.IndexOutOfBoundsException",
+        ),
+        // The Error tree: the roots of its three branches, then each branch's own subclasses.
+        ("java.lang.ThreadDeath", "java.lang.Error"),
+        ("java.lang.AssertionError", "java.lang.Error"),
+        ("java.lang.LinkageError", "java.lang.Error"),
+        ("java.lang.VirtualMachineError", "java.lang.Error"),
+        ("java.lang.ClassCircularityError", "java.lang.LinkageError"),
+        ("java.lang.ClassFormatError", "java.lang.LinkageError"),
+        (
+            "java.lang.ExceptionInInitializerError",
+            "java.lang.LinkageError",
+        ),
+        ("java.lang.NoClassDefFoundError", "java.lang.LinkageError"),
+        ("java.lang.UnsatisfiedLinkError", "java.lang.LinkageError"),
+        ("java.lang.VerifyError", "java.lang.LinkageError"),
+        ("java.lang.BootstrapMethodError", "java.lang.LinkageError"),
+        (
+            "java.lang.IncompatibleClassChangeError",
+            "java.lang.LinkageError",
+        ),
+        (
+            "java.lang.AbstractMethodError",
+            "java.lang.IncompatibleClassChangeError",
+        ),
+        (
+            "java.lang.IllegalAccessError",
+            "java.lang.IncompatibleClassChangeError",
+        ),
+        (
+            "java.lang.InstantiationError",
+            "java.lang.IncompatibleClassChangeError",
+        ),
+        (
+            "java.lang.NoSuchFieldError",
+            "java.lang.IncompatibleClassChangeError",
+        ),
+        (
+            "java.lang.NoSuchMethodError",
+            "java.lang.IncompatibleClassChangeError",
+        ),
+        ("java.lang.InternalError", "java.lang.VirtualMachineError"),
+        (
+            "java.lang.OutOfMemoryError",
+            "java.lang.VirtualMachineError",
+        ),
+        (
+            "java.lang.StackOverflowError",
+            "java.lang.VirtualMachineError",
+        ),
+        ("java.lang.UnknownError", "java.lang.VirtualMachineError"),
+    ];
+    // The rows are one acyclic superclass chain, so the walk from the presented class reaches
+    // every ancestor the table proves; the step cap only bounds a corrupted table the same way
+    // the array walk bounds a corrupted rank. The parent is compared after each step, so the
+    // answer is the widening relation alone: a presented type equal to the required one is the
+    // dispatch's same-name answer, never this table's.
+    let mut current = presented;
+    for _ in 0..DIRECT_EDGES.len() {
+        let Some((_, parent)) = DIRECT_EDGES.iter().find(|(child, _)| *child == current) else {
+            return false;
+        };
+        current = parent;
+        if current == required {
+            return true;
+        }
+    }
+    false
+}
+
 /// The type one method descriptor's **result** states, when this layer can spell it (`V` is `None`).
 ///
 /// The member's own descriptor is the requirement every `return` of its body is written under, and a
@@ -26184,6 +26351,118 @@ mod tests {
             assert!(
                 !platform_reference_argument_widens(release, presented, required),
                 "release {release}: {presented} must not widen to {required} from this proof"
+            );
+        }
+    }
+
+    #[test]
+    fn java_lang_throwable_widening_reaches_exactly_the_table_ancestors() {
+        // One positive per documented branch of the release-8 java.lang tree, including the
+        // multi-level walks (an ArrayIndexOutOfBoundsException value reaches Throwable through
+        // IndexOutOfBoundsException and RuntimeException) and every intermediate ancestor a
+        // descriptor can name.
+        for (presented, required) in [
+            (
+                "java.lang.IllegalStateException",
+                "java.lang.RuntimeException",
+            ),
+            ("java.lang.IllegalStateException", "java.lang.Exception"),
+            ("java.lang.IllegalStateException", "java.lang.Throwable"),
+            (
+                "java.lang.IllegalArgumentException",
+                "java.lang.RuntimeException",
+            ),
+            ("java.lang.NullPointerException", "java.lang.Exception"),
+            ("java.lang.ClassCastException", "java.lang.RuntimeException"),
+            ("java.lang.ClassCastException", "java.lang.Throwable"),
+            (
+                "java.lang.ArrayIndexOutOfBoundsException",
+                "java.lang.IndexOutOfBoundsException",
+            ),
+            (
+                "java.lang.ArrayIndexOutOfBoundsException",
+                "java.lang.RuntimeException",
+            ),
+            (
+                "java.lang.StringIndexOutOfBoundsException",
+                "java.lang.Throwable",
+            ),
+            (
+                "java.lang.NumberFormatException",
+                "java.lang.IllegalArgumentException",
+            ),
+            (
+                "java.lang.UnsupportedOperationException",
+                "java.lang.Throwable",
+            ),
+            ("java.lang.SecurityException", "java.lang.Throwable"),
+            (
+                "java.lang.TypeNotPresentException",
+                "java.lang.RuntimeException",
+            ),
+            ("java.lang.RuntimeException", "java.lang.Exception"),
+            ("java.lang.Exception", "java.lang.Throwable"),
+            ("java.lang.ClassNotFoundException", "java.lang.Exception"),
+            ("java.lang.InterruptedException", "java.lang.Throwable"),
+            (
+                "java.lang.CloneNotSupportedException",
+                "java.lang.Exception",
+            ),
+            ("java.lang.Error", "java.lang.Throwable"),
+            ("java.lang.AssertionError", "java.lang.Error"),
+            (
+                "java.lang.OutOfMemoryError",
+                "java.lang.VirtualMachineError",
+            ),
+            ("java.lang.OutOfMemoryError", "java.lang.Error"),
+            ("java.lang.StackOverflowError", "java.lang.Throwable"),
+            (
+                "java.lang.ExceptionInInitializerError",
+                "java.lang.LinkageError",
+            ),
+            (
+                "java.lang.NoSuchMethodError",
+                "java.lang.IncompatibleClassChangeError",
+            ),
+        ] {
+            assert!(
+                java_lang_throwable_widens(presented, required),
+                "{presented} must widen to {required} from the java.lang table"
+            );
+        }
+
+        // The refusals the closed set exists for: the same family's subpackages and user
+        // classes, the non-ancestor java.lang names a slot can spell, the downward and sibling
+        // directions, the primitive and array shapes, and the platform pair this answer must
+        // not take over from `platform_reference_argument_widens`.
+        for (presented, required) in [
+            ("java.io.IOException", "java.lang.Throwable"),
+            ("java.io.IOException", "java.lang.Exception"),
+            (
+                "java.util.ConcurrentModificationException",
+                "java.lang.RuntimeException",
+            ),
+            (
+                "java.lang.annotation.AnnotationTypeMismatchException",
+                "java.lang.RuntimeException",
+            ),
+            ("example.MyException", "java.lang.Throwable"),
+            ("java.lang.String", "java.lang.Throwable"),
+            ("java.lang.StringBuilder", "java.lang.Throwable"),
+            ("java.lang.IllegalStateException", "java.lang.Error"),
+            ("java.lang.Exception", "java.lang.RuntimeException"),
+            ("java.lang.Throwable", "java.lang.Exception"),
+            ("java.lang.Throwable", "java.lang.Throwable"),
+            ("java.util.List", "java.lang.Iterable"),
+            ("int", "java.lang.Throwable"),
+            ("boolean", "java.lang.Exception"),
+            ("java.lang.IllegalStateException", "int"),
+            ("java.lang.IllegalStateException[]", "java.lang.Throwable[]"),
+            ("java.lang.RuntimeException<String>", "java.lang.Exception"),
+        ] {
+            assert!(
+                !java_lang_throwable_widens(presented, required),
+                "{presented} must not widen to {required} from the java.lang table"
             );
         }
     }

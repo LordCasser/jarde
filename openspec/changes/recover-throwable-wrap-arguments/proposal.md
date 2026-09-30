@@ -4,7 +4,7 @@
 
 ## What Changes
 
-- 在调用实参转换分派中新增 java.lang 异常类闭集上转型回答：被呈现类型为 java.lang 核心 Throwable 子类（RuntimeException、IllegalStateException、IllegalArgumentException、IOException 家族、Exception、Error 等闭集）且要求类型为其 java.lang 祖先（Throwable/Exception/RuntimeException）时，按既有 widening 模式保留要求类型拼写（`cast_argument`），不引入运行时风险（上转型恒成功）。
+- 在调用实参转换分派中新增 java.lang 异常类闭集上转型回答：被呈现类型为 java.lang 核心 Throwable 子类（RuntimeException、IllegalStateException、IllegalArgumentException、NullPointerException、ClassCastException、Error 家族等闭集，只收 `java.lang`；`java.io.IOException` 等子包异常不收）且要求类型为其 java.lang 祖先（Throwable/Exception/RuntimeException 及表中中间祖先）时，按既有 widening 模式保留要求类型拼写（`cast_argument`），不引入运行时风险（上转型恒成功）。
 - 闭集以固定表维护（与 `platform_reference_argument_widens` 同风格）；用户自定义类的层级证明登记为升级路径（触发条件：首个非 java.lang 类上转型场景出现时以 resolution 环境事实建 `reference_overload_calls` 同款证明通道）。
 - 以 C2.alias 固定类、包装重抛变体族（不同异常类型/嵌套包装/用户 Throwable 形参方法）、既有转换回归（Object 目标/数组/overload 证明/List→Iterable）与 verifier 有效负例验收。
 

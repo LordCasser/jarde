@@ -22,7 +22,7 @@
 ## 切片划分
 
 - **Slice A（`recover-named-row-crossing-locals`）**：判别 1 + 写值扩展 2，闭合 C1.five/C4.constructNamed 家族；N1/P3StorePrefix 的"store 前置降级"钉死负例按判别 1 的结构论证**翻转为正例**（该形状不可能为 TWR），catch-all 行与非边界（劈开/吞初始化）降级保持。
-- **Slice B（`recover-throwable-wrap-arguments`）**：判别 3 的 java.lang 异常类闭集上转型表（→ Throwable/Exception/RuntimeException 祖先），闭合包装重抛家族；用户类层级的一般证明登记为升级路径（触发条件：首个非平台类上转型场景）。
+- **Slice B（`recover-throwable-wrap-arguments`）**：判别 3 的 java.lang 异常类闭集上转型表（→ Throwable/Exception/RuntimeException 祖先），闭合包装重抛家族；用户类层级的一般证明登记为升级路径（触发条件：首个非平台类上转型场景）。**已实现（2026-09-30）**：`java_lang_throwable_widens` 45 条直接边闭集，C2.alias 与变体族完整恢复、负例钉死，证据与三方对照见 [wrap/](wrap/README.md)。
 - C4.twrNamed（TWR + 外层具名 catch）登记为 CF-17 新缺口，随 TWR 家族扩验另片。
 
 原 class 是行为基准；JADX 输出仅作结构参照。
