@@ -1,0 +1,13 @@
+# 变更前（基线 86f2e740，未含 FlagConditionalFinally 证书）对固定 Tf4 与全部负例的恢复结果
+# 每节一行质量/区域结论：基线对固定 Tf4 整方法回退（证书不存在），对负例同样不呈现 finally
+Tf4CleanupCall: quality=fallback try_finally_count=0 bytecode_fallback=True
+Tf4CleanupDoubleUpdate: quality=fallback try_finally_count=0 bytecode_fallback=True
+Tf4FieldMismatch: quality=fallback try_finally_count=0 bytecode_fallback=True
+Tf4InvertedCondition: quality=fallback try_finally_count=0 bytecode_fallback=True
+Tf4KMismatch: quality=fallback try_finally_count=0 bytecode_fallback=True
+Tf4LeadExtra: quality=fallback try_finally_count=0 bytecode_fallback=True
+Tf4LeadTrue: quality=fallback try_finally_count=0 bytecode_fallback=True
+Tf4NoSetTrue: quality=fallback try_finally_count=0 bytecode_fallback=True
+Tf4StatementAfterSetTrue: quality=fallback try_finally_count=0 bytecode_fallback=True
+Tf4TwoSetTrue: quality=fallback try_finally_count=0 bytecode_fallback=True
+FIXED Tf4: quality=fallback try_finally_count=0 regions=[(None, False), (None, False)]

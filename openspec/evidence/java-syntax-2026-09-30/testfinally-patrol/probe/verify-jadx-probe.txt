@@ -1,0 +1,2 @@
+failCall=false failCleanup=false outcome=ok value=call result=-1
+failCall=true failCleanup=false outcome=RuntimeException:call value=null result=-2
