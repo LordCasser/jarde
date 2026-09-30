@@ -1,0 +1,5 @@
+17fac06a6009944fd6ba053361d39bfd0b1c49b34c545d869bc5b538daa9c18c  openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf1.class
+52f4ec0c394efa4654c4c4fe8408febae0806c943ecf909bcaf0b99fcd5c7528  openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf2.class
+229d6ced1815b48172f23d0eb0bf5c3b07027fe9dc2d53b2344e92ef2e6f9294  openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf2$Result.class
+f006eaacaecddd2e7a77821758e17d74488b6293467799eeb3c9e2c08c6c2de3  openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf3.class
+b078022c25731f9275aa63bd3721d3e66021f63a4edce2315811111f26a0370a  openspec/evidence/java-syntax-2026-09-30/testfinally-patrol/fixture/Tf4.class
