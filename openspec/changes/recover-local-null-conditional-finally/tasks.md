@@ -17,4 +17,4 @@
 
 - [x] 4.1 探针变体（正文可注入异常、query 可返回 null、清理可注入异常）下原 class/固定 JADX Java-input/Jarde 三方 Java 8 重编，`java -Xverify:all` 正常（关闭一次、返回值正确）、正文抛错（关闭一次、原异常重抛）、query null（不关闭）、清理抛错（覆盖）逐路径一致；记录输出 SHA。
 - [x] 4.2 全仓回归（`cargo test --workspace --tests --locked --no-fail-fast` 全绿）、`cargo fmt --all -- --check`、CI 同款 Clippy 新码零新增、`openspec validate --all --strict`、diff check；清理专用 Cargo target。
-- [ ] 4.3 root 独立复核证书边界、副本折叠来源与三方行为，更新 CF-16 清单与巡查账本；仅标记固定 Tf1（TestFinally）JVM 切片。
+- [x] 4.3 root 独立复核证书边界、副本折叠来源与三方行为，更新 CF-16 清单与巡查账本；仅标记固定 Tf1（TestFinally）JVM 切片。（root 于合并主线 402c9e94 复核：固定类唯一 try/finally + 一份 `if (local3 != null) { local3.close(); }`、37 BCI 来源、探针四路径与原 class 一致、9 负例拒绝、Tf4/Test14 互不误触、全仓 2682/0〔首跑 1 例 `observable_equals_calls…` flake 两次复跑干净，CI 双 seed 为权威〕、fmt/openspec 220/220。分离式 lead 呈现属既有裁决。）
