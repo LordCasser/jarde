@@ -1,0 +1,8 @@
+{
+    try (W17b local0 = new W17b()) {
+        touch(local0);
+    } catch (java.lang.IllegalStateException local0) {
+        return "caught";
+    }
+    return "done";
+}

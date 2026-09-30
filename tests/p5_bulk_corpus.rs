@@ -734,10 +734,18 @@ impl Billing {
         // of every row stands, no member's text or classification moved, and the two arms move by
         // the same −54 for the same reason. The rows were regenerated with
         // `record_the_billing_table` and the arms' own reader, not hand-edited.
-        ir_items: 20277,
-        analysis_steps: 10493,
+        //
+        // The whole-construct catch of `recover-enclosing-named-catch` re-measured the row once
+        // more: `Guarded.withCatch`'s single full-span row now presents as the statement's own
+        // `catch` clause, moving the member from `ExplanationOnly` to `Produced` (the case's
+        // count falls from five to four) and billing +50 `IrItems`, +34 `AnalysisSteps` and
+        // −51 `output_bytes` — the statement and its anchored handler take the place of the
+        // whole-method quote. The two arms move by the same amounts; the rows were regenerated
+        // with `record_the_billing_table`, not hand-edited.
+        ir_items: 20327,
+        analysis_steps: 10527,
         result_items: 122,
-        output_bytes: 23280,
+        output_bytes: 23229,
     };
     /// `damaged-tail`: the readable classes only; the damaged entries cost their own attempts.
     ///
@@ -803,10 +811,12 @@ impl Billing {
         // [`Billing::MANY_METHOD_CLASS`] records: the concat rule's presented chains bill one
         // `IrItems` fewer per record than the refusals they replace, and no other dimension of
         // the corpus's work moved.
-        ir_items: 33730,
-        analysis_steps: 17261,
+        // +50/+34/−51 with the whole-construct catch, the same work
+        // [`Billing::MANY_METHOD_CLASS`] records for the one member it moved.
+        ir_items: 33780,
+        analysis_steps: 17295,
         result_items: 1378,
-        output_bytes: 39564,
+        output_bytes: 39513,
     };
 
     /// Arm B — the same requests, each carrying the one store that started empty. Pinned for the same
@@ -834,10 +844,12 @@ impl Billing {
         // −54 with the `recover-preceded-statement-catches` merge, the same work the direct arm
         // records: the work the two arms share is what moved, and retention still touches only
         // the read dimensions.
-        ir_items: 33730,
-        analysis_steps: 17261,
+        // +50/+34/−51 with the whole-construct catch — the work is the same work the direct arm
+        // records, and retention still touches only the read dimensions.
+        ir_items: 33780,
+        analysis_steps: 17295,
         result_items: 26,
-        output_bytes: 39564,
+        output_bytes: 39513,
     };
 }
 // ---------------------------------------------------------------------------------------------
@@ -1126,13 +1138,13 @@ fn every_case_holds_the_shape_it_is_named_for() {
     assert_eq!(run.report.summary.methods_declared, 107);
     assert_eq!(run.report.summary.status(), "complete");
     assert_eq!(
-        run.report.summary.outcomes.explanation_only, 5,
+        run.report.summary.outcomes.explanation_only, 4,
         "the committed `Guarded` sample is where the case's explanation-shaped members are — its \
-         `fin`/`catchFinally` copies, its guarded bodies that branch (`branching`, `withCatch`) and \
-         the irreducible `suppressedCatching` — and the generated members are all produced. The \
-         sixth member the previous ledger counted here, `boom`'s `throw new`, is presented as the \
-         construction statement it is since the explicit-cast/construction presentation landed, so \
-         it is `Produced` now: {:?}",
+         `fin`/`catchFinally` copies, its branching guarded body (`branching`) and the irreducible \
+         `suppressedCatching` — and the generated members are all produced. `withCatch` is the \
+         member the previous ledger counted here beside them: the whole-construct catch presents it \
+         as the statement's own clause, so it is `Produced` now, exactly like `boom`'s `throw new` \
+         before it: {:?}",
         run.report.summary.outcomes
     );
 
