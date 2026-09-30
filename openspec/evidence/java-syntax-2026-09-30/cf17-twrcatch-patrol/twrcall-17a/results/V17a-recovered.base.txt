@@ -1,0 +1,153 @@
+// jarde: presentation of `V17a` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class V17a extends java.lang.Object implements java.lang.AutoCloseable {
+    public static boolean boom;
+
+    public V17a() {
+        // @method <init>()V
+        // @declaration a constructor of `V17a`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void close() {
+        // @method close()V
+        // @declaration an instance method of `V17a`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        if (V17a.boom) {
+            throw new java.lang.IllegalStateException("close");
+        } else {
+            return;
+        }
+    }
+
+    static void touch(V17a arg0) {
+        // @method touch(LV17a;)V
+        // @declaration a static method of `V17a`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (V17a.boom) {
+            throw new java.lang.IllegalStateException("touch");
+        } else {
+            java.lang.System.out.println("touched");
+            return;
+        }
+    }
+
+    static java.lang.String give() {
+        // @method give()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (V17a.boom) {
+            throw new java.lang.IllegalStateException("give");
+        } else {
+            return "g";
+        }
+    }
+
+    static V17a$G17 pick() {
+        // @method pick()LV17a$G17;
+        // @declaration a static method of `V17a`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (V17a.boom) {
+            throw new java.lang.IllegalStateException("pick");
+        } else {
+            return new V17a$G17Impl();
+        }
+    }
+
+    public static java.lang.String pureCalls() throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `pureCalls()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method pureCalls()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 25 33 39 41
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String mixedVoidAndCall() throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `mixedVoidAndCall()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method mixedVoidAndCall()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 24 32 38 40
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String callBeforeReturnInside() throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `callBeforeReturnInside()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method callBeforeReturnInside()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 26 34 40
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String callOnlyReturnInside() throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `callOnlyReturnInside()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method callOnlyReturnInside()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 22 30 36
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String staticCall() throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `staticCall()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method staticCall()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 19 27 33 35
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String virtualCall() throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `virtualCall()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method virtualCall()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 20 28 34 36
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String interfaceCall() throws java.lang.Exception {
+        // jarde: not recovered: the recovery run for `interfaceCall()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method interfaceCall()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 24 32 38 40
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String receivedLocal() throws java.lang.Exception {
+        // @method receivedLocal()Ljava/lang/String;
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        try (V17a local0 = new V17a()) {
+            java.lang.String local1 = local0.toString();
+        }
+        return "done";
+    }
+
+    public static void main(java.lang.String[] arg0) throws java.lang.Exception {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `V17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) pureCalls());
+        java.lang.System.out.println((java.lang.String) mixedVoidAndCall());
+        java.lang.System.out.println((java.lang.String) callBeforeReturnInside());
+        java.lang.System.out.println((java.lang.String) callOnlyReturnInside());
+        java.lang.System.out.println((java.lang.String) staticCall());
+        java.lang.System.out.println((java.lang.String) virtualCall());
+        java.lang.System.out.println((java.lang.String) interfaceCall());
+        java.lang.System.out.println((java.lang.String) receivedLocal());
+        return;
+    }
+
+    static {
+        // @method <clinit>()V
+        // @declaration a static initializer of `V17a`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        V17a.boom = false;
+    }
+}

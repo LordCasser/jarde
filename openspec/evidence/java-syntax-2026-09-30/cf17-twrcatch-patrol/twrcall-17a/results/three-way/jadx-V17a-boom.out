@@ -1,0 +1,8 @@
+pureCalls:caught:close|sup:close
+mixedVoidAndCall:caught:touch|sup:close
+callBeforeReturnInside:caught:touch|sup:close
+callOnlyReturnInside:caught:close|sup:close
+staticCall:caught:give|sup:close
+virtualCall:caught:close|sup:close
+interfaceCall:caught:pick|sup:close
+receivedLocal:caught:close|sup:close

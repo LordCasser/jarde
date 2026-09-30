@@ -1,0 +1,65 @@
+// jarde: presentation of `N17a` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class N17a extends java.lang.Object implements java.lang.AutoCloseable {
+    public N17a() {
+        // @method <init>()V
+        // @declaration a constructor of `N17a`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public void close() {
+        // @method close()V
+        // @declaration an instance method of `N17a`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        return;
+    }
+
+    public static java.lang.String popWrongValue() {
+        // jarde: not recovered: the recovery run for `popWrongValue()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method popWrongValue()Ljava/lang/String;
+        // @declaration a static method of `N17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 22 30 36 38
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String popAfterCast() {
+        // jarde: not recovered: the recovery run for `popAfterCast()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method popAfterCast()Ljava/lang/String;
+        // @declaration a static method of `N17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 23 31 37 39
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String popSecondReader() {
+        // jarde: not recovered: the recovery run for `popSecondReader()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method popSecondReader()Ljava/lang/String;
+        // @declaration a static method of `N17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 22 30 36 38
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static java.lang.String pop2Discard() {
+        // jarde: not recovered: the recovery run for `pop2Discard()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method pop2Discard()Ljava/lang/String;
+        // @declaration a static method of `N17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 19 27 33 35
+        // local 0 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `N17a`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        java.lang.System.out.println((java.lang.String) popWrongValue());
+        java.lang.System.out.println((java.lang.String) popAfterCast());
+        java.lang.System.out.println((java.lang.String) popSecondReader());
+        java.lang.System.out.println((java.lang.String) pop2Discard());
+        return;
+    }
+}

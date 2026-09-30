@@ -1,0 +1,10 @@
+pureCalls:done
+touched
+mixedVoidAndCall:done
+touched
+callBeforeReturnInside:in
+callOnlyReturnInside:solo
+staticCall:done
+virtualCall:done
+interfaceCall:done
+receivedLocal:done
