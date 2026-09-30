@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含 noCont、named-catch switch、string switch、labeled-loop 全部既有切片）、fmt、CI 完整 30 项 allowlist clippy、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 W1/W2 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致（`70`/`36`/`70`）；记录输出 SHA。
-- [ ] 3.3 root 独立复核出口分类边界、fallback 划分与三方行为，更新 CF-13 账本（勾销已证差距或收窄为剩余形态）与巡查记录。
+- [x] 3.3 root 独立复核出口分类边界、fallback 划分与三方行为，更新 CF-13 账本（勾销已证差距或收窄为剩余形态）与巡查记录。（root 于合并主线 dd532a4c 复核：W1 恢复为 for + switch + default 内 `continue;` + switch 后 `+= 10`，重编行为逐字一致（`70`/`36`）；W2/变体与 noCont 对照逐字不变；全仓 2743/0〔首跑 1 例临时目录碰撞 flake 重跑干净〕、fmt/openspec 230/230。落点复核：`SwitchLoopJoin` 三态 + `shared_tail` 侧信道为必要精化；string switch 同因顺带恢复已在报告区分并测试钉住；labeled continue 形态维持既有等价呈现未扩展，登记后续。）
