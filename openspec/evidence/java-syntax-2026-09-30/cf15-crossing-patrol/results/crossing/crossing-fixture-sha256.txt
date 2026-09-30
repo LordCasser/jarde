@@ -1,0 +1,6 @@
+449e4f8ffe2ec0ab6981f29f1da7cc163dc06807d3a5e54e71abda30d6daa0f8  openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X1Catchall.class
+64ca1ad2f6bfeb10179f31763f631a54771d6a90f4d7ee06b9c854f411c93657  openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X2Split.class
+0cdae8db761e8e87155e778b42567f0e57b8862317db3279f857bd507c4a62d4  openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X3Between.class
+0ffd48a44fd3fe2d2c6e2b1d73a9d321512cd8e8b82b6a535f934bf8b451805a  openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X4DoubleUse.class
+b65770fb39d767e0bfbe49e6fea32b1c33eed3cb340e901f2ec8277b6737af0d  openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X5CrossBlock.class
+1681b6bf03313845e7a08231c43453e152171fc20e4419582760415bc942c7dd  openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/crossing/X6Direct.class

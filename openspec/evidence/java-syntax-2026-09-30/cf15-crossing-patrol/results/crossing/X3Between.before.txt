@@ -1,0 +1,33 @@
+// jarde: presentation of `X3Between` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class X3Between extends java.lang.Object {
+    public X3Between() {
+        // @method <init>()V
+        // @declaration a constructor of `X3Between`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void t(boolean arg0) {
+        // @method t(Z)V
+        // @declaration a static method of `X3Between`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0) {
+            throw new java.lang.IllegalStateException("state");
+        } else {
+            return;
+        }
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `X3Between`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 4 7 9 10 11 12 15 16 18 21 22
+        // BCI 10: the resource's own initialisation is not one statement of this block whose value lands in a slot: writing it in the header would move or drop an effect
+        // @bytecode 25 26 29 31 34
+        // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [26, 25]
+    }
+}

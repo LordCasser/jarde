@@ -16,8 +16,11 @@
 //! 1. `helper(); try { … } catch (E e) { … }` — and the same shape behind a field write or a
 //!    `getstatic`-consuming call — recovers completely, the prefix statement staying where the
 //!    bytecode ran it;
-//! 2. a store prefix (`r = open(); try … catch (E e)`) keeps degrading under the resource rules —
-//!    the refusal stays, and the shape is never spelled as a user `catch`;
+//! 2. a store prefix whose row is the CF-15 crossing answer's (`r = open(); try … catch (E e)`,
+//!    a named row one completed store precedes, whose end closes nothing and whose handler closes
+//!    nothing) presents as the ordinary `try`/`catch` its own table names, the prefix statement
+//!    spelled before the `try` and the crossing local declared above it — N1 and P3StorePrefix,
+//!    whose degradation this file's first revision pinned, are that answer's own positives now;
 //! 3. a concatenation whose builder a branch cuts is refused with `jre_concat_split` naming the
 //!    `toString` the chain's own value reaches, while an earlier same-owner `toString` in the
 //!    method and a same-block chain stay out of the refusal's way;
@@ -425,30 +428,71 @@ fn m1_and_m2_presentations_are_unchanged_verbatim() {
     assert_eq!(main.text, M2_MAIN_VERBATIM);
 }
 
-/// A store prefix keeps the resource rules' own answer: the row is examined as a header, the proof
-/// degrades, and the shape is never spelled as a user `catch` — for the frozen N1 and for the
-/// second store-prefix neighbor.
+/// The CF-15 crossing answer: a named row one completed store precedes — the range begins where
+/// `r = open();` ends, its end closes nothing and its handler closes nothing — is the `catch` its
+/// own table names, not a resource header. The prefix statement spells before the `try`, the
+/// crossing local is declared above the statement and assigned in the statement's own lead, and
+/// the whole `main` presents for the frozen N1 and for the second store-prefix neighbor. The
+/// degradation this file's first revision pinned was the resource proof's own refusal for a row no
+/// proof of that shape could own; the structural argument (the wrapper row covers the
+/// initialisation; the lowering's own rows end in the slot's normal close and their handlers close
+/// the resource) is the CF-15 change's own record.
 #[test]
-fn a_store_prefix_still_degrades_to_the_resource_refusal() {
+fn a_store_prefix_before_a_named_catch_presents_the_catch() {
     for (name, class) in [("N1", N1), ("P3StorePrefix", P3_STORE_PREFIX)] {
         let report = present(class, b"main", b"([Ljava/lang/String;)V", 1);
+        assert!(report.produced(), "{name}: {:?}", report.stop());
+        assert_eq!(report.representation, Representation::Java, "{name}");
+        assert_eq!(report.quality, Quality::Structured, "{name}");
         assert!(
-            !report.text.contains("try {"),
-            "{name} must not present a user catch: {}",
+            !report.text.contains("@bytecode"),
+            "{name} presents every statement: {}",
+            report.text
+        );
+        // The declaration hoists above the statement; the prefix store is the statement's own
+        // lead, before the `try`, and the crossing local reads in both the protected arm and the
+        // handler the way the source wrote them.
+        let declared = report
+            .text
+            .find("java.io.ByteArrayOutputStream local1;")
+            .expect("the crossing local's declaration");
+        let lead = report
+            .text
+            .find("local1 = open();")
+            .expect("the prefix store statement");
+        let try_at = report.text.find("try {").expect("the try");
+        let write = report
+            .text
+            .find("local1.write(")
+            .expect("the protected body's use");
+        let catch_at = report
+            .text
+            .find("catch (java.lang.IllegalStateException local2)")
+            .expect("the named clause");
+        let size = report
+            .text
+            .find("local1.size()")
+            .expect("the handler's use");
+        assert!(
+            declared < lead
+                && lead < try_at
+                && try_at < write
+                && write < catch_at
+                && catch_at < size,
+            "{name}: statement order: {}",
             report.text
         );
         assert!(
-            report.text.contains("@bytecode"),
-            "{name} keeps its fallback: {}",
+            report.text.contains("t();"),
+            "{name}: the body's own call presents: {}",
             report.text
         );
-        assert_eq!(report.quality, Quality::Fallback, "{name}");
         assert!(
             report
                 .diagnostics
                 .iter()
-                .any(|diagnostic| diagnostic.code == "jre_guard_handler"),
-            "{name} keeps the resource degradation refusal: {:?}",
+                .all(|diagnostic| diagnostic.code != "jre_guard_handler"),
+            "{name}: the resource proof is out of the way: {:?}",
             report.diagnostics
         );
     }

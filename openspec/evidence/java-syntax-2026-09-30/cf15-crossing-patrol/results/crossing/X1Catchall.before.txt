@@ -1,0 +1,40 @@
+// jarde: presentation of `X1Catchall` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class X1Catchall extends java.lang.Object {
+    public X1Catchall() {
+        // @method <init>()V
+        // @declaration a constructor of `X1Catchall`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    public static void t(boolean arg0) {
+        // @method t(Z)V
+        // @declaration a static method of `X1Catchall`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0) {
+            throw new java.lang.IllegalStateException("state");
+        } else {
+            return;
+        }
+    }
+
+    public static java.io.ByteArrayOutputStream open() {
+        // @method open()Ljava/io/ByteArrayOutputStream;
+        // @declaration a static method of `X1Catchall`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        return new java.io.ByteArrayOutputStream();
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // jarde: not recovered: the recovery run for `main([Ljava/lang/String;)V` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `X1Catchall`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 3 4 5 8 9 10 13
+        // BCI 16: the handler's own instruction sequence is not the one this rule proves for a guarded region
+        // @bytecode 16 17 20 22 25
+        // 2 live block(s) are reachable only through edges the normal-flow view leaves out: [17, 16]
+    }
+}
