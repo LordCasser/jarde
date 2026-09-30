@@ -1,0 +1,47 @@
+// jarde: presentation of `Tf4StatementAfterSetTrue` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class Tf4StatementAfterSetTrue extends java.lang.Object {
+    private int result;
+
+    public Tf4StatementAfterSetTrue() {
+        // @method <init>()V
+        // @declaration a constructor of `Tf4StatementAfterSetTrue`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        this.result = 0;
+        return;
+    }
+
+    public java.lang.String test() {
+        // jarde: not recovered: the recovery run for `test()Ljava/lang/String;` produced no statement (explanation only); the artifact's own comment lines are below
+        // @method test()Ljava/lang/String;
+        // @declaration an instance method of `Tf4StatementAfterSetTrue`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        // @bytecode 0 25 35 37 43 53
+        // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+    }
+
+    private java.lang.String call() {
+        // @method call()Ljava/lang/String;
+        // @declaration an instance method of `Tf4StatementAfterSetTrue`, member flags 0x0002
+        // recovered from bytecode; presentation is not claimed to compile
+        return "call";
+    }
+
+    public int check() {
+        // @method check()I
+        // @declaration an instance method of `Tf4StatementAfterSetTrue`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        this.test();
+        return this.result;
+    }
+
+    public static void main(java.lang.String[] arg0) {
+        // @method main([Ljava/lang/String;)V
+        // @declaration a static method of `Tf4StatementAfterSetTrue`, member flags 0x0009
+        // recovered from bytecode; presentation is not claimed to compile
+        Tf4StatementAfterSetTrue local1 = new Tf4StatementAfterSetTrue();
+        java.lang.System.out.println("result=" + local1.check());
+        return;
+    }
+}
