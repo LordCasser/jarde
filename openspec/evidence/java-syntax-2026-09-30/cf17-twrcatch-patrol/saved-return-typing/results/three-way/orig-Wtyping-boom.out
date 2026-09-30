@@ -1,0 +1,6 @@
+stringLiteral:touch|sup:close
+intLiteral:touch|sup:close
+constructorValue:touch|sup:close
+callReturn:touch|sup:close
+nullValue:touch|sup:close
+classLiteral:touch|sup:close
