@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿、fmt、CI 完整 30 项 allowlist clippy（避免 `iter().copied().collect()` 类 CI-only lint）、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 A2 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 正常路径（含副作用计数）逐路径一致；记录输出 SHA。（见 [results/retype-threeway.md](../../evidence/java-syntax-2026-10-01/em17-slot-reuse-patrol/results/retype-threeway.md)；V3/V4 负例维持既有呈现、Jarde 腿按既有拒绝记录，JADX V4 自身输出不可编译照录。）
-- [ ] 3.3 root 独立复分段判据、呈现形态与三方行为，更新 EM-17/18 账本与巡查记录。
+- [x] 3.3 root 独立复分段判据、呈现形态与三方行为，更新 EM-17/18 账本与巡查记录。（root 于合并主线 bd535c63 复核：A2 分段 `boolean[] local2_2 = new boolean[3];` 就地声明+段二换名、整类重编行为逐字一致（`2,3,4,true`）、A1/同型/真别名负例逐字不变、全仓 2734/0、fmt/openspec 229/229。落点 `reuse.rs` 第三条窄拆分证明（既有 `Plan::variable_at` 扩展点）复核认可为正确所有者。裁决：int[]/int[][] 维度差异复用按完整拼写差异分段**保留**——与元素类型差异同为单声明不可编译问题，宽判据正确。V3/V4 真别名不可编译呈现维持，属后续片域。）
