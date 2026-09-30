@@ -1,0 +1,4 @@
+ba28c310fb596aaea16e4c717717d8764642c5045c133cc99f69a3547eb35340  openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C1.class
+ae946f2dfd9af46fcb98d6c01ced50b1791f70d0d7d3d8e6ea960be1415a34c2  openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C2.class
+59d0cf4c750e0c281b762d1b35c3e26bceda22af9abc789a6df7e78af3952689  openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C3.class
+8d7eee82db6e54af9a096ba69cd59542ad09290076c9245a310a00fe550b3573  openspec/evidence/java-syntax-2026-09-30/cf15-crossing-patrol/fixture/C4.class
