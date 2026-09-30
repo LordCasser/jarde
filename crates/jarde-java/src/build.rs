@@ -24227,7 +24227,10 @@ fn parameter_descriptors(descriptor: &str) -> Option<Vec<&str>> {
 /// the stack value it stored ([`store_operand`]). Nothing else is followed — a call's result, a
 /// field read and a value merged out of several definitions state no array here — which is what
 /// keeps this a reading of the facts that name an array and not a type system.
-fn array_of_value(
+///
+/// `crate::reuse`'s array-lifetime split reads the same channel for the writes it would present as
+/// separate locals, so the answer stays one body-wide reading.
+pub(crate) fn array_of_value(
     ssa: &SsaTable,
     operations: &Operations,
     value: ValueId,

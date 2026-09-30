@@ -1557,6 +1557,86 @@
       "path": "tests/fixtures/p3-array-invocation-widening/v8/UnknownArrayRelation.class"
     },
     {
+      "blake3": "e82df03a413af361f48ffea8d2ef823ff72c07c30402a1b88210a3954398d5c8",
+      "bytes": 2428,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/baseline/A1.jarde.java"
+    },
+    {
+      "blake3": "395ae9d64c21a8f21f346105de4ceb5ff83567fcc21531f960b615682ca85a1a",
+      "bytes": 1377,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/baseline/V2.jarde.java"
+    },
+    {
+      "blake3": "8711d12f0114f6ce9829a5daede1e1e6c733410f05faeee2958702df42c5bcbd",
+      "bytes": 1396,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/baseline/V3.jarde.java"
+    },
+    {
+      "blake3": "6e5e7c06013561cf9d2a6311c1830e559247fcbd05c2fa567c38166ff6b66c51",
+      "bytes": 1431,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/baseline/V4.jarde.java"
+    },
+    {
+      "blake3": "8880274a660d25a7720501c2fd217b40782135ce4be3ea42f1f837eb4a446bef",
+      "bytes": 10,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/expected/A1.stdout"
+    },
+    {
+      "blake3": "5b117b5bc1df07de136100b085527b93e5879ea98cf88cc033da4e820464a375",
+      "bytes": 11,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/expected/A2.stdout"
+    },
+    {
+      "blake3": "513b27e53a3699025ce54ac354d5f4f2328b4377abf6cc3c69d2cbd522ca171f",
+      "bytes": 12,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/expected/V1.stdout"
+    },
+    {
+      "blake3": "49124bf4f7f37328738ac34216a60dcd5f58bb198c5c3f6719b6becafb7e7882",
+      "bytes": 2,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/expected/V2.stdout"
+    },
+    {
+      "blake3": "6e6137eed49a3130229e5d9a1b3f148dc99e1c48cc8fe61cd7474d5f2976226b",
+      "bytes": 3,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/expected/V3.stdout"
+    },
+    {
+      "blake3": "6e6137eed49a3130229e5d9a1b3f148dc99e1c48cc8fe61cd7474d5f2976226b",
+      "bytes": 3,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/expected/V4.stdout"
+    },
+    {
+      "blake3": "cdbb03777480426042e1072527565b7f4339dd468b40faa8d4676d498fd5b121",
+      "bytes": 976,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/v8/A1.class"
+    },
+    {
+      "blake3": "ed0279231cd47202b17cf9932639d706eb8958532b06fd5518c31e7f30b9a06d",
+      "bytes": 843,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/v8/A2.class"
+    },
+    {
+      "blake3": "f7d084c5a5b0660520ee31f2401a6a3324f23e7dbc750f94d5f667d0f83a9731",
+      "bytes": 873,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/v8/V1.class"
+    },
+    {
+      "blake3": "07afbc2b58c3eadd1f024fe1fee164df3516a5f85509958ce2f5b8388ae6ea21",
+      "bytes": 384,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/v8/V2.class"
+    },
+    {
+      "blake3": "508e67e88c1d0167729980a78e3044106d8cfb67082bdfe5df91a0b938da501c",
+      "bytes": 561,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/v8/V3.class"
+    },
+    {
+      "blake3": "a914a4235d256b22f64f153c6ee795c9d2fd2f0c2ed7342d8b10345e0f245e5d",
+      "bytes": 570,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/v8/V4.class"
+    },
+    {
       "blake3": "5d11b9f1fbdb940e39c7819a2a9058540f10f288fddfcb98ae5f19aa3ac9869f",
       "bytes": 691,
       "path": "tests/fixtures/p3-array-types/ArrayTypes.java"

@@ -46,6 +46,8 @@ use jarde_jvm::method_ir::{
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 
+use crate::ast::Type;
+use crate::decode::Operations;
 use crate::names::{DebugLocal, LocalVariable, SlotEvidence};
 use crate::region::Region;
 use crate::stop::{StopReason, charge, poll};
@@ -106,6 +108,7 @@ impl Plan {
 pub(crate) fn plan(
     ssa: &SsaTable,
     canonical: &CanonicalCfg,
+    operations: &Operations,
     regions: &[Region],
     slots: u16,
     parameters: u16,
@@ -145,6 +148,21 @@ pub(crate) fn plan(
             budget,
         )? {
             plan.evidence[index] = SlotEvidence::Split(names);
+            plan.splits.insert(slot, split);
+            continue;
+        }
+        if let Some((segments, split)) = array_retype_split(
+            ssa,
+            canonical,
+            operations,
+            slot,
+            parameters,
+            slot_records,
+            accesses.get(&slot),
+            resources,
+            budget,
+        )? {
+            plan.evidence[index] = SlotEvidence::Split(vec![None; segments]);
             plan.splits.insert(slot, split);
             continue;
         }
@@ -582,6 +600,151 @@ fn typed_split(
             ranges: vec![(0, boundary), (boundary, u32::MAX)],
         },
     )))
+}
+
+/// The third deliberately narrow inference: an array lifetime whose element type differs from a
+/// later array lifetime over the same slot (EM-17/18 A2: the `int[]` a computed fill holds, then
+/// the `boolean[]` the same slot holds once the first is dead). The spellings come from the array
+/// channel the frames and the creating instructions already state —
+/// [`crate::build::array_of_value`] — so no new proof fact is read.
+///
+/// Which definition owns a read is the SSA's own answer: the read's value is the one store that
+/// wrote it, so the reads two definitions own cannot overlap, and the reads that name no single
+/// definition refuse the split — above all a phi that merges two definitions' values (the join or
+/// loop-carried confluence of a true alias), and beside it a caught reference or an entry value.
+/// The refused slot keeps the one variable it has today, exactly as a slot whose writes all state
+/// the same spelling does: one declaration already presents that.
+///
+/// Each definition is one segment, and one segment is one variable with exactly one write — which
+/// is also why a definition's value surviving on the operand stack past the next store refuses
+/// here: the name a consumer of that stack value spells is placed by the segment ranges, and a
+/// consumer at or past the next definition's store would read the next segment's name.
+#[allow(clippy::too_many_arguments)]
+fn array_retype_split(
+    ssa: &SsaTable,
+    canonical: &CanonicalCfg,
+    operations: &Operations,
+    slot: u16,
+    parameters: u16,
+    records: &[&DebugLocal],
+    accesses: Option<&Accesses>,
+    resources: &BTreeSet<u16>,
+    budget: &mut Budget,
+) -> Result<Option<(usize, Split)>, StopReason> {
+    // The same scope rules the other narrow proof keeps: a parameter's declaration is the
+    // signature's, a guard header's slot is the header's own rule, a slot the debug table records
+    // is the records' decision, and unreachable code states no store order at all.
+    if slot < parameters
+        || resources.contains(&slot)
+        || !records.is_empty()
+        || !canonical.unreachable().is_empty()
+    {
+        return Ok(None);
+    }
+    let Some(accesses) = accesses else {
+        return Ok(None);
+    };
+    if accesses.reads.is_empty() || accesses.writes.len() < 2 {
+        return Ok(None);
+    }
+    // Every write states a full array spelling, and at least two spellings differ. The writes are
+    // the segment boundaries in store order; a definition whose value nothing reads still bounds
+    // the segment before it, and its own statement is presented as the declaration it is.
+    let mut definitions: Vec<(u32, ValueId, (Type, u32))> =
+        Vec::with_capacity(accesses.writes.len());
+    for write in &accesses.writes {
+        poll(budget, Some(write.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(write.bci),
+        )?;
+        let Some(shape) = crate::build::array_of_value(ssa, operations, write.value, 0) else {
+            return Ok(None);
+        };
+        definitions.push((write.bci, write.value, shape));
+    }
+    definitions.sort_by_key(|(bci, _, _)| *bci);
+    if definitions
+        .windows(2)
+        .any(|window| window[0].0 == window[1].0)
+    {
+        // One instruction writing the slot twice is no store order to present.
+        return Ok(None);
+    }
+    if definitions
+        .windows(2)
+        .all(|window| window[0].2 == window[1].2)
+    {
+        return Ok(None);
+    }
+    // A definition's own value outliving the next definition's store would place a read of the
+    // earlier segment's name at a statement the later segment's ranges cover. The reads' own
+    // positions cannot do this (a read past the next store reads the next store's value), but the
+    // value can survive on the operand stack or feed a merge; both refuse.
+    for (index, (_, value, _)) in definitions.iter().enumerate() {
+        let Some(boundary) = definitions.get(index + 1).map(|(bci, _, _)| *bci) else {
+            break;
+        };
+        let Some(value) = representative(ssa, *value) else {
+            return Ok(None);
+        };
+        for use_ in ssa.value(value).uses() {
+            let at = use_.bci().unwrap_or_else(|| use_.block().bci());
+            poll(budget, Some(at))?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+            if at >= boundary {
+                return Ok(None);
+            }
+        }
+    }
+    // The variable each access belongs to: a write its own segment, a read the segment of the
+    // definition whose value it reads. A read whose value names no definition of this slot keeps
+    // the slot one variable, and so does a definition two reads would claim.
+    let mut by_bci: BTreeMap<u32, u16> = BTreeMap::new();
+    for (index, (bci, _, _)) in definitions.iter().enumerate() {
+        let index = u16::try_from(index).unwrap_or(u16::MAX);
+        by_bci.insert(*bci, index);
+    }
+    for read in &accesses.reads {
+        poll(budget, Some(read.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(read.bci),
+        )?;
+        let Some(value) = representative(ssa, read.value) else {
+            return Ok(None);
+        };
+        let mut owners = definitions
+            .iter()
+            .enumerate()
+            .filter(|(_, (_, defined, _))| {
+                representative(ssa, *defined).is_some_and(|found| found == value)
+            });
+        let Some((index, _)) = owners.next() else {
+            return Ok(None);
+        };
+        if owners.next().is_some() {
+            return Ok(None);
+        }
+        let index = u16::try_from(index).unwrap_or(u16::MAX);
+        match by_bci.insert(read.bci, index) {
+            // A read and a write at one BCI have to agree on the segment they touch.
+            Some(assigned) if assigned != index => return Ok(None),
+            _ => {}
+        }
+    }
+    let mut ranges = Vec::with_capacity(definitions.len());
+    let mut start = 0;
+    for (bci, _, _) in &definitions[1..] {
+        ranges.push((start, *bci));
+        start = *bci;
+    }
+    ranges.push((start, u32::MAX));
+    Ok(Some((definitions.len(), Split { by_bci, ranges })))
 }
 
 /// The accesses of one local slot.
