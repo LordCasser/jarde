@@ -1,0 +1,1 @@
+e372f219aa6b556e6717b10648d99ff3d5f4bdaca5a4b4f68233d2f157b3c765  openspec/evidence/java-syntax-2026-10-01/catch-param-slot-reuse/fixture/S1.class
