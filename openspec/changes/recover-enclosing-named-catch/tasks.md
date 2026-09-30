@@ -18,4 +18,4 @@
   - 全仓 265 个测试目标 `test result: ok`（各轮 `df -h /` ≥15Gi）；`cargo fmt --all -- --check` 干净；clippy 逐站点配对：新增 0（本地 1.98 存量 91 站点持平，`Verdict` 装箱避免 large-variant 新告警）；`openspec validate --all --strict` 225 项全过；四条 ignored 失败（d5 chainCast、jdk25、Combo 未来验收、release 构建）经 stash 对照为主线既有。
 - [x] 3.2 T3/T1/C4 三方对照：原 class/固定 JADX Java-input/Jarde `javac --release 8` 重编，`java -Xverify:all` 正常路径与注入异常路径（ISE 被 catch、清理异常传播、suppression 保留）逐路径一致；记录输出 SHA。
   - `enclosing-17b/results/three-way/`：T3/T1/C4 三腿逐行一致；W17b 五路径（正常、体注入 ISE、handler 调用体、清理异常传播、suppression）jarde 与原类逐行一致，JADX 列 `closeThrows` 一处自身重构缺陷（close 移入保护区并虚构 suppression，与 17a 记录同类）——`run-sha256.txt`/`leg-source-sha256.txt` 落盘。恢复文本 `javac --release 8` 一次通过，无机械补丁。
-- [ ] 3.3 root 独立复核容忍守卫、子句呈现与覆盖账本，更新 CF-17 清单与巡查账本。
+- [x] 3.3 root 独立复核容忍守卫、子句呈现与覆盖账本，更新 CF-17 清单与巡查账本。（root 于合并主线 5644fc85 复核：T3 两形、T1、C4.twrNamed 与 Guarded.withCatch 全部恢复为 `try (…) { … } catch (E e) { … }`、六负例逐字保持拒绝、全仓 2723/0〔首跑 1 例 plugin plane flake 重跑干净〕、fmt/openspec 225/225。至多一行全跨度行守卫与单直行 handler 证明复核通过；handler 参数传递槽复用限制登记 Catches 扩展片域。）
