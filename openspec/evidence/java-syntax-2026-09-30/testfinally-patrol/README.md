@@ -20,7 +20,7 @@
 
 ## 下一步（不自动开工）
 
-按证书邻近度排序推进中：Tf4（`recover-flag-conditional-finally`，已落地并通过 root 复核，见下节；root 验收于合并主线 f63f7634：全仓 2674/0、固定类 0 not-recovered）与 Tf1（`recover-local-null-conditional-finally`，[spec 已立](../../../changes/recover-local-null-conditional-finally/)，为下一片，串行实施——共享 `guarded()` dispatch 注册点）。Tf2 形状已预读：异常表 `[2,25)→32 any` + 自保护 `[32,34)→32`，lead `[aconst_null, astore_2]`，副本为**无条件** `closeQuietly` 调用（三份：正常 25–30、异常 34–39 各一），返回值是 **try 内构造**并保存的 `astore_3`@24——失败点是 `finally_copy` 直体证书的 lead 门槛只认字段赋值，属 Test9 直体家族的"null 局部 lead + 构造保存返回"变体，随该家族扩验另片。Tf3（提前 `return null` + 正文条件流）最后。上游 `TestFinally3.test2NoDebug` 标 `@NotYetImplemented`，JADX 自身亦未完成，属已登记分母调整项。
+按证书邻近度排序推进中：Tf4（`recover-flag-conditional-finally`，已落地并通过 root 复核，见下节；root 验收于合并主线 f63f7634：全仓 2674/0、固定类 0 not-recovered）与 Tf1（`recover-local-null-conditional-finally`，[spec 已立](../../../changes/recover-local-null-conditional-finally/)，已落地，见下节）。Tf2 形状已预读：异常表 `[2,25)→32 any` + 自保护 `[32,34)→32`，lead `[aconst_null, astore_2]`，副本为**无条件** `closeQuietly` 调用（三份：正常 25–30、异常 34–39 各一），返回值是 **try 内构造**并保存的 `astore_3`@24——失败点是 `finally_copy` 直体证书的 lead 门槛只认字段赋值，属 Test9 直体家族的"null 局部 lead + 构造保存返回"变体，随该家族扩验另片。Tf3（提前 `return null` + 正文条件流）最后。上游 `TestFinally3.test2NoDebug` 标 `@NotYetImplemented`，JADX 自身亦未完成，属已登记分母调整项。
 
 ## Tf4 落地记录（change `recover-flag-conditional-finally`）
 
@@ -29,3 +29,14 @@ Tf4 已由该 change 落地为 Guard 内 `prove_flag_conditional_finally` 证书
 - `results/Tf4.after.json`、`results/Tf4.jarde.java`：证书命中后的固定类恢复（structured、单一 finally region、36 个物理 BCI 全有来源；handler 副本字段访问按既有 `jre_field_not_emitted` 折叠记账）。
 - `negatives/baseline-refusals.txt`：基线 `86f2e740`（无证书）对固定类整方法回退、对全部负例拒绝；实现后由 `p3_flag_conditional_finally` 全量拒绝（11 个负例，含补丁类 Tf4GuardFieldMismatch）。
 - `probe/`：同布局探针变体三方对照。原 class 与 Jarde `javac --release 8` 重编后 `java -Xverify:all` 逐路径一致（正常 `result==1`、call 抛错 `result==-2` 且异常传播、清理抛错 `RuntimeException:cleanup` 覆盖，两探针全路径）；JADX Java-input 作参照——`Tf4CleanupProbe` 三路径一致，`Tf4Probe` 正常路径 `result=-1` 即上文登记的 `z`/`z2` 语义失真（JADX 把 `success = true` 死写为 `z2`，不合并进 `z`），不构成行为正例。输出 SHA 见 `probe/behavior-sha256.txt`。
+
+## Tf1 落地记录（change `recover-local-null-conditional-finally`）
+
+Tf1 已由该 change 落地为 Guard 内 `prove_local_null_conditional_finally` 证书：两行 any 表 + 自保护绑定行、`[aconst_null; astore]` lead、正文同槽赋值全集（均在受保护区间内且右侧值非 null 字面量）、两份逐参数同形副本（四指令 `aload s; ifnull exit; aload s; invokevirtual T ()V`，T 参数化、两份一致，可选共有的七指令守卫抛出尾——与 Tf4 平行），折叠为唯一 `try/finally` + 一份 `if (local3 != null) { local3.close(); }`。本目录新增证据：
+
+- `results/Tf1.after.json`、`results/Tf1.jarde.java`、`results/recovery-sha256-tf1.txt`：证书命中后的固定类恢复（structured、单一 finally region、37 个物理 BCI 全有来源；lead 呈现为分离式 `Cursor local3; local3 = null;`，同 Tf4 的既有裁决）。
+- `results/tf1-baseline-replay.txt`：任务 1.1 的可重放基线（class/源 SHA、双行 any 表、`Tf1.base.json` 的整方法回退诊断、固定类 `java -Xverify:all` 通过）。
+- `negatives/src/`（9 个负例，每类独立子目录）、`negatives/patch-tf1.py`（4 个同长字节码补丁）、`negatives/verify-Tf1*.txt`（各负例 `java -Xverify:all` 输出）、`negatives/baseline-refusals-tf1.txt`（基线 `baff5438` 对固定类与全部负例均整方法回退、零 finally）、`negatives/recovery-tf1/`（实现后 9 个负例仍全部拒绝的恢复输出）、`negatives/fixture-sha256-tf1.txt`。
+- `probe/src-tf1/`、`probe/run-behavior-tf1.sh`、`probe/behavior-tf1-sha256.txt`：同布局探针（正文可注入异常、query 可返回 null、清理可注入异常）三方对照。原 class 与 Jarde `javac --release 8` 重编后 `java -Xverify:all` 逐路径一致（正常关闭一次返回 `v`、正文抛错关闭一次且 `RuntimeException:body` 重抛、query 返回 null 不关闭、清理抛错 `RuntimeException:cleanup` 覆盖，4 路径全过）；JADX Java-input 侧 4 路径亦一致，仍仅作参照（其恢复带巡查登记的死代码 artifact）。三方 run 输出 SHA 相同（`9cc1eae6…`）。
+
+root 复核（证书边界、副本折叠来源、账本标记）属该 change 任务 4.3，另行走查。
