@@ -11863,7 +11863,9 @@ mod tests {
             // The 2026-09-28 fixture additions moved the measured sweep; see the closing paragraph
             // of this test's documentation and the fixture index for the current corpus totals.
             // The 2026-10-01 caught-value typing fixture (one TWR class, seven bodies) moved it again.
-            (432, 2086, 249, 1637, 8),
+            // The 2026-10-01 array-slot-retype fixtures (the patrol's A1/A2 plus four boundary
+            // variants, twenty-three bodies) moved it again.
+            (438, 2109, 249, 1645, 8),
             "fixture population changed: re-measure these counts"
         );
     }
