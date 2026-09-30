@@ -103,6 +103,7 @@ use crate::build::stack_operands;
 use crate::decode::Operations;
 use crate::facts::{CompareOp, InvokeKind, Operation};
 use crate::init::Sites;
+use crate::lambda::parse_method;
 use crate::normal_flow::NormalFlowView;
 use crate::pass::{FINALLY, MONITOR, Pass, TWR};
 use crate::refusal::Refusal;
@@ -1485,6 +1486,65 @@ fn single_statement_with_constructor(
             })
         })
     })
+}
+
+/// Whether one range begins at a **statement boundary**: the instruction before it is the last
+/// instruction of a statement that completed there, so the range splits no statement and swallows
+/// no initialisation. This is the completion proof [`completed_field_assignment`] makes about its
+/// own assignment, read for any statement: a block whose entry carries a stack value is one this
+/// block-local reading cannot bound, and a range the block's own run reaches with a value still
+/// waiting on the operand stack begins inside the statement that produced it — the old-value
+/// update whose `dup2` the range follows, or the initialisation whose store it covers.
+fn statement_boundary(facts: &Facts<'_>, before: u32, range: u32) -> bool {
+    let Some(block) = facts.block_of(before) else {
+        return false;
+    };
+    let Some(entry) = facts.ssa.block(block) else {
+        return false;
+    };
+    if entry
+        .entry()
+        .iter()
+        .any(|(slot, _)| matches!(slot, Slot::Stack(_)))
+    {
+        return false;
+    }
+    let mut depth = 0i64;
+    for effect in facts
+        .ssa
+        .effects()
+        .instructions()
+        .iter()
+        .filter(|effect| effect.block() == block && effect.bci() < range)
+    {
+        depth += i64::from(effect.stack_delta());
+        if depth < 0 {
+            return false;
+        }
+    }
+    depth == 0
+}
+
+/// Whether one instruction is one a source statement can **end** with: a `void` invocation, a
+/// field write, a return. These are the terminals the statement boundaries a following range can
+/// begin at carry — a branch, a monitor enter, a stack shuffle or a value producer belongs to the
+/// construct or expression it transfers within, and no statement of its own ends there.
+fn statement_ends(facts: &Facts<'_>, at: u32) -> bool {
+    match facts.op(at) {
+        // A `void` invocation: the call hands back no value, so what it read is the whole
+        // statement — `helper();`, `System.out.println(…);` — and the range after it begins a new
+        // one. An invocation that returns is a value producer, and the statement that consumes it
+        // ends at *that* consumer, not at the call.
+        Some(Operation::Invoke(called)) => {
+            matches!(parse_method(called.descriptor()), Some((_, None)))
+        }
+        Some(Operation::Field {
+            access: crate::facts::FieldAccess::Write,
+            ..
+        })
+        | Some(Operation::Return) => true,
+        _ => false,
+    }
 }
 
 /// A completed field assignment before a protected range is an ordinary statement, not a
@@ -9939,7 +9999,8 @@ fn resources(
         //
         // So the questions are one — "is what precedes this range a resource's own initialisation?" —
         // and a row answers *no* where no instruction precedes it in this block, where the statement
-        // before it is no store at all, and where an ordinary assignment precedes it. None of these
+        // before it is no store at all *and a statement boundary stands where the range begins*, and
+        // where an ordinary assignment precedes it. None of these
         // rows is examined as a resource, and when every candidate answers no the shape is not this
         // rule's at all.
         let Some(before) = facts
@@ -9979,7 +10040,23 @@ fn resources(
         // immediately before the range it declares — `try (R r = open())` and Java 9's `try (r)`
         // both store the variable the range reads — so no provable header of this shape answers no
         // here, and a `try` whose header this build cannot state keeps degrading as one.
-        if !matches!(facts.op(before), Some(Operation::Store { .. })) {
+        //
+        // The skip is answered only where the row's range begins at a **statement boundary**:
+        // the instruction before the range is one that *ends* a source statement — a `void`
+        // invocation (`helper();`), a field write (`field = 7;`, the statement
+        // [`completed_field_assignment`] reads), a return — and the statement it ends completed
+        // exactly there, the way a compiler lays one statement out before the next
+        // ([`statement_boundary`]). Those are the clause boundaries a source statement owns: the
+        // `try` after `helper();`, the `catch` and `finally` clauses of the statement whose body
+        // returned. A range that begins anywhere else — inside an expression (the old-value
+        // update whose `dup2` the row covers), past a branch or a monitor enter (the ranges of a
+        // `synchronized` statement's own body and cleanup), or over a store the row widened into
+        // — is no clause a source statement could own, so the row keeps the examination whose
+        // proof refuses below, the same answer it held before this question was asked.
+        if !matches!(facts.op(before), Some(Operation::Store { .. }))
+            && statement_ends(facts, before)
+            && statement_boundary(facts, before, row.start_bci)
+        {
             continue;
         }
         // A direct null literal is not enough to call an ordinary `try` a resource header. Admit it
