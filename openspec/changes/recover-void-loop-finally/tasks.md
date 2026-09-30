@@ -17,4 +17,4 @@
 
 - [x] 4.1 以 fresh CLI 重建完整 Jarde class-source，和固定原 class、原 Java 8 转写、JADX Java-input 对照零/多类、第一/后续写入失败、关闭失败及双重失败；所有版本运行 `java -Xverify:all`，结果、清理次数及异常身份逐路径一致，记录输出 SHA。（verification/fixed.run.txt 等四份逐字节一致，behavior-sha256.txt）
 - [x] 4.2 重放 1.2 的有效近邻和已验收的 Test3/4/5/11/13/EmptyFinally；运行 `cargo test -p jarde-java --tests --locked`、workspace check、fmt、OpenSpec strict、CI 同款 Clippy、diff check，记录结果并清理专用 Cargo target。（verification/ 各日志；216/216 strict；484/0 测试；replay 与验证的临时 target 均由脚本清理）
-- [ ] 4.3 root 独立复核双行表、三循环/SSA/异常边、来源和四方行为，更新 CF-16 账本；只标记固定 Test2 JVM 切片，不外推 DX/DEX、Test5/9 或其他编译 profile。
+- [x] 4.3 root 独立复核双行表、三循环/SSA/异常边、来源和四方行为，更新 CF-16 账本；只标记固定 Test2 JVM 切片，不外推 DX/DEX、Test5/9 或其他编译 profile。（root 于合并主线 823b4bd1 复核：固定类 0 not-recovered、三循环+唯一 finally+一次 close、源码 SHA 59d5c8c… 与实施记录一致、497 测试全绿、fmt/clippy 新码零告警、openspec strict 通过）

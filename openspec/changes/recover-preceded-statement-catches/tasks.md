@@ -17,4 +17,4 @@
 
 - [x] 4.1 fresh CLI 重建：原始 class、M5 家族、M3 的原/JADX/Jarde 完整 Java 8 源码重编，`java -Xverify:all` 下正常与各异常路径行为逐字一致；记录输出 SHA。
 - [x] 4.2 回归既有 finally/concat/TWR/monitor 测试与 Test3/4/5/11/16/17 已验收切片；`cargo test -p jarde-java --tests --locked`、workspace check、`cargo fmt --all -- --check`、CI 同款 Clippy、`openspec validate --strict`、diff check，清理专用 Cargo target。
-- [ ] 4.3 root 独立复核门槛分支、值流归属、三方运行与来源，更新 CF-16 清单与账本；仅标记非 store 前置具名 catch 家族与 `FinallyOnce.main` 切片，不外推 store 前置家族或 DEX。
+- [x] 4.3 root 独立复核门槛分支、值流归属、三方运行与来源，更新 CF-16 清单与账本；仅标记非 store 前置具名 catch 家族与 `FinallyOnce.main` 切片，不外推 store 前置家族或 DEX。（root 于合并主线 823b4bd1 复核：原始 FinallyOnce.class 全类 0 not-recovered 且与冻结期望逐字节一致、M1/M2 与基线逐字相同、N1 `jre_guard_handler` 与 N2b `jre_concat_split`@32 保持、Phi 任一臂归属语义复核通过、新码 clippy 零告警）
