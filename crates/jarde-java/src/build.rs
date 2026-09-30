@@ -2773,6 +2773,11 @@ pub(crate) fn resource_slots(regions: &[Region]) -> BTreeSet<u16> {
                     slots.insert(resource.slot());
                 }
             }
+            // A whole-construct catch's header is a declaration too: the slot it names is never
+            // split, exactly like a `try`/`catch` clause's parameter slot.
+            if let Some(clause) = plan.enclosing() {
+                slots.insert(clause.parameter());
+            }
         }
         Region::Try { catches, .. } => {
             for clause in catches {
@@ -13501,6 +13506,42 @@ impl Builder<'_> {
                             };
                             body.push(statement);
                         }
+                        // The clause the proof carried: the `catch` a compiler wound around the
+                        // whole lowering. Its header spells the row's class and the name the
+                        // parameter's slot carries; its body is the handler's one straight block,
+                        // written as ordinary statements with the binding store left to the header
+                        // — the same discipline a `try`/`catch` statement's own clauses follow.
+                        let mut catches = Vec::new();
+                        if let Some(clause) = plan.enclosing() {
+                            let (ty, name) = match self.enclosing_catch_header(clause) {
+                                Ok(header) => header,
+                                Err(reason) => {
+                                    let at = clause.body().0;
+                                    let bcis = self.region_quote(region, at);
+                                    return self.fallback(bcis, &reason, at);
+                                }
+                            };
+                            let outer_declared = self.declared.clone();
+                            // The header declares the local the handler's own entry store fills:
+                            // the store is therefore not a statement of the body, and every later
+                            // read of that local is a read of the name this header states.
+                            self.declared
+                                .insert(LocalVariable::whole(clause.parameter()));
+                            self.clause_parameters.insert(clause.body().0);
+                            let handler = match self.body_range(clause.body()) {
+                                Ok(statements) => statements,
+                                Err(stop) => {
+                                    self.declared = outer_declared;
+                                    return Err(stop);
+                                }
+                            };
+                            self.declared = outer_declared;
+                            catches.push(crate::ast::CatchClause {
+                                ty,
+                                name,
+                                body: handler,
+                            });
+                        }
                         let mut origin = OriginSet::new(Origin::direct(
                             resources
                                 .first()
@@ -13513,13 +13554,19 @@ impl Builder<'_> {
                             // relationship the statement preserves is answerable from the artifact.
                             origin = origin.plus_derived(Origin::derived(*bci));
                         }
+                        if let Some(clause) = plan.enclosing() {
+                            // The clause's handler entry is an anchor of the statement beside the
+                            // proof's own readings, the way a `try`/`catch` clause's is.
+                            origin = origin.plus_derived(Origin::derived(clause.body().0));
+                        }
                         self.push(Stmt::new(
                             StmtKind::Try {
                                 resources: declarations,
-                                // A guarded statement has no clauses: a `catch` beside a `try` header
-                                // is the `Unexplained` refusal, and this node is only written where
-                                // that proof succeeded.
-                                catches: Vec::new(),
+                                // The one clause the proof carried: a `catch` whose whole-construct
+                                // row and straight handler both proved. Every other shape beside a
+                                // `try` header stays the `Unexplained` refusal, and this node is
+                                // only written where that proof succeeded.
+                                catches,
                                 body,
                                 finally_body: None,
                             },
@@ -15135,6 +15182,38 @@ impl Builder<'_> {
             ));
         };
         Ok((types.join(" | "), name.to_owned()))
+    }
+
+    /// The header of the `catch` a whole-construct row carried: the one class its row names, and
+    /// the name the parameter's slot carries. The spelling is the clause header's own path through
+    /// the pool and the name table, so a whole-construct clause reads exactly like a `try`/`catch`
+    /// statement's.
+    fn enclosing_catch_header(
+        &self,
+        clause: &guard::EnclosingCatch,
+    ) -> Result<(String, String), String> {
+        let internal = cp_class_name(self.pool, clause.catch_type()).map_err(|_| {
+            format!(
+                "the catch type at constant-pool index {} is not a `CONSTANT_Class` entry, so the clause names no class",
+                clause.catch_type()
+            )
+        })?;
+        let internal = String::from_utf8_lossy(&internal.0).into_owned();
+        let ty = spell_reference(&internal).ok_or_else(|| {
+            format!(
+                "the catch type `{internal}` is not a class name this layer can spell as a Java type, so the clause cannot be named"
+            )
+        })?;
+        // The slot of a clause's parameter is never split (P3 3.4): the header writes the
+        // declaration, so the slot it takes stays one variable.
+        let Some(name) = self.names.whole(clause.parameter()).map(RenderedName::text) else {
+            return Err(format!(
+                "the catch parameter at BCI {} lives in slot {}, which has no name",
+                clause.body().0,
+                clause.parameter()
+            ));
+        };
+        Ok((ty, name.to_owned()))
     }
 
     /// Writes the statements of one instruction range, in order.

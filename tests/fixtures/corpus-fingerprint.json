@@ -3142,8 +3142,8 @@
       "path": "tests/fixtures/p3-handler-store/v8/HandlerStore.class"
     },
     {
-      "blake3": "b226962ee3597e612ed88c8ebb7f526e8616e567fc8b7f9d118b3227a62918ff",
-      "bytes": 4098,
+      "blake3": "27333a20c3862a37362de3aad14a7a7dd5a1d06acaad201beaa299730de917ad",
+      "bytes": 4160,
       "path": "tests/fixtures/p3-handlers/Guarded.java"
     },
     {
