@@ -42,3 +42,7 @@
 - N1 的 store 前置家族（`r = open(); …`）继续按资源降级拒绝，不在本切片内解决；这保持"证明不了的 TWR 永不伪装成用户 catch"的既有决策。
 - 本目录证据为 JVM Java 8/11 classfile；不外推 DX/DEX 输入。
 - `handled`/`escaping` 已由 [cf16-finally 各验收](../../java-syntax-2026-09-27/cf16-finally/) 独立闭合，本切片只针对 `main` 及其两个根因家族。
+
+## 实施复放（2026-09-30）
+
+切片 [`recover-preceded-statement-catches`](../../../changes/recover-preceded-statement-catches/) 实施后的复放记录见 [results/near-replay.md](results/near-replay.md)：`fixture/near/` 下的五个 verifier 有效近邻（字段写前置、`getstatic` 消费语句前置、第二例 store 前置降级、更早同 owner `toString` 之后的真 split 链、双资源 TWR）的修复前后行为、三方重编运行结果与门禁输出。冻结部分（`fixture/` 的 SHA、上文基线表）保持原样未动。
