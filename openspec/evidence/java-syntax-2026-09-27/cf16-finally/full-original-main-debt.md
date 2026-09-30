@@ -1,4 +1,6 @@
-# `FinallyOnce.main`：完整类的独立恢复缺口
+# `FinallyOnce.main`：完整类的独立恢复缺口（已闭合）
+
+> **2026-09-30 闭合**：拆分取证见[前置语句具名 catch 证据](../../java-syntax-2026-09-30/finallyonce-main-catches/README.md)，实施见 [recover-preceded-statement-catches](../../../changes/recover-preceded-statement-catches/)。合并主线后原始完整类全方法恢复，`handled`/`escaping` 输出不变。下文为闭合前的登记原文。
 
 固定原 class `FinallyOnce.class` SHA-256 `3ad6857285368c95c3176a520300c4abba09084443fe7fc08e8972330e9cedd2` 的 `handled` 和 `escaping` 已分别按同布局最小完整类验收；原始完整类的 `main([Ljava/lang/String;)V` 仍为 explanation-only，不能据两方法的结果声称整类源码可重编。这是独立于 CF-16 清理副本证明的后续单元，不混入 Test14 的条件 finally 实现。
 
