@@ -1828,6 +1828,18 @@ struct HeaderTestChain {
     exit: CanonicalBlockId,
 }
 
+/// Where a switch inside a loop meets, decided by [`Walker::switch_loop_join`].
+enum SwitchLoopJoin {
+    /// One proved in-loop join the arms' own routes share.
+    Local(usize),
+    /// No block inside the loop is met by two arms: every arm's route ends at the current
+    /// loop's continue target, so that target is the join and the arms fall out of the switch.
+    ContinueTarget,
+    /// The arm routes cannot be classified, or they share an in-loop block this proof cannot
+    /// elect as the one join. The switch is refused.
+    Refused,
+}
+
 type HeaderTestFacts = (u32, u32, Vec<CanonicalBlockId>);
 
 impl Frame {
@@ -9302,23 +9314,34 @@ impl Walker<'_> {
         Ok(Some(proof))
     }
 
-    /// The run a refused loop leaves behind: one refusal naming the loop's own block and everything
-    /// the body's walk claimed, then the sibling quotes that walk left behind.
+    /// The run a refused loop leaves behind: the quotes the body's walk left behind first (they
+    /// are the walk's own first failures), then one refusal naming the loop's own block and every
+    /// block nothing earlier claimed.
     ///
     /// A refused loop cannot be written — the statement is the loop — so the blocks its body proved
     /// have no place as statements, and the body's region is **dropped** by the caller. A dropped
     /// region is exactly what the exactly-once invariant forbids: those blocks were claimed, so the
     /// uncovered-blocks scan will not name them, and a block named by no region is a silently lost
-    /// part of the body. The refusal therefore quotes the header and every block the body's run
-    /// holds, each once, in the walk's own order; the quotes the body left behind stay quotes and
-    /// are reported beside it ([`Run`]).
+    /// part of the body. The refusal therefore quotes the header and every body block still
+    /// unclaimed, each once, in the walk's own order; the quotes the body left behind stay quotes
+    /// and are reported beside it ([`Run`]) — before the refusal, because the body's quote is the
+    /// failure the loop's refusal is about, and no block may be claimed by both. A refusal whose
+    /// every block an earlier quote already holds states nothing of its own and is not emitted.
     fn loop_fallback(header: &CanonicalBlockId, reason: FallbackReason, body: Vec<Region>) -> Run {
-        let blocks = gap_blocks(header, body.iter().flat_map(Region::blocks).cloned());
-        let mut run = vec![Region::Fallback { blocks, reason }];
-        run.extend(
-            body.into_iter()
-                .filter(|region| matches!(region, Region::Fallback { .. })),
-        );
+        let mut run: Vec<Region> = body
+            .iter()
+            .filter(|region| matches!(region, Region::Fallback { .. }))
+            .cloned()
+            .collect();
+        let claimed: BTreeSet<&CanonicalBlockId> = run.iter().flat_map(Region::blocks).collect();
+        let blocks: Vec<CanonicalBlockId> =
+            gap_blocks(header, body.iter().flat_map(Region::blocks).cloned())
+                .into_iter()
+                .filter(|block| !claimed.contains(block))
+                .collect();
+        if !blocks.is_empty() {
+            run.push(Region::Fallback { blocks, reason });
+        }
         (run, None)
     }
 
@@ -10225,9 +10248,13 @@ impl Walker<'_> {
     }
 
     /// Find the one join of switch paths that stay in the current loop. An arm may instead end
-    /// at an exact, already proved loop break target. For the current loop's update, a case must
-    /// end in its own explicit transfer; a normal path through the shared join is not a continue.
-    /// This bounded proof does not claim blocks or change the normal-flow graph.
+    /// at an exact, already proved loop break target, or end at the loop's own continue target
+    /// while its other route still completes at the shared join (the arm's `if (…) continue;`).
+    /// For the current loop's update, a case must end in its own explicit transfer; a normal
+    /// path through the shared join is not a continue. When no block inside the loop is met by
+    /// two arms' own routes, every arm's meeting point is the continue target itself, and the
+    /// answer says so ([`SwitchLoopJoin::ContinueTarget`]). This bounded proof does not claim
+    /// blocks or change the normal-flow graph.
     fn switch_loop_join(
         &mut self,
         branch: usize,
@@ -10235,16 +10262,16 @@ impl Walker<'_> {
         frame: &Frame,
         at: u32,
         continue_target: Option<usize>,
-    ) -> Result<Option<usize>, StopReason> {
+    ) -> Result<SwitchLoopJoin, StopReason> {
         let Some(scope) = &frame.scope else {
-            return Ok(None);
+            return Ok(SwitchLoopJoin::Refused);
         };
         let entries: BTreeSet<usize> = successors
             .iter()
             .filter_map(|id| self.view.index_of(id))
             .collect();
         if entries.len() != successors.len() {
-            return Ok(None);
+            return Ok(SwitchLoopJoin::Refused);
         }
         let exits: BTreeSet<usize> = frame
             .loop_targets
@@ -10252,6 +10279,10 @@ impl Walker<'_> {
             .filter_map(|target| target.break_target)
             .collect();
         let mut proved = Vec::new();
+        // Whether any block inside the loop is met by two or more arms' own routes. When no such
+        // block exists and no local join was proved, every arm's meeting point is the loop's own
+        // continue target, and that target is the join (the arms fall out of the switch into it).
+        let mut shared_tail = false;
         for candidate in scope {
             if *candidate == branch
                 || entries.contains(candidate)
@@ -10272,6 +10303,7 @@ impl Walker<'_> {
                 let mut work = vec![(*entry, None)];
                 let mut reaches_join = false;
                 let mut reaches_continue = false;
+                let mut arm_valid = true;
                 while let Some((current, predecessor)) = work.pop() {
                     poll(self.budget, Some(at))?;
                     charge(
@@ -10297,7 +10329,7 @@ impl Walker<'_> {
                                     })
                         });
                         if !explicit_transfer {
-                            valid = false;
+                            arm_valid = false;
                             break;
                         }
                         reaches_continue = true;
@@ -10318,31 +10350,38 @@ impl Walker<'_> {
                                 .is_some_and(|operation| operation.switch().is_some()))
                         || !seen.insert(current)
                     {
-                        valid = false;
+                        arm_valid = false;
                         break;
                     }
                     let next = self.view.successors(current);
                     if next.is_empty() {
-                        valid = false;
+                        arm_valid = false;
                         break;
                     }
                     work.extend(next.into_iter().map(|successor| (successor, Some(current))));
                 }
-                if !valid || (reaches_join && reaches_continue) {
+                // One arm's unclassifiable route (across another case entry, out of the scope)
+                // keeps this candidate from being *proved*, but the other arms still say whether
+                // the candidate is a real meeting point of the switch — which is what decides
+                // between refusing and letting the loop's own continue target be the join.
+                if !arm_valid {
                     valid = false;
-                    break;
+                    continue;
                 }
                 normal_arms += usize::from(reaches_join);
                 continue_arms += usize::from(reaches_continue);
             }
+            shared_tail |= normal_arms >= 2;
             if valid && normal_arms >= 2 && (continue_target.is_none() || continue_arms > 0) {
                 proved.push(*candidate);
             }
         }
         Ok(if proved.len() == 1 {
-            proved.first().copied()
+            SwitchLoopJoin::Local(proved.first().copied().expect("one proved candidate"))
+        } else if proved.is_empty() && !shared_tail {
+            SwitchLoopJoin::ContinueTarget
         } else {
-            None
+            SwitchLoopJoin::Refused
         })
     }
 
@@ -10371,16 +10410,33 @@ impl Walker<'_> {
         // A refused `switch` keeps the prefix's statements, and every block the walk entered for it
         // stays named: an arm already walked into a region is dropped with the statement, so its
         // blocks are quoted beside the branch — the same exactly-once rule the body of a refused
-        // loop follows ([`Self::loop_fallback`]).
+        // loop follows ([`Self::loop_fallback`]). The quotes the arms' own walks left behind come
+        // first (they are the walk's own first failures) and own their blocks; the refusal quotes
+        // the branch and only the blocks nothing earlier claimed, and says nothing of its own when
+        // that set is empty.
         let quoted = |entered: &[Region], reason: FallbackReason| {
-            let blocks = gap_blocks(branch, entered.iter().flat_map(Region::blocks).cloned());
-            let (mut run, _) = gap(prefix.to_vec(), blocks, reason, None);
-            run.extend(
-                entered
-                    .iter()
-                    .filter(|region| matches!(region, Region::Fallback { .. }))
-                    .cloned(),
-            );
+            let retained: Vec<Region> = entered
+                .iter()
+                .filter(|region| matches!(region, Region::Fallback { .. }))
+                .cloned()
+                .collect();
+            let claimed: BTreeSet<&CanonicalBlockId> =
+                retained.iter().flat_map(Region::blocks).collect();
+            let blocks: Vec<CanonicalBlockId> =
+                gap_blocks(branch, entered.iter().flat_map(Region::blocks).cloned())
+                    .into_iter()
+                    .filter(|block| !claimed.contains(block))
+                    .collect();
+            let mut run = Vec::new();
+            if !prefix.is_empty() {
+                run.push(Region::Straight {
+                    blocks: prefix.to_vec(),
+                });
+            }
+            run.extend(retained);
+            if !blocks.is_empty() {
+                run.push(Region::Fallback { blocks, reason });
+            }
             (run, None)
         };
         let post_join = self
@@ -10406,22 +10462,35 @@ impl Walker<'_> {
             None
         };
         let join_node = if post_is_loop_exit {
-            let Some(local_join) =
-                self.switch_loop_join(node, successors, frame, branch_bci, switch_continue)?
-            else {
-                // An enclosing loop exit cannot stand in for a switch's local join. Without a
-                // unique in-loop meeting point the arm ownership remains unproved.
-                return Ok(quoted(
-                    &[],
-                    FallbackReason::SwitchShape {
-                        block_bci: branch.bci(),
-                    },
-                ));
-            };
-            Some(local_join)
+            match self.switch_loop_join(node, successors, frame, branch_bci, switch_continue)? {
+                SwitchLoopJoin::Local(local_join) => Some(local_join),
+                // Every arm's route ends at the loop's own continue target: the join is that
+                // target and the arms fall out of the switch into it. `switch_continue` is
+                // `Some` exactly when the post-dominator *is* that target, so a switch whose
+                // post-dominator is a loop break still refuses below.
+                SwitchLoopJoin::ContinueTarget => switch_continue,
+                SwitchLoopJoin::Refused => {
+                    // An enclosing loop exit cannot stand in for a switch's local join. Without a
+                    // unique in-loop meeting point the arm ownership remains unproved.
+                    return Ok(quoted(
+                        &[],
+                        FallbackReason::SwitchShape {
+                            block_bci: branch.bci(),
+                        },
+                    ));
+                }
+            }
         } else {
             post_join.or(forward_join)
         };
+        if post_is_loop_exit && join_node.is_none() {
+            return Ok(quoted(
+                &[],
+                FallbackReason::SwitchShape {
+                    block_bci: branch.bci(),
+                },
+            ));
+        }
         let join = join_node.and_then(|join| self.view.id_of(join).cloned());
         let join_bci = join.as_ref().map(CanonicalBlockId::bci);
         // Every target the decode names must be a successor the graph holds, and every successor a
