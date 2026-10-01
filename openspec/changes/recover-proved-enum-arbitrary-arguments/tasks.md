@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含全部 enum 相关切片：enum-constants/string-arg-enum-constant-bodies/enum-constructor-delegation/enum-user-initializer-suffix/enum-int-arguments/nested-enum-source 等）、fmt、CI 完整 30 项 allowlist clippy、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 N1/N3 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致（含嵌套类一起编译）；记录输出 SHA。
-- [ ] 3.3 root 独立复核 grammar 边界、ctor 体纪律与三方行为，更新 DT-13/账本（收窄挂起项为匿名体形态）与巡查记录。
+- [x] 3.3 root 独立复核 grammar 边界、ctor 体纪律与三方行为，更新 DT-13/账本（收窄挂起项为匿名体形态）与巡查记录。（root 于合并主线 46397c9f 复核：N1$Numbers 折叠为 `ONE((byte) 1, N1$Numbers$NumString.ONE), TWO((byte) 2, …);`——即账本 TestInnerEnums 全量形态；提交内 Rust 测试 `patrol_n1_full_shape_folds_and_recompiles_run_like_the_fixture_baseline` 完成嵌套类联合编译与基线运行比对；全仓 2756/0、fmt/openspec 232/232。`class_source.rs` 三处最小门扩展认可（折叠写入器物理所在，根 crate 内）；`$` 全限定名拼写与 field/enumswitch 呈现同款为既有约定。剩余：匿名体形态（N2，字节码结构已预研）、double/long 字面量与数组实参按需另片。）
