@@ -1,0 +1,3 @@
+ADD:0:7
+MUL:1:12
+valueOf: true

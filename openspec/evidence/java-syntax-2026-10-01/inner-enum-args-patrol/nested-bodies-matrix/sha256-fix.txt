@@ -1,0 +1,18 @@
+# recover-nested-enum-constant-bodies 修复产物（-fix 专名）；冻结 jar 两行沿用 sha256.txt 未改动
+# 变体负例前后同哈希（p.Weird_Name-before==after、p.Holder3_Dual-before==after）= 文本逐字不变；TwoLevel 前后不同哈希 = 连带翻转（见 variants-before-after-fix.md 第 2 节）
+90990e96b513b8e796649eb8ff42dbf1b6c663fc3bbf53f67ef6063942e939cf  N2-ops-fix.jar
+5b366913a8e98d8884c443519584c4c4b35b0074a81d637a0a9f9a5f5ecbd22f  variants-fix.jar
+4a5f71ff6c76a9e975678e1df0d83f72e6fc1ec3855e1febb17886cf5c6fad26  p.Holder2_OpAbs-fix.jarde.java
+2989a1da27919f64b57c27da8f1a5186c77489ed8bc59dff40b5018c8f88a9b4  N2_Operation-fix.jarde.java
+d49b60bf950d699f556e1eeea7f9a380c54f55ce546ddda028f61f6e801ebaba  demo_Op-fix.jarde.java
+4b6a12d05d4e11ecebc7bd8142027bb9473b530bf0107c605c3a447266772c99  p.OpIface-fix.jarde.java
+3bf5ab86baf95f8470542ffa00dc01b20a96ea864dcf36c061401af98bf1eee5  fix/p.Weird_Name-before.jarde.txt
+3bf5ab86baf95f8470542ffa00dc01b20a96ea864dcf36c061401af98bf1eee5  fix/p.Weird_Name-after.jarde.txt
+af036eb72600460f6d6eb9f44eee41bf1550ada889f021d0736b7cf5123a62f2  fix/p.TwoLevel_Middle_Deep-before.jarde.txt
+c5f397009b12e57132c645e67cb9c107959cb2a5497bd17f67adfedea415028a  fix/p.TwoLevel_Middle_Deep-fix.jarde.txt
+f4b0b7bf639f171cbe98448181a3a4d7a1868f243bccdb1df79794fc479b0473  fix/p.Holder3_Dual-before.jarde.txt
+f4b0b7bf639f171cbe98448181a3a4d7a1868f243bccdb1df79794fc479b0473  fix/p.Holder3_Dual-after.jarde.txt
+576df4f9e11219fd8ce3b1d71ccda7a261a400b5f78468bcf3a9255e8e1ed4e5  fix/N2.java
+570b07e1660ef0112cff0973538dab72c94029434c5aa1c357fe628f9f23d1e4  fix/TwoLevel.java
+35d9993cd5b5df796404a1ae9875aaec9faf1e84356148b83810aa9f2ecfb77f  fix/Holder3.java
+aa2b2c3a2957a262f41ed8b2c2fc202304d9fb577250d34661171102fb433566  fix/Weird$Name.java
