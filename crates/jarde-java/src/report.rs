@@ -125,6 +125,9 @@ pub struct RecoveryRequest<'a> {
     /// Exact invocation sites whose source reference widening and target declaration were proved
     /// against the selected class-source environment. A method-only request has none.
     pub reference_overload_calls: &'a [ProvedReferenceOverloadCall],
+    /// Exact invocation arguments whose snapshot class-file header chain proved the reference
+    /// widening. A method-only request has none.
+    pub snapshot_hierarchy_widenings: &'a [ProvedSnapshotHierarchyWidening],
     /// Exact superclass field writes proved by the selected class-source environment.
     pub superclass_field_writes: &'a [ProvedSuperclassFieldWrite],
     /// Exact captured-outer reads proved by the selected class-source family assembly.
@@ -243,6 +246,19 @@ pub struct ProvedInterfaceSuperCall {
 #[doc(hidden)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProvedReferenceOverloadCall {
+    pub bci: u32,
+    pub source: String,
+    pub target: String,
+}
+
+/// One invocation argument's safe upcast, proved by the snapshot's own class files: the presented
+/// type and the required type are both physical classes of the analyzed snapshot, and the
+/// presented type's class-file headers state the chain (superclass and interfaces, transitively,
+/// bounded) up to the required one.  A chain name absent from the snapshot proved nothing, so a
+/// platform target or a platform intermediate keeps its refusal.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProvedSnapshotHierarchyWidening {
     pub bci: u32,
     pub source: String,
     pub target: String,
@@ -2447,6 +2463,7 @@ impl<'a> RecoveryRequest<'a> {
             typed_functional_target: None,
             interface_super_calls: &[],
             reference_overload_calls: &[],
+            snapshot_hierarchy_widenings: &[],
             superclass_field_writes: &[],
             captured_outer_reads: &[],
             outer_super_calls: &[],
@@ -2492,6 +2509,15 @@ impl<'a> RecoveryRequest<'a> {
         calls: &'a [ProvedReferenceOverloadCall],
     ) -> Self {
         self.reference_overload_calls = calls;
+        self
+    }
+
+    /// Supply only invocation arguments proved against this snapshot's own class-file headers.
+    pub fn with_snapshot_hierarchy_widenings(
+        mut self,
+        widenings: &'a [ProvedSnapshotHierarchyWidening],
+    ) -> Self {
+        self.snapshot_hierarchy_widenings = widenings;
         self
     }
 
@@ -4361,6 +4387,7 @@ fn recover_inner(
             typed_functional_target: request.typed_functional_target,
             interface_super_calls: request.interface_super_calls,
             reference_overload_calls: request.reference_overload_calls,
+            snapshot_hierarchy_widenings: request.snapshot_hierarchy_widenings,
             captured_outer_reads: request.captured_outer_reads,
             outer_super_calls: request.outer_super_calls,
             physical_method: request.ir.declaration().map(|member| member.identity()),
