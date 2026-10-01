@@ -35,6 +35,11 @@ const STRING_VARARGS_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I[Ljava/lang/
 const STRING_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;ILjava/lang/String;)V";
 const ENUM_CTOR_DESCRIPTOR: &[u8] = b"(Ljava/lang/String;I)V";
 const MAX_ENUM_STRING_VARARGS_ELEMENTS: usize = 64;
+/// The most user arguments one arbitrary enum constructor tail may carry. The bound keeps the
+/// per-argument proof budget bounded; wider tails stay per-field until evidence asks for them.
+const MAX_ENUM_USER_ARGUMENTS: usize = 3;
+/// The shared `(Ljava/lang/String;I` prefix every enum constructor descriptor starts with.
+const ENUM_CTOR_DESCRIPTOR_PREFIX: &[u8] = b"(Ljava/lang/String;I";
 const VALUES_DESCRIPTOR_PREFIX: &[u8] = b"()[L";
 const VALUE_OF_DESCRIPTOR_PREFIX: &[u8] = b"(Ljava/lang/String;)L";
 const ENUM_VALUE_OF_DESCRIPTOR: &[u8] = b"(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;";
@@ -111,6 +116,8 @@ pub(crate) enum ProvedEnumSourceArgument {
     Int(ProvedEnumIntArgument),
     String(ProvedEnumStringArgument),
     StringVarargs(Vec<ProvedEnumStringLiteral>),
+    /// The full user argument tail of one arbitrary constructor call, in parameter order.
+    User(Vec<ProvedEnumUserArgument>),
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -153,6 +160,193 @@ pub(crate) struct ProvedEnumStringLiteral {
     pub(crate) bci: u32,
 }
 
+/// One classified user parameter of an arbitrary enum constructor tail: the shapes this slice
+/// proves past the four fixed descriptors. `J`/`F`/`D` literals and array parameters stay outside
+/// it and keep the per-field presentation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum EnumUserParameter {
+    /// A primitive int-family parameter: the constant step expects one int literal, and the
+    /// presentation narrows it by this parameter type.
+    IntLiteral(EnumIntUserParameter),
+    /// A `Ljava/lang/String;` parameter: the constant step expects one String literal.
+    StringLiteral,
+    /// Any other `L…;` object parameter: the constant step expects one static field reference or
+    /// `aconst_null`.
+    Object { descriptor: Vec<u8> },
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum EnumIntUserParameter {
+    Byte,
+    Char,
+    Short,
+    Int,
+    Boolean,
+}
+
+impl EnumUserParameter {
+    /// The physical parameter descriptor this parameter contributes to the constructor.
+    fn descriptor(&self) -> &[u8] {
+        match self {
+            Self::IntLiteral(EnumIntUserParameter::Byte) => b"B",
+            Self::IntLiteral(EnumIntUserParameter::Char) => b"C",
+            Self::IntLiteral(EnumIntUserParameter::Short) => b"S",
+            Self::IntLiteral(EnumIntUserParameter::Int) => b"I",
+            Self::IntLiteral(EnumIntUserParameter::Boolean) => b"Z",
+            Self::StringLiteral => b"Ljava/lang/String;",
+            Self::Object { descriptor } => descriptor,
+        }
+    }
+
+    /// Parse one parameter descriptor from the front of a constructor descriptor tail.
+    fn parse(descriptor: &[u8]) -> Option<(Self, &[u8])> {
+        match descriptor.first()? {
+            b'B' => Some((
+                Self::IntLiteral(EnumIntUserParameter::Byte),
+                &descriptor[1..],
+            )),
+            b'C' => Some((
+                Self::IntLiteral(EnumIntUserParameter::Char),
+                &descriptor[1..],
+            )),
+            b'S' => Some((
+                Self::IntLiteral(EnumIntUserParameter::Short),
+                &descriptor[1..],
+            )),
+            b'I' => Some((
+                Self::IntLiteral(EnumIntUserParameter::Int),
+                &descriptor[1..],
+            )),
+            b'Z' => Some((
+                Self::IntLiteral(EnumIntUserParameter::Boolean),
+                &descriptor[1..],
+            )),
+            b'L' => {
+                if let Some(rest) = descriptor.strip_prefix(b"Ljava/lang/String;") {
+                    return Some((Self::StringLiteral, rest));
+                }
+                let end = descriptor.iter().position(|byte| *byte == b';')?;
+                let name = &descriptor[1..end];
+                if name.is_empty() {
+                    return None;
+                }
+                let name = std::str::from_utf8(name).ok()?;
+                if name
+                    .split('/')
+                    .any(|segment| !jarde_java::is_java_identifier(segment))
+                {
+                    return None;
+                }
+                Some((
+                    Self::Object {
+                        descriptor: descriptor[..=end].to_vec(),
+                    },
+                    &descriptor[end + 1..],
+                ))
+            }
+            // `J`/`F`/`D` literal parameters and array parameters are not this slice's grammar.
+            _ => None,
+        }
+    }
+
+    /// The Java type text the folded constructor declaration spells for this parameter, through
+    /// the repository's one descriptor → source-name channel.
+    fn source_type_text(&self) -> Option<String> {
+        match self {
+            Self::IntLiteral(EnumIntUserParameter::Byte) => Some("byte".to_owned()),
+            Self::IntLiteral(EnumIntUserParameter::Char) => Some("char".to_owned()),
+            Self::IntLiteral(EnumIntUserParameter::Short) => Some("short".to_owned()),
+            Self::IntLiteral(EnumIntUserParameter::Int) => Some("int".to_owned()),
+            Self::IntLiteral(EnumIntUserParameter::Boolean) => Some("boolean".to_owned()),
+            Self::StringLiteral => Some("java.lang.String".to_owned()),
+            Self::Object { descriptor } => {
+                let facts = descriptor_facts(descriptor, DescriptorKind::Field).ok()?;
+                let spelled = type_of_component(facts.single()?)?.spell().to_owned();
+                spelled
+                    .split('.')
+                    .all(jarde_java::is_java_identifier)
+                    .then_some(spelled)
+            }
+        }
+    }
+}
+
+/// Parse an arbitrary enum constructor descriptor: the shared `(Ljava/lang/String;I` prefix plus
+/// one to three user parameters of the admitted shapes, then `)V`. The no-user-argument shape is
+/// its own fixed descriptor and is never produced here.
+fn parse_arbitrary_ctor_descriptor(descriptor: &[u8]) -> Option<Vec<EnumUserParameter>> {
+    let tail = descriptor.strip_prefix(ENUM_CTOR_DESCRIPTOR_PREFIX)?;
+    let tail = tail.strip_suffix(b")V")?;
+    if tail.is_empty() {
+        return None;
+    }
+    let mut parameters = Vec::new();
+    let mut rest = tail;
+    while !rest.is_empty() {
+        if parameters.len() == MAX_ENUM_USER_ARGUMENTS {
+            return None;
+        }
+        let (parameter, remainder) = EnumUserParameter::parse(rest)?;
+        parameters.push(parameter);
+        rest = remainder;
+    }
+    Some(parameters)
+}
+
+/// What the constant step expects at one user argument position, derived from the parameter.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum EnumUserArgumentExpectation {
+    IntLiteral(EnumIntUserParameter),
+    StringLiteral,
+    StaticFieldOrNull,
+}
+
+impl EnumUserArgumentExpectation {
+    fn of_parameter(parameter: &EnumUserParameter) -> Self {
+        match parameter {
+            EnumUserParameter::IntLiteral(kind) => Self::IntLiteral(*kind),
+            EnumUserParameter::StringLiteral => Self::StringLiteral,
+            EnumUserParameter::Object { .. } => Self::StaticFieldOrNull,
+        }
+    }
+}
+
+/// One proved user argument of an arbitrary enum constructor tail, carried with the presentation
+/// its parameter descriptor determines. Static field nodes keep the raw symbolic reference's
+/// Java spelling from the repository's descriptor-name path and are never resolved across classes.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum ProvedEnumUserArgument {
+    /// One int-family literal, narrowed by the parameter descriptor (`(byte) 1`, `'x'`, `true`).
+    IntLiteral { text: String, bci: u32 },
+    /// One String literal (the parameter is `Ljava/lang/String;`).
+    StringLiteral(ProvedEnumStringLiteral),
+    /// One static field reference spelled `Owner.name`.
+    StaticField {
+        source_owner: String,
+        source_name: String,
+        bci: u32,
+    },
+    /// `aconst_null` at an object parameter.
+    Null { bci: u32 },
+}
+
+impl ProvedEnumUserArgument {
+    fn source_text(&self) -> String {
+        match self {
+            Self::IntLiteral { text, .. } => text.clone(),
+            Self::StringLiteral(value) => {
+                format!("\"{}\"", jarde_java::escape_string(&value.value))
+            }
+            Self::StaticField {
+                source_owner,
+                source_name,
+                ..
+            } => format!("{source_owner}.{source_name}"),
+            Self::Null { .. } => "null".to_owned(),
+        }
+    }
+}
+
 impl ProvedEnumSourceArgument {
     pub(crate) fn source_text(&self) -> String {
         match self {
@@ -161,6 +355,11 @@ impl ProvedEnumSourceArgument {
             Self::StringVarargs(values) => values
                 .iter()
                 .map(|value| format!("\"{}\"", jarde_java::escape_string(&value.value)))
+                .collect::<Vec<_>>()
+                .join(", "),
+            Self::User(arguments) => arguments
+                .iter()
+                .map(|argument| argument.source_text())
                 .collect::<Vec<_>>()
                 .join(", "),
         }
@@ -245,6 +444,10 @@ pub(crate) struct ProvedOrdinaryEnumConstantGroup {
     pub(crate) delegating_constructor_method_index: Option<u64>,
     pub(crate) constructor_body: Option<Box<ProvedEnumConstructorBody>>,
     pub(crate) constructor_field_index: Option<u64>,
+    /// The proved presentation tail of one arbitrary single constructor, present exactly when the
+    /// physical descriptor came through `parse_arbitrary_ctor_descriptor` instead of one of the
+    /// four fixed shapes.
+    pub(crate) constructor_user_tail: Option<ProvedEnumUserConstructorTail>,
     pub(crate) constructor_signature_present: bool,
     pub(crate) initializer_method_index: u64,
     pub(crate) values_method_index: u64,
@@ -306,6 +509,22 @@ pub(crate) struct ProvedEnumConstructorBody {
     pub(crate) candidate: jarde_java::report::ClassEnumConstructorCandidates,
 }
 
+/// The source presentation of one arbitrary enum constructor tail: every user parameter with the
+/// Java type text its descriptor spells and the own instance field the proved body stores it
+/// into, in argument order.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ProvedEnumUserConstructorTail {
+    pub(crate) parameters: Vec<ProvedEnumUserConstructorParameter>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ProvedEnumUserConstructorParameter {
+    /// The Java type text the folded constructor declaration spells for this parameter.
+    pub(crate) type_text: String,
+    /// The own instance field the constructor body stores this parameter into.
+    pub(crate) field_name: String,
+}
+
 pub(crate) fn may_capture_group_code(class: &ClassFacts, member_table_complete: bool) -> bool {
     if !member_table_complete
         || class.major_version != 52
@@ -339,7 +558,8 @@ pub(crate) fn has_only_terminal_initializer_return(
     let Some(constructor) = methods.get(constructor_index) else {
         return false;
     };
-    if group.constructor_signature_present
+    if group.constructor_user_tail.is_none()
+        && group.constructor_signature_present
         && constructor.enum_constructor_source_tail
             == crate::class_source::EnumConstructorSourceTail::Unrecognized
     {
@@ -1657,80 +1877,93 @@ pub(crate) fn prove_group(
         .iter()
         .filter(|method| method.name.raw().0 == b"<init>")
         .count();
-    let (constructor_index, delegating_constructor_index, delegation_edge, constructor_body) =
-        match constructor_count {
-            1 => {
-                let descriptor = method_headers
-                    .iter()
-                    .find(|method| method.name.raw().0 == b"<init>")
-                    .map(|method| method.descriptor.raw().0.as_slice())
-                    .unwrap_or(&[]);
-                if descriptor != CTOR_DESCRIPTOR
-                    && descriptor != DELEGATING_CTOR_DESCRIPTOR
-                    && descriptor != STRING_CTOR_DESCRIPTOR
-                    && descriptor != STRING_VARARGS_CTOR_DESCRIPTOR
-                {
-                    return Ok(refuse("the enum has an unsupported constructor descriptor"));
+    let (
+        constructor_index,
+        delegating_constructor_index,
+        delegation_edge,
+        constructor_body,
+        user_constructor_parameters,
+    ) = match constructor_count {
+        1 => {
+            let descriptor = method_headers
+                .iter()
+                .find(|method| method.name.raw().0 == b"<init>")
+                .map(|method| method.descriptor.raw().0.as_slice())
+                .unwrap_or(&[]);
+            let user_parameters = if descriptor == CTOR_DESCRIPTOR
+                || descriptor == DELEGATING_CTOR_DESCRIPTOR
+                || descriptor == STRING_CTOR_DESCRIPTOR
+                || descriptor == STRING_VARARGS_CTOR_DESCRIPTOR
+            {
+                None
+            } else {
+                match parse_arbitrary_ctor_descriptor(descriptor) {
+                    Some(parameters) => Some(parameters),
+                    None => {
+                        return Ok(refuse("the enum has an unsupported constructor descriptor"));
+                    }
                 }
-                let constructor_index = match unique_method(method_headers, b"<init>", descriptor) {
-                    Ok(index) => index,
-                    Err(reason) => return Ok(refuse(&reason)),
-                };
-                (constructor_index, None, None, None)
-            }
-            2 => {
-                let edge = match prove_constructor_delegation_edge(
-                    DelegationEdgeInput {
-                        owner,
-                        constants: &constants,
-                        backing_name: backing_field.name.raw().0.as_slice(),
-                        field_headers,
-                        method_headers,
-                        source_methods,
-                        code_candidates,
-                    },
-                    budget,
-                )? {
-                    Ok(edge) => edge,
-                    Err(reason) => {
-                        return Ok(refuse(&format!(
-                            "enum constructor delegation edge refused: {reason}"
-                        )));
-                    }
-                };
-                let body = match prove_terminal_constructor_body(
-                    TerminalConstructorBodyInput {
-                        owner,
-                        method_index: edge.terminal_method_index,
-                        field_headers,
-                        source_fields,
-                        method_headers,
-                        source_methods,
-                        code_candidates,
-                        constructor_candidates,
-                    },
-                    budget,
-                )? {
-                    Ok(body) => body,
-                    Err(reason) => {
-                        return Ok(refuse(&format!(
-                            "terminal constructor body refused: {reason}"
-                        )));
-                    }
-                };
-                (
-                    edge.terminal_method_index,
-                    Some(edge.delegating_method_index),
-                    Some(edge),
-                    Some(Box::new(body)),
-                )
-            }
-            _ => {
-                return Ok(refuse(
-                    "the enum has additional constructor bodies outside this proof",
-                ));
-            }
-        };
+            };
+            let constructor_index = match unique_method(method_headers, b"<init>", descriptor) {
+                Ok(index) => index,
+                Err(reason) => return Ok(refuse(&reason)),
+            };
+            (constructor_index, None, None, None, user_parameters)
+        }
+        2 => {
+            let edge = match prove_constructor_delegation_edge(
+                DelegationEdgeInput {
+                    owner,
+                    constants: &constants,
+                    backing_name: backing_field.name.raw().0.as_slice(),
+                    field_headers,
+                    method_headers,
+                    source_methods,
+                    code_candidates,
+                },
+                budget,
+            )? {
+                Ok(edge) => edge,
+                Err(reason) => {
+                    return Ok(refuse(&format!(
+                        "enum constructor delegation edge refused: {reason}"
+                    )));
+                }
+            };
+            let body = match prove_terminal_constructor_body(
+                TerminalConstructorBodyInput {
+                    owner,
+                    method_index: edge.terminal_method_index,
+                    field_headers,
+                    source_fields,
+                    method_headers,
+                    source_methods,
+                    code_candidates,
+                    constructor_candidates,
+                },
+                budget,
+            )? {
+                Ok(body) => body,
+                Err(reason) => {
+                    return Ok(refuse(&format!(
+                        "terminal constructor body refused: {reason}"
+                    )));
+                }
+            };
+            (
+                edge.terminal_method_index,
+                Some(edge.delegating_method_index),
+                Some(edge),
+                Some(Box::new(body)),
+                None,
+            )
+        }
+        _ => {
+            return Ok(refuse(
+                "the enum has additional constructor bodies outside this proof",
+            ));
+        }
+    };
     let values_descriptor = values_descriptor(owner);
     let values_index = match unique_method(method_headers, b"values", &values_descriptor) {
         Ok(index) => index,
@@ -1885,6 +2118,15 @@ pub(crate) fn prove_group(
         vec![STRING_VARARGS_CTOR_DESCRIPTOR.to_vec()]
     } else if method_headers[constructor_index].descriptor.raw().0 == STRING_CTOR_DESCRIPTOR {
         vec![STRING_CTOR_DESCRIPTOR.to_vec()]
+    } else if user_constructor_parameters.is_some() {
+        // The use census must keep treating this physical descriptor as a projected constructor.
+        vec![
+            method_headers[constructor_index]
+                .descriptor
+                .raw()
+                .0
+                .to_vec(),
+        ]
     } else {
         vec![CTOR_DESCRIPTOR.to_vec()]
     };
@@ -1924,8 +2166,24 @@ pub(crate) fn prove_group(
         }
     }
 
+    let mut constructor_user_tail = None;
     let expected_ctor_field = if let Some(body) = &constructor_body {
         Some(body.field_index)
+    } else if let Some(parameters) = &user_constructor_parameters {
+        match prove_arbitrary_user_constructor(
+            constructor,
+            owner,
+            parameters,
+            field_headers,
+            source_fields,
+            budget,
+        )? {
+            Ok(tail) => {
+                constructor_user_tail = Some(tail);
+                None
+            }
+            Err(reason) => return Ok(refuse(&reason)),
+        }
     } else if method_headers[constructor_index].descriptor.raw().0 == DELEGATING_CTOR_DESCRIPTOR {
         if !prove_implicit_enum_constructor(
             constructor,
@@ -2017,6 +2275,23 @@ pub(crate) fn prove_group(
             };
             constants.len()
         ]
+    } else if let Some(parameters) = &user_constructor_parameters {
+        vec![
+            InitializerConstructorCall {
+                descriptor: method_headers[constructor_index]
+                    .descriptor
+                    .raw()
+                    .0
+                    .to_vec(),
+                source_argument: EnumSourceArgument::UserArguments(
+                    parameters
+                        .iter()
+                        .map(EnumUserArgumentExpectation::of_parameter)
+                        .collect(),
+                ),
+            };
+            constants.len()
+        ]
     } else {
         vec![
             InitializerConstructorCall {
@@ -2036,7 +2311,8 @@ pub(crate) fn prove_group(
                 .0
                 .as_slice(),
             STRING_CTOR_DESCRIPTOR | STRING_VARARGS_CTOR_DESCRIPTOR
-        ) {
+        ) || user_constructor_parameters.is_some()
+        {
             // This slice inspects the complete raw initializer stream and copies string literals.
             // Charge it here without changing the pre-existing int/no-arg proof budget behavior.
             let mut literal_bytes = 0_u64;
@@ -2143,6 +2419,7 @@ pub(crate) fn prove_group(
             constructor_body,
             constructor_field_index: expected_ctor_field
                 .map(|index| u64::try_from(index).unwrap_or(u64::MAX)),
+            constructor_user_tail,
             constructor_signature_present: method_headers[constructor_index]
                 .attributes
                 .iter()
@@ -2532,6 +2809,147 @@ fn prove_string_varargs_constructor(
         ));
     }
     Ok(Ok((*field_index, instructions[3].bci)))
+}
+
+/// Prove the complete user body of one arbitrary enum constructor from its raw same-run Code:
+/// the exact `Enum` super call, then exactly one `this`-slot store per user parameter into its
+/// own distinct instance field of the parameter's descriptor, then a bare return. Every other
+/// effect refuses the constructor and with it the fold.
+fn prove_arbitrary_user_constructor(
+    code: &EnumMethodCodeCandidate,
+    owner: &[u8],
+    parameters: &[EnumUserParameter],
+    fields: &[MemberHeader],
+    source_fields: &[ClassSourceField],
+    budget: &mut Budget,
+) -> Result<std::result::Result<ProvedEnumUserConstructorTail, String>> {
+    let refused = |reason: &str| Ok(Err(reason.to_owned()));
+    let instructions = &code.instructions;
+    let expected_len = 4 + parameters.len() * 3 + 1;
+    if !code.complete
+        || code.exception_handler_count != 0
+        || instructions.len() != expected_len
+        || !instructions_are_contiguous(instructions, budget)?
+    {
+        return refused(
+            "the arbitrary constructor Code is incomplete, noncanonical, or has handlers",
+        );
+    }
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(instructions.len())
+            .unwrap_or(u64::MAX)
+            .saturating_add(u64::try_from(code.member_uses.len()).unwrap_or(u64::MAX)),
+    )?;
+    let pure_local = |instruction: &EnumCodeInstruction, kind: u8, slot: u16| {
+        local_load(instruction, kind, slot)
+            && instruction.immediate.is_none()
+            && instruction.reference.is_none()
+    };
+    if !pure_local(&instructions[0], b'a', 0)
+        || !pure_local(&instructions[1], b'a', 1)
+        || !pure_local(&instructions[2], b'i', 2)
+        || !method_reference(
+            &instructions[3],
+            0xb7,
+            ENUM_SUPER,
+            b"<init>",
+            ENUM_CTOR_DESCRIPTOR,
+            false,
+        )
+        || instructions[3].width != 3
+        || instructions[3].immediate.is_some()
+        || instructions[3].local.is_some()
+    {
+        return refused("the arbitrary constructor has effects before the exact Enum super call");
+    }
+    let mut stored_fields = std::collections::BTreeSet::new();
+    let mut tail_parameters = Vec::with_capacity(parameters.len());
+    for (index, parameter) in parameters.iter().enumerate() {
+        budget.poll()?;
+        let base = 4 + index * 3;
+        let Ok(slot) = u16::try_from(3 + index) else {
+            return refused("the arbitrary constructor parameter slot overflows");
+        };
+        let load_kind = match parameter {
+            EnumUserParameter::IntLiteral(_) => b'i',
+            EnumUserParameter::StringLiteral | EnumUserParameter::Object { .. } => b'a',
+        };
+        if !pure_local(&instructions[base], b'a', 0)
+            || !pure_local(&instructions[base + 1], load_kind, slot)
+            || instructions[base + 2].opcode != 0xb5
+            || instructions[base + 2].width != 3
+            || instructions[base + 2].immediate.is_some()
+            || instructions[base + 2].local.is_some()
+        {
+            return refused(
+                "the arbitrary constructor body is not one this-slot store per user parameter",
+            );
+        }
+        let Some(EnumCodeReference::Field {
+            owner: field_owner,
+            name,
+            descriptor,
+        }) = &instructions[base + 2].reference
+        else {
+            return refused("the arbitrary constructor's parameter store has no resolved Fieldref");
+        };
+        if field_owner != owner || descriptor.as_slice() != parameter.descriptor() {
+            return refused(
+                "the arbitrary constructor stores a parameter into a differently typed field",
+            );
+        }
+        let Ok(field_name) = String::from_utf8(name.clone()) else {
+            return refused("the arbitrary constructor's field target is not valid Java text");
+        };
+        let matching: Vec<_> = fields
+            .iter()
+            .enumerate()
+            .filter(|(_, field)| {
+                field.name.raw().0 == name.as_slice()
+                    && field.descriptor.raw().0 == parameter.descriptor()
+                    && field.access_flags & (ACC_STATIC | ACC_ENUM) == 0
+            })
+            .map(|(index, _)| index)
+            .collect();
+        let [field_index] = matching.as_slice() else {
+            return refused(
+                "the arbitrary constructor's parameter store target is absent or ambiguous",
+            );
+        };
+        if !stored_fields.insert(*field_index) {
+            return refused("two arbitrary constructor parameters store into one field");
+        }
+        if source_fields
+            .get(*field_index)
+            .is_none_or(|source| source.declaration.is_none())
+        {
+            return refused(
+                "the arbitrary constructor's parameter field is not faithfully declared",
+            );
+        }
+        let Some(type_text) = parameter.source_type_text() else {
+            return refused(
+                "the arbitrary constructor's parameter type has no readable Java spelling",
+            );
+        };
+        tail_parameters.push(ProvedEnumUserConstructorParameter {
+            type_text,
+            field_name,
+        });
+    }
+    let last = &instructions[expected_len - 1];
+    if last.opcode != 0xb1
+        || last.width != 1
+        || last.immediate.is_some()
+        || last.local.is_some()
+        || last.reference.is_some()
+    {
+        return refused("the arbitrary constructor does not end in a bare return");
+    }
+    Ok(Ok(ProvedEnumUserConstructorTail {
+        parameters: tail_parameters,
+    }))
 }
 
 fn prove_constructor(
@@ -3458,6 +3876,8 @@ enum EnumSourceArgument {
     Exact(i32),
     SingleString,
     StringVarargs,
+    /// One expectation per user parameter of an arbitrary constructor call, in parameter order.
+    UserArguments(Vec<EnumUserArgumentExpectation>),
     None,
 }
 
@@ -3656,6 +4076,23 @@ fn prove_initializer_prefix(
                     offset,
                     Some(ProvedEnumSourceArgument::StringVarargs(values)),
                 )
+            }
+            EnumSourceArgument::UserArguments(expectations) => {
+                let mut offset = 4_usize;
+                let mut arguments = Vec::with_capacity(expectations.len());
+                for (argument_index, expectation) in expectations.iter().enumerate() {
+                    let start = cursor + offset;
+                    let Some((length, argument)) =
+                        prove_user_source_argument(instructions, start, *expectation)
+                    else {
+                        return Err(format!(
+                            "constant {ordinal} argument {argument_index} does not match its constructor parameter"
+                        ));
+                    };
+                    arguments.push(argument);
+                    offset += length;
+                }
+                (offset, Some(ProvedEnumSourceArgument::User(arguments)))
             }
             EnumSourceArgument::None => (4, None),
         };
@@ -4167,15 +4604,7 @@ fn proved_int_static_field(instruction: &EnumCodeInstruction) -> Option<ProvedEn
     if !jarde_java::is_java_identifier(&source_name) {
         return None;
     }
-    let owner_facts = descriptor_facts(&object_descriptor(owner), DescriptorKind::Field).ok()?;
-    let full_source_owner = type_of_component(owner_facts.single()?)?.spell().to_owned();
-    if full_source_owner
-        .split('.')
-        .any(|segment| !jarde_java::is_java_identifier(segment))
-    {
-        return None;
-    }
-    let source_owner = full_source_owner.rsplit('.').next()?.to_owned();
+    let source_owner = spelled_static_field_owner(owner)?;
     Some(ProvedEnumIntArgument::StaticField {
         owner: owner.clone(),
         name: name.clone(),
@@ -4184,6 +4613,168 @@ fn proved_int_static_field(instruction: &EnumCodeInstruction) -> Option<ProvedEn
         source_name,
         bci: instruction.bci,
     })
+}
+
+/// The `Owner` half of one static field argument's `Owner.name` spelling, through the
+/// repository's one descriptor → source-name channel: the owner's full source name with only its
+/// final dot segment kept, the same spelling every field-style presentation writes.
+fn spelled_static_field_owner(owner: &[u8]) -> Option<String> {
+    let owner_facts = descriptor_facts(&object_descriptor(owner), DescriptorKind::Field).ok()?;
+    let full_source_owner = type_of_component(owner_facts.single()?)?.spell().to_owned();
+    if full_source_owner
+        .split('.')
+        .any(|segment| !jarde_java::is_java_identifier(segment))
+    {
+        return None;
+    }
+    Some(full_source_owner.rsplit('.').next()?.to_owned())
+}
+
+/// Prove one user argument of an arbitrary enum constructor call at the initializer stack
+/// position, expecting exactly the shape its parameter descriptor classifies. Every spelling is
+/// decided here; a shape outside the expectation refuses the argument and with it the fold.
+fn prove_user_source_argument(
+    instructions: &[EnumCodeInstruction],
+    start: usize,
+    expectation: EnumUserArgumentExpectation,
+) -> Option<(usize, ProvedEnumUserArgument)> {
+    let first = instructions.get(start)?;
+    match expectation {
+        EnumUserArgumentExpectation::IntLiteral(parameter) => {
+            let (value, bci) = proved_int_family_literal(first)?;
+            let text = narrowed_int_user_text(parameter, value)?;
+            Some((1, ProvedEnumUserArgument::IntLiteral { text, bci }))
+        }
+        EnumUserArgumentExpectation::StringLiteral => {
+            let literal = proved_string_literal(first)?;
+            Some((1, ProvedEnumUserArgument::StringLiteral(literal)))
+        }
+        EnumUserArgumentExpectation::StaticFieldOrNull => {
+            if let Some(argument) = proved_object_static_field(first) {
+                return Some((1, argument));
+            }
+            if first.opcode == 0x01
+                && first.width == 1
+                && first.immediate.is_none()
+                && first.local.is_none()
+                && first.reference.is_none()
+            {
+                return Some((1, ProvedEnumUserArgument::Null { bci: first.bci }));
+            }
+            None
+        }
+    }
+}
+
+/// Prove one int-family literal argument instruction: the iconst/bipush/sipush immediate shapes
+/// this slice shares with the plain-int path, plus the `ldc`/`ldc_w` Integer shape the proposal's
+/// grammar admits (the shared `proved_int_literal` keeps the plain-int path's own stricter shape,
+/// so the fixed descriptor behavior stays byte-identical).
+fn proved_int_family_literal(instruction: &EnumCodeInstruction) -> Option<(i32, u32)> {
+    let value = int_constant_value(instruction)?;
+    let operands_match = match instruction.opcode {
+        0x02..=0x08 => {
+            instruction.width == 1
+                && matches!(instruction.immediate, Some(ImmediateValue::Int(actual)) if actual == value)
+                && instruction.local.is_none()
+                && instruction.reference.is_none()
+        }
+        0x10 => {
+            instruction.width == 2
+                && matches!(instruction.immediate, Some(ImmediateValue::Int(actual)) if actual == value)
+                && instruction.local.is_none()
+                && instruction.reference.is_none()
+        }
+        0x11 => {
+            instruction.width == 3
+                && matches!(instruction.immediate, Some(ImmediateValue::Int(actual)) if actual == value)
+                && instruction.local.is_none()
+                && instruction.reference.is_none()
+        }
+        0x12 => {
+            instruction.width == 2
+                && instruction.local.is_none()
+                && matches!(instruction.reference, Some(EnumCodeReference::Integer(actual)) if actual == value)
+        }
+        0x13 => {
+            instruction.width == 3
+                && instruction.local.is_none()
+                && matches!(instruction.reference, Some(EnumCodeReference::Integer(actual)) if actual == value)
+        }
+        _ => false,
+    };
+    operands_match.then_some((value, instruction.bci))
+}
+
+/// Prove one `getstatic` object argument. The field reference is spelled `Owner.name` and never
+/// resolved across classes: the source spelling is exactly what the initializer executes, so the
+/// fold stays faithful whatever the target field holds.
+fn proved_object_static_field(instruction: &EnumCodeInstruction) -> Option<ProvedEnumUserArgument> {
+    if instruction.opcode != 0xb2
+        || instruction.width != 3
+        || instruction.immediate.is_some()
+        || instruction.local.is_some()
+    {
+        return None;
+    }
+    let Some(EnumCodeReference::Field {
+        owner,
+        name,
+        descriptor,
+    }) = &instruction.reference
+    else {
+        return None;
+    };
+    // A verifier-valid object argument carries a reference-typed value, so the field descriptor
+    // must be an object or an array of them.
+    if owner.is_empty() || !matches!(descriptor.first(), Some(b'L' | b'[')) {
+        return None;
+    }
+    let source_name = String::from_utf8(name.clone()).ok()?;
+    if !jarde_java::is_java_identifier(&source_name) {
+        return None;
+    }
+    let source_owner = spelled_static_field_owner(owner)?;
+    Some(ProvedEnumUserArgument::StaticField {
+        source_owner,
+        source_name,
+        bci: instruction.bci,
+    })
+}
+
+/// The presentation of one int-family literal, narrowed by its parameter descriptor: `B` and `S`
+/// carry an explicit cast, `I` spells the bare value, `Z` spells the bare boolean keywords, and
+/// `C` spells a char literal for the values a char literal denotes (the compile-and-fold-equivalent
+/// `(char) v` cast covers the rest).
+fn narrowed_int_user_text(parameter: EnumIntUserParameter, value: i32) -> Option<String> {
+    match parameter {
+        EnumIntUserParameter::Byte => Some(format!("(byte) {value}")),
+        EnumIntUserParameter::Short => Some(format!("(short) {value}")),
+        EnumIntUserParameter::Int => Some(value.to_string()),
+        EnumIntUserParameter::Boolean => match value {
+            0 => Some("false".to_owned()),
+            1 => Some("true".to_owned()),
+            _ => None,
+        },
+        EnumIntUserParameter::Char => match u32::try_from(value) {
+            Ok(value) if value <= u32::from(u16::MAX) => Some(char_user_text(value)),
+            // Outside the char range no char literal denotes this value; the cast is the exact
+            // source form javac constant-folds to it.
+            _ => Some(format!("(char) {value}")),
+        },
+    }
+}
+
+fn char_user_text(value: u32) -> String {
+    match char::from_u32(value) {
+        Some('\'') => "'\\''".to_owned(),
+        Some('\\') => "'\\\\'".to_owned(),
+        Some(character) if ('\u{20}'..='\u{7e}').contains(&character) => {
+            format!("'{character}'")
+        }
+        // Control and non-ASCII values have no single-line char literal this slice spells.
+        _ => format!("(char) {value}"),
+    }
 }
 
 fn instruction_sequence_is_contiguous(instructions: &[EnumCodeInstruction]) -> bool {
@@ -8647,5 +9238,627 @@ public final class PackageArgsRunner {
                 panic!("unexpected incomplete class selection: {candidates:?}")
             }
         }
+    }
+
+    const N0_PATROL_CLASS: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N0.class"
+    );
+    const N0_PATROL_TEXT: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N0.jarde.java"
+    );
+    const N3_PATROL_SOURCE: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N3.java"
+    );
+    const N1_PATROL_SOURCE: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N1.java"
+    );
+    const N3_PATROL_RUN: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/n3.out"
+    );
+    const N1_PATROL_RUN: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/n1.out"
+    );
+
+    fn compile_java_sources_to_directory(
+        label: &str,
+        sources: &[(&str, &str)],
+        debug: bool,
+    ) -> (std::path::PathBuf, TemporaryDirectory) {
+        let (directory, cleanup) = java_test_directory(label);
+        let mut command = Command::new("javac");
+        command.arg("--release").arg("8");
+        command.arg(if debug { "-g" } else { "-g:none" });
+        command.arg("-d").arg(&directory);
+        for (name, source_text) in sources {
+            let source = directory.join(format!("{name}.java"));
+            fs::write(&source, source_text).expect("the fixture source is written");
+            command.arg(&source);
+        }
+        let output = command.output().expect("the Java 8 compiler is available");
+        assert!(
+            output.status.success(),
+            "javac failed for {label}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        (directory, cleanup)
+    }
+
+    fn compile_and_run_folded_sources(
+        label: &str,
+        folded_sources: &[(&str, &str)],
+        runner_class: &str,
+        runner_source: &str,
+    ) -> String {
+        let (directory, _cleanup) = java_test_directory(label);
+        let mut compile = Command::new("javac");
+        compile.arg("--release").arg("8").arg("-g:none");
+        // The folded sources live in the classpath directory itself; an empty `-sourcepath`
+        // keeps javac from compiling them a second time through the implicit source lookup.
+        compile.arg("-sourcepath").arg("");
+        compile.arg("-cp").arg(&directory).arg("-d").arg(&directory);
+        let mut paths = Vec::new();
+        for (name, text) in folded_sources {
+            let path = directory.join(format!("{name}.java"));
+            fs::write(&path, text).expect("the folded source is written");
+            paths.push(path);
+        }
+        let runner_path = directory.join(format!("{runner_class}.java"));
+        fs::write(&runner_path, runner_source).expect("the runner source is written");
+        paths.push(runner_path);
+        for path in &paths {
+            compile.arg(path);
+        }
+        let output = compile.output().expect("the Java 8 compiler is available");
+        assert!(
+            output.status.success(),
+            "the folded sources failed to compile for {label}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let run = Command::new("java")
+            .arg("-Xverify:all")
+            .arg("-cp")
+            .arg(&directory)
+            .arg(runner_class)
+            .output()
+            .expect("the Java runtime is available");
+        assert!(
+            run.status.success(),
+            "the folded sources failed to run for {label}: {}",
+            String::from_utf8_lossy(&run.stderr)
+        );
+        String::from_utf8(run.stdout).expect("the folded run output is UTF-8")
+    }
+
+    #[test]
+    fn arbitrary_ctor_descriptor_grammar_parses_only_the_admitted_tails() {
+        assert_eq!(
+            parse_arbitrary_ctor_descriptor(b"(Ljava/lang/String;II)V"),
+            Some(vec![EnumUserParameter::IntLiteral(
+                EnumIntUserParameter::Int
+            )])
+        );
+        assert_eq!(
+            parse_arbitrary_ctor_descriptor(b"(Ljava/lang/String;IBLjava/lang/String;)V"),
+            Some(vec![
+                EnumUserParameter::IntLiteral(EnumIntUserParameter::Byte),
+                EnumUserParameter::StringLiteral,
+            ])
+        );
+        assert_eq!(
+            parse_arbitrary_ctor_descriptor(b"(Ljava/lang/String;ILN3$Simple;)V"),
+            Some(vec![EnumUserParameter::Object {
+                descriptor: b"LN3$Simple;".to_vec(),
+            }])
+        );
+        assert_eq!(
+            parse_arbitrary_ctor_descriptor(b"(Ljava/lang/String;I[Ljava/lang/String;)V"),
+            None,
+            "array parameters stay outside the grammar"
+        );
+        assert_eq!(
+            parse_arbitrary_ctor_descriptor(b"(Ljava/lang/String;IJ)V"),
+            None,
+            "long literal parameters stay outside the grammar"
+        );
+        assert_eq!(
+            parse_arbitrary_ctor_descriptor(b"(Ljava/lang/String;ID)V"),
+            None,
+            "double literal parameters stay outside the grammar"
+        );
+        assert_eq!(
+            parse_arbitrary_ctor_descriptor(b"(Ljava/lang/String;I)V"),
+            None,
+            "the empty tail is the fixed no-argument descriptor"
+        );
+        assert_eq!(
+            parse_arbitrary_ctor_descriptor(
+                b"(Ljava/lang/String;IBLjava/lang/String;Ljava/lang/Object;I)V"
+            ),
+            None,
+            "more than three user arguments stay outside the grammar"
+        );
+        assert_eq!(
+            parse_arbitrary_ctor_descriptor(b"(Ljava/lang/String;ILjava/lang/String;)V"),
+            Some(vec![EnumUserParameter::StringLiteral]),
+            "the fixed String shape also parses, but the whitelist keeps it on the original path"
+        );
+    }
+
+    #[test]
+    fn int_user_arguments_narrow_by_their_parameter_descriptor() {
+        assert_eq!(
+            narrowed_int_user_text(EnumIntUserParameter::Byte, -56),
+            Some("(byte) -56".to_owned())
+        );
+        assert_eq!(
+            narrowed_int_user_text(EnumIntUserParameter::Short, 300),
+            Some("(short) 300".to_owned())
+        );
+        assert_eq!(
+            narrowed_int_user_text(EnumIntUserParameter::Int, -1),
+            Some("-1".to_owned())
+        );
+        assert_eq!(
+            narrowed_int_user_text(EnumIntUserParameter::Boolean, 1),
+            Some("true".to_owned())
+        );
+        assert_eq!(
+            narrowed_int_user_text(EnumIntUserParameter::Boolean, 0),
+            Some("false".to_owned())
+        );
+        assert_eq!(
+            narrowed_int_user_text(EnumIntUserParameter::Boolean, 2),
+            None,
+            "no boolean literal denotes 2"
+        );
+        assert_eq!(
+            narrowed_int_user_text(EnumIntUserParameter::Char, 120),
+            Some("'x'".to_owned())
+        );
+        assert_eq!(
+            narrowed_int_user_text(EnumIntUserParameter::Char, 39),
+            Some("'\\''".to_owned())
+        );
+        assert_eq!(
+            narrowed_int_user_text(EnumIntUserParameter::Char, -1),
+            Some("(char) -1".to_owned()),
+            "no char literal denotes -1; the cast is javac's own constant fold"
+        );
+        assert_eq!(
+            narrowed_int_user_text(EnumIntUserParameter::Char, 10),
+            Some("(char) 10".to_owned()),
+            "control characters keep the cast spelling"
+        );
+    }
+
+    #[test]
+    fn patrol_n0_fixture_keeps_its_exact_folded_text() {
+        let report = enum_report(N0_PATROL_CLASS, "N0", &mut test_budget());
+        assert_eq!(report.text, N0_PATROL_TEXT);
+    }
+
+    #[test]
+    fn patrol_n3_probes_fold_and_recompile_run_like_the_fixture_baseline() {
+        for debug in [false, true] {
+            let (directory, _cleanup) = compile_java_sources_to_directory(
+                "patrol-n3-fixture",
+                &[("N3", N3_PATROL_SOURCE)],
+                debug,
+            );
+            let original = Command::new("java")
+                .arg("-Xverify:all")
+                .arg("-cp")
+                .arg(&directory)
+                .arg("N3")
+                .output()
+                .expect("the Java runtime is available");
+            assert_eq!(
+                String::from_utf8(original.stdout).as_deref(),
+                Ok(N3_PATROL_RUN),
+                "the original fixture classes run like the recorded baseline"
+            );
+            let mut simple_folded_text = None;
+            let mut refs_folded_text = None;
+            for (name, folded_line, other_line) in [
+                ("N3$Simple", "A((byte) 1, \"x\"),", "B((byte) 2, \"y\");"),
+                ("N3$Refs", "A(N3$Simple.A),", "B(N3$Simple.B);"),
+            ] {
+                let bytes = fs::read(directory.join(format!("{name}.class")))
+                    .expect("the fixture nested enum class was emitted");
+                let report = enum_report(&bytes, name, &mut test_budget());
+                let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(group)) =
+                    &report.enum_constant_proof
+                else {
+                    panic!("{name} refused: {:?}", report.enum_constant_proof);
+                };
+                assert_eq!(group.constants.len(), 2);
+                assert!(report.text.contains(folded_line), "{name}: {}", report.text);
+                assert!(report.text.contains(other_line), "{name}: {}", report.text);
+                assert!(!report.text.contains("valueOf("));
+                assert!(!report.text.contains("$VALUES"));
+                if name == "N3$Simple" {
+                    assert!(
+                        report
+                            .text
+                            .contains("private N3$Simple(byte arg0, java.lang.String arg1) {")
+                    );
+                    assert!(report.text.contains("this.num = arg0;"));
+                    assert!(report.text.contains("this.s = arg1;"));
+                    simple_folded_text = Some(report.text);
+                } else {
+                    assert!(report.text.contains("private N3$Refs(N3$Simple arg0) {"));
+                    assert!(report.text.contains("this.s = arg0;"));
+                    refs_folded_text = Some(report.text);
+                }
+            }
+            let simple_folded_text = simple_folded_text.expect("the Simple text was captured");
+            let refs_folded_text = refs_folded_text.expect("the Refs text was captured");
+            let recovered = compile_and_run_folded_sources(
+                "patrol-n3-folded",
+                &[
+                    ("N3$Simple", simple_folded_text.as_str()),
+                    ("N3$Refs", refs_folded_text.as_str()),
+                ],
+                "N3FoldedRunner",
+                "public final class N3FoldedRunner {\n    public static void main(String[] a) {\n        System.out.println(N3$Simple.A.n());\n        System.out.println(N3$Refs.A.g().n());\n    }\n}\n",
+            );
+            assert_eq!(recovered, N3_PATROL_RUN);
+        }
+    }
+
+    #[test]
+    fn patrol_n1_full_shape_folds_and_recompiles_run_like_the_fixture_baseline() {
+        let (directory, _cleanup) = compile_java_sources_to_directory(
+            "patrol-n1-fixture",
+            &[("N1", N1_PATROL_SOURCE)],
+            false,
+        );
+        let original = Command::new("java")
+            .arg("-Xverify:all")
+            .arg("-cp")
+            .arg(&directory)
+            .arg("N1")
+            .output()
+            .expect("the Java runtime is available");
+        assert_eq!(
+            String::from_utf8(original.stdout).as_deref(),
+            Ok(N1_PATROL_RUN),
+            "the original fixture classes run like the recorded baseline"
+        );
+        let mut folded_texts = Vec::new();
+        for (name, folded_lines) in [
+            (
+                "N1$Numbers$NumString",
+                vec!["ONE(\"one\"),", "TWO(\"two\");"],
+            ),
+            (
+                "N1$Numbers",
+                vec![
+                    "ONE((byte) 1, N1$Numbers$NumString.ONE),",
+                    "TWO((byte) 2, N1$Numbers$NumString.TWO);",
+                ],
+            ),
+        ] {
+            let bytes = fs::read(directory.join(format!("{name}.class")))
+                .expect("the fixture nested enum class was emitted");
+            let report = enum_report(&bytes, name, &mut test_budget());
+            let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(group)) =
+                &report.enum_constant_proof
+            else {
+                panic!("{name} refused: {:?}", report.enum_constant_proof);
+            };
+            assert_eq!(group.constants.len(), 2);
+            for line in folded_lines {
+                assert!(report.text.contains(line), "{name}: {}", report.text);
+            }
+            assert!(!report.text.contains("valueOf("));
+            assert!(!report.text.contains("$VALUES"));
+            if name == "N1$Numbers" {
+                assert!(
+                    report
+                        .text
+                        .contains("private N1$Numbers(byte arg0, N1$Numbers$NumString arg1) {")
+                );
+                assert!(report.text.contains("this.num = arg0;"));
+                assert!(report.text.contains("this.str = arg1;"));
+            }
+            folded_texts.push((name, report.text));
+        }
+        let recovered = compile_and_run_folded_sources(
+            "patrol-n1-folded",
+            &[
+                ("N1$Numbers$NumString", folded_texts[0].1.as_str()),
+                ("N1$Numbers", folded_texts[1].1.as_str()),
+            ],
+            "N1FoldedRunner",
+            "public final class N1FoldedRunner {\n    public static void main(String[] args) {\n        System.out.println(N1$Numbers.ONE.getNum());\n        System.out.println(N1$Numbers.ONE.getNumStr());\n        System.out.println(N1$Numbers.ONE.getName());\n        System.out.println(N1$Numbers.TWO.getNum());\n    }\n}\n",
+        );
+        assert_eq!(recovered, N1_PATROL_RUN);
+    }
+
+    #[test]
+    fn arbitrary_argument_shapes_fold_with_narrowed_spellings_and_verified_runtime() {
+        const RUNNER_BODY: &str = r#"        for (BytesText v : BytesText.values()) System.out.println(v.name() + ":" + v.n() + ":" + v.text());
+        for (CrossRefs v : CrossRefs.values()) System.out.println(v.name() + ":" + v.other());
+        for (CharArgs v : CharArgs.values()) System.out.println(v.name() + ":" + v.c());
+        for (BoolArgs v : BoolArgs.values()) System.out.println(v.name() + ":" + v.flag());
+        for (ShortArgs v : ShortArgs.values()) System.out.println(v.name() + ":" + v.s());
+        for (IntArgs v : IntArgs.values()) System.out.println(v.name() + ":" + v.i());
+        System.out.println(BytesText.valueOf("A").text());
+        System.out.println(BytesText.A.n() + CrossRefs.R1.other().toString().length());"#;
+        const MATRIX: &str = r#"enum BytesText {
+    A((byte) 1, "x"), B((byte) 2, "y");
+    private final byte num;
+    private final String s;
+    BytesText(byte n, String s) { this.num = n; this.s = s; }
+    byte n() { return num; }
+    String text() { return s; }
+}
+enum CrossRefs {
+    R1(BytesText.A), R2(BytesText.B), R3(null);
+    private final Object other;
+    CrossRefs(Object other) { this.other = other; }
+    Object other() { return other; }
+}
+enum CharArgs {
+    ONE('x'), TWO('\''), THREE((char) -1);
+    private final char c;
+    CharArgs(char c) { this.c = c; }
+    char c() { return c; }
+}
+enum BoolArgs {
+    NO(false), YES(true);
+    private final boolean flag;
+    BoolArgs(boolean flag) { this.flag = flag; }
+    boolean flag() { return flag; }
+}
+enum ShortArgs {
+    BIG((short) 300), SMALL((short) -300);
+    private final short s;
+    ShortArgs(short s) { this.s = s; }
+    short s() { return s; }
+}
+enum IntArgs {
+    MID(5), NEG(-1);
+    private final int i;
+    IntArgs(int i) { this.i = i; }
+    int i() { return i; }
+}
+public class ArgsMatrix {
+    public static void main(String[] args) {
+"#;
+        let matrix_source = format!("{MATRIX}{RUNNER_BODY}\n    }}\n}}\n");
+        let (directory, _cleanup) = compile_java_sources_to_directory(
+            "args-matrix",
+            &[("ArgsMatrix", &matrix_source)],
+            false,
+        );
+        let original = Command::new("java")
+            .arg("-Xverify:all")
+            .arg("-cp")
+            .arg(&directory)
+            .arg("ArgsMatrix")
+            .output()
+            .expect("the Java runtime is available");
+        assert!(original.status.success());
+        let original_output = String::from_utf8(original.stdout).expect("matrix output is UTF-8");
+        let expectations: Vec<(&str, Vec<&str>)> = vec![
+            (
+                "BytesText",
+                vec![
+                    "A((byte) 1, \"x\"),",
+                    "B((byte) 2, \"y\");",
+                    "private BytesText(byte arg0, java.lang.String arg1) {",
+                    "this.num = arg0;",
+                    "this.s = arg1;",
+                ],
+            ),
+            (
+                "CrossRefs",
+                vec![
+                    "R1(BytesText.A),",
+                    "R2(BytesText.B),",
+                    "R3(null);",
+                    "private CrossRefs(java.lang.Object arg0) {",
+                    "this.other = arg0;",
+                ],
+            ),
+            (
+                "CharArgs",
+                vec![
+                    "ONE('x'),",
+                    "TWO('\\''),",
+                    "THREE((char) 65535);",
+                    "private CharArgs(char arg0) {",
+                    "this.c = arg0;",
+                ],
+            ),
+            (
+                "BoolArgs",
+                vec![
+                    "NO(false),",
+                    "YES(true);",
+                    "private BoolArgs(boolean arg0) {",
+                    "this.flag = arg0;",
+                ],
+            ),
+            (
+                "ShortArgs",
+                vec![
+                    "BIG((short) 300),",
+                    "SMALL((short) -300);",
+                    "private ShortArgs(short arg0) {",
+                    "this.s = arg0;",
+                ],
+            ),
+            (
+                "IntArgs",
+                vec![
+                    "MID(5),",
+                    "NEG(-1);",
+                    "private IntArgs(int arg0) {",
+                    "this.i = arg0;",
+                ],
+            ),
+        ];
+        let mut folded_sources = Vec::new();
+        for (name, lines) in &expectations {
+            let bytes = fs::read(directory.join(format!("{name}.class")))
+                .expect("the matrix enum class was emitted");
+            let report = enum_report(&bytes, name, &mut test_budget());
+            let ClassSourceEnumConstantProof::Proved(ProvedEnumConstantGroup::Ordinary(_)) =
+                &report.enum_constant_proof
+            else {
+                panic!("{name} refused: {:?}", report.enum_constant_proof);
+            };
+            for line in lines {
+                assert!(report.text.contains(line), "{name}: {}", report.text);
+            }
+            assert!(
+                !report.text.contains("valueOf(") && !report.text.contains("$VALUES"),
+                "{name} keeps values/valueOf/clinit folded into the enum presentation: {}",
+                report.text
+            );
+            folded_sources.push((*name, report.text));
+        }
+        let recovered = compile_and_run_folded_sources(
+            "args-matrix-folded",
+            &folded_sources
+                .iter()
+                .map(|(name, text)| (*name, text.as_str()))
+                .collect::<Vec<_>>(),
+            "ArgsMatrixFoldedRunner",
+            &format!(
+                "public final class ArgsMatrixFoldedRunner {{\n    public static void main(String[] args) {{\n{RUNNER_BODY}\n    }}\n}}\n"
+            ),
+        );
+        assert_eq!(recovered, original_output);
+    }
+
+    #[test]
+    fn unsupported_arbitrary_argument_shapes_refuse_and_keep_the_per_field_presentation() {
+        const REFUSALS: &str = r#"enum KindMismatchObject {
+    A("plain");
+    private final Object v;
+    KindMismatchObject(Object v) { this.v = v; }
+    Object v() { return v; }
+}
+enum StringParamGetstatic {
+    A(StrHold.source);
+    private final String v;
+    StringParamGetstatic(String v) { this.v = v; }
+    String v() { return v; }
+}
+enum ExtraStatement {
+    A((byte) 1, "x");
+    private final byte num;
+    private final String s;
+    ExtraStatement(byte n, String s) { System.out.println("side"); this.num = n; this.s = s; }
+    byte n() { return num; }
+}
+enum TooManyArgs {
+    A((byte) 1, "x", java.math.BigInteger.ZERO, 5);
+    private final byte b;
+    private final String s;
+    private final java.math.BigInteger big;
+    private final int i;
+    TooManyArgs(byte b, String s, java.math.BigInteger big, int i) {
+        this.b = b;
+        this.s = s;
+        this.big = big;
+        this.i = i;
+    }
+    byte b() { return b; }
+    String s() { return s; }
+    java.math.BigInteger big() { return big; }
+    int i() { return i; }
+}
+enum LongArg {
+    A(1L);
+    private final long v;
+    LongArg(long v) { this.v = v; }
+    long v() { return v; }
+}
+class StrHold {
+    static String source = "held";
+}
+public class ArgsRefusals {
+    public static void main(String[] args) {
+        System.out.println(KindMismatchObject.A.v());
+        System.out.println(StringParamGetstatic.A.v());
+        System.out.println(ExtraStatement.A.n());
+        System.out.println(TooManyArgs.A.b() + ":" + TooManyArgs.A.s() + ":" + TooManyArgs.A.big() + ":" + TooManyArgs.A.i());
+        System.out.println(LongArg.A.v());
+    }
+}"#;
+        let (directory, _cleanup) = compile_java_sources_to_directory(
+            "args-refusals",
+            &[("ArgsRefusals", REFUSALS)],
+            false,
+        );
+        let original = Command::new("java")
+            .arg("-Xverify:all")
+            .arg("-cp")
+            .arg(&directory)
+            .arg("ArgsRefusals")
+            .output()
+            .expect("the Java runtime is available");
+        assert!(
+            original.status.success(),
+            "every negative fixture is verifier-valid: {}",
+            String::from_utf8_lossy(&original.stderr)
+        );
+        let expectations: Vec<(&str, &str)> = vec![
+            ("KindMismatchObject", "A(\"plain\")"),
+            ("StringParamGetstatic", "A(StrHold.source)"),
+            ("ExtraStatement", "A((byte) 1, \"x\")"),
+            ("TooManyArgs", "A((byte) 1"),
+            ("LongArg", "A(1L)"),
+        ];
+        for (name, folded_line) in expectations {
+            let bytes = fs::read(directory.join(format!("{name}.class")))
+                .expect("the refusal enum class was emitted");
+            let report = enum_report(&bytes, name, &mut test_budget());
+            assert!(
+                matches!(
+                    report.enum_constant_proof,
+                    ClassSourceEnumConstantProof::Refused { .. }
+                ),
+                "{name} should refuse: {:?}",
+                report.enum_constant_proof
+            );
+            assert!(
+                report
+                    .text
+                    .contains(&format!("public static final {name} A;")),
+                "{name} keeps the per-field presentation: {}",
+                report.text
+            );
+            assert!(
+                !report.text.contains(folded_line),
+                "{name} must not fold: {}",
+                report.text
+            );
+        }
+    }
+
+    #[test]
+    fn arbitrary_argument_fold_stays_a_budget_stop_that_keeps_the_per_field_text() {
+        const SOURCE: &str = r#"enum BudgetBytes {
+    A((byte) 1, "x"), B((byte) 2, "y");
+    private final byte num;
+    private final String s;
+    BudgetBytes(byte n, String s) { this.num = n; this.s = s; }
+}"#;
+        let bytes = compile_java_class("BudgetBytes", SOURCE, false);
+        let mut limits = test_budget().limits().clone();
+        limits.ir_items = 150;
+        let limited = enum_report(&bytes, "BudgetBytes", &mut Budget::new(limits));
+        assert!(matches!(
+            limited.enum_constant_proof,
+            ClassSourceEnumConstantProof::Stopped { .. }
+        ));
+        assert!(limited.text.contains("public static final BudgetBytes A;"));
+        assert!(!limited.text.contains("A((byte) 1"));
     }
 }
