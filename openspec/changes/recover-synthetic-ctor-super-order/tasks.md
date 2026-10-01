@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿、fmt、CI 完整 30 项 allowlist clippy、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。（root 代收尾于两个 glm-5.3-flash 通道配额耗尽后实测：全仓 2778/0、fmt/openspec 236/236、完整 30 项 allowlist clippy 干净；实现者的 in-crate p3_patterns 78/0 含 6 正负例。）
 - [ ] 3.2 C1/C2 family 三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核判据、重排边界与三方行为，更新 DT 账本与巡查记录。
+- [x] 3.3 root 独立复核判据、重排边界与三方行为，更新 DT 账本与巡查记录。（root 于合并主线 daa4fb31 复核：`C1$1`/`C2$Inner` ctor 首句 `super();`、合成字段写入后移按原序、合成声明保留；family 联编运行 25/6、10 与基线一致；非合成/交错/计算值负例不重排；全仓 2778/0〔首跑 1 例 engine flake 单跑与复跑均过〕、fmt/openspec 236/236。收尾由 root 在两个 glm-5.3-flash 通道配额耗尽后代完成——与 scv 切片同模式，见 impl-record.md。）
