@@ -12586,24 +12586,8 @@ impl Builder<'_> {
         let when_false = self.render_value(proof.when_false, proof.consumer_bci, 0)?;
         let (when_true, when_false) =
             self.narrow_field_conditional_arms(proof, &test, when_true, when_false);
-        let boolean_return_values = self
-            .instructions
-            .get(&proof.consumer_bci)
-            .filter(|instruction| instruction.opcode() == 0xac)
-            .filter(|_| self.return_type == Some(Type::Boolean))
-            .filter(|_| test.presented == Some(Type::Boolean))
-            .and_then(|_| {
-                if self.ssa.value(proof.when_true).replaced_by().is_some()
-                    || self.ssa.value(proof.when_false).replaced_by().is_some()
-                {
-                    return None;
-                }
-                Some((
-                    integer_constant(self.ssa, self.operations, proof.when_true)?,
-                    integer_constant(self.ssa, self.operations, proof.when_false)?,
-                ))
-            });
-        let kind = match boolean_return_values {
+        let boolean_position_values = self.boolean_position_values(proof, &test);
+        let kind = match boolean_position_values {
             Some((1, 0)) => test.kind.clone(),
             Some((0, 1)) => ExprKind::Not {
                 value: Box::new(test.clone()),
@@ -12650,6 +12634,80 @@ impl Builder<'_> {
             }
         }
         Ok(Expr::new(expression.kind, origin).presenting(ty))
+    }
+
+    /// The two arm constants a consumer position that already requires a boolean may read as one.
+    ///
+    /// A branch-selected 0/1 is how a `boolean` is pushed, and a position a **descriptor** — not a
+    /// value's shape — states boolean may read the two arms as that boolean's own value: the
+    /// method's `Z` return states its `ireturn`'s requirement, and a call site's own descriptor
+    /// states the parameter the comparison result is passed to ([`Self::equality_argument_parameter`]).
+    /// That is the same reading the declaration plan makes of a store into a `boolean` variable, and
+    /// the arm constants and the boolean-presented test are the same branch-value shape both
+    /// positions share — so this is the one place the collapse is judged, for every such consumer.
+    fn boolean_position_values(
+        &self,
+        proof: &ConditionalValueProof,
+        test: &Expr,
+    ) -> Option<(i64, i64)> {
+        let consumer = self.instructions.get(&proof.consumer_bci)?;
+        let boolean_position = if consumer.opcode() == 0xac {
+            self.return_type == Some(Type::Boolean)
+        } else {
+            self.equality_argument_parameter(proof)
+        };
+        if !boolean_position || test.presented != Some(Type::Boolean) {
+            return None;
+        }
+        if self.ssa.value(proof.when_true).replaced_by().is_some()
+            || self.ssa.value(proof.when_false).replaced_by().is_some()
+        {
+            return None;
+        }
+        Some((
+            integer_constant(self.ssa, self.operations, proof.when_true)?,
+            integer_constant(self.ssa, self.operations, proof.when_false)?,
+        ))
+    }
+
+    /// Whether the one call that consumes a conditional value reads it through a parameter the
+    /// call's own descriptor declares `boolean`, and the value's branch is an equality pair
+    /// comparison (`if_acmpXX`/`if_icmpXX`).
+    ///
+    /// The parameter is found by the same positional mapping the call's arguments are typed with
+    /// ([`typed_arguments`]): the stack operands after the receiver, in order, are the descriptor's
+    /// parameters, so a descriptor that does not line up with the operands states nothing here. The
+    /// equality restriction is this slice's own boundary: `a == b`/`a != b` is the spelling the
+    /// argument position presents, while an ordering branch (`<`, `>`), a zero test (`ifeq`) and a
+    /// null test keep the conditional — and the refusal — they have always had.
+    fn equality_argument_parameter(&self, proof: &ConditionalValueProof) -> bool {
+        let Some(Operation::Invoke(target)) = self.operations.get(proof.consumer_bci) else {
+            return false;
+        };
+        let Some(Operation::Comparison { op, .. }) = self.operations.get(proof.branch_bci) else {
+            return false;
+        };
+        if !matches!(op, CompareOp::JumpIfSame | CompareOp::JumpIfDifferent) {
+            return false;
+        }
+        let Some(parameters) = parameter_descriptors(target.descriptor()) else {
+            return false;
+        };
+        let Some(instruction) = self.instructions.get(&proof.consumer_bci) else {
+            return false;
+        };
+        let operands = stack_operands(instruction);
+        let arguments = match target.kind() {
+            InvokeKind::Static => operands.as_slice(),
+            _ => operands.get(1..).unwrap_or(&[]),
+        };
+        if parameters.len() != arguments.len() {
+            return false;
+        }
+        arguments
+            .iter()
+            .position(|(_, value)| *value == proof.phi)
+            .is_some_and(|index| parameters[index] == "Z")
     }
 
     /// A field descriptor and the sole physical call parameter jointly justify the source type
