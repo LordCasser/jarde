@@ -1,0 +1,8 @@
+/tmp/args-replay/jadx-src/sources/defpackage/ShortArgs.java:5: 错误: 不兼容的类型: 从int转换到short可能会有损失
+    BIG(300),
+        ^
+/tmp/args-replay/jadx-src/sources/defpackage/ShortArgs.java:6: 错误: 不兼容的类型: 从int转换到short可能会有损失
+    SMALL(-300);
+          ^
+注: 某些消息已经过简化; 请使用 -Xdiags:verbose 重新编译以获得完整输出
+2 个错误

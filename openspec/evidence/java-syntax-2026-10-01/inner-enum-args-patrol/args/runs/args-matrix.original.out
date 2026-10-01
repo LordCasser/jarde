@@ -1,0 +1,16 @@
+A:1:x
+B:2:y
+R1:A
+R2:B
+R3:null
+ONE:x
+TWO:'
+THREE:￿
+NO:false
+YES:true
+BIG:300
+SMALL:-300
+MID:5
+NEG:-1
+x
+2

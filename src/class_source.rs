@@ -7097,16 +7097,26 @@ pub(crate) fn prepare_enum_constant_source_projection(
     let Some(constructor) = methods.get(constructor_index) else {
         return Ok(None);
     };
-    let no_source_constructor = group.constructor_field_index.is_none();
+    let user_tail = group.constructor_user_tail.as_ref();
+    let no_source_constructor = group.constructor_field_index.is_none() && user_tail.is_none();
     let has_only_enum_signature_marker =
         constructor.enum_constructor_signature_erasure_refused && constructor.markers.len() == 1;
+    // The arbitrary tail's own proof owns the constructor shape; the one marker it can carry is
+    // the same JVM-only name/ordinal Signature erasure refusal the recognized tails absorb.
+    let has_arbitrary_signature_marker = user_tail.is_some()
+        && constructor.markers.len() <= 1
+        && constructor
+            .markers
+            .first()
+            .is_none_or(|marker| marker.contains("jvm_signature_erasure_mismatch"));
     if constructor.item.index != group.constructor_method_index
-        || (!no_source_constructor && source_field.is_none())
+        || (!no_source_constructor && user_tail.is_none() && source_field.is_none())
         || source_field.is_some_and(|field| {
             Some(field.item.index) != group.constructor_field_index || field.declaration.is_none()
         })
         || (!no_source_constructor && constructor.declaration.is_none())
         || (!no_source_constructor
+            && user_tail.is_none()
             && group.constructor_signature_present
             && !matches!(
                 constructor.enum_constructor_source_tail,
@@ -7114,10 +7124,23 @@ pub(crate) fn prepare_enum_constant_source_projection(
                     | EnumConstructorSourceTail::SingleString
                     | EnumConstructorSourceTail::StringVarargs
             ))
-        || (!constructor.markers.is_empty() && !has_only_enum_signature_marker)
+        || (!constructor.markers.is_empty()
+            && !has_only_enum_signature_marker
+            && !has_arbitrary_signature_marker)
         || !constructor.annotations.refusals.is_empty()
         || !constructor.parameter_annotations.refusals.is_empty()
         || !constructor.type_annotations.refusals.is_empty()
+        || (user_tail.is_some()
+            && (constructor
+                .parameter_annotations
+                .uses_by_position
+                .iter()
+                .any(|uses| !uses.is_empty())
+                || constructor
+                    .type_annotations
+                    .parameter_uses
+                    .iter()
+                    .any(|uses| !uses.is_empty())))
         || constructor
             .parameter_annotations
             .uses_by_position
@@ -7264,7 +7287,38 @@ pub(crate) fn prepare_enum_constant_source_projection(
         if terminal_constructor_body.is_some() {
             return Ok(None);
         }
-        if !no_source_constructor {
+        if let Some(tail) = user_tail {
+            // The arbitrary tail's proof carries each parameter's type text and its own stored
+            // field; the folded declaration spells the user parameters only, in argument order.
+            let mut constructor_declaration = String::new();
+            if let Some(modifier) = visibility(constructor.item.access_flags) {
+                constructor_declaration.push_str(modifier);
+                constructor_declaration.push(' ');
+            }
+            constructor_declaration.push_str(&declaration.name);
+            constructor_declaration.push('(');
+            for (index, parameter) in tail.parameters.iter().enumerate() {
+                if index > 0 {
+                    constructor_declaration.push_str(", ");
+                }
+                constructor_declaration.push_str(&parameter.type_text);
+                constructor_declaration.push_str(&format!(" arg{index}"));
+            }
+            constructor_declaration.push(')');
+            let mut assignments = String::new();
+            for (index, parameter) in tail.parameters.iter().enumerate() {
+                assignments.push_str(&format!(
+                    "        this.{} = arg{index};\n",
+                    parameter.field_name
+                ));
+            }
+            let constructor_body =
+                format!("    {constructor_declaration} {{\n{assignments}    }}\n");
+            constructor_texts.push((
+                group.constructor_method_index,
+                prefix_method_annotations(constructor_body, &constructor.annotations),
+            ));
+        } else if !no_source_constructor {
             let Some(field_name) = field_name.as_deref() else {
                 return Ok(None);
             };
