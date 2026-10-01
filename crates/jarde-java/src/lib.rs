@@ -59,6 +59,7 @@ pub mod artifact;
 pub mod ast;
 pub mod bridge;
 pub mod concat;
+pub(crate) mod ctor_order;
 pub mod declaration;
 pub mod enumswitch;
 pub mod evidence;
