@@ -22,3 +22,7 @@
 `recover-nested-ctor-argument-sites`：构造站点走查接受实参位的嵌套构造——外层实参扫描遇 `new; dup; …; invokespecial` 完整内嵌站点时递归证明之（单用途、值恰为外层该实参），跳过该区间继续外层序列；内嵌站点呈现为构造实参表达式（复用构造呈现，嵌套拼 `new Y(…)` 于实参位）。X2.nested/X1.main 恢复；单参作方法实参、throw 位等既有形态逐字不变；内嵌非完整站点（无 ctor/双用途/跨块）保持拒绝。
 
 原 class 为行为基准。
+
+## 实施结果（`recover-nested-ctor-argument-sites`）
+
+走查已扩展：外层实参扫描按同一站点判据递归证明内嵌构造（深度上限 2），成功则跳过其闭区间续扫并由既有构造拼写呈现于实参位；内嵌非完整站点（双用途、跨块、三层）保持拒绝并登记。X1.main/X2.nested 及变体前后、三方对照与门禁记录见 [results-nested/nested-replay.md](results-nested/nested-replay.md)（变体源与 SHA 在 [variants-nested/](variants-nested/)）。

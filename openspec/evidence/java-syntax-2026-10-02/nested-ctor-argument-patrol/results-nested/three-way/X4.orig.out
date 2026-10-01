@@ -1,0 +1,3 @@
+Top(Mid(Leaf(z)))
+Tag(t,Val(assigned))/Val(assigned)
+Tag(t,Val(a))
