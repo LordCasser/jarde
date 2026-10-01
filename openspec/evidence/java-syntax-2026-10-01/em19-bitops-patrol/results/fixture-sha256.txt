@@ -1,0 +1,5 @@
+94599b5267539ef8268e974b6881356c2c38b36f0124b3064e64f13fa4252a17  openspec/evidence/java-syntax-2026-10-01/em19-bitops-patrol/fixture/B1.class
+48a75b91f2bcc3b797d6017572dcf7e2ca7190a2f82730310008673f6bbe27ce  openspec/evidence/java-syntax-2026-10-01/em19-bitops-patrol/fixture/B2.class
+bd92085dcadb215a1cc34220002f525468f0dda80cb2e7ad53f9b294efa0f705  openspec/evidence/java-syntax-2026-10-01/em19-bitops-patrol/fixture/B3.class
+d2365b13ace12bb20a21650154ba1a779e691ae600f2451948b424a0d92ab548  openspec/evidence/java-syntax-2026-10-01/em19-bitops-patrol/fixture/B4.class
+fccfb351d782707059adabdcfaf63dca22c1329b82aae88e41083f888c78a734  openspec/evidence/java-syntax-2026-10-01/em19-bitops-patrol/fixture/B5.class
