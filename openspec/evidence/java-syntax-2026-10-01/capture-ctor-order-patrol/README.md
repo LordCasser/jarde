@@ -20,3 +20,8 @@ ctor 语句呈现按字节码序逐字输出；对"super 前的合成字段存"�
 `recover-synthetic-ctor-super-order`（窄呈现切片）：ctor 呈现识别"前缀合成字段存 + super"序列（字段名匹配 `this$N`/`val$` 前缀或 InnerClasses/合成属性佐证，值为参数直传），把该组 store 移至 super 之后按序呈现；合成字段声明本身保留（faithful）。C1/C2 family 联编可过 javac 且行为一致。
 
 原 class 为行为基准。
+
+
+## 处置结果（2026-10-01）
+
+已由 [recover-synthetic-ctor-super-order](../../../changes/recover-synthetic-ctor-super-order/) 闭合（root 验收 daa4fb31）：合成 pre-super 存组重排为 super-先行，C1/C2 family 联编可编译且行为一致；非合成/交错/计算值边界钉死。收尾由 root 在双 glm-5.3-flash 通道配额耗尽后代完成，记录见 [impl-record.md](impl-record.md)。
