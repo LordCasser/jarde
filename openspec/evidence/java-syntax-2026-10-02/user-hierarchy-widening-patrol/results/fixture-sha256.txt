@@ -1,0 +1,1 @@
+c5d89d3edb0284ee3f6274a0527f5f6c0bfedd3539598dc28455a549a0dbf31e  openspec/evidence/java-syntax-2026-10-02/user-hierarchy-widening-patrol/fixture/fam.jar
