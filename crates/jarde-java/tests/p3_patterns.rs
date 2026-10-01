@@ -5491,6 +5491,301 @@ fn a_run_that_was_not_told_the_class_refuses_the_pre_call_write_and_the_prologue
 }
 
 // ---------------------------------------------------------------------------
+// E: a compiler's synthetic pre-super capture is presented prologue-first
+// ---------------------------------------------------------------------------
+
+/// `p/Cap.<init>(...)`: the body javac writes for a capture class — the synthetic captures stored
+/// **before** the constructor call, each from one parameter's own load — with the named captures'
+/// field flags as the negative cases state them, and `extra` writing one ordinary field after the
+/// captures when an interleave negative asks for it.
+fn capture_ctor_class(captures: &[(&str, u16)], extra: Option<(&str, u16)>) -> Vec<u8> {
+    let mut pool = Pool::default();
+    let _code = code_attribute(&mut pool);
+    let object_name = pool.utf8("java/lang/Object");
+    let object = pool.class(object_name);
+    let class_name = pool.utf8("p/Cap");
+    let class = pool.class(class_name);
+    let super_init = member_ref(&mut pool, object, "<init>", "()V");
+    let mut descriptor = String::from("(");
+    let mut fields = Vec::new();
+    let mut code = Code::default();
+    for (index, (name, flags)) in captures.iter().enumerate() {
+        let field = field_ref(&mut pool, class, name, "I");
+        fields.push(FieldDef {
+            flags: *flags,
+            name: pool.utf8(name),
+            descriptor: pool.utf8("I"),
+        });
+        descriptor.push('I');
+        code = code
+            .op(0x2a) // aload_0
+            .op(0x1a + u8::try_from(index + 1).expect("few captures")) // iload_n
+            .op(0xb5)
+            .index(field); // putfield p/Cap.<name>:I
+    }
+    descriptor.push_str(")V");
+    if let Some((name, flags)) = extra {
+        let field = field_ref(&mut pool, class, name, "I");
+        fields.push(FieldDef {
+            flags,
+            name: pool.utf8(name),
+            descriptor: pool.utf8("I"),
+        });
+        code = code
+            .op(0x2a) // aload_0
+            .op(0x08) // iconst_5
+            .op(0xb5)
+            .index(field); // putfield p/Cap.<name>:I
+    }
+    code = code
+        .op(0x2a) // aload_0
+        .op(0xb7)
+        .index(super_init) // invokespecial java/lang/Object.<init>()V
+        .op(0xb1); // return
+    let method_name = pool.utf8("<init>");
+    let method_descriptor = pool.utf8(&descriptor);
+    class_bytes_with(
+        &pool,
+        CLASS_FLAGS,
+        class,
+        object,
+        &fields,
+        &[MemberDef {
+            flags: 0x0000,
+            name: method_name,
+            descriptor: method_descriptor,
+            max_stack: 2,
+            max_locals: u16::try_from(captures.len() + 1).expect("few captures"),
+            code: code.done(),
+        }],
+    )
+}
+
+const ACC_FINAL_SYNTHETIC: u16 = 0x1010;
+
+/// The debug names one capture constructor presents under: the receiver's, then the captures' own
+/// parameter names by slot.
+fn capture_debug(captures: usize) -> Vec<Option<String>> {
+    let mut debug = vec![Some("self".to_owned())];
+    debug.resize(captures + 1, None);
+    debug
+}
+
+#[test]
+fn a_synthetic_capture_store_is_presented_after_its_constructor_call() {
+    // javac's own shape for an anonymous class's capture: the field header carries
+    // `ACC_SYNTHETIC` — the compiler's evidence — and the bytes store it before the call.
+    let class = capture_ctor_class(&[("val$base", ACC_FINAL_SYNTHETIC)], None);
+    let report = present_in(&class, b"<init>", b"(I)V", 2, capture_debug(1));
+    assert!(report.produced(), "{:?}", report.stop());
+    // The constructor call is the first statement; the capture's write follows it, the text the
+    // source had (JLS 12.5 runs the instance initializers after `super(…)`). The write is not
+    // dropped and not re-anchored: its record and its origins are the putfield's own.
+    let super_line = line_with(&report, "super();");
+    let write_line = line_with(&report, "this.val$base = arg1;");
+    let return_line = line_with(&report, "return;");
+    assert!(
+        super_line < write_line && write_line < return_line,
+        "the capture write is presented after the constructor call:\n{}",
+        report.text
+    );
+    assert_eq!(report.text.matches("super()").count(), 1, "{}", report.text);
+    assert_eq!(report.fields.len(), 1);
+    assert!(report.fields[0].presented(), "{:?}", report.fields);
+    assert_eq!(report.fields[0].name, "val$base");
+    assert_eq!(report.fields[0].access, "write");
+    let prologue = report.init.as_ref().expect("the prologue is read");
+    assert_eq!(prologue.target, Some(ConstructorTarget::Super));
+    assert_eq!(prologue.bci, Some(6));
+}
+
+#[test]
+fn a_synthetic_enclosing_instance_store_is_presented_after_its_constructor_call() {
+    // The member-class shape: the enclosing instance is written before the call, and the flag
+    // (not the `this$0` name alone) is what makes it the compiler's write.
+    let mut pool = Pool::default();
+    let _code = code_attribute(&mut pool);
+    let object_name = pool.utf8("java/lang/Object");
+    let object = pool.class(object_name);
+    let class_name = pool.utf8("p/Outer$1");
+    let class = pool.class(class_name);
+    let field = field_ref(&mut pool, class, "this$0", "Lp/Outer;");
+    let super_init = member_ref(&mut pool, object, "<init>", "()V");
+    let code = Code::default()
+        .op(0x2a) // 0: aload_0
+        .op(0x2b) // 1: aload_1 (the enclosing instance)
+        .op(0xb5)
+        .index(field) // 2: putfield p/Outer$1.this$0:Lp/Outer;
+        .op(0x2a) // 5: aload_0
+        .op(0xb7)
+        .index(super_init) // 6: invokespecial java/lang/Object.<init>()V
+        .op(0xb1) // 9: return
+        .done();
+    let field_name = pool.utf8("this$0");
+    let field_descriptor = pool.utf8("Lp/Outer;");
+    let method_name = pool.utf8("<init>");
+    let method_descriptor = pool.utf8("(Lp/Outer;)V");
+    let class = class_bytes_with(
+        &pool,
+        CLASS_FLAGS,
+        class,
+        object,
+        &[FieldDef {
+            flags: 0x1010,
+            name: field_name,
+            descriptor: field_descriptor,
+        }],
+        &[MemberDef {
+            flags: 0x0000,
+            name: method_name,
+            descriptor: method_descriptor,
+            max_stack: 2,
+            max_locals: 2,
+            code,
+        }],
+    );
+    let report = present_in(
+        &class,
+        b"<init>",
+        b"(Lp/Outer;)V",
+        2,
+        vec![Some("self".into()), Some("outer".into())],
+    );
+    assert!(report.produced(), "{:?}", report.stop());
+    let super_line = line_with(&report, "super();");
+    let write_line = line_with(&report, "this.this$0 = outer;");
+    assert!(
+        super_line < write_line,
+        "the enclosing-instance write is presented after the constructor call:\n{}",
+        report.text
+    );
+    assert_eq!(report.fields.len(), 1);
+    assert!(report.fields[0].presented(), "{:?}", report.fields);
+}
+
+#[test]
+fn a_double_capture_group_is_presented_after_its_constructor_call_in_order() {
+    // Both captures move, and each keeps the place its own bytes had within the group.
+    let class = capture_ctor_class(
+        &[
+            ("val$base", ACC_FINAL_SYNTHETIC),
+            ("val$step", ACC_FINAL_SYNTHETIC),
+        ],
+        None,
+    );
+    let report = present_in(&class, b"<init>", b"(II)V", 3, capture_debug(2));
+    assert!(report.produced(), "{:?}", report.stop());
+    let super_line = line_with(&report, "super();");
+    let base_line = line_with(&report, "this.val$base = arg1;");
+    let step_line = line_with(&report, "this.val$step = arg2;");
+    assert!(
+        super_line < base_line && base_line < step_line,
+        "the two captures move together and in order:\n{}",
+        report.text
+    );
+}
+
+#[test]
+fn a_field_named_like_a_capture_but_not_synthetic_stays_before_its_constructor_call() {
+    // The negative the design pins: a user field that happens to be spelled `val$x`, with no
+    // `ACC_SYNTHETIC` on the header the run read, is not the compiler's capture, and the
+    // verbatim order stays.
+    let class = capture_ctor_class(&[("val$x", 0x0002)], None);
+    let report = present_in(&class, b"<init>", b"(I)V", 2, capture_debug(1));
+    assert!(report.produced(), "{:?}", report.stop());
+    let write_line = line_with(&report, "this.val$x = arg1;");
+    let super_line = line_with(&report, "super();");
+    assert!(
+        write_line < super_line,
+        "the user field's write is not moved past the constructor call:\n{}",
+        report.text
+    );
+    assert_eq!(report.fields.len(), 1);
+    assert!(report.fields[0].presented(), "{:?}", report.fields);
+}
+
+#[test]
+fn an_interleaved_pre_call_group_stays_where_the_bytecode_made_it() {
+    // A user write interleaved with a real synthetic capture is not the compiler's contiguous
+    // group: no part of the prefix is moved, and the order stays verbatim.
+    let class = capture_ctor_class(&[("val$base", ACC_FINAL_SYNTHETIC)], Some(("f", 0x0002)));
+    let report = present_in(&class, b"<init>", b"(I)V", 2, capture_debug(1));
+    assert!(report.produced(), "{:?}", report.stop());
+    let write_line = line_with(&report, "this.val$base = arg1;");
+    let user_line = line_with(&report, "this.f = 5;");
+    let super_line = line_with(&report, "super();");
+    assert!(
+        write_line < user_line && user_line < super_line,
+        "the interleaved group is not reordered:\n{}",
+        report.text
+    );
+}
+
+#[test]
+fn a_synthetic_capture_of_a_computed_value_stays_where_the_bytecode_made_it() {
+    // The direct-parameter requirement: a synthetic field whose pre-call write stores a computed
+    // value is not the compiler's capture pass, and the verbatim order stays.
+    let mut pool = Pool::default();
+    let _code = code_attribute(&mut pool);
+    let object_name = pool.utf8("java/lang/Object");
+    let object = pool.class(object_name);
+    let class_name = pool.utf8("p/Cap");
+    let class = pool.class(class_name);
+    let field = field_ref(&mut pool, class, "val$base", "I");
+    let super_init = member_ref(&mut pool, object, "<init>", "()V");
+    let code = Code::default()
+        .op(0x2a) // 0: aload_0
+        .op(0x1b) // 1: iload_1
+        .op(0x04) // 2: iconst_1
+        .op(0x60) // 3: iadd
+        .op(0xb5)
+        .index(field) // 4: putfield p/Cap.val$base:I
+        .op(0x2a) // 7: aload_0
+        .op(0xb7)
+        .index(super_init) // 8: invokespecial java/lang/Object.<init>()V
+        .op(0xb1) // 11: return
+        .done();
+    let field_name = pool.utf8("val$base");
+    let field_descriptor = pool.utf8("I");
+    let method_name = pool.utf8("<init>");
+    let method_descriptor = pool.utf8("(I)V");
+    let class = class_bytes_with(
+        &pool,
+        CLASS_FLAGS,
+        class,
+        object,
+        &[FieldDef {
+            flags: 0x1010,
+            name: field_name,
+            descriptor: field_descriptor,
+        }],
+        &[MemberDef {
+            flags: 0x0000,
+            name: method_name,
+            descriptor: method_descriptor,
+            max_stack: 3,
+            max_locals: 2,
+            code,
+        }],
+    );
+    let report = present_in(
+        &class,
+        b"<init>",
+        b"(I)V",
+        2,
+        vec![Some("self".into()), None],
+    );
+    assert!(report.produced(), "{:?}", report.stop());
+    let write_line = line_with(&report, "this.val$base = arg1 + 1;");
+    let super_line = line_with(&report, "super();");
+    assert!(
+        write_line < super_line,
+        "the computed capture write is not moved past the constructor call:\n{}",
+        report.text
+    );
+}
+
+// ---------------------------------------------------------------------------
 // The oracle on the two 2.3 shapes whose meaning is an order
 // ---------------------------------------------------------------------------
 
