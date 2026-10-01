@@ -12373,9 +12373,17 @@ fn resolve_enum_constant_body_relations(
             !constructors
                 .iter()
                 .any(|constructor| constructor.table_index == *table_index && constructor.has_code)
-                || !constant_shape.iter().any(|constant| {
-                    constant.allocation_owner == *owner && constant.allocation_owner != enum_owner
-                })
+                // The marker parameter type is javac's overload-disambiguation artifact, not a
+                // semantic input: a top-level enum reuses its first constant's anonymous
+                // subclass (`Op$1`), while a nested enum takes the enclosing scope's synthetic
+                // anonymous class (`Holder2$1`). Binding the bridge to a constant by that name
+                // would break the nested shape, so the bridge is bound structurally by its
+                // proved delegation edges instead: the constructor chain proves its body
+                // forwards unchanged name/ordinal to the private constructor, and every body
+                // child's constructor must invoke exactly this descriptor with a null marker
+                // (the per-relation bridge proof below). The one name rule that remains is
+                // that the marker is not the enum owner itself.
+                || owner.as_slice() == enum_owner
         })
         || constructors.iter().any(|constructor| {
             constructor.descriptor != source_ctor
@@ -21629,6 +21637,304 @@ mod enum_constant_body_relation_tests {
             .collect();
         fs::remove_dir_all(dir).unwrap();
         entries
+    }
+
+    fn compiled_default_package_entries(file_name: &str, source: &str) -> Vec<(Vec<u8>, Vec<u8>)> {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir = std::env::temp_dir().join(format!(
+            "jarde-nested-body-fix-{}-{nonce}-{}",
+            std::process::id(),
+            NEXT_FIXTURE_ID.fetch_add(1, Ordering::Relaxed)
+        ));
+        let source_path = dir.join("source").join(file_name);
+        let classes = dir.join("classes");
+        fs::create_dir_all(source_path.parent().unwrap()).unwrap();
+        fs::create_dir_all(&classes).unwrap();
+        fs::write(&source_path, source).unwrap();
+        let compile = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-d"])
+            .arg(&classes)
+            .arg(&source_path)
+            .output()
+            .expect("javac is available for the frozen nested-body sources");
+        assert!(
+            compile.status.success(),
+            "javac failed: {}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        let mut entries: Vec<(Vec<u8>, Vec<u8>)> = fs::read_dir(&classes)
+            .unwrap()
+            .map(|entry| {
+                let path = entry.unwrap().path();
+                (
+                    path.file_name()
+                        .unwrap()
+                        .to_string_lossy()
+                        .into_owned()
+                        .into_bytes(),
+                    fs::read(path).unwrap(),
+                )
+            })
+            .collect();
+        entries.sort_by(|left, right| left.0.cmp(&right.0));
+        fs::remove_dir_all(dir).unwrap();
+        entries
+    }
+
+    fn compiled_p_entries(sources: &[(&str, &str)]) -> Vec<(Vec<u8>, Vec<u8>)> {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir = std::env::temp_dir().join(format!(
+            "jarde-nested-body-fix-p-{}-{nonce}-{}",
+            std::process::id(),
+            NEXT_FIXTURE_ID.fetch_add(1, Ordering::Relaxed)
+        ));
+        let classes = dir.join("classes");
+        fs::create_dir_all(&classes).unwrap();
+        let mut arguments = Vec::new();
+        for (name, source) in sources {
+            let path = dir.join("source").join(name);
+            fs::create_dir_all(path.parent().unwrap()).unwrap();
+            fs::write(&path, source).unwrap();
+            arguments.push(path);
+        }
+        let compile = Command::new("javac")
+            .args(["--release", "8", "-g:none", "-d"])
+            .arg(&classes)
+            .args(&arguments)
+            .output()
+            .expect("javac is available for the frozen nested-body sources");
+        assert!(
+            compile.status.success(),
+            "javac failed: {}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+        let mut entries: Vec<(Vec<u8>, Vec<u8>)> = fs::read_dir(classes.join("p"))
+            .unwrap()
+            .map(|entry| {
+                let path = entry.unwrap().path();
+                (
+                    format!("p/{}", path.file_name().unwrap().to_string_lossy()).into_bytes(),
+                    fs::read(path).unwrap(),
+                )
+            })
+            .collect();
+        entries.sort_by(|left, right| left.0.cmp(&right.0));
+        fs::remove_dir_all(dir).unwrap();
+        entries
+    }
+
+    fn report_from_jar_bytes(jar_bytes: Vec<u8>, class: &str) -> ClassSourceReport {
+        let engine = Engine::new();
+        let mut budget = budget();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(jar_bytes), &mut budget)
+            .unwrap();
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: jarde_reader::view::LoaderId("app".to_owned()),
+        };
+        match engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal(class),
+                    },
+                    environment,
+                },
+                &mut budget,
+            )
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => report,
+            other => panic!("class source did not select one definition: {other:?}"),
+        }
+    }
+
+    const NESTED_IFACE_ENUM: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/fixture/N2.java"
+    );
+    const USER_DOLLAR_ENUM: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/Weird$Name.java"
+    );
+    const TWO_LEVEL_ENUM: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/TwoLevel.java"
+    );
+    const DUAL_SHAPE_ENUM: &str = include_str!(
+        "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/fix/Holder3.java"
+    );
+
+    #[test]
+    fn nested_enum_constant_bodies_fold_with_the_same_structural_obligations() {
+        let entries = compiled_default_package_entries("N2.java", NESTED_IFACE_ENUM);
+        let report = report(&entries, "N2$Operation");
+        let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+        ) = &report.enum_constant_proof
+        else {
+            panic!(
+                "the nested interface enum must fold: {:?}",
+                report.enum_constant_proof
+            );
+        };
+        assert_eq!(group.constants.len(), 2);
+        assert_eq!(report.enum_constant_body_relations.len(), 2);
+        for relation in &report.enum_constant_body_relations {
+            let proof = relation.body_proof.as_ref().expect("body proof runs");
+            let methods = proof.as_ref().expect("the child body proves");
+            assert!(!methods.is_empty());
+            assert!(relation.use_census.exclusive);
+        }
+        assert!(
+            report.text.contains("PLUS {"),
+            "folded text: {}",
+            report.text
+        );
+        assert!(
+            report.text.contains("return arg1 + arg2;"),
+            "{}",
+            report.text
+        );
+        assert!(report.text.contains("MINUS {"));
+        assert!(report.text.contains("return arg1 - arg2;"));
+        assert!(
+            !report
+                .text
+                .contains("public static final N2$Operation PLUS;"),
+            "the physical constant field is not presented twice: {}",
+            report.text
+        );
+    }
+
+    #[test]
+    fn frozen_nested_matrix_jars_flip_exactly_the_nested_cells() {
+        let nested_jar = include_bytes!(
+            "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/nested-iface-abs.jar"
+        )
+        .to_vec();
+        let nested = report_from_jar_bytes(nested_jar.clone(), "p/Holder2$OpAbs");
+        let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+        ) = &nested.enum_constant_proof
+        else {
+            panic!(
+                "the frozen nested abstract enum must fold: {:?}",
+                nested.enum_constant_proof
+            );
+        };
+        assert_eq!(group.constants.len(), 2);
+        assert!(nested.text.contains("ADD {"), "{}", nested.text);
+        assert!(nested.text.contains("return arg1 + arg2;"));
+        assert!(nested.text.contains("MUL {"));
+        assert!(nested.text.contains("return arg1 * arg2;"));
+
+        let toplevel = report_from_jar_bytes(nested_jar, "p/OpIface");
+        let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+        ) = &toplevel.enum_constant_proof
+        else {
+            panic!(
+                "the frozen top-level interface enum must fold: {:?}",
+                toplevel.enum_constant_proof
+            );
+        };
+        assert_eq!(group.constants.len(), 2);
+        assert!(toplevel.text.contains("ADD {"), "{}", toplevel.text);
+
+        let op_jar = include_bytes!(
+            "../openspec/evidence/java-syntax-2026-10-01/inner-enum-args-patrol/nested-bodies-matrix/toplevel-op.jar"
+        )
+        .to_vec();
+        let op = report_from_jar_bytes(op_jar, "demo/Op");
+        let crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+            crate::enum_constants::ProvedEnumConstantGroup::Body(group),
+        ) = &op.enum_constant_proof
+        else {
+            panic!(
+                "the frozen top-level abstract enum must fold: {:?}",
+                op.enum_constant_proof
+            );
+        };
+        assert_eq!(group.constants.len(), 2);
+        assert!(op.text.contains("ADD {") && op.text.contains("MULTIPLY {"));
+    }
+
+    #[test]
+    fn user_dollar_named_toplevel_enum_keeps_its_toplevel_semantics() {
+        let entries = compiled_p_entries(&[("Weird$Name.java", USER_DOLLAR_ENUM)]);
+        let report = report(&entries, "p/Weird$Name");
+        assert!(
+            matches!(
+                report.enum_constant_proof,
+                crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                    crate::enum_constants::ProvedEnumConstantGroup::Body(_)
+                )
+            ),
+            "a user `$`-named top-level enum is a top-level enum: {:?}",
+            report.enum_constant_proof
+        );
+        assert!(report.text.contains("FIRST {"), "{}", report.text);
+        assert!(report.text.contains("return 10;"));
+        assert!(report.text.contains("SECOND {"));
+        assert!(report.text.contains("return 20;"));
+    }
+
+    #[test]
+    fn multi_level_nested_enum_structural_semantics_are_registered() {
+        let entries = compiled_p_entries(&[("TwoLevel.java", TWO_LEVEL_ENUM)]);
+        let report = report(&entries, "p/TwoLevel$Middle$Deep");
+        assert!(
+            matches!(
+                report.enum_constant_proof,
+                crate::enum_constants::ClassSourceEnumConstantProof::Proved(
+                    crate::enum_constants::ProvedEnumConstantGroup::Body(_)
+                )
+            ),
+            "registered structural behavior for A$B$C: {:?}",
+            report.enum_constant_proof
+        );
+        assert!(report.text.contains("X {"), "{}", report.text);
+        assert!(report.text.contains("Y {"));
+    }
+
+    #[test]
+    fn nested_enum_with_unproved_body_obligations_stays_field_by_field() {
+        let entries = compiled_p_entries(&[("Holder3.java", DUAL_SHAPE_ENUM)]);
+        let report = report(&entries, "p/Holder3$Dual");
+        match &report.enum_constant_proof {
+            crate::enum_constants::ClassSourceEnumConstantProof::Refused { reason } => {
+                assert_eq!(
+                    reason, "a selected child lacks complete override bodies",
+                    "the dual abstract+interface shape keeps its obligation refusal"
+                );
+            }
+            other => panic!("the dual shape must keep refusing: {other:?}"),
+        }
+        assert!(
+            !report.text.contains("SQUARE {"),
+            "an unproved nested shape keeps field-by-field presentation: {}",
+            report.text
+        );
+        assert!(
+            report
+                .text
+                .contains("public static final p.Holder3$Dual SQUARE;"),
+            "the physical constant field stays: {}",
+            report.text
+        );
     }
 
     #[test]
