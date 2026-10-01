@@ -1,0 +1,2 @@
+8bb00653a6a8a2508da9937b3f6742bd4d3283c40c14b19536d141a5d6618d0a  openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X1.class
+84cdb5c5063a6cd998c3e0886cd91f4bd24d0daa2f33a10ee4491c808696937d  openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class
