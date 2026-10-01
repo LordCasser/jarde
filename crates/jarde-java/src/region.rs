@@ -446,6 +446,15 @@ pub enum Region {
         consumer: CanonicalBlockId,
         consumer_bci: u32,
         reason: FallbackReason,
+        /// The continuation the consumer block's own trailing branch begins, recognized from that
+        /// block at claim time. A consumer whose terminal instruction is the next structure's
+        /// first test stores this region's value **and** branches again, so no disjoint join
+        /// block exists for a sibling region to start at; the continuation is composed here and
+        /// renders at this region's own lexical path, after the consumer block's suffix. The
+        /// continuation never starts behind this region's back: the walk committed this region's
+        /// participants before the nested dispatch, so the continuation's first test block is
+        /// exactly `consumer`, and every block it holds is a block only it owns.
+        tail: Vec<Region>,
     },
     /// One bounded, single-entry test DAG ending at two shared boolean returns.
     /// Ownership is committed once; the builder must independently prove its Java expression.
@@ -674,12 +683,16 @@ impl Region {
                 }
             }
             Self::Straight { .. }
-            | Self::ShortCircuitValue { .. }
             | Self::TwoExitReturn { .. }
             | Self::SharedTailEarlyReturn { .. }
             | Self::LoopBreak { .. }
             | Self::LoopContinue { .. }
             | Self::Fallback { .. } => {}
+            Self::ShortCircuitValue { tail, .. } => {
+                for region in tail {
+                    region.elided_cleanup_bcis(out);
+                }
+            }
         }
     }
 
@@ -708,6 +721,7 @@ impl Region {
                 true_producer,
                 false_producer,
                 consumer,
+                tail,
                 ..
             } => {
                 let mut blocks = prefix.iter().collect::<Vec<_>>();
@@ -721,10 +735,19 @@ impl Region {
                         blocks.push(block);
                     }
                 }
-                for block in [true_producer, false_producer, consumer] {
+                for block in [true_producer, false_producer] {
                     if !blocks.contains(&block) {
                         blocks.push(block);
                     }
+                }
+                // A composed continuation starts **at** the consumer block: its own first test
+                // lists the block, so listing it here too would name one block twice and the
+                // completed tree would refuse as an ownership overlap.
+                if tail.is_empty() && !blocks.contains(&consumer) {
+                    blocks.push(consumer);
+                }
+                for region in tail {
+                    blocks.extend(region.blocks());
                 }
                 blocks
             }
@@ -1025,9 +1048,12 @@ pub(crate) fn project_string_switches(
                     visit(cleanup, ir, budget)?;
                 }
             }
-            Region::ShortCircuitValue { .. }
-            | Region::TwoExitReturn { .. }
-            | Region::SharedTailEarlyReturn { .. } => {}
+            Region::ShortCircuitValue { tail, .. } => {
+                for region in tail.iter_mut() {
+                    visit(region, ir, budget)?;
+                }
+            }
+            Region::TwoExitReturn { .. } | Region::SharedTailEarlyReturn { .. } => {}
             Region::Straight { .. }
             | Region::Fallback { .. }
             | Region::Guard { body: None, .. }
@@ -2840,10 +2866,10 @@ impl Walker<'_> {
                             .and_then(|tail| self.view.id_of(tail).cloned());
                         return Ok(one(region, next));
                     }
-                    if let Some((region, next)) =
+                    if let Some((regions, next)) =
                         self.short_circuit_value(&prefix, &branch, branch_bci, frame)?
                     {
-                        return Ok(one(region, next));
+                        return Ok((regions, next));
                     }
                     if let Some(region) =
                         self.two_exit_return(&prefix, &branch, branch_bci, frame)?
@@ -6453,7 +6479,7 @@ impl Walker<'_> {
         outer_branch: &CanonicalBlockId,
         outer_branch_bci: u32,
         frame: &Frame,
-    ) -> Result<Option<(Region, Option<CanonicalBlockId>)>, StopReason> {
+    ) -> Result<Option<(Vec<Region>, Option<CanonicalBlockId>)>, StopReason> {
         // Method-level candidates keep their original restriction. The only protected-range
         // extension is a candidate that starts at the exact entry of one try body: its boundary
         // and exception-table row then prove the complete local ownership without widening an
@@ -6681,8 +6707,14 @@ impl Walker<'_> {
         let Some(consumer_node) = self.view.index_of(&consumer) else {
             return Ok(None);
         };
+        // Two successors mean the consumer block itself branches once more: the anchor this
+        // region consumes lives there and the branch is the continuation's own first test, so
+        // the block is claimed here and the continuation composed from it. Anything with more
+        // than two successors is no two-way shape this slice reads.
+        let consumer_successors = self.view.successors(consumer_node);
+        let consumer_two_way = consumer_successors.len() == 2;
         if self.view.successor_ids(&false_producer) != [consumer.clone()]
-            || self.view.successors(consumer_node).len() > 1
+            || consumer_successors.len() > 2
         {
             return Ok(None);
         }
@@ -6861,13 +6893,17 @@ impl Walker<'_> {
         let Some(consumer_terminal) = consumer_block.instructions().last() else {
             return Ok(None);
         };
-        if self
-            .operations
-            .get(consumer_terminal.bci())
-            .is_some_and(|operation| {
-                operation.comparison().is_some() || operation.switch().is_some()
-            })
-        {
+        // A consumer block that ends in a branch stores this region's value **and** starts the
+        // next structure: the two-way comparison case composes the continuation from this very
+        // block (below), and everything else — a `switch` there, a two-way exit of a
+        // protected-range candidate — keeps the whole-shape refusal this slice has always taken.
+        let consumer_terminal_branches =
+            self.operations
+                .get(consumer_terminal.bci())
+                .is_some_and(|operation| {
+                    operation.comparison().is_some() || operation.switch().is_some()
+                });
+        if consumer_terminal_branches && !(consumer_two_way && protected_try.is_none()) {
             return Ok(None);
         }
         let next = self.view.successor_ids(&consumer).into_iter().next();
@@ -6982,11 +7018,39 @@ impl Walker<'_> {
 
         // Commit ownership only after the entire local shape passed. The outer block was inserted
         // by region_at_inner already; every other participant is inserted exactly once here.
-        for node in participants {
-            self.visited.insert(node);
-        }
-        Ok(Some((
-            Region::ShortCircuitValue {
+        if consumer_two_way && consumer_terminal_branches {
+            // The consumer block stores this region's value and then branches into the next
+            // structure, whose first test is that very branch: no disjoint join block exists for
+            // a sibling to start at, so the continuation is recognized from the consumer block
+            // itself — the nested walk marks the block visited as its dispatch — and the whole
+            // continuation composes into one statement sequence at one lexical path. A
+            // continuation that does not close rolls the whole claim back, which is the decline
+            // this shape has always taken; a stop (budget, cancellation, recursion bound) stops
+            // the run as any other.
+            let checkpoint = self.visited.clone();
+            let mut tail = Vec::new();
+            let mut continuation = Some(consumer.clone());
+            let tail_next = loop {
+                let Some(start) = continuation.clone() else {
+                    break None;
+                };
+                match self.region_at(&start, frame) {
+                    Ok((run, next)) => {
+                        tail.extend(run);
+                        continuation = next;
+                    }
+                    Err(stop) => return Err(stop),
+                }
+            };
+            if tail.is_empty() {
+                self.visited = checkpoint;
+                return Ok(None);
+            }
+            for node in participants {
+                self.visited.insert(node);
+            }
+            let mut run = Vec::with_capacity(tail.len() + 1);
+            run.push(Region::ShortCircuitValue {
                 prefix: prefix.to_vec(),
                 tests,
                 test_edges,
@@ -6996,7 +7060,26 @@ impl Walker<'_> {
                 consumer,
                 consumer_bci,
                 reason,
-            },
+                tail,
+            });
+            return Ok(Some((run, tail_next)));
+        }
+        for node in participants {
+            self.visited.insert(node);
+        }
+        Ok(Some((
+            vec![Region::ShortCircuitValue {
+                prefix: prefix.to_vec(),
+                tests,
+                test_edges,
+                gateways,
+                true_producer,
+                false_producer,
+                consumer,
+                consumer_bci,
+                reason,
+                tail: Vec::new(),
+            }],
             next,
         )))
     }

@@ -1933,7 +1933,10 @@ fn short_circuit_local_booleans(
     while let Some(region) = pending.pop() {
         poll(budget, region.blocks().first().map(|block| block.bci()))?;
         match region {
-            Region::ShortCircuitValue { consumer_bci, .. } => {
+            Region::ShortCircuitValue {
+                consumer_bci, tail, ..
+            } => {
+                pending.extend(tail.iter());
                 if !matches!(operations.get(*consumer_bci), Some(Operation::Store { .. })) {
                     continue;
                 }
@@ -1951,130 +1954,22 @@ fn short_circuit_local_booleans(
                 let ShortCircuitConsumer::Local(slot, written) = proof.consumer else {
                     continue;
                 };
-                let at = proof.consumer_bci;
-                let Some(variable) = reuse.variable_at(slot, at) else {
-                    continue;
-                };
-                if slot < parameters
-                    || names.text(variable).is_none()
-                    || !matches!(ssa.value(written).def(), Definition::Instruction { bci, .. } if *bci == at)
-                    || ssa.value(written).replaced_by().is_some()
-                {
-                    continue;
-                }
-                let Some(accesses) = uses.get(&variable) else {
-                    continue;
-                };
-                let writes = accesses
-                    .iter()
-                    .filter(|access| access.written.is_some())
-                    .collect::<Vec<_>>();
-                let [write] = writes.as_slice() else {
-                    continue;
-                };
-                if declaration_region(accesses, paths).is_none()
-                    || write.bci != at
-                    || write.written != Some(written)
-                    || write.stored != Some(proof.phi)
-                    // This first Store consumer only claims a declaration in its own region.
-                    // A read in another lexical region needs an independently proved elevated
-                    // assignment and is conservatively left to a later scope change.
-                    || accesses.iter().any(|access| access.path != write.path)
-                {
-                    continue;
-                }
-                let reads = accesses
-                    .iter()
-                    .filter(|access| access.read.is_some())
-                    .collect::<Vec<_>>();
-                let direct_readers = ssa
-                    .value(written)
-                    .uses()
-                    .iter()
-                    .filter_map(|reader| reader.bci())
-                    .collect::<BTreeSet<_>>();
-                let read_bcis = reads
-                    .iter()
-                    .map(|access| access.bci)
-                    .collect::<BTreeSet<_>>();
-                if reads.is_empty()
-                    || reads.len() != read_bcis.len()
-                    || ssa.value(written).uses().len() != reads.len()
-                    || direct_readers != read_bcis
-                    || reads.iter().any(|access| {
-                        access.bci <= at
-                            || access.read != Some(written)
-                            || reuse.variable_at(slot, access.bci) != Some(variable)
-                    })
-                {
-                    continue;
-                }
-                let mut complete = true;
-                for access in reads {
-                    poll(budget, Some(access.bci))?;
-                    charge(
-                        budget,
-                        CountedBudgetDimension::AnalysisSteps,
-                        1,
-                        Some(access.bci),
-                    )?;
-                    let Some(load) = instruction_at(ssa, access.bci) else {
-                        complete = false;
-                        break;
-                    };
-                    let Some(Operation::Load { slot: load_slot }) = operations.get(access.bci)
-                    else {
-                        complete = false;
-                        break;
-                    };
-                    let [(Slot::Stack(_), loaded)] = load.writes() else {
-                        complete = false;
-                        break;
-                    };
-                    if *load_slot != slot
-                        || !matches!(load.opcode(), 0x15 | 0x1a..=0x1d)
-                        || load.reads() != [(Slot::Local(slot), written)]
-                    {
-                        complete = false;
-                        break;
-                    }
-                    let [reader] = ssa.value(*loaded).uses() else {
-                        complete = false;
-                        break;
-                    };
-                    let Some(consumer_bci) = reader.bci() else {
-                        complete = false;
-                        break;
-                    };
-                    let Some(consumer) = instruction_at(ssa, consumer_bci) else {
-                        complete = false;
-                        break;
-                    };
-                    if !matches!(consumer.reads(), [(Slot::Stack(_), value)] if *value == *loaded) {
-                        complete = false;
-                        break;
-                    }
-                    let boolean_position = match (consumer.opcode(), operations.get(consumer_bci)) {
-                        (
-                            0xb3,
-                            Some(Operation::Field {
-                                access: FieldAccess::Write,
-                                is_static: true,
-                                descriptor,
-                                ..
-                            }),
-                        ) if descriptor == "Z" => fields
-                            .claim(consumer_bci)
-                            .is_some_and(|(_, shape)| shape.value == Some(*loaded)),
-                        (0xac, Some(Operation::Return)) => return_type == Some(&Type::Boolean),
-                        _ => false,
-                    };
-                    if !boolean_position {
-                        complete = false;
-                        break;
-                    }
-                }
-                if complete {
+                if let Some(variable) = proves_boolean_local_store(
+                    slot,
+                    written,
+                    proof.phi,
+                    proof.consumer_bci,
+                    ssa,
+                    operations,
+                    names,
+                    reuse,
+                    fields,
+                    return_type,
+                    parameters,
+                    uses,
+                    paths,
+                    budget,
+                )? {
                     proved.insert(variable);
                 }
             }
@@ -2083,7 +1978,31 @@ fn short_circuit_local_booleans(
             }
             Region::If {
                 then_arm, else_arm, ..
-            } => pending.extend([then_arm.as_ref(), else_arm.as_ref()]),
+            } => {
+                pending.extend([then_arm.as_ref(), else_arm.as_ref()]);
+                // One comparison selecting between the same `1`/`0` literals is the one-test
+                // shape of the same bounded Phi/Store graph the short-circuit regions prove, and
+                // the ordinary fold already proves it for its own presentation. When that store
+                // feeds the same named, single-write, all-Boolean-reads discipline, its local
+                // seeds `boolean` here too — so a flag the chain stores beside a concat-consumed
+                // one spells `boolean` on both sides of the same statement sequence.
+                if let Some(variable) = proves_conditional_store_boolean(
+                    region,
+                    canonical,
+                    ssa,
+                    operations,
+                    names,
+                    reuse,
+                    fields,
+                    return_type,
+                    parameters,
+                    uses,
+                    paths,
+                    budget,
+                )? {
+                    proved.insert(variable);
+                }
+            }
             Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
                 pending.extend(groups.iter().map(|group| group.arm.as_ref()));
             }
@@ -2113,6 +2032,277 @@ fn short_circuit_local_booleans(
     Ok(proved)
 }
 
+/// The store one bounded conditional-value Phi feeds, and the one local it seeds `boolean`.
+///
+/// This is the single discipline behind the pass's two store shapes: the exact `1`/`0` graph is
+/// proved by the shape's own rule (a short-circuit region's [`ShortCircuitConsumer::Local`], or
+/// the ordinary one-test fold), and what remains is one named, single-write local whose every
+/// reachable read is an explicit Boolean consumer. The write must be the shape's own consumer, the
+/// declaration must live in the region the accesses share, and nothing else is followed.
+#[allow(clippy::too_many_arguments)]
+fn proves_boolean_local_store(
+    slot: u16,
+    written: ValueId,
+    phi: ValueId,
+    at: u32,
+    ssa: &SsaTable,
+    operations: &Operations,
+    names: &NameTable,
+    reuse: &reuse::Plan,
+    fields: &field::Plan,
+    return_type: Option<&Type>,
+    parameters: u16,
+    uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
+    paths: &RegionPaths,
+    budget: &mut Budget,
+) -> Result<Option<LocalVariable>, StopReason> {
+    let Some(variable) = reuse.variable_at(slot, at) else {
+        return Ok(None);
+    };
+    if slot < parameters
+        || names.text(variable).is_none()
+        || !matches!(ssa.value(written).def(), Definition::Instruction { bci, .. } if *bci == at)
+        || ssa.value(written).replaced_by().is_some()
+    {
+        return Ok(None);
+    }
+    let Some(accesses) = uses.get(&variable) else {
+        return Ok(None);
+    };
+    let writes = accesses
+        .iter()
+        .filter(|access| access.written.is_some())
+        .collect::<Vec<_>>();
+    let [write] = writes.as_slice() else {
+        return Ok(None);
+    };
+    if declaration_region(accesses, paths).is_none()
+        || write.bci != at
+        || write.written != Some(written)
+        || write.stored != Some(phi)
+        // This first Store consumer only claims a declaration in its own region.
+        // A read in another lexical region needs an independently proved elevated
+        // assignment and is conservatively left to a later scope change.
+        || accesses.iter().any(|access| access.path != write.path)
+    {
+        return Ok(None);
+    }
+    let reads = accesses
+        .iter()
+        .filter(|access| access.read.is_some())
+        .collect::<Vec<_>>();
+    let direct_readers = ssa
+        .value(written)
+        .uses()
+        .iter()
+        .filter_map(|reader| reader.bci())
+        .collect::<BTreeSet<_>>();
+    let read_bcis = reads
+        .iter()
+        .map(|access| access.bci)
+        .collect::<BTreeSet<_>>();
+    // A later join can carry this slot's one value through a **trivial** merge: a Phi whose every
+    // input is this value and that the SSA already replaced by it. It states no second consumer —
+    // the same tolerance the proved instance-field consumer applies to its receiver — so the
+    // closed use chain counts the instruction readers (`direct_readers`) and asks the block-level
+    // uses to be exactly such merges.
+    let trivial_merges: BTreeSet<_> = ssa
+        .phis()
+        .iter()
+        .filter(|merge| {
+            merge.slot() == Slot::Local(slot)
+                && ssa.value(merge.value()).replaced_by() == Some(written)
+                && merge
+                    .inputs()
+                    .iter()
+                    .all(|input| matches!(input, PhiInput::Value(value) if *value == written))
+        })
+        .map(|merge| merge.block())
+        .collect();
+    if reads.is_empty()
+        || reads.len() != read_bcis.len()
+        || direct_readers != read_bcis
+        || !ssa
+            .value(written)
+            .uses()
+            .iter()
+            .filter(|use_| use_.bci().is_none())
+            .all(|use_| trivial_merges.contains(use_.block()))
+        || reads.iter().any(|access| {
+            access.bci <= at
+                || access.read != Some(written)
+                || reuse.variable_at(slot, access.bci) != Some(variable)
+        })
+    {
+        return Ok(None);
+    }
+    for access in reads {
+        poll(budget, Some(access.bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(access.bci),
+        )?;
+        let Some(load) = instruction_at(ssa, access.bci) else {
+            return Ok(None);
+        };
+        let Some(Operation::Load { slot: load_slot }) = operations.get(access.bci) else {
+            return Ok(None);
+        };
+        let [(Slot::Stack(_), loaded)] = load.writes() else {
+            return Ok(None);
+        };
+        if *load_slot != slot
+            || !matches!(load.opcode(), 0x15 | 0x1a..=0x1d)
+            || load.reads() != [(Slot::Local(slot), written)]
+        {
+            return Ok(None);
+        }
+        let [reader] = ssa.value(*loaded).uses() else {
+            return Ok(None);
+        };
+        let Some(consumer_bci) = reader.bci() else {
+            return Ok(None);
+        };
+        let Some(consumer) = instruction_at(ssa, consumer_bci) else {
+            return Ok(None);
+        };
+        // A concatenation's `append(Z)` reads its receiver and its operand: the loaded local is
+        // the overload's one value, on top of the builder the chain allocated. The SSA read list
+        // states the stack top first, so the loaded value is matched by identity among the stack
+        // reads, not by position; the one-read positions (`putstatic Z`, `ireturn Z`) read the
+        // value alone and match the same way.
+        let reads_the_loaded_value = !consumer.reads().is_empty()
+            && consumer
+                .reads()
+                .iter()
+                .all(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            && consumer.reads().iter().any(|(_, value)| *value == *loaded);
+        if !reads_the_loaded_value {
+            return Ok(None);
+        }
+        let boolean_position = match (consumer.opcode(), operations.get(consumer_bci)) {
+            (
+                0xb3,
+                Some(Operation::Field {
+                    access: FieldAccess::Write,
+                    is_static: true,
+                    descriptor,
+                    ..
+                }),
+            ) if descriptor == "Z" => fields
+                .claim(consumer_bci)
+                .is_some_and(|(_, shape)| shape.value == Some(*loaded)),
+            (0xac, Some(Operation::Return)) => return_type == Some(&Type::Boolean),
+            // The one concatenation overload that consumes a `boolean` directly: javac 8 lowers
+            // `flag + text` to `StringBuilder.append:(Z)Ljava/lang/StringBuilder;` (and the
+            // `StringBuffer` spelling of the same chain), with the loaded local as the operand.
+            (0xb6, Some(Operation::Invoke(target)))
+                if (target.owner() == "java/lang/StringBuilder"
+                    && target.name() == "append"
+                    && target.descriptor() == "(Z)Ljava/lang/StringBuilder;")
+                    || (target.owner() == "java/lang/StringBuffer"
+                        && target.name() == "append"
+                        && target.descriptor() == "(Z)Ljava/lang/StringBuffer;") =>
+            {
+                true
+            }
+            _ => false,
+        };
+        if !boolean_position {
+            return Ok(None);
+        }
+    }
+    Ok(Some(variable))
+}
+
+/// Seeds `boolean` for the one-test conditional store a fold proves, when it meets
+/// [`proves_boolean_local_store`]'s discipline. The fold's own proof is the same bounded
+/// `1`/`0` graph the short-circuit regions prove; a store that is not the fold's one consumer,
+/// or a candidate whose join stores nothing this run names, states nothing here.
+#[allow(clippy::too_many_arguments)]
+fn proves_conditional_store_boolean(
+    region: &Region,
+    canonical: &CanonicalCfg,
+    ssa: &SsaTable,
+    operations: &Operations,
+    names: &NameTable,
+    reuse: &reuse::Plan,
+    fields: &field::Plan,
+    return_type: Option<&Type>,
+    parameters: u16,
+    uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
+    paths: &RegionPaths,
+    budget: &mut Budget,
+) -> Result<Option<LocalVariable>, StopReason> {
+    let Region::If {
+        join: Some(join), ..
+    } = region
+    else {
+        return Ok(None);
+    };
+    // Cheap pre-filter before the proof bills anything: the shape this seeds is a stack Phi the
+    // join stores into a local. A join with no live stack Phi (arms merging locals only, a void
+    // arm pair) states no conditional store and owes no proof charge.
+    let Some(first) = ssa
+        .block(join)
+        .and_then(|block| block.instructions().first())
+    else {
+        return Ok(None);
+    };
+    if !matches!(first.opcode(), 0x36 | 0x3b..=0x3e)
+        || !ssa.phis().iter().any(|phi| {
+            phi.block() == join
+                && matches!(phi.slot(), Slot::Stack(_))
+                && ssa.value(phi.value()).replaced_by().is_none()
+        })
+    {
+        return Ok(None);
+    }
+    let ConditionalValueAttempt::Proved(proof) =
+        prove_conditional_value(region, canonical, ssa, operations, budget)?
+    else {
+        return Ok(None);
+    };
+    let at = proof.consumer_bci;
+    let Some(instruction) = instruction_at(ssa, at) else {
+        return Ok(None);
+    };
+    let Some(Operation::Store { slot }) = operations.get(at) else {
+        return Ok(None);
+    };
+    // The store's own SSA write is the store's output value; the fold's Phi reaches it as the
+    // stack operand the store reads, exactly like the region store the SCV shape proves.
+    let Some(written) = (match instruction.writes() {
+        [(Slot::Local(written_slot), value)] if written_slot == slot => Some(*value),
+        _ => None,
+    }) else {
+        return Ok(None);
+    };
+    if proof.join.bci() > at
+        || !matches!(instruction.reads(), [(Slot::Stack(_), value)] if *value == proof.phi)
+    {
+        return Ok(None);
+    }
+    proves_boolean_local_store(
+        *slot,
+        written,
+        proof.phi,
+        at,
+        ssa,
+        operations,
+        names,
+        reuse,
+        fields,
+        return_type,
+        parameters,
+        uses,
+        paths,
+        budget,
+    )
+}
+
 /// The write one variable's type is decided from, and the values that state it.
 struct FirstWrite {
     /// The write's own bytecode index: the anchor a declaration or a refusal is written under.
@@ -2138,7 +2328,10 @@ struct FirstWrite {
 ///   two definitions away state nothing without a separate proof;
 /// * a **bounded short-circuit Phi/Store proof** from [`short_circuit_local_booleans`]: the exact
 ///   1/0 graph, unique `istore`, one named local and all its reachable reads at explicit Boolean
-///   consumers form one initiating seed before this type decision runs;
+///   consumers form one initiating seed before this type decision runs. The same discipline seeds
+///   the one-test shape of that graph (`proves_conditional_store_boolean`): a fold whose store
+///   meets the identical named, single-write, all-Boolean-reads chain — including the
+///   concatenation's own `append(Z)` operand position;
 /// * the **frame's type** for the value a variable's first write stores — the type of every
 ///   non-boolean decision, because the frames state one slot shape for the four int-sized
 ///   primitives and cannot tell a `boolean` from an `int`;
@@ -2831,9 +3024,12 @@ fn collect_guards(region: &Region, visit: &mut impl FnMut(&Region)) {
                 collect_guards(cleanup, visit);
             }
         }
-        Region::ShortCircuitValue { .. }
-        | Region::TwoExitReturn { .. }
-        | Region::SharedTailEarlyReturn { .. } => {}
+        Region::ShortCircuitValue { tail, .. } => {
+            for region in tail {
+                collect_guards(region, visit);
+            }
+        }
+        Region::TwoExitReturn { .. } | Region::SharedTailEarlyReturn { .. } => {}
         Region::Guard { body: None, .. }
         | Region::Straight { .. }
         | Region::Fallback { .. }
@@ -2932,9 +3128,9 @@ fn guard_return_ownership(
             | Region::TwoExitReturn { .. }
             | Region::SharedTailEarlyReturn { .. }
             | Region::Fallback { .. }
-            | Region::ShortCircuitValue { .. }
             | Region::LoopBreak { .. }
             | Region::LoopContinue { .. } => {}
+            Region::ShortCircuitValue { tail, .. } => pending.extend(tail),
         }
     }
     Ok(ownership)
@@ -3759,10 +3955,18 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
         | Region::TwoExitReturn { .. }
         | Region::SharedTailEarlyReturn { .. }
         | Region::Fallback { .. }
-        | Region::ShortCircuitValue { .. }
         | Region::Guard { body: None, .. }
         | Region::LoopBreak { .. }
         | Region::LoopContinue { .. } => {}
+        // A composed continuation is this region's own statement sequence, so its blocks stand
+        // at the same lexical path: the declaration the store consumer anchors and the reads the
+        // continuation makes share one region path, which is what keeps a local's Boolean
+        // evidence and its declaration placement in one place.
+        Region::ShortCircuitValue { tail, .. } => {
+            for region in tail {
+                collect_paths(region, path, out);
+            }
+        }
     }
     if matches!(region, Region::Fallback { .. }) {
         out.fallbacks.insert(path.clone());
@@ -3971,9 +4175,12 @@ fn unaccounted_region_bcis(region: &Region) -> Vec<u32> {
             }
         }
         Region::Fallback { reason, .. } => bcis.extend_from_slice(reason.unaccounted()),
-        Region::ShortCircuitValue { .. }
-        | Region::TwoExitReturn { .. }
-        | Region::SharedTailEarlyReturn { .. } => {}
+        Region::ShortCircuitValue { tail, .. } => {
+            for region in tail {
+                bcis.extend(unaccounted_region_bcis(region));
+            }
+        }
+        Region::TwoExitReturn { .. } | Region::SharedTailEarlyReturn { .. } => {}
         Region::Straight { .. }
         | Region::Guard { body: None, .. }
         | Region::LoopBreak { .. }
@@ -5738,6 +5945,7 @@ fn prove_short_circuit_value(
         false_producer,
         consumer,
         consumer_bci,
+        tail,
         ..
     } = region
     else {
@@ -5927,8 +6135,12 @@ fn prove_short_circuit_value(
             ));
         }
     }
+    // A composed continuation owns the consumer block's own two-way branch, so the block's two
+    // outgoing edges are the continuation's arms and not a second consumer of this value.
+    let consumer_branch_delegated = !tail.is_empty();
     if !same(incoming.get(consumer), &[true_producer, false_producer])
-        || outgoing.get(consumer).is_some_and(|edges| edges.len() > 1)
+        || (outgoing.get(consumer).is_some_and(|edges| edges.len() > 1)
+            && !consumer_branch_delegated)
     {
         return Ok(ShortCircuitValueAttempt::Refused(
             ShortCircuitValueRefusal::Edges,
@@ -6767,7 +6979,7 @@ fn prove_local_assignments(
             }
             // This proof never enters a loop, protected range, or handler body.
             Region::Try { .. } | Region::Guard { .. } => {}
-            Region::ShortCircuitValue { tests, .. } => {
+            Region::ShortCircuitValue { tests, tail, .. } => {
                 charge(
                     budget,
                     CountedBudgetDimension::AnalysisSteps,
@@ -6775,6 +6987,7 @@ fn prove_local_assignments(
                     tests.first().map(|(_, bci)| *bci),
                 )?;
                 condition_tests.extend(tests.iter().cloned());
+                pending.extend(tail);
             }
             Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => {
                 pending.extend(groups.iter().map(|group| group.arm.as_ref()));
@@ -11617,7 +11830,13 @@ impl Builder<'_> {
                     self.prepare_conditional_region(cleanup, allowed_exception_row)?;
                 }
             }
-            Region::ShortCircuitValue { consumer, .. } => {
+            Region::ShortCircuitValue { consumer, tail, .. } => {
+                // A composed continuation stages its own statements here: its nested
+                // short-circuit region keys its declaration on its consumer block and its folds
+                // key their values on their branches, exactly as a top-level region does.
+                for region in tail {
+                    self.prepare_conditional_region(region, allowed_exception_row)?;
+                }
                 if let ShortCircuitValueAttempt::Proved(proof) = prove_short_circuit_value(
                     region,
                     self.canonical,
@@ -12830,6 +13049,7 @@ impl Builder<'_> {
             consumer,
             consumer_bci,
             reason,
+            tail,
             ..
         } = region
         {
@@ -12869,7 +13089,18 @@ impl Builder<'_> {
             }
             self.settled.insert(*consumer_bci);
             let suffix = self.block(consumer);
-            self.settled.remove(consumer_bci);
+            // A composed continuation's first test lives in this block, and its test-effects walk
+            // re-reads the store's block: the settled marker stays so the store this region
+            // already presented is never presented twice, exactly like a switch-expression fold's
+            // own join.
+            if tail.is_empty() {
+                self.settled.remove(consumer_bci);
+            }
+            // The continuation is this statement sequence's own rest: it renders at the same
+            // lexical path, after the consumer block's suffix, in the bytecode's own order.
+            for region in tail {
+                self.region(region, path)?;
+            }
             return suffix;
         }
         if let Some(reason) = self.declarations.incomplete.get(path).cloned() {
@@ -19138,7 +19369,13 @@ impl Builder<'_> {
         match self.declare(variable, at)? {
             Declaration::Declared(ty) => {
                 let value = if ty == Type::Boolean {
-                    boolean_spelling(value)
+                    // A proved conditional value stored into a `boolean` local is that local's
+                    // own test: the one-test fold this pass seeded spells `flag`, not `flag ? 1
+                    // : 0` under a `boolean` name no `int` text can fill.
+                    match short_circuit_boolean_expression(value.clone(), 0) {
+                        Some(folded) => boolean_spelling(folded),
+                        None => value,
+                    }
                 } else {
                     value
                 };

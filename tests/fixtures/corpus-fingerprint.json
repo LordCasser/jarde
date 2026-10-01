@@ -2617,6 +2617,26 @@
       "path": "tests/fixtures/p3-conditional-values/nested-type/NestedType.java"
     },
     {
+      "blake3": "20a6aa9b412ba24e9ef5f4036797513b06f591fd9b00da66dcc0c9bc535f5763",
+      "bytes": 1046,
+      "path": "tests/fixtures/p3-conditional-values/scv-concat-consumers/ScvConcatConsumers.class"
+    },
+    {
+      "blake3": "e00af8a41c811a55273f3298fd7f55440e750dab9f90fda0ef2886ed9ed7d383",
+      "bytes": 916,
+      "path": "tests/fixtures/p3-conditional-values/scv-concat-consumers/ScvConcatConsumers.java"
+    },
+    {
+      "blake3": "e6fcf67fde7c61c85ebbf496759b7798da54267d05c49d8687e23f6803440bff",
+      "bytes": 536,
+      "path": "tests/fixtures/p3-conditional-values/scv-concat-consumers/ScvConcatReReadControls.class"
+    },
+    {
+      "blake3": "bdb02cd8ad89863b067a04650b029cd3bdaf5c9db594f1be5593688e7fd4e0eb",
+      "bytes": 245,
+      "path": "tests/fixtures/p3-conditional-values/scv-concat-consumers/ScvConcatReReadControls.java"
+    },
+    {
       "blake3": "6817d0a1a005634af8ccf30dfc7ec7b796353da07dbe0bb13f1a4c077cc7a2ca",
       "bytes": 414,
       "path": "tests/fixtures/p3-conditional-values/short-circuit-chain-shared-true-controls/ChainOrFieldDuplicatePhi.class"

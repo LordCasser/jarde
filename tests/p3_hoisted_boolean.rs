@@ -575,7 +575,9 @@ fn the_type_decision_is_billed_and_a_stopped_run_commits_nothing() {
     // which seeds the queue), then `y` (its write stores a read of `x`) and then `z`. The full-run
     // count and cutoff below are pinned for this request. At the cutoff the run stops on `x`'s write
     // at BCI 1, keeping a concrete source anchor on the budget boundary so the plan's charge cannot
-    // be removed without changing the result.
+    // be removed without changing the result. The 2026-10-01 concatenation-consumed short-circuit
+    // change seeds one-test conditional stores too, but its proof attempt is pre-filtered to joins
+    // that hold a live stack Phi, and `relayed`'s join merges locals only: it bills nothing here.
     const RELAYED_IR_ITEMS: u64 = 464;
     const IR_ITEMS_BEFORE_THE_PLAN: u64 = 374;
     let engine = Engine::new();
