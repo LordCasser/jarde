@@ -21,6 +21,6 @@
 ## 切片划分
 
 - **`recover-proved-enum-arbitrary-arguments`（本片，MVP）**：构造 grammar 从四固定形扩展为 `(String, int, <≤3 用户实参>)`，实参语法 = {int 族字面量（按参数类型拼写窄化 `(byte) 1`）、String 字面量、静态字段引用 `Owner.name`、null}；ctor 体纪律沿用（super 调用 + 每参存 own final 字段）。闭合 N0 之外的全部纯实参形态（N3 两探针、N1 全量形态）。
-- **常量专属匿名体（`N2$Operation` 形态）另片**：需要匿名子类链识别（Sub extends enum、其 <init> 委托 super、body 呈现进常量体 `PLUS { … }`），是大颗粒里程碑，随后按证据推进。
+- **常量专属匿名体（`N2$Operation` 形态）另片**：需要匿名子类链识别（Sub extends enum、其 <init> 委托 super、body 呈现进常量体 `PLUS { … }`），是大颗粒里程碑，随后按证据推进。**字节码结构已预研**（2026-10-01）：`<clinit>` 每常量为 `new N2$Operation$N; dup; ldc "NAME"; iconst ord; invokespecial Sub.<init>(String,int); putstatic NAME`；匿名子类 `final class Sub extends Operation`，ctor 体恰为委托 `super(name, ord, null)`（枚举自身 ctor 带合成 `$1` 参防递归），覆盖方法体（`apply`）在 Sub 类内。跨类读取（Sub 的成员表与方法体）可评估走已归档的 member-class-family 装配通道，不必然新增机制——设计时核对 A16 单类读取预算的边界。
 
 原 class 为行为基准；JADX 参照不作为语义正例。
