@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含 new@1 全部既有测试）、fmt、CI 完整 30 项 allowlist clippy、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 X1/X2 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核走查扩展、区间判据与三方行为，更新构造呈现账本与巡查记录。
+- [x] 3.3 root 独立复核走查扩展、区间判据与三方行为，更新构造呈现账本与巡查记录。（root 于合并主线 b339c700 复核：X2.nested 呈现 `new Exception("outer", (Throwable) new Exception("inner"))`、X1/X2 重编行为逐字一致；判别三档中前两档逐字不变、三层/双用途/跨块负例保持拒绝且新增两道拒绝链（内嵌值须为外层实参、跨异常边界）；全仓 2803/0、fmt/openspec 240/240。递归挂点复核认可：verify 顺序扫描 + 同一 verify 递归（depth≤2）、失败回退原拒绝文本。三层与委托链内嵌登记后续。）
