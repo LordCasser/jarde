@@ -12,3 +12,7 @@
 **判别变量 = 枚举自身二进制名含 `$`（嵌套枚举）**——与抽象/接口实现无关。`TestEnumsInterface` 的 `TestCls.Operation` 正是嵌套枚举，故其账本挂起成立；`TestInnerEnums.Numbers` 同为嵌套（其常量体形态待本片后同批覆盖）。方向：常量体折叠的子类名派生/匹配在父名含 `$` 时错位（子类 `Holder2$OpAbs$1` 的父名回切或 InnerClasses 关系解析取错段）。
 
 处理：`recover-nested-enum-constant-bodies` 窄切片（判别矩阵即正反 fixture）。原 class 为行为基准。
+
+## 更新（2026-10-01，`recover-nested-enum-constant-bodies` 实施后）
+
+上表两嵌套格已随该 change 翻转为折叠；两顶格局逐字不变。首个拒绝点为常量体折叠整组门中"synthetic 访问桥 marker 参数类型 == 常量匿名子类名"的顶层形态名绑定（嵌套枚举 javac 取外围类合成匿名类作 marker，如 `p/Holder2$1`）；修复改为桥的结构事实绑定（桥体委托 + 子类按桥描述符空 marker 调用），义务证明零放宽。定位记录、负例/变体前后（人为 `$` 顶层名不误伤、`A$B$C` 连带翻转登记、嵌套+抽象/接口双形保持逐字段）、三方 `java -Xverify:all` 对照与产物 SHA 见 [refusal-point-fix.md](refusal-point-fix.md)、[variants-before-after-fix.md](variants-before-after-fix.md)、[threeway-fix.md](threeway-fix.md)、[sha256-fix.txt](sha256-fix.txt)；冻结 jar 两行（上文 SHA）未改动。
