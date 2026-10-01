@@ -1,0 +1,1 @@
+4c951087f41285a7c052b02d37ee8182195aa3a74cdee2655ff1785cec1d379a  openspec/evidence/java-syntax-2026-10-02/string-ops-patrol/fixture/S1.class
