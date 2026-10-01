@@ -12,4 +12,4 @@
 
 - [x] 3.1 `cargo test --workspace --tests --locked --no-fail-fast` 全绿（含 enum 全家族与 member-family 测试）、fmt、CI 完整 30 项 allowlist clippy、`openspec validate --all --strict`、diff check；磁盘低于 15Gi 先 `cargo clean`，完成即清。
 - [x] 3.2 `p.Combo` 与变体三方对照：原 class/固定 JADX Java-input/Jarde 重编 `java -Xverify:all` 逐路径一致；记录输出 SHA。
-- [ ] 3.3 root 独立复核义务参数化、呈现合成与三方行为，更新 DT-12/13 账本与巡查记录。
+- [x] 3.3 root 独立复核义务参数化、呈现合成与三方行为，更新 DT-12/13 账本与巡查记录。（root 于合并主线 72e275ab 复核：p.Combo 折叠 `ADD(1) { … }, MUL(2) { … }, ID(0);`、整 family 重编运行一致（7/12/0）、纯带体/纯带参六 fixture diff 逐字节不变、全仓 2766/0、fmt/openspec 235/235。拒绝点三层参数化复核认可（数量门/描述符白名单/步宽硬编码/转发表/呈现 len!=2）；两固定切片"恰 2 常量"钉死保持。遗留登记：getstatic 参带体在 jarde-java structured-initializer 层被拒（本 change 面外，该层补齐后本通道无需再改）。）
