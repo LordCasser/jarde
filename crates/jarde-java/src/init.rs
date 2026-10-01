@@ -112,6 +112,9 @@ struct ConstructionFacts<'a> {
     ssa: &'a SsaTable,
     operations: &'a Operations,
     chains: &'a crate::concat::Plan,
+    /// The allocations another rule of this run writes the text of, handed in by [`sites`]: a
+    /// nested-candidate scan must not claim what another rule already owns.
+    reserved: &'a BTreeSet<u32>,
     fields: &'a field::Plan,
     arrays: &'a crate::build::ArrayInitializers,
     java_release: u16,
@@ -119,6 +122,13 @@ struct ConstructionFacts<'a> {
     method: Option<&'a crate::facts::MethodFacts>,
     code: &'a MethodCodeFacts,
 }
+
+/// How many levels of construction one `new` expression of this rule presents: the outer
+/// construction plus **one** complete nested construction in an argument position —
+/// `new X(msg, new Y("inner"))`. A deeper run (`new A(new B(new C()))`) keeps its refusal and its
+/// registration: the middle and inner sites are still proved on their own by the body walk, and
+/// the outermost is refused rather than half-spelled.
+const MAX_NESTED_CONSTRUCTION_LAYERS: u32 = 2;
 
 /// Every construction site of one body, the candidates that were not sites, and the gaps stated in
 /// every selection.
@@ -306,6 +316,7 @@ pub(crate) fn sites(
         ssa,
         operations,
         chains,
+        reserved,
         fields,
         arrays,
         java_release,
@@ -336,7 +347,7 @@ pub(crate) fn sites(
                 continue;
             }
             let ty = ty.clone();
-            match verify(head, index, block, ty.clone(), &facts) {
+            match verify(head, index, block, ty.clone(), &facts, 0) {
                 Ok(site) => {
                     plan.allocation_candidates[candidate_index].verified = true;
                     for bci in &site.owned {
@@ -374,17 +385,24 @@ fn site_positions(site: &Site) -> Vec<u32> {
 /// `fields` is the `field@1` plan of this body: the one fact consulted here that this rule does not
 /// decide for itself, and only for the question of whether an instruction is a place the instance is
 /// written (P3 2c.26).
+///
+/// `depth` counts construction layers: 0 for the body's own walk, 1 for a construction proved
+/// recursively inside another one's argument run. The scan below steps over a nested
+/// `new; dup; …; invokespecial` run only while `depth + 1` stays under
+/// [`MAX_NESTED_CONSTRUCTION_LAYERS`].
 fn verify(
     head: u32,
     index: usize,
     block: &[SsaInstruction],
     ty: String,
     facts: &ConstructionFacts<'_>,
+    depth: u32,
 ) -> Result<Site, Refusal> {
     let ConstructionFacts {
         ssa,
         operations,
         chains,
+        reserved,
         fields,
         arrays,
         java_release,
@@ -403,17 +421,64 @@ fn verify(
             dup.bci()
         )));
     }
-    let Some(constructor) = block.iter().skip(index + 2).find(|instruction| {
-        matches!(
-            operations.get(instruction.bci()),
+    // The constructor call this expression writes: the first `<init>` on this allocation's own
+    // class after the copy. What stands between the copy and that call are the argument runs, and
+    // one argument can be **another complete construction** — `new X(msg, new Y("inner"))`, the
+    // wrapped-exception and wrapper-object shape — whose own `new; dup; …; invokespecial` run
+    // completes inside this one's arguments. The scan steps over such a run only when this same
+    // verification proves it recursively, and what that proof states is exactly what the outer
+    // expression needs: the nested constructor matches the nested allocation, the nested value is
+    // single-use, and its closed run is this block's own contiguous instruction range. A candidate
+    // that does not prove is **not** stepped over — the ordinary walk reads on, and the checks
+    // below refuse the outer construction exactly as they did before this rule knew about nesting.
+    let mut nested_sites: Vec<Site> = Vec::new();
+    let mut scan = index + 2;
+    let found = loop {
+        let Some(instruction) = block.get(scan) else {
+            break None;
+        };
+        let bci = instruction.bci();
+        if depth + 1 < MAX_NESTED_CONSTRUCTION_LAYERS
+            && !reserved.contains(&bci)
+            && !chains.owns(bci)
+            && let Some(Operation::Allocate { ty: nested_ty }) = operations.get(bci)
+            && block
+                .get(scan + 1)
+                .is_some_and(|next| operations.get(next.bci()) == Some(&Operation::Duplicate))
+            && let Ok(site) = verify(bci, scan, block, nested_ty.clone(), facts, depth + 1)
+        {
+            // Step over the whole closed run: the nested constructor is the last instruction of
+            // it, and the outer construction's own call is the first one after it that names this
+            // allocation's class.
+            let after = block
+                .iter()
+                .position(|instruction| instruction.bci() == site.constructor)
+                .expect("the nested construction's call belongs to this block")
+                + 1;
+            nested_sites.push(site);
+            scan = after;
+            continue;
+        }
+        if matches!(
+            operations.get(bci),
             Some(Operation::Invoke(target)) if target.owner() == ty && target.name() == "<init>"
-        )
-    }) else {
+        ) {
+            break Some(instruction);
+        }
+        scan += 1;
+    };
+    let Some(constructor) = found else {
         return Err(shape(format!(
             "the allocation at BCI {head} is never constructed: no `{ty}.<init>(…)` call reads the instance it builds and the copy of it"
         )));
     };
     let at = constructor.bci();
+    // The closed runs the scan stepped over: every instruction of every recursively proved nested
+    // construction, which the span check below accepts as part of this one expression.
+    let nested_expression: BTreeSet<u32> = nested_sites
+        .iter()
+        .flat_map(|site| site.expression.iter().copied())
+        .collect();
     // The instructions the instance comes from: the allocation, its copy and the constructor that
     // initialized it. A compiler may put the stored value down as any of the three, and what matters
     // is that the value really belongs to *this* allocation.
@@ -440,6 +505,25 @@ fn verify(
         })
         .map(|target| verify_member(index, block, constructor, &operands, facts, target))
         .transpose()?;
+    // Every nested construction the scan stepped over is one **argument** of this call: its
+    // completed instance is exactly the value the call reads at that position — the same "the
+    // value is the argument" fact the presentation states when it spells the site inside the `new`
+    // expression. A run that completes inside this construction for any other reader — a call on
+    // the fresh instance, a store of it — has no place in the expression, and this construction
+    // keeps its refusal.
+    for nested in &nested_sites {
+        let nested_produced_by = [nested.head, nested.dup, nested.constructor];
+        if !operands
+            .iter()
+            .skip(1)
+            .any(|(_, value)| is_the_instance(ssa, *value, &nested_produced_by))
+        {
+            return Err(shape(format!(
+                "the construction at BCI {} completes inside the construction at BCI {head}, and its value is not one of the arguments of the constructor call at BCI {at}: the `new` expression has no single place to write it",
+                nested.head
+            )));
+        }
+    }
     let mut embedded_concat = false;
     let mut embedded_array = BTreeSet::new();
     let arguments = if let Some(member) = &member {
@@ -496,6 +580,7 @@ fn verify(
                 break;
             }
             match operations.get(instruction.bci()) {
+                Some(_) if nested_expression.contains(&instruction.bci()) => {}
                 Some(_) if nested_concat.contains(&instruction.bci()) => {}
                 Some(_) if embedded_array.contains(&instruction.bci()) => {}
                 Some(
@@ -601,8 +686,9 @@ fn verify(
             ),
         ));
     }
-    if embedded_concat || !embedded_array.is_empty() {
-        // A Java expression runs under one exception region. Moving a proved inner chain into the
+    if embedded_concat || !embedded_array.is_empty() || !nested_expression.is_empty() {
+        // A Java expression runs under one exception region. Moving a proved inner run — a
+        // concatenation chain, an inline char[] initializer, a nested construction — into the
         // outer construction is sound only when every instruction in the construction and its
         // sole consumer has the same handler coverage as the outer allocation.
         let coverage = |bci: u32| -> Vec<u32> {
@@ -623,11 +709,13 @@ fn verify(
         {
             let (code, argument) = if embedded_concat {
                 ("jre_new_concat_exception_boundary", "concatenation")
-            } else {
+            } else if !embedded_array.is_empty() {
                 (
                     "jre_new_inline_char_array_exception_boundary",
                     "inline char[]",
                 )
+            } else {
+                ("jre_new_nested_exception_boundary", "nested construction")
             };
             return Err(Refusal::shape(
                 code,
@@ -1574,6 +1662,15 @@ mod tests {
     );
     const INLINE_CHAR_ARRAY: &[u8] =
         include_bytes!("../../../tests/fixtures/em27-inline-string/em27/Probe.class");
+    const NESTED_PROBE: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class"
+    );
+    const NESTED_VARIANTS: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X3.class"
+    );
+    const NESTED_NEGATIVES: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X4.class"
+    );
 
     fn inline_char_sites(
         name: &str,
@@ -1892,10 +1989,12 @@ mod tests {
         }
         let fields = field::Plan::empty();
         let arrays = crate::build::ArrayInitializers::default();
+        let reserved = BTreeSet::new();
         let facts = ConstructionFacts {
             ssa,
             operations: &operations,
             chains: &crate::concat::Plan::empty(),
+            reserved: &reserved,
             fields: &fields,
             arrays: &arrays,
             java_release: 8,
@@ -1903,7 +2002,7 @@ mod tests {
             method: None,
             code: &code,
         };
-        verify(head, index, block.instructions(), ty.clone(), &facts)
+        verify(head, index, block.instructions(), ty.clone(), &facts, 0)
     }
 
     fn verdict(class: &[u8], name: &str, descriptor: &str) -> Result<Site, Refusal> {
@@ -2152,6 +2251,7 @@ mod tests {
                 ssa,
                 operations: &operations,
                 chains: &chains,
+                reserved: chains.owned(),
                 fields: &fields,
                 arrays: &arrays,
                 java_release: 8,
@@ -2159,15 +2259,185 @@ mod tests {
                 method: None,
                 code: &boundary_code,
             };
-            let boundary =
-                match verify(site.head, index, block, site.class.clone(), &boundary_facts) {
-                    Ok(_) => {
-                        panic!("a handler boundary cannot be crossed by the nested expression")
-                    }
-                    Err(reason) => reason,
-                };
+            let boundary = match verify(
+                site.head,
+                index,
+                block,
+                site.class.clone(),
+                &boundary_facts,
+                0,
+            ) {
+                Ok(_) => {
+                    panic!("a handler boundary cannot be crossed by the nested expression")
+                }
+                Err(reason) => reason,
+            };
             assert_eq!(boundary.code(), "jre_new_concat_exception_boundary");
         }
+    }
+
+    fn nested_sites(
+        class: &[u8],
+        name: &str,
+        descriptor: &str,
+        handler_range: Option<(u32, u32)>,
+    ) -> Sites {
+        let (analysis, _) = analyzed_caller(class, name, descriptor);
+        let ir = analysis.ir();
+        let mut code = ir.code().expect("code").clone();
+        if let Some((start_bci, end_bci)) = handler_range {
+            code.exception_handlers
+                .push(jarde_reader::classfile::ExceptionHandlerFact {
+                    ordinal: 0,
+                    start_bci,
+                    end_bci,
+                    handler_bci: 0,
+                    catch_type_index: None,
+                });
+        }
+        let ssa = ir.ssa().expect("ssa");
+        let operations = Operations::of(&code, ir.constant_pool());
+        let fields = field::Plan::empty();
+        let chains = crate::concat::Plan::empty();
+        let method_facts = crate::facts::MethodFacts::new(name, descriptor, 0);
+        sites(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &crate::build::ArrayInitializers::default(),
+            8,
+            &[],
+            &method_facts,
+            &code,
+        )
+    }
+
+    /// The two sites of one nested construction and the one text they share: the outer call's own
+    /// argument run is the inner site's complete closed run, and neither site owns the other's
+    /// instructions (P3 2.3 — one expression per allocation, wherever it is consumed).
+    #[test]
+    fn nested_argument_sites_present_the_complete_inner_construction() {
+        let probe = nested_sites(NESTED_PROBE, "nested", "()Ljava/lang/String;", None);
+        let outer = probe
+            .site_at_head(0)
+            .expect("the outer construction proves");
+        let inner = probe
+            .site_at_head(6)
+            .expect("the nested construction proves");
+        assert_eq!((outer.head, outer.dup, outer.constructor), (0, 3, 15));
+        assert_eq!((inner.head, inner.dup, inner.constructor), (6, 9, 12));
+        // The outer's second argument is the nested construction's completed instance: the value
+        // the inner constructor call wrote through.
+        assert_eq!(outer.arguments, [4, 12]);
+        assert_eq!(outer.owned, [0, 3, 15].into_iter().collect::<BTreeSet<_>>());
+        assert_eq!(
+            outer.expression,
+            [0, 3, 4, 6, 9, 10, 12, 15]
+                .into_iter()
+                .collect::<BTreeSet<_>>()
+        );
+        assert!(outer.owned.is_disjoint(&inner.owned));
+        assert!(outer.expression.is_superset(&inner.expression));
+        assert!(probe.refusals().next().is_none());
+        assert!(
+            probe
+                .allocation_candidates()
+                .iter()
+                .all(|candidate| candidate.verified)
+        );
+
+        // `new TwoNested(new B("y"), new C("z"))`, `new Tagged("first", new B("second"))` and
+        // `new TwoSame(new B("1"), new B("2"))`: two argument positions, the second position, and
+        // one nested class twice — every nested run proves and folds into the outer expression.
+        let variants: [(&str, u32, u32, &[u32], &[u32]); 3] = [
+            ("doubleNested", 0, 22, &[4, 13], &[10, 19]),
+            ("secondPosition", 0, 15, &[6], &[12]),
+            ("sameClassTwice", 0, 22, &[4, 13], &[10, 19]),
+        ];
+        for (name, outer_head, constructor, nested_heads, nested_calls) in variants {
+            let plan = nested_sites(NESTED_VARIANTS, name, "()Ljava/lang/String;", None);
+            let outer = plan
+                .site_at_head(outer_head)
+                .unwrap_or_else(|| panic!("{name} outer proves"));
+            assert_eq!(outer.constructor, constructor, "{name}");
+            for (nested_head, nested_call) in nested_heads.iter().zip(nested_calls) {
+                let nested = plan
+                    .site_at_head(*nested_head)
+                    .unwrap_or_else(|| panic!("{name} nested at BCI {nested_head} proves"));
+                assert_eq!(&nested.constructor, nested_call, "{name}");
+                assert!(outer.owned.is_disjoint(&nested.owned), "{name}");
+                assert!(outer.expression.is_superset(&nested.expression), "{name}");
+                assert!(
+                    outer.arguments.contains(nested_call),
+                    "{name}: the nested completed instance is one outer argument"
+                );
+            }
+            assert!(plan.refusals().next().is_none(), "{name}");
+            assert!(
+                plan.allocation_candidates()
+                    .iter()
+                    .all(|candidate| candidate.verified),
+                "{name}"
+            );
+        }
+
+        // Moving the nested run's effect into the outer expression needs one exception region:
+        // a handler that splits the nested interval keeps the outer construction refused.
+        let crossed = nested_sites(
+            NESTED_PROBE,
+            "nested",
+            "()Ljava/lang/String;",
+            Some((6, 12)),
+        );
+        assert!(crossed.site_at_head(0).is_none());
+        assert_eq!(
+            crossed.refusals().next().expect("boundary refusal").code(),
+            "jre_new_nested_exception_boundary"
+        );
+    }
+
+    /// The negatives the patrol froze: a three-layer run keeps its outermost refusal (the middle
+    /// and inner sites still prove on their own), and a nested value with a second purpose keeps
+    /// both refusals (P3 2c.27 — one `new` expression in one place).
+    #[test]
+    fn deeper_and_double_purpose_nested_constructions_stay_refused() {
+        let three = nested_sites(NESTED_NEGATIVES, "threeLayer", "()Ljava/lang/String;", None);
+        assert!(
+            three.site_at_head(0).is_none(),
+            "the outermost of three layers"
+        );
+        assert!(three.site_at_head(4).is_some(), "the middle layer proves");
+        assert!(three.site_at_head(8).is_some(), "the inner layer proves");
+        let refusal = three
+            .refusals()
+            .next()
+            .expect("the outer refusal registers");
+        assert!(
+            refusal
+                .message()
+                .contains("completes inside the construction at BCI 0")
+        );
+
+        let double = nested_sites(NESTED_NEGATIVES, "doubleUse", "()Ljava/lang/String;", None);
+        assert!(double.site_at_head(0).is_none());
+        assert!(double.site_at_head(6).is_none());
+        let codes: Vec<_> = double
+            .refusals()
+            .map(|gap| gap.code().to_string())
+            .collect();
+        assert_eq!(codes, ["jre_new_interleaved_effect", "jre_new_shape"]);
+
+        let cross = nested_sites(
+            NESTED_NEGATIVES,
+            "crossBlock",
+            "(Z)Ljava/lang/String;",
+            None,
+        );
+        assert!(cross.site_at_head(0).is_none());
+        assert!(cross.site_at_head(10).is_none());
+        assert!(cross.site_at_head(22).is_none());
     }
 
     #[test]
