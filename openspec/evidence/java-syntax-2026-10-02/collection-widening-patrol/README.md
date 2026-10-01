@@ -17,8 +17,17 @@
 
 ## 处置
 
-`recover-platform-collection-widening`：`platform_reference_argument_widens` 的 java.util 集合闭集扩展——JDK 8 `java.util` 固定层级直接边（ArrayList/LinkedList/Vector→List；HashMap/TreeMap/LinkedHashMap/Hashtable→Map；HashSet/TreeSet/LinkedHashSet→Set；ArrayDeque/LinkedList→Deque/Queue；接口链 List/Set/Queue→Collection→Iterable），与 throwable 同款传递闭包 walk；逐对以 JDK 运行时 `getSuperclass`/接口表机械核对。用户类/非 java.util 不放宽（升级路径同前：resolution 层证明）。
+`recover-platform-collection-widening`：`platform_reference_argument_widens` 的 java.util 集合闭集扩展——JDK 8 `java.util` 固定层级直接边（ArrayList/LinkedList/Vector→List；HashMap/TreeMap/LinkedHashMap/Hashtable→Map；HashSet/TreeSet/LinkedHashSet→Set；ArrayDeque→Deque；接口链 List/Set/Queue→Collection→Iterable，含 `Abstract*` 骨架、`Stack→Vector`、`Properties→Hashtable`、`Deque→Queue`、`SortedSet/NavigableSet` 与 `SortedMap/NavigableMap` 链），与 throwable 同款传递闭包 walk；逐对以 JDK 运行时 `getSuperclass`/接口表机械核对。用户类/非 java.util 不放宽（升级路径同前：resolution 层证明）。
 
-次要观察（不在本片）：装箱循环别名存储的 `aload;pop` 残留——与 discarded-call 家族相邻但形态不同（被丢弃的是 load 而非调用结果），按需另片。
+**实现完成（2026-10-02）**：表为 40 条直接边，见 [widen/README.md](widen/README.md) 与
+[widen/results/collection-table-rows.txt](widen/results/collection-table-rows.txt)；机械核对在真实
+JDK 8（Corretto 1.8.0_432）五项全过（[widen/results/collection-table-check.txt](widen/results/collection-table-check.txt)）。
+G1 的 `max` 拒绝点与结果局部级联已恢复（`(java.util.List) local0`），整类 `javac --release 8` 可编、
+`zeta:a`/`6` 与原 class/JADX 三方逐路径一致；CWV 33 处拒绝全恢复、CWN 7 处表外拒绝逐字保留。
+`List → Iterable` 既有回答与全部既有转换测试不变。表口径经 root 裁定为「严表」：每行是 javadoc
+声明的**直接**边（含 `Abstract*` 骨架与 `Stack`/`Properties` 包装），walk 负责传递闭包；同族真边
+（`LinkedList→Deque`、`Deque→Queue`、`NavigableSet→SortedSet` 等）一并入表。
+
+次要观察（不在本片）：装箱循环别名存储的 `aload;pop` 残留——与 discarded-call 家族相邻但形态不同（被丢弃的是 load 而非调用结果），按需另片。G1 的 `autoboxLoop` BCI 44 是该残留的固定现场，本片后仍为整类唯一 `@bytecode` 标记。
 
 原 class 为行为基准。
